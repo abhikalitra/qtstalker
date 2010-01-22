@@ -25,9 +25,8 @@
 
 
 
-BarData::BarData (QString &sym)
+BarData::BarData ()
 {
-  symbol = sym;
   high = -99999999;
   low = 99999999;
   barLength = DailyBar;
@@ -116,7 +115,7 @@ void BarData::prepend (Bar *bar)
 void BarData::createDateList ()
 {
   dateList.clear();
-  
+
   int loop;
   for (loop = 0; loop < (int) barList.count(); loop++)
   {
@@ -184,7 +183,7 @@ double BarData::getMin ()
 BarData::InputType BarData::getInputType (QString &d)
 {
   InputType t = Close;
-  
+
   while (1)
   {
     if (d == QObject::tr("Open"))
@@ -192,7 +191,7 @@ BarData::InputType BarData::getInputType (QString &d)
       t = Open;
       break;
     }
-    
+
     if (d == QObject::tr("High"))
     {
       t = High;
@@ -222,34 +221,34 @@ BarData::InputType BarData::getInputType (QString &d)
       t = OI;
       break;
     }
-    
+
     if (d == QObject::tr("Day"))
     {
       t = Day;
       break;
     }
-    
+
     if (d == QObject::tr("Week"))
     {
       t = Week;
       break;
     }
-    
+
     if (d == QObject::tr("Month"))
     {
       t = Month;
       break;
     }
-    
+
     if (d == QObject::tr("DayofWeek"))
     {
       t = DayOfWeek;
       break;
     }
-    
+
     break;
   }
-  
+
   return t;
 }
 

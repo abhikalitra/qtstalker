@@ -62,13 +62,14 @@
 #include "../pics/zoomin.xpm"
 #include "../pics/zoomout.xpm"
 #include "../pics/refresh.xpm"
+#include "../pics/script.xpm"
 
 
 QtstalkerApp::QtstalkerApp(QString session)
 {
+  recordList = 0;
   refreshTimer = 0;
   zoomPos = -1;
-  recordList = 0;
   setWindowIcon(QIcon(qtstalker));
   QApplication::setOrganizationName("Qtstalker");
 
@@ -163,6 +164,9 @@ QtstalkerApp::QtstalkerApp(QString session)
   script = new ExScript;
   connect(script, SIGNAL(signalDone()), this, SLOT(slotScriptDone()));
 
+  // setup the script server
+  script2 = new ExScript;
+  connect(script2, SIGNAL(signalDone()), this, SLOT(slotScriptDone2()));
 
   // setup the initial indicators
   QStringList l;
@@ -297,6 +301,12 @@ void QtstalkerApp::createActions ()
   action->setChecked(config.getBool(Config::RefreshStatus));
   connect(action, SIGNAL(toggled(bool)), this, SLOT(slotRefreshChart(bool)));
   actionList.insert(Refresh, action);
+
+  action = new QAction(QIcon(script_xpm), tr("Run S&cript"), this);
+  action->setStatusTip(tr("Run Qtstalker script"));
+  action->setToolTip(tr("Run Qtstalker script"));
+  connect(action, SIGNAL(activated()), this, SLOT(slotScript()));
+  actionList.insert(Script, action);
 }
 
 void QtstalkerApp::createMenuBar()
@@ -327,6 +337,7 @@ void QtstalkerApp::createMenuBar()
   menu = new QMenu;
   menu->setTitle(tr("&Tools"));
   menu->addAction(actionList.value(DataWindow1));
+  menu->addAction(actionList.value(Script));
   menubar->addMenu(menu);
 
   menubar->addSeparator();
@@ -375,6 +386,8 @@ void QtstalkerApp::createToolBars ()
   if (config.getBool(Config::ShowDataWindowButton))
     toolbar->addAction(actionList.value(DataWindow1));
 
+  toolbar->addAction(actionList.value(Script));
+
   if (config.getBool(Config::ShowHelpButton))
     toolbar->addAction(actionList.value(Help));
 
@@ -382,7 +395,7 @@ void QtstalkerApp::createToolBars ()
   QToolBar *toolbar2 = addToolBar("chartToolBar");
 
   QString ts; // temporary string
-  BarData bd(ts);
+  BarData bd;
   QStringList l;
   bd.getBarLengthList(l);
 
@@ -596,6 +609,7 @@ void QtstalkerApp::slotQuit()
     delete recordList;
 
   delete script;
+  delete script2;
 }
 
 void QtstalkerApp::closeEvent(QCloseEvent *)
@@ -697,14 +711,15 @@ void QtstalkerApp::loadChart (QString d)
   // create and populate the quote data
   if (recordList)
     delete recordList;
-  recordList = new BarData(chartPath);
+  recordList = new BarData;
+  recordList->setSymbol(chartPath);
   recordList->setBarLength((BarData::BarLength) compressionCombo->currentIndex());
   recordList->setBarsRequested(barCount->value());
 
   DataBase db;
   db.getChart(recordList);
 
-  script->setInput(recordList);
+  script->setBarData(recordList);
 
   db.getActiveIndicatorList(indicatorList);
   ilPos = -1;
@@ -1065,6 +1080,10 @@ void QtstalkerApp::slotAppFont (QFont d)
   slotWakeup();
 }
 
+/**********************************************************************/
+/************************ SCRIPT FUNCTIONS ***************************/
+/**********************************************************************/
+
 // called each time script is done an indicator
 // we update each plot with the new plotlines
 void QtstalkerApp::slotScriptDone ()
@@ -1114,6 +1133,44 @@ void QtstalkerApp::slotScriptDone ()
   i.getData(Indicator::IndicatorParmPath, s2);
   s3 = s + " " + s2;
   script->calculate(s3);
+}
+
+// runs a Qtstalker script selected by user
+void QtstalkerApp::slotScript ()
+{
+  QString file = QFileDialog::getOpenFileName(this,
+					      QString(tr("Select Qtstalker script to run.")),
+					      QDir::homePath(),
+					      QString(),
+					      0,
+					      0);
+  if (file.isEmpty())
+    return;
+
+  bool ok;
+  QString command = "perl " + file;
+  command = QInputDialog::getText(this,
+				  QString(tr("Enter Qtstalker script command")),
+				  QString(tr("Script command")),
+				  QLineEdit::Normal,
+				  command,
+				  &ok,
+				  0);
+
+  if (! ok)
+    return;
+
+  script2->calculate(command);
+}
+
+// called each time a Qtstalker script has executed
+void QtstalkerApp::slotScriptDone2 ()
+{
+  QMessageBox::information(this,
+			   QString(tr("Script Completed")),
+			   QString(tr("Script Completed")),
+			   QMessageBox::Ok,
+			   QMessageBox::Ok);
 }
 
 /**********************************************************************/

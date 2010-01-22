@@ -143,7 +143,7 @@ void DataBase::getChart (BarData *data)
 
   QString symbol, ts, ts2, s, sql;
   data->getSymbol(symbol);
-  
+
   Config config;
   config.getData(Config::DbGetSymbol, sql);
 
@@ -177,7 +177,7 @@ void DataBase::getChart (BarData *data)
       qDebug() << "DataBase::getChart:" << q.lastError().text();
       break;
     }
-    
+
     while (q.next())
     {
       QDateTime dt = q.value(0).toDateTime();
@@ -190,44 +190,44 @@ void DataBase::getChart (BarData *data)
       {
 	if (bars.count() == data->getBarsRequested())
 	  break;
-	
+
 	dateList.append(s); // save new dateList entry
 	bar = new Bar;
         bar->setDate(dt); // save actual date
 
 	bars.insert(s, bar);
-	
+
         QVariant v = q.value(1);
         if (v.isValid())
 	  bar->setOpen(v.toDouble());
-	
+
         v = q.value(2);
         if (v.isValid())
 	  bar->setHigh(v.toDouble());
-	
+
         v = q.value(3);
         if (v.isValid())
 	  bar->setLow(v.toDouble());
-	
+
         v = q.value(4);
         if (v.isValid())
 	  bar->setClose(v.toDouble());
-	
+
         v = q.value(5);
         if (v.isValid())
 	  bar->setVolume(v.toDouble());
-	
+
         v = q.value(6);
         if (v.isValid())
 	  bar->setOI(v.toDouble());
-	
+
 	continue;
       }
 
       QVariant v = q.value(1);
       if (v.isValid())
         bar->setOpen(v.toDouble());
-	
+
       v = q.value(2);
       if (v.isValid())
       {
@@ -252,7 +252,7 @@ void DataBase::getChart (BarData *data)
         bar->setVolume(v1 + v2);
       }
     }
-    
+
     if (bars.count() == data->getBarsRequested())
       break;
 
@@ -656,6 +656,7 @@ void DataBase::setChartObject (COSettings *co)
 //**************** INDICATOR SETTINGS ***************************************************
 //***************************************************************************************
 
+/*
 void DataBase::getIndicatorSettings (IndicatorSettings &set)
 {
   set.clear();
@@ -674,10 +675,10 @@ void DataBase::getIndicatorSettings (IndicatorSettings &set)
 
   if (q.next())
   {
-    QString ts = q.value(1).toString(); 
+    QString ts = q.value(1).toString();
     set.setName(ts);
 
-    ts = q.value(2).toString(); 
+    ts = q.value(2).toString();
     set.parse(ts);
   }
 }
@@ -688,7 +689,7 @@ void DataBase::setIndicatorSettings (IndicatorSettings &set)
   set.getIndicator(indicator);
   set.getString(ts);
   set.getName(name);
-  
+
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "INSERT OR REPLACE INTO indicatorSettings VALUES (";
   s.append("'" + indicator + "'");
@@ -699,4 +700,5 @@ void DataBase::setIndicatorSettings (IndicatorSettings &set)
   if (q.lastError().isValid())
     qDebug() << "DataBase::setIndicatorSettings:" << q.lastError().text() << s;
 }
+*/
 

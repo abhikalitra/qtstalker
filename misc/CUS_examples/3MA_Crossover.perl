@@ -10,7 +10,8 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "INDICATOR,SMA,10MA,Close,10"; # create the 10 SMA indicator
+# get some close bars
+print STDOUT "INDICATOR,REF,cl,Close,0";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -18,7 +19,7 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "INDICATOR,SMA,20MA,Close,20"; # create the 20 SMA indicator
+print STDOUT "INDICATOR,SMA,10MA,cl,10"; # create the 10 SMA indicator
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -26,7 +27,15 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "INDICATOR,SMA,50MA,Close,50"; # create the 50 SMA indicator
+print STDOUT "INDICATOR,SMA,20MA,cl,20"; # create the 20 SMA indicator
+$a = <STDIN>; # get the return code
+chomp($a); # remove the \n
+if ($a ne "0")
+{
+  exit; # we have a non zero return code, exit script
+}
+
+print STDOUT "INDICATOR,SMA,50MA,cl,50"; # create the 50 SMA indicator
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -36,7 +45,7 @@ if ($a ne "0")
 
 print STDOUT "PLOT,Bars,C,red,Bar"; # plot BARS
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
@@ -44,7 +53,7 @@ if ($a ne "0")
 
 print STDOUT "PLOT,10MA,10MA,blue,Line"; # plot 10 SMA
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
@@ -52,7 +61,7 @@ if ($a ne "0")
 
 print STDOUT "PLOT,20MA,20MA,red,Line"; # plot 20 SMA
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
@@ -60,7 +69,7 @@ if ($a ne "0")
 
 print STDOUT "PLOT,50MA,50MA,yellow,Line"; # plot 50 SMA
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script

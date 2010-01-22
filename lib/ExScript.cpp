@@ -20,6 +20,13 @@
  */
 
 #include "ExScript.h"
+#include "ta_libc.h"
+#include "DataBase.h"
+#include "SCGetIndicator.h"
+#include "SCSetIndicator.h"
+#include "SCPlot.h"
+#include "SCSymbolList.h"
+#include "SCIndicator.h"
 
 #include <QByteArray>
 #include <QtDebug>
@@ -29,9 +36,13 @@ ExScript::ExScript ()
 {
   proc = 0;
   data = 0;
-  is = 0;
-  
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TALIB::setDefaults:error on TA_Initialize");
+
   functionList << "INDICATOR" << "GET_INDICATOR" << "SET_INDICATOR" << "PLOT";
+  functionList << "SYMBOL_LIST";
 }
 
 ExScript::~ExScript ()
@@ -41,29 +52,26 @@ ExScript::~ExScript ()
 
 void ExScript::clear ()
 {
+  tlines.clear();
+  plotOrder.clear();
+
   if (proc)
   {
     delete proc;
     proc = 0;
   }
-    
-  if (is)
-  {
-    delete is;
-    is = 0;
-  }
 }
 
-void ExScript::setInput (BarData *bd)
+void ExScript::setBarData (BarData *d)
 {
-  data = bd;
+  data = d;
 }
 
 void ExScript::calculate (QString &command)
 {
   // clean up if needed
   clear();
-  
+
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
   connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
@@ -96,17 +104,17 @@ void ExScript::readFromStdout ()
     qDebug() << "ExScript::readFromStdout: invalid request string " << l;
     return;
   }
-  
+
   int i = functionList.indexOf(l[0]);
   switch ((Function) i)
   {
     case INDICATOR:
     {
-      if (! is)
-        is = new IndicatorScript(data);
-      
-      int rc = is->parseIndicator(l);
-      
+      if (! data)
+        break;
+
+      SCIndicator sc;
+      int rc = sc.calculate(l, tlines, data);
       QByteArray ba;
       ba.append(QString::number(rc) + '\n');
       proc->write(ba);
@@ -114,38 +122,58 @@ void ExScript::readFromStdout ()
     }
     case GET_INDICATOR:
     {
-      if (! is)
-        is = new IndicatorScript(data);
+      if (! data)
+        break;
+
+      SCGetIndicator sc;
       QByteArray ba;
-      is->getIndicator(l, ba);
+      int rc = sc.calculate(l, ba, tlines);
+      if (rc)
+        ba.append("ERROR\n");
       proc->write(ba);
       break;
     }
     case SET_INDICATOR:
     {
-      if (! is)
-        is = new IndicatorScript(data);
+      if (! data)
+        break;
+
+      SCSetIndicator sc;
       QByteArray ba;
-      is->setIndicator(l, ba);
+      int rc = sc.calculate(l, tlines);
+      if (rc)
+        ba.append("1\n");
+      else
+        ba.append("0\n");
       proc->write(ba);
       break;
     }
     case PLOT:
     {
-      if (! is)
-      {
-        proc->write("1\n");
+      if (! data)
         break;
-      }
-      
-      int rc = is->plot(l);
-      
+
+      SCPlot sc;
       QByteArray ba;
-      ba.append(QString::number(rc) + '\n');
+      int rc = sc.calculate(l, plotOrder, tlines);
+      if (rc)
+        ba.append("1\n");
+      else
+        ba.append("0\n");
       proc->write(ba);
       break;
     }
-    default: // if we are here we attempt to parse an indicator rerquest
+    case SYMBOL_LIST:
+    {
+      SCSymbolList sc;
+      QByteArray ba;
+      int rc = sc.calculate(l, ba);
+      if (rc)
+        ba.append("ERROR\n");
+      proc->write(ba);
+      break;
+    }
+    default:
       break;
   }
 }
@@ -159,10 +187,24 @@ void ExScript::readFromStderr ()
 
 void ExScript::getLines (QList<PlotLine *> &lines)
 {
-  if (! is)
-    return;
-  
-  is->getLines(lines);
+  int loop;
+  for (loop = 0; loop < plotOrder.count(); loop++)
+  {
+    lines.append(tlines.value(plotOrder[loop]));
+//    qDebug() << "plot order" << loop << plotOrder[loop];
+  }
+
+  QHashIterator<QString, PlotLine *> it(tlines);
+  while (it.hasNext())
+  {
+    it.next();
+    if (! it.value()->getPlotFlag())
+    {
+//      qDebug() << "deleted" << it.key();
+      delete it.value();
+    }
+  }
+
   clear();
 }
 

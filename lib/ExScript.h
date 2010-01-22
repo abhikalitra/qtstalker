@@ -19,8 +19,12 @@
  *  USA.
  */
 
+#ifndef EXSCRIPT_HPP
+#define EXSCRIPT_HPP
+
+
 #include "BarData.h"
-#include "IndicatorScript.h"
+#include "PlotLine.h"
 
 #include <QProcess>
 #include <QList>
@@ -32,35 +36,39 @@
 class ExScript : public QObject
 {
   Q_OBJECT
-  
+
   signals:
     void signalDone ();
-  
+
   public:
     enum Function
     {
       INDICATOR, // get a library indicator
       GET_INDICATOR, // pass indicator data to the calling script
       SET_INDICATOR, // pass indicator data from script to qtstalker
-      PLOT // plot the desired indicator
+      PLOT, // plot the desired indicator
+      SYMBOL_LIST // get a list of symbols in the db
     };
 
     ExScript ();
     ~ExScript ();
     void clear ();
+    void setBarData (BarData *d);
     void calculate (QString &command);
     void getLines (QList<PlotLine *> &);
-    void setInput (BarData *bd);
 
   public slots:
     void readFromStdout ();
     void readFromStderr ();
     void done (int, QProcess::ExitStatus);
-    
+
   private:
     QProcess *proc;
-    BarData *data;
     QStringList functionList;
-    IndicatorScript *is;
+    QHash<QString, PlotLine *> tlines;
+    QStringList plotOrder;
+    BarData *data;
+    QStringList inputList;
 };
 
+#endif

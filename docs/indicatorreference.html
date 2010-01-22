@@ -1,98 +1,91 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
-  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen">
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css"
+ media="screen">
   <script type="text/javascript" src="qtstalker.js">
  </script>
   <title>Qtstalker: Indicator Reference</title>
-  <meta name="generator" content="Amaya 9.53, see http://www.w3.org/Amaya/">
+  <meta name="generator"
+ content="Amaya 9.53, see http://www.w3.org/Amaya/">
 </head>
-
 <body>
-
 <div id="content">
-
 <div id="rightPanel">
-
-<div id="version">
-</div>
-
+<div id="version"></div>
 <div id="toc">
-          <hr />
+<hr>
 <ul>
   <li><a href="index.html">Home</a></li>
   <li><a href="toc.html">Table of Contents</a></li>
 </ul>
 </div>
-
 </div>
-
-<h1><u>Indicator Reference</u></h1>
-
+<h1><u>Script API Reference</u></h1>
 <p></p>
-
-<p>Here is the complete alphabetical ordered list of all indicators available
-in Qtstalker. There are also many indicators available via CUS and TALIB.</p>
-
+<br>
 <p></p>
 <hr>
-
-<h3>Data Exchange</h3>
-
-<p>These functions allow indicator scripts to exchange raw data between scripts
-and Qtstalker. If we want access to raw indicator data we use the GET_INDICATOR
-function. To create a custom indicator with values created within the script,
-we use the SET_INDICATOR function</p>
-
-<p></p>
-
-<p>To request indicator values:</p>
-
-<p></p>
-
-<p>GET_INDICATOR,NAME</p>
+<h3>Symbols</h3>
+This function allow scripts to return a list of symbols in the quote
+database.<br>
+<br>
+SYMBOL_LIST,SEARCH_STRING<br>
 <ul>
-  <li>NAME is the variable name of the indicator previously created in the
-    script.</li>
+  <li>SEARCH_STRING is the search string pattern. A '*' will return all
+symbols in the database. The % is used to match any length. ie %IBM%
+would return any symbols containing IBM. The _ is used to match on a
+single character.<br>
+  </li>
 </ul>
-
-<p>On success, a CSV (comma separated values) string is returned of the entire
-indicator. Failure returns the string "ERROR". We return "ERROR" instead of "1"
-because the script might confuse the error code with actual data, so we return
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<h3>Data Exchange</h3>
+<p>These functions allow indicator scripts to exchange raw data between
+scripts
+and Qtstalker. If we want access to raw indicator data we use the
+GET_INDICATOR
+function. To create a custom indicator with values created within the
+script,
+we use the SET_INDICATOR function</p>
+<p></p>
+<p>To request indicator values:</p>
+<p></p>
+<p>GET_INDICATOR,NAME,BARS</p>
+<ul>
+  <li>NAME is the variable name of the indicator previously created in
+the script.</li>
+  <li>BARS is the number of bars desired. 0 will return all bars. ie.
+20 would return the last 20 bars.<br>
+  </li>
+</ul>
+<p>On success, a CSV (comma separated values) string is returned of the
+entire
+indicator. Failure returns the string "ERROR". We return "ERROR"
+instead of "1"
+because the script might confuse the error code with actual data, so we
+return
 letters instead of numbers in this case.</p>
-
 <p></p>
-
 <p></p>
-
 <p>To send data from the script to create a new indicator:</p>
-
 <p></p>
-
 <p>SET_INDICATOR,NAME,STRING</p>
 <ul>
   <li>NAME is the variable name of the dataset.</li>
   <li>STRING is a CSV string of all values.</li>
 </ul>
-
 <p>On success returns "0", failure returns "1";</p>
-
 <p></p>
 <hr>
-
 <h3>Plot Format</h3>
-
 <p></p>
-
 <p>This function allows the indicator script to plot indicators.</p>
-
 <p></p>
-
 <p>The plot format is:</p>
-
 <p></p>
-
 <p>PLOT,NAME,LABEL,COLOR,PLOT_TYPE</p>
 <ul>
   <li>PLOT is the command.</li>
@@ -101,7 +94,6 @@ letters instead of numbers in this case.</p>
   <li>COLOR is the color of the plot.</li>
   <li>PLOT_TYPE is the type of plot desired.</li>
 </ul>
-
 <p>The available values of PLOT_TYPE are:</p>
 <ul>
   <li>Dot</li>
@@ -114,26 +106,21 @@ letters instead of numbers in this case.</p>
   <li>Bar</li>
   <li>Candle</li>
 </ul>
-
 <p></p>
-
-<p>After the PLOT command string is given, the script must then wait for the
-return code. The return code will be either "0" for success or "1" for error.
+<p>After the PLOT command string is given, the script must then wait
+for the
+return code. The return code will be either "0" for success or "1" for
+error.
 If an error occurs, the script should exit execution. Please browse the
 included scripts for examples of how they should be used.</p>
-
 <p></p>
 <hr>
-
 <h3>Indicator Format</h3>
-
 <p></p>
-
 <p>&lt;NAME&gt; is the name given to the indicator</p>
-
 <p></p>
-
-<p>&lt;INPUT&gt; is the input data. This can be either a previously created
+<p>&lt;INPUT&gt; is the input data. This can be either a previously
+created
 indicator or bar data as follows:</p>
 <ul>
   <li>"Open" the open value of the bar</li>
@@ -143,7 +130,6 @@ indicator or bar data as follows:</p>
   <li>"Volume" the volume value of the bar</li>
   <li>"OI" the open interest value of the bar</li>
 </ul>
-
 <p>&lt;OPERATOR&gt; is a comparison operator. They are:</p>
 <ul>
   <li>"=" equal to</li>
@@ -154,1063 +140,894 @@ indicator or bar data as follows:</p>
   <li>"AND" logical AND</li>
   <li>"OR" logical OR</li>
 </ul>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Trigonometric ACos</h3>
-
 <p>INDICATOR,ACOS,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Chaikin A/D Line</h3>
-
 <p>INDICATOR,AD,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Arithmetic Add</h3>
-
 <p>INDICATOR,ADD,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Chaikin A/D Oscillator</h3>
-
 <p>INDICATOR,ADOSC,&lt;NAME&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Average Directional Movement Index</h3>
-
 <p>INDICATOR,ADX,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Average Directional Movement Index Rating</h3>
-
 <p>INDICATOR,ADXR,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Absolute Price Oscillator</h3>
-
 <p>INDICATOR,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Aroon</h3>
-
 <p>INDICATOR,AROON,&lt;DOWN_NAME&gt;,&lt;UP_NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Aroon Oscillator</h3>
-
 <p>INDICATOR,AROONOSC,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Trigonometric ASin</h3>
-
 <p>INDICATOR,ASIN,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Trigonometric ATan</h3>
-
 <p>INDICATOR,ATAN,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Average True Range</h3>
-
 <p>INDICATOR,ATR,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Average Price</h3>
-
 <p>INDICATOR,AVGPRICE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>OHLC Bars</h3>
-
 <p>INDICATOR,BARS,&lt;NAME&gt;,&lt;BAR_UP_COLOR&gt;,&lt;BAR_DOWN_COLOR&gt;,&lt;BAR_NEUTRAL_COLOR&gt;</p>
-
 <p></p>
-
 <p>This will create OHLC bars.</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Bollinger Bands</h3>
-
 <p>INDICATOR,BBANDS,&lt;INPUT&gt;,&lt;NAME_UPPER&gt;,&lt;NAME_MIDDLE&gt;,&lt;NAME_LOWER&gt;,&lt;PERIOD&gt;,&lt;UPPER_DEVIATION&gt;,&lt;LOWER_DEVIATION&gt;,&lt;MA_TYPE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Beta</h3>
-
 <p>INDICATOR,BETA,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Balance Of Power</h3>
-
 <p>INDICATOR,BOP,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Candles</h3>
-
 <p>INDICATOR,CANDLES,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;</p>
-
 <p></p>
-
 <p>This will create candle bars.</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Commodity Channel Index</h3>
-
 <p>INDICATOR,CCI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Two Crows</h3>
-
 <p>INDICATOR,CDL2CROWS,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Three Black Crows</h3>
-
 <p>INDICATOR,CDL3BLACKCROWS,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Three Inside Up/Down</h3>
-
 <p>INDICATOR,CDL3INSIDE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Three-Line Strike</h3>
-
 <p>INDICATOR,CDL3LINESTRIKE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Three Outside Up/Down</h3>
-
 <p>INDICATOR,CDL3OUTSIDE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Three Stars In The South</h3>
-
 <p>INDICATOR,CDL3STARSINSOUTH,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Three Advancing White Soldiers</h3>
-
 <p>INDICATOR,CDL3WHITESOLDIERS,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Abandoned Baby</h3>
-
 <p>INDICATOR,CDLABANDONEDBABY,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Advance Block</h3>
-
 <p>INDICATOR,CDLADVANCEBLOCK,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Belt-hold</h3>
-
 <p>INDICATOR,CDLBELTHOLD,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Breakaway</h3>
-
 <p>INDICATOR,CDLBREAKAWAY,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Closing Marubozu</h3>
-
 <p>INDICATOR,CDLCLOSINGMARUBOZU,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Concealing Baby Swallow</h3>
-
 <p>INDICATOR,CDLCONCEALBABYSWALL,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Counterattack</h3>
-
 <p>INDICATOR,CDLCOUNTERATTACK,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Dark Cloud Cover</h3>
-
 <p>INDICATOR,CDLDARKCLOUDCOVER,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Doji</h3>
-
 <p>INDICATOR,CDLDOJI,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Doji Star</h3>
-
 <p>INDICATOR,CDLDOJISTAR,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Dragonfly Doji</h3>
-
 <p>INDICATOR,CDLDRAGONFLYDOJI,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Engulfing Pattern</h3>
-
 <p>INDICATOR,CDLENGULFING,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Evening Doji Star</h3>
-
 <p>INDICATOR,CDLEVENINGDOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Evening Star</h3>
-
 <p>INDICATOR,CDLEVENINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Up/Down-gap side-by-side white lines</h3>
-
 <p>INDICATOR,CDLGAPSIDESIDEWHITE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Gravestone Doji</h3>
-
 <p>INDICATOR,CDLGRAVESTONEDOJI,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Hammer</h3>
-
 <p>INDICATOR,CDLHAMMER,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Hanging Man</h3>
-
 <p>INDICATOR,CDLHANGINGMAN,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Harami Pattern</h3>
-
 <p>INDICATOR,CDLHARAMI,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Harami Cross Pattern</h3>
-
 <p>INDICATOR,CDLHARAMICROSS,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>High-Wave Candle</h3>
-
 <p>INDICATOR,CDLHIGHWAVE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Hikkake Pattern</h3>
-
 <p>INDICATOR,CDLHIKKAKE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Modified Hikkake Pattern</h3>
-
 <p>INDICATOR,CDLHIKKAKEMOD,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Homing Pigeon</h3>
-
 <p>INDICATOR,CDLHOMINGPIGEON,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Identical Three Crows</h3>
-
 <p>INDICATOR,CDLIDENTICAL3CROWS,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>In-Neck Pattern</h3>
-
 <p>INDICATOR,CDLINNECK,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Inverted Hammer</h3>
-
 <p>INDICATOR,CDLINVERTEDHAMMER,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Kicking</h3>
-
 <p>INDICATOR,CDLKICKING,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Kicking - bull/bear determined by the longer marubozu</h3>
-
 <p>INDICATOR,CDLKICKINGBYLENGTH,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Ladder Bottom</h3>
-
 <p>INDICATOR,CDLLADDERBOTTOM,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Long Legged Doji</h3>
-
 <p>INDICATOR,CDLLONGLEGGEDDOJI,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Long Line Candle</h3>
-
 <p>INDICATOR,CDLLONGLINE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Marubozu</h3>
-
 <p>INDICATOR,CDLMARUBOZU,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Matching Low</h3>
-
 <p>INDICATOR,CDLMATCHINGLOW,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Mat Hold</h3>
-
 <p>INDICATOR,CDLMATHOLD,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Morning Doji Star</h3>
-
 <p>INDICATOR,CDLMORNINGDOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Morning Star</h3>
-
 <p>INDICATOR,CDLMORNINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>On-Neck Pattern</h3>
-
 <p>INDICATOR,CDLONNECK,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Piercing Pattern</h3>
-
 <p>INDICATOR,CDLPIERCING,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Rickshaw Man</h3>
-
 <p>INDICATOR,CDLRICKSHAWMAN,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Rising/Falling Three Methods</h3>
-
 <p>INDICATOR,CDLRISEFALL3METHODS,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Separating Lines</h3>
-
 <p>INDICATOR,CDLSEPARATINGLINES,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Shooting Star</h3>
-
 <p>INDICATOR,CDLSHOOTINGSTAR,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Short Line Candle</h3>
-
 <p>INDICATOR,CDLSHORTLINE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Spinning Top</h3>
-
 <p>INDICATOR,CDLSPINNINGTOP,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Stalled Pattern</h3>
-
 <p>INDICATOR,CDLSTALLEDPATTERN,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Stick Sandwich</h3>
-
 <p>INDICATOR,CDLSTICKSANDWICH,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Takuri (Dragonfly Doji with very long lower shadow)</h3>
-
 <p>INDICATOR,CDLTAKURI,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Tasuki Gap</h3>
-
 <p>INDICATOR,CDLTASUKIGAP,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Thrusting Pattern</h3>
-
 <p>INDICATOR,CDLTHRUSTING,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Tristar Pattern</h3>
-
 <p>INDICATOR,CDLTRISTAR,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Unique 3 River</h3>
-
 <p>INDICATOR,CDLUNIQUE3RIVER,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Upside Gap Two Crows</h3>
-
 <p>INDICATOR,CDLUPSIDEGAP2CROWS,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Upside/Downside Gap Three Methods</h3>
-
 <p>INDICATOR,CDLXSIDEGAP3METHODS,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Ceil</h3>
-
 <p>INDICATOR,CEIL,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Chande Momentum Oscillator</h3>
-
 <p>INDICATOR,CMO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>COLOR</h3>
-
 <p>INDICATOR,COLOR,&lt;INPUT&gt;,&lt;INPUT_2&gt;,&lt;VALUE&gt;,&lt;COLOR&gt;</p>
-
 <p></p>
-
-<p>This function compares the values of &lt;INPUT&gt; data array with the
+<p>This function compares the values of &lt;INPUT&gt; data array with
+the
 number &lt;VALUE&gt;. If they are equal then</p>
-
 <p>&lt;COLOR&gt; is applied to the &lt;INPUT_2&gt; data array.</p>
-
 <p>&lt;INPUT&gt; is the line that determines the color</p>
-
 <p>&lt;INPUT_2&gt; is the line that receives the color</p>
-
-<p>&lt;VALUE&gt; is the number compared in &lt;INPUT&gt;. If &lt;VALUE&gt; and
-&lt;INPUT&gt; are equal, then &lt;COLOR&gt; is applied to &lt;INPUT_2&gt;</p>
-
+<p>&lt;VALUE&gt; is the number compared in &lt;INPUT&gt;. If
+&lt;VALUE&gt; and
+&lt;INPUT&gt; are equal, then &lt;COLOR&gt; is applied to
+&lt;INPUT_2&gt;</p>
 <p>&lt;COLOR&gt; is the color name that is applied to &lt;INPUT_2&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>COMPARE</h3>
-
 <p>INDICATOR,COMPARE,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;OPERATOR&gt;</p>
-
 <p></p>
-
 <p>This function compares the values of &lt;INPUT_1&gt; data array with
 &lt;INPUT_2&gt; data array using the &lt;OPERATOR&gt; for comparison.</p>
-
-<p>The result is a boolean array of TRUE/FALSE values. The comparison order is
+<p>The result is a boolean array of TRUE/FALSE values. The comparison
+order is
 made &lt;INPUT_1&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>COMPARE2</h3>
-
 <p>INDICATOR,COMPARE2,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;VALUE&gt;,&lt;OPERATOR&gt;</p>
-
 <p></p>
-
-<p>This function compares the values of &lt;INPUT&gt; data array with the
+<p>This function compares the values of &lt;INPUT&gt; data array with
+the
 number &lt;VALUE&gt; using the &lt;OPERATOR&gt; for comparison.</p>
-
-<p>The result is a boolean array of TRUE/FALSE values. The comparison order is
+<p>The result is a boolean array of TRUE/FALSE values. The comparison
+order is
 made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Pearson's Correlation Coefficient (r)</h3>
-
 <p>INDICATOR,CORREL,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Trigonometric Cos</h3>
-
 <p>INDICATOR,COS,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Trigonometric Cosh</h3>
-
 <p>INDICATOR,COSH,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Double Exponential Moving Average</h3>
-
 <p>INDICATOR,DEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Arithmetic Div</h3>
-
 <p>INDICATOR,DIV,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Directional Movement Index</h3>
-
 <p>INDICATOR,DX,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Exponential Moving Average</h3>
-
 <p>INDICATOR,EMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Arithmetic Exp</h3>
-
 <p>INDICATOR,EXP,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Floor</h3>
-
 <p>INDICATOR,FLOOR,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Hilbert Transform - Dominant Cycle Period</h3>
-
 <p>INDICATOR,HT_DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Hilbert Transform - Dominant Cycle Phase</h3>
-
 <p>INDICATOR,HT_DCPHASE,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Hilbert Transform - Phasor Components</h3>
-
 <p>INDICATOR,HT_PHASOR,&lt;INPUT&gt;,&lt;NAME_PHASE&gt;,&lt;NAME_QUADRATURE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Hilbert Transform - SineWave</h3>
-
 <p>INDICATOR,HT_SINE,&lt;INPUT&gt;,&lt;NAME_SINE&gt;,&lt;NAME_LEAD_SINE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Hilbert Transform - Instantaneous Trendline</h3>
-
 <p>INDICATOR,HT_TRENDLINE,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Hilbert Transform - Trend vs Cycle Mode</h3>
-
 <p>INDICATOR,HT_TRENDMODE,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Kaufman Adaptive Moving Average</h3>
-
 <p>INDICATOR,KAMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Linear Regression</h3>
-
 <p>INDICATOR,LINEARREG,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Linear Regression Angle</h3>
-
 <p>INDICATOR,LINEARREG_ANGLE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Linear Regression Intercept</h3>
-
 <p>INDICATOR,LINEARREG_INTERCEPT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Linear Regression Slope</h3>
-
 <p>INDICATOR,SLOPE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Log Natural</h3>
-
 <p>INDICATOR,LN,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Log10</h3>
-
 <p>INDICATOR,LOG10,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Moving Average Convergence/Divergence</h3>
-
 <p>INDICATOR,MACD,&lt;INPUT&gt;,&lt;NAME_MACD&gt;,&lt;NAME_SIGNAL&gt;,&lt;NAME_HIST&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;SIGNAL_PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>MACD with controllable MA type</h3>
-
 <p>INDICATOR,MACDEXT,&lt;INPUT&gt;,&lt;NAME_MACD&gt;,&lt;NAME_SIGNAL&gt;,&lt;NAME_HIST&gt;,&lt;FAST_PERIOD&gt;,&lt;FAST_MA_TYPE&gt;,&lt;SLOW_PERIOD&gt;,&lt;SLOW_MA_TYPE&gt;,&lt;SIGNAL_PERIOD&gt;,&lt;SIGNAL_MA_TYPE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Moving Average Convergence/Divergence Fix 12/26</h3>
-
 <p>INDICATOR,MACDFIX,&lt;INPUT&gt;,&lt;NAME_MACD&gt;,&lt;NAME_SIGNAL&gt;,&lt;NAME_HIST&gt;,&lt;SIGNAL_PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>MESA Adaptive Moving Average</h3>
-
 <p>INDICATOR,MAMA,&lt;INPUT&gt;,&lt;NAME_MAMA&gt;,&lt;NAME_FAMA&gt;,&lt;FAST_LIMIT&gt;,&lt;SLOW_LIMIT&gt;&lt;FAST_LIMIT&gt;
-and &lt;SLOW_LIMIT&gt; are both decimal values.</p>
-
+and
+&lt;SLOW_LIMIT&gt;
+are
+both decimal values.</p>
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Moving average with variable period</h3>
-
 <p>INDICATOR,MAVP,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;MIN_PERIOD&gt;,&lt;MAX_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Highest value over a specified period</h3>
-
 <p>INDICATOR,MAX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Index of highest value over a specified period</h3>
-
 <p>INDICATOR,MAXINDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Median Price</h3>
-
 <p>INDICATOR,MEDPRICE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Money Flow Index</h3>
-
 <p>INDICATOR,MFI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>MidPoint over period</h3>
-
 <p>INDICATOR,MIDPOINT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Midpoint Price over period</h3>
-
 <p>INDICATOR,MIDPRICE,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Lowest value over a specified period</h3>
-
 <p>INDICATOR,MIN,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Index of lowest value over a specified period</h3>
-
 <p>INDICATOR,MININDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Lowest and highest values over a specified period</h3>
-
 <p>INDICATOR,MINMAX,&lt;INPUT&gt;,&lt;NAME_MIN&gt;,&lt;NAME_MAX&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Indexes of lowest and highest values over a specified period</h3>
-
 <p>INDICATOR,MINMAXINDEX,&lt;INPUT&gt;,&lt;NAME_MIN&gt;,&lt;NAME_MAX&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Minus Directional Indicator</h3>
-
 <p>INDICATOR,MINUS_DI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Minus Directional Movement</h3>
-
 <p>INDICATOR,MINUS_DM,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Momentum</h3>
-
 <p>INDICATOR,MOM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Arithmetic Mult</h3>
-
 <p>INDICATOR,MULT,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Normalized Average True Range</h3>
-
 <p>INDICATOR,NATR,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Normalize</h3>
-
 <p>INDICATOR,NORMAL,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
-<p>This funtion normalizes the values found in &lt;INPUT&gt; data array. That
+<p>This funtion normalizes the values found in &lt;INPUT&gt; data
+array. That
 is, scales all numbers to values</p>
-
-<p>between 0 and 100. Useful for plotting wildly different values together on
+<p>between 0 and 100. Useful for plotting wildly different values
+together on
 the same chart. Also</p>
-
 <p>useful for comparing multiple datasets of different value ranges.</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>On Balance Volume</h3>
-
 <p>INDICATOR,OBV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT_2&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Plus Directional Indicator</h3>
-
 <p>INDICATOR,PLUS_DI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Plus Directional Movement</h3>
-
 <p>INDICATOR,PLUS_DM,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Percentage Price Oscillator</h3>
-
 <p>INDICATOR,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Reference Dataset</h3>
-
 <p>INDICATOR,REF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
-<p>This function creates a dataset that is &lt;INPUT&gt; - &lt;PERIOD&gt;
+<p>This function creates a dataset that is &lt;INPUT&gt; -
+&lt;PERIOD&gt;
 offset. So, if you wanted to create a dataset of yesterday's close</p>
-
-<p>values the string would be 'REF,yclose,Close,1' If you just wanted the
+<p>values the string would be 'REF,yclose,Close,1' If you just wanted
+the
 today's Close then &lt;PERIOD&gt; would be '0'</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Rate of change : ((price/prevPrice)-1)*100</h3>
-
 <p>INDICATOR,ROC,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Rate of change Percentage: (price-prevPrice)/prevPrice</h3>
-
 <p>INDICATOR,ROCP,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Rate of change ratio: (price/prevPrice)</h3>
-
 <p>INDICATOR,ROCR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Rate of change ratio 100 scale: (price/prevPrice)*100</h3>
-
 <p>INDICATOR,ROCR100,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Relative Strength Index</h3>
-
 <p>INDICATOR,RSI,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Parabolic SAR</h3>
-
 <p>INDICATOR,SAR,&lt;NAME&gt;,&lt;ACCELERATION&gt;,&lt;MAXIMUM&gt;ACCELERATION
-and MAXIMUM are decimal values.</p>
-
+and
+MAXIMUM
+are
+decimal values.</p>
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Parabolic SAR - Extended</h3>
-
 <p>INDICATOR,SAREXT,&lt;NAME&gt;,&lt;START&gt;,&lt;OFFSET_REVERSE&gt;,&lt;ACCEL_INIT_LONG&gt;,&lt;ACCEL_LONG&gt;,&lt;ACCEL_MAX_LONG&gt;,&lt;ACCEL_INIT_SHORT&gt;,&lt;ACCEL_SHORT&gt;,&lt;ACCEL_MAX_SHORT&gt;</p>
-
 <p>All values are decimals.</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Trigonometric Sin</h3>
-
 <p>INDICATOR,SIN,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Trigonometric Sinh</h3>
-
 <p>INDICATOR,SINH,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Simple Moving Average</h3>
-
 <p>INDICATOR,SMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Square Root</h3>
-
 <p>INDICATOR,SQRT,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Standard Deviation</h3>
-
 <p>INDICATOR,STDDEV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Stochastic</h3>
-
 <p>INDICATOR,STOCH,&lt;NAME_SLOWK&gt;,&lt;NAME_SLOWD&gt;,&lt;FASTK_PERIOD&gt;,&lt;SLOWK_PERIOD&gt;,&lt;SLOWK_MA_TYPE&gt;,&lt;SLOWD_PERIOD&gt;,&lt;SLOWD_MA_TYPE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Stochastic Fast</h3>
-
 <p>INDICATOR,STOCHF,&lt;NAME_FASTK&gt;,&lt;NAME_FASTD&gt;,&lt;FASTK_PERIOD&gt;,&lt;FASTD_PERIOD&gt;,&lt;FASTD_MA_TYPE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Stochastic Relative Strength Index</h3>
-
 <p>INDICATOR,STOCHRSI,&lt;INPUT&gt;,&lt;NAME_FASTK&gt;,&lt;NAME_FASTD&gt;,&lt;PERIOD&gt;,&lt;FASTK_PERIOD&gt;,&lt;FASTD_PERIOD&gt;,&lt;FASTD_MA_TYPE&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Arithmetic Substraction</h3>
-
 <p>INDICATOR,SUB,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Summation</h3>
-
 <p>INDICATOR,SUM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>SYMBOL</h3>
-
-<p>INDICATOR,SYMBOL,&lt;NAME&gt;,&lt;SYMBOL&gt;</p>
-
+<p>INDICATOR,SYMBOL,&lt;NAME&gt;,&lt;SYMBOL&gt;,&lt;BAR_FIELD&gt;,&lt;BAR_LENGTH&gt;,&lt;BARS&gt;</p>
 <p>Where &lt;SYMBOL&gt; is the symbol in the quote database.</p>
-
+<p>&lt;BAR_FIELD&gt; is the bar value ie. Open, High, Low, Close,
+Volume, OI</p>
+<p>&lt;BAR_LENGTH&gt; is the bar size. ie. 1 Minute, 5 Minute, 10
+Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
+<p>&lt;BARS&gt; is the number of bars to use.<br>
+<br>
+</p>
 <p></p>
-
 <h3>Triple Exponential Moving Average (T3)</h3>
-
 <p>INDICATOR,T3,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;VFACTOR&gt;</p>
-
 <p>&lt;VFACTOR&gt; is a decimal value.</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Trigonometric Tan</h3>
-
 <p>INDICATOR,TAN,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Vector Trigonometric Tanh</h3>
-
 <p>INDICATOR,TANH,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Triple Exponential Moving Average</h3>
-
 <p>INDICATOR,TEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>True Range</h3>
-
 <p>INDICATOR,TRANGE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Triangular Moving Average</h3>
-
 <p>INDICATOR,TRIMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>TRIX - 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA</h3>
-
 <p>INDICATOR,TRIX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Time Series Forecast</h3>
-
 <p>INDICATOR,TSF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Typical Price</h3>
-
 <p>INDICATOR,TYPPRICE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Ultimate Oscillator</h3>
-
 <p>INDICATOR,ULTOSC,&lt;NAME&gt;,&lt;PERIOD_1&gt;,&lt;PERIOD_2&gt;,&lt;PERIOD_3&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Variance</h3>
-
 <p>INDICATOR,VAR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Weighted Close Price</h3>
-
 <p>INDICATOR,WCLPRICE,&lt;NAME&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Williams' %R</h3>
-
 <p>INDICATOR,WILLR,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-
 <p></p>
-
+<h3><br>
+</h3>
 <h3>Weighted Moving Average</h3>
-
-<p>INDICATOR,WMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-
+<p>INDICATOR,WMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+</p>
+<p><br>
+</p>
 <p></p>
 </div>
 </body>

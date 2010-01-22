@@ -11,11 +11,13 @@ To Do:
 - Round off values to lesser precision when displaying in data panel.
 - Improve source code documentation. Javadoc comments are utilised by Doxygen.
 - add security name field to the CSV class.
-- create an integrated indicator editor. 
+- create an integrated indicator editor.
 - add tooltips
 - documentation
+- update docs regarding '-session' command line option
+- fix BETA.perl example to use stock vs index
 
- 
+
 Maybe some day:
 ===============
 

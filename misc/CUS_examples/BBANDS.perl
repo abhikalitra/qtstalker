@@ -14,14 +14,23 @@ if ($a ne "0")
 # plot the BARS indicator
 print STDOUT "PLOT,Bars,C,red,Bar";
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
+if ($a ne "0")
+{
+  exit; # we have a non zero return code, exit script
+}
+
+# get some close bars
+print STDOUT "INDICATOR,REF,cl,Close,0";
+$a = <STDIN>; # get the return code
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
 }
 
 # create the BBANDS indicator
-print STDOUT "INDICATOR,BBANDS,Close,UPPER,MIDDLE,LOWER,5,2,2,SMA";
+print STDOUT "INDICATOR,BBANDS,cl,UPPER,MIDDLE,LOWER,5,2,2,SMA";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

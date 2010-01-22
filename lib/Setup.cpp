@@ -24,7 +24,6 @@
 #include "Config.h"
 #include "DataBase.h"
 #include "Indicator.h"
-#include "IndicatorSettings.h"
 
 
 #include <QtDebug>
@@ -43,7 +42,7 @@ void Setup::setup ()
   setupConfigDefaults();
   setupDefaultIndicators();
   setupQuoteBase();
-  setupIndicatorSettings();
+//  setupIndicatorSettings();
 }
 
 void Setup::setupDirectories ()
@@ -68,7 +67,7 @@ void Setup::setupQuoteBase ()
   QString d;
   config.getData(Config::DbPlugin, d);
   QSqlDatabase db = QSqlDatabase::addDatabase(d, "quotes");
-  
+
   config.getData(Config::DbHostName, d);
   db.setHostName(d);
 
@@ -374,35 +373,35 @@ void Setup::setupConfigDefaults ()
     d = "2";
     config.setData(Config::IndicatorTabRows, d);
   }
-  
+
   config.getData(Config::DbPlugin, d);
   if (d.isEmpty())
   {
     d = "QSQLITE";
     config.setData(Config::DbPlugin, d);
   }
-  
+
   config.getData(Config::DbHostName, d);
   if (d.isEmpty())
   {
     d = "localhost";
     config.setData(Config::DbHostName, d);
   }
-  
+
   config.getData(Config::DbName, d);
   if (d.isEmpty())
   {
     d = QDir::homePath() + "/.CSV/quotes.sqlite";
     config.setData(Config::DbName, d);
   }
-  
+
   config.getData(Config::DbUserName, d);
   if (d.isEmpty())
   {
     d = "qtstalker";
     config.setData(Config::DbUserName, d);
   }
-  
+
   config.getData(Config::DbPassword, d);
   if (d.isEmpty())
   {
@@ -451,126 +450,126 @@ void Setup::setupConfigDefaults ()
     d = "0";
     config.setData(Config::DefaultIndicators, d);
   }
-  
+
   config.getData(Config::DefaultBuyArrowColor, d);
   if (d.isEmpty())
   {
     d = "green";
     config.setData(Config::DefaultBuyArrowColor, d);
   }
-  
+
   config.getData(Config::DefaultSellArrowColor, d);
   if (d.isEmpty())
   {
     d = "red";
     config.setData(Config::DefaultSellArrowColor, d);
   }
-  
+
   config.getData(Config::DefaultHorizontalLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
     config.setData(Config::DefaultHorizontalLineColor, d);
   }
-  
+
   config.getData(Config::DefaultVerticalLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
     config.setData(Config::DefaultVerticalLineColor, d);
   }
-  
+
   config.getData(Config::DefaultFiboLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
     config.setData(Config::DefaultFiboLineColor, d);
   }
-  
+
   config.getData(Config::DefaultFiboLine1, d);
   if (d.isEmpty())
   {
     d = "0.382";
     config.setData(Config::DefaultFiboLine1, d);
   }
-  
+
   config.getData(Config::DefaultFiboLine2, d);
   if (d.isEmpty())
   {
     d = "0.5";
     config.setData(Config::DefaultFiboLine2, d);
   }
-  
+
   config.getData(Config::DefaultFiboLine3, d);
   if (d.isEmpty())
   {
     d = "0.618";
     config.setData(Config::DefaultFiboLine3, d);
   }
-  
+
   config.getData(Config::DefaultFiboLine4, d);
   if (d.isEmpty())
   {
     d = "0";
     config.setData(Config::DefaultFiboLine4, d);
   }
-  
+
   config.getData(Config::DefaultFiboLine5, d);
   if (d.isEmpty())
   {
     d = "0";
     config.setData(Config::DefaultFiboLine5, d);
   }
-  
+
   config.getData(Config::DefaultFiboLine6, d);
   if (d.isEmpty())
   {
     d = "0";
     config.setData(Config::DefaultFiboLine6, d);
-  }   
-  
+  }
+
   config.getData(Config::DefaultTextColor, d);
   if (d.isEmpty())
   {
     d = "white";
     config.setData(Config::DefaultTextColor, d);
   }
-  
+
   config.getData(Config::DefaultTextFont, d);
   if (d.isEmpty())
   {
     d = "DejaVu Sans,9,50,0,0";
     config.setData(Config::DefaultTextFont, d);
   }
-  
+
   config.getData(Config::DefaultTextLabel, d);
   if (d.isEmpty())
   {
     d = QObject::tr("Text");
     config.setData(Config::DefaultTextLabel, d);
   }
-  
+
   config.getData(Config::DefaultTrendLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
     config.setData(Config::DefaultTrendLineColor, d);
   }
-  
+
   config.getData(Config::DefaultTrendLineBar, d);
   if (d.isEmpty())
   {
     d = "Close";
     config.setData(Config::DefaultTrendLineBar, d);
   }
-  
+
   config.getData(Config::DefaultTrendLineExtend, d);
   if (d.isEmpty())
   {
     d = "1";
     config.setData(Config::DefaultTrendLineExtend, d);
   }
-  
+
   config.getData(Config::DefaultTrendLineUseBar, d);
   if (d.isEmpty())
   {
@@ -617,7 +616,7 @@ void Setup::setupDefaultIndicators ()
   config.getData(Config::DefaultIndicators, d);
   if (d.toInt())
     return;
-  
+
   // create the Bars indicator
   Indicator i;
   i.setData(Indicator::IndicatorParmTabRow, 1);
@@ -632,7 +631,7 @@ void Setup::setupDefaultIndicators ()
   config.getData(Config::IndicatorScriptPath, s);
   s.append("/Bars.perl");
   i.setData(Indicator::IndicatorParmPath, s);
-  
+
   DataBase db;
   db.setIndicator(i);
 
@@ -649,10 +648,11 @@ void Setup::setupDefaultIndicators ()
   config.getData(Config::IndicatorScriptPath, s);
   s.append("/Volume.perl");
   i.setData(Indicator::IndicatorParmPath, s);
-  
+
   db.setIndicator(i);
 }
 
+/*
 void Setup::setupIndicatorSettings ()
 {
   DataBase db;
@@ -1482,7 +1482,7 @@ void Setup::setupIndicatorSettings ()
   s = QObject::tr("Color Bars");
   set.setName(s);
   db.setIndicatorSettings(set);
-  
+
   // COMPARE settings
   set.clear();
   indicator = "COMPARE";
@@ -1495,7 +1495,7 @@ void Setup::setupIndicatorSettings ()
   s = QObject::tr("Compare Vectors");
   set.setName(s);
   db.setIndicatorSettings(set);
-  
+
   // COMPARE2 settings
   set.clear();
   indicator = "COMPARE2";
@@ -2304,10 +2304,16 @@ void Setup::setupIndicatorSettings ()
   indicator = "SYMBOL";
   set.setIndicator(indicator);
   set.addItem(output, (int) IndicatorSettings::TypeOutput, indicator);
-  set.addItem(input, (int) IndicatorSettings::TypeInput, close);
   s = QObject::tr("Symbol");
   s2 = "IBM";
   set.addItem(s, (int) IndicatorSettings::TypeSymbol, s2);
+  s = QObject::tr("Bar Field");
+  set.addItem(s, (int) IndicatorSettings::TypeText, close);
+  s = QObject::tr("Bar Length");
+  s2 = QObject::tr("Daily");
+  set.addItem(s, (int) IndicatorSettings::TypeText, s2);
+  s = QObject::tr("Bars");
+  set.addItem(s, (int) IndicatorSettings::TypeInt, 275);
   s = QObject::tr("Create Price Vector");
   set.setName(s);
   db.setIndicatorSettings(set);
@@ -2466,4 +2472,5 @@ void Setup::setupIndicatorSettings ()
 
   db.commit();
 }
+*/
 

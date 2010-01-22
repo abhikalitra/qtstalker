@@ -146,4 +146,19 @@
 
           Added docs/api/.cvsignore file to ignore changes to the index.qhp file.
 
+20100118: Added a button to the toolbar that runs a Qtstalker script. Will probably expand this
+          to maybe a new script manager tab in the future. For now, we will just use the button.
+          This function is not meant for indicator scripts, but for the expanding scripting
+          facility that will eventually be able to script most qtstalker functions. You can run
+          an indicator script if you want, but nothing will happen. We will see if we can integrate
+          the two in the future to a single script que.
+
+          Modified the SYMBOL indicator function to better handle scripts. Format has changed. See
+          the docs.
+
+          Added a new SYMBOL_LIST function to the script interface. See the docs.
+
+20100119: Changed the GET_INDICATOR script function. Added the BARS parm. This allows user to specify
+          how many BARS they want returned. See docs for details.
+
 

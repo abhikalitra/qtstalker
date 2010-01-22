@@ -233,10 +233,6 @@ a partial match like %BM or %IBM%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to delete group item?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Add To &amp;Group	Ctrl+G</source>
         <translation type="unfinished"></translation>
     </message>
@@ -246,6 +242,10 @@ a partial match like %BM or %IBM%</source>
     </message>
     <message>
         <source>Select group to add selected charts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete group items?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1928,6 +1928,18 @@ $ed is the last date.</source>
         <source>Unable to launch Qt Assistant (%1)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Bar Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -2117,6 +2129,30 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Show documentation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run S&amp;cript</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Qtstalker script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Qtstalker script to run.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Qtstalker script command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script Completed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

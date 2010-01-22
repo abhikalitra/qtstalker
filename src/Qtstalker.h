@@ -37,6 +37,7 @@
 #include "ChartPage.h"
 #include "ExScript.h"
 #include "assistant.h"
+#include "BarData.h"
 
 
 class QtstalkerApp : public QMainWindow
@@ -89,7 +90,8 @@ class QtstalkerApp : public QMainWindow
       RecentCharts,
       ZoomIn,
       ZoomOut,
-      Refresh
+      Refresh,
+      Script
     };
 
     QtstalkerApp (QString);
@@ -145,6 +147,8 @@ class QtstalkerApp : public QMainWindow
     void slotRefreshChart (bool);
     void slotReloadChart ();
     void slotRefreshUpdated (int);
+    void slotScript ();
+    void slotScriptDone2 ();
 
   protected:
     void closeEvent(QCloseEvent *event);
@@ -169,6 +173,7 @@ class QtstalkerApp : public QMainWindow
     QSlider *slider;
     QComboBox *recentCharts;
     ExScript *script;
+    ExScript *script2;
     QStringList indicatorList;
     int ilPos;
     QList<Setting> zoomList;

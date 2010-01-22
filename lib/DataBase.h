@@ -30,8 +30,6 @@
 #include "BarData.h"
 #include "Indicator.h"
 #include "COSettings.h"
-#include "IndicatorSettings.h"
-
 
 
 class DataBase
@@ -72,8 +70,8 @@ class DataBase
     void setChartObject (COSettings *);
 
     // indicator settings
-    void setIndicatorSettings (IndicatorSettings &);
-    void getIndicatorSettings (IndicatorSettings &);
+//    void setIndicatorSettings (IndicatorSettings &);
+//    void getIndicatorSettings (IndicatorSettings &);
 };
 
 #endif

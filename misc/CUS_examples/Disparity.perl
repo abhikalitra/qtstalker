@@ -4,7 +4,7 @@
 $|++;
 
 # Get today's close
-print STDOUT "GET_INDICATOR,Close";
+print STDOUT "GET_INDICATOR,Close,-1";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @close_0 = split(",", $rc);
 

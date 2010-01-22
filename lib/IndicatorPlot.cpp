@@ -47,9 +47,6 @@
 #include <math.h> // only for fabs()
 
 
-
-
-
 IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 {
   startX = 2;

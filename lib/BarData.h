@@ -58,8 +58,8 @@ class BarData
       WeeklyBar,
       MonthlyBar
     };
-    
-    BarData (QString &);
+
+    BarData ();
     ~BarData ();
     int count ();
     void getDate (int, QDateTime &);
@@ -95,7 +95,7 @@ class BarData
     void getTimeString (int, QString &);
     void getDateTimeString (int, QString &);
 
-    
+
   protected:
     QList<Bar *> barList;
     QHash<QString, int> dateList;
