@@ -161,4 +161,9 @@
 20100119: Changed the GET_INDICATOR script function. Added the BARS parm. This allows user to specify
           how many BARS they want returned. See docs for details.
 
+20100121: In order to enable a simple scripting system, I felt it was better to break down the big classes
+          into many simple classes. Wrote wrapper classes for every indicator. This way we can allow for
+          flexibility and keep a single interface. Will be doing more of the same where possible.
+          Added 50+ new classes, mostly ta-lib wrappers.
+
 
