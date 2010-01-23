@@ -166,4 +166,6 @@
           flexibility and keep a single interface. Will be doing more of the same where possible.
           Added 50+ new classes, mostly ta-lib wrappers.
 
+20100122: Added FI, LMS, PP, SZ, THERM, VFI, VIDYA indicators from 0.36.
+
 

@@ -1001,923 +1001,11 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>AROON Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>AROON Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Neutral Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BBANDS Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BBANDS Mid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BBANDS Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upper Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lower Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Penetration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SMA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Trigonometric ACos</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chaikin Accumulation Distribution Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Arithmetic Add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chaikin Accumulation Distribution Oscillator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Average Directional Movement Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Average Directional Movement Index Rating</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Absolute Price Oscillator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Aroon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Aroon Oscillator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Trigonometric ASin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Trigonometric ATan</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Average True Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Average Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OHLC Price Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Candle Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bollinger Bands</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Beta</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Balance Of Power</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Commodity Channel Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Two Crows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three Black Crows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three Inside Up/Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three-Line Strike</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three Outside Up/Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three Stars In The South</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Three Advancing White Soldiers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Abandoned Baby</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Advance Block</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Belt-hold</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Breakaway</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Closing Marubozu</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Concealing Baby Swallow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Counterattack</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dark Cloud Cover</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Doji</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Doji Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dragonfly Doji</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Engulfing Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Evening Doji Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Evening Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up/Down-gap side-by-side white lines</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Gravestone Doji</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hammer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hanging Man</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Harami Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Harami Cross Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High-Wave Candle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hikkake Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Modified Hikkake Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Homing Pigeon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Identical Three Crows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>In-Neck Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Inverted Hammer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Kicking</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Kicking - bull/bear determined by the longer marubozu</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ladder Bottom</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Long Legged Doji</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Long Line Candle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Marubozu</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Matching Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mat Hold</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Morning Doji Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Morning Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>On-Neck Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Piercing Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rickshaw Man</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rising/Falling Three Methods</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Separating Lines</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Shooting Star</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short Line Candle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Spinning Top</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stalled Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stick Sandwich</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Takuri (Dragonfly Doji with very long lower shadow)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tasuki Gap</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Thrusting Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tristar Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unique 3 River</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upside Gap Two Crows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upside/Downside Gap Three Methods</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Ceil</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chande Momentum Oscillator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compare Vectors</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Compare Vector With Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pearsons Correlation Coefficient</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Trigonometric Cos</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Trigonometric Cosh</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Double Exponential Moving Average</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Arithmetic Div</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Directional Movement Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exponential Moving Average</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Arithmetic Exp</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Floor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hilbert Transform - Dominant Cycle Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hilbert Transform - Dominant Cycle Phase</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>In Phase</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quadrature</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hilbert Transform - Phasor Components</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lead Sine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hilbert Transform - SineWave</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hilbert Transform - Instantaneous Trendline</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hilbert Transform - Trend vs Cycle Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Kaufman Adaptive Moving Average</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Linear Regression</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Linear Regression Angle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Linear Regression Intercept</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Linear Regression Slope</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Log Natural</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Log10</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MACD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MACD Signal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MACD Hist</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Moving Average Convergence/Divergence</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MACD with controllable MA type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Moving Average Convergence/Divergence Fix 12/26</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast Limit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow Limit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MESA Adaptive Moving Average</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Moving average with variable period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Highest value over a specified period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index of highest value over a specified period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Median Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Money Flow Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MidPoint over period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Midpoint Price over period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lowest value over a specified period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index of lowest value over a specified period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lowest and highest values over a specified period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min Index Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Index Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexes of lowest and highest values over a specified period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Minus Directional Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Minus Directional Movement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Momentum</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Arithmetic Mult</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Normalized Average True Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Normalize Vector</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>On Balance Volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plus Directional Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plus Directional Movement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Percentage Price Oscillator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Create Vector with Optional Period Displacement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rate of change : ((price/prevPrice)-1)*100</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rate of change Percentage: (price-prevPrice)/prevPrice</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rate of change ratio: (price/prevPrice)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rate of change ratio 100 scale: (price/prevPrice)*100</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Relative Strength Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Acceleration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Parabolic SAR</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Offset On Reverse</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Initial Acceleration Long</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Acceleration Long</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Acceleration Max Long</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Initial Acceleration Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Acceleration Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Acceleration Max Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Parabolic SAR - Extended</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Trigonometric Sin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Trigonometric Sinh</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Simple Moving Average</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Square Root</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Standard Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastK Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowK Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowK MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowD Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowD MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stochastic</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastD Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastD MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stochastic Fast</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stochastic Relative Strength Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Arithmetic Substraction</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Summation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Create Price Vector</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume Factor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Triple Exponential Moving Average (T3)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Trigonometric Tan</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vector Trigonometric Tanh</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Triple Exponential Moving Average</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>True Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Triangular Moving Average</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>1-day Rate-Of-Change (ROC) of a Triple Smooth EMA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Time Series Forecast</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Typical Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mid Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ultimate Oscillator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Variance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Weighted Close Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Williams %R</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Weighted Moving Average</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1929,15 +1017,255 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bar Field</source>
+        <source>Parms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bar Length</source>
+        <source>Line Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bars</source>
+        <source>Freq</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>LOWPASS Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Variable Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>LOWPASS Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PP FS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PP SS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PP TS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PP FR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PP SR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PP TR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Support</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Support Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label First Support</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label Second Support</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label Third Support</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resistance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resistance Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label First Resistance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label Second Resistance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label Third Resistance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PP Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PP Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PP Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sine Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lead Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sine Line Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lead Line Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SINWAV Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SINWAV Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SZ LONG</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SZ SHORT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lookback Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Decline Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Coefficient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SZ Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SZ Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>THERM MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>THERM Parms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Parms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color Above MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color Below MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color Threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Line Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>THERM Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>THERM Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VFI Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VFI Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vidya period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volatility Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VIDYA Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zones</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VIDYA Format</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -48,6 +48,7 @@
 #include "DX.h"
 #include "EMA.h"
 #include "EXP.h"
+#include "FI.h"
 #include "FLOOR.h"
 #include "HT_DCPERIOD.h"
 #include "HT_DCPHASE.h"
@@ -60,6 +61,7 @@
 #include "LINEARREG_ANGLE.h"
 #include "LINEARREG_INTERCEPT.h"
 #include "LINEARREG_SLOPE.h"
+#include "LMS.h"
 #include "LN.h"
 #include "LOG10.h"
 #include "MACD.h"
@@ -82,6 +84,7 @@
 #include "NATR.h"
 #include "NORMAL.h"
 #include "OBV.h"
+#include "PP.h"
 #include "PLUS_DI.h"
 #include "PLUS_DM.h"
 #include "PPO.h"
@@ -90,6 +93,7 @@
 #include "RSI.h"
 #include "SAR.h"
 #include "SIN.h"
+#include "SINWAV.h"
 #include "SMA.h"
 #include "SQRT.h"
 #include "STDDEV.h"
@@ -97,9 +101,11 @@
 #include "SUB.h"
 #include "SUM.h"
 #include "SYMBOL.h"
+#include "SZ.h"
 #include "T3.h"
 #include "TAN.h"
 #include "TEMA.h"
+#include "THERM.h"
 #include "TRANGE.h"
 #include "TRIMA.h"
 #include "TRIX.h"
@@ -107,6 +113,8 @@
 #include "TYPPRICE.h"
 #include "ULTOSC.h"
 #include "VAR.h"
+#include "VFI.h"
+#include "VIDYA.h"
 #include "WCLPRICE.h"
 #include "WILLR.h"
 #include "WMA.h"
@@ -121,29 +129,179 @@ SCIndicator::SCIndicator ()
 
   opList << "=" << "<" << "<=" << ">" << ">=" << "AND" << "OR";
 
-  indicatorList << "ACOS" << "AD" << "ADD" << "ADOSC" << "ADX" << "ADXR" << "APO" << "AROON" << "AROONOSC" << "ASIN";
-  indicatorList << "ATAN" << "ATR" << "AVGPRICE" << "BARS" << "BBANDS" << "BETA" << "BOP" << "CANDLES" << "CCI";
-  indicatorList << "CDL2CROWS" << "CDL3BLACKCROWS" << "CDL3INSIDE" << "CDL3LINESTRIKE" << "CDL3OUTSIDE";
-  indicatorList << "CDL3STARSINSOUTH" << "CDL3WHITESOLDIERS" << "CDLABANDONEDBABY" << "CDLADVANCEBLOCK" << "CDLBELTHOLD";
-  indicatorList << "CDLBREAKAWAY" << "CDLCLOSINGMARUBOZU" << "CDLCONCEALBABYSWALL" << "CDLCOUNTERATTACK" << "CDLDARKCLOUDCOVER";
-  indicatorList << "CDLDOJI" << "CDLDOJISTAR" << "CDLDRAGONFLYDOJI" << "CDLENGULFING" << "CDLEVENINGDOJISTAR" << "CDLEVENINGSTAR";
-  indicatorList << "CDLGAPSIDESIDEWHITE" << "CDLGRAVESTONEDOJI" << "CDLHAMMER" << "CDLHANGINGMAN" << "CDLHARAMI" << "CDLHARAMICROSS";
-  indicatorList << "CDLHIGHWAVE" << "CDLHIKKAKE" << "CDLHIKKAKEMOD" << "CDLHOMINGPIGEON" << "CDLIDENTICAL3CROWS" << "CDLINNECK";
-  indicatorList << "CDLINVERTEDHAMMER" << "CDLKICKING" << "CDLKICKINGBYLENGTH" << "CDLLADDERBOTTOM" << "CDLLONGLEGGEDDOJI";
-  indicatorList << "CDLLONGLINE" << "CDLMARUBOZU" << "CDLMATCHINGLOW" << "CDLMATHOLD" << "CDLMORNINGDOJISTAR";
-  indicatorList << "CDLMORNINGSTAR" << "CDLONNECK" << "CDLPIERCING" << "CDLRICKSHAWMAN" << "CDLRISEFALL3METHODS";
-  indicatorList << "CDLSEPARATINGLINES" << "CDLSHOOTINGSTAR" << "CDLSHORTLINE" << "CDLSPINNINGTOP" << "CDLSTALLEDPATTERN";
-  indicatorList << "CDLSTICKSANDWICH" << "CDLTAKURI" << "CDLTASUKIGAP" << "CDLTHRUSTING" << "CDLTRISTAR" << "CDLUNIQUE3RIVER";
-  indicatorList << "CDLUPSIDEGAP2CROWS" << "CDLXSIDEGAP3METHODS" << "CEIL" << "CMO" << "COLOR" << "COMPARE" << "COMPARE2";
-  indicatorList << "CORREL" << "COS" << "COSH" << "DEMA" << "DIV" << "DX" << "EMA" << "EXP" << "FLOOR" << "HT_DCPERIOD";
-  indicatorList << "HT_DCPHASE" << "HT_PHASOR" << "HT_SINE" << "HT_TRENDLINE" << "HT_TRENDMODE" << "KAMA" << "LINEARREG";
-  indicatorList << "LINEARREG_ANGLE" << "LINEARREG_INTERCEPT" << "LINEARREG_SLOPE" << "LN" << "LOG10" << "MACD" << "MACDEXT";
-  indicatorList << "MACDFIX" << "MAMA" << "MAVP" << "MAX" << "MAXINDEX" << "MEDPRICE" << "MFI" << "MIDPOINT" << "MIDPRICE";
-  indicatorList << "MIN" << "MININDEX" << "MINMAX" << "MINMAXINDEX" << "MINUS_DI" << "MINUS_DM" << "MOM" << "MULT" << "NATR";
-  indicatorList << "NORMAL" << "OBV" << "PLUS_DI" << "PLUS_DM" << "PPO" << "REF" << "ROC" << "ROCP" << "ROCR" << "ROCR100";
-  indicatorList << "RSI" << "SAR" << "SAREXT" << "SIN" << "SINH" << "SMA" << "SQRT" << "STDDEV" << "STOCH" << "STOCHF";
-  indicatorList << "STOCHRSI" << "SUB" << "SUM" << "SYMBOL" << "T3" << "TAN" << "TANH" << "TEMA" << "TRANGE" << "TRIMA";
-  indicatorList << "TRIX" << "TSF" << "TYPPRICE" << "ULTOSC" << "VAR" << "WCLPRICE" << "WILLR" << "WMA";
+  indicatorList << "ACOS";
+  indicatorList << "AD";
+  indicatorList << "ADD";
+  indicatorList << "ADOSC";
+  indicatorList << "ADX";
+  indicatorList << "ADXR";
+  indicatorList << "APO";
+  indicatorList << "AROON";
+  indicatorList << "AROONOSC";
+  indicatorList << "ASIN";
+  indicatorList << "ATAN";
+  indicatorList << "ATR";
+  indicatorList << "AVGPRICE";
+  indicatorList << "BARS";
+  indicatorList << "BBANDS";
+  indicatorList << "BETA";
+  indicatorList << "BOP";
+  indicatorList << "CANDLES";
+  indicatorList << "CCI";
+  indicatorList << "CDL2CROWS";
+  indicatorList << "CDL3BLACKCROWS";
+  indicatorList << "CDL3INSIDE";
+  indicatorList << "CDL3LINESTRIKE";
+  indicatorList << "CDL3OUTSIDE";
+  indicatorList << "CDL3STARSINSOUTH";
+  indicatorList << "CDL3WHITESOLDIERS";
+  indicatorList << "CDLABANDONEDBABY";
+  indicatorList << "CDLADVANCEBLOCK";
+  indicatorList << "CDLBELTHOLD";
+  indicatorList << "CDLBREAKAWAY";
+  indicatorList << "CDLCLOSINGMARUBOZU";
+  indicatorList << "CDLCONCEALBABYSWALL";
+  indicatorList << "CDLCOUNTERATTACK";
+  indicatorList << "CDLDARKCLOUDCOVER";
+  indicatorList << "CDLDOJI";
+  indicatorList << "CDLDOJISTAR";
+  indicatorList << "CDLDRAGONFLYDOJI";
+  indicatorList << "CDLENGULFING";
+  indicatorList << "CDLEVENINGDOJISTAR";
+  indicatorList << "CDLEVENINGSTAR";
+  indicatorList << "CDLGAPSIDESIDEWHITE";
+  indicatorList << "CDLGRAVESTONEDOJI";
+  indicatorList << "CDLHAMMER";
+  indicatorList << "CDLHANGINGMAN";
+  indicatorList << "CDLHARAMI";
+  indicatorList << "CDLHARAMICROSS";
+  indicatorList << "CDLHIGHWAVE";
+  indicatorList << "CDLHIKKAKE";
+  indicatorList << "CDLHIKKAKEMOD";
+  indicatorList << "CDLHOMINGPIGEON";
+  indicatorList << "CDLIDENTICAL3CROWS";
+  indicatorList << "CDLINNECK";
+  indicatorList << "CDLINVERTEDHAMMER";
+  indicatorList << "CDLKICKING";
+  indicatorList << "CDLKICKINGBYLENGTH";
+  indicatorList << "CDLLADDERBOTTOM";
+  indicatorList << "CDLLONGLEGGEDDOJI";
+  indicatorList << "CDLLONGLINE";
+  indicatorList << "CDLMARUBOZU";
+  indicatorList << "CDLMATCHINGLOW";
+  indicatorList << "CDLMATHOLD";
+  indicatorList << "CDLMORNINGDOJISTAR";
+  indicatorList << "CDLMORNINGSTAR";
+  indicatorList << "CDLONNECK";
+  indicatorList << "CDLPIERCING";
+  indicatorList << "CDLRICKSHAWMAN";
+  indicatorList << "CDLRISEFALL3METHODS";
+  indicatorList << "CDLSEPARATINGLINES";
+  indicatorList << "CDLSHOOTINGSTAR";
+  indicatorList << "CDLSHORTLINE";
+  indicatorList << "CDLSPINNINGTOP";
+  indicatorList << "CDLSTALLEDPATTERN";
+  indicatorList << "CDLSTICKSANDWICH";
+  indicatorList << "CDLTAKURI";
+  indicatorList << "CDLTASUKIGAP";
+  indicatorList << "CDLTHRUSTING";
+  indicatorList << "CDLTRISTAR";
+  indicatorList << "CDLUNIQUE3RIVER";
+  indicatorList << "CDLUPSIDEGAP2CROWS";
+  indicatorList << "CDLXSIDEGAP3METHODS";
+  indicatorList << "CEIL";
+  indicatorList << "CMO";
+  indicatorList << "COLOR";
+  indicatorList << "COMPARE";
+  indicatorList << "COMPARE2";
+  indicatorList << "CORREL";
+  indicatorList << "COS";
+  indicatorList << "COSH";
+  indicatorList << "DEMA";
+  indicatorList << "DIV";
+  indicatorList << "DX";
+  indicatorList << "EMA";
+  indicatorList << "EXP";
+  indicatorList << "FI";
+  indicatorList << "FLOOR";
+  indicatorList << "HT_DCPERIOD";
+  indicatorList << "HT_DCPHASE";
+  indicatorList << "HT_PHASOR";
+  indicatorList << "HT_SINE";
+  indicatorList << "HT_TRENDLINE";
+  indicatorList << "HT_TRENDMODE";
+  indicatorList << "KAMA";
+  indicatorList << "LINEARREG";
+  indicatorList << "LINEARREG_ANGLE";
+  indicatorList << "LINEARREG_INTERCEPT";
+  indicatorList << "LINEARREG_SLOPE";
+  indicatorList << "LMS";
+  indicatorList << "LN";
+  indicatorList << "LOG10";
+  indicatorList << "MACD";
+  indicatorList << "MACDEXT";
+  indicatorList << "MACDFIX";
+  indicatorList << "MAMA";
+  indicatorList << "MAVP";
+  indicatorList << "MAX";
+  indicatorList << "MAXINDEX";
+  indicatorList << "MEDPRICE";
+  indicatorList << "MFI";
+  indicatorList << "MIDPOINT";
+  indicatorList << "MIDPRICE";
+  indicatorList << "MIN";
+  indicatorList << "MININDEX";
+  indicatorList << "MINMAX";
+  indicatorList << "MINMAXINDEX";
+  indicatorList << "MINUS_DI";
+  indicatorList << "MINUS_DM";
+  indicatorList << "MOM";
+  indicatorList << "MULT";
+  indicatorList << "NATR";
+  indicatorList << "NORMAL";
+  indicatorList << "OBV";
+  indicatorList << "PP";
+  indicatorList << "PLUS_DI";
+  indicatorList << "PLUS_DM";
+  indicatorList << "PPO";
+  indicatorList << "REF";
+  indicatorList << "ROC";
+  indicatorList << "ROCP";
+  indicatorList << "ROCR";
+  indicatorList << "ROCR100";
+  indicatorList << "RSI";
+  indicatorList << "SAR";
+  indicatorList << "SAREXT";
+  indicatorList << "SIN";
+  indicatorList << "SINH";
+  indicatorList << "SINWAV";
+  indicatorList << "SMA";
+  indicatorList << "SQRT";
+  indicatorList << "STDDEV";
+  indicatorList << "STOCH";
+  indicatorList << "STOCHF";
+  indicatorList << "STOCHRSI";
+  indicatorList << "SUB";
+  indicatorList << "SUM";
+  indicatorList << "SYMBOL";
+  indicatorList << "SZ";
+  indicatorList << "T3";
+  indicatorList << "TAN";
+  indicatorList << "TANH";
+  indicatorList << "TEMA";
+  indicatorList << "THERM";
+  indicatorList << "TRANGE";
+  indicatorList << "TRIMA";
+  indicatorList << "TRIX";
+  indicatorList << "TSF";
+  indicatorList << "TYPPRICE";
+  indicatorList << "ULTOSC";
+  indicatorList << "VAR";
+  indicatorList << "VFI";
+  indicatorList << "VIDYA";
+  indicatorList << "WCLPRICE";
+  indicatorList << "WILLR";
+  indicatorList << "WMA";
 }
 
 int SCIndicator::calculate (QStringList &l, QHash<QString, PlotLine *> &tlines, BarData *data)
@@ -413,6 +571,12 @@ int SCIndicator::calculate (QStringList &l, QHash<QString, PlotLine *> &tlines, 
       rc = ind.calculate(l, tlines, data);
       break;
     }
+    case _FI:
+    {
+      FI ind;
+      rc = ind.calculate(l, tlines, data);
+      break;
+    }
     case _FLOOR:
     {
       FLOOR ind;
@@ -482,6 +646,12 @@ int SCIndicator::calculate (QStringList &l, QHash<QString, PlotLine *> &tlines, 
     case _LINEARREG_SLOPE:
     {
       LINEARREG_SLOPE ind;
+      rc = ind.calculate(l, tlines, data);
+      break;
+    }
+    case _LMS:
+    {
+      LMS ind;
       rc = ind.calculate(l, tlines, data);
       break;
     }
@@ -629,6 +799,12 @@ int SCIndicator::calculate (QStringList &l, QHash<QString, PlotLine *> &tlines, 
       rc = ind.calculate(l, tlines, data);
       break;
     }
+    case _PP:
+    {
+      PP ind;
+      rc = ind.calculate(l, tlines, data);
+      break;
+    }
     case _PLUS_DI:
     {
       PLUS_DI ind;
@@ -692,6 +868,12 @@ int SCIndicator::calculate (QStringList &l, QHash<QString, PlotLine *> &tlines, 
       rc = ind.calculate2(l, tlines, data);
       break;
     }
+    case _SINWAV:
+    {
+      SINWAV ind;
+      rc = ind.calculate(l, tlines, data);
+      break;
+    }
     case _SMA:
     {
       SMA ind;
@@ -746,6 +928,12 @@ int SCIndicator::calculate (QStringList &l, QHash<QString, PlotLine *> &tlines, 
       rc = ind.calculate(l, tlines);
       break;
     }
+    case _SZ:
+    {
+      SZ ind;
+      rc = ind.calculate(l, tlines, data);
+      break;
+    }
     case _T3:
     {
       T3 ind;
@@ -767,6 +955,12 @@ int SCIndicator::calculate (QStringList &l, QHash<QString, PlotLine *> &tlines, 
     case _TEMA:
     {
       TEMA ind;
+      rc = ind.calculate(l, tlines, data);
+      break;
+    }
+    case _THERM:
+    {
+      THERM ind;
       rc = ind.calculate(l, tlines, data);
       break;
     }
@@ -809,6 +1003,18 @@ int SCIndicator::calculate (QStringList &l, QHash<QString, PlotLine *> &tlines, 
     case _VAR:
     {
       VAR ind;
+      rc = ind.calculate(l, tlines, data);
+      break;
+    }
+    case _VFI:
+    {
+      VFI ind;
+      rc = ind.calculate(l, tlines, data);
+      break;
+    }
+    case _VIDYA:
+    {
+      VIDYA ind;
       rc = ind.calculate(l, tlines, data);
       break;
     }

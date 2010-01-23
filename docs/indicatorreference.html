@@ -637,6 +637,11 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
 <p></p>
 <h3><br>
 </h3>
+<h3>Force Index<br>
+</h3>
+<p>INDICATOR,FI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
+<h3><br>
+</h3>
 <h3>Vector Floor</h3>
 <p>INDICATOR,FLOOR,&lt;NAME&gt;,&lt;INPUT&gt;</p>
 <p></p>
@@ -693,10 +698,21 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
 <h3><br>
 </h3>
 <h3>Linear Regression Slope</h3>
-<p>INDICATOR,SLOPE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,LINEARREG_SLOPE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
 <p></p>
 <h3><br>
 </h3>
+<h3>Least Mean Square Predictor<br>
+</h3>
+<p>INDICATOR,LMS,&lt;SLOWK_NAME&gt;,&lt;2DAY_NAME&gt;,&lt;5DAY_NAME&gt;,&lt;FASTK_PERIOD&gt;,&lt;SLOWK_PERIOD&gt;,&lt;CMB_INDEX&gt;<br>
+</p>
+<ul>
+  <li>FASTK_PERIOD usually set to 5</li>
+  <li>SLOWK_PERIOD usually set to 5</li>
+  <li>CMB_INDEX is 0 for Counter Trend mode or 1 for Cycle mode<br>
+  </li>
+</ul>
+<br>
 <h3>Vector Log Natural</h3>
 <p>INDICATOR,LN,&lt;NAME&gt;,&lt;INPUT&gt;</p>
 <p></p>
@@ -727,7 +743,8 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
 and
 &lt;SLOW_LIMIT&gt;
 are
-both decimal values.</p>
+both
+decimal values.</p>
 <p></p>
 <h3><br>
 </h3>
@@ -829,6 +846,24 @@ the same chart. Also</p>
 <p></p>
 <h3><br>
 </h3>
+<h3>Pivot Point<br>
+</h3>
+<p>INDICATOR,PP,&lt;NAME&gt;,&lt;POINT&gt;<br>
+</p>
+<ul>
+  <li>&lt;POINT&gt; is value between 0 and 5<br>
+  </li>
+  <ul>
+    <li>0 = first resistance</li>
+    <li>1 = second resistance</li>
+    <li>2 = third resistance</li>
+    <li>3 = first support</li>
+    <li>4 = second support</li>
+    <li>5 = third support</li>
+  </ul>
+</ul>
+<br>
+<br>
 <h3>Plus Directional Indicator</h3>
 <p>INDICATOR,PLUS_DI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
 <p></p>
@@ -886,7 +921,8 @@ today's Close then &lt;PERIOD&gt; would be '0'</p>
 and
 MAXIMUM
 are
-decimal values.</p>
+decimal
+values.</p>
 <p></p>
 <h3><br>
 </h3>
@@ -906,6 +942,10 @@ decimal values.</p>
 <p></p>
 <h3><br>
 </h3>
+<h3>Ehler's Sine Wave<br>
+</h3>
+<p>INDICATOR,SINWAV,&lt;SINE_NAME&gt;,&lt;LEAD_NAME&gt;</p>
+<br>
 <h3>Simple Moving Average</h3>
 <p>INDICATOR,SMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
 <p></p>
@@ -957,6 +997,18 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 <br>
 </p>
 <p></p>
+<h3>Safe Zone Stop<br>
+</h3>
+<p>INDICATOR,SZ,&lt;NAME&gt;,&lt;METHOD&gt;,&lt;PERIOD&gt;,&lt;NO_DECLINE_PERIOD&gt;,&lt;COEFFICIENT&gt;<br>
+</p>
+<ul>
+  <li>&lt;METHOD&gt; is either Long or Short</li>
+  <li>&lt;PERIOD&gt; 10 is a good default</li>
+  <li>&lt;NO_DECLINE_PERIOD&gt; 2 is good default</li>
+  <li>&lt;COEFFICIENT&gt; 2.5 is a good default<br>
+  </li>
+</ul>
+<br>
 <h3>Triple Exponential Moving Average (T3)</h3>
 <p>INDICATOR,T3,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;VFACTOR&gt;</p>
 <p>&lt;VFACTOR&gt; is a decimal value.</p>
@@ -975,6 +1027,11 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 </h3>
 <h3>Triple Exponential Moving Average</h3>
 <p>INDICATOR,TEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<h3><br>
+</h3>
+<h3>Market Thermometer<br>
+</h3>
+<p>INDICATOR,THERM,&lt;NAME&gt;</p>
 <p></p>
 <h3><br>
 </h3>
@@ -1011,6 +1068,27 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 <h3>Variance</h3>
 <p>INDICATOR,VAR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;</p>
 <p></p>
+<h3><br>
+</h3>
+<h3>VFI</h3>
+<p>INDICATOR,VFI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+</p>
+<ul>
+  <li>&lt;PERIOD&gt; 100 is a good default<br>
+  </li>
+</ul>
+<h3><br>
+</h3>
+<h3>Variable Index Dynamic Average<br>
+</h3>
+<p>INDICATOR,VIDYA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;VOLUME_PERIOD&gt;<br>
+</p>
+<ul>
+  <li>&lt;PERIOD&gt; default 14<br>
+  </li>
+  <li>&lt;VOLUME_PERIOD&gt; default 10<br>
+  </li>
+</ul>
 <h3><br>
 </h3>
 <h3>Weighted Close Price</h3>
