@@ -39,7 +39,7 @@ if ($a ne "0")
 }
 
 # plot the UPPER BBANDS line
-print STDOUT "PLOT,UPPER,UPPER,red,Line";
+print STDOUT "PLOT,UPPER,UPPER,orange,Line";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -57,7 +57,7 @@ if ($a ne "0")
 }
 
 # plot the LOWER BBANDS line
-print STDOUT "PLOT,LOWER,LOWER,red,Line";
+print STDOUT "PLOT,LOWER,LOWER,orange,Line";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
