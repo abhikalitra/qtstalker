@@ -151,7 +151,7 @@
           This function is not meant for indicator scripts, but for the expanding scripting
           facility that will eventually be able to script most qtstalker functions. You can run
           an indicator script if you want, but nothing will happen. We will see if we can integrate
-          the two in the future to a single script que.
+          the two in the future to a single script queue.
 
           Modified the SYMBOL indicator function to better handle scripts. Format has changed. See
           the docs.
