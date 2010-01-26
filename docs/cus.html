@@ -148,7 +148,17 @@ pass indicator data directly back and forth between scripts and Qtstalker so
 that complex calculations can be performed. Consult the indicator API for
 details.</p>
 
-<p></p>
+<h4 id="debug">Debug techniques</h4>
+<p>
+  If your indicator script is using the Script API incorrectly, then the
+  script will fail at this point and processing will terminate.
+  Review the console log as there may be some error message.
+</p>
+<p>
+  To assist with debugging, printing to Standard Error will send the message to the console.
+  So while developing, sprinkle <code>print STDERR "HERE 1";</code> type statements in your
+  code to find exactly where it is failing.
+</p>
 
 <h4><a name="examples" id="examples">CUS Examples Repository</a></h4>
 
