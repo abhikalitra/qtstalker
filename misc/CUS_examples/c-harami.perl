@@ -1,5 +1,10 @@
 # qtstalker c-harami - Candles: Harami and Harami Cross
 
+# green   : Bull Harami
+# cyan    : Bull Harami Cross
+# red     : Bear Harami
+# magenta : Bear Harami Cross
+
 $|++;
 
 # get the Candles

@@ -1,5 +1,8 @@
 # qtstalker s-harami - Candles: Harami and Harami Cross
 
+# yellow  : Harami
+# orange  : Harami Cross
+
 $|++;
 
 # get Harami
