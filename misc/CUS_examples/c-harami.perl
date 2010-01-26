@@ -1,4 +1,4 @@
-# qtstalker s-harami - Candles: Harami and Harami Cross
+# qtstalker c-harami - Candles: Harami and Harami Cross
 
 $|++;
 
@@ -7,7 +7,7 @@ print STDOUT "INDICATOR,CANDLES,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Harami
-print STDOUT "INDICATOR,CDLHARAMI,ch1,Candle,white";
+print STDOUT "INDICATOR,CDLHARAMI,ch1,Candle";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "INDICATOR,COMPARE2,c1,ch1,1,>=";
@@ -23,7 +23,7 @@ print STDOUT "INDICATOR,COLOR,c2,candles,1,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Harami Cross
-print STDOUT "INDICATOR,CDLHARAMICROSS,ch2,Candle,white";
+print STDOUT "INDICATOR,CDLHARAMICROSS,ch2,Candle";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "INDICATOR,COMPARE2,c3,ch2,1,>=";

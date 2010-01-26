@@ -7,7 +7,7 @@ print STDOUT "INDICATOR,CANDLES,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Kirikomi
-print STDOUT "INDICATOR,CDLPIERCING,ckk1,Candle,white";
+print STDOUT "INDICATOR,CDLPIERCING,ckk1,Candle";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "INDICATOR,COMPARE2,c1,ckk1,1,>=";
@@ -17,7 +17,7 @@ print STDOUT "INDICATOR,COLOR,c1,candles,1,green";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Kabuse
-print STDOUT "INDICATOR,CDLDARKCLOUDCOVER,ckk2,Candle,white";
+print STDOUT "INDICATOR,CDLDARKCLOUDCOVER,ckk2,Candle";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "INDICATOR,COMPARE2,c2,ckk2,-1,<=";
