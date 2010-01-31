@@ -26,6 +26,7 @@
 
 CDL::CDL ()
 {
+  indicator = "CDL";
   penKey = QObject::tr("Penetration");
   methodKey = QObject::tr("Method");
 

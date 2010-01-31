@@ -20,6 +20,7 @@
  */
 
 #include "BBANDS.h"
+#include "BARS.h"
 
 #include <QtDebug>
 
@@ -103,6 +104,9 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
     qDeleteAll(l);
     return 1;
   }
+
+  BARS bars;
+  rc = bars.getIndicator(ind, data);
 
   // upper line
   PlotLine *line = l.at(0);

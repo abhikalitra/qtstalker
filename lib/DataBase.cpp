@@ -505,6 +505,8 @@ void DataBase::setIndicator (Indicator &i)
   cus = QString::number(i.getCUS());
   i.getIndicator(indicator);
 
+  transaction();
+
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "INSERT OR REPLACE INTO indicatorIndex VALUES (";
   s.append("'" + name + "'");
@@ -553,6 +555,8 @@ void DataBase::setIndicator (Indicator &i)
     if (q.lastError().isValid())
       qDebug() << "DataBase::setIndicator: save parm" << q.lastError().text();
   }
+
+  commit();
 }
 
 void DataBase::deleteIndicator (QString &name)
@@ -739,54 +743,4 @@ void DataBase::setChartObject (COSettings *co)
       qDebug() << "DataBase::setChartObject: " << q.lastError().text();
   }
 }
-
-//***************************************************************************************
-//**************** INDICATOR SETTINGS ***************************************************
-//***************************************************************************************
-
-/*
-void DataBase::getIndicatorSettings (IndicatorSettings &set)
-{
-  set.clear();
-
-  QString indicator;
-  set.getIndicator(indicator);
-
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT * FROM indicatorSettings WHERE indicator='" + indicator + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::getIndicatorSettings:" << q.lastError().text();
-    return;
-  }
-
-  if (q.next())
-  {
-    QString ts = q.value(1).toString();
-    set.setName(ts);
-
-    ts = q.value(2).toString();
-    set.parse(ts);
-  }
-}
-
-void DataBase::setIndicatorSettings (IndicatorSettings &set)
-{
-  QString indicator, ts, name;
-  set.getIndicator(indicator);
-  set.getString(ts);
-  set.getName(name);
-
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO indicatorSettings VALUES (";
-  s.append("'" + indicator + "'");
-  s.append(",'" + name + "'");
-  s.append(",'" + ts + "'");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::setIndicatorSettings:" << q.lastError().text() << s;
-}
-*/
 

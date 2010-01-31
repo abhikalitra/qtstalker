@@ -721,6 +721,8 @@ void QtstalkerApp::loadChart (QString d)
   int loop;
   for (loop = 0; loop < indicatorList.count(); loop++)
   {
+    loadIndicator(indicatorList[loop]);
+/*
     Indicator i;
     i.setName(indicatorList[loop]);
     db.getIndicator(i);
@@ -754,6 +756,7 @@ void QtstalkerApp::loadChart (QString d)
     plot->calculate();
     plot->getIndicatorPlot()->setPlotList(lines);
     plot->loadChartObjects();
+*/
   }
 
   resetZoomSettings();
@@ -766,6 +769,44 @@ void QtstalkerApp::loadChart (QString d)
   slotDrawPlots();
   setWindowTitle(getWindowCaption());
   slotStatusMessage(QString());
+}
+
+void QtstalkerApp::loadIndicator (QString &d)
+{
+  Indicator i;
+  DataBase db;
+  i.setName(d);
+  db.getIndicator(i);
+
+  QList<PlotLine *> lines;
+  IndicatorFactory fac;
+  QString s;
+  i.getIndicator(s);
+  IndicatorBase *ib = fac.getFunction(s);
+  if (! ib)
+    return;
+
+  ib->setSettings(i);
+
+  if (ib->getIndicator(i, recordList))
+  {
+    qDebug() << "Qtstalker::loadIndicator: getIndicator failed";
+    delete ib;
+    return;
+  }
+
+  delete ib;
+
+  i.getLines(lines);
+
+  Plot *plot = plotList[d];
+  if (! plot)
+    return;
+
+  plot->setData(recordList);
+  plot->calculate();
+  plot->getIndicatorPlot()->setPlotList(lines);
+  plot->loadChartObjects();
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -848,6 +889,8 @@ void QtstalkerApp::slotNewIndicator (QString n)
 
   if (! recordList)
     return;
+
+  loadIndicator(n);
 }
 
 void QtstalkerApp::slotDeleteIndicator (QString text)
@@ -886,6 +929,8 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 
   if (! recordList)
     return;
+
+  loadIndicator(name);
 }
 
 void QtstalkerApp::addIndicatorButton (QString d)

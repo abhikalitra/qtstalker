@@ -32,7 +32,7 @@ BOP::BOP ()
   d = "red";
   settings.setData(colorKey, d);
 
-  d = "Line";
+  d = "Histogram Bar";
   settings.setData(plotKey, d);
 
   settings.setData(labelKey, indicator);

@@ -177,5 +177,12 @@
 
           Removed most of the /misc/CUS_examples that did not demonstrate good uses of indicator scripts.
 
+20100131: Fixed a bug in CSV that did not prepare the filename to be used as a symbol override. Also
+          fixed bug that did not use the supplied symbol switch if no symbol was specified in the csv field
+          format switch. Also added a 'G' format field option to ignore unused fields in the data stream.
+
+          Fixed bug that did not update charts that are newly created in Qtstalker::.
+
+
 
 

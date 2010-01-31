@@ -198,6 +198,9 @@ void CSV::import ()
 	    flag = TRUE;
           }
 	  break;
+	case 'G':
+	  // we just ignore this field. its a place holder
+	  break;
 	default:
 	  break;
       }
@@ -216,11 +219,15 @@ void CSV::import ()
     r.getSymbol(ts);
     if (ts.isEmpty())
     {
-      if (fi.suffix() == "txt" || fi.suffix() == "TXT")
-        ts = fi.completeBaseName();
+      if (symbol.isEmpty())
+      {
+        // remove any file suffix so we can use this as a symbol
+        QString ts2 = fi.completeSuffix();
+        ts = ts.remove(ts2, Qt::CaseSensitive);
+        r.setSymbol(ts);
+      }
       else
-        ts = fi.fileName();
-      r.setSymbol(ts);
+        r.setSymbol(symbol); // use symbol from command line option
     }
 
     if (symbolHash.contains(ts))
@@ -498,6 +505,7 @@ void CSV::setOI (QString &d)
 
 void CSV::setSymbol (QString &d)
 {
+  convertSymbol(d);
   symbol = d;
 }
 
@@ -525,11 +533,7 @@ int CSV::setBarTime (Bar &r, QString &d)
 
 void CSV::setBarSymbol (Bar &r, QString &d)
 {
-  // remove any unwanted characters in the symbol name
-  d.replace(QString(" "), QString("_")); // replace spaces
-  d.replace(QString("-"), QString("_")); // replace minus signs
-  d.replace(QString("&"), QString("_")); // replace ampersand
-  d.replace(QString("."), QString("_")); // replace dot
+  convertSymbol(d);
   r.setSymbol(d);
 }
 
@@ -612,7 +616,7 @@ int CSV::setBarOI (Bar &r, QString &d)
 {
   int flag = FALSE;
   bool ok;
-  d.toDouble(&ok);
+  d.toInt(&ok);
   if (! ok)
     flag = TRUE;
   else
@@ -623,5 +627,12 @@ int CSV::setBarOI (Bar &r, QString &d)
   return flag;
 }
 
-
+// remove any unwanted characters in the symbol name
+void CSV::convertSymbol (QString &d)
+{
+  d.replace(QString(" "), QString("_")); // replace spaces
+  d.replace(QString("-"), QString("_")); // replace minus signs
+  d.replace(QString("&"), QString("_")); // replace ampersand
+  d.replace(QString("."), QString("_")); // replace dot
+}
 

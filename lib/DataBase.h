@@ -69,10 +69,6 @@ class DataBase
     void deleteChartObject (QString &id);
     void getChartObjects (QString &symbol, QString &indicator, QHash<QString, COSettings *> &list);
     void setChartObject (COSettings *);
-
-    // indicator settings
-//    void setIndicatorSettings (IndicatorSettings &);
-//    void getIndicatorSettings (IndicatorSettings &);
 };
 
 #endif

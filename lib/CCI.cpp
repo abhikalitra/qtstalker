@@ -27,6 +27,10 @@
 CCI::CCI ()
 {
   indicator = "CCI";
+  ref1Key = QObject::tr("Ref 1 Value");
+  ref2Key = QObject::tr("Ref 2 Value");
+  ref1ColorKey = QObject::tr("Ref 1 Color");
+  ref2ColorKey = QObject::tr("Ref 2 Color");
 
   QString d;
   d = "red";
@@ -36,8 +40,13 @@ CCI::CCI ()
   settings.setData(plotKey, d);
 
   settings.setData(labelKey, indicator);
-
   settings.setData(periodKey, 14);
+  settings.setData(ref1Key, 100);
+  settings.setData(ref2Key, -100);
+
+  d = "red";
+  settings.setData(ref1ColorKey, d);
+  settings.setData(ref2ColorKey, d);
 }
 
 int CCI::getIndicator (Indicator &ind, BarData *data)
@@ -58,6 +67,24 @@ int CCI::getIndicator (Indicator &ind, BarData *data)
   settings.getData(labelKey, s);
   line->setLabel(s);
 
+  ind.addLine(line);
+
+  // create the ref1 line
+  int ref = settings.getInt(ref1Key);
+  line = new PlotLine;
+  settings.getData(ref1ColorKey, s);
+  line->setColor(s);
+  line->setType(PlotLine::Horizontal);
+  line->append(ref);
+  ind.addLine(line);
+
+  // create the ref2 line
+  ref = settings.getInt(ref2Key);
+  line = new PlotLine;
+  settings.getData(ref2ColorKey, s);
+  line->setColor(s);
+  line->setType(PlotLine::Horizontal);
+  line->append(ref);
   ind.addLine(line);
 
   return 0;
@@ -149,6 +176,20 @@ int CCI::dialog ()
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
 
+  page++;
+  k = QObject::tr("Ref Lines");
+  dialog->addPage(page, k);
+
+  settings.getData(ref1ColorKey, d);
+  dialog->addColorItem(page, ref1ColorKey, d);
+
+  settings.getData(ref2ColorKey, d);
+  dialog->addColorItem(page, ref2ColorKey, d);
+
+  dialog->addIntItem(page, ref1Key, settings.getInt(ref1Key), -100000, 100000);
+
+  dialog->addIntItem(page, ref2Key, settings.getInt(ref2Key), -100000, 100000);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -167,6 +208,18 @@ int CCI::dialog ()
 
   dialog->getItem(periodKey, d);
   settings.setData(periodKey, d);
+
+  dialog->getItem(ref1Key, d);
+  settings.setData(ref1Key, d);
+
+  dialog->getItem(ref2Key, d);
+  settings.setData(ref2Key, d);
+
+  dialog->getItem(ref1ColorKey, d);
+  settings.setData(ref1ColorKey, d);
+
+  dialog->getItem(ref2ColorKey, d);
+  settings.setData(ref2ColorKey, d);
 
   delete dialog;
   return rc;

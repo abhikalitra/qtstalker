@@ -90,6 +90,8 @@ class CSV
     int setBarVolume (Bar &r, QString &d);
     int setBarOI (Bar &r, QString &d);
 
+    void convertSymbol (QString &symbol);
+
   private:
     QString format;
     QString dateFormat;

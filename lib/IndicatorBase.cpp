@@ -192,6 +192,14 @@ void IndicatorBase::getSettings (Indicator &_ind)
 void IndicatorBase::getIndicatorList (QStringList &l)
 {
   l = indicatorList;
+  l.removeAll("COLOR");
+  l.removeAll("COMPARE");
+  l.removeAll("COMPARE2");
+  l.removeAll("MATH");
+  l.removeAll("MATH2");
+  l.removeAll("REF");
+  l.removeAll("SYMBOL");
+  l.removeAll("TRIG");
 }
 
 void IndicatorBase::getMAList (QStringList &l)

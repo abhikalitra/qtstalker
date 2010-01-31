@@ -32,6 +32,12 @@ class CCI : public IndicatorBase
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getCCI (BarData *data, int period);
     int dialog ();
+
+  protected:
+    QString ref1Key;
+    QString ref2Key;
+    QString ref1ColorKey;
+    QString ref2ColorKey;
 };
 
 #endif

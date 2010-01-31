@@ -34,6 +34,8 @@ CANDLES::CANDLES ()
 
   d = "Line";
   settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
 }
 
 int CANDLES::getIndicator (Indicator &ind, BarData *data)
@@ -47,7 +49,6 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
     return 1;
 
   line->setColor(color);
-  line->setType(PlotLine::Candle);
 
   settings.getData(labelKey, s);
   line->setLabel(s);
@@ -93,6 +94,8 @@ int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
 PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
 {
   PlotLine *line = new PlotLine;
+  line->setType(PlotLine::Candle);
+
   int loop;
   int size = data->count();
   for (loop = 0; loop < size; loop++)

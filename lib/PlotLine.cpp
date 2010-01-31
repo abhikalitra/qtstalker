@@ -34,7 +34,7 @@ PlotLine::PlotLine ()
   scaleFlag = FALSE;
   colorFlag = FALSE;
   plotFlag = FALSE;
-  
+
   typeList << QObject::tr("Dot") << QObject::tr("Dash") << QObject::tr("Histogram") << QObject::tr("Histogram Bar");
   typeList << QObject::tr("Line") << QObject::tr("Invisible") << QObject::tr("Horizontal");
   typeList << QObject::tr("Bar") << QObject::tr("Candle");
@@ -51,7 +51,7 @@ void PlotLine::setColor (QColor &d)
   color = d;
 //  resetColor();
 }
-  
+
 void PlotLine::getColor (QColor &d)
 {
   d = color;
@@ -62,7 +62,7 @@ void PlotLine::setColorBar (int i, QColor &d)
   Val r = data[i];
   r.color = d;
   data.replace(i, r);
-  
+
 //  data[i].color = d;
 }
 
@@ -75,7 +75,7 @@ void PlotLine::resetColor ()
 {
   if (! data.count())
     return;
-  
+
   int loop;
   for (loop = 0; loop < data.count(); loop++)
   {
@@ -209,6 +209,10 @@ bool PlotLine::getColorFlag ()
 void PlotLine::getLineTypes (QStringList &l)
 {
   l = typeList;
+  l.removeAll(QObject::tr("Invisible"));
+  l.removeAll(QObject::tr("Horizontal"));
+  l.removeAll(QObject::tr("Bar"));
+  l.removeAll(QObject::tr("Candle"));
 }
 
 void PlotLine::append (QColor &c, double o, double h, double l, double cl, bool cf)

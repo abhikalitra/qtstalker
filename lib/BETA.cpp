@@ -34,7 +34,7 @@ BETA::BETA ()
   d = "red";
   settings.setData(colorKey, d);
 
-  d = "Line";
+  d = "Histogram Bar";
   settings.setData(plotKey, d);
 
   settings.setData(labelKey, indicator);
@@ -61,7 +61,6 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
 
   settings.getData(indexKey, s);
   BarData *bd = new BarData;
-  data->getSymbol(s);
   bd->setSymbol(s);
   bd->setBarLength(data->getBarLength());
   bd->setBarsRequested(data->getBarsRequested());
