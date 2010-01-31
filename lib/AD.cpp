@@ -20,34 +20,74 @@
  */
 
 #include "AD.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 AD::AD ()
 {
+  indicator = "AD";
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
 }
 
-int AD::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int AD::getIndicator (Indicator &ind, BarData *data)
+{
+  PlotLine *line = getAD(data);
+  if (! line)
+    return 1;
+
+  QString s;
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int AD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,AD,<NAME>
 
   if (set.count() != 3)
   {
-    qDebug() << "AD::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
-  int size = data->count();
+  PlotLine *line = getAD(data);
+  if (! line)
+    return 1;
 
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * AD::getAD (BarData *data)
+{
+  int size = data->count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -67,82 +107,55 @@ int AD::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   TA_RetCode rc = TA_AD(0, size - 1, &high[0], &low[0], &close[0], &volume[0], &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "AD::calculate: : TA-Lib error" << rc;
-    return 1;
+    qDebug() << indicator << "::calculate: : TA-Lib error" << rc;
+    return 0;
   }
 
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
-  tlines.insert(set[2], line);
-
-  return 0;
+  return line;
 }
 
-int AD::calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int AD::dialog ()
 {
-  // INDICATOR,ADOSC,<NAME>,<FAST_PERIOD>,<SLOW_PERIOD>
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
 
-  if (set.count() < 5)
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  QColor c(d);
+  dialog->addColorItem(page, colorKey, c);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
   {
-    qDebug() << "ADOSC::calculate: invalid parm count" << set.count();
-    return 1;
+    delete dialog;
+    return rc;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
-    return 1;
-  }
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
 
-  bool ok;
-  int fast = set[3].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "ADOSC::calculate: invalid fast period parm" << set[3];
-    return 1;
-  }
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
 
-  int slow = set[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "ADOSC::calculate: invalid slow period parm" << set[4];
-    return 1;
-  }
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
 
-  int size = data->count();
-
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real volume[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
-    volume[loop] = (TA_Real) data->getVolume(loop);
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_ADOSC(0, size - 1, &high[0], &low[0], &close[0], &volume[0], fast, slow, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ADOSC::calculate: : TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(set[2], line);
-
-  return 0;
+  delete dialog;
+  return rc;
 }
+
 

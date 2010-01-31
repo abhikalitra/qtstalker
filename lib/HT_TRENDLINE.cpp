@@ -20,29 +20,68 @@
  */
 
 #include "HT_TRENDLINE.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 HT_TRENDLINE::HT_TRENDLINE ()
 {
+  indicator = "HT_TRENDLINE";
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
+
+  d = "Close";
+  settings.setData(inputKey, d);
 }
 
-int HT_TRENDLINE::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int HT_TRENDLINE::getIndicator (Indicator &ind, BarData *data)
+{
+  QString s;
+  settings.getData(inputKey, s);
+  PlotLine *in = data->getInput(data->getInputType(s));
+  if (! in)
+  {
+    qDebug() << indicator << "::calculate: input not found" << s;
+    return 1;
+  }
+
+  PlotLine *line = getHT_TRENDLINE(in);
+  if (! line)
+  {
+    delete in;
+    return 1;
+  }
+
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  delete in;
+
+  return 0;
+}
+
+int HT_TRENDLINE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,HT_TRENDLINE,<NAME>,<INPUT>
 
   if (set.count() != 4)
   {
-    qDebug() << "HT_TRENDLINE::calculate: invalid parm count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
@@ -52,13 +91,31 @@ int HT_TRENDLINE::calculate (QStringList &set, QHash<QString, PlotLine *> &tline
     in = data->getInput(data->getInputType(set[3]));
     if (! in)
     {
-      qDebug() << set[1] << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[3];
       return 1;
     }
 
     tlines.insert(set[3], in);
   }
 
+  PlotLine *tl = tlines.value(set[2]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    return 1;
+  }
+
+  PlotLine *line = getHT_TRENDLINE(in);
+  if (! line)
+    return 1;
+
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * HT_TRENDLINE::getHT_TRENDLINE (PlotLine *in)
+{
   TA_Integer outBeg;
   TA_Integer outNb;
   TA_Real input[in->getSize()];
@@ -70,16 +127,61 @@ int HT_TRENDLINE::calculate (QStringList &set, QHash<QString, PlotLine *> &tline
   TA_RetCode rc = TA_HT_TRENDLINE(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "HT_TRENDLINE::calculate: TA-Lib error" << rc;
-    return 1;
+    qDebug() << indicator << "::calculate TA-Lib error" << rc;
+    return 0;
   }
 
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
-  tlines.insert(set[2], line);
-
-  return 0;
+  return line;
 }
+
+int HT_TRENDLINE::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  QColor c(d);
+  dialog->addColorItem(page, colorKey, c);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  settings.getData(inputKey, d);
+  dialog->addComboItem(page, inputKey, inputList, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
+
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
+
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
+
+  dialog->getItem(inputKey, d);
+  settings.setData(inputKey, d);
+
+  delete dialog;
+  return rc;
+}
+
 

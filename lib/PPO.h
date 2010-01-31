@@ -22,20 +22,21 @@
 #ifndef PPO_HPP
 #define PPO_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class PPO
+class PPO : public IndicatorBase
 {
   public:
     PPO ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getPPO (PlotLine *in, int fast, int slow, int ma);
+    int dialog ();
 
-  protected:
+  private:
+    QString fpKey;
+    QString spKey;
+    QString maKey;
 };
 
 #endif

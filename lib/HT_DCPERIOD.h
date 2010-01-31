@@ -22,20 +22,16 @@
 #ifndef HT_DCPERIOD_HPP
 #define HT_DCPERIOD_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class HT_DCPERIOD
+class HT_DCPERIOD : public IndicatorBase
 {
   public:
     HT_DCPERIOD ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getHT_DCPERIOD (PlotLine *in);
+    int dialog ();
 };
 
 #endif

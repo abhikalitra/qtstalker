@@ -22,19 +22,14 @@
 #ifndef SYMBOL_HPP
 #define SYMBOL_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-
-
-class SYMBOL
+class SYMBOL : public IndicatorBase
 {
   public:
     SYMBOL ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines);
-
-  protected:
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getSYMBOL (QString &sym, QString &field, QString &length, int bars);
 };
 
 #endif

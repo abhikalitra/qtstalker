@@ -20,36 +20,99 @@
  */
 
 #include "HT_PHASOR.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 HT_PHASOR::HT_PHASOR ()
 {
+  indicator = "HT_PHASOR";
+  pcKey = QObject::tr("Phase Color");
+  qcKey = QObject::tr("Quad Color");
+  ppKey = QObject::tr("Phase Plot");
+  qpKey = QObject::tr("Quad Plot");
+  plKey = QObject::tr("Phase Label");
+  qlKey = QObject::tr("Quad Label");
+
+  QString d;
+  d = "red";
+  settings.setData(pcKey, d);
+
+  d = "red";
+  settings.setData(qcKey, d);
+
+  d = "Line";
+  settings.setData(ppKey, d);
+  settings.setData(qpKey, d);
+
+  d = "PHASE";
+  settings.setData(plKey, d);
+
+  d = "QUAD";
+  settings.setData(qlKey, d);
+
+  d = "Close";
+  settings.setData(inputKey, d);
 }
 
-int HT_PHASOR::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int HT_PHASOR::getIndicator (Indicator &ind, BarData *data)
+{
+  QString s;
+  settings.getData(inputKey, s);
+  PlotLine *in = data->getInput(data->getInputType(s));
+  if (! in)
+  {
+    qDebug() << indicator << "::calculate: input not found" << s;
+    return 1;
+  }
+
+  QList<PlotLine *> l;
+  int rc = getHT_PHASOR(in, l);
+  if (rc || l.count() != 2)
+  {
+    delete in;
+    qDeleteAll(l);
+    return 1;
+  }
+
+  // phase line
+  PlotLine *line = l.at(0);
+  settings.getData(pcKey, s);
+  line->setColor(s);
+
+  settings.getData(ppKey, s);
+  line->setType(s);
+
+  settings.getData(plKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  // quad line
+  line = l.at(1);
+  settings.getData(qcKey, s);
+  line->setColor(s);
+
+  settings.getData(qpKey, s);
+  line->setType(s);
+
+  settings.getData(qlKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  delete in;
+
+  return 0;
+}
+
+int HT_PHASOR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,HT_PHASOR,<INPUT>,<NAME_PHASE>,<NAME_QUADRATURE>
 
   if (set.count() != 5)
   {
-    qDebug() << "HT_PHASOR::calculate: invalid parm count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[3];
-    return 1;
-  }
-
-  tl = tlines.value(set[4]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
@@ -59,13 +122,43 @@ int HT_PHASOR::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, 
     in = data->getInput(data->getInputType(set[2]));
     if (! in)
     {
-      qDebug() << set[1] << "::calculate: input not found" << set[2];
+      qDebug() << indicator << "::calculate: input not found" << set[2];
       return 1;
     }
 
     tlines.insert(set[2], in);
   }
 
+  PlotLine *tl = tlines.value(set[3]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    return 1;
+  }
+
+  tl = tlines.value(set[4]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    return 1;
+  }
+
+  QList<PlotLine *> l;
+  int rc = getHT_PHASOR(in, l);
+  if (rc || l.count() != 2)
+  {
+    qDeleteAll(l);
+    return 1;
+  }
+
+  tlines.insert(set[3], l.at(0));
+  tlines.insert(set[4], l.at(1));
+
+  return 0;
+}
+
+int HT_PHASOR::getHT_PHASOR (PlotLine *in, QList<PlotLine *> &l)
+{
   TA_Integer outBeg;
   TA_Integer outNb;
   TA_Real input[in->getSize()];
@@ -78,21 +171,68 @@ int HT_PHASOR::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, 
   TA_RetCode rc = TA_HT_PHASOR(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0], &out2[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "HT_PHASOR::calculate: TA-Lib error" << rc;
+    qDebug() << indicator << "::calculate TA-Lib error" << rc;
     return 1;
   }
 
   PlotLine *line = new PlotLine;
-  PlotLine *quad = new PlotLine;
+  PlotLine *line2 = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
   {
     line->append(out[loop]);
-    quad->append(out2[loop]);
+    line2->append(out2[loop]);
   }
 
-  tlines.insert(set[3], line);
-  tlines.insert(set[4], quad);
+  l.append(line);
+  l.append(line2);
 
   return 0;
 }
+
+int HT_PHASOR::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  QColor c(d);
+  dialog->addColorItem(page, colorKey, c);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  settings.getData(inputKey, d);
+  dialog->addComboItem(page, inputKey, inputList, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
+
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
+
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
+
+  dialog->getItem(inputKey, d);
+  settings.setData(inputKey, d);
+
+  delete dialog;
+  return rc;
+}
+
 

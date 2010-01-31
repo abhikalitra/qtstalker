@@ -20,36 +20,122 @@
  */
 
 #include "MAMA.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 MAMA::MAMA ()
 {
+  indicator = "MAMA";
+  mcKey = QObject::tr("MAMA Color");
+  fcKey = QObject::tr("FAMA Color");
+  mpKey = QObject::tr("MAMA Plot");
+  fpKey = QObject::tr("FAMA Plot");
+  mlKey = QObject::tr("MAMA Label");
+  flKey = QObject::tr("FAMA Label");
+  flmKey = QObject::tr("Fast Limit");
+  slmKey = QObject::tr("Slow Limit");
+
+  QString d;
+  d = "red";
+  settings.setData(mcKey, d);
+
+  d = "yellow";
+  settings.setData(fcKey, d);
+
+  d = "Line";
+  settings.setData(mpKey, d);
+
+  settings.setData(fpKey, d);
+
+  d = "MAMA";
+  settings.setData(mlKey, d);
+
+  d = "FAMA";
+  settings.setData(flKey, d);
+
+  d = "Close";
+  settings.setData(inputKey, d);
+
+  settings.setData(flmKey, 0.5);
+  settings.setData(slmKey, 0.5);
 }
 
-int MAMA::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int MAMA::getIndicator (Indicator &ind, BarData *data)
+{
+  QString s;
+  settings.getData(inputKey, s);
+  PlotLine *in = data->getInput(data->getInputType(s));
+  if (! in)
+  {
+    qDebug() << indicator << "::calculate: input not found" << s;
+    return 1;
+  }
+
+  double fast = settings.getDouble(flmKey);
+  double slow = settings.getDouble(slmKey);
+
+  QList<PlotLine *> l;
+  int rc = getMAMA(in, fast, slow, l);
+  if (rc)
+  {
+    qDeleteAll(l);
+    delete in;
+    return 1;
+  }
+
+  // mama line
+  PlotLine *line = l.at(0);
+  settings.getData(mcKey, s);
+  line->setColor(s);
+
+  settings.getData(mpKey, s);
+  line->setType(s);
+
+  settings.getData(mlKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  // fama line
+  line = l.at(1);
+  settings.getData(fcKey, s);
+  line->setColor(s);
+
+  settings.getData(fpKey, s);
+  line->setType(s);
+
+  settings.getData(flKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  delete in;
+
+  return 0;
+}
+
+int MAMA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,MAMA,<INPUT>,<NAME_MAMA>,<NAME_FAMA>,<FAST_LIMIT>,<SLOW_LIMIT>
 
   if (set.count() != 7)
   {
-    qDebug() << "MAMA::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::calculate: duplicate name" << set[4];
     return 1;
   }
 
@@ -59,7 +145,7 @@ int MAMA::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
     in = data->getInput(data->getInputType(set[2]));
     if (! in)
     {
-      qDebug() << set[1] << "::calculate: input not found" << set[2];
+      qDebug() << indicator << "::calculate: input not found" << set[2];
       return 1;
     }
 
@@ -70,30 +156,47 @@ int MAMA::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
   double fast = set[5].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "MAMA::calculate: invalid fast limit" << set[5];
+    qDebug() << indicator << "::calculate: invalid fast limit" << set[5];
     return 1;
   }
 
   double slow = set[6].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "MAMA::calculate: invalid slow limit" << set[6];
+    qDebug() << indicator << "::calculate: invalid slow limit" << set[6];
     return 1;
   }
 
+  QList<PlotLine *> l;
+  int rc = getMAMA(in, fast, slow, l);
+  if (rc)
+  {
+    qDeleteAll(l);
+    return 1;
+  }
+
+  tlines.insert(set[3], l.at(0));
+  tlines.insert(set[4], l.at(1));
+
+  return 0;
+}
+
+int MAMA::getMAMA (PlotLine *in, double fast, double slow, QList<PlotLine *> &l)
+{
+  int size = in->getSize();
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Real out2[in->getSize()];
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Real out2[size];
   int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
+  for (loop = 0; loop < size; loop++)
     input[loop] = (TA_Real) in->getData(loop);
 
-  TA_RetCode rc = TA_MAMA(0, in->getSize() - 1, &input[0], fast, slow, &outBeg, &outNb, &out[0], &out2[0]);
+  TA_RetCode rc = TA_MAMA(0, size - 1, &input[0], fast, slow, &outBeg, &outNb, &out[0], &out2[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "MAMA::calculate: TA-Lib error" << rc;
+    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
     return 1;
   }
 
@@ -105,9 +208,90 @@ int MAMA::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
     fama->append(out2[loop]);
   }
 
-  tlines.insert(set[3], line);
-  tlines.insert(set[4], fama);
+  l.append(line);
+  l.append(fama);
 
   return 0;
+}
+
+int MAMA::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(inputKey, d);
+  dialog->addComboItem(page, inputKey, inputList, d);
+
+  dialog->addDoubleItem(page, flmKey, settings.getDouble(flmKey), 0.01, 0.99);
+
+  dialog->addDoubleItem(page, slmKey, settings.getDouble(slmKey), 0.01, 0.99);
+
+  page++;
+  k = QObject::tr("MAMA");
+  dialog->addPage(page, k);
+
+  settings.getData(mcKey, d);
+  dialog->addColorItem(page, mcKey, d);
+
+  settings.getData(mpKey, d);
+  dialog->addComboItem(page, mpKey, plotList, d);
+
+  settings.getData(mlKey, d);
+  dialog->addTextItem(page, mlKey, d);
+
+  page++;
+  k = QObject::tr("FAMA");
+  dialog->addPage(page, k);
+
+  settings.getData(fcKey, d);
+  dialog->addColorItem(page, fcKey, d);
+
+  settings.getData(fpKey, d);
+  dialog->addComboItem(page, fpKey, plotList, d);
+
+  settings.getData(flKey, d);
+  dialog->addTextItem(page, flKey, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(mcKey, d);
+  settings.setData(mcKey, d);
+
+  dialog->getItem(mpKey, d);
+  settings.setData(mpKey, d);
+
+  dialog->getItem(mlKey, d);
+  settings.setData(mlKey, d);
+
+  dialog->getItem(fcKey, d);
+  settings.setData(fcKey, d);
+
+  dialog->getItem(fpKey, d);
+  settings.setData(fpKey, d);
+
+  dialog->getItem(flKey, d);
+  settings.setData(flKey, d);
+
+  dialog->getItem(inputKey, d);
+  settings.setData(inputKey, d);
+
+  dialog->getItem(flmKey, d);
+  settings.setData(flmKey, d);
+
+  dialog->getItem(slmKey, d);
+  settings.setData(slmKey, d);
+
+  delete dialog;
+  return rc;
 }
 

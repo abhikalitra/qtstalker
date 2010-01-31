@@ -22,21 +22,19 @@
 #ifndef LMS_HPP
 #define LMS_HPP
 
-#include <QStringList>
-#include <QString>
-#include <QHash>
+#include <QList>
 
-#include "PlotLine.h"
-#include "BarData.h"
+#include "IndicatorBase.h"
 
-
-class LMS
+class LMS : public IndicatorBase
 {
   public:
     LMS ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    void getLMS (QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    void getLMS (QList<PlotLine *> &l, BarData *data);
     PlotLine * slowK(PlotLine * inLine, int kPeriod, int slowKperiod);
+    int dialog ();
 
   protected:
     int cycleFlag;
@@ -46,6 +44,19 @@ class LMS
     QString slowkName;
     QString Day2Name;
     QString Day5Name;
+
+    QString skcKey;
+    QString d2cKey;
+    QString d5cKey;
+    QString skpKey;
+    QString d2pKey;
+    QString d5pKey;
+    QString sklKey;
+    QString d2lKey;
+    QString d5lKey;
+    QString fpKey;
+    QString spKey;
+    QString indexKey;
 };
 
 #endif

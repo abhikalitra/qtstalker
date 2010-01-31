@@ -22,21 +22,20 @@
 #ifndef ADX_HPP
 #define ADX_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class ADX
+class ADX : public IndicatorBase
 {
   public:
     ADX ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data); // ADX
-    int calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data); // ADXR
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getADX (BarData *data, int period, int method);
+    int dialog ();
 
   protected:
+    QString methodKey;
+    QStringList methodList;
 };
 
 #endif

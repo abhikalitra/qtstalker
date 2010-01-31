@@ -22,20 +22,16 @@
 #ifndef HT_TRENDMODE_HPP
 #define HT_TRENDMODE_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class HT_TRENDMODE
+class HT_TRENDMODE : public IndicatorBase
 {
   public:
     HT_TRENDMODE ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getHT_TRENDMODE (PlotLine *in);
+    int dialog ();
 };
 
 #endif

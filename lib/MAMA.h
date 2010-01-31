@@ -22,20 +22,28 @@
 #ifndef MAMA_HPP
 #define MAMA_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
+#include <QList>
 
-
-class MAMA
+class MAMA : public IndicatorBase
 {
   public:
     MAMA ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getMAMA (PlotLine *in, double fast, double slow, QList<PlotLine *> &l);
+    int dialog ();
 
   protected:
+    QString mcKey;
+    QString fcKey;
+    QString mpKey;
+    QString fpKey;
+    QString mlKey;
+    QString flKey;
+    QString flmKey;
+    QString slmKey;
 };
 
 #endif

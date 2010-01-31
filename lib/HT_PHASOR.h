@@ -22,20 +22,24 @@
 #ifndef HT_PHASOR_HPP
 #define HT_PHASOR_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class HT_PHASOR
+class HT_PHASOR : public IndicatorBase
 {
   public:
     HT_PHASOR ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getHT_PHASOR (PlotLine *in, QList<PlotLine *> &l);
+    int dialog ();
 
-  protected:
+  private:
+    QString pcKey;
+    QString qcKey;
+    QString ppKey;
+    QString qpKey;
+    QString plKey;
+    QString qlKey;
 };
 
 #endif

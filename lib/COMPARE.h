@@ -22,21 +22,15 @@
 #ifndef COMPARE_HPP
 #define COMPARE_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class COMPARE
+class COMPARE : public IndicatorBase
 {
   public:
     COMPARE ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &opList, BarData *data);
-    int calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &opList, BarData *data);
-
-  protected:
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCOMPARE (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCOMPARE2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
 };
 
 #endif

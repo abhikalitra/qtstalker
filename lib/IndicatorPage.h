@@ -34,9 +34,6 @@
 #include "Setting.h"
 
 
-
-
-
 class IndicatorPage : public QWidget
 {
   Q_OBJECT
@@ -46,7 +43,7 @@ class IndicatorPage : public QWidget
     void signalEnableIndicator (QString);
     void signalDeleteIndicator (QString);
     void signalNewIndicator (QString);
-  
+
   public:
     IndicatorPage (QWidget *);
 
@@ -65,7 +62,7 @@ class IndicatorPage : public QWidget
   protected:
     virtual void keyPressEvent (QKeyEvent *);
 
-    int listFlag;    
+    int listFlag;
     QListWidget *list;
     QMenu *menu;
     QList<QAction *> actions;

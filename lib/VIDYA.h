@@ -22,21 +22,20 @@
 #ifndef VIDYA_HPP
 #define VIDYA_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class VIDYA
+class VIDYA : public IndicatorBase
 {
   public:
     VIDYA ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     void calcCMO (PlotLine *outSignal, PlotLine *inSignal, int iPeriod);
+    PlotLine * getVIDYA (PlotLine *inSignal, int period, int volPeriod);
+    int dialog ();
 
   protected:
+    QString vpKey;
 };
 
 #endif

@@ -20,43 +20,159 @@
  */
 
 #include "MACD.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 MACD::MACD ()
 {
+  indicator = "MACD";
+  macdcKey = QObject::tr("MACD Color");
+  sigcKey = QObject::tr("Signal Color");
+  histcKey = QObject::tr("Histogram Color");
+  macdpKey = QObject::tr("MACD Plot");
+  sigpKey = QObject::tr("Signal Plot");
+  histpKey = QObject::tr("Histogram Plot");
+  macdlKey = QObject::tr("MACD Label");
+  siglKey = QObject::tr("Signal Label");
+  histlKey = QObject::tr("Histogram Label");
+  fpKey = QObject::tr("Fast Period");
+  spKey = QObject::tr("Slow Period");
+  sigpdKey = QObject::tr("Signal Period");
+
+  QString d;
+  d = "red";
+  settings.setData(macdcKey, d);
+
+  d = "yellow";
+  settings.setData(sigcKey, d);
+
+  d = "blue";
+  settings.setData(histcKey, d);
+
+  d = "Line";
+  settings.setData(macdpKey, d);
+
+  d = "Dash";
+  settings.setData(sigpKey, d);
+
+  d = "Histogram";
+  settings.setData(histpKey, d);
+
+  d = "MACD";
+  settings.setData(macdlKey, d);
+
+  d = "SIG";
+  settings.setData(siglKey, d);
+
+  d = "HIST";
+  settings.setData(histlKey, d);
+
+  d = "Close";
+  settings.setData(inputKey, d);
+
+  settings.setData(fpKey, 12);
+  settings.setData(spKey, 26);
+  settings.setData(sigpdKey, 9);
 }
 
-int MACD::calculate1 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int MACD::getIndicator (Indicator &ind, BarData *data)
 {
-  // INDICATOR,MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<SLOW_PERIOD>,<SIGNAL_PERIOD>
+  QString s;
+  settings.getData(inputKey, s);
+  PlotLine *in = data->getInput(data->getInputType(s));
+  if (! in)
+  {
+    qDebug() << indicator << "::calculate: input not found" << s;
+    return 1;
+  }
+
+  int fast = settings.getInt(fpKey);
+  int slow = settings.getInt(spKey);
+  int signal = settings.getInt(sigpdKey);
+
+  QList<PlotLine *> l;
+  int rc = getMACD(in, fast, slow, signal, l);
+  if (rc)
+  {
+    qDeleteAll(l);
+    delete in;
+    return 1;
+  }
+
+  // macd line
+  PlotLine *line = l.at(0);
+  settings.getData(macdcKey, s);
+  line->setColor(s);
+
+  settings.getData(macdpKey, s);
+  line->setType(s);
+
+  settings.getData(macdlKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  // signal line
+  line = l.at(1);
+  settings.getData(sigcKey, s);
+  line->setColor(s);
+
+  settings.getData(sigpKey, s);
+  line->setType(s);
+
+  settings.getData(siglKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  // hist line
+  line = l.at(2);
+  settings.getData(histcKey, s);
+  line->setColor(s);
+
+  settings.getData(histpKey, s);
+  line->setType(s);
+
+  settings.getData(histlKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  delete in;
+
+  return 0;
+}
+
+int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // INDICATOR,MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,
+  // <SLOW_PERIOD>,<SIGNAL_PERIOD>
 
   if (set.count() != 9)
   {
-    qDebug() << "MACD::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::calculate: duplicate name" << set[4];
     return 1;
   }
 
   tl = tlines.value(set[5]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[5];
+    qDebug() << indicator << "::calculate: duplicate name" << set[5];
     return 1;
   }
 
@@ -66,7 +182,7 @@ int MACD::calculate1 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
     in = data->getInput(data->getInputType(set[2]));
     if (! in)
     {
-      qDebug() << set[1] << "::calculate: input not found" << set[2];
+      qDebug() << indicator << "::calculate: input not found" << set[2];
       return 1;
     }
 
@@ -77,162 +193,56 @@ int MACD::calculate1 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   int fast = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::calculate: invalid fast period" << set[6];
+    qDebug() << indicator << "::calculate: invalid fast period" << set[6];
     return 1;
   }
 
   int slow = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::calculate: invalid slow period" << set[7];
+    qDebug() << indicator << "::calculate: invalid slow period" << set[7];
     return 1;
   }
 
   int signal = set[8].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::calculate: invalid signal period" << set[8];
+    qDebug() << indicator << "::calculate: invalid signal period" << set[8];
     return 1;
   }
 
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Real out2[in->getSize()];
-  TA_Real out3[in->getSize()];
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
-  TA_RetCode rc = TA_MACD(0, in->getSize() - 1, &input[0], fast, slow, signal, &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
-  if (rc != TA_SUCCESS)
+  QList<PlotLine *> l;
+  int rc = getMACD(in, fast, slow, signal, l);
+  if (rc)
   {
-    qDebug() << "MACD::calculate: TA-Lib error" << rc;
+    qDeleteAll(l);
     return 1;
   }
 
-  PlotLine *line = new PlotLine;
-  PlotLine *sig = new PlotLine;
-  PlotLine *hist = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-  {
-    line->append(out[loop]);
-    sig->append(out2[loop]);
-    hist->append(out3[loop]);
-  }
-
-  tlines.insert(set[3], line);
-  tlines.insert(set[4], sig);
-  tlines.insert(set[5], hist);
+  tlines.insert(set[3], l.at(0));
+  tlines.insert(set[4], l.at(1));
+  tlines.insert(set[5], l.at(2));
 
   return 0;
 }
 
-int MACD::calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList, BarData *data)
+int MACD::getMACD (PlotLine *in, int fast, int slow, int signal, QList<PlotLine *> &l)
 {
-  // INDICATOR,MACDEXT,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<FAST_MA_TYPE>,
-  // <SLOW_PERIOD>,<SLOW_MA_TYPE>,<SIGNAL_PERIOD>,<SIGNAL_MA_TYPE>
-
-  if (set.count() != 12)
-  {
-    qDebug() << "MACDEXT::calculate: invalid parm count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[3];
-    return 1;
-  }
-
-  tl = tlines.value(set[4]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[4];
-    return 1;
-  }
-
-  tl = tlines.value(set[5]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[5];
-    return 1;
-  }
-
-  PlotLine *in = tlines.value(set[2]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(set[2]));
-    if (! in)
-    {
-      qDebug() << set[1] << "::calculate: input not found" << set[2];
-      return 1;
-    }
-
-    tlines.insert(set[2], in);
-  }
-
-  bool ok;
-  int fast = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "MACDEXT::calculate: invalid fast period" << set[6];
-    return 1;
-  }
-
-  int fastma = maList.indexOf(set[7]);
-  if (fastma == -1)
-  {
-    qDebug() << "MACDEXT::calculate: invalid fast ma" << set[7];
-    return 1;
-  }
-
-  int slow = set[8].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "MACDEXT::calculate: invalid slow period" << set[8];
-    return 1;
-  }
-
-  int slowma = maList.indexOf(set[9]);
-  if (slowma == -1)
-  {
-    qDebug() << "MACDEXT::calculate: invalid slow ma" << set[9];
-    return 1;
-  }
-
-  int signal = set[10].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "MACDEXT::calculate: invalid signal period" << set[9];
-    return 1;
-  }
-
-  int signalma = maList.indexOf(set[11]);
-  if (signalma == -1)
-  {
-    qDebug() << "MACDEXT::calculate: invalid fast ma" << set[11];
-    return 1;
-  }
-
+  int size = in->getSize();
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Real out2[in->getSize()];
-  TA_Real out3[in->getSize()];
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Real out3[size];
   int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
+  for (loop = 0; loop < size; loop++)
     input[loop] = (TA_Real) in->getData(loop);
 
-  TA_RetCode rc = TA_MACDEXT(0, in->getSize() - 1, &input[0], fast, (TA_MAType) fastma,
-			     slow, (TA_MAType) slowma, signal, (TA_MAType) signalma,
-			     &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
+  TA_RetCode rc = TA_MACD(0, size - 1, &input[0], fast, slow, signal, &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "MACDEXT::calculate: TA-Lib error" << rc;
+    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
     return 1;
   }
 
@@ -246,96 +256,118 @@ int MACD::calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, QStr
     hist->append(out3[loop]);
   }
 
-  tlines.insert(set[3], line);
-  tlines.insert(set[4], sig);
-  tlines.insert(set[5], hist);
+  l.append(line);
+  l.append(sig);
+  l.append(hist);
 
   return 0;
 }
 
-int MACD::calculate3 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int MACD::dialog ()
 {
-  // INDICATOR,MACDFIX,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<SIGNAL_PERIOD>
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
 
-  if (set.count() != 7)
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(inputKey, d);
+  dialog->addComboItem(page, inputKey, inputList, d);
+
+  dialog->addIntItem(page, fpKey, settings.getInt(fpKey), 2, 100000);
+
+  dialog->addIntItem(page, spKey, settings.getInt(spKey), 2, 100000);
+
+  dialog->addIntItem(page, sigpdKey, settings.getInt(sigpdKey), 1, 100000);
+
+  page++;
+  k = QObject::tr("MACD");
+  dialog->addPage(page, k);
+
+  settings.getData(macdcKey, d);
+  dialog->addColorItem(page, macdcKey, d);
+
+  settings.getData(macdpKey, d);
+  dialog->addComboItem(page, macdpKey, plotList, d);
+
+  settings.getData(macdlKey, d);
+  dialog->addTextItem(page, macdlKey, d);
+
+  page++;
+  k = QObject::tr("Signal");
+  dialog->addPage(page, k);
+
+  settings.getData(sigcKey, d);
+  dialog->addColorItem(page, sigcKey, d);
+
+  settings.getData(sigpKey, d);
+  dialog->addComboItem(page, sigpKey, plotList, d);
+
+  settings.getData(siglKey, d);
+  dialog->addTextItem(page, siglKey, d);
+
+  page++;
+  k = QObject::tr("Hist");
+  dialog->addPage(page, k);
+
+  settings.getData(histcKey, d);
+  dialog->addColorItem(page, histcKey, d);
+
+  settings.getData(histpKey, d);
+  dialog->addComboItem(page, histpKey, plotList, d);
+
+  settings.getData(histlKey, d);
+  dialog->addTextItem(page, histlKey, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
   {
-    qDebug() << "MACDFIX::calculate: invalid parm count" << set.count();
-    return 1;
+    delete dialog;
+    return rc;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[3];
-    return 1;
-  }
+  dialog->getItem(macdcKey, d);
+  settings.setData(macdcKey, d);
 
-  tl = tlines.value(set[4]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[4];
-    return 1;
-  }
+  dialog->getItem(macdpKey, d);
+  settings.setData(macdpKey, d);
 
-  tl = tlines.value(set[5]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[5];
-    return 1;
-  }
+  dialog->getItem(macdlKey, d);
+  settings.setData(macdlKey, d);
 
-  PlotLine *in = tlines.value(set[2]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(set[2]));
-    if (! in)
-    {
-      qDebug() << set[1] << "::calculate: input not found" << set[2];
-      return 1;
-    }
+  dialog->getItem(sigcKey, d);
+  settings.setData(sigcKey, d);
 
-    tlines.insert(set[2], in);
-  }
+  dialog->getItem(sigpKey, d);
+  settings.setData(sigpKey, d);
 
-  bool ok;
-  int period = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "MACDFIX::calculate: invalid period" << set[6];
-    return 1;
-  }
+  dialog->getItem(siglKey, d);
+  settings.setData(siglKey, d);
 
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Real out2[in->getSize()];
-  TA_Real out3[in->getSize()];
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
+  dialog->getItem(histcKey, d);
+  settings.setData(histcKey, d);
 
-  TA_RetCode rc = TA_MACDFIX(0, in->getSize() - 1, &input[0], period, &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "MACDFIX::calculate: TA-Lib error" << rc;
-    return 1;
-  }
+  dialog->getItem(histpKey, d);
+  settings.setData(histpKey, d);
 
-  PlotLine *line = new PlotLine;
-  PlotLine *sig = new PlotLine;
-  PlotLine *hist = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-  {
-    line->append(out[loop]);
-    sig->append(out2[loop]);
-    hist->append(out3[loop]);
-  }
+  dialog->getItem(histlKey, d);
+  settings.setData(histlKey, d);
 
-  tlines.insert(set[3], line);
-  tlines.insert(set[4], sig);
-  tlines.insert(set[5], hist);
+  dialog->getItem(inputKey, d);
+  settings.setData(inputKey, d);
 
-  return 0;
+  dialog->getItem(fpKey, d);
+  settings.setData(fpKey, d);
+
+  dialog->getItem(spKey, d);
+  settings.setData(spKey, d);
+
+  dialog->getItem(sigpdKey, d);
+  settings.setData(sigpdKey, d);
+
+  delete dialog;
+  return rc;
 }
 

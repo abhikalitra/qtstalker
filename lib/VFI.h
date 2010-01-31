@@ -22,20 +22,16 @@
 #ifndef VFI_HPP
 #define VFI_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class VFI
+class VFI : public IndicatorBase
 {
   public:
     VFI ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getVFI (BarData *data, int period);
+    int dialog ();
 };
 
 #endif

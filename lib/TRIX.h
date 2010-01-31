@@ -22,20 +22,16 @@
 #ifndef TRIX_HPP
 #define TRIX_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class TRIX
+class TRIX : public IndicatorBase
 {
   public:
     TRIX ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getTRIX (PlotLine *in, int period);
+    int dialog ();
 };
 
 #endif

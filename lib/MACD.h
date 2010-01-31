@@ -22,22 +22,32 @@
 #ifndef MACD_HPP
 #define MACD_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
+#include <QList>
 
-
-class MACD
+class MACD : public IndicatorBase
 {
   public:
     MACD ();
-    int calculate1 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList, BarData *data);
-    int calculate3 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getMACD (PlotLine *in, int fast, int slow, int signal, QList<PlotLine *> &l);
+    int dialog ();
 
   protected:
+    QString macdcKey;
+    QString sigcKey;
+    QString histcKey;
+    QString macdpKey;
+    QString sigpKey;
+    QString histpKey;
+    QString macdlKey;
+    QString siglKey;
+    QString histlKey;
+    QString fpKey;
+    QString spKey;
+    QString sigpdKey;
 };
 
 #endif

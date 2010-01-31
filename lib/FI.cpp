@@ -26,33 +26,67 @@
 
 FI::FI ()
 {
+  indicator = "FI";
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
 }
 
-int FI::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int FI::getIndicator (Indicator &ind, BarData *data)
 {
-  // INDICATOR,FI,NAME,PERIOD
+  PlotLine *line = getFI(data);
+  if (! line)
+    return 1;
 
-  if (set.count() != 4)
+  QString s;
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // INDICATOR,FI,NAME
+
+  if (set.count() != 3)
   {
-    qDebug() << "FI::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
-  bool ok;
-  int period = set[3].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "FI::calculate: invalid fast period parm" << set[3];
+  PlotLine *line = getFI(data);
+  if (! line)
     return 1;
-  }
 
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * FI::getFI (BarData *data)
+{
   PlotLine *fi = new PlotLine();
   int loop;
   double force = 0;
@@ -63,8 +97,45 @@ int FI::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     fi->append(force);
   }
 
-  tlines.insert(set[2], fi);
+  return fi;
+}
 
-  return 0;
+int FI::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  dialog->addColorItem(page, colorKey, d);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
+
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
+
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
+
+  delete dialog;
+  return rc;
 }
 

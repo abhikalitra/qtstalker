@@ -61,6 +61,7 @@ class DataBase
     void getIndicatorList (QStringList &);
     void getActiveIndicatorList (QStringList &);
     void getSearchIndicatorList (QString &pattern, QStringList &list);
+    void setIndicatorEnable (Indicator &);
 
     // chart object functions
     void deleteChartObjects (QString &symbol);

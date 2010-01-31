@@ -22,21 +22,16 @@
 #ifndef TRANGE_HPP
 #define TRANGE_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class TRANGE
+class TRANGE : public IndicatorBase
 {
   public:
     TRANGE ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data); // TR
-    int calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data); // ATR
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getTRANGE (BarData *data);
+    int dialog ();
 };
 
 #endif

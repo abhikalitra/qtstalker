@@ -37,25 +37,67 @@
 
 THERM::THERM ()
 {
+  indicator = "THERM";
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
 }
 
-int THERM::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int THERM::getIndicator (Indicator &ind, BarData *data)
+{
+  PlotLine *line = getTHERM(data);
+  if (! line)
+    return 1;
+
+  QString s;
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int THERM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,THERM,<NAME>
 
   if (set.count() != 3)
   {
-    qDebug() << "THERM::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
+  PlotLine *line = getTHERM(data);
+  if (! line)
+    return 1;
+
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * THERM::getTHERM (BarData *data)
+{
   PlotLine *therm = new PlotLine();
   int loop;
   double thermometer = 0;
@@ -72,8 +114,45 @@ int THERM::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
     therm->append(thermometer);
   }
 
-  tlines.insert(set[2], therm);
+  return therm;
+}
 
-  return 0;
+int THERM::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  dialog->addColorItem(page, colorKey, d);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
+
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
+
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
+
+  delete dialog;
+  return rc;
 }
 

@@ -22,20 +22,16 @@
 #ifndef LINEARREG_SLOPE_HPP
 #define LINEARREG_SLOPE_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class LINEARREG_SLOPE
+class LINEARREG_SLOPE : public IndicatorBase
 {
   public:
     LINEARREG_SLOPE ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getLINEARREG_SLOPE (PlotLine *in, int period);
+    int dialog ();
 };
 
 #endif

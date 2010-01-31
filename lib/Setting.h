@@ -36,6 +36,8 @@ class Setting
     int getInt (int);
     void setData (QString &, QString &);
     void setData (int, int);
+    void setData (QString &, int);
+    void setData (QString &, double);
     void getKeyList (QStringList &);
     void remove (QString &);
     void getString (QString &);
@@ -43,7 +45,7 @@ class Setting
     void clear ();
     int count ();
     void copy (Setting *);
-    
+
   protected:
     QHash<QString, QString> dict;
 };

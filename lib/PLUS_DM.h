@@ -22,20 +22,16 @@
 #ifndef PLUS_DM_HPP
 #define PLUS_DM_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class PLUS_DM
+class PLUS_DM : public IndicatorBase
 {
   public:
     PLUS_DM ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getPLUS_DM (BarData *data, int period);
+    int dialog ();
 };
 
 #endif

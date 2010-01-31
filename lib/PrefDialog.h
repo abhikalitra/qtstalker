@@ -24,6 +24,7 @@
 
 #include "ColorButton.h"
 #include "FontButton.h"
+#include "Indicator.h"
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -44,6 +45,7 @@
 #include <QString>
 #include <QLabel>
 #include <QGridLayout>
+#include <QList>
 
 
 class PrefDialog : public QDialog
@@ -53,36 +55,38 @@ class PrefDialog : public QDialog
   public:
     PrefDialog (QWidget *);
     PrefDialog ();
-    ~PrefDialog ();
     void init ();
-    void addColorItem (QString &, QColor &);
-    void addColorPrefItem (QString &, QColor &);
+    void addPage (int page, QString &title);
+    void addColorItem (int page, QString &name, QString &color);
+    void addColorItem (int page, QString &, QColor &);
+    void addColorPrefItem (int page, QString &, QColor &);
     void getColor (QString &, QColor &);
-    void addDoubleItem (QString &, double, double, double);
-    void addDoubleItem (QString &, double);
+    void addDoubleItem (int page, QString &, double, double, double);
+    void addDoubleItem (int page, QString &, double);
     double getDouble (QString &);
-    void addIntItem (QString &, int);
-    void addIntItem (QString &, int, int, int);
+    void addIntItem (int page, QString &, int);
+    void addIntItem (int page, QString &, int, int, int);
     int getInt (QString &);
-    void addCheckItem (QString &, bool);
-    void addCheckItem (QString &, QString &);
+    void addCheckItem (int page, QString &, bool);
+    void addCheckItem (int page, QString &, QString &);
     bool getCheck (QString &);
     void getCheckString (QString &, QString &);
-    void addFontItem (QString &, QFont &);
+    void addFontItem (int page, QString &, QFont &);
     void getFont (QString &, QFont &);
-    void addTextItem (QString &, QString &);
+    void addTextItem (int page, QString &, QString &);
     void getText (QString &, QString &);
-    void addComboItem (QString &, QStringList &, QString &);
-    void addComboItem (QString &, QStringList &, int);
+    void addComboItem (int page, QString &, QStringList &, QString &);
+    void addComboItem (int page, QString &, QStringList &, int);
     void getCombo (QString &, QString &);
     int getComboIndex (QString &);
     QComboBox * getComboWidget (QString &);
-    void addDateItem (QString &, QDateTime &);
+    void addDateItem (int page, QString &, QDateTime &);
     void getDate (QString &, QDateTime &);
     void getItem (QString &, QString &);
-    void addTimeItem (QString &, QDateTime &);
+    void addTimeItem (int page, QString &, QDateTime &);
     void getTime (QString &, QDateTime &);
-    
+
+
   public slots:
 
   private:
@@ -96,8 +100,10 @@ class PrefDialog : public QDialog
     QHash<QString, QDateEdit *> dateList;
     QHash<QString, QLabel *> labelList;
     QHash<QString, QTimeEdit *> timeList;
+    QHash<int, QGridLayout *> gridList;
     QDialogButtonBox *buttonBox;
     QGridLayout *grid;
+    QTabWidget *tabs;
 };
 
 #endif

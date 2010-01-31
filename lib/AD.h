@@ -22,21 +22,16 @@
 #ifndef AD_HPP
 #define AD_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class AD
+class AD : public IndicatorBase
 {
   public:
     AD ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data); // AD
-    int calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data); // ADOSC
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getAD (BarData *data);
+    int dialog ();
 };
 
 #endif

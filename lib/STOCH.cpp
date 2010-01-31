@@ -20,37 +20,125 @@
  */
 
 #include "STOCH.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 STOCH::STOCH ()
 {
+  indicator = "STOCH";
+  skcKey = QObject::tr("SlowK Color");
+  sdcKey = QObject::tr("SlowD Color");
+  skpKey = QObject::tr("SlowK Plot");
+  sdpKey = QObject::tr("SlowD Plot");
+  sklKey = QObject::tr("SlowK Label");
+  sdlKey = QObject::tr("SlowD Label");
+  fkpKey = QObject::tr("FastK Period");
+  skpdKey = QObject::tr("SlowK Period");
+  sdpdKey = QObject::tr("SlowD Period");
+  skmaKey = QObject::tr("SlowK MA");
+  sdmaKey = QObject::tr("SlowD MA");
+
+  QString d;
+  d = "red";
+  settings.setData(skcKey, d);
+
+  d = "yellow";
+  settings.setData(sdcKey, d);
+
+  d = "Line";
+  settings.setData(skpKey, d);
+
+  d = "Dash";
+  settings.setData(sdpKey, d);
+
+  d = "K";
+  settings.setData(sklKey, d);
+
+  d = "D";
+  settings.setData(sdlKey, d);
+
+  settings.setData(fkpKey, 5);
+  settings.setData(skpdKey, 3);
+  settings.setData(sdpdKey, 3);
+
+  d = "SMA";
+  settings.setData(skmaKey, d);
+  settings.setData(sdmaKey, d);
 }
 
-int STOCH::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList, BarData *data)
+int STOCH::getIndicator (Indicator &ind, BarData *data)
+{
+  int fastk = settings.getInt(fkpKey);
+  int slowk = settings.getInt(skpdKey);
+  int slowd = settings.getInt(sdpdKey);
+
+  QString s;
+  settings.getData(skmaKey, s);
+  int skma = maList.indexOf(s);
+
+  settings.getData(sdmaKey, s);
+  int sdma = maList.indexOf(s);
+
+  QList<PlotLine *> l;
+  int rc = getSTOCH(data, fastk, slowk, skma, slowd, sdma, l);
+  if (rc || l.count() != 2)
+  {
+    qDeleteAll(l);
+    return 1;
+  }
+
+  // slowk line
+  PlotLine *line = l.at(0);
+  settings.getData(skcKey, s);
+  line->setColor(s);
+
+  settings.getData(skpKey, s);
+  line->setType(s);
+
+  settings.getData(sklKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  // slowd line
+  line = l.at(1);
+  settings.getData(sdcKey, s);
+  line->setColor(s);
+
+  settings.getData(sdpKey, s);
+  line->setType(s);
+
+  settings.getData(sdlKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,STOCH,<NAME_SLOWK>,<NAME_SLOWD>,<FASTK_PERIOD>,<SLOWK_PERIOD>,<SLOWK_MA_TYPE>,
   // <SLOWD_PERIOD>,<SLOWD_MA_TYPE>
 
   if (set.count() != 9)
   {
-    qDebug() << "STOCH::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
   tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
@@ -58,40 +146,55 @@ int STOCH::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStr
   int fkp = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH::calculate: invalid fastk period" << set[4];
+    qDebug() << indicator << "::calculate: invalid fastk period" << set[4];
     return 1;
   }
 
   int skp = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH::calculate: invalid slowk period" << set[5];
+    qDebug() << indicator << "::calculate: invalid slowk period" << set[5];
     return 1;
   }
 
   int kma = maList.indexOf(set[6]);
   if (kma == -1)
   {
-    qDebug() << "STOCH::calculate: invalid slowk ma" << set[6];
+    qDebug() << indicator << "::calculate: invalid slowk ma" << set[6];
     return 1;
   }
 
   int sdp = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH::calculate: invalid slowd period" << set[7];
+    qDebug() << indicator << "::calculate: invalid slowd period" << set[7];
     return 1;
   }
 
   int dma = maList.indexOf(set[8]);
   if (dma == -1)
   {
-    qDebug() << "STOCH::calculate: invalid slowd ma" << set[8];
+    qDebug() << indicator << "::calculate: invalid slowd ma" << set[8];
     return 1;
   }
 
-  int size = data->count();
+  QList<PlotLine *> l;
+  int rc = getSTOCH(data, fkp, skp, kma, sdp, dma, l);
+  if (rc || l.count() != 2)
+  {
+    qDeleteAll(l);
+    return 1;
+  }
 
+  tlines.insert(set[2], l.at(0));
+  tlines.insert(set[3], l.at(1));
+
+  return 0;
+}
+
+int STOCH::getSTOCH (BarData *data, int fkp, int skp, int skma, int sdp, int sdma, QList<PlotLine *> &l)
+{
+  int size = data->count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -107,10 +210,10 @@ int STOCH::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStr
 
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_RetCode rc = TA_STOCH(0, size - 1, &high[0], &low[0], &close[0], fkp, skp, (TA_MAType) kma, sdp, (TA_MAType) dma, &outBeg, &outNb, &out[0], &out2[0]);
+  TA_RetCode rc = TA_STOCH(0, size - 1, &high[0], &low[0], &close[0], fkp, skp, (TA_MAType) skma, sdp, (TA_MAType) sdma, &outBeg, &outNb, &out[0], &out2[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "STOCH::calculate: TA-Lib error" << rc;
+    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
     return 1;
   }
 
@@ -122,184 +225,97 @@ int STOCH::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStr
     line2->append(out2[loop]);
   }
 
-  tlines.insert(set[2], line);
-  tlines.insert(set[3], line2);
+  l.append(line);
+  l.append(line2);
 
   return 0;
 }
 
-int STOCH::calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList, BarData *data)
+int STOCH::dialog ()
 {
-  // INDICATOR,STOCHF,<NAME_FASTK>,<NAME_FASTD>,<FASTK_PERIOD>,<FASTD_PERIOD>,<FASTD_MA_TYPE>
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
 
-  if (set.count() != 7)
+  k = QObject::tr("SlowK");
+  dialog->addPage(page, k);
+
+  settings.getData(skcKey, d);
+  dialog->addColorItem(page, skcKey, d);
+
+  settings.getData(skpKey, d);
+  dialog->addComboItem(page, skpKey, plotList, d);
+
+  settings.getData(sklKey, d);
+  dialog->addTextItem(page, sklKey, d);
+
+  dialog->addIntItem(page, fkpKey, settings.getInt(fkpKey), 1, 100000);
+
+  dialog->addIntItem(page, skpdKey, settings.getInt(skpdKey), 1, 100000);
+
+  settings.getData(skmaKey, d);
+  dialog->addComboItem(page, skmaKey, maList, d);
+
+  page++;
+  k = QObject::tr("SlowD");
+  dialog->addPage(page, k);
+
+  settings.getData(sdcKey, d);
+  dialog->addColorItem(page, sdcKey, d);
+
+  settings.getData(sdpKey, d);
+  dialog->addComboItem(page, sdpKey, plotList, d);
+
+  settings.getData(sdlKey, d);
+  dialog->addTextItem(page, sdlKey, d);
+
+  dialog->addIntItem(page, sdpdKey, settings.getInt(sdpdKey), 1, 100000);
+
+  settings.getData(sdmaKey, d);
+  dialog->addComboItem(page, sdmaKey, maList, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
   {
-    qDebug() << "STOCHF::calculate: invalid parm count" << set.count();
-    return 1;
+    delete dialog;
+    return rc;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
-    return 1;
-  }
+  dialog->getItem(skcKey, d);
+  settings.setData(skcKey, d);
 
-  tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[3];
-    return 1;
-  }
+  dialog->getItem(skpKey, d);
+  settings.setData(skpKey, d);
 
-  bool ok;
-  int fkp = set[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "STOCHF::calculate: invalid fastk period" << set[4];
-    return 1;
-  }
+  dialog->getItem(sklKey, d);
+  settings.setData(sklKey, d);
 
-  int fdp = set[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "STOCHF::calculate: invalid fastd period" << set[5];
-    return 1;
-  }
+  dialog->getItem(sdcKey, d);
+  settings.setData(sdcKey, d);
 
-  int ma = maList.indexOf(set[6]);
-  if (ma == -1)
-  {
-    qDebug() << "STOCH::calculate: invalid ma" << set[6];
-    return 1;
-  }
+  dialog->getItem(sdpKey, d);
+  settings.setData(sdpKey, d);
 
-  int size = data->count();
+  dialog->getItem(sdlKey, d);
+  settings.setData(sdlKey, d);
 
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
-  }
+  dialog->getItem(fkpKey, d);
+  settings.setData(fkpKey, d);
 
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_STOCHF(0, size - 1, &high[0], &low[0], &close[0], fkp, fdp, (TA_MAType) ma, &outBeg, &outNb, &out[0], &out2[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "STOCHF::calculate: TA-Lib error" << rc;
-    return 1;
-  }
+  dialog->getItem(skpdKey, d);
+  settings.setData(skpdKey, d);
 
-  PlotLine *line = new PlotLine;
-  PlotLine *line2 = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-  {
-    line->append(out[loop]);
-    line2->append(out2[loop]);
-  }
+  dialog->getItem(sdpdKey, d);
+  settings.setData(sdpdKey, d);
 
-  tlines.insert(set[2], line);
-  tlines.insert(set[3], line2);
+  dialog->getItem(skmaKey, d);
+  settings.setData(skmaKey, d);
 
-  return 0;
-}
+  dialog->getItem(sdmaKey, d);
+  settings.setData(sdmaKey, d);
 
-int STOCH::calculate3 (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList)
-{
-  // INDICATOR,STOCHRSI,<INPUT>,<NAME_FASTK>,<NAME_FASTD>,<PERIOD>,<FASTK_PERIOD>,<FASTD_PERIOD>,
-  // <FASTD_MA_TYPE>
-
-  if (set.count() != 9)
-  {
-    qDebug() << "STOCHRSI::calculate: invalid parm count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[3];
-    return 1;
-  }
-
-  tl = tlines.value(set[4]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[4];
-    return 1;
-  }
-
-  PlotLine *in = tlines.value(set[2]);
-  if (! in)
-  {
-    qDebug() << "STOCHRSI::calculate: input error" << set[2];
-    return 1;
-  }
-
-  bool ok;
-  int period = set[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "STOCHRSI::calculate: invalid period" << set[5];
-    return 1;
-  }
-
-  int fkp = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "STOCHRSI::calculate: invalid fastkk period" << set[6];
-    return 1;
-  }
-
-  int fdp = set[7].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "STOCHRSI::calculate: invalid fastd period" << set[7];
-    return 1;
-  }
-
-  int ma = maList.indexOf(set[8]);
-  if (ma == -1)
-  {
-    qDebug() << "STOCHRSI::calculate: invalid ma parm" << set[8];
-    return 1;
-  }
-
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
-  TA_Real out2[in->getSize()];
-  int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_STOCHRSI(0, in->getSize() - 1, &input[0], period, fkp, fdp, (TA_MAType) ma, &outBeg, &outNb, &out[0], &out2[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "STOCHRSI::calculate: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  PlotLine *line2 = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-  {
-    line->append(out[loop]);
-    line2->append(out2[loop]);
-  }
-
-  tlines.insert(set[3], line);
-  tlines.insert(set[4], line2);
-
-  return 0;
+  delete dialog;
+  return rc;
 }
 

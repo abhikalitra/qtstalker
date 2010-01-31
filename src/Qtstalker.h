@@ -139,7 +139,6 @@ class QtstalkerApp : public QMainWindow
     void cmpsBtn15Clicked();
     void cmpsBtn5Clicked();
     void slotAddRecentChart (QString);
-    void slotScriptDone ();
     void slotZoomIn ();
     void slotZoomOut ();
     void slotPlotZoom (int, int);
@@ -147,8 +146,8 @@ class QtstalkerApp : public QMainWindow
     void slotRefreshChart (bool);
     void slotReloadChart ();
     void slotRefreshUpdated (int);
-    void slotScript ();
-    void slotScriptDone2 ();
+//    void slotScript ();
+//    void slotScriptDone ();
 
   protected:
     void closeEvent(QCloseEvent *event);
@@ -172,10 +171,7 @@ class QtstalkerApp : public QMainWindow
     QSpinBox *barCount;
     QSlider *slider;
     QComboBox *recentCharts;
-    ExScript *script;
-    ExScript *script2;
-    QStringList indicatorList;
-    int ilPos;
+//    ExScript *script;
     QList<Setting> zoomList;
     int zoomPos;
     QTimer *refreshTimer;

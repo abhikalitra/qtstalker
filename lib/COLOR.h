@@ -22,20 +22,13 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class COLOR
+class COLOR : public IndicatorBase
 {
   public:
     COLOR ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
 };
 
 #endif

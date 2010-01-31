@@ -22,20 +22,16 @@
 #ifndef MINUS_DI_HPP
 #define MINUS_DI_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class MINUS_DI
+class MINUS_DI : public IndicatorBase
 {
   public:
     MINUS_DI ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getMINUS_DI (BarData *data, int period);
+    int dialog ();
 };
 
 #endif

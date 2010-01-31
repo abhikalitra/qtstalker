@@ -22,20 +22,16 @@
 #ifndef MIDPRICE_HPP
 #define MIDPRICE_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class MIDPRICE
+class MIDPRICE : public IndicatorBase
 {
   public:
     MIDPRICE ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getMIDPRICE (BarData *data, int period);
+    int dialog ();
 };
 
 #endif

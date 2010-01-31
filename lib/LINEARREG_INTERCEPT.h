@@ -22,20 +22,16 @@
 #ifndef LINEARREG_INTERCEPT_HPP
 #define LINEARREG_INTERCEPT_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class LINEARREG_INTERCEPT
+class LINEARREG_INTERCEPT : public IndicatorBase
 {
   public:
     LINEARREG_INTERCEPT ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getLINEARREG_INTERCEPT (PlotLine *in, int period);
+    int dialog ();
 };
 
 #endif

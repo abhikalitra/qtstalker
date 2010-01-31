@@ -30,22 +30,77 @@
 
 VIDYA::VIDYA ()
 {
+  indicator = "VIDYA";
+  vpKey = QObject::tr("Volume Period");
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
+
+  d = "Close";
+  settings.setData(inputKey, d);
+
+  settings.setData(periodKey, 14);
+
+  settings.setData(vpKey, 10);
 }
 
-int VIDYA::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int VIDYA::getIndicator (Indicator &ind, BarData *data)
+{
+  QString s;
+  settings.getData(inputKey, s);
+  PlotLine *in = data->getInput(data->getInputType(s));
+  if (! in)
+  {
+    qDebug() << indicator << "::calculate: input not found" << s;
+    return 1;
+  }
+
+  int period = settings.getInt(periodKey);
+  int volPeriod = settings.getInt(vpKey);
+
+  PlotLine *line = getVIDYA(in, period, volPeriod);
+  if (! line)
+  {
+    delete in;
+    return 1;
+  }
+
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  delete in;
+
+  return 0;
+}
+
+int VIDYA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,VIDYA,<NAME>,<INPUT>,<PERIOD>,<VOLUME_PERIOD>
 
   if (set.count() != 6)
   {
-    qDebug() << "VIDYA::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
@@ -55,7 +110,7 @@ int VIDYA::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
     inSignal = data->getInput(data->getInputType(set[3]));
     if (! inSignal)
     {
-      qDebug() << set[1] << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[3];
       return 1;
     }
 
@@ -66,60 +121,22 @@ int VIDYA::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "VIDYA::calculate: invalid fast period parm" << set[4];
+    qDebug() << indicator << "::calculate: invalid fast period settings" << set[4];
     return 1;
   }
 
   int volPeriod = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "VIDYA::calculate: invalid fast period parm" << set[5];
+    qDebug() << indicator << "::calculate: invalid fast period settings" << set[5];
     return 1;
   }
 
-  PlotLine *out = new PlotLine;
-  PlotLine *cmo = new PlotLine;
+  PlotLine *line = getVIDYA(inSignal, period, volPeriod);
+  if (! line)
+    return 1;
 
-  calcCMO(cmo, inSignal, volPeriod);
-
-  int i = 0;
-  int loop = (int)inSignal->getSize();
-
-  QVector<double> *inSeries = new QVector<double>(loop);
-  inSeries->fill(0.0);
-  QVector<double> *offset = new QVector<double>(loop);
-  offset->fill(0.0);
-  QVector<double> *absCmo = new QVector<double>(loop);
-  absCmo->fill(0.0);
-  QVector<double> *vidya = new QVector<double>(loop);
-  vidya->fill(0.0);
-
-  double c = 2 / (double) period + 1;
-
-  for ( i = 0; i < loop; i++)
-    (*inSeries)[i] = inSignal->getData(i);
-
-  int index = inSeries->size() -1;
-  for (i = cmo->getSize() -1; i >= 0; i--)
-  {
-    (*absCmo)[index] = fabs(cmo->getData(i) / 100);
-    index--;
-  }
-
-  for (i = volPeriod + period; i < (int)inSeries->size(); i++)		// period safty
-  {
-    (*vidya)[i] = ( inSeries->at(i) * c * absCmo->at(i) ) + ( (1 - absCmo->at(i) * c) * vidya->at(i-1) );
-    //!  (Price*Const*AbsCMO) + ((1-AbsCMO*Const)*VIDYA[1]),Price);
-    out->append(vidya->at(i));
-  }
-
-  delete inSeries;
-  delete offset;
-  delete absCmo;
-  delete vidya;
-  delete cmo;
-
-  tlines.insert(set[2], out);
+  tlines.insert(set[2], line);
 
   return 0;
 }
@@ -206,5 +223,107 @@ void VIDYA::calcCMO (PlotLine *outSignal, PlotLine *inSignal, int iPeriod)
   delete cmoUp;
   delete cmoDown;
   delete rawCmo;
+}
+
+PlotLine * VIDYA::getVIDYA (PlotLine *inSignal, int period, int volPeriod)
+{
+  PlotLine *out = new PlotLine;
+  PlotLine *cmo = new PlotLine;
+
+  calcCMO(cmo, inSignal, volPeriod);
+
+  int i = 0;
+  int loop = (int)inSignal->getSize();
+
+  QVector<double> *inSeries = new QVector<double>(loop);
+  inSeries->fill(0.0);
+  QVector<double> *offset = new QVector<double>(loop);
+  offset->fill(0.0);
+  QVector<double> *absCmo = new QVector<double>(loop);
+  absCmo->fill(0.0);
+  QVector<double> *vidya = new QVector<double>(loop);
+  vidya->fill(0.0);
+
+  double c = 2 / (double) period + 1;
+
+  for ( i = 0; i < loop; i++)
+    (*inSeries)[i] = inSignal->getData(i);
+
+  int index = inSeries->size() -1;
+  for (i = cmo->getSize() -1; i >= 0; i--)
+  {
+    (*absCmo)[index] = fabs(cmo->getData(i) / 100);
+    index--;
+  }
+
+  for (i = volPeriod + period; i < (int)inSeries->size(); i++)		// period safty
+  {
+    (*vidya)[i] = ( inSeries->at(i) * c * absCmo->at(i) ) + ( (1 - absCmo->at(i) * c) * vidya->at(i-1) );
+    //!  (Price*Const*AbsCMO) + ((1-AbsCMO*Const)*VIDYA[1]),Price);
+    out->append(vidya->at(i));
+  }
+
+  delete inSeries;
+  delete offset;
+  delete absCmo;
+  delete vidya;
+  delete cmo;
+
+  return out;
+}
+
+int VIDYA::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  dialog->addColorItem(page, colorKey, d);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  settings.getData(inputKey, d);
+  dialog->addComboItem(page, inputKey, inputList, d);
+
+  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
+
+  dialog->addIntItem(page, vpKey, settings.getInt(vpKey), 1, 100000);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
+
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
+
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
+
+  dialog->getItem(inputKey, d);
+  settings.setData(inputKey, d);
+
+  dialog->getItem(periodKey, d);
+  settings.setData(periodKey, d);
+
+  dialog->getItem(vpKey, d);
+  settings.setData(vpKey, d);
+
+  delete dialog;
+  return rc;
 }
 

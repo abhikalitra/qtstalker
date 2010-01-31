@@ -27,22 +27,57 @@
 
 VFI::VFI ()
 {
+  indicator = "VFI";
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
+
+  settings.setData(periodKey, 100);
 }
 
-int VFI::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int VFI::getIndicator (Indicator &ind, BarData *data)
+{
+  int period = settings.getInt(periodKey);
+
+  PlotLine *line = getVFI(data, period);
+  if (! line)
+    return 1;
+
+  QString s;
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int VFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,VFI,<NAME>,<PERIOD>
 
   if (set.count() != 4)
   {
-    qDebug() << "VFI::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
@@ -50,10 +85,21 @@ int VFI::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   int period = set[3].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "VFI::calculate: invalid period" << set[3];
+    qDebug() << indicator << "::calculate: invalid period" << set[3];
     return 1;
   }
 
+  PlotLine *line = getVFI(data, period);
+  if (! line)
+    return 1;
+
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * VFI::getVFI (BarData *data, int period)
+{
   PlotLine *vfi = new PlotLine();
   int loop;
   for (loop = period; loop < (int) data->count(); loop++)
@@ -105,8 +151,50 @@ int VFI::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
     vfi->append(t);
   }
 
-  tlines.insert(set[2], vfi);
+  return vfi;
+}
 
-  return 0;
+int VFI::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  dialog->addColorItem(page, colorKey, d);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
+
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
+
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
+
+  dialog->getItem(periodKey, d);
+  settings.setData(periodKey, d);
+
+  delete dialog;
+  return rc;
 }
 

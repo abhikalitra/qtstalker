@@ -22,20 +22,16 @@
 #ifndef DEMA_HPP
 #define DEMA_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class DEMA
+class DEMA : public IndicatorBase
 {
   public:
     DEMA ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getDEMA (PlotLine *in, int period);
+    int dialog ();
 };
 
 #endif

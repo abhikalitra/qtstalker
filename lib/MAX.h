@@ -22,20 +22,16 @@
 #ifndef MAX_HPP
 #define MAX_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class MAX
+class MAX : public IndicatorBase
 {
   public:
     MAX ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getMAX (PlotLine *in, int period);
+    int dialog ();
 };
 
 #endif

@@ -1,0 +1,56 @@
+/*
+ *  Qtstalker stock charter
+ *
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  USA.
+ */
+
+#ifndef MACDEXT_HPP
+#define MACDEXT_HPP
+
+#include "IndicatorBase.h"
+
+#include <QList>
+
+class MACDEXT : public IndicatorBase
+{
+  public:
+    MACDEXT ();
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getMACDEXT (PlotLine *in, int fast, int fma, int slow, int sma, int signal, int sigma, QList<PlotLine *> &l);
+    int dialog ();
+
+  protected:
+    QString macdcKey;
+    QString sigcKey;
+    QString histcKey;
+    QString macdpKey;
+    QString sigpKey;
+    QString histpKey;
+    QString macdlKey;
+    QString siglKey;
+    QString histlKey;
+    QString fpKey;
+    QString spKey;
+    QString sigpdKey;
+    QString fmaKey;
+    QString smaKey;
+    QString sigmaKey;
+};
+
+#endif

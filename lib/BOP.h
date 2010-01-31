@@ -22,20 +22,16 @@
 #ifndef BOP_HPP
 #define BOP_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class BOP
+class BOP : public IndicatorBase
 {
   public:
     BOP ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getBOP (BarData *data);
+    int dialog ();
 };
 
 #endif

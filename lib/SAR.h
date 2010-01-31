@@ -22,21 +22,20 @@
 #ifndef SAR_HPP
 #define SAR_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class SAR
+class SAR : public IndicatorBase
 {
   public:
     SAR ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getSAR (BarData *data, double accel, double max);
+    int dialog ();
 
   protected:
+    QString accelKey;
+    QString maxKey;
 };
 
 #endif

@@ -54,7 +54,7 @@ class ExScript : public QObject
     ~ExScript ();
     void clear ();
     void setBarData (BarData *d);
-    void calculate (QString &command);
+    int calculate (QString &command);
     void getLines (QList<PlotLine *> &);
 
   public slots:

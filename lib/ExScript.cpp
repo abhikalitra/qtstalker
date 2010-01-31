@@ -20,13 +20,13 @@
  */
 
 #include "ExScript.h"
-#include "ta_libc.h"
 #include "DataBase.h"
 #include "SCGetIndicator.h"
 #include "SCSetIndicator.h"
 #include "SCPlot.h"
 #include "SCSymbolList.h"
-#include "SCIndicator.h"
+#include "IndicatorFactory.h"
+#include "IndicatorBase.h"
 
 #include <QByteArray>
 #include <QtDebug>
@@ -37,9 +37,9 @@ ExScript::ExScript ()
   proc = 0;
   data = 0;
 
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("TALIB::setDefaults:error on TA_Initialize");
+//  TA_RetCode rc = TA_Initialize();
+//  if (rc != TA_SUCCESS)
+//    qDebug("TALIB::setDefaults:error on TA_Initialize");
 
   functionList << "INDICATOR" << "GET_INDICATOR" << "SET_INDICATOR" << "PLOT";
   functionList << "SYMBOL_LIST";
@@ -67,7 +67,7 @@ void ExScript::setBarData (BarData *d)
   data = d;
 }
 
-void ExScript::calculate (QString &command)
+int ExScript::calculate (QString &command)
 {
   // clean up if needed
   clear();
@@ -85,8 +85,17 @@ void ExScript::calculate (QString &command)
   {
     qDebug() << "ExScript::calculate: error starting script...timed out";
     clear();
-    return;
+    return 1;
   }
+
+  if (! proc->waitForFinished(30000))
+  {
+    qDebug() << "ExScript::calculate: script error";
+    clear();
+    return 1;
+  }
+
+  return 0;
 }
 
 void ExScript::done (int, QProcess::ExitStatus)
@@ -113,11 +122,19 @@ void ExScript::readFromStdout ()
       if (! data)
         break;
 
-      SCIndicator sc;
-      int rc = sc.calculate(l, tlines, data);
+      IndicatorFactory fac;
+      IndicatorBase *ib = fac.getFunction(l[1]);
+      if (! ib)
+      {
+        proc->write("1\n");
+        break;
+      }
+
+      int rc = ib->getCUS(l, tlines, data);
       QByteArray ba;
       ba.append(QString::number(rc) + '\n');
       proc->write(ba);
+      delete ib;
       break;
     }
     case GET_INDICATOR:

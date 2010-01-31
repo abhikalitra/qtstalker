@@ -20,36 +20,163 @@
  */
 
 #include "CDL.h"
-#include "SCIndicator.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 CDL::CDL ()
 {
+  penKey = QObject::tr("Penetration");
+  methodKey = QObject::tr("Method");
+
+  methodList << "2CROWS";
+  methodList << "3BLACKCROWS";
+  methodList << "3INSIDE";
+  methodList << "3LINESTRIKE";
+  methodList << "3OUTSIDE";
+  methodList << "3STARSINSOUTH";
+  methodList << "3WHITESOLDIERS";
+  methodList << "ABANDONEDBABY";
+  methodList << "ADVANCEBLOCK";
+  methodList << "BELTHOLD";
+  methodList << "BREAKAWAY";
+  methodList << "CLOSINGMARUBOZU";
+  methodList << "CONCEALBABYSWALL";
+  methodList << "COUNTERATTACK";
+  methodList << "DARKCLOUDCOVER";
+  methodList << "DOJI";
+  methodList << "DOJISTAR";
+  methodList << "DRAGONFLYDOJI";
+  methodList << "ENGULFING";
+  methodList << "EVENINGDOJISTAR";
+  methodList << "EVENINGSTAR";
+  methodList << "GAPSIDESIDEWHITE";
+  methodList << "GRAVESTONEDOJI";
+  methodList << "HAMMER";
+  methodList << "HANGINGMAN";
+  methodList << "HARAMI";
+  methodList << "HARAMICROSS";
+  methodList << "HIGHWAVE";
+  methodList << "HIKKAKE";
+  methodList << "HIKKAKEMOD";
+  methodList << "HOMINGPIGEON";
+  methodList << "IDENTICAL3CROWS";
+  methodList << "INNECK";
+  methodList << "INVERTEDHAMMER";
+  methodList << "KICKING";
+  methodList << "KICKINGBYLENGTH";
+  methodList << "LADDERBOTTOM";
+  methodList << "LONGLEGGEDDOJI";
+  methodList << "LONGLINE";
+  methodList << "MARUBOZU";
+  methodList << "MATCHINGLOW";
+  methodList << "MATHOLD";
+  methodList << "MORNINGDOJISTAR";
+  methodList << "MORNINGSTAR";
+  methodList << "ONNECK";
+  methodList << "PIERCING";
+  methodList << "RICKSHAWMAN";
+  methodList << "RISEFALL3METHODS";
+  methodList << "SEPARATINGLINES";
+  methodList << "SHOOTINGSTAR";
+  methodList << "SHORTLINE";
+  methodList << "SPINNINGTOP";
+  methodList << "STALLEDPATTERN";
+  methodList << "STICKSANDWICH";
+  methodList << "TAKURI";
+  methodList << "TASUKIGAP";
+  methodList << "THRUSTING";
+  methodList << "TRISTAR";
+  methodList << "UNIQUE3RIVER";
+  methodList << "UPSIDEGAP2CROWS";
+  methodList << "XSIDEGAP3METHODS";
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
+
+  settings.setData(penKey, 0.3);
+
+  d = "2CROWS";
+  settings.setData(methodKey, d);
 }
 
-int CDL::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, int type, BarData *data)
+int CDL::getIndicator (Indicator &ind, BarData *data)
 {
-  // format INDICATOR,CDL,NAME
-  // format INDICATOR,CDL,NAME,PENETRATION
+  double pen = settings.getDouble(penKey);
 
-  if (set.count() < 3 || set.count() > 4)
+  QString s;
+  settings.getData(methodKey, s);
+  int method = methodList.indexOf(s);
+
+  PlotLine *line = getCDL(data, method, pen);
+  if (! line)
+    return 1;
+
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int CDL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // format INDICATOR,CDL,NAME,METHOD,PENETRATION
+
+  if (set.count() != 5)
   {
-    qDebug() << "CDL::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
-  int size = data->count();
+  int method = methodList.indexOf(set[3]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid method" << set[3];
+    return 1;
+  }
 
+  double pen = 0;
+  bool ok;
+  pen = set[4].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid penetration" << set[4];
+    return 1;
+  }
+
+  PlotLine *line = getCDL(data, method, pen);
+  if (! line)
+    return 1;
+
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * CDL::getCDL (BarData *data, int method, double pen)
+{
+  int size = data->count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -69,189 +196,189 @@ int CDL::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, int ty
 
   TA_RetCode rc = TA_SUCCESS;
 
-  switch ((SCIndicator::IndicatorName) type)
+  switch ((Function) method)
   {
-    case SCIndicator::_CDL2CROWS:
+    case _2CROWS:
       rc = TA_CDL2CROWS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDL3BLACKCROWS:
+    case _3BLACKCROWS:
       rc = TA_CDL3BLACKCROWS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDL3INSIDE:
+    case _3INSIDE:
       rc = TA_CDL3INSIDE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDL3LINESTRIKE:
+    case _3LINESTRIKE:
       rc = TA_CDL3LINESTRIKE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDL3OUTSIDE:
+    case _3OUTSIDE:
       rc = TA_CDL3OUTSIDE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDL3STARSINSOUTH:
+    case _3STARSINSOUTH:
       rc = TA_CDL3STARSINSOUTH(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDL3WHITESOLDIERS:
+    case _3WHITESOLDIERS:
       rc = TA_CDL3WHITESOLDIERS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLABANDONEDBABY:
-      rc = TA_CDLABANDONEDBABY(0, size - 1, &open[0], &high[0], &low[0], &close[0], set[3].toDouble(), &outBeg, &outNb, &out[0]);
+    case _ABANDONEDBABY:
+      rc = TA_CDLABANDONEDBABY(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLADVANCEBLOCK:
+    case _ADVANCEBLOCK:
       rc = TA_CDLADVANCEBLOCK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLBELTHOLD:
+    case _BELTHOLD:
       rc = TA_CDLBELTHOLD(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLBREAKAWAY:
+    case _BREAKAWAY:
       rc = TA_CDLBREAKAWAY(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLCLOSINGMARUBOZU:
+    case _CLOSINGMARUBOZU:
       rc = TA_CDLCLOSINGMARUBOZU(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLCONCEALBABYSWALL:
+    case _CONCEALBABYSWALL:
       rc = TA_CDLCONCEALBABYSWALL(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLCOUNTERATTACK:
+    case _COUNTERATTACK:
       rc = TA_CDLCOUNTERATTACK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLDARKCLOUDCOVER:
-      rc = TA_CDLDARKCLOUDCOVER(0, size - 1, &open[0], &high[0], &low[0], &close[0], set[3].toDouble(), &outBeg, &outNb, &out[0]);
+    case _DARKCLOUDCOVER:
+      rc = TA_CDLDARKCLOUDCOVER(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLDOJI:
+    case _DOJI:
       rc = TA_CDLDOJI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLDOJISTAR:
+    case _DOJISTAR:
       rc = TA_CDLDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLDRAGONFLYDOJI:
+    case _DRAGONFLYDOJI:
       rc = TA_CDLDRAGONFLYDOJI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLENGULFING:
+    case _ENGULFING:
       rc = TA_CDLENGULFING(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLEVENINGDOJISTAR:
-      rc = TA_CDLEVENINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], set[3].toDouble(), &outBeg, &outNb, &out[0]);
+    case _EVENINGDOJISTAR:
+      rc = TA_CDLEVENINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLEVENINGSTAR:
-      rc = TA_CDLEVENINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], set[3].toDouble(), &outBeg, &outNb, &out[0]);
+    case _EVENINGSTAR:
+      rc = TA_CDLEVENINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLGAPSIDESIDEWHITE:
+    case _GAPSIDESIDEWHITE:
       rc = TA_CDLGAPSIDESIDEWHITE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLGRAVESTONEDOJI:
+    case _GRAVESTONEDOJI:
       rc = TA_CDLGRAVESTONEDOJI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLHAMMER:
+    case _HAMMER:
       rc = TA_CDLHAMMER(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLHANGINGMAN:
+    case _HANGINGMAN:
       rc = TA_CDLHANGINGMAN(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLHARAMI:
+    case _HARAMI:
       rc = TA_CDLHARAMI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLHARAMICROSS:
+    case _HARAMICROSS:
       rc = TA_CDLHARAMICROSS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLHIGHWAVE:
+    case _HIGHWAVE:
       rc = TA_CDLHIGHWAVE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLHIKKAKE:
+    case _HIKKAKE:
       rc = TA_CDLHIKKAKE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLHIKKAKEMOD:
+    case _HIKKAKEMOD:
       rc = TA_CDLHIKKAKEMOD(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLHOMINGPIGEON:
+    case _HOMINGPIGEON:
       rc = TA_CDLHOMINGPIGEON(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLIDENTICAL3CROWS:
+    case _IDENTICAL3CROWS:
       rc = TA_CDLIDENTICAL3CROWS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLINNECK:
+    case _INNECK:
       rc = TA_CDLINNECK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLINVERTEDHAMMER:
+    case _INVERTEDHAMMER:
       rc = TA_CDLINVERTEDHAMMER(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLKICKING:
+    case _KICKING:
       rc = TA_CDLKICKING(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLKICKINGBYLENGTH:
+    case _KICKINGBYLENGTH:
       rc = TA_CDLKICKINGBYLENGTH(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLLADDERBOTTOM:
+    case _LADDERBOTTOM:
       rc = TA_CDLLADDERBOTTOM(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLLONGLEGGEDDOJI:
+    case _LONGLEGGEDDOJI:
       rc = TA_CDLLONGLEGGEDDOJI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLLONGLINE:
+    case _LONGLINE:
       rc = TA_CDLLONGLINE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLMARUBOZU:
+    case _MARUBOZU:
       rc = TA_CDLMARUBOZU(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLMATCHINGLOW:
+    case _MATCHINGLOW:
       rc = TA_CDLMATCHINGLOW(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLMATHOLD:
-      rc = TA_CDLMATHOLD(0, size - 1, &open[0], &high[0], &low[0], &close[0], set[3].toDouble(), &outBeg, &outNb, &out[0]);
+    case _MATHOLD:
+      rc = TA_CDLMATHOLD(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLMORNINGDOJISTAR:
-      rc = TA_CDLMORNINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], set[3].toDouble(), &outBeg, &outNb, &out[0]);
+    case _MORNINGDOJISTAR:
+      rc = TA_CDLMORNINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLMORNINGSTAR:
-      rc = TA_CDLMORNINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], set[3].toDouble(), &outBeg, &outNb, &out[0]);
+    case _MORNINGSTAR:
+      rc = TA_CDLMORNINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLONNECK:
+    case _ONNECK:
       rc = TA_CDLONNECK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLPIERCING:
+    case _PIERCING:
       rc = TA_CDLPIERCING(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLRICKSHAWMAN:
+    case _RICKSHAWMAN:
       rc = TA_CDLRICKSHAWMAN(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLRISEFALL3METHODS:
+    case _RISEFALL3METHODS:
       rc = TA_CDLRISEFALL3METHODS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLSEPARATINGLINES:
+    case _SEPARATINGLINES:
       rc = TA_CDLSEPARATINGLINES(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLSHOOTINGSTAR:
+    case _SHOOTINGSTAR:
       rc = TA_CDLSHOOTINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLSHORTLINE:
+    case _SHORTLINE:
       rc = TA_CDLSHORTLINE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLSPINNINGTOP:
+    case _SPINNINGTOP:
       rc = TA_CDLSPINNINGTOP(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLSTALLEDPATTERN:
+    case _STALLEDPATTERN:
       rc = TA_CDLSTALLEDPATTERN(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLSTICKSANDWICH:
+    case _STICKSANDWICH:
       rc = TA_CDLSTICKSANDWICH(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLTAKURI:
+    case _TAKURI:
       rc = TA_CDLTAKURI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLTASUKIGAP:
+    case _TASUKIGAP:
       rc = TA_CDLTASUKIGAP(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLTHRUSTING:
+    case _THRUSTING:
       rc = TA_CDLTHRUSTING(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLTRISTAR:
+    case _TRISTAR:
       rc = TA_CDLTRISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLUNIQUE3RIVER:
+    case _UNIQUE3RIVER:
       rc = TA_CDLUNIQUE3RIVER(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLUPSIDEGAP2CROWS:
+    case _UPSIDEGAP2CROWS:
       rc = TA_CDLUPSIDEGAP2CROWS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case SCIndicator::_CDLXSIDEGAP3METHODS:
+    case _XSIDEGAP3METHODS:
       rc = TA_CDLXSIDEGAP3METHODS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
     default:
@@ -260,16 +387,64 @@ int CDL::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, int ty
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "CDL::calculate: TA-Lib error" << rc;
-    return 1;
+    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    return 0;
   }
 
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
-  tlines.insert(set[2], line);
+  return line;
+}
 
-  return 0;
+int CDL::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  dialog->addColorItem(page, colorKey, d);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  dialog->addDoubleItem(page, penKey, settings.getDouble(penKey), 0, 100);
+
+  settings.getData(methodKey, d);
+  dialog->addComboItem(page, methodKey, methodList, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
+
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
+
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
+
+  dialog->getItem(penKey, d);
+  settings.setData(penKey, d);
+
+  dialog->getItem(methodKey, d);
+  settings.setData(methodKey, d);
+
+  delete dialog;
+  return rc;
 }
 

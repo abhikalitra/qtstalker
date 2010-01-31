@@ -22,20 +22,19 @@
 #ifndef CORREL_HPP
 #define CORREL_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class CORREL
+class CORREL : public IndicatorBase
 {
   public:
     CORREL ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getCORREL (PlotLine *in, PlotLine *in2, int period);
+    int dialog ();
 
-  protected:
+  private:
+    QString input2Key;
 };
 
 #endif

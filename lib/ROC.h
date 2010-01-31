@@ -22,20 +22,20 @@
 #ifndef ROC_HPP
 #define ROC_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class ROC
+class ROC : public IndicatorBase
 {
   public:
     ROC ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getROC (PlotLine *in, int period, int method);
+    int dialog ();
 
   protected:
+    QString methodKey;
+    QStringList methodList;
 };
 
 #endif

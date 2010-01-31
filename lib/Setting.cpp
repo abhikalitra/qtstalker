@@ -1,6 +1,6 @@
 /*
  *  Qtstalker stock charter
- * 
+ *
  *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -68,6 +68,18 @@ void Setting::setData (int k, int d)
   QString s = QString::number(k);
   QString s2 = QString::number(d);
   dict.insert(s, s2);
+}
+
+void Setting::setData (QString &k, int d)
+{
+  QString s2 = QString::number(d);
+  dict.insert(k, s2);
+}
+
+void Setting::setData (QString &k, double d)
+{
+  QString s2 = QString::number(d);
+  dict.insert(k, s2);
 }
 
 void Setting::getKeyList (QStringList &l)

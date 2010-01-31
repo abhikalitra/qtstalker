@@ -23,8 +23,9 @@
 #include "DataBase.h"
 #include "Indicator.h"
 #include "Config.h"
-#include "IndicatorDialog.h"
-
+#include "IndicatorBase.h"
+#include "IndicatorFactory.h"
+#include "PrefDialog.h"
 
 #include "../pics/ok.xpm"
 #include "../pics/disable.xpm"
@@ -43,8 +44,6 @@
 #include <QIcon>
 #include <QtDebug>
 #include <QLabel>
-
-
 
 
 IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
@@ -88,7 +87,7 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doubleClick(QListWidgetItem *)));
   connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   vbox->addWidget(list);
-    
+
   menu = new QMenu(this);
   QAction *action = menu->addAction(QIcon(newchart), tr("&New Indicator"), this, SLOT(newIndicator()), QKeySequence(Qt::CTRL+Qt::Key_N));
   actions.append(action);
@@ -103,38 +102,26 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 
 void IndicatorPage::newIndicator ()
 {
-  bool ok;
-  QString selection = QInputDialog::getText(this,
-				    	    tr("New Indicator"),
-  				    	    tr("Enter new indicator name."),
-				    	    QLineEdit::Normal,
-				    	    tr("New Indicator"),
-				    	    &ok);
-  if (! ok || selection.isEmpty())
-    return;
-
-  DataBase db;
+  IndicatorBase ib;
   QStringList l;
-  db.getIndicatorList(l);
-  if (l.contains(selection))
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This indicator already exists."));
-    return;
-  }
-  
-  IndicatorDialog *dialog = new IndicatorDialog(this);
+  ib.getIndicatorList(l);
+
+  PrefDialog *dialog = new PrefDialog;
   dialog->setWindowTitle(tr("New Indicator"));
+  QString s = tr("Main");
+  dialog->addPage(0, s);
 
-  dialog->setName(selection);
+  s = tr("Name");
+  QString name;
+  dialog->addTextItem(0, s, name);
 
-  Config config;
-  QString s;
-  config.getData(Config::IndicatorTabRows, s);
-  dialog->setTabRow(s);
+  s = tr("Indicator");
+  QString indicator;
+  dialog->addComboItem(0, s, l, 0);
 
-  config.getData(Config::IndicatorScriptCommand, s);
-  dialog->setCommand(s);
-  
+  s = tr("Tab Row");
+  dialog->addIntItem(0, s, 1, 1, 3);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -142,25 +129,56 @@ void IndicatorPage::newIndicator ()
     return;
   }
 
-  Indicator i;
-  i.setData(Indicator::IndicatorParmName, selection);
-  
-  dialog->getCommand(s);
-  i.setData(Indicator::IndicatorParmCommand, s);
-  
-  dialog->getFile(s);
-  i.setData(Indicator::IndicatorParmPath, s);
-  
-  dialog->getTabRow(s);
-  i.setData(Indicator::IndicatorParmTabRow, s);
+  s = tr("Name");
+  dialog->getItem(s, name);
+  if (name.isEmpty())
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Name missing."));
+    delete dialog;
+    return;
+  }
 
-  i.setData(Indicator::IndicatorParmEnable, 1);
-  
-  db.setIndicator(i);
-  
+  s = tr("Indicator");
+  dialog->getItem(s, indicator);
   delete dialog;
 
-  emit signalNewIndicator(selection);
+  s = tr("Tab Row");
+  int tabRow = dialog->getInt(s);
+
+  // check is name already exists
+  l.clear();
+  DataBase db;
+  db.getIndicatorList(l);
+  if (l.contains(name))
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This indicator already exists."));
+    return;
+  }
+
+  Indicator i;
+  i.setEnable(1);
+  i.setName(name);
+  i.setTabRow(tabRow);
+
+  IndicatorFactory fac;
+  IndicatorBase *ib2 = fac.getFunction(indicator);
+  if (! ib2)
+    return;
+
+  rc = ib2->dialog();
+  if (rc == QDialog::Rejected)
+  {
+    delete ib2;
+    return;
+  }
+
+  ib2->getSettings(i);
+
+  db.setIndicator(i);
+
+  delete ib2;
+
+  emit signalNewIndicator(name);
 
   if (listFlag == 0)
     showActive();
@@ -181,45 +199,33 @@ void IndicatorPage::editIndicator ()
 
 void IndicatorPage::editIndicator (QString &name)
 {
-  DataBase db;
   Indicator i;
-  i.setData(Indicator::IndicatorParmName, name);
+  i.setName(name);
+
+  DataBase db;
   db.getIndicator(i);
-  
-  IndicatorDialog *dialog = new IndicatorDialog(this);
-  dialog->setWindowTitle(tr("Edit Indicator"));
+  QString indicator;
+  i.getIndicator(indicator);
 
-  dialog->setName(name);
+  IndicatorFactory fac;
+  IndicatorBase *ib2 = fac.getFunction(indicator);
+  if (! ib2)
+    return;
 
-  QString s;
-  i.getData(Indicator::IndicatorParmTabRow, s);
-  dialog->setTabRow(s);
+  ib2->setSettings(i);
 
-  i.getData(Indicator::IndicatorParmCommand, s);
-  dialog->setCommand(s);
-  
-  i.getData(Indicator::IndicatorParmPath, s);
-  dialog->setFile(s);
-  
-  int rc = dialog->exec();
+  int rc = ib2->dialog();
   if (rc == QDialog::Rejected)
   {
-    delete dialog;
+    delete ib2;
     return;
   }
-  
-  dialog->getCommand(s);
-  i.setData(Indicator::IndicatorParmCommand, s);
-  
-  dialog->getFile(s);
-  i.setData(Indicator::IndicatorParmPath, s);
-  
-  dialog->getTabRow(s);
-  i.setData(Indicator::IndicatorParmTabRow, s);
+
+  ib2->getSettings(i);
 
   db.setIndicator(i);
-  
-  delete dialog;
+
+  delete ib2;
 
   emit signalDisableIndicator(name);
   emit signalEnableIndicator(name);
@@ -246,7 +252,7 @@ void IndicatorPage::deleteIndicator ()
   db.deleteIndicator(s);
 
   emit signalDeleteIndicator(s);
-  
+
   delete item;
 }
 
@@ -259,21 +265,21 @@ void IndicatorPage::doubleClick (QListWidgetItem *item)
 
   DataBase db;
   Indicator i;
-  i.setData(Indicator::IndicatorParmName, s);
+  i.setName(s);
 
   db.getIndicator(i);
 
-  if (i.getIntData(Indicator::IndicatorParmEnable))
+  if (i.getEnable())
   {
-    i.setData(Indicator::IndicatorParmEnable, 0);
-    db.setIndicator(i);
+    i.setEnable(0);
+    db.setIndicatorEnable(i);
     item->setIcon(QIcon(disable));
     emit signalDisableIndicator(s);
   }
   else
   {
-    i.setData(Indicator::IndicatorParmEnable, 1);
-    db.setIndicator(i);
+    i.setEnable(1);
+    db.setIndicatorEnable(i);
     item->setIcon(QIcon(ok));
     emit signalEnableIndicator(s);
   }
@@ -295,13 +301,13 @@ void IndicatorPage::rightClick (const QPoint &)
 
 void IndicatorPage::keyPressEvent (QKeyEvent *key)
 {
-  doKeyPress(key);  
+  doKeyPress(key);
 }
 
 void IndicatorPage::doKeyPress (QKeyEvent *key)
 {
   key->accept();
-  
+
   if (key->modifiers() == Qt::ControlModifier)
   {
     switch(key->key())

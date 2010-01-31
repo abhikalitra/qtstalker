@@ -26,22 +26,34 @@
 
 COMPARE::COMPARE ()
 {
+  indicator = "COMPARE";
 }
 
-int COMPARE::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &opList, BarData *data)
+int COMPARE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  int rc = 0;
+  if (set[1] == "COMPARE")
+    rc = getCOMPARE(set, tlines, data);
+  else
+    rc = getCOMPARE2(set, tlines, data);
+
+  return rc;
+}
+
+int COMPARE::getCOMPARE (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,COMPARE,<NAME>,<INPUT_1>,<INPUT_2>,<OPERATOR>
 
   if (set.count() != 6)
   {
-    qDebug() << "COMPARE::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
@@ -51,7 +63,7 @@ int COMPARE::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QS
     in = data->getInput(data->getInputType(set[3]));
     if (! in)
     {
-      qDebug() << set[1] << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[3];
       return 1;
     }
 
@@ -64,7 +76,7 @@ int COMPARE::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QS
     in2 = data->getInput(data->getInputType(set[4]));
     if (! in2)
     {
-      qDebug() << set[1] << "::calculate: input2 not found" << set[4];
+      qDebug() << indicator << "::calculate: input2 not found" << set[4];
       return 1;
     }
 
@@ -74,7 +86,7 @@ int COMPARE::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QS
   int op = opList.indexOf(set[5]);
   if (op == -1)
   {
-    qDebug() << "COMPARE::calculate: invalid operator" << set[5];
+    qDebug() << indicator << "::calculate: invalid operator" << set[5];
     return 1;
   }
 
@@ -144,20 +156,20 @@ int COMPARE::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QS
   return 0;
 }
 
-int COMPARE::calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &opList, BarData *data)
+int COMPARE::getCOMPARE2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,COMPARE2,<NAME>,<INPUT>,<VALUE>,<OPERATOR>
 
   if (set.count() != 6)
   {
-    qDebug() << "COMPARE2::calculate: invalid parm count" << set.count();
+    qDebug() << "COMPARE2" << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << "COMPARE2" << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
@@ -167,7 +179,7 @@ int COMPARE::calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, Q
     in = data->getInput(data->getInputType(set[3]));
     if (! in)
     {
-      qDebug() << set[1] << "::calculate: input not found" << set[3];
+      qDebug() << "COMPARE2" << "::calculate: input not found" << set[3];
       return 1;
     }
 
@@ -178,14 +190,14 @@ int COMPARE::calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, Q
   double value = set[4].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "COMPARE2::calculate: invalid value" << set[4];
+    qDebug() << "COMPARE2" << "::calculate: invalid value" << set[4];
     return 1;
   }
 
   int op = opList.indexOf(set[5]);
   if (op == -1)
   {
-    qDebug() << "COMPARE2::calculate: invalid operator" << set[5];
+    qDebug() << "COMPARE2" << "::calculate: invalid operator" << set[5];
     return 1;
   }
 

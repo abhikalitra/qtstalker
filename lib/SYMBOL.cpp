@@ -20,7 +20,6 @@
  */
 
 #include "SYMBOL.h"
-#include "BarData.h"
 #include "DataBase.h"
 
 #include <QtDebug>
@@ -28,22 +27,23 @@
 
 SYMBOL::SYMBOL ()
 {
+  indicator = "SYMBOL";
 }
 
-int SYMBOL::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines)
+int SYMBOL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *)
 {
   // INDICATOR,SYMBOL,<NAME>,<SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
 
   if (set.count() != 7)
   {
-    qDebug() << "SYMBOL::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
@@ -51,18 +51,29 @@ int SYMBOL::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines)
   int bars = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "SYMBOL::calculate: invalid bars" << set[6];
+    qDebug() << indicator << "::calculate: invalid bars" << set[6];
     return 1;
   }
 
+  PlotLine *line = getSYMBOL(set[3], set[4], set[5], bars);
+  if (! line)
+    return 1;
+
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * SYMBOL::getSYMBOL (QString &sym, QString &field, QString &length, int bars)
+{
   DataBase db;
   BarData symbol;
-  symbol.setSymbol(set[3]);
-  symbol.setBarLength(set[5]);
+  symbol.setSymbol(sym);
+  symbol.setBarLength(length);
   symbol.setBarsRequested(bars);
   db.getChart(&symbol);
 
-  BarData::InputType it = symbol.getInputType(set[4]);
+  BarData::InputType it = symbol.getInputType(field);
   PlotLine *line = symbol.getInput(it);
   line->setScaleFlag(TRUE);
 
@@ -91,8 +102,6 @@ int SYMBOL::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines)
   }
 */
 
-  tlines.insert(set[2], line);
-
-  return 0;
+  return line;
 }
 

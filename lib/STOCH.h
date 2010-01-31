@@ -22,22 +22,29 @@
 #ifndef STOCH_HPP
 #define STOCH_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class STOCH
+class STOCH : public IndicatorBase
 {
   public:
     STOCH ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList, BarData *data);
-    int calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList, BarData *data);
-    int calculate3 (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getSTOCH (BarData *data, int fkp, int skp, int skma, int sdp, int sdma, QList<PlotLine *> &l);
+    int dialog ();
 
   protected:
+    QString skcKey;
+    QString sdcKey;
+    QString skpKey;
+    QString sdpKey;
+    QString sklKey;
+    QString sdlKey;
+    QString fkpKey;
+    QString skpdKey;
+    QString sdpdKey;
+    QString skmaKey;
+    QString sdmaKey;
 };
 
 #endif

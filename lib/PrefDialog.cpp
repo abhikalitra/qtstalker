@@ -21,13 +21,16 @@
 
 #include "PrefDialog.h"
 #include "Config.h"
-
+#include "PlotLine.h"
+#include "IndicatorBase.h"
+#include "BarData.h"
 
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QFrame>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QtDebug>
 
 
 
@@ -41,31 +44,14 @@ PrefDialog::PrefDialog () : QDialog (0, 0)
   init();
 }
 
-PrefDialog::~PrefDialog ()
-{
-  qDeleteAll(colorButtonList);
-  qDeleteAll(intList);
-  qDeleteAll(doubleList);
-  qDeleteAll(checkList);
-  qDeleteAll(fontButtonList);
-  qDeleteAll(textList);
-  qDeleteAll(comboList);
-  qDeleteAll(dateList);
-  qDeleteAll(labelList);
-  qDeleteAll(timeList);
-}
-
 void PrefDialog::init ()
 {
   QVBoxLayout *vbox = new QVBoxLayout;
   setLayout(vbox);
 
-  grid = new QGridLayout;
-  vbox->addLayout(grid);
-  grid->setMargin(5);
-  grid->setSpacing(5);
-  grid->setColumnStretch(1, 1);
-  
+  tabs = new QTabWidget;
+  vbox->addWidget(tabs);
+
   vbox->insertStretch(-1, 1);
 
   buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
@@ -75,33 +61,67 @@ void PrefDialog::init ()
   vbox->addWidget(buttonBox);
 }
 
-void PrefDialog::addColorItem (QString &name, QColor &color)
+void PrefDialog::addPage (int page, QString &title)
 {
+  QWidget *w = new QWidget(this);
+
+  QGridLayout *grid = new QGridLayout;
+  grid->setSpacing(5);
+  grid->setColumnStretch(1, 1);
+  w->setLayout(grid);
+
+  tabs->addTab(w, title);
+
+  gridList.insert(page, grid);
+}
+
+void PrefDialog::addColorItem (int page, QString &name, QString &color)
+{
+  QColor c(color);
+  addColorItem(page, name, c);
+}
+
+void PrefDialog::addColorItem (int page, QString &name, QColor &color)
+{
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addColorItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
-  
+
   ColorButton *button = new ColorButton(this, color);
   grid->addWidget(button, grid->rowCount() - 1, 1);
   button->setColorButton();
   colorButtonList.insert(name, button);
 }
 
-void PrefDialog::addColorPrefItem (QString &name, QColor &color)
+void PrefDialog::addColorPrefItem (int page, QString &name, QColor &color)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addColorPrefItem: page number not found";
+    return;
+  }
+
   ColorButton *mainButton = new ColorButton(this, color);
-  
+
   // add the preset preferred buttons
   // for now a fixed quantity of 5 pieces with fixed colors
   // may/will later expand with the possibility to make user defineable too
   QString prefButtonName = "PrefColor";
   ColorButton *prefButton;
-  QColor prefColor[5]; 
+  QColor prefColor[5];
   prefColor[0].setNamedColor("white");
   prefColor[1].setNamedColor("red");
   prefColor[2].setNamedColor("green");
   prefColor[3].setRgb(85,170,255); // something like blue
   prefColor[4].setRgb(255,170,0); // orange
-  
+
   // create pref-buttons and arange in one row(hbox)
   QHBoxLayout *hbox = new QHBoxLayout;
   int i;
@@ -115,16 +135,16 @@ void PrefDialog::addColorPrefItem (QString &name, QColor &color)
     connect (prefButton, SIGNAL(robPressed(QColor)), mainButton, SLOT(setColor(QColor)));
     hbox->addWidget(prefButton);
     colorButtonList.insert(prefButtonName + QString::number(i, 'f', 0), prefButton);
-  
+
   }
-  
+
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->addLayout(hbox);
   vbox->addWidget(mainButton);
-  
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
-  
+
   grid->addLayout(vbox, grid->rowCount() - 1, 1);
   mainButton->setColorButton();
   colorButtonList.insert(name, mainButton);
@@ -137,16 +157,23 @@ void PrefDialog::getColor (QString &name, QColor &color)
     button->getColor(color);
 }
 
-void PrefDialog::addDoubleItem (QString &name, double num)
+void PrefDialog::addDoubleItem (int page, QString &name, double num)
 {
-  addDoubleItem(name, num, -9999999999.0, 9999999999.0);
+  addDoubleItem(page, name, num, -9999999999.0, 9999999999.0);
 }
 
-void PrefDialog::addDoubleItem (QString &name, double num, double low, double high)
+void PrefDialog::addDoubleItem (int page, QString &name, double num, double low, double high)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addDoubleItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
-  
+
   QDoubleSpinBox *edit = new QDoubleSpinBox;
   edit->setMinimum(low);
   edit->setMaximum(high);
@@ -164,16 +191,23 @@ double PrefDialog::getDouble (QString &name)
   return num;
 }
 
-void PrefDialog::addIntItem (QString &name, int num)
+void PrefDialog::addIntItem (int page, QString &name, int num)
 {
-  addIntItem(name, num, -999999999, 999999999);
+  addIntItem(page, name, num, -999999999, 999999999);
 }
 
-void PrefDialog::addIntItem (QString &name, int num, int min, int max)
+void PrefDialog::addIntItem (int page, QString &name, int num, int min, int max)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addIntItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
-  
+
   QSpinBox *spin = new QSpinBox;
   spin->setMinimum(min);
   spin->setMaximum(max);
@@ -191,19 +225,26 @@ int PrefDialog::getInt (QString &name)
   return num;
 }
 
-void PrefDialog::addCheckItem (QString &name, QString &flag)
+void PrefDialog::addCheckItem (int page, QString &name, QString &flag)
 {
   if (! flag.compare("True"))
-    addCheckItem(name, TRUE);
+    addCheckItem(page, name, TRUE);
   else
-    addCheckItem(name, FALSE);
+    addCheckItem(page, name, FALSE);
 }
 
-void PrefDialog::addCheckItem (QString &name, bool flag)
+void PrefDialog::addCheckItem (int page, QString &name, bool flag)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addCheckItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
-  
+
   QCheckBox *check = new QCheckBox;
   check->setChecked(flag);
   grid->addWidget(check, grid->rowCount() - 1, 1);
@@ -229,14 +270,21 @@ void PrefDialog::getCheckString (QString &name, QString &flag)
       flag = "True";
     else
       flag = "False";
-  }    
+  }
 }
 
-void PrefDialog::addFontItem (QString &name, QFont &font)
+void PrefDialog::addFontItem (int page, QString &name, QFont &font)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addFontItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
-  
+
   FontButton *button = new FontButton(this, font);
   grid->addWidget(button, grid->rowCount() - 1, 1);
   fontButtonList.insert(name, button);
@@ -249,8 +297,15 @@ void PrefDialog::getFont (QString &name, QFont &font)
     button->getFont(font);
 }
 
-void PrefDialog::addTextItem (QString &name, QString &t)
+void PrefDialog::addTextItem (int page, QString &name, QString &t)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addTextItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
 
@@ -267,8 +322,15 @@ void PrefDialog::getText (QString &name, QString &s)
     s = edit->text();
 }
 
-void PrefDialog::addComboItem (QString &name, QStringList &l, QString &s)
+void PrefDialog::addComboItem (int page, QString &name, QStringList &l, QString &s)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addComboItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
 
@@ -284,8 +346,15 @@ void PrefDialog::addComboItem (QString &name, QStringList &l, QString &s)
   comboList.insert(name, combo);
 }
 
-void PrefDialog::addComboItem (QString &name, QStringList &l, int s)
+void PrefDialog::addComboItem (int page, QString &name, QStringList &l, int s)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addComboItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
 
@@ -318,8 +387,15 @@ QComboBox * PrefDialog::getComboWidget (QString &name)
   return comboList.value(name);
 }
 
-void PrefDialog::addDateItem (QString &name, QDateTime &dt)
+void PrefDialog::addDateItem (int page, QString &name, QDateTime &dt)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addDateItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
 
@@ -335,8 +411,15 @@ void PrefDialog::getDate (QString &name, QDateTime &dt)
     dt.setDate(date->date());
 }
 
-void PrefDialog::addTimeItem (QString &name, QDateTime &dt)
+void PrefDialog::addTimeItem (int page, QString &name, QDateTime &dt)
 {
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addTimeItem: page number not found";
+    return;
+  }
+
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
 

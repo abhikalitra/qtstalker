@@ -20,34 +20,74 @@
  */
 
 #include "TRANGE.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 TRANGE::TRANGE ()
 {
+  indicator = "TRANGE";
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
 }
 
-int TRANGE::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int TRANGE::getIndicator (Indicator &ind, BarData *data)
+{
+  PlotLine *line = getTRANGE(data);
+  if (! line)
+    return 1;
+
+  QString s;
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int TRANGE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,TRANGE,<NAME>
 
   if (set.count() != 3)
   {
-    qDebug() << "TRANGE::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
-  int size = data->count();
+  PlotLine *line = getTRANGE(data);
+  if (! line)
+    return 1;
 
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * TRANGE::getTRANGE (BarData *data)
+{
+  int size = data->count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -65,73 +105,55 @@ int TRANGE::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
   TA_RetCode rc = TA_TRANGE(0, size - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "TRANGE::calculate: TA-Lib error" << rc;
-    return 1;
+    qDebug() << indicator << "::calculate: : TA-Lib error" << rc;
+    return 0;
   }
 
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
-  tlines.insert(set[2], line);
-
-  return 0;
+  return line;
 }
 
-int TRANGE::calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int TRANGE::dialog ()
 {
-  // INDICATOR,ATR,<NAME>,<PERIOD>
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
 
-  if (set.count() != 4)
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  QColor c(d);
+  dialog->addColorItem(page, colorKey, c);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
   {
-    qDebug() << "ATR::calculate: invalid parm count" << set.count();
-    return 1;
+    delete dialog;
+    return rc;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
-    return 1;
-  }
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
 
-  bool ok;
-  int period = set[3].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "ATR::calculate: invalid period parm" << set[3];
-    return 1;
-  }
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
 
-  int size = data->count();
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
 
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_ATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "ATR::calculate: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(set[2], line);
-
-  return 0;
+  delete dialog;
+  return rc;
 }
+
 

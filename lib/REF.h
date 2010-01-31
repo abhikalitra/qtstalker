@@ -22,20 +22,13 @@
 #ifndef REF_HPP
 #define REF_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class REF
+class REF : public IndicatorBase
 {
   public:
     REF ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
 };
 
 #endif

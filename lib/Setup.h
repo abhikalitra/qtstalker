@@ -35,7 +35,6 @@ class Setup
     void setupDirectories ();
     void setupQuoteBase ();
     void setupDefaultIndicators ();
-//    void setupIndicatorSettings ();
 
   protected:
     QString home;

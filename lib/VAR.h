@@ -22,20 +22,19 @@
 #ifndef VAR_HPP
 #define VAR_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class VAR
+class VAR : public IndicatorBase
 {
   public:
     VAR ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getVAR (PlotLine *in, int period, double dev);
+    int dialog ();
 
   protected:
+    QString devKey;
 };
 
 #endif

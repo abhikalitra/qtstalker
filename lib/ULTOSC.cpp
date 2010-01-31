@@ -27,49 +27,101 @@
 
 ULTOSC::ULTOSC ()
 {
+  indicator = "ULTOSC";
+  spKey = QObject::tr("Short Period");
+  mpKey = QObject::tr("Medium Period");
+  lpKey = QObject::tr("Long Period");
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
+
+  settings.setData(spKey, 7);
+  settings.setData(mpKey, 14);
+  settings.setData(lpKey, 28);
 }
 
-int ULTOSC::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int ULTOSC::getIndicator (Indicator &ind, BarData *data)
 {
-  // INDICATOR,ULTOSC,<NAME>,<PERIOD_1>,<PERIOD_2>,<PERIOD_3>
+  int sp = settings.getInt(spKey);
+  int mp = settings.getInt(mpKey);
+  int lp = settings.getInt(lpKey);
 
-  if (set.count() != 6)
+  PlotLine *line = getULTOSC(data, sp, mp, lp);
+  if (! line)
+    return 1;
+
+  QString s;
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int ULTOSC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // INDICATOR,ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>
+
+  if (set.count() != 4)
   {
-    qDebug() << "ULTOSC::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
   bool ok;
-  int fp = set[3].toInt(&ok);
+  int sp = set[3].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ULTOSC::calculate: invalid fast period" << set[3];
+    qDebug() << indicator << "::calculate: invalid short period" << set[3];
     return 1;
   }
 
   int mp = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ULTOSC::calculate: invalid med period" << set[4];
+    qDebug() << indicator << "::calculate: invalid med period" << set[4];
     return 1;
   }
 
-  int sp = set[5].toInt(&ok);
+  int lp = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ULTOSC::calculate: invalid slow period" << set[5];
+    qDebug() << indicator << "::calculate: invalid long period" << set[5];
     return 1;
   }
 
-  int size = data->count();
+  PlotLine *line = getULTOSC(data, sp, mp, lp);
+  if (! line)
+    return 1;
 
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp)
+{
+  int size = data->count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -84,19 +136,71 @@ int ULTOSC::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
 
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_RetCode rc = TA_ULTOSC(0, size - 1, &high[0], &low[0], &close[0], fp, mp, sp, &outBeg, &outNb, &out[0]);
+  TA_RetCode rc = TA_ULTOSC(0, size - 1, &high[0], &low[0], &close[0], sp, mp, lp, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "ULTOSC::calculate: TA-Lib error" << rc;
-    return 1;
+    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    return 0;
   }
 
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
-  tlines.insert(set[2], line);
+  return line;
+}
 
-  return 0;
+int ULTOSC::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  dialog->addColorItem(page, colorKey, d);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  dialog->addIntItem(page, spKey, settings.getInt(spKey), 1, 100000);
+
+  dialog->addIntItem(page, mpKey, settings.getInt(mpKey), 1, 100000);
+
+  dialog->addIntItem(page, lpKey, settings.getInt(lpKey), 1, 100000);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
+
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
+
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
+
+  dialog->getItem(spKey, d);
+  settings.setData(spKey, d);
+
+  dialog->getItem(mpKey, d);
+  settings.setData(mpKey, d);
+
+  dialog->getItem(lpKey, d);
+  settings.setData(lpKey, d);
+
+  delete dialog;
+  return rc;
 }
 

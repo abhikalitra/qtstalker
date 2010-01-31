@@ -26,32 +26,72 @@
 
 CANDLES::CANDLES ()
 {
+  indicator = "CANDLES";
+
+  QString d;
+  d = "green";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
 }
 
-int CANDLES::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int CANDLES::getIndicator (Indicator &ind, BarData *data)
+{
+  QString s;
+  settings.getData(colorKey, s);
+  QColor color(s);
+
+  PlotLine *line = getCANDLES(data, color);
+  if (! line)
+    return 1;
+
+  line->setColor(color);
+  line->setType(PlotLine::Candle);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,CANDLES,<NAME>,<CANDLE_COLOR>
 
   if (set.count() != 4)
   {
-    qDebug() << "CANDLES::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
   QColor color(set[3]);
   if (! color.isValid())
   {
-    qDebug() << "CANDLES::calculate: invalid color" << set[3];
+    qDebug() << indicator << "::calculate: invalid color" << set[3];
     return 1;
   }
 
+  PlotLine *line = getCANDLES(data, color);
+  if (! line)
+    return 1;
+
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
+{
   PlotLine *line = new PlotLine;
   int loop;
   int size = data->count();
@@ -68,14 +108,41 @@ int CANDLES::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, Ba
     }
 
     line->append(color, op, data->getHigh(loop), data->getLow(loop), cl, fillFlag);
-
-//    QDateTime dt;
-//    data->getDate(loop, dt);
-//    line->append(dt);
   }
 
-  tlines.insert(set[2], line);
+  return line;
+}
 
-  return 0;
+int CANDLES::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  dialog->addColorItem(page, colorKey, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
+
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
+
+  delete dialog;
+  return rc;
 }
 

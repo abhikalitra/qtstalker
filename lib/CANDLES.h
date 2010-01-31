@@ -22,20 +22,18 @@
 #ifndef CANDLES_HPP
 #define CANDLES_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
+#include <QColor>
 
-
-class CANDLES
+class CANDLES : public IndicatorBase
 {
   public:
     CANDLES ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getCANDLES (BarData *data, QColor &color);
+    int dialog ();
 };
 
 #endif

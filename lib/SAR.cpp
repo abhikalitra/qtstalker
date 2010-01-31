@@ -20,29 +20,68 @@
  */
 
 #include "SAR.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 SAR::SAR ()
 {
+  indicator = "SAR";
+  accelKey = QObject::tr("Acceleration");
+  maxKey = QObject::tr("Max Acceleration");
+
+  QString d;
+  d = "red";
+  settings.setData(colorKey, d);
+
+  d = "Line";
+  settings.setData(plotKey, d);
+
+  settings.setData(labelKey, indicator);
+
+  settings.setData(accelKey, 0.02);
+
+  settings.setData(maxKey, 0.2);
 }
 
-int SAR::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int SAR::getIndicator (Indicator &ind, BarData *data)
 {
-  // INDICATOR,SAR,<NAME>,<ACCELERATION>,<MAXIMUM>
+  double accel = settings.getDouble(accelKey);
+  double max = settings.getDouble(maxKey);
+
+  PlotLine *line = getSAR(data, accel, max);
+  if (! line)
+    return 1;
+
+  QString s;
+  settings.getData(colorKey, s);
+  line->setColor(s);
+
+  settings.getData(plotKey, s);
+  line->setType(s);
+
+  settings.getData(labelKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // INDICATOR,SAR,<NAME>,<ACCEL>,<MAX ACCEL>
 
   if (set.count() != 5)
   {
-    qDebug() << "SAR::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
@@ -50,19 +89,29 @@ int SAR::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   double accel = set[3].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "SAR::calculate: invalid acceleration" << set[3];
+    qDebug() << indicator << "::calculate: invalid acceleration" << set[3];
     return 1;
   }
 
   double max = set[4].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "SAR::calculate: invalid maximum" << set[4];
+    qDebug() << indicator << "::calculate: invalid max" << set[4];
     return 1;
   }
 
-  int size = data->count();
+  PlotLine *line = getSAR(data, accel, max);
+  if (! line)
+    return 1;
 
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * SAR::getSAR (BarData *data, double accel, double max)
+{
+  int size = data->count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real out[size];
@@ -78,122 +127,63 @@ int SAR::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   TA_RetCode rc = TA_SAR(0, size - 1, &high[0], &low[0], accel, max, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "SAR::calculate: TA-Lib error" << rc;
-    return 1;
+    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    return 0;
   }
 
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
-  tlines.insert(set[2], line);
-
-  return 0;
+  return line;
 }
 
-int SAR::calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int SAR::dialog ()
 {
-  // INDICATOR,SAREXT,<NAME>,<START>,<OFFSET_REVERSE>,<ACCEL_INIT_LONG>,<ACCEL_LONG>,<ACCEL_MAX_LONG>,
-  // <ACCEL_INIT_SHORT>,<ACCEL_SHORT>,<ACCEL_MAX_SHORT>
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
 
-  if (set.count() != 11)
+  k = QObject::tr("Settings");
+  dialog->addPage(page, k);
+
+  settings.getData(colorKey, d);
+  dialog->addColorItem(page, colorKey, d);
+
+  settings.getData(plotKey, d);
+  dialog->addComboItem(page, plotKey, plotList, d);
+
+  settings.getData(labelKey, d);
+  dialog->addTextItem(page, labelKey, d);
+
+  dialog->addDoubleItem(page, accelKey, settings.getDouble(accelKey), 0, 100000);
+
+  dialog->addDoubleItem(page, maxKey, settings.getDouble(maxKey), 0, 100000);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
   {
-    qDebug() << "SAREXT::calculate: invalid parm count" << set.count();
-    return 1;
+    delete dialog;
+    return rc;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
-  {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
-    return 1;
-  }
+  dialog->getItem(colorKey, d);
+  settings.setData(colorKey, d);
 
-  bool ok;
-  double start = set[3].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "SAREXT::calculate: invalid start" << set[3];
-    return 1;
-  }
+  dialog->getItem(plotKey, d);
+  settings.setData(plotKey, d);
 
-  double offrev = set[4].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "SAREXT::calculate: invalid offset reverse" << set[4];
-    return 1;
-  }
+  dialog->getItem(labelKey, d);
+  settings.setData(labelKey, d);
 
-  double ail = set[5].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "SAREXT::calculate: invalid accel init long" << set[5];
-    return 1;
-  }
+  dialog->getItem(accelKey, d);
+  settings.setData(accelKey, d);
 
-  double al = set[6].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "SAREXT::calculate: invalid accel long" << set[6];
-    return 1;
-  }
+  dialog->getItem(maxKey, d);
+  settings.setData(maxKey, d);
 
-  double aml = set[7].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "SAREXT::calculate: invalid accel max long" << set[7];
-    return 1;
-  }
-
-  double ais = set[8].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "SAREXT::calculate: invalid accel init short" << set[8];
-    return 1;
-  }
-
-  double as = set[9].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "SAREXT::calculate: invalid accel short" << set[9];
-    return 1;
-  }
-
-  double ams = set[10].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "SAREXT::calculate: invalid accel max short" << set[10];
-    return 1;
-  }
-
-  int size = data->count();
-
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_SAREXT(0, size - 1, &high[0], &low[0], start, offrev, ail, al, aml,
-			    ais, as, ams, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "SAREXT::calculate: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  tlines.insert(set[2], line);
-
-  return 0;
+  delete dialog;
+  return rc;
 }
 

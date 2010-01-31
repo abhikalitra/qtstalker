@@ -22,20 +22,31 @@
 #ifndef BBANDS_HPP
 #define BBANDS_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
+#include <QList>
 
-
-class BBANDS
+class BBANDS : public IndicatorBase
 {
   public:
     BBANDS ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getBBANDS (PlotLine *in, int period, double udev, double ldev, int ma, QList<PlotLine *> &l);
+    int dialog ();
 
-  protected:
+  private:
+    QString ucKey;
+    QString mcKey;
+    QString lcKey;
+    QString upKey;
+    QString mpKey;
+    QString lpKey;
+    QString ulKey;
+    QString mlKey;
+    QString llKey;
+    QString udKey;
+    QString ldKey;
 };
 
 #endif

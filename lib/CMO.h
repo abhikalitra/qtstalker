@@ -22,20 +22,16 @@
 #ifndef CMO_HPP
 #define CMO_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class CMO
+class CMO : public IndicatorBase
 {
   public:
     CMO ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getCMO (PlotLine *in, int period);
+    int dialog ();
 };
 
 #endif

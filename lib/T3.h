@@ -22,20 +22,19 @@
 #ifndef T3_HPP
 #define T3_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class T3
+class T3 : public IndicatorBase
 {
   public:
     T3 ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getT3 (PlotLine *in, int period, double vfactor);
+    int dialog ();
 
   protected:
+    QString vKey;
 };
 
 #endif

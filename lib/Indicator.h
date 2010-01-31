@@ -23,31 +23,46 @@
 #define INDICATOR_HPP
 
 #include <QString>
-#include <QHash>
+#include <QList>
+
+#include "PlotLine.h"
+#include "Setting.h"
 
 
 class Indicator
 {
   public:
-    enum IndicatorParm
-    {
-      IndicatorParmName,
-      IndicatorParmEnable,
-      IndicatorParmTabRow,
-      IndicatorParmDate,
-      IndicatorParmLog,
-      IndicatorParmCommand,
-      IndicatorParmPath
-    };
-
     Indicator ();
-    void setData(IndicatorParm, QString &);
-    void getData(IndicatorParm, QString &);
-    void setData(IndicatorParm, int);
-    int getIntData(IndicatorParm);
-    
+    void setName(QString &);
+    void getName(QString &);
+    void setEnable(int);
+    int getEnable();
+    void setTabRow(int);
+    int getTabRow();
+    void setDate(int);
+    int getDate();
+    void setLog(int);
+    int getLog();
+    void setCUS(int);
+    int getCUS();
+    void setIndicator(QString &);
+    void getIndicator(QString &);
+    void setLines(QList<PlotLine *> &);
+    void getLines(QList<PlotLine *> &);
+    void setSettings(Setting &);
+    void getSettings(Setting &);
+    void addLine (PlotLine *);
+
   protected:
-    QHash<IndicatorParm, QString> data;
+    QList<PlotLine *> lines;
+    Setting settings;
+    QString name;
+    QString indicator;
+    int enable;
+    int tabRow;
+    int date;
+    int log;
+    int cus;
 };
 
 #endif

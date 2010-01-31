@@ -22,21 +22,26 @@
 #ifndef AROON_HPP
 #define AROON_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
+#include <QList>
 
-
-class AROON
+class AROON : public IndicatorBase
 {
   public:
     AROON ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data); // AROON
-    int calculate2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data); // AROONOSC
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getAROON (BarData *data, int period, QList<PlotLine *> &l);
+    int dialog ();
 
-  protected:
+  private:
+    QString dcKey;
+    QString ucKey;
+    QString dpKey;
+    QString upKey;
+    QString dlKey;
+    QString ulKey;
 };
 
 #endif

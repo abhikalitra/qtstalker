@@ -22,20 +22,16 @@
 #ifndef SUM_HPP
 #define SUM_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class SUM
+class SUM : public IndicatorBase
 {
   public:
     SUM ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-
-  protected:
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getSUM (PlotLine *in, int period);
+    int dialog ();
 };
 
 #endif

@@ -26,22 +26,23 @@
 
 REF::REF ()
 {
+  indicator = "REF";
 }
 
-int REF::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int REF::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,REF,<NAME>,<INPUT>,<PERIOD>
 
   if (set.count() != 5)
   {
-    qDebug() << "REF::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
@@ -51,7 +52,7 @@ int REF::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
     in = data->getInput(data->getInputType(set[3]));
     if (! in)
     {
-      qDebug() << set[1] << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[3];
       return 1;
     }
 
@@ -62,7 +63,7 @@ int REF::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "REF::calculate: invalid fast period parm" << set[4];
+    qDebug() << indicator << "::calculate: invalid fast period parm" << set[4];
     return 1;
   }
 

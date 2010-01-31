@@ -22,20 +22,21 @@
 #ifndef ULTOSC_HPP
 #define ULTOSC_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class ULTOSC
+class ULTOSC : public IndicatorBase
 {
   public:
     ULTOSC ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getULTOSC (BarData *data, int sp, int mp, int lp);
+    int dialog ();
 
   protected:
+    QString spKey;
+    QString mpKey;
+    QString lpKey;
 };
 
 #endif

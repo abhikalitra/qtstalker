@@ -22,20 +22,22 @@
 #ifndef SZ_HPP
 #define SZ_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class SZ
+class SZ : public IndicatorBase
 {
   public:
     SZ ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getSZ (BarData *data, QString &method, int period, int no_decline_period, double coefficient);
+    int dialog ();
 
   protected:
+    QString methodKey;
+    QString ndpKey;
+    QString coKey;
+    QStringList methodList;
 };
 
 #endif

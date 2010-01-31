@@ -250,29 +250,6 @@ a partial match like %BM or %IBM%</source>
     </message>
 </context>
 <context>
-    <name>IndicatorDialog</name>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tab Row</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script File...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>IndicatorPage</name>
     <message>
         <source>Qtstalker: Error</source>
@@ -288,10 +265,6 @@ a partial match like %BM or %IBM%</source>
     </message>
     <message>
         <source>Are you sure you want to permanently delete this indicator?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter new indicator name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -332,7 +305,19 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit Indicator</source>
+        <source>Main</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name missing.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1001,10 +986,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1017,107 +998,139 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Parms</source>
+        <source>Up Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Line Type</source>
+        <source>Down Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Freq</source>
+        <source>Neutral Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Width</source>
+        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>LOWPASS Indicator</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Variable Name</source>
+        <source>Fast Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>LOWPASS Format</source>
+        <source>Slow Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PP FS</source>
+        <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PP SS</source>
+        <source>MA Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PP TS</source>
+        <source>Down Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PP FR</source>
+        <source>Up Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PP SR</source>
+        <source>Down Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PP TR</source>
+        <source>Up Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Support</source>
+        <source>Upper Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Support Color</source>
+        <source>Middle Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label First Support</source>
+        <source>Lower Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label Second Support</source>
+        <source>Upper Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label Third Support</source>
+        <source>Middle Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Resistance</source>
+        <source>Lower Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Resistance Color</source>
+        <source>Upper Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label First Resistance</source>
+        <source>Middle Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label Second Resistance</source>
+        <source>Lower Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label Third Resistance</source>
+        <source>Upper Deviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PP Indicator</source>
+        <source>Lower Deviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PP Level</source>
+        <source>Index Symbol</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>PP Format</source>
+        <source>Penetration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phase Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quad Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phase Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quad Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phase Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quad Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1129,35 +1142,307 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sine Line Type</source>
+        <source>Sine Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lead Line Type</source>
+        <source>Lead Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SINWAV Indicator</source>
+        <source>Sine Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SINWAV Format</source>
+        <source>Lead Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SZ LONG</source>
+        <source>SlowK Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SZ SHORT</source>
+        <source>SlowK Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Position</source>
+        <source>SlowK Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lookback Period</source>
+        <source>CMB Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MACD Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Histogram Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MACD Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Histogram Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MACD Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Histogram Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAMA Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FAMA Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAMA Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FAMA Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAMA Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FAMA Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast Limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow Limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIN Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAX Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIN Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAX Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIN Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAX Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1R Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3R Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1S Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2S Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3S Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1R Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2R Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3R Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1S Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2S Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3S Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Offset Reverse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Initial Long Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Long Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Initial Short Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Short Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowD Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowD Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowD Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastK Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowK Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowK MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowD Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowD MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastD Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastD MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastK Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastD Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastK Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastD Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastK Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastD Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1169,103 +1454,83 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SZ Indicator</source>
+        <source>V Factor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SZ Format</source>
+        <source>Short Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>THERM MA</source>
+        <source>Med Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>THERM Parms</source>
+        <source>Long Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA Parms</source>
+        <source>Volume Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Color Above MA</source>
+        <source>Edit Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Color Below MA</source>
+        <source>Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Color Threshold</source>
+        <source>Mid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Threshold</source>
+        <source>2 Day Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Smoothing</source>
+        <source>5 Day Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Smoothing Type</source>
+        <source>2 Day Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA Color</source>
+        <source>5 Day Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA Line Type</source>
+        <source>2 Day Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA Label</source>
+        <source>5 Day Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA Period</source>
+        <source>MACD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA Type</source>
+        <source>Signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>THERM Indicator</source>
+        <source>Hist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>THERM Format</source>
+        <source>MAMA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>VFI Indicator</source>
+        <source>FAMA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>VFI Format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vidya period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volatility Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>VIDYA Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zones</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>VIDYA Format</source>
+        <source>2R Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1457,30 +1722,6 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Show documentation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run S&amp;cript</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Qtstalker script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Qtstalker script to run.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Qtstalker script command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script Completed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -22,6 +22,7 @@
 #include "DataBase.h"
 #include "Bar.h"
 #include "Config.h"
+#include "Setting.h"
 
 #include <QtDebug>
 #include <QtSql>
@@ -60,19 +61,37 @@ DataBase::DataBase (QString session)
     qDebug() << "DataBase::createGroupIndexTable: " << q.lastError().text();
 
   // create the indicator index table
-  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (name TEXT PRIMARY KEY, enable INT, tabRow INT, date INT, log INT, command TEXT, path TEXT)";
+  s = "CREATE TABLE IF NOT EXISTS indicatorIndex (";
+  s.append("name TEXT PRIMARY KEY");
+  s.append(", enable INT");
+  s.append(", tabRow INT");
+  s.append(", date INT");
+  s.append(", log INT");
+  s.append(", cus INT");
+  s.append(", indicator TEXT");
+  s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createIndicatorIndexTable: " << q.lastError().text();
 
   // create the chart object table
-  s = "CREATE TABLE IF NOT EXISTS chartObjects (id INT PRIMARY KEY, symbol TEXT, indicator TEXT, type TEXT, settings TEXT)";
+  s = "CREATE TABLE IF NOT EXISTS chartObjects (";
+  s.append("id INT PRIMARY KEY");
+  s.append(", symbol TEXT");
+  s.append(", indicator TEXT");
+  s.append(", type TEXT");
+  s.append(", settings TEXT");
+  s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createChartObjectsTable: " << q.lastError().text();
 
   // create the indicator settings table
-  s = "CREATE TABLE IF NOT EXISTS indicatorSettings (indicator TEXT PRIMARY KEY UNIQUE, name TEXT, settings TEXT)";
+  s = "CREATE TABLE IF NOT EXISTS indicatorSettings (";
+  s.append("indicator TEXT PRIMARY KEY UNIQUE");
+  s.append(", name TEXT");
+  s.append(", settings TEXT");
+  s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createIndicatorSettingsTable: " << q.lastError().text();
@@ -433,7 +452,7 @@ void DataBase::deleteGroup (QString &n)
 void DataBase::getIndicator (Indicator &parms)
 {
   QString name;
-  parms.getData(Indicator::IndicatorParmName, name);
+  parms.getName(name);
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "SELECT * FROM indicatorIndex WHERE name='" + name + "'";
@@ -447,28 +466,44 @@ void DataBase::getIndicator (Indicator &parms)
   if (! q.next())
     return;
 
-  parms.setData(Indicator::IndicatorParmEnable, q.value(1).toInt());
-  parms.setData(Indicator::IndicatorParmTabRow, q.value(2).toInt());
-  parms.setData(Indicator::IndicatorParmDate, q.value(3).toInt());
-  parms.setData(Indicator::IndicatorParmLog, q.value(4).toInt());
-
-  s = q.value(5).toString();
-  parms.setData(Indicator::IndicatorParmCommand, s);
-
+  parms.setEnable(q.value(1).toInt());
+  parms.setTabRow(q.value(2).toInt());
+  parms.setDate(q.value(3).toInt());
+  parms.setLog(q.value(4).toInt());
+  parms.setCUS(q.value(5).toInt());
   s = q.value(6).toString();
-  parms.setData(Indicator::IndicatorParmPath, s);
+  parms.setIndicator(s);
+
+  // load the parms from the indicator
+  s = "SELECT * FROM INDICATOR_PARMS_" + name;
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getIndicator: " << q.lastError().text();
+    return;
+  }
+
+  Setting set;
+  while (q.next())
+  {
+    QString k = q.value(0).toString();
+    QString d = q.value(1).toString();
+    set.setData(k, d);
+  }
+
+  parms.setSettings(set);
 }
 
 void DataBase::setIndicator (Indicator &i)
 {
-  QString name, enable, tabRow, date, log, command, path;
-  i.getData(Indicator::IndicatorParmName, name);
-  i.getData(Indicator::IndicatorParmEnable, enable);
-  i.getData(Indicator::IndicatorParmTabRow, tabRow);
-  i.getData(Indicator::IndicatorParmDate, date);
-  i.getData(Indicator::IndicatorParmLog, log);
-  i.getData(Indicator::IndicatorParmCommand, command);
-  i.getData(Indicator::IndicatorParmPath, path);
+  QString name, enable, tabRow, date, log, cus, indicator;
+  i.getName(name);
+  enable = QString::number(i.getEnable());
+  tabRow = QString::number(i.getTabRow());
+  date = QString::number(i.getDate());
+  log = QString::number(i.getLog());
+  cus = QString::number(i.getCUS());
+  i.getIndicator(indicator);
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "INSERT OR REPLACE INTO indicatorIndex VALUES (";
@@ -477,12 +512,47 @@ void DataBase::setIndicator (Indicator &i)
   s.append("," + tabRow);
   s.append("," + date);
   s.append("," + log);
-  s.append(",'" + command + "'");
-  s.append(",'" + path + "'");
+  s.append("," + cus);
+  s.append(",'" + indicator + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "DataBase::setIndicator: " << q.lastError().text();
+    qDebug() << "DataBase::setIndicator: save index" << q.lastError().text();
+
+  // create the parms table if needed
+  QString table = "INDICATOR_PARMS_" + name;
+  s = "CREATE TABLE IF NOT EXISTS " + table + " (";
+  s.append("key TEXT");
+  s.append(", data TEXT");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::setIndicator: create parms table" << q.lastError().text();
+
+  // remove all the records first
+  s = "DELETE FROM " + table;
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::setIndicator: clear parms table" << q.lastError().text();
+
+  Setting set;
+  i.getSettings(set);
+  QStringList keyList;
+  set.getKeyList(keyList);
+  int loop;
+  for (loop = 0; loop < keyList.count(); loop++)
+  {
+    QString d;
+    set.getData(keyList[loop], d);
+
+    s = "INSERT OR REPLACE INTO " + table + " VALUES (";
+    s.append("'" + keyList[loop] + "'");
+    s.append(",'" + d + "'");
+    s.append(")");
+    q.exec(s);
+    if (q.lastError().isValid())
+      qDebug() << "DataBase::setIndicator: save parm" << q.lastError().text();
+  }
 }
 
 void DataBase::deleteIndicator (QString &name)
@@ -495,6 +565,11 @@ void DataBase::deleteIndicator (QString &name)
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::deleteIndicatorIndex: " << q.lastError().text();
+
+  s = "DROP TABLE INDICATOR_PARMS_" + name;
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::deleteIndicator: drop parms table" << q.lastError().text();
 }
 
 void DataBase::getIndicatorList (QStringList &l)
@@ -551,6 +626,19 @@ void DataBase::getSearchIndicatorList (QString &pattern, QStringList &list)
     list.append(q.value(0).toString());
 
   list.sort();
+}
+
+void DataBase::setIndicatorEnable (Indicator &i)
+{
+  QString name, enable;
+  i.getName(name);
+  enable = QString::number(i.getEnable());
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "UPDATE indicatorIndex SET enable=" + enable + " WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::setIndicatorEnable:" << q.lastError().text();
 }
 
 /********************************************************************************/

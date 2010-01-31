@@ -22,20 +22,19 @@
 #ifndef STDDEV_HPP
 #define STDDEV_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class STDDEV
+class STDDEV : public IndicatorBase
 {
   public:
     STDDEV ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getSTDDEV (PlotLine *in, int period, double dev);
+    int dialog ();
 
   protected:
+    QString devKey;
 };
 
 #endif

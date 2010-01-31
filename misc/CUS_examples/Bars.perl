@@ -12,7 +12,7 @@ if ($a ne "0")
 
 print STDOUT "PLOT,Bars,C,red,Bar"; # plot BARS
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script

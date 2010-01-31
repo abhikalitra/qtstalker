@@ -1,6 +1,6 @@
 /*
  *  Qtstalker stock charter
- * 
+ *
  *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -15,42 +15,116 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
 #include "Indicator.h"
 
 
-
 Indicator::Indicator ()
 {
-  setData(IndicatorParmEnable, 0);
-  setData(IndicatorParmTabRow, 1);
-  setData(IndicatorParmDate, 1);
-  setData(IndicatorParmLog, 0);
+  enable = 0;
+  tabRow = 1;
+  date = 1;
+  log = 0;
+  cus = 0;
 }
 
-void Indicator::setData (IndicatorParm k, QString &d)
+void Indicator::setName(QString &d)
 {
-  data.insert(k, d);
+  name = d;
 }
 
-void Indicator::getData (IndicatorParm k, QString &d)
+void Indicator::getName(QString &d)
 {
-  d.clear();
-  d = data.value(k);
+  d = name;
 }
 
-void Indicator::setData (IndicatorParm k, int d)
+void Indicator::setEnable(int d)
 {
-  data.insert(k, QString::number(d));
+  enable = d;
 }
 
-int Indicator::getIntData (IndicatorParm k)
+int Indicator::getEnable()
 {
-  int d = 0;
-  d = data.value(k).toInt();
-  return d;
+  return enable;
+}
+
+void Indicator::setTabRow(int d)
+{
+  tabRow = d;
+}
+
+int Indicator::getTabRow()
+{
+  return tabRow;
+}
+
+void Indicator::setDate(int d)
+{
+  date = d;
+}
+
+int Indicator::getDate()
+{
+  return date;
+}
+
+void Indicator::setCUS(int d)
+{
+  cus = d;
+}
+
+int Indicator::getCUS()
+{
+  return cus;
+}
+
+void Indicator::setLog(int d)
+{
+  log = d;
+}
+
+int Indicator::getLog()
+{
+  return log;
+}
+
+void Indicator::setIndicator(QString &d)
+{
+  indicator = d;
+  if (d == "CUS")
+    cus = 1;
+}
+
+void Indicator::getIndicator(QString &d)
+{
+  d = indicator;
+}
+
+void Indicator::setLines(QList<PlotLine *> &d)
+{
+  lines = d;
+}
+
+void Indicator::getLines(QList<PlotLine *> &d)
+{
+  d = lines;
+}
+
+void Indicator::setSettings(Setting &d)
+{
+  settings = d;
+}
+
+void Indicator::getSettings(Setting &d)
+{
+  d = settings;
+}
+
+void Indicator::addLine(PlotLine *d)
+{
+  lines.append(d);
 }
 

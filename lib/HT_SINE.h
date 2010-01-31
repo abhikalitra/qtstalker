@@ -22,20 +22,24 @@
 #ifndef HT_SINE_HPP
 #define HT_SINE_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class HT_SINE
+class HT_SINE : public IndicatorBase
 {
   public:
     HT_SINE ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getHT_SINE (PlotLine *in, QList<PlotLine *> &l);
+    int dialog ();
 
-  protected:
+  private:
+    QString pcKey;
+    QString qcKey;
+    QString ppKey;
+    QString qpKey;
+    QString plKey;
+    QString qlKey;
 };
 
 #endif

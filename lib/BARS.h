@@ -22,20 +22,21 @@
 #ifndef BARS_HPP
 #define BARS_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class BARS
+class BARS : public IndicatorBase
 {
   public:
     BARS ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral);
+    int dialog ();
 
-  protected:
+  private:
+    QString ucKey;
+    QString dcKey;
+    QString ncKey;
 };
 
 #endif

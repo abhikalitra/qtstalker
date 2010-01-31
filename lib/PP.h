@@ -22,20 +22,30 @@
 #ifndef PP_HPP
 #define PP_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class PP
+class PP : public IndicatorBase
 {
   public:
     PP ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getPP (BarData *data, int point);
+    int dialog ();
 
   protected:
+    QString r1cKey;
+    QString r2cKey;
+    QString r3cKey;
+    QString s1cKey;
+    QString s2cKey;
+    QString s3cKey;
+    QString r1lKey;
+    QString r2lKey;
+    QString r3lKey;
+    QString s1lKey;
+    QString s2lKey;
+    QString s3lKey;
 };
 
 #endif

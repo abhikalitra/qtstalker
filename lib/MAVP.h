@@ -22,20 +22,21 @@
 #ifndef MAVP_HPP
 #define MAVP_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class MAVP
+class MAVP : public IndicatorBase
 {
   public:
     MAVP ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, QStringList &maList, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma);
+    int dialog ();
 
   protected:
+    QString input2Key;
+    QString minKey;
+    QString maxKey;
 };
 
 #endif
