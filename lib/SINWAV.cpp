@@ -29,33 +29,113 @@
 
 SINWAV::SINWAV ()
 {
+  indicator = "SINWAV";
+  scKey = QObject::tr("Sine Color");
+  lcKey = QObject::tr("Lead Color");
+  spKey = QObject::tr("Sine Plot");
+  lpKey = QObject::tr("Lead Plot");
+  slKey = QObject::tr("Sine Label");
+  llKey = QObject::tr("Lead Label");
+
+  QString d;
+  d = "red";
+  settings.setData(scKey, d);
+
+  d = "yellow";
+  settings.setData(lcKey, d);
+
+  d = "Line";
+  settings.setData(spKey, d);
+  settings.setData(lpKey, d);
+
+  d = "SINE";
+  settings.setData(slKey, d);
+
+  d = "LEAD";
+  settings.setData(llKey, d);
 }
 
-int SINWAV::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int SINWAV::getIndicator (Indicator &ind, BarData *data)
+{
+  QList<PlotLine *> l;
+  getSINWAV(data, l);
+  if (l.count() != 2)
+  {
+    qDeleteAll(l);
+    return 1;
+  }
+
+  // sine line
+  QString s;
+  PlotLine *line = l.at(0);
+  settings.getData(scKey, s);
+  line->setColor(s);
+
+  settings.getData(spKey, s);
+  line->setType(s);
+
+  settings.getData(slKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  // lead line
+  line = l.at(1);
+  settings.getData(lcKey, s);
+  line->setColor(s);
+
+  settings.getData(lpKey, s);
+  line->setType(s);
+
+  settings.getData(llKey, s);
+  line->setLabel(s);
+
+  ind.addLine(line);
+
+  return 0;
+}
+
+int SINWAV::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // Ehler's sine wave
   // INDICATOR,SINWAV,<SINE_NAME>,<LEAD_NAME>
 
   if (set.count() != 4)
   {
-    qDebug() << "SINWAV::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: invalid sine name" << set[2];
+    qDebug() << indicator << "::calculate: invalid sine name" << set[2];
     return 1;
   }
 
   tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << set[1] << "::calculate: invalid lead name" << set[3];
+    qDebug() << indicator << "::calculate: invalid lead name" << set[3];
     return 1;
   }
 
+  QList<PlotLine *> l;
+  getSINWAV(data, l);
+  if (l.count() != 2)
+  {
+    qDeleteAll(l);
+    return 1;
+  }
+
+  tlines.insert(set[2], l.at(0)); // sine
+  tlines.insert(set[3], l.at(1)); // lead
+
+  return 0;
+}
+
+void SINWAV::getSINWAV (BarData *data, QList<PlotLine *> &l)
+{
   PlotLine *Price = new PlotLine;
 
   int i = 0;
@@ -208,9 +288,68 @@ int SINWAV::calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
   delete DCPhase;
   delete Price;
 
-  tlines.insert(set[2], out1); // sine
-  tlines.insert(set[3], out1); // lead
+  l.append(out1); // sine
+  l.append(out2); // lead
+}
 
-  return 0;
+int SINWAV::dialog ()
+{
+  int page = 0;
+  QString k, d;
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+
+  k = QObject::tr("Sine");
+  dialog->addPage(page, k);
+
+  settings.getData(scKey, d);
+  dialog->addColorItem(page, scKey, d);
+
+  settings.getData(spKey, d);
+  dialog->addComboItem(page, spKey, plotList, d);
+
+  settings.getData(slKey, d);
+  dialog->addTextItem(page, slKey, d);
+
+  page++;
+  k = QObject::tr("Lead");
+  dialog->addPage(page, k);
+
+  settings.getData(lcKey, d);
+  dialog->addColorItem(page, lcKey, d);
+
+  settings.getData(lpKey, d);
+  dialog->addComboItem(page, lpKey, plotList, d);
+
+  settings.getData(llKey, d);
+  dialog->addTextItem(page, llKey, d);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return rc;
+  }
+
+  dialog->getItem(scKey, d);
+  settings.setData(scKey, d);
+
+  dialog->getItem(spKey, d);
+  settings.setData(spKey, d);
+
+  dialog->getItem(slKey, d);
+  settings.setData(slKey, d);
+
+  dialog->getItem(lcKey, d);
+  settings.setData(lcKey, d);
+
+  dialog->getItem(lpKey, d);
+  settings.setData(lpKey, d);
+
+  dialog->getItem(llKey, d);
+  settings.setData(llKey, d);
+
+  delete dialog;
+  return rc;
 }
 

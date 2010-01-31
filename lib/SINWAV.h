@@ -22,20 +22,24 @@
 #ifndef SINWAV_HPP
 #define SINWAV_HPP
 
-#include <QStringList>
-#include <QHash>
+#include "IndicatorBase.h"
 
-#include "PlotLine.h"
-#include "BarData.h"
-
-
-class SINWAV
+class SINWAV : public IndicatorBase
 {
   public:
     SINWAV ();
-    int calculate (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getIndicator (Indicator &ind, BarData *data);
+    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    void getSINWAV (BarData *data, QList<PlotLine *> &l);
+    int dialog ();
 
   protected:
+    QString scKey;
+    QString lcKey;
+    QString spKey;
+    QString lpKey;
+    QString slKey;
+    QString llKey;
 };
 
 #endif
