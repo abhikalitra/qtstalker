@@ -7,7 +7,7 @@ $|++; # turn on autoflush, qtstalker needs this to know when data is finished be
 
 
 # create the day indicator
-print STDOUT "INDICATOR,REF,Day,Close,0"; 
+print STDOUT "INDICATOR,REF,Day,Close,0";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -16,7 +16,7 @@ if ($a ne "0")
 }
 
 # create the 20 SMA indicator
-print STDOUT "INDICATOR,SMA,20MA,Close,20"; 
+print STDOUT "INDICATOR,MA,20MA,Close,20,SMA";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -25,7 +25,7 @@ if ($a ne "0")
 }
 
 # create the 50 SMA indicator
-print STDOUT "INDICATOR,SMA,50MA,Close,50"; 
+print STDOUT "INDICATOR,MA,50MA,Close,50,SMA";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -34,7 +34,7 @@ if ($a ne "0")
 }
 
 # create the 200 SMA indicator
-print STDOUT "INDICATOR,SMA,200MA,Close,200";
+print STDOUT "INDICATOR,MA,200MA,Close,200,SMA";
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -46,7 +46,7 @@ if ($a ne "0")
 # print 200SMA - 50SMA - 20SMA - Day, day is on the foreground
 print STDOUT "PLOT,200MA,200MA,#f3ff88,Dot";
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
@@ -55,7 +55,7 @@ if ($a ne "0")
 #plot 50 SMA, color purple
 print STDOUT "PLOT,50MA,50MA,#9041ff,Dash";
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
@@ -64,7 +64,7 @@ if ($a ne "0")
 # plot 20 SMA, color green
 print STDOUT "PLOT,20MA,20MA,#09ff00,Dash";
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script
@@ -73,7 +73,7 @@ if ($a ne "0")
 # plot day, color red
 print STDOUT "PLOT,Day,Day,Red,Line";
 $a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+chomp($a); # remove the \n
 if ($a ne "0")
 {
   exit; # we have a non zero return code, exit script

@@ -120,7 +120,7 @@ void IndicatorPage::newIndicator ()
   dialog->addComboItem(0, s, l, 0);
 
   s = tr("Tab Row");
-  dialog->addIntItem(0, s, 1, 1, 3);
+  dialog->addIntItem(0, s, 2, 1, 3);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -140,10 +140,11 @@ void IndicatorPage::newIndicator ()
 
   s = tr("Indicator");
   dialog->getItem(s, indicator);
-  delete dialog;
 
   s = tr("Tab Row");
   int tabRow = dialog->getInt(s);
+
+  delete dialog;
 
   // check is name already exists
   l.clear();

@@ -18,7 +18,7 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "INDICATOR,ADX,ADX,14"; # create the adx line
+print STDOUT "INDICATOR,ADX,ADX,14,ADX"; # create the adx line
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

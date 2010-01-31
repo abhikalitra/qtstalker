@@ -320,6 +320,10 @@ a partial match like %SI or %RSI%</source>
         <source>Name missing.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Tab Row</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IndicatorPlot</name>
@@ -1410,38 +1414,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>FastD Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastD MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastK Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastD Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastK Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastD Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastK Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastD Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Method</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1459,10 +1431,6 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Short Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Med Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1531,6 +1499,174 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>2R Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CEIL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EXP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FLOOR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>LN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>LOG10</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>NORMALIZE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SQRT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DIV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MULT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SUB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ROC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ROCP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ROCR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ROC100</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SlowD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast K Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast D Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast K Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast D Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast K Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast D Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast D Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast K Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast D MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FastD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ACOS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ASIN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ATAN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>COS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>COSH</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SIN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SINH</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TAN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TANH</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Medium Period</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

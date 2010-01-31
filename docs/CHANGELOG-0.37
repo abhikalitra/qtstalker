@@ -168,4 +168,14 @@
 
 20100122: Added FI, LMS, PP, SZ, THERM, VFI, VIDYA indicators from 0.36.
 
+20100130: Big changes to the indicators. I have reinstated the 0.36 version of indicators. Now we can have
+          the old hard coded version that uses a GUI for settings and the script version. Use the CUS
+          indicator to use scripts. Will be tweaking the indicators over time. Possibly adding MA
+          capability for them.
+
+          Consolidated many indicators into grouped functions like CDL, TRIG, MATH, MATH2 etc. See docs.
+
+          Removed most of the /misc/CUS_examples that did not demonstrate good uses of indicator scripts.
+
+
 

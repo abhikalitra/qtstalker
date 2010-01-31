@@ -6,20 +6,23 @@ $|++;
 # Get today's close
 print STDOUT "INDICATOR,REF,cl,Close,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+
 print STDOUT "GET_INDICATOR,cl,0";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @close_0 = split(",", $rc);
 
 # Get the 13-bar SMA
-print STDOUT "INDICATOR,SMA,sma_13,Close,13";
+print STDOUT "INDICATOR,MA,sma_13,Close,13,SMA";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+
 print STDOUT "GET_INDICATOR,sma_13,0";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @sma_13 = split(",", $rc);
 
 # Get the 200-bar SMA
-print STDOUT "INDICATOR,SMA,sma_200,Close,200";
+print STDOUT "INDICATOR,MA,sma_200,Close,200,SMA";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+
 print STDOUT "GET_INDICATOR,sma_200,0";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @sma_200 = split(",", $rc);
