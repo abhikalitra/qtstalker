@@ -54,16 +54,20 @@ data. </p>
 <p>The data filenames can have any filename extension, e.g. ibm.txt or
 ibm.csv
 or any other. </p>
-<p>It is useful to set the "Use file name for symbol" option. Some data
+<p>If no symbol name is supplied and the csv data has no symbol name
+included, then CSV will use the filename as a default. Some data
 files
 will not have the symbol name on every data row. If they do, then
 specify that
 field to be "Ignore". </p>
-<p>The filename extension will be stripped and the basename part will
-be used,
-e.g. for "ibm.txt" the symbol will be "ibm". Similarly for uppercase,
-e.g. for
-"GOOG.csv" the symbol will be "GOOG". </p>
+<p>No attempt will be made to alter the filename when used as a symbol
+override. So, if the filename is GOOG.txt then the imported symbol name
+will be GOOG.txt. Previous versions tried to strip off the file suffix,
+but this does not allow a user to intentionally use a .TO or .US suffix
+if desired. So we will not try to second guess users. Anyway, file
+suffix's are an evil dos, win32 legacy convention and should be
+severely punished by law ;-)<br>
+</p>
 <h2 id="date-time">Date or Date-Time format</h2>
 <p>The date format is using the <a
  href="http://doc.qtsoftware.com/qdatetime.html#fromString-2">Qt date</a>
@@ -112,7 +116,7 @@ automation for your data loading. </p>
 <br>
 <pre>-s is the delimiter<br></pre>
 <p>Some examples: </p>
-<pre>to import a csv file with same symbol 'FOO', an example would be:<br>CSV -i /home/user/csv.txt -d yyyy/MM/dd<br><br>same as above but using the filename for Symbol (i.e. bhp):<br>CSV -i /home/user/bhp.txt -d yyyy/MM/dd -f D,O,H,L,C,V,I<br><br>to import a csv file with multiple symbols, an example would be:<br>CSV -i /home/user/csv.txt -d yyyy/MM/dd -f S,D,O,H,L,C,V,I -s ,<br><br>to import a single quote, an example would be:<br>CSV -d yyyy/MM/dd -s , -S FOO -D 2009/11/11 -O 100.5 -H 150.75 -L 50 -C 125.75 -V 100000 -I 123456<br></pre>
+<pre>to import a csv file with symbol name 'FOO', an example would be:<br>CSV -i /home/user/csv.txt -S FOO -d yyyy/MM/dd<br><br>same as above but using the filename for Symbol (i.e. bhp):<br>CSV -i /home/user/bhp -d yyyy/MM/dd -f D,O,H,L,C,V,I<br><br>to import a csv file with multiple symbols, an example would be:<br>CSV -i /home/user/csv.txt -d yyyy/MM/dd -f S,D,O,H,L,C,V,I -s ,<br><br>to import a single quote, an example would be:<br>CSV -d yyyy/MM/dd -s , -S FOO -D 2009/11/11 -O 100.5 -H 150.75 -L 50 -C 125.75 -V 100000 -I 123456<br></pre>
 <h2 id="todo">To do</h2>
 <pre>* Get some content from the old "cvs.html" doc.<br><br></pre>
 </div>

@@ -180,6 +180,10 @@
 20100131: Fixed a bug in CSV that did not prepare the filename to be used as a symbol override. Also
           fixed bug that did not use the supplied symbol switch if no symbol was specified in the csv field
           format switch. Also added a 'G' format field option to ignore unused fields in the data stream.
+          Also, when using the filename as a symbol, no attempt to strip off the suffix will be made. This
+          may interfere with user plans to actually use the suffix. Better not second guess the users.
+          Anyway, file suffix's are an evil dos, win32 legacy conventions and should be severely
+          punished by law. Updated docs to reflect the changes.
 
           Fixed bug that did not update charts that are newly created in Qtstalker::.
 

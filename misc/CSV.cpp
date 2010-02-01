@@ -222,12 +222,17 @@ void CSV::import ()
       if (symbol.isEmpty())
       {
         // remove any file suffix so we can use this as a symbol
-        QString ts2 = fi.completeSuffix();
-        ts = ts.remove(ts2, Qt::CaseSensitive);
-        r.setSymbol(ts);
+	QString ts2 = fName;
+	convertSymbol(ts2);
+        r.setSymbol(ts2);
+	ts = ts2;
+	qDebug() << ts;
       }
       else
+      {
         r.setSymbol(symbol); // use symbol from command line option
+	ts = symbol;
+      }
     }
 
     if (symbolHash.contains(ts))
