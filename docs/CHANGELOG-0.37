@@ -185,7 +185,7 @@
           Anyway, file suffix's are an evil dos, win32 legacy conventions and should be severely
           punished by law. Updated docs to reflect the changes.
 
-          Fixed bug that did not update charts that are newly created in Qtstalker::.
+          Fixed bug that did not update charts that are newly created in Qtstalker::
 
 
 

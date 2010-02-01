@@ -157,11 +157,19 @@ indicator or bar data as follows:</p>
 <h3>Average Directional Movement Index</h3>
 <p>INDICATOR,ADX,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
 </p>
+<p>Available methods are:<br>
+</p>
 <ul>
-  <li>Methods are ADX and ADXR<br>
+  <li>ADX</li>
+  <li>ADXR</li>
+  <li>DX<br>
+  </li>
+  <li>-DI</li>
+  <li>+DI</li>
+  <li>-DM</li>
+  <li>+DM<br>
   </li>
 </ul>
-<p></p>
 <br>
 <h3>Absolute Price Oscillator</h3>
 <p>INDICATOR,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
@@ -204,30 +212,20 @@ indicator or bar data as follows:</p>
 <h3><br>
 </h3>
 <h3>Candles</h3>
-<p>INDICATOR,CANDLES,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;</p>
+<p>INDICATOR,CANDLES,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;METHOD&gt;,&lt;PENETRATION&gt;</p>
 <p></p>
-<p>This will create candle bars.</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Commodity Channel Index</h3>
-<p>INDICATOR,CCI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Candle Functions</h3>
-<p>INDICATOR,CDL,&lt;NAME&gt;,&lt;METHOD&gt;,&lt;PENETRATION&gt;<br>
+<p>This will create candle bars.<br>
+</p>
+<p>Not all candle functions use the PENETRATION field. However, it is
+needed
+regardless or the script will fail.</p>
+<p>The &lt;NONE&gt; method will create basic colored, candle bars. All
+other methods will return a boolean array of values.</p>
+<p>The available methods are:<br>
 </p>
 <ul>
-  <li>Method is the TA-LIB candle function desired. <br>
+  <li>&lt;NONE&gt; (Creates just regular candle bars)<br>
   </li>
-  <li>Not all candle functions use the PENETRATION field. One is needed
-regardless or the script will fail.</li>
-</ul>
-<br>
-Available methods are:<br>
-<br>
-<ul>
   <li>2CROWS</li>
   <li>3BLACKCROWS</li>
   <li>3INSIDE</li>
@@ -291,6 +289,9 @@ Available methods are:<br>
   <li>XSIDEGAP3METHODS</li>
 </ul>
 <br>
+<h3>Commodity Channel Index</h3>
+<p>INDICATOR,CCI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
+<p></p>
 <br>
 <h3>Chande Momentum Oscillator</h3>
 <p>INDICATOR,CMO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
@@ -339,11 +340,6 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
 </h3>
 <h3>Pearson's Correlation Coefficient (r)</h3>
 <p>INDICATOR,CORREL,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<br>
-<br>
-<h3>Directional Movement Index</h3>
-<p>INDICATOR,DX,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
 <p></p>
 <br>
 <h3>Force Index<br>
@@ -532,18 +528,8 @@ Available methods are:<br>
 <h3>Indexes of lowest and highest values over a specified period</h3>
 <p>INDICATOR,MINMAXINDEX,&lt;INPUT&gt;,&lt;NAME_MIN&gt;,&lt;NAME_MAX&gt;,&lt;PERIOD&gt;</p>
 <p></p>
-<h3><br>
-</h3>
-<h3>Minus Directional Indicator</h3>
-<p>INDICATOR,MINUS_DI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Minus Directional Movement</h3>
-<p>INDICATOR,MINUS_DM,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
+<br>
+<br>
 <h3>Momentum</h3>
 <p>INDICATOR,MOM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
 <p></p>
@@ -569,22 +555,9 @@ Available methods are:<br>
   </ul>
 </ul>
 <br>
-<br>
-<h3>Plus Directional Indicator</h3>
-<p>INDICATOR,PLUS_DI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Plus Directional Movement</h3>
-<p>INDICATOR,PLUS_DM,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
 <h3>Percentage Price Oscillator</h3>
 <p>INDICATOR,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
 <p></p>
-<h3><br>
-</h3>
 <br>
 <h3>PRICE</h3>
 INDICATOR,PRICE,&lt;NAME&gt;,&lt;METHOD&gt;<br>

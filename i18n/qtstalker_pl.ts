@@ -1669,6 +1669,26 @@ $ed is the last date.</source>
         <source>Medium Period</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Ref 1 Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2 Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref Lines</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>

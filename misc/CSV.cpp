@@ -226,7 +226,6 @@ void CSV::import ()
 	convertSymbol(ts2);
         r.setSymbol(ts2);
 	ts = ts2;
-	qDebug() << ts;
       }
       else
       {

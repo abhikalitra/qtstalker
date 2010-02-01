@@ -29,11 +29,84 @@
 class CANDLES : public IndicatorBase
 {
   public:
+    enum Function
+    {
+      _NONE,
+      _2CROWS,
+      _3BLACKCROWS,
+      _3INSIDE,
+      _3LINESTRIKE,
+      _3OUTSIDE,
+      _3STARSINSOUTH,
+      _3WHITESOLDIERS,
+      _ABANDONEDBABY,
+      _ADVANCEBLOCK,
+      _BELTHOLD,
+      _BREAKAWAY,
+      _CLOSINGMARUBOZU,
+      _CONCEALBABYSWALL,
+      _COUNTERATTACK,
+      _DARKCLOUDCOVER,
+      _DOJI,
+      _DOJISTAR,
+      _DRAGONFLYDOJI,
+      _ENGULFING,
+      _EVENINGDOJISTAR,
+      _EVENINGSTAR,
+      _GAPSIDESIDEWHITE,
+      _GRAVESTONEDOJI,
+      _HAMMER,
+      _HANGINGMAN,
+      _HARAMI,
+      _HARAMICROSS,
+      _HIGHWAVE,
+      _HIKKAKE,
+      _HIKKAKEMOD,
+      _HOMINGPIGEON,
+      _IDENTICAL3CROWS,
+      _INNECK,
+      _INVERTEDHAMMER,
+      _KICKING,
+      _KICKINGBYLENGTH,
+      _LADDERBOTTOM,
+      _LONGLEGGEDDOJI,
+      _LONGLINE,
+      _MARUBOZU,
+      _MATCHINGLOW,
+      _MATHOLD,
+      _MORNINGDOJISTAR,
+      _MORNINGSTAR,
+      _ONNECK,
+      _PIERCING,
+      _RICKSHAWMAN,
+      _RISEFALL3METHODS,
+      _SEPARATINGLINES,
+      _SHOOTINGSTAR,
+      _SHORTLINE,
+      _SPINNINGTOP,
+      _STALLEDPATTERN,
+      _STICKSANDWICH,
+      _TAKURI,
+      _TASUKIGAP,
+      _THRUSTING,
+      _TRISTAR,
+      _UNIQUE3RIVER,
+      _UPSIDEGAP2CROWS,
+      _XSIDEGAP3METHODS
+    };
+
     CANDLES ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getCANDLES (BarData *data, QColor &color);
     int dialog ();
+    PlotLine * getMethod (BarData *data, int method, double pen);
+
+  protected:
+    QString methodKey;
+    QString penKey;
+    QString patColorKey;
+    QStringList methodList;
 };
 
 #endif

@@ -105,31 +105,35 @@ int VOL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 PlotLine * VOL::getVOL (BarData *data, int method)
 {
   int size = data->count();
-  TA_Real close[size];
-  TA_Real volume[size];
   TA_Real out[size];
-
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    close[loop] = (TA_Real) data->getClose(loop);
-    volume[loop] = (TA_Real) data->getVolume(loop);
-  }
-
   TA_Integer outBeg;
   TA_Integer outNb;
   TA_RetCode rc = TA_SUCCESS;
   switch (method)
   {
     case 0:
+    {
+      TA_Real close[size];
+      TA_Real volume[size];
+      int loop;
+      for (loop = 0; loop < size; loop++)
+      {
+        close[loop] = (TA_Real) data->getClose(loop);
+        volume[loop] = (TA_Real) data->getVolume(loop);
+      }
       rc = TA_OBV(0, size - 1, &close[0], &volume[0], &outBeg, &outNb, &out[0]);
       break;
+    }
     case 1: // volume;
     {
-      int loop;
-      outNb = size;
-      for (loop = 0; loop < size; loop++)
-        out[loop] = (TA_Real) data->getVolume(loop);
+      PlotLine *line = data->getInput(BarData::Volume);
+      if (! line)
+      {
+        qDebug() << indicator << "::getVOL: no volume data";
+        return 0;
+      }
+      else
+	return line;
       break;
     }
     default:
@@ -142,6 +146,7 @@ PlotLine * VOL::getVOL (BarData *data, int method)
     return 0;
   }
 
+  int loop;
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);

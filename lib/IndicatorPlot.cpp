@@ -1070,7 +1070,8 @@ void IndicatorPlot::drawHorizontalLine ()
   QString s, s2;
   strip(currentLine->getData(currentLine->getSize() - 1), 4, s);
   currentLine->getLabel(s2);
-  s = s2 + "=" + s;
+  s = s2 + s;
+//  s = s2 + "=" + s;
 
   painter.setBackgroundMode(Qt::OpaqueMode);
   painter.setBackground(QBrush(backgroundColor));

@@ -34,14 +34,12 @@
 #include "BOP.h"
 #include "CANDLES.h"
 #include "CCI.h"
-#include "CDL.h"
 #include "CMO.h"
 #include "COLOR.h"
 #include "COMPARE.h"
 #include "CORREL.h"
 #include "CUS.h"
 #include "DEMA.h"
-#include "DX.h"
 #include "FI.h"
 #include "HT_DCPERIOD.h"
 #include "HT_DCPHASE.h"
@@ -71,13 +69,9 @@
 #include "MININDEX.h"
 #include "MINMAX.h"
 #include "MINMAXINDEX.h"
-#include "MINUS_DI.h"
-#include "MINUS_DM.h"
 #include "MOM.h"
 #include "NATR.h"
 #include "PP.h"
-#include "PLUS_DI.h"
-#include "PLUS_DM.h"
 #include "PPO.h"
 #include "PRICE.h"
 #include "REF.h"
@@ -190,11 +184,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new CCI;
       break;
     }
-    case IndicatorBase::_CDL:
-    {
-      ib = new CDL;
-      break;
-    }
     case IndicatorBase::_CMO:
     {
       ib = new CMO;
@@ -224,11 +213,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_DEMA:
     {
       ib = new DEMA;
-      break;
-    }
-    case IndicatorBase::_DX:
-    {
-      ib = new DX;
       break;
     }
     case IndicatorBase::_FI:
@@ -376,16 +360,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new MINMAXINDEX;
       break;
     }
-    case IndicatorBase::_MINUS_DI:
-    {
-      ib = new MINUS_DI;
-      break;
-    }
-    case IndicatorBase::_MINUS_DM:
-    {
-      ib = new MINUS_DM;
-      break;
-    }
     case IndicatorBase::_MOM:
     {
       ib = new MOM;
@@ -394,16 +368,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_NATR:
     {
       ib = new NATR;
-      break;
-    }
-    case IndicatorBase::_PLUS_DI:
-    {
-      ib = new PLUS_DI;
-      break;
-    }
-    case IndicatorBase::_PLUS_DM:
-    {
-      ib = new PLUS_DM;
       break;
     }
     case IndicatorBase::_PP:

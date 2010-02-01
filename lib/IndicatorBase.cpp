@@ -57,7 +57,6 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "BOP";
   indicatorList << "CANDLES";
   indicatorList << "CCI";
-  indicatorList << "CDL";
   indicatorList << "CMO";
   indicatorList << "COLOR";
   indicatorList << "COMPARE";
@@ -65,7 +64,6 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "CORREL";
   indicatorList << "CUS";
   indicatorList << "DEMA";
-  indicatorList << "DX";
   indicatorList << "FI";
   indicatorList << "HT_DCPERIOD";
   indicatorList << "HT_DCPHASE";
@@ -95,12 +93,8 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "MININDEX";
   indicatorList << "MINMAX";
   indicatorList << "MINMAXINDEX";
-  indicatorList << "MINUS_DI";
-  indicatorList << "MINUS_DM";
   indicatorList << "MOM";
   indicatorList << "NATR";
-  indicatorList << "PLUS_DI";
-  indicatorList << "PLUS_DM";
   indicatorList << "PP";
   indicatorList << "PPO";
   indicatorList << "PRICE";
@@ -192,14 +186,6 @@ void IndicatorBase::getSettings (Indicator &_ind)
 void IndicatorBase::getIndicatorList (QStringList &l)
 {
   l = indicatorList;
-  l.removeAll("COLOR");
-  l.removeAll("COMPARE");
-  l.removeAll("COMPARE2");
-  l.removeAll("MATH");
-  l.removeAll("MATH2");
-  l.removeAll("REF");
-  l.removeAll("SYMBOL");
-  l.removeAll("TRIG");
 }
 
 void IndicatorBase::getMAList (QStringList &l)

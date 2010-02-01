@@ -30,11 +30,27 @@ class ADX : public IndicatorBase
     ADX ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getADX (BarData *data, int period, int method);
+    PlotLine * getLine (BarData *data, int period, int method);
     int dialog ();
 
   protected:
     QString methodKey;
+    QString adxColorKey;
+    QString adxrColorKey;
+    QString pdiColorKey;
+    QString mdiColorKey;
+    QString adxPlotKey;
+    QString adxrPlotKey;
+    QString pdiPlotKey;
+    QString mdiPlotKey;
+    QString adxLabelKey;
+    QString adxrLabelKey;
+    QString pdiLabelKey;
+    QString mdiLabelKey;
+    QString adxCheckKey;
+    QString adxrCheckKey;
+    QString pdiCheckKey;
+    QString mdiCheckKey;
     QStringList methodList;
 };
 

@@ -62,7 +62,7 @@ BBANDS::BBANDS ()
   d = "Close";
   settings.setData(inputKey, d);
 
-  settings.setData(periodKey, 5);
+  settings.setData(periodKey, 20);
 
   settings.setData(udKey, 2);
 

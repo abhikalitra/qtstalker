@@ -20,6 +20,7 @@
  */
 
 #include "CORREL.h"
+#include "DataBase.h"
 
 #include <QtDebug>
 
@@ -28,10 +29,14 @@ CORREL::CORREL ()
 {
   indicator = "CORREL";
   input2Key = QObject::tr("Input 2");
+  hlineColorKey = "Reference Line Color";
 
   QString d;
   d = "red";
   settings.setData(colorKey, d);
+
+  d = "white";
+  settings.setData(hlineColorKey, d);
 
   d = "Line";
   settings.setData(plotKey, d);
@@ -40,6 +45,8 @@ CORREL::CORREL ()
 
   d = "Close";
   settings.setData(inputKey, d);
+
+  d = "SP500";
   settings.setData(input2Key, d);
 
   settings.setData(periodKey, 30);
@@ -57,11 +64,20 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
   }
 
   settings.getData(input2Key, s);
-  PlotLine *in2 = data->getInput(data->getInputType(s));
+  BarData *bd = new BarData;
+  bd->setSymbol(s);
+  bd->setBarLength(data->getBarLength());
+  bd->setBarsRequested(data->getBarsRequested());
+
+  DataBase db;
+  db.getChart(bd);
+
+  PlotLine *in2 = bd->getInput(BarData::Close);
   if (! in2)
   {
-    qDebug() << indicator << "::calculate: input2 not found" << s;
+    qDebug() << indicator << "::calculate: input 2 not found";
     delete in;
+    delete bd;
     return 1;
   }
 
@@ -72,6 +88,7 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
   {
     delete in;
     delete in2;
+    delete bd;
     return 1;
   }
 
@@ -86,8 +103,28 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
 
   ind.addLine(line);
 
+  // 1 reference line
+  PlotLine *hline = new PlotLine;
+  settings.getData(hlineColorKey, s);
+  hline->setColor(s);
+  hline->append(1);
+  ind.addLine(hline);
+
+  // 0 reference line
+  hline = new PlotLine;
+  hline->setColor(s);
+  hline->append(0);
+  ind.addLine(hline);
+
+  // -1 reference line
+  hline = new PlotLine;
+  hline->setColor(s);
+  hline->append(-1);
+  ind.addLine(hline);
+
   delete in;
   delete in2;
+  delete bd;
 
   return 0;
 }
@@ -200,6 +237,9 @@ int CORREL::dialog ()
   settings.getData(colorKey, d);
   dialog->addColorItem(page, colorKey, d);
 
+  settings.getData(hlineColorKey, d);
+  dialog->addColorItem(page, hlineColorKey, d);
+
   settings.getData(plotKey, d);
   dialog->addComboItem(page, plotKey, plotList, d);
 
@@ -210,7 +250,7 @@ int CORREL::dialog ()
   dialog->addComboItem(page, inputKey, inputList, d);
 
   settings.getData(input2Key, d);
-  dialog->addComboItem(page, input2Key, inputList, d);
+  dialog->addTextItem(page, input2Key, d);
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
 
@@ -223,6 +263,9 @@ int CORREL::dialog ()
 
   dialog->getItem(colorKey, d);
   settings.setData(colorKey, d);
+
+  dialog->getItem(hlineColorKey, d);
+  settings.setData(hlineColorKey, d);
 
   dialog->getItem(plotKey, d);
   settings.setData(plotKey, d);

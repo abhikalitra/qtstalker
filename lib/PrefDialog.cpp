@@ -233,7 +233,7 @@ void PrefDialog::addCheckItem (int page, QString &name, QString &flag)
     addCheckItem(page, name, FALSE);
 }
 
-void PrefDialog::addCheckItem (int page, QString &name, bool flag)
+void PrefDialog::addCheckItem (int page, QString &name, int flag)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -251,9 +251,9 @@ void PrefDialog::addCheckItem (int page, QString &name, bool flag)
   checkList.insert(name, check);
 }
 
-bool PrefDialog::getCheck (QString &name)
+int PrefDialog::getCheck (QString &name)
 {
-  bool flag = FALSE;
+  int flag = FALSE;
   QCheckBox *check = checkList.value(name);
   if (check)
     flag = check->isChecked();
@@ -267,9 +267,9 @@ void PrefDialog::getCheckString (QString &name, QString &flag)
   if (check)
   {
     if (check->isChecked())
-      flag = "True";
+      flag = "TRUE";
     else
-      flag = "False";
+      flag = "FALSE";
   }
 }
 

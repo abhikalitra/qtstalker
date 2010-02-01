@@ -35,6 +35,7 @@ class CORREL : public IndicatorBase
 
   private:
     QString input2Key;
+    QString hlineColorKey;
 };
 
 #endif

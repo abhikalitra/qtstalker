@@ -67,9 +67,9 @@ class PrefDialog : public QDialog
     void addIntItem (int page, QString &, int);
     void addIntItem (int page, QString &, int, int, int);
     int getInt (QString &);
-    void addCheckItem (int page, QString &, bool);
+    void addCheckItem (int page, QString &, int);
     void addCheckItem (int page, QString &, QString &);
-    bool getCheck (QString &);
+    int getCheck (QString &);
     void getCheckString (QString &, QString &);
     void addFontItem (int page, QString &, QFont &);
     void getFont (QString &, QFont &);
