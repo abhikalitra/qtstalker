@@ -20,6 +20,7 @@
  */
 
 #include "MAMA.h"
+#include "BARS.h"
 
 #include <QtDebug>
 
@@ -27,6 +28,7 @@
 MAMA::MAMA ()
 {
   indicator = "MAMA";
+  oscKey = QObject::tr("Oscillator");
   mcKey = QObject::tr("MAMA Color");
   fcKey = QObject::tr("FAMA Color");
   mpKey = QObject::tr("MAMA Plot");
@@ -58,7 +60,9 @@ MAMA::MAMA ()
   settings.setData(inputKey, d);
 
   settings.setData(flmKey, 0.5);
-  settings.setData(slmKey, 0.5);
+  settings.setData(slmKey, 0.05);
+
+  settings.setData(oscKey, 0);
 }
 
 int MAMA::getIndicator (Indicator &ind, BarData *data)
@@ -85,30 +89,55 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
   }
 
   // mama line
-  PlotLine *line = l.at(0);
-  settings.getData(mcKey, s);
-  line->setColor(s);
+  PlotLine *mama = l.at(0);
+  PlotLine *fama = l.at(1);
 
-  settings.getData(mpKey, s);
-  line->setType(s);
+  int osc = settings.getInt(oscKey);
+  if (osc)
+  {
+    PlotLine *line = new PlotLine;
+    line->setType(PlotLine::HistogramBar);
 
-  settings.getData(mlKey, s);
-  line->setLabel(s);
+    settings.getData(mcKey, s);
+    line->setColor(s);
 
-  ind.addLine(line);
+    s = "OSC";
+    line->setLabel(s);
 
-  // fama line
-  line = l.at(1);
-  settings.getData(fcKey, s);
-  line->setColor(s);
+    int loop;
+    for (loop = 0; loop < mama->getSize(); loop++)
+      line->append(mama->getData(loop) - fama->getData(loop));
 
-  settings.getData(fpKey, s);
-  line->setType(s);
+    ind.addLine(line);
+  }
+  else
+  {
+    BARS bars;
+    bars.getIndicator(ind, data);
 
-  settings.getData(flKey, s);
-  line->setLabel(s);
+    settings.getData(mcKey, s);
+    mama->setColor(s);
 
-  ind.addLine(line);
+    settings.getData(mpKey, s);
+    mama->setType(s);
+
+    settings.getData(mlKey, s);
+    mama->setLabel(s);
+
+    ind.addLine(mama);
+
+    // fama line
+    settings.getData(fcKey, s);
+    fama->setColor(s);
+
+    settings.getData(fpKey, s);
+    fama->setType(s);
+
+    settings.getData(flKey, s);
+    fama->setLabel(s);
+
+    ind.addLine(fama);
+  }
 
   delete in;
 
@@ -231,6 +260,8 @@ int MAMA::dialog ()
 
   dialog->addDoubleItem(page, slmKey, settings.getDouble(slmKey), 0.01, 0.99);
 
+  dialog->addCheckItem(page, oscKey, settings.getInt(oscKey));
+
   page++;
   k = QObject::tr("MAMA");
   dialog->addPage(page, k);
@@ -290,6 +321,9 @@ int MAMA::dialog ()
 
   dialog->getItem(slmKey, d);
   settings.setData(slmKey, d);
+
+  dialog->getItem(oscKey, d);
+  settings.setData(oscKey, d);
 
   delete dialog;
   return rc;

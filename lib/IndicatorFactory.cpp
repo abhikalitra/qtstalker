@@ -39,18 +39,11 @@
 #include "COMPARE.h"
 #include "CORREL.h"
 #include "CUS.h"
-#include "DEMA.h"
 #include "FI.h"
-#include "HT_DCPERIOD.h"
-#include "HT_DCPHASE.h"
+#include "HT.h"
 #include "HT_PHASOR.h"
 #include "HT_SINE.h"
-#include "HT_TRENDLINE.h"
-#include "HT_TRENDMODE.h"
 #include "LINEARREG.h"
-#include "LINEARREG_ANGLE.h"
-#include "LINEARREG_INTERCEPT.h"
-#include "LINEARREG_SLOPE.h"
 #include "LMS.h"
 #include "MA.h"
 #include "MACD.h"
@@ -210,24 +203,14 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new CUS;
       break;
     }
-    case IndicatorBase::_DEMA:
-    {
-      ib = new DEMA;
-      break;
-    }
     case IndicatorBase::_FI:
     {
       ib = new FI;
       break;
     }
-    case IndicatorBase::_HT_DCPERIOD:
+    case IndicatorBase::_HT:
     {
-      ib = new HT_DCPERIOD;
-      break;
-    }
-    case IndicatorBase::_HT_DCPHASE:
-    {
-      ib = new HT_DCPHASE;
+      ib = new HT;
       break;
     }
     case IndicatorBase::_HT_PHASOR:
@@ -240,34 +223,9 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new HT_SINE;
       break;
     }
-    case IndicatorBase::_HT_TRENDLINE:
-    {
-      ib = new HT_TRENDLINE;
-      break;
-    }
-    case IndicatorBase::_HT_TRENDMODE:
-    {
-      ib = new HT_TRENDMODE;
-      break;
-    }
     case IndicatorBase::_LINEARREG:
     {
       ib = new LINEARREG;
-      break;
-    }
-    case IndicatorBase::_LINEARREG_ANGLE:
-    {
-      ib = new LINEARREG_ANGLE;
-      break;
-    }
-    case IndicatorBase::_LINEARREG_INTERCEPT:
-    {
-      ib = new LINEARREG_INTERCEPT;
-      break;
-    }
-    case IndicatorBase::_LINEARREG_SLOPE:
-    {
-      ib = new LINEARREG_SLOPE;
       break;
     }
     case IndicatorBase::_LMS:

@@ -63,18 +63,11 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "COMPARE2";
   indicatorList << "CORREL";
   indicatorList << "CUS";
-  indicatorList << "DEMA";
   indicatorList << "FI";
-  indicatorList << "HT_DCPERIOD";
-  indicatorList << "HT_DCPHASE";
+  indicatorList << "HT";
   indicatorList << "HT_PHASOR";
   indicatorList << "HT_SINE";
-  indicatorList << "HT_TRENDLINE";
-  indicatorList << "HT_TRENDMODE";
   indicatorList << "LINEARREG";
-  indicatorList << "LINEARREG_ANGLE";
-  indicatorList << "LINEARREG_INTERCEPT";
-  indicatorList << "LINEARREG_SLOPE";
   indicatorList << "LMS";
   indicatorList << "MA";
   indicatorList << "MACD";
@@ -147,7 +140,7 @@ int IndicatorBase::dialog ()
   return 0;
 }
 
-PlotLine * IndicatorBase::getMA (PlotLine *_in)
+PlotLine * IndicatorBase::getMA (PlotLine *_in, int period, int type)
 {
   TA_Integer outBeg;
   TA_Integer outNb;
@@ -157,7 +150,7 @@ PlotLine * IndicatorBase::getMA (PlotLine *_in)
   for (loop = 0; loop < _in->getSize(); loop++)
     input[loop] = (TA_Real) _in->getData(loop);
 
-  TA_RetCode rc = TA_MA(0, _in->getSize() - 1, &input[0], maPeriod, (TA_MAType) maType, &outBeg, &outNb, &out[0]);
+  TA_RetCode rc = TA_MA(0, _in->getSize() - 1, &input[0], period, (TA_MAType) type, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
     qDebug() << "IndicatorBase::getMA: TA-Lib error" << rc;

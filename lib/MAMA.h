@@ -36,6 +36,7 @@ class MAMA : public IndicatorBase
     int dialog ();
 
   protected:
+    QString oscKey;
     QString mcKey;
     QString fcKey;
     QString mpKey;

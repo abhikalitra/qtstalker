@@ -98,9 +98,12 @@ void DataWindow::setPlot (Plot *d)
   QString s;
   for (loop2 = 0; loop2 < lines.count(); loop2++)
   {
+    PlotLine *line = lines.at(loop2);
+    if (line->getType() == PlotLine::Horizontal)
+      continue;
+
     table->setColumnCount(table->columnCount() + 1);
 
-    PlotLine *line = lines.at(loop2);
     line->getLabel(s);
     QTableWidgetItem *ti = new QTableWidgetItem(s, 0);
     table->setHorizontalHeaderItem(table->columnCount() - 1, ti);

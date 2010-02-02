@@ -98,6 +98,9 @@ CANDLES::CANDLES ()
   d = "green";
   settings.setData(colorKey, d);
 
+  d = "red";
+  settings.setData(patColorKey, d);
+
   d = "Line";
   settings.setData(plotKey, d);
 

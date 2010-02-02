@@ -61,18 +61,11 @@ class IndicatorBase
       _COMPARE2,
       _CORREL,
       _CUS,
-      _DEMA,
       _FI,
-      _HT_DCPERIOD,
-      _HT_DCPHASE,
+      _HT,
       _HT_PHASOR,
       _HT_SINE,
-      _HT_TRENDLINE,
-      _HT_TRENDMODE,
       _LINEARREG,
-      _LINEARREG_ANGLE,
-      _LINEARREG_INTERCEPT,
-      _LINEARREG_SLOPE,
       _LMS,
       _MA,
       _MACD,
@@ -128,7 +121,7 @@ class IndicatorBase
     virtual int getIndicator (Indicator &ind, BarData *data);
     virtual int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     virtual int dialog ();
-    PlotLine * getMA (PlotLine *_in);
+    PlotLine * getMA (PlotLine *_in, int period, int type);
     void setSettings (Indicator &_indicator);
     void getSettings (Indicator &_indicator);
     void getIndicatorList (QStringList &);

@@ -49,7 +49,11 @@ LMS::LMS ()
   QString d;
   d = "red";
   settings.setData(skcKey, d);
+
+  d = "yellow";
   settings.setData(d2cKey, d);
+
+  d = "blue";
   settings.setData(d5cKey, d);
 
   d = "Line";

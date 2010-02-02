@@ -19,19 +19,23 @@
  *  USA.
  */
 
-#ifndef LINEARREG_INTERCEPT_HPP
-#define LINEARREG_INTERCEPT_HPP
+#ifndef HT_HPP
+#define HT_HPP
 
 #include "IndicatorBase.h"
 
-class LINEARREG_INTERCEPT : public IndicatorBase
+class HT : public IndicatorBase
 {
   public:
-    LINEARREG_INTERCEPT ();
+    HT ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getLINEARREG_INTERCEPT (PlotLine *in, int period);
+    PlotLine * getHT (PlotLine *in, int method);
     int dialog ();
+
+  protected:
+    QString methodKey;
+    QStringList methodList;
 };
 
 #endif

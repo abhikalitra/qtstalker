@@ -107,18 +107,21 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
   PlotLine *hline = new PlotLine;
   settings.getData(hlineColorKey, s);
   hline->setColor(s);
+  hline->setType(PlotLine::Horizontal);
   hline->append(1);
   ind.addLine(hline);
 
   // 0 reference line
   hline = new PlotLine;
   hline->setColor(s);
+  hline->setType(PlotLine::Horizontal);
   hline->append(0);
   ind.addLine(hline);
 
   // -1 reference line
   hline = new PlotLine;
   hline->setColor(s);
+  hline->setType(PlotLine::Horizontal);
   hline->append(-1);
   ind.addLine(hline);
 

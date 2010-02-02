@@ -32,10 +32,15 @@ FI::FI ()
   d = "red";
   settings.setData(colorKey, d);
 
-  d = "Line";
+  d = "Histogram Bar";
   settings.setData(plotKey, d);
 
   settings.setData(labelKey, indicator);
+
+  d = "EMA";
+  settings.setData(maKey, d);
+
+  settings.setData(periodKey, 2);
 }
 
 int FI::getIndicator (Indicator &ind, BarData *data)
@@ -44,17 +49,29 @@ int FI::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
+  int period = settings.getInt(periodKey);
+
   QString s;
+  settings.getData(maKey, s);
+  int mat = maList.indexOf(s);
+
+  PlotLine *ma = getMA(line, period, mat);
+  if (! ma)
+  {
+    delete line;
+    return 1;
+  }
+
   settings.getData(colorKey, s);
-  line->setColor(s);
+  ma->setColor(s);
 
   settings.getData(plotKey, s);
-  line->setType(s);
+  ma->setType(s);
 
   settings.getData(labelKey, s);
-  line->setLabel(s);
+  ma->setLabel(s);
 
-  ind.addLine(line);
+  ind.addLine(ma);
 
   return 0;
 }
@@ -119,6 +136,11 @@ int FI::dialog ()
   settings.getData(labelKey, d);
   dialog->addTextItem(page, labelKey, d);
 
+  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
+
+  settings.getData(maKey, d);
+  dialog->addComboItem(page, maKey, maList, d);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -134,6 +156,12 @@ int FI::dialog ()
 
   dialog->getItem(labelKey, d);
   settings.setData(labelKey, d);
+
+  dialog->getItem(periodKey, d);
+  settings.setData(periodKey, d);
+
+  dialog->getItem(maKey, d);
+  settings.setData(maKey, d);
 
   delete dialog;
   return rc;

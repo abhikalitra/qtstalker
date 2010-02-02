@@ -20,6 +20,7 @@
  */
 
 #include "MA.h"
+#include "BARS.h"
 
 #include <QtDebug>
 
@@ -30,6 +31,7 @@ MA::MA ()
   methodKey = QObject::tr("Method");
 
   methodList << "EMA";
+  methodList << "DEMA";
   methodList << "KAMA";
   methodList << "SMA";
   methodList << "TEMA";
@@ -77,6 +79,9 @@ int MA::getIndicator (Indicator &ind, BarData *data)
     delete in;
     return 1;
   }
+
+  BARS bars;
+  bars.getIndicator(ind, data);
 
   settings.getData(colorKey, s);
   line->setColor(s);
@@ -166,18 +171,21 @@ PlotLine * MA::getMA (PlotLine *in, int period, int method)
       rc = TA_EMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     case 1:
-      rc = TA_KAMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_DEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     case 2:
-      rc = TA_SMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_KAMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     case 3:
-      rc = TA_TEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_SMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     case 4:
+      rc = TA_TEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 5:
       rc = TA_TRIMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
-    case 5: // Wilder
+    case 6: // Wilder
     {
       PlotLine *line = new PlotLine;
       double t = 0;
@@ -195,7 +203,7 @@ PlotLine * MA::getMA (PlotLine *in, int period, int method)
       return line;
       break;
     }
-    case 6:
+    case 7:
       rc = TA_WMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     default:

@@ -20,6 +20,7 @@
  */
 
 #include "LINEARREG.h"
+#include "BARS.h"
 
 #include <QtDebug>
 
@@ -27,6 +28,12 @@
 LINEARREG::LINEARREG ()
 {
   indicator = "LINEARREG";
+  methodKey = QObject::tr("Method");
+
+  methodList << "LINEARREG";
+  methodList << "ANGLE";
+  methodList << "INTERCEPT";
+  methodList << "SLOPE";
 
   QString d;
   d = "red";
@@ -41,6 +48,9 @@ LINEARREG::LINEARREG ()
   settings.setData(inputKey, d);
 
   settings.setData(periodKey, 14);
+
+  d = "LINEARREG";
+  settings.setData(methodKey, d);
 }
 
 int LINEARREG::getIndicator (Indicator &ind, BarData *data)
@@ -56,11 +66,27 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
 
   int period = settings.getInt(periodKey);
 
-  PlotLine *line = getLINEARREG(in, period);
+  settings.getData(methodKey, s);
+  int method = methodList.indexOf(s);
+
+  PlotLine *line = getLINEARREG(in, period, method);
   if (! line)
   {
     delete in;
     return 1;
+  }
+
+  switch (method)
+  {
+    case 0: // LINEARREG
+    case 2: // INTERCEPT
+    {
+      BARS bars;
+      bars.getIndicator(ind, data);
+      break;
+    }
+    default:
+      break;
   }
 
   settings.getData(colorKey, s);
@@ -81,9 +107,9 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
 
 int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,LINEARREG,<NAME>,<INPUT>,<PERIOD>
+  // INDICATOR,LINEARREG,<NAME>,<INPUT>,<PERIOD>,<METHOD>
 
-  if (set.count() != 5)
+  if (set.count() != 6)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -117,7 +143,14 @@ int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
     return 1;
   }
 
-  PlotLine *line = getLINEARREG(in, period);
+  int method = methodList.indexOf(set[5]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid method" << set[5];
+    return 1;
+  }
+
+  PlotLine *line = getLINEARREG(in, period, method);
   if (! line)
     return 1;
 
@@ -126,7 +159,7 @@ int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
   return 0;
 }
 
-PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period)
+PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period, int method)
 {
   int size = in->getSize();
   TA_Real input[size];
@@ -137,7 +170,25 @@ PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period)
 
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_RetCode rc = TA_LINEARREG(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+  TA_RetCode rc = TA_SUCCESS;
+  switch (method)
+  {
+    case 0:
+      rc = TA_LINEARREG(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 1:
+      rc = TA_LINEARREG_ANGLE(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 2:
+      rc = TA_LINEARREG_INTERCEPT(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 3:
+      rc = TA_LINEARREG_SLOPE(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
   if (rc != TA_SUCCESS)
   {
     qDebug() << indicator << "::calculate: TA-Lib error" << rc;
@@ -175,6 +226,9 @@ int LINEARREG::dialog ()
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
 
+  settings.getData(methodKey, d);
+  dialog->addComboItem(page, methodKey, methodList, d);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -196,6 +250,9 @@ int LINEARREG::dialog ()
 
   dialog->getItem(periodKey, d);
   settings.setData(periodKey, d);
+
+  dialog->getItem(methodKey, d);
+  settings.setData(methodKey, d);
 
   delete dialog;
   return rc;

@@ -19,14 +19,21 @@
  *  USA.
  */
 
-#include "HT_DCPERIOD.h"
+#include "HT.h"
+#include "BARS.h"
 
 #include <QtDebug>
 
 
-HT_DCPERIOD::HT_DCPERIOD ()
+HT::HT ()
 {
-  indicator = "HT_DCPERIOD";
+  indicator = "HT";
+  methodKey = QObject::tr("Method");
+
+  methodList << "DCPERIOD";
+  methodList << "DCPHASE";
+  methodList << "TRENDLINE";
+  methodList << "TRENDMODE";
 
   QString d;
   d = "red";
@@ -39,9 +46,12 @@ HT_DCPERIOD::HT_DCPERIOD ()
 
   d = "Close";
   settings.setData(inputKey, d);
+
+  d = "TRENDLINE";
+  settings.setData(methodKey, d);
 }
 
-int HT_DCPERIOD::getIndicator (Indicator &ind, BarData *data)
+int HT::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
   settings.getData(inputKey, s);
@@ -52,11 +62,21 @@ int HT_DCPERIOD::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  PlotLine *line = getHT_DCPERIOD(in);
+  settings.getData(methodKey, s);
+  int method = methodList.indexOf(s);
+
+  PlotLine *line = getHT(in, method);
   if (! line)
   {
     delete in;
     return 1;
+  }
+
+  // dont add bars if method = TRENDMODE
+  if (method != 3)
+  {
+    BARS bars;
+    bars.getIndicator(ind, data);
   }
 
   settings.getData(colorKey, s);
@@ -75,11 +95,11 @@ int HT_DCPERIOD::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int HT_DCPERIOD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int HT::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,HT_DCPERIOD,<NAME>,<INPUT>
+  // INDICATOR,HT,<NAME>,<INPUT>,<METHOD>
 
-  if (set.count() != 4)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
@@ -98,6 +118,13 @@ int HT_DCPERIOD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, B
     tlines.insert(set[3], in);
   }
 
+  int method = methodList.indexOf(set[4]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid method" << set[4];
+    return 1;
+  }
+
   PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
@@ -105,7 +132,7 @@ int HT_DCPERIOD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, B
     return 1;
   }
 
-  PlotLine *line = getHT_DCPERIOD(in);
+  PlotLine *line = getHT(in, method);
   if (! line)
     return 1;
 
@@ -114,17 +141,48 @@ int HT_DCPERIOD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, B
   return 0;
 }
 
-PlotLine * HT_DCPERIOD::getHT_DCPERIOD (PlotLine *in)
+PlotLine * HT::getHT (PlotLine *in, int method)
 {
+  int size = in->getSize();
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
+  TA_Real input[size];
+  TA_Real out[size];
   int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
+  for (loop = 0; loop < size; loop++)
     input[loop] = (TA_Real) in->getData(loop);
 
-  TA_RetCode rc = TA_HT_DCPERIOD(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+  TA_RetCode rc = TA_SUCCESS;
+  switch (method)
+  {
+    case 0:
+      rc = TA_HT_DCPERIOD (0, size - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 1:
+      rc = TA_HT_DCPHASE (0, size - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 2:
+      rc = TA_HT_TRENDLINE (0, size - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 3:
+    {
+      TA_Integer iout[size];
+      rc = TA_HT_TRENDMODE (0, size - 1, &input[0], &outBeg, &outNb, &iout[0]);
+      if (rc != TA_SUCCESS)
+      {
+        qDebug() << indicator << "::calculate TA-Lib error" << rc;
+        return 0;
+      }
+      PlotLine *line = new PlotLine;
+      for (loop = 0; loop < outNb; loop++)
+        line->append(iout[loop]);
+      return line;
+      break;
+    }
+    default:
+      break;
+  }
+
   if (rc != TA_SUCCESS)
   {
     qDebug() << indicator << "::calculate TA-Lib error" << rc;
@@ -138,7 +196,7 @@ PlotLine * HT_DCPERIOD::getHT_DCPERIOD (PlotLine *in)
   return line;
 }
 
-int HT_DCPERIOD::dialog ()
+int HT::dialog ()
 {
   int page = 0;
   QString k, d;
@@ -161,6 +219,9 @@ int HT_DCPERIOD::dialog ()
   settings.getData(inputKey, d);
   dialog->addComboItem(page, inputKey, inputList, d);
 
+  settings.getData(methodKey, d);
+  dialog->addComboItem(page, methodKey, methodList, d);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -179,6 +240,9 @@ int HT_DCPERIOD::dialog ()
 
   dialog->getItem(inputKey, d);
   settings.setData(inputKey, d);
+
+  dialog->getItem(methodKey, d);
+  settings.setData(methodKey, d);
 
   delete dialog;
   return rc;

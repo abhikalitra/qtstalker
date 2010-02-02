@@ -347,15 +347,19 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
 <p>INDICATOR,FI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
 <br>
 <h3>Hilbert Transform - Dominant Cycle Period</h3>
-<p>INDICATOR,HT_DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;</p>
+<p>INDICATOR,HT_DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;METHOD&gt;<br>
+</p>
+<p>Available methods are:<br>
+</p>
+<ul>
+  <li>DCPERIOD (Dominant Cycle Period)</li>
+  <li>DCPHASE (Dominant Cycle Phase)</li>
+  <li>TRENDLINE (Instantaneous Trendline)</li>
+  <li>TRENDMODE (Trend vs Cycle Mode) This returns a boolean array.<br>
+  </li>
+</ul>
 <p></p>
-<h3><br>
-</h3>
-<h3>Hilbert Transform - Dominant Cycle Phase</h3>
-<p>INDICATOR,HT_DCPHASE,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-<p></p>
-<h3><br>
-</h3>
+<br>
 <h3>Hilbert Transform - Phasor Components</h3>
 <p>INDICATOR,HT_PHASOR,&lt;INPUT&gt;,&lt;NAME_PHASE&gt;,&lt;NAME_QUADRATURE&gt;</p>
 <p></p>
@@ -364,37 +368,24 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
 <h3>Hilbert Transform - SineWave</h3>
 <p>INDICATOR,HT_SINE,&lt;INPUT&gt;,&lt;NAME_SINE&gt;,&lt;NAME_LEAD_SINE&gt;</p>
 <p></p>
-<h3><br>
-</h3>
-<h3>Hilbert Transform - Instantaneous Trendline</h3>
-<p>INDICATOR,HT_TRENDLINE,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Hilbert Transform - Trend vs Cycle Mode</h3>
-<p>INDICATOR,HT_TRENDMODE,&lt;NAME&gt;,&lt;INPUT&gt;</p>
-<p></p>
+<br>
 <br>
 <h3>Linear Regression</h3>
-<p>INDICATOR,LINEARREG,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,LINEARREG,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
+</p>
+<p>Available methods are:<br>
+</p>
+<ul>
+  <li>LINEARREG (Linear Regression)<br>
+  </li>
+  <li>ANGLE (Linear Regression Angle)</li>
+  <li>INTERCEPT (Linear Regression Intercept)</li>
+  <li>SLOPE (Linear Regression Slope)</li>
+</ul>
 <p></p>
-<h3><br>
-</h3>
-<h3>Linear Regression Angle</h3>
-<p>INDICATOR,LINEARREG_ANGLE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Linear Regression Intercept</h3>
-<p>INDICATOR,LINEARREG_INTERCEPT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Linear Regression Slope</h3>
-<p>INDICATOR,LINEARREG_SLOPE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
+<span style="font-weight: bold;"><br>
+<br>
+</span>
 <h3>Least Mean Square Predictor<br>
 </h3>
 <p>INDICATOR,LMS,&lt;SLOWK_NAME&gt;,&lt;2DAY_NAME&gt;,&lt;5DAY_NAME&gt;,&lt;FASTK_PERIOD&gt;,&lt;SLOWK_PERIOD&gt;,&lt;CMB_INDEX&gt;<br>
@@ -412,7 +403,8 @@ INDICATOR,MA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
 <br>
 Methods available are:<br>
 <ul>
-  <li>EMA - Exponential mvoing average<br>
+  <li>EMA - Exponential mvoing average</li>
+  <li>DEMA - Double exponential moving average<br>
   </li>
   <li>KAMA - Kaufman adaptive moving average<br>
   </li>
@@ -445,13 +437,17 @@ Methods available are:<br>
 <h3><br>
 </h3>
 <h3>MESA Adaptive Moving Average</h3>
-<p>INDICATOR,MAMA,&lt;INPUT&gt;,&lt;NAME_MAMA&gt;,&lt;NAME_FAMA&gt;,&lt;FAST_LIMIT&gt;,&lt;SLOW_LIMIT&gt;&lt;FAST_LIMIT&gt;
+<p>INDICATOR,MAMA,&lt;INPUT&gt;,&lt;NAME_MAMA&gt;,&lt;NAME_FAMA&gt;,&lt;FAST_LIMIT&gt;,&lt;SLOW_LIMIT&gt;<br>
+</p>
+<ul>
+  <li>&lt;FAST_LIMIT&gt;
 and
 &lt;SLOW_LIMIT&gt;
 are
 both
 decimal
-values.</p>
+values.</li>
+</ul>
 <p></p>
 <br>
 <h3>MATH</h3>
