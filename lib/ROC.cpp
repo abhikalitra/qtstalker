@@ -28,6 +28,8 @@ ROC::ROC ()
 {
   indicator = "ROC";
   methodKey = QObject::tr("Method");
+  smoothKey = QObject::tr("Smoothing Period");
+  smoothTypeKey = QObject::tr("Smoothing Type");
 
   methodList << QObject::tr("ROC");
   methodList << QObject::tr("ROCP");
@@ -38,7 +40,7 @@ ROC::ROC ()
   d = "red";
   settings.setData(colorKey, d);
 
-  d = "Line";
+  d = "Histogram Bar";
   settings.setData(plotKey, d);
 
   settings.setData(labelKey, indicator);
@@ -47,6 +49,10 @@ ROC::ROC ()
   settings.setData(inputKey, d);
 
   settings.setData(periodKey, 10);
+  settings.setData(smoothKey, 1);
+
+  d = "SMA";
+  settings.setData(smoothTypeKey, d);
 
   d = "ROC";
   settings.setData(methodKey, d);
@@ -65,10 +71,15 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
 
   int period = settings.getInt(periodKey);
 
+  int smoothing = settings.getInt(smoothKey);
+
   settings.getData(methodKey, s);
   int method = methodList.indexOf(s);
 
-  PlotLine *line = getROC(in, period, method);
+  settings.getData(smoothTypeKey, s);
+  int type = maList.indexOf(s);
+
+  PlotLine *line = getROC(in, period, method, smoothing, type);
   if (! line)
   {
     delete in;
@@ -93,9 +104,9 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
 
 int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,ROC,<NAME>,<INPUT>,<PERIOD>,<METHOD>
+  // INDICATOR,ROC,<NAME>,<INPUT>,<PERIOD>,<METHOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
 
-  if (set.count() != 6)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -136,7 +147,21 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getROC(in, period, method);
+  int smoothing = set[6].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing" << set[6];
+    return 1;
+  }
+
+  int type = maList.indexOf(set[7]);
+  if (type == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing type" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getROC(in, period, method, smoothing, type);
   if (! line)
     return 1;
 
@@ -145,7 +170,7 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * ROC::getROC (PlotLine *in, int period, int method)
+PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int type)
 {
   int size = in->getSize();
   TA_Real input[size];
@@ -185,6 +210,19 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method)
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
+  if (smoothing > 1)
+  {
+    PlotLine *ma = getMA(line, smoothing, type);
+    if (! ma)
+    {
+      delete line;
+      return 0;
+    }
+
+    delete line;
+    line = ma;
+  }
+
   return line;
 }
 
@@ -215,6 +253,11 @@ int ROC::dialog ()
   settings.getData(methodKey, d);
   dialog->addComboItem(page, methodKey, methodList, d);
 
+  dialog->addIntItem(page, smoothKey, settings.getInt(smoothKey), 1, 100000);
+
+  settings.getData(smoothTypeKey, d);
+  dialog->addComboItem(page, smoothTypeKey, maList, d);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -239,6 +282,12 @@ int ROC::dialog ()
 
   dialog->getItem(methodKey, d);
   settings.setData(methodKey, d);
+
+  dialog->getItem(smoothKey, d);
+  settings.setData(smoothKey, d);
+
+  dialog->getItem(smoothTypeKey, d);
+  settings.setData(smoothTypeKey, d);
 
   delete dialog;
   return rc;

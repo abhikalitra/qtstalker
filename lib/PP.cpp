@@ -20,6 +20,7 @@
  */
 
 #include "PP.h"
+#include "BARS.h"
 
 #include <QtDebug>
 
@@ -39,6 +40,12 @@ PP::PP ()
   s1lKey = QObject::tr("1S Label");
   s2lKey = QObject::tr("2S Label");
   s3lKey = QObject::tr("3S Label");
+  r1ShowKey = QObject::tr("Show R1");
+  r2ShowKey = QObject::tr("Show R2");
+  r3ShowKey = QObject::tr("Show R3");
+  s1ShowKey = QObject::tr("Show S1");
+  s2ShowKey = QObject::tr("Show S2");
+  s3ShowKey = QObject::tr("Show S3");
 
   QString d;
   d = "red";
@@ -50,92 +57,122 @@ PP::PP ()
   settings.setData(s3cKey, d);
 
   d = "1R";
-  settings.setData(r1lKey, indicator);
+  settings.setData(r1lKey, d);
 
   d = "2R";
-  settings.setData(r2lKey, indicator);
+  settings.setData(r2lKey, d);
 
   d = "3R";
-  settings.setData(r3lKey, indicator);
+  settings.setData(r3lKey, d);
 
   d = "1S";
-  settings.setData(s1lKey, indicator);
+  settings.setData(s1lKey, d);
 
   d = "2S";
-  settings.setData(s2lKey, indicator);
+  settings.setData(s2lKey, d);
 
   d = "3S";
-  settings.setData(s3lKey, indicator);
+  settings.setData(s3lKey, d);
+
+  settings.setData(r1ShowKey, 1);
+  settings.setData(r2ShowKey, 1);
+  settings.setData(r3ShowKey, 1);
+  settings.setData(s1ShowKey, 1);
+  settings.setData(s2ShowKey, 1);
+  settings.setData(s3ShowKey, 1);
 }
 
 int PP::getIndicator (Indicator &ind, BarData *data)
 {
-  // 1R line
-  PlotLine *line = getPP(data, 0);
+  BARS bars;
+  int rc = bars.getIndicator(ind, data);
+  if (rc)
+    return 1;
 
   QString s;
-  settings.getData(r1cKey, s);
-  line->setColor(s);
+  // 1R line
+  if (settings.getInt(r1ShowKey))
+  {
+    PlotLine *line = getPP(data, 0);
 
-  settings.getData(r1lKey, s);
-  line->setLabel(s);
+    settings.getData(r1cKey, s);
+    line->setColor(s);
 
-  ind.addLine(line);
+    settings.getData(r1lKey, s);
+    line->setLabel(s);
+
+    ind.addLine(line);
+  }
 
   // 2R line
-  line = getPP(data, 1);
+  if (settings.getInt(r2ShowKey))
+  {
+    PlotLine *line = getPP(data, 1);
 
-  settings.getData(r2cKey, s);
-  line->setColor(s);
+    settings.getData(r2cKey, s);
+    line->setColor(s);
 
-  settings.getData(r2lKey, s);
-  line->setLabel(s);
+    settings.getData(r2lKey, s);
+    line->setLabel(s);
 
-  ind.addLine(line);
+    ind.addLine(line);
+  }
 
   // 3R line
-  line = getPP(data, 2);
+  if (settings.getInt(r3ShowKey))
+  {
+    PlotLine *line = getPP(data, 2);
 
-  settings.getData(r3cKey, s);
-  line->setColor(s);
+    settings.getData(r3cKey, s);
+    line->setColor(s);
 
-  settings.getData(r3lKey, s);
-  line->setLabel(s);
+    settings.getData(r3lKey, s);
+    line->setLabel(s);
 
-  ind.addLine(line);
+    ind.addLine(line);
+  }
 
   // 1S line
-  line = getPP(data, 3);
+  if (settings.getInt(s1ShowKey))
+  {
+    PlotLine *line = getPP(data, 3);
 
-  settings.getData(s1cKey, s);
-  line->setColor(s);
+    settings.getData(s1cKey, s);
+    line->setColor(s);
 
-  settings.getData(s1lKey, s);
-  line->setLabel(s);
+    settings.getData(s1lKey, s);
+    line->setLabel(s);
 
-  ind.addLine(line);
+    ind.addLine(line);
+  }
 
   // 2S line
-  line = getPP(data, 4);
+  if (settings.getInt(s2ShowKey))
+  {
+    PlotLine *line = getPP(data, 4);
 
-  settings.getData(s2cKey, s);
-  line->setColor(s);
+    settings.getData(s2cKey, s);
+    line->setColor(s);
 
-  settings.getData(s2lKey, s);
-  line->setLabel(s);
+    settings.getData(s2lKey, s);
+    line->setLabel(s);
 
-  ind.addLine(line);
+    ind.addLine(line);
+  }
 
   // 3S line
-  line = getPP(data, 5);
+  if (settings.getInt(s3ShowKey))
+  {
+    PlotLine *line = getPP(data, 5);
 
-  settings.getData(s3cKey, s);
-  line->setColor(s);
+    settings.getData(s3cKey, s);
+    line->setColor(s);
 
-  settings.getData(s3lKey, s);
-  line->setLabel(s);
+    settings.getData(s3lKey, s);
+    line->setLabel(s);
 
-  ind.addLine(line);
+    ind.addLine(line);
+  }
 
   return 0;
 }
@@ -248,6 +285,8 @@ int PP::dialog ()
   settings.getData(r1lKey, d);
   dialog->addTextItem(page, r1lKey, d);
 
+  dialog->addCheckItem(page, r1ShowKey, settings.getInt(r1ShowKey));
+
   page++;
   k = "R2";
   dialog->addPage(page, k);
@@ -257,6 +296,8 @@ int PP::dialog ()
 
   settings.getData(r2lKey, d);
   dialog->addTextItem(page, r2lKey, d);
+
+  dialog->addCheckItem(page, r2ShowKey, settings.getInt(r2ShowKey));
 
   page++;
   k = "R3";
@@ -268,6 +309,8 @@ int PP::dialog ()
   settings.getData(r3lKey, d);
   dialog->addTextItem(page, r3lKey, d);
 
+  dialog->addCheckItem(page, r3ShowKey, settings.getInt(r3ShowKey));
+
   page++;
   k = "S1";
   dialog->addPage(page, k);
@@ -277,6 +320,8 @@ int PP::dialog ()
 
   settings.getData(s1lKey, d);
   dialog->addTextItem(page, s1lKey, d);
+
+  dialog->addCheckItem(page, s1ShowKey, settings.getInt(s1ShowKey));
 
   page++;
   k = "S2";
@@ -288,6 +333,8 @@ int PP::dialog ()
   settings.getData(s2lKey, d);
   dialog->addTextItem(page, s2lKey, d);
 
+  dialog->addCheckItem(page, s2ShowKey, settings.getInt(s2ShowKey));
+
   page++;
   k = "S3";
   dialog->addPage(page, k);
@@ -297,6 +344,8 @@ int PP::dialog ()
 
   settings.getData(s3lKey, d);
   dialog->addTextItem(page, s3lKey, d);
+
+  dialog->addCheckItem(page, s3ShowKey, settings.getInt(s3ShowKey));
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -340,6 +389,24 @@ int PP::dialog ()
 
   dialog->getItem(s3lKey, d);
   settings.setData(s3lKey, d);
+
+  dialog->getItem(r1ShowKey, d);
+  settings.setData(r1ShowKey, d);
+
+  dialog->getItem(r2ShowKey, d);
+  settings.setData(r2ShowKey, d);
+
+  dialog->getItem(r3ShowKey, d);
+  settings.setData(r3ShowKey, d);
+
+  dialog->getItem(s1ShowKey, d);
+  settings.setData(s1ShowKey, d);
+
+  dialog->getItem(s2ShowKey, d);
+  settings.setData(s2ShowKey, d);
+
+  dialog->getItem(s3ShowKey, d);
+  settings.setData(s3ShowKey, d);
 
   delete dialog;
   return rc;

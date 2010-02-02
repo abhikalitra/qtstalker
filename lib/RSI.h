@@ -30,8 +30,16 @@ class RSI : public IndicatorBase
     RSI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getRSI (PlotLine *in, int period);
+    PlotLine * getRSI (PlotLine *in, int period, int smoothing, int type);
     int dialog ();
+
+  protected:
+    QString ref1Key;
+    QString ref2Key;
+    QString ref1ColorKey;
+    QString ref2ColorKey;
+    QString smoothKey;
+    QString smoothTypeKey;
 };
 
 #endif

@@ -63,18 +63,15 @@
 #include "ROC.h"
 #include "RSI.h"
 #include "SAR.h"
-#include "SAREXT.h"
 #include "SINWAV.h"
 #include "STDDEV.h"
 #include "STOCH.h"
-#include "STOCHF.h"
 #include "STOCHRSI.h"
 #include "SUM.h"
 #include "SYMBOL.h"
 #include "SZ.h"
 #include "T3.h"
 #include "THERM.h"
-#include "TRANGE.h"
 #include "TRIG.h"
 #include "TRIX.h"
 #include "TSF.h"
@@ -315,11 +312,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new SAR;
       break;
     }
-    case IndicatorBase::_SAREXT:
-    {
-      ib = new SAREXT;
-      break;
-    }
     case IndicatorBase::_SINWAV:
     {
       ib = new SINWAV;
@@ -333,11 +325,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_STOCH:
     {
       ib = new STOCH;
-      break;
-    }
-    case IndicatorBase::_STOCHF:
-    {
-      ib = new STOCHF;
       break;
     }
     case IndicatorBase::_STOCHRSI:
@@ -368,11 +355,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_THERM:
     {
       ib = new THERM;
-      break;
-    }
-    case IndicatorBase::_TRANGE:
-    {
-      ib = new TRANGE;
       break;
     }
     case IndicatorBase::_TRIG:

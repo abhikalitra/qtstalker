@@ -23,6 +23,7 @@
    Dr. Alexander Elder's book _Come Into My Trading Room_, p.173 */
 
 #include "SZ.h"
+#include "BARS.h"
 
 #include <QtDebug>
 #include <math.h>
@@ -69,6 +70,14 @@ int SZ::getIndicator (Indicator &ind, BarData *data)
   PlotLine *line = getSZ(data, method, period, ndperiod, coeff);
   if (! line)
     return 1;
+
+  BARS bars;
+  int rc = bars.getIndicator(ind, data);
+  if (rc)
+  {
+    delete line;
+    return 1;
+  }
 
   QString s;
   settings.getData(colorKey, s);

@@ -107,6 +107,12 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
 
   BARS bars;
   rc = bars.getIndicator(ind, data);
+  if (rc)
+  {
+    delete in;
+    qDeleteAll(l);
+    return 1;
+  }
 
   // upper line
   PlotLine *line = l.at(0);

@@ -37,6 +37,9 @@ class ULTOSC : public IndicatorBase
     QString spKey;
     QString mpKey;
     QString lpKey;
+    QString ref30ColorKey;
+    QString ref50ColorKey;
+    QString ref70ColorKey;
 };
 
 #endif

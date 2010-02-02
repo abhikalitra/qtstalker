@@ -20,6 +20,7 @@
  */
 
 #include "SAR.h"
+#include "BARS.h"
 
 #include <QtDebug>
 
@@ -27,31 +28,38 @@
 SAR::SAR ()
 {
   indicator = "SAR";
-  accelKey = QObject::tr("Acceleration");
-  maxKey = QObject::tr("Max Acceleration");
+  initKey = QObject::tr("Initial Step");
+  maxKey = QObject::tr("Max Step");
 
   QString d;
   d = "red";
   settings.setData(colorKey, d);
 
-  d = "Line";
+  d = "Dot";
   settings.setData(plotKey, d);
 
   settings.setData(labelKey, indicator);
 
-  settings.setData(accelKey, 0.02);
-
+  settings.setData(initKey, 0.02);
   settings.setData(maxKey, 0.2);
 }
 
 int SAR::getIndicator (Indicator &ind, BarData *data)
 {
-  double accel = settings.getDouble(accelKey);
+  double init = settings.getDouble(initKey);
   double max = settings.getDouble(maxKey);
 
-  PlotLine *line = getSAR(data, accel, max);
+  PlotLine *line = getSAR(data, init, max);
   if (! line)
     return 1;
+
+  BARS bars;
+  int rc = bars.getIndicator(ind, data);
+  if (rc)
+  {
+    delete line;
+    return 1;
+  }
 
   QString s;
   settings.getData(colorKey, s);
@@ -70,7 +78,7 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
 
 int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,SAR,<NAME>,<ACCEL>,<MAX ACCEL>
+  // INDICATOR,SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>
 
   if (set.count() != 5)
   {
@@ -86,10 +94,10 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   }
 
   bool ok;
-  double accel = set[3].toDouble(&ok);
+  double init = set[3].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid acceleration" << set[3];
+    qDebug() << indicator << "::calculate: invalid init" << set[3];
     return 1;
   }
 
@@ -100,7 +108,7 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getSAR(data, accel, max);
+  PlotLine *line = getSAR(data, init, max);
   if (! line)
     return 1;
 
@@ -109,7 +117,7 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * SAR::getSAR (BarData *data, double accel, double max)
+PlotLine * SAR::getSAR (BarData *data, double init, double max)
 {
   int size = data->count();
   TA_Real high[size];
@@ -124,7 +132,7 @@ PlotLine * SAR::getSAR (BarData *data, double accel, double max)
 
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_RetCode rc = TA_SAR(0, size - 1, &high[0], &low[0], accel, max, &outBeg, &outNb, &out[0]);
+  TA_RetCode rc = TA_SAR(0, size - 1, &high[0], &low[0], init, max, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
     qDebug() << indicator << "::calculate: TA-Lib error" << rc;
@@ -157,7 +165,7 @@ int SAR::dialog ()
   settings.getData(labelKey, d);
   dialog->addTextItem(page, labelKey, d);
 
-  dialog->addDoubleItem(page, accelKey, settings.getDouble(accelKey), 0, 100000);
+  dialog->addDoubleItem(page, initKey, settings.getDouble(initKey), 0, 100000);
 
   dialog->addDoubleItem(page, maxKey, settings.getDouble(maxKey), 0, 100000);
 
@@ -177,8 +185,8 @@ int SAR::dialog ()
   dialog->getItem(labelKey, d);
   settings.setData(labelKey, d);
 
-  dialog->getItem(accelKey, d);
-  settings.setData(accelKey, d);
+  dialog->getItem(initKey, d);
+  settings.setData(initKey, d);
 
   dialog->getItem(maxKey, d);
   settings.setData(maxKey, d);

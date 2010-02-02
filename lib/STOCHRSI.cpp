@@ -37,6 +37,10 @@ STOCHRSI::STOCHRSI ()
   fdpdKey = QObject::tr("Fast D Period");
   fkpdKey = QObject::tr("Fast K Period");
   fdmaKey = QObject::tr("Fast D MA");
+  ref1Key = QObject::tr("Ref. 1 Line");
+  ref2Key = QObject::tr("Ref. 2 Line");
+  ref1ColorKey = QObject::tr("Ref 1 Color");
+  ref2ColorKey = QObject::tr("Ref 2 Color");
 
   QString d;
   d = "red";
@@ -45,16 +49,20 @@ STOCHRSI::STOCHRSI ()
   d = "yellow";
   settings.setData(fdcKey, d);
 
+  d = "white";
+  settings.setData(ref1ColorKey, d);
+  settings.setData(ref2ColorKey, d);
+
   d = "Line";
   settings.setData(fkpKey, d);
 
   d = "Dash";
   settings.setData(fdpKey, d);
 
-  d = "K";
+  d = "STORSI_K";
   settings.setData(fklKey, d);
 
-  d = "D";
+  d = "STORSI_D";
   settings.setData(fdlKey, d);
 
   settings.setData(fkpdKey, 5);
@@ -67,6 +75,9 @@ STOCHRSI::STOCHRSI ()
   settings.setData(inputKey, d);
 
   settings.setData(periodKey, 14);
+
+  settings.setData(ref1Key, 25);
+  settings.setData(ref2Key, 75);
 }
 
 int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
@@ -95,6 +106,20 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
     delete in;
     return 1;
   }
+
+  PlotLine *ref1 = new PlotLine;
+  ref1->setType(PlotLine::Horizontal);
+  settings.getData(ref1ColorKey, s);
+  ref1->setColor(s);
+  ref1->append(settings.getInt(ref1Key));
+  ind.addLine(ref1);
+
+  PlotLine *ref2 = new PlotLine;
+  ref2->setType(PlotLine::Horizontal);
+  settings.getData(ref2ColorKey, s);
+  ref2->setColor(s);
+  ref2->append(settings.getInt(ref2Key));
+  ind.addLine(ref2);
 
   // fastk line
   PlotLine *line = l.at(0);
@@ -289,6 +314,20 @@ int STOCHRSI::dialog ()
   settings.getData(fdmaKey, d);
   dialog->addComboItem(page, fdmaKey, maList, d);
 
+  page++;
+  k = QObject::tr("Ref");
+  dialog->addPage(page, k);
+
+  settings.getData(ref1ColorKey, d);
+  dialog->addColorItem(page, ref1ColorKey, d);
+
+  settings.getData(ref2ColorKey, d);
+  dialog->addColorItem(page, ref2ColorKey, d);
+
+  dialog->addIntItem(page, ref1Key, settings.getInt(ref1Key), 0, 100);
+
+  dialog->addIntItem(page, ref2Key, settings.getInt(ref2Key), 0, 100);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -328,6 +367,18 @@ int STOCHRSI::dialog ()
 
   dialog->getItem(inputKey, d);
   settings.setData(inputKey, d);
+
+  dialog->getItem(ref1ColorKey, d);
+  settings.setData(ref1ColorKey, d);
+
+  dialog->getItem(ref2ColorKey, d);
+  settings.setData(ref2ColorKey, d);
+
+  dialog->getItem(ref1Key, d);
+  settings.setData(ref1Key, d);
+
+  dialog->getItem(ref2Key, d);
+  settings.setData(ref2Key, d);
 
   delete dialog;
   return rc;

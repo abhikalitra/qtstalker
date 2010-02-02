@@ -30,11 +30,13 @@ class ROC : public IndicatorBase
     ROC ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getROC (PlotLine *in, int period, int method);
+    PlotLine * getROC (PlotLine *in, int period, int method, int smoothing, int type);
     int dialog ();
 
   protected:
     QString methodKey;
+    QString smoothKey;
+    QString smoothTypeKey;
     QStringList methodList;
 };
 

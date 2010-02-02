@@ -20,6 +20,7 @@
  */
 
 #include "TSF.h"
+#include "BARS.h"
 
 #include <QtDebug>
 
@@ -60,6 +61,15 @@ int TSF::getIndicator (Indicator &ind, BarData *data)
   if (! line)
   {
     delete in;
+    return 1;
+  }
+
+  BARS bars;
+  int rc = bars.getIndicator(ind, data);
+  if (rc)
+  {
+    delete in;
+    delete line;
     return 1;
   }
 

@@ -31,10 +31,18 @@ ULTOSC::ULTOSC ()
   spKey = QObject::tr("Short Period");
   mpKey = QObject::tr("Medium Period");
   lpKey = QObject::tr("Long Period");
+  ref30ColorKey = QObject::tr("Ref. 30 Color");
+  ref50ColorKey = QObject::tr("Ref. 50 Color");
+  ref70ColorKey = QObject::tr("Ref. 70 Color");
 
   QString d;
   d = "red";
   settings.setData(colorKey, d);
+
+  d = "white";
+  settings.setData(ref30ColorKey, d);
+  settings.setData(ref50ColorKey, d);
+  settings.setData(ref70ColorKey, d);
 
   d = "Line";
   settings.setData(plotKey, d);
@@ -57,6 +65,27 @@ int ULTOSC::getIndicator (Indicator &ind, BarData *data)
     return 1;
 
   QString s;
+  PlotLine *ref30 = new PlotLine;
+  ref30->setType(PlotLine::Horizontal);
+  settings.getData(ref30ColorKey, s);
+  ref30->setColor(s);
+  ref30->append(30);
+  ind.addLine(ref30);
+
+  PlotLine *ref50 = new PlotLine;
+  ref50->setType(PlotLine::Horizontal);
+  settings.getData(ref50ColorKey, s);
+  ref50->setColor(s);
+  ref50->append(50);
+  ind.addLine(ref50);
+
+  PlotLine *ref70 = new PlotLine;
+  ref70->setType(PlotLine::Horizontal);
+  settings.getData(ref70ColorKey, s);
+  ref70->setColor(s);
+  ref70->append(70);
+  ind.addLine(ref70);
+
   settings.getData(colorKey, s);
   line->setColor(s);
 
@@ -175,6 +204,19 @@ int ULTOSC::dialog ()
 
   dialog->addIntItem(page, lpKey, settings.getInt(lpKey), 1, 100000);
 
+  page++;
+  k = QObject::tr("Ref");
+  dialog->addPage(page, k);
+
+  settings.getData(ref30ColorKey, d);
+  dialog->addColorItem(page, ref30ColorKey, d);
+
+  settings.getData(ref50ColorKey, d);
+  dialog->addColorItem(page, ref50ColorKey, d);
+
+  settings.getData(ref70ColorKey, d);
+  dialog->addColorItem(page, ref70ColorKey, d);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -199,6 +241,15 @@ int ULTOSC::dialog ()
 
   dialog->getItem(lpKey, d);
   settings.setData(lpKey, d);
+
+  dialog->getItem(ref30ColorKey, d);
+  settings.setData(ref30ColorKey, d);
+
+  dialog->getItem(ref50ColorKey, d);
+  settings.setData(ref50ColorKey, d);
+
+  dialog->getItem(ref70ColorKey, d);
+  settings.setData(ref70ColorKey, d);
 
   delete dialog;
   return rc;

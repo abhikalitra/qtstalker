@@ -43,6 +43,10 @@ class STOCHRSI : public IndicatorBase
     QString fkpdKey;
     QString fdpdKey;
     QString fdmaKey;
+    QString ref1Key;
+    QString ref2Key;
+    QString ref1ColorKey;
+    QString ref2ColorKey;
 };
 
 #endif

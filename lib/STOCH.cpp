@@ -38,6 +38,10 @@ STOCH::STOCH ()
   sdpdKey = QObject::tr("SlowD Period");
   skmaKey = QObject::tr("SlowK MA");
   sdmaKey = QObject::tr("SlowD MA");
+  ref1Key = QObject::tr("Ref. 1 Line");
+  ref2Key = QObject::tr("Ref. 2 Line");
+  ref1ColorKey = QObject::tr("Ref 1 Color");
+  ref2ColorKey = QObject::tr("Ref 2 Color");
 
   QString d;
   d = "red";
@@ -46,16 +50,20 @@ STOCH::STOCH ()
   d = "yellow";
   settings.setData(sdcKey, d);
 
+  d = "white";
+  settings.setData(ref1ColorKey, d);
+  settings.setData(ref2ColorKey, d);
+
   d = "Line";
   settings.setData(skpKey, d);
 
   d = "Dash";
   settings.setData(sdpKey, d);
 
-  d = "K";
+  d = "SLOW_K";
   settings.setData(sklKey, d);
 
-  d = "D";
+  d = "SLOW_D";
   settings.setData(sdlKey, d);
 
   settings.setData(fkpKey, 5);
@@ -65,6 +73,9 @@ STOCH::STOCH ()
   d = "SMA";
   settings.setData(skmaKey, d);
   settings.setData(sdmaKey, d);
+
+  settings.setData(ref1Key, 25);
+  settings.setData(ref2Key, 75);
 }
 
 int STOCH::getIndicator (Indicator &ind, BarData *data)
@@ -87,6 +98,20 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
     qDeleteAll(l);
     return 1;
   }
+
+  PlotLine *ref1 = new PlotLine;
+  ref1->setType(PlotLine::Horizontal);
+  settings.getData(ref1ColorKey, s);
+  ref1->setColor(s);
+  ref1->append(settings.getInt(ref1Key));
+  ind.addLine(ref1);
+
+  PlotLine *ref2 = new PlotLine;
+  ref2->setType(PlotLine::Horizontal);
+  settings.getData(ref2ColorKey, s);
+  ref2->setColor(s);
+  ref2->append(settings.getInt(ref2Key));
+  ind.addLine(ref2);
 
   // slowk line
   PlotLine *line = l.at(0);
@@ -275,6 +300,20 @@ int STOCH::dialog ()
   settings.getData(sdmaKey, d);
   dialog->addComboItem(page, sdmaKey, maList, d);
 
+  page++;
+  k = QObject::tr("Ref");
+  dialog->addPage(page, k);
+
+  settings.getData(ref1ColorKey, d);
+  dialog->addColorItem(page, ref1ColorKey, d);
+
+  settings.getData(ref2ColorKey, d);
+  dialog->addColorItem(page, ref2ColorKey, d);
+
+  dialog->addIntItem(page, ref1Key, settings.getInt(ref1Key), 0, 100);
+
+  dialog->addIntItem(page, ref2Key, settings.getInt(ref2Key), 0, 100);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -314,6 +353,18 @@ int STOCH::dialog ()
 
   dialog->getItem(sdmaKey, d);
   settings.setData(sdmaKey, d);
+
+  dialog->getItem(ref1ColorKey, d);
+  settings.setData(ref1ColorKey, d);
+
+  dialog->getItem(ref2ColorKey, d);
+  settings.setData(ref2ColorKey, d);
+
+  dialog->getItem(ref1Key, d);
+  settings.setData(ref1Key, d);
+
+  dialog->getItem(ref2Key, d);
+  settings.setData(ref2Key, d);
 
   delete dialog;
   return rc;

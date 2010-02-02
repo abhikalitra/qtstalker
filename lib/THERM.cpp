@@ -38,26 +38,114 @@
 THERM::THERM ()
 {
   indicator = "THERM";
+  downColorKey = QObject::tr("Down Color");
+  upColorKey = QObject::tr("Up Color");
+  threshColorKey = QObject::tr("Threshold Color");
+  threshKey = QObject::tr("Threshold");
+  smoothKey = QObject::tr("Smoothing Period");
+  smoothTypeKey = QObject::tr("Smoothing Type");
 
   QString d;
+  d = "green";
+  settings.setData(downColorKey, d);
+
+  d = "magenta";
+  settings.setData(upColorKey, d);
+
   d = "red";
-  settings.setData(colorKey, d);
+  settings.setData(threshColorKey, d);
+
+  d = "yellow";
+  settings.setData(maColorKey, d);
 
   d = "Line";
-  settings.setData(plotKey, d);
+  settings.setData(maPlotKey, d);
 
   settings.setData(labelKey, indicator);
+
+  d = "THERM_MA";
+  settings.setData(maLabelKey, d);
+
+  settings.setData(threshKey, 3);
+  settings.setData(smoothKey, 2);
+  settings.setData(maPeriodKey, 22);
+
+  d = "SMA";
+  settings.setData(maTypeKey, d);
+  settings.setData(smoothTypeKey, d);
 }
 
 int THERM::getIndicator (Indicator &ind, BarData *data)
 {
-  PlotLine *line = getTHERM(data);
+  QString s;
+  int smoothing = settings.getInt(smoothKey);
+
+  settings.getData(smoothTypeKey, s);
+  int type = maList.indexOf(s);
+
+  PlotLine *line = getTHERM(data, smoothing, type);
   if (! line)
     return 1;
 
-  QString s;
-  settings.getData(colorKey, s);
-  line->setColor(s);
+  // therm ma
+  int maPeriod = settings.getInt(maPeriodKey);
+
+  settings.getData(maTypeKey, s);
+  int maType = maList.indexOf(s);
+
+  PlotLine *ma = getMA(line, maPeriod, maType);
+  if (! ma)
+  {
+    delete line;
+    return 1;
+  }
+
+  settings.getData(maColorKey, s);
+  ma->setColor(s);
+  settings.getData(maPlotKey, s);
+  ma->setType(s);
+  settings.getData(maLabelKey, s);
+  ma->setLabel(s);
+
+  // assign therm colors
+  line->setColorFlag(TRUE);
+  line->setType(PlotLine::HistogramBar);
+  int thermLoop = line->getSize() - 1;
+  int maLoop = ma->getSize() - 1;
+  double threshold = settings.getDouble(threshKey);
+
+  settings.getData(threshColorKey, s);
+  QColor threshColor(s);
+
+  settings.getData(upColorKey, s);
+  QColor upColor(s);
+
+  settings.getData(downColorKey, s);
+  QColor downColor(s);
+
+  while (thermLoop > -1)
+  {
+    if (maLoop > -1)
+    {
+      double thrm = line->getData(thermLoop);
+      double thrmma = ma->getData(maLoop);
+
+      if (thrm > (thrmma * threshold))
+        line->setColorBar(thermLoop, threshColor);
+      else
+      {
+        if (thrm > thrmma)
+          line->setColorBar(thermLoop, upColor);
+        else
+          line->setColorBar(thermLoop, downColor);
+      }
+    }
+    else
+      line->setColorBar(thermLoop, downColor);
+
+    thermLoop--;
+    maLoop--;
+  }
 
   settings.getData(plotKey, s);
   line->setType(s);
@@ -67,14 +155,16 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
 
   ind.addLine(line);
 
+  ind.addLine(ma);
+
   return 0;
 }
 
 int THERM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,THERM,<NAME>
+  // INDICATOR,THERM,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
 
-  if (set.count() != 3)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -87,7 +177,22 @@ int THERM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  PlotLine *line = getTHERM(data);
+  bool ok;
+  int smoothing = set[3].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing" << set[3];
+    return 1;
+  }
+
+  int type = maList.indexOf(set[4]);
+  if (type == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing type" << set[4];
+    return 1;
+  }
+
+  PlotLine *line = getTHERM(data, smoothing, type);
   if (! line)
     return 1;
 
@@ -96,9 +201,9 @@ int THERM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   return 0;
 }
 
-PlotLine * THERM::getTHERM (BarData *data)
+PlotLine * THERM::getTHERM (BarData *data, int smoothing, int type)
 {
-  PlotLine *therm = new PlotLine();
+  PlotLine *line = new PlotLine();
   int loop;
   double thermometer = 0;
   for (loop = 1; loop < (int) data->count(); loop++)
@@ -111,10 +216,23 @@ PlotLine * THERM::getTHERM (BarData *data)
     else
       thermometer = lo;
 
-    therm->append(thermometer);
+    line->append(thermometer);
   }
 
-  return therm;
+  if (smoothing > 1)
+  {
+    PlotLine *ma = getMA(line, smoothing, type);
+    if (! ma)
+    {
+      delete line;
+      return 0;
+    }
+
+    delete line;
+    line = ma;
+  }
+
+  return line;
 }
 
 int THERM::dialog ()
@@ -127,14 +245,42 @@ int THERM::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(upColorKey, d);
+  dialog->addColorItem(page, upColorKey, d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(downColorKey, d);
+  dialog->addColorItem(page, downColorKey, d);
+
+  settings.getData(threshColorKey, d);
+  dialog->addColorItem(page, threshColorKey, d);
 
   settings.getData(labelKey, d);
   dialog->addTextItem(page, labelKey, d);
+
+  dialog->addDoubleItem(page, threshKey, settings.getDouble(threshKey), 0, 100000);
+
+  dialog->addIntItem(page, smoothKey, settings.getInt(smoothKey), 1, 100000);
+
+  settings.getData(smoothTypeKey, d);
+  dialog->addComboItem(page, smoothTypeKey, maList, d);
+
+  page++;
+  k = QObject::tr("MA");
+  dialog->addPage(page, k);
+
+  settings.getData(maColorKey, d);
+  dialog->addColorItem(page, maColorKey, d);
+
+  settings.getData(maPlotKey, d);
+  dialog->addComboItem(page, maPlotKey, plotList, d);
+
+  settings.getData(maLabelKey, d);
+  dialog->addTextItem(page, maLabelKey, d);
+
+  dialog->addIntItem(page, maPeriodKey, settings.getInt(maPeriodKey), 1, 100000);
+
+  settings.getData(maTypeKey, d);
+  dialog->addComboItem(page, maTypeKey, maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -143,14 +289,41 @@ int THERM::dialog ()
     return rc;
   }
 
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
+  dialog->getItem(upColorKey, d);
+  settings.setData(upColorKey, d);
 
-  dialog->getItem(plotKey, d);
-  settings.setData(plotKey, d);
+  dialog->getItem(downColorKey, d);
+  settings.setData(downColorKey, d);
+
+  dialog->getItem(threshColorKey, d);
+  settings.setData(threshColorKey, d);
 
   dialog->getItem(labelKey, d);
   settings.setData(labelKey, d);
+
+  dialog->getItem(threshKey, d);
+  settings.setData(threshKey, d);
+
+  dialog->getItem(smoothKey, d);
+  settings.setData(smoothKey, d);
+
+  dialog->getItem(smoothTypeKey, d);
+  settings.setData(smoothTypeKey, d);
+
+  dialog->getItem(maColorKey, d);
+  settings.setData(maColorKey, d);
+
+  dialog->getItem(maLabelKey, d);
+  settings.setData(maLabelKey, d);
+
+  dialog->getItem(maPlotKey, d);
+  settings.setData(maPlotKey, d);
+
+  dialog->getItem(maPeriodKey, d);
+  settings.setData(maPeriodKey, d);
+
+  dialog->getItem(maTypeKey, d);
+  settings.setData(maTypeKey, d);
 
   delete dialog;
   return rc;

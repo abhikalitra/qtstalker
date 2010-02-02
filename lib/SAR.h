@@ -30,11 +30,11 @@ class SAR : public IndicatorBase
     SAR ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getSAR (BarData *data, double accel, double max);
+    PlotLine * getSAR (BarData *data, double init, double max);
     int dialog ();
 
   protected:
-    QString accelKey;
+    QString initKey;
     QString maxKey;
 };
 

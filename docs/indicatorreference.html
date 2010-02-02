@@ -448,19 +448,10 @@ Methods available are:<br>
 <h3>MESA Adaptive Moving Average</h3>
 <p>INDICATOR,MAMA,&lt;INPUT&gt;,&lt;NAME_MAMA&gt;,&lt;NAME_FAMA&gt;,&lt;FAST_LIMIT&gt;,&lt;SLOW_LIMIT&gt;<br>
 </p>
-<ul>
-  <li>&lt;FAST_LIMIT&gt;
-and
-&lt;SLOW_LIMIT&gt;
-are
-both
-decimal
-values.</li>
-</ul>
 <p></p>
 <br>
-<h3>MATH</h3>
-INDICATOR,MATH,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;METHOD&gt;<br>
+<h3>MATH1</h3>
+INDICATOR,MATH1,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;METHOD&gt;<br>
 <br>
 Available methods are:<br>
 <ul>
@@ -489,54 +480,14 @@ Available methods are:<br>
 <h3>Moving average with variable period</h3>
 <p>INDICATOR,MAVP,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;MIN_PERIOD&gt;,&lt;MAX_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
 <p></p>
-<h3><br>
-</h3>
-<h3>Highest value over a specified period</h3>
-<p>INDICATOR,MAX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Index of highest value over a specified period</h3>
-<p>INDICATOR,MAXINDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p></p>
 <br>
 <h3>Money Flow Index</h3>
 <p>INDICATOR,MFI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
 <p></p>
-<h3><br>
-</h3>
-<h3>MidPoint over period</h3>
-<p>INDICATOR,MIDPOINT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Midpoint Price over period</h3>
-<p>INDICATOR,MIDPRICE,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Lowest value over a specified period</h3>
-<p>INDICATOR,MIN,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Index of lowest value over a specified period</h3>
-<p>INDICATOR,MININDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Lowest and highest values over a specified period</h3>
-<p>INDICATOR,MINMAX,&lt;INPUT&gt;,&lt;NAME_MIN&gt;,&lt;NAME_MAX&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Indexes of lowest and highest values over a specified period</h3>
-<p>INDICATOR,MINMAXINDEX,&lt;INPUT&gt;,&lt;NAME_MIN&gt;,&lt;NAME_MAX&gt;,&lt;PERIOD&gt;</p>
-<p></p>
 <br>
 <br>
 <h3>Momentum</h3>
-<p>INDICATOR,MOM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,MOM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <br>
 <h3>Pivot Point<br>
@@ -571,6 +522,23 @@ Available methods are:<br>
   <li>WCLPRICE</li>
 </ul>
 <br>
+<h3>RANGE<br>
+</h3>
+<p>INDICATOR,RANGE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
+</p>
+<p>Available methods are:<br>
+</p>
+<ul>
+  <li>MIN</li>
+  <li>MININDEX</li>
+  <li>MAX</li>
+  <li>MAXINDEX</li>
+  <li>MIDPOINT</li>
+  <li>MIDPRICE</li>
+  <li>TRANGE (True Range)<br>
+  </li>
+</ul>
+<br>
 <br>
 <h3>Reference Dataset</h3>
 <p>INDICATOR,REF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
@@ -586,7 +554,7 @@ today's Close then &lt;PERIOD&gt; would be '0'</p>
 </h3>
 <h3>Rate of change<br>
 </h3>
-<p>INDICATOR,ROC,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
+<p>INDICATOR,ROC,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;
 </p>
 Methods available are:<br>
 <ul>
@@ -598,25 +566,16 @@ Methods available are:<br>
 <p></p>
 <br>
 <h3>Relative Strength Index</h3>
-<p>INDICATOR,RSI,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,RSI,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <h3><br>
 </h3>
 <h3>Parabolic SAR</h3>
-<p>INDICATOR,SAR,&lt;NAME&gt;,&lt;ACCELERATION&gt;,&lt;MAXIMUM&gt;ACCELERATION
-and
-MAXIMUM
-are
-decimal
-values.</p>
+<p>INDICATOR,SAR,&lt;NAME&gt;,&lt;INITIAL_STEP&gt;,&lt;MAX_STEP&gt;</p>
 <p></p>
-<h3><br>
-</h3>
-<h3>Parabolic SAR - Extended</h3>
-<p>INDICATOR,SAREXT,&lt;NAME&gt;,&lt;START&gt;,&lt;OFFSET_REVERSE&gt;,&lt;ACCEL_INIT_LONG&gt;,&lt;ACCEL_LONG&gt;,&lt;ACCEL_MAX_LONG&gt;,&lt;ACCEL_INIT_SHORT&gt;,&lt;ACCEL_SHORT&gt;,&lt;ACCEL_MAX_SHORT&gt;</p>
-<p>All values are decimals.</p>
-<p></p>
+<span style="font-weight: bold;"><br>
 <br>
+</span>
 <h3>Ehler's Sine Wave<br>
 </h3>
 <p>INDICATOR,SINWAV,&lt;SINE_NAME&gt;,&lt;LEAD_NAME&gt;</p>
@@ -629,13 +588,9 @@ values.</p>
 <h3>Stochastic</h3>
 <p>INDICATOR,STOCH,&lt;NAME_SLOWK&gt;,&lt;NAME_SLOWD&gt;,&lt;FASTK_PERIOD&gt;,&lt;SLOWK_PERIOD&gt;,&lt;SLOWK_MA_TYPE&gt;,&lt;SLOWD_PERIOD&gt;,&lt;SLOWD_MA_TYPE&gt;</p>
 <p></p>
-<h3><br>
-</h3>
-<h3>Stochastic Fast</h3>
-<p>INDICATOR,STOCHF,&lt;NAME_FASTK&gt;,&lt;NAME_FASTD&gt;,&lt;FASTK_PERIOD&gt;,&lt;FASTD_PERIOD&gt;,&lt;FASTD_MA_TYPE&gt;</p>
-<p></p>
-<h3><br>
-</h3>
+<span style="font-weight: bold;"><br>
+<br>
+</span>
 <h3>Stochastic Relative Strength Index</h3>
 <p>INDICATOR,STOCHRSI,&lt;INPUT&gt;,&lt;NAME_FASTK&gt;,&lt;NAME_FASTD&gt;,&lt;PERIOD&gt;,&lt;FASTK_PERIOD&gt;,&lt;FASTD_PERIOD&gt;,&lt;FASTD_MA_TYPE&gt;</p>
 <p></p>
@@ -675,12 +630,7 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 <br>
 <h3>Market Thermometer<br>
 </h3>
-<p>INDICATOR,THERM,&lt;NAME&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>True Range</h3>
-<p>INDICATOR,TRANGE,&lt;NAME&gt;</p>
+<p>INDICATOR,THERM,&lt;NAME&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <br>
 <br>

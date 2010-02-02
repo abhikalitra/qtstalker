@@ -34,6 +34,7 @@ RANGE::RANGE ()
   methodList << "MAXINDEX";
   methodList << "MIDPOINT";
   methodList << "MIDPRICE";
+  methodList << "TRANGE";
 }
 
 int RANGE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
@@ -154,6 +155,21 @@ PlotLine * RANGE::getRANGE (PlotLine *in, BarData *data, int period, int method)
         low[loop] = (TA_Real) data->getLow(loop);
       }
       rc = TA_MIDPRICE(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    }
+    case 6:
+    {
+      size = data->count();
+      TA_Real high[size];
+      TA_Real low[size];
+      TA_Real close[size];
+      for (loop = 0; loop < size; loop++)
+      {
+        high[loop] = (TA_Real) data->getHigh(loop);
+        low[loop] = (TA_Real) data->getLow(loop);
+        close[loop] = (TA_Real) data->getClose(loop);
+      }
+      rc = TA_TRANGE(0, size - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
     }
     default:

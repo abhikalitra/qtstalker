@@ -27,10 +27,20 @@
 RSI::RSI ()
 {
   indicator = "RSI";
+  ref1Key = QObject::tr("Ref. 1 Line");
+  ref2Key = QObject::tr("Ref. 2 Line");
+  ref1ColorKey = QObject::tr("Ref 1 Color");
+  ref2ColorKey = QObject::tr("Ref 2 Color");
+  smoothKey = QObject::tr("Smoothing Period");
+  smoothTypeKey = QObject::tr("Smoothing Type");
 
   QString d;
   d = "red";
   settings.setData(colorKey, d);
+
+  d = "white";
+  settings.setData(ref1ColorKey, d);
+  settings.setData(ref2ColorKey, d);
 
   d = "Line";
   settings.setData(plotKey, d);
@@ -41,6 +51,13 @@ RSI::RSI ()
   settings.setData(inputKey, d);
 
   settings.setData(periodKey, 14);
+  settings.setData(smoothKey, 1);
+
+  d = "SMA";
+  settings.setData(smoothTypeKey, d);
+
+  settings.setData(ref1Key, 30);
+  settings.setData(ref2Key, 70);
 }
 
 int RSI::getIndicator (Indicator &ind, BarData *data)
@@ -56,12 +73,31 @@ int RSI::getIndicator (Indicator &ind, BarData *data)
 
   int period = settings.getInt(periodKey);
 
-  PlotLine *line = getRSI(in, period);
+  int smoothing = settings.getInt(smoothKey);
+
+  settings.getData(smoothTypeKey, s);
+  int type = maList.indexOf(s);
+
+  PlotLine *line = getRSI(in, period, smoothing, type);
   if (! line)
   {
     delete in;
     return 1;
   }
+
+  PlotLine *ref1 = new PlotLine;
+  ref1->setType(PlotLine::Horizontal);
+  settings.getData(ref1ColorKey, s);
+  ref1->setColor(s);
+  ref1->append(settings.getInt(ref1Key));
+  ind.addLine(ref1);
+
+  PlotLine *ref2 = new PlotLine;
+  ref2->setType(PlotLine::Horizontal);
+  settings.getData(ref2ColorKey, s);
+  ref2->setColor(s);
+  ref2->append(settings.getInt(ref2Key));
+  ind.addLine(ref2);
 
   settings.getData(colorKey, s);
   line->setColor(s);
@@ -81,9 +117,9 @@ int RSI::getIndicator (Indicator &ind, BarData *data)
 
 int RSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,RSI,<NAME>,<INPUT>,<PERIOD>
+  // INDICATOR,RSI,<NAME>,<INPUT>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
 
-  if (set.count() != 5)
+  if (set.count() != 7)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -117,7 +153,21 @@ int RSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getRSI(in, period);
+  int smoothing = set[5].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing" << set[5];
+    return 1;
+  }
+
+  int type = maList.indexOf(set[6]);
+  if (type == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing type" << set[6];
+    return 1;
+  }
+
+  PlotLine *line = getRSI(in, period, smoothing, type);
   if (! line)
     return 1;
 
@@ -126,7 +176,7 @@ int RSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * RSI::getRSI (PlotLine *in, int period)
+PlotLine * RSI::getRSI (PlotLine *in, int period, int smoothing, int type)
 {
   int size = in->getSize();
   TA_Real input[size];
@@ -147,6 +197,19 @@ PlotLine * RSI::getRSI (PlotLine *in, int period)
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
+
+  if (smoothing > 1)
+  {
+    PlotLine *ma = getMA(line, smoothing, type);
+    if (! ma)
+    {
+      delete line;
+      return 0;
+    }
+
+    delete line;
+    line = ma;
+  }
 
   return line;
 }
@@ -175,6 +238,25 @@ int RSI::dialog ()
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
 
+  dialog->addIntItem(page, smoothKey, settings.getInt(smoothKey), 1, 100000);
+
+  settings.getData(smoothTypeKey, d);
+  dialog->addComboItem(page, smoothTypeKey, maList, d);
+
+  page++;
+  k = QObject::tr("Ref");
+  dialog->addPage(page, k);
+
+  settings.getData(ref1ColorKey, d);
+  dialog->addColorItem(page, ref1ColorKey, d);
+
+  settings.getData(ref2ColorKey, d);
+  dialog->addColorItem(page, ref2ColorKey, d);
+
+  dialog->addIntItem(page, ref1Key, settings.getInt(ref1Key), 0, 100);
+
+  dialog->addIntItem(page, ref2Key, settings.getInt(ref2Key), 0, 100);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -196,6 +278,24 @@ int RSI::dialog ()
 
   dialog->getItem(periodKey, d);
   settings.setData(periodKey, d);
+
+  dialog->getItem(smoothKey, d);
+  settings.setData(smoothKey, d);
+
+  dialog->getItem(smoothTypeKey, d);
+  settings.setData(smoothTypeKey, d);
+
+  dialog->getItem(ref1ColorKey, d);
+  settings.setData(ref1ColorKey, d);
+
+  dialog->getItem(ref2ColorKey, d);
+  settings.setData(ref2ColorKey, d);
+
+  dialog->getItem(ref1Key, d);
+  settings.setData(ref1Key, d);
+
+  dialog->getItem(ref2Key, d);
+  settings.setData(ref2Key, d);
 
   delete dialog;
   return rc;

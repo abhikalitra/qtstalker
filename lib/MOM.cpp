@@ -27,36 +27,26 @@
 MOM::MOM ()
 {
   indicator = "MOM";
-  showMAKey = QObject::tr("Show MA");
-  showMOMKey = QObject::tr("Show MOM");
+  smoothKey = QObject::tr("Smoothing Period");
+  smoothTypeKey = QObject::tr("Smoothing Type");
 
   QString d;
   d = "red";
   settings.setData(colorKey, d);
 
-  d = "yellow";
-  settings.setData(maColorKey, d);
-
-  d = "Line";
+  d = "Histogram Bar";
   settings.setData(plotKey, d);
-  settings.setData(maPlotKey, d);
 
   settings.setData(labelKey, indicator);
-
-  d = "MOM_MA";
-  settings.setData(maLabelKey, d);
 
   d = "Close";
   settings.setData(inputKey, d);
 
   settings.setData(periodKey, 10);
-  settings.setData(maPeriodKey, 10);
+  settings.setData(smoothKey, 1);
 
   d = "SMA";
-  settings.setData(maTypeKey, d);
-
-  settings.setData(showMOMKey, 1);
-  settings.setData(showMAKey, 1);
+  settings.setData(smoothTypeKey, d);
 }
 
 int MOM::getIndicator (Indicator &ind, BarData *data)
@@ -71,37 +61,16 @@ int MOM::getIndicator (Indicator &ind, BarData *data)
   }
 
   int period = settings.getInt(periodKey);
+  int smoothing = settings.getInt(smoothKey);
 
-  PlotLine *ma = 0;
-  PlotLine *line = getMOM(in, period);
+  settings.getData(smoothTypeKey, s);
+  int type = maList.indexOf(s);
+
+  PlotLine *line = getMOM(in, period, smoothing, type);
   if (! line)
   {
     delete in;
     return 1;
-  }
-
-  if (settings.getInt(showMAKey))
-  {
-    int maPeriod = settings.getInt(maPeriodKey);
-
-    settings.getData(maTypeKey, s);
-    int type = maList.indexOf(s);
-
-    ma = getMA(line, maPeriod, type);
-    if (! ma)
-    {
-      delete line;
-      return 1;
-    }
-
-    settings.getData(maColorKey, s);
-    ma->setColor(s);
-
-    settings.getData(maPlotKey, s);
-    ma->setType(s);
-
-    settings.getData(maLabelKey, s);
-    ma->setLabel(s);
   }
 
   settings.getData(colorKey, s);
@@ -113,13 +82,7 @@ int MOM::getIndicator (Indicator &ind, BarData *data)
   settings.getData(labelKey, s);
   line->setLabel(s);
 
-  if (settings.getInt(showMOMKey))
-    ind.addLine(line);
-  else
-    delete line;
-
-  if (settings.getInt(showMAKey))
-    ind.addLine(ma);
+  ind.addLine(line);
 
   delete in;
 
@@ -128,9 +91,9 @@ int MOM::getIndicator (Indicator &ind, BarData *data)
 
 int MOM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,MOM,<NAME>,<INPUT>,<PERIOD>
+  // INDICATOR,MOM,<NAME>,<INPUT>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
 
-  if (set.count() != 5)
+  if (set.count() != 7)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -164,7 +127,21 @@ int MOM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getMOM(in, period);
+  int smoothing = set[5].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing" << set[5];
+    return 1;
+  }
+
+  int type = maList.indexOf(set[6]);
+  if (type == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing type" << set[6];
+    return 1;
+  }
+
+  PlotLine *line = getMOM(in, period, smoothing, type);
   if (! line)
     return 1;
 
@@ -173,7 +150,7 @@ int MOM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * MOM::getMOM (PlotLine *in, int period)
+PlotLine * MOM::getMOM (PlotLine *in, int period, int smoothing, int type)
 {
   int size = in->getSize();
   TA_Real input[size];
@@ -194,6 +171,19 @@ PlotLine * MOM::getMOM (PlotLine *in, int period)
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
+
+  if (smoothing > 1)
+  {
+    PlotLine *ma = getMA(line, smoothing, type);
+    if (! ma)
+    {
+      delete line;
+      return 0;
+    }
+
+    delete line;
+    line = ma;
+  }
 
   return line;
 }
@@ -222,27 +212,10 @@ int MOM::dialog ()
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
 
-  dialog->addCheckItem(page, showMOMKey, settings.getInt(showMOMKey));
+  dialog->addIntItem(page, smoothKey, settings.getInt(smoothKey), 1, 100000);
 
-  page++;
-  k = QObject::tr("MA");
-  dialog->addPage(page, k);
-
-  settings.getData(maColorKey, d);
-  dialog->addColorItem(page, maColorKey, d);
-
-  settings.getData(maPlotKey, d);
-  dialog->addComboItem(page, maPlotKey, plotList, d);
-
-  settings.getData(maLabelKey, d);
-  dialog->addTextItem(page, maLabelKey, d);
-
-  dialog->addIntItem(page, maPeriodKey, settings.getInt(maPeriodKey), 2, 100000);
-
-  settings.getData(maTypeKey, d);
-  dialog->addComboItem(page, maTypeKey, maList, d);
-
-  dialog->addCheckItem(page, showMAKey, settings.getInt(showMAKey));
+  settings.getData(smoothTypeKey, d);
+  dialog->addComboItem(page, smoothTypeKey, maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -266,26 +239,11 @@ int MOM::dialog ()
   dialog->getItem(periodKey, d);
   settings.setData(periodKey, d);
 
-  dialog->getItem(showMOMKey, d);
-  settings.setData(showMOMKey, d);
+  dialog->getItem(smoothKey, d);
+  settings.setData(smoothKey, d);
 
-  dialog->getItem(maColorKey, d);
-  settings.setData(maColorKey, d);
-
-  dialog->getItem(maPlotKey, d);
-  settings.setData(maPlotKey, d);
-
-  dialog->getItem(maLabelKey, d);
-  settings.setData(maLabelKey, d);
-
-  dialog->getItem(maPeriodKey, d);
-  settings.setData(maPeriodKey, d);
-
-  dialog->getItem(maTypeKey, d);
-  settings.setData(maTypeKey, d);
-
-  dialog->getItem(showMAKey, d);
-  settings.setData(showMAKey, d);
+  dialog->getItem(smoothTypeKey, d);
+  settings.setData(smoothTypeKey, d);
 
   delete dialog;
   return rc;

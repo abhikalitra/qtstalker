@@ -30,8 +30,16 @@ class THERM : public IndicatorBase
     THERM ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getTHERM (BarData *data);
+    PlotLine * getTHERM (BarData *data, int smoothing, int type);
     int dialog ();
+
+  protected:
+    QString downColorKey;
+    QString upColorKey;
+    QString threshColorKey;
+    QString threshKey;
+    QString smoothKey;
+    QString smoothTypeKey;
 };
 
 #endif

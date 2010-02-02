@@ -46,6 +46,12 @@ class PP : public IndicatorBase
     QString s1lKey;
     QString s2lKey;
     QString s3lKey;
+    QString r1ShowKey;
+    QString r2ShowKey;
+    QString r3ShowKey;
+    QString s1ShowKey;
+    QString s2ShowKey;
+    QString s3ShowKey;
 };
 
 #endif

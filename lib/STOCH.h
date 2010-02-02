@@ -45,6 +45,10 @@ class STOCH : public IndicatorBase
     QString sdpdKey;
     QString skmaKey;
     QString sdmaKey;
+    QString ref1Key;
+    QString ref2Key;
+    QString ref1ColorKey;
+    QString ref2ColorKey;
 };
 
 #endif
