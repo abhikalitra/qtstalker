@@ -77,7 +77,6 @@ class IndicatorBase
       _MOM,
       _PP,
       _PPO,
-      _PRICE,
       _RANGE,
       _REF,
       _ROC,

@@ -83,7 +83,6 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "MOM";
   indicatorList << "PP";
   indicatorList << "PPO";
-  indicatorList << "PRICE";
   indicatorList << "RANGE";
   indicatorList << "REF";
   indicatorList << "ROC";

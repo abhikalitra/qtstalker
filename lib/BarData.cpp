@@ -31,6 +31,17 @@ BarData::BarData ()
   low = 99999999;
   barLength = DailyBar;
   barsRequested = 0;
+
+  inputList << QObject::tr("Open");
+  inputList << QObject::tr("High");
+  inputList << QObject::tr("Low");
+  inputList << QObject::tr("Close");
+  inputList << QObject::tr("Volume");
+  inputList << QObject::tr("OI");
+  inputList << QObject::tr("AvgPrice");
+  inputList << QObject::tr("MedianPrice");
+  inputList << QObject::tr("TypicalPrice");
+  inputList << QObject::tr("WCPrice");
 }
 
 BarData::~BarData ()
@@ -40,59 +51,56 @@ BarData::~BarData ()
 
 void BarData::getInputFields (QStringList &l)
 {
-  l.clear();
-  l.append(QObject::tr("Open"));
-  l.append(QObject::tr("High"));
-  l.append(QObject::tr("Low"));
-  l.append(QObject::tr("Close"));
-  l.append(QObject::tr("Volume"));
-  l.append(QObject::tr("OI"));
-  l.append(QObject::tr("Day"));
-  l.append(QObject::tr("Week"));
-  l.append(QObject::tr("Month"));
-  l.append(QObject::tr("DayOfWeek"));
+  l = inputList;
 }
 
 PlotLine * BarData::getInput (BarData::InputType field)
 {
-  PlotLine *in = new PlotLine();
+  PlotLine *in = new PlotLine;
   int loop;
-  QDateTime dt;
-  for (loop = 0; loop < (int) barList.count(); loop++)
+  for (loop = 0; loop < count(); loop++)
   {
-    switch(field)
+    switch (field)
     {
       case Open:
         in->append(getOpen(loop));
-	break;
+        break;
       case High:
         in->append(getHigh(loop));
-	break;
+        break;
       case Low:
         in->append(getLow(loop));
-	break;
+        break;
       case Volume:
         in->append(getVolume(loop));
-	break;
+        break;
       case OI:
         in->append(getOI(loop));
-	break;
-      case Day:
-        getDate(loop, dt);
-        in->append(dt.date().day());
-	break;
-      case Week:
-        getDate(loop, dt);
-        in->append(dt.date().weekNumber());
-	break;
-      case Month:
-        getDate(loop, dt);
-        in->append(dt.date().month());
-	break;
-      case DayOfWeek:
-        getDate(loop, dt);
-        in->append(dt.date().dayOfWeek());
-	break;
+        break;
+      case AveragePrice:
+      {
+        double t = (getOpen(loop) + getHigh(loop) + getLow(loop) + getClose(loop)) / 4.0;
+        in->append(t);
+        break;
+      }
+      case MedianPrice:
+      {
+        double t = (getHigh(loop) + getLow(loop)) / 2.0;
+        in->append(t);
+        break;
+      }
+      case TypicalPrice:
+      {
+        double t = (getHigh(loop) + getLow(loop) + getClose(loop)) / 3.0;
+        in->append(t);
+        break;
+      }
+      case WeightedClosePrice:
+      {
+        double t = (getHigh(loop) + getLow(loop) + (getClose(loop) * 2)) / 4.0;
+        in->append(t);
+        break;
+      }
       default:
         in->append(getClose(loop));
         break;
@@ -182,74 +190,11 @@ double BarData::getMin ()
 
 BarData::InputType BarData::getInputType (QString &d)
 {
-  InputType t = Close;
-
-  while (1)
-  {
-    if (d == QObject::tr("Open"))
-    {
-      t = Open;
-      break;
-    }
-
-    if (d == QObject::tr("High"))
-    {
-      t = High;
-      break;
-    }
-
-    if (d == QObject::tr("Low"))
-    {
-      t = Low;
-      break;
-    }
-
-    if (d == QObject::tr("Close"))
-    {
-      t = Close;
-      break;
-    }
-
-    if (d == QObject::tr("Volume"))
-    {
-      t = Volume;
-      break;
-    }
-
-    if (d == QObject::tr("OI"))
-    {
-      t = OI;
-      break;
-    }
-
-    if (d == QObject::tr("Day"))
-    {
-      t = Day;
-      break;
-    }
-
-    if (d == QObject::tr("Week"))
-    {
-      t = Week;
-      break;
-    }
-
-    if (d == QObject::tr("Month"))
-    {
-      t = Month;
-      break;
-    }
-
-    if (d == QObject::tr("DayofWeek"))
-    {
-      t = DayOfWeek;
-      break;
-    }
-
-    break;
-  }
-
-  return t;
+  InputType rc = Close;
+  int t = inputList.indexOf(d);
+  if (t != -1)
+    rc = (InputType) t;
+  return rc;
 }
 
 void BarData::getBarLengthList (QStringList &l)

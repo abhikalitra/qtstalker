@@ -40,10 +40,10 @@ class BarData
       Close,
       Volume,
       OI,
-      Day,
-      Week,
-      Month,
-      DayOfWeek
+      AveragePrice,
+      MedianPrice,
+      TypicalPrice,
+      WeightedClosePrice
     };
 
     enum BarLength
@@ -106,6 +106,7 @@ class BarData
     QString name;
     QString type;
     int barsRequested;
+    QStringList inputList;
 };
 
 #endif

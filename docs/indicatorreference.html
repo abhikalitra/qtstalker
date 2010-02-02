@@ -123,13 +123,18 @@ included scripts for examples of how they should be used.</p>
 created
 indicator or bar data as follows:</p>
 <ul>
-  <li>"Open" the open value of the bar</li>
-  <li>"High" the high value of the bar</li>
-  <li>"Low" the low value of the bar</li>
-  <li>"Close" the close value of the bar</li>
-  <li>"Volume" the volume value of the bar</li>
-  <li>"OI" the open interest value of the bar</li>
+  <li>'Open' - open value of the bar</li>
+  <li>'High' - high value of the bar</li>
+  <li>'Low' - low value of the bar</li>
+  <li>'Close' - close value of the bar</li>
+  <li>'Volume' - volume value of the bar</li>
+  <li>'OI' - open interest value of the bar</li>
+  <li>'Average Price' - (Open + High + Low + Close) / 4&nbsp;</li>
+  <li>'Median Price' - (High + Low) / 2</li>
+  <li>'Typical Price' - (High + Low + Close) / 3</li>
+  <li>'WCPrice' - (High + Low + (Close * 2)) / 4</li>
 </ul>
+<br>
 <p>&lt;OPERATOR&gt; is a comparison operator. They are:</p>
 <ul>
   <li>"=" equal to</li>
@@ -355,7 +360,8 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
 </h3>
 <p>INDICATOR,FI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
 <br>
-<h3>Hilbert Transform - Dominant Cycle Period</h3>
+<h3>Hilbert Transform<br>
+</h3>
 <p>INDICATOR,HT_DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;METHOD&gt;<br>
 </p>
 <p>Available methods are:<br>
@@ -423,28 +429,20 @@ Methods available are:<br>
   </li>
   <li>TRIMA - Triangular moving average<br>
   </li>
-  <li>Wilder - W. Wilder's version<br>
+  <li>Wilder - W. Wilder's formula<br>
   </li>
   <li>WMA - Weighted moving average<br>
   </li>
 </ul>
 <br>
 <br>
-<h3>Moving Average Convergence/Divergence</h3>
-<p>INDICATOR,MACD,&lt;INPUT&gt;,&lt;NAME_MACD&gt;,&lt;NAME_SIGNAL&gt;,&lt;NAME_HIST&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;SIGNAL_PERIOD&gt;</p>
-<p></p>
-<h3><br>
+<h3>MACD<br>
 </h3>
-<h3>MACD with controllable MA type</h3>
 <p>INDICATOR,MACDEXT,&lt;INPUT&gt;,&lt;NAME_MACD&gt;,&lt;NAME_SIGNAL&gt;,&lt;NAME_HIST&gt;,&lt;FAST_PERIOD&gt;,&lt;FAST_MA_TYPE&gt;,&lt;SLOW_PERIOD&gt;,&lt;SLOW_MA_TYPE&gt;,&lt;SIGNAL_PERIOD&gt;,&lt;SIGNAL_MA_TYPE&gt;</p>
 <p></p>
-<h3><br>
-</h3>
-<h3>Moving Average Convergence/Divergence Fix 12/26</h3>
-<p>INDICATOR,MACDFIX,&lt;INPUT&gt;,&lt;NAME_MACD&gt;,&lt;NAME_SIGNAL&gt;,&lt;NAME_HIST&gt;,&lt;SIGNAL_PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
+<span style="font-weight: bold;"><br>
+<br>
+</span>
 <h3>MESA Adaptive Moving Average</h3>
 <p>INDICATOR,MAMA,&lt;INPUT&gt;,&lt;NAME_MAMA&gt;,&lt;NAME_FAMA&gt;,&lt;FAST_LIMIT&gt;,&lt;SLOW_LIMIT&gt;<br>
 </p>
@@ -511,16 +509,6 @@ Available methods are:<br>
 <p>INDICATOR,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
 <p></p>
 <br>
-<h3>PRICE</h3>
-INDICATOR,PRICE,&lt;NAME&gt;,&lt;METHOD&gt;<br>
-<br>
-Available methods are:<br>
-<ul>
-  <li>AVGPRICE</li>
-  <li>MEDPRICE</li>
-  <li>TYPPRICE</li>
-  <li>WCLPRICE</li>
-</ul>
 <br>
 <h3>RANGE<br>
 </h3>

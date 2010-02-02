@@ -55,7 +55,6 @@
 #include "MOM.h"
 #include "PP.h"
 #include "PPO.h"
-#include "PRICE.h"
 #include "RANGE.h"
 #include "REF.h"
 #include "ROC.h"
@@ -268,11 +267,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_PPO:
     {
       ib = new PPO;
-      break;
-    }
-    case IndicatorBase::_PRICE:
-    {
-      ib = new PRICE;
       break;
     }
     case IndicatorBase::_RANGE:
