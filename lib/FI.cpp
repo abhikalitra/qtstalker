@@ -38,7 +38,7 @@ FI::FI ()
   settings.setData(labelKey, indicator);
 
   d = "EMA";
-  settings.setData(maKey, d);
+  settings.setData(maTypeKey, d);
 
   settings.setData(periodKey, 2);
 }
@@ -52,7 +52,7 @@ int FI::getIndicator (Indicator &ind, BarData *data)
   int period = settings.getInt(periodKey);
 
   QString s;
-  settings.getData(maKey, s);
+  settings.getData(maTypeKey, s);
   int mat = maList.indexOf(s);
 
   PlotLine *ma = getMA(line, period, mat);
@@ -138,8 +138,8 @@ int FI::dialog ()
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
 
-  settings.getData(maKey, d);
-  dialog->addComboItem(page, maKey, maList, d);
+  settings.getData(maTypeKey, d);
+  dialog->addComboItem(page, maTypeKey, maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -160,8 +160,8 @@ int FI::dialog ()
   dialog->getItem(periodKey, d);
   settings.setData(periodKey, d);
 
-  dialog->getItem(maKey, d);
-  settings.setData(maKey, d);
+  dialog->getItem(maTypeKey, d);
+  settings.setData(maTypeKey, d);
 
   delete dialog;
   return rc;

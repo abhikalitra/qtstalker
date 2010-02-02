@@ -69,7 +69,7 @@ BBANDS::BBANDS ()
   settings.setData(ldKey, 2);
 
   d = "SMA";
-  settings.setData(maKey, d);
+  settings.setData(maTypeKey, d);
 }
 
 int BBANDS::getIndicator (Indicator &ind, BarData *data)
@@ -87,7 +87,7 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
   double udev = settings.getDouble(udKey);
   double ldev = settings.getDouble(ldKey);
 
-  settings.getData(maKey, s);
+  settings.getData(maTypeKey, s);
   int ma = maList.indexOf(s);
 
   QList<PlotLine *> l;
@@ -306,8 +306,8 @@ int BBANDS::dialog ()
 
   dialog->addDoubleItem(page, ldKey, settings.getDouble(ldKey), -100000, 100000);
 
-  settings.getData(maKey, d);
-  dialog->addComboItem(page, maKey, maList, d);
+  settings.getData(maTypeKey, d);
+  dialog->addComboItem(page, maTypeKey, maList, d);
 
   page++;
   k = QObject::tr("Up");
@@ -394,8 +394,8 @@ int BBANDS::dialog ()
   dialog->getItem(ldKey, d);
   settings.setData(ldKey, d);
 
-  dialog->getItem(maKey, d);
-  settings.setData(maKey, d);
+  dialog->getItem(maTypeKey, d);
+  settings.setData(maTypeKey, d);
 
   delete dialog;
   return rc;

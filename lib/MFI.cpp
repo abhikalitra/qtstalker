@@ -27,28 +27,69 @@
 MFI::MFI ()
 {
   indicator = "MFI";
+  showMAKey = QObject::tr("Show MA");
+  showMFIKey = QObject::tr("Show MFI");
 
   QString d;
   d = "red";
   settings.setData(colorKey, d);
 
+  d = "yellow";
+  settings.setData(maColorKey, d);
+
   d = "Line";
   settings.setData(plotKey, d);
+  settings.setData(maPlotKey, d);
 
   settings.setData(labelKey, indicator);
 
+  d = "MFI_MA";
+  settings.setData(maLabelKey, d);
+
   settings.setData(periodKey, 14);
+  settings.setData(maPeriodKey, 10);
+
+  d = "SMA";
+  settings.setData(maTypeKey, d);
+
+  settings.setData(showMFIKey, 1);
+  settings.setData(showMAKey, 1);
 }
 
 int MFI::getIndicator (Indicator &ind, BarData *data)
 {
+  QString s;
   int period = settings.getInt(periodKey);
 
+  PlotLine *ma = 0;
   PlotLine *line = getMFI(data, period);
   if (! line)
     return 1;
 
-  QString s;
+  if (settings.getInt(showMAKey))
+  {
+    int maPeriod = settings.getInt(maPeriodKey);
+
+    settings.getData(maTypeKey, s);
+    int type = maList.indexOf(s);
+
+    ma = getMA(line, maPeriod, type);
+    if (! ma)
+    {
+      delete line;
+      return 1;
+    }
+
+    settings.getData(maColorKey, s);
+    ma->setColor(s);
+
+    settings.getData(maPlotKey, s);
+    ma->setType(s);
+
+    settings.getData(maLabelKey, s);
+    ma->setLabel(s);
+  }
+
   settings.getData(colorKey, s);
   line->setColor(s);
 
@@ -58,7 +99,13 @@ int MFI::getIndicator (Indicator &ind, BarData *data)
   settings.getData(labelKey, s);
   line->setLabel(s);
 
-  ind.addLine(line);
+  if (settings.getInt(showMFIKey))
+    ind.addLine(line);
+  else
+    delete line;
+
+  if (settings.getInt(showMAKey))
+    ind.addLine(ma);
 
   return 0;
 }
@@ -141,8 +188,7 @@ int MFI::dialog ()
   dialog->addPage(page, k);
 
   settings.getData(colorKey, d);
-  QColor c(d);
-  dialog->addColorItem(page, colorKey, c);
+  dialog->addColorItem(page, colorKey, d);
 
   settings.getData(plotKey, d);
   dialog->addComboItem(page, plotKey, plotList, d);
@@ -151,6 +197,28 @@ int MFI::dialog ()
   dialog->addTextItem(page, labelKey, d);
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
+
+  dialog->addCheckItem(page, showMFIKey, settings.getInt(showMFIKey));
+
+  page++;
+  k = QObject::tr("MA");
+  dialog->addPage(page, k);
+
+  settings.getData(maColorKey, d);
+  dialog->addColorItem(page, maColorKey, d);
+
+  settings.getData(maPlotKey, d);
+  dialog->addComboItem(page, maPlotKey, plotList, d);
+
+  settings.getData(maLabelKey, d);
+  dialog->addTextItem(page, maLabelKey, d);
+
+  dialog->addIntItem(page, maPeriodKey, settings.getInt(maPeriodKey), 2, 100000);
+
+  settings.getData(maTypeKey, d);
+  dialog->addComboItem(page, maTypeKey, maList, d);
+
+  dialog->addCheckItem(page, showMAKey, settings.getInt(showMAKey));
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -170,6 +238,27 @@ int MFI::dialog ()
 
   dialog->getItem(periodKey, d);
   settings.setData(periodKey, d);
+
+  dialog->getItem(showMFIKey, d);
+  settings.setData(showMFIKey, d);
+
+  dialog->getItem(maColorKey, d);
+  settings.setData(maColorKey, d);
+
+  dialog->getItem(maPlotKey, d);
+  settings.setData(maPlotKey, d);
+
+  dialog->getItem(maLabelKey, d);
+  settings.setData(maLabelKey, d);
+
+  dialog->getItem(maPeriodKey, d);
+  settings.setData(maPeriodKey, d);
+
+  dialog->getItem(maTypeKey, d);
+  settings.setData(maTypeKey, d);
+
+  dialog->getItem(showMAKey, d);
+  settings.setData(showMAKey, d);
 
   delete dialog;
   return rc;

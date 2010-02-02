@@ -50,23 +50,15 @@
 #include "MACDEXT.h"
 #include "MACDFIX.h"
 #include "MAMA.h"
-#include "MATH.h"
+#include "MATH1.h"
 #include "MATH2.h"
 #include "MAVP.h"
-#include "MAX.h"
-#include "MAXINDEX.h"
 #include "MFI.h"
-#include "MIDPOINT.h"
-#include "MIDPRICE.h"
-#include "MIN.h"
-#include "MININDEX.h"
-#include "MINMAX.h"
-#include "MINMAXINDEX.h"
 #include "MOM.h"
-#include "NATR.h"
 #include "PP.h"
 #include "PPO.h"
 #include "PRICE.h"
+#include "RANGE.h"
 #include "REF.h"
 #include "ROC.h"
 #include "RSI.h"
@@ -258,9 +250,9 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new MAMA;
       break;
     }
-    case IndicatorBase::_MATH:
+    case IndicatorBase::_MATH1:
     {
-      ib = new MATH;
+      ib = new MATH1;
       break;
     }
     case IndicatorBase::_MATH2:
@@ -273,59 +265,14 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new MAVP;
       break;
     }
-    case IndicatorBase::_MAX:
-    {
-      ib = new MAX;
-      break;
-    }
-    case IndicatorBase::_MAXINDEX:
-    {
-      ib = new MAXINDEX;
-      break;
-    }
     case IndicatorBase::_MFI:
     {
       ib = new MFI;
       break;
     }
-    case IndicatorBase::_MIDPOINT:
-    {
-      ib = new MIDPOINT;
-      break;
-    }
-    case IndicatorBase::_MIDPRICE:
-    {
-      ib = new MIDPRICE;
-      break;
-    }
-    case IndicatorBase::_MIN:
-    {
-      ib = new MIN;
-      break;
-    }
-    case IndicatorBase::_MININDEX:
-    {
-      ib = new MININDEX;
-      break;
-    }
-    case IndicatorBase::_MINMAX:
-    {
-      ib = new MINMAX;
-      break;
-    }
-    case IndicatorBase::_MINMAXINDEX:
-    {
-      ib = new MINMAXINDEX;
-      break;
-    }
     case IndicatorBase::_MOM:
     {
       ib = new MOM;
-      break;
-    }
-    case IndicatorBase::_NATR:
-    {
-      ib = new NATR;
       break;
     }
     case IndicatorBase::_PP:
@@ -341,6 +288,11 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_PRICE:
     {
       ib = new PRICE;
+      break;
+    }
+    case IndicatorBase::_RANGE:
+    {
+      ib = new RANGE;
       break;
     }
     case IndicatorBase::_REF:

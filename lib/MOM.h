@@ -32,6 +32,10 @@ class MOM : public IndicatorBase
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getMOM (PlotLine *in, int period);
     int dialog ();
+
+  protected:
+    QString showMAKey;
+    QString showMOMKey;
 };
 
 #endif

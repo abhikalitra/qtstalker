@@ -32,7 +32,11 @@ IndicatorBase::IndicatorBase ()
   labelKey = QObject::tr("Label");
   inputKey = QObject::tr("Input");
   periodKey = QObject::tr("Period");
-  maKey = QObject::tr("MA Type");
+  maColorKey = QObject::tr("MA Color");
+  maPlotKey = QObject::tr("MA Plot");
+  maLabelKey = QObject::tr("MA Label");
+  maPeriodKey = QObject::tr("MA Period");
+  maTypeKey = QObject::tr("MA Type");
 
   PlotLine pl;
   pl.getLineTypes(plotList);
@@ -74,23 +78,15 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "MACDEXT";
   indicatorList << "MACDFIX";
   indicatorList << "MAMA";
-  indicatorList << "MATH";
+  indicatorList << "MATH1";
   indicatorList << "MATH2";
   indicatorList << "MAVP";
-  indicatorList << "MAX";
-  indicatorList << "MAXINDEX";
   indicatorList << "MFI";
-  indicatorList << "MIDPOINT";
-  indicatorList << "MIDPRICE";
-  indicatorList << "MIN";
-  indicatorList << "MININDEX";
-  indicatorList << "MINMAX";
-  indicatorList << "MINMAXINDEX";
   indicatorList << "MOM";
-  indicatorList << "NATR";
   indicatorList << "PP";
   indicatorList << "PPO";
   indicatorList << "PRICE";
+  indicatorList << "RANGE";
   indicatorList << "REF";
   indicatorList << "ROC";
   indicatorList << "RSI";
@@ -154,6 +150,7 @@ PlotLine * IndicatorBase::getMA (PlotLine *_in, int period, int type)
   if (rc != TA_SUCCESS)
   {
     qDebug() << "IndicatorBase::getMA: TA-Lib error" << rc;
+    qDebug() << period << type;
     return 0;
   }
 

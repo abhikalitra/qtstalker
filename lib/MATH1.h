@@ -19,19 +19,20 @@
  *  USA.
  */
 
-#ifndef MAXINDEX_HPP
-#define MAXINDEX_HPP
+#ifndef MATH1_HPP
+#define MATH1_HPP
 
 #include "IndicatorBase.h"
 
-class MAXINDEX : public IndicatorBase
+class MATH1 : public IndicatorBase
 {
   public:
-    MAXINDEX ();
-    int getIndicator (Indicator &ind, BarData *data);
+    MATH1 ();
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getMAXINDEX (PlotLine *in, int period);
-    int dialog ();
+    PlotLine * getMATH1 (PlotLine *in, int method);
+
+  protected:
+    QStringList methodList;
 };
 
 #endif

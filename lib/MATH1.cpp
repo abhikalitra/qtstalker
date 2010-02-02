@@ -19,15 +19,15 @@
  *  USA.
  */
 
-#include "MATH.h"
+#include "MATH1.h"
 #include "math.h" // for fabs
 
 #include <QtDebug>
 
 
-MATH::MATH ()
+MATH1::MATH1 ()
 {
-  indicator = "MATH";
+  indicator = "MATH1";
 
   methodList << QObject::tr("CEIL");
   methodList << QObject::tr("EXP");
@@ -38,9 +38,9 @@ MATH::MATH ()
   methodList << QObject::tr("SQRT");
 }
 
-int MATH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int MATH1::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,MATH,<NAME>,<INPUT>,<METHOD>
+  // INDICATOR,MATH1,<NAME>,<INPUT>,<METHOD>
 
   if (set.count() != 5)
   {
@@ -75,7 +75,7 @@ int MATH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  PlotLine *line = getMATH(in, method);
+  PlotLine *line = getMATH1(in, method);
   if (! line)
     return 1;
 
@@ -84,7 +84,7 @@ int MATH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   return 0;
 }
 
-PlotLine * MATH::getMATH (PlotLine *in, int method)
+PlotLine * MATH1::getMATH1 (PlotLine *in, int method)
 {
   TA_Integer outBeg;
   TA_Integer outNb;

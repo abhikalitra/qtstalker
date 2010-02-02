@@ -20,6 +20,7 @@
  */
 
 #include "MAVP.h"
+#include "BARS.h"
 
 #include <QtDebug>
 
@@ -49,7 +50,7 @@ MAVP::MAVP ()
   settings.setData(maxKey, 30);
 
   d = "SMA";
-  settings.setData(maKey, d);
+  settings.setData(maTypeKey, d);
 }
 
 int MAVP::getIndicator (Indicator &ind, BarData *data)
@@ -75,7 +76,7 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   int min = settings.getInt(minKey);
   int max = settings.getInt(maxKey);
 
-  settings.getData(maKey, s);
+  settings.getData(maTypeKey, s);
   int ma = maList.indexOf(s);
 
   PlotLine *line = getMAVP(in, in2, min, max, ma);
@@ -85,6 +86,9 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
     delete in2;
     return 1;
   }
+
+  BARS bars;
+  bars.getIndicator(ind, data);
 
   settings.getData(colorKey, s);
   line->setColor(s);
@@ -241,8 +245,8 @@ int MAVP::dialog ()
 
   dialog->addIntItem(page, maxKey, settings.getInt(maxKey), 2, 100000);
 
-  settings.getData(maKey, d);
-  dialog->addComboItem(page, maKey, maList, d);
+  settings.getData(maTypeKey, d);
+  dialog->addComboItem(page, maTypeKey, maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -272,8 +276,8 @@ int MAVP::dialog ()
   dialog->getItem(maxKey, d);
   settings.setData(maxKey, d);
 
-  dialog->getItem(maKey, d);
-  settings.setData(maKey, d);
+  dialog->getItem(maTypeKey, d);
+  settings.setData(maTypeKey, d);
 
   delete dialog;
   return rc;

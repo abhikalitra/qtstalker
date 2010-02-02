@@ -19,29 +19,20 @@
  *  USA.
  */
 
-#ifndef MINMAX_HPP
-#define MINMAX_HPP
+#ifndef RANGE_HPP
+#define RANGE_HPP
 
 #include "IndicatorBase.h"
 
-#include <QList>
-
-class MINMAX : public IndicatorBase
+class RANGE : public IndicatorBase
 {
   public:
-    MINMAX ();
-    int getIndicator (Indicator &ind, BarData *data);
+    RANGE ();
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getMINMAX (PlotLine *in, int period, QList<PlotLine *> &l);
-    int dialog ();
+    PlotLine * getRANGE (PlotLine *in, BarData *data, int period, int method);
 
   protected:
-    QString mincKey;
-    QString maxcKey;
-    QString minpKey;
-    QString maxpKey;
-    QString minlKey;
-    QString maxlKey;
+    QStringList methodList;
 };
 
 #endif

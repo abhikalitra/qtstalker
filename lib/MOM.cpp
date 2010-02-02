@@ -27,20 +27,36 @@
 MOM::MOM ()
 {
   indicator = "MOM";
+  showMAKey = QObject::tr("Show MA");
+  showMOMKey = QObject::tr("Show MOM");
 
   QString d;
   d = "red";
   settings.setData(colorKey, d);
 
+  d = "yellow";
+  settings.setData(maColorKey, d);
+
   d = "Line";
   settings.setData(plotKey, d);
+  settings.setData(maPlotKey, d);
 
   settings.setData(labelKey, indicator);
+
+  d = "MOM_MA";
+  settings.setData(maLabelKey, d);
 
   d = "Close";
   settings.setData(inputKey, d);
 
   settings.setData(periodKey, 10);
+  settings.setData(maPeriodKey, 10);
+
+  d = "SMA";
+  settings.setData(maTypeKey, d);
+
+  settings.setData(showMOMKey, 1);
+  settings.setData(showMAKey, 1);
 }
 
 int MOM::getIndicator (Indicator &ind, BarData *data)
@@ -56,11 +72,36 @@ int MOM::getIndicator (Indicator &ind, BarData *data)
 
   int period = settings.getInt(periodKey);
 
+  PlotLine *ma = 0;
   PlotLine *line = getMOM(in, period);
   if (! line)
   {
     delete in;
     return 1;
+  }
+
+  if (settings.getInt(showMAKey))
+  {
+    int maPeriod = settings.getInt(maPeriodKey);
+
+    settings.getData(maTypeKey, s);
+    int type = maList.indexOf(s);
+
+    ma = getMA(line, maPeriod, type);
+    if (! ma)
+    {
+      delete line;
+      return 1;
+    }
+
+    settings.getData(maColorKey, s);
+    ma->setColor(s);
+
+    settings.getData(maPlotKey, s);
+    ma->setType(s);
+
+    settings.getData(maLabelKey, s);
+    ma->setLabel(s);
   }
 
   settings.getData(colorKey, s);
@@ -72,7 +113,13 @@ int MOM::getIndicator (Indicator &ind, BarData *data)
   settings.getData(labelKey, s);
   line->setLabel(s);
 
-  ind.addLine(line);
+  if (settings.getInt(showMOMKey))
+    ind.addLine(line);
+  else
+    delete line;
+
+  if (settings.getInt(showMAKey))
+    ind.addLine(ma);
 
   delete in;
 
@@ -175,6 +222,28 @@ int MOM::dialog ()
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
 
+  dialog->addCheckItem(page, showMOMKey, settings.getInt(showMOMKey));
+
+  page++;
+  k = QObject::tr("MA");
+  dialog->addPage(page, k);
+
+  settings.getData(maColorKey, d);
+  dialog->addColorItem(page, maColorKey, d);
+
+  settings.getData(maPlotKey, d);
+  dialog->addComboItem(page, maPlotKey, plotList, d);
+
+  settings.getData(maLabelKey, d);
+  dialog->addTextItem(page, maLabelKey, d);
+
+  dialog->addIntItem(page, maPeriodKey, settings.getInt(maPeriodKey), 2, 100000);
+
+  settings.getData(maTypeKey, d);
+  dialog->addComboItem(page, maTypeKey, maList, d);
+
+  dialog->addCheckItem(page, showMAKey, settings.getInt(showMAKey));
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -196,6 +265,27 @@ int MOM::dialog ()
 
   dialog->getItem(periodKey, d);
   settings.setData(periodKey, d);
+
+  dialog->getItem(showMOMKey, d);
+  settings.setData(showMOMKey, d);
+
+  dialog->getItem(maColorKey, d);
+  settings.setData(maColorKey, d);
+
+  dialog->getItem(maPlotKey, d);
+  settings.setData(maPlotKey, d);
+
+  dialog->getItem(maLabelKey, d);
+  settings.setData(maLabelKey, d);
+
+  dialog->getItem(maPeriodKey, d);
+  settings.setData(maPeriodKey, d);
+
+  dialog->getItem(maTypeKey, d);
+  settings.setData(maTypeKey, d);
+
+  dialog->getItem(showMAKey, d);
+  settings.setData(showMAKey, d);
 
   delete dialog;
   return rc;

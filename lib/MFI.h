@@ -32,6 +32,10 @@ class MFI : public IndicatorBase
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getMFI (BarData *data, int period);
     int dialog ();
+
+  protected:
+    QString showMAKey;
+    QString showMFIKey;
 };
 
 #endif

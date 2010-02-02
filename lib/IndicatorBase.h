@@ -72,23 +72,15 @@ class IndicatorBase
       _MACDEXT,
       _MACDFIX,
       _MAMA,
-      _MATH,
+      _MATH1,
       _MATH2,
       _MAVP,
-      _MAX,
-      _MAXINDEX,
       _MFI,
-      _MIDPOINT,
-      _MIDPRICE,
-      _MIN,
-      _MININDEX,
-      _MINMAX,
-      _MINMAXINDEX,
       _MOM,
-      _NATR,
       _PP,
       _PPO,
       _PRICE,
+      _RANGE,
       _REF,
       _ROC,
       _RSI,
@@ -131,8 +123,6 @@ class IndicatorBase
     Setting settings;
     QString name;
     QString indicator;
-    int maPeriod;
-    int maType;
 
     QStringList indicatorList;
     QStringList maList;
@@ -145,7 +135,11 @@ class IndicatorBase
     QString labelKey;
     QString inputKey;
     QString periodKey;
-    QString maKey;
+    QString maPeriodKey;
+    QString maTypeKey;
+    QString maColorKey;
+    QString maPlotKey;
+    QString maLabelKey;
 };
 
 #endif

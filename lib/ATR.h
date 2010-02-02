@@ -30,8 +30,12 @@ class ATR : public IndicatorBase
     ATR ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getATR (BarData *data, int period);
+    PlotLine * getATR (BarData *data, int period, int method);
     int dialog ();
+
+  protected:
+    QString methodKey;
+    QStringList methodList;
 };
 
 #endif

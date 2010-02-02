@@ -27,6 +27,10 @@
 ATR::ATR ()
 {
   indicator = "ATR";
+  methodKey = QObject::tr("Method");
+
+  methodList << "ATR";
+  methodList << "NATR";
 
   QString d;
   d = "red";
@@ -38,17 +42,23 @@ ATR::ATR ()
   settings.setData(labelKey, indicator);
 
   settings.setData(periodKey, 14);
+
+  d = "ATR";
+  settings.setData(methodKey, d);
 }
 
 int ATR::getIndicator (Indicator &ind, BarData *data)
 {
   int period = settings.getInt(periodKey);
 
-  PlotLine *line = getATR(data, period);
+  QString s;
+  settings.getData(methodKey, s);
+  int method = methodList.indexOf(s);
+
+  PlotLine *line = getATR(data, period, method);
   if (! line)
     return 1;
 
-  QString s;
   settings.getData(colorKey, s);
   line->setColor(s);
 
@@ -65,7 +75,7 @@ int ATR::getIndicator (Indicator &ind, BarData *data)
 
 int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,ATR,<NAME>,<PERIOD>
+  // INDICATOR,ATR,<NAME>,<PERIOD>,<METHOD>
 
   if (set.count() != 4)
   {
@@ -88,7 +98,14 @@ int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getATR(data, period);
+  int method = methodList.indexOf(set[4]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid method" << set[4];
+    return 1;
+  }
+
+  PlotLine *line = getATR(data, period, method);
   if (! line)
     return 1;
 
@@ -97,7 +114,7 @@ int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * ATR::getATR (BarData *data, int period)
+PlotLine * ATR::getATR (BarData *data, int period, int method)
 {
   int size = data->count();
   TA_Real high[size];
@@ -114,7 +131,19 @@ PlotLine * ATR::getATR (BarData *data, int period)
 
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_RetCode rc = TA_ATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
+  TA_RetCode rc = TA_SUCCESS;
+  switch (method)
+  {
+    case 0:
+      rc = TA_ATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 1:
+      rc = TA_NATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
   if (rc != TA_SUCCESS)
   {
     qDebug() << indicator << "::calculate: TA-Lib error" << rc;
@@ -150,6 +179,9 @@ int ATR::dialog ()
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
 
+  settings.getData(methodKey, d);
+  dialog->addComboItem(page, methodKey, methodList, d);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -168,6 +200,9 @@ int ATR::dialog ()
 
   dialog->getItem(periodKey, d);
   settings.setData(periodKey, d);
+
+  dialog->getItem(methodKey, d);
+  settings.setData(methodKey, d);
 
   delete dialog;
   return rc;
