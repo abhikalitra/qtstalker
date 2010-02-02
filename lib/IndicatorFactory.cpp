@@ -89,7 +89,7 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
 {
   IndicatorBase tib;
   QStringList l;
-  tib.getIndicatorList(l);
+  tib.getIndicatorList(l, 0);
 
   IndicatorBase *ib = 0;
   int i = l.indexOf(_indicator);

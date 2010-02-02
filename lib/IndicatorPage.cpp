@@ -104,7 +104,7 @@ void IndicatorPage::newIndicator ()
 {
   IndicatorBase ib;
   QStringList l;
-  ib.getIndicatorList(l);
+  ib.getIndicatorList(l, 1);
 
   PrefDialog *dialog = new PrefDialog;
   dialog->setWindowTitle(tr("New Indicator"));

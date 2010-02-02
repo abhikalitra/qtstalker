@@ -110,7 +110,7 @@ class IndicatorBase
     PlotLine * getMA (PlotLine *_in, int period, int type);
     void setSettings (Indicator &_indicator);
     void getSettings (Indicator &_indicator);
-    void getIndicatorList (QStringList &);
+    void getIndicatorList (QStringList &, int flag);
     void getMAList (QStringList &);
 
   protected:

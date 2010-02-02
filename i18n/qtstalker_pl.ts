@@ -798,26 +798,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Day</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Week</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Month</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DayOfWeek</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DayofWeek</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>1 Minute</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1270,30 +1250,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MIN Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAX Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MIN Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAX Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MIN Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAX Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>1R Color</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1335,46 +1291,6 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>3S Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Acceleration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Acceleration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Offset Reverse</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Initial Long Acceleration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Long Acceleration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Long Acceleration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Initial Short Acceleration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short Acceleration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Short Acceleration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1687,6 +1603,210 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Ref Lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADX Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADXR Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+DI Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-DI Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADX Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADXR Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+DI Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-DI Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADX Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADXR Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+DI Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-DI Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADX Display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADXR Display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+DI Display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-DI Display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-DI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>+DI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADX</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ADXR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AvgPrice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MedianPrice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TypicalPrice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WCPrice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pattern Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oscillator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show MFI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show R1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show R2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show R3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show S1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show S2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show S3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 1 Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 2 Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Initial Step</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Step</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Threshold Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 30 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 50 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 70 Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

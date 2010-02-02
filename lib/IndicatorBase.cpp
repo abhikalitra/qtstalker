@@ -167,9 +167,22 @@ void IndicatorBase::getSettings (Indicator &_ind)
   _ind.setSettings(settings);
 }
 
-void IndicatorBase::getIndicatorList (QStringList &l)
+void IndicatorBase::getIndicatorList (QStringList &l, int flag)
 {
   l = indicatorList;
+
+  if (flag)
+  {
+    l.removeAll("COLOR");
+    l.removeAll("COMPARE");
+    l.removeAll("COMPARE2");
+    l.removeAll("MATH1");
+    l.removeAll("MATH2");
+    l.removeAll("RANGE");
+    l.removeAll("REF");
+    l.removeAll("SYMBOL");
+    l.removeAll("TRIG");
+  }
 }
 
 void IndicatorBase::getMAList (QStringList &l)
