@@ -47,8 +47,6 @@
 #include "LMS.h"
 #include "MA.h"
 #include "MACD.h"
-#include "MACDEXT.h"
-#include "MACDFIX.h"
 #include "MAMA.h"
 #include "MATH1.h"
 #include "MATH2.h"
@@ -230,16 +228,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_MACD:
     {
       ib = new MACD;
-      break;
-    }
-    case IndicatorBase::_MACDEXT:
-    {
-      ib = new MACDEXT;
-      break;
-    }
-    case IndicatorBase::_MACDFIX:
-    {
-      ib = new MACDFIX;
       break;
     }
     case IndicatorBase::_MAMA:

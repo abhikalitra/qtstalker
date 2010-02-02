@@ -39,6 +39,9 @@ MACD::MACD ()
   fpKey = QObject::tr("Fast Period");
   spKey = QObject::tr("Slow Period");
   sigpdKey = QObject::tr("Signal Period");
+  fmaKey = QObject::tr("Fast MA");
+  smaKey = QObject::tr("Slow MA");
+  sigmaKey = QObject::tr("Signal MA");
 
   QString d;
   d = "red";
@@ -74,6 +77,12 @@ MACD::MACD ()
   settings.setData(fpKey, 12);
   settings.setData(spKey, 26);
   settings.setData(sigpdKey, 9);
+
+  d = "SMA";
+  settings.setData(fmaKey, d);
+  settings.setData(smaKey, d);
+  d = "EMA";
+  settings.setData(sigmaKey, d);
 }
 
 int MACD::getIndicator (Indicator &ind, BarData *data)
@@ -91,8 +100,17 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
   int slow = settings.getInt(spKey);
   int signal = settings.getInt(sigpdKey);
 
+  settings.getData(fmaKey, s);
+  int fastma = maList.indexOf(s);
+
+  settings.getData(smaKey, s);
+  int slowma = maList.indexOf(s);
+
+  settings.getData(sigmaKey, s);
+  int signalma = maList.indexOf(s);
+
   QList<PlotLine *> l;
-  int rc = getMACD(in, fast, slow, signal, l);
+  int rc = getMACD(in, fast, fastma, slow, slowma, signal, signalma, l);
   if (rc)
   {
     qDeleteAll(l);
@@ -146,10 +164,10 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
 
 int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,
-  // <SLOW_PERIOD>,<SIGNAL_PERIOD>
+  // INDICATOR,MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<FAST_MA_TYPE>,
+  // <SLOW_PERIOD>,<SLOW_MA_TYPE>,<SIGNAL_PERIOD>,<SIGNAL_MA_TYPE>
 
-  if (set.count() != 9)
+  if (set.count() != 12)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
@@ -197,22 +215,43 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  int slow = set[7].toInt(&ok);
-  if (! ok)
+  int fastma = maList.indexOf(set[7]);
+  if (fastma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid slow period" << set[7];
+    qDebug() << indicator << "::calculate: invalid fast ma" << set[7];
     return 1;
   }
 
-  int signal = set[8].toInt(&ok);
+  int slow = set[8].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid signal period" << set[8];
+    qDebug() << indicator << "::calculate: invalid slow period" << set[8];
+    return 1;
+  }
+
+  int slowma = maList.indexOf(set[9]);
+  if (slowma == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid slow ma" << set[9];
+    return 1;
+  }
+
+  int signal = set[10].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid signal period" << set[9];
+    return 1;
+  }
+
+  int signalma = maList.indexOf(set[11]);
+  if (signalma == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid fast ma" << set[11];
     return 1;
   }
 
   QList<PlotLine *> l;
-  int rc = getMACD(in, fast, slow, signal, l);
+  int rc = getMACD(in, fast, fastma, slow, slowma, signal, signalma, l);
   if (rc)
   {
     qDeleteAll(l);
@@ -226,7 +265,8 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   return 0;
 }
 
-int MACD::getMACD (PlotLine *in, int fast, int slow, int signal, QList<PlotLine *> &l)
+int MACD::getMACD (PlotLine *in, int fast, int fma, int slow, int sma, int signal,
+			 int sigma, QList<PlotLine *> &l)
 {
   int size = in->getSize();
   TA_Integer outBeg;
@@ -239,7 +279,9 @@ int MACD::getMACD (PlotLine *in, int fast, int slow, int signal, QList<PlotLine 
   for (loop = 0; loop < size; loop++)
     input[loop] = (TA_Real) in->getData(loop);
 
-  TA_RetCode rc = TA_MACD(0, size - 1, &input[0], fast, slow, signal, &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
+  TA_RetCode rc = TA_MACDEXT(0, size - 1, &input[0], fast, (TA_MAType) fma,
+			     slow, (TA_MAType) sma, signal, (TA_MAType) sigma,
+			     &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
   if (rc != TA_SUCCESS)
   {
     qDebug() << indicator << "::calculate: TA-Lib error" << rc;
@@ -280,7 +322,11 @@ int MACD::dialog ()
 
   dialog->addIntItem(page, spKey, settings.getInt(spKey), 2, 100000);
 
-  dialog->addIntItem(page, sigpdKey, settings.getInt(sigpdKey), 1, 100000);
+  settings.getData(fmaKey, d);
+  dialog->addComboItem(page, fmaKey, maList, d);
+
+  settings.getData(smaKey, d);
+  dialog->addComboItem(page, smaKey, maList, d);
 
   page++;
   k = QObject::tr("MACD");
@@ -307,6 +353,11 @@ int MACD::dialog ()
 
   settings.getData(siglKey, d);
   dialog->addTextItem(page, siglKey, d);
+
+  dialog->addIntItem(page, sigpdKey, settings.getInt(sigpdKey), 1, 100000);
+
+  settings.getData(sigmaKey, d);
+  dialog->addComboItem(page, sigmaKey, maList, d);
 
   page++;
   k = QObject::tr("Hist");
@@ -366,6 +417,15 @@ int MACD::dialog ()
 
   dialog->getItem(sigpdKey, d);
   settings.setData(sigpdKey, d);
+
+  dialog->getItem(fmaKey, d);
+  settings.setData(fmaKey, d);
+
+  dialog->getItem(smaKey, d);
+  settings.setData(smaKey, d);
+
+  dialog->getItem(sigmaKey, d);
+  settings.setData(sigmaKey, d);
 
   delete dialog;
   return rc;

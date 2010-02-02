@@ -32,7 +32,7 @@ class MACD : public IndicatorBase
     MACD ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getMACD (PlotLine *in, int fast, int slow, int signal, QList<PlotLine *> &l);
+    int getMACD (PlotLine *in, int fast, int fma, int slow, int sma, int signal, int sigma, QList<PlotLine *> &l);
     int dialog ();
 
   protected:
@@ -48,6 +48,9 @@ class MACD : public IndicatorBase
     QString fpKey;
     QString spKey;
     QString sigpdKey;
+    QString fmaKey;
+    QString smaKey;
+    QString sigmaKey;
 };
 
 #endif

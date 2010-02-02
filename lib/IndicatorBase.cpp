@@ -75,8 +75,6 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "LMS";
   indicatorList << "MA";
   indicatorList << "MACD";
-  indicatorList << "MACDEXT";
-  indicatorList << "MACDFIX";
   indicatorList << "MAMA";
   indicatorList << "MATH1";
   indicatorList << "MATH2";

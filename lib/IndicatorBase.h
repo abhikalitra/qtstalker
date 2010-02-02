@@ -69,8 +69,6 @@ class IndicatorBase
       _LMS,
       _MA,
       _MACD,
-      _MACDEXT,
-      _MACDFIX,
       _MAMA,
       _MATH1,
       _MATH2,

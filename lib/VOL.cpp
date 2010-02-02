@@ -36,13 +36,27 @@ VOL::VOL ()
   d = "red";
   settings.setData(colorKey, d);
 
+  d = "yellow";
+  settings.setData(maColorKey, d);
+
   d = "Histogram Bar";
   settings.setData(plotKey, d);
 
+  d = "Line";
+  settings.setData(maPlotKey, d);
+
   settings.setData(labelKey, indicator);
+
+  d = "VOL_MA";
+  settings.setData(maLabelKey, d);
 
   d = "VOL";
   settings.setData(methodKey, d);
+
+  settings.setData(maPeriodKey, 10);
+
+  d = "SMA";
+  settings.setData(maTypeKey, d);
 }
 
 int VOL::getIndicator (Indicator &ind, BarData *data)
@@ -55,6 +69,29 @@ int VOL::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
+  // vol ma
+  int period = settings.getInt(maPeriodKey);
+
+  settings.getData(maTypeKey, s);
+  int type = maList.indexOf(s);
+
+  PlotLine *ma = getMA(line, period, type);
+  if (! ma)
+  {
+    delete line;
+    return 1;
+  }
+
+  settings.getData(maColorKey, s);
+  ma->setColor(s);
+
+  settings.getData(maPlotKey, s);
+  ma->setType(s);
+
+  settings.getData(maLabelKey, s);
+  ma->setLabel(s);
+
+  // vol
   settings.getData(colorKey, s);
   line->setColor(s);
 
@@ -65,6 +102,7 @@ int VOL::getIndicator (Indicator &ind, BarData *data)
   line->setLabel(s);
 
   ind.addLine(line);
+  ind.addLine(ma);
 
   return 0;
 }
@@ -177,6 +215,24 @@ int VOL::dialog ()
   settings.getData(methodKey, d);
   dialog->addComboItem(page, methodKey, methodList, d);
 
+  page++;
+  k = QObject::tr("MA");
+  dialog->addPage(page, k);
+
+  settings.getData(maColorKey, d);
+  dialog->addColorItem(page, maColorKey, c);
+
+  settings.getData(maPlotKey, d);
+  dialog->addComboItem(page, maPlotKey, plotList, d);
+
+  settings.getData(maLabelKey, d);
+  dialog->addTextItem(page, maLabelKey, d);
+
+  dialog->addIntItem(page, maPeriodKey, settings.getInt(maPeriodKey), 1, 100000);
+
+  settings.getData(maTypeKey, d);
+  dialog->addComboItem(page, maTypeKey, maList, d);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -195,6 +251,21 @@ int VOL::dialog ()
 
   dialog->getItem(methodKey, d);
   settings.setData(methodKey, d);
+
+  dialog->getItem(maColorKey, d);
+  settings.setData(maColorKey, d);
+
+  dialog->getItem(maPlotKey, d);
+  settings.setData(maPlotKey, d);
+
+  dialog->getItem(maLabelKey, d);
+  settings.setData(maLabelKey, d);
+
+  dialog->getItem(maPeriodKey, d);
+  settings.setData(maPeriodKey, d);
+
+  dialog->getItem(maTypeKey, d);
+  settings.setData(maTypeKey, d);
 
   delete dialog;
   return rc;
