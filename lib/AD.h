@@ -22,6 +22,7 @@
 #ifndef AD_HPP
 #define AD_HPP
 
+
 #include "IndicatorBase.h"
 
 class AD : public IndicatorBase

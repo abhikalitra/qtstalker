@@ -114,7 +114,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
   {
     case 4: // phasor
     {
-      int t = guiMethodList.indexOf(QString("PHASE"));
+      int t = methodList.indexOf(QString("PHASE"));
       PlotLine *phase = getHT(in, t);
       if (! phase)
       {
@@ -128,7 +128,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
       settings.getData(phaseLabelKey, s);
       phase->setLabel(s);
 
-      t = guiMethodList.indexOf(QString("QUAD"));
+      t = methodList.indexOf(QString("QUAD"));
       PlotLine *quad = getHT(in, t);
       if (! quad)
       {
@@ -149,7 +149,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
     }
     case 5: // sine
     {
-      int t = guiMethodList.indexOf(QString("SINE"));
+      int t = methodList.indexOf(QString("SINE"));
       PlotLine *sine = getHT(in, t);
       if (! sine)
       {
@@ -163,7 +163,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
       settings.getData(sineLabelKey, s);
       sine->setLabel(s);
 
-      t = guiMethodList.indexOf(QString("LEAD"));
+      t = methodList.indexOf(QString("LEAD"));
       PlotLine *lead = getHT(in, t);
       if (! lead)
       {
