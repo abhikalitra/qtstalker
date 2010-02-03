@@ -189,20 +189,16 @@ int BOP::dialog ()
     return rc;
   }
 
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
-
-  dialog->getItem(plotKey, d);
-  settings.setData(plotKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(smoothKey, d);
-  settings.setData(smoothKey, d);
-
-  dialog->getItem(smoothTypeKey, d);
-  settings.setData(smoothTypeKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

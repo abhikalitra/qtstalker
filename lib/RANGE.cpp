@@ -34,13 +34,12 @@ RANGE::RANGE ()
   methodList << "MAXINDEX";
   methodList << "MIDPOINT";
   methodList << "MIDPRICE";
-  methodList << "TRANGE";
   methodList << "SUM";
 }
 
 int RANGE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,RANGE,<NAME>,<INPUT>,<PERIOD>,<METHOD>
+  // INDICATOR,RANGE,METHOD,<NAME>,<INPUT>,<PERIOD>
 
   if (set.count() != 6)
   {
@@ -48,38 +47,38 @@ int RANGE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
+  int method = methodList.indexOf(set[2]);
+  if (method == -1)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: invalid method" << set[2];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  PlotLine *tl = tlines.value(set[3]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    return 1;
+  }
+
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[2], in);
+    tlines.insert(set[4], in);
   }
 
   bool ok;
-  int period = set[4].toInt(&ok);
+  int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[4];
-    return 1;
-  }
-
-  int method = methodList.indexOf(set[5]);
-  if (method == -1)
-  {
-    qDebug() << indicator << "::calculate: invalid method" << set[5];
+    qDebug() << indicator << "::calculate: invalid period" << set[5];
     return 1;
   }
 
@@ -87,7 +86,7 @@ int RANGE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }
@@ -159,21 +158,6 @@ PlotLine * RANGE::getRANGE (PlotLine *in, BarData *data, int period, int method)
       break;
     }
     case 6:
-    {
-      size = data->count();
-      TA_Real high[size];
-      TA_Real low[size];
-      TA_Real close[size];
-      for (loop = 0; loop < size; loop++)
-      {
-        high[loop] = (TA_Real) data->getHigh(loop);
-        low[loop] = (TA_Real) data->getLow(loop);
-        close[loop] = (TA_Real) data->getClose(loop);
-      }
-      rc = TA_TRANGE(0, size - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
-      break;
-    }
-    case 7:
       rc = TA_SUM(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     default:

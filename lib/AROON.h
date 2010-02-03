@@ -37,13 +37,17 @@ class AROON : public IndicatorBase
 
   private:
     QStringList methodList;
+    QStringList guiMethodList;
+    QString methodKey;
     QString dcKey;
     QString ucKey;
     QString dpKey;
     QString upKey;
     QString dlKey;
     QString ulKey;
-    QString oscKey;
+    QString oscColorKey;
+    QString oscPlotKey;
+    QString oscLabelKey;
 };
 
 #endif

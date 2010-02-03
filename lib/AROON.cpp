@@ -27,22 +27,28 @@
 AROON::AROON ()
 {
   indicator = "AROON";
+  methodKey = QObject::tr("Method");
   dcKey = QObject::tr("Down Color");
   ucKey = QObject::tr("Up Color");
   dpKey = QObject::tr("Down Plot");
   upKey = QObject::tr("Up Plot");
   dlKey = QObject::tr("Down Label");
   ulKey = QObject::tr("Up Label");
-  oscKey = QObject::tr("Oscillator");
+  oscColorKey = QObject::tr("OSC Color");
+  oscPlotKey = QObject::tr("OSC Plot");
+  oscLabelKey = QObject::tr("OSC Label");
 
   methodList << "UP";
   methodList << "DOWN";
   methodList << "OSC";
 
+  guiMethodList << "AROON";
+  guiMethodList << "OSC";
+
   QString d;
   d = "red";
   settings.setData(dcKey, d);
-  settings.setData(colorKey, d);
+  settings.setData(oscColorKey, d);
 
   d = "green";
   settings.setData(ucKey, d);
@@ -50,7 +56,9 @@ AROON::AROON ()
   d = "Line";
   settings.setData(dpKey, d);
   settings.setData(upKey, d);
-  settings.setData(plotKey, d);
+
+  d = "Histogram Bar";
+  settings.setData(oscPlotKey, d);
 
   d = "AROON_D";
   settings.setData(dlKey, d);
@@ -59,35 +67,39 @@ AROON::AROON ()
   settings.setData(ulKey, d);
 
   d = "AROON_OSC";
-  settings.setData(labelKey, d);
+  settings.setData(oscLabelKey, d);
 
   settings.setData(periodKey, 14);
 
-  settings.setData(oscKey, 0);
+  d = "OSC";
+  settings.setData(methodKey, d);
 }
 
 int AROON::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  int period = settings.getInt(periodKey);
-  int osc = settings.getInt(oscKey);
+  settings.getData(methodKey, s);
+  int method = guiMethodList.indexOf(s);
 
-  if (osc)
+  int period = settings.getInt(periodKey);
+
+  if (method == 1)
   {
     PlotLine *line = getAROON(data, period, 2);
     if (! line)
       return 1;
 
-    settings.getData(colorKey, s);
+    settings.getData(oscColorKey, s);
     line->setColor(s);
 
-    settings.getData(plotKey, s);
+    settings.getData(oscPlotKey, s);
     line->setType(s);
 
-    settings.getData(labelKey, s);
+    settings.getData(oscLabelKey, s);
     line->setLabel(s);
 
     ind.addLine(line);
+
     return 0;
   }
 
@@ -130,7 +142,7 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
 
 int AROON::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,AROON,<NAME>,<PERIOD>,<METHOD>
+  // INDICATOR,AROON,<METHOD>,<NAME>,<PERIOD>
 
   if (set.count() != 5)
   {
@@ -138,25 +150,25 @@ int AROON::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  int method = methodList.indexOf(set[2]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid method" << set[2];
+    return 1;
+  }
+
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   bool ok;
-  int period = set[3].toInt(&ok);
+  int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[3];
-    return 1;
-  }
-
-  int method = methodList.indexOf(set[4]);
-  if (method == -1)
-  {
-    qDebug() << indicator << "::calculate: invalid method" << set[4];
+    qDebug() << indicator << "::calculate: invalid period" << set[4];
     return 1;
   }
 
@@ -164,7 +176,7 @@ int AROON::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }
@@ -225,9 +237,17 @@ int AROON::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
+  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
+
+  settings.getData(methodKey, d);
+  dialog->addComboItem(page, methodKey, guiMethodList, d);
+
+  page++;
+  k = QObject::tr("Aroon");
+  dialog->addPage(page, k);
+
   settings.getData(ucKey, d);
-  QColor c2(d);
-  dialog->addColorItem(page, ucKey, c2);
+  dialog->addColorItem(page, ucKey, d);
 
   settings.getData(dcKey, d);
   QColor c(d);
@@ -245,22 +265,18 @@ int AROON::dialog ()
   settings.getData(dlKey, d);
   dialog->addTextItem(page, dlKey, d);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
-
   page++;
   k = QObject::tr("OSC");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(oscColorKey, d);
+  dialog->addColorItem(page, oscColorKey, d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(oscPlotKey, d);
+  dialog->addComboItem(page, oscPlotKey, plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
-
-  dialog->addCheckItem(page, oscKey, settings.getInt(oscKey));
+  settings.getData(oscLabelKey, d);
+  dialog->addTextItem(page, oscLabelKey, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -269,38 +285,16 @@ int AROON::dialog ()
     return rc;
   }
 
-  dialog->getItem(dcKey, d);
-  settings.setData(dcKey, d);
-
-  dialog->getItem(ucKey, d);
-  settings.setData(ucKey, d);
-
-  dialog->getItem(dpKey, d);
-  settings.setData(dpKey, d);
-
-  dialog->getItem(upKey, d);
-  settings.setData(upKey, d);
-
-  dialog->getItem(dlKey, d);
-  settings.setData(dlKey, d);
-
-  dialog->getItem(ulKey, d);
-  settings.setData(ulKey, d);
-
-  dialog->getItem(periodKey, d);
-  settings.setData(periodKey, d);
-
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
-
-  dialog->getItem(plotKey, d);
-  settings.setData(plotKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(oscKey, d);
-  settings.setData(oscKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

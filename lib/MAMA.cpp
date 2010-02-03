@@ -295,35 +295,16 @@ int MAMA::dialog ()
     return rc;
   }
 
-  dialog->getItem(mcKey, d);
-  settings.setData(mcKey, d);
-
-  dialog->getItem(mpKey, d);
-  settings.setData(mpKey, d);
-
-  dialog->getItem(mlKey, d);
-  settings.setData(mlKey, d);
-
-  dialog->getItem(fcKey, d);
-  settings.setData(fcKey, d);
-
-  dialog->getItem(fpKey, d);
-  settings.setData(fpKey, d);
-
-  dialog->getItem(flKey, d);
-  settings.setData(flKey, d);
-
-  dialog->getItem(inputKey, d);
-  settings.setData(inputKey, d);
-
-  dialog->getItem(flmKey, d);
-  settings.setData(flmKey, d);
-
-  dialog->getItem(slmKey, d);
-  settings.setData(slmKey, d);
-
-  dialog->getItem(oscKey, d);
-  settings.setData(oscKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

@@ -102,7 +102,7 @@ int PO::getIndicator (Indicator &ind, BarData *data)
 
 int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PO,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>,<METHOD>
+  // INDICATOR,PO,METHOD,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>
 
   if (set.count() != 8)
   {
@@ -110,52 +110,52 @@ int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
+  int method = methodList.indexOf(set[2]);
+  if (method == -1)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: invalid method" << set[2];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  PlotLine *tl = tlines.value(set[3]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    return 1;
+  }
+
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[3], in);
+    tlines.insert(set[4], in);
   }
 
   bool ok;
-  int fast = set[4].toInt(&ok);
+  int fast = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fast period parm" << set[4];
+    qDebug() << indicator << "::calculate: invalid fast period" << set[5];
     return 1;
   }
 
-  int slow = set[5].toInt(&ok);
+  int slow = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid slow period parm" << set[5];
+    qDebug() << indicator << "::calculate: invalid slow period" << set[6];
     return 1;
   }
 
-  int ma = maList.indexOf(set[6]);
+  int ma = maList.indexOf(set[7]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid ma parm" << set[6];
-    return 1;
-  }
-
-  int method = methodList.indexOf(set[7]);
-  if (method == -1)
-  {
-    qDebug() << indicator << "::calculate: invalid method" << set[7];
+    qDebug() << indicator << "::calculate: invalid ma" << set[7];
     return 1;
   }
 
@@ -163,7 +163,7 @@ int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }
@@ -244,29 +244,17 @@ int PO::dialog ()
     return rc;
   }
 
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
-  dialog->getItem(plotKey, d);
-  settings.setData(plotKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(inputKey, d);
-  settings.setData(inputKey, d);
-
-  dialog->getItem(fpKey, d);
-  settings.setData(fpKey, d);
-
-  dialog->getItem(spKey, d);
-  settings.setData(spKey, d);
-
-  dialog->getItem(maTypeKey, d);
-  settings.setData(maTypeKey, d);
-
-  dialog->getItem(methodKey, d);
-  settings.setData(methodKey, d);
 
   delete dialog;
   return rc;

@@ -171,17 +171,16 @@ int BARS::dialog ()
     return rc;
   }
 
-  dialog->getItem(ucKey, d);
-  settings.setData(ucKey, d);
-
-  dialog->getItem(dcKey, d);
-  settings.setData(dcKey, d);
-
-  dialog->getItem(ncKey, d);
-  settings.setData(ncKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

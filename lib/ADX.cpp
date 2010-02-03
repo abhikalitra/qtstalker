@@ -180,7 +180,7 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
 
 int ADX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,ADX,<NAME>,<PERIOD>,<METHOD>
+  // INDICATOR,ADX,<METHOD>,<NAME>,<PERIOD>
 
   if (set.count() != 5)
   {
@@ -188,25 +188,25 @@ int ADX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  int method = methodList.indexOf(set[2]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid method" << set[2];
+    return 1;
+  }
+
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   bool ok;
-  int period = set[3].toInt(&ok);
+  int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period settings" << set[3];
-    return 1;
-  }
-
-  int method = methodList.indexOf(set[4]);
-  if (method == -1)
-  {
-    qDebug() << indicator << "::calculate: invalid method" << set[4];
+    qDebug() << indicator << "::calculate: invalid period" << set[4];
     return 1;
   }
 
@@ -214,7 +214,7 @@ int ADX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }
@@ -356,52 +356,16 @@ int ADX::dialog ()
     return rc;
   }
 
-  dialog->getItem(periodKey, d);
-  settings.setData(periodKey, d);
-
-  dialog->getItem(mdiColorKey, d);
-  settings.setData(mdiColorKey, d);
-
-  dialog->getItem(mdiPlotKey, d);
-  settings.setData(mdiPlotKey, d);
-
-  dialog->getItem(mdiLabelKey, d);
-  settings.setData(mdiLabelKey, d);
-
-  settings.setData(mdiCheckKey, dialog->getCheck(mdiCheckKey));
-
-  dialog->getItem(pdiColorKey, d);
-  settings.setData(pdiColorKey, d);
-
-  dialog->getItem(pdiPlotKey, d);
-  settings.setData(pdiPlotKey, d);
-
-  dialog->getItem(pdiLabelKey, d);
-  settings.setData(pdiLabelKey, d);
-
-  settings.setData(pdiCheckKey, dialog->getCheck(pdiCheckKey));
-
-  dialog->getItem(adxColorKey, d);
-  settings.setData(adxColorKey, d);
-
-  dialog->getItem(adxPlotKey, d);
-  settings.setData(adxPlotKey, d);
-
-  dialog->getItem(adxLabelKey, d);
-  settings.setData(adxLabelKey, d);
-
-  settings.setData(adxCheckKey, dialog->getCheck(adxCheckKey));
-
-  dialog->getItem(adxrColorKey, d);
-  settings.setData(adxrColorKey, d);
-
-  dialog->getItem(adxrPlotKey, d);
-  settings.setData(adxrPlotKey, d);
-
-  dialog->getItem(adxrLabelKey, d);
-  settings.setData(adxrLabelKey, d);
-
-  settings.setData(adxrCheckKey, dialog->getCheck(adxrCheckKey));
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

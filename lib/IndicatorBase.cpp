@@ -49,7 +49,6 @@ IndicatorBase::IndicatorBase ()
   opList << "=" << "<" << "<=" << ">" << ">=" << "AND" << "OR";
 
   indicatorList << "AD";
-  indicatorList << "ADOSC";
   indicatorList << "ADX";
   indicatorList << "AROON";
   indicatorList << "ATR";
@@ -72,7 +71,6 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "MACD";
   indicatorList << "MAMA";
   indicatorList << "MATH1";
-  indicatorList << "MATH2";
   indicatorList << "MAVP";
   indicatorList << "MFI";
   indicatorList << "MOM";
@@ -83,7 +81,6 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "ROC";
   indicatorList << "RSI";
   indicatorList << "SAR";
-  indicatorList << "STDDEV";
   indicatorList << "STOCH";
   indicatorList << "STOCHRSI";
   indicatorList << "SYMBOL";
@@ -167,7 +164,6 @@ void IndicatorBase::getIndicatorList (QStringList &l, int flag)
     l.removeAll("COLOR");
     l.removeAll("COMPARE");
     l.removeAll("MATH1");
-    l.removeAll("MATH2");
     l.removeAll("RANGE");
     l.removeAll("REF");
     l.removeAll("SYMBOL");

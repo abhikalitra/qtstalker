@@ -150,59 +150,51 @@ indicator or bar data as follows:</p>
 </h3>
 <span style="font-weight: bold;"><br>
 </span>
-<h3>Chaikin A/D Line</h3>
-<p>INDICATOR,AD,&lt;NAME&gt;</p>
+<h3>Chaikin Accumulation Distribution<br>
+</h3>
+<p>INDICATOR,AD,AD,&lt;NAME&gt;</p>
 <p></p>
-<br>
-<h3>Chaikin A/D Oscillator</h3>
-<p>INDICATOR,ADOSC,&lt;NAME&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;</p>
+INDICATOR,AD,ADOSC,&lt;NAME&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;
 <p></p>
 <h3><br>
 </h3>
 <h3>Average Directional Movement Index</h3>
-<p>INDICATOR,ADX,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
+<p>INDICATOR,ADX,ADX,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>Available methods are:<br>
+<p>INDICATOR,ADX,ADXR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<ul>
-  <li>ADX</li>
-  <li>ADXR</li>
-  <li>DX<br>
-  </li>
-  <li>-DI</li>
-  <li>+DI</li>
-  <li>-DM</li>
-  <li>+DM<br>
-  </li>
-</ul>
+<p>INDICATOR,ADX,DX,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+</p>
+<p>INDICATOR,ADX,-DI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+</p>
+<p>INDICATOR,ADX,+DI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+</p>
+<p>INDICATOR,ADX,-DM,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+</p>
+<p>INDICATOR,ADX,+DM,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+</p>
 <br>
 <br>
 <h3>Aroon</h3>
-<p>INDICATOR,AROON,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
+<p>INDICATOR,AROON,UP,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>Available methods are:<br>
+<p>INDICATOR,AROON,DOWN,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<ul>
-  <li>UP - returns the up line</li>
-  <li>DOWN - returns the down line<br>
-  </li>
-  <li>OSC - returns the oscillator of (up - down)<br>
-  </li>
-</ul>
+<p>INDICATOR,AROON,OSC,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+</p>
+<p>
+</p>
+<p>
+</p>
 <br>
 <br>
 <h3>Average True Range</h3>
-<p>INDICATOR,ATR,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
+<p>INDICATOR,ATR,ATR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>Available methods are:<br>
+<p>INDICATOR,ATR,NATR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<ul>
-  <li>ATR (Average True Range)<br>
-  </li>
-  <li>NATR (Normalized Average True Range)<br>
-  </li>
-</ul>
-<p></p>
+<p><br>
+</p>
 <br>
 <h3>OHLC Bars</h3>
 <p>INDICATOR,BARS,&lt;NAME&gt;,&lt;BAR_UP_COLOR&gt;,&lt;BAR_DOWN_COLOR&gt;,&lt;BAR_NEUTRAL_COLOR&gt;</p>
@@ -227,82 +219,77 @@ indicator or bar data as follows:</p>
 <h3><br>
 </h3>
 <h3>Candles</h3>
-<p>INDICATOR,CANDLES,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;METHOD&gt;,&lt;PENETRATION&gt;</p>
+<p>INDICATOR,CANDLES,NONE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+</p>
+<p>INDICATOR,CANDLES,2CROWS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,3BLACKCROWS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,3INSIDE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;</p>
+INDICATOR,CANDLES,3LINESTRIKE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,3OUTSIDE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,3STARSINSOUTH,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,3WHITESOLDIERS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,ABANDONEDBABY,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,ADVANCEBLOCK,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,BELTHOLD,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,BREAKAWAY,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,CLOSINGMARUBOZU,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,CONCEALBABYSWALL,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,COUNTERATTACK,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,DARKCLOUDCOVER,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,DOJI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,DOJISTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,DRAGONFLYDOJI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,ENGULFING,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,EVENINGDOJISTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,EVENINGSTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,GAPSIDESIDEWHITE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,GRAVESTONEDOJI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,HAMMER,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,HANGINGMAN,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,HARAMI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,HARAMICROSS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,HIGHWAVE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,HIKKAKE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,HIKKAKEMOD,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,HOMINGPIGEON,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,IDENTICAL3CROWS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,INNECK,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,INVERTEDHAMMER,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,KICKING,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,KICKINGBYLENGTH,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,LADDERBOTTOM,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,LONGLEGGEDDOJI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,LONGLINE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,MARUBOZU,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,MATCHINGLOW,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,MATHOLD,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,MORNINGDOJISTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,MORNINGSTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,ONNECK,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,PIERCING,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,RICKSHAWMAN,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,RISEFALL3METHODS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,SEPARATINGLINES,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,SHOOTINGSTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,SHORTLINE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,SPINNINGTOP,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,STALLEDPATTERN,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,STICKSANDWICH,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,TAKURI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,TASUKIGAP,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,THRUSTING,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,TRISTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,UNIQUE3RIVER,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,UPSIDEGAP2CROWS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,CANDLES,XSIDEGAP3METHODS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+<br>
 <p></p>
 <p>This will create candle bars.<br>
 </p>
-<p>Not all candle functions use the PENETRATION field. However, it is
-needed
-regardless or the script will fail.</p>
-<p>The &lt;NONE&gt; method will create basic colored, candle bars. All
+<p>The &lt;PENETRATION&gt; value is the percentage of candle
+penetration used for certain methods. The &lt;NONE&gt; method will
+create basic colored, candle bars. All
 other methods will return a boolean array of values.</p>
-<p>The available methods are:<br>
-</p>
-<ul>
-  <li>&lt;NONE&gt; (Creates just regular candle bars)<br>
-  </li>
-  <li>2CROWS</li>
-  <li>3BLACKCROWS</li>
-  <li>3INSIDE</li>
-  <li>3LINESTRIKE</li>
-  <li>3OUTSIDE</li>
-  <li>3STARSINSOUTH</li>
-  <li>3WHITESOLDIERS</li>
-  <li>ABANDONEDBABY</li>
-  <li>ADVANCEBLOCK</li>
-  <li>BELTHOLD</li>
-  <li>BREAKAWAY</li>
-  <li>CLOSINGMARUBOZU</li>
-  <li>CONCEALBABYSWALL</li>
-  <li>COUNTERATTACK</li>
-  <li>DARKCLOUDCOVER</li>
-  <li>DOJI</li>
-  <li>DOJISTAR</li>
-  <li>DRAGONFLYDOJI</li>
-  <li>ENGULFING</li>
-  <li>EVENINGDOJISTAR</li>
-  <li>EVENINGSTAR</li>
-  <li>GAPSIDESIDEWHITE</li>
-  <li>GRAVESTONEDOJI</li>
-  <li>HAMMER</li>
-  <li>HANGINGMAN</li>
-  <li>HARAMI</li>
-  <li>HARAMICROSS</li>
-  <li>HIGHWAVE</li>
-  <li>HIKKAKE</li>
-  <li>HIKKAKEMOD</li>
-  <li>HOMINGPIGEON</li>
-  <li>IDENTICAL3CROWS</li>
-  <li>INNECK</li>
-  <li>INVERTEDHAMMER</li>
-  <li>KICKING</li>
-  <li>KICKINGBYLENGTH</li>
-  <li>LADDERBOTTOM</li>
-  <li>LONGLEGGEDDOJI</li>
-  <li>LONGLINE</li>
-  <li>MARUBOZU</li>
-  <li>MATCHINGLOW</li>
-  <li>MATHOLD</li>
-  <li>MORNINGDOJISTAR</li>
-  <li>MORNINGSTAR</li>
-  <li>ONNECK</li>
-  <li>PIERCING</li>
-  <li>RICKSHAWMAN</li>
-  <li>RISEFALL3METHODS</li>
-  <li>SEPARATINGLINES</li>
-  <li>SHOOTINGSTAR</li>
-  <li>SHORTLINE</li>
-  <li>SPINNINGTOP</li>
-  <li>STALLEDPATTERN</li>
-  <li>STICKSANDWICH</li>
-  <li>TAKURI</li>
-  <li>TASUKIGAP</li>
-  <li>THRUSTING</li>
-  <li>TRISTAR</li>
-  <li>UNIQUE3RIVER</li>
-  <li>UPSIDEGAP2CROWS</li>
-  <li>XSIDEGAP3METHODS</li>
-</ul>
 <br>
 <h3>Commodity Channel Index</h3>
 <p>INDICATOR,CCI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
@@ -371,39 +358,33 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
 <br>
 <h3>Hilbert Transform<br>
 </h3>
-<p>INDICATOR,HT_DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;METHOD&gt;<br>
+<p>INDICATOR,HT,DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
-<p>Available methods are:<br>
+<p>INDICATOR,HT,DCPHASE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
-<ul>
-  <li>DCPERIOD (Dominant Cycle Period)</li>
-  <li>DCPHASE (Dominant Cycle Phase)</li>
-  <li>TRENDLINE (Instantaneous Trendline)</li>
-  <li>TRENDMODE (Trend vs Cycle Mode) This returns a boolean array.</li>
-  <li>PHASE - Phase plot of the hilbert transform phasor indicator.</li>
-  <li>QUAD - Quadrature plot of the hilbert transform phasor indicator.</li>
-  <li>SINE - Sine plot of the hilbert transform sinewave indicator.</li>
-  <li>LEAD - Lead Sine plot of the hilbert transform sinewave indicator.<br>
-  </li>
-</ul>
-<p></p>
+<p>INDICATOR,HT,TRENDLINE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+</p>
+<p>INDICATOR,HT,TRENDMODE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+</p>
+<p>INDICATOR,HT,PHASE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+</p>
+<p>INDICATOR,HT,QUAD,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+</p>
+<p>INDICATOR,HT,SINE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+</p>
+<p>INDICATOR,HT,LEAD,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+</p>
+<p>
+</p>
 <br>
 <br>
 <h3>Linear Regression</h3>
-<p>INDICATOR,LINEARREG,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
+<p>INDICATOR,LINEARREG,LINEARREG,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,LINEARREG,ANGLE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,LINEARREG,INTERCEPT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,LINEARREG,SLOPE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,LINEARREG,TSF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>Available methods are:<br>
-</p>
-<ul>
-  <li>LINEARREG - Linear Regression<br>
-  </li>
-  <li>ANGLE Linear - Regression Angle</li>
-  <li>INTERCEPT - Linear Regression Intercept</li>
-  <li>SLOPE - Linear Regression Slope</li>
-  <li>TSF - Time Series Forecast<br>
-  </li>
-</ul>
-<p></p>
 <span style="font-weight: bold;"><br>
 <br>
 </span>
@@ -420,26 +401,14 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
 <br>
 <br>
 <h3>MA (Moving Average)</h3>
-INDICATOR,MA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
-<br>
-Methods available are:<br>
-<ul>
-  <li>EMA - Exponential mvoing average</li>
-  <li>DEMA - Double exponential moving average<br>
-  </li>
-  <li>KAMA - Kaufman adaptive moving average<br>
-  </li>
-  <li>SMA - Simple moving average<br>
-  </li>
-  <li>TEMA - Triple exponential moving average<br>
-  </li>
-  <li>TRIMA - Triangular moving average<br>
-  </li>
-  <li>Wilder - W. Wilder's formula<br>
-  </li>
-  <li>WMA - Weighted moving average<br>
-  </li>
-</ul>
+INDICATOR,MA,EMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,MA,DEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,MA,KAMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,MA,SMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,MA,TEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,MA,TRIMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,MA,Wilder,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,MA,WMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
 <br>
 <h3>MACD<br>
@@ -455,41 +424,29 @@ Methods available are:<br>
 <p></p>
 <br>
 <h3>MATH1</h3>
-INDICATOR,MATH1,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;METHOD&gt;<br>
+INDICATOR,MATH1,CEIL,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,EXP,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,FLOOR,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,LN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,LOG10,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,NORMALIZE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,SQRT,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,ACOS,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,ASIN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,ATAN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,COS,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,COSH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,SIN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,SINH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,TAN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,MATH1,TANH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-Available methods are:<br>
-<ul>
-  <li>CEIL</li>
-  <li>EXP</li>
-  <li>FLOOR</li>
-  <li>LN</li>
-  <li>LOG10</li>
-  <li>NORMALIZE</li>
-  <li>SQRT</li>
-  <li>ACOS</li>
-  <li>ASIN</li>
-  <li>ATAN</li>
-  <li>COS</li>
-  <li>COSH</li>
-  <li>SIN</li>
-  <li>SINH</li>
-  <li>TAN</li>
-  <li>TANH</li>
-</ul>
-<ul>
-</ul>
+INDICATOR,MATH1,ADD,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+INDICATOR,MATH1,DIV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+INDICATOR,MATH1,MULT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+INDICATOR,MATH1,SUB,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
 <br>
-<br>
-<h3>MATH2</h3>
-INDICATOR,MATH2,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;,&lt;METHOD&gt;<br>
-<br>
-Available methods are:<br>
-<ul>
-  <li>ADD</li>
-  <li>DIV</li>
-  <li>MULT</li>
-  <li>SUB</li>
-</ul>
+<p>INDICATOR,MATH1,STDDEV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;</p>
 <br>
 <br>
 <h3>Moving average with variable period</h3>
@@ -523,35 +480,21 @@ Available methods are:<br>
 </ul>
 <br>
 <h3>Price Oscillator</h3>
-<p>INDICATOR,PO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;,&lt;METHOD&gt;<br>
+<p>INDICATOR,PO,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;<br>
+INDICATOR,PO,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;<br>
 </p>
-<p>Available methods are:<br>
-</p>
-<ul>
-  <li>APO - Absolute Price Oscillator<br>
-  </li>
-  <li>PPO - Percentage Price Oscillator<br>
-  </li>
-</ul>
 <br>
 <br>
 <h3>RANGE<br>
 </h3>
-<p>INDICATOR,RANGE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
+<p>INDICATOR,RANGE,MIN,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,RANGE,MININDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,RANGE,MAX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,RANGE,MAXINDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,RANGE,MIDPOINT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,RANGE,MIDPRICE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,RANGE,SUM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>Available methods are:<br>
-</p>
-<ul>
-  <li>MIN</li>
-  <li>MININDEX</li>
-  <li>MAX</li>
-  <li>MAXINDEX</li>
-  <li>MIDPOINT</li>
-  <li>MIDPRICE</li>
-  <li>TRANGE (True Range)</li>
-  <li>SUM - Summation<br>
-  </li>
-</ul>
 <br>
 <br>
 <h3>Reference Dataset</h3>
@@ -568,16 +511,12 @@ today's Close then &lt;PERIOD&gt; would be '0'</p>
 </h3>
 <h3>Rate of change<br>
 </h3>
-<p>INDICATOR,ROC,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;
+<p>INDICATOR,ROC,ROC,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
+INDICATOR,ROC,ROCP,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
+INDICATOR,ROC,ROCR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
+INDICATOR,ROC,ROCR100,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
 </p>
-Methods available are:<br>
-<ul>
-  <li>ROC = ((price/prevPrice)-1)*100</li>
-  <li>ROCP = (price-prevPrice)/prevPrice</li>
-  <li>ROCR = (price/prevPrice)</li>
-  <li>ROCR100 = (price/prevPrice)*100</li>
-</ul>
-<p></p>
+<br>
 <br>
 <h3>Relative Strength Index</h3>
 <p>INDICATOR,RSI,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
@@ -589,11 +528,6 @@ Methods available are:<br>
 <p></p>
 <span style="font-weight: bold;"><br>
 </span><br>
-<h3>Standard Deviation</h3>
-<p>INDICATOR,STDDEV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;</p>
-<p></p>
-<h3><br>
-</h3>
 <h3>Stochastic</h3>
 <p>INDICATOR,STOCH,&lt;NAME_SLOWK&gt;,&lt;NAME_SLOWD&gt;,&lt;FASTK_PERIOD&gt;,&lt;SLOWK_PERIOD&gt;,&lt;SLOWK_MA_TYPE&gt;,&lt;SLOWD_PERIOD&gt;,&lt;SLOWD_MA_TYPE&gt;</p>
 <p></p>
@@ -607,7 +541,8 @@ Methods available are:<br>
 <br>
 <h3>SYMBOL</h3>
 <p>INDICATOR,SYMBOL,&lt;NAME&gt;,&lt;SYMBOL&gt;,&lt;BAR_FIELD&gt;,&lt;BAR_LENGTH&gt;,&lt;BARS&gt;</p>
-<p>Where &lt;SYMBOL&gt; is the symbol in the quote database.</p>
+<p><br>
+Where &lt;SYMBOL&gt; is the symbol in the quote database.</p>
 <p>&lt;BAR_FIELD&gt; is the bar value ie. Open, High, Low, Close,
 Volume, OI</p>
 <p>&lt;BAR_LENGTH&gt; is the bar size. ie. 1 Minute, 5 Minute, 10
@@ -681,15 +616,9 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 <br>
 <br>
 <h3>VOL</h3>
-INDICATOR,VOL,&lt;NAME&gt;,&lt;METHOD&gt;<br>
+INDICATOR,VOL,OBV,&lt;NAME&gt;<br>
+INDICATOR,VOL,VOL,&lt;NAME&gt;<br>
 <br>
-Available methods are:<br>
-<ul>
-  <li>OBV - On Balance Volume<br>
-  </li>
-  <li>VOL - Volume bars<br>
-  </li>
-</ul>
 <br>
 <br>
 <h3>Williams' %R</h3>

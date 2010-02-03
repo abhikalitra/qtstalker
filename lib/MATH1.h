@@ -29,7 +29,12 @@ class MATH1 : public IndicatorBase
   public:
     MATH1 ();
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS3 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS4 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getMATH1 (PlotLine *in, int method);
+    PlotLine * getMATH2 (PlotLine *in, PlotLine *in2, int method);
+    PlotLine * getSTDDEV (PlotLine *in, int period, double dev);
 
   protected:
     QStringList methodList;

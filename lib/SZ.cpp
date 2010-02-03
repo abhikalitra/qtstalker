@@ -297,26 +297,16 @@ int SZ::dialog ()
     return rc;
   }
 
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
-
-  dialog->getItem(plotKey, d);
-  settings.setData(plotKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(periodKey, d);
-  settings.setData(periodKey, d);
-
-  dialog->getItem(methodKey, d);
-  settings.setData(methodKey, d);
-
-  dialog->getItem(ndpKey, d);
-  settings.setData(ndpKey, d);
-
-  dialog->getItem(coKey, d);
-  settings.setData(coKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

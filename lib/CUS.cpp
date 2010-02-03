@@ -73,8 +73,16 @@ int CUS::dialog ()
     return rc;
   }
 
-  dialog->getItem(commandKey, d);
-  settings.setData(commandKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

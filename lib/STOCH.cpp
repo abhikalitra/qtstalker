@@ -321,50 +321,16 @@ int STOCH::dialog ()
     return rc;
   }
 
-  dialog->getItem(skcKey, d);
-  settings.setData(skcKey, d);
-
-  dialog->getItem(skpKey, d);
-  settings.setData(skpKey, d);
-
-  dialog->getItem(sklKey, d);
-  settings.setData(sklKey, d);
-
-  dialog->getItem(sdcKey, d);
-  settings.setData(sdcKey, d);
-
-  dialog->getItem(sdpKey, d);
-  settings.setData(sdpKey, d);
-
-  dialog->getItem(sdlKey, d);
-  settings.setData(sdlKey, d);
-
-  dialog->getItem(fkpKey, d);
-  settings.setData(fkpKey, d);
-
-  dialog->getItem(skpdKey, d);
-  settings.setData(skpdKey, d);
-
-  dialog->getItem(sdpdKey, d);
-  settings.setData(sdpdKey, d);
-
-  dialog->getItem(skmaKey, d);
-  settings.setData(skmaKey, d);
-
-  dialog->getItem(sdmaKey, d);
-  settings.setData(sdmaKey, d);
-
-  dialog->getItem(ref1ColorKey, d);
-  settings.setData(ref1ColorKey, d);
-
-  dialog->getItem(ref2ColorKey, d);
-  settings.setData(ref2ColorKey, d);
-
-  dialog->getItem(ref1Key, d);
-  settings.setData(ref1Key, d);
-
-  dialog->getItem(ref2Key, d);
-  settings.setData(ref2Key, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

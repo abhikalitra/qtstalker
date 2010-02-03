@@ -379,53 +379,16 @@ int MACD::dialog ()
     return rc;
   }
 
-  dialog->getItem(macdcKey, d);
-  settings.setData(macdcKey, d);
-
-  dialog->getItem(macdpKey, d);
-  settings.setData(macdpKey, d);
-
-  dialog->getItem(macdlKey, d);
-  settings.setData(macdlKey, d);
-
-  dialog->getItem(sigcKey, d);
-  settings.setData(sigcKey, d);
-
-  dialog->getItem(sigpKey, d);
-  settings.setData(sigpKey, d);
-
-  dialog->getItem(siglKey, d);
-  settings.setData(siglKey, d);
-
-  dialog->getItem(histcKey, d);
-  settings.setData(histcKey, d);
-
-  dialog->getItem(histpKey, d);
-  settings.setData(histpKey, d);
-
-  dialog->getItem(histlKey, d);
-  settings.setData(histlKey, d);
-
-  dialog->getItem(inputKey, d);
-  settings.setData(inputKey, d);
-
-  dialog->getItem(fpKey, d);
-  settings.setData(fpKey, d);
-
-  dialog->getItem(spKey, d);
-  settings.setData(spKey, d);
-
-  dialog->getItem(sigpdKey, d);
-  settings.setData(sigpdKey, d);
-
-  dialog->getItem(fmaKey, d);
-  settings.setData(fmaKey, d);
-
-  dialog->getItem(smaKey, d);
-  settings.setData(smaKey, d);
-
-  dialog->getItem(sigmaKey, d);
-  settings.setData(sigmaKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

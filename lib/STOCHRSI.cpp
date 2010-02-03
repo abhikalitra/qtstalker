@@ -335,50 +335,16 @@ int STOCHRSI::dialog ()
     return rc;
   }
 
-  dialog->getItem(fkcKey, d);
-  settings.setData(fkcKey, d);
-
-  dialog->getItem(fkpKey, d);
-  settings.setData(fkpKey, d);
-
-  dialog->getItem(fklKey, d);
-  settings.setData(fklKey, d);
-
-  dialog->getItem(fdcKey, d);
-  settings.setData(fdcKey, d);
-
-  dialog->getItem(fdpKey, d);
-  settings.setData(fdpKey, d);
-
-  dialog->getItem(fdlKey, d);
-  settings.setData(fdlKey, d);
-
-  dialog->getItem(fkpdKey, d);
-  settings.setData(fkpdKey, d);
-
-  dialog->getItem(fdpdKey, d);
-  settings.setData(fdpdKey, d);
-
-  dialog->getItem(fdmaKey, d);
-  settings.setData(fdmaKey, d);
-
-  dialog->getItem(periodKey, d);
-  settings.setData(periodKey, d);
-
-  dialog->getItem(inputKey, d);
-  settings.setData(inputKey, d);
-
-  dialog->getItem(ref1ColorKey, d);
-  settings.setData(ref1ColorKey, d);
-
-  dialog->getItem(ref2ColorKey, d);
-  settings.setData(ref2ColorKey, d);
-
-  dialog->getItem(ref1Key, d);
-  settings.setData(ref1Key, d);
-
-  dialog->getItem(ref2Key, d);
-  settings.setData(ref2Key, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

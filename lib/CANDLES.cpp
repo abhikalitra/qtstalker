@@ -31,7 +31,7 @@ CANDLES::CANDLES ()
   methodKey = QObject::tr("Method");
   patColorKey = QObject::tr("Pattern Color");
 
-  methodList << "<NONE>";
+  methodList << "NONE";
   methodList << "2CROWS";
   methodList << "3BLACKCROWS";
   methodList << "3INSIDE";
@@ -154,7 +154,7 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
 
 int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,CANDLES,<NAME>,<CANDLE_COLOR>,<METHOD>,<PENETRATION>
+  // INDICATOR,CANDLES,METHOD,<NAME>,<CANDLE_COLOR>,<PENETRATION>
 
   if (set.count() != 6)
   {
@@ -162,24 +162,24 @@ int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
-    return 1;
-  }
-
-  QColor color(set[3]);
-  if (! color.isValid())
-  {
-    qDebug() << indicator << "::calculate: invalid color" << set[3];
-    return 1;
-  }
-
-  int method = methodList.indexOf(set[4]);
+  int method = methodList.indexOf(set[2]);
   if (method == -1)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[4];
+    qDebug() << indicator << "::calculate: invalid method" << set[2];
+    return 1;
+  }
+
+  PlotLine *tl = tlines.value(set[3]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    return 1;
+  }
+
+  QColor color(set[4]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::calculate: invalid color" << set[4];
     return 1;
   }
 
@@ -196,10 +196,11 @@ int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
     line = getCANDLES(data, color);
   else
     line = getMethod(data, method, pen);
+
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }
@@ -260,20 +261,16 @@ int CANDLES::dialog ()
     return rc;
   }
 
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
-
-  dialog->getItem(patColorKey, d);
-  settings.setData(patColorKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(methodKey, d);
-  settings.setData(methodKey, d);
-
-  dialog->getItem(penKey, d);
-  settings.setData(penKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;
@@ -303,6 +300,21 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen)
 
   switch ((Function) method)
   {
+    case _ABANDONEDBABY:
+      rc = TA_CDLABANDONEDBABY(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      break;
+    case _DARKCLOUDCOVER:
+      rc = TA_CDLDARKCLOUDCOVER(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      break;
+    case _EVENINGDOJISTAR:
+      rc = TA_CDLEVENINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      break;
+    case _EVENINGSTAR:
+      rc = TA_CDLEVENINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      break;
+    case _MORNINGDOJISTAR:
+      rc = TA_CDLMORNINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      break;
     case _2CROWS:
       rc = TA_CDL2CROWS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
@@ -324,9 +336,6 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen)
     case _3WHITESOLDIERS:
       rc = TA_CDL3WHITESOLDIERS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case _ABANDONEDBABY:
-      rc = TA_CDLABANDONEDBABY(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
-      break;
     case _ADVANCEBLOCK:
       rc = TA_CDLADVANCEBLOCK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
@@ -345,9 +354,6 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen)
     case _COUNTERATTACK:
       rc = TA_CDLCOUNTERATTACK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
-    case _DARKCLOUDCOVER:
-      rc = TA_CDLDARKCLOUDCOVER(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
-      break;
     case _DOJI:
       rc = TA_CDLDOJI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
@@ -359,12 +365,6 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen)
       break;
     case _ENGULFING:
       rc = TA_CDLENGULFING(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
-      break;
-    case _EVENINGDOJISTAR:
-      rc = TA_CDLEVENINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
-      break;
-    case _EVENINGSTAR:
-      rc = TA_CDLEVENINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
       break;
     case _GAPSIDESIDEWHITE:
       rc = TA_CDLGAPSIDESIDEWHITE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
@@ -425,15 +425,6 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen)
       break;
     case _MATCHINGLOW:
       rc = TA_CDLMATCHINGLOW(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
-      break;
-    case _MATHOLD:
-      rc = TA_CDLMATHOLD(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
-      break;
-    case _MORNINGDOJISTAR:
-      rc = TA_CDLMORNINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
-      break;
-    case _MORNINGSTAR:
-      rc = TA_CDLMORNINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
       break;
     case _ONNECK:
       rc = TA_CDLONNECK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);

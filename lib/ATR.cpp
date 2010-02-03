@@ -75,7 +75,7 @@ int ATR::getIndicator (Indicator &ind, BarData *data)
 
 int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,ATR,<NAME>,<PERIOD>,<METHOD>
+  // INDICATOR,ATR,<METHOD>,<NAME>,<PERIOD>
 
   if (set.count() != 4)
   {
@@ -83,25 +83,25 @@ int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  int method = methodList.indexOf(set[2]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid method" << set[2];
+    return 1;
+  }
+
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   bool ok;
-  int period = set[3].toInt(&ok);
+  int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period parm" << set[3];
-    return 1;
-  }
-
-  int method = methodList.indexOf(set[4]);
-  if (method == -1)
-  {
-    qDebug() << indicator << "::calculate: invalid method" << set[4];
+    qDebug() << indicator << "::calculate: invalid period" << set[4];
     return 1;
   }
 
@@ -109,7 +109,7 @@ int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }
@@ -189,20 +189,16 @@ int ATR::dialog ()
     return rc;
   }
 
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
-
-  dialog->getItem(plotKey, d);
-  settings.setData(plotKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(periodKey, d);
-  settings.setData(periodKey, d);
-
-  dialog->getItem(methodKey, d);
-  settings.setData(methodKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

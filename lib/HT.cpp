@@ -214,7 +214,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
 
 int HT::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,HT,<NAME>,<INPUT>,<METHOD>
+  // INDICATOR,HT,METHOD,<NAME>,<INPUT>
 
   if (set.count() != 5)
   {
@@ -222,38 +222,38 @@ int HT::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  int method = methodList.indexOf(set[2]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid method" << set[2];
+    return 1;
+  }
+
+  PlotLine *tl = tlines.value(set[3]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    return 1;
+  }
+
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[3], in);
-  }
-
-  int method = methodList.indexOf(set[4]);
-  if (method == -1)
-  {
-    qDebug() << indicator << "::calculate: invalid method" << set[4];
-    return 1;
-  }
-
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
-    return 1;
+    tlines.insert(set[4], in);
   }
 
   PlotLine *line = getHT(in, method);
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }
@@ -413,56 +413,16 @@ int HT::dialog ()
     return rc;
   }
 
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
-
-  dialog->getItem(plotKey, d);
-  settings.setData(plotKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(inputKey, d);
-  settings.setData(inputKey, d);
-
-  dialog->getItem(methodKey, d);
-  settings.setData(methodKey, d);
-
-  dialog->getItem(phaseColorKey, d);
-  settings.setData(phaseColorKey, d);
-
-  dialog->getItem(quadColorKey, d);
-  settings.setData(quadColorKey, d);
-
-  dialog->getItem(sineColorKey, d);
-  settings.setData(sineColorKey, d);
-
-  dialog->getItem(leadColorKey, d);
-  settings.setData(leadColorKey, d);
-
-  dialog->getItem(phasePlotKey, d);
-  settings.setData(phasePlotKey, d);
-
-  dialog->getItem(quadPlotKey, d);
-  settings.setData(quadPlotKey, d);
-
-  dialog->getItem(sinePlotKey, d);
-  settings.setData(sinePlotKey, d);
-
-  dialog->getItem(leadPlotKey, d);
-  settings.setData(leadPlotKey, d);
-
-  dialog->getItem(phaseLabelKey, d);
-  settings.setData(phaseLabelKey, d);
-
-  dialog->getItem(quadLabelKey, d);
-  settings.setData(quadLabelKey, d);
-
-  dialog->getItem(sineLabelKey, d);
-  settings.setData(sineLabelKey, d);
-
-  dialog->getItem(leadLabelKey, d);
-  settings.setData(leadLabelKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

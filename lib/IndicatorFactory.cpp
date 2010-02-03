@@ -22,7 +22,6 @@
 #include "IndicatorFactory.h"
 
 #include "AD.h"
-#include "ADOSC.h"
 #include "ADX.h"
 #include "AROON.h"
 #include "ATR.h"
@@ -45,7 +44,6 @@
 #include "MACD.h"
 #include "MAMA.h"
 #include "MATH1.h"
-#include "MATH2.h"
 #include "MAVP.h"
 #include "MFI.h"
 #include "MOM.h"
@@ -56,7 +54,6 @@
 #include "ROC.h"
 #include "RSI.h"
 #include "SAR.h"
-#include "STDDEV.h"
 #include "STOCH.h"
 #include "STOCHRSI.h"
 #include "SYMBOL.h"
@@ -93,11 +90,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_AD:
     {
       ib = new AD ;
-      break;
-    }
-    case IndicatorBase::_ADOSC:
-    {
-      ib = new ADOSC;
       break;
     }
     case IndicatorBase::_ADX:
@@ -210,11 +202,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new MATH1;
       break;
     }
-    case IndicatorBase::_MATH2:
-    {
-      ib = new MATH2;
-      break;
-    }
     case IndicatorBase::_MAVP:
     {
       ib = new MAVP;
@@ -263,11 +250,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_SAR:
     {
       ib = new SAR;
-      break;
-    }
-    case IndicatorBase::_STDDEV:
-    {
-      ib = new STDDEV;
       break;
     }
     case IndicatorBase::_STOCH:

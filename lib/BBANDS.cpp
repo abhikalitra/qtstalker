@@ -361,47 +361,16 @@ int BBANDS::dialog ()
     return rc;
   }
 
-  dialog->getItem(ucKey, d);
-  settings.setData(ucKey, d);
-
-  dialog->getItem(mcKey, d);
-  settings.setData(mcKey, d);
-
-  dialog->getItem(lcKey, d);
-  settings.setData(lcKey, d);
-
-  dialog->getItem(upKey, d);
-  settings.setData(upKey, d);
-
-  dialog->getItem(mpKey, d);
-  settings.setData(mpKey, d);
-
-  dialog->getItem(lpKey, d);
-  settings.setData(lpKey, d);
-
-  dialog->getItem(ulKey, d);
-  settings.setData(ulKey, d);
-
-  dialog->getItem(mlKey, d);
-  settings.setData(mlKey, d);
-
-  dialog->getItem(llKey, d);
-  settings.setData(llKey, d);
-
-  dialog->getItem(inputKey, d);
-  settings.setData(inputKey, d);
-
-  dialog->getItem(periodKey, d);
-  settings.setData(periodKey, d);
-
-  dialog->getItem(udKey, d);
-  settings.setData(udKey, d);
-
-  dialog->getItem(ldKey, d);
-  settings.setData(ldKey, d);
-
-  dialog->getItem(maTypeKey, d);
-  settings.setData(maTypeKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

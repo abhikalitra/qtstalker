@@ -43,7 +43,6 @@ class IndicatorBase
     enum IndicatorName
     {
       _AD,
-      _ADOSC,
       _ADX,
       _AROON,
       _ATR,
@@ -66,7 +65,6 @@ class IndicatorBase
       _MACD,
       _MAMA,
       _MATH1,
-      _MATH2,
       _MAVP,
       _MFI,
       _MOM,
@@ -77,7 +75,6 @@ class IndicatorBase
       _ROC,
       _RSI,
       _SAR,
-      _STDDEV,
       _STOCH,
       _STOCHRSI,
       _SYMBOL,

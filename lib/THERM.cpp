@@ -289,41 +289,16 @@ int THERM::dialog ()
     return rc;
   }
 
-  dialog->getItem(upColorKey, d);
-  settings.setData(upColorKey, d);
-
-  dialog->getItem(downColorKey, d);
-  settings.setData(downColorKey, d);
-
-  dialog->getItem(threshColorKey, d);
-  settings.setData(threshColorKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(threshKey, d);
-  settings.setData(threshKey, d);
-
-  dialog->getItem(smoothKey, d);
-  settings.setData(smoothKey, d);
-
-  dialog->getItem(smoothTypeKey, d);
-  settings.setData(smoothTypeKey, d);
-
-  dialog->getItem(maColorKey, d);
-  settings.setData(maColorKey, d);
-
-  dialog->getItem(maLabelKey, d);
-  settings.setData(maLabelKey, d);
-
-  dialog->getItem(maPlotKey, d);
-  settings.setData(maPlotKey, d);
-
-  dialog->getItem(maPeriodKey, d);
-  settings.setData(maPeriodKey, d);
-
-  dialog->getItem(maTypeKey, d);
-  settings.setData(maTypeKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

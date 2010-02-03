@@ -354,59 +354,16 @@ int PP::dialog ()
     return rc;
   }
 
-  dialog->getItem(r1cKey, d);
-  settings.setData(r1cKey, d);
-
-  dialog->getItem(r1lKey, d);
-  settings.setData(r1lKey, d);
-
-  dialog->getItem(r2cKey, d);
-  settings.setData(r2cKey, d);
-
-  dialog->getItem(r2lKey, d);
-  settings.setData(r2lKey, d);
-
-  dialog->getItem(r3cKey, d);
-  settings.setData(r3cKey, d);
-
-  dialog->getItem(r3lKey, d);
-  settings.setData(r3lKey, d);
-
-  dialog->getItem(s1cKey, d);
-  settings.setData(s1cKey, d);
-
-  dialog->getItem(s1lKey, d);
-  settings.setData(s1lKey, d);
-
-  dialog->getItem(s2cKey, d);
-  settings.setData(s2cKey, d);
-
-  dialog->getItem(s2lKey, d);
-  settings.setData(s2lKey, d);
-
-  dialog->getItem(s3cKey, d);
-  settings.setData(s3cKey, d);
-
-  dialog->getItem(s3lKey, d);
-  settings.setData(s3lKey, d);
-
-  dialog->getItem(r1ShowKey, d);
-  settings.setData(r1ShowKey, d);
-
-  dialog->getItem(r2ShowKey, d);
-  settings.setData(r2ShowKey, d);
-
-  dialog->getItem(r3ShowKey, d);
-  settings.setData(r3ShowKey, d);
-
-  dialog->getItem(s1ShowKey, d);
-  settings.setData(s1ShowKey, d);
-
-  dialog->getItem(s2ShowKey, d);
-  settings.setData(s2ShowKey, d);
-
-  dialog->getItem(s3ShowKey, d);
-  settings.setData(s3ShowKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

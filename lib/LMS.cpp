@@ -488,41 +488,16 @@ int LMS::dialog ()
     return rc;
   }
 
-  dialog->getItem(skcKey, d);
-  settings.setData(skcKey, d);
-
-  dialog->getItem(d2cKey, d);
-  settings.setData(d2cKey, d);
-
-  dialog->getItem(d5cKey, d);
-  settings.setData(d5cKey, d);
-
-  dialog->getItem(skpKey, d);
-  settings.setData(skpKey, d);
-
-  dialog->getItem(d2pKey, d);
-  settings.setData(d2pKey, d);
-
-  dialog->getItem(d5pKey, d);
-  settings.setData(d5pKey, d);
-
-  dialog->getItem(sklKey, d);
-  settings.setData(sklKey, d);
-
-  dialog->getItem(d2lKey, d);
-  settings.setData(d2lKey, d);
-
-  dialog->getItem(d5lKey, d);
-  settings.setData(d5lKey, d);
-
-  dialog->getItem(fpKey, d);
-  settings.setData(fpKey, d);
-
-  dialog->getItem(spKey, d);
-  settings.setData(spKey, d);
-
-  dialog->getItem(indexKey, d);
-  settings.setData(indexKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;

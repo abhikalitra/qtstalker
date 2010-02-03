@@ -241,35 +241,16 @@ int CCI::dialog ()
     return rc;
   }
 
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
-
-  dialog->getItem(plotKey, d);
-  settings.setData(plotKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(periodKey, d);
-  settings.setData(periodKey, d);
-
-  dialog->getItem(ref1Key, d);
-  settings.setData(ref1Key, d);
-
-  dialog->getItem(ref2Key, d);
-  settings.setData(ref2Key, d);
-
-  dialog->getItem(ref1ColorKey, d);
-  settings.setData(ref1ColorKey, d);
-
-  dialog->getItem(ref2ColorKey, d);
-  settings.setData(ref2ColorKey, d);
-
-  dialog->getItem(smoothKey, d);
-  settings.setData(smoothKey, d);
-
-  dialog->getItem(smoothTypeKey, d);
-  settings.setData(smoothTypeKey, d);
+  QStringList keys;
+  settings.getKeyList(keys);
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
 
   delete dialog;
   return rc;
