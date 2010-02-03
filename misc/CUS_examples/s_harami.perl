@@ -1,4 +1,4 @@
-# qtstalker s-harami - Candles: Harami and Harami Cross
+# qtstalker s_harami - Candles: Harami and Harami Cross
 
 # yellow  : Harami
 # orange  : Harami Cross

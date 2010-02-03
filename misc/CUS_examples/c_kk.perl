@@ -1,4 +1,4 @@
-# qtstalker c-kk - Candles: Piercing Line (Kirikomi) and Dark Cloud Cover (Kabuse)
+# qtstalker c_kk - Candles: Piercing Line (Kirikomi) and Dark Cloud Cover (Kabuse)
 
 # green : Piercing Line
 # red   : Dark Cloud Cover

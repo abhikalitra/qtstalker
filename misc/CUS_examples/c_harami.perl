@@ -1,4 +1,4 @@
-# qtstalker c-harami - Candles: Harami and Harami Cross
+# qtstalker c_harami - Candles: Harami and Harami Cross
 
 # green   : Bull Harami
 # cyan    : Bull Harami Cross
