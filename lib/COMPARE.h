@@ -31,6 +31,9 @@ class COMPARE : public IndicatorBase
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getCOMPARE (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getCOMPARE2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+
+  protected:
+    QStringList methodList;
 };
 
 #endif

@@ -316,24 +316,35 @@ other methods will return a boolean array of values.</p>
 <h3>COLOR</h3>
 <p>INDICATOR,COLOR,&lt;INPUT&gt;,&lt;INPUT_2&gt;,&lt;VALUE&gt;,&lt;COLOR&gt;</p>
 <p></p>
-<p>This function compares the values of &lt;INPUT&gt; data array with
+<p><br>
+This function compares the values of &lt;INPUT&gt; data array with
 the
-number &lt;VALUE&gt;. If they are equal then</p>
-<p>&lt;COLOR&gt; is applied to the &lt;INPUT_2&gt; data array.</p>
-<p>&lt;INPUT&gt; is the line that determines the color</p>
-<p>&lt;INPUT_2&gt; is the line that receives the color</p>
-<p>&lt;VALUE&gt; is the number compared in &lt;INPUT&gt;. If
+number &lt;VALUE&gt;. If they are equal then &lt;COLOR&gt; is applied
+to the &lt;INPUT_2&gt; data array.<br>
+</p>
+<ul>
+  <li>&lt;INPUT&gt; is the line that determines the color</li>
+  <li>&lt;INPUT_2&gt; is the line that receives the color</li>
+  <li>&lt;VALUE&gt; is the number compared in &lt;INPUT&gt;. If
 &lt;VALUE&gt; and
 &lt;INPUT&gt; are equal, then &lt;COLOR&gt; is applied to
-&lt;INPUT_2&gt;</p>
-<p>&lt;COLOR&gt; is the color name that is applied to &lt;INPUT_2&gt;</p>
-<p></p>
-<h3><br>
-</h3>
+&lt;INPUT_2&gt;</li>
+  <li>&lt;COLOR&gt; is the color name that is applied to &lt;INPUT_2&gt;</li>
+</ul>
+<br>
 <h3>COMPARE</h3>
-<p>INDICATOR,COMPARE,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;OPERATOR&gt;</p>
+<p>INDICATOR,COMPARE,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;OPERATOR&gt;,&lt;METHOD&gt;<br>
+</p>
+<p>Available methods are:<br>
+</p>
+<ul>
+  <li>ARRAY</li>
+  <li>VALUE</li>
+</ul>
+<br>
 <p></p>
-<p>This function compares the values of &lt;INPUT_1&gt; data array with
+<p>The ARRAY &lt;METHOD&gt; compares the values of &lt;INPUT_1&gt; data
+array with
 &lt;INPUT_2&gt; data array using the &lt;OPERATOR&gt; for comparison.</p>
 <p>The result is a boolean array of TRUE/FALSE values. The comparison
 order is
@@ -341,18 +352,15 @@ made &lt;INPUT_1&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
 <p></p>
 <h3><br>
 </h3>
-<h3>COMPARE2</h3>
-<p>INDICATOR,COMPARE2,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;VALUE&gt;,&lt;OPERATOR&gt;</p>
-<p></p>
-<p>This function compares the values of &lt;INPUT&gt; data array with
-the
-number &lt;VALUE&gt; using the &lt;OPERATOR&gt; for comparison.</p>
+The VALUE &lt;METHOD&gt; compares the values of &lt;INPUT&gt; data
+array with a
+number &lt;INPUT_2&gt; using the &lt;OPERATOR&gt; for comparison.
 <p>The result is a boolean array of TRUE/FALSE values. The comparison
 order is
-made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
+made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
 <p></p>
-<h3><br>
-</h3>
+<br>
+<br>
 <h3>Pearson's Correlation Coefficient (r)</h3>
 <p>INDICATOR,CORREL,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;PERIOD&gt;</p>
 <p></p>
@@ -371,18 +379,13 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
   <li>DCPERIOD (Dominant Cycle Period)</li>
   <li>DCPHASE (Dominant Cycle Phase)</li>
   <li>TRENDLINE (Instantaneous Trendline)</li>
-  <li>TRENDMODE (Trend vs Cycle Mode) This returns a boolean array.<br>
+  <li>TRENDMODE (Trend vs Cycle Mode) This returns a boolean array.</li>
+  <li>PHASE - Phase plot of the hilbert transform phasor indicator.</li>
+  <li>QUAD - Quadrature plot of the hilbert transform phasor indicator.</li>
+  <li>SINE - Sine plot of the hilbert transform sinewave indicator.</li>
+  <li>LEAD - Lead Sine plot of the hilbert transform sinewave indicator.<br>
   </li>
 </ul>
-<p></p>
-<br>
-<h3>Hilbert Transform - Phasor Components</h3>
-<p>INDICATOR,HT_PHASOR,&lt;INPUT&gt;,&lt;NAME_PHASE&gt;,&lt;NAME_QUADRATURE&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Hilbert Transform - SineWave</h3>
-<p>INDICATOR,HT_SINE,&lt;INPUT&gt;,&lt;NAME_SINE&gt;,&lt;NAME_LEAD_SINE&gt;</p>
 <p></p>
 <br>
 <br>

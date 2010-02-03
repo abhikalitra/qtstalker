@@ -62,13 +62,10 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "CMO";
   indicatorList << "COLOR";
   indicatorList << "COMPARE";
-  indicatorList << "COMPARE2";
   indicatorList << "CORREL";
   indicatorList << "CUS";
   indicatorList << "FI";
   indicatorList << "HT";
-  indicatorList << "HT_PHASOR";
-  indicatorList << "HT_SINE";
   indicatorList << "LINEARREG";
   indicatorList << "LMS";
   indicatorList << "MA";
@@ -172,13 +169,11 @@ void IndicatorBase::getIndicatorList (QStringList &l, int flag)
   {
     l.removeAll("COLOR");
     l.removeAll("COMPARE");
-    l.removeAll("COMPARE2");
     l.removeAll("MATH1");
     l.removeAll("MATH2");
     l.removeAll("RANGE");
     l.removeAll("REF");
     l.removeAll("SYMBOL");
-    l.removeAll("TRIG");
   }
 }
 

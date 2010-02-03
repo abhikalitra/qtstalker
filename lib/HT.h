@@ -35,7 +35,21 @@ class HT : public IndicatorBase
 
   protected:
     QString methodKey;
+    QString phaseColorKey;
+    QString quadColorKey;
+    QString sineColorKey;
+    QString leadColorKey;
+    QString phasePlotKey;
+    QString quadPlotKey;
+    QString sinePlotKey;
+    QString leadPlotKey;
+    QString phaseLabelKey;
+    QString quadLabelKey;
+    QString sineLabelKey;
+    QString leadLabelKey;
+
     QStringList methodList;
+    QStringList guiMethodList;
 };
 
 #endif

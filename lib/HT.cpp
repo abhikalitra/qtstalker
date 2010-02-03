@@ -29,20 +29,65 @@ HT::HT ()
 {
   indicator = "HT";
   methodKey = QObject::tr("Method");
+  phaseColorKey = QObject::tr("Phase Color");
+  quadColorKey = QObject::tr("Quad Color");
+  sineColorKey = QObject::tr("Sine Color");
+  leadColorKey = QObject::tr("Lead Color");
+  phasePlotKey = QObject::tr("Phase Plot");
+  quadPlotKey = QObject::tr("Quad Plot");
+  sinePlotKey = QObject::tr("Sine Plot");
+  leadPlotKey = QObject::tr("Lead Plot");
+  phaseLabelKey = QObject::tr("Phase Label");
+  quadLabelKey = QObject::tr("Quad Label");
+  sineLabelKey = QObject::tr("Sine Label");
+  leadLabelKey = QObject::tr("Lead Label");
 
   methodList << "DCPERIOD";
   methodList << "DCPHASE";
   methodList << "TRENDLINE";
   methodList << "TRENDMODE";
+  methodList << "PHASE";
+  methodList << "QUAD";
+  methodList << "SINE";
+  methodList << "LEAD";
+
+  guiMethodList << "DCPERIOD";
+  guiMethodList << "DCPHASE";
+  guiMethodList << "TRENDLINE";
+  guiMethodList << "TRENDMODE";
+  guiMethodList << "PHASOR";
+  guiMethodList << "SINE";
 
   QString d;
   d = "red";
   settings.setData(colorKey, d);
+  settings.setData(phaseColorKey, d);
+  settings.setData(sineColorKey, d);
+
+  d = "yellow";
+  settings.setData(quadColorKey, d);
+  settings.setData(leadColorKey, d);
 
   d = "Line";
   settings.setData(plotKey, d);
+  settings.setData(phasePlotKey, d);
+  settings.setData(quadPlotKey, d);
+  settings.setData(sinePlotKey, d);
+  settings.setData(leadPlotKey, d);
 
   settings.setData(labelKey, indicator);
+
+  d = "PHASE";
+  settings.setData(phaseLabelKey, d);
+
+  d = "QUAD";
+  settings.setData(quadLabelKey, d);
+
+  d = "SINE";
+  settings.setData(sineLabelKey, d);
+
+  d = "LEAD";
+  settings.setData(leadLabelKey, d);
 
   d = "Close";
   settings.setData(inputKey, d);
@@ -63,35 +108,107 @@ int HT::getIndicator (Indicator &ind, BarData *data)
   }
 
   settings.getData(methodKey, s);
-  int method = methodList.indexOf(s);
+  int method = guiMethodList.indexOf(s);
 
-  PlotLine *line = getHT(in, method);
-  if (! line)
+  switch (method)
   {
-    delete in;
-    return 1;
+    case 4: // phasor
+    {
+      int t = guiMethodList.indexOf(QString("PHASE"));
+      PlotLine *phase = getHT(in, t);
+      if (! phase)
+      {
+        delete in;
+        return 1;
+      }
+      settings.getData(phaseColorKey, s);
+      phase->setColor(s);
+      settings.getData(phasePlotKey, s);
+      phase->setType(s);
+      settings.getData(phaseLabelKey, s);
+      phase->setLabel(s);
+
+      t = guiMethodList.indexOf(QString("QUAD"));
+      PlotLine *quad = getHT(in, t);
+      if (! quad)
+      {
+        delete in;
+	delete phase;
+        return 1;
+      }
+      settings.getData(quadColorKey, s);
+      quad->setColor(s);
+      settings.getData(quadPlotKey, s);
+      quad->setType(s);
+      settings.getData(quadLabelKey, s);
+      quad->setLabel(s);
+
+      ind.addLine(phase);
+      ind.addLine(quad);
+      break;
+    }
+    case 5: // sine
+    {
+      int t = guiMethodList.indexOf(QString("SINE"));
+      PlotLine *sine = getHT(in, t);
+      if (! sine)
+      {
+        delete in;
+        return 1;
+      }
+      settings.getData(sineColorKey, s);
+      sine->setColor(s);
+      settings.getData(sinePlotKey, s);
+      sine->setType(s);
+      settings.getData(sineLabelKey, s);
+      sine->setLabel(s);
+
+      t = guiMethodList.indexOf(QString("LEAD"));
+      PlotLine *lead = getHT(in, t);
+      if (! lead)
+      {
+        delete in;
+	delete sine;
+        return 1;
+      }
+      settings.getData(leadColorKey, s);
+      lead->setColor(s);
+      settings.getData(leadPlotKey, s);
+      lead->setType(s);
+      settings.getData(leadLabelKey, s);
+      lead->setLabel(s);
+
+      ind.addLine(sine);
+      ind.addLine(lead);
+      break;
+    }
+    default:
+    {
+      PlotLine *line = getHT(in, method);
+      if (! line)
+      {
+        delete in;
+        return 1;
+      }
+
+      if (method != 3)
+      {
+        BARS bars;
+        bars.getIndicator(ind, data);
+      }
+
+      settings.getData(colorKey, s);
+      line->setColor(s);
+      settings.getData(plotKey, s);
+      line->setType(s);
+      settings.getData(labelKey, s);
+      line->setLabel(s);
+      ind.addLine(line);
+      break;
+    }
   }
-
-  // dont add bars if method = TRENDMODE
-  if (method != 3)
-  {
-    BARS bars;
-    bars.getIndicator(ind, data);
-  }
-
-  settings.getData(colorKey, s);
-  line->setColor(s);
-
-  settings.getData(plotKey, s);
-  line->setType(s);
-
-  settings.getData(labelKey, s);
-  line->setLabel(s);
-
-  ind.addLine(line);
 
   delete in;
-
   return 0;
 }
 
@@ -179,6 +296,30 @@ PlotLine * HT::getHT (PlotLine *in, int method)
       return line;
       break;
     }
+    case 4: // phase line
+    {
+      TA_Real out2[size];
+      rc = TA_HT_PHASOR (0, size - 1, &input[0], &outBeg, &outNb, &out[0], &out2[0]);
+      break;
+    }
+    case 5: // quad line
+    {
+      TA_Real out2[size];
+      rc = TA_HT_PHASOR (0, size - 1, &input[0], &outBeg, &outNb, &out2[0], &out[0]);
+      break;
+    }
+    case 6: // sine line
+    {
+      TA_Real out2[size];
+      rc = TA_HT_SINE (0, size - 1, &input[0], &outBeg, &outNb, &out[0], &out2[0]);
+      break;
+    }
+    case 7: // lead line
+    {
+      TA_Real out2[size];
+      rc = TA_HT_SINE (0, size - 1, &input[0], &outBeg, &outNb, &out2[0], &out[0]);
+      break;
+    }
     default:
       break;
   }
@@ -207,8 +348,7 @@ int HT::dialog ()
   dialog->addPage(page, k);
 
   settings.getData(colorKey, d);
-  QColor c(d);
-  dialog->addColorItem(page, colorKey, c);
+  dialog->addColorItem(page, colorKey, d);
 
   settings.getData(plotKey, d);
   dialog->addComboItem(page, plotKey, plotList, d);
@@ -220,7 +360,51 @@ int HT::dialog ()
   dialog->addComboItem(page, inputKey, inputList, d);
 
   settings.getData(methodKey, d);
-  dialog->addComboItem(page, methodKey, methodList, d);
+  dialog->addComboItem(page, methodKey, guiMethodList, d);
+
+  page++;
+  k = QObject::tr("Phasor");
+  dialog->addPage(page, k);
+
+  settings.getData(phaseColorKey, d);
+  dialog->addColorItem(page, phaseColorKey, d);
+
+  settings.getData(quadColorKey, d);
+  dialog->addColorItem(page, quadColorKey, d);
+
+  settings.getData(phasePlotKey, d);
+  dialog->addComboItem(page, phasePlotKey, plotList, d);
+
+  settings.getData(quadPlotKey, d);
+  dialog->addComboItem(page, quadPlotKey, plotList, d);
+
+  settings.getData(phaseLabelKey, d);
+  dialog->addTextItem(page, phaseLabelKey, d);
+
+  settings.getData(quadLabelKey, d);
+  dialog->addTextItem(page, quadLabelKey, d);
+
+  page++;
+  k = QObject::tr("Sine Wave");
+  dialog->addPage(page, k);
+
+  settings.getData(sineColorKey, d);
+  dialog->addColorItem(page, sineColorKey, d);
+
+  settings.getData(leadColorKey, d);
+  dialog->addColorItem(page, leadColorKey, d);
+
+  settings.getData(sinePlotKey, d);
+  dialog->addComboItem(page, sinePlotKey, plotList, d);
+
+  settings.getData(leadPlotKey, d);
+  dialog->addComboItem(page, leadPlotKey, plotList, d);
+
+  settings.getData(sineLabelKey, d);
+  dialog->addTextItem(page, sineLabelKey, d);
+
+  settings.getData(leadLabelKey, d);
+  dialog->addTextItem(page, leadLabelKey, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -243,6 +427,42 @@ int HT::dialog ()
 
   dialog->getItem(methodKey, d);
   settings.setData(methodKey, d);
+
+  dialog->getItem(phaseColorKey, d);
+  settings.setData(phaseColorKey, d);
+
+  dialog->getItem(quadColorKey, d);
+  settings.setData(quadColorKey, d);
+
+  dialog->getItem(sineColorKey, d);
+  settings.setData(sineColorKey, d);
+
+  dialog->getItem(leadColorKey, d);
+  settings.setData(leadColorKey, d);
+
+  dialog->getItem(phasePlotKey, d);
+  settings.setData(phasePlotKey, d);
+
+  dialog->getItem(quadPlotKey, d);
+  settings.setData(quadPlotKey, d);
+
+  dialog->getItem(sinePlotKey, d);
+  settings.setData(sinePlotKey, d);
+
+  dialog->getItem(leadPlotKey, d);
+  settings.setData(leadPlotKey, d);
+
+  dialog->getItem(phaseLabelKey, d);
+  settings.setData(phaseLabelKey, d);
+
+  dialog->getItem(quadLabelKey, d);
+  settings.setData(quadLabelKey, d);
+
+  dialog->getItem(sineLabelKey, d);
+  settings.setData(sineLabelKey, d);
+
+  dialog->getItem(leadLabelKey, d);
+  settings.setData(leadLabelKey, d);
 
   delete dialog;
   return rc;

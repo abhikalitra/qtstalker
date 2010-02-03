@@ -39,8 +39,6 @@
 #include "CUS.h"
 #include "FI.h"
 #include "HT.h"
-#include "HT_PHASOR.h"
-#include "HT_SINE.h"
 #include "LINEARREG.h"
 #include "LMS.h"
 #include "MA.h"
@@ -161,7 +159,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       break;
     }
     case IndicatorBase::_COMPARE:
-    case IndicatorBase::_COMPARE2:
     {
       ib = new COMPARE;
       break;
@@ -184,16 +181,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_HT:
     {
       ib = new HT;
-      break;
-    }
-    case IndicatorBase::_HT_PHASOR:
-    {
-      ib = new HT_PHASOR;
-      break;
-    }
-    case IndicatorBase::_HT_SINE:
-    {
-      ib = new HT_SINE;
       break;
     }
     case IndicatorBase::_LINEARREG:
