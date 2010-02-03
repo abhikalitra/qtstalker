@@ -64,7 +64,6 @@
 #include "T3.h"
 #include "THERM.h"
 #include "TRIX.h"
-#include "TSF.h"
 #include "ULTOSC.h"
 #include "VAR.h"
 #include "VFI.h"
@@ -304,11 +303,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_TRIX:
     {
       ib = new TRIX;
-      break;
-    }
-    case IndicatorBase::_TSF:
-    {
-      ib = new TSF;
       break;
     }
     case IndicatorBase::_ULTOSC:

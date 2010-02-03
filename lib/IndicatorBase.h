@@ -85,7 +85,6 @@ class IndicatorBase
       _T3,
       _THERM,
       _TRIX,
-      _TSF,
       _ULTOSC,
       _VAR,
       _VFI,

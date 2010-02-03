@@ -34,6 +34,7 @@ LINEARREG::LINEARREG ()
   methodList << "ANGLE";
   methodList << "INTERCEPT";
   methodList << "SLOPE";
+  methodList << "TSF";
 
   QString d;
   d = "red";
@@ -184,6 +185,9 @@ PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period, int method)
       break;
     case 3:
       rc = TA_LINEARREG_SLOPE(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 4:
+      rc = TA_TSF(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     default:
       break;

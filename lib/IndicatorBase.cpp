@@ -91,7 +91,6 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "T3";
   indicatorList << "THERM";
   indicatorList << "TRIX";
-  indicatorList << "TSF";
   indicatorList << "ULTOSC";
   indicatorList << "VAR";
   indicatorList << "VFI";
