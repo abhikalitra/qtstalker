@@ -89,7 +89,6 @@ class IndicatorBase
       _SZ,
       _T3,
       _THERM,
-      _TRIG,
       _TRIX,
       _TSF,
       _ULTOSC,

@@ -36,6 +36,15 @@ MATH1::MATH1 ()
   methodList << QObject::tr("LOG10");
   methodList << QObject::tr("NORMALIZE");
   methodList << QObject::tr("SQRT");
+  methodList << QObject::tr("ACOS");
+  methodList << QObject::tr("ASIN");
+  methodList << QObject::tr("ATAN");
+  methodList << QObject::tr("COS");
+  methodList << QObject::tr("COSH");
+  methodList << QObject::tr("SIN");
+  methodList << QObject::tr("SINH");
+  methodList << QObject::tr("TAN");
+  methodList << QObject::tr("TANH");
 }
 
 int MATH1::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
@@ -132,6 +141,33 @@ PlotLine * MATH1::getMATH1 (PlotLine *in, int method)
     }
     case 6:
       rc = TA_SQRT(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 7:
+      rc = TA_ACOS(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 8:
+      rc = TA_ASIN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 9:
+      rc = TA_ATAN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 10:
+      rc = TA_COS(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 11:
+      rc = TA_COSH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 12:
+      rc = TA_SIN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 13:
+      rc = TA_SINH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 14:
+      rc = TA_TAN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case 15:
+      rc = TA_TANH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     default:
       break;
