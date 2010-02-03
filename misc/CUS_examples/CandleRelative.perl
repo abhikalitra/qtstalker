@@ -4,7 +4,7 @@
 $|++;
 
 # get the Candles
-print STDOUT "INDICATOR,CANDLES,candles,dimgray";
+print STDOUT "INDICATOR,CANDLES,candles,dimgray,<NONE>,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get today's Close
