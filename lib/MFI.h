@@ -30,12 +30,12 @@ class MFI : public IndicatorBase
     MFI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getMFI (BarData *data, int period);
+    PlotLine * getMFI (BarData *data, int period, int smoothing, int type);
     int dialog ();
 
   protected:
-    QString showMAKey;
-    QString showMFIKey;
+    QString smoothKey;
+    QString smoothTypeKey;
 };
 
 #endif

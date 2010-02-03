@@ -35,6 +35,7 @@ RANGE::RANGE ()
   methodList << "MIDPOINT";
   methodList << "MIDPRICE";
   methodList << "TRANGE";
+  methodList << "SUM";
 }
 
 int RANGE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
@@ -172,6 +173,9 @@ PlotLine * RANGE::getRANGE (PlotLine *in, BarData *data, int period, int method)
       rc = TA_TRANGE(0, size - 1, &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
       break;
     }
+    case 7:
+      rc = TA_SUM(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
     default:
       break;
   }

@@ -56,11 +56,9 @@
 #include "ROC.h"
 #include "RSI.h"
 #include "SAR.h"
-#include "SINWAV.h"
 #include "STDDEV.h"
 #include "STOCH.h"
 #include "STOCHRSI.h"
-#include "SUM.h"
 #include "SYMBOL.h"
 #include "SZ.h"
 #include "T3.h"
@@ -268,11 +266,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new SAR;
       break;
     }
-    case IndicatorBase::_SINWAV:
-    {
-      ib = new SINWAV;
-      break;
-    }
     case IndicatorBase::_STDDEV:
     {
       ib = new STDDEV;
@@ -286,11 +279,6 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
     case IndicatorBase::_STOCHRSI:
     {
       ib = new STOCHRSI;
-      break;
-    }
-    case IndicatorBase::_SUM:
-    {
-      ib = new SUM;
       break;
     }
     case IndicatorBase::_SYMBOL:

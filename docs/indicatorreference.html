@@ -222,7 +222,7 @@ indicator or bar data as follows:</p>
 <h3><br>
 </h3>
 <h3>Balance Of Power</h3>
-<p>INDICATOR,BOP,&lt;NAME&gt;</p>
+<p>INDICATOR,BOP,&lt;NAME&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <h3><br>
 </h3>
@@ -305,7 +305,7 @@ other methods will return a boolean array of values.</p>
 </ul>
 <br>
 <h3>Commodity Channel Index</h3>
-<p>INDICATOR,CCI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,CCI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <br>
 <h3>Chande Momentum Oscillator</h3>
@@ -367,7 +367,7 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
 <br>
 <h3>Force Index<br>
 </h3>
-<p>INDICATOR,FI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,FI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;MA_TYPE&gt;</p>
 <br>
 <h3>Hilbert Transform<br>
 </h3>
@@ -447,7 +447,7 @@ Methods available are:<br>
 <span style="font-weight: bold;"><br>
 <br>
 </span>
-<h3>MESA Adaptive Moving Average</h3>
+<h3>MAMA&nbsp; Adaptive Moving Average</h3>
 <p>INDICATOR,MAMA,&lt;INPUT&gt;,&lt;NAME_MAMA&gt;,&lt;NAME_FAMA&gt;,&lt;FAST_LIMIT&gt;,&lt;SLOW_LIMIT&gt;<br>
 </p>
 <p></p>
@@ -495,7 +495,7 @@ Available methods are:<br>
 <p></p>
 <br>
 <h3>Money Flow Index</h3>
-<p>INDICATOR,MFI,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,MFI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <br>
 <br>
@@ -546,7 +546,8 @@ Available methods are:<br>
   <li>MAXINDEX</li>
   <li>MIDPOINT</li>
   <li>MIDPRICE</li>
-  <li>TRANGE (True Range)<br>
+  <li>TRANGE (True Range)</li>
+  <li>SUM - Summation<br>
   </li>
 </ul>
 <br>
@@ -585,12 +586,7 @@ Methods available are:<br>
 <p>INDICATOR,SAR,&lt;NAME&gt;,&lt;INITIAL_STEP&gt;,&lt;MAX_STEP&gt;</p>
 <p></p>
 <span style="font-weight: bold;"><br>
-<br>
-</span>
-<h3>Ehler's Sine Wave<br>
-</h3>
-<p>INDICATOR,SINWAV,&lt;SINE_NAME&gt;,&lt;LEAD_NAME&gt;</p>
-<br>
+</span><br>
 <h3>Standard Deviation</h3>
 <p>INDICATOR,STDDEV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;</p>
 <p></p>
@@ -641,6 +637,7 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 <p>&lt;VFACTOR&gt; is a decimal value.</p>
 <p></p>
 <br>
+<br>
 <h3>Market Thermometer<br>
 </h3>
 <p>INDICATOR,THERM,&lt;NAME&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
@@ -653,9 +650,11 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 <p></p>
 <h3><br>
 </h3>
+<br>
 <h3>Time Series Forecast</h3>
 <p>INDICATOR,TSF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
 <p></p>
+<br>
 <br>
 <h3>Ultimate Oscillator</h3>
 <p>INDICATOR,ULTOSC,&lt;NAME&gt;,&lt;PERIOD_1&gt;,&lt;PERIOD_2&gt;,&lt;PERIOD_3&gt;</p>

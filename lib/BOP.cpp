@@ -27,6 +27,8 @@
 BOP::BOP ()
 {
   indicator = "BOP";
+  smoothKey = QObject::tr("Smoothing Period");
+  smoothTypeKey = QObject::tr("Smoothing Type");
 
   QString d;
   d = "red";
@@ -36,15 +38,25 @@ BOP::BOP ()
   settings.setData(plotKey, d);
 
   settings.setData(labelKey, indicator);
+
+  settings.setData(smoothKey, 10);
+
+  d = "SMA";
+  settings.setData(smoothTypeKey, d);
 }
 
 int BOP::getIndicator (Indicator &ind, BarData *data)
 {
-  PlotLine *line = getBOP(data);
+  QString s;
+  int smoothing = settings.getInt(smoothKey);
+
+  settings.getData(smoothTypeKey, s);
+  int type = maList.indexOf(s);
+
+  PlotLine *line = getBOP(data, smoothing, type);
   if (! line)
     return 1;
 
-  QString s;
   settings.getData(colorKey, s);
   line->setColor(s);
 
@@ -61,9 +73,9 @@ int BOP::getIndicator (Indicator &ind, BarData *data)
 
 int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,BOP,<NAME>
+  // INDICATOR,BOP,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
 
-  if (set.count() != 3)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -76,7 +88,22 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getBOP(data);
+  bool ok;
+  int smoothing = set[3].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing period" << set[3];
+    return 1;
+  }
+
+  int ma = maList.indexOf(set[4]);
+  if (ma == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing type" << set[4];
+    return 1;
+  }
+
+  PlotLine *line = getBOP(data, smoothing, ma);
   if (! line)
     return 1;
 
@@ -85,7 +112,7 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * BOP::getBOP (BarData *data)
+PlotLine * BOP::getBOP (BarData *data, int smoothing, int type)
 {
   int size = data->count();
   TA_Real open[size];
@@ -115,6 +142,19 @@ PlotLine * BOP::getBOP (BarData *data)
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
+  if (smoothing > 1)
+  {
+    PlotLine *ma = getMA(line, smoothing, type);
+    if (! ma)
+    {
+      delete line;
+      return 0;
+    }
+
+    delete line;
+    line = ma;
+  }
+
   return line;
 }
 
@@ -137,6 +177,11 @@ int BOP::dialog ()
   settings.getData(labelKey, d);
   dialog->addTextItem(page, labelKey, d);
 
+  dialog->addIntItem(page, smoothKey, settings.getInt(smoothKey), 1, 100000);
+
+  settings.getData(smoothTypeKey, d);
+  dialog->addComboItem(page, smoothTypeKey, maList, d);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -152,6 +197,12 @@ int BOP::dialog ()
 
   dialog->getItem(labelKey, d);
   settings.setData(labelKey, d);
+
+  dialog->getItem(smoothKey, d);
+  settings.setData(smoothKey, d);
+
+  dialog->getItem(smoothTypeKey, d);
+  settings.setData(smoothTypeKey, d);
 
   delete dialog;
   return rc;

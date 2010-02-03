@@ -30,7 +30,7 @@ class CCI : public IndicatorBase
     CCI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getCCI (BarData *data, int period);
+    PlotLine * getCCI (BarData *data, int period, int smoothing, int type);
     int dialog ();
 
   protected:
@@ -38,6 +38,8 @@ class CCI : public IndicatorBase
     QString ref2Key;
     QString ref1ColorKey;
     QString ref2ColorKey;
+    QString smoothKey;
+    QString smoothTypeKey;
 };
 
 #endif

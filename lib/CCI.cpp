@@ -31,6 +31,8 @@ CCI::CCI ()
   ref2Key = QObject::tr("Ref 2 Value");
   ref1ColorKey = QObject::tr("Ref 1 Color");
   ref2ColorKey = QObject::tr("Ref 2 Color");
+  smoothKey = QObject::tr("Smoothing Period");
+  smoothTypeKey = QObject::tr("Smoothing Type");
 
   QString d;
   d = "red";
@@ -47,17 +49,27 @@ CCI::CCI ()
   d = "red";
   settings.setData(ref1ColorKey, d);
   settings.setData(ref2ColorKey, d);
+
+  settings.setData(smoothKey, 10);
+
+  d = "SMA";
+  settings.setData(smoothTypeKey, d);
 }
 
 int CCI::getIndicator (Indicator &ind, BarData *data)
 {
+  QString s;
   int period = settings.getInt(periodKey);
 
-  PlotLine *line = getCCI(data, period);
+  int smoothing = settings.getInt(smoothKey);
+
+  settings.getData(smoothTypeKey, s);
+  int type = maList.indexOf(s);
+
+  PlotLine *line = getCCI(data, period, smoothing, type);
   if (! line)
     return 1;
 
-  QString s;
   settings.getData(colorKey, s);
   line->setColor(s);
 
@@ -92,9 +104,9 @@ int CCI::getIndicator (Indicator &ind, BarData *data)
 
 int CCI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,CCI,<NAME>,<PERIOD>
+  // INDICATOR,CCI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
 
-  if (set.count() != 4)
+  if (set.count() != 6)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -115,7 +127,21 @@ int CCI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getCCI(data, period);
+  int smoothing = set[4].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing period" << set[4];
+    return 1;
+  }
+
+  int ma = maList.indexOf(set[5]);
+  if (ma == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid smoothing type" << set[5];
+    return 1;
+  }
+
+  PlotLine *line = getCCI(data, period, smoothing, ma);
   if (! line)
     return 1;
 
@@ -124,7 +150,7 @@ int CCI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * CCI::getCCI (BarData *data, int period)
+PlotLine * CCI::getCCI (BarData *data, int period, int smoothing, int type)
 {
   int size = data->count();
   TA_Real high[size];
@@ -152,6 +178,19 @@ PlotLine * CCI::getCCI (BarData *data, int period)
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
 
+  if (smoothing > 1)
+  {
+    PlotLine *ma = getMA(line, smoothing, type);
+    if (! ma)
+    {
+      delete line;
+      return 0;
+    }
+
+    delete line;
+    line = ma;
+  }
+
   return line;
 }
 
@@ -175,6 +214,11 @@ int CCI::dialog ()
   dialog->addTextItem(page, labelKey, d);
 
   dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
+
+  dialog->addIntItem(page, smoothKey, settings.getInt(smoothKey), 1, 100000);
+
+  settings.getData(smoothTypeKey, d);
+  dialog->addComboItem(page, smoothTypeKey, maList, d);
 
   page++;
   k = QObject::tr("Ref Lines");
@@ -220,6 +264,12 @@ int CCI::dialog ()
 
   dialog->getItem(ref2ColorKey, d);
   settings.setData(ref2ColorKey, d);
+
+  dialog->getItem(smoothKey, d);
+  settings.setData(smoothKey, d);
+
+  dialog->getItem(smoothTypeKey, d);
+  settings.setData(smoothTypeKey, d);
 
   delete dialog;
   return rc;

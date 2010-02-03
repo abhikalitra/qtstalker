@@ -30,7 +30,7 @@ class FI : public IndicatorBase
     FI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getFI (BarData *data);
+    PlotLine * getFI (BarData *data, int period, int type);
     int dialog ();
 };
 

@@ -30,8 +30,12 @@ class BOP : public IndicatorBase
     BOP ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getBOP (BarData *data);
+    PlotLine * getBOP (BarData *data, int smoothing, int type);
     int dialog ();
+
+  protected:
+    QString smoothKey;
+    QString smoothTypeKey;
 };
 
 #endif

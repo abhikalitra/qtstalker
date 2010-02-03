@@ -45,42 +45,35 @@ FI::FI ()
 
 int FI::getIndicator (Indicator &ind, BarData *data)
 {
-  PlotLine *line = getFI(data);
+  QString s;
+  int period = settings.getInt(periodKey);
+
+  settings.getData(maTypeKey, s);
+  int ma = maList.indexOf(s);
+
+  PlotLine *line = getFI(data, period, ma);
   if (! line)
     return 1;
 
-  int period = settings.getInt(periodKey);
-
-  QString s;
-  settings.getData(maTypeKey, s);
-  int mat = maList.indexOf(s);
-
-  PlotLine *ma = getMA(line, period, mat);
-  if (! ma)
-  {
-    delete line;
-    return 1;
-  }
-
   settings.getData(colorKey, s);
-  ma->setColor(s);
+  line->setColor(s);
 
   settings.getData(plotKey, s);
-  ma->setType(s);
+  line->setType(s);
 
   settings.getData(labelKey, s);
-  ma->setLabel(s);
+  line->setLabel(s);
 
-  ind.addLine(ma);
+  ind.addLine(line);
 
   return 0;
 }
 
 int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,FI,NAME
+  // INDICATOR,FI,NAME,PERIOD,MA_TYPE
 
-  if (set.count() != 3)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -93,7 +86,22 @@ int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     return 1;
   }
 
-  PlotLine *line = getFI(data);
+  bool ok;
+  int period = set[3].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid period" << set[3];
+    return 1;
+  }
+
+  int ma = maList.indexOf(set[4]);
+  if (ma == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid ma" << set[4];
+    return 1;
+  }
+
+  PlotLine *line = getFI(data, period, ma);
   if (! line)
     return 1;
 
@@ -102,19 +110,32 @@ int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   return 0;
 }
 
-PlotLine * FI::getFI (BarData *data)
+PlotLine * FI::getFI (BarData *data, int period, int type)
 {
-  PlotLine *fi = new PlotLine();
+  PlotLine *line = new PlotLine();
   int loop;
   double force = 0;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
     double cdiff = data->getClose(loop) - data->getClose(loop - 1);
     force = data->getVolume(loop) * cdiff;
-    fi->append(force);
+    line->append(force);
   }
 
-  return fi;
+  if (period > 1)
+  {
+    PlotLine *ma = getMA(line, period, type);
+    if (! ma)
+    {
+      delete line;
+      return 0;
+    }
+
+    delete line;
+    line = ma;
+  }
+
+  return line;
 }
 
 int FI::dialog ()
@@ -136,7 +157,7 @@ int FI::dialog ()
   settings.getData(labelKey, d);
   dialog->addTextItem(page, labelKey, d);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
+  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
 
   settings.getData(maTypeKey, d);
   dialog->addComboItem(page, maTypeKey, maList, d);

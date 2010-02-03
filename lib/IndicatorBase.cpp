@@ -83,11 +83,9 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "ROC";
   indicatorList << "RSI";
   indicatorList << "SAR";
-  indicatorList << "SINWAV";
   indicatorList << "STDDEV";
   indicatorList << "STOCH";
   indicatorList << "STOCHRSI";
-  indicatorList << "SUM";
   indicatorList << "SYMBOL";
   indicatorList << "SZ";
   indicatorList << "T3";
