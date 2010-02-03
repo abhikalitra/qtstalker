@@ -176,19 +176,20 @@ indicator or bar data as follows:</p>
   </li>
 </ul>
 <br>
-<h3>Absolute Price Oscillator</h3>
-<p>INDICATOR,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
-<p></p>
-<h3><br>
-</h3>
+<br>
 <h3>Aroon</h3>
-<p>INDICATOR,AROON,&lt;DOWN_NAME&gt;,&lt;UP_NAME&gt;,&lt;PERIOD&gt;</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Aroon Oscillator</h3>
-<p>INDICATOR,AROONOSC,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
-<p></p>
+<p>INDICATOR,AROON,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
+</p>
+<p>Available methods are:<br>
+</p>
+<ul>
+  <li>UP - returns the up line</li>
+  <li>DOWN - returns the down line<br>
+  </li>
+  <li>OSC - returns the oscillator of (up - down)<br>
+  </li>
+</ul>
+<br>
 <br>
 <h3>Average True Range</h3>
 <p>INDICATOR,ATR,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;METHOD&gt;<br>
@@ -505,9 +506,17 @@ Available methods are:<br>
   </ul>
 </ul>
 <br>
-<h3>Percentage Price Oscillator</h3>
-<p>INDICATOR,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
-<p></p>
+<h3>Price Oscillator</h3>
+<p>INDICATOR,PO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;,&lt;METHOD&gt;<br>
+</p>
+<p>Available methods are:<br>
+</p>
+<ul>
+  <li>APO - Absolute Price Oscillator<br>
+  </li>
+  <li>PPO - Percentage Price Oscillator<br>
+  </li>
+</ul>
 <br>
 <br>
 <h3>RANGE<br>

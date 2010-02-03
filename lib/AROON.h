@@ -32,16 +32,18 @@ class AROON : public IndicatorBase
     AROON ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getAROON (BarData *data, int period, QList<PlotLine *> &l);
+    PlotLine * getAROON (BarData *data, int period, int method);
     int dialog ();
 
   private:
+    QStringList methodList;
     QString dcKey;
     QString ucKey;
     QString dpKey;
     QString upKey;
     QString dlKey;
     QString ulKey;
+    QString oscKey;
 };
 
 #endif

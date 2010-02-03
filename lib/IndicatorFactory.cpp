@@ -24,9 +24,7 @@
 #include "AD.h"
 #include "ADOSC.h"
 #include "ADX.h"
-#include "APO.h"
 #include "AROON.h"
-#include "AROONOSC.h"
 #include "ATR.h"
 #include "BARS.h"
 #include "BBANDS.h"
@@ -54,7 +52,7 @@
 #include "MFI.h"
 #include "MOM.h"
 #include "PP.h"
-#include "PPO.h"
+#include "PO.h"
 #include "RANGE.h"
 #include "REF.h"
 #include "ROC.h"
@@ -113,19 +111,9 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new ADX;
       break;
     }
-    case IndicatorBase::_APO:
-    {
-      ib = new APO;
-      break;
-    }
     case IndicatorBase::_AROON:
     {
       ib = new AROON;
-      break;
-    }
-    case IndicatorBase::_AROONOSC:
-    {
-      ib = new AROONOSC;
       break;
     }
     case IndicatorBase::_ATR:
@@ -264,9 +252,9 @@ IndicatorBase * IndicatorFactory::getFunction (QString &_indicator)
       ib = new PP;
       break;
     }
-    case IndicatorBase::_PPO:
+    case IndicatorBase::_PO:
     {
-      ib = new PPO;
+      ib = new PO;
       break;
     }
     case IndicatorBase::_RANGE:

@@ -51,9 +51,7 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "AD";
   indicatorList << "ADOSC";
   indicatorList << "ADX";
-  indicatorList << "APO";
   indicatorList << "AROON";
-  indicatorList << "AROONOSC";
   indicatorList << "ATR";
   indicatorList << "BARS";
   indicatorList << "BBANDS";
@@ -82,7 +80,7 @@ IndicatorBase::IndicatorBase ()
   indicatorList << "MFI";
   indicatorList << "MOM";
   indicatorList << "PP";
-  indicatorList << "PPO";
+  indicatorList << "PO";
   indicatorList << "RANGE";
   indicatorList << "REF";
   indicatorList << "ROC";

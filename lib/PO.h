@@ -19,19 +19,25 @@
  *  USA.
  */
 
-#ifndef AROONOSC_HPP
-#define AROONOSC_HPP
+#ifndef PO_HPP
+#define PO_HPP
 
 #include "IndicatorBase.h"
 
-class AROONOSC : public IndicatorBase
+class PO : public IndicatorBase
 {
   public:
-    AROONOSC ();
+    PO ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getAROONOSC (BarData *data, int period);
+    PlotLine * getPO (PlotLine *in, int fast, int slow, int ma, int method);
     int dialog ();
+
+  private:
+    QStringList methodList;
+    QString methodKey;
+    QString fpKey;
+    QString spKey;
 };
 
 #endif

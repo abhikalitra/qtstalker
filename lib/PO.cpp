@@ -19,17 +19,19 @@
  *  USA.
  */
 
-#include "APO.h"
+#include "PO.h"
 
 #include <QtDebug>
 
 
-APO::APO ()
+PO::PO ()
 {
-  indicator = "APO";
+  indicator = "PO";
   fpKey = QObject::tr("Fast Period");
   spKey = QObject::tr("Slow Period");
-  maKey = QObject::tr("MA Type");
+
+  methodList << "APO";
+  methodList << "PPO";
 
   QString d;
   d = "red";
@@ -48,10 +50,13 @@ APO::APO ()
   settings.setData(spKey, 26);
 
   d = "SMA";
-  settings.setData(maKey, d);
+  settings.setData(maTypeKey, d);
+
+  d = "APO";
+  settings.setData(methodKey, d);
 }
 
-int APO::getIndicator (Indicator &ind, BarData *data)
+int PO::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
   settings.getData(inputKey, s);
@@ -66,10 +71,13 @@ int APO::getIndicator (Indicator &ind, BarData *data)
 
   int slow = settings.getInt(spKey);
 
-  settings.getData(maKey, s);
+  settings.getData(maTypeKey, s);
   int ma = maList.indexOf(s);
 
-  PlotLine *line = getAPO(in, fast, slow, ma);
+  settings.getData(methodKey, s);
+  int method = methodList.indexOf(s);
+
+  PlotLine *line = getPO(in, fast, slow, ma, method);
   if (! line)
   {
     delete in;
@@ -92,11 +100,11 @@ int APO::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int APO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,APO,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>
+  // INDICATOR,PO,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>,<METHOD>
 
-  if (set.count() != 7)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -144,7 +152,14 @@ int APO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getAPO(in, fast, slow, ma);
+  int method = methodList.indexOf(set[7]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::calculate: invalid method" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getPO(in, fast, slow, ma, method);
   if (! line)
     return 1;
 
@@ -153,7 +168,7 @@ int APO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * APO::getAPO (PlotLine *in, int fast, int slow, int ma)
+PlotLine * PO::getPO (PlotLine *in, int fast, int slow, int ma, int method)
 {
   TA_Integer outBeg;
   TA_Integer outNb;
@@ -163,7 +178,19 @@ PlotLine * APO::getAPO (PlotLine *in, int fast, int slow, int ma)
   for (loop = 0; loop < in->getSize(); loop++)
     input[loop] = (TA_Real) in->getData(loop);
 
-  TA_RetCode rc = TA_APO(0, in->getSize() - 1, &input[0], fast, slow, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
+  TA_RetCode rc = TA_SUCCESS;
+  switch (method)
+  {
+    case 0:
+      rc = TA_APO(0, in->getSize() - 1, &input[0], fast, slow, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
+      break;
+    case 1:
+      rc = TA_PPO(0, in->getSize() - 1, &input[0], fast, slow, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
   if (rc != TA_SUCCESS)
   {
     qDebug() << indicator << "::calculate: TA-Lib error" << rc;
@@ -177,7 +204,7 @@ PlotLine * APO::getAPO (PlotLine *in, int fast, int slow, int ma)
   return line;
 }
 
-int APO::dialog ()
+int PO::dialog ()
 {
   int page = 0;
   QString k, d;
@@ -204,8 +231,11 @@ int APO::dialog ()
 
   dialog->addIntItem(page, spKey, settings.getInt(spKey), 2, 100000);
 
-  settings.getData(maKey, d);
-  dialog->addComboItem(page, maKey, maList, d);
+  settings.getData(maTypeKey, d);
+  dialog->addComboItem(page, maTypeKey, maList, d);
+
+  settings.getData(methodKey, d);
+  dialog->addComboItem(page, methodKey, methodList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -232,8 +262,11 @@ int APO::dialog ()
   dialog->getItem(spKey, d);
   settings.setData(spKey, d);
 
-  dialog->getItem(maKey, d);
-  settings.setData(maKey, d);
+  dialog->getItem(maTypeKey, d);
+  settings.setData(maTypeKey, d);
+
+  dialog->getItem(methodKey, d);
+  settings.setData(methodKey, d);
 
   delete dialog;
   return rc;
