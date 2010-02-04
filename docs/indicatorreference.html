@@ -123,16 +123,16 @@ included scripts for examples of how they should be used.</p>
 created
 indicator or bar data as follows:</p>
 <ul>
-  <li>'Open' - open value of the bar</li>
-  <li>'High' - high value of the bar</li>
-  <li>'Low' - low value of the bar</li>
-  <li>'Close' - close value of the bar</li>
-  <li>'Volume' - volume value of the bar</li>
-  <li>'OI' - open interest value of the bar</li>
-  <li>'Average Price' - (Open + High + Low + Close) / 4&nbsp;</li>
-  <li>'Median Price' - (High + Low) / 2</li>
-  <li>'Typical Price' - (High + Low + Close) / 3</li>
-  <li>'WCPrice' - (High + Low + (Close * 2)) / 4</li>
+  <li>Open - open value of the bar</li>
+  <li>High - high value of the bar</li>
+  <li>Low - low value of the bar</li>
+  <li>Close - close value of the bar</li>
+  <li>Volume - volume value of the bar</li>
+  <li>OI - open interest value of the bar</li>
+  <li>Average Price - (Open + High + Low + Close) / 4&nbsp;</li>
+  <li>Median Price - (High + Low) / 2</li>
+  <li>Typical Price - (High + Low + Close) / 3</li>
+  <li>WCPrice - (High + Low + (Close * 2)) / 4</li>
 </ul>
 <br>
 <p>&lt;OPERATOR&gt; is a comparison operator. They are:</p>
@@ -219,69 +219,126 @@ INDICATOR,AD,ADOSC,&lt;NAME&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;
 <h3><br>
 </h3>
 <h3>Candles</h3>
-<p>INDICATOR,CANDLES,NONE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+<p>INDICATOR,CANDLES,NONE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;<br>
 </p>
-<p>INDICATOR,CANDLES,2CROWS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,3BLACKCROWS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,3INSIDE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;</p>
-INDICATOR,CANDLES,3LINESTRIKE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,3OUTSIDE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,3STARSINSOUTH,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,3WHITESOLDIERS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,ABANDONEDBABY,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,ADVANCEBLOCK,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,BELTHOLD,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,BREAKAWAY,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,CLOSINGMARUBOZU,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,CONCEALBABYSWALL,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,COUNTERATTACK,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,DARKCLOUDCOVER,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,DOJI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,DOJISTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,DRAGONFLYDOJI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,ENGULFING,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,EVENINGDOJISTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,EVENINGSTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,GAPSIDESIDEWHITE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,GRAVESTONEDOJI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,HAMMER,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,HANGINGMAN,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,HARAMI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,HARAMICROSS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,HIGHWAVE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,HIKKAKE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,HIKKAKEMOD,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,HOMINGPIGEON,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,IDENTICAL3CROWS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,INNECK,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,INVERTEDHAMMER,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,KICKING,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,KICKINGBYLENGTH,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,LADDERBOTTOM,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,LONGLEGGEDDOJI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,LONGLINE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,MARUBOZU,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,MATCHINGLOW,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,MATHOLD,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,MORNINGDOJISTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,MORNINGSTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,ONNECK,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,PIERCING,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,RICKSHAWMAN,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,RISEFALL3METHODS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,SEPARATINGLINES,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,SHOOTINGSTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,SHORTLINE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,SPINNINGTOP,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,STALLEDPATTERN,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,STICKSANDWICH,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,TAKURI,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,TASUKIGAP,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,THRUSTING,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,TRISTAR,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,UNIQUE3RIVER,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,UPSIDEGAP2CROWS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
-INDICATOR,CANDLES,XSIDEGAP3METHODS,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;,&lt;PENETRATION&gt;<br>
+<p>INDICATOR,CANDLES,2CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
+<p>INDICATOR,CANDLES,3BLACKCROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
+<p>INDICATOR,CANDLES,3INSIDE,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
+INDICATOR,CANDLES,3LINESTRIKE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,3OUTSIDE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,3STARSINSOUTH,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,3WHITESOLDIERS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,ABANDONEDBABY,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,ADVANCEBLOCK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,BELTHOLD,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,BREAKAWAY,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,CLOSINGMARUBOZU,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,CONCEALBABYSWALL,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,COUNTERATTACK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,DARKCLOUDCOVER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,DOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,DOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,DRAGONFLYDOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,ENGULFING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,EVENINGDOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,EVENINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,GAPSIDESIDEWHITE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,GRAVESTONEDOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,HAMMER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,HANGINGMAN,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,HARAMI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,HARAMICROSS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,HIGHWAVE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,HIKKAKE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,HIKKAKEMOD,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,HOMINGPIGEON,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,IDENTICAL3CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,INNECK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,INVERTEDHAMMER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,KICKING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,KICKINGBYLENGTH,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,LADDERBOTTOM,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,LONGLEGGEDDOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,LONGLINE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,MARUBOZU,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,MATCHINGLOW,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,MATHOLD,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,MORNINGDOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,MORNINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,ONNECK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,PIERCING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,RICKSHAWMAN,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,RISEFALL3METHODS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,SEPARATINGLINES,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,SHOOTINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,SHORTLINE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,SPINNINGTOP,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,STALLEDPATTERN,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,STICKSANDWICH,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,TAKURI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,TASUKIGAP,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,THRUSTING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,TRISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,UNIQUE3RIVER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,UPSIDEGAP2CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<br>
+INDICATOR,CANDLES,XSIDEGAP3METHODS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
 <p></p>
 <p>This will create candle bars.<br>
@@ -320,18 +377,13 @@ to the &lt;INPUT_2&gt; data array.<br>
 </ul>
 <br>
 <h3>COMPARE</h3>
-<p>INDICATOR,COMPARE,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;OPERATOR&gt;,&lt;METHOD&gt;<br>
+<p>INDICATOR,COMPARE,ARRAY,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;OPERATOR&gt;</p>
+<p>INDICATOR,COMPARE,VALUE,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;VALUE&gt;,&lt;OPERATOR&gt;<br>
 </p>
-<p>Available methods are:<br>
-</p>
-<ul>
-  <li>ARRAY</li>
-  <li>VALUE</li>
-</ul>
 <br>
 <p></p>
-<p>The ARRAY &lt;METHOD&gt; compares the values of &lt;INPUT_1&gt; data
-array with
+<p>The ARRAY method compares the values of &lt;INPUT_1&gt; data array
+with
 &lt;INPUT_2&gt; data array using the &lt;OPERATOR&gt; for comparison.</p>
 <p>The result is a boolean array of TRUE/FALSE values. The comparison
 order is
@@ -339,12 +391,12 @@ made &lt;INPUT_1&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
 <p></p>
 <h3><br>
 </h3>
-The VALUE &lt;METHOD&gt; compares the values of &lt;INPUT&gt; data
-array with a
-number &lt;INPUT_2&gt; using the &lt;OPERATOR&gt; for comparison.
+The VALUE method compares the values of &lt;INPUT&gt; data array with
+the
+number &lt;VALUE&gt; using the &lt;OPERATOR&gt; for comparison.
 <p>The result is a boolean array of TRUE/FALSE values. The comparison
 order is
-made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
+made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
 <p></p>
 <br>
 <br>
@@ -379,11 +431,11 @@ made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
 <br>
 <br>
 <h3>Linear Regression</h3>
-<p>INDICATOR,LINEARREG,LINEARREG,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,LINEARREG,ANGLE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,LINEARREG,INTERCEPT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,LINEARREG,SLOPE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,LINEARREG,TSF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,LINEARREG,LINEARREG,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,LINEARREG,ANGLE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,LINEARREG,INTERCEPT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,LINEARREG,SLOPE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,LINEARREG,TSF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 </p>
 <span style="font-weight: bold;"><br>
 <br>
@@ -402,12 +454,19 @@ INDICATOR,LINEARREG,TSF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
 <h3>MA (Moving Average)</h3>
 INDICATOR,MA,EMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<br>
 INDICATOR,MA,DEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<br>
 INDICATOR,MA,KAMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<br>
 INDICATOR,MA,SMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<br>
 INDICATOR,MA,TEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<br>
 INDICATOR,MA,TRIMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<br>
 INDICATOR,MA,Wilder,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<br>
 INDICATOR,MA,WMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
 <br>
@@ -425,28 +484,46 @@ INDICATOR,MA,WMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
 <h3>MATH1</h3>
 INDICATOR,MATH1,CEIL,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,EXP,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,FLOOR,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,LN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,LOG10,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,NORMALIZE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,SQRT,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,ACOS,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,ASIN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,ATAN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,COS,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,COSH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,SIN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,SINH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,TAN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<br>
 INDICATOR,MATH1,TANH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
 INDICATOR,MATH1,ADD,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+<br>
 INDICATOR,MATH1,DIV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+<br>
 INDICATOR,MATH1,MULT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+<br>
 INDICATOR,MATH1,SUB,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
 <br>
-<p>INDICATOR,MATH1,STDDEV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;</p>
+INDICATOR,MATH1,STDDEV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;
 <br>
 <br>
 <h3>Moving average with variable period</h3>
@@ -480,20 +557,20 @@ INDICATOR,MATH1,SUB,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
 </ul>
 <br>
 <h3>Price Oscillator</h3>
-<p>INDICATOR,PO,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;<br>
-INDICATOR,PO,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;<br>
+<p>INDICATOR,PO,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
+<p>INDICATOR,PO,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;<br>
 </p>
 <br>
 <br>
 <h3>RANGE<br>
 </h3>
-<p>INDICATOR,RANGE,MIN,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,RANGE,MININDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,RANGE,MAX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,RANGE,MAXINDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,RANGE,MIDPOINT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,RANGE,MIDPRICE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
-INDICATOR,RANGE,SUM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,RANGE,MIN,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,RANGE,MININDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,RANGE,MAX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,RANGE,MAXINDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,RANGE,MIDPOINT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,RANGE,MIDPRICE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,RANGE,SUM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 </p>
 <br>
 <br>
@@ -511,10 +588,10 @@ today's Close then &lt;PERIOD&gt; would be '0'</p>
 </h3>
 <h3>Rate of change<br>
 </h3>
-<p>INDICATOR,ROC,ROC,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
-INDICATOR,ROC,ROCP,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
-INDICATOR,ROC,ROCR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
-INDICATOR,ROC,ROCR100,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
+<p>INDICATOR,ROC,ROC,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,ROC,ROCP,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,ROC,ROCR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,ROC,ROCR100,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
 </p>
 <br>
 <br>
@@ -617,6 +694,7 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 <br>
 <h3>VOL</h3>
 INDICATOR,VOL,OBV,&lt;NAME&gt;<br>
+<br>
 INDICATOR,VOL,VOL,&lt;NAME&gt;<br>
 <br>
 <br>

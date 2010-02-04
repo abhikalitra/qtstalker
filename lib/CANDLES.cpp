@@ -154,9 +154,10 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
 
 int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,CANDLES,METHOD,<NAME>,<CANDLE_COLOR>,<PENETRATION>
+  // INDICATOR,CANDLES,METHOD,<NAME>,<COLOR>
+  // INDICATOR,CANDLES,METHOD,<NAME>,<PENETRATION>
 
-  if (set.count() != 6)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -176,26 +177,36 @@ int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
     return 1;
   }
 
-  QColor color(set[4]);
-  if (! color.isValid())
-  {
-    qDebug() << indicator << "::calculate: invalid color" << set[4];
-    return 1;
-  }
-
-  bool ok;
-  double pen = set[5].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::calculate: invalid penetration" << set[5];
-    return 1;
-  }
-
   PlotLine *line = 0;
-  if (method == 0)
-    line = getCANDLES(data, color);
-  else
-    line = getMethod(data, method, pen);
+
+  switch (method)
+  {
+    case 0:
+    {
+      QColor color(set[4]);
+      if (! color.isValid())
+      {
+        qDebug() << indicator << "::calculate: invalid color" << set[4];
+        return 1;
+      }
+
+      line = getCANDLES(data, color);
+      break;
+    }
+    default:
+    {
+      bool ok;
+      double pen = set[5].toDouble(&ok);
+      if (! ok)
+      {
+        qDebug() << indicator << "::calculate: invalid penetration" << set[5];
+        return 1;
+      }
+
+      line = getMethod(data, method, pen);
+      break;
+    }
+  }
 
   if (! line)
     return 1;

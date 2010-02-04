@@ -26,6 +26,7 @@
 
 #include <QColor>
 
+
 class CANDLES : public IndicatorBase
 {
   public:

@@ -12,7 +12,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @close_0 = split(",", $rc);
 
 # Get the 13-bar SMA
-print STDOUT "INDICATOR,MA,sma_13,Close,13,SMA";
+print STDOUT "INDICATOR,MA,SMA,sma_13,Close,13";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "GET_INDICATOR,sma_13,0";
@@ -20,7 +20,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @sma_13 = split(",", $rc);
 
 # Get the 200-bar SMA
-print STDOUT "INDICATOR,MA,sma_200,Close,200,SMA";
+print STDOUT "INDICATOR,MA,SMA,sma_200,Close,200";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "GET_INDICATOR,sma_200,0";
