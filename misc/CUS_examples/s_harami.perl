@@ -6,11 +6,11 @@
 $|++;
 
 # get Harami
-print STDOUT "INDICATOR,CANDLES,c1,dimgray,HARAMI,0";
+print STDOUT "INDICATOR,CANDLES,HARAMI,c1,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Harami Cross
-print STDOUT "INDICATOR,CANDLES,c2,dimgray,HARAMICROSS,0";
+print STDOUT "INDICATOR,CANDLES,HARAMICROSS,c2,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "PLOT,c1,s-harami-1,yellow,Histogram Bar";

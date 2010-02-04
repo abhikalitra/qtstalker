@@ -1478,14 +1478,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lead</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>SlowK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1726,14 +1718,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show MFI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>MA</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1807,6 +1791,38 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Ref. 70 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Aroon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phasor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sine Wave</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>STDDEV</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

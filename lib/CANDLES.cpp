@@ -196,10 +196,10 @@ int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
     default:
     {
       bool ok;
-      double pen = set[5].toDouble(&ok);
+      double pen = set[4].toDouble(&ok);
       if (! ok)
       {
-        qDebug() << indicator << "::calculate: invalid penetration" << set[5];
+        qDebug() << indicator << "::calculate: invalid penetration" << set[4];
         return 1;
       }
 
