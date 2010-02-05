@@ -27,6 +27,17 @@
 class SZ : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      Period,
+      Method,
+      NoDeclinePeriod,
+      Coefficient
+    };
+
     SZ ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,9 +45,6 @@ class SZ : public IndicatorBase
     int dialog ();
 
   protected:
-    QString methodKey;
-    QString ndpKey;
-    QString coKey;
     QStringList methodList;
 };
 

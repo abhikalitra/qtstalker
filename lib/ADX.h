@@ -27,6 +27,27 @@
 class ADX : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      ADXColor,
+      ADXRColor,
+      PDIColor,
+      MDIColor,
+      ADXPlot,
+      ADXRPlot,
+      PDIPlot,
+      MDIPlot,
+      ADXLabel,
+      ADXRLabel,
+      PDILabel,
+      MDILabel,
+      ADXCheck,
+      ADXRCheck,
+      PDICheck,
+      MDICheck,
+      Period
+    };
+
     ADX ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,23 +55,6 @@ class ADX : public IndicatorBase
     int dialog ();
 
   protected:
-    QString methodKey;
-    QString adxColorKey;
-    QString adxrColorKey;
-    QString pdiColorKey;
-    QString mdiColorKey;
-    QString adxPlotKey;
-    QString adxrPlotKey;
-    QString pdiPlotKey;
-    QString mdiPlotKey;
-    QString adxLabelKey;
-    QString adxrLabelKey;
-    QString pdiLabelKey;
-    QString mdiLabelKey;
-    QString adxCheckKey;
-    QString adxrCheckKey;
-    QString pdiCheckKey;
-    QString mdiCheckKey;
     QStringList methodList;
 };
 

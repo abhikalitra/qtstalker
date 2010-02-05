@@ -27,68 +27,35 @@
 STOCH::STOCH ()
 {
   indicator = "STOCH";
-  skcKey = QObject::tr("SlowK Color");
-  sdcKey = QObject::tr("SlowD Color");
-  skpKey = QObject::tr("SlowK Plot");
-  sdpKey = QObject::tr("SlowD Plot");
-  sklKey = QObject::tr("SlowK Label");
-  sdlKey = QObject::tr("SlowD Label");
-  fkpKey = QObject::tr("FastK Period");
-  skpdKey = QObject::tr("SlowK Period");
-  sdpdKey = QObject::tr("SlowD Period");
-  skmaKey = QObject::tr("SlowK MA");
-  sdmaKey = QObject::tr("SlowD MA");
-  ref1Key = QObject::tr("Ref. 1 Line");
-  ref2Key = QObject::tr("Ref. 2 Line");
-  ref1ColorKey = QObject::tr("Ref 1 Color");
-  ref2ColorKey = QObject::tr("Ref 2 Color");
 
-  QString d;
-  d = "red";
-  settings.setData(skcKey, d);
-
-  d = "yellow";
-  settings.setData(sdcKey, d);
-
-  d = "white";
-  settings.setData(ref1ColorKey, d);
-  settings.setData(ref2ColorKey, d);
-
-  d = "Line";
-  settings.setData(skpKey, d);
-
-  d = "Dash";
-  settings.setData(sdpKey, d);
-
-  d = "SLOW_K";
-  settings.setData(sklKey, d);
-
-  d = "SLOW_D";
-  settings.setData(sdlKey, d);
-
-  settings.setData(fkpKey, 5);
-  settings.setData(skpdKey, 3);
-  settings.setData(sdpdKey, 3);
-
-  d = "SMA";
-  settings.setData(skmaKey, d);
-  settings.setData(sdmaKey, d);
-
-  settings.setData(ref1Key, 25);
-  settings.setData(ref2Key, 75);
+  settings.setData(SlowkColor, "red");
+  settings.setData(SlowdColor, "yellow");
+  settings.setData(Ref1Color, "white");
+  settings.setData(Ref2Color, "white");
+  settings.setData(SlowkPlot, "Line");
+  settings.setData(SlowdPlot, "Dash");
+  settings.setData(SlowkLabel, "SLOWK");
+  settings.setData(SlowdLabel, "SLOWD");
+  settings.setData(FastkPeriod, 5);
+  settings.setData(SlowkPeriod, 3);
+  settings.setData(SlowdPeriod, 3);
+  settings.setData(SlowkMA, "SMA");
+  settings.setData(SlowdMA, "SMA");
+  settings.setData(Ref1, 25);
+  settings.setData(Ref2, 75);
 }
 
 int STOCH::getIndicator (Indicator &ind, BarData *data)
 {
-  int fastk = settings.getInt(fkpKey);
-  int slowk = settings.getInt(skpdKey);
-  int slowd = settings.getInt(sdpdKey);
+  int fastk = settings.getInt(FastkPeriod);
+  int slowk = settings.getInt(SlowkPeriod);
+  int slowd = settings.getInt(SlowdPeriod);
 
   QString s;
-  settings.getData(skmaKey, s);
+  settings.getData(SlowkMA, s);
   int skma = maList.indexOf(s);
 
-  settings.getData(sdmaKey, s);
+  settings.getData(SlowdMA, s);
   int sdma = maList.indexOf(s);
 
   QList<PlotLine *> l;
@@ -101,40 +68,40 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
 
   PlotLine *ref1 = new PlotLine;
   ref1->setType(PlotLine::Horizontal);
-  settings.getData(ref1ColorKey, s);
+  settings.getData(Ref1Color, s);
   ref1->setColor(s);
-  ref1->append(settings.getInt(ref1Key));
+  ref1->append(settings.getInt(Ref1));
   ind.addLine(ref1);
 
   PlotLine *ref2 = new PlotLine;
   ref2->setType(PlotLine::Horizontal);
-  settings.getData(ref2ColorKey, s);
+  settings.getData(Ref2Color, s);
   ref2->setColor(s);
-  ref2->append(settings.getInt(ref2Key));
+  ref2->append(settings.getInt(Ref2));
   ind.addLine(ref2);
 
   // slowk line
   PlotLine *line = l.at(0);
-  settings.getData(skcKey, s);
+  settings.getData(SlowkColor, s);
   line->setColor(s);
 
-  settings.getData(skpKey, s);
+  settings.getData(SlowkPlot, s);
   line->setType(s);
 
-  settings.getData(sklKey, s);
+  settings.getData(SlowkLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
 
   // slowd line
   line = l.at(1);
-  settings.getData(sdcKey, s);
+  settings.getData(SlowdColor, s);
   line->setColor(s);
 
-  settings.getData(sdpKey, s);
+  settings.getData(SlowdPlot, s);
   line->setType(s);
 
-  settings.getData(sdlKey, s);
+  settings.getData(SlowdLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -266,53 +233,53 @@ int STOCH::dialog ()
   k = QObject::tr("SlowK");
   dialog->addPage(page, k);
 
-  settings.getData(skcKey, d);
-  dialog->addColorItem(page, skcKey, d);
+  settings.getData(SlowkColor, d);
+  dialog->addColorItem(SlowkColor, page, QObject::tr("Color"), d);
 
-  settings.getData(skpKey, d);
-  dialog->addComboItem(page, skpKey, plotList, d);
+  settings.getData(SlowkPlot, d);
+  dialog->addComboItem(SlowkPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(sklKey, d);
-  dialog->addTextItem(page, sklKey, d);
+  settings.getData(SlowkLabel, d);
+  dialog->addTextItem(SlowkLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, fkpKey, settings.getInt(fkpKey), 1, 100000);
+  dialog->addIntItem(FastkPeriod, page, QObject::tr("FastK Period"), settings.getInt(FastkPeriod), 1, 100000);
 
-  dialog->addIntItem(page, skpdKey, settings.getInt(skpdKey), 1, 100000);
+  dialog->addIntItem(SlowkPeriod, page, QObject::tr("Period"), settings.getInt(SlowkPeriod), 1, 100000);
 
-  settings.getData(skmaKey, d);
-  dialog->addComboItem(page, skmaKey, maList, d);
+  settings.getData(SlowkMA, d);
+  dialog->addComboItem(SlowkMA, page, QObject::tr("MA Type"), maList, d);
 
   page++;
   k = QObject::tr("SlowD");
   dialog->addPage(page, k);
 
-  settings.getData(sdcKey, d);
-  dialog->addColorItem(page, sdcKey, d);
+  settings.getData(SlowdColor, d);
+  dialog->addColorItem(SlowdColor, page, QObject::tr("Color"), d);
 
-  settings.getData(sdpKey, d);
-  dialog->addComboItem(page, sdpKey, plotList, d);
+  settings.getData(SlowdPlot, d);
+  dialog->addComboItem(SlowdPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(sdlKey, d);
-  dialog->addTextItem(page, sdlKey, d);
+  settings.getData(SlowdLabel, d);
+  dialog->addTextItem(SlowdLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, sdpdKey, settings.getInt(sdpdKey), 1, 100000);
+  dialog->addIntItem(SlowdPeriod, page, QObject::tr("Period"), settings.getInt(SlowdPeriod), 1, 100000);
 
-  settings.getData(sdmaKey, d);
-  dialog->addComboItem(page, sdmaKey, maList, d);
+  settings.getData(SlowdMA, d);
+  dialog->addComboItem(SlowdMA, page, QObject::tr("MA Type"), maList, d);
 
   page++;
   k = QObject::tr("Ref");
   dialog->addPage(page, k);
 
-  settings.getData(ref1ColorKey, d);
-  dialog->addColorItem(page, ref1ColorKey, d);
+  settings.getData(Ref1Color, d);
+  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
 
-  settings.getData(ref2ColorKey, d);
-  dialog->addColorItem(page, ref2ColorKey, d);
+  settings.getData(Ref2Color, d);
+  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
 
-  dialog->addIntItem(page, ref1Key, settings.getInt(ref1Key), 0, 100);
+  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), settings.getInt(Ref1), 0, 100);
 
-  dialog->addIntItem(page, ref2Key, settings.getInt(ref2Key), 0, 100);
+  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), settings.getInt(Ref2), 0, 100);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -321,16 +288,7 @@ int STOCH::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

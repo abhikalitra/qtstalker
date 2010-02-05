@@ -28,47 +28,25 @@
 MAMA::MAMA ()
 {
   indicator = "MAMA";
-  oscKey = QObject::tr("Oscillator");
-  mcKey = QObject::tr("MAMA Color");
-  fcKey = QObject::tr("FAMA Color");
-  mpKey = QObject::tr("MAMA Plot");
-  fpKey = QObject::tr("FAMA Plot");
-  mlKey = QObject::tr("MAMA Label");
-  flKey = QObject::tr("FAMA Label");
-  flmKey = QObject::tr("Fast Limit");
-  slmKey = QObject::tr("Slow Limit");
 
-  QString d;
-  d = "red";
-  settings.setData(mcKey, d);
-
-  d = "yellow";
-  settings.setData(fcKey, d);
-
-  d = "Line";
-  settings.setData(mpKey, d);
-
-  settings.setData(fpKey, d);
-
-  d = "MAMA";
-  settings.setData(mlKey, d);
-
-  d = "FAMA";
-  settings.setData(flKey, d);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-
-  settings.setData(flmKey, 0.5);
-  settings.setData(slmKey, 0.05);
-
-  settings.setData(oscKey, 0);
+  settings.setData(OSC, 1);
+  settings.setData(OSCColor, "red");
+  settings.setData(MAMAColor, "red");
+  settings.setData(FAMAColor, "yellow");
+  settings.setData(MAMAPlot, "Line");
+  settings.setData(FAMAPlot, "Line");
+  settings.setData(MAMALabel, "MAMA");
+  settings.setData(FAMALabel, "FAMA");
+  settings.setData(OSCLabel, "MAMAOSC");
+  settings.setData(FastLimit, 0.5);
+  settings.setData(SlowLimit, 0.05);
+  settings.setData(Input, "Close");
 }
 
 int MAMA::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -76,8 +54,8 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  double fast = settings.getDouble(flmKey);
-  double slow = settings.getDouble(slmKey);
+  double fast = settings.getDouble(FastLimit);
+  double slow = settings.getDouble(SlowLimit);
 
   QList<PlotLine *> l;
   int rc = getMAMA(in, fast, slow, l);
@@ -92,16 +70,16 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
   PlotLine *mama = l.at(0);
   PlotLine *fama = l.at(1);
 
-  int osc = settings.getInt(oscKey);
+  int osc = settings.getInt(OSC);
   if (osc)
   {
     PlotLine *line = new PlotLine;
     line->setType(PlotLine::HistogramBar);
 
-    settings.getData(mcKey, s);
+    settings.getData(OSCColor, s);
     line->setColor(s);
 
-    s = "OSC";
+    settings.getData(OSCLabel, s);
     line->setLabel(s);
 
     int loop;
@@ -115,25 +93,25 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
     BARS bars;
     bars.getIndicator(ind, data);
 
-    settings.getData(mcKey, s);
+    settings.getData(MAMAColor, s);
     mama->setColor(s);
 
-    settings.getData(mpKey, s);
+    settings.getData(MAMAPlot, s);
     mama->setType(s);
 
-    settings.getData(mlKey, s);
+    settings.getData(MAMALabel, s);
     mama->setLabel(s);
 
     ind.addLine(mama);
 
     // fama line
-    settings.getData(fcKey, s);
+    settings.getData(FAMAColor, s);
     fama->setColor(s);
 
-    settings.getData(fpKey, s);
+    settings.getData(FAMAPlot, s);
     fama->setType(s);
 
-    settings.getData(flKey, s);
+    settings.getData(FAMALabel, s);
     fama->setLabel(s);
 
     ind.addLine(fama);
@@ -253,40 +231,40 @@ int MAMA::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  dialog->addDoubleItem(page, flmKey, settings.getDouble(flmKey), 0.01, 0.99);
+  dialog->addDoubleItem(FastLimit, page, QObject::tr("Fast Limit"), settings.getDouble(FastLimit), 0.01, 0.99);
 
-  dialog->addDoubleItem(page, slmKey, settings.getDouble(slmKey), 0.01, 0.99);
+  dialog->addDoubleItem(SlowLimit, page, QObject::tr("Slow Limit"), settings.getDouble(SlowLimit), 0.01, 0.99);
 
-  dialog->addCheckItem(page, oscKey, settings.getInt(oscKey));
+  dialog->addCheckItem(OSC, page, QObject::tr("Oscillator"), settings.getInt(OSC));
 
   page++;
   k = QObject::tr("MAMA");
   dialog->addPage(page, k);
 
-  settings.getData(mcKey, d);
-  dialog->addColorItem(page, mcKey, d);
+  settings.getData(MAMAColor, d);
+  dialog->addColorItem(MAMAColor, page, QObject::tr("Color"), d);
 
-  settings.getData(mpKey, d);
-  dialog->addComboItem(page, mpKey, plotList, d);
+  settings.getData(MAMAPlot, d);
+  dialog->addComboItem(MAMAPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(mlKey, d);
-  dialog->addTextItem(page, mlKey, d);
+  settings.getData(MAMALabel, d);
+  dialog->addTextItem(MAMALabel, page, QObject::tr("Label"), d);
 
   page++;
   k = QObject::tr("FAMA");
   dialog->addPage(page, k);
 
-  settings.getData(fcKey, d);
-  dialog->addColorItem(page, fcKey, d);
+  settings.getData(FAMAColor, d);
+  dialog->addColorItem(FAMAColor, page, QObject::tr("Color"), d);
 
-  settings.getData(fpKey, d);
-  dialog->addComboItem(page, fpKey, plotList, d);
+  settings.getData(FAMAPlot, d);
+  dialog->addComboItem(FAMAPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(flKey, d);
-  dialog->addTextItem(page, flKey, d);
+  settings.getData(FAMALabel, d);
+  dialog->addTextItem(FAMALabel, page, QObject::tr("Label"), d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -295,16 +273,7 @@ int MAMA::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

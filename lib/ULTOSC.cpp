@@ -28,37 +28,23 @@
 ULTOSC::ULTOSC ()
 {
   indicator = "ULTOSC";
-  spKey = QObject::tr("Short Period");
-  mpKey = QObject::tr("Medium Period");
-  lpKey = QObject::tr("Long Period");
-  ref30ColorKey = QObject::tr("Ref. 30 Color");
-  ref50ColorKey = QObject::tr("Ref. 50 Color");
-  ref70ColorKey = QObject::tr("Ref. 70 Color");
 
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "white";
-  settings.setData(ref30ColorKey, d);
-  settings.setData(ref50ColorKey, d);
-  settings.setData(ref70ColorKey, d);
-
-  d = "Line";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  settings.setData(spKey, 7);
-  settings.setData(mpKey, 14);
-  settings.setData(lpKey, 28);
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Line");
+  settings.setData(Label, indicator);
+  settings.setData(ShortPeriod, 7);
+  settings.setData(MidPeriod, 14);
+  settings.setData(LongPeriod, 28);
+  settings.setData(Ref1Color, "white");
+  settings.setData(Ref2Color, "white");
+  settings.setData(Ref3Color, "white");
 }
 
 int ULTOSC::getIndicator (Indicator &ind, BarData *data)
 {
-  int sp = settings.getInt(spKey);
-  int mp = settings.getInt(mpKey);
-  int lp = settings.getInt(lpKey);
+  int sp = settings.getInt(ShortPeriod);
+  int mp = settings.getInt(MidPeriod);
+  int lp = settings.getInt(LongPeriod);
 
   PlotLine *line = getULTOSC(data, sp, mp, lp);
   if (! line)
@@ -67,32 +53,32 @@ int ULTOSC::getIndicator (Indicator &ind, BarData *data)
   QString s;
   PlotLine *ref30 = new PlotLine;
   ref30->setType(PlotLine::Horizontal);
-  settings.getData(ref30ColorKey, s);
+  settings.getData(Ref1Color, s);
   ref30->setColor(s);
   ref30->append(30);
   ind.addLine(ref30);
 
   PlotLine *ref50 = new PlotLine;
   ref50->setType(PlotLine::Horizontal);
-  settings.getData(ref50ColorKey, s);
+  settings.getData(Ref2Color, s);
   ref50->setColor(s);
   ref50->append(50);
   ind.addLine(ref50);
 
   PlotLine *ref70 = new PlotLine;
   ref70->setType(PlotLine::Horizontal);
-  settings.getData(ref70ColorKey, s);
+  settings.getData(Ref3Color, s);
   ref70->setColor(s);
   ref70->append(70);
   ind.addLine(ref70);
 
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -189,33 +175,33 @@ int ULTOSC::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, spKey, settings.getInt(spKey), 1, 100000);
+  dialog->addIntItem(ShortPeriod, page, QObject::tr("Short Period"), settings.getInt(ShortPeriod), 1, 100000);
 
-  dialog->addIntItem(page, mpKey, settings.getInt(mpKey), 1, 100000);
+  dialog->addIntItem(MidPeriod, page, QObject::tr("Mid Period"), settings.getInt(MidPeriod), 1, 100000);
 
-  dialog->addIntItem(page, lpKey, settings.getInt(lpKey), 1, 100000);
+  dialog->addIntItem(LongPeriod, page, QObject::tr("Long Period"), settings.getInt(LongPeriod), 1, 100000);
 
   page++;
   k = QObject::tr("Ref");
   dialog->addPage(page, k);
 
-  settings.getData(ref30ColorKey, d);
-  dialog->addColorItem(page, ref30ColorKey, d);
+  settings.getData(Ref1Color, d);
+  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 30 Color"), d);
 
-  settings.getData(ref50ColorKey, d);
-  dialog->addColorItem(page, ref50ColorKey, d);
+  settings.getData(Ref2Color, d);
+  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 50 Color"), d);
 
-  settings.getData(ref70ColorKey, d);
-  dialog->addColorItem(page, ref70ColorKey, d);
+  settings.getData(Ref3Color, d);
+  dialog->addColorItem(Ref3Color, page, QObject::tr("Ref. 70 Color"), d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -224,16 +210,7 @@ int ULTOSC::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

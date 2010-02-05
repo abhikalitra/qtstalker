@@ -27,43 +27,25 @@
 AD::AD ()
 {
   indicator = "AD";
-  methodKey = QObject::tr("Method");
-  fpKey = QObject::tr("Fast Period");
-  spKey = QObject::tr("Slow Period");
-  oscColorKey = QObject::tr("OSC Color");
-  oscPlotKey = QObject::tr("OSC Plot");
-  oscLabelKey = QObject::tr("OSC Label");
+
+  settings.setData(Method, QString("AD"));
+  settings.setData(ADColor, QString("red"));
+  settings.setData(ADPlot, QString("Line"));
+  settings.setData(ADLabel, QString("AD"));
+  settings.setData(FastPeriod, 3);
+  settings.setData(SlowPeriod, 10);
+  settings.setData(OSCColor, QString("red"));
+  settings.setData(OSCPlot, QString("Histogram Bar"));
+  settings.setData(OSCLabel, QString("ADOSC"));
 
   methodList << "AD";
   methodList << "ADOSC";
-
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-  settings.setData(oscColorKey, d);
-
-  d = "Line";
-  settings.setData(plotKey, d);
-
-  d = "Histogram Bar";
-  settings.setData(oscPlotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "ADOSC";
-  settings.setData(oscLabelKey, d);
-
-  settings.setData(fpKey, 3);
-  settings.setData(spKey, 10);
-
-  d = "AD";
-  settings.setData(methodKey, d);
 }
 
 int AD::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(methodKey, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
   PlotLine *line = 0;
@@ -71,24 +53,24 @@ int AD::getIndicator (Indicator &ind, BarData *data)
   {
     case 1:
     {
-      int fp = settings.getInt(fpKey);
-      int sp = settings.getInt(spKey);
-      line = getADOSC(data, fp, sp);
-      settings.getData(oscColorKey, s);
+      int fp = settings.getInt(FastPeriod);
+      int sp = settings.getInt(SlowPeriod);
+      line = getAD(data, 1, fp, sp);
+      settings.getData(OSCColor, s);
       line->setColor(s);
-      settings.getData(oscPlotKey, s);
+      settings.getData(OSCPlot, s);
       line->setType(s);
-      settings.getData(oscLabelKey, s);
+      settings.getData(OSCLabel, s);
       line->setLabel(s);
       break;
     }
     default:
-      line = getAD(data);
-      settings.getData(colorKey, s);
+      line = getAD(data, 0, 0, 0);
+      settings.getData(ADColor, s);
       line->setColor(s);
-      settings.getData(plotKey, s);
+      settings.getData(ADPlot, s);
       line->setType(s);
-      settings.getData(labelKey, s);
+      settings.getData(ADLabel, s);
       line->setLabel(s);
       break;
   }
@@ -137,7 +119,7 @@ int AD::getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  PlotLine *line = getAD(data);
+  PlotLine *line = getAD(data, 0, 0, 0);
   if (! line)
     return 1;
 
@@ -178,7 +160,7 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
     return 1;
   }
 
-  PlotLine *line = getADOSC(data, fast, slow);
+  PlotLine *line = getAD(data, 1, fast, slow);
   if (! line)
     return 1;
 
@@ -187,7 +169,7 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   return 0;
 }
 
-PlotLine * AD::getAD (BarData *data)
+PlotLine * AD::getAD (BarData *data, int method, int fast, int slow)
 {
   int size = data->count();
   TA_Real high[size];
@@ -206,40 +188,17 @@ PlotLine * AD::getAD (BarData *data)
 
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_RetCode rc = TA_AD(0, size - 1, &high[0], &low[0], &close[0], &volume[0], &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
+  TA_RetCode rc = TA_SUCCESS;
+  switch (method)
   {
-    qDebug() << indicator << "::calculate: : TA-Lib error" << rc;
-    return 0;
+    case 1:
+      rc = TA_ADOSC(0, size - 1, &high[0], &low[0], &close[0], &volume[0], fast, slow, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      rc = TA_AD(0, size - 1, &high[0], &low[0], &close[0], &volume[0], &outBeg, &outNb, &out[0]);
+      break;
   }
 
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  return line;
-}
-
-PlotLine * AD::getADOSC (BarData *data, int fast, int slow)
-{
-  int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real volume[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
-    volume[loop] = (TA_Real) data->getVolume(loop);
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_ADOSC(0, size - 1, &high[0], &low[0], &close[0], &volume[0], fast, slow, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
     qDebug() << indicator << "::calculate: : TA-Lib error" << rc;
@@ -260,38 +219,41 @@ int AD::dialog ()
   PrefDialog *dialog = new PrefDialog;
   dialog->setWindowTitle(QObject::tr("Edit Indicator"));
 
-  k = QObject::tr("Settings");
+  k = QObject::tr("General");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  QColor c(d);
-  dialog->addColorItem(page, colorKey, c);
+  settings.getData(Method, d);
+  dialog->addComboItem((int) Method, page, QObject::tr("Method"), methodList, d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  page++;
+  k = QObject::tr("AD");
+  dialog->addPage(page, k);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(ADColor, d);
+  dialog->addColorItem((int) ADColor, page, QObject::tr("Color"), d);
 
-  settings.getData(methodKey, d);
-  dialog->addComboItem(page, methodKey, methodList, d);
+  settings.getData(ADPlot, d);
+  dialog->addComboItem((int) ADPlot, page, QObject::tr("Plot"), plotList, d);
+
+  settings.getData(ADLabel, d);
+  dialog->addTextItem((int) ADLabel, page, QObject::tr("Label"), d);
 
   page++;
   k = QObject::tr("OSC");
   dialog->addPage(page, k);
 
-  settings.getData(oscColorKey, d);
-  dialog->addColorItem(page, oscColorKey, d);
+  settings.getData(OSCColor, d);
+  dialog->addColorItem(OSCColor, page, QObject::tr("Color"), d);
 
-  settings.getData(oscPlotKey, d);
-  dialog->addComboItem(page, oscPlotKey, plotList, d);
+  settings.getData(OSCPlot, d);
+  dialog->addComboItem(OSCPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(oscLabelKey, d);
-  dialog->addTextItem(page, oscLabelKey, d);
+  settings.getData(OSCLabel, d);
+  dialog->addTextItem(OSCLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, fpKey, settings.getInt(fpKey), 1, 100000);
+  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), settings.getInt(FastPeriod), 1, 100000);
 
-  dialog->addIntItem(page, spKey, settings.getInt(spKey), 1, 100000);
+  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 1, 100000);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -300,16 +262,7 @@ int AD::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

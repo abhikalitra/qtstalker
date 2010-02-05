@@ -27,6 +27,15 @@
 class TRIX : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Input,
+      Color,
+      Plot,
+      Label,
+      Period
+    };
+
     TRIX ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);

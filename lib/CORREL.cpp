@@ -28,34 +28,22 @@
 CORREL::CORREL ()
 {
   indicator = "CORREL";
-  input2Key = QObject::tr("Input 2");
-  hlineColorKey = "Reference Line Color";
 
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "white";
-  settings.setData(hlineColorKey, d);
-
-  d = "Line";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-
-  d = "SP500";
-  settings.setData(input2Key, d);
-
-  settings.setData(periodKey, 30);
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Line");
+  settings.setData(Label, indicator);
+  settings.setData(Input, "Close");
+  settings.setData(Input2, "SP500");
+  settings.setData(Period, 30);
+  settings.setData(Ref1Color, "white");
+  settings.setData(Ref2Color, "white");
+  settings.setData(Ref3Color, "white");
 }
 
 int CORREL::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -63,7 +51,7 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(input2Key, s);
+  settings.getData(Input2, s);
   BarData *bd = new BarData;
   bd->setSymbol(s);
   bd->setBarLength(data->getBarLength());
@@ -81,7 +69,7 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  int period = settings.getInt(periodKey);
+  int period = settings.getInt(Period);
 
   PlotLine *line = getCORREL(in, in2, period);
   if (! line)
@@ -92,20 +80,20 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
 
   // 1 reference line
   PlotLine *hline = new PlotLine;
-  settings.getData(hlineColorKey, s);
+  settings.getData(Ref3Color, s);
   hline->setColor(s);
   hline->setType(PlotLine::Horizontal);
   hline->append(1);
@@ -113,6 +101,7 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
 
   // 0 reference line
   hline = new PlotLine;
+  settings.getData(Ref2Color, s);
   hline->setColor(s);
   hline->setType(PlotLine::Horizontal);
   hline->append(0);
@@ -120,6 +109,7 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
 
   // -1 reference line
   hline = new PlotLine;
+  settings.getData(Ref1Color, s);
   hline->setColor(s);
   hline->setType(PlotLine::Horizontal);
   hline->append(-1);
@@ -237,25 +227,35 @@ int CORREL::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(hlineColorKey, d);
-  dialog->addColorItem(page, hlineColorKey, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  settings.getData(Input2, d);
+  dialog->addTextItem(Input2, page, QObject::tr("Input 2"), d);
 
-  settings.getData(input2Key, d);
-  dialog->addTextItem(page, input2Key, d);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
+  page++;
+  k = QObject::tr("Ref.");
+  dialog->addPage(page, k);
+
+  settings.getData(Ref1Color, d);
+  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
+
+  settings.getData(Ref2Color, d);
+  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
+
+  settings.getData(Ref3Color, d);
+  dialog->addColorItem(Ref3Color, page, QObject::tr("Ref. 3 Color"), d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -264,26 +264,7 @@ int CORREL::dialog ()
     return rc;
   }
 
-  dialog->getItem(colorKey, d);
-  settings.setData(colorKey, d);
-
-  dialog->getItem(hlineColorKey, d);
-  settings.setData(hlineColorKey, d);
-
-  dialog->getItem(plotKey, d);
-  settings.setData(plotKey, d);
-
-  dialog->getItem(labelKey, d);
-  settings.setData(labelKey, d);
-
-  dialog->getItem(inputKey, d);
-  settings.setData(inputKey, d);
-
-  dialog->getItem(input2Key, d);
-  settings.setData(input2Key, d);
-
-  dialog->getItem(periodKey, d);
-  settings.setData(periodKey, d);
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

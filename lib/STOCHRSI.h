@@ -27,6 +27,25 @@
 class STOCHRSI : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      FastkColor,
+      FastdColor,
+      Ref1Color,
+      Ref2Color,
+      FastkPlot,
+      FastdPlot,
+      FastkLabel,
+      FastdLabel,
+      FastkPeriod,
+      FastdPeriod,
+      FastdMA,
+      Ref1,
+      Ref2,
+      Input,
+      Period
+    };
+
     STOCHRSI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,19 +53,6 @@ class STOCHRSI : public IndicatorBase
     int dialog ();
 
   protected:
-    QString fkcKey;
-    QString fdcKey;
-    QString fkpKey;
-    QString fdpKey;
-    QString fklKey;
-    QString fdlKey;
-    QString fkpdKey;
-    QString fdpdKey;
-    QString fdmaKey;
-    QString ref1Key;
-    QString ref2Key;
-    QString ref1ColorKey;
-    QString ref2ColorKey;
 };
 
 #endif

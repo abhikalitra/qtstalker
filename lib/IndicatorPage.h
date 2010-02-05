@@ -43,6 +43,7 @@ class IndicatorPage : public QWidget
     void signalEnableIndicator (QString);
     void signalDeleteIndicator (QString);
     void signalNewIndicator (QString);
+    void signalRefreshIndicator (QString);
 
   public:
     IndicatorPage (QWidget *);

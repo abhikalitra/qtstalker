@@ -27,39 +27,24 @@
 PO::PO ()
 {
   indicator = "PO";
-  fpKey = QObject::tr("Fast Period");
-  spKey = QObject::tr("Slow Period");
 
   methodList << "APO";
   methodList << "PPO";
 
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "Histogram Bar";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-
-  settings.setData(fpKey, 12);
-
-  settings.setData(spKey, 26);
-
-  d = "SMA";
-  settings.setData(maTypeKey, d);
-
-  d = "APO";
-  settings.setData(methodKey, d);
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Histogram Bar");
+  settings.setData(Label, indicator);
+  settings.setData(Input, "Close");
+  settings.setData(FastPeriod, 12);
+  settings.setData(SlowPeriod, 26);
+  settings.setData(MAType, "SMA");
+  settings.setData(Method, "APO");
 }
 
 int PO::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -67,14 +52,14 @@ int PO::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  int fast = settings.getInt(fpKey);
+  int fast = settings.getInt(FastPeriod);
 
-  int slow = settings.getInt(spKey);
+  int slow = settings.getInt(SlowPeriod);
 
-  settings.getData(maTypeKey, s);
+  settings.getData(MAType, s);
   int ma = maList.indexOf(s);
 
-  settings.getData(methodKey, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
   PlotLine *line = getPO(in, fast, slow, ma, method);
@@ -84,13 +69,13 @@ int PO::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -214,28 +199,27 @@ int PO::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  QColor c(d);
-  dialog->addColorItem(page, colorKey, c);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  dialog->addIntItem(page, fpKey, settings.getInt(fpKey), 2, 100000);
+  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), settings.getInt(FastPeriod), 2, 100000);
 
-  dialog->addIntItem(page, spKey, settings.getInt(spKey), 2, 100000);
+  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 2, 100000);
 
-  settings.getData(maTypeKey, d);
-  dialog->addComboItem(page, maTypeKey, maList, d);
+  settings.getData(MAType, d);
+  dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
 
-  settings.getData(methodKey, d);
-  dialog->addComboItem(page, methodKey, methodList, d);
+  settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -244,17 +228,7 @@ int PO::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
-
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

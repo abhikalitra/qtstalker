@@ -27,12 +27,16 @@
 class CUS : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Script
+    };
+
     CUS ();
     int getIndicator (Indicator &_ind, BarData *_data);
     int dialog ();
 
   private:
-    QString commandKey;
 };
 
 #endif

@@ -59,6 +59,8 @@ void PrefDialog::init ()
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 //  connect(buttonBox, SIGNAL(helpRequested()), this, SLOT(help()));
   vbox->addWidget(buttonBox);
+
+  keys.clear();
 }
 
 void PrefDialog::addPage (int page, QString &title)
@@ -75,13 +77,13 @@ void PrefDialog::addPage (int page, QString &title)
   gridList.insert(page, grid);
 }
 
-void PrefDialog::addColorItem (int page, QString &name, QString &color)
+void PrefDialog::addColorItem (int key, int page, QString name, QString &color)
 {
   QColor c(color);
-  addColorItem(page, name, c);
+  addColorItem(key, page, name, c);
 }
 
-void PrefDialog::addColorItem (int page, QString &name, QColor &color)
+void PrefDialog::addColorItem (int key, int page, QString name, QColor &color)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -96,73 +98,24 @@ void PrefDialog::addColorItem (int page, QString &name, QColor &color)
   ColorButton *button = new ColorButton(this, color);
   grid->addWidget(button, grid->rowCount() - 1, 1);
   button->setColorButton();
-  colorButtonList.insert(name, button);
+  colorButtonList.insert(key, button);
+
+  keys.append(key);
 }
 
-void PrefDialog::addColorPrefItem (int page, QString &name, QColor &color)
+void PrefDialog::getColor (int key, QColor &color)
 {
-  QGridLayout *grid = gridList.value(page);
-  if (! grid)
-  {
-    qDebug() << "PrefDialog::addColorPrefItem: page number not found";
-    return;
-  }
-
-  ColorButton *mainButton = new ColorButton(this, color);
-
-  // add the preset preferred buttons
-  // for now a fixed quantity of 5 pieces with fixed colors
-  // may/will later expand with the possibility to make user defineable too
-  QString prefButtonName = "PrefColor";
-  ColorButton *prefButton;
-  QColor prefColor[5];
-  prefColor[0].setNamedColor("white");
-  prefColor[1].setNamedColor("red");
-  prefColor[2].setNamedColor("green");
-  prefColor[3].setRgb(85,170,255); // something like blue
-  prefColor[4].setRgb(255,170,0); // orange
-
-  // create pref-buttons and arange in one row(hbox)
-  QHBoxLayout *hbox = new QHBoxLayout;
-  int i;
-  for (i = 0; i < 5; i++)
-  {
-    prefButton = new ColorButton(this, prefColor[i]);
-    prefButton->setDialogOff();
-//    prefButton->pix.resize(10, 10);
-    prefButton->setFixedSize(10, 10);
-    prefButton->setColorButton();
-    connect (prefButton, SIGNAL(robPressed(QColor)), mainButton, SLOT(setColor(QColor)));
-    hbox->addWidget(prefButton);
-    colorButtonList.insert(prefButtonName + QString::number(i, 'f', 0), prefButton);
-
-  }
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->addLayout(hbox);
-  vbox->addWidget(mainButton);
-
-  QLabel *label = new QLabel(name);
-  grid->addWidget(label, grid->rowCount(), 0);
-
-  grid->addLayout(vbox, grid->rowCount() - 1, 1);
-  mainButton->setColorButton();
-  colorButtonList.insert(name, mainButton);
-}
-
-void PrefDialog::getColor (QString &name, QColor &color)
-{
-  ColorButton *button = colorButtonList.value(name);
+  ColorButton *button = colorButtonList.value(key);
   if (button)
     button->getColor(color);
 }
 
-void PrefDialog::addDoubleItem (int page, QString &name, double num)
+void PrefDialog::addDoubleItem (int key, int page, QString name, double num)
 {
-  addDoubleItem(page, name, num, -9999999999.0, 9999999999.0);
+  addDoubleItem(key, page, name, num, -9999999999.0, 9999999999.0);
 }
 
-void PrefDialog::addDoubleItem (int page, QString &name, double num, double low, double high)
+void PrefDialog::addDoubleItem (int key, int page, QString name, double num, double low, double high)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -179,24 +132,26 @@ void PrefDialog::addDoubleItem (int page, QString &name, double num, double low,
   edit->setMaximum(high);
   edit->setValue(num);
   grid->addWidget(edit, grid->rowCount() - 1, 1);
-  doubleList.insert(name, edit);
+  doubleList.insert(key, edit);
+
+  keys.append(key);
 }
 
-double PrefDialog::getDouble (QString &name)
+double PrefDialog::getDouble (int key)
 {
   double num = 0;
-  QDoubleSpinBox *edit = doubleList.value(name);
+  QDoubleSpinBox *edit = doubleList.value(key);
   if (edit)
     num = edit->value();
   return num;
 }
 
-void PrefDialog::addIntItem (int page, QString &name, int num)
+void PrefDialog::addIntItem (int key, int page, QString name, int num)
 {
-  addIntItem(page, name, num, -999999999, 999999999);
+  addIntItem(key, page, name, num, -999999999, 999999999);
 }
 
-void PrefDialog::addIntItem (int page, QString &name, int num, int min, int max)
+void PrefDialog::addIntItem (int key, int page, QString name, int num, int min, int max)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -213,27 +168,29 @@ void PrefDialog::addIntItem (int page, QString &name, int num, int min, int max)
   spin->setMaximum(max);
   spin->setValue(num);
   grid->addWidget(spin, grid->rowCount() - 1, 1);
-  intList.insert(name, spin);
+  intList.insert(key, spin);
+
+  keys.append(key);
 }
 
-int PrefDialog::getInt (QString &name)
+int PrefDialog::getInt (int key)
 {
   int num = 0;
-  QSpinBox *spin = intList.value(name);
+  QSpinBox *spin = intList.value(key);
   if (spin)
     num = spin->value();
   return num;
 }
 
-void PrefDialog::addCheckItem (int page, QString &name, QString &flag)
+void PrefDialog::addCheckItem (int key, int page, QString name, QString &flag)
 {
   if (! flag.compare("True"))
-    addCheckItem(page, name, TRUE);
+    addCheckItem(key, page, name, TRUE);
   else
-    addCheckItem(page, name, FALSE);
+    addCheckItem(key, page, name, FALSE);
 }
 
-void PrefDialog::addCheckItem (int page, QString &name, int flag)
+void PrefDialog::addCheckItem (int key, int page, QString name, int flag)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -248,22 +205,24 @@ void PrefDialog::addCheckItem (int page, QString &name, int flag)
   QCheckBox *check = new QCheckBox;
   check->setChecked(flag);
   grid->addWidget(check, grid->rowCount() - 1, 1);
-  checkList.insert(name, check);
+  checkList.insert(key, check);
+
+  keys.append(key);
 }
 
-int PrefDialog::getCheck (QString &name)
+int PrefDialog::getCheck (int key)
 {
   int flag = FALSE;
-  QCheckBox *check = checkList.value(name);
+  QCheckBox *check = checkList.value(key);
   if (check)
     flag = check->isChecked();
   return flag;
 }
 
-void PrefDialog::getCheckString (QString &name, QString &flag)
+void PrefDialog::getCheckString (int key, QString &flag)
 {
   flag.truncate(0);
-  QCheckBox *check = checkList.value(name);
+  QCheckBox *check = checkList.value(key);
   if (check)
   {
     if (check->isChecked())
@@ -273,7 +232,7 @@ void PrefDialog::getCheckString (QString &name, QString &flag)
   }
 }
 
-void PrefDialog::addFontItem (int page, QString &name, QFont &font)
+void PrefDialog::addFontItem (int key, int page, QString name, QFont &font)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -287,17 +246,19 @@ void PrefDialog::addFontItem (int page, QString &name, QFont &font)
 
   FontButton *button = new FontButton(this, font);
   grid->addWidget(button, grid->rowCount() - 1, 1);
-  fontButtonList.insert(name, button);
+  fontButtonList.insert(key, button);
+
+  keys.append(key);
 }
 
-void PrefDialog::getFont (QString &name, QFont &font)
+void PrefDialog::getFont (int key, QFont &font)
 {
-  FontButton *button = fontButtonList.value(name);
+  FontButton *button = fontButtonList.value(key);
   if (button)
     button->getFont(font);
 }
 
-void PrefDialog::addTextItem (int page, QString &name, QString &t)
+void PrefDialog::addTextItem (int key, int page, QString name, QString &t)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -311,18 +272,20 @@ void PrefDialog::addTextItem (int page, QString &name, QString &t)
 
   QLineEdit *edit = new QLineEdit(t);
   grid->addWidget(edit, grid->rowCount() - 1, 1);
-  textList.insert(name, edit);
+  textList.insert(key, edit);
+
+  keys.append(key);
 }
 
-void PrefDialog::getText (QString &name, QString &s)
+void PrefDialog::getText (int key, QString &s)
 {
   s.clear();
-  QLineEdit *edit = textList.value(name);
+  QLineEdit *edit = textList.value(key);
   if (edit)
     s = edit->text();
 }
 
-void PrefDialog::addComboItem (int page, QString &name, QStringList &l, QString &s)
+void PrefDialog::addComboItem (int key, int page, QString name, QStringList &l, QString &s)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -343,10 +306,12 @@ void PrefDialog::addComboItem (int page, QString &name, QStringList &l, QString 
       combo->setCurrentIndex(t);
   }
   grid->addWidget(combo, grid->rowCount() - 1, 1);
-  comboList.insert(name, combo);
+  comboList.insert(key, combo);
+
+  keys.append(key);
 }
 
-void PrefDialog::addComboItem (int page, QString &name, QStringList &l, int s)
+void PrefDialog::addComboItem (int key, int page, QString name, QStringList &l, int s)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -362,32 +327,34 @@ void PrefDialog::addComboItem (int page, QString &name, QStringList &l, int s)
   combo->addItems(l);
   combo->setCurrentIndex(s);
   grid->addWidget(combo, grid->rowCount() - 1, 1);
-  comboList.insert(name, combo);
+  comboList.insert(key, combo);
+
+  keys.append(key);
 }
 
-void PrefDialog::getCombo (QString &name, QString &s)
+void PrefDialog::getCombo (int key, QString &s)
 {
   s.clear();
-  QComboBox *combo = comboList.value(name);
+  QComboBox *combo = comboList.value(key);
   if (combo)
     s = combo->currentText();
 }
 
-int PrefDialog::getComboIndex (QString &name)
+int PrefDialog::getComboIndex (int key)
 {
   int i = 0;
-  QComboBox *combo = comboList.value(name);
+  QComboBox *combo = comboList.value(key);
   if (combo)
     i = combo->currentIndex();
   return i;
 }
 
-QComboBox * PrefDialog::getComboWidget (QString &name)
+QComboBox * PrefDialog::getComboWidget (int key)
 {
-  return comboList.value(name);
+  return comboList.value(key);
 }
 
-void PrefDialog::addDateItem (int page, QString &name, QDateTime &dt)
+void PrefDialog::addDateItem (int key, int page, QString name, QDateTime &dt)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -401,17 +368,19 @@ void PrefDialog::addDateItem (int page, QString &name, QDateTime &dt)
 
   QDateEdit *date = new QDateEdit(dt.date());
   grid->addWidget(date, grid->rowCount() - 1, 1);
-  dateList.insert(name, date);
+  dateList.insert(key, date);
+
+  keys.append(key);
 }
 
-void PrefDialog::getDate (QString &name, QDateTime &dt)
+void PrefDialog::getDate (int key, QDateTime &dt)
 {
-  QDateEdit *date = dateList.value(name);
+  QDateEdit *date = dateList.value(key);
   if (date)
     dt.setDate(date->date());
 }
 
-void PrefDialog::addTimeItem (int page, QString &name, QDateTime &dt)
+void PrefDialog::addTimeItem (int key, int page, QString name, QDateTime &dt)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -425,57 +394,59 @@ void PrefDialog::addTimeItem (int page, QString &name, QDateTime &dt)
 
   QTimeEdit *time = new QTimeEdit(dt.time());
   grid->addWidget(time, grid->rowCount() - 1, 1);
-  timeList.insert(name, time);
+  timeList.insert(key, time);
+
+  keys.append(key);
 }
 
-void PrefDialog::getTime (QString &name, QDateTime &dt)
+void PrefDialog::getTime (int key, QDateTime &dt)
 {
-  QTimeEdit *time = timeList.value(name);
+  QTimeEdit *time = timeList.value(key);
   if (time)
     dt.setTime(time->time());
 }
 
-void PrefDialog::getItem (QString &name, QString &s)
+void PrefDialog::getItem (int key, QString &s)
 {
   s.clear();
 
   // check for text
-  if (textList.contains(name))
+  if (textList.contains(key))
   {
-    getText(name, s);
+    getText(key, s);
     return;
   }
 
   // check for combo
-  if (comboList.contains(name))
+  if (comboList.contains(key))
   {
-    getCombo(name, s);
+    getCombo(key, s);
     return;
   }
 
   // check for int
-  if (intList.contains(name))
+  if (intList.contains(key))
   {
-    QSpinBox *spin = intList.value(name);
+    QSpinBox *spin = intList.value(key);
     if (spin)
       s = spin->text();
     return;
   }
 
   // check for double
-  if (doubleList.contains(name))
+  if (doubleList.contains(key))
   {
-    QDoubleSpinBox *spin = doubleList.value(name);
+    QDoubleSpinBox *spin = doubleList.value(key);
     if (spin)
       s = spin->cleanText();
     return;
   }
 
   // check color
-  if (colorButtonList.contains(name))
+  if (colorButtonList.contains(key))
   {
     QColor color;
-    getColor(name, color);
+    getColor(key, color);
     if (color.isValid())
     {
       s = color.name();
@@ -484,12 +455,16 @@ void PrefDialog::getItem (QString &name, QString &s)
   }
 
   // check check
-  if (checkList.contains(name))
+  if (checkList.contains(key))
   {
-    QCheckBox *check = checkList.value(name);
+    QCheckBox *check = checkList.value(key);
     if (check)
       s = QString::number(check->isChecked());
   }
 }
 
+void PrefDialog::getKeyList (QList<int> &l)
+{
+  l = keys;
+}
 

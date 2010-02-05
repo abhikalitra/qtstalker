@@ -27,6 +27,14 @@
 class VFI : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      Period
+    };
+
     VFI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);

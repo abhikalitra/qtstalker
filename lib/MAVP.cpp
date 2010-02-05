@@ -28,35 +28,21 @@
 MAVP::MAVP ()
 {
   indicator = "MAVP";
-  input2Key = QObject::tr("Input 2");
-  minKey = QObject::tr("Min");
-  maxKey = QObject::tr("Max");
 
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "Line";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-  settings.setData(input2Key, d);
-
-  settings.setData(minKey, 2);
-
-  settings.setData(maxKey, 30);
-
-  d = "SMA";
-  settings.setData(maTypeKey, d);
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Line");
+  settings.setData(Label, indicator);
+  settings.setData(Input, "Close");
+  settings.setData(Input2, "Close");
+  settings.setData(Min, 2);
+  settings.setData(Max, 30);
+  settings.setData(MAType, "SMA");
 }
 
 int MAVP::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -64,7 +50,7 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(input2Key, s);
+  settings.getData(Input2, s);
   PlotLine *in2 = data->getInput(data->getInputType(s));
   if (! in2)
   {
@@ -73,10 +59,10 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  int min = settings.getInt(minKey);
-  int max = settings.getInt(maxKey);
+  int min = settings.getInt(Min);
+  int max = settings.getInt(Max);
 
-  settings.getData(maTypeKey, s);
+  settings.getData(MAType, s);
   int ma = maList.indexOf(s);
 
   PlotLine *line = getMAVP(in, in2, min, max, ma);
@@ -90,13 +76,13 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   BARS bars;
   bars.getIndicator(ind, data);
 
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -226,27 +212,27 @@ int MAVP::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  settings.getData(input2Key, d);
-  dialog->addComboItem(page, input2Key, inputList, d);
+  settings.getData(Input2, d);
+  dialog->addComboItem(Input2, page, QObject::tr("Input 2"), inputList, d);
 
-  dialog->addIntItem(page, minKey, settings.getInt(minKey), 2, 100000);
+  dialog->addIntItem(Min, page, QObject::tr("Min"), settings.getInt(Min), 2, 100000);
 
-  dialog->addIntItem(page, maxKey, settings.getInt(maxKey), 2, 100000);
+  dialog->addIntItem(Max, page, QObject::tr("Max"), settings.getInt(Max), 2, 100000);
 
-  settings.getData(maTypeKey, d);
-  dialog->addComboItem(page, maTypeKey, maList, d);
+  settings.getData(MAType, d);
+  dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -255,16 +241,7 @@ int MAVP::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

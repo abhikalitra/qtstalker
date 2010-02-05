@@ -1825,6 +1825,86 @@ $ed is the last date.</source>
         <source>STDDEV</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>MA 1 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 2 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 3 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 1 Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 2 Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 3 Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 1 Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 2 Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 3 Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 1 Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 2 Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 3 Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 1 Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 2 Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 3 Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AD</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>

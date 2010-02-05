@@ -27,6 +27,18 @@
 class PO : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Method,
+      Input,
+      Color,
+      Plot,
+      Label,
+      FastPeriod,
+      SlowPeriod,
+      MAType
+    };
+
     PO ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -35,9 +47,6 @@ class PO : public IndicatorBase
 
   private:
     QStringList methodList;
-    QString methodKey;
-    QString fpKey;
-    QString spKey;
 };
 
 #endif

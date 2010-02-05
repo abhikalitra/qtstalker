@@ -27,6 +27,29 @@
 class BARS : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      UpColor,
+      DownColor,
+      NeutralColor,
+      BarsLabel,
+      MAColor,
+      MA2Color,
+      MA3Color,
+      MAPlot,
+      MA2Plot,
+      MA3Plot,
+      MALabel,
+      MA2Label,
+      MA3Label,
+      MAPeriod,
+      MA2Period,
+      MA3Period,
+      MAType,
+      MA2Type,
+      MA3Type
+    };
+
     BARS ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,9 +57,6 @@ class BARS : public IndicatorBase
     int dialog ();
 
   private:
-    QString ucKey;
-    QString dcKey;
-    QString ncKey;
 };
 
 #endif

@@ -28,26 +28,18 @@
 SAR::SAR ()
 {
   indicator = "SAR";
-  initKey = QObject::tr("Initial Step");
-  maxKey = QObject::tr("Max Step");
 
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "Dot";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  settings.setData(initKey, 0.02);
-  settings.setData(maxKey, 0.2);
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Dot");
+  settings.setData(Label, indicator);
+  settings.setData(Init, 0.02);
+  settings.setData(Max, 0.2);
 }
 
 int SAR::getIndicator (Indicator &ind, BarData *data)
 {
-  double init = settings.getDouble(initKey);
-  double max = settings.getDouble(maxKey);
+  double init = settings.getDouble(Init);
+  double max = settings.getDouble(Max);
 
   PlotLine *line = getSAR(data, init, max);
   if (! line)
@@ -62,13 +54,13 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
   }
 
   QString s;
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -156,18 +148,18 @@ int SAR::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addDoubleItem(page, initKey, settings.getDouble(initKey), 0, 100000);
+  dialog->addDoubleItem(Init, page, QObject::tr("Initial"), settings.getDouble(Init), 0, 100000);
 
-  dialog->addDoubleItem(page, maxKey, settings.getDouble(maxKey), 0, 100000);
+  dialog->addDoubleItem(Max, page, QObject::tr("Max"), settings.getDouble(Max), 0, 100000);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -176,16 +168,7 @@ int SAR::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

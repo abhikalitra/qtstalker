@@ -27,6 +27,18 @@
 class MAVP : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      Input,
+      Input2,
+      Min,
+      Max,
+      MAType
+    };
+
     MAVP ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,9 +46,6 @@ class MAVP : public IndicatorBase
     int dialog ();
 
   protected:
-    QString input2Key;
-    QString minKey;
-    QString maxKey;
 };
 
 #endif

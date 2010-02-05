@@ -27,6 +27,16 @@
 class MFI : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      Period,
+      Smoothing,
+      SmoothingType
+    };
+
     MFI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,8 +44,6 @@ class MFI : public IndicatorBase
     int dialog ();
 
   protected:
-    QString smoothKey;
-    QString smoothTypeKey;
 };
 
 #endif

@@ -27,45 +27,36 @@
 ATR::ATR ()
 {
   indicator = "ATR";
-  methodKey = QObject::tr("Method");
+
+  settings.setData(Method, "ATR");
+  settings.setData(Period, 14);
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Line");
+  settings.setData(Label, indicator);
 
   methodList << "ATR";
   methodList << "NATR";
-
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "Line";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  settings.setData(periodKey, 14);
-
-  d = "ATR";
-  settings.setData(methodKey, d);
 }
 
 int ATR::getIndicator (Indicator &ind, BarData *data)
 {
-  int period = settings.getInt(periodKey);
+  int period = settings.getInt(Period);
 
   QString s;
-  settings.getData(methodKey, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
   PlotLine *line = getATR(data, period, method);
   if (! line)
     return 1;
 
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -167,20 +158,19 @@ int ATR::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  QColor c(d);
-  dialog->addColorItem(page, colorKey, c);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
 
-  settings.getData(methodKey, d);
-  dialog->addComboItem(page, methodKey, methodList, d);
+  settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -189,16 +179,7 @@ int ATR::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

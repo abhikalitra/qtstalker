@@ -27,9 +27,27 @@
 CANDLES::CANDLES ()
 {
   indicator = "CANDLES";
-  penKey = QObject::tr("Penetration");
-  methodKey = QObject::tr("Method");
-  patColorKey = QObject::tr("Pattern Color");
+
+  settings.setData(Penetration, 0.3);
+  settings.setData(Method, "NONE");
+  settings.setData(MethodColor, "cyan");
+  settings.setData(Color, "green");
+  settings.setData(Label, indicator);
+  settings.setData(MAColor, "red");
+  settings.setData(MA2Color, "yellow");
+  settings.setData(MA3Color, "blue");
+  settings.setData(MAPlot, "Line");
+  settings.setData(MA2Plot, "Line");
+  settings.setData(MA3Plot, "Line");
+  settings.setData(MALabel, "MA1");
+  settings.setData(MA2Label, "MA2");
+  settings.setData(MA3Label, "MA3");
+  settings.setData(MAPeriod, 20);
+  settings.setData(MA2Period, 50);
+  settings.setData(MA3Period, 200);
+  settings.setData(MAType, "SMA");
+  settings.setData(MA2Type, "SMA");
+  settings.setData(MA3Type, "SMA");
 
   methodList << "NONE";
   methodList << "2CROWS";
@@ -93,28 +111,12 @@ CANDLES::CANDLES ()
   methodList << "UNIQUE3RIVER";
   methodList << "UPSIDEGAP2CROWS";
   methodList << "XSIDEGAP3METHODS";
-
-  QString d;
-  d = "green";
-  settings.setData(colorKey, d);
-
-  d = "red";
-  settings.setData(patColorKey, d);
-
-  d = "Line";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  settings.setData(penKey, 0.3);
-
-  settings.setData(methodKey, methodList[0]);
 }
 
 int CANDLES::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   QColor color(s);
 
   PlotLine *line = getCANDLES(data, color);
@@ -122,21 +124,21 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
     return 1;
 
   line->setColor(color);
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
-  settings.getData(methodKey, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
   if (method != _NONE)
   {
-    double pen = settings.getDouble(penKey);
+    double pen = settings.getDouble(Penetration);
 
     PlotLine *line2 = getMethod(data, method, pen);
     line2->setColorFlag(TRUE);
     if (! line2)
       return 1;
 
-    settings.getData(patColorKey, s);
+    settings.getData(MethodColor, s);
     QColor c(s);
 
     int loop;
@@ -148,6 +150,51 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
   }
 
   ind.addLine(line);
+
+  int period = settings.getInt(MAPeriod);
+  if (period > 1)
+  {
+    settings.getData(MAType, s);
+    int type = maList.indexOf(s);
+    PlotLine *ma = getMA(line, period, type);
+    settings.getData(MAColor, s);
+    ma->setColor(s);
+    settings.getData(MAPlot, s);
+    ma->setType(s);
+    settings.getData(MALabel, s);
+    ma->setLabel(s);
+    ind.addLine(ma);
+  }
+
+  period = settings.getInt(MA2Period);
+  if (period > 1)
+  {
+    settings.getData(MA2Type, s);
+    int type = maList.indexOf(s);
+    PlotLine *ma = getMA(line, period, type);
+    settings.getData(MA2Color, s);
+    ma->setColor(s);
+    settings.getData(MA2Plot, s);
+    ma->setType(s);
+    settings.getData(MA2Label, s);
+    ma->setLabel(s);
+    ind.addLine(ma);
+  }
+
+  period = settings.getInt(MA3Period);
+  if (period > 1)
+  {
+    settings.getData(MA3Type, s);
+    int type = maList.indexOf(s);
+    PlotLine *ma = getMA(line, period, type);
+    settings.getData(MA3Color, s);
+    ma->setColor(s);
+    settings.getData(MA3Plot, s);
+    ma->setType(s);
+    settings.getData(MA3Label, s);
+    ma->setLabel(s);
+    ind.addLine(ma);
+  }
 
   return 0;
 }
@@ -251,19 +298,73 @@ int CANDLES::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Candle Color"), d);
 
-  settings.getData(patColorKey, d);
-  dialog->addColorItem(page, patColorKey, d);
+  settings.getData(MethodColor, d);
+  dialog->addColorItem(MethodColor, page, QObject::tr("Method Color"), d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  settings.getData(methodKey, d);
-  dialog->addComboItem(page, methodKey, methodList, d);
+  settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
-  dialog->addDoubleItem(page, penKey, settings.getDouble(penKey), 0, 100);
+  dialog->addDoubleItem(Penetration, page, QObject::tr("Penetration"), settings.getDouble(Penetration), 0, 100);
+
+  page++;
+  k = QObject::tr("MA 1");
+  dialog->addPage(page, k);
+
+  settings.getData(MAColor, d);
+  dialog->addColorItem(MAColor, page, QObject::tr("Color"), d);
+
+  settings.getData(MAPlot, d);
+  dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);
+
+  settings.getData(MALabel, d);
+  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d);
+
+  dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), settings.getInt(MAPeriod), 1, 100000);
+
+  settings.getData(MAType, d);
+  dialog->addComboItem(MAType, page, QObject::tr("Type"), maList, d);
+
+  page++;
+  k = QObject::tr("MA 2");
+  dialog->addPage(page, k);
+
+  settings.getData(MA2Color, d);
+  dialog->addColorItem(MA2Color, page, QObject::tr("Color"), d);
+
+  settings.getData(MA2Plot, d);
+  dialog->addComboItem(MA2Plot, page, QObject::tr("Plot"), plotList, d);
+
+  settings.getData(MA2Label, d);
+  dialog->addTextItem(MA2Label, page, QObject::tr("Label"), d);
+
+  dialog->addIntItem(MA2Period, page, QObject::tr("Period"), settings.getInt(MA2Period), 1, 100000);
+
+  settings.getData(MA2Type, d);
+  dialog->addComboItem(MA2Type, page, QObject::tr("Type"), maList, d);
+
+  page++;
+  k = QObject::tr("MA 3");
+  dialog->addPage(page, k);
+
+  settings.getData(MA3Color, d);
+  dialog->addColorItem(MA3Color, page, QObject::tr("Color"), d);
+
+  settings.getData(MA3Plot, d);
+  dialog->addComboItem(MA3Plot, page, QObject::tr("Plot"), plotList, d);
+
+  settings.getData(MA3Label, d);
+  dialog->addTextItem(MA3Label, page, QObject::tr("Label"), d);
+
+  dialog->addIntItem(MA3Period, page, QObject::tr("Period"), settings.getInt(MA3Period), 1, 100000);
+
+  settings.getData(MA3Type, d);
+  dialog->addComboItem(MA3Type, page, QObject::tr("Type"), maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -272,16 +373,7 @@ int CANDLES::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

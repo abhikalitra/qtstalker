@@ -27,17 +27,6 @@
 
 IndicatorBase::IndicatorBase ()
 {
-  colorKey = QObject::tr("Color");
-  plotKey = QObject::tr("Plot");
-  labelKey = QObject::tr("Label");
-  inputKey = QObject::tr("Input");
-  periodKey = QObject::tr("Period");
-  maColorKey = QObject::tr("MA Color");
-  maPlotKey = QObject::tr("MA Plot");
-  maLabelKey = QObject::tr("MA Label");
-  maPeriodKey = QObject::tr("MA Period");
-  maTypeKey = QObject::tr("MA Type");
-
   PlotLine pl;
   pl.getLineTypes(plotList);
 
@@ -175,5 +164,19 @@ void IndicatorBase::getMAList (QStringList &l)
   l = maList;
 }
 
+void IndicatorBase::getDialogSettings (PrefDialog *dialog)
+{
+  QList<int> keys;
+  dialog->getKeyList(keys);
+
+  int loop;
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    QString d;
+    dialog->getItem(keys[loop], d);
+    if (! d.isEmpty())
+      settings.setData(keys[loop], d);
+  }
+}
 
 

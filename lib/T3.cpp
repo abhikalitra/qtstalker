@@ -28,29 +28,19 @@
 T3::T3 ()
 {
   indicator = "T3";
-  vKey = QObject::tr("V Factor");
 
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "Line";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-
-  settings.setData(periodKey, 5);
-
-  settings.setData(vKey, 0.7);
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Line");
+  settings.setData(Label, indicator);
+  settings.setData(Period, 5);
+  settings.setData(Input, "Close");
+  settings.setData(VFactor, 0.7);
 }
 
 int T3::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -58,8 +48,8 @@ int T3::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  int period = settings.getInt(periodKey);
-  double vfactor = settings.getDouble(vKey);
+  int period = settings.getInt(Period);
+  double vfactor = settings.getDouble(VFactor);
 
   PlotLine *line = getT3(in, period, vfactor);
   if (! line)
@@ -77,13 +67,13 @@ int T3::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -181,21 +171,21 @@ int T3::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  dialog->addDoubleItem(page, vKey, settings.getDouble(vKey), 0, 1);
+  dialog->addDoubleItem(VFactor, page, QObject::tr("V Factor"), settings.getDouble(VFactor), 0, 1);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -204,16 +194,7 @@ int T3::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

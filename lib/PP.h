@@ -27,6 +27,28 @@
 class PP : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      R1Color,
+      R2Color,
+      R3Color,
+      S1Color,
+      S2Color,
+      S3Color,
+      R1Label,
+      R2Label,
+      R3Label,
+      S1Label,
+      S2Label,
+      S3Label,
+      R1Show,
+      R2Show,
+      R3Show,
+      S1Show,
+      S2Show,
+      S3Show
+    };
+
     PP ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,24 +56,6 @@ class PP : public IndicatorBase
     int dialog ();
 
   protected:
-    QString r1cKey;
-    QString r2cKey;
-    QString r3cKey;
-    QString s1cKey;
-    QString s2cKey;
-    QString s3cKey;
-    QString r1lKey;
-    QString r2lKey;
-    QString r3lKey;
-    QString s1lKey;
-    QString s2lKey;
-    QString s3lKey;
-    QString r1ShowKey;
-    QString r2ShowKey;
-    QString r3ShowKey;
-    QString s1ShowKey;
-    QString s2ShowKey;
-    QString s3ShowKey;
 };
 
 #endif

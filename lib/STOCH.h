@@ -27,6 +27,25 @@
 class STOCH : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      SlowkColor,
+      SlowdColor,
+      Ref1Color,
+      Ref2Color,
+      SlowkPlot,
+      SlowdPlot,
+      SlowkLabel,
+      SlowdLabel,
+      FastkPeriod,
+      SlowkPeriod,
+      SlowdPeriod,
+      SlowkMA,
+      SlowdMA,
+      Ref1,
+      Ref2
+    };
+
     STOCH ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,21 +53,6 @@ class STOCH : public IndicatorBase
     int dialog ();
 
   protected:
-    QString skcKey;
-    QString sdcKey;
-    QString skpKey;
-    QString sdpKey;
-    QString sklKey;
-    QString sdlKey;
-    QString fkpKey;
-    QString skpdKey;
-    QString sdpdKey;
-    QString skmaKey;
-    QString sdmaKey;
-    QString ref1Key;
-    QString ref2Key;
-    QString ref1ColorKey;
-    QString ref2ColorKey;
 };
 
 #endif

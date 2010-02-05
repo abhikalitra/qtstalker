@@ -32,40 +32,27 @@
 SZ::SZ ()
 {
   indicator = "SZ";
-  methodKey = QObject::tr("Method");
-  ndpKey = QObject::tr("No Decline Period");
-  coKey = QObject::tr("Coefficient");
+
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Line");
+  settings.setData(Label, indicator);
+  settings.setData(Period, 10);
+  settings.setData(Method, "Long");
+  settings.setData(NoDeclinePeriod, 2);
+  settings.setData(Coefficient, 2);
 
   methodList << QObject::tr("Long");
   methodList << QObject::tr("Short");
-
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "Line";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  settings.setData(periodKey, 10);
-
-  d = "Long";
-  settings.setData(methodKey, d);
-
-  settings.setData(ndpKey, 2);
-
-  settings.setData(coKey, 2.5);
 }
 
 int SZ::getIndicator (Indicator &ind, BarData *data)
 {
   QString method;
-  settings.getData(methodKey, method);
+  settings.getData(Method, method);
 
-  int period = settings.getInt(periodKey);
-  int ndperiod = settings.getInt(ndpKey);
-  double coeff = settings.getDouble(coKey);
+  int period = settings.getInt(Period);
+  int ndperiod = settings.getInt(NoDeclinePeriod);
+  double coeff = settings.getDouble(Coefficient);
 
   PlotLine *line = getSZ(data, method, period, ndperiod, coeff);
   if (! line)
@@ -80,13 +67,13 @@ int SZ::getIndicator (Indicator &ind, BarData *data)
   }
 
   QString s;
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -272,23 +259,23 @@ int SZ::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
 
-  settings.getData(methodKey, d);
-  dialog->addComboItem(page, methodKey, methodList, d);
+  settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
-  dialog->addIntItem(page, ndpKey, settings.getInt(ndpKey), 1, 100000);
+  dialog->addIntItem(NoDeclinePeriod, page, QObject::tr("No Decline Period"), settings.getInt(NoDeclinePeriod), 1, 100000);
 
-  dialog->addDoubleItem(page, coKey, settings.getDouble(coKey), 0, 100000);
+  dialog->addDoubleItem(Coefficient, page, QObject::tr("Coefficient"), settings.getDouble(Coefficient), 0, 100000);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -297,16 +284,7 @@ int SZ::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

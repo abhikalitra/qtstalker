@@ -96,6 +96,30 @@ class CANDLES : public IndicatorBase
       _XSIDEGAP3METHODS
     };
 
+    enum Parm
+    {
+      Method,
+      Penetration,
+      MethodColor,
+      Color,
+      Label,
+      MAColor,
+      MA2Color,
+      MA3Color,
+      MAPlot,
+      MA2Plot,
+      MA3Plot,
+      MALabel,
+      MA2Label,
+      MA3Label,
+      MAPeriod,
+      MA2Period,
+      MA3Period,
+      MAType,
+      MA2Type,
+      MA3Type
+    };
+
     CANDLES ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -104,9 +128,6 @@ class CANDLES : public IndicatorBase
     PlotLine * getMethod (BarData *data, int method, double pen);
 
   protected:
-    QString methodKey;
-    QString penKey;
-    QString patColorKey;
     QStringList methodList;
 };
 

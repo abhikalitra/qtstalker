@@ -113,14 +113,14 @@ void IndicatorPage::newIndicator ()
 
   s = tr("Name");
   QString name;
-  dialog->addTextItem(0, s, name);
+  dialog->addTextItem(0, 0, s, name);
 
   s = tr("Indicator");
   QString indicator;
-  dialog->addComboItem(0, s, l, 0);
+  dialog->addComboItem(1, 0, s, l, 0);
 
   s = tr("Tab Row");
-  dialog->addIntItem(0, s, 2, 1, 3);
+  dialog->addIntItem(2, 0, s, 2, 1, 3);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -130,7 +130,7 @@ void IndicatorPage::newIndicator ()
   }
 
   s = tr("Name");
-  dialog->getItem(s, name);
+  dialog->getItem(0, name);
   if (name.isEmpty())
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("Name missing."));
@@ -139,10 +139,10 @@ void IndicatorPage::newIndicator ()
   }
 
   s = tr("Indicator");
-  dialog->getItem(s, indicator);
+  dialog->getItem(1, indicator);
 
   s = tr("Tab Row");
-  int tabRow = dialog->getInt(s);
+  int tabRow = dialog->getInt(2);
 
   delete dialog;
 
@@ -228,8 +228,7 @@ void IndicatorPage::editIndicator (QString &name)
 
   delete ib2;
 
-  emit signalDisableIndicator(name);
-  emit signalEnableIndicator(name);
+  emit signalRefreshIndicator(name);
 }
 
 void IndicatorPage::deleteIndicator ()

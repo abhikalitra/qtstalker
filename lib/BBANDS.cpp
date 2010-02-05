@@ -27,55 +27,27 @@
 BBANDS::BBANDS ()
 {
   indicator = "BBANDS";
-  ucKey = QObject::tr("Upper Color");
-  mcKey = QObject::tr("Middle Color");
-  lcKey = QObject::tr("Lower Color");
-  upKey = QObject::tr("Upper Plot");
-  mpKey = QObject::tr("Middle Plot");
-  lpKey = QObject::tr("Lower Plot");
-  ulKey = QObject::tr("Upper Label");
-  mlKey = QObject::tr("Middle Label");
-  llKey = QObject::tr("Lower Label");
-  udKey = QObject::tr("Upper Deviation");
-  ldKey = QObject::tr("Lower Deviation");
 
-  QString d;
-  d = "red";
-  settings.setData(ucKey, d);
-  settings.setData(mcKey, d);
-  settings.setData(lcKey, d);
-
-  d = "Line";
-  settings.setData(upKey, d);
-  settings.setData(mpKey, d);
-  settings.setData(lpKey, d);
-
-  d = "BB_U";
-  settings.setData(ulKey, d);
-
-  d = "BB_M";
-  settings.setData(mlKey, d);
-
-  d = "BB_L";
-  settings.setData(llKey, d);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-
-  settings.setData(periodKey, 20);
-
-  settings.setData(udKey, 2);
-
-  settings.setData(ldKey, 2);
-
-  d = "SMA";
-  settings.setData(maTypeKey, d);
+  settings.setData(UpColor, "red");
+  settings.setData(MidColor, "red");
+  settings.setData(DownColor, "red");
+  settings.setData(UpPlot, "Line");
+  settings.setData(MidPlot, "Line");
+  settings.setData(DownPlot, "Line");
+  settings.setData(UpLabel, "BBANDSU");
+  settings.setData(MidLabel, "BBANDSM");
+  settings.setData(DownLabel, "BBANDSL");
+  settings.setData(UpDeviation, 2);
+  settings.setData(DownDeviation, 2);
+  settings.setData(Input, "Close");
+  settings.setData(Period, 20);
+  settings.setData(MAType, "SMA");
 }
 
 int BBANDS::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -83,11 +55,11 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  int period = settings.getInt(periodKey);
-  double udev = settings.getDouble(udKey);
-  double ldev = settings.getDouble(ldKey);
+  int period = settings.getInt(Period);
+  double udev = settings.getDouble(UpDeviation);
+  double ldev = settings.getDouble(DownDeviation);
 
-  settings.getData(maTypeKey, s);
+  settings.getData(MAType, s);
   int ma = maList.indexOf(s);
 
   QList<PlotLine *> l;
@@ -116,39 +88,39 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
 
   // upper line
   PlotLine *line = l.at(0);
-  settings.getData(ucKey, s);
+  settings.getData(UpColor, s);
   line->setColor(s);
 
-  settings.getData(upKey, s);
+  settings.getData(UpPlot, s);
   line->setType(s);
 
-  settings.getData(ulKey, s);
+  settings.getData(UpLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
 
   // middle line
   line = l.at(1);
-  settings.getData(mcKey, s);
+  settings.getData(MidColor, s);
   line->setColor(s);
 
-  settings.getData(mpKey, s);
+  settings.getData(MidPlot, s);
   line->setType(s);
 
-  settings.getData(mlKey, s);
+  settings.getData(MidLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
 
   // lower line
   line = l.at(2);
-  settings.getData(lcKey, s);
+  settings.getData(DownColor, s);
   line->setColor(s);
 
-  settings.getData(lpKey, s);
+  settings.getData(DownPlot, s);
   line->setType(s);
 
-  settings.getData(llKey, s);
+  settings.getData(DownLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -303,56 +275,56 @@ int BBANDS::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
 
-  dialog->addDoubleItem(page, udKey, settings.getDouble(udKey), -100000, 100000);
+  dialog->addDoubleItem(UpDeviation, page, QObject::tr("Upper Deviation"), settings.getDouble(UpDeviation), -100000, 100000);
 
-  dialog->addDoubleItem(page, ldKey, settings.getDouble(ldKey), -100000, 100000);
+  dialog->addDoubleItem(DownDeviation, page, QObject::tr("Lower Deviation"), settings.getDouble(DownDeviation), -100000, 100000);
 
-  settings.getData(maTypeKey, d);
-  dialog->addComboItem(page, maTypeKey, maList, d);
+  settings.getData(MAType, d);
+  dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
 
   page++;
-  k = QObject::tr("Up");
+  k = QObject::tr("Upper");
   dialog->addPage(page, k);
 
-  settings.getData(ucKey, d);
-  dialog->addColorItem(page, ucKey, d);
+  settings.getData(UpColor, d);
+  dialog->addColorItem(UpColor, page, QObject::tr("Color"), d);
 
-  settings.getData(upKey, d);
-  dialog->addComboItem(page, upKey, plotList, d);
+  settings.getData(UpPlot, d);
+  dialog->addComboItem(UpPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(ulKey, d);
-  dialog->addTextItem(page, ulKey, d);
+  settings.getData(UpLabel, d);
+  dialog->addTextItem(UpLabel, page, QObject::tr("Label"), d);
 
   page++;
   k = QObject::tr("Mid");
   dialog->addPage(page, k);
 
-  settings.getData(mcKey, d);
-  dialog->addColorItem(page, mcKey, d);
+  settings.getData(MidColor, d);
+  dialog->addColorItem(MidColor, page, QObject::tr("Color"), d);
 
-  settings.getData(mpKey, d);
-  dialog->addComboItem(page, mpKey, plotList, d);
+  settings.getData(MidPlot, d);
+  dialog->addComboItem(MidPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(mlKey, d);
-  dialog->addTextItem(page, mlKey, d);
+  settings.getData(MidLabel, d);
+  dialog->addTextItem(MidLabel, page, QObject::tr("Label"), d);
 
   page++;
-  k = QObject::tr("Low");
+  k = QObject::tr("Lower");
   dialog->addPage(page, k);
 
-  settings.getData(lcKey, d);
-  dialog->addColorItem(page, lcKey, d);
+  settings.getData(DownColor, d);
+  dialog->addColorItem(DownColor, page, QObject::tr("Color"), d);
 
-  settings.getData(lpKey, d);
-  dialog->addComboItem(page, lpKey, plotList, d);
+  settings.getData(DownPlot, d);
+  dialog->addComboItem(DownPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(llKey, d);
-  dialog->addTextItem(page, llKey, d);
+  settings.getData(DownLabel, d);
+  dialog->addTextItem(DownLabel, page, QObject::tr("Label"), d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -361,16 +333,7 @@ int BBANDS::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

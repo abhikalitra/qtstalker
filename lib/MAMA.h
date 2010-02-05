@@ -29,6 +29,22 @@
 class MAMA : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      OSC,
+      OSCColor,
+      MAMAColor,
+      FAMAColor,
+      MAMAPlot,
+      FAMAPlot,
+      OSCLabel,
+      MAMALabel,
+      FAMALabel,
+      FastLimit,
+      SlowLimit,
+      Input
+    };
+
     MAMA ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -36,15 +52,6 @@ class MAMA : public IndicatorBase
     int dialog ();
 
   protected:
-    QString oscKey;
-    QString mcKey;
-    QString fcKey;
-    QString mpKey;
-    QString fpKey;
-    QString mlKey;
-    QString flKey;
-    QString flmKey;
-    QString slmKey;
 };
 
 #endif

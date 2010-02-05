@@ -27,6 +27,20 @@
 class CCI : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      Smoothing,
+      SmoothingType,
+      Period,
+      Ref1,
+      Ref2,
+      Ref1Color,
+      Ref2Color
+    };
+
     CCI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,12 +48,6 @@ class CCI : public IndicatorBase
     int dialog ();
 
   protected:
-    QString ref1Key;
-    QString ref2Key;
-    QString ref1ColorKey;
-    QString ref2ColorKey;
-    QString smoothKey;
-    QString smoothTypeKey;
 };
 
 #endif

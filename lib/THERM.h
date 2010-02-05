@@ -27,6 +27,23 @@
 class THERM : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      UpColor,
+      DownColor,
+      ThreshColor,
+      MAColor,
+      MAPlot,
+      Plot,
+      Label,
+      MALabel,
+      Threshold,
+      Smoothing,
+      SmoothingType,
+      MAPeriod,
+      MAType
+    };
+
     THERM ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,12 +51,6 @@ class THERM : public IndicatorBase
     int dialog ();
 
   protected:
-    QString downColorKey;
-    QString upColorKey;
-    QString threshColorKey;
-    QString threshKey;
-    QString smoothKey;
-    QString smoothTypeKey;
 };
 
 #endif

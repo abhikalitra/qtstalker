@@ -27,6 +27,16 @@
 class T3 : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Input,
+      Color,
+      Plot,
+      Label,
+      Period,
+      VFactor
+    };
+
     T3 ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,7 +44,6 @@ class T3 : public IndicatorBase
     int dialog ();
 
   protected:
-    QString vKey;
 };
 
 #endif

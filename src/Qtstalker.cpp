@@ -720,44 +720,7 @@ void QtstalkerApp::loadChart (QString d)
 
   int loop;
   for (loop = 0; loop < indicatorList.count(); loop++)
-  {
     loadIndicator(indicatorList[loop]);
-/*
-    Indicator i;
-    i.setName(indicatorList[loop]);
-    db.getIndicator(i);
-
-    QList<PlotLine *> lines;
-    IndicatorFactory fac;
-    QString s;
-    i.getIndicator(s);
-    IndicatorBase *ib = fac.getFunction(s);
-    if (! ib)
-      continue;
-
-    ib->setSettings(i);
-
-    if (ib->getIndicator(i, recordList))
-    {
-      qDebug() << "Qtstalker::loadChart: getIndicator failed";
-      delete ib;
-      continue;
-    }
-
-    delete ib;
-
-    i.getLines(lines);
-
-    Plot *plot = plotList[indicatorList[loop]];
-    if (! plot)
-      continue;
-
-    plot->setData(recordList);
-    plot->calculate();
-    plot->getIndicatorPlot()->setPlotList(lines);
-    plot->loadChartObjects();
-*/
-  }
 
   resetZoomSettings();
   setSliderStart();
@@ -807,6 +770,12 @@ void QtstalkerApp::loadIndicator (QString &d)
   plot->calculate();
   plot->getIndicatorPlot()->setPlotList(lines);
   plot->loadChartObjects();
+}
+
+void QtstalkerApp::refreshIndicator (QString d)
+{
+  loadIndicator(d);
+  slotDrawPlots();
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -957,15 +926,15 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   // get the last used indicators
   Config config;
-  QStringList lastIndicatorUsed;
-  config.getData(Config::LastIndicatorUsed, lastIndicatorUsed);
+//  QStringList lastIndicatorUsed;
+//  config.getData(Config::LastIndicatorUsed, lastIndicatorUsed);
 
   // Set the current indicator in this row to the last used one.
-  if (i.getTabRow() < lastIndicatorUsed.count())
-  {
-    if (d == lastIndicatorUsed[i.getTabRow()])
-      it->setCurrentWidget(plot);
-  }
+//  if (i.getTabRow() < lastIndicatorUsed.count())
+//  {
+//    if (d == lastIndicatorUsed[i.getTabRow()])
+//      it->setCurrentWidget(plot);
+//  }
 
   QColor color;
   config.getData(Config::BackgroundColor, color);
@@ -1064,6 +1033,7 @@ void QtstalkerApp::initIndicatorNav ()
   connect(ip, SIGNAL(signalNewIndicator(QString)), this, SLOT(slotNewIndicator(QString)));
   connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
   connect(this, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
+  connect(ip, SIGNAL(signalRefreshIndicator(QString)), this, SLOT(refreshIndicator(QString)));
   navTab->addTab(ip, QIcon(indicator), QString());
   navTab->setTabToolTip(2, tr("Indicators"));
 }

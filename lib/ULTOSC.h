@@ -27,6 +27,19 @@
 class ULTOSC : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      ShortPeriod,
+      MidPeriod,
+      LongPeriod,
+      Ref1Color,
+      Ref2Color,
+      Ref3Color
+    };
+
     ULTOSC ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,12 +47,6 @@ class ULTOSC : public IndicatorBase
     int dialog ();
 
   protected:
-    QString spKey;
-    QString mpKey;
-    QString lpKey;
-    QString ref30ColorKey;
-    QString ref50ColorKey;
-    QString ref70ColorKey;
 };
 
 #endif

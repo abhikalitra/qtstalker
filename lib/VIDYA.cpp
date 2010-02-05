@@ -31,29 +31,19 @@
 VIDYA::VIDYA ()
 {
   indicator = "VIDYA";
-  vpKey = QObject::tr("Volume Period");
 
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "Line";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-
-  settings.setData(periodKey, 14);
-
-  settings.setData(vpKey, 10);
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Line");
+  settings.setData(Label, indicator);
+  settings.setData(Period, 14);
+  settings.setData(Input, "Close");
+  settings.setData(VPeriod, 10);
 }
 
 int VIDYA::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -61,8 +51,8 @@ int VIDYA::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  int period = settings.getInt(periodKey);
-  int volPeriod = settings.getInt(vpKey);
+  int period = settings.getInt(Period);
+  int volPeriod = settings.getInt(VPeriod);
 
   PlotLine *line = getVIDYA(in, period, volPeriod);
   if (! line)
@@ -71,13 +61,13 @@ int VIDYA::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -282,21 +272,21 @@ int VIDYA::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  dialog->addIntItem(page, vpKey, settings.getInt(vpKey), 1, 100000);
+  dialog->addIntItem(VPeriod, page, QObject::tr("Volume Period"), settings.getInt(VPeriod), 1, 100000);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -305,16 +295,7 @@ int VIDYA::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

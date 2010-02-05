@@ -147,6 +147,7 @@ class QtstalkerApp : public QMainWindow
     void slotReloadChart ();
     void slotRefreshUpdated (int);
     void loadIndicator (QString &d);
+    void refreshIndicator (QString);
 //    void slotScript ();
 //    void slotScriptDone ();
 

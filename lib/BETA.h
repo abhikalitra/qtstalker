@@ -27,6 +27,16 @@
 class BETA : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      Period,
+      Input,
+      Index
+    };
+
     BETA ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,7 +44,6 @@ class BETA : public IndicatorBase
     int dialog ();
 
   private:
-    QString indexKey;
 };
 
 #endif

@@ -521,8 +521,12 @@ void DataBase::setIndicator (Indicator &i)
   if (q.lastError().isValid())
     qDebug() << "DataBase::setIndicator: save index" << q.lastError().text();
 
-  // create the parms table if needed
+  // remove the parms table
   QString table = "INDICATOR_PARMS_" + name;
+  s = "DROP TABLE " + table;
+  q.exec(s);
+
+  // re-create the parms table
   s = "CREATE TABLE IF NOT EXISTS " + table + " (";
   s.append("key TEXT");
   s.append(", data TEXT");
@@ -530,12 +534,6 @@ void DataBase::setIndicator (Indicator &i)
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::setIndicator: create parms table" << q.lastError().text();
-
-  // remove all the records first
-  s = "DELETE FROM " + table;
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::setIndicator: clear parms table" << q.lastError().text();
 
   Setting set;
   i.getSettings(set);

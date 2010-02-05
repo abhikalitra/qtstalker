@@ -27,42 +27,28 @@
 VOL::VOL ()
 {
   indicator = "VOL";
-  methodKey = QObject::tr("Method");
+
+  settings.setData(UpColor, "green");
+  settings.setData(DownColor, "red");
+  settings.setData(NeutralColor, "blue");
+  settings.setData(Color, "red");
+  settings.setData(MAColor, "yellow");
+  settings.setData(Plot, "Histogram Bar");
+  settings.setData(MAPlot, "Line");
+  settings.setData(Label, indicator);
+  settings.setData(MALabel, "VOLMA");
+  settings.setData(Method, "VOL");
+  settings.setData(MAPeriod, 10);
+  settings.setData(MAType, "SMA");
 
   methodList << "OBV";
   methodList << "VOL";
-
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "yellow";
-  settings.setData(maColorKey, d);
-
-  d = "Histogram Bar";
-  settings.setData(plotKey, d);
-
-  d = "Line";
-  settings.setData(maPlotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "VOL_MA";
-  settings.setData(maLabelKey, d);
-
-  d = "VOL";
-  settings.setData(methodKey, d);
-
-  settings.setData(maPeriodKey, 10);
-
-  d = "SMA";
-  settings.setData(maTypeKey, d);
 }
 
 int VOL::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(methodKey, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
   PlotLine *line = getVOL(data, method);
@@ -70,9 +56,9 @@ int VOL::getIndicator (Indicator &ind, BarData *data)
     return 1;
 
   // vol ma
-  int period = settings.getInt(maPeriodKey);
+  int period = settings.getInt(MAPeriod);
 
-  settings.getData(maTypeKey, s);
+  settings.getData(MAType, s);
   int type = maList.indexOf(s);
 
   PlotLine *ma = getMA(line, period, type);
@@ -82,23 +68,23 @@ int VOL::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(maColorKey, s);
+  settings.getData(MAColor, s);
   ma->setColor(s);
 
-  settings.getData(maPlotKey, s);
+  settings.getData(MAPlot, s);
   ma->setType(s);
 
-  settings.getData(maLabelKey, s);
+  settings.getData(MALabel, s);
   ma->setLabel(s);
 
   // vol
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -170,8 +156,25 @@ PlotLine * VOL::getVOL (BarData *data, int method)
         qDebug() << indicator << "::getVOL: no volume data";
         return 0;
       }
-      else
-	return line;
+
+      line->setColorFlag(TRUE);
+      int loop;
+      QColor up("green");
+      QColor down("red");
+      QColor neutral("blue");
+      for (loop = 1; loop < data->count(); loop++)
+      {
+	if (data->getClose(loop) < data->getClose(loop - 1))
+	  line->setColorBar(loop, down);
+	else
+	{
+	  if (data->getClose(loop) > data->getClose(loop - 1))
+	    line->setColorBar(loop, up);
+	  else
+	    line->setColorBar(loop, neutral);
+	}
+      }
+      return line;
       break;
     }
     default:
@@ -202,36 +205,41 @@ int VOL::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  QColor c(d);
-  dialog->addColorItem(page, colorKey, c);
+  settings.getData(UpColor, d);
+  dialog->addColorItem(UpColor, page, QObject::tr("Up Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(DownColor, d);
+  dialog->addColorItem(DownColor, page, QObject::tr("Down Color"), d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(NeutralColor, d);
+  dialog->addColorItem(NeutralColor, page, QObject::tr("Neutral Color"), d);
 
-  settings.getData(methodKey, d);
-  dialog->addComboItem(page, methodKey, methodList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
+
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+
+  settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
   page++;
   k = QObject::tr("MA");
   dialog->addPage(page, k);
 
-  settings.getData(maColorKey, d);
-  dialog->addColorItem(page, maColorKey, c);
+  settings.getData(MAColor, d);
+  dialog->addColorItem(MAColor, page, QObject::tr("Color"), d);
 
-  settings.getData(maPlotKey, d);
-  dialog->addComboItem(page, maPlotKey, plotList, d);
+  settings.getData(MAPlot, d);
+  dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(maLabelKey, d);
-  dialog->addTextItem(page, maLabelKey, d);
+  settings.getData(MALabel, d);
+  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, maPeriodKey, settings.getInt(maPeriodKey), 1, 100000);
+  dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), settings.getInt(MAPeriod), 1, 100000);
 
-  settings.getData(maTypeKey, d);
-  dialog->addComboItem(page, maTypeKey, maList, d);
+  settings.getData(MAType, d);
+  dialog->addComboItem(MAType, page, QObject::tr("Type"), maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -240,16 +248,7 @@ int VOL::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

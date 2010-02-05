@@ -27,6 +27,15 @@
 class ATR : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Method,
+      Period,
+      Color,
+      Plot,
+      Label
+    };
+
     ATR ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);

@@ -27,6 +27,27 @@
 class HT : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Method,
+      Input,
+      Color,
+      PhaseColor,
+      QuadColor,
+      SineColor,
+      LeadColor,
+      Plot,
+      PhasePlot,
+      QuadPlot,
+      SinePlot,
+      LeadPlot,
+      Label,
+      PhaseLabel,
+      QuadLabel,
+      SineLabel,
+      LeadLabel
+    };
+
     HT ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,20 +55,6 @@ class HT : public IndicatorBase
     int dialog ();
 
   protected:
-    QString methodKey;
-    QString phaseColorKey;
-    QString quadColorKey;
-    QString sineColorKey;
-    QString leadColorKey;
-    QString phasePlotKey;
-    QString quadPlotKey;
-    QString sinePlotKey;
-    QString leadPlotKey;
-    QString phaseLabelKey;
-    QString quadLabelKey;
-    QString sineLabelKey;
-    QString leadLabelKey;
-
     QStringList methodList;
     QStringList guiMethodList;
 };

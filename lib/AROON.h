@@ -29,6 +29,21 @@
 class AROON : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Method,
+      DownColor,
+      UpColor,
+      OSCColor,
+      DownPlot,
+      UpPlot,
+      OSCPlot,
+      DownLabel,
+      UpLabel,
+      OSCLabel,
+      Period
+    };
+
     AROON ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -38,16 +53,6 @@ class AROON : public IndicatorBase
   private:
     QStringList methodList;
     QStringList guiMethodList;
-    QString methodKey;
-    QString dcKey;
-    QString ucKey;
-    QString dpKey;
-    QString upKey;
-    QString dlKey;
-    QString ulKey;
-    QString oscColorKey;
-    QString oscPlotKey;
-    QString oscLabelKey;
 };
 
 #endif

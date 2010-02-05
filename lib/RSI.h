@@ -27,6 +27,21 @@
 class RSI : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Input,
+      Color,
+      Plot,
+      Label,
+      Period,
+      Smoothing,
+      SmoothingType,
+      Ref1,
+      Ref2,
+      Ref1Color,
+      Ref2Color
+    };
+
     RSI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,12 +49,6 @@ class RSI : public IndicatorBase
     int dialog ();
 
   protected:
-    QString ref1Key;
-    QString ref2Key;
-    QString ref1ColorKey;
-    QString ref2ColorKey;
-    QString smoothKey;
-    QString smoothTypeKey;
 };
 
 #endif

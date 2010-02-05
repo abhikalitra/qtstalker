@@ -27,6 +27,18 @@
 class ROC : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Method,
+      Input,
+      Color,
+      Plot,
+      Label,
+      Period,
+      Smoothing,
+      SmoothingType
+    };
+
     ROC ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,9 +46,6 @@ class ROC : public IndicatorBase
     int dialog ();
 
   protected:
-    QString methodKey;
-    QString smoothKey;
-    QString smoothTypeKey;
     QStringList methodList;
 };
 

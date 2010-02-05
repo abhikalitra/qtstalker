@@ -28,57 +28,30 @@
 LMS::LMS ()
 {
   indicator = "LMS";
-  skcKey = QObject::tr("SlowK Color");
-  d2cKey = QObject::tr("2 Day Color");
-  d5cKey = QObject::tr("5 Day Color");
-  skpKey = QObject::tr("SlowK Plot");
-  d2pKey = QObject::tr("2 Day Plot");
-  d5pKey = QObject::tr("5 Day Plot");
-  sklKey = QObject::tr("SlowK Label");
-  d2lKey = QObject::tr("2 Day Label");
-  d5lKey = QObject::tr("5 Day Label");
-  fpKey = QObject::tr("Fast Period");
-  spKey = QObject::tr("Slow Period");
-  indexKey = QObject::tr("CMB Index");
+
+  settings.setData(SlowkColor, "red");
+  settings.setData(Day2Color, "yellow");
+  settings.setData(Day5Color, "blue");
+  settings.setData(SlowkPlot, "Line");
+  settings.setData(Day2Plot, "Line");
+  settings.setData(Day5Plot, "Line");
+  settings.setData(SlowkLabel, "SLOWK");
+  settings.setData(Day2Label, "2DAY");
+  settings.setData(Day5Label, "5DAY");
+  settings.setData(FastPeriod, 5);
+  settings.setData(SlowPeriod, 5);
+  settings.setData(Index, 1);
 
   cycleFlag = TRUE;
   fkPeriod = 5;
   skPeriod = 5;
   cmbIndex = 1;
-
-  QString d;
-  d = "red";
-  settings.setData(skcKey, d);
-
-  d = "yellow";
-  settings.setData(d2cKey, d);
-
-  d = "blue";
-  settings.setData(d5cKey, d);
-
-  d = "Line";
-  settings.setData(skpKey, d);
-  settings.setData(d2pKey, d);
-  settings.setData(d5pKey, d);
-
-  d = "SLOWK";
-  settings.setData(sklKey, d);
-
-  d = "2DAY";
-  settings.setData(d2lKey, d);
-
-  d = "5DAY";
-  settings.setData(d5lKey, d);
-
-  settings.setData(fpKey, 5);
-  settings.setData(spKey, 5);
-  settings.setData(indexKey, 1);
 }
 
 int LMS::getIndicator (Indicator &ind, BarData *data)
 {
-  fkPeriod = settings.getInt(fpKey);
-  skPeriod = settings.getInt(spKey);
+  fkPeriod = settings.getInt(FastPeriod);
+  skPeriod = settings.getInt(SlowPeriod);
 
   QList<PlotLine *> l;
   getLMS(l, data);
@@ -91,39 +64,39 @@ int LMS::getIndicator (Indicator &ind, BarData *data)
   // slowK line
   QString s;
   PlotLine *line = l.at(0);
-  settings.getData(skcKey, s);
+  settings.getData(SlowkColor, s);
   line->setColor(s);
 
-  settings.getData(skpKey, s);
+  settings.getData(SlowkPlot, s);
   line->setType(s);
 
-  settings.getData(sklKey, s);
+  settings.getData(SlowkLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
 
   // 2Day line
   line = l.at(1);
-  settings.getData(d2cKey, s);
+  settings.getData(Day2Color, s);
   line->setColor(s);
 
-  settings.getData(d2pKey, s);
+  settings.getData(Day2Plot, s);
   line->setType(s);
 
-  settings.getData(d2lKey, s);
+  settings.getData(Day2Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
 
   // 5Day line
   line = l.at(2);
-  settings.getData(d5cKey, s);
+  settings.getData(Day5Color, s);
   line->setColor(s);
 
-  settings.getData(d5pKey, s);
+  settings.getData(Day5Plot, s);
   line->setType(s);
 
-  settings.getData(d5lKey, s);
+  settings.getData(Day5Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -438,48 +411,48 @@ int LMS::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  dialog->addIntItem(page, fpKey, settings.getInt(fpKey), 1, 100000);
-  dialog->addIntItem(page, spKey, settings.getInt(spKey), 1, 100000);
-  dialog->addIntItem(page, indexKey, settings.getInt(indexKey), 0, 1);
+  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), settings.getInt(FastPeriod), 1, 100000);
+  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 1, 100000);
+  dialog->addIntItem(Index, page, QObject::tr("Index"), settings.getInt(Index), 0, 1);
 
   page++;
   k = "SlowK";
   dialog->addPage(page, k);
 
-  settings.getData(skcKey, d);
-  dialog->addColorItem(page, skcKey, d);
+  settings.getData(SlowkColor, d);
+  dialog->addColorItem(SlowkColor, page, QObject::tr("Color"), d);
 
-  settings.getData(skpKey, d);
-  dialog->addComboItem(page, skpKey, plotList, d);
+  settings.getData(SlowkPlot, d);
+  dialog->addComboItem(SlowkPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(sklKey, d);
-  dialog->addTextItem(page, sklKey, d);
+  settings.getData(SlowkLabel, d);
+  dialog->addTextItem(SlowkLabel, page, QObject::tr("Label"), d);
 
   page++;
   k = "2 Day";
   dialog->addPage(page, k);
 
-  settings.getData(d2cKey, d);
-  dialog->addColorItem(page, d2cKey, d);
+  settings.getData(Day2Color, d);
+  dialog->addColorItem(Day2Color, page, QObject::tr("Color"), d);
 
-  settings.getData(d2pKey, d);
-  dialog->addComboItem(page, d2pKey, plotList, d);
+  settings.getData(Day2Plot, d);
+  dialog->addComboItem(Day2Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(d2lKey, d);
-  dialog->addTextItem(page, d2lKey, d);
+  settings.getData(Day2Plot, d);
+  dialog->addTextItem(Day2Plot, page, QObject::tr("Label"), d);
 
   page++;
   k = "5 Day";
   dialog->addPage(page, k);
 
-  settings.getData(d5cKey, d);
-  dialog->addColorItem(page, d5cKey, d);
+  settings.getData(Day5Color, d);
+  dialog->addColorItem(Day5Color, page, QObject::tr("Color"), d);
 
-  settings.getData(d5pKey, d);
-  dialog->addComboItem(page, d5pKey, plotList, d);
+  settings.getData(Day5Plot, d);
+  dialog->addComboItem(Day5Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(d5lKey, d);
-  dialog->addTextItem(page, d5lKey, d);
+  settings.getData(Day5Label, d);
+  dialog->addTextItem(Day5Label, page, QObject::tr("Label"), d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -488,16 +461,7 @@ int LMS::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

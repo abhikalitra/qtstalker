@@ -27,23 +27,24 @@
 ADX::ADX ()
 {
   indicator = "ADX";
-  methodKey = QObject::tr("Method");
-  adxColorKey = QObject::tr("ADX Color");
-  adxrColorKey = QObject::tr("ADXR Color");
-  pdiColorKey = QObject::tr("+DI Color");
-  mdiColorKey = QObject::tr("-DI Color");
-  adxPlotKey = QObject::tr("ADX Plot");
-  adxrPlotKey = QObject::tr("ADXR Plot");
-  pdiPlotKey = QObject::tr("+DI Plot");
-  mdiPlotKey = QObject::tr("-DI Plot");
-  adxLabelKey = QObject::tr("ADX Label");
-  adxrLabelKey = QObject::tr("ADXR Label");
-  pdiLabelKey = QObject::tr("+DI Label");
-  mdiLabelKey = QObject::tr("-DI Label");
-  adxCheckKey = QObject::tr("ADX Display");
-  adxrCheckKey = QObject::tr("ADXR Display");
-  pdiCheckKey = QObject::tr("+DI Display");
-  mdiCheckKey = QObject::tr("-DI Display");
+
+  settings.setData(ADXColor, "blue");
+  settings.setData(ADXRColor, "yellow");
+  settings.setData(PDIColor, "green");
+  settings.setData(MDIColor, "red");
+  settings.setData(ADXPlot, "Line");
+  settings.setData(ADXRPlot, "Line");
+  settings.setData(PDIPlot, "Line");
+  settings.setData(MDIPlot, "Line");
+  settings.setData(ADXLabel, "ADX");
+  settings.setData(ADXRLabel, "ADXR");
+  settings.setData(PDILabel, "+DI");
+  settings.setData(MDILabel, "-DI");
+  settings.setData(ADXCheck, 1);
+  settings.setData(ADXRCheck, 1);
+  settings.setData(PDICheck, 1);
+  settings.setData(MDICheck, 1);
+  settings.setData(Period, 14);
 
   methodList << "ADX";
   methodList << "ADXR";
@@ -52,124 +53,83 @@ ADX::ADX ()
   methodList << "DX";
   methodList << "-DM";
   methodList << "+DM";
-
-  QString d;
-  d = "red";
-  settings.setData(mdiColorKey, d);
-
-  d = "green";
-  settings.setData(pdiColorKey, d);
-
-  d = "blue";
-  settings.setData(adxColorKey, d);
-
-  d = "yellow";
-  settings.setData(adxrColorKey, d);
-
-  d = "Line";
-  settings.setData(mdiPlotKey, d);
-  settings.setData(pdiPlotKey, d);
-  settings.setData(adxPlotKey, d);
-  settings.setData(adxrPlotKey, d);
-
-  d = "-DI";
-  settings.setData(mdiLabelKey, d);
-
-  d = "+DI";
-  settings.setData(pdiLabelKey, d);
-
-  d = "ADX";
-  settings.setData(adxLabelKey, d);
-
-  d = "ADXR";
-  settings.setData(adxrLabelKey, d);
-
-  settings.setData(periodKey, 14);
-
-  d = "ADX";
-  settings.setData(methodKey, d);
-
-  settings.setData(mdiCheckKey, 1);
-  settings.setData(pdiCheckKey, 1);
-  settings.setData(adxCheckKey, 1);
-  settings.setData(adxrCheckKey, 1);
 }
 
 int ADX::getIndicator (Indicator &ind, BarData *data)
 {
-  int period = settings.getInt(periodKey);
+  int period = settings.getInt(Period);
 
-  if (settings.getInt(mdiCheckKey))
+  if (settings.getInt(MDICheck))
   {
     PlotLine *line = getLine(data, period, 0);
     if (! line)
       return 1;
 
     QString s;
-    settings.getData(mdiColorKey, s);
+    settings.getData(MDIColor, s);
     line->setColor(s);
 
-    settings.getData(mdiPlotKey, s);
+    settings.getData(MDIPlot, s);
     line->setType(s);
 
-    settings.getData(mdiLabelKey, s);
+    settings.getData(MDILabel, s);
     line->setLabel(s);
 
     ind.addLine(line);
   }
 
-  if (settings.getInt(pdiCheckKey))
+  if (settings.getInt(PDICheck))
   {
     PlotLine *line = getLine(data, period, 1);
     if (! line)
       return 1;
 
     QString s;
-    settings.getData(pdiColorKey, s);
+    settings.getData(PDIColor, s);
     line->setColor(s);
 
-    settings.getData(pdiPlotKey, s);
+    settings.getData(PDIPlot, s);
     line->setType(s);
 
-    settings.getData(pdiLabelKey, s);
+    settings.getData(PDILabel, s);
     line->setLabel(s);
 
     ind.addLine(line);
   }
 
-  if (settings.getInt(adxCheckKey))
+  if (settings.getInt(ADXCheck))
   {
     PlotLine *line = getLine(data, period, 2);
     if (! line)
       return 1;
 
     QString s;
-    settings.getData(adxColorKey, s);
+    settings.getData(ADXColor, s);
     line->setColor(s);
 
-    settings.getData(adxPlotKey, s);
+    settings.getData(ADXPlot, s);
     line->setType(s);
 
-    settings.getData(adxLabelKey, s);
+    settings.getData(ADXLabel, s);
     line->setLabel(s);
 
     ind.addLine(line);
   }
 
-  if (settings.getInt(adxrCheckKey))
+  if (settings.getInt(ADXRCheck))
   {
     PlotLine *line = getLine(data, period, 3);
     if (! line)
       return 1;
 
     QString s;
-    settings.getData(adxrColorKey, s);
+    settings.getData(ADXRColor, s);
     line->setColor(s);
 
-    settings.getData(adxrPlotKey, s);
+    settings.getData(ADXRPlot, s);
     line->setType(s);
 
-    settings.getData(adxrLabelKey, s);
+    settings.getData(ADXRLabel, s);
     line->setLabel(s);
 
     ind.addLine(line);
@@ -284,70 +244,70 @@ int ADX::dialog ()
   PrefDialog *dialog = new PrefDialog;
   dialog->setWindowTitle(QObject::tr("Edit Indicator"));
 
-  k = QObject::tr("Settings");
+  k = QObject::tr("General");
   dialog->addPage(page, k);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
 
   page++;
   k = QObject::tr("-DI");
   dialog->addPage(page, k);
 
-  settings.getData(mdiColorKey, d);
-  dialog->addColorItem(page, mdiColorKey, d);
+  settings.getData(MDIColor, d);
+  dialog->addColorItem(MDIColor, page, QObject::tr("Color"), d);
 
-  settings.getData(mdiPlotKey, d);
-  dialog->addComboItem(page, mdiPlotKey, plotList, d);
+  settings.getData(MDIPlot, d);
+  dialog->addComboItem(MDIPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(mdiLabelKey, d);
-  dialog->addTextItem(page, mdiLabelKey, d);
+  settings.getData(MDILabel, d);
+  dialog->addTextItem(MDILabel, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, mdiCheckKey, settings.getInt(mdiCheckKey));
+  dialog->addCheckItem(MDICheck, page, QObject::tr("Show"), settings.getInt(MDICheck));
 
   page++;
   k = QObject::tr("+DI");
   dialog->addPage(page, k);
 
-  settings.getData(pdiColorKey, d);
-  dialog->addColorItem(page, pdiColorKey, d);
+  settings.getData(PDIColor, d);
+  dialog->addColorItem(PDIColor, page, QObject::tr("Color"), d);
 
-  settings.getData(pdiPlotKey, d);
-  dialog->addComboItem(page, pdiPlotKey, plotList, d);
+  settings.getData(PDIPlot, d);
+  dialog->addComboItem(PDIPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(pdiLabelKey, d);
-  dialog->addTextItem(page, pdiLabelKey, d);
+  settings.getData(PDILabel, d);
+  dialog->addTextItem(PDILabel, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, pdiCheckKey, settings.getInt(pdiCheckKey));
+  dialog->addCheckItem(PDICheck, page, QObject::tr("Show"), settings.getInt(MDICheck));
 
   page++;
   k = QObject::tr("ADX");
   dialog->addPage(page, k);
 
-  settings.getData(adxColorKey, d);
-  dialog->addColorItem(page, adxColorKey, d);
+  settings.getData(ADXColor, d);
+  dialog->addColorItem(ADXColor, page, QObject::tr("Color"), d);
 
-  settings.getData(adxPlotKey, d);
-  dialog->addComboItem(page, adxPlotKey, plotList, d);
+  settings.getData(ADXPlot, d);
+  dialog->addComboItem(ADXPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(adxLabelKey, d);
-  dialog->addTextItem(page, adxLabelKey, d);
+  settings.getData(ADXLabel, d);
+  dialog->addTextItem(ADXLabel, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, adxCheckKey, settings.getInt(adxCheckKey));
+  dialog->addCheckItem(ADXCheck, page, QObject::tr("Show"), settings.getInt(MDICheck));
 
   page++;
   k = QObject::tr("ADXR");
   dialog->addPage(page, k);
 
-  settings.getData(adxrColorKey, d);
-  dialog->addColorItem(page, adxrColorKey, d);
+  settings.getData(ADXRColor, d);
+  dialog->addColorItem(ADXRColor, page, QObject::tr("Color"), d);
 
-  settings.getData(adxrPlotKey, d);
-  dialog->addComboItem(page, adxrPlotKey, plotList, d);
+  settings.getData(ADXRPlot, d);
+  dialog->addComboItem(ADXRPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(adxrLabelKey, d);
-  dialog->addTextItem(page, adxrLabelKey, d);
+  settings.getData(ADXRLabel, d);
+  dialog->addTextItem(ADXRLabel, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, adxrCheckKey, settings.getInt(adxrCheckKey));
+  dialog->addCheckItem(ADXRCheck, page, QObject::tr("Show"), settings.getInt(MDICheck));
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -356,16 +316,7 @@ int ADX::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

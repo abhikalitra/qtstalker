@@ -28,62 +28,28 @@
 STOCHRSI::STOCHRSI ()
 {
   indicator = "STOCHRSI";
-  fkcKey = QObject::tr("Fast K Color");
-  fdcKey = QObject::tr("Fast D Color");
-  fkpKey = QObject::tr("Fast K Plot");
-  fdpKey = QObject::tr("Fast D Plot");
-  fklKey = QObject::tr("Fast K Label");
-  fdlKey = QObject::tr("Fast D Label");
-  fdpdKey = QObject::tr("Fast D Period");
-  fkpdKey = QObject::tr("Fast K Period");
-  fdmaKey = QObject::tr("Fast D MA");
-  ref1Key = QObject::tr("Ref. 1 Line");
-  ref2Key = QObject::tr("Ref. 2 Line");
-  ref1ColorKey = QObject::tr("Ref 1 Color");
-  ref2ColorKey = QObject::tr("Ref 2 Color");
 
-  QString d;
-  d = "red";
-  settings.setData(fkcKey, d);
-
-  d = "yellow";
-  settings.setData(fdcKey, d);
-
-  d = "white";
-  settings.setData(ref1ColorKey, d);
-  settings.setData(ref2ColorKey, d);
-
-  d = "Line";
-  settings.setData(fkpKey, d);
-
-  d = "Dash";
-  settings.setData(fdpKey, d);
-
-  d = "STORSI_K";
-  settings.setData(fklKey, d);
-
-  d = "STORSI_D";
-  settings.setData(fdlKey, d);
-
-  settings.setData(fkpdKey, 5);
-  settings.setData(fdpdKey, 3);
-
-  d = "SMA";
-  settings.setData(fdmaKey, d);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-
-  settings.setData(periodKey, 14);
-
-  settings.setData(ref1Key, 25);
-  settings.setData(ref2Key, 75);
+  settings.setData(FastkColor, "red");
+  settings.setData(FastdColor, "yellow");
+  settings.setData(Ref1Color, "white");
+  settings.setData(Ref2Color, "white");
+  settings.setData(FastkPlot, "Line");
+  settings.setData(FastdPlot, "Dash");
+  settings.setData(FastkLabel, "STORSIK");
+  settings.setData(FastdLabel, "STORSID");
+  settings.setData(FastkPeriod, 5);
+  settings.setData(FastdPeriod, 3);
+  settings.setData(FastdMA, "SMA");
+  settings.setData(Ref1, 25);
+  settings.setData(Ref2, 75);
+  settings.setData(Input, "SMA");
+  settings.setData(Period, 14);
 }
 
 int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -91,11 +57,11 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  int period = settings.getInt(periodKey);
-  int fastk = settings.getInt(fkpdKey);
-  int fastd = settings.getInt(fdpdKey);
+  int period = settings.getInt(Period);
+  int fastk = settings.getInt(FastkPeriod);
+  int fastd = settings.getInt(FastdPeriod);
 
-  settings.getData(fdmaKey, s);
+  settings.getData(FastdMA, s);
   int ma = maList.indexOf(s);
 
   QList<PlotLine *> l;
@@ -109,40 +75,40 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
 
   PlotLine *ref1 = new PlotLine;
   ref1->setType(PlotLine::Horizontal);
-  settings.getData(ref1ColorKey, s);
+  settings.getData(Ref1Color, s);
   ref1->setColor(s);
-  ref1->append(settings.getInt(ref1Key));
+  ref1->append(settings.getInt(Ref1));
   ind.addLine(ref1);
 
   PlotLine *ref2 = new PlotLine;
   ref2->setType(PlotLine::Horizontal);
-  settings.getData(ref2ColorKey, s);
+  settings.getData(Ref2Color, s);
   ref2->setColor(s);
-  ref2->append(settings.getInt(ref2Key));
+  ref2->append(settings.getInt(Ref2));
   ind.addLine(ref2);
 
   // fastk line
   PlotLine *line = l.at(0);
-  settings.getData(fkcKey, s);
+  settings.getData(FastkColor, s);
   line->setColor(s);
 
-  settings.getData(fkpKey, s);
+  settings.getData(FastkPlot, s);
   line->setType(s);
 
-  settings.getData(fklKey, s);
+  settings.getData(FastkLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
 
   // fastd line
   line = l.at(1);
-  settings.getData(fdcKey, s);
+  settings.getData(FastdColor, s);
   line->setColor(s);
 
-  settings.getData(fdpKey, s);
+  settings.getData(FastdPlot, s);
   line->setType(s);
 
-  settings.getData(fdlKey, s);
+  settings.getData(FastdLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -276,57 +242,57 @@ int STOCHRSI::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 2, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
   page++;
   k = QObject::tr("FastK");
   dialog->addPage(page, k);
 
-  settings.getData(fkcKey, d);
-  dialog->addColorItem(page, fkcKey, d);
+  settings.getData(FastkColor, d);
+  dialog->addColorItem(FastkColor, page, QObject::tr("Color"), d);
 
-  settings.getData(fkpKey, d);
-  dialog->addComboItem(page, fkpKey, plotList, d);
+  settings.getData(FastkPlot, d);
+  dialog->addComboItem(FastkPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(fklKey, d);
-  dialog->addTextItem(page, fklKey, d);
+  settings.getData(FastkLabel, d);
+  dialog->addTextItem(FastkLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, fkpdKey, settings.getInt(fkpdKey), 1, 100000);
+  dialog->addIntItem(FastkPeriod, page, QObject::tr("Period"), settings.getInt(FastkPeriod), 1, 100000);
 
   page++;
   k = QObject::tr("FastD");
   dialog->addPage(page, k);
 
-  settings.getData(fdcKey, d);
-  dialog->addColorItem(page, fdcKey, d);
+  settings.getData(FastdColor, d);
+  dialog->addColorItem(FastdColor, page, QObject::tr("Color"), d);
 
-  settings.getData(fdpKey, d);
-  dialog->addComboItem(page, fdpKey, plotList, d);
+  settings.getData(FastdPlot, d);
+  dialog->addComboItem(FastdPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(fdlKey, d);
-  dialog->addTextItem(page, fdlKey, d);
+  settings.getData(FastdLabel, d);
+  dialog->addTextItem(FastdLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, fdpdKey, settings.getInt(fdpdKey), 1, 100000);
+  dialog->addIntItem(FastdPeriod, page, QObject::tr("Period"), settings.getInt(FastdPeriod), 1, 100000);
 
-  settings.getData(fdmaKey, d);
-  dialog->addComboItem(page, fdmaKey, maList, d);
+  settings.getData(FastdMA, d);
+  dialog->addComboItem(FastdMA, page, QObject::tr("MA Type"), maList, d);
 
   page++;
   k = QObject::tr("Ref");
   dialog->addPage(page, k);
 
-  settings.getData(ref1ColorKey, d);
-  dialog->addColorItem(page, ref1ColorKey, d);
+  settings.getData(Ref1Color, d);
+  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
 
-  settings.getData(ref2ColorKey, d);
-  dialog->addColorItem(page, ref2ColorKey, d);
+  settings.getData(Ref2Color, d);
+  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
 
-  dialog->addIntItem(page, ref1Key, settings.getInt(ref1Key), 0, 100);
+  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), settings.getInt(Ref1), 0, 100);
 
-  dialog->addIntItem(page, ref2Key, settings.getInt(ref2Key), 0, 100);
+  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), settings.getInt(Ref2), 0, 100);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -335,16 +301,7 @@ int STOCHRSI::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

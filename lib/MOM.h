@@ -27,6 +27,17 @@
 class MOM : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Input,
+      Color,
+      Plot,
+      Label,
+      Period,
+      Smoothing,
+      SmoothingType
+    };
+
     MOM ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,8 +45,6 @@ class MOM : public IndicatorBase
     int dialog ();
 
   protected:
-    QString smoothKey;
-    QString smoothTypeKey;
 };
 
 #endif

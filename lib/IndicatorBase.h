@@ -100,6 +100,7 @@ class IndicatorBase
     void getSettings (Indicator &_indicator);
     void getIndicatorList (QStringList &, int flag);
     void getMAList (QStringList &);
+    void getDialogSettings (PrefDialog *dialog);
 
   protected:
     Setting settings;
@@ -111,17 +112,6 @@ class IndicatorBase
     QStringList opList;
     QStringList plotList;
     QStringList inputList;
-
-    QString colorKey;
-    QString plotKey;
-    QString labelKey;
-    QString inputKey;
-    QString periodKey;
-    QString maPeriodKey;
-    QString maTypeKey;
-    QString maColorKey;
-    QString maPlotKey;
-    QString maLabelKey;
 };
 
 #endif

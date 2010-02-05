@@ -27,68 +27,29 @@
 MACD::MACD ()
 {
   indicator = "MACD";
-  macdcKey = QObject::tr("MACD Color");
-  sigcKey = QObject::tr("Signal Color");
-  histcKey = QObject::tr("Histogram Color");
-  macdpKey = QObject::tr("MACD Plot");
-  sigpKey = QObject::tr("Signal Plot");
-  histpKey = QObject::tr("Histogram Plot");
-  macdlKey = QObject::tr("MACD Label");
-  siglKey = QObject::tr("Signal Label");
-  histlKey = QObject::tr("Histogram Label");
-  fpKey = QObject::tr("Fast Period");
-  spKey = QObject::tr("Slow Period");
-  sigpdKey = QObject::tr("Signal Period");
-  fmaKey = QObject::tr("Fast MA");
-  smaKey = QObject::tr("Slow MA");
-  sigmaKey = QObject::tr("Signal MA");
 
-  QString d;
-  d = "red";
-  settings.setData(macdcKey, d);
-
-  d = "yellow";
-  settings.setData(sigcKey, d);
-
-  d = "blue";
-  settings.setData(histcKey, d);
-
-  d = "Line";
-  settings.setData(macdpKey, d);
-
-  d = "Dash";
-  settings.setData(sigpKey, d);
-
-  d = "Histogram";
-  settings.setData(histpKey, d);
-
-  d = "MACD";
-  settings.setData(macdlKey, d);
-
-  d = "SIG";
-  settings.setData(siglKey, d);
-
-  d = "HIST";
-  settings.setData(histlKey, d);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-
-  settings.setData(fpKey, 12);
-  settings.setData(spKey, 26);
-  settings.setData(sigpdKey, 9);
-
-  d = "SMA";
-  settings.setData(fmaKey, d);
-  settings.setData(smaKey, d);
-  d = "EMA";
-  settings.setData(sigmaKey, d);
+  settings.setData(MACDColor, "red");
+  settings.setData(SignalColor, "yellow");
+  settings.setData(HistColor, "blue");
+  settings.setData(MACDPlot, "Line");
+  settings.setData(SignalPlot, "Dash");
+  settings.setData(HistPlot, "Histogram");
+  settings.setData(MACDLabel, "MACD");
+  settings.setData(SignalLabel, "SIG");
+  settings.setData(HistLabel, "HIST");
+  settings.setData(FastPeriod, 12);
+  settings.setData(SlowPeriod, 26);
+  settings.setData(SignalPeriod, 9);
+  settings.setData(FastMA, "SMA");
+  settings.setData(SlowMA, "SMA");
+  settings.setData(SignalMA, "EMA");
+  settings.setData(Input, "Close");
 }
 
 int MACD::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -96,17 +57,17 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  int fast = settings.getInt(fpKey);
-  int slow = settings.getInt(spKey);
-  int signal = settings.getInt(sigpdKey);
+  int fast = settings.getInt(FastPeriod);
+  int slow = settings.getInt(SlowPeriod);
+  int signal = settings.getInt(SignalPeriod);
 
-  settings.getData(fmaKey, s);
+  settings.getData(FastMA, s);
   int fastma = maList.indexOf(s);
 
-  settings.getData(smaKey, s);
+  settings.getData(SlowMA, s);
   int slowma = maList.indexOf(s);
 
-  settings.getData(sigmaKey, s);
+  settings.getData(SignalMA, s);
   int signalma = maList.indexOf(s);
 
   QList<PlotLine *> l;
@@ -120,39 +81,39 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
 
   // macd line
   PlotLine *line = l.at(0);
-  settings.getData(macdcKey, s);
+  settings.getData(MACDColor, s);
   line->setColor(s);
 
-  settings.getData(macdpKey, s);
+  settings.getData(MACDPlot, s);
   line->setType(s);
 
-  settings.getData(macdlKey, s);
+  settings.getData(MACDLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
 
   // signal line
   line = l.at(1);
-  settings.getData(sigcKey, s);
+  settings.getData(SignalColor, s);
   line->setColor(s);
 
-  settings.getData(sigpKey, s);
+  settings.getData(SignalPlot, s);
   line->setType(s);
 
-  settings.getData(siglKey, s);
+  settings.getData(SignalLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
 
   // hist line
   line = l.at(2);
-  settings.getData(histcKey, s);
+  settings.getData(HistColor, s);
   line->setColor(s);
 
-  settings.getData(histpKey, s);
+  settings.getData(HistPlot, s);
   line->setType(s);
 
-  settings.getData(histlKey, s);
+  settings.getData(HistLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -315,62 +276,62 @@ int MACD::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  dialog->addIntItem(page, fpKey, settings.getInt(fpKey), 2, 100000);
+  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), settings.getInt(FastPeriod), 2, 100000);
 
-  dialog->addIntItem(page, spKey, settings.getInt(spKey), 2, 100000);
+  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 2, 100000);
 
-  settings.getData(fmaKey, d);
-  dialog->addComboItem(page, fmaKey, maList, d);
+  settings.getData(FastMA, d);
+  dialog->addComboItem(FastMA, page, QObject::tr("Fast MA"), maList, d);
 
-  settings.getData(smaKey, d);
-  dialog->addComboItem(page, smaKey, maList, d);
+  settings.getData(SlowMA, d);
+  dialog->addComboItem(SlowMA, page, QObject::tr("Slow MA"), maList, d);
 
   page++;
   k = QObject::tr("MACD");
   dialog->addPage(page, k);
 
-  settings.getData(macdcKey, d);
-  dialog->addColorItem(page, macdcKey, d);
+  settings.getData(MACDColor, d);
+  dialog->addColorItem(MACDColor, page, QObject::tr("Color"), d);
 
-  settings.getData(macdpKey, d);
-  dialog->addComboItem(page, macdpKey, plotList, d);
+  settings.getData(MACDPlot, d);
+  dialog->addComboItem(MACDPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(macdlKey, d);
-  dialog->addTextItem(page, macdlKey, d);
+  settings.getData(MACDLabel, d);
+  dialog->addTextItem(MACDLabel, page, QObject::tr("Label"), d);
 
   page++;
   k = QObject::tr("Signal");
   dialog->addPage(page, k);
 
-  settings.getData(sigcKey, d);
-  dialog->addColorItem(page, sigcKey, d);
+  settings.getData(SignalColor, d);
+  dialog->addColorItem(SignalColor, page, QObject::tr("Color"), d);
 
-  settings.getData(sigpKey, d);
-  dialog->addComboItem(page, sigpKey, plotList, d);
+  settings.getData(SignalPlot, d);
+  dialog->addComboItem(SignalPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(siglKey, d);
-  dialog->addTextItem(page, siglKey, d);
+  settings.getData(SignalLabel, d);
+  dialog->addTextItem(SignalLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, sigpdKey, settings.getInt(sigpdKey), 1, 100000);
+  dialog->addIntItem(SignalPeriod, page, QObject::tr("Period"), settings.getInt(SignalPeriod), 1, 100000);
 
-  settings.getData(sigmaKey, d);
-  dialog->addComboItem(page, sigmaKey, maList, d);
+  settings.getData(SignalMA, d);
+  dialog->addComboItem(SignalMA, page, QObject::tr("MA Type"), maList, d);
 
   page++;
   k = QObject::tr("Hist");
   dialog->addPage(page, k);
 
-  settings.getData(histcKey, d);
-  dialog->addColorItem(page, histcKey, d);
+  settings.getData(HistColor, d);
+  dialog->addColorItem(HistColor, page, QObject::tr("Color"), d);
 
-  settings.getData(histpKey, d);
-  dialog->addComboItem(page, histpKey, plotList, d);
+  settings.getData(HistPlot, d);
+  dialog->addComboItem(HistPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(histlKey, d);
-  dialog->addTextItem(page, histlKey, d);
+  settings.getData(HistLabel, d);
+  dialog->addTextItem(HistLabel, page, QObject::tr("Label"), d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -379,16 +340,7 @@ int MACD::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

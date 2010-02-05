@@ -28,23 +28,29 @@
 class AD : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Method,
+      FastPeriod,
+      SlowPeriod,
+      ADColor,
+      ADPlot,
+      ADLabel,
+      OSCColor,
+      OSCPlot,
+      OSCLabel
+    };
+
     AD ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getAD (BarData *data);
-    PlotLine * getADOSC (BarData *data, int fastPeriod, int slowPeriod);
+    PlotLine * getAD (BarData *data, int method, int fast, int slow);
     int dialog ();
 
   private:
     QStringList methodList;
-    QString methodKey;
-    QString fpKey;
-    QString spKey;
-    QString oscColorKey;
-    QString oscPlotKey;
-    QString oscLabelKey;
 };
 
 #endif

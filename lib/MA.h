@@ -27,6 +27,16 @@
 class MA : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Method,
+      Color,
+      Plot,
+      Label,
+      Input,
+      Period
+    };
+
     MA ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);

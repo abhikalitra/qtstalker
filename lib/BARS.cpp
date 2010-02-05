@@ -27,33 +27,38 @@
 BARS::BARS ()
 {
   indicator = "BARS";
-  ucKey = QObject::tr("Up Color");
-  dcKey = QObject::tr("Down Color");
-  ncKey = QObject::tr("Neutral Color");
 
-  QString d;
-  d = "green";
-  settings.setData(ucKey, d);
-
-  d = "red";
-  settings.setData(dcKey, d);
-
-  d = "blue";
-  settings.setData(ncKey, d);
-
-  settings.setData(labelKey, indicator);
+  settings.setData(UpColor, "green");
+  settings.setData(DownColor, "red");
+  settings.setData(NeutralColor, "blue");
+  settings.setData(BarsLabel, indicator);
+  settings.setData(MAColor, "red");
+  settings.setData(MA2Color, "yellow");
+  settings.setData(MA3Color, "blue");
+  settings.setData(MAPlot, "Line");
+  settings.setData(MA2Plot, "Line");
+  settings.setData(MA3Plot, "Line");
+  settings.setData(MALabel, "MA1");
+  settings.setData(MA2Label, "MA2");
+  settings.setData(MA3Label, "MA3");
+  settings.setData(MAPeriod, 20);
+  settings.setData(MA2Period, 50);
+  settings.setData(MA3Period, 200);
+  settings.setData(MAType, "SMA");
+  settings.setData(MA2Type, "SMA");
+  settings.setData(MA3Type, "SMA");
 }
 
 int BARS::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(ucKey, s);
+  settings.getData(UpColor, s);
   QColor up(s);
 
-  settings.getData(dcKey, s);
+  settings.getData(DownColor, s);
   QColor down(s);
 
-  settings.getData(ncKey, s);
+  settings.getData(NeutralColor, s);
   QColor neutral(s);
 
   PlotLine *line = getBARS(data, up, down, neutral);
@@ -62,10 +67,55 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
 
   line->setType(PlotLine::Bar);
 
-  settings.getData(labelKey, s);
+  settings.getData(BarsLabel, s);
   line->setLabel(s);
 
   ind.addLine(line);
+
+  int period = settings.getInt(MAPeriod);
+  if (period > 1)
+  {
+    settings.getData(MAType, s);
+    int type = maList.indexOf(s);
+    PlotLine *ma = getMA(line, period, type);
+    settings.getData(MAColor, s);
+    ma->setColor(s);
+    settings.getData(MAPlot, s);
+    ma->setType(s);
+    settings.getData(MALabel, s);
+    ma->setLabel(s);
+    ind.addLine(ma);
+  }
+
+  period = settings.getInt(MA2Period);
+  if (period > 1)
+  {
+    settings.getData(MA2Type, s);
+    int type = maList.indexOf(s);
+    PlotLine *ma = getMA(line, period, type);
+    settings.getData(MA2Color, s);
+    ma->setColor(s);
+    settings.getData(MA2Plot, s);
+    ma->setType(s);
+    settings.getData(MA2Label, s);
+    ma->setLabel(s);
+    ind.addLine(ma);
+  }
+
+  period = settings.getInt(MA3Period);
+  if (period > 1)
+  {
+    settings.getData(MA3Type, s);
+    int type = maList.indexOf(s);
+    PlotLine *ma = getMA(line, period, type);
+    settings.getData(MA3Color, s);
+    ma->setColor(s);
+    settings.getData(MA3Plot, s);
+    ma->setType(s);
+    settings.getData(MA3Label, s);
+    ma->setLabel(s);
+    ind.addLine(ma);
+  }
 
   return 0;
 }
@@ -149,20 +199,71 @@ int BARS::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(ucKey, d);
-  QColor c(d);
-  dialog->addColorItem(page, ucKey, c);
+  settings.getData(UpColor, d);
+  dialog->addColorItem(UpColor, page, QObject::tr("Up"), d);
 
-  settings.getData(dcKey, d);
-  c.setNamedColor(d);
-  dialog->addColorItem(page, dcKey, c);
+  settings.getData(DownColor, d);
+  dialog->addColorItem(DownColor, page, QObject::tr("Down"), d);
 
-  settings.getData(ncKey, d);
-  c.setNamedColor(d);
-  dialog->addColorItem(page, ncKey, c);
+  settings.getData(NeutralColor, d);
+  dialog->addColorItem(NeutralColor, page, QObject::tr("Neutral"), d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(BarsLabel, d);
+  dialog->addTextItem(BarsLabel, page, QObject::tr("Label"), d);
+
+  page++;
+  k = QObject::tr("MA 1");
+  dialog->addPage(page, k);
+
+  settings.getData(MAColor, d);
+  dialog->addColorItem(MAColor, page, QObject::tr("Color"), d);
+
+  settings.getData(MAPlot, d);
+  dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);
+
+  settings.getData(MALabel, d);
+  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d);
+
+  dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), settings.getInt(MAPeriod), 1, 100000);
+
+  settings.getData(MAType, d);
+  dialog->addComboItem(MAType, page, QObject::tr("Type"), maList, d);
+
+  page++;
+  k = QObject::tr("MA 2");
+  dialog->addPage(page, k);
+
+  settings.getData(MA2Color, d);
+  dialog->addColorItem(MA2Color, page, QObject::tr("Color"), d);
+
+  settings.getData(MA2Plot, d);
+  dialog->addComboItem(MA2Plot, page, QObject::tr("Plot"), plotList, d);
+
+  settings.getData(MA2Label, d);
+  dialog->addTextItem(MA2Label, page, QObject::tr("Label"), d);
+
+  dialog->addIntItem(MA2Period, page, QObject::tr("Period"), settings.getInt(MA2Period), 1, 100000);
+
+  settings.getData(MA2Type, d);
+  dialog->addComboItem(MA2Type, page, QObject::tr("Type"), maList, d);
+
+  page++;
+  k = QObject::tr("MA 3");
+  dialog->addPage(page, k);
+
+  settings.getData(MA3Color, d);
+  dialog->addColorItem(MA3Color, page, QObject::tr("Color"), d);
+
+  settings.getData(MA3Plot, d);
+  dialog->addComboItem(MA3Plot, page, QObject::tr("Plot"), plotList, d);
+
+  settings.getData(MA3Label, d);
+  dialog->addTextItem(MA3Label, page, QObject::tr("Label"), d);
+
+  dialog->addIntItem(MA3Period, page, QObject::tr("Period"), settings.getInt(MA3Period), 1, 100000);
+
+  settings.getData(MA3Type, d);
+  dialog->addComboItem(MA3Type, page, QObject::tr("Type"), maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -171,16 +272,7 @@ int BARS::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

@@ -26,41 +26,15 @@ Setting::Setting ()
 {
 }
 
-void Setting::getData (QString &k, QString &d)
-{
-  d.clear();
-  if (dict.contains(k))
-    d = dict.value(k);
-}
-
-double Setting::getDouble (QString &k)
-{
-  if (dict.contains(k))
-    return dict.value(k).toDouble();
-  else
-    return 0;
-}
-
-int Setting::getInt (QString &k)
-{
-  if (dict.contains(k))
-    return dict.value(k).toInt();
-  else
-    return 0;
-}
-
-int Setting::getInt (int k)
-{
-  QString s = QString::number(k);
-  if (dict.contains(s))
-    return dict.value(s).toInt();
-  else
-    return 0;
-}
-
 void Setting::setData (QString &k, QString &d)
 {
   dict.insert(k, d);
+}
+
+void Setting::setData (int k, QString d)
+{
+  QString s = QString::number(k);
+  dict.insert(s, d);
 }
 
 void Setting::setData (int k, int d)
@@ -80,6 +54,55 @@ void Setting::setData (QString &k, double d)
 {
   QString s2 = QString::number(d);
   dict.insert(k, s2);
+}
+
+void Setting::getData (QString &k, QString &d)
+{
+  d.clear();
+  if (dict.contains(k))
+    d = dict.value(k);
+}
+
+void Setting::getData (int k, QString &d)
+{
+  d.clear();
+  QString s = QString::number(k);
+  if (dict.contains(s))
+    d = dict.value(s);
+}
+
+double Setting::getDouble (QString &k)
+{
+  if (dict.contains(k))
+    return dict.value(k).toDouble();
+  else
+    return 0;
+}
+
+double Setting::getDouble (int k)
+{
+  QString s = QString::number(k);
+  if (dict.contains(s))
+    return dict.value(s).toDouble();
+  else
+    return 0;
+}
+
+int Setting::getInt (QString &k)
+{
+  if (dict.contains(k))
+    return dict.value(k).toInt();
+  else
+    return 0;
+}
+
+int Setting::getInt (int k)
+{
+  QString s = QString::number(k);
+  if (dict.contains(s))
+    return dict.value(s).toInt();
+  else
+    return 0;
 }
 
 void Setting::getKeyList (QStringList &l)
@@ -146,6 +169,19 @@ void Setting::copy (Setting *r)
     k = it.key();
     d = it.value();
     r->setData(k, d);
+  }
+}
+
+void Setting::copy (Setting &r)
+{
+  QString k, d;
+  QHashIterator<QString, QString> it(dict);
+  while (it.hasNext())
+  {
+    it.next();
+    k = it.key();
+    d = it.value();
+    r.setData(k, d);
   }
 }
 

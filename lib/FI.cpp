@@ -28,40 +28,32 @@ FI::FI ()
 {
   indicator = "FI";
 
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "Histogram Bar";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "EMA";
-  settings.setData(maTypeKey, d);
-
-  settings.setData(periodKey, 2);
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Histogram Bar");
+  settings.setData(Label, indicator);
+  settings.setData(MAType, "EMA");
+  settings.setData(Period, 2);
 }
 
 int FI::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  int period = settings.getInt(periodKey);
+  int period = settings.getInt(Period);
 
-  settings.getData(maTypeKey, s);
+  settings.getData(MAType, s);
   int ma = maList.indexOf(s);
 
   PlotLine *line = getFI(data, period, ma);
   if (! line)
     return 1;
 
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -148,19 +140,19 @@ int FI::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
 
-  settings.getData(maTypeKey, d);
-  dialog->addComboItem(page, maTypeKey, maList, d);
+  settings.getData(MAType, d);
+  dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -169,16 +161,7 @@ int FI::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

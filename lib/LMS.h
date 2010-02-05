@@ -29,6 +29,22 @@
 class LMS : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      SlowkColor,
+      Day2Color,
+      Day5Color,
+      SlowkPlot,
+      Day2Plot,
+      Day5Plot,
+      SlowkLabel,
+      Day2Label,
+      Day5Label,
+      FastPeriod,
+      SlowPeriod,
+      Index
+    };
+
     LMS ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -44,19 +60,6 @@ class LMS : public IndicatorBase
     QString slowkName;
     QString Day2Name;
     QString Day5Name;
-
-    QString skcKey;
-    QString d2cKey;
-    QString d5cKey;
-    QString skpKey;
-    QString d2pKey;
-    QString d5pKey;
-    QString sklKey;
-    QString d2lKey;
-    QString d5lKey;
-    QString fpKey;
-    QString spKey;
-    QString indexKey;
 };
 
 #endif

@@ -27,6 +27,19 @@
 class CORREL : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      Input,
+      Input2,
+      Period,
+      Ref1Color,
+      Ref2Color,
+      Ref3Color
+    };
+
     CORREL ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);

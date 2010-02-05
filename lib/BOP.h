@@ -27,6 +27,15 @@
 class BOP : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      Smoothing,
+      SmoothingType
+    };
+
     BOP ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,8 +43,6 @@ class BOP : public IndicatorBase
     int dialog ();
 
   protected:
-    QString smoothKey;
-    QString smoothTypeKey;
 };
 
 #endif

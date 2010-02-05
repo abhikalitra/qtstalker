@@ -27,6 +27,15 @@
 class SAR : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Color,
+      Plot,
+      Label,
+      Init,
+      Max
+    };
+
     SAR ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,8 +43,6 @@ class SAR : public IndicatorBase
     int dialog ();
 
   protected:
-    QString initKey;
-    QString maxKey;
 };
 
 #endif

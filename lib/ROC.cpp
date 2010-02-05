@@ -27,41 +27,26 @@
 ROC::ROC ()
 {
   indicator = "ROC";
-  methodKey = QObject::tr("Method");
-  smoothKey = QObject::tr("Smoothing Period");
-  smoothTypeKey = QObject::tr("Smoothing Type");
+
+  settings.setData(Color, "red");
+  settings.setData(Plot, "Histogram Bar");
+  settings.setData(Label, indicator);
+  settings.setData(Period, 10);
+  settings.setData(Smoothing, 1);
+  settings.setData(SmoothingType, "SMA");
+  settings.setData(Input, "Close");
+  settings.setData(Method, "ROC");
 
   methodList << QObject::tr("ROC");
   methodList << QObject::tr("ROCP");
   methodList << QObject::tr("ROCR");
   methodList << QObject::tr("ROC100");
-
-  QString d;
-  d = "red";
-  settings.setData(colorKey, d);
-
-  d = "Histogram Bar";
-  settings.setData(plotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "Close";
-  settings.setData(inputKey, d);
-
-  settings.setData(periodKey, 10);
-  settings.setData(smoothKey, 1);
-
-  d = "SMA";
-  settings.setData(smoothTypeKey, d);
-
-  d = "ROC";
-  settings.setData(methodKey, d);
 }
 
 int ROC::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(inputKey, s);
+  settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
@@ -69,14 +54,14 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  int period = settings.getInt(periodKey);
+  int period = settings.getInt(Period);
 
-  int smoothing = settings.getInt(smoothKey);
+  int smoothing = settings.getInt(Smoothing);
 
-  settings.getData(methodKey, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
-  settings.getData(smoothTypeKey, s);
+  settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
 
   PlotLine *line = getROC(in, period, method, smoothing, type);
@@ -86,13 +71,13 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(colorKey, s);
+  settings.getData(Color, s);
   line->setColor(s);
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -236,27 +221,27 @@ int ROC::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(colorKey, d);
-  dialog->addColorItem(page, colorKey, d);
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(plotKey, d);
-  dialog->addComboItem(page, plotKey, plotList, d);
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  settings.getData(inputKey, d);
-  dialog->addComboItem(page, inputKey, inputList, d);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
 
-  dialog->addIntItem(page, periodKey, settings.getInt(periodKey), 1, 100000);
+  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
-  settings.getData(methodKey, d);
-  dialog->addComboItem(page, methodKey, methodList, d);
+  settings.getData(SmoothingType, d);
+  dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);
 
-  dialog->addIntItem(page, smoothKey, settings.getInt(smoothKey), 1, 100000);
+  settings.getData(Input, d);
+  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  settings.getData(smoothTypeKey, d);
-  dialog->addComboItem(page, smoothTypeKey, maList, d);
+  settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -265,16 +250,7 @@ int ROC::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

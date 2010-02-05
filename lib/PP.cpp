@@ -28,58 +28,25 @@
 PP::PP ()
 {
   indicator = "PP";
-  r1cKey = QObject::tr("1R Color");
-  r2cKey = QObject::tr("2R Color");
-  r3cKey = QObject::tr("3R Color");
-  s1cKey = QObject::tr("1S Color");
-  s2cKey = QObject::tr("2S Color");
-  s3cKey = QObject::tr("3S Color");
-  r1lKey = QObject::tr("1R Label");
-  r2lKey = QObject::tr("2R Label");
-  r3lKey = QObject::tr("3R Label");
-  s1lKey = QObject::tr("1S Label");
-  s2lKey = QObject::tr("2S Label");
-  s3lKey = QObject::tr("3S Label");
-  r1ShowKey = QObject::tr("Show R1");
-  r2ShowKey = QObject::tr("Show R2");
-  r3ShowKey = QObject::tr("Show R3");
-  s1ShowKey = QObject::tr("Show S1");
-  s2ShowKey = QObject::tr("Show S2");
-  s3ShowKey = QObject::tr("Show S3");
 
-  QString d;
-  d = "red";
-  settings.setData(r1cKey, d);
-  settings.setData(r2cKey, d);
-  settings.setData(r3cKey, d);
-  settings.setData(s1cKey, d);
-  settings.setData(s2cKey, d);
-  settings.setData(s3cKey, d);
-
-  d = "1R";
-  settings.setData(r1lKey, d);
-
-  d = "2R";
-  settings.setData(r2lKey, d);
-
-  d = "3R";
-  settings.setData(r3lKey, d);
-
-  d = "1S";
-  settings.setData(s1lKey, d);
-
-  d = "2S";
-  settings.setData(s2lKey, d);
-
-  d = "3S";
-  settings.setData(s3lKey, d);
-
-  settings.setData(r1ShowKey, 1);
-  settings.setData(r2ShowKey, 1);
-  settings.setData(r3ShowKey, 1);
-  settings.setData(s1ShowKey, 1);
-  settings.setData(s2ShowKey, 1);
-  settings.setData(s3ShowKey, 1);
+  settings.setData(R1Color, "red");
+  settings.setData(R2Color, "red");
+  settings.setData(R3Color, "red");
+  settings.setData(S1Color, "red");
+  settings.setData(S2Color, "red");
+  settings.setData(S3Color, "red");
+  settings.setData(R1Label, "1R");
+  settings.setData(R2Label, "2R");
+  settings.setData(R3Label, "3R");
+  settings.setData(S1Label, "1S");
+  settings.setData(S2Label, "2S");
+  settings.setData(S3Label, "3S");
+  settings.setData(R1Show, 1);
+  settings.setData(R2Show, 1);
+  settings.setData(R3Show, 1);
+  settings.setData(S1Show, 1);
+  settings.setData(S2Show, 1);
+  settings.setData(S3Show, 1);
 }
 
 int PP::getIndicator (Indicator &ind, BarData *data)
@@ -91,84 +58,84 @@ int PP::getIndicator (Indicator &ind, BarData *data)
 
   QString s;
   // 1R line
-  if (settings.getInt(r1ShowKey))
+  if (settings.getInt(R1Show))
   {
     PlotLine *line = getPP(data, 0);
 
-    settings.getData(r1cKey, s);
+    settings.getData(R1Color, s);
     line->setColor(s);
 
-    settings.getData(r1lKey, s);
+    settings.getData(R1Label, s);
     line->setLabel(s);
 
     ind.addLine(line);
   }
 
   // 2R line
-  if (settings.getInt(r2ShowKey))
+  if (settings.getInt(R2Show))
   {
     PlotLine *line = getPP(data, 1);
 
-    settings.getData(r2cKey, s);
+    settings.getData(R2Color, s);
     line->setColor(s);
 
-    settings.getData(r2lKey, s);
+    settings.getData(R2Label, s);
     line->setLabel(s);
 
     ind.addLine(line);
   }
 
   // 3R line
-  if (settings.getInt(r3ShowKey))
+  if (settings.getInt(R3Show))
   {
     PlotLine *line = getPP(data, 2);
 
-    settings.getData(r3cKey, s);
+    settings.getData(R3Color, s);
     line->setColor(s);
 
-    settings.getData(r3lKey, s);
+    settings.getData(R3Label, s);
     line->setLabel(s);
 
     ind.addLine(line);
   }
 
   // 1S line
-  if (settings.getInt(s1ShowKey))
+  if (settings.getInt(S1Show))
   {
     PlotLine *line = getPP(data, 3);
 
-    settings.getData(s1cKey, s);
+    settings.getData(S1Color, s);
     line->setColor(s);
 
-    settings.getData(s1lKey, s);
+    settings.getData(S1Label, s);
     line->setLabel(s);
 
     ind.addLine(line);
   }
 
   // 2S line
-  if (settings.getInt(s2ShowKey))
+  if (settings.getInt(S2Show))
   {
     PlotLine *line = getPP(data, 4);
 
-    settings.getData(s2cKey, s);
+    settings.getData(S2Color, s);
     line->setColor(s);
 
-    settings.getData(s2lKey, s);
+    settings.getData(S2Label, s);
     line->setLabel(s);
 
     ind.addLine(line);
   }
 
   // 3S line
-  if (settings.getInt(s3ShowKey))
+  if (settings.getInt(S3Show))
   {
     PlotLine *line = getPP(data, 5);
 
-    settings.getData(s3cKey, s);
+    settings.getData(S3Color, s);
     line->setColor(s);
 
-    settings.getData(s3lKey, s);
+    settings.getData(S3Label, s);
     line->setLabel(s);
 
     ind.addLine(line);
@@ -279,73 +246,73 @@ int PP::dialog ()
   k = "R1";
   dialog->addPage(page, k);
 
-  settings.getData(r1cKey, d);
-  dialog->addColorItem(page, r1cKey, d);
+  settings.getData(R1Color, d);
+  dialog->addColorItem(R1Color, page, QObject::tr("Color"), d);
 
-  settings.getData(r1lKey, d);
-  dialog->addTextItem(page, r1lKey, d);
+  settings.getData(R1Label, d);
+  dialog->addTextItem(R1Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, r1ShowKey, settings.getInt(r1ShowKey));
+  dialog->addCheckItem(R1Show, page, QObject::tr("Show"), settings.getInt(R1Show));
 
   page++;
   k = "R2";
   dialog->addPage(page, k);
 
-  settings.getData(r2cKey, d);
-  dialog->addColorItem(page, r2cKey, d);
+  settings.getData(R2Color, d);
+  dialog->addColorItem(R2Color, page, QObject::tr("Color"), d);
 
-  settings.getData(r2lKey, d);
-  dialog->addTextItem(page, r2lKey, d);
+  settings.getData(R2Label, d);
+  dialog->addTextItem(R2Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, r2ShowKey, settings.getInt(r2ShowKey));
+  dialog->addCheckItem(R2Show, page, QObject::tr("Show"), settings.getInt(R2Show));
 
   page++;
   k = "R3";
   dialog->addPage(page, k);
 
-  settings.getData(r3cKey, d);
-  dialog->addColorItem(page, r3cKey, d);
+  settings.getData(R3Color, d);
+  dialog->addColorItem(R3Color, page, QObject::tr("Color"), d);
 
-  settings.getData(r3lKey, d);
-  dialog->addTextItem(page, r3lKey, d);
+  settings.getData(R3Label, d);
+  dialog->addTextItem(R3Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, r3ShowKey, settings.getInt(r3ShowKey));
+  dialog->addCheckItem(R3Show, page, QObject::tr("Show"), settings.getInt(R3Show));
 
   page++;
   k = "S1";
   dialog->addPage(page, k);
 
-  settings.getData(s1cKey, d);
-  dialog->addColorItem(page, s1cKey, d);
+  settings.getData(S1Color, d);
+  dialog->addColorItem(S1Color, page, QObject::tr("Color"), d);
 
-  settings.getData(s1lKey, d);
-  dialog->addTextItem(page, s1lKey, d);
+  settings.getData(S1Label, d);
+  dialog->addTextItem(S1Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, s1ShowKey, settings.getInt(s1ShowKey));
+  dialog->addCheckItem(S1Show, page, QObject::tr("Show"), settings.getInt(S1Show));
 
   page++;
   k = "S2";
   dialog->addPage(page, k);
 
-  settings.getData(s2cKey, d);
-  dialog->addColorItem(page, s2cKey, d);
+  settings.getData(S2Color, d);
+  dialog->addColorItem(S2Color, page, QObject::tr("Color"), d);
 
-  settings.getData(s2lKey, d);
-  dialog->addTextItem(page, s2lKey, d);
+  settings.getData(S2Label, d);
+  dialog->addTextItem(S2Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, s2ShowKey, settings.getInt(s2ShowKey));
+  dialog->addCheckItem(S2Show, page, QObject::tr("Show"), settings.getInt(S2Show));
 
   page++;
   k = "S3";
   dialog->addPage(page, k);
 
-  settings.getData(s3cKey, d);
-  dialog->addColorItem(page, s3cKey, d);
+  settings.getData(S3Color, d);
+  dialog->addColorItem(S3Color, page, QObject::tr("Color"), d);
 
-  settings.getData(s3lKey, d);
-  dialog->addTextItem(page, s3lKey, d);
+  settings.getData(S3Label, d);
+  dialog->addTextItem(S3Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(page, s3ShowKey, settings.getInt(s3ShowKey));
+  dialog->addCheckItem(S3Show, page, QObject::tr("Show"), settings.getInt(S3Show));
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -354,16 +321,7 @@ int PP::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

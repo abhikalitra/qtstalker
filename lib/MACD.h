@@ -29,6 +29,26 @@
 class MACD : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      MACDColor,
+      SignalColor,
+      HistColor,
+      MACDPlot,
+      SignalPlot,
+      HistPlot,
+      MACDLabel,
+      SignalLabel,
+      HistLabel,
+      FastPeriod,
+      SlowPeriod,
+      SignalPeriod,
+      FastMA,
+      SlowMA,
+      SignalMA,
+      Input
+    };
+
     MACD ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -36,21 +56,6 @@ class MACD : public IndicatorBase
     int dialog ();
 
   protected:
-    QString macdcKey;
-    QString sigcKey;
-    QString histcKey;
-    QString macdpKey;
-    QString sigpKey;
-    QString histpKey;
-    QString macdlKey;
-    QString siglKey;
-    QString histlKey;
-    QString fpKey;
-    QString spKey;
-    QString sigpdKey;
-    QString fmaKey;
-    QString smaKey;
-    QString sigmaKey;
 };
 
 #endif

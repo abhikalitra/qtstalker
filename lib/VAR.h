@@ -27,6 +27,16 @@
 class VAR : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      Input,
+      Color,
+      Plot,
+      Label,
+      Period,
+      Deviation
+    };
+
     VAR ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
@@ -34,7 +44,6 @@ class VAR : public IndicatorBase
     int dialog ();
 
   protected:
-    QString devKey;
 };
 
 #endif

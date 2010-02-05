@@ -38,49 +38,27 @@
 THERM::THERM ()
 {
   indicator = "THERM";
-  downColorKey = QObject::tr("Down Color");
-  upColorKey = QObject::tr("Up Color");
-  threshColorKey = QObject::tr("Threshold Color");
-  threshKey = QObject::tr("Threshold");
-  smoothKey = QObject::tr("Smoothing Period");
-  smoothTypeKey = QObject::tr("Smoothing Type");
 
-  QString d;
-  d = "green";
-  settings.setData(downColorKey, d);
-
-  d = "magenta";
-  settings.setData(upColorKey, d);
-
-  d = "red";
-  settings.setData(threshColorKey, d);
-
-  d = "yellow";
-  settings.setData(maColorKey, d);
-
-  d = "Line";
-  settings.setData(maPlotKey, d);
-
-  settings.setData(labelKey, indicator);
-
-  d = "THERM_MA";
-  settings.setData(maLabelKey, d);
-
-  settings.setData(threshKey, 3);
-  settings.setData(smoothKey, 2);
-  settings.setData(maPeriodKey, 22);
-
-  d = "SMA";
-  settings.setData(maTypeKey, d);
-  settings.setData(smoothTypeKey, d);
+  settings.setData(DownColor, "green");
+  settings.setData(UpColor, "magenta");
+  settings.setData(ThreshColor, "red");
+  settings.setData(MAColor, "yellow");
+  settings.setData(MAPlot, "Line");
+  settings.setData(Label, indicator);
+  settings.setData(MALabel, "THERM_MA");
+  settings.setData(Threshold, 3);
+  settings.setData(Smoothing, 2);
+  settings.setData(MAPeriod, 22);
+  settings.setData(MAType, "SMA");
+  settings.setData(SmoothingType, "SMA");
 }
 
 int THERM::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  int smoothing = settings.getInt(smoothKey);
+  int smoothing = settings.getInt(Smoothing);
 
-  settings.getData(smoothTypeKey, s);
+  settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
 
   PlotLine *line = getTHERM(data, smoothing, type);
@@ -88,9 +66,9 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
     return 1;
 
   // therm ma
-  int maPeriod = settings.getInt(maPeriodKey);
+  int maPeriod = settings.getInt(MAPeriod);
 
-  settings.getData(maTypeKey, s);
+  settings.getData(MAType, s);
   int maType = maList.indexOf(s);
 
   PlotLine *ma = getMA(line, maPeriod, maType);
@@ -100,11 +78,11 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(maColorKey, s);
+  settings.getData(MAColor, s);
   ma->setColor(s);
-  settings.getData(maPlotKey, s);
+  settings.getData(MAPlot, s);
   ma->setType(s);
-  settings.getData(maLabelKey, s);
+  settings.getData(MALabel, s);
   ma->setLabel(s);
 
   // assign therm colors
@@ -112,15 +90,15 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   line->setType(PlotLine::HistogramBar);
   int thermLoop = line->getSize() - 1;
   int maLoop = ma->getSize() - 1;
-  double threshold = settings.getDouble(threshKey);
+  double threshold = settings.getDouble(Threshold);
 
-  settings.getData(threshColorKey, s);
+  settings.getData(ThreshColor, s);
   QColor threshColor(s);
 
-  settings.getData(upColorKey, s);
+  settings.getData(UpColor, s);
   QColor upColor(s);
 
-  settings.getData(downColorKey, s);
+  settings.getData(DownColor, s);
   QColor downColor(s);
 
   while (thermLoop > -1)
@@ -147,10 +125,10 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
     maLoop--;
   }
 
-  settings.getData(plotKey, s);
+  settings.getData(Plot, s);
   line->setType(s);
 
-  settings.getData(labelKey, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   ind.addLine(line);
@@ -245,42 +223,42 @@ int THERM::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(upColorKey, d);
-  dialog->addColorItem(page, upColorKey, d);
+  settings.getData(UpColor, d);
+  dialog->addColorItem(UpColor, page, QObject::tr("Up Color"), d);
 
-  settings.getData(downColorKey, d);
-  dialog->addColorItem(page, downColorKey, d);
+  settings.getData(DownColor, d);
+  dialog->addColorItem(DownColor, page, QObject::tr("Down Color"), d);
 
-  settings.getData(threshColorKey, d);
-  dialog->addColorItem(page, threshColorKey, d);
+  settings.getData(ThreshColor, d);
+  dialog->addColorItem(ThreshColor, page, QObject::tr("Threshold Color"), d);
 
-  settings.getData(labelKey, d);
-  dialog->addTextItem(page, labelKey, d);
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addDoubleItem(page, threshKey, settings.getDouble(threshKey), 0, 100000);
+  dialog->addDoubleItem(Threshold, page, QObject::tr("Threshold"), settings.getDouble(Threshold), 0, 100000);
 
-  dialog->addIntItem(page, smoothKey, settings.getInt(smoothKey), 1, 100000);
+  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
-  settings.getData(smoothTypeKey, d);
-  dialog->addComboItem(page, smoothTypeKey, maList, d);
+  settings.getData(SmoothingType, d);
+  dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);
 
   page++;
   k = QObject::tr("MA");
   dialog->addPage(page, k);
 
-  settings.getData(maColorKey, d);
-  dialog->addColorItem(page, maColorKey, d);
+  settings.getData(MAColor, d);
+  dialog->addColorItem(MAColor, page, QObject::tr("Color"), d);
 
-  settings.getData(maPlotKey, d);
-  dialog->addComboItem(page, maPlotKey, plotList, d);
+  settings.getData(MAPlot, d);
+  dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(maLabelKey, d);
-  dialog->addTextItem(page, maLabelKey, d);
+  settings.getData(MALabel, d);
+  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(page, maPeriodKey, settings.getInt(maPeriodKey), 1, 100000);
+  dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), settings.getInt(MAPeriod), 1, 100000);
 
-  settings.getData(maTypeKey, d);
-  dialog->addComboItem(page, maTypeKey, maList, d);
+  settings.getData(MAType, d);
+  dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -289,16 +267,7 @@ int THERM::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;

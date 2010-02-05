@@ -29,6 +29,24 @@
 class BBANDS : public IndicatorBase
 {
   public:
+    enum Parm
+    {
+      UpColor,
+      DownColor,
+      MidColor,
+      UpPlot,
+      DownPlot,
+      MidPlot,
+      UpLabel,
+      DownLabel,
+      MidLabel,
+      Period,
+      UpDeviation,
+      DownDeviation,
+      Input,
+      MAType
+    };
+
     BBANDS ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);

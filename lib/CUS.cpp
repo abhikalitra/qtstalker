@@ -28,17 +28,14 @@
 CUS::CUS ()
 {
   indicator = "CUS";
-  commandKey = QObject::tr("Command");
 
-  QString d;
-  d = "perl /usr/local/share/qtstalker/indicator/";
-  settings.setData(commandKey, d);
+  settings.setData(Script, "perl /usr/local/share/qtstalker/indicator/");
 }
 
 int CUS::getIndicator (Indicator &_ind, BarData *_data)
 {
   QString s;
-  settings.getData(commandKey, s);
+  settings.getData(Script, s);
 
   ExScript script;
   script.setBarData(_data);
@@ -63,8 +60,8 @@ int CUS::dialog ()
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(commandKey, d);
-  dialog->addTextItem(page, commandKey, d);
+  settings.getData(Script, d);
+  dialog->addTextItem(Script, page, QObject::tr("Script"), d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -73,16 +70,7 @@ int CUS::dialog ()
     return rc;
   }
 
-  QStringList keys;
-  settings.getKeyList(keys);
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      settings.setData(keys[loop], d);
-  }
+  getDialogSettings(dialog);
 
   delete dialog;
   return rc;
