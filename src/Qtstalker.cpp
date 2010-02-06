@@ -64,7 +64,7 @@
 #include "../pics/zoomin.xpm"
 #include "../pics/zoomout.xpm"
 #include "../pics/refresh.xpm"
-//#include "../pics/script.xpm"
+#include "../pics/script.xpm"
 
 
 QtstalkerApp::QtstalkerApp(QString session)
@@ -162,7 +162,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   initIndicatorNav();
 
   // setup the script server
-//  script = new ExScript;
+  script = new ExScript;
 //  connect(script, SIGNAL(signalDone()), this, SLOT(slotScriptDone()));
 
   // setup the initial indicators
@@ -299,11 +299,11 @@ void QtstalkerApp::createActions ()
   connect(action, SIGNAL(toggled(bool)), this, SLOT(slotRefreshChart(bool)));
   actionList.insert(Refresh, action);
 
-//  action = new QAction(QIcon(script_xpm), tr("Run S&cript"), this);
-//  action->setStatusTip(tr("Run Qtstalker script"));
-//  action->setToolTip(tr("Run Qtstalker script"));
-//  connect(action, SIGNAL(activated()), this, SLOT(slotScript()));
-//  actionList.insert(Script, action);
+  action = new QAction(QIcon(script_xpm), tr("Run S&cript"), this);
+  action->setStatusTip(tr("Run Qtstalker script"));
+  action->setToolTip(tr("Run Qtstalker script"));
+  connect(action, SIGNAL(activated()), this, SLOT(slotScript()));
+  actionList.insert(Script, action);
 }
 
 void QtstalkerApp::createMenuBar()
@@ -334,7 +334,7 @@ void QtstalkerApp::createMenuBar()
   menu = new QMenu;
   menu->setTitle(tr("&Tools"));
   menu->addAction(actionList.value(DataWindow1));
-//  menu->addAction(actionList.value(Script));
+  menu->addAction(actionList.value(Script));
   menubar->addMenu(menu);
 
   menubar->addSeparator();
@@ -383,7 +383,7 @@ void QtstalkerApp::createToolBars ()
   if (config.getBool(Config::ShowDataWindowButton))
     toolbar->addAction(actionList.value(DataWindow1));
 
-//  toolbar->addAction(actionList.value(Script));
+  toolbar->addAction(actionList.value(Script));
 
   if (config.getBool(Config::ShowHelpButton))
     toolbar->addAction(actionList.value(Help));
@@ -605,7 +605,7 @@ void QtstalkerApp::slotQuit()
   if (recordList)
     delete recordList;
 
-//  delete script;
+  delete script;
 }
 
 void QtstalkerApp::closeEvent(QCloseEvent *)
@@ -924,18 +924,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   it->addTab(plot, d);
 
-  // get the last used indicators
   Config config;
-//  QStringList lastIndicatorUsed;
-//  config.getData(Config::LastIndicatorUsed, lastIndicatorUsed);
-
-  // Set the current indicator in this row to the last used one.
-//  if (i.getTabRow() < lastIndicatorUsed.count())
-//  {
-//    if (d == lastIndicatorUsed[i.getTabRow()])
-//      it->setCurrentWidget(plot);
-//  }
-
   QColor color;
   config.getData(Config::BackgroundColor, color);
 
@@ -1132,7 +1121,6 @@ void QtstalkerApp::slotAppFont (QFont d)
 /**********************************************************************/
 
 // runs a Qtstalker script selected by user
-/*
 void QtstalkerApp::slotScript ()
 {
   QString file = QFileDialog::getOpenFileName(this,
@@ -1157,12 +1145,16 @@ void QtstalkerApp::slotScript ()
   if (! ok)
     return;
 
+  script->setBarData(recordList);
   script->calculate(command);
+  QMessageBox::information(this,
+			   QString(tr("Script Completed")),
+			   QString(tr("Script Completed")),
+			   QMessageBox::Ok,
+			   QMessageBox::Ok);
 }
-*/
 
 // called each time a Qtstalker script has executed
-/*
 void QtstalkerApp::slotScriptDone ()
 {
   QMessageBox::information(this,
@@ -1171,7 +1163,6 @@ void QtstalkerApp::slotScriptDone ()
 			   QMessageBox::Ok,
 			   QMessageBox::Ok);
 }
-*/
 
 /**********************************************************************/
 /************************ TOOLBAR FUNCTIONS ***************************/

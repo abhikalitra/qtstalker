@@ -187,6 +187,17 @@
 
           Fixed bug that did not update charts that are newly created in Qtstalker::
 
+20100206: I have re-implemented the 0.36 version of the hard coded indicators along side the new
+          scripting engine so we can have the best of both worlds. The script interface will be
+          changing slightly for some of the indicators as I tweak each indicator. I will try to
+          keep the docs current to reflect those changes as I make them. I am happy with the new
+          changes and think we have (FINALLY!) a way to keep everyone (noobs and pros) satisfied.
+          GUI and script versions YAY!!!!! I removed most the example scripts and kept the ones
+          that provided good examples of how to do things.
+
+          Added 3 new script commands. GET_INDICATOR_INDEX, CLEAR, GROUP_ADD. See docs. With these
+          new commands, it is now possible to run scans. I am thinking of creating a seperate scan app
+          so as not to bog down qtstalker with bloat and performance bottlenecks.
 
 
 

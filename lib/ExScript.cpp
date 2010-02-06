@@ -38,7 +38,7 @@ ExScript::ExScript ()
   proc = 0;
   data = 0;
 
-  functionList << "INDICATOR" << "GET_INDICATOR" << "GET_INDICATOR_INDEX" << "GROUP_ADD";
+  functionList << "CLEAR" << "INDICATOR" << "GET_INDICATOR" << "GET_INDICATOR_INDEX" << "GROUP_ADD";
   functionList << "SET_INDICATOR" << "PLOT" << "SYMBOL_LIST";
 }
 
@@ -87,7 +87,7 @@ int ExScript::calculate (QString &command)
 
   if (! proc->waitForFinished(30000))
   {
-    qDebug() << "ExScript::calculate: script error";
+    qDebug() << "ExScript::calculate: script error, timed out";
     clear();
     return 1;
   }
@@ -114,10 +114,27 @@ void ExScript::readFromStdout ()
   int i = functionList.indexOf(l[0]);
   switch ((Function) i)
   {
+    case CLEAR:
+    {
+      // we actually have to delete the lines if we call this function in scripts
+      // not from qtstalker or we will delete actual plots
+      QHashIterator<QString, PlotLine *> it(tlines);
+      while (it.hasNext())
+      {
+        it.next();
+        delete it.value();
+      }
+      tlines.clear();
+      plotOrder.clear();
+      QByteArray ba;
+      ba.append("0\n");
+      proc->write(ba);
+      break;
+    }
     case INDICATOR:
     {
-      if (! data)
-        break;
+//      if (! data)
+//        break;
 
       IndicatorFactory fac;
       IndicatorBase *ib = fac.getFunction(l[1]);
@@ -136,8 +153,8 @@ void ExScript::readFromStdout ()
     }
     case GET_INDICATOR:
     {
-      if (! data)
-        break;
+//      if (! data)
+//        break;
 
       SCGetIndicator sc;
       QByteArray ba;
@@ -149,8 +166,8 @@ void ExScript::readFromStdout ()
     }
     case SET_INDICATOR:
     {
-      if (! data)
-        break;
+//      if (! data)
+//        break;
 
       SCSetIndicator sc;
       QByteArray ba;
@@ -164,8 +181,8 @@ void ExScript::readFromStdout ()
     }
     case PLOT:
     {
-      if (! data)
-        break;
+//      if (! data)
+//        break;
 
       SCPlot sc;
       QByteArray ba;

@@ -43,6 +43,7 @@ class ExScript : public QObject
   public:
     enum Function
     {
+      CLEAR, // clears all data
       INDICATOR, // get a library indicator
       GET_INDICATOR, // pass indicator data to the calling script
       GET_INDICATOR_INDEX, // pass a single indicator value to the calling script

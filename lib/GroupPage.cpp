@@ -73,6 +73,8 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   actionList.append(action);
   action = menu->addAction(QIcon(delgroup), tr("De&lete Group	Ctrl+L"), this, SLOT(deleteGroup()), QKeySequence(Qt::CTRL+Qt::Key_L));
   actionList.append(action);
+  action = menu->addAction(QIcon(), tr("&Refresh List	Ctrl+R"), this, SLOT(updateGroups()), QKeySequence(Qt::CTRL+Qt::Key_R));
+  actionList.append(action);
 
   loadGroups();
 
@@ -237,7 +239,11 @@ void GroupPage::loadGroups ()
 void GroupPage::updateGroups ()
 {
   int cg = group->currentIndex();
+  if (cg < 0)
+    cg = 0;
   int cr = nav->currentRow();
+  if (cr < 0)
+    cr = 0;
 
   group->blockSignals(TRUE);
   loadGroups();
