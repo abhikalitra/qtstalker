@@ -27,87 +27,68 @@
 COMPARE::COMPARE ()
 {
   indicator = "COMPARE";
-
-  methodList << "ARRAY";
-  methodList << "VALUE";
 }
 
 int COMPARE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  if (set.count() != 7)
+  // INDICATOR,COMPARE,<NAME>,<INPUT_1>,<INPUT_2>,<OPERATOR>
+
+  if (set.count() != 6)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  int method = methodList.indexOf(set[2]);
-
-  int rc = 1;
-  switch (method)
-  {
-    case 0: // array
-      rc = getCOMPARE(set, tlines, data);
-      break;
-    case 1: // value
-      rc = getCOMPARE2(set, tlines, data);
-      break;
-    default:
-      break;
-  }
-
-  return rc;
-}
-
-int COMPARE::getCOMPARE (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
-{
-  // INDICATOR,COMPARE,ARRAY,<NAME>,<INPUT_1>,<INPUT_2>,<OPERATOR>
-
-  if (set.count() != 7)
-  {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = tlines.value(set[2]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::calculate: duplicate name" << set[2];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[4]);
+  PlotLine *in = getInput(set[3], tlines, data);
   if (! in)
-  {
-    in = data->getInput(data->getInputType(set[4]));
-    if (! in)
-    {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
-      return 1;
-    }
+    return 1;
 
-    tlines.insert(set[4], in);
-  }
-
-  PlotLine *in2 = tlines.value(set[5]);
+  PlotLine *in2 = getInput(set[4], tlines, data);
   if (! in2)
-  {
-    in2 = data->getInput(data->getInputType(set[5]));
-    if (! in2)
-    {
-      qDebug() << indicator << "::calculate: input2 not found" << set[5];
-      return 1;
-    }
+    return 1;
 
-    tlines.insert(set[5], in2);
-  }
-
-  int op = opList.indexOf(set[6]);
+  int op = opList.indexOf(set[5]);
   if (op == -1)
   {
-    qDebug() << indicator << "::calculate: invalid operator" << set[6];
+    qDebug() << indicator << "::calculate: invalid operator" << set[5];
     return 1;
   }
 
+  PlotLine *line = 0;
+  if (in->getSize() > 1 && in2->getSize() > 1) // A - A
+    line = compareAA(in, in2, op);
+  else
+  {
+    if (in->getSize() > 1 && in2->getSize() == 1) // A - V
+      line = compareAV(in, in2, op);
+    else
+    {
+      if (in->getSize() == 1 && in2->getSize() == 1) // V - V
+        line = compareVV(in, in2, op);
+      else
+      {
+        if (in->getSize() == 1 && in2->getSize() > 1) // V - A
+          line = compareVA(in, in2, op);
+	else
+	  return 1;
+      }
+    }
+  }
+
+  tlines.insert(set[2], line);
+
+  return 0;
+}
+
+PlotLine * COMPARE::compareAA (PlotLine *in, PlotLine *in2, int op)
+{
   int loop = in->getSize() - 1;
   int loop2 = in2->getSize() - 1;
   PlotLine *line = new PlotLine;
@@ -149,18 +130,6 @@ int COMPARE::getCOMPARE (QStringList &set, QHash<QString, PlotLine *> &tlines, B
 	else
           line->prepend(0);
         break;
-      case 5: // AND
-        if (t && t2)
-          line->prepend(1);
-	else
-          line->prepend(0);
-        break;
-      case 6: // OR
-        if (t || t2)
-          line->prepend(1);
-	else
-          line->prepend(0);
-        break;
       default:
         break;
     }
@@ -169,103 +138,47 @@ int COMPARE::getCOMPARE (QStringList &set, QHash<QString, PlotLine *> &tlines, B
     loop2--;
   }
 
-  tlines.insert(set[3], line);
-
-  return 0;
+  return line;
 }
 
-int COMPARE::getCOMPARE2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+PlotLine * COMPARE::compareAV (PlotLine *in, PlotLine *in2, int op)
 {
-  // INDICATOR,COMPARE,VALUE,<NAME>,<INPUT>,<VALUE>,<OPERATOR>
-
-  if (set.count() != 7)
-  {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
-    return 1;
-  }
-
-  PlotLine *in = tlines.value(set[4]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(set[4]));
-    if (! in)
-    {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
-      return 1;
-    }
-
-    tlines.insert(set[4], in);
-  }
-
-  bool ok;
-  double value = set[5].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::calculate: invalid value" << set[5];
-    return 1;
-  }
-
-  int op = opList.indexOf(set[6]);
-  if (op == -1)
-  {
-    qDebug() << indicator << "::calculate: invalid operator" << set[6];
-    return 1;
-  }
-
   int loop = in->getSize() - 1;
   PlotLine *line = new PlotLine;
 
   while (loop > -1)
   {
     double t = in->getData(loop);
+    double t2 = in2->getData(0);
 
     switch (op)
     {
       case 0: // equal
-        if (t == value)
+        if (t == t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case 1: // less then
-        if (t < value)
+        if (t < t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case 2: // less than equal
-        if (t <= value)
+        if (t <= t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case 3: // greater than
-        if (t > value)
+        if (t > t2)
           line->prepend(1);
 	else
           line->prepend(0);
         break;
       case 4: // greater than equal
-        if (t >= value)
-          line->prepend(1);
-	else
-          line->prepend(0);
-        break;
-      case 5: // AND
-        if (t && value)
-          line->prepend(1);
-	else
-          line->prepend(0);
-        break;
-      case 6: // OR
-        if (t || value)
+        if (t >= t2)
           line->prepend(1);
 	else
           line->prepend(0);
@@ -277,8 +190,132 @@ int COMPARE::getCOMPARE2 (QStringList &set, QHash<QString, PlotLine *> &tlines, 
     loop--;
   }
 
-  tlines.insert(set[3], line);
+  return line;
+}
 
-  return 0;
+PlotLine * COMPARE::compareVV (PlotLine *in, PlotLine *in2, int op)
+{
+  PlotLine *line = new PlotLine;
+
+  double t = in->getData(0);
+  double t2 = in2->getData(0);
+
+  switch (op)
+  {
+    case 0: // equal
+      if (t == t2)
+        line->prepend(1);
+      else
+        line->prepend(0);
+      break;
+    case 1: // less then
+      if (t < t2)
+        line->prepend(1);
+      else
+        line->prepend(0);
+      break;
+    case 2: // less than equal
+      if (t <= t2)
+        line->prepend(1);
+      else
+        line->prepend(0);
+      break;
+    case 3: // greater than
+      if (t > t2)
+        line->prepend(1);
+      else
+        line->prepend(0);
+      break;
+    case 4: // greater than equal
+      if (t >= t2)
+        line->prepend(1);
+      else
+        line->prepend(0);
+      break;
+    default:
+      break;
+  }
+
+  return line;
+}
+
+PlotLine * COMPARE::compareVA (PlotLine *in, PlotLine *in2, int op)
+{
+  int loop = in2->getSize() - 1;
+  PlotLine *line = new PlotLine;
+
+  while (loop > -1)
+  {
+    double t = in->getData(0);
+    double t2 = in2->getData(loop);
+
+    switch (op)
+    {
+      case 0: // equal
+        if (t == t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 1: // less then
+        if (t < t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 2: // less than equal
+        if (t <= t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 3: // greater than
+        if (t > t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      case 4: // greater than equal
+        if (t >= t2)
+          line->prepend(1);
+	else
+          line->prepend(0);
+        break;
+      default:
+        break;
+    }
+
+    loop--;
+  }
+
+  return line;
+}
+
+PlotLine * COMPARE::getInput (QString &name, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // check if an existing array
+  PlotLine *in = tlines.value(name);
+  if (! in)
+  {
+    // check if its a Open, High, Low, Close, Volume etc array
+    in = data->getInput(data->getInputType(name));
+    if (! in)
+    {
+      // check if its a value
+      bool ok;
+      double value = name.toDouble(&ok);
+      if (! ok)
+      {
+        qDebug() << indicator << "::calculate: invalid input" << name;
+        return 0;
+      }
+
+      // its a number so create a line for it
+      in = new PlotLine;
+      in->append(value);
+    }
+  }
+
+  return in;
 }
 

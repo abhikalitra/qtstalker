@@ -26,7 +26,7 @@ if ($a ne "0")
   exit; # we have a non zero return code, exit script
 }
 
-print STDOUT "INDICATOR,COMPARE,ARRAY,comp1,cl,pcl,>"; # return true if Close > PClose
+print STDOUT "INDICATOR,COMPARE,comp1,cl,pcl,>"; # return true if Close > PClose
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")
@@ -45,7 +45,7 @@ if ($a ne "0")
 }
 
 
-print STDOUT "INDICATOR,COMPARE,ARRAY,comp2,cl,pcl,="; # return true if Close == PClose
+print STDOUT "INDICATOR,COMPARE,comp2,cl,pcl,="; # return true if Close == PClose
 $a = <STDIN>; # get the return code
 chomp($a); # remove the \n
 if ($a ne "0")

@@ -51,7 +51,8 @@ function. To create a custom indicator with values created within the
 script,
 we use the SET_INDICATOR function</p>
 <p></p>
-<p>To request indicator values:</p>
+<p><br>
+To request indicator values:</p>
 <p></p>
 <p>GET_INDICATOR,NAME,BARS</p>
 <ul>
@@ -70,8 +71,29 @@ return
 letters instead of numbers in this case.</p>
 <p></p>
 <p></p>
-<p>To send data from the script to create a new indicator:</p>
+<br>
+<br>
+To return a single value in a data array:<br>
+<p>GET_INDICATOR_INDEX,NAME,OFFSET<br>
+</p>
+<ul>
+  <li>NAME is the variable name of the indicator previously created in
+the script.</li>
+  <li>OFFSET is the index position starting from the last value moving
+towards the start. ie. 0 would return the last value. 1 would return
+the 2nd last value etc.</li>
+</ul>
+On success, a single value is returned. Failure returns the string
+"ERROR". We return "ERROR"
+instead of "1"
+because the script might confuse the error code with actual data, so we
+return
+letters instead of numbers in this case.
 <p></p>
+<p><br>
+</p>
+<p>To send data from the script to create a new indicator:<br>
+</p>
 <p>SET_INDICATOR,NAME,STRING</p>
 <ul>
   <li>NAME is the variable name of the dataset.</li>
@@ -142,8 +164,6 @@ indicator or bar data as follows:</p>
   <li>"&lt;=" less than or equal to</li>
   <li>"&gt;" greater than</li>
   <li>"&gt;=" greater than or equal to</li>
-  <li>"AND" logical AND</li>
-  <li>"OR" logical OR</li>
 </ul>
 <p></p>
 <h3><br>
@@ -377,26 +397,15 @@ to the &lt;INPUT_2&gt; data array.<br>
 </ul>
 <br>
 <h3>COMPARE</h3>
-<p>INDICATOR,COMPARE,ARRAY,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;OPERATOR&gt;</p>
-<p>INDICATOR,COMPARE,VALUE,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;VALUE&gt;,&lt;OPERATOR&gt;<br>
-</p>
+<p>INDICATOR,COMPARE,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;OPERATOR&gt;</p>
 <br>
-<p></p>
-<p>The ARRAY method compares the values of &lt;INPUT_1&gt; data array
-with
-&lt;INPUT_2&gt; data array using the &lt;OPERATOR&gt; for comparison.</p>
-<p>The result is a boolean array of TRUE/FALSE values. The comparison
+Compares&nbsp; &lt;INPUT_1&gt; with
+&lt;INPUT_2&gt; using the &lt;OPERATOR&gt; for comparison.
+&lt;INPUT_1&gt; and &lt;INPUT_2&gt; can either be a data array or a
+numerical value. The result is a boolean array of TRUE/FALSE values.
+The comparison
 order is
-made &lt;INPUT_1&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.</p>
-<p></p>
-<h3><br>
-</h3>
-The VALUE method compares the values of &lt;INPUT&gt; data array with
-the
-number &lt;VALUE&gt; using the &lt;OPERATOR&gt; for comparison.
-<p>The result is a boolean array of TRUE/FALSE values. The comparison
-order is
-made &lt;INPUT&gt; &lt;OPERATOR&gt; &lt;VALUE&gt;.</p>
+made &lt;INPUT_1&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.
 <p></p>
 <br>
 <br>

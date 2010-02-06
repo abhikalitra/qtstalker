@@ -70,3 +70,44 @@ int SCGetIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, Pl
   return 0;
 }
 
+int SCGetIndicator::getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba)
+{
+  // format = INDEX,INPUT_ARRAY,OFFSET
+
+  ba.clear();
+
+  if (l.count() != 3)
+  {
+    qDebug() << "SCGetIndicator::getIndex: invalid parm count" << l.count();
+    return 1;
+  }
+
+  PlotLine *line = tlines.value(l[1]);
+  if (! line)
+  {
+    qDebug() << "SCGetIndicator::getIndex: invalid input" << l[1];
+    return 1;
+  }
+
+  bool ok;
+  int index = l[2].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "SCGetIndicator::getIndex: invalid index" << l[2];
+    return 1;
+  }
+
+  int offset = line->getSize() - 1 - index;
+  if (offset < 0)
+  {
+    qDebug() << "SCGetIndicator::getIndex: offset greater than" << l[1] << "size";
+    return 1;
+  }
+
+  ba.append(QString::number(line->getData(offset)));
+
+  ba.append('\n');
+
+  return 0;
+}
+

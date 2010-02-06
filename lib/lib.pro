@@ -33,6 +33,7 @@ HEADERS += SCGetIndicator.h
 HEADERS += SCSetIndicator.h
 HEADERS += SCPlot.h
 HEADERS += SCSymbolList.h
+HEADERS += SCGroup.h
 HEADERS += IndicatorBase.h
 HEADERS += IndicatorFactory.h
 
@@ -112,6 +113,7 @@ SOURCES += SCGetIndicator.cpp
 SOURCES += SCSetIndicator.cpp
 SOURCES += SCPlot.cpp
 SOURCES += SCSymbolList.cpp
+SOURCES += SCGroup.cpp
 SOURCES += IndicatorBase.cpp
 SOURCES += IndicatorFactory.cpp
 

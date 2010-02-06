@@ -24,6 +24,7 @@
 #include "SCGetIndicator.h"
 #include "SCSetIndicator.h"
 #include "SCPlot.h"
+#include "SCGroup.h"
 #include "SCSymbolList.h"
 #include "IndicatorFactory.h"
 #include "IndicatorBase.h"
@@ -37,12 +38,8 @@ ExScript::ExScript ()
   proc = 0;
   data = 0;
 
-//  TA_RetCode rc = TA_Initialize();
-//  if (rc != TA_SUCCESS)
-//    qDebug("TALIB::setDefaults:error on TA_Initialize");
-
-  functionList << "INDICATOR" << "GET_INDICATOR" << "SET_INDICATOR" << "PLOT";
-  functionList << "SYMBOL_LIST";
+  functionList << "INDICATOR" << "GET_INDICATOR" << "GET_INDICATOR_INDEX" << "GROUP_ADD";
+  functionList << "SET_INDICATOR" << "PLOT" << "SYMBOL_LIST";
 }
 
 ExScript::~ExScript ()
@@ -187,6 +184,28 @@ void ExScript::readFromStdout ()
       int rc = sc.calculate(l, ba);
       if (rc)
         ba.append("ERROR\n");
+      proc->write(ba);
+      break;
+    }
+    case GET_INDICATOR_INDEX:
+    {
+      SCGetIndicator sc;
+      QByteArray ba;
+      int rc = sc.getIndex(l, tlines, ba);
+      if (rc)
+        ba.append("ERROR\n");
+      proc->write(ba);
+      break;
+    }
+    case GROUP_ADD:
+    {
+      SCGroup sc;
+      QByteArray ba;
+      int rc = sc.addGroup(l, ba);
+      if (rc)
+        ba.append("1\n");
+      else
+        ba.append("0\n");
       proc->write(ba);
       break;
     }

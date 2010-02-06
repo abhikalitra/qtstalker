@@ -19,25 +19,35 @@
  *  USA.
  */
 
-#ifndef SCGETINDICATOR_HPP
-#define SCGETINDICATOR_HPP
+#include "SCGroup.h"
+#include "DataBase.h"
+
+#include <QtDebug>
 
 
-#include <QStringList>
-#include <QByteArray>
-#include <QHash>
-
-#include "PlotLine.h"
-
-
-class SCGetIndicator
+SCGroup::SCGroup ()
 {
-  public:
-    SCGetIndicator ();
-    int calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines);
-    int getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
+}
 
-  private:
-};
+int SCGroup::addGroup (QStringList &l, QByteArray &ba)
+{
+  // format = GROUP_ADD,GROUP,ITEM
 
-#endif
+  ba.clear();
+
+  if (l.count() != 3)
+  {
+    qDebug() << "SCGroup::addGroup: invalid parm count" << l.count();
+    return 1;
+  }
+
+  DataBase db;
+  QStringList groupList;
+  db.getGroupList(l[1], groupList);
+  groupList.append(l[2]);
+  groupList.removeDuplicates();
+  db.setGroupList(l[1], groupList);
+
+  return 0;
+}
+

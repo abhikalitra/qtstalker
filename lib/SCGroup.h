@@ -19,23 +19,19 @@
  *  USA.
  */
 
-#ifndef SCGETINDICATOR_HPP
-#define SCGETINDICATOR_HPP
+#ifndef SCGROUP_HPP
+#define SCGROUP_HPP
 
 
 #include <QStringList>
 #include <QByteArray>
-#include <QHash>
-
-#include "PlotLine.h"
 
 
-class SCGetIndicator
+class SCGroup
 {
   public:
-    SCGetIndicator ();
-    int calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines);
-    int getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
+    SCGroup ();
+    int addGroup (QStringList &l, QByteArray &ba);
 
   private:
 };
