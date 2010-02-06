@@ -7,7 +7,7 @@ $|++;
 print STDOUT "INDICATOR,REF,cl,Close,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "GET_INDICATOR,cl,0";
+print STDOUT "INDICATOR_GET,cl,0";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @close_0 = split(",", $rc);
 
@@ -15,7 +15,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 print STDOUT "INDICATOR,MA,SMA,sma_13,Close,13";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "GET_INDICATOR,sma_13,0";
+print STDOUT "INDICATOR_GET,sma_13,0";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @sma_13 = split(",", $rc);
 
@@ -23,7 +23,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 print STDOUT "INDICATOR,MA,SMA,sma_200,Close,200";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "GET_INDICATOR,sma_200,0";
+print STDOUT "INDICATOR_GET,sma_200,0";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @sma_200 = split(",", $rc);
 
@@ -42,7 +42,7 @@ for (my $i = ($periodUnstable - 1); $i <= $#close_0; $i++)
   push(@values, $value);
 }
 
-printf STDOUT "SET_INDICATOR,disparity_13," . join(",", @values);
+printf STDOUT "INDICATOR_SET,disparity_13," . join(",", @values);
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "PLOT,disparity_13,Disparity-13,red,Line";
@@ -62,7 +62,7 @@ for (my $i = ($periodUnstable - 1); $i <= $#close_0; $i++)
   push(@values, $value);
 }
 
-printf STDOUT "SET_INDICATOR,disparity_200," . join(",", @values);
+printf STDOUT "INDICATOR_SET,disparity_200," . join(",", @values);
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "PLOT,disparity_200,Disparity-200,orange,Line";

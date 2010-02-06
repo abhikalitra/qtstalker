@@ -32,6 +32,7 @@ class SCGroup
   public:
     SCGroup ();
     int addGroup (QStringList &l, QByteArray &ba);
+    int deleteGroup (QStringList &l, QByteArray &ba);
 
   private:
 };

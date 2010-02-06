@@ -195,9 +195,15 @@
           GUI and script versions YAY!!!!! I removed most the example scripts and kept the ones
           that provided good examples of how to do things.
 
-          Added 3 new script commands. GET_INDICATOR_INDEX, CLEAR, GROUP_ADD. See docs. With these
-          new commands, it is now possible to run scans. I am thinking of creating a seperate scan app
-          so as not to bog down qtstalker with bloat and performance bottlenecks.
+          Added 4 new script commands. INDICATOR_GET_INDEX, CLEAR, GROUP_ADD, GROUP_DELETE.
+          See docs. With these new commands, it is now possible to run scans. I am thinking
+          of creating a seperate scan app so as not to bog down qtstalker with bloat and
+          performance bottlenecks. Although an entire database scan did not use more than 25%
+          CPU on my mid powered system while happily viewing charts. Could be possible to
+          integrate scripting easily with adequate performance.
+
+          Changed the GET_INDICATOR command to INDICATOR_GET and SET_INDICATOR to INDICATOR_SET. This
+          is to better organize the commands into common groups. Docs and scripts are updated.
 
 
 

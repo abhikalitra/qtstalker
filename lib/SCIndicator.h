@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCGETINDICATOR_HPP
-#define SCGETINDICATOR_HPP
+#ifndef SCINDICATOR_HPP
+#define SCINDICATOR_HPP
 
 
 #include <QStringList>
@@ -30,12 +30,13 @@
 #include "PlotLine.h"
 
 
-class SCGetIndicator
+class SCIndicator
 {
   public:
-    SCGetIndicator ();
-    int calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines);
+    SCIndicator ();
+    int getIndicator (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines);
     int getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
+    int setIndicator (QStringList &l, QHash<QString, PlotLine *> &tlines);
 
   private:
 };

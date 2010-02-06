@@ -163,6 +163,7 @@ QtstalkerApp::QtstalkerApp(QString session)
 
   // setup the script server
   script = new ExScript;
+  script->setDeleteFlag(TRUE);
   connect(script, SIGNAL(signalDone()), this, SLOT(slotScriptDone()));
 
   // setup the initial indicators
@@ -605,6 +606,7 @@ void QtstalkerApp::slotQuit()
   if (recordList)
     delete recordList;
 
+  script->stop();
   delete script;
 }
 
@@ -1123,6 +1125,21 @@ void QtstalkerApp::slotAppFont (QFont d)
 // runs a Qtstalker script selected by user
 void QtstalkerApp::slotScript ()
 {
+  if (script->getState())
+  {
+    int rc = QMessageBox::warning(this,
+			          QString(tr("QtStalker Warning")),
+			          QString(tr("Script server is busy.\nCancel running script?")),
+			          QMessageBox::Yes | QMessageBox::No,
+			          QMessageBox::No);
+
+    if (rc == QMessageBox::No)
+      return;
+
+    script->stop();
+    return;
+  }
+
   QString file = QFileDialog::getOpenFileName(this,
 					      QString(tr("Select Qtstalker script to run.")),
 					      QDir::homePath(),

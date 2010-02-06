@@ -21,8 +21,7 @@
 
 #include "ExScript.h"
 #include "DataBase.h"
-#include "SCGetIndicator.h"
-#include "SCSetIndicator.h"
+#include "SCIndicator.h"
 #include "SCPlot.h"
 #include "SCGroup.h"
 #include "SCSymbolList.h"
@@ -37,9 +36,13 @@ ExScript::ExScript ()
 {
   proc = 0;
   data = 0;
+  deleteFlag = 0;
 
-  functionList << "CLEAR" << "INDICATOR" << "GET_INDICATOR" << "GET_INDICATOR_INDEX" << "GROUP_ADD";
-  functionList << "SET_INDICATOR" << "PLOT" << "SYMBOL_LIST";
+  functionList << "CLEAR";
+  functionList << "INDICATOR" << "INDICATOR_GET" << "INDICATOR_GET_INDEX" << "INDICATOR_SET";
+  functionList << "GROUP_ADD" << "GROUP_DELETE";
+  functionList << "PLOT";
+  functionList << "SYMBOL_LIST";
 }
 
 ExScript::~ExScript ()
@@ -49,14 +52,26 @@ ExScript::~ExScript ()
 
 void ExScript::clear ()
 {
-  tlines.clear();
-  plotOrder.clear();
-
   if (proc)
   {
+    proc->kill();
     delete proc;
     proc = 0;
   }
+
+  plotOrder.clear();
+
+  if (deleteFlag)
+  {
+    QHashIterator<QString, PlotLine *> it(tlines);
+    while (it.hasNext())
+    {
+      it.next();
+      delete it.value();
+    }
+  }
+
+  tlines.clear();
 }
 
 void ExScript::setBarData (BarData *d)
@@ -157,9 +172,6 @@ void ExScript::readFromStdout ()
     }
     case INDICATOR:
     {
-//      if (! data)
-//        break;
-
       IndicatorFactory fac;
       IndicatorBase *ib = fac.getFunction(l[1]);
       if (! ib)
@@ -175,27 +187,55 @@ void ExScript::readFromStdout ()
       delete ib;
       break;
     }
-    case GET_INDICATOR:
+    case INDICATOR_GET:
     {
-//      if (! data)
-//        break;
-
-      SCGetIndicator sc;
+      SCIndicator sc;
       QByteArray ba;
-      int rc = sc.calculate(l, ba, tlines);
+      int rc = sc.getIndicator(l, ba, tlines);
       if (rc)
         ba.append("ERROR\n");
       proc->write(ba);
       break;
     }
-    case SET_INDICATOR:
+    case INDICATOR_GET_INDEX:
     {
-//      if (! data)
-//        break;
-
-      SCSetIndicator sc;
+      SCIndicator sc;
       QByteArray ba;
-      int rc = sc.calculate(l, tlines);
+      int rc = sc.getIndex(l, tlines, ba);
+      if (rc)
+        ba.append("ERROR\n");
+      proc->write(ba);
+      break;
+    }
+    case INDICATOR_SET:
+    {
+      SCIndicator sc;
+      QByteArray ba;
+      int rc = sc.setIndicator(l, tlines);
+      if (rc)
+        ba.append("1\n");
+      else
+        ba.append("0\n");
+      proc->write(ba);
+      break;
+    }
+    case GROUP_ADD:
+    {
+      SCGroup sc;
+      QByteArray ba;
+      int rc = sc.addGroup(l, ba);
+      if (rc)
+        ba.append("1\n");
+      else
+        ba.append("0\n");
+      proc->write(ba);
+      break;
+    }
+    case GROUP_DELETE:
+    {
+      SCGroup sc;
+      QByteArray ba;
+      int rc = sc.deleteGroup(l, ba);
       if (rc)
         ba.append("1\n");
       else
@@ -205,9 +245,6 @@ void ExScript::readFromStdout ()
     }
     case PLOT:
     {
-//      if (! data)
-//        break;
-
       SCPlot sc;
       QByteArray ba;
       int rc = sc.calculate(l, plotOrder, tlines);
@@ -225,28 +262,6 @@ void ExScript::readFromStdout ()
       int rc = sc.calculate(l, ba);
       if (rc)
         ba.append("ERROR\n");
-      proc->write(ba);
-      break;
-    }
-    case GET_INDICATOR_INDEX:
-    {
-      SCGetIndicator sc;
-      QByteArray ba;
-      int rc = sc.getIndex(l, tlines, ba);
-      if (rc)
-        ba.append("ERROR\n");
-      proc->write(ba);
-      break;
-    }
-    case GROUP_ADD:
-    {
-      SCGroup sc;
-      QByteArray ba;
-      int rc = sc.addGroup(l, ba);
-      if (rc)
-        ba.append("1\n");
-      else
-        ba.append("0\n");
       proc->write(ba);
       break;
     }
@@ -283,5 +298,34 @@ void ExScript::getLines (QList<PlotLine *> &lines)
   }
 
   clear();
+}
+
+int ExScript::getState ()
+{
+  int rc = 0;
+
+  if (! proc)
+    return rc;
+
+  if (proc->state() != QProcess::NotRunning)
+    rc = 1;
+
+  return rc;
+}
+
+void ExScript::stop ()
+{
+  if (! proc)
+    return;
+
+  if (proc->state() == QProcess::NotRunning)
+    return;
+
+  clear();
+}
+
+void ExScript::setDeleteFlag (int d)
+{
+  deleteFlag = d;
 }
 

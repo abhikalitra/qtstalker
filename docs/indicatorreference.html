@@ -69,21 +69,31 @@ group. If
 </ul>
 <br>
 <br>
+GROUP_DELETE,&lt;GROUP_NAME&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp; This function will delete a Qtstalker group
+and all of its contents.<br>
+<br>
+<ul>
+  <li>&lt;GROUP_NAME&gt; is the name of the group to delete.<br>
+  </li>
+</ul>
+<br>
 <br>
 <hr style="width: 100%; height: 2px;"><br>
 <h3 style="text-decoration: underline;">Data Exchange</h3>
 <p>These functions allow indicator scripts to exchange raw data between
 scripts
 and Qtstalker. If we want access to raw indicator data we use the
-GET_INDICATOR
+INDICATOR_GET
 function. To create a custom indicator with values created within the
 script,
-we use the SET_INDICATOR function</p>
+we use the INDICATOR_SET function</p>
 <p></p>
 <p><br>
 To request indicator values:</p>
 <p></p>
-<p>GET_INDICATOR,NAME,BARS</p>
+<p>INDICATOR_GET,NAME,BARS</p>
 <ul>
   <li>NAME is the variable name of the indicator previously created in
 the script.</li>
@@ -103,7 +113,7 @@ letters instead of numbers in this case.</p>
 <br>
 <br>
 To return a single value in a data array:<br>
-<p>GET_INDICATOR_INDEX,NAME,OFFSET<br>
+<p>INDICATOR_GET_INDEX,NAME,OFFSET<br>
 </p>
 <ul>
   <li>NAME is the variable name of the indicator previously created in
@@ -123,12 +133,14 @@ letters instead of numbers in this case.
 </p>
 <p>To send data from the script to create a new indicator:<br>
 </p>
-<p>SET_INDICATOR,NAME,STRING</p>
+<p>INDICATOR_SET,NAME,STRING</p>
 <ul>
   <li>NAME is the variable name of the dataset.</li>
   <li>STRING is a CSV string of all values.</li>
 </ul>
-<p>On success returns "0", failure returns "1";</p>
+<p>On success returns "0", failure returns "1"<br>
+<br>
+</p>
 <p></p>
 <hr>
 <h3><span style="text-decoration: underline;">Plot</span><br>

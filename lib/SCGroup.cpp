@@ -51,3 +51,21 @@ int SCGroup::addGroup (QStringList &l, QByteArray &ba)
   return 0;
 }
 
+int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
+{
+  // format = GROUP_DELETE,GROUP
+
+  ba.clear();
+
+  if (l.count() != 2)
+  {
+    qDebug() << "SCGroup::addGroup: invalid parm count" << l.count();
+    return 1;
+  }
+
+  DataBase db;
+  db.deleteGroup(l[1]);
+
+  return 0;
+}
+

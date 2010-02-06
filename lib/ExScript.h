@@ -45,10 +45,11 @@ class ExScript : public QObject
     {
       CLEAR, // clears all data
       INDICATOR, // get a library indicator
-      GET_INDICATOR, // pass indicator data to the calling script
-      GET_INDICATOR_INDEX, // pass a single indicator value to the calling script
+      INDICATOR_GET, // pass indicator data to the calling script
+      INDICATOR_GET_INDEX, // pass a single indicator value to the calling script
+      INDICATOR_SET, // pass indicator data from script to qtstalker
       GROUP_ADD, // add a group item to a group
-      SET_INDICATOR, // pass indicator data from script to qtstalker
+      GROUP_DELETE, // deletes a group and contents
       PLOT, // plot the desired indicator
       SYMBOL_LIST // get a list of symbols in the db
     };
@@ -60,6 +61,9 @@ class ExScript : public QObject
     int calculate (QString &command);
     int calculate2 (QString &command); // used for non indicator scripts
     void getLines (QList<PlotLine *> &);
+    int getState ();
+    void stop ();
+    void setDeleteFlag (int);
 
   public slots:
     void readFromStdout ();
@@ -73,6 +77,7 @@ class ExScript : public QObject
     QStringList plotOrder;
     BarData *data;
     QStringList inputList;
+    int deleteFlag;
 };
 
 #endif
