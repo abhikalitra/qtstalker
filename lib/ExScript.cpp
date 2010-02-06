@@ -95,6 +95,30 @@ int ExScript::calculate (QString &command)
   return 0;
 }
 
+int ExScript::calculate2 (QString &command)
+{
+  // clean up if needed
+  clear();
+
+  proc = new QProcess(this);
+  connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+  connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
+
+  // start the process
+  proc->start(command, QIODevice::ReadWrite);
+
+  // make sure process starts error free
+  if (! proc->waitForStarted(30000))
+  {
+    qDebug() << "ExScript::calculate: error starting script...timed out";
+    clear();
+    return 1;
+  }
+
+  return 0;
+}
+
 void ExScript::done (int, QProcess::ExitStatus)
 {
   emit signalDone();

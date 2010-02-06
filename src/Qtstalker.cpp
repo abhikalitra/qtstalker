@@ -163,7 +163,7 @@ QtstalkerApp::QtstalkerApp(QString session)
 
   // setup the script server
   script = new ExScript;
-//  connect(script, SIGNAL(signalDone()), this, SLOT(slotScriptDone()));
+  connect(script, SIGNAL(signalDone()), this, SLOT(slotScriptDone()));
 
   // setup the initial indicators
   QStringList l;
@@ -1146,12 +1146,7 @@ void QtstalkerApp::slotScript ()
     return;
 
   script->setBarData(recordList);
-  script->calculate(command);
-  QMessageBox::information(this,
-			   QString(tr("Script Completed")),
-			   QString(tr("Script Completed")),
-			   QMessageBox::Ok,
-			   QMessageBox::Ok);
+  script->calculate2(command);
 }
 
 // called each time a Qtstalker script has executed

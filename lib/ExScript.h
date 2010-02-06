@@ -58,6 +58,7 @@ class ExScript : public QObject
     void clear ();
     void setBarData (BarData *d);
     int calculate (QString &command);
+    int calculate2 (QString &command); // used for non indicator scripts
     void getLines (QList<PlotLine *> &);
 
   public slots:
