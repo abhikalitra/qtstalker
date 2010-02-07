@@ -47,9 +47,11 @@ class ExScript : public QObject
       INDICATOR, // get a library indicator
       INDICATOR_GET, // pass indicator data to the calling script
       INDICATOR_GET_INDEX, // pass a single indicator value to the calling script
+      INDICATOR_GET_SIZE, // returns the size of the indicator.
       INDICATOR_SET, // pass indicator data from script to qtstalker
       GROUP_ADD, // add a group item to a group
       GROUP_DELETE, // deletes a group and contents
+      GROUP_GET, // returns a csv list of the group contents
       PLOT, // plot the desired indicator
       SYMBOL_LIST // get a list of symbols in the db
     };

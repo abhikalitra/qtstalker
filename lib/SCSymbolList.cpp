@@ -34,6 +34,7 @@ int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
   // format = SYMBOL_LIST,SEARCH_STRING
 
   ba.clear();
+  ba.append("ERROR\n");
 
   if (l.count() != 2)
   {
@@ -48,6 +49,7 @@ int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
   else
     db.getSearchList(l[1], symbolList);
 
+  ba.clear();
   ba.append(symbolList.join(","));
   ba.append('\n');
 

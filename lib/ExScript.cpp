@@ -34,20 +34,27 @@
 
 ExScript::ExScript ()
 {
-  proc = 0;
+//  proc = 0;
   data = 0;
   deleteFlag = 0;
 
   functionList << "CLEAR";
-  functionList << "INDICATOR" << "INDICATOR_GET" << "INDICATOR_GET_INDEX" << "INDICATOR_SET";
-  functionList << "GROUP_ADD" << "GROUP_DELETE";
+  functionList << "INDICATOR" << "INDICATOR_GET" << "INDICATOR_GET_INDEX" << "INDICATOR_GET_SIZE";
+  functionList << "INDICATOR_SET";
+  functionList << "GROUP_ADD" << "GROUP_DELETE" << "GROUP_GET";
   functionList << "PLOT";
   functionList << "SYMBOL_LIST";
+
+  proc = new QProcess(this);
+  connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+  connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 }
 
 ExScript::~ExScript ()
 {
   clear();
+  delete proc;
 }
 
 void ExScript::clear ()
@@ -55,8 +62,8 @@ void ExScript::clear ()
   if (proc)
   {
     proc->kill();
-    delete proc;
-    proc = 0;
+//    delete proc;
+//    proc = 0;
   }
 
   plotOrder.clear();
@@ -84,23 +91,24 @@ int ExScript::calculate (QString &command)
   // clean up if needed
   clear();
 
-  proc = new QProcess(this);
-  connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
-  connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
+//  proc = new QProcess(this);
+//  connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+//  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+//  connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 
   // start the process
   proc->start(command, QIODevice::ReadWrite);
 
   // make sure process starts error free
-  if (! proc->waitForStarted(30000))
+  if (! proc->waitForStarted(10000))
   {
     qDebug() << "ExScript::calculate: error starting script...timed out";
     clear();
     return 1;
   }
 
-  if (! proc->waitForFinished(30000))
+  // wait until script is finished, this will block gui until done.
+  if (! proc->waitForFinished(10000))
   {
     qDebug() << "ExScript::calculate: script error, timed out";
     clear();
@@ -115,16 +123,16 @@ int ExScript::calculate2 (QString &command)
   // clean up if needed
   clear();
 
-  proc = new QProcess(this);
-  connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
-  connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
+//  proc = new QProcess(this);
+//  connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+//  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+//  connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 
   // start the process
   proc->start(command, QIODevice::ReadWrite);
 
   // make sure process starts error free
-  if (! proc->waitForStarted(30000))
+  if (! proc->waitForStarted(10000))
   {
     qDebug() << "ExScript::calculate: error starting script...timed out";
     clear();
@@ -150,6 +158,7 @@ void ExScript::readFromStdout ()
     return;
   }
 
+  ba.clear();
   int i = functionList.indexOf(l[0]);
   switch ((Function) i)
   {
@@ -165,7 +174,6 @@ void ExScript::readFromStdout ()
       }
       tlines.clear();
       plotOrder.clear();
-      QByteArray ba;
       ba.append("0\n");
       proc->write(ba);
       break;
@@ -181,7 +189,6 @@ void ExScript::readFromStdout ()
       }
 
       int rc = ib->getCUS(l, tlines, data);
-      QByteArray ba;
       ba.append(QString::number(rc) + '\n');
       proc->write(ba);
       delete ib;
@@ -190,83 +197,73 @@ void ExScript::readFromStdout ()
     case INDICATOR_GET:
     {
       SCIndicator sc;
-      QByteArray ba;
-      int rc = sc.getIndicator(l, ba, tlines);
-      if (rc)
-        ba.append("ERROR\n");
+      sc.getIndicator(l, ba, tlines);
       proc->write(ba);
       break;
     }
     case INDICATOR_GET_INDEX:
     {
       SCIndicator sc;
-      QByteArray ba;
-      int rc = sc.getIndex(l, tlines, ba);
-      if (rc)
-        ba.append("ERROR\n");
+      sc.getIndex(l, tlines, ba);
+      proc->write(ba);
+      break;
+    }
+    case INDICATOR_GET_SIZE:
+    {
+      SCIndicator sc;
+      sc.getSize(l, tlines, ba);
       proc->write(ba);
       break;
     }
     case INDICATOR_SET:
     {
       SCIndicator sc;
-      QByteArray ba;
-      int rc = sc.setIndicator(l, tlines);
-      if (rc)
-        ba.append("1\n");
-      else
-        ba.append("0\n");
+      sc.setIndicator(l, tlines, ba);
       proc->write(ba);
       break;
     }
     case GROUP_ADD:
     {
       SCGroup sc;
-      QByteArray ba;
-      int rc = sc.addGroup(l, ba);
-      if (rc)
-        ba.append("1\n");
-      else
-        ba.append("0\n");
+      sc.addGroup(l, ba);
       proc->write(ba);
       break;
     }
     case GROUP_DELETE:
     {
       SCGroup sc;
-      QByteArray ba;
-      int rc = sc.deleteGroup(l, ba);
-      if (rc)
-        ba.append("1\n");
-      else
-        ba.append("0\n");
+      sc.deleteGroup(l, ba);
+      proc->write(ba);
+      break;
+    }
+    case GROUP_GET:
+    {
+      SCGroup sc;
+      sc.getGroup(l, ba);
       proc->write(ba);
       break;
     }
     case PLOT:
     {
       SCPlot sc;
-      QByteArray ba;
-      int rc = sc.calculate(l, plotOrder, tlines);
-      if (rc)
-        ba.append("1\n");
-      else
-        ba.append("0\n");
+      sc.calculate(l, plotOrder, tlines, ba);
       proc->write(ba);
       break;
     }
     case SYMBOL_LIST:
     {
       SCSymbolList sc;
-      QByteArray ba;
-      int rc = sc.calculate(l, ba);
-      if (rc)
-        ba.append("ERROR\n");
+      sc.calculate(l, ba);
       proc->write(ba);
       break;
     }
     default:
+    {
+      // if we are here it means there was a command syntax error, abort script
+      clear();
+      qDebug() << "ExScript::readFromStdout: syntax error, script abend" << l;
       break;
+    }
   }
 }
 

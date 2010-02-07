@@ -178,6 +178,7 @@ class QtstalkerApp : public QMainWindow
     int zoomPos;
     QTimer *refreshTimer;
     Assistant *assistant;
+    QString currentScript;
 };
 
 #endif

@@ -36,7 +36,8 @@ class SCIndicator
     SCIndicator ();
     int getIndicator (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines);
     int getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
-    int setIndicator (QStringList &l, QHash<QString, PlotLine *> &tlines);
+    int setIndicator (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
+    int getSize (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
 
   private:
 };

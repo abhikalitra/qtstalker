@@ -205,5 +205,11 @@
           Changed the GET_INDICATOR command to INDICATOR_GET and SET_INDICATOR to INDICATOR_SET. This
           is to better organize the commands into common groups. Docs and scripts are updated.
 
+20100207: Added GROUP_GET, INDICATOR_GET_SIZE script commands. See docs.
+
+          Fixed ExScript bug that caused a script to hang when parsing incorrect syntax.
+
+
+
 
 

@@ -34,6 +34,7 @@ int SCGroup::addGroup (QStringList &l, QByteArray &ba)
   // format = GROUP_ADD,GROUP,ITEM
 
   ba.clear();
+  ba.append("1\n");
 
   if (l.count() != 3)
   {
@@ -48,6 +49,9 @@ int SCGroup::addGroup (QStringList &l, QByteArray &ba)
   groupList.removeDuplicates();
   db.setGroupList(l[1], groupList);
 
+  ba.clear();
+  ba.append("0\n");
+
   return 0;
 }
 
@@ -56,6 +60,7 @@ int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
   // format = GROUP_DELETE,GROUP
 
   ba.clear();
+  ba.append("1\n");
 
   if (l.count() != 2)
   {
@@ -65,6 +70,33 @@ int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
 
   DataBase db;
   db.deleteGroup(l[1]);
+
+  ba.clear();
+  ba.append("0\n");
+
+  return 0;
+}
+
+int SCGroup::getGroup (QStringList &l, QByteArray &ba)
+{
+  // format = GROUP_GET,GROUP
+
+  ba.clear();
+  ba.append("ERROR\n");
+
+  if (l.count() != 2)
+  {
+    qDebug() << "SCGroup::getGroup: invalid parm count" << l.count();
+    return 1;
+  }
+
+  DataBase db;
+  QStringList groupList;
+  db.getGroupList(l[1], groupList);
+
+  ba.clear();
+  ba.append(groupList.join(","));
+  ba.append("\n");
 
   return 0;
 }

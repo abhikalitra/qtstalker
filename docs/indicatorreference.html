@@ -29,10 +29,13 @@
 <p></p>
 <hr>
 <h3 style="text-decoration: underline;">Symbols</h3>
-This function allow scripts to return a list of symbols in the quote
-database.<br>
 <br>
-SYMBOL_LIST,SEARCH_STRING<br>
+<span style="font-weight: bold;">SYMBOL_LIST,&lt;SEARCH_STRING</span>&gt;<br>
+<br>
+This function allow scripts to return a list of symbols in the quote
+database. On success a csv list of symbols is returned. On failure, the
+string "ERROR" is returned.<br>
+<br>
 <ul>
   <li>SEARCH_STRING is the search string pattern. A '*' will return all
 symbols in the database. The % is used to match any length. ie %IBM%
@@ -43,24 +46,26 @@ single character.<br>
 <br>
 <hr style="width: 100%; height: 2px;"><br>
 <h3 style="text-decoration: underline;">Utilities</h3>
-CLEAR<br>
+<span style="font-weight: bold;">CLEAR</span><br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp; Used in script loops to clear memory of data
 used in the script. This is <span
  style="text-decoration: underline; font-weight: bold;">MANDATORY</span>
 when looping in scripts. If not used, we could develop memory leaks or
-duplicate variable errors.<br>
+duplicate variable errors. On success a '0' is returned. On failure, a
+'1' is returned.<br>
 <br>
 <hr style="width: 100%; height: 2px;"><br>
 <h3 style="text-decoration: underline;">Group Functions</h3>
 <br>
 <br>
-GROUP_ADD,&lt;GROUP_NAME&gt;,&lt;GROUP_ITEM&gt;<br>
+<span style="font-weight: bold;">GROUP_ADD,&lt;GROUP_NAME&gt;,&lt;GROUP_ITEM&gt;</span><br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp; This function will add an item to a Qtstalker
 group. If
 &lt;GROUP_NAME&gt; does not exist, it will be created and the
-&lt;GROUP_ITEM&gt; added.<br>
+&lt;GROUP_ITEM&gt; added. On success a '0' is returned. On failure, a
+'1' is returned.<br>
 <br>
 <ul>
   <li>&lt;GROUP_NAME&gt; is the name of the group to add items to.</li>
@@ -69,14 +74,28 @@ group. If
 </ul>
 <br>
 <br>
-GROUP_DELETE,&lt;GROUP_NAME&gt;<br>
+<br>
+<span style="font-weight: bold;">GROUP_DELETE,&lt;GROUP_NAME&gt;</span><br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp; This function will delete a Qtstalker group
-and all of its contents.<br>
+and all of its contents. On success a '0' is returned. On failure, a
+'1' is returned.<br>
 <br>
 <ul>
   <li>&lt;GROUP_NAME&gt; is the name of the group to delete.<br>
   </li>
+</ul>
+<br>
+<br>
+<br>
+<span style="font-weight: bold;">GROUP_GET,&lt;GROUP_NAME&gt;</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp; This function will return a csv list of
+&lt;GROUP_NAME&gt;. On success a csv list of the group contents is
+returned. On failure, the string "ERROR" is returned.<br>
+<br>
+<ul>
+  <li>&lt;GROUP_NAME&gt; is the name of the group.</li>
 </ul>
 <br>
 <br>
@@ -90,10 +109,10 @@ function. To create a custom indicator with values created within the
 script,
 we use the INDICATOR_SET function</p>
 <p></p>
-<p><br>
-To request indicator values:</p>
-<p></p>
-<p>INDICATOR_GET,NAME,BARS</p>
+<p style="font-weight: bold;"><br>
+INDICATOR_GET,&lt;NAME&gt;,&lt;BARS&gt;<br>
+</p>
+<p>Request indicator values.</p>
 <ul>
   <li>NAME is the variable name of the indicator previously created in
 the script.</li>
@@ -111,10 +130,12 @@ letters instead of numbers in this case.</p>
 <p></p>
 <p></p>
 <br>
+<span style="font-weight: bold;"><br>
 <br>
-To return a single value in a data array:<br>
-<p>INDICATOR_GET_INDEX,NAME,OFFSET<br>
-</p>
+INDICATOR_GET_INDEX,&lt;NAME&gt;,&lt;OFFSET</span>&gt;<br>
+<br>
+Return a single value in a data array<br>
+<br>
 <ul>
   <li>NAME is the variable name of the indicator previously created in
 the script.</li>
@@ -131,9 +152,30 @@ letters instead of numbers in this case.
 <p></p>
 <p><br>
 </p>
-<p>To send data from the script to create a new indicator:<br>
+<p><span style="font-weight: bold;"><br>
+INDICATOR_GET_SIZE,&lt;NAME&gt;</span><br>
+<br>
+Returns the size of a data array.<br>
+<br>
 </p>
-<p>INDICATOR_SET,NAME,STRING</p>
+<ul>
+  <li>NAME is the variable name of the indicator previously created in
+the script.</li>
+</ul>
+<br>
+On success, a single value is returned. Failure returns the string
+"ERROR". We return "ERROR"
+instead of "1"
+because the script might confuse the error code with actual data, so we
+return
+letters instead of numbers in this case.<br>
+<p><br>
+<br>
+</p>
+<p style="font-weight: bold;"><br>
+INDICATOR_SET,&lt;NAME&gt;,&lt;STRING&gt;<br>
+</p>
+<p>Send data from the script to create a new indicator</p>
 <ul>
   <li>NAME is the variable name of the dataset.</li>
   <li>STRING is a CSV string of all values.</li>
@@ -143,14 +185,18 @@ letters instead of numbers in this case.
 </p>
 <p></p>
 <hr>
+<h3><br>
+<span style="text-decoration: underline;"></span></h3>
 <h3><span style="text-decoration: underline;">Plot</span><br>
 </h3>
 <p></p>
-<p>This function allows the indicator script to plot indicators.</p>
-<p></p>
-<p>The plot format is:</p>
-<p></p>
-<p>PLOT,NAME,LABEL,COLOR,PLOT_TYPE</p>
+<span style="font-weight: bold;"><br>
+PLOT,&lt;NAME&gt;,&lt;LABEL&gt;,&lt;COLOR&gt;,&lt;PLOT_TYPE&gt;<br>
+<br>
+</span>
+<p>This function allows the indicator script to plot indicators.<br>
+</p>
+<br>
 <ul>
   <li>PLOT is the command.</li>
   <li>NAME is the indicator previously created to plot.</li>
@@ -158,7 +204,8 @@ letters instead of numbers in this case.
   <li>COLOR is the color of the plot.</li>
   <li>PLOT_TYPE is the type of plot desired.</li>
 </ul>
-<p>The available values of PLOT_TYPE are:</p>
+<p><br>
+The available values of PLOT_TYPE are:</p>
 <ul>
   <li>Dot</li>
   <li>Dash</li>
@@ -171,7 +218,8 @@ letters instead of numbers in this case.
   <li>Candle</li>
 </ul>
 <p></p>
-<p>After the PLOT command string is given, the script must then wait
+<p><br>
+After the PLOT command string is given, the script must then wait
 for the
 return code. The return code will be either "0" for success or "1" for
 error.
@@ -179,8 +227,11 @@ If an error occurs, the script should exit execution. Please browse the
 included scripts for examples of how they should be used.</p>
 <p></p>
 <hr>
-<h3><span style="text-decoration: underline;">Indicator</span><br>
-</h3>
+<h3><br>
+<span style="text-decoration: underline;"></span></h3>
+<h3><span style="text-decoration: underline;">Indicator</span></h3>
+Creates an indicator.<br>
+<br>
 <p></p>
 <p>&lt;NAME&gt; is the name given to the indicator</p>
 <p></p>
@@ -404,13 +455,14 @@ INDICATOR,CANDLES,UPSIDEGAP2CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 INDICATOR,CANDLES,XSIDEGAP3METHODS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
 <p></p>
-<p>This will create candle bars.<br>
-</p>
-<p>The &lt;PENETRATION&gt; value is the percentage of candle
+<br>
+The &lt;PENETRATION&gt; value is the percentage of candle
 penetration used for certain methods. The &lt;NONE&gt; method will
 create basic colored, candle bars. All
-other methods will return a boolean array of values.</p>
+other methods will return a boolean array of values.
 <br>
+<h3><br>
+</h3>
 <h3>Commodity Channel Index</h3>
 <p>INDICATOR,CCI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>

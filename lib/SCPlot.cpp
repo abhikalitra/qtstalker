@@ -28,9 +28,11 @@ SCPlot::SCPlot ()
 {
 }
 
-int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, PlotLine *> &tlines)
+int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, PlotLine *> &tlines, QByteArray &ba)
 {
   // format 'PLOT,NAME,LABEL,COLOR,LINE_TYPE'
+  ba.clear();
+  ba.append("1\n");
 
   if (l.count() != 5)
   {
@@ -51,6 +53,9 @@ int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, Pl
   line->setPlotFlag(TRUE);
 
   plotOrder.append(l[1]);
+
+  ba.clear();
+  ba.append("0\n");
 
   return 0;
 }

@@ -33,6 +33,7 @@ int SCIndicator::getIndicator (QStringList &l, QByteArray &ba, QHash<QString, Pl
   // format 'INDICATOR_GET,VARIABLE,BARS' returns the requested data in a CSV string
 
   ba.clear();
+  ba.append("ERROR\n");
 
   if (l.count() != 3)
   {
@@ -64,6 +65,7 @@ int SCIndicator::getIndicator (QStringList &l, QByteArray &ba, QHash<QString, Pl
   for (; loop < in->getSize(); loop++)
     l2.append(QString::number(in->getData(loop)));
 
+  ba.clear();
   ba.append(l2.join(","));
   ba.append('\n');
 
@@ -75,6 +77,7 @@ int SCIndicator::getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, Q
   // format = INDICATOR_GET_INDEX,INPUT_ARRAY,OFFSET
 
   ba.clear();
+  ba.append("ERROR\n");
 
   if (l.count() != 3)
   {
@@ -104,16 +107,19 @@ int SCIndicator::getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, Q
     return 1;
   }
 
+  ba.clear();
   ba.append(QString::number(line->getData(offset)));
-
   ba.append('\n');
 
   return 0;
 }
 
-int SCIndicator::setIndicator (QStringList &l, QHash<QString, PlotLine *> &tlines)
+int SCIndicator::setIndicator (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba)
 {
   // format 'INDICATOR_SET,VARIABLE,CSV,DATA,FROM,NOW,ON' - will create a new line using the provided data
+
+  ba.clear();
+  ba.append("1\n");
 
   if (l.count() < 3)
   {
@@ -135,6 +141,38 @@ int SCIndicator::setIndicator (QStringList &l, QHash<QString, PlotLine *> &tline
     line->append(l[loop].toDouble());
 
   tlines.insert(l[1], line);
+
+  ba.clear();
+  ba.append("0\n");
+
+  return 0;
+}
+
+int SCIndicator::getSize (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba)
+{
+  // format = INDICATOR_GET_SIZE,INPUT_ARRAY
+
+  ba.clear();
+  ba.append("ERROR\n");
+
+  if (l.count() != 2)
+  {
+    qDebug() << "SCIndicator::getSize: invalid parm count" << l.count();
+    return 1;
+  }
+
+  PlotLine *line = tlines.value(l[1]);
+  if (! line)
+  {
+    qDebug() << "SCIndicator::getSize: invalid input" << l[1];
+    return 1;
+  }
+
+  int size = line->getSize();
+
+  ba.clear();
+  ba.append(QString::number(size));
+  ba.append('\n');
 
   return 0;
 }

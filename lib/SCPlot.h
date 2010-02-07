@@ -33,7 +33,7 @@ class SCPlot
 {
   public:
     SCPlot ();
-    int calculate (QStringList &l, QStringList &plotOrder, QHash<QString, PlotLine *> &tlines);
+    int calculate (QStringList &l, QStringList &plotOrder, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
 
   private:
 };

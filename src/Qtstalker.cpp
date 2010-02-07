@@ -1164,16 +1164,24 @@ void QtstalkerApp::slotScript ()
 
   script->setBarData(recordList);
   script->calculate2(command);
+
+  QFileInfo fi(file);
+  currentScript = fi.completeBaseName();
 }
 
 // called each time a Qtstalker script has executed
 void QtstalkerApp::slotScriptDone ()
 {
+  slotStatusMessage(QString(currentScript + tr(" script completed.")));
+  currentScript.clear();
+
+/*
   QMessageBox::information(this,
 			   QString(tr("Script Completed")),
 			   QString(tr("Script Completed")),
 			   QMessageBox::Ok,
 			   QMessageBox::Ok);
+*/
 }
 
 /**********************************************************************/
