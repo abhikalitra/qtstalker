@@ -29,22 +29,44 @@ Config::Config ()
 {
 }
 
+void Config::init (QString session)
+{
+  QString s = QDir::homePath() + "/.qtstalker/config.sqlite" + session;
+  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "config");
+  db.setHostName("me");
+  db.setDatabaseName(s);
+  db.setUserName("qtstalker");
+  db.setPassword("qtstalker");
+  if (! db.open())
+  {
+    qDebug() << "Config::Config:" << db.lastError().text();
+    return;
+  }
+
+  // create the config table
+  QSqlQuery q(db);
+  s = "CREATE TABLE IF NOT EXISTS config (key INT PRIMARY KEY, setting TEXT)";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "Config::createConfigTable: " << q.lastError().text();
+}
+
 void Config::transaction ()
 {
-  QSqlDatabase db = QSqlDatabase::database("data");
+  QSqlDatabase db = QSqlDatabase::database("config");
   db.transaction();
 }
 
 void Config::commit ()
 {
-  QSqlDatabase db = QSqlDatabase::database("data");
+  QSqlDatabase db = QSqlDatabase::database("config");
   db.commit();
 }
 
 void Config::getData (Parm p, QString &d)
 {
   d.clear();
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database("config"));
   QString s = "SELECT setting FROM config WHERE key=" + QString::number(p);
   q.exec(s);
   if (q.lastError().isValid())
@@ -59,7 +81,7 @@ void Config::getData (Parm p, QString &d)
 
 void Config::setData (Parm p, QString &d)
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database("config"));
   QString s = "INSERT OR REPLACE INTO config (key,setting) VALUES (" + QString::number(p) + ",'" + d + "')";
   q.exec(s);
   if (q.lastError().isValid())
@@ -73,10 +95,10 @@ void Config::getData (Parm p, QSplitter *sp)
 {
   QString s;
   getData(p, s);
-  
+
   QStringList l = s.split(",");
   QList<int> sizeList = sp->sizes();
-  
+
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
@@ -88,7 +110,7 @@ void Config::getData (Parm p, QSplitter *sp)
     else
       sizeList[loop] = l[loop].toInt();
   }
-  
+
   sp->setSizes(sizeList);
 }
 
@@ -96,11 +118,11 @@ void Config::setData (Parm p, QSplitter *sp)
 {
   QStringList l;
   QList<int> sizeList = sp->sizes();
-  
+
   int loop;
   for (loop = 0; loop < (int) sizeList.count(); loop++)
     l.append(QString::number(sizeList[loop]));
-  
+
   QString s(l.join(","));
   setData(p,s);
 }
@@ -112,13 +134,13 @@ void Config::getData (Parm name, QColor &color)
   if (c.length())
     color.setNamedColor(c);
 }
-    
+
 void Config::setData (Parm name, QColor &color)
 {
   QString c = color.name();
   setData(name, c);
 }
-  
+
 void Config::getData (Parm name, QFont &font)
 {
   QString f;
@@ -142,7 +164,7 @@ void Config::setData (Parm name, QFont &font)
               QString::number(font.weight()) + "," +
               QString::number(font.italic ()) + "," +
               QString::number(font.bold ());
-		
+
   setData(name, f);
 }
 
@@ -152,7 +174,7 @@ void Config::getData (Parm name, QPoint &p)
   getData(name, s);
   if (! s.length())
     return;
-  
+
   QStringList l = s.split(",");
   p.setX(l[0].toInt());
   p.setY(l[1].toInt());
@@ -170,7 +192,7 @@ void Config::getData (Parm name, QSize &sz)
   getData(name, s);
   if (! s.length())
     return;
-  
+
   QStringList l = s.split(",");
   sz.setWidth (l[0].toInt());
   sz.setHeight(l[1].toInt());

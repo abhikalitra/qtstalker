@@ -33,9 +33,9 @@ DataBase::DataBase ()
 {
 }
 
-DataBase::DataBase (QString session)
+void DataBase::init ()
 {
-  QString s = QDir::homePath() + "/.qtstalker/data.sqlite" + session;
+  QString s = QDir::homePath() + "/.qtstalker/data.sqlite";
   QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "data");
   db.setHostName("me");
   db.setDatabaseName(s);
@@ -47,14 +47,8 @@ DataBase::DataBase (QString session)
     return;
   }
 
-  // create the config table
-  QSqlQuery q(db);
-  s = "CREATE TABLE IF NOT EXISTS config (key INT PRIMARY KEY, setting TEXT)";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::createConfigTable: " << q.lastError().text();
-
   // create the group index table
+  QSqlQuery q(db);
   s = "CREATE TABLE IF NOT EXISTS groupIndex (name TEXT PRIMARY KEY, parms TEXT)";
   q.exec(s);
   if (q.lastError().isValid())
@@ -95,6 +89,17 @@ DataBase::DataBase (QString session)
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createIndicatorSettingsTable: " << q.lastError().text();
+
+  // create the script table
+  s = "CREATE TABLE IF NOT EXISTS script (";
+  s.append("name TEXT PRIMARY KEY UNIQUE");
+  s.append(", command TEXT");
+  s.append(", comment TEXT");
+  s.append(", lastRun TEXT");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::createScriptTable: " << q.lastError().text();
 }
 
 void DataBase::transaction ()
@@ -740,5 +745,107 @@ void DataBase::setChartObject (COSettings *co)
     if (q.lastError().isValid())
       qDebug() << "DataBase::setChartObject: " << q.lastError().text();
   }
+}
+
+/********************************************************************************/
+/********************* script functions *****************************************/
+/********************************************************************************/
+
+void DataBase::getScripts (QStringList &l)
+{
+  l.clear();
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "SELECT name FROM script";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getScripts: " << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+    l.append(q.value(0).toString());
+
+  l.sort();
+}
+
+void DataBase::getScript (Script &script)
+{
+  QString name;
+  script.getName(name);
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "SELECT command,comment,lastRun FROM script WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getScript: " << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+  {
+    s = q.value(0).toString();
+    script.setCommand(s);
+
+    s = q.value(1).toString();
+    script.setComment(s);
+
+    QDateTime dt = q.value(2).toDateTime();
+    script.setLastRun(dt);
+  }
+}
+
+void DataBase::setScript (Script &script)
+{
+  QString name, command, comment, lastRun;
+  script.getName(name);
+  script.getCommand(command);
+  script.getComment(comment);
+  QDateTime dt;
+  script.getLastRun(dt);
+  lastRun = dt.toString(Qt::ISODate);
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "INSERT OR REPLACE INTO script VALUES (";
+  s.append("'" + name + "'");
+  s.append(",'" + command + "'");
+  s.append(",'" + comment + "'");
+  s.append(",'" + lastRun + "'");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::setScript: " << q.lastError().text();
+}
+
+void DataBase::deleteScript (Script &script)
+{
+  QString name;
+  script.getName(name);
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "DELETE FROM script WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "DataBase::deleteScript: " << q.lastError().text();
+}
+
+void DataBase::getScriptSearch (QString &pattern, QStringList &list)
+{
+  list.clear();
+
+  QSqlQuery q(QSqlDatabase::database("data"));
+  QString s = "SELECT name FROM script WHERE name LIKE '" + pattern + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataBase::getScriptSearch: " << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+    list.append(q.value(0).toString());
+
+  list.sort();
 }
 

@@ -59,10 +59,10 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   connect(allButton, SIGNAL(clicked()), this, SLOT(allButtonPressed()));
   allButton->setMaximumSize(25, 25);
   hbox->addWidget(allButton);
- 
+
   symbolButton = new QToolButton;
   symbolButton->setToolTip(tr("Symbol Search"));
-  symbolButton->setIcon(QIcon(search));
+  symbolButton->setIcon(QIcon(search_xpm));
   connect(symbolButton, SIGNAL(clicked()), this, SLOT(symbolSearch()));
   symbolButton->setMaximumSize(25, 25);
   hbox->addWidget(symbolButton);
@@ -80,7 +80,7 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   menu = new QMenu(this);
   menu->addAction(QIcon(addgroup), tr("Add To &Group	Ctrl+G"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
   menu->addAction(QIcon(asterisk_xpm), tr("&All Symbols"), this, SLOT(updateList()), QKeySequence(Qt::CTRL+Qt::Key_A));
-  menu->addAction(QIcon(search), tr("&Symbol Search"), this, SLOT(symbolSearch()), QKeySequence(Qt::CTRL+Qt::Key_S));
+  menu->addAction(QIcon(search_xpm), tr("&Symbol Search"), this, SLOT(symbolSearch()), QKeySequence(Qt::CTRL+Qt::Key_S));
 
   // update to last symbol search before displaying
   Config config;
@@ -139,14 +139,14 @@ void ChartPage::addToGroup ()
   tl.removeAll(QString());
 
   db.setGroupList(group, tl);
-  
+
   emit signalAddToGroup();
 }
 
 void ChartPage::doKeyPress (QKeyEvent *key)
 {
   key->accept();
-  
+
   if (key->modifiers() == Qt::ControlModifier)
   {
     switch(key->key())
@@ -184,7 +184,7 @@ void ChartPage::updateList ()
       db.getAllChartsList(l);
       break;
   }
-  
+
   nav->addItems(l);
 }
 
@@ -209,7 +209,7 @@ void ChartPage::symbolSearch ()
 
   nav->clear();
   nav->addItems(l);
-  
+
   Config config;
   config.setData(Config::LastSymbolSearch, searchString);
 }

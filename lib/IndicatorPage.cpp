@@ -74,7 +74,7 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 
   searchButton = new QToolButton;
   searchButton->setToolTip(tr("Search"));
-  searchButton->setIcon(QIcon(search));
+  searchButton->setIcon(QIcon(search_xpm));
   connect(searchButton, SIGNAL(clicked()), this, SLOT(indicatorSearch()));
   searchButton->setMaximumSize(25, 25);
   hbox->addWidget(searchButton);

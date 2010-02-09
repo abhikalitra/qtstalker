@@ -33,8 +33,11 @@ HEADERS += SCIndicator.h
 HEADERS += SCPlot.h
 HEADERS += SCSymbolList.h
 HEADERS += SCGroup.h
+HEADERS += SCTest.h
 HEADERS += IndicatorBase.h
 HEADERS += IndicatorFactory.h
+HEADERS += ScriptPage.h
+HEADERS += Script.h
 
 HEADERS += AD.h
 HEADERS += ADX.h
@@ -112,8 +115,11 @@ SOURCES += SCIndicator.cpp
 SOURCES += SCPlot.cpp
 SOURCES += SCSymbolList.cpp
 SOURCES += SCGroup.cpp
+SOURCES += SCTest.cpp
 SOURCES += IndicatorBase.cpp
 SOURCES += IndicatorFactory.cpp
+SOURCES += ScriptPage.cpp
+SOURCES += Script.cpp
 
 SOURCES += AD.cpp
 SOURCES += ADX.cpp

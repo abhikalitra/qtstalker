@@ -25,6 +25,7 @@
 #include "SCPlot.h"
 #include "SCGroup.h"
 #include "SCSymbolList.h"
+#include "SCTest.h"
 #include "IndicatorFactory.h"
 #include "IndicatorBase.h"
 
@@ -37,6 +38,7 @@ ExScript::ExScript ()
 //  proc = 0;
   data = 0;
   deleteFlag = 0;
+  killFlag = 0;
 
   functionList << "CLEAR";
   functionList << "INDICATOR" << "INDICATOR_GET" << "INDICATOR_GET_INDEX" << "INDICATOR_GET_SIZE";
@@ -44,6 +46,7 @@ ExScript::ExScript ()
   functionList << "GROUP_ADD" << "GROUP_DELETE" << "GROUP_GET";
   functionList << "PLOT";
   functionList << "SYMBOL_LIST";
+  functionList << "TEST_ENTER_LONG" << "TEST_EXIT_LONG" << "TEST_ENTER_SHORT" << "TEST_EXIT_SHORT";
 
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
@@ -59,6 +62,8 @@ ExScript::~ExScript ()
 
 void ExScript::clear ()
 {
+//  killFlag = 0;
+
   if (proc)
   {
     proc->kill();
@@ -135,7 +140,6 @@ int ExScript::calculate2 (QString &command)
   if (! proc->waitForStarted(10000))
   {
     qDebug() << "ExScript::calculate: error starting script...timed out";
-    clear();
     return 1;
   }
 
@@ -159,6 +163,13 @@ void ExScript::readFromStdout ()
   }
 
   ba.clear();
+  if (killFlag)
+  {
+    qDebug() << "ExScript::readFromStdout: script terminated";
+    clear();
+    return;
+  }
+
   int i = functionList.indexOf(l[0]);
   switch ((Function) i)
   {
@@ -174,8 +185,7 @@ void ExScript::readFromStdout ()
       }
       tlines.clear();
       plotOrder.clear();
-      ba.append("0\n");
-      proc->write(ba);
+      proc->write("0\n");
       break;
     }
     case INDICATOR:
@@ -257,6 +267,16 @@ void ExScript::readFromStdout ()
       proc->write(ba);
       break;
     }
+    case TEST_ENTER_LONG:
+    case TEST_EXIT_LONG:
+    case TEST_ENTER_SHORT:
+    case TEST_EXIT_SHORT:
+    {
+      SCTest sc;
+      sc.getSig(l, data, tlines, ba, signalList);
+      proc->write(ba);
+      break;
+    }
     default:
     {
       // if we are here it means there was a command syntax error, abort script
@@ -318,11 +338,17 @@ void ExScript::stop ()
   if (proc->state() == QProcess::NotRunning)
     return;
 
-  clear();
+  killFlag = TRUE;
 }
 
 void ExScript::setDeleteFlag (int d)
 {
   deleteFlag = d;
+}
+
+void ExScript::getSignalList (QHash<int, int> &l)
+{
+  l = signalList;
+  signalList.clear();
 }
 

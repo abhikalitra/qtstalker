@@ -30,13 +30,14 @@
 #include "BarData.h"
 #include "Indicator.h"
 #include "COSettings.h"
+#include "Script.h"
 
 
 class DataBase
 {
   public:
     DataBase ();
-    DataBase (QString session); // called only at startup, initializes database tables
+    void init (); // called only at qtstalker startup, initializes database tables
     void transaction ();
     void commit ();
 
@@ -69,6 +70,13 @@ class DataBase
     void deleteChartObject (QString &id);
     void getChartObjects (QString &symbol, QString &indicator, QHash<QString, COSettings *> &list);
     void setChartObject (COSettings *);
+
+    // script functions
+    void getScripts (QStringList &);
+    void getScript (Script &);
+    void deleteScript (Script &);
+    void setScript (Script &);
+    void getScriptSearch (QString &pattern, QStringList &list);
 };
 
 #endif

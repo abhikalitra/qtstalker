@@ -209,6 +209,20 @@
 
           Fixed ExScript bug that caused a script to hang when parsing incorrect syntax.
 
+20100208: Decoupled the config settings from main database. This allows the user to run multiple
+          instances of qtstalker while allowing each instance to share all the common data such
+          as indicators, groups etc. Changes made in one instance will be reflected in all other
+          instances except for the preferences which are unique to each instance. Use the -session
+          command line option to generate each instance.
+
+          Added script side panel for script management. Works much the same as the other panels.
+
+
+
+
+
+
+
 
 
 

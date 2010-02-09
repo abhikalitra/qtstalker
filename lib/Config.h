@@ -131,6 +131,7 @@ class Config
     };
 
     Config ();
+    void init (QString session); // called only at qtstalker startup, initializes tables
     void transaction ();
     void commit ();
 

@@ -53,7 +53,11 @@ class ExScript : public QObject
       GROUP_DELETE, // deletes a group and contents
       GROUP_GET, // returns a csv list of the group contents
       PLOT, // plot the desired indicator
-      SYMBOL_LIST // get a list of symbols in the db
+      SYMBOL_LIST, // get a list of symbols in the db
+      TEST_ENTER_LONG,
+      TEST_EXIT_LONG,
+      TEST_ENTER_SHORT,
+      TEST_EXIT_SHORT
     };
 
     ExScript ();
@@ -66,6 +70,8 @@ class ExScript : public QObject
     int getState ();
     void stop ();
     void setDeleteFlag (int);
+    void getSignalList (QHash<int, int> &l);
+
 
   public slots:
     void readFromStdout ();
@@ -80,6 +86,8 @@ class ExScript : public QObject
     BarData *data;
     QStringList inputList;
     int deleteFlag;
+    QHash<int, int> signalList;
+    int killFlag;
 };
 
 #endif
