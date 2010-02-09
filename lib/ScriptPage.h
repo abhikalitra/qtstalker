@@ -46,7 +46,7 @@ class ScriptPage : public QWidget
     enum Status
     {
       StatusAll,
-      StatusQue,
+      StatusQueue,
       StatusSearch
     };
 
@@ -64,11 +64,11 @@ class ScriptPage : public QWidget
     void search ();
     void update ();
     void showAllScripts ();
-    void showQue ();
+    void showQueue ();
     void showSearch ();
-    void addScriptQue (Script &);
+    void addScriptQueue (Script &);
     void scriptDone ();
-    void removeScriptQue ();
+    void removeScriptQueue ();
 
   protected:
     ExScript *scriptServer;
@@ -77,7 +77,7 @@ class ScriptPage : public QWidget
     QMenu *menu;
     QList<QAction *> actions;
     QToolButton *allButton;
-    QToolButton *queButton;
+    QToolButton *queueButton;
     QToolButton *searchButton;
     QList<Script> scriptList;
     QString searchString;

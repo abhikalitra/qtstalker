@@ -62,12 +62,12 @@ ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
   allButton->setMaximumSize(25, 25);
   hbox->addWidget(allButton);
 
-  queButton = new QToolButton;
-  queButton->setToolTip(tr("Show script que."));
-  queButton->setIcon(QIcon(script_xpm));
-  connect(queButton, SIGNAL(clicked()), this, SLOT(showQue()));
-  queButton->setMaximumSize(25, 25);
-  hbox->addWidget(queButton);
+  queueButton = new QToolButton;
+  queueButton->setToolTip(tr("Show script queue"));
+  queueButton->setIcon(QIcon(script_xpm));
+  connect(queueButton, SIGNAL(clicked()), this, SLOT(showQueue()));
+  queueButton->setMaximumSize(25, 25);
+  hbox->addWidget(queueButton);
 
   searchButton = new QToolButton;
   searchButton->setToolTip(tr("Search"));
@@ -216,8 +216,8 @@ void ScriptPage::doubleClick (QListWidgetItem *item)
 
   switch (status)
   {
-    case StatusQue:
-      removeScriptQue();
+    case StatusQueue:
+      removeScriptQueue();
       break;
     default:
     {
@@ -234,7 +234,7 @@ void ScriptPage::doubleClick (QListWidgetItem *item)
       script.setName(s);
       DataBase db;
       db.getScript(script);
-      addScriptQue(script);
+      addScriptQueue(script);
       break;
     }
   }
@@ -246,8 +246,8 @@ void ScriptPage::rightClick (const QPoint &)
 
   switch (status)
   {
-    case StatusQue:
-      menu->addAction(QIcon(deleteitem), tr("&Remove Script From Que"), this, SLOT(removeScriptQue()), QKeySequence(Qt::CTRL+Qt::Key_R));
+    case StatusQueue:
+      menu->addAction(QIcon(deleteitem), tr("&Remove Script From Queue"), this, SLOT(removeScriptQueue()), QKeySequence(Qt::CTRL+Qt::Key_R));
       break;
     default:
       menu->addAction(QIcon(newchart), tr("&New Script"), this, SLOT(newScript()), QKeySequence(Qt::CTRL+Qt::Key_N));
@@ -281,11 +281,11 @@ void ScriptPage::update ()
 {
   switch (status)
   {
-    case StatusQue:
-      showQue();
+    case StatusQueue:
+      showQueue();
       break;
     case StatusSearch:
-      showQue();
+      showQueue();
       break;
     default:
       showAllScripts();
@@ -305,9 +305,9 @@ void ScriptPage::showAllScripts ()
   list->addItems(l);
 }
 
-void ScriptPage::showQue ()
+void ScriptPage::showQueue ()
 {
-  status = StatusQue;
+  status = StatusQueue;
 
   list->clear();
 
@@ -336,14 +336,14 @@ void ScriptPage::showSearch ()
     list->addItem(l[loop]);
 }
 
-void ScriptPage::addScriptQue (Script &script)
+void ScriptPage::addScriptQueue (Script &script)
 {
   scriptList.append(script);
 
   if (scriptList.count() > 1)
     return;
 
-  if (status == StatusQue)
+  if (status == StatusQueue)
     update();
 
   startScript();
@@ -358,7 +358,7 @@ void ScriptPage::scriptDone ()
   if (! scriptList.count())
     return;
 
-  if (status == StatusQue)
+  if (status == StatusQueue)
     update();
 
   startScript();
@@ -372,7 +372,7 @@ void ScriptPage::startScript ()
   scriptServer->calculate2(command);
 }
 
-void ScriptPage::removeScriptQue ()
+void ScriptPage::removeScriptQueue ()
 {
   QListWidgetItem *item = list->currentItem();
   if (! item)
