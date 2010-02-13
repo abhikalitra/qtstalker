@@ -220,6 +220,13 @@
 20100213: Applied patch ID 2951227 - (fix ATR parameter checking. Add SYMBOL_GET for ExScript).
           Thanks to John Anderson for the patch.
 
+          Split off functions in DataBase:: that deal with quotes into seperate class QuoteDataBase.
+
+          Started adding the back testing app into CVS. Please do not use yet, this is still alpha
+          quality and merely in CVS now so I don't have to keep multiple CVS code bases.
+
+
+
 
 
 

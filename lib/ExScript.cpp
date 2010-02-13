@@ -254,9 +254,14 @@ void ExScript::readFromStdout ()
     }
     case SYMBOL_GET:
     {
-      QString symbol;
-      data->getSymbol(symbol);
-      ba.append(symbol + '\n');
+      if (! data)
+        ba.append("1\n"); // we don't have any data, so return an error
+      else
+      {
+        QString symbol;
+        data->getSymbol(symbol);
+        ba.append(symbol + '\n');
+      }
       proc->write(ba);
       break;
     }
