@@ -250,7 +250,7 @@ void ScriptPage::rightClick (const QPoint &)
       menu->addAction(QIcon(deleteitem), tr("&Remove Script From Queue"), this, SLOT(removeScriptQueue()), QKeySequence(Qt::CTRL+Qt::Key_R));
       break;
     default:
-      menu->addAction(QIcon(newchart), tr("&New Script"), this, SLOT(newScript()), QKeySequence(Qt::CTRL+Qt::Key_N));
+      menu->addAction(QIcon(newchart_xpm), tr("&New Script"), this, SLOT(newScript()), QKeySequence(Qt::CTRL+Qt::Key_N));
       menu->addAction(QIcon(edit), tr("&Edit Script"), this, SLOT(editScript()), QKeySequence(Qt::CTRL+Qt::Key_E));
       menu->addAction(QIcon(deleteitem), tr("&Delete Script"), this, SLOT(deleteScript()), QKeySequence(Qt::CTRL+Qt::Key_D));
       break;

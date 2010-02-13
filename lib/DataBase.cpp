@@ -21,7 +21,7 @@
 
 #include "DataBase.h"
 #include "Bar.h"
-#include "Config.h"
+//#include "Config.h"
 #include "Setting.h"
 
 #include <QtDebug>
@@ -117,7 +117,7 @@ void DataBase::commit ()
 /********************************************************************************/
 /********************* chart functions *******************************************/
 /********************************************************************************/
-
+/*
 void DataBase::getAllChartsList (QStringList &l)
 {
   l.clear();
@@ -393,6 +393,7 @@ void DataBase::setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTim
       break;
   }
 }
+*/
 
 /********************************************************************************/
 /********************* group functions *******************************************/

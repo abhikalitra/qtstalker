@@ -46,6 +46,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QList>
+#include <QTextEdit>
 
 
 class PrefDialog : public QDialog
@@ -86,6 +87,8 @@ class PrefDialog : public QDialog
     void getTime (int key, QDateTime &);
     void getItem (int key, QString &);
     void getKeyList (QList<int> &);
+    void addTextEditItem (int key, int page, QString, QString &);
+    void getTextEdit (int key, QString &);
 
   public slots:
 
@@ -100,6 +103,7 @@ class PrefDialog : public QDialog
     QHash<int, QDateEdit *> dateList;
     QHash<int, QLabel *> labelList;
     QHash<int, QTimeEdit *> timeList;
+    QHash<int, QTextEdit *> textEditList;
     QHash<int, QGridLayout *> gridList;
     QDialogButtonBox *buttonBox;
     QGridLayout *grid;

@@ -1,6 +1,6 @@
 /*
  *  Qtstalker stock charter
- * 
+ *
  *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -133,7 +133,7 @@ void COSettings::setData (COParm, QFont &d)
 void COSettings::getData (COParm k, QString &d)
 {
   d.clear();
-  
+
   switch (k)
   {
     case COID:
@@ -187,17 +187,17 @@ void COSettings::newObject (int o)
 
   QString d = QString::number(o);
   setData(COCOType, d);
-  
+
   switch ((COType) o)
   {
     case COSettings::COBuyArrow:
-      config.getData(Config::DefaultBuyArrowColor, color);
+      config.getBaseData((int) Config::DefaultBuyArrowColor, color);
       setData(COColor, color);
       break;
     case COSettings::COFiboLine:
-      config.getData(Config::DefaultFiboLineColor, color);
+      config.getBaseData((int) Config::DefaultFiboLineColor, color);
       setData(COColor, color);
-      
+
       setData(COLine1, config.getDouble(Config::DefaultFiboLine1));
       setData(COLine2, config.getDouble(Config::DefaultFiboLine2));
       setData(COLine3, config.getDouble(Config::DefaultFiboLine3));
@@ -208,25 +208,25 @@ void COSettings::newObject (int o)
       setData(COExtend, 0);
       break;
     case COSettings::COHorizontalLine:
-      config.getData(Config::DefaultHorizontalLineColor, color);
+      config.getBaseData((int) Config::DefaultHorizontalLineColor, color);
       setData(COColor, color);
       break;
     case COSettings::COSellArrow:
-      config.getData(Config::DefaultSellArrowColor, color);
+      config.getBaseData((int) Config::DefaultSellArrowColor, color);
       setData(COColor, color);
       break;
     case COSettings::COText:
-      config.getData(Config::DefaultTextColor, color);
+      config.getBaseData((int) Config::DefaultTextColor, color);
       setData(COColor, color);
 
-      config.getData(Config::DefaultTextFont, font);
+      config.getBaseData((int) Config::DefaultTextFont, font);
       setData(COFont, font);
 
       config.getData(Config::DefaultTextLabel, d);
       setData(COLabel, d);
       break;
     case COSettings::COTrendLine:
-      config.getData(Config::DefaultTrendLineColor, color);
+      config.getBaseData((int) Config::DefaultTrendLineColor, color);
       setData(COColor, color);
 
       config.getData(Config::DefaultTrendLineBar, d);
@@ -237,7 +237,7 @@ void COSettings::newObject (int o)
       setData(COExtend, config.getInt(Config::DefaultTrendLineExtend));
       break;
     case COSettings::COVerticalLine:
-      config.getData(Config::DefaultVerticalLineColor, color);
+      config.getBaseData((int) Config::DefaultVerticalLineColor, color);
       setData(COColor, color);
       break;
     default:
@@ -296,7 +296,7 @@ int COSettings::isSelected (QPoint &point)
     if (r->contains(point))
       return 1;
   }
-  
+
   return 0;
 }
 
@@ -309,7 +309,7 @@ int COSettings::isGrabSelected (QPoint &point)
     if (r->contains(point))
       return loop + 1;
   }
-  
+
   return 0;
 }
 
@@ -362,11 +362,11 @@ void COSettings::getInfo (Setting &info)
       k = QObject::tr("Type");
       d = QObject::tr("Buy Arrow");
       info.setData(k, d);
-      
+
       k = QObject::tr("Date");
       getData(CODate, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Price");
       getData(COValue, d);
       info.setData(k, d);
@@ -375,35 +375,35 @@ void COSettings::getInfo (Setting &info)
       k = QObject::tr("Type");
       d = QObject::tr("Fibo Line");
       info.setData(k, d);
-      
+
       k = QObject::tr("High Point");
       getData(COHigh, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Low Point");
       getData(COLow, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Line 1");
       getData(COLine1, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Line 2");
       getData(COLine2, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Line 3");
       getData(COLine3, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Line 4");
       getData(COLine4, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Line 5");
       getData(COLine5, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Line 6");
       getData(COLine6, d);
       info.setData(k, d);
@@ -412,11 +412,11 @@ void COSettings::getInfo (Setting &info)
       k = QObject::tr("Type");
       d = QObject::tr("Horizontal Line");
       info.setData(k, d);
-      
+
       k = QObject::tr("Date");
       getData(CODate, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Price");
       getData(COValue, d);
       info.setData(k, d);
@@ -425,11 +425,11 @@ void COSettings::getInfo (Setting &info)
       k = QObject::tr("Type");
       d = QObject::tr("Sell Arrow");
       info.setData(k, d);
-      
+
       k = QObject::tr("Date");
       getData(CODate, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Price");
       getData(COValue, d);
       info.setData(k, d);
@@ -438,7 +438,7 @@ void COSettings::getInfo (Setting &info)
       k = QObject::tr("Type");
       d = QObject::tr("Text");
       info.setData(k, d);
-      
+
       k = QObject::tr("Label");
       getData(COLabel, d);
       info.setData(k, d);
@@ -447,11 +447,11 @@ void COSettings::getInfo (Setting &info)
       k = QObject::tr("Type");
       d = QObject::tr("Trend Line");
       info.setData(k, d);
-      
+
       k = QObject::tr("Start Date");
       getData(CODate, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("Start Price");
       getData(COValue, d);
       info.setData(k, d);
@@ -459,7 +459,7 @@ void COSettings::getInfo (Setting &info)
       k = QObject::tr("End Date");
       getData(CODate2, d);
       info.setData(k, d);
-      
+
       k = QObject::tr("End Price");
       getData(COValue2, d);
       info.setData(k, d);
@@ -468,7 +468,7 @@ void COSettings::getInfo (Setting &info)
       k = QObject::tr("Type");
       d = QObject::tr("Vertical Line");
       info.setData(k, d);
-      
+
       k = QObject::tr("Date");
       getData(CODate, d);
       info.setData(k, d);
@@ -476,6 +476,6 @@ void COSettings::getInfo (Setting &info)
     default:
       break;
   }
-  
+
 }
 

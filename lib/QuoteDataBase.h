@@ -19,24 +19,30 @@
  *  USA.
  */
 
-#ifndef SCTEST_HPP
-#define SCTEST_HPP
+#ifndef QUOTEDATABASE_HPP
+#define QUOTEDATABASE_HPP
 
-
+#include <QString>
 #include <QStringList>
+#include <QDateTime>
 #include <QHash>
-#include <QByteArray>
 
-#include "PlotLine.h"
+#include "BarData.h"
 
 
-class SCTest
+class QuoteDataBase
 {
   public:
-    SCTest ();
-    void getSig (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba, QList<PlotLine *> &rl);
-
-  private:
+    QuoteDataBase ();
+    void init (QString &plugin, QString &dbFile, QString &host, QString &user, QString &pass);
+    void transaction ();
+    void commit ();
+    void getAllChartsList (QString &sql, QStringList &);
+    void getSearchList (QString &sql, QString &pat, QStringList &l);
+    void getChart (QString &sql, QString &sqlFirstDate, QString &sqlLastDate, BarData *);
+    void getFirstDate (QString &sql, QDateTime &date, QString &symbol);
+    void getLastDate (QString &sql, QDateTime &date, QString &symbol);
+    void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength);
 };
 
 #endif

@@ -89,7 +89,7 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   vbox->addWidget(list);
 
   menu = new QMenu(this);
-  QAction *action = menu->addAction(QIcon(newchart), tr("&New Indicator"), this, SLOT(newIndicator()), QKeySequence(Qt::CTRL+Qt::Key_N));
+  QAction *action = menu->addAction(QIcon(newchart_xpm), tr("&New Indicator"), this, SLOT(newIndicator()), QKeySequence(Qt::CTRL+Qt::Key_N));
   actions.append(action);
   action = menu->addAction(QIcon(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
   actions.append(action);

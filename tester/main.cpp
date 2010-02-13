@@ -1,5 +1,5 @@
 /*
- *  Qtstalker stock charter
+ *  QtStalkerTester
  *
  *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
@@ -19,49 +19,32 @@
  *  USA.
  */
 
-#include "SCSymbolList.h"
-#include "QuoteDataBase.h"
-#include "Config.h"
-
+#include <QApplication>
+#include <QTranslator>
+#include <QString>
+#include <QLocale>
 #include <QtDebug>
 
+#include "QtStalkerTester.h"
+#include "../lib/qtstalker_defines.h"
 
-SCSymbolList::SCSymbolList ()
+
+int main(int argc, char *argv[])
 {
-}
+  QApplication a(argc, argv);
+  QCoreApplication::setOrganizationName("QtStalkerTester");
+  QCoreApplication::setApplicationName("QtStalkerTester");
+  QTranslator tor( 0 );
 
-int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
-{
-  // format = SYMBOL_LIST,SEARCH_STRING
+  QString i18nDir = QString("%1/qtstalker/i18n").arg(INSTALL_DATA_DIR);
+  QString i18nFilename = QString("qtstalker_%1").arg(QLocale::system().name());
+  tor.load(i18nFilename, i18nDir);
+  a.installTranslator( &tor );
 
-  ba.clear();
-  ba.append("ERROR\n");
+  QtStalkerTester *app = new QtStalkerTester;
 
-  if (l.count() != 2)
-  {
-    qDebug() << "SCSymbolList::calculate: invalid parm count" << l.count();
-    return 1;
-  }
+  app->show();
 
-  Config config;
-  QString s;
-  QuoteDataBase db;
-  QStringList symbolList;
-  if (l[1] == "*")
-  {
-    config.getData(Config::DbAllSymbols, s);
-    db.getAllChartsList(s, symbolList);
-  }
-  else
-  {
-    config.getData(Config::DbSearchSymbols, s);
-    db.getSearchList(s, l[1], symbolList);
-  }
-
-  ba.clear();
-  ba.append(symbolList.join(","));
-  ba.append('\n');
-
-  return 0;
+  return a.exec();
 }
 

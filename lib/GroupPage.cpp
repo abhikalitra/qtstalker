@@ -65,7 +65,7 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   vbox->addWidget(nav);
 
   menu = new QMenu(this);
-  QAction *action = menu->addAction(QIcon(newchart), tr("&New Group		Ctrl+N"), this, SLOT(newGroup()), QKeySequence(Qt::CTRL+Qt::Key_N));
+  QAction *action = menu->addAction(QIcon(newchart_xpm), tr("&New Group		Ctrl+N"), this, SLOT(newGroup()), QKeySequence(Qt::CTRL+Qt::Key_N));
   actionList.append(action);
   action = menu->addAction(QIcon(addgroup), tr("Add To &Group	Ctrl+G"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
   actionList.append(action);

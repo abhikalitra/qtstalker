@@ -303,4 +303,21 @@ void BarData::getDateTimeString (int d, QString &s)
   barList.at(d)->getDateTimeString(s);
 }
 
+double BarData::getAvgPrice (int d)
+{
+  double t = (getOpen(d) + getHigh(d) + getLow(d) + getClose(d)) / 4.0;
+  return t;
+}
+
+double BarData::getMedianPrice (int d)
+{
+  double t = (getHigh(d) + getLow(d)) / 2.0;
+  return t;
+}
+
+double BarData::getTypicalPrice (int d)
+{
+  double t = (getHigh(d) + getLow(d) + getClose(d)) / 3.0;
+  return t;
+}
 

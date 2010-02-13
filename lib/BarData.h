@@ -94,7 +94,9 @@ class BarData
     void getDateString (int, QString &);
     void getTimeString (int, QString &);
     void getDateTimeString (int, QString &);
-
+    double getAvgPrice (int);
+    double getMedianPrice (int);
+    double getTypicalPrice (int);
 
   protected:
     QList<Bar *> barList;

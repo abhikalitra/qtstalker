@@ -1,7 +1,7 @@
 TEMPLATE = lib
 
 CONFIG += thread warn_on debug
-CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
+#CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 
@@ -13,6 +13,7 @@ HEADERS += PrefDialog.h
 HEADERS += ColorButton.h
 HEADERS += FontButton.h
 HEADERS += Bar.h
+HEADERS += BaseConfig.h
 HEADERS += Config.h
 HEADERS += Plot.h
 HEADERS += DatePlot.h
@@ -38,6 +39,11 @@ HEADERS += IndicatorBase.h
 HEADERS += IndicatorFactory.h
 HEADERS += ScriptPage.h
 HEADERS += Script.h
+HEADERS += TestDataBase.h
+HEADERS += Test.h
+HEADERS += TestTrade.h
+HEADERS += TestSignal.h
+HEADERS += QuoteDataBase.h
 
 HEADERS += AD.h
 HEADERS += ADX.h
@@ -95,6 +101,7 @@ SOURCES += PrefDialog.cpp
 SOURCES += ColorButton.cpp
 SOURCES += FontButton.cpp
 SOURCES += Bar.cpp
+SOURCES += BaseConfig.cpp
 SOURCES += Config.cpp
 SOURCES += Plot.cpp
 SOURCES += DatePlot.cpp
@@ -120,6 +127,11 @@ SOURCES += IndicatorBase.cpp
 SOURCES += IndicatorFactory.cpp
 SOURCES += ScriptPage.cpp
 SOURCES += Script.cpp
+SOURCES += TestDataBase.cpp
+SOURCES += Test.cpp
+SOURCES += TestTrade.cpp
+SOURCES += TestSignal.cpp
+SOURCES += QuoteDataBase.cpp
 
 SOURCES += AD.cpp
 SOURCES += ADX.cpp

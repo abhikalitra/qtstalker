@@ -248,6 +248,10 @@ a partial match like %BM or %IBM%</source>
         <source>Are you sure you want to delete group items?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Refresh List	Ctrl+R</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IndicatorPage</name>
@@ -1034,42 +1038,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Upper Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Middle Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lower Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upper Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Middle Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lower Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upper Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Middle Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lower Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Upper Deviation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1078,19 +1046,11 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Index Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Penetration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1142,95 +1102,11 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SlowK Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowK Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowK Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CMB Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MACD Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Histogram Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MACD Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Histogram Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MACD Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Histogram Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Fast MA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Slow MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAMA Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FAMA Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAMA Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FAMA Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAMA Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FAMA Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1250,83 +1126,11 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>1R Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>3R Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>1S Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>2S Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>3S Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>1R Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>2R Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>3R Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>1S Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>2S Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>3S Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Deviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SlowD Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowD Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowD Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>FastK Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowK Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowK MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowD Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowD MA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1370,30 +1174,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>2 Day Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>5 Day Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>2 Day Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>5 Day Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>2 Day Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>5 Day Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>MACD</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1411,10 +1191,6 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>FAMA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>2R Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1486,42 +1262,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Fast K Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast D Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast K Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast D Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast K Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast D Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast D Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast K Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast D MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>FastK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1574,18 +1314,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Medium Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1 Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2 Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Ref 1 Color</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1595,70 +1323,6 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Ref Lines</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADX Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADXR Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>+DI Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>-DI Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADX Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADXR Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>+DI Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>-DI Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADX Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADXR Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>+DI Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>-DI Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADX Display</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADXR Display</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>+DI Display</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>-DI Display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1694,26 +1358,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pattern Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Oscillator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1722,55 +1366,11 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Smoothing Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Smoothing Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show R1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show R2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show R3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show S1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show S2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show S3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 1 Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 2 Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Ref</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Initial Step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1794,18 +1394,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>OSC Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OSC Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OSC Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>OSC</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1826,66 +1414,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA 1 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 2 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 3 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 1 Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 2 Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 3 Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 1 Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 2 Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 3 Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 1 Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 2 Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 3 Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 1 Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 2 Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 3 Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>MA 1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1903,6 +1431,297 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>AD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upper</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lower</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Candle Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 1 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 2 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 3 Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref. 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Initial</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mid Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QtStalkerTester</name>
+    <message>
+        <source>Ready</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trailing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stops</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gross Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Net Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Drawdown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average Drawdown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Commissions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Win/Loss Ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Percent Profitable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Winning Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Losing Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Largest Winning Trade</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Largest Losing Trade</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average Winning Trade</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average Losing Trade</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Largest Winning Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Largest Losing Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Largest Winning Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Largest Losing Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>E&amp;xit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit QtStalkerTester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Equipment Database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About QtStalkerTester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter name of new test.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>QtStalkerTester: Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This test already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select test to open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Test Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Entry Commission</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Commission</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>QtStalkerTest: Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid script command.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid symbol setting.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2094,6 +1913,99 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Show documentation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScriptPage</name>
+    <message>
+        <source>Show all scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show script que.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter name of new script.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This script already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Script </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to permanently delete this script?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to execute this script?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Remove Script From Que</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter either a specific name like MyScript or
+a partial match like %Script or %Scr%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script currently executing.
+Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

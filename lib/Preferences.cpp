@@ -61,7 +61,7 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
 
   Config config;
   QSize sz;
-  config.getData(Config::PrefDlgWindowSize, sz);
+  config.getBaseData((int) Config::PrefDlgWindowSize, sz);
   resize(sz);
 
   modified = 0;
@@ -341,7 +341,7 @@ void Preferences::createColorPage ()
   backgroundColorButton = new ColorButton(w, color);
   backgroundColorButton->setToolTip(tr("Background color for charts."));
   grid->addWidget(backgroundColorButton, row++, col--);
-  config.getData(Config::BackgroundColor, color);
+  config.getBaseData((int) Config::BackgroundColor, color);
   backgroundColorButton->setColor(color);
   connect(backgroundColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -352,7 +352,7 @@ void Preferences::createColorPage ()
   borderColorButton = new ColorButton(w, color);
   borderColorButton->setToolTip(tr("Border line color for charts. Used for seperators, ticks etc."));
   grid->addWidget(borderColorButton, row++, col--);
-  config.getData(Config::BorderColor, color);
+  config.getBaseData((int) Config::BorderColor, color);
   borderColorButton->setColor(color);
   connect(borderColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -363,7 +363,7 @@ void Preferences::createColorPage ()
   gridColorButton = new ColorButton(w, color);
   gridColorButton->setToolTip(tr("Grid color for charts."));
   grid->addWidget(gridColorButton, row++, col--);
-  config.getData(Config::GridColor, color);
+  config.getBaseData((int) Config::GridColor, color);
   gridColorButton->setColor(color);
   connect(gridColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -399,7 +399,7 @@ void Preferences::createFontPage ()
   grid->addWidget(label, row, col++);
 
   QFont font;
-  config.getData(Config::PlotFont, font);
+  config.getBaseData((int) Config::PlotFont, font);
   plotFontButton = new FontButton(w, font);
   plotFontButton->setToolTip(tr("Font used for text that appears on the chart."));
   grid->addWidget(plotFontButton, row++, col--);
@@ -410,7 +410,7 @@ void Preferences::createFontPage ()
   label = new QLabel(tr("App Font"));
   grid->addWidget(label, row, col++);
 
-  config.getData(Config::AppFont, font);
+  config.getBaseData((int) Config::AppFont, font);
   appFontButton = new FontButton(w, font);
   appFontButton->setToolTip(tr("Font used for everything but charts."));
   grid->addWidget(appFontButton, row++, col--);
@@ -590,83 +590,83 @@ void Preferences::slotSave ()
   if (! modified)
   {
     QSize sz = size();
-    config.setData(Config::PrefDlgWindowSize, sz);
+    config.setBaseData((int) Config::PrefDlgWindowSize, sz);
     accept();
   }
 
   config.transaction();
 
-  config.setData(Config::PSButton1, bs1Spinner->value());
-  config.setData(Config::PSButton2, bs2Spinner->value());
-  config.setData(Config::IndicatorTabRows, tabRows->value());
+  config.setBaseData((int) Config::PSButton1, bs1Spinner->value());
+  config.setBaseData((int) Config::PSButton2, bs2Spinner->value());
+  config.setBaseData((int) Config::IndicatorTabRows, tabRows->value());
 
-  config.setData(Config::Refresh, refreshSpinner->value());
+  config.setBaseData((int) Config::Refresh, refreshSpinner->value());
   if (refreshModified)
     emit signalRefreshChanged(refreshSpinner->value());
 
   QColor c, c2;
   backgroundColorButton->getColor(c);
-  config.getData(Config::BackgroundColor,c2);
+  config.getBaseData((int) Config::BackgroundColor, c2);
   if (c != c2)
   {
-    config.setData(Config::BackgroundColor,c);
+    config.setBaseData((int) Config::BackgroundColor, c);
     emit signalBackgroundColor(c);
   }
 
   borderColorButton->getColor(c);
-  config.getData(Config::BorderColor,c2);
+  config.getBaseData((int) Config::BorderColor, c2);
   if (c != c2)
   {
-    config.setData(Config::BorderColor,c);
+    config.setBaseData((int) Config::BorderColor, c);
     emit signalBorderColor(c);
   }
 
   gridColorButton->getColor(c);
-  config.getData(Config::GridColor,c2);
+  config.getBaseData((int) Config::GridColor, c2);
   if (c != c2)
   {
-    config.setData(Config::GridColor,c);
+    config.setBaseData((int) Config::GridColor, c);
     emit signalGridColor(c);
   }
 
   QFont f, f2;
   plotFontButton->getFont(f);
-  config.getData(Config::PlotFont, f2);
+  config.getBaseData((int) Config::PlotFont, f2);
   if (f != f2)
   {
-    config.setData(Config::PlotFont, f);
+    config.setBaseData((int) Config::PlotFont, f);
   }
 
   appFontButton->getFont(f);
-  config.getData(Config::AppFont, f2);
+  config.getBaseData((int) Config::AppFont, f2);
   if (f != f2)
   {
-    config.setData(Config::AppFont, f);
+    config.setBaseData((int) Config::AppFont, f);
     emit signalAppFont(f);
   }
 
   // main tool bar settings
   // save all, anyway if changed or not, who cares?
-  config.setData(Config::ShowQuitButton, quitBtnCheck->isChecked());
-  config.setData(Config::ShowPrefButton, prefBtnCheck->isChecked());
-  config.setData(Config::ShowSidePanelButton, sidePanelBtnCheck->isChecked());
-  config.setData(Config::ShowGridButton, gridBtnCheck->isChecked());
-  config.setData(Config::ShowScaleToScreenButton, scaleToScreenBtnCheck->isChecked());
-  config.setData(Config::ShowCrosshairButton, crosshairBtnCheck->isChecked());
-  config.setData(Config::ShowDrawModeButton, drawModeBtnCheck->isChecked());
-  config.setData(Config::ShowRefreshButton, refreshButtonCheck->isChecked());
-  config.setData(Config::ShowNewIndicatorButton, newIndicatorBtnCheck->isChecked());
-  config.setData(Config::ShowDataWindowButton, dataWindowBtnCheck->isChecked());
-  config.setData(Config::ShowHelpButton, helpButtonCheck->isChecked());
+  config.setBaseData((int) Config::ShowQuitButton, quitBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowPrefButton, prefBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowSidePanelButton, sidePanelBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowGridButton, gridBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowScaleToScreenButton, scaleToScreenBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowCrosshairButton, crosshairBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowDrawModeButton, drawModeBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowRefreshButton, refreshButtonCheck->isChecked());
+  config.setBaseData((int) Config::ShowNewIndicatorButton, newIndicatorBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowDataWindowButton, dataWindowBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowHelpButton, helpButtonCheck->isChecked());
 
   // chart tool bar settings
-  config.setData(Config::ShowCmps60Button, cmps60BtnCheck->isChecked());
-  config.setData(Config::ShowCmps15Button, cmps15BtnCheck->isChecked());
-  config.setData(Config::ShowCmps5Button, cmps5BtnCheck->isChecked());
-  config.setData(Config::ShowCmpsDayButton, cmpsDayBtnCheck->isChecked());
-  config.setData(Config::ShowCmpsWkyButton, cmpsWkyBtnCheck->isChecked());
-  config.setData(Config::ShowCmpsMtyButton, cmpsMtyBtnCheck->isChecked());
-  config.setData(Config::ShowRecentCharts, recentComboBoxCheck->isChecked());
+  config.setBaseData((int) Config::ShowCmps60Button, cmps60BtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowCmps15Button, cmps15BtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowCmps5Button, cmps5BtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowCmpsDayButton, cmpsDayBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowCmpsWkyButton, cmpsWkyBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowCmpsMtyButton, cmpsMtyBtnCheck->isChecked());
+  config.setBaseData((int) Config::ShowRecentCharts, recentComboBoxCheck->isChecked());
 
   // save database parms
   s = dbDriver->currentText();
@@ -705,7 +705,7 @@ void Preferences::slotSave ()
   emit signalLoadChart();
 
   QSize sz = size();
-  config.setData(Config::PrefDlgWindowSize, sz);
+  config.setBaseData((int) Config::PrefDlgWindowSize, sz);
 
   config.commit();
 
@@ -738,7 +738,7 @@ void Preferences::cancelPressed()
 
   Config config;
   QSize sz = size();
-  config.setData(Config::PrefDlgWindowSize, sz);
+  config.setBaseData((int) Config::PrefDlgWindowSize, sz);
 
   reject();
 }

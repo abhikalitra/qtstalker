@@ -24,14 +24,10 @@
 #define CONFIG_HPP
 
 #include <QString>
-#include <QStringList>
-#include <QSplitter>
-#include <QColor>
-#include <QFont>
-#include <QPoint>
-#include <QSize>
 
-class Config
+#include "BaseConfig.h"
+
+class Config : public BaseConfig
 {
   public:
     enum Parm
@@ -132,38 +128,8 @@ class Config
 
     Config ();
     void init (QString session); // called only at qtstalker startup, initializes tables
-    void transaction ();
-    void commit ();
-
     void setData (Parm, QString &);
     void getData (Parm, QString &);
-
-    void getData (Parm, QSplitter *);
-    void setData (Parm, QSplitter *);
-
-    bool getBool (Parm);
-    void setData (Parm, bool);
-
-    int getInt (Parm);
-    void setData (Parm, int);
-
-    double getDouble (Parm);
-    void setData (Parm, double);
-
-    void getData (Parm, QColor &);
-    void setData (Parm, QColor &);
-
-    void getData (Parm, QFont &);
-    void setData (Parm, QFont &);
-
-    void getData (Parm, QPoint &);
-    void setData (Parm, QPoint &);
-
-    void getData (Parm, QSize &);
-    void setData (Parm, QSize &);
-
-    void setData (Parm, QStringList &);
-    void getData (Parm, QStringList &);
 };
 
 #endif

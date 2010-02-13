@@ -20,7 +20,8 @@
  */
 
 #include "SYMBOL.h"
-#include "DataBase.h"
+#include "QuoteDataBase.h"
+#include "Config.h"
 
 #include <QtDebug>
 
@@ -66,12 +67,18 @@ int SYMBOL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
 
 PlotLine * SYMBOL::getSYMBOL (QString &sym, QString &field, QString &length, int bars)
 {
-  DataBase db;
   BarData symbol;
   symbol.setSymbol(sym);
   symbol.setBarLength(length);
   symbol.setBarsRequested(bars);
-  db.getChart(&symbol);
+
+  QuoteDataBase db;
+  Config config;
+  QString sql, sqlfd, sqlld;
+  config.getData(Config::DbGetSymbol, sql);
+  config.getData(Config::DbFirstDate, sqlfd);
+  config.getData(Config::DbLastDate, sqlld);
+  db.getChart(sql, sqlfd, sqlld, &symbol);
 
   BarData::InputType it = symbol.getInputType(field);
   PlotLine *line = symbol.getInput(it);

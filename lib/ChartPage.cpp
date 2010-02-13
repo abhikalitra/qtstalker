@@ -21,6 +21,7 @@
 
 #include "ChartPage.h"
 #include "DataBase.h"
+#include "QuoteDataBase.h"
 #include "Config.h"
 
 #include "../pics/addgroup.xpm"
@@ -170,18 +171,22 @@ void ChartPage::doKeyPress (QKeyEvent *key)
 
 void ChartPage::updateList ()
 {
-  DataBase db;
+  QuoteDataBase db;
+  Config config;
   QStringList l;
+  QString s;
 
   nav->clear();
 
   switch (activeSearch)
   {
     case 1:
-      db.getSearchList(searchString, l);
+      config.getData(Config::DbSearchSymbols, s);
+      db.getSearchList(s, searchString, l);
       break;
     default:
-      db.getAllChartsList(l);
+      config.getData(Config::DbAllSymbols, s);
+      db.getAllChartsList(s, l);
       break;
   }
 
@@ -203,14 +208,16 @@ void ChartPage::symbolSearch ()
 
   activeSearch = 1;
 
-  DataBase db;
+  QuoteDataBase db;
   QStringList l;
-  db.getSearchList(searchString, l);
+  Config config;
+  QString s;
+  config.getData(Config::DbSearchSymbols, s);
+  db.getSearchList(s, searchString, l);
 
   nav->clear();
   nav->addItems(l);
 
-  Config config;
   config.setData(Config::LastSymbolSearch, searchString);
 }
 

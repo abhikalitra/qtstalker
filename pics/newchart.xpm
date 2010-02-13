@@ -1,5 +1,5 @@
 /* XPM */
-static const char *newchart[]={
+static const char *newchart_xpm[]={
 "22 22 49 1",
 ". c None",
 "r c #000000",

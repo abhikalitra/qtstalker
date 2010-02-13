@@ -1,5 +1,5 @@
 /* XPM */
-static const char *finished[]={
+static const char *done_xpm[]={
 "16 16 141 2",
 "Qt c None",
 ".k c #9f1005",

@@ -1,18 +1,18 @@
 TEMPLATE = app
 
-CONFIG += qt thread warn_on debug
+CONFIG += qt thread warn_on
 #CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math
 
-HEADERS += Qtstalker.h
-HEADERS += assistant.h
+HEADERS += QtStalkerTester.h
+HEADERS += TestConfig.h
 
-SOURCES += Qtstalker.cpp
+SOURCES += QtStalkerTester.cpp
+SOURCES += TestConfig.cpp
 SOURCES += main.cpp
-SOURCES += assistant.cpp
 
-TARGET = qtstalker
+TARGET = QtStalkerTester
 
 INCLUDEPATH += ../lib
 
@@ -29,4 +29,6 @@ INSTALLS += target
 # FIXME: QMAKE_DISTCLEAN does not seem to work from the top-level qtstalker.pro
 # so doing it here.
 QMAKE_DISTCLEAN += ../.qmake.cache
+
+QT += sql
 

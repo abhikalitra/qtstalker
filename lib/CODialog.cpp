@@ -39,7 +39,7 @@
 CODialog::CODialog (QWidget *w, COSettings *c) : QDialog (w, 0)
 {
   co = c;
-  
+
   QVBoxLayout *vbox = new QVBoxLayout;
   setLayout(vbox);
 
@@ -81,7 +81,7 @@ CODialog::CODialog (QWidget *w, COSettings *c) : QDialog (w, 0)
     default:
       break;
   }
-  
+
   modified = 0;
 }
 
@@ -96,7 +96,7 @@ void CODialog::createArrowPage ()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
@@ -109,7 +109,7 @@ void CODialog::createArrowPage ()
   // color
   QLabel *label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
-  
+
   QColor color;
   co->getData(COSettings::COColor, color);
   colorButton = new ColorButton(w, color);
@@ -119,22 +119,22 @@ void CODialog::createArrowPage ()
   // price
   label = new QLabel(tr("Price"));
   grid->addWidget(label, row, col++);
-  
+
   dspin = new QDoubleSpinBox;
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COValue, td);
   dspin->setValue(td);
   connect(dspin, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // default
   label = new QLabel(tr("Set Default"));
   grid->addWidget(label, row, col++);
-  
+
   checkDefault = new QCheckBox;
   grid->addWidget(checkDefault, row++, col--);
   connect(checkDefault, SIGNAL(toggled(bool)), this, SLOT(slotModified()));
-  
+
   grid->setRowStretch(row, 2);
 
   tabs->addTab(w, tr("Parms"));
@@ -143,12 +143,12 @@ void CODialog::createArrowPage ()
 void CODialog::createHorizontalLinePage ()
 {
   setWindowTitle(tr("Edit Horizontal Line"));
-      
+
   QWidget *w = new QWidget;
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
@@ -161,7 +161,7 @@ void CODialog::createHorizontalLinePage ()
   // color
   QLabel *label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
-  
+
   QColor color;
   co->getData(COSettings::COColor, color);
   colorButton = new ColorButton(w, color);
@@ -171,33 +171,33 @@ void CODialog::createHorizontalLinePage ()
   // price
   label = new QLabel(tr("Price"));
   grid->addWidget(label, row, col++);
-  
+
   dspin = new QDoubleSpinBox;
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COValue, td);
   dspin->setValue(td);
   connect(dspin, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // text
   label = new QLabel(tr("Text"));
   grid->addWidget(label, row, col++);
-  
+
   text = new QLineEdit;
   grid->addWidget(text, row++, col--);
   QString s;
   co->getData(COSettings::COLabel, s);
   text->setText(s);
   connect(text, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  
+
   // default
   label = new QLabel(tr("Set Default"));
   grid->addWidget(label, row, col++);
-  
+
   checkDefault = new QCheckBox;
   grid->addWidget(checkDefault, row++, col--);
   connect(checkDefault, SIGNAL(toggled(bool)), this, SLOT(slotModified()));
-  
+
   grid->setRowStretch(row, 2);
 
   tabs->addTab(w, tr("Parms"));
@@ -206,12 +206,12 @@ void CODialog::createHorizontalLinePage ()
 void CODialog::createTextPage ()
 {
   setWindowTitle(tr("Edit Text"));
-      
+
   QWidget *w = new QWidget;
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
@@ -224,7 +224,7 @@ void CODialog::createTextPage ()
   // color
   QLabel *label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
-  
+
   QColor color;
   co->getData(COSettings::COColor, color);
   colorButton = new ColorButton(w, color);
@@ -234,25 +234,25 @@ void CODialog::createTextPage ()
   // price
   label = new QLabel(tr("Price"));
   grid->addWidget(label, row, col++);
-  
+
   dspin = new QDoubleSpinBox;
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COValue, td);
   dspin->setValue(td);
   connect(dspin, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // text
   label = new QLabel(tr("Text"));
   grid->addWidget(label, row, col++);
-  
+
   text = new QLineEdit;
   grid->addWidget(text, row++, col--);
   QString s;
   co->getData(COSettings::COLabel, s);
   text->setText(s);
   connect(text, SIGNAL(textChanged(const QString &)), this, SLOT(slotModified()));
-  
+
   // font
   label = new QLabel(tr("Font"));
   grid->addWidget(label, row, col++);
@@ -262,15 +262,15 @@ void CODialog::createTextPage ()
   fontButton = new FontButton(w, font);
   grid->addWidget(fontButton, row++, col--);
   connect(fontButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
-  
+
   // default
   label = new QLabel(tr("Set Default"));
   grid->addWidget(label, row, col++);
-  
+
   checkDefault = new QCheckBox;
   grid->addWidget(checkDefault, row++, col--);
   connect(checkDefault, SIGNAL(toggled(bool)), this, SLOT(slotModified()));
-  
+
   grid->setRowStretch(row, 2);
 
   tabs->addTab(w, tr("Parms"));
@@ -279,12 +279,12 @@ void CODialog::createTextPage ()
 void CODialog::createFiboLinePage ()
 {
   setWindowTitle(tr("Edit Fibo Line"));
-  
+
   QWidget *w = new QWidget;
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
@@ -297,113 +297,113 @@ void CODialog::createFiboLinePage ()
   // color
   QLabel *label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
-  
+
   QColor color;
   co->getData(COSettings::COColor, color);
   colorButton = new ColorButton(w, color);
   grid->addWidget(colorButton, row++, col--);
   connect(colorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
-  
+
   // line1
   label = new QLabel(tr("Line 1"));
   grid->addWidget(label, row, col++);
-  
+
   dspin = new QDoubleSpinBox;
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COLine1, td);
   dspin->setValue(td);
   connect(dspin, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // line2
   label = new QLabel(tr("Line 2"));
   grid->addWidget(label, row, col++);
-  
+
   dspin2 = new QDoubleSpinBox;
   grid->addWidget(dspin2, row++, col--);
   co->getData(COSettings::COLine2, td);
   dspin2->setValue(td);
   connect(dspin2, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // line3
   label = new QLabel(tr("Line 3"));
   grid->addWidget(label, row, col++);
-  
+
   dspin3 = new QDoubleSpinBox;
   grid->addWidget(dspin3, row++, col--);
   co->getData(COSettings::COLine3, td);
   dspin3->setValue(td);
   connect(dspin3, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // line4
   label = new QLabel(tr("Line 4"));
   grid->addWidget(label, row, col++);
-  
+
   dspin4 = new QDoubleSpinBox;
   grid->addWidget(dspin4, row++, col--);
   co->getData(COSettings::COLine4, td);
   dspin4->setValue(td);
   connect(dspin4, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // line5
   label = new QLabel(tr("Line 5"));
   grid->addWidget(label, row, col++);
-  
+
   dspin5 = new QDoubleSpinBox;
   grid->addWidget(dspin5, row++, col--);
   co->getData(COSettings::COLine5, td);
   dspin5->setValue(td);
   connect(dspin5, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // line6
   label = new QLabel(tr("Line 6"));
   grid->addWidget(label, row, col++);
-  
+
   dspin6 = new QDoubleSpinBox;
   grid->addWidget(dspin6, row++, col--);
   co->getData(COSettings::COLine6, td);
   dspin6->setValue(td);
   connect(dspin6, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // high
   label = new QLabel(tr("High Point"));
   grid->addWidget(label, row, col++);
-  
+
   dspin7 = new QDoubleSpinBox;
   grid->addWidget(dspin7, row++, col--);
   co->getData(COSettings::COHigh, td);
   dspin7->setValue(td);
   connect(dspin7, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // low
   label = new QLabel(tr("Low Point"));
   grid->addWidget(label, row, col++);
-  
+
   dspin8 = new QDoubleSpinBox;
   grid->addWidget(dspin8, row++, col--);
   co->getData(COSettings::COLow, td);
   dspin8->setValue(td);
   connect(dspin8, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // extend
   label = new QLabel(tr("Extend"));
   grid->addWidget(label, row, col++);
-  
+
   check = new QCheckBox;
   int ti = 0;
   co->getData(COSettings::COExtend, ti);
   check->setChecked((bool) ti);
   grid->addWidget(check, row++, col--);
   connect(check, SIGNAL(toggled(bool)), this, SLOT(slotModified()));
-  
+
   // default
   label = new QLabel(tr("Set Default"));
   grid->addWidget(label, row, col++);
-  
+
   checkDefault = new QCheckBox;
   grid->addWidget(checkDefault, row++, col--);
   connect(checkDefault, SIGNAL(toggled(bool)), this, SLOT(slotModified()));
-  
+
   grid->setRowStretch(row, 2);
 
   tabs->addTab(w, tr("Parms"));
@@ -417,7 +417,7 @@ void CODialog::createTrendLinePage ()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
@@ -430,7 +430,7 @@ void CODialog::createTrendLinePage ()
   // color
   QLabel *label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
-  
+
   QColor color;
   co->getData(COSettings::COColor, color);
   colorButton = new ColorButton(w, color);
@@ -440,28 +440,28 @@ void CODialog::createTrendLinePage ()
   // start price
   label = new QLabel(tr("Start Price"));
   grid->addWidget(label, row, col++);
-  
+
   dspin = new QDoubleSpinBox;
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COValue, td);
   dspin->setValue(td);
   connect(dspin, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // end price
   label = new QLabel(tr("End Price"));
   grid->addWidget(label, row, col++);
-  
+
   dspin2 = new QDoubleSpinBox;
   grid->addWidget(dspin2, row++, col--);
   co->getData(COSettings::COValue2, td);
   dspin2->setValue(td);
   connect(dspin2, SIGNAL(valueChanged(double)), this, SLOT(slotModified()));
-  
+
   // bar field
   label = new QLabel(tr("Bar Field"));
   grid->addWidget(label, row, col++);
-  
+
   QStringList l;
   l.append(tr("Open"));
   l.append(tr("High"));
@@ -475,36 +475,36 @@ void CODialog::createTrendLinePage ()
   co->getData(COSettings::COBarField, s);
   combo->setCurrentIndex(l.indexOf(s));
   connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(slotModified()));
-  
+
   // use bar
   label = new QLabel(tr("Use Bar"));
   grid->addWidget(label, row, col++);
-  
+
   check = new QCheckBox;
   int ti = 0;
   co->getData(COSettings::COUseBar, ti);
   check->setChecked((bool) ti);
   grid->addWidget(check, row++, col--);
   connect(check, SIGNAL(toggled(bool)), this, SLOT(slotModified()));
-  
+
   // extend
   label = new QLabel(tr("Extend"));
   grid->addWidget(label, row, col++);
-  
+
   check2 = new QCheckBox;
   co->getData(COSettings::COExtend, ti);
   check2->setChecked((bool) ti);
   grid->addWidget(check2, row++, col--);
   connect(check2, SIGNAL(toggled(bool)), this, SLOT(slotModified()));
-  
+
   // default
   label = new QLabel(tr("Set Default"));
   grid->addWidget(label, row, col++);
-  
+
   checkDefault = new QCheckBox;
   grid->addWidget(checkDefault, row++, col--);
   connect(checkDefault, SIGNAL(toggled(bool)), this, SLOT(slotModified()));
-  
+
   grid->setRowStretch(row, 2);
 
   tabs->addTab(w, tr("Parms"));
@@ -513,12 +513,12 @@ void CODialog::createTrendLinePage ()
 void CODialog::createVerticalLinePage ()
 {
   setWindowTitle(tr("Edit Vertical Line"));
-      
+
   QWidget *w = new QWidget;
 
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
-  
+
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
   grid->setSpacing(5);
@@ -531,7 +531,7 @@ void CODialog::createVerticalLinePage ()
   // color
   QLabel *label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
-  
+
   QColor color;
   co->getData(COSettings::COColor, color);
   colorButton = new ColorButton(w, color);
@@ -541,11 +541,11 @@ void CODialog::createVerticalLinePage ()
   // default
   label = new QLabel(tr("Set Default"));
   grid->addWidget(label, row, col++);
-  
+
   checkDefault = new QCheckBox;
   grid->addWidget(checkDefault, row++, col--);
   connect(checkDefault, SIGNAL(toggled(bool)), this, SLOT(slotModified()));
-  
+
   grid->setRowStretch(row, 2);
 
   tabs->addTab(w, tr("Parms"));
@@ -574,7 +574,7 @@ void CODialog::slotSave()
   QColor color;
   colorButton->getColor(color);
   co->setData(COSettings::COColor, color);
-  
+
   Config config;
   QFont font;
   QString s;
@@ -583,20 +583,20 @@ void CODialog::slotSave()
   {
     case COSettings::COBuyArrow:
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultBuyArrowColor, color);
-      
+	config.setBaseData((int) Config::DefaultBuyArrowColor, color);
+
       co->setData(COSettings::COValue, dspin->value());
       break;
     case COSettings::COSellArrow:
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultSellArrowColor, color);
-      
+	config.setBaseData((int) Config::DefaultSellArrowColor, color);
+
       co->setData(COSettings::COValue, dspin->value());
       break;
     case COSettings::COHorizontalLine:
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultHorizontalLineColor, color);
-      
+	config.setBaseData((int) Config::DefaultHorizontalLineColor, color);
+
       co->setData(COSettings::COValue, dspin->value());
 
       s = text->text();
@@ -604,47 +604,47 @@ void CODialog::slotSave()
       break;
     case COSettings::COText:
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultTextColor, color);
-      
+	config.setBaseData((int) Config::DefaultTextColor, color);
+
       co->setData(COSettings::COValue, dspin->value());
 
       s = text->text();
       co->setData(COSettings::COLabel, s);
       if (checkDefault->isChecked())
 	config.setData(Config::DefaultTextLabel, s);
-      
+
       fontButton->getFont(font);
       co->setData(COSettings::COFont, font);
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultTextFont, font);
+	config.setBaseData((int) Config::DefaultTextFont, font);
       break;
     case COSettings::COFiboLine:
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLineColor, color);
-      
+	config.setBaseData((int) Config::DefaultFiboLineColor, color);
+
       co->setData(COSettings::COLine1, dspin->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine1, dspin->value());
+	config.setBaseData((int) Config::DefaultFiboLine1, dspin->value());
 
       co->setData(COSettings::COLine2, dspin2->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine2, dspin2->value());
+	config.setBaseData((int) Config::DefaultFiboLine2, dspin2->value());
 
       co->setData(COSettings::COLine3, dspin3->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine3, dspin3->value());
+	config.setBaseData((int) Config::DefaultFiboLine3, dspin3->value());
 
       co->setData(COSettings::COLine4, dspin4->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine4, dspin4->value());
+	config.setBaseData((int) Config::DefaultFiboLine4, dspin4->value());
 
       co->setData(COSettings::COLine5, dspin5->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine5, dspin5->value());
+	config.setBaseData((int) Config::DefaultFiboLine5, dspin5->value());
 
       co->setData(COSettings::COLine6, dspin6->value());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultFiboLine6, dspin6->value());
+	config.setBaseData((int) Config::DefaultFiboLine6, dspin6->value());
 
       co->setData(COSettings::COHigh, dspin7->value());
 
@@ -654,8 +654,8 @@ void CODialog::slotSave()
       break;
     case COSettings::COTrendLine:
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultTrendLineColor, color);
-      
+	config.setBaseData((int) Config::DefaultTrendLineColor, color);
+
       co->setData(COSettings::COValue, dspin->value());
 
       co->setData(COSettings::COValue2, dspin2->value());
@@ -664,23 +664,23 @@ void CODialog::slotSave()
       co->setData(COSettings::COBarField, s);
       if (checkDefault->isChecked())
 	config.setData(Config::DefaultTrendLineBar, s);
-      
+
       co->setData(COSettings::COUseBar, check->isChecked());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultTrendLineUseBar, check->isChecked());
-      
+	config.setBaseData((int) Config::DefaultTrendLineUseBar, check->isChecked());
+
       co->setData(COSettings::COExtend, check2->isChecked());
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultTrendLineExtend, check2->isChecked());
+	config.setBaseData((int) Config::DefaultTrendLineExtend, check2->isChecked());
       break;
     case COSettings::COVerticalLine:
       if (checkDefault->isChecked())
-	config.setData(Config::DefaultVerticalLineColor, color);
+	config.setBaseData((int) Config::DefaultVerticalLineColor, color);
       break;
     default:
       break;
   }
-  
+
   accept();
 }
 

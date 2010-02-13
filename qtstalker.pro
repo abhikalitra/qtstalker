@@ -88,6 +88,9 @@ SUBDIRS += lib
 # compile app
 SUBDIRS += src
 
+# compile tester
+SUBDIRS += tester
+
 # compile CSV app
 SUBDIRS += misc
 

@@ -19,49 +19,31 @@
  *  USA.
  */
 
-#include "SCSymbolList.h"
-#include "QuoteDataBase.h"
-#include "Config.h"
+#include "TestSignal.h"
 
-#include <QtDebug>
-
-
-SCSymbolList::SCSymbolList ()
+TestSignal::TestSignal ()
 {
+  bar = -1;
+  signal = 0;
 }
 
-int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
+int TestSignal::getBar ()
 {
-  // format = SYMBOL_LIST,SEARCH_STRING
+  return bar;
+}
 
-  ba.clear();
-  ba.append("ERROR\n");
+void TestSignal::setBar (int d)
+{
+  bar = d;
+}
 
-  if (l.count() != 2)
-  {
-    qDebug() << "SCSymbolList::calculate: invalid parm count" << l.count();
-    return 1;
-  }
+int TestSignal::getSignal ()
+{
+  return signal;
+}
 
-  Config config;
-  QString s;
-  QuoteDataBase db;
-  QStringList symbolList;
-  if (l[1] == "*")
-  {
-    config.getData(Config::DbAllSymbols, s);
-    db.getAllChartsList(s, symbolList);
-  }
-  else
-  {
-    config.getData(Config::DbSearchSymbols, s);
-    db.getSearchList(s, l[1], symbolList);
-  }
-
-  ba.clear();
-  ba.append(symbolList.join(","));
-  ba.append('\n');
-
-  return 0;
+void TestSignal::addSignal ()
+{
+  signal++;
 }
 

@@ -461,10 +461,45 @@ void PrefDialog::getItem (int key, QString &s)
     if (check)
       s = QString::number(check->isChecked());
   }
+
+  // check for textedit
+  if (textEditList.contains(key))
+  {
+    getTextEdit(key, s);
+    return;
+  }
 }
 
 void PrefDialog::getKeyList (QList<int> &l)
 {
   l = keys;
+}
+
+void PrefDialog::addTextEditItem (int key, int page, QString name, QString &t)
+{
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addTextEditItem: page number not found";
+    return;
+  }
+
+  QLabel *label = new QLabel(name);
+  grid->addWidget(label, grid->rowCount(), 0);
+
+  QTextEdit *edit = new QTextEdit;
+  edit->setText(t);
+  grid->addWidget(edit, grid->rowCount() - 1, 1);
+  textEditList.insert(key, edit);
+
+  keys.append(key);
+}
+
+void PrefDialog::getTextEdit (int key, QString &s)
+{
+  s.clear();
+  QTextEdit *edit = textEditList.value(key);
+  if (edit)
+    s = edit->toPlainText();
 }
 

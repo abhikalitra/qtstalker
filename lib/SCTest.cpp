@@ -28,8 +28,7 @@ SCTest::SCTest ()
 {
 }
 
-void SCTest::getSig (QStringList &l, BarData *data, QHash<QString, PlotLine *> &tlines, QByteArray &ba,
-			QHash<int, int> &sig)
+void SCTest::getSig (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba, QList<PlotLine *> &rl)
 {
   // format TEST_ENTER_LONG,INPUT
   // format TEST_EXIT_LONG,INPUT
@@ -38,7 +37,6 @@ void SCTest::getSig (QStringList &l, BarData *data, QHash<QString, PlotLine *> &
 
   ba.clear();
   ba.append("1\n");
-  sig.clear();
 
   if (l.count() != 2)
   {
@@ -53,32 +51,7 @@ void SCTest::getSig (QStringList &l, BarData *data, QHash<QString, PlotLine *> &
     return;
   }
 
-  int barLoop = data->count() - line->getSize() - 1;
-  if (barLoop < 0)
-  {
-    qDebug() << "SCTest::enterLong:" << line->getSize() << "size > bars size";
-    return;
-  }
-
-  int status = 0;
-  int lineLoop;
-  for (lineLoop = 0; lineLoop < line->getSize(); lineLoop++, barLoop++)
-  {
-    switch (status)
-    {
-      case 1: // we are inside a signal
-        if (line->getData(lineLoop) == 0)
-	  status = 0;
-	break;
-      default: // we are outside a signal
-        if (line->getData(lineLoop) == 1)
-	{
-	  status = 1;
-	  sig.insert(barLoop, lineLoop);
-	}
-	break;
-    }
-  }
+  rl.append(line);
 
   ba.clear();
   ba.append("0\n");

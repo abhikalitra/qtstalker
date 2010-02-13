@@ -48,7 +48,7 @@ void Setup::setup ()
   setupDirectories();
   setupConfigDefaults();
   setupDefaultIndicators();
-  setupQuoteBase();
+//  setupQuoteBase();
 }
 
 void Setup::setupDirectories ()
@@ -67,6 +67,7 @@ void Setup::setupDirectories ()
   version = "0.37";
 }
 
+/*
 void Setup::setupQuoteBase ()
 {
   Config config;
@@ -88,6 +89,7 @@ void Setup::setupQuoteBase ()
   if (! db.open())
     qDebug() << "Setup::setup: quote db open failed";
 }
+*/
 
 void Setup::setupConfigDefaults ()
 {
@@ -659,6 +661,6 @@ void Setup::setupDefaultIndicators ()
     delete ib;
   }
 
-  config.setData(Config::DefaultIndicators, 1);
+  config.setBaseData((int) Config::DefaultIndicators, 1);
 }
 

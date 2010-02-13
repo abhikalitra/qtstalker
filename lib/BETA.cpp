@@ -20,7 +20,8 @@
  */
 
 #include "BETA.h"
-#include "DataBase.h"
+#include "QuoteDataBase.h"
+#include "Config.h"
 
 #include <QtDebug>
 
@@ -54,8 +55,13 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
   bd->setBarLength(data->getBarLength());
   bd->setBarsRequested(data->getBarsRequested());
 
-  DataBase db;
-  db.getChart(bd);
+  QuoteDataBase db;
+  Config config;
+  QString sql, sqlfd, sqlld;
+  config.getData(Config::DbGetSymbol, sql);
+  config.getData(Config::DbFirstDate, sqlfd);
+  config.getData(Config::DbLastDate, sqlld);
+  db.getChart(sql, sqlfd, sqlld, bd);
 
   PlotLine *in2 = bd->getInput(BarData::Close);
   if (! in2)

@@ -74,16 +74,10 @@ void ExScript::clear ()
   plotOrder.clear();
 
   if (deleteFlag)
-  {
-    QHashIterator<QString, PlotLine *> it(tlines);
-    while (it.hasNext())
-    {
-      it.next();
-      delete it.value();
-    }
-  }
-
+    qDeleteAll(tlines);
   tlines.clear();
+
+  clearTestLines();
 }
 
 void ExScript::setBarData (BarData *d)
@@ -177,14 +171,12 @@ void ExScript::readFromStdout ()
     {
       // we actually have to delete the lines if we call this function in scripts
       // not from qtstalker or we will delete actual plots
-      QHashIterator<QString, PlotLine *> it(tlines);
-      while (it.hasNext())
-      {
-        it.next();
-        delete it.value();
-      }
+      qDeleteAll(tlines);
       tlines.clear();
       plotOrder.clear();
+
+      clearTestLines();
+
       proc->write("0\n");
       break;
     }
@@ -276,12 +268,30 @@ void ExScript::readFromStdout ()
       break;
     }
     case TEST_ENTER_LONG:
+    {
+      SCTest sc;
+      sc.getSig(l, tlines, ba, enterLongList);
+      proc->write(ba);
+      break;
+    }
     case TEST_EXIT_LONG:
+    {
+      SCTest sc;
+      sc.getSig(l, tlines, ba, exitLongList);
+      proc->write(ba);
+      break;
+    }
     case TEST_ENTER_SHORT:
+    {
+      SCTest sc;
+      sc.getSig(l, tlines, ba, enterShortList);
+      proc->write(ba);
+      break;
+    }
     case TEST_EXIT_SHORT:
     {
       SCTest sc;
-      sc.getSig(l, data, tlines, ba, signalList);
+      sc.getSig(l, tlines, ba, exitShortList);
       proc->write(ba);
       break;
     }
@@ -354,9 +364,42 @@ void ExScript::setDeleteFlag (int d)
   deleteFlag = d;
 }
 
-void ExScript::getSignalList (QHash<int, int> &l)
+void ExScript::getEnterLongList (QList<PlotLine *> &l)
 {
-  l = signalList;
-  signalList.clear();
+  l = enterLongList;
+  enterLongList.clear();
+}
+
+void ExScript::getExitLongList (QList<PlotLine *> &l)
+{
+  l = exitLongList;
+  exitLongList.clear();
+}
+
+void ExScript::getEnterShortList (QList<PlotLine *> &l)
+{
+  l = enterShortList;
+  enterShortList.clear();
+}
+
+void ExScript::getExitShortList (QList<PlotLine *> &l)
+{
+  l = exitShortList;
+  exitShortList.clear();
+}
+
+void ExScript::clearTestLines ()
+{
+  qDeleteAll(enterLongList);
+  enterLongList.clear();
+
+  qDeleteAll(exitLongList);
+  exitLongList.clear();
+
+  qDeleteAll(enterShortList);
+  enterShortList.clear();
+
+  qDeleteAll(exitShortList);
+  exitShortList.clear();
 }
 
