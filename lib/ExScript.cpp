@@ -45,7 +45,7 @@ ExScript::ExScript ()
   functionList << "INDICATOR_SET";
   functionList << "GROUP_ADD" << "GROUP_DELETE" << "GROUP_GET";
   functionList << "PLOT";
-  functionList << "SYMBOL_LIST";
+  functionList << "SYMBOL_GET" << "SYMBOL_LIST";
   functionList << "TEST_ENTER_LONG" << "TEST_EXIT_LONG" << "TEST_ENTER_SHORT" << "TEST_EXIT_SHORT";
 
   proc = new QProcess(this);
@@ -57,7 +57,7 @@ ExScript::ExScript ()
 ExScript::~ExScript ()
 {
   clear();
-  delete proc;
+//  delete proc;
 }
 
 void ExScript::clear ()
@@ -257,6 +257,14 @@ void ExScript::readFromStdout ()
     {
       SCPlot sc;
       sc.calculate(l, plotOrder, tlines, ba);
+      proc->write(ba);
+      break;
+    }
+    case SYMBOL_GET:
+    {
+      QString symbol;
+      data->getSymbol(symbol);
+      ba.append(symbol + '\n');
       proc->write(ba);
       break;
     }

@@ -53,6 +53,7 @@ class ExScript : public QObject
       GROUP_DELETE, // deletes a group and contents
       GROUP_GET, // returns a csv list of the group contents
       PLOT, // plot the desired indicator
+      SYMBOL_GET, // get the current symbol
       SYMBOL_LIST, // get a list of symbols in the db
       TEST_ENTER_LONG,
       TEST_EXIT_LONG,
