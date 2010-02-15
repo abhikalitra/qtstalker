@@ -61,12 +61,17 @@ void TestDataBase::init ()
   s.append("name TEXT PRIMARY KEY");
   s.append(",script TEXT");
   s.append(",symbol TEXT");
-  s.append(",enterField TEXT");
-  s.append(",exitField TEXT");
+  s.append(",enterField INT");
+  s.append(",exitField INT");
   s.append(",bars INT");
   s.append(",barLength INT");
   s.append(",entryComm REAL");
   s.append(",exitComm REAL");
+  s.append(",delay INT");
+  s.append(",account REAL");
+  s.append(",volumePercentage REAL");
+
+  // summary data
   s.append(",grossProfit REAL");
   s.append(",netProfit REAL");
   s.append(",maxDrawDown REAL");
@@ -85,6 +90,8 @@ void TestDataBase::init ()
   s.append(",maxLossLong REAL");
   s.append(",maxWinShort REAL");
   s.append(",maxLossShort REAL");
+  s.append(",tradeLog TEXT");
+  s.append(",balance REAL");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -106,7 +113,7 @@ void TestDataBase::commit ()
 void TestDataBase::getTests (QStringList &l)
 {
   l.clear();
-  
+
   QSqlQuery q(QSqlDatabase::database("testData"));
   QString s = "SELECT name FROM testIndex";
   q.exec(s);
@@ -126,7 +133,7 @@ void TestDataBase::getTest (Test &test)
 {
   QString name;
   test.getName(name);
-  
+
   QSqlQuery q(QSqlDatabase::database("testData"));
   QString s = "SELECT * FROM testIndex WHERE name='" + name + "'";
   q.exec(s);
@@ -141,20 +148,21 @@ void TestDataBase::getTest (Test &test)
     int col = 1;
     s = q.value(col++).toString();
     test.setScript(s);
-    
+
     s = q.value(col++).toString();
     test.setSymbol(s);
-    
-    s = q.value(col++).toString();
-    test.setEnterField(s);
-    
-    s = q.value(col++).toString();
-    test.setExitField(s);
-    
+
+    test.setEnterField(q.value(col++).toInt());
+    test.setExitField(q.value(col++).toInt());
     test.setBars(q.value(col++).toInt());
     test.setBarLength(q.value(col++).toInt());
     test.setEntryComm(q.value(col++).toDouble());
     test.setExitComm(q.value(col++).toDouble());
+    test.setDelay(q.value(col++).toInt());
+    test.setAccount(q.value(col++).toDouble());
+    test.setVolumePercentage(q.value(col++).toDouble());
+
+    // summary stuff
     test.setGrossProfit(q.value(col++).toDouble());
     test.setNetProfit(q.value(col++).toDouble());
     test.setMaxDrawDown(q.value(col++).toDouble());
@@ -173,6 +181,11 @@ void TestDataBase::getTest (Test &test)
     test.setMaxLossLong(q.value(col++).toDouble());
     test.setMaxWinShort(q.value(col++).toDouble());
     test.setMaxLossShort(q.value(col++).toDouble());
+
+    s = q.value(col++).toString();
+    test.setTradeLog(s);
+
+    test.setBalance(q.value(col++).toDouble());
   }
 }
 
@@ -180,30 +193,31 @@ void TestDataBase::setTest (Test &test)
 {
   QString name, ts;
   test.getName(name);
-  
+
   transaction();
-  
+
   QSqlQuery q(QSqlDatabase::database("testData"));
   QString s = "INSERT OR REPLACE INTO testIndex  VALUES (";
-  
+
   s.append("'" + name + "'");
 
   test.getScript(ts);
   s.append(",'" + ts + "'");
-  
+
   test.getSymbol(ts);
   s.append(",'" + ts + "'");
-  
-  test.getEnterField(ts);
-  s.append(",'" + ts + "'");
-  
-  test.getExitField(ts);
-  s.append(",'" + ts + "'");
-  
+
+  s.append("," + QString::number(test.getEnterField()));
+  s.append("," + QString::number(test.getExitField()));
   s.append("," + QString::number(test.getBars()));
   s.append("," + QString::number(test.getBarLength()));
   s.append("," + QString::number(test.getEntryComm()));
   s.append("," + QString::number(test.getExitComm()));
+  s.append("," + QString::number(test.getDelay()));
+  s.append("," + QString::number(test.getAccount()));
+  s.append("," + QString::number(test.getVolumePercentage()));
+
+  // summary stuff
   s.append("," + QString::number(test.getGrossProfit()));
   s.append("," + QString::number(test.getNetProfit()));
   s.append("," + QString::number(test.getMaxDrawDown()));
@@ -222,7 +236,12 @@ void TestDataBase::setTest (Test &test)
   s.append("," + QString::number(test.getMaxLossLong()));
   s.append("," + QString::number(test.getMaxWinShort()));
   s.append("," + QString::number(test.getMaxLossShort()));
-  
+
+  test.getTradeLog(ts);
+  s.append(",'" + ts + "'");
+
+  s.append("," + QString::number(test.getBalance()));
+
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -234,10 +253,10 @@ void TestDataBase::setTest (Test &test)
 void TestDataBase::deleteTest (Test &test)
 {
   transaction();
-  
+
   QString name;
   test.getName(name);
-  
+
   QSqlQuery q(QSqlDatabase::database("testData"));
   QString s = "DELETE FROM testIndex WHERE name='" + name + "'";
   q.exec(s);

@@ -225,6 +225,40 @@
           Started adding the back testing app into CVS. Please do not use yet, this is still alpha
           quality and merely in CVS now so I don't have to keep multiple CVS code bases.
 
+          Fixed bug in BARS that did not turn off MA's when used in hard coded indicators. eg BBANDS.
+
+          ******WARNING***************************************************************************
+          In order to fix certain issues with the CSV app, I have restructured the CSV quotes database.
+          Unfortunately, these changes have created complications for using an external database.
+          For now, I have removed the external compatibility code and defaulted to the sqlite
+          local version. In order for me to get this project to a 1.0 solid release, I will have
+          to drop all the "nice to have" features until the final infrastructure is in place.
+
+          The bad news is that CVS users will have to reload all their quote data into the new
+          structure. The good news is that symbol names can be whatever the user wants. So, we
+          can keep the original exchange names. Also, this allows me to move faster to finish
+          this project.
+          ****************************************************************************************
+
+           Added new switches to the CSV app. see docs.
+
+           Removed the compression drop down list on the toolbar and replaced it with all buttons.
+           More efficient now.
+
+20100215:  Removed the 'Draw Mode' button from the toolbar. This was a clunky legacy method for
+           chart objects. Now you can create them anytime.
+
+           Added a new cursors section to the toolbar. Folded the crosshairs button into the cursor
+           group. Depending on the cursor selected, different functions are available. Hope to expand
+           this concept in the future. Perhaps extend it to chart objects.
+
+           Moved the CSV app into its own directory called oddly enough... csv.
+
+
+
+
+
+
 
 
 

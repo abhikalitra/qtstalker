@@ -30,6 +30,8 @@
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
 #include "../pics/script.xpm"
+#include "../pics/que.xpm"
+#include "../pics/ok.xpm"
 
 #include <QCursor>
 #include <QInputDialog>
@@ -41,6 +43,7 @@
 #include <QtDebug>
 #include <QLabel>
 #include <QButtonGroup>
+#include <QListWidgetItem>
 
 
 ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
@@ -160,7 +163,7 @@ void ScriptPage::editScript (QString &d)
   s = tr("Comment");
   QString comment;
   script.getComment(comment);
-  dialog->addTextItem(1, 0, s, comment);
+  dialog->addTextEditItem(1, 0, s, comment);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -317,7 +320,10 @@ void ScriptPage::showQueue ()
     Script script = scriptList.at(loop);
     QString s;
     script.getName(s);
-    list->addItem(s);
+    if (loop == 0)
+      new QListWidgetItem(QIcon(ok), s, list);
+    else
+      new QListWidgetItem(QIcon(que_xpm), s, list);
   }
 }
 

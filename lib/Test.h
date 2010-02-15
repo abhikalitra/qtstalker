@@ -34,10 +34,10 @@ class Test
     void setScript (QString &);
     void getSymbol (QString &);
     void setSymbol (QString &);
-    void getEnterField (QString &);
-    void setEnterField (QString &);
-    void getExitField (QString &);
-    void setExitField (QString &);
+    int getEnterField ();
+    void setEnterField (int);
+    int getExitField ();
+    void setExitField (int);
     int getBars ();
     void setBars (int);
     int getBarLength ();
@@ -46,7 +46,16 @@ class Test
     void setEntryComm (double);
     double getExitComm ();
     void setExitComm (double);
-    
+    int getDelay ();
+    void setDelay (int);
+    double getAccount ();
+    void setAccount (double);
+    double getVolumePercentage ();
+    void setVolumePercentage (double);
+
+    // summary stuff
+    void getTradeLog (QString &);
+    void setTradeLog (QString &);
     double getCommissions ();
     void setCommissions (double);
     double getGrossProfit ();
@@ -85,20 +94,26 @@ class Test
     void setMaxWinShort (double);
     double getMaxLossShort ();
     void setMaxLossShort (double);
-    
-    
+    double getBalance ();
+    void setBalance (double);
+
+
   protected:
     QString name;
     QString script;
     QString symbol;
-    QString enterField;
-    QString exitField;
+    int enterField;
+    int exitField;
     int bars;
     int barLength;
     double entryComm;
     double exitComm;
-    
+    int delay;
+    double account;
+    double volumePercentage;
+
     // summary data
+    QString tradeLog;
     double commissions;
     double grossProfit;
     double netProfit;
@@ -118,6 +133,7 @@ class Test
     double maxLossLong;
     double maxWinShort;
     double maxLossShort;
+    double balance;
 };
 
 #endif

@@ -29,6 +29,7 @@ TestTrade::TestTrade ()
   exitPrice = 0;
   type = 0;
   volume = 1;
+  volumePercentage = 20;
   drawDown = 0;
   value = 0;
   profit = 0;
@@ -98,6 +99,16 @@ void TestTrade::setVolume (int d)
   volume = d;
 }
 
+double TestTrade::getVolumePercentage ()
+{
+  return volumePercentage;
+}
+
+void TestTrade::setVolumePercentage (double d)
+{
+  volumePercentage = d;
+}
+
 double TestTrade::getValue ()
 {
   return value;
@@ -165,8 +176,16 @@ void TestTrade::getExitLogMessage (QString &d)
   }
 }
 
-void TestTrade::update (PlotLine *data)
+void TestTrade::update (PlotLine *data, double account)
 {
+  if (volumePercentage > 0 && account > 0)
+  {
+    double money = account * (volumePercentage / 100);
+    volume = money / enterPrice;
+  }
+  else
+    volume = 1;
+
   int loop;
   for (loop = indexStart; loop <= indexEnd; loop++)
   {

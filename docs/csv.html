@@ -29,10 +29,12 @@ enables the loading of data to the SQLite database for users that do
 not have
 better independent techniques for data management (e.g. connect your
 own
-external database to Qtstalker). </p>
+external database to Qtstalker) </p>
 <p>Note that this "CSV" application will always be basic, as it is
 intended
-that you manage your data as a separate concern. </p>
+that you manage your data as a separate concern.<br>
+<br>
+</p>
 <h2 id="data">Obtain the data as CSV files</h2>
 <p>If you purchase data from a reliable data supplier, then it should
 be
@@ -42,14 +44,18 @@ Yahoo) then
 you need to obtain that each day as a CSV file using some independent
 means,
 e.g. manual download via web browser; or automated using 'wget', etc. </p>
-<p>The field delimiter can be any character. The default is comma. </p>
+<p>The field delimiter can be any character. The default is comma.<br>
+<br>
+</p>
 <h2 id="quality">Data quality</h2>
 <p>You should have some independent means for data verification, e.g. a
 Perl
 script. </p>
 <p>This "CSV" application will do some basic error detection while
 loading the
-data. </p>
+data.<br>
+<br>
+</p>
 <h2 id="filename">File names</h2>
 <p>The data filenames can have any filename extension, e.g. ibm.txt or
 ibm.csv
@@ -68,6 +74,8 @@ if desired. So we will not try to second guess users. Anyway, file
 suffix's are an evil dos, win32 legacy convention and should be
 severely punished by law ;-)<br>
 </p>
+<h2 id="date-time"><br>
+</h2>
 <h2 id="date-time">Date or Date-Time format</h2>
 <p>The date format is using the <a
  href="http://doc.qtsoftware.com/qdatetime.html#fromString-2">Qt date</a>
@@ -96,12 +104,22 @@ format.
     </tr>
   </tbody>
 </table>
+<h2 id="operation"><br>
+</h2>
 <h2 id="operation">Operation</h2>
 <p>"CSV" is a command-line tool. This enables you greater flexibility
 and
 automation for your data loading. </p>
 <p>Here are the switches and some examples of usage: </p>
-<pre>-S is symbol<br><br>-D is date<br><br>-T is time<br><br>-O is open<br><br>-H is high<br><br>-L is low<br><br>-C is close<br><br>-V is volume<br><br>-I is open interest<br><br>-i is an input file containing quotes<br><br>-d is date format<br><br>-t is time format<br><br>-f is csv field format 'D,O,H,L,C,V,I,G'<br><br>Use these fields to represent each line of text in the csv file.<br>It is important to note that a line must contain at least the D,O,H,L,C,V fields in order to succeed otherwise the text will be rejected.<br></pre>
+<pre><br>-S is symbol<br><br>-D is date<br><br>-T is time<br><br>-O is open<br><br>-H is high<br><br>-L is low<br><br>-C is close<br><br>-V is volume<br><br>-I is open interest<br><br>-i is an input file containing quotes<br><br>-d is date format<br><br>-t is time format<br><br>-p is the file path to the database. If not used the default ~/.CSV will be used. This option is used if the user wants to use a different database, or manage multiple databases.<br><br>-s is the delimiter<br><br>-n is the company name eg. 'Microsoft' no spaces allowed.<br><br>-e is the exchange the security trades on.<br><br>-y is the security type. This can be:<br></pre>
+<ul>
+  <li>Stock</li>
+  <li>Futures</li>
+  <li>Index</li>
+  <li>Bond<br>
+  </li>
+</ul>
+<pre><br>-f is csv field format 'D,O,H,L,C,V,I,G'<br><br>Use these fields to represent each line of text in the csv file.<br>It is important to note that a line must contain at least the D,O,H,L,C,V fields in order to succeed otherwise the text will be rejected.<br></pre>
 <ul>
   <li>D is a date field</li>
   <li>O is an open price field</li>
@@ -114,9 +132,10 @@ automation for your data loading. </p>
   </li>
 </ul>
 <br>
-<pre>-s is the delimiter<br></pre>
 <p>Some examples: </p>
 <pre>to import a csv file with symbol name 'FOO', an example would be:<br>CSV -i /home/user/csv.txt -S FOO -d yyyy/MM/dd<br><br>same as above but using the filename for Symbol (i.e. bhp):<br>CSV -i /home/user/bhp -d yyyy/MM/dd -f D,O,H,L,C,V,I<br><br>to import a csv file with multiple symbols, an example would be:<br>CSV -i /home/user/csv.txt -d yyyy/MM/dd -f S,D,O,H,L,C,V,I -s ,<br><br>to import a single quote, an example would be:<br>CSV -d yyyy/MM/dd -s , -S FOO -D 2009/11/11 -O 100.5 -H 150.75 -L 50 -C 125.75 -V 100000 -I 123456<br></pre>
+<h2 id="todo"><br>
+</h2>
 <h2 id="todo">To do</h2>
 <pre>* Get some content from the old "cvs.html" doc.<br><br></pre>
 </div>

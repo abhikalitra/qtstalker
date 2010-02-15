@@ -61,6 +61,7 @@ class CSV
 {
   public:
     CSV ();
+    int openDb (QString &file);
     void clear ();
     void setChart (QList<Bar> *bars);
     void import ();
@@ -79,6 +80,10 @@ class CSV
     void setVolume (QString &);
     void setOI (QString &);
     void setSymbol (QString &);
+    void setDbFile (QString &);
+    void setName (QString &);
+    void setExchange (QString &);
+    void setType (QString &);
 
     int setBarDate (Bar &r, QString &d);
     int setBarTime (Bar &r, QString &d);
@@ -93,6 +98,7 @@ class CSV
     void convertSymbol (QString &symbol);
 
   private:
+    QString dbFile;
     QString format;
     QString dateFormat;
     QString timeFormat;
@@ -107,6 +113,9 @@ class CSV
     QString volume;
     QString oi;
     QString symbol;
+    QString name;
+    QString exchange;
+    QString type;
 };
 
 #endif

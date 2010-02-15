@@ -1,5 +1,5 @@
 /* XPM */
-static const char *vertical[]={
+static const char *vertical_xpm[]={
 "16 16 2 1",
 ". c None",
 "# c #303030",

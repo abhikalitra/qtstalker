@@ -36,8 +36,6 @@
 #include "FontButton.h"
 
 
-
-
 class Preferences : public QDialog
 {
   Q_OBJECT
@@ -49,18 +47,15 @@ class Preferences : public QDialog
     void signalPlotFont (QFont);
     void signalAppFont (QFont);
     void signalLoadChart ();
-    void signalReloadToolBars ();
     void signalRefreshChanged (int);
 
   public:
     Preferences (QWidget *);
     void createGeneralPage ();
     void createDatabasePage ();
-    void createSQLPage ();
+//    void createSQLPage ();
     void createColorPage ();
     void createFontPage ();
-    void createMTPage (); // main tool bar
-    void createCTPage (); // chart tool bar
 
   public slots:
     void slotSave ();
@@ -75,23 +70,23 @@ class Preferences : public QDialog
     // flags
     int modified;
     int refreshModified;
-    
+
     // main page
     QSpinBox *bs1Spinner;
     QSpinBox *bs2Spinner;
     QSpinBox *tabRows;
     QSpinBox *refreshSpinner;
-    
+
     // color page
     ColorButton *backgroundColorButton;
     ColorButton *borderColorButton;
     ColorButton *gridColorButton;
-    
+
     // font page
     FontButton *plotFontButton;
     FontButton *appFontButton;
 
-    // db page 
+    // db page
     QComboBox *dbDriver;
     QLineEdit *dbHostName;
     QLineEdit *dbName;
@@ -99,34 +94,13 @@ class Preferences : public QDialog
     QLineEdit *dbPassword;
 
     // sql page
+/*
     QLineEdit *dbAllSymbols;
     QLineEdit *dbSearchSymbols;
     QLineEdit *dbFirstDate;
     QLineEdit *dbLastDate;
     QLineEdit *dbGetSymbol;
-
-    // on MainToolbar    
-    QCheckBox *quitBtnCheck;
-    QCheckBox *prefBtnCheck;
-    QCheckBox *sidePanelBtnCheck;
-    QCheckBox *gridBtnCheck;
-    QCheckBox *scaleToScreenBtnCheck;
-    QCheckBox *crosshairBtnCheck;
-    QCheckBox *drawModeBtnCheck;
-    QCheckBox *newIndicatorBtnCheck;
-    QCheckBox *dataWindowBtnCheck;
-    QCheckBox *mainQuoteBtnCheck;
-    QCheckBox *helpButtonCheck;
-    QCheckBox *refreshButtonCheck;
-
-    // on ChartToolbar
-    QCheckBox *cmps60BtnCheck;
-    QCheckBox *cmps15BtnCheck;
-    QCheckBox *cmps5BtnCheck;
-    QCheckBox *cmpsDayBtnCheck;
-    QCheckBox *cmpsWkyBtnCheck;
-    QCheckBox *cmpsMtyBtnCheck;
-    QCheckBox *recentComboBoxCheck;
+*/
 };
 
 #endif

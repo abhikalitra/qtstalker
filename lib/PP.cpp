@@ -52,6 +52,7 @@ PP::PP ()
 int PP::getIndicator (Indicator &ind, BarData *data)
 {
   BARS bars;
+  bars.turnOffMAs();
   int rc = bars.getIndicator(ind, data);
   if (rc)
     return 1;

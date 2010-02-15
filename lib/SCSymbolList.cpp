@@ -21,7 +21,6 @@
 
 #include "SCSymbolList.h"
 #include "QuoteDataBase.h"
-#include "Config.h"
 
 #include <QtDebug>
 
@@ -43,20 +42,12 @@ int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
     return 1;
   }
 
-  Config config;
-  QString s;
   QuoteDataBase db;
   QStringList symbolList;
   if (l[1] == "*")
-  {
-    config.getData(Config::DbAllSymbols, s);
-    db.getAllChartsList(s, symbolList);
-  }
+    db.getAllChartsList(symbolList);
   else
-  {
-    config.getData(Config::DbSearchSymbols, s);
-    db.getSearchList(s, l[1], symbolList);
-  }
+    db.getSearchList(l[1], symbolList);
 
   ba.clear();
   ba.append(symbolList.join(","));

@@ -278,3 +278,10 @@ int BARS::dialog ()
   return rc;
 }
 
+void BARS::turnOffMAs ()
+{
+  settings.setData(MAPeriod, 1);
+  settings.setData(MA2Period, 1);
+  settings.setData(MA3Period, 1);
+}
+

@@ -33,9 +33,6 @@
 #include <QLabel>
 
 
-
-
-
 CODialog::CODialog (QWidget *w, COSettings *c) : QDialog (w, 0)
 {
   co = c;
@@ -121,6 +118,8 @@ void CODialog::createArrowPage ()
   grid->addWidget(label, row, col++);
 
   dspin = new QDoubleSpinBox;
+  dspin->setMinimum(-99999999);
+  dspin->setMaximum(99999999);
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COValue, td);
@@ -173,6 +172,8 @@ void CODialog::createHorizontalLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin = new QDoubleSpinBox;
+  dspin->setMinimum(-99999999);
+  dspin->setMaximum(99999999);
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COValue, td);
@@ -236,6 +237,8 @@ void CODialog::createTextPage ()
   grid->addWidget(label, row, col++);
 
   dspin = new QDoubleSpinBox;
+  dspin->setMinimum(-99999999);
+  dspin->setMaximum(99999999);
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COValue, td);
@@ -309,6 +312,8 @@ void CODialog::createFiboLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin = new QDoubleSpinBox;
+  dspin->setMinimum(-99999999);
+  dspin->setMaximum(99999999);
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COLine1, td);
@@ -320,6 +325,8 @@ void CODialog::createFiboLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin2 = new QDoubleSpinBox;
+  dspin2->setMinimum(-99999999);
+  dspin2->setMaximum(99999999);
   grid->addWidget(dspin2, row++, col--);
   co->getData(COSettings::COLine2, td);
   dspin2->setValue(td);
@@ -330,6 +337,8 @@ void CODialog::createFiboLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin3 = new QDoubleSpinBox;
+  dspin3->setMinimum(-99999999);
+  dspin3->setMaximum(99999999);
   grid->addWidget(dspin3, row++, col--);
   co->getData(COSettings::COLine3, td);
   dspin3->setValue(td);
@@ -340,6 +349,8 @@ void CODialog::createFiboLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin4 = new QDoubleSpinBox;
+  dspin4->setMinimum(-99999999);
+  dspin4->setMaximum(99999999);
   grid->addWidget(dspin4, row++, col--);
   co->getData(COSettings::COLine4, td);
   dspin4->setValue(td);
@@ -350,6 +361,8 @@ void CODialog::createFiboLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin5 = new QDoubleSpinBox;
+  dspin5->setMinimum(-99999999);
+  dspin5->setMaximum(99999999);
   grid->addWidget(dspin5, row++, col--);
   co->getData(COSettings::COLine5, td);
   dspin5->setValue(td);
@@ -360,6 +373,8 @@ void CODialog::createFiboLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin6 = new QDoubleSpinBox;
+  dspin6->setMinimum(-99999999);
+  dspin6->setMaximum(99999999);
   grid->addWidget(dspin6, row++, col--);
   co->getData(COSettings::COLine6, td);
   dspin6->setValue(td);
@@ -370,6 +385,8 @@ void CODialog::createFiboLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin7 = new QDoubleSpinBox;
+  dspin7->setMinimum(-99999999);
+  dspin7->setMaximum(99999999);
   grid->addWidget(dspin7, row++, col--);
   co->getData(COSettings::COHigh, td);
   dspin7->setValue(td);
@@ -380,6 +397,8 @@ void CODialog::createFiboLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin8 = new QDoubleSpinBox;
+  dspin8->setMinimum(-99999999);
+  dspin8->setMaximum(99999999);
   grid->addWidget(dspin8, row++, col--);
   co->getData(COSettings::COLow, td);
   dspin8->setValue(td);
@@ -442,6 +461,8 @@ void CODialog::createTrendLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin = new QDoubleSpinBox;
+  dspin->setMinimum(-99999999);
+  dspin->setMaximum(99999999);
   grid->addWidget(dspin, row++, col--);
   double td = 0;
   co->getData(COSettings::COValue, td);
@@ -453,6 +474,8 @@ void CODialog::createTrendLinePage ()
   grid->addWidget(label, row, col++);
 
   dspin2 = new QDoubleSpinBox;
+  dspin2->setMinimum(-99999999);
+  dspin2->setMaximum(99999999);
   grid->addWidget(dspin2, row++, col--);
   co->getData(COSettings::COValue2, td);
   dspin2->setValue(td);

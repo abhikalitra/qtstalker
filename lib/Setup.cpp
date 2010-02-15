@@ -48,7 +48,6 @@ void Setup::setup ()
   setupDirectories();
   setupConfigDefaults();
   setupDefaultIndicators();
-//  setupQuoteBase();
 }
 
 void Setup::setupDirectories ()
@@ -66,30 +65,6 @@ void Setup::setupDirectories ()
 
   version = "0.37";
 }
-
-/*
-void Setup::setupQuoteBase ()
-{
-  Config config;
-  QString d;
-  config.getData(Config::DbPlugin, d);
-  QSqlDatabase db = QSqlDatabase::addDatabase(d, "quotes");
-
-  config.getData(Config::DbHostName, d);
-  db.setHostName(d);
-
-  config.getData(Config::DbName, d);
-  db.setDatabaseName(d);
-
-  config.getData(Config::DbUserName, d);
-  db.setUserName(d);
-
-  config.getData(Config::DbPassword, d);
-  db.setPassword(d);
-  if (! db.open())
-    qDebug() << "Setup::setup: quote db open failed";
-}
-*/
 
 void Setup::setupConfigDefaults ()
 {
@@ -319,48 +294,6 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::ShowHelpButton, d);
   }
 
-  config.getData(Config::ShowCmps60Button, d);
-  if (d.isEmpty())
-  {
-    d = "0";
-    config.setData(Config::ShowCmps60Button, d);
-  }
-
-  config.getData(Config::ShowCmps15Button, d);
-  if (d.isEmpty())
-  {
-    d = "0";
-    config.setData(Config::ShowCmps15Button, d);
-  }
-
-  config.getData(Config::ShowCmps5Button, d);
-  if (d.isEmpty())
-  {
-    d = "0";
-    config.setData(Config::ShowCmps5Button, d);
-  }
-
-  config.getData(Config::ShowCmpsDayButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowCmpsDayButton, d);
-  }
-
-  config.getData(Config::ShowCmpsWkyButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowCmpsWkyButton, d);
-  }
-
-  config.getData(Config::ShowCmpsMtyButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowCmpsMtyButton, d);
-  }
-
   config.getData(Config::ShowRecentCharts, d);
   if (d.isEmpty())
   {
@@ -417,6 +350,7 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::DbPassword, d);
   }
 
+/*
   config.getData(Config::DbAllSymbols, d);
   if (d.isEmpty())
   {
@@ -451,6 +385,7 @@ void Setup::setupConfigDefaults ()
     d = "SELECT date,open,high,low,close,volume,oi FROM $symbol WHERE date >= $sd AND date <= $ed ORDER BY date DESC LIMIT $records";
     config.setData(Config::DbGetSymbol, d);
   }
+*/
 
   config.getData(Config::DefaultIndicators, d);
   if (d.isEmpty())

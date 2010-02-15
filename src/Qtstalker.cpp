@@ -25,13 +25,13 @@
 #include <QColor>
 #include <QStringList>
 #include <QDateTime>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <math.h> // only for fabs()
 #include <QtDebug>
 #include <QToolButton>
 #include <QApplication>
 #include <QDesktopServices>
+#include <QHBoxLayout>
 
 #include "Qtstalker.h"
 #include "DataWindow.h"
@@ -59,7 +59,6 @@
 #include "../pics/configure.xpm"
 #include "../pics/scaletoscreen.xpm"
 #include "../pics/nav.xpm"
-#include "../pics/co.xpm"
 #include "../pics/qtstalker.xpm"
 #include "../pics/help.xpm"
 #include "../pics/crosshair.xpm"
@@ -67,6 +66,14 @@
 #include "../pics/zoomout.xpm"
 #include "../pics/refresh.xpm"
 #include "../pics/script.xpm"
+//#include "../pics/buyarrow.xpm"
+//#include "../pics/fib.xpm"
+//#include "../pics/horizontal.xpm"
+//#include "../pics/sellarrow.xpm"
+//#include "../pics/text.xpm"
+//#include "../pics/trend.xpm"
+//#include "../pics/vertical.xpm"
+#include "../pics/cursor_arrow.xpm"
 
 
 QtstalkerApp::QtstalkerApp(QString session)
@@ -91,13 +98,9 @@ QtstalkerApp::QtstalkerApp(QString session)
   setup.setup();
 
   QuoteDataBase qdb;
-  QString plugin, host, dbFile, user, pass;
-  config.getData(Config::DbPlugin, plugin);
-  config.getData(Config::DbHostName, host);
+  QString dbFile;
   config.getData(Config::DbName, dbFile);
-  config.getData(Config::DbUserName, user);
-  config.getData(Config::DbPassword, pass);
-  qdb.init(plugin, dbFile, host, user, pass);
+  qdb.init(dbFile);
 
   assistant = new Assistant;
 
@@ -122,6 +125,9 @@ QtstalkerApp::QtstalkerApp(QString session)
   hbox->setMargin(0);
   hbox->setSpacing(0);
   baseWidget->setLayout(hbox);
+
+  // add the side toolBar first
+//  hbox->addWidget(toolBar2);
 
   navSplitter = new QSplitter;
   navSplitter->setOrientation(Qt::Horizontal);
@@ -288,22 +294,6 @@ void QtstalkerApp::createActions ()
   connect(action, SIGNAL(toggled(bool)), this, SLOT(slotHideNav(bool)));
   actionList.insert(SidePanel, action);
 
-  action = new QAction(QIcon(co), tr("Toggle Dra&w Mode"), this);
-  action->setStatusTip(tr("Toggle drawing mode (Ctrl+0)"));
-  action->setToolTip(tr("Toggle drawing mode (Ctrl+0)"));
-  action->setCheckable(TRUE);
-  action->setChecked(config.getBool(Config::DrawMode));
-  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalDraw(bool)));
-  actionList.insert(DrawMode, action);
-
-  action = new QAction(QIcon(crosshair), tr("Toggle Cross&hairs"), this);
-  action->setStatusTip(tr("Toggle crosshairs (Ctrl+6)"));
-  action->setToolTip(tr("Toggle crosshairs (Ctrl+6)"));
-  action->setCheckable(TRUE);
-  action->setChecked(config.getBool(Config::Crosshairs));
-  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalCrosshairsStatus(bool)));
-  actionList.insert(Crosshairs, action);
-
   action = new QAction(QIcon(refresh_xpm), tr("&Refresh Chart"), this);
   action->setStatusTip(tr("Refresh chart every x minutes"));
   action->setToolTip(tr("Refresh chart every x minutes"));
@@ -334,8 +324,6 @@ void QtstalkerApp::createMenuBar()
   menu->addAction(actionList.value(Grid));
   menu->addAction(actionList.value(ScaleToScreen));
   menu->addAction(actionList.value(SidePanel));
-  menu->addAction(actionList.value(DrawMode));
-  menu->addAction(actionList.value(Crosshairs));
   menubar->addMenu(menu);
 
   menu = new QMenu;
@@ -354,123 +342,186 @@ void QtstalkerApp::createMenuBar()
 
 void QtstalkerApp::createToolBars ()
 {
-  // construct the button toolbar
-  QToolBar *toolbar = addToolBar("buttonToolbar");
+/*
+  // construct the side toolbar
+  toolBar2 = addToolBar("sideToolBar");
+  toolBar2->setOrientation(Qt::Vertical);
+
+
+  toolBar2->addSeparator();
+
+  // buy arrow button
+  b = new QToolButton;
+  b->setToolTip(tr("Buy Arrow Object"));
+  b->setIcon(QIcon(buyarrow_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(buyArrowButtonPressed()));
+  toolBar2->addWidget(b);
+
+  // fibo arrow button
+  b = new QToolButton;
+  b->setToolTip(tr("Retracement Level Object"));
+  b->setIcon(QIcon(fib_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(fiboButtonPressed()));
+  toolBar2->addWidget(b);
+
+  // horizontal button
+  b = new QToolButton;
+  b->setToolTip(tr("Horizontal Line Object"));
+  b->setIcon(QIcon(horizontal_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(horizontalButtonPressed()));
+  toolBar2->addWidget(b);
+
+  // sell arrow button
+  b = new QToolButton;
+  b->setToolTip(tr("Sell Arrow Object"));
+  b->setIcon(QIcon(sellarrow_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(sellArrowButtonPressed()));
+  toolBar2->addWidget(b);
+
+  // text button
+  b = new QToolButton;
+  b->setToolTip(tr("Text Object"));
+  b->setIcon(QIcon(text_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(textButtonPressed()));
+  toolBar2->addWidget(b);
+
+  // trend line button
+  b = new QToolButton;
+  b->setToolTip(tr("Trend Line Object"));
+  b->setIcon(QIcon(trend_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(trendButtonPressed()));
+  toolBar2->addWidget(b);
+
+  // vertical button
+  b = new QToolButton;
+  b->setToolTip(tr("Vertical Line Object"));
+  b->setIcon(QIcon(vertical_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(verticalButtonPressed()));
+  toolBar2->addWidget(b);
+*/
 
   //construct main toolbar
-  Config config;
-  if (config.getBool(Config::ShowQuitButton))
-    toolbar->addAction(actionList.value(Exit));
+  QToolBar *toolbar = addToolBar("buttonToolBar");
 
-  if (config.getBool(Config::ShowPrefButton))
-    toolbar->addAction(actionList.value(Options));
+  toolbar->addAction(actionList.value(Exit));
+  toolbar->addAction(actionList.value(Options));
+  toolbar->addAction(actionList.value(SidePanel));
+  toolbar->addAction(actionList.value(Grid));
+  toolbar->addAction(actionList.value(ScaleToScreen));
+  toolbar->addAction(actionList.value(Refresh));
+  toolbar->addAction(actionList.value(NewIndicator));
+  toolbar->addAction(actionList.value(DataWindow1));
+  toolbar->addAction(actionList.value(Help));
 
-  if (config.getBool(Config::ShowSidePanelButton))
-    toolbar->addAction(actionList.value(SidePanel));
+  toolbar->addSeparator();
 
-  if (config.getBool(Config::ShowGridButton))
-    toolbar->addAction(actionList.value(Grid));
+  QButtonGroup *bg = new QButtonGroup(this);
+  connect(bg, SIGNAL(buttonClicked(int)), this, SLOT(cursorButtonPressed(int)));
 
-  if (config.getBool(Config::ShowScaleToScreenButton))
-    toolbar->addAction(actionList.value(ScaleToScreen));
+  // normal cursor button
+  QToolButton *b = new QToolButton;
+  b->setToolTip(tr("Select Cursor"));
+  b->setIcon(QIcon(cursor_arrow_xpm));
+  b->setCheckable(TRUE);
+  b->setChecked(TRUE);
+  toolbar->addWidget(b);
+  bg->addButton(b, 0);
 
-  if (config.getBool(Config::ShowCrosshairButton))
-    toolbar->addAction(actionList.value(Crosshairs));
+  // crosshair button
+  b = new QToolButton;
+  b->setToolTip(tr("Crosshairs Cursor"));
+  b->setIcon(QIcon(crosshair));
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  bg->addButton(b, 1);
 
-  if (config.getBool(Config::ShowDrawModeButton))
-    toolbar->addAction(actionList.value(DrawMode));
 
-  if (config.getBool(Config::ShowRefreshButton))
-    toolbar->addAction(actionList.value(Refresh));
+  toolbar->addSeparator();
 
-  if (config.getBool(Config::ShowNewIndicatorButton))
-    toolbar->addAction(actionList.value(NewIndicator));
 
-  if (config.getBool(Config::ShowDataWindowButton))
-    toolbar->addAction(actionList.value(DataWindow1));
-
-  if (config.getBool(Config::ShowHelpButton))
-    toolbar->addAction(actionList.value(Help));
-
-  // construct the chart toolbar
-  QToolBar *toolbar2 = addToolBar("chartToolBar");
-
-  QString ts; // temporary string
-  BarData bd;
-  QStringList l;
-  bd.getBarLengthList(l);
-
-  // compression
-  compressionCombo = new QComboBox;
-  compressionCombo->addItems(l);
-  compressionCombo->setCurrentIndex(config.getInt(Config::BarLength));
-  compressionCombo->setToolTip(tr("Bar Length (Compression)"));
-  connect(compressionCombo, SIGNAL(activated(int)), this, SLOT(slotBarLengthChanged(int)));
-
-  QAction *action = toolbar2->addWidget(compressionCombo);
-  actionList.insert(Compression, action);
+  // button group for the bars group
+  barButtonGroup = new QButtonGroup(this);
+  connect(barButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(slotBarLengthChanged(int)));
 
   // monthly compression button
-  QToolButton *b = new QToolButton; // compression button monthly
-  b->setToolTip(tr("Monthly Compression"));
-  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtnMClicked()));
-
-  action = toolbar2->addWidget(b);
-  actionList.insert(CompressionM, action);
-  action->setVisible(config.getBool(Config::ShowCmpsMtyButton));
+  b = new QToolButton;
+  b->setToolTip(tr("Monthly Bars"));
   b->setText("M");
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  barButtonGroup->addButton(b, 8);
 
   // weekly compression button
-  b = new QToolButton; // compression button weekly
-  b->setToolTip(tr("Weekly Compression"));
-  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtnWClicked()));
-
-  action = toolbar2->addWidget(b);
-  actionList.insert(CompressionW, action);
-  action->setVisible(config.getBool(Config::ShowCmpsWkyButton));
+  b = new QToolButton;
+  b->setToolTip(tr("Weekly Bars"));
   b->setText("W");
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  barButtonGroup->addButton(b, 7);
 
   // daily compression button
-  b = new QToolButton; //   button daily
-  b->setToolTip(tr("Daily Compression"));
-  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtnDClicked()));
-
-  action = toolbar2->addWidget(b);
-  actionList.insert(CompressionD, action);
-  action->setVisible(config.getBool(Config::ShowCmpsDayButton));
+  b = new QToolButton;
+  b->setToolTip(tr("Daily Bars"));
   b->setText("D");
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  barButtonGroup->addButton(b, 6);
 
   // 60 minute compression button
-  b = new QToolButton; // compression button 60min
-  b->setToolTip(tr("60min Compression"));
-  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtn60Clicked()));
-
-  action = toolbar2->addWidget(b);
-  actionList.insert(Compression60, action);
-  action->setVisible(config.getBool(Config::ShowCmps60Button));
+  b = new QToolButton;
+  b->setToolTip(tr("60 Minute Bars"));
   b->setText("60");
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  barButtonGroup->addButton(b, 5);
+
+  // 30 minute compression button
+  b = new QToolButton;
+  b->setToolTip(tr("30 Minute Bars"));
+  b->setText("30");
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  barButtonGroup->addButton(b, 4);
 
   // 15 minute compression button
-  b = new QToolButton; // compression button 15min
-  b->setToolTip(tr("15min Compression"));
-  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtn15Clicked()));
-
-  action = toolbar2->addWidget(b);
-  actionList.insert(Compression15, action);
-  action->setVisible(config.getBool(Config::ShowCmps15Button));
+  b = new QToolButton;
+  b->setToolTip(tr("15 Minute Bars"));
   b->setText("15");
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  barButtonGroup->addButton(b, 3);
+
+  // 10 minute compression button
+  b = new QToolButton;
+  b->setToolTip(tr("10 Minute Bars"));
+  b->setText("10");
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  barButtonGroup->addButton(b, 2);
 
   // 5 minute compression button
-  b = new QToolButton; // compression button 5min
-  b->setToolTip(tr("5min Compression"));
-  connect(b, SIGNAL(clicked()), this, SLOT(cmpsBtn5Clicked()));
-
-  action = toolbar2->addWidget(b);
-  actionList.insert(Compression5, action);
-  action->setVisible(config.getBool(Config::ShowCmps5Button));
+  b = new QToolButton;
+  b->setToolTip(tr("5 Minute Bars"));
   b->setText("5");
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  barButtonGroup->addButton(b, 1);
 
-  toolbar2->addSeparator();
+  // 1 minute compression button
+  b = new QToolButton;
+  b->setToolTip(tr("1 Minute Bars"));
+  b->setText("1");
+  b->setCheckable(TRUE);
+  toolbar->addWidget(b);
+  barButtonGroup->addButton(b, 0);
+
+  // set the button to last used position
+  Config config;
+  b = (QToolButton *) barButtonGroup->button(config.getInt((int) Config::BarLength));
+  b->setChecked(TRUE);
+
+
+  toolbar->addSeparator();
 
   int ti = config.getInt(Config::Pixelspace);
   Setting set;
@@ -482,7 +533,7 @@ void QtstalkerApp::createToolBars ()
   // zoom in button
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(slotZoomIn()));
-  action = toolbar2->addWidget(b);
+  QAction *action = toolbar->addWidget(b);
   actionList.insert(ZoomIn, action);
   b->setToolTip(tr("Zoom In"));
   b->setIcon(QIcon(zoomin_xpm));
@@ -492,7 +543,7 @@ void QtstalkerApp::createToolBars ()
   // zoom out button
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(slotZoomOut()));
-  action = toolbar2->addWidget(b);
+  action = toolbar->addWidget(b);
   actionList.insert(ZoomOut, action);
   b->setToolTip(tr("Zoom Out"));
   b->setIcon(QIcon(zoomout_xpm));
@@ -503,8 +554,8 @@ void QtstalkerApp::createToolBars ()
   // PS1 button
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(ps1ButtonClicked()));
-
-  action = toolbar2->addWidget(b);
+  QString ts;
+  action = toolbar->addWidget(b);
   actionList.insert(PS1, action);
   config.getData(Config::PSButton1, ts);
   b->setToolTip(tr("Set Bar Spacing to ") + ts);
@@ -513,15 +564,13 @@ void QtstalkerApp::createToolBars ()
   // PS2 button
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), this, SLOT(ps2ButtonClicked()));
-
-  action = toolbar2->addWidget(b);
+  action = toolbar->addWidget(b);
   actionList.insert(PS2, action);
   config.getData(Config::PSButton2, ts);
   b->setToolTip(tr("Set Bar Spacing to ") + ts);
   b->setText(ts);
 
-
-  toolbar2->addSeparator();
+  toolbar->addSeparator();
 
   //bars to load
   barCount = new QSpinBox;
@@ -529,13 +578,13 @@ void QtstalkerApp::createToolBars ()
   barCount->setValue(config.getInt(Config::BarsToLoad));
   barCount->setToolTip(tr("Total bars to load"));
   connect(barCount, SIGNAL(editingFinished()), this, SLOT(slotChartUpdated()));
-
-  action = toolbar2->addWidget(barCount);
+  action = toolbar->addWidget(barCount);
   actionList.insert(BarCount, action);
 
-  toolbar2->addSeparator();
+  toolbar->addSeparator();
 
   // recent charts combo
+  QStringList l;
   config.getBaseData((int) Config::RecentChartsList, l);
   recentCharts = new QComboBox;
   recentCharts->setMaxCount(10);
@@ -545,8 +594,7 @@ void QtstalkerApp::createToolBars ()
   recentCharts->setCurrentIndex(0);
   recentCharts->setToolTip(tr("Recent Charts"));
   connect(recentCharts, SIGNAL(activated(int)), this, SLOT(slotOpenChart(int)));
-
-  action = toolbar2->addWidget(recentCharts);
+  action = toolbar->addWidget(recentCharts);
   actionList.insert(RecentCharts, action);
   action->setVisible(config.getBool(Config::ShowRecentCharts));
 }
@@ -583,16 +631,14 @@ void QtstalkerApp::slotQuit()
   config.setBaseData((int) Config::MainWindowPos, pt);
 
   // save menubar settings
-  config.setBaseData((int) Config::DrawMode, actionList.value(DrawMode)->isChecked());
   config.setBaseData((int) Config::ScaleToScreen, actionList.value(ScaleToScreen)->isChecked());
   config.setBaseData((int) Config::Grid, actionList.value(Grid)->isChecked());
-  config.setBaseData((int) Config::Crosshairs, actionList.value(Crosshairs)->isChecked());
   config.setBaseData((int) Config::ShowSidePanel, actionList.value(SidePanel)->isChecked());
   config.setBaseData((int) Config::RefreshStatus, actionList.value(Refresh)->isChecked());
 
   // save toolbar settings
   config.setBaseData((int) Config::BarsToLoad, barCount->value());
-  config.setBaseData((int) Config::BarLength, compressionCombo->currentIndex());
+  config.setBaseData((int) Config::BarLength, barButtonGroup->checkedId());
 
   Setting set = zoomList[0];
   config.setBaseData((int) Config::Pixelspace, set.getInt(1)); // save base zoom amount
@@ -608,7 +654,6 @@ void QtstalkerApp::slotQuit()
   // delete any BarData
   if (recordList)
     delete recordList;
-
 }
 
 void QtstalkerApp::closeEvent(QCloseEvent *)
@@ -712,15 +757,11 @@ void QtstalkerApp::loadChart (QString d)
     delete recordList;
   recordList = new BarData;
   recordList->setSymbol(chartPath);
-  recordList->setBarLength((BarData::BarLength) compressionCombo->currentIndex());
+  recordList->setBarLength((BarData::BarLength) barButtonGroup->checkedId());
   recordList->setBarsRequested(barCount->value());
 
   QuoteDataBase qdb;
-  QString sql, sqlfd, sqlld;
-  config.getData(Config::DbGetSymbol, sql);
-  config.getData(Config::DbFirstDate, sqlfd);
-  config.getData(Config::DbLastDate, sqlld);
-  qdb.getChart(sql, sqlfd, sqlld, recordList);
+  qdb.getChart(recordList);
 
   DataBase db;
   QStringList indicatorList;
@@ -804,7 +845,7 @@ QString QtstalkerApp::getWindowCaption ()
   if (! s2.isEmpty())
     caption.append(" (" + s2 + ")");
 
-  caption.append(" " + compressionCombo->currentText());
+//  caption.append(" " + compressionCombo->currentText());
 
   return caption;
 }
@@ -839,23 +880,7 @@ void QtstalkerApp::slotDataWindow ()
 
 void QtstalkerApp::slotBarLengthChanged(int barLength)
 {
-  Config config;
-  int n = config.getInt(Config::BarLength);
-  if (n == barLength)
-    return;
-
-  // the compression has changed
-  config.setBaseData((int) Config::BarLength, compressionCombo->currentIndex());
-
-  barLength == 8 ? actionList.value(CompressionM)->setChecked(TRUE) : actionList.value(CompressionM)->setChecked(FALSE);
-  barLength == 7 ? actionList.value(CompressionW)->setChecked(TRUE) : actionList.value(CompressionW)->setChecked(FALSE);
-  barLength == 6 ? actionList.value(CompressionD)->setChecked(TRUE) : actionList.value(CompressionD)->setChecked(FALSE);
-  barLength == 5 ? actionList.value(Compression60)->setChecked(TRUE) : actionList.value(Compression60)->setChecked(FALSE);
-  barLength == 3 ? actionList.value(Compression15)->setChecked(TRUE) : actionList.value(Compression15)->setChecked(FALSE);
-  barLength == 1 ? actionList.value(Compression5)->setChecked(TRUE) : actionList.value(Compression5)->setChecked(FALSE);
-
-  emit signalInterval((BarData::BarLength) compressionCombo->currentIndex());
-
+  emit signalInterval((BarData::BarLength) barLength);
   loadChart(chartPath);
 }
 
@@ -959,9 +984,8 @@ void QtstalkerApp::addIndicatorButton (QString d)
   plot->setPixelspace(set.getInt(1));
 
   plot->setIndex(slider->value());
-  plot->setInterval((BarData::BarLength) compressionCombo->currentIndex());
+  plot->setInterval((BarData::BarLength) barButtonGroup->checkedId());
   plot->setCrosshairsStatus(config.getBool(Config::Crosshairs));
-  plot->setDrawMode(actionList.value(DrawMode)->isChecked());
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
   indy->setIndicator(d);
@@ -980,7 +1004,10 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
   connect(this, SIGNAL(signalGrid(bool)), indy, SLOT(slotGridChanged(bool)));
   connect(this, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
-  connect(this, SIGNAL(signalDraw(bool)), indy, SLOT(slotDrawModeChanged(bool)));
+
+//  connect(this, SIGNAL(signalNewExternalChartObject(int)), indy, SLOT(newExternalChartObject(int)));
+//  connect(indy, SIGNAL(signalNewExternalChartObjectDone()), this, SLOT(newExternalChartObjectDone()));
+//  connect(this, SIGNAL(signalSetExternalChartObject(int)), indy, SLOT(setExternalChartObjectFlag(int)));
 }
 
 void QtstalkerApp::slotChartUpdated ()
@@ -1100,11 +1127,6 @@ void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool)
   slotDrawPlots();
 }
 
-void QtstalkerApp::slotCrosshairsStatus (bool status)
-{
-  emit signalCrosshairsStatus(status);
-}
-
 void QtstalkerApp::slotDrawPlots ()
 {
   int loop;
@@ -1205,42 +1227,6 @@ void QtstalkerApp::ps2ButtonClicked ()
   actionList.value(ZoomOut)->setEnabled(FALSE);
 }
 
-void QtstalkerApp::cmpsBtnMClicked()
-{
-  compressionCombo->setCurrentIndex((int) BarData::MonthlyBar);
-  slotBarLengthChanged((int) BarData::MonthlyBar);
-}
-
-void QtstalkerApp::cmpsBtnWClicked()
-{
-  compressionCombo->setCurrentIndex((int) BarData::WeeklyBar);
-  slotBarLengthChanged((int) BarData::WeeklyBar);
-}
-
-void QtstalkerApp::cmpsBtnDClicked()
-{
-  compressionCombo->setCurrentIndex((int) BarData::DailyBar);
-  slotBarLengthChanged((int) BarData::DailyBar);
-}
-
-void QtstalkerApp::cmpsBtn60Clicked()
-{
-  compressionCombo->setCurrentIndex((int) BarData::Minute60);
-  slotBarLengthChanged((int) BarData::Minute60);
-}
-
-void QtstalkerApp::cmpsBtn15Clicked()
-{
-  compressionCombo->setCurrentIndex((int) BarData::Minute15);
-  slotBarLengthChanged((int) BarData::Minute15);
-}
-
-void QtstalkerApp::cmpsBtn5Clicked()
-{
-  compressionCombo->setCurrentIndex((int) BarData::Minute5);
-  slotBarLengthChanged((int) BarData::Minute5);
-}
-
 void QtstalkerApp::slotAddRecentChart (QString d)
 {
   if (recentCharts->findText(d, Qt::MatchExactly) > -1)
@@ -1248,6 +1234,69 @@ void QtstalkerApp::slotAddRecentChart (QString d)
 
   recentCharts->insertItem(0, d);
 }
+
+void QtstalkerApp::cursorButtonPressed (int id)
+{
+  switch (id)
+  {
+    case 0:
+      emit signalCrosshairsStatus(FALSE);
+      break;
+    case 1:
+      emit signalCrosshairsStatus(TRUE);
+      break;
+    default:
+      break;
+  }
+}
+
+// ******************************************************************************
+// **************************** Side Toolbar Functions **************************
+// ******************************************************************************
+/*
+void QtstalkerApp::buyArrowButtonPressed ()
+{
+  emit signalNewExternalChartObject((int) COSettings::COBuyArrow);
+}
+
+void QtstalkerApp::fiboButtonPressed ()
+{
+  emit signalNewExternalChartObject((int) COSettings::COFiboLine);
+}
+
+void QtstalkerApp::horizontalButtonPressed ()
+{
+  emit signalNewExternalChartObject((int) COSettings::COHorizontalLine);
+}
+
+void QtstalkerApp::sellArrowButtonPressed ()
+{
+  emit signalNewExternalChartObject((int) COSettings::COSellArrow);
+}
+
+void QtstalkerApp::textButtonPressed ()
+{
+  emit signalNewExternalChartObject((int) COSettings::COText);
+}
+
+void QtstalkerApp::trendButtonPressed ()
+{
+  emit signalNewExternalChartObject((int) COSettings::COTrendLine);
+}
+
+void QtstalkerApp::verticalButtonPressed ()
+{
+  emit signalNewExternalChartObject((int) COSettings::COVerticalLine);
+}
+
+// this slot is connected to a plot that is triggered when mouse has clicked the plot
+// during external chart object creation
+// we then turn off all the plots waiting for a click from the mouse
+void QtstalkerApp::newExternalChartObjectDone ()
+{
+  emit signalSetExternalChartObject(0);
+}
+*/
 
 // ******************************************************************************
 // **************************** Zoom Functions **********************************

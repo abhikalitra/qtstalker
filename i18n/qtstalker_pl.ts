@@ -1513,6 +1513,34 @@ $ed is the last date.</source>
         <source>Mid Period</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source> Enter Long: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> at </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Enter Short: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Exit Long: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with a profit of $</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with a loss of $</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Exit Short: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtStalkerTester</name>
@@ -1927,10 +1955,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show script que.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1979,10 +2003,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Remove Script From Que</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;New Script</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2006,6 +2026,14 @@ a partial match like %Script or %Scr%</source>
     <message>
         <source>Script currently executing.
 Are you sure you want to remove this script?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show script queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Remove Script From Queue</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -30,7 +30,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   vbox->setMargin(0);
   vbox->setSpacing(0);
   setLayout(vbox);
-  
+
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setMargin(0);
   hbox->setSpacing(0);
@@ -38,13 +38,13 @@ Plot::Plot (QWidget *w) : QWidget(w)
 
   indicatorPlot = new IndicatorPlot(this);
   hbox->addWidget(indicatorPlot, 1, 0);
-  
+
   scalePlot = new ScalePlot(this);
   hbox->addWidget(scalePlot);
-  
+
   datePlot = new DatePlot(this);
   vbox->addWidget(datePlot);
-  
+
   connect(indicatorPlot, SIGNAL(signalDraw()), this, SLOT(slotUpdateScalePlot()));
   connect(indicatorPlot, SIGNAL(signalDateFlag(bool)), this, SLOT(slotDateFlagChanged(bool)));
   connect(indicatorPlot, SIGNAL(signalLogFlag(bool)), this, SLOT(slotLogScaleChanged(bool)));
@@ -64,9 +64,9 @@ void Plot::setData (BarData *l)
 
   datePlot->setData(l);
   indicatorPlot->setXGrid(datePlot->getXGrid());
-  
+
   scalePlot->setData(l->getClose(l->count() - 1));
-  
+
   indicatorPlot->setData(l);
 }
 
@@ -85,11 +85,6 @@ void Plot::setLogScale (bool d)
 void Plot::setChartPath (QString d)
 {
   indicatorPlot->setChartPath(d);
-}
-
-void Plot::setDrawMode (bool d)
-{
-  indicatorPlot->setDrawMode(d);
 }
 
 void Plot::setInfoFlag (bool d)
@@ -157,8 +152,8 @@ void Plot::setIndex (int d)
 
 void Plot::setInterval (BarData::BarLength d)
 {
-  datePlot->setInterval(d);    
-  indicatorPlot->setInterval(d);    
+  datePlot->setInterval(d);
+  indicatorPlot->setInterval(d);
 }
 
 void Plot::setDateFlag (bool d)
@@ -194,11 +189,6 @@ void Plot::slotScaleToScreenChanged (bool d)
 {
   setScaleToScreen(d);
   indicatorPlot->draw();
-}
-
-void Plot::slotDrawModeChanged (bool d)
-{
-  setDrawMode(d);
 }
 
 void Plot::slotDateFlagChanged (bool d)

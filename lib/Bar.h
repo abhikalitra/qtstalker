@@ -53,6 +53,12 @@ class Bar
     void getTimeString (QString &);
     void setSymbol (QString &);
     void getSymbol (QString &);
+    void setName (QString &);
+    void getName (QString &);
+    void setType (QString &);
+    void getType (QString &);
+    void setExchange (QString &);
+    void getExchange (QString &);
     void setTime (QTime &);
     void setData (QString &, QString &);
     void getData (QString &, QString &);
@@ -61,7 +67,7 @@ class Bar
     void getKeys (QStringList &);
     void copy (Bar *);
     void clear ();
-    
+
   protected:
     QHash<QString, QString> data;
     QDateTime date;

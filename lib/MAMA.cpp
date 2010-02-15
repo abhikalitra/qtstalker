@@ -91,6 +91,7 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
   else
   {
     BARS bars;
+    bars.turnOffMAs();
     bars.getIndicator(ind, data);
 
     settings.getData(MAMAColor, s);

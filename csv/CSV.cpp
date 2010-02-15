@@ -22,6 +22,7 @@
 
 
 #include "CSV.h"
+#include "QuoteDataBase.h"
 
 #include <QtDebug>
 #include <QFile>
@@ -34,40 +35,34 @@
 
 CSV::CSV ()
 {
-  QDir dir(QDir::homePath());
-  QString home = dir.absolutePath() + "/.CSV";
-  if (! dir.exists(home))
-  {
-    if (! dir.mkdir(home))
-      qDebug() << "CSV::Unable to create" << home;
-  }
-
-  QString s = home + "/quotes.sqlite";
-
-  QSqlDatabase db = QSqlDatabase::database("quotes");
-  if (! db.isValid())
-  {
-    db = QSqlDatabase::addDatabase("QSQLITE", "quotes");
-    db.setHostName("localhost");
-    db.setDatabaseName(s);
-    db.setUserName("CSV");
-    db.setPassword("CSV");
-    if (! db.open())
-      qDebug() << "CSV::CSV: quotes db open failed";
-  }
-
-  QSqlQuery q(db);
-  s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
-  s.append(" symbol VARCHAR(50) PRIMARY KEY UNIQUE");
-  s.append(", name VARCHAR(100)");
-  s.append(", exchange VARCHAR(25)");
-  s.append(", data VARCHAR(250)");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "CSV::CSV:createSymbolIndexTable: " << q.lastError().text();
-
   clear();
+}
+
+int CSV::openDb (QString &file)
+{
+  if (file.isEmpty())
+  {
+    // no dbFile given, so we create the default one
+    QDir dir(QDir::homePath());
+    QString home = dir.absolutePath() + "/.CSV";
+    if (! dir.exists(home))
+    {
+      if (! dir.mkdir(home))
+      {
+        qDebug() << "CSV::open: Unable to create" << home;
+	return 1;
+      }
+    }
+
+    dbFile = home + "/quotes.sqlite";
+  }
+  else
+    dbFile = file;
+
+  QuoteDataBase db;
+  db.init(dbFile);
+
+  return 0;
 }
 
 void CSV::clear ()
@@ -75,16 +70,23 @@ void CSV::clear ()
   date.clear();
   time.clear();
   symbol.clear();
+  dbFile.clear();
+  name.clear();
+  exchange.clear();
+  type.clear();
   open = "0";
   high = "0";
   low = "0";
   close = "0";
   volume = "0";
   oi = "0";
+  delimiter = ",";
 }
 
 void CSV::import ()
 {
+  openDb(dbFile);
+
   if (inputFile.isEmpty())
   {
     importQuote();
@@ -221,7 +223,6 @@ void CSV::import ()
     {
       if (symbol.isEmpty())
       {
-        // remove any file suffix so we can use this as a symbol
 	QString ts2 = fName;
 	convertSymbol(ts2);
         r.setSymbol(ts2);
@@ -229,10 +230,20 @@ void CSV::import ()
       }
       else
       {
-        r.setSymbol(symbol); // use symbol from command line option
-	ts = symbol;
+	ts = symbol;  // use symbol from command line option
+	convertSymbol(ts);
+        r.setSymbol(ts);
       }
     }
+
+    if (name.length())
+      r.setName(name);
+
+    if (exchange.length())
+      r.setExchange(exchange);
+
+    if (type.length())
+      r.setType(type);
 
     if (symbolHash.contains(ts))
     {
@@ -316,6 +327,15 @@ void CSV::importQuote ()
     return;
   }
 
+  if (name.length())
+    r.setName(name);
+
+  if (exchange.length())
+    r.setExchange(exchange);
+
+  if (type.length())
+    r.setType(type);
+
   QList<Bar> *l = new QList<Bar>;
   l->append(r);
   setChart(l);
@@ -329,117 +349,8 @@ void CSV::setChart (QList<Bar> *bars)
   if (! bars->count())
     return;
 
-  Bar bar = bars->at(0);
-  QString tsymbol;
-  bar.getSymbol(tsymbol);
-
-  QStringList formatList = format.split(",");
-
-  // check to see if symbol exists
-  QSqlDatabase db = QSqlDatabase::database("quotes");
-  if (! db.isValid())
-  {
-    qDebug() << "CSV::setChart:" << db.lastError().text();
-    return;
-  }
-
-  QSqlQuery q(db);
-  QString ts = "SELECT * FROM symbolIndex WHERE symbol='" + tsymbol + "'";
-  q.exec(ts);
-  if (q.lastError().isValid())
-  {
-    qDebug() << q.lastError().text();
-    qDebug() << ts;
-    return;
-  }
-
-  if (! q.next())
-  {
-    // new symbol, create new table for it
-    ts = "CREATE TABLE IF NOT EXISTS " + tsymbol + " (date DATETIME PRIMARY KEY UNIQUE";
-    ts.append(", open REAL, high REAL, low REAL, close REAL, volume INT, oi INT)");
-    q.exec(ts);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "CSV::setChart:create new symbol table: " << q.lastError().text();
-      qDebug() << ts;
-      return;
-    }
-
-    // add new symbol entry into the symbol index table
-    ts = "REPLACE INTO symbolIndex (symbol) VALUES('" + tsymbol + "')";
-    q.exec(ts);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "CSV::setChart:create new symbol index record: " << q.lastError().text();
-      qDebug() << ts;
-      return;
-    }
-  }
-
-  db.transaction();
-
-  int loop;
-  QString tdate;
-  for (loop = 0; loop < bars->count(); loop++)
-  {
-    Bar bar = bars->at(loop);
-    bar.getDateTimeString(tdate);
-
-    ts = "REPLACE INTO " + tsymbol + " VALUES('" + tdate + "'";
-
-    QString k = "Open";
-    QString d;
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "High";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "Low";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "Close";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "Volume";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "OI";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0)");
-    else
-      ts.append("," + d + ")");
-
-    q.exec(ts);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "CSV::setChart:save quote in symbol table: " << q.lastError().text();
-      qDebug() << ts;
-    }
-  }
-
-  db.commit();
+  QuoteDataBase db;
+  db.setChart(bars);
 }
 
 void CSV::setFormat (QString &d)
@@ -634,9 +545,29 @@ int CSV::setBarOI (Bar &r, QString &d)
 // remove any unwanted characters in the symbol name
 void CSV::convertSymbol (QString &d)
 {
-  d.replace(QString(" "), QString("_")); // replace spaces
-  d.replace(QString("-"), QString("_")); // replace minus signs
-  d.replace(QString("&"), QString("_")); // replace ampersand
-  d.replace(QString("."), QString("_")); // replace dot
+  d = d.remove(QString("'"), Qt::CaseSensitive); // remove '
+}
+
+void CSV::setDbFile (QString &d)
+{
+  dbFile = d;
+}
+
+void CSV::setName (QString &d)
+{
+  d = d.remove(QString("'"), Qt::CaseSensitive); // remove '
+  name = d;
+}
+
+void CSV::setExchange (QString &d)
+{
+  d = d.remove(QString("'"), Qt::CaseSensitive); // remove '
+  exchange = d;
+}
+
+void CSV::setType (QString &d)
+{
+  d = d.remove(QString("'"), Qt::CaseSensitive); // remove '
+  type = d;
 }
 

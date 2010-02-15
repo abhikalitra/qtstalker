@@ -56,8 +56,8 @@ class Config : public BaseConfig
       MainWindowPos, // app position
       PrefDlgWindowSize, // preferences dialog window size
       DbUserName, // sql quotes db user name needed for login
-      BackTesterWindowSize, // unused
-      ScannerWindowSize,  // unused
+      BackTesterWindowSize, // ********* UNUSED *************
+      ScannerWindowSize,  // ********* UNUSED *************
       Version,  // current qtstalker version
       PlotSizes, // csv list of plot row sizes
       DbPassword, // sql db user password
@@ -69,26 +69,26 @@ class Config : public BaseConfig
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
       ShowSidePanel, // side panel flag
-      ShowQuitButton, // toolbar button flag
-      ShowPrefButton,  // toolbar button flag
-      ShowSidePanelButton, // toolbar button flag
-      ShowGridButton, // toolbar button flag
-      ShowScaleToScreenButton, // toolbar button flag
-      ShowCrosshairButton, // toolbar button flag
+      ShowQuitButton, // ********* UNUSED *************
+      ShowPrefButton,  // ********* UNUSED *************
+      ShowSidePanelButton, // ********* UNUSED *************
+      ShowGridButton, // ********* UNUSED *************
+      ShowScaleToScreenButton, // ********* UNUSED *************
+      ShowCrosshairButton, // ********* UNUSED *************
       DbSearchSymbols, // the sql command to get a symbol search
-      ShowDrawModeButton, // toolbar button flag
-      ShowNewIndicatorButton, // toolbar button flag
-      ShowDataWindowButton, // toolbar button flag
-      ShowHelpButton, // toolbar button flag
-      ShowRefreshButton, // toolbar button flag
-      IndicatorScriptCommand,  // default script interpreter command
-      IndicatorScriptPath, // default indicator script directory
-      ShowCmps5Button, // toolbar button flag
-      ShowCmps15Button, // toolbar button flag
-      ShowCmps60Button, // toolbar button flag
-      ShowCmpsDayButton, // toolbar button flag
-      ShowCmpsWkyButton, // toolbar button flag
-      ShowCmpsMtyButton, // toolbar button flag
+      ShowDrawModeButton, // ********* UNUSED *************
+      ShowNewIndicatorButton, // ********* UNUSED *************
+      ShowDataWindowButton, // ********* UNUSED *************
+      ShowHelpButton, // ********* UNUSED *************
+      ShowRefreshButton, // ********* UNUSED *************
+      IndicatorScriptCommand,  // ********* UNUSED *************
+      IndicatorScriptPath, // ********* UNUSED *************
+      ShowCmps5Button, // ********* UNUSED *************
+      ShowCmps15Button, // ********* UNUSED *************
+      ShowCmps60Button, // ********* UNUSED *************
+      ShowCmpsDayButton, // ********* UNUSED *************
+      ShowCmpsWkyButton, // ********* UNUSED *************
+      ShowCmpsMtyButton, // ********* UNUSED *************
       Unused11, // ********* UNUSED *************
       DbFirstDate, // the sql command to get the first date for a symbol
       DbLastDate, // the sql command to get the last date for a symbol

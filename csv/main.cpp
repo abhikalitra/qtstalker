@@ -19,6 +19,22 @@ int main (int argc, char **argv)
 
     switch (ba[1])
     {
+      case 'y': // security type
+        s = argv[loop + 1];
+	csv.setType(s);
+        break;
+      case 'e': // security exchange
+        s = argv[loop + 1];
+	csv.setExchange(s);
+        break;
+      case 'n': // company name eg. 'Microsoft'
+        s = argv[loop + 1];
+	csv.setName(s);
+        break;
+      case 'p': // sqlite db path
+        s = argv[loop + 1];
+	csv.setDbFile(s);
+        break;
       case 'i':
         s = argv[loop + 1];
 	csv.setInputFile(s);

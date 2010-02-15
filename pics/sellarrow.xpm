@@ -1,5 +1,5 @@
 /* XPM */
-static const char *sellarrow[]={
+static const char *sellarrow_xpm[]={
 "16 16 2 1",
 ". c None",
 "# c #ff0000",

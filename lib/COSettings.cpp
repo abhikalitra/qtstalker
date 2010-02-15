@@ -30,14 +30,12 @@ COSettings::COSettings (QString i, QString s, QString indi, QString t)
   symbol = s;
   indicator = indi;
   type = t;
-  dateFormat = "yyyy-MM-dd HH:mm:ss";
   selected = FALSE;
   saveFlag = FALSE;
 }
 
 COSettings::COSettings ()
 {
-  dateFormat = "yyyy-MM-dd HH:mm:ss";
   selected = FALSE;
   saveFlag = FALSE;
 }
@@ -112,12 +110,12 @@ void COSettings::setData (COParm k, QColor &d)
 void COSettings::getData (COParm k, QDateTime &d)
 {
   if (settings.contains(k))
-    d = QDateTime::fromString(settings.value(k), dateFormat);
+    d = QDateTime::fromString(settings.value(k), Qt::ISODate);
 }
 
 void COSettings::setData (COParm k, QDateTime &d)
 {
-  settings.insert(k, d.toString(dateFormat));
+  settings.insert(k, d.toString(Qt::ISODate));
 }
 
 void COSettings::getData (COParm, QFont &d)

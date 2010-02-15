@@ -62,13 +62,9 @@ QtStalkerTester::QtStalkerTester ()
   tdb.init();
 
   QuoteDataBase qdb;
-  QString plugin, dbFile, host, user, pass;
-  config.getData(TestConfig::DbPlugin, plugin);
+  QString dbFile;
   config.getData(TestConfig::DbName, dbFile);
-  config.getData(TestConfig::DbHostName, host);
-  config.getData(TestConfig::DbUserName, user);
-  config.getData(TestConfig::DbPassword, pass);
-  qdb.init(plugin, dbFile, host, user, pass);
+  qdb.init(dbFile);
 
   createActions();
   createMenuBar();
@@ -165,6 +161,7 @@ void QtStalkerTester::createRuleTab()
 
   barLength = new QComboBox;
   barLength->addItems(barLengthList);
+  barLength->setCurrentIndex(6);
   grid->addWidget(barLength, row++, col--);
 
   // bars
@@ -172,7 +169,7 @@ void QtStalkerTester::createRuleTab()
   grid->addWidget(label, row, col++);
 
   bars = new QSpinBox;
-  bars->setMinimum(0);
+  bars->setMinimum(1);
   bars->setMaximum(999999);
   bars->setValue(275);
   grid->addWidget(bars, row++, col--);
@@ -201,6 +198,36 @@ void QtStalkerTester::createRuleTab()
   exitComm->setMaximum(999999);
   exitComm->setValue(10);
   grid->addWidget(exitComm, row++, col--);
+
+  // trade delay
+  label = new QLabel(tr("Trade Delay"));
+  grid->addWidget(label, row, col++);
+
+  delay = new QSpinBox;
+  delay->setMinimum(0);
+  delay->setMaximum(100);
+  delay->setValue(1);
+  grid->addWidget(delay, row++, col--);
+
+  // account
+  label = new QLabel(tr("Account"));
+  grid->addWidget(label, row, col++);
+
+  account = new QDoubleSpinBox;
+  account->setMinimum(0);
+  account->setMaximum(99999999);
+  account->setValue(10000);
+  grid->addWidget(account, row++, col--);
+
+  // volume percentage
+  label = new QLabel(tr("Volume Percentage"));
+  grid->addWidget(label, row, col++);
+
+  volumePercentage = new QDoubleSpinBox;
+  volumePercentage->setMinimum(0);
+  volumePercentage->setMaximum(100);
+  volumePercentage->setValue(20);
+  grid->addWidget(volumePercentage, row++, col--);
 
 //  grid->setRowStretch(row, 1);
 
@@ -380,6 +407,13 @@ void QtStalkerTester::createReportTab()
 
   maxLossShort = new QLabel;
   grid->addWidget(maxLossShort, row++, col--);
+
+  // balance
+  label = new QLabel(tr("Account Balance"));
+  grid->addWidget(label, row, col++);
+
+  balance = new QLabel;
+  grid->addWidget(balance, row++, col--);
 
   tradeLog = new QTextEdit;
   tradeLog->setReadOnly(TRUE);
@@ -598,13 +632,9 @@ void QtStalkerTester::loadTest (QString &s)
   test.getSymbol(ts);
   symbol->setText(ts);
 
-  test.getEnterField(ts);
-  int index = priceList.indexOf(ts);
-  enterField->setCurrentIndex(index);
+  enterField->setCurrentIndex(test.getEnterField());
 
-  test.getExitField(ts);
-  index = priceList.indexOf(ts);
-  exitField->setCurrentIndex(index);
+  exitField->setCurrentIndex(test.getExitField());
 
   barLength->setCurrentIndex(test.getBarLength());
 
@@ -614,7 +644,15 @@ void QtStalkerTester::loadTest (QString &s)
 
   exitComm->setValue(test.getExitComm());
 
+  delay->setValue(test.getDelay());
+
+  account->setValue(test.getAccount());
+
+  volumePercentage->setValue(test.getVolumePercentage());
+
   // summary items
+  test.getTradeLog(ts);
+  tradeLog->append(ts);
   grossProfit->setNum(test.getGrossProfit());
   netProfit->setNum(test.getNetProfit());
   maxDrawDown->setNum(test.getMaxDrawDown());
@@ -633,6 +671,7 @@ void QtStalkerTester::loadTest (QString &s)
   maxLossLong->setNum(test.getMaxLossLong());
   maxWinShort->setNum(test.getMaxWinShort());
   maxLossShort->setNum(test.getMaxLossShort());
+  balance->setNum(test.getBalance());
 }
 
 void QtStalkerTester::getSettings ()
@@ -645,11 +684,9 @@ void QtStalkerTester::getSettings ()
   ts = symbol->text();
   test.setSymbol(ts);
 
-  ts = enterField->currentText();
-  test.setEnterField(ts);
+  test.setEnterField(enterField->currentIndex());
 
-  ts = exitField->currentText();
-  test.setExitField(ts);
+  test.setExitField(exitField->currentIndex());
 
   test.setBarLength(barLength->currentIndex());
 
@@ -659,13 +696,11 @@ void QtStalkerTester::getSettings ()
 
   test.setExitComm(exitComm->value());
 
-  test.setBarLength(barLength->currentIndex());
+  test.setDelay(delay->value());
 
-  test.setBars(bars->value());
+  test.setAccount(account->value());
 
-  test.setEntryComm(entryComm->value());
-
-  test.setExitComm(exitComm->value());
+  test.setVolumePercentage(volumePercentage->value());
 }
 
 void QtStalkerTester::cancelTest ()
@@ -698,12 +733,12 @@ void QtStalkerTester::run ()
   data->setBarsRequested(bars->value());
 
   QuoteDataBase qdb;
-  TestConfig config;
-  QString sql, sqlfd, sqlld;
-  config.getData(TestConfig::DbGetSymbol, sql);
-  config.getData(TestConfig::DbFirstDate, sqlfd);
-  config.getData(TestConfig::DbLastDate, sqlld);
-  qdb.getChart(sql, sqlfd, sqlld, data);
+  qdb.getChart(data);
+  if (data->count() == 0)
+  {
+    qDebug() << "QtStalkerTester::run: 0 bars loaded";
+    return;
+  }
 
   ExScript server;
   server.setBarData(data);
@@ -746,11 +781,6 @@ void QtStalkerTester::run ()
 	  TestTrade *trade = trades.at(trades.count() - 1);
 	  endTrade(loop, data, trade);
 	}
-	else
-	{
-	  TestTrade *trade = trades.at(trades.count() - 1);
-	  currentTrade(loop, data, trade);
-	}
 	break;
       }
       case 2: // currently short, check if we exit trade
@@ -762,11 +792,6 @@ void QtStalkerTester::run ()
 	  TestTrade *trade = trades.at(trades.count() - 1);
 	  endTrade(loop, data, trade);
 	}
-	else
-	{
-	  TestTrade *trade = trades.at(trades.count() - 1);
-	  currentTrade(loop, data, trade);
-	}
 	break;
       }
       default:
@@ -777,6 +802,7 @@ void QtStalkerTester::run ()
 	  status = 1; // we are long
 	  TestTrade *trade = new TestTrade;
 	  trade->setType(0);
+          trade->setVolumePercentage(volumePercentage->value());
 	  startTrade(loop, data, trade);
 	  trades.append(trade);
 	}
@@ -787,6 +813,7 @@ void QtStalkerTester::run ()
 	  status = 2; // we are short
 	  TestTrade *trade = new TestTrade;
 	  trade->setType(1);
+          trade->setVolumePercentage(volumePercentage->value());
 	  startTrade(loop, data, trade);
 	  trades.append(trade);
 	}
@@ -852,76 +879,76 @@ void QtStalkerTester::createSignals (BarData *data, QList<PlotLine *> &l, QHash<
 
 void QtStalkerTester::startTrade (int pos, BarData *data, TestTrade *trade)
 {
+  int offset = pos + delay->value();
+  if (offset >= data->count())
+    offset = pos;
+
   QDateTime dt;
-  data->getDate(pos, dt);
-  trade->setEnterDate(dt, pos);
+  data->getDate(offset, dt);
+  trade->setEnterDate(dt, offset);
 
   int i = enterField->currentIndex();
 
   switch (i)
   {
     case 0:
-      trade->setEnterPrice(data->getOpen(pos));
+      trade->setEnterPrice(data->getOpen(offset));
       break;
     case 1:
-      trade->setEnterPrice(data->getHigh(pos));
+      trade->setEnterPrice(data->getHigh(offset));
       break;
     case 2:
-      trade->setEnterPrice(data->getLow(pos));
+      trade->setEnterPrice(data->getLow(offset));
       break;
     case 4:
-      trade->setEnterPrice(data->getAvgPrice(pos));
+      trade->setEnterPrice(data->getAvgPrice(offset));
       break;
     case 5:
-      trade->setEnterPrice(data->getMedianPrice(pos));
+      trade->setEnterPrice(data->getMedianPrice(offset));
       break;
     case 6:
-      trade->setEnterPrice(data->getTypicalPrice(pos));
+      trade->setEnterPrice(data->getTypicalPrice(offset));
       break;
     default:
-      trade->setEnterPrice(data->getClose(pos));
+      trade->setEnterPrice(data->getClose(offset));
       break;
   }
 }
 
-void QtStalkerTester::currentTrade (int pos, BarData *data, TestTrade *trade)
-{
-  QDateTime dt;
-  data->getDate(pos, dt);
-  trade->setExitDate(dt, pos);
-  trade->setExitPrice(data->getClose(pos));
-}
-
 void QtStalkerTester::endTrade (int pos, BarData *data, TestTrade *trade)
 {
+  int offset = pos + delay->value();
+  if (offset >= data->count())
+    offset = pos;
+
   QDateTime dt;
-  data->getDate(pos, dt);
-  trade->setExitDate(dt, pos);
+  data->getDate(offset, dt);
+  trade->setExitDate(dt, offset);
 
   int i = exitField->currentIndex();
 
   switch (i)
   {
     case 0:
-      trade->setExitPrice(data->getOpen(pos));
+      trade->setExitPrice(data->getOpen(offset));
       break;
     case 1:
-      trade->setExitPrice(data->getHigh(pos));
+      trade->setExitPrice(data->getHigh(offset));
       break;
     case 2:
-      trade->setExitPrice(data->getLow(pos));
+      trade->setExitPrice(data->getLow(offset));
       break;
     case 4:
-      trade->setExitPrice(data->getAvgPrice(pos));
+      trade->setExitPrice(data->getAvgPrice(offset));
       break;
     case 5:
-      trade->setExitPrice(data->getMedianPrice(pos));
+      trade->setExitPrice(data->getMedianPrice(offset));
       break;
     case 6:
-      trade->setExitPrice(data->getTypicalPrice(pos));
+      trade->setExitPrice(data->getTypicalPrice(offset));
       break;
     default:
-      trade->setExitPrice(data->getClose(pos));
+      trade->setExitPrice(data->getClose(offset));
       break;
   }
 }
@@ -929,12 +956,33 @@ void QtStalkerTester::endTrade (int pos, BarData *data, TestTrade *trade)
 void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
 {
   double totalDraw = 0;
+  double tmaxDrawDown = 0;
   int longTrades = 0;
+  int winTrades = 0;
+  int lossTrades = 0;
   int shortTrades = 0;
   double totalLossTrades = 0;
   int numDrawDown = 0;
+  double gross = 0;
+  double tmaxWinTrade = 0;
+  double tmaxLossTrade = 0;
+  double tmaxWinLong = 0;
+  double tmaxLossLong = 0;
+  double tmaxWinShort = 0;
+  double tmaxLossShort = 0;
+  double commission = 0;
+  double net = 0;
+  double tavgDrawDown = 0;
+  double tavgWinTrade = 0;
+  double tavgLossTrade = 0;
+  double twinLossRatio = 0;
+  double profitable = 0;
+  double tbalance = account->value();
   int loop;
   QString s;
+
+  tradeLog->clear();
+
   for (loop = 0; loop < trades.count(); loop++)
   {
     TestTrade *trade = trades.at(loop);
@@ -945,8 +993,8 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
       numDrawDown++;
     }
 
-    if (trade->getDrawDown() < test.getMaxDrawDown())
-      test.setMaxDrawDown(trade->getDrawDown());
+    if (trade->getDrawDown() < tmaxDrawDown)
+      tmaxDrawDown = trade->getDrawDown();
 
     if (trade->getType() == 0)
       longTrades++;
@@ -955,28 +1003,28 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
 
     if (trade->getProfit() >= 0)
     {
-      test.setWinTrades(test.getWinTrades() + 1);
-      test.setGrossProfit(test.getGrossProfit() + trade->getProfit());
-      if (trade->getProfit() > test.getMaxWinTrade())
+      winTrades++;
+      gross = gross + trade->getProfit();
+      if (trade->getProfit() > tmaxWinTrade)
       {
-	test.setMaxWinTrade(trade->getProfit());
+	tmaxWinTrade = trade->getProfit();
 	if (trade->getType() == 0)
-	  test.setMaxWinLong(test.getMaxWinTrade());
+	  tmaxWinLong = tmaxWinTrade;
 	else
-	  test.setMaxWinShort(test.getMaxWinTrade());
+	  tmaxWinShort = tmaxWinTrade;
       }
     }
     else
     {
-      test.setLossTrades(test.getLossTrades() + 1);
+      lossTrades++;
       totalLossTrades = totalLossTrades + trade->getProfit();
-      if (trade->getProfit() < test.getMaxLossTrade())
+      if (trade->getProfit() < tmaxLossTrade)
       {
-	test.setMaxLossTrade(trade->getProfit());
+	tmaxLossTrade = trade->getProfit();
 	if (trade->getType() == 0)
-	  test.setMaxLossLong(test.getMaxLossTrade());
+	  tmaxLossLong = tmaxLossTrade;
 	else
-	  test.setMaxLossShort(test.getMaxLossTrade());
+	  tmaxLossShort = tmaxLossTrade;
       }
     }
 
@@ -984,62 +1032,115 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
     tradeLog->append(s);
     trade->getExitLogMessage(s);
     tradeLog->append(s);
+
+    tbalance = tbalance + trade->getProfit();
   }
 
-  test.setTotalComm((entryComm->value() + exitComm->value()) * trades.count());
+  // commissions
+  commission = (entryComm->value() + exitComm->value()) * trades.count();
 
-  test.setNetProfit(test.getGrossProfit() - test.getTotalComm());
+  // net
+  net = gross - commission;
 
-  if (trades.count())
-    test.setAvgDrawDown(totalDraw / trades.count());
+  tbalance = tbalance + net;
 
+  // avg draw down
+  if (numDrawDown)
+    tavgDrawDown = totalDraw / (double) numDrawDown;
+
+  // avg win trade
+  if (gross && winTrades)
+    tavgWinTrade = gross / (double) winTrades;
+
+  // avg loss trade
+  if (totalLossTrades && lossTrades)
+    tavgLossTrade = totalLossTrades / (double) lossTrades;
+
+  // avg win / avg loss ratio
+  if (tavgWinTrade && tavgLossTrade)
+    twinLossRatio = tavgWinTrade / tavgLossTrade;
+
+  // % profitable
+  if (winTrades && trades.count())
+    profitable = ((double) winTrades / (double) trades.count()) * 100;
+
+  // update test and report fields
+  s = tradeLog->toPlainText();
+  test.setTradeLog(s);
+
+  grossProfit->setNum(gross);
+  test.setGrossProfit(gross);
+
+  netProfit->setNum(net);
+  test.setNetProfit(net);
+
+  maxDrawDown->setNum(tmaxDrawDown);
+  test.setMaxDrawDown(tmaxDrawDown);
+
+  avgDrawDown->setNum(tavgDrawDown);
+  test.setAvgDrawDown(tavgDrawDown);
+
+  commissions->setNum(commission);
+  test.setCommissions(commission);
+
+  winLossRatio->setNum(twinLossRatio);
+  test.setWinLossRatio(twinLossRatio);
+
+  totalTrades->setNum(trades.count());
   test.setTrades(trades.count());
 
-  if (test.getGrossProfit() && test.getWinTrades())
-    test.setAvgWinTrade(test.getGrossProfit() / test.getWinTrades());
+  percentProfitable->setNum(profitable);
+  test.setProfitable(profitable);
 
-  if (totalLossTrades && test.getLossTrades())
-    test.setAvgLossTrade(totalLossTrades / test.getLossTrades());
+  winningTrades->setNum(winTrades);
+  test.setWinTrades(winTrades);
 
-  if (test.getWinTrades() && test.getLossTrades())
-    test.setWinLossRatio(test.getWinTrades() / test.getLossTrades());
+  losingTrades->setNum(lossTrades);
+  test.setLossTrades(lossTrades);
 
-  if (test.getWinTrades() && test.getTrades())
-    test.setProfitable((test.getWinTrades() / test.getTrades()) * 100);
+  maxWinTrade->setNum(tmaxWinTrade);
+  test.setMaxWinTrade(tmaxWinTrade);
 
-  grossProfit->setNum(test.getGrossProfit());
-  netProfit->setNum(test.getNetProfit());
-  maxDrawDown->setNum(test.getMaxDrawDown());
-  avgDrawDown->setNum(test.getAvgDrawDown());
-  commissions->setNum(test.getTotalComm());
-  winLossRatio->setNum(test.getWinLossRatio());
-  totalTrades->setNum(test.getTrades());
-  percentProfitable->setNum(test.getProfitable());
-  winningTrades->setNum(test.getWinTrades());
-  losingTrades->setNum(test.getLossTrades());
-  maxWinTrade->setNum(test.getMaxWinTrade());
-  maxLossTrade->setNum(test.getMaxLossTrade());
-  avgWinTrade->setNum(test.getAvgWinTrade());
-  avgLossTrade->setNum(test.getAvgLossTrade());
-  maxWinLong->setNum(test.getMaxWinLong());
-  maxLossLong->setNum(test.getMaxLossLong());
-  maxWinShort->setNum(test.getMaxWinShort());
-  maxLossShort->setNum(test.getMaxLossShort());
+  maxLossTrade->setNum(tmaxLossTrade);
+  test.setMaxLossTrade(tmaxLossTrade);
+
+  avgWinTrade->setNum(tavgWinTrade);
+  test.setAvgWinTrade(tavgWinTrade);
+
+  avgLossTrade->setNum(tavgLossTrade);
+  test.setAvgLossTrade(tavgLossTrade);
+
+  maxWinLong->setNum(tmaxWinLong);
+  test.setMaxWinLong(tmaxWinLong);
+
+  maxLossLong->setNum(tmaxLossLong);
+  test.setMaxLossLong(tmaxLossLong);
+
+  maxWinShort->setNum(tmaxWinShort);
+  test.setMaxWinShort(tmaxWinShort);
+
+  maxLossShort->setNum(tmaxLossShort);
+  test.setMaxLossShort(tmaxLossShort);
+
+  balance->setNum(tbalance);
+  test.setBalance(tbalance);
 
   saveTest();
 }
 
 void QtStalkerTester::runTrades (BarData *data, QList<TestTrade *> &trades)
 {
-  PlotLine *line = data->getInput((BarData::InputType) exitField->currentIndex());
+  PlotLine *line = data->getInput((BarData::Close));
   if (! line)
     return;
 
   int loop;
+  double money = account->value();
   for (loop = 0; loop < trades.count(); loop++)
   {
     TestTrade *trade = trades.at(loop);
-    trade->update(line);
+    trade->update(line, money);
+    money = money + trade->getProfit();
   }
 
   delete line;

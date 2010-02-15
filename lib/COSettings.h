@@ -93,7 +93,7 @@ class COSettings
     void setData (COParm, QDateTime &);
     void getData (COParm, QString &);
     void setData (COParm, QString &);
-    
+
     void newObject (int);
     void setSaveFlag (int);
     int getSaveFlag ();
@@ -107,7 +107,7 @@ class COSettings
     int isGrabSelected (QPoint &point);
     void getHighLow (double &high, double &low);
     void getInfo (Setting &);
-    
+
   protected:
     QString id;
     QString symbol;
@@ -115,7 +115,6 @@ class COSettings
     QString type;
     QFont font;
     QHash<COParm, QString> settings;
-    QString dateFormat;
     int saveFlag;
     int selected;
     QList<QRegion *> grabHandles;

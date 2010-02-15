@@ -46,6 +46,7 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
     return 1;
 
   BARS bars;
+  bars.turnOffMAs();
   int rc = bars.getIndicator(ind, data);
   if (rc)
   {

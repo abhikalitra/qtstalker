@@ -62,7 +62,6 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   mouseFlag = None;
   crossHairFlag = FALSE;
   chartMenu = 0;
-  drawMode = FALSE;
   crosshairs = TRUE;
   infoFlag = TRUE;
   coSelected = 0;
@@ -86,6 +85,8 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   setMouseTracking(TRUE);
 
   setFocusPolicy(Qt::ClickFocus);
+
+//  externalChartObjectFlag = FALSE;
 }
 
 IndicatorPlot::~IndicatorPlot ()
@@ -138,19 +139,6 @@ void IndicatorPlot::setLogScale (bool d)
 void IndicatorPlot::setDateFlag (bool d)
 {
   dateFlag = d;
-}
-
-void IndicatorPlot::setDrawMode (bool d)
-{
-  drawMode = d;
-
-  if (drawMode)
-    setCursor(QCursor(Qt::ArrowCursor));
-  else
-    setCursor(QCursor(Qt::CrossCursor));
-
-  if (! drawMode && mouseFlag == COSelected && coSelected)
-    mouseFlag = None;
 }
 
 void IndicatorPlot::setInfoFlag (bool d)
@@ -258,45 +246,41 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
   if (! data  || event->button() != Qt::LeftButton)
     return;
 
-  if (! drawMode)
-  {
-    if (crosshairs)
-    {
-      crossHair(event->x(), event->y(), TRUE);
-      updateStatusBar(event->x(), event->y());
-      emit leftMouseButton(event->x(), event->y(), 0);
-    }
-    else
-      updateStatusBar(event->x(), event->y());
-
-    return;
-  }
-
   getXY(event->x(), event->y());
 
-  if (mouseFlag == None)
-  {
-    QHashIterator<QString, COSettings *> it(coList);
-    while (it.hasNext())
-    {
-      it.next();
-      coSelected = it.value();
-      QPoint p(event->x(), event->y());
-      if (coSelected->isSelected(p))
-      {
-        mouseFlag = COSelected;
-	coSelected->setSelected(TRUE);
-        getCOInfo();
-	draw();
-        return;
-      }
-    }
-  }
-
-  QPoint p;
   switch (mouseFlag)
   {
+    case None:
+    {
+      if (crosshairs)
+      {
+        crossHair(event->x(), event->y(), TRUE);
+        updateStatusBar(event->x(), event->y());
+        emit leftMouseButton(event->x(), event->y(), 0);
+      }
+      else
+        updateStatusBar(event->x(), event->y());
+
+      QHashIterator<QString, COSettings *> it(coList);
+      while (it.hasNext())
+      {
+        it.next();
+        coSelected = it.value();
+        QPoint p(event->x(), event->y());
+        if (coSelected->isSelected(p))
+        {
+          mouseFlag = COSelected;
+          coSelected->setSelected(TRUE);
+          getCOInfo();
+	  draw();
+          return;
+        }
+      }
+      break;
+    }
     case COSelected:
+    {
+      QPoint p;
       p.setX(event->x());
       p.setY(event->y());
       moveFlag = coSelected->isGrabSelected(p);
@@ -312,10 +296,13 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
         }
       }
       break;
+    }
     case Moving:
       mouseFlag = COSelected;
       break;
     case ClickWait:
+//      if (externalChartObjectFlag)
+//	emit signalNewExternalChartObjectDone();
       objectClickWait();
       break;
     case ClickWait2:
@@ -332,32 +319,25 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
   if (! data || event->y() <= 0)
     return;
 
-  if (mouseFlag == RubberBand)
+  switch (mouseFlag)
   {
-    rubberBand->setGeometry(QRect(mouseOrigin, event->pos()).normalized());
-    return;
+    case RubberBand:
+      rubberBand->setGeometry(QRect(mouseOrigin, event->pos()).normalized());
+      break;
+    case Moving:
+//    case ClickWait:
+    case ClickWait2:
+      getXY(event->x(), event->y());
+      objectMoving();
+      break;
+    case None:
+      // update the data panel with new data
+      if (infoFlag)
+        getInfo(event->x(), event->y());
+      break;
+    default:
+      break;
   }
-
-  // are we trying to drag a chart object?
-  if (drawMode)
-  {
-    switch (mouseFlag)
-    {
-      case Moving:
-      case ClickWait:
-      case ClickWait2:
-        getXY(event->x(), event->y());
-        objectMoving();
-	return;
-	break;
-      default:
-	break;
-    }
-  }
-
-  // update the data panel with new data
-  if (infoFlag && mouseFlag == None)
-    getInfo(event->x(), event->y());
 }
 
 void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
@@ -365,22 +345,24 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
   if (! data)
     return;
 
-  if (mouseFlag == None && drawMode == FALSE)
+  switch (mouseFlag)
   {
-    rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
-    mouseOrigin = event->pos();
-    rubberBand->setGeometry(QRect(mouseOrigin, QSize()));
-    rubberBand->show();
-    mouseFlag = RubberBand;
-    setCursor(QCursor(Qt::SizeFDiagCursor));
-    return;
+    case None:
+    {
+      rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+      mouseOrigin = event->pos();
+      rubberBand->setGeometry(QRect(mouseOrigin, QSize()));
+      rubberBand->show();
+      mouseFlag = RubberBand;
+      setCursor(QCursor(Qt::SizeFDiagCursor));
+      break;
+    }
+    case COSelected:
+      if (coSelected)
+        slotObjectDialog();
+    default:
+      break;
   }
-
-  if (mouseFlag != COSelected)
-    return;
-
-  if (coSelected)
-    slotObjectDialog();
 }
 
 void IndicatorPlot::mouseReleaseEvent(QMouseEvent *)
@@ -407,12 +389,16 @@ void IndicatorPlot::mouseReleaseEvent(QMouseEvent *)
 
 void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
 {
-  if (drawMode && mouseFlag == COSelected && coSelected)
-    coMenu->exec(QCursor::pos());
-  else
+  switch (mouseFlag)
   {
-    if (menuFlag)
-      showPopupMenu();
+    case COSelected:
+      if (coSelected)
+        coMenu->exec(QCursor::pos());
+      break;
+    default:
+      if (menuFlag)
+        showPopupMenu();
+      break;
   }
 }
 
@@ -887,16 +873,16 @@ void IndicatorPlot::showPopupMenu ()
   chartMenu->clear();
 
   chartObjectMenu = new QMenu(tr("New Chart Object"));
-  chartObjectMenu->addAction(QPixmap(buyarrow), tr("Buy Arrow"), this, SLOT(slotNewBuyArrow()));
-  chartObjectMenu->addAction(QPixmap(fib), tr("Fibonacci Line"), this, SLOT(slotNewFiboline()));
-  chartObjectMenu->addAction(QPixmap(horizontal), tr("Horizontal Line"), this, SLOT(slotNewHorizontalLine()));
-  chartObjectMenu->addAction(QPixmap(sellarrow), tr("Sell Arrow"), this, SLOT(slotNewSellArrow()));
-  chartObjectMenu->addAction(QPixmap(text), tr("Text"), this, SLOT(slotNewText()));
-  chartObjectMenu->addAction(QPixmap(trend), tr("Trend Line"), this, SLOT(slotNewTrendLine()));
-  chartObjectMenu->addAction(QPixmap(vertical), ("Vertical Line"), this, SLOT(slotNewVerticalLine()));
+  chartObjectMenu->addAction(QPixmap(buyarrow_xpm), tr("Buy Arrow"), this, SLOT(slotNewBuyArrow()));
+  chartObjectMenu->addAction(QPixmap(fib_xpm), tr("Fibonacci Line"), this, SLOT(slotNewFiboline()));
+  chartObjectMenu->addAction(QPixmap(horizontal_xpm), tr("Horizontal Line"), this, SLOT(slotNewHorizontalLine()));
+  chartObjectMenu->addAction(QPixmap(sellarrow_xpm), tr("Sell Arrow"), this, SLOT(slotNewSellArrow()));
+  chartObjectMenu->addAction(QPixmap(text_xpm), tr("Text"), this, SLOT(slotNewText()));
+  chartObjectMenu->addAction(QPixmap(trend_xpm), tr("Trend Line"), this, SLOT(slotNewTrendLine()));
+  chartObjectMenu->addAction(QPixmap(vertical_xpm), ("Vertical Line"), this, SLOT(slotNewVerticalLine()));
 
   chartMenu->addMenu(chartObjectMenu);
-  if (! drawMode || ! data)
+  if (! data)
     chartObjectMenu->setEnabled(FALSE);
   else
     chartObjectMenu->setEnabled(TRUE);
@@ -950,11 +936,6 @@ void IndicatorPlot::slotScaleToScreenChanged (bool d)
 {
   setScaleToScreen(d);
   draw();
-}
-
-void IndicatorPlot::slotDrawModeChanged (bool d)
-{
-  setDrawMode(d);
 }
 
 void IndicatorPlot::slotLogScaleChanged (bool d)
@@ -1389,6 +1370,19 @@ void IndicatorPlot::slotNewVerticalLine ()
 {
   slotNewChartObject((int) COSettings::COVerticalLine);
 }
+
+/*
+void IndicatorPlot::setExternalChartObjectFlag (int d)
+{
+  externalChartObjectFlag = d;
+}
+
+void IndicatorPlot::newExternalChartObject (int d)
+{
+  externalChartObjectFlag = TRUE;
+  slotNewChartObject(d);
+}
+*/
 
 void IndicatorPlot::slotNewChartObject (int selection)
 {

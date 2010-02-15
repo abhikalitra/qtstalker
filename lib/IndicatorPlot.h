@@ -1,8 +1,8 @@
 /*
  *  Qtstalker stock charter
- * 
+ *
  *  Copyright (C) 2001-2007 Stefan S. Stratigakos
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
@@ -64,6 +64,7 @@ class IndicatorPlot : public QWidget
     void signalDraw ();
     void signalDateFlag (bool);
     void signalLogFlag (bool);
+//    void signalNewExternalChartObjectDone();
 
   public:
     enum MouseStatus
@@ -89,7 +90,6 @@ class IndicatorPlot : public QWidget
     int convertXToDataIndex (int);
     void setGridFlag (bool);
     void setScaleToScreen (bool);
-    void setDrawMode (bool);
     void setDateFlag (bool);
     void setCrosshairsFlag (bool);
     void setScaler (Scaler &);
@@ -110,7 +110,7 @@ class IndicatorPlot : public QWidget
     void setIndicator (QString &);
     void loadChartObjects ();
     void addLine (PlotLine *);
-    
+
     void objectClickWait ();
     void objectClickWait2 ();
     void drawBuyArrow ();
@@ -125,7 +125,7 @@ class IndicatorPlot : public QWidget
     void fiboLineMoving ();
 
     void drawRubberBand (QRect &r);
-   
+
   public slots:
     void draw();
     void drawRefresh();
@@ -142,7 +142,6 @@ class IndicatorPlot : public QWidget
     void slotSliderChanged (int);
     void slotGridChanged (bool);
     void slotScaleToScreenChanged (bool);
-    void slotDrawModeChanged (bool);
     void slotLogScaleChanged (bool);
     void setInterval(BarData::BarLength);
     void slotNewBuyArrow ();
@@ -153,6 +152,8 @@ class IndicatorPlot : public QWidget
     void slotNewTrendLine ();
     void slotNewVerticalLine ();
     void calculate ();
+//    void newExternalChartObject (int);
+//    void setExternalChartObjectFlag (int);
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -198,7 +199,6 @@ class IndicatorPlot : public QWidget
     bool scaleToScreen;
     bool logScale;
     bool crossHairFlag;
-    bool drawMode;
     bool crosshairs;
     bool infoFlag;
     bool dateFlag;
@@ -226,6 +226,8 @@ class IndicatorPlot : public QWidget
     int tx, ty;
     QRubberBand *rubberBand;
     QPoint mouseOrigin;
+
+//    int externalChartObjectFlag;
 };
 
 #endif

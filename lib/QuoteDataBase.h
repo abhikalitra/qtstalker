@@ -26,23 +26,28 @@
 #include <QStringList>
 #include <QDateTime>
 #include <QHash>
+#include <QList>
 
 #include "BarData.h"
+#include "Bar.h"
 
 
 class QuoteDataBase
 {
   public:
     QuoteDataBase ();
-    void init (QString &plugin, QString &dbFile, QString &host, QString &user, QString &pass);
+    void init (QString &dbFile);
     void transaction ();
     void commit ();
-    void getAllChartsList (QString &sql, QStringList &);
-    void getSearchList (QString &sql, QString &pat, QStringList &l);
-    void getChart (QString &sql, QString &sqlFirstDate, QString &sqlLastDate, BarData *);
-    void getFirstDate (QString &sql, QDateTime &date, QString &symbol);
-    void getLastDate (QString &sql, QDateTime &date, QString &symbol);
-    void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength);
+    void getAllChartsList (QStringList &);
+    void getSearchList (QString &pat, QStringList &l);
+    void getChart (BarData *);
+    void getFirstDate (QString &table, QDateTime &date);
+    void getLastDate (QString &table, QDateTime &date);
+    void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate,
+			   BarData::BarLength barLength);
+    int getTableName (QString &symbol, QString &table);
+    void setChart (QList<Bar> *bars);
 };
 
 #endif

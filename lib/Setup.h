@@ -33,7 +33,6 @@ class Setup
     void setup ();
     void setupConfigDefaults ();
     void setupDirectories ();
-//    void setupQuoteBase ();
     void setupDefaultIndicators ();
 
   protected:

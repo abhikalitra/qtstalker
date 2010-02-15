@@ -21,7 +21,6 @@
 
 #include "SYMBOL.h"
 #include "QuoteDataBase.h"
-#include "Config.h"
 
 #include <QtDebug>
 
@@ -73,12 +72,7 @@ PlotLine * SYMBOL::getSYMBOL (QString &sym, QString &field, QString &length, int
   symbol.setBarsRequested(bars);
 
   QuoteDataBase db;
-  Config config;
-  QString sql, sqlfd, sqlld;
-  config.getData(Config::DbGetSymbol, sql);
-  config.getData(Config::DbFirstDate, sqlfd);
-  config.getData(Config::DbLastDate, sqlld);
-  db.getChart(sql, sqlfd, sqlld, &symbol);
+  db.getChart(&symbol);
 
   BarData::InputType it = symbol.getInputType(field);
   PlotLine *line = symbol.getInput(it);

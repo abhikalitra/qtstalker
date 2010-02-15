@@ -21,7 +21,6 @@
 
 #include "CORREL.h"
 #include "QuoteDataBase.h"
-#include "Config.h"
 
 #include <QtDebug>
 
@@ -59,12 +58,7 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
   bd->setBarsRequested(data->getBarsRequested());
 
   QuoteDataBase db;
-  Config config;
-  QString sql, sqlfd, sqlld;
-  config.getData(Config::DbGetSymbol, sql);
-  config.getData(Config::DbFirstDate, sqlfd);
-  config.getData(Config::DbLastDate, sqlld);
-  db.getChart(sql, sqlfd, sqlld, bd);
+  db.getChart(bd);
 
   PlotLine *in2 = bd->getInput(BarData::Close);
   if (! in2)

@@ -74,6 +74,7 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   }
 
   BARS bars;
+  bars.turnOffMAs();
   bars.getIndicator(ind, data);
 
   settings.getData(Color, s);

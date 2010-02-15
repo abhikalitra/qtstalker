@@ -72,6 +72,7 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
     case 2: // INTERCEPT
     {
       BARS bars;
+      bars.turnOffMAs();
       bars.getIndicator(ind, data);
       break;
     }

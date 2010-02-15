@@ -68,7 +68,6 @@ class QtStalkerTester : public QMainWindow
     void getSettings ();
     void createSignals (BarData *, QList<PlotLine *> &, QHash<int, TestSignal *> &);
     void startTrade (int pos, BarData *data, TestTrade *trade);
-    void currentTrade (int pos, BarData *data, TestTrade *trade);
     void endTrade (int pos, BarData *data, TestTrade *trade);
     void createSummary (QList<TestTrade *> &trades);
     void runTrades (BarData *data, QList<TestTrade *> &trades);
@@ -111,11 +110,15 @@ class QtStalkerTester : public QMainWindow
     QTextEdit *tradeLog;
     QDialogButtonBox *buttonBox;
     QSpinBox *bars;
+    QSpinBox *delay;
     QDoubleSpinBox *entryComm;
     QDoubleSpinBox *exitComm;
     QComboBox *barLength;
     QPushButton *scriptButton;
+    QDoubleSpinBox *account;
+    QDoubleSpinBox *volumePercentage;
 
+    // summary stuff
     QLabel *grossProfit;
     QLabel *netProfit;
     QLabel *maxDrawDown;
@@ -134,6 +137,7 @@ class QtStalkerTester : public QMainWindow
     QLabel *maxLossLong;
     QLabel *maxWinShort;
     QLabel *maxLossShort;
+    QLabel *balance;
 };
 
 #endif

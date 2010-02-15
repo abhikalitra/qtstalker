@@ -30,6 +30,7 @@
 #include <QList>
 #include <QSpinBox>
 #include <QTimer>
+#include <QButtonGroup>
 
 
 #include "Plot.h"
@@ -59,6 +60,8 @@ class QtstalkerApp : public QMainWindow
     void signalDraw (bool);
     void signalNewIndicator ();
     void signalCrossHair (int, int, bool);
+//    void signalNewExternalChartObject (int);
+//    void signalSetExternalChartObject (int);
 
   public:
     enum MenuAction
@@ -71,17 +74,9 @@ class QtstalkerApp : public QMainWindow
       About,
       ScaleToScreen,
       SidePanel,
-      DrawMode,
       Crosshairs,
       Help,
       IndicatorSummary,
-      Compression,
-      CompressionM,
-      CompressionW,
-      CompressionD,
-      Compression60,
-      Compression15,
-      Compression5,
       PS1,
       PS2,
       BarCount,
@@ -121,7 +116,6 @@ class QtstalkerApp : public QMainWindow
     void slotStatusMessage (QString);
     void slotUpdateInfo (Setting *);
     void slotPlotLeftMouseButton (int, int, bool);
-    void slotCrosshairsStatus (bool);
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
     void slotDrawPlots ();
@@ -131,12 +125,6 @@ class QtstalkerApp : public QMainWindow
     void slotHideNav (bool d);
     void ps1ButtonClicked ();
     void ps2ButtonClicked ();
-    void cmpsBtnMClicked();
-    void cmpsBtnWClicked();
-    void cmpsBtnDClicked();
-    void cmpsBtn60Clicked();
-    void cmpsBtn15Clicked();
-    void cmpsBtn5Clicked();
     void slotAddRecentChart (QString);
     void slotZoomIn ();
     void slotZoomOut ();
@@ -147,6 +135,16 @@ class QtstalkerApp : public QMainWindow
     void slotRefreshUpdated (int);
     void loadIndicator (QString &d);
     void refreshIndicator (QString);
+    void cursorButtonPressed (int id);
+
+//    void buyArrowButtonPressed ();
+//    void fiboButtonPressed ();
+//    void horizontalButtonPressed ();
+//    void sellArrowButtonPressed ();
+//    void textButtonPressed ();
+//    void trendButtonPressed ();
+//    void verticalButtonPressed ();
+//    void newExternalChartObjectDone ();
 
   protected:
     void closeEvent(QCloseEvent *event);
@@ -166,7 +164,6 @@ class QtstalkerApp : public QMainWindow
     QStatusBar *statusbar;
     QList<QTabWidget*> tabList;
     QHash<MenuAction, QAction*> actionList;
-    QComboBox *compressionCombo;
     QSpinBox *barCount;
     QSlider *slider;
     QComboBox *recentCharts;
@@ -174,6 +171,8 @@ class QtstalkerApp : public QMainWindow
     int zoomPos;
     QTimer *refreshTimer;
     Assistant *assistant;
+    QButtonGroup *barButtonGroup;
+//    QToolBar *toolBar2;
 };
 
 #endif

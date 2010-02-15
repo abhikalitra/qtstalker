@@ -181,12 +181,10 @@ void ChartPage::updateList ()
   switch (activeSearch)
   {
     case 1:
-      config.getData(Config::DbSearchSymbols, s);
-      db.getSearchList(s, searchString, l);
+      db.getSearchList(searchString, l);
       break;
     default:
-      config.getData(Config::DbAllSymbols, s);
-      db.getAllChartsList(s, l);
+      db.getAllChartsList(l);
       break;
   }
 
@@ -212,8 +210,7 @@ void ChartPage::symbolSearch ()
   QStringList l;
   Config config;
   QString s;
-  config.getData(Config::DbSearchSymbols, s);
-  db.getSearchList(s, searchString, l);
+  db.getSearchList(searchString, l);
 
   nav->clear();
   nav->addItems(l);

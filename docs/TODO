@@ -10,14 +10,10 @@ To Do:
 - update classes with a description of purpose, usage etc.
 - Round off values to lesser precision when displaying in data panel.
 - Improve source code documentation. Javadoc comments are utilised by Doxygen.
-- add security name field to the CSV class.
 - create an integrated indicator editor.
 - add tooltips
 - documentation
 - update docs regarding '-session' command line option
-- fix CSV to handle symbols that begin with a number
-- fix CSV to remove '&' chars
-- fix CSV to output error messages with symbols
 
 
 Maybe some day:

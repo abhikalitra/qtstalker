@@ -20,8 +20,8 @@
  */
 
 #include "Bar.h"
-#include <QtDebug>
 
+#include <QtDebug>
 
 
 Bar::Bar ()
@@ -139,15 +139,7 @@ void Bar::getDateString (QString &d)
 
 void Bar::getDateTimeString (QString &d)
 {
-  QString s;
-  getDateString(s);
-  
-  s.append(" ");
-    
-  QString s2;
-  getTimeString(s2);
-  s.append(s2);
-  d = s;
+  d = date.toString(Qt::ISODate);
 }
 
 void Bar::getTimeString (QString &d)
@@ -165,6 +157,45 @@ void Bar::getSymbol (QString &d)
 {
   d.clear();
   QString k("Symbol");
+  d = data.value(k);
+}
+
+void Bar::setName (QString &d)
+{
+  QString k("Name");
+  data.insert(k, d);
+}
+
+void Bar::getName (QString &d)
+{
+  d.clear();
+  QString k("Name");
+  d = data.value(k);
+}
+
+void Bar::setType (QString &d)
+{
+  QString k("Type");
+  data.insert(k, d);
+}
+
+void Bar::getType (QString &d)
+{
+  d.clear();
+  QString k("Type");
+  d = data.value(k);
+}
+
+void Bar::setExchange (QString &d)
+{
+  QString k("Exchange");
+  data.insert(k, d);
+}
+
+void Bar::getExchange (QString &d)
+{
+  d.clear();
+  QString k("Exchange");
   d = data.value(k);
 }
 
@@ -225,7 +256,7 @@ void Bar::getKeys (QStringList &l)
   {
     i.next();
     l.append(i.key());
-  }  
+  }
 }
 
 void Bar::clear ()

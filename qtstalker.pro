@@ -92,7 +92,7 @@ SUBDIRS += src
 SUBDIRS += tester
 
 # compile CSV app
-SUBDIRS += misc
+SUBDIRS += csv
 
 # install docs and i18n
 SUBDIRS += docs

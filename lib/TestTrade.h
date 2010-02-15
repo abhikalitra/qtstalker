@@ -43,12 +43,14 @@ class TestTrade
     void setType (int);
     int getVolume ();
     void setVolume (int);
+    double getVolumePercentage ();
+    void setVolumePercentage (double);
     double getValue ();
     double getDrawDown ();
     double getProfit ();
     void getEntryLogMessage (QString &);
     void getExitLogMessage (QString &);
-    void update (PlotLine *data);
+    void update (PlotLine *data, double account);
 
   private:
     QDateTime enterDate;
@@ -57,6 +59,7 @@ class TestTrade
     double exitPrice;
     int type;
     int volume;
+    double volumePercentage;
     double drawDown;
     double value;
     double profit;

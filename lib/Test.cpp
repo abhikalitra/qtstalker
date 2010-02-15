@@ -23,12 +23,19 @@
 
 Test::Test ()
 {
+  enterField = 0;
+  exitField = 0;
   commissions = 0;
   grossProfit = 0;
   netProfit = 0;
   totalComm = 0;
-  entryComm = 0;
-  exitComm = 0;
+  entryComm = 10;
+  exitComm = 10;
+  delay = 1;
+  bars = 275;
+  barLength = 6;
+  account = 10000;
+  volumePercentage = 20;
 
   maxDrawDown = 0;
   avgDrawDown = 0;
@@ -45,6 +52,7 @@ Test::Test ()
   maxLossLong = 0;
   maxWinShort = 0;
   maxLossShort = 0;
+  balance = 0;
 }
 
 void Test::getName (QString &d)
@@ -77,22 +85,22 @@ void Test::setSymbol (QString &d)
   symbol = d;
 }
 
-void Test::getEnterField (QString &d)
+int Test::getEnterField ()
 {
-  d = enterField;
+  return enterField;
 }
 
-void Test::setEnterField (QString &d)
+void Test::setEnterField (int d)
 {
   enterField = d;
 }
 
-void Test::getExitField (QString &d)
+int Test::getExitField ()
 {
-  d = exitField;
+  return exitField;
 }
 
-void Test::setExitField (QString &d)
+void Test::setExitField (int d)
 {
   exitField = d;
 }
@@ -137,8 +145,48 @@ void Test::setExitComm (double d)
   exitComm = d;
 }
 
+int Test::getDelay ()
+{
+  return delay;
+}
+
+void Test::setDelay (int d)
+{
+  delay = d;
+}
+
+double Test::getAccount ()
+{
+  return account;
+}
+
+void Test::setAccount (double d)
+{
+  account = d;
+}
+
+double Test::getVolumePercentage ()
+{
+  return volumePercentage;
+}
+
+void Test::setVolumePercentage (double d)
+{
+  volumePercentage = d;
+}
+
 
 //  summary items
+
+void Test::getTradeLog (QString &d)
+{
+  d = tradeLog;
+}
+
+void Test::setTradeLog (QString &d)
+{
+  tradeLog = d;
+}
 
 double Test::getCommissions ()
 {
@@ -328,5 +376,15 @@ double Test::getMaxLossShort ()
 void Test::setMaxLossShort (double d)
 {
   maxLossShort = d;
+}
+
+double Test::getBalance ()
+{
+  return balance;
+}
+
+void Test::setBalance (double d)
+{
+  balance = d;
 }
 

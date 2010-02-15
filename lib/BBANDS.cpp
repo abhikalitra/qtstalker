@@ -78,6 +78,7 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
   }
 
   BARS bars;
+  bars.turnOffMAs();
   rc = bars.getIndicator(ind, data);
   if (rc)
   {

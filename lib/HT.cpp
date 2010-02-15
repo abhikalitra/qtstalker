@@ -162,6 +162,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
       if (method != 3)
       {
         BARS bars;
+        bars.turnOffMAs();
         bars.getIndicator(ind, data);
       }
 
