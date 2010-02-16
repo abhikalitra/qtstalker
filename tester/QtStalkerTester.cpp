@@ -120,7 +120,7 @@ void QtStalkerTester::createRuleTab()
   int col = 0;
 
   // script parms
-  QLabel *label = new QLabel(tr("Script"));
+  QLabel *label = new QLabel(tr("Script Command"));
   grid->addWidget(label, row, col++);
 
 //  scriptButton = new QPushButton;
@@ -650,6 +650,10 @@ void QtStalkerTester::loadTest (QString &s)
 
   volumePercentage->setValue(test.getVolumePercentage());
 
+  trailingCheck->setChecked(test.getTrailingCheck());
+
+  trailing->setValue(test.getTrailingStop());
+
   // summary items
   test.getTradeLog(ts);
   tradeLog->append(ts);
@@ -701,6 +705,10 @@ void QtStalkerTester::getSettings ()
   test.setAccount(account->value());
 
   test.setVolumePercentage(volumePercentage->value());
+
+  test.setTrailingCheck(trailingCheck->isChecked());
+
+  test.setTrailingStop(trailing->value());
 }
 
 void QtStalkerTester::cancelTest ()
@@ -742,86 +750,33 @@ void QtStalkerTester::run ()
 
   ExScript server;
   server.setBarData(data);
+  server.setDeleteFlag(TRUE);
   test.getScript(s);
   server.calculate(s); // we are calling the blocking version of calculate() here
 
   QHash<int, TestSignal *> enterLongSigs;
-  QList<PlotLine *> l;
-  server.getEnterLongList(l);
-  createSignals(data, l, enterLongSigs);
+  PlotLine *l = server.getEnterLong();
+  if (l)
+    createSignals(data, l, enterLongSigs);
 
-  l.clear();
   QHash<int, TestSignal *> exitLongSigs;
-  server.getExitLongList(l);
-  createSignals(data, l, exitLongSigs);
+  l = server.getExitLong();
+  if (l)
+    createSignals(data, l, exitLongSigs);
 
-  l.clear();
   QHash<int, TestSignal *> enterShortSigs;
-  server.getEnterShortList(l);
-  createSignals(data, l, enterShortSigs);
+  l = server.getEnterShort();
+  if (l)
+    createSignals(data, l, enterShortSigs);
 
-  l.clear();
   QHash<int, TestSignal *> exitShortSigs;
-  server.getExitShortList(l);
-  createSignals(data,l, exitShortSigs);
+  l = server.getExitShort();
+  if (l)
+    createSignals(data,l, exitShortSigs);
 
-  int loop;
-  int status = 0;
   QList<TestTrade *> trades;
-  for (loop = 0; loop < data->count(); loop++)
-  {
-    switch (status)
-    {
-      case 1: // currently long, check if we exit trade
-      {
-	TestSignal *sig = exitLongSigs.value(loop);
-	if (sig)
-	{
-	  status = 0; // exit long
-	  TestTrade *trade = trades.at(trades.count() - 1);
-	  endTrade(loop, data, trade);
-	}
-	break;
-      }
-      case 2: // currently short, check if we exit trade
-      {
-	TestSignal *sig = exitShortSigs.value(loop);
-	if (sig)
-	{
-	  status = 0; // exit short
-	  TestTrade *trade = trades.at(trades.count() - 1);
-	  endTrade(loop, data, trade);
-	}
-	break;
-      }
-      default:
-      {
-	TestSignal *sig = enterLongSigs.value(loop);
-	if (sig)
-	{
-	  status = 1; // we are long
-	  TestTrade *trade = new TestTrade;
-	  trade->setType(0);
-          trade->setVolumePercentage(volumePercentage->value());
-	  startTrade(loop, data, trade);
-	  trades.append(trade);
-	}
-
-	sig = enterShortSigs.value(loop);
-	if (sig)
-	{
-	  status = 2; // we are short
-	  TestTrade *trade = new TestTrade;
-	  trade->setType(1);
-          trade->setVolumePercentage(volumePercentage->value());
-	  startTrade(loop, data, trade);
-	  trades.append(trade);
-	}
-
-	break;
-      }
-    }
-  }
+  createTrades(data, trades, 0, enterLongSigs, exitLongSigs);
+  createTrades(data, trades, 1, enterShortSigs, exitShortSigs);
 
   runTrades(data, trades);
 
@@ -835,43 +790,73 @@ void QtStalkerTester::run ()
   qDeleteAll(exitShortSigs);
 }
 
-void QtStalkerTester::createSignals (BarData *data, QList<PlotLine *> &l, QHash<int, TestSignal*> &sigs)
+void QtStalkerTester::createSignals (BarData *data, PlotLine *line, QHash<int, TestSignal*> &sigs)
+{
+  int barLoop = data->count() - line->getSize();
+  if (barLoop < 0)
+  {
+    qDebug() << "QtStalkerTester::createSignals" << line->getSize() << "size > bars size";
+    return;
+  }
+
+  int status = 0;
+  int lineLoop;
+  for (lineLoop = 0; lineLoop < line->getSize(); lineLoop++, barLoop++)
+  {
+    switch (status)
+    {
+      case 1: // we are inside a signal
+        if (line->getData(lineLoop) == 0)
+          status = 0;
+	break;
+      default: // we are outside a signal
+        if (line->getData(lineLoop) == 1)
+        {
+          status = 1;
+          TestSignal *sig = new TestSignal;
+	  sig->setBar(barLoop);
+	  sigs.insert(barLoop, sig);
+	  QDateTime dt;
+	  data->getDate(barLoop, dt);
+	}
+	break;
+    }
+  }
+}
+
+void QtStalkerTester::createTrades (BarData *data, QList<TestTrade *> &trades, int type,
+				    QHash<int, TestSignal *> &enterSigs, QHash<int, TestSignal *> &exitSigs)
 {
   int loop;
-  for (loop = 0; loop < l.count(); loop++)
+  int status = 0;
+  for (loop = 0; loop < data->count(); loop++)
   {
-    PlotLine *line = l.at(loop);
-    int barLoop = data->count() - line->getSize();
-    if (barLoop < 0)
+    switch (status)
     {
-      qDebug() << "QtStalkerTester::createSignals" << line->getSize() << "size > bars size";
-      continue;
-    }
-
-    int status = 0;
-    int lineLoop;
-    for (lineLoop = 0; lineLoop < line->getSize(); lineLoop++, barLoop++)
-    {
-      switch (status)
+      case 1: // currently in trade, check if we exit trade
       {
-        case 1: // we are inside a signal
-          if (line->getData(lineLoop) == 0)
- 	    status = 0;
-	  break;
-        default: // we are outside a signal
-          if (line->getData(lineLoop) == 1)
-	  {
-	    status = 1;
-	    TestSignal *sig = sigs.value(barLoop);
-	    if (! sig)
-	    {
-	      sig = new TestSignal;
-	      sig->setBar(barLoop);
-	      sigs.insert(barLoop, sig);
-	      sig->addSignal();
-	    }
-	  }
-	  break;
+	TestSignal *sig = exitSigs.value(loop);
+	if (sig)
+	{
+	  status = 0; // exit
+	  TestTrade *trade = trades.at(trades.count() - 1);
+	  endTrade(loop, data, trade);
+	}
+	break;
+      }
+      default:
+      {
+	TestSignal *sig = enterSigs.value(loop);
+	if (sig)
+	{
+	  status = 1; // we are in a trade
+	  TestTrade *trade = new TestTrade;
+	  trade->setType(type);
+          trade->setVolumePercentage(volumePercentage->value());
+	  startTrade(loop, data, trade);
+	  trades.append(trade);
+	}
+	break;
       }
     }
   }
@@ -953,6 +938,51 @@ void QtStalkerTester::endTrade (int pos, BarData *data, TestTrade *trade)
   }
 }
 
+void QtStalkerTester::runTrades (BarData *data, QList<TestTrade *> &trades)
+{
+
+  PlotLine *line = 0;
+  switch (exitField->currentIndex())
+  {
+    case 0:
+      line = data->getInput((BarData::Open));
+      break;
+    case 1:
+      line = data->getInput((BarData::High));
+      break;
+    case 2:
+      line = data->getInput((BarData::Low));
+      break;
+    case 4:
+      line = data->getInput((BarData::AveragePrice));
+      break;
+    case 5:
+      line = data->getInput((BarData::MedianPrice));
+      break;
+    case 6:
+      line = data->getInput((BarData::TypicalPrice));
+      break;
+    default:
+      line = data->getInput((BarData::Close));
+      break;
+  }
+  if (! line)
+    return;
+
+  int loop;
+  double money = account->value();
+  for (loop = 0; loop < trades.count(); loop++)
+  {
+    TestTrade *trade = trades.at(loop);
+    if (trailingCheck->isChecked())
+      trade->setTrailing(trailing->value());
+    trade->update(line, data, money);
+    money = money + trade->getProfit();
+  }
+
+  delete line;
+}
+
 void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
 {
   double totalDraw = 0;
@@ -982,6 +1012,7 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
   QString s;
 
   tradeLog->clear();
+  QStringList tradeLogList;
 
   for (loop = 0; loop < trades.count(); loop++)
   {
@@ -1028,13 +1059,13 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
       }
     }
 
-    trade->getEntryLogMessage(s);
-    tradeLog->append(s);
-    trade->getExitLogMessage(s);
-    tradeLog->append(s);
-
-    tbalance = tbalance + trade->getProfit();
+    trade->getLogMessage(s);
+    tradeLogList.append(s);
   }
+
+  tradeLogList.sort();
+  for (loop = 0; loop < tradeLogList.count(); loop++)
+    tradeLog->append(tradeLogList[loop]);
 
   // commissions
   commission = (entryComm->value() + exitComm->value()) * trades.count();
@@ -1058,7 +1089,11 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
 
   // avg win / avg loss ratio
   if (tavgWinTrade && tavgLossTrade)
+  {
     twinLossRatio = tavgWinTrade / tavgLossTrade;
+    if (twinLossRatio < 0)
+      twinLossRatio = twinLossRatio * -1;
+  }
 
   // % profitable
   if (winTrades && trades.count())
@@ -1128,21 +1163,5 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
   saveTest();
 }
 
-void QtStalkerTester::runTrades (BarData *data, QList<TestTrade *> &trades)
-{
-  PlotLine *line = data->getInput((BarData::Close));
-  if (! line)
-    return;
 
-  int loop;
-  double money = account->value();
-  for (loop = 0; loop < trades.count(); loop++)
-  {
-    TestTrade *trade = trades.at(loop);
-    trade->update(line, money);
-    money = money + trade->getProfit();
-  }
-
-  delete line;
-}
 

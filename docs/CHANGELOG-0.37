@@ -254,6 +254,9 @@
 
            Moved the CSV app into its own directory called oddly enough... csv.
 
+20100216:  Applied patch #2951337 (fix trendline when use bar is on). Thanks to John Anderson for the patch.
+
+
 
 
 

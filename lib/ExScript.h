@@ -71,11 +71,10 @@ class ExScript : public QObject
     int getState ();
     void stop ();
     void setDeleteFlag (int);
-    void getEnterLongList (QList<PlotLine *> &);
-    void getExitLongList (QList<PlotLine *> &);
-    void getEnterShortList (QList<PlotLine *> &);
-    void getExitShortList (QList<PlotLine *> &);
-    void clearTestLines ();
+    PlotLine * getEnterLong ();
+    PlotLine * getExitLong ();
+    PlotLine * getEnterShort ();
+    PlotLine * getExitShort ();
 
   public slots:
     void readFromStdout ();
@@ -90,10 +89,10 @@ class ExScript : public QObject
     BarData *data;
     QStringList inputList;
     int deleteFlag;
-    QList<PlotLine *> enterLongList;
-    QList<PlotLine *> exitLongList;
-    QList<PlotLine *> enterShortList;
-    QList<PlotLine *> exitShortList;
+    PlotLine * enterLong;
+    PlotLine * exitLong;
+    PlotLine * enterShort;
+    PlotLine * exitShort;
     int killFlag;
 };
 

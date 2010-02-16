@@ -36,6 +36,8 @@ Test::Test ()
   barLength = 6;
   account = 10000;
   volumePercentage = 20;
+  trailingCheck = 0;
+  trailingStop = 7;
 
   maxDrawDown = 0;
   avgDrawDown = 0;
@@ -174,6 +176,27 @@ void Test::setVolumePercentage (double d)
 {
   volumePercentage = d;
 }
+
+int Test::getTrailingCheck ()
+{
+  return trailingCheck;
+}
+
+void Test::setTrailingCheck (int d)
+{
+  trailingCheck = d;
+}
+
+double Test::getTrailingStop ()
+{
+  return trailingStop;
+}
+
+void Test::setTrailingStop (double d)
+{
+  trailingStop = d;
+}
+
 
 
 //  summary items

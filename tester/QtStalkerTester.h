@@ -66,11 +66,13 @@ class QtStalkerTester : public QMainWindow
     void createReportTab();
     void loadTest (QString &);
     void getSettings ();
-    void createSignals (BarData *, QList<PlotLine *> &, QHash<int, TestSignal *> &);
+    void createSignals (BarData *, PlotLine *line, QHash<int, TestSignal *> &);
     void startTrade (int pos, BarData *data, TestTrade *trade);
     void endTrade (int pos, BarData *data, TestTrade *trade);
     void createSummary (QList<TestTrade *> &trades);
     void runTrades (BarData *data, QList<TestTrade *> &trades);
+    void createTrades (BarData *data, QList<TestTrade *> &trades, int type,
+		       QHash<int, TestSignal *> &enterSigs, QHash<int, TestSignal *> &exitSigs);
 
   public slots:
     void about ();

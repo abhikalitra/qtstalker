@@ -39,6 +39,10 @@ ExScript::ExScript ()
   data = 0;
   deleteFlag = 0;
   killFlag = 0;
+  enterLong = 0;
+  exitLong = 0;
+  enterShort = 0;
+  exitShort = 0;
 
   functionList << "CLEAR";
   functionList << "INDICATOR" << "INDICATOR_GET" << "INDICATOR_GET_INDEX" << "INDICATOR_GET_SIZE";
@@ -57,19 +61,12 @@ ExScript::ExScript ()
 ExScript::~ExScript ()
 {
   clear();
-//  delete proc;
 }
 
 void ExScript::clear ()
 {
-//  killFlag = 0;
-
   if (proc)
-  {
     proc->kill();
-//    delete proc;
-//    proc = 0;
-  }
 
   plotOrder.clear();
 
@@ -77,7 +74,10 @@ void ExScript::clear ()
     qDeleteAll(tlines);
   tlines.clear();
 
-  clearTestLines();
+  enterLong = 0;
+  exitLong = 0;
+  enterShort = 0;
+  exitShort = 0;
 }
 
 void ExScript::setBarData (BarData *d)
@@ -89,11 +89,6 @@ int ExScript::calculate (QString &command)
 {
   // clean up if needed
   clear();
-
-//  proc = new QProcess(this);
-//  connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-//  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
-//  connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 
   // start the process
   proc->start(command, QIODevice::ReadWrite);
@@ -121,11 +116,6 @@ int ExScript::calculate2 (QString &command)
 {
   // clean up if needed
   clear();
-
-//  proc = new QProcess(this);
-//  connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-//  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
-//  connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 
   // start the process
   proc->start(command, QIODevice::ReadWrite);
@@ -174,9 +164,6 @@ void ExScript::readFromStdout ()
       qDeleteAll(tlines);
       tlines.clear();
       plotOrder.clear();
-
-      clearTestLines();
-
       proc->write("0\n");
       break;
     }
@@ -275,28 +262,36 @@ void ExScript::readFromStdout ()
     case TEST_ENTER_LONG:
     {
       SCTest sc;
-      sc.getSig(l, tlines, ba, enterLongList);
+      enterLong = sc.getSig(l, tlines, ba);
+      if (! enterLong)
+	qDebug() << "ExScript::readFromStddout: no enterLong input";
       proc->write(ba);
       break;
     }
     case TEST_EXIT_LONG:
     {
       SCTest sc;
-      sc.getSig(l, tlines, ba, exitLongList);
+      exitLong = sc.getSig(l, tlines, ba);
+      if (! exitLong)
+	qDebug() << "ExScript::readFromStddout: no exitLong input";
       proc->write(ba);
       break;
     }
     case TEST_ENTER_SHORT:
     {
       SCTest sc;
-      sc.getSig(l, tlines, ba, enterShortList);
+      enterShort = sc.getSig(l, tlines, ba);
+      if (! enterShort)
+	qDebug() << "ExScript::readFromStddout: no enterShort input";
       proc->write(ba);
       break;
     }
     case TEST_EXIT_SHORT:
     {
       SCTest sc;
-      sc.getSig(l, tlines, ba, exitShortList);
+      exitShort = sc.getSig(l, tlines, ba);
+      if (! exitShort)
+	qDebug() << "ExScript::readFromStddout: no exitShort input";
       proc->write(ba);
       break;
     }
@@ -369,42 +364,23 @@ void ExScript::setDeleteFlag (int d)
   deleteFlag = d;
 }
 
-void ExScript::getEnterLongList (QList<PlotLine *> &l)
+PlotLine * ExScript::getEnterLong ()
 {
-  l = enterLongList;
-  enterLongList.clear();
+  return enterLong;
 }
 
-void ExScript::getExitLongList (QList<PlotLine *> &l)
+PlotLine * ExScript::getExitLong ()
 {
-  l = exitLongList;
-  exitLongList.clear();
+  return exitLong;
 }
 
-void ExScript::getEnterShortList (QList<PlotLine *> &l)
+PlotLine * ExScript::getEnterShort ()
 {
-  l = enterShortList;
-  enterShortList.clear();
+  return enterShort;
 }
 
-void ExScript::getExitShortList (QList<PlotLine *> &l)
+PlotLine * ExScript::getExitShort ()
 {
-  l = exitShortList;
-  exitShortList.clear();
-}
-
-void ExScript::clearTestLines ()
-{
-  qDeleteAll(enterLongList);
-  enterLongList.clear();
-
-  qDeleteAll(exitLongList);
-  exitLongList.clear();
-
-  qDeleteAll(enterShortList);
-  enterShortList.clear();
-
-  qDeleteAll(exitShortList);
-  exitShortList.clear();
+  return exitShort;
 }
 

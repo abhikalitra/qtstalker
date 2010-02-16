@@ -26,10 +26,21 @@
 #include <QDateTime>
 
 #include "PlotLine.h"
+#include "BarData.h"
 
 class TestTrade
 {
   public:
+    enum Signal
+    {
+      SignalNone,
+      SignalEnterLong,
+      SignalExitLong,
+      SignalEnterShort,
+      SignalTestEnd,
+      SignalTrailingStop
+    };
+
     TestTrade ();
     void getEnterDate (QDateTime &);
     void setEnterDate (QDateTime &, int index);
@@ -48,9 +59,12 @@ class TestTrade
     double getValue ();
     double getDrawDown ();
     double getProfit ();
-    void getEntryLogMessage (QString &);
-    void getExitLogMessage (QString &);
-    void update (PlotLine *data, double account);
+    void getLogMessage (QString &);
+    void update (PlotLine *line, BarData *data, double account);
+    int getSignal ();
+    void setSignal (int);
+    void setTrailing (double);
+    double calculateTrailingStop (double price);
 
   private:
     QDateTime enterDate;
@@ -65,6 +79,8 @@ class TestTrade
     double profit;
     int indexStart;
     int indexEnd;
+    int signal;
+    double trailing;
 };
 
 #endif

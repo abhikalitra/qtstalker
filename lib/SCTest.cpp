@@ -28,7 +28,7 @@ SCTest::SCTest ()
 {
 }
 
-void SCTest::getSig (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba, QList<PlotLine *> &rl)
+PlotLine * SCTest::getSig (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba)
 {
   // format TEST_ENTER_LONG,INPUT
   // format TEST_EXIT_LONG,INPUT
@@ -41,19 +41,19 @@ void SCTest::getSig (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteAr
   if (l.count() != 2)
   {
     qDebug() << "SCTest::enterLong: invalid parm count" << l.count();
-    return;
+    return 0;
   }
 
   PlotLine *line = tlines[l[1]];
   if (! line)
   {
     qDebug() << "SCTest::enterLong: invalid input" << l[1];
-    return;
+    return 0;
   }
-
-  rl.append(line);
 
   ba.clear();
   ba.append("0\n");
+
+  return line;
 }
 

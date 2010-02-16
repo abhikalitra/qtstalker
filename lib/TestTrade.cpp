@@ -22,6 +22,7 @@
 #include "TestTrade.h"
 
 #include <QObject>
+#include <QDebug>
 
 TestTrade::TestTrade ()
 {
@@ -35,6 +36,8 @@ TestTrade::TestTrade ()
   profit = 0;
   indexStart = 0;
   indexEnd = 0;
+  signal = 0;
+  trailing = 0;
 }
 
 void TestTrade::getEnterDate (QDateTime &d)
@@ -124,59 +127,51 @@ double TestTrade::getProfit ()
   return profit;
 }
 
-void TestTrade::getEntryLogMessage (QString &d)
+void TestTrade::getLogMessage (QString &d)
 {
   QDateTime dt;
   getEnterDate(dt);
   d = dt.toString(Qt::ISODate);
 
   if (getType() == 0)
-  {
     d.append(QObject::tr(" Enter Long: "));
-    d.append(QString::number(getVolume()));
-    d.append(QObject::tr(" at "));
-    d.append(QString::number(getEnterPrice()));
-  }
   else
-  {
     d.append(QObject::tr(" Enter Short: "));
-    d.append(QString::number(getVolume()));
-    d.append(QObject::tr(" at "));
-    d.append(QString::number(getEnterPrice()));
-  }
-}
 
-void TestTrade::getExitLogMessage (QString &d)
-{
-  QDateTime dt;
+  d.append(QString::number(getVolume()));
+  d.append(QObject::tr(" at "));
+  d.append(QString::number(getEnterPrice()));
+
+  d.append("  ");
+
   getExitDate(dt);
-  d = dt.toString(Qt::ISODate);
+  d.append(dt.toString(Qt::ISODate));
 
-  if (getType() == 0)
+  switch ((Signal) signal)
   {
-    d.append(QObject::tr(" Exit Long: "));
-    d.append(QString::number(getVolume()));
-    d.append(QObject::tr(" at "));
-    d.append(QString::number(getExitPrice()));
-    if (getProfit() >= 0)
-      d.append(QObject::tr(" with a profit of $") + QString::number(getProfit()));
-    else
-      d.append(QObject::tr(" with a loss of $") + QString::number(getProfit()));
+    case SignalTestEnd:
+      d.append(QObject::tr(" Test End: "));
+      break;
+    case SignalTrailingStop:
+      d.append(QObject::tr(" Trailing Stop: "));
+      break;
+    default:
+      if (getType() == 0)
+        d.append(QObject::tr(" Exit Long: "));
+      else
+        d.append(QObject::tr(" Exit Short: "));
+      break;
   }
+
+  d.append(QObject::tr(" at "));
+  d.append(QString::number(getExitPrice()));
+  if (getProfit() >= 0)
+    d.append(QObject::tr(" with a profit of $") + QString::number(getProfit()));
   else
-  {
-    d.append(QObject::tr(" Exit Short: "));
-    d.append(QString::number(getVolume()));
-    d.append(QObject::tr(" at "));
-    d.append(QString::number(getExitPrice()));
-    if (getProfit() >= 0)
-      d.append(QObject::tr(" with a profit of $") + QString::number(getProfit()));
-    else
-      d.append(QObject::tr(" with a loss of $") + QString::number(getProfit()));
-  }
+    d.append(QObject::tr(" with a loss of $") + QString::number(getProfit()));
 }
 
-void TestTrade::update (PlotLine *data, double account)
+void TestTrade::update (PlotLine *line, BarData *data, double account)
 {
   if (volumePercentage > 0 && account > 0)
   {
@@ -186,11 +181,30 @@ void TestTrade::update (PlotLine *data, double account)
   else
     volume = 1;
 
+  // check if we have an exit price
+  if (indexEnd == 0)
+  {
+    // no exit signal provided, we exit on last data bar
+    indexEnd = line->getSize() - 1;
+    exitPrice = line->getData(indexEnd);
+    data->getDate(indexEnd, exitDate);
+    signal = (int) SignalTestEnd;
+  }
+  else
+    signal = (int) SignalExitLong;
+
+  qDebug() << indexStart << enterDate << enterPrice << indexEnd << exitDate << exitPrice;
+
+
+  double trail = 0;
+  if (trailing)
+    trail = calculateTrailingStop(enterPrice);
+
   int loop;
   for (loop = indexStart; loop <= indexEnd; loop++)
   {
     double ev = enterPrice * volume;
-    value = data->getData(loop) * volume;
+    value = line->getData(loop) * volume;
 
     if (type == 0)
       profit = value - ev;
@@ -199,7 +213,68 @@ void TestTrade::update (PlotLine *data, double account)
 
     if (profit < drawDown)
       drawDown = profit;
+
+    // check trailing stop if set
+    if (trailing)
+    {
+      double td = calculateTrailingStop(line->getData(loop));
+
+      // long
+      if (type == 0)
+      {
+        if (line->getData(loop) < trail)
+        {
+          signal = (int) SignalTrailingStop;
+	  exitPrice = line->getData(loop);
+	  data->getDate(loop, exitDate);
+	  return;
+        }
+
+        if (td > trail)
+	  trail = td;
+      }
+      else
+      {
+	// short
+        if (line->getData(loop) > trail)
+        {
+          signal = (int) SignalTrailingStop;
+	  exitPrice = line->getData(loop);
+	  data->getDate(loop, exitDate);
+	  return;
+        }
+
+        if (td < trail)
+	  trail = td;
+      }
+    }
   }
+}
+
+int TestTrade::getSignal ()
+{
+  return signal;
+}
+
+void TestTrade::setSignal (int d)
+{
+  signal = d;
+}
+
+void TestTrade::setTrailing (double d)
+{
+  trailing = d;
+}
+
+double TestTrade::calculateTrailingStop (double price)
+{
+  double ts = 0;
+  if (type == 0)
+    ts = price * (1 - (trailing / 100));
+  else
+    ts = price * (1 + (trailing / 100));
+
+  return ts;
 }
 
 

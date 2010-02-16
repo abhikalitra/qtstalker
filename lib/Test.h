@@ -52,6 +52,10 @@ class Test
     void setAccount (double);
     double getVolumePercentage ();
     void setVolumePercentage (double);
+    int getTrailingCheck ();
+    void setTrailingCheck (int);
+    double getTrailingStop ();
+    void setTrailingStop (double);
 
     // summary stuff
     void getTradeLog (QString &);
@@ -111,6 +115,8 @@ class Test
     int delay;
     double account;
     double volumePercentage;
+    int trailingCheck;
+    double trailingStop;
 
     // summary data
     QString tradeLog;

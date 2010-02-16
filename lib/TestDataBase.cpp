@@ -70,6 +70,8 @@ void TestDataBase::init ()
   s.append(",delay INT");
   s.append(",account REAL");
   s.append(",volumePercentage REAL");
+  s.append(",trailingStop REAL");
+  s.append(",trailingCheck INT");
 
   // summary data
   s.append(",grossProfit REAL");
@@ -161,6 +163,8 @@ void TestDataBase::getTest (Test &test)
     test.setDelay(q.value(col++).toInt());
     test.setAccount(q.value(col++).toDouble());
     test.setVolumePercentage(q.value(col++).toDouble());
+    test.setTrailingStop(q.value(col++).toDouble());
+    test.setTrailingCheck(q.value(col++).toInt());
 
     // summary stuff
     test.setGrossProfit(q.value(col++).toDouble());
@@ -216,6 +220,8 @@ void TestDataBase::setTest (Test &test)
   s.append("," + QString::number(test.getDelay()));
   s.append("," + QString::number(test.getAccount()));
   s.append("," + QString::number(test.getVolumePercentage()));
+  s.append("," + QString::number(test.getTrailingStop()));
+  s.append("," + QString::number(test.getTrailingCheck()));
 
   // summary stuff
   s.append("," + QString::number(test.getGrossProfit()));

@@ -45,6 +45,7 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <math.h> // only for fabs()
+#include <iostream>
 
 
 IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
@@ -1983,26 +1984,28 @@ void IndicatorPlot::drawTrendLine ()
     QString bar;
     coDraw->getData(COSettings::COBarField, bar);
 
-    if (bar == tr("Open"))
+    QStringList l;
+    l << tr("Open") << tr("High") << tr("Low") << tr("Close");
+    switch (l.indexOf(bar))
     {
-      y = scaler.convertToY(data->getOpen(i));
-      y2 = scaler.convertToY(data->getOpen(i2));
+      case 0: // open
+        y = scaler.convertToY(data->getOpen(i));
+        y2 = scaler.convertToY(data->getOpen(i2));
+	break;
+      case 1: // high
+        y = scaler.convertToY(data->getHigh(i));
+        y2 = scaler.convertToY(data->getHigh(i2));
+	break;
+      case 2: // low
+        y = scaler.convertToY(data->getLow(i));
+        y2 = scaler.convertToY(data->getLow(i2));
+	break;
+      default:
+        // assume Close, for now. Need to display a warning.
+        y = scaler.convertToY(data->getClose(i));
+        y2 = scaler.convertToY(data->getClose(i2));
+	break;
     }
-
-    if (bar == tr("High"))
-    {
-      y = scaler.convertToY(data->getHigh(i));
-      y2 = scaler.convertToY(data->getHigh(i2));
-    }
-
-    if (bar == tr("Low"))
-    {
-      y = scaler.convertToY(data->getLow(i));
-      y2 = scaler.convertToY(data->getLow(i2));
-    }
-
-    y = scaler.convertToY(data->getClose(i));
-    y2 = scaler.convertToY(data->getClose(i2));
   }
   else
   {

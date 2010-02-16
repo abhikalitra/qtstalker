@@ -34,7 +34,7 @@ class SCTest
 {
   public:
     SCTest ();
-    void getSig (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba, QList<PlotLine *> &rl);
+    PlotLine * getSig (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
 
   private:
 };
