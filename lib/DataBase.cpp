@@ -21,8 +21,8 @@
 
 #include "DataBase.h"
 #include "Bar.h"
-//#include "Config.h"
 #include "Setting.h"
+#include "COFactory.h"
 
 #include <QtDebug>
 #include <QtSql>
@@ -73,8 +73,25 @@ void DataBase::init ()
   s.append("id INT PRIMARY KEY");
   s.append(", symbol TEXT");
   s.append(", indicator TEXT");
-  s.append(", type TEXT");
-  s.append(", settings TEXT");
+  s.append(", type INT");
+  s.append(", color TEXT");
+  s.append(", date TEXT");
+  s.append(", date2 TEXT");
+  s.append(", price REAL");
+  s.append(", price2 REAL");
+  s.append(", high REAL");
+  s.append(", low REAL");
+  s.append(", font TEXT");
+  s.append(", label TEXT");
+  s.append(", extend INT");
+  s.append(", line1 REAL");
+  s.append(", line2 REAL");
+  s.append(", line3 REAL");
+  s.append(", line4 REAL");
+  s.append(", line5 REAL");
+  s.append(", line6 REAL");
+  s.append(", barField TEXT");
+  s.append(", useBar INT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -408,10 +425,10 @@ void DataBase::deleteChartObject (QString &id)
   }
 }
 
-void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QString, COSettings *> &list)
+void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QString, BaseCO *> &list)
 {
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT id,symbol,indicator,type,settings FROM chartObjects WHERE symbol='" + symbol + "' AND indicator='" + indicator + "'";
+  QString s = "SELECT * FROM chartObjects WHERE symbol='" + symbol + "' AND indicator='" + indicator + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -421,49 +438,38 @@ void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QStri
 
   while (q.next())
   {
-    COSettings *co = new COSettings(q.value(0).toString(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString());
-    QString ts = q.value(4).toString();
-    co->parse(ts);
-    list.insert(q.value(0).toString(), co);
+    Setting set;
+    int loop;
+    for (loop = (int) BaseCO::ParmID; loop <= BaseCO::ParmUseBar; loop++)
+    {
+      QString k = QString::number(loop);
+      QString d = q.value(loop).toString();
+      set.setData(k, d);
+    }
+
+    COFactory fac;
+    BaseCO *co = fac.getCO(q.value(1).toInt());
+    if (! co)
+    {
+      qDebug() << "DataBase::getChartObjects: error creating co";
+      continue;
+    }
+
+    co->setSettings(set);
+    list.insert(q.value(1).toString(), co);
   }
 }
 
-void DataBase::setChartObject (COSettings *co)
+void DataBase::setChartObject (BaseCO *co)
 {
-  QString id;
-  co->getData(COSettings::COID, id);
-
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT id FROM chartObjects WHERE id=" + id;
+  QString s;
+  co->getSettings(s);
   q.exec(s);
   if (q.lastError().isValid())
   {
     qDebug() << "DataBase::setChartObject: " << q.lastError().text();
     return;
-  }
-
-  if (q.next())
-  {
-    QString settings;
-    co->getSettings(settings);
-
-    s = "UPDATE chartObjects SET settings='" + settings + "' WHERE id=" + id;
-    q.exec(s);
-    if (q.lastError().isValid())
-      qDebug() << "DataBase::setChartObject: " << q.lastError().text();
-  }
-  else
-  {
-    QString symbol, indicator, type, settings;
-    co->getData(COSettings::COSymbol, symbol);
-    co->getData(COSettings::COIndicator, indicator);
-    co->getData(COSettings::COCOType, type);
-    co->getSettings(settings);
-
-    s = "INSERT OR REPLACE INTO chartObjects VALUES (" + id + ",'" + symbol + "','" + indicator + "','" + type + "','" + settings + "')";
-    q.exec(s);
-    if (q.lastError().isValid())
-      qDebug() << "DataBase::setChartObject: " << q.lastError().text();
   }
 }
 

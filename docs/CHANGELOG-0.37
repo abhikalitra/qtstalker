@@ -256,6 +256,13 @@
 
 20100216:  Applied patch #2951337 (fix trendline when use bar is on). Thanks to John Anderson for the patch.
 
+20100217:  Overhauled the chart objects. Split them off into separate classes...again :-( Code clean up
+           and simpler interface.
+
+           Renamed FiboLine chart object to Retracement (which is more accurate).
+
+
+
 
 
 

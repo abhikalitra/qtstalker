@@ -2,133 +2,9 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>CODialog</name>
+    <name>BuyArrow</name>
     <message>
-        <source>Edit Buy Arrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Sell Arrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Parms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Horizontal Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Fibo Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High Point</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low Point</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Trend Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Bar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Vertical Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Item modified. Are you sure you want to discard changes?</source>
+        <source>Select point to place Buy Arrow...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -254,6 +130,13 @@ a partial match like %BM or %IBM%</source>
     </message>
 </context>
 <context>
+    <name>HorizontalLine</name>
+    <message>
+        <source>Select point to place Horizontal Line...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IndicatorPage</name>
     <message>
         <source>Qtstalker: Error</source>
@@ -348,10 +231,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Fibonacci Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Horizontal Line</source>
         <translation type="unfinished"></translation>
     </message>
@@ -376,51 +255,7 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select point to place Buy Arrow...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Fibo Line high point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place Horizontal Line...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place Sell Arrow...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place Text...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Trend Line starting point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place Vertical Line...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select FiboLine low point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select TrendLine ending point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -433,6 +268,14 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>New Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Retracement low point...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -479,42 +322,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Quit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Side Panel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Grid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scale to Screen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CrossHair</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MainToolbar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ChartToolbar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit Preferences</source>
         <translation type="unfinished"></translation>
     </message>
@@ -540,42 +347,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Db Password</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Draw Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Data Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Monthly Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Weekly Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Daily Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>60 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>15 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>5 Minute Bars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -621,56 +392,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>All Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The SQL command to list all symbols in the database.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The SQL command to search for specific symbol(s) in the database.
-% is used for globbing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>First Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The SQL command to return the earliest date for $symbol.
-$symbol is the symbol name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Last Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The SQL command to return the most recent date for $symbol.
-$symbol is the symbol name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Get Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The SQL command to return quotes.
-$symbol is the symbol name.
-$sd is the first date.
-$ed is the last date.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SQL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Background color for charts.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -691,87 +412,11 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select if you want the Quit button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Preferences button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Side Panel button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Grid button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Scale to Screen button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Crosshair button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Draw Mode button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the New Indicator button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Data Window button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Help button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Monthly Bars button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Weekly Bars button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Daily Bars button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the 60 Minute Bars button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the 15 Minute Bars button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the 5 Minute Bars button to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Recent Charts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Recent Charts list to appear on the toolbar.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Refresh Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Refresh chart every x minutes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select if you want the Refresh Chart button to appear on the toolbar.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -891,10 +536,6 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fibo Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1541,15 +1182,71 @@ $ed is the last date.</source>
         <source> Exit Short: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Buy Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Horizontal Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Sell Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Test End: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Trailing Stop: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Vertical Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TrendLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit TrendLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtStalkerTester</name>
     <message>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1752,6 +1449,26 @@ $ed is the last date.</source>
         <source>Invalid symbol setting.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Script Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trade Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume Percentage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Account Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -1832,22 +1549,6 @@ $ed is the last date.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Toggle Dra&amp;w Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle drawing mode (Ctrl+0)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle Cross&amp;hairs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle crosshairs (Ctrl+6)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1865,34 +1566,6 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Length (Compression)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Monthly Compression</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Weekly Compression</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Daily Compression</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>60min Compression</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>15min Compression</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>5min Compression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1945,6 +1618,57 @@ $ed is the last date.</source>
     </message>
     <message>
         <source>Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Crosshairs Cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Monthly Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Weekly Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Daily Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>60 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>30 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>15 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>10 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>5 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Retracement</name>
+    <message>
+        <source>Select Retracement high point...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2034,6 +1758,34 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>&amp;Remove Script From Queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SellArrow</name>
+    <message>
+        <source>Select point to place Sell Arrow...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Text</name>
+    <message>
+        <source>Select point to place Text...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TrendLine</name>
+    <message>
+        <source>Select Trend Line starting point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VerticalLine</name>
+    <message>
+        <source>Select point to place Vertical Line...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

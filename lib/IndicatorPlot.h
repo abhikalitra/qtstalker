@@ -43,13 +43,9 @@
 #include <QRect>
 
 #include "PlotLine.h"
-#include "COSettings.h"
 #include "Scaler.h"
 #include "BarData.h"
-
-#define HANDLE_WIDTH 6
-
-
+#include "BaseCO.h"
 
 class IndicatorPlot : public QWidget
 {
@@ -110,20 +106,6 @@ class IndicatorPlot : public QWidget
     void setIndicator (QString &);
     void loadChartObjects ();
     void addLine (PlotLine *);
-
-    void objectClickWait ();
-    void objectClickWait2 ();
-    void drawBuyArrow ();
-    void drawSellArrow ();
-    void drawText ();
-    void drawFiboLine ();
-    void drawCOHorizontalLine ();
-    void drawTrendLine ();
-    void drawVerticalLine ();
-    void objectMoving ();
-    void trendLineMoving ();
-    void fiboLineMoving ();
-
     void drawRubberBand (QRect &r);
 
   public slots:
@@ -145,7 +127,7 @@ class IndicatorPlot : public QWidget
     void slotLogScaleChanged (bool);
     void setInterval(BarData::BarLength);
     void slotNewBuyArrow ();
-    void slotNewFiboline ();
+    void slotNewRetracement ();
     void slotNewHorizontalLine ();
     void slotNewSellArrow ();
     void slotNewText ();
@@ -209,9 +191,9 @@ class IndicatorPlot : public QWidget
     double y1;
     QDateTime x1;
     MouseStatus mouseFlag;
-    QHash<QString, COSettings *> coList;
-    COSettings *coSelected;
-    COSettings *coDraw;
+    QHash<QString, BaseCO *> coList;
+    BaseCO *coSelected;
+    BaseCO *coDraw;
     QString indicator;
     BarData *data;
     QVector<int> xGrid;
@@ -221,7 +203,6 @@ class IndicatorPlot : public QWidget
     QList<PlotLine *> plotList;
     QString chartSymbol;
     int moveFlag;
-    QString dateFormat;
 
     int tx, ty;
     QRubberBand *rubberBand;

@@ -422,53 +422,53 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::DefaultVerticalLineColor, d);
   }
 
-  config.getData(Config::DefaultFiboLineColor, d);
+  config.getData(Config::DefaultRetracementColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    config.setData(Config::DefaultFiboLineColor, d);
+    config.setData(Config::DefaultRetracementColor, d);
   }
 
-  config.getData(Config::DefaultFiboLine1, d);
+  config.getData(Config::DefaultRetracementLine1, d);
   if (d.isEmpty())
   {
     d = "0.382";
-    config.setData(Config::DefaultFiboLine1, d);
+    config.setData(Config::DefaultRetracementLine1, d);
   }
 
-  config.getData(Config::DefaultFiboLine2, d);
+  config.getData(Config::DefaultRetracementLine2, d);
   if (d.isEmpty())
   {
     d = "0.5";
-    config.setData(Config::DefaultFiboLine2, d);
+    config.setData(Config::DefaultRetracementLine2, d);
   }
 
-  config.getData(Config::DefaultFiboLine3, d);
+  config.getData(Config::DefaultRetracementLine3, d);
   if (d.isEmpty())
   {
     d = "0.618";
-    config.setData(Config::DefaultFiboLine3, d);
+    config.setData(Config::DefaultRetracementLine3, d);
   }
 
-  config.getData(Config::DefaultFiboLine4, d);
+  config.getData(Config::DefaultRetracementLine4, d);
   if (d.isEmpty())
   {
     d = "0";
-    config.setData(Config::DefaultFiboLine4, d);
+    config.setData(Config::DefaultRetracementLine4, d);
   }
 
-  config.getData(Config::DefaultFiboLine5, d);
+  config.getData(Config::DefaultRetracementLine5, d);
   if (d.isEmpty())
   {
     d = "0";
-    config.setData(Config::DefaultFiboLine5, d);
+    config.setData(Config::DefaultRetracementLine5, d);
   }
 
-  config.getData(Config::DefaultFiboLine6, d);
+  config.getData(Config::DefaultRetracementLine6, d);
   if (d.isEmpty())
   {
     d = "0";
-    config.setData(Config::DefaultFiboLine6, d);
+    config.setData(Config::DefaultRetracementLine6, d);
   }
 
   config.getData(Config::DefaultTextColor, d);
