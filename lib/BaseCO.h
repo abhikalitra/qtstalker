@@ -30,10 +30,11 @@
 #include <QDateTime>
 #include <QColor>
 #include <QObject>
+#include <QSqlQuery>
 
-#include "Setting.h"
 #include "BarData.h"
 #include "Scaler.h"
+#include "Setting.h"
 
 class BaseCO : public QObject
 {
@@ -54,32 +55,6 @@ class BaseCO : public QObject
       COVerticalLine
     };
 
-    enum Parm
-    {
-      ParmID,
-      ParmSymbol,
-      ParmIndicator,
-      ParmType,
-      ParmColor,
-      ParmDate,
-      ParmDate2,
-      ParmPrice,
-      ParmPrice2,
-      ParmHigh,
-      ParmLow,
-      ParmFont,
-      ParmLabel,
-      ParmExtend,
-      ParmLine1,
-      ParmLine2,
-      ParmLine3,
-      ParmLine4,
-      ParmLine5,
-      ParmLine6,
-      ParmBarField,
-      ParmUseBar
-    };
-
     BaseCO ();
     virtual ~BaseCO ();
     virtual void draw (QPixmap &, BarData *data, int startX, int pixelspace, int startIndex,
@@ -93,7 +68,7 @@ class BaseCO : public QObject
     virtual void getDate2 (QDateTime &);
     virtual void setPrice (double);
     virtual void setPrice2 (double);
-    virtual void setSettings (Setting &);
+    virtual void setSettings (QSqlQuery &q);
     virtual void getSettings (QString &);
     virtual void create (QString &_id, QString &_symbol, QString &_indicator);
     virtual int create2 (QDateTime &x, double y);

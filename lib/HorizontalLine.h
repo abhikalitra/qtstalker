@@ -29,13 +29,15 @@
 
 class HorizontalLine : public BaseCO
 {
+  Q_OBJECT
+
   public:
     HorizontalLine ();
     void draw (QPixmap &buffer, BarData *, int, int, int, Scaler &scaler);
     void getInfo (Setting &);
     void dialog ();
     void setPrice (double);
-    void setSettings (Setting &);
+    void setSettings (QSqlQuery &q);
     void getSettings (QString &);
     void create (QString &_id, QString &_symbol, QString &_indicator);
     int create2 (QDateTime &x, double y);

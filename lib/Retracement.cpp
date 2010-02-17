@@ -24,7 +24,6 @@
 #include "PrefDialog.h"
 #include "Config.h"
 
-#include <QObject>
 #include <QPainter>
 
 Retracement::Retracement ()
@@ -169,39 +168,39 @@ void Retracement::draw (QPixmap &buffer, BarData *data, int startX, int pixelspa
 
 void Retracement::getInfo (Setting &info)
 {
-  QString k = QObject::tr("Type");
-  QString d = QObject::tr("Retracement");
+  QString k = tr("Type");
+  QString d = tr("Retracement");
   info.setData(k, d);
 
-  k = QObject::tr("High Point");
+  k = tr("High Point");
   d = QString::number(high);
   info.setData(k, d);
 
-  k = QObject::tr("Low Point");
+  k = tr("Low Point");
   d = QString::number(low);
   info.setData(k, d);
 
-  k = QObject::tr("Line 1");
+  k = tr("Line 1");
   d = QString::number(line1);
   info.setData(k, d);
 
-  k = QObject::tr("Line 2");
+  k = tr("Line 2");
   d = QString::number(line2);
   info.setData(k, d);
 
-  k = QObject::tr("Line 3");
+  k = tr("Line 3");
   d = QString::number(line3);
   info.setData(k, d);
 
-  k = QObject::tr("Line 4");
+  k = tr("Line 4");
   d = QString::number(line4);
   info.setData(k, d);
 
-  k = QObject::tr("Line 5");
+  k = tr("Line 5");
   d = QString::number(line5);
   info.setData(k, d);
 
-  k = QObject::tr("Line 6");
+  k = tr("Line 6");
   d = QString::number(line6);
   info.setData(k, d);
 }
@@ -209,44 +208,44 @@ void Retracement::getInfo (Setting &info)
 void Retracement::dialog ()
 {
   PrefDialog *dialog = new PrefDialog;
-  QString s = QObject::tr("Edit Retracement");
+  QString s = tr("Edit Retracement");
   dialog->setWindowTitle(s);
-  s = QObject::tr("Settings");
+  s = tr("Settings");
   int page = 0;
   dialog->addPage(page, s);
 
-  s = QObject::tr("Color");
+  s = tr("Color");
   dialog->addColorItem(0, page, s, color);
 
-  s = QObject::tr("High Point");
+  s = tr("High Point");
   dialog->addDoubleItem(1, page, s, high);
 
-  s = QObject::tr("Low Point");
+  s = tr("Low Point");
   dialog->addDoubleItem(2, page, s, low);
 
-  s = QObject::tr("Line 1");
+  s = tr("Line 1");
   dialog->addDoubleItem(3, page, s, line1);
 
-  s = QObject::tr("Line 2");
+  s = tr("Line 2");
   dialog->addDoubleItem(4, page, s, line2);
 
-  s = QObject::tr("Line 3");
+  s = tr("Line 3");
   dialog->addDoubleItem(5, page, s, line3);
 
-  s = QObject::tr("Line 4");
+  s = tr("Line 4");
   dialog->addDoubleItem(6, page, s, line4);
 
-  s = QObject::tr("Line 5");
+  s = tr("Line 5");
   dialog->addDoubleItem(7, page, s, line5);
 
-  s = QObject::tr("Line 6");
+  s = tr("Line 6");
   dialog->addDoubleItem(8, page, s, line6);
 
-  s = QObject::tr("Extend");
+  s = tr("Extend");
   dialog->addCheckItem(9, page, s, extend);
 
   int def = FALSE;
-  s = QObject::tr("Set Default");
+  s = tr("Set Default");
   dialog->addCheckItem(10, page, s, def);
 
   int rc = dialog->exec();
@@ -304,47 +303,23 @@ void Retracement::getDate2 (QDateTime &d)
   d = date2;
 }
 
-void Retracement::setSettings (Setting &set)
+void Retracement::setSettings (QSqlQuery &q)
 {
-  QString k = QString::number(ParmColor);
-  QString d;
-  set.getData(k, d);
-  color.setNamedColor(d);
-
-  k = QString::number(ParmHigh);
-  high = set.getDouble(k);
-
-  k = QString::number(ParmLow);
-  low = set.getDouble(k);
-
-  k = QString::number(ParmLine1);
-  line1 = set.getDouble(k);
-
-  k = QString::number(ParmLine2);
-  line2 = set.getDouble(k);
-
-  k = QString::number(ParmLine3);
-  line3 = set.getDouble(k);
-
-  k = QString::number(ParmLine4);
-  line4 = set.getDouble(k);
-
-  k = QString::number(ParmLine5);
-  line5 = set.getDouble(k);
-
-  k = QString::number(ParmLine6);
-  line6 = set.getDouble(k);
-
-  k = QString::number(ParmExtend);
-  extend = set.getInt(k);
-
-  k = QString::number(ParmDate);
-  set.getData(k, d);
-  date = QDateTime::fromString(d, Qt::ISODate);
-
-  k = QString::number(ParmDate2);
-  set.getData(k, d);
-  date2 = QDateTime::fromString(d, Qt::ISODate);
+  id = q.value(0).toString();
+  symbol = q.value(1).toString();
+  indicator = q.value(2).toString();
+  color.setNamedColor(q.value(4).toString());
+  date = q.value(5).toDateTime();
+  date2 = q.value(6).toDateTime();
+  high = q.value(9).toDouble();
+  low = q.value(10).toDouble();
+  line1 = q.value(14).toDouble();
+  line2 = q.value(15).toDouble();
+  line3 = q.value(16).toDouble();
+  line4 = q.value(17).toDouble();
+  line5 = q.value(18).toDouble();
+  line6 = q.value(19).toDouble();
+  extend = q.value(13).toInt();
 }
 
 void Retracement::getSettings (QString &set)

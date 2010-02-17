@@ -28,6 +28,8 @@
 
 class TrendLine : public BaseCO
 {
+  Q_OBJECT
+
   public:
     TrendLine ();
     void draw (QPixmap &buffer, BarData *data, int startX, int pixelspace, int startIndex, Scaler &scaler);
@@ -40,7 +42,7 @@ class TrendLine : public BaseCO
     void setPrice (double);
     void setPrice2 (double);
     void getHighLow (double &h, double &l);
-    void setSettings (Setting &);
+    void setSettings (QSqlQuery &q);
     void getSettings (QString &);
     void create (QString &_id, QString &_symbol, QString &_indicator);
     int create2 (QDateTime &x, double y);

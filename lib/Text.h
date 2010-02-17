@@ -28,6 +28,8 @@
 
 class Text : public BaseCO
 {
+  Q_OBJECT
+
   public:
     Text ();
     void draw (QPixmap &buffer, BarData *data, int startX, int pixelspace, int startIndex, Scaler &scaler);
@@ -35,7 +37,7 @@ class Text : public BaseCO
     void dialog ();
     void setDate (QDateTime &);
     void setPrice (double);
-    void setSettings (Setting &);
+    void setSettings (QSqlQuery &q);
     void getSettings (QString &);
     void create (QString &_id, QString &_symbol, QString &_indicator);
     int create2 (QDateTime &x, double y);

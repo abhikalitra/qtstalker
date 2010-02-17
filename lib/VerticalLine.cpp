@@ -24,7 +24,6 @@
 #include "PrefDialog.h"
 #include "Config.h"
 
-#include <QObject>
 #include <QPainter>
 
 VerticalLine::VerticalLine ()
@@ -85,11 +84,11 @@ void VerticalLine::draw (QPixmap &buffer, BarData *data, int startX, int pixelsp
 
 void VerticalLine::getInfo (Setting &info)
 {
-  QString k = QObject::tr("Type");
-  QString d = QObject::tr("Vertical Line");
+  QString k = tr("Type");
+  QString d = tr("Vertical Line");
   info.setData(k, d);
 
-  k = QObject::tr("Date");
+  k = tr("Date");
   d = date.toString(Qt::ISODate);
   info.setData(k, d);
 }
@@ -97,17 +96,17 @@ void VerticalLine::getInfo (Setting &info)
 void VerticalLine::dialog ()
 {
   PrefDialog *dialog = new PrefDialog;
-  QString s = QObject::tr("Edit Vertical Line");
+  QString s = tr("Edit Vertical Line");
   dialog->setWindowTitle(s);
-  s = QObject::tr("Settings");
+  s = tr("Settings");
   int page = 0;
   dialog->addPage(page, s);
 
-  s = QObject::tr("Color");
+  s = tr("Color");
   dialog->addColorItem(0, page, s, color);
 
   int def = FALSE;
-  s = QObject::tr("Set Default");
+  s = tr("Set Default");
   dialog->addCheckItem(1, page, s, def);
 
   int rc = dialog->exec();
@@ -135,16 +134,13 @@ void VerticalLine::setDate (QDateTime &d)
   date = d;
 }
 
-void VerticalLine::setSettings (Setting &set)
+void VerticalLine::setSettings (QSqlQuery &q)
 {
-  QString k = QString::number(ParmColor);
-  QString d;
-  set.getData(k, d);
-  color.setNamedColor(d);
-
-  k = QString::number(ParmDate);
-  set.getData(k, d);
-  date = QDateTime::fromString(d, Qt::ISODate);
+  id = q.value(0).toString();
+  symbol = q.value(1).toString();
+  indicator = q.value(2).toString();
+  color.setNamedColor(q.value(4).toString());
+  date = q.value(5).toDateTime();
 }
 
 void VerticalLine::getSettings (QString &set)

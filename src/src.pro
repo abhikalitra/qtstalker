@@ -30,3 +30,4 @@ INSTALLS += target
 # so doing it here.
 QMAKE_DISTCLEAN += ../.qmake.cache
 
+QT += sql

@@ -21,7 +21,7 @@
 
 #include "BaseCO.h"
 
-#include <QObject>
+#include <QDebug>
 
 BaseCO::BaseCO ()
 {
@@ -81,8 +81,9 @@ void BaseCO::setPrice2 (double)
 {
 }
 
-void BaseCO::setSettings (Setting &)
+void BaseCO::setSettings (QSqlQuery &)
 {
+  qDebug() << "BaseCO";
 }
 
 void BaseCO::getSettings (QString &)
@@ -184,9 +185,8 @@ int BaseCO::isGrabSelected (QPoint &point)
 void BaseCO::getCOList (QStringList &l)
 {
   l.clear();
-  l << QObject::tr("Buy Arrow") << QObject::tr("Horizontal Line") << QObject::tr("Retracement");
-  l << QObject::tr("Sell Arrow") << QObject::tr("Text") << QObject::tr("Trend Line");
-  l << QObject::tr("Vertical Line");
+  l << tr("Buy Arrow") << tr("Horizontal Line") << tr("Retracement");
+  l << tr("Sell Arrow") << tr("Text") << tr("Trend Line") << tr("Vertical Line");
 }
 
 void BaseCO::setSymbol (QString &d)

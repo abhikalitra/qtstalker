@@ -24,7 +24,6 @@
 #include "PrefDialog.h"
 #include "Config.h"
 
-#include <QObject>
 #include <QPainter>
 
 SellArrow::SellArrow ()
@@ -86,15 +85,15 @@ void SellArrow::draw (QPixmap &buffer, BarData *data, int startX, int pixelspace
 
 void SellArrow::getInfo (Setting &info)
 {
-  QString k = QObject::tr("Type");
-  QString d = QObject::tr("Sell Arrow");
+  QString k = tr("Type");
+  QString d = tr("Sell Arrow");
   info.setData(k, d);
 
-  k = QObject::tr("Date");
+  k = tr("Date");
   d = date.toString(Qt::ISODate);
   info.setData(k, d);
 
-  k = QObject::tr("Price");
+  k = tr("Price");
   d = QString::number(price);
   info.setData(k, d);
 }
@@ -103,20 +102,20 @@ void SellArrow::getInfo (Setting &info)
 void SellArrow::dialog ()
 {
   PrefDialog *dialog = new PrefDialog;
-  QString s = QObject::tr("Edit Sell Arrow");
+  QString s = tr("Edit Sell Arrow");
   dialog->setWindowTitle(s);
-  s = QObject::tr("Settings");
+  s = tr("Settings");
   int page = 0;
   dialog->addPage(page, s);
 
-  s = QObject::tr("Color");
+  s = tr("Color");
   dialog->addColorItem(0, page, s, color);
 
-  s = QObject::tr("Price");
+  s = tr("Price");
   dialog->addDoubleItem(1, page, s, price);
 
   int def = FALSE;
-  s = QObject::tr("Set Default");
+  s = tr("Set Default");
   dialog->addCheckItem(2, page, s, def);
 
   int rc = dialog->exec();
@@ -150,19 +149,14 @@ void SellArrow::setPrice (double d)
   price = d;
 }
 
-void SellArrow::setSettings (Setting &set)
+void SellArrow::setSettings (QSqlQuery &q)
 {
-  QString k = QString::number(ParmColor);
-  QString d;
-  set.getData(k, d);
-  color.setNamedColor(d);
-
-  k = QString::number(ParmDate);
-  set.getData(k, d);
-  date = QDateTime::fromString(d, Qt::ISODate);
-
-  k = QString::number(ParmPrice);
-  price = set.getDouble(k);
+  id = q.value(0).toString();
+  symbol = q.value(1).toString();
+  indicator = q.value(2).toString();
+  color.setNamedColor(q.value(4).toString());
+  date = q.value(5).toDateTime();
+  price = q.value(7).toDouble();
 }
 
 void SellArrow::getSettings (QString &set)

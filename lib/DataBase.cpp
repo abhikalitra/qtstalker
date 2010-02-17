@@ -70,28 +70,28 @@ void DataBase::init ()
 
   // create the chart object table
   s = "CREATE TABLE IF NOT EXISTS chartObjects (";
-  s.append("id INT PRIMARY KEY");
-  s.append(", symbol TEXT");
-  s.append(", indicator TEXT");
-  s.append(", type INT");
-  s.append(", color TEXT");
-  s.append(", date TEXT");
-  s.append(", date2 TEXT");
-  s.append(", price REAL");
-  s.append(", price2 REAL");
-  s.append(", high REAL");
-  s.append(", low REAL");
-  s.append(", font TEXT");
-  s.append(", label TEXT");
-  s.append(", extend INT");
-  s.append(", line1 REAL");
-  s.append(", line2 REAL");
-  s.append(", line3 REAL");
-  s.append(", line4 REAL");
-  s.append(", line5 REAL");
-  s.append(", line6 REAL");
-  s.append(", barField TEXT");
-  s.append(", useBar INT");
+  s.append("id INT PRIMARY KEY"); // 0
+  s.append(", symbol TEXT"); // 1
+  s.append(", indicator TEXT"); // 2
+  s.append(", type INT"); // 3
+  s.append(", color TEXT"); // 4
+  s.append(", date TEXT"); // 5
+  s.append(", date2 TEXT"); // 6
+  s.append(", price REAL"); // 7
+  s.append(", price2 REAL"); // 8
+  s.append(", high REAL"); // 9
+  s.append(", low REAL"); // 10
+  s.append(", font TEXT"); // 11
+  s.append(", label TEXT"); // 12
+  s.append(", extend INT"); // 13
+  s.append(", line1 REAL"); // 14
+  s.append(", line2 REAL"); // 15
+  s.append(", line3 REAL"); // 16
+  s.append(", line4 REAL"); // 17
+  s.append(", line5 REAL"); // 18
+  s.append(", line6 REAL"); // 19
+  s.append(", barField TEXT"); // 20
+  s.append(", useBar INT"); // 21
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -438,25 +438,16 @@ void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QStri
 
   while (q.next())
   {
-    Setting set;
-    int loop;
-    for (loop = (int) BaseCO::ParmID; loop <= BaseCO::ParmUseBar; loop++)
-    {
-      QString k = QString::number(loop);
-      QString d = q.value(loop).toString();
-      set.setData(k, d);
-    }
-
     COFactory fac;
-    BaseCO *co = fac.getCO(q.value(1).toInt());
+    BaseCO *co = fac.getCO(q.value(3).toInt());
     if (! co)
     {
       qDebug() << "DataBase::getChartObjects: error creating co";
       continue;
     }
 
-    co->setSettings(set);
-    list.insert(q.value(1).toString(), co);
+    co->setSettings(q);
+    list.insert(q.value(0).toString(), co);
   }
 }
 

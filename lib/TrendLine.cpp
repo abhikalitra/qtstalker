@@ -24,7 +24,6 @@
 #include "PrefDialog.h"
 #include "Config.h"
 
-#include <QObject>
 #include <QPainter>
 
 TrendLine::TrendLine ()
@@ -34,8 +33,8 @@ TrendLine::TrendLine ()
   useBar = 0;
   price = 0;
   price2 = 0;
-  bar = QObject::tr("Close");
-  fieldList << QObject::tr("Open") << QObject::tr("High") << QObject::tr("Low") << QObject::tr("Close");
+  bar = tr("Close");
+  fieldList << tr("Open") << tr("High") << tr("Low") << tr("Close");
 }
 
 void TrendLine::draw (QPixmap &buffer, BarData *data, int startX, int pixelspace, int startIndex,
@@ -161,23 +160,23 @@ void TrendLine::draw (QPixmap &buffer, BarData *data, int startX, int pixelspace
 
 void TrendLine::getInfo (Setting &info)
 {
-  QString k = QObject::tr("Type");
-  QString d = QObject::tr("TrendLine");
+  QString k = tr("Type");
+  QString d = tr("TrendLine");
   info.setData(k, d);
 
-  k = QObject::tr("Start Date");
+  k = tr("Start Date");
   d = date.toString(Qt::ISODate);
   info.setData(k, d);
 
-  k = QObject::tr("Start Price");
+  k = tr("Start Price");
   d = QString::number(price);
   info.setData(k, d);
 
-  k = QObject::tr("End Date");
+  k = tr("End Date");
   d = date2.toString(Qt::ISODate);
   info.setData(k, d);
 
-  k = QObject::tr("End Price");
+  k = tr("End Price");
   d = QString::number(price2);
   info.setData(k, d);
 }
@@ -185,32 +184,32 @@ void TrendLine::getInfo (Setting &info)
 void TrendLine::dialog ()
 {
   PrefDialog *dialog = new PrefDialog;
-  QString s = QObject::tr("Edit TrendLine");
+  QString s = tr("Edit TrendLine");
   dialog->setWindowTitle(s);
-  s = QObject::tr("Settings");
+  s = tr("Settings");
   int page = 0;
   dialog->addPage(page, s);
 
-  s = QObject::tr("Color");
+  s = tr("Color");
   dialog->addColorItem(0, page, s, color);
 
-  s = QObject::tr("Start Price");
+  s = tr("Start Price");
   dialog->addDoubleItem(1, page, s, price);
 
-  s = QObject::tr("End Price");
+  s = tr("End Price");
   dialog->addDoubleItem(2, page, s, price2);
 
-  s = QObject::tr("Bar Field");
+  s = tr("Bar Field");
   dialog->addComboItem(3, page, s, fieldList, bar);
 
-  s = QObject::tr("Use Bar");
+  s = tr("Use Bar");
   dialog->addCheckItem(4, page, s, useBar);
 
-  s = QObject::tr("Extend");
+  s = tr("Extend");
   dialog->addCheckItem(5, page, s, extend);
 
   int def = FALSE;
-  s = QObject::tr("Set Default");
+  s = tr("Set Default");
   dialog->addCheckItem(6, page, s, def);
 
   int rc = dialog->exec();
@@ -287,35 +286,19 @@ void TrendLine::getHighLow (double &h, double &l)
     l = price2;
 }
 
-void TrendLine::setSettings (Setting &set)
+void TrendLine::setSettings (QSqlQuery &q)
 {
-  QString k = QString::number(ParmColor);
-  QString d;
-  set.getData(k, d);
-  color.setNamedColor(d);
-
-  k = QString::number(ParmDate);
-  set.getData(k, d);
-  date = QDateTime::fromString(d, Qt::ISODate);
-
-  k = QString::number(ParmDate2);
-  set.getData(k, d);
-  date2 = QDateTime::fromString(d, Qt::ISODate);
-
-  k = QString::number(ParmPrice);
-  price = set.getDouble(k);
-
-  k = QString::number(ParmPrice2);
-  price2 = set.getDouble(k);
-
-  k = QString::number(ParmExtend);
-  extend = set.getInt(k);
-
-  k = QString::number(ParmUseBar);
-  useBar = set.getInt(k);
-
-  k = QString::number(ParmBarField);
-  set.getData(k, bar);
+  id = q.value(0).toString();
+  symbol = q.value(1).toString();
+  indicator = q.value(2).toString();
+  color.setNamedColor(q.value(4).toString());
+  date = q.value(5).toDateTime();
+  date2 = q.value(6).toDateTime();
+  price = q.value(7).toDouble();
+  price2 = q.value(8).toDouble();
+  extend = q.value(13).toInt();
+  useBar = q.value(21).toInt();
+  bar = q.value(20).toString();
 }
 
 void TrendLine::getSettings (QString &set)

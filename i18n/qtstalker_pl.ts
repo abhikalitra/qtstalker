@@ -135,6 +135,38 @@ a partial match like %BM or %IBM%</source>
         <source>Select point to place Horizontal Line...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Horizontal Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Default</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IndicatorPage</name>
@@ -255,10 +287,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select TrendLine ending point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Edit Chart Object</source>
         <translation type="unfinished"></translation>
     </message>
@@ -272,10 +300,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Retracement low point...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1195,10 +1219,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit Horizontal Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit Retracement</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1671,6 +1691,10 @@ a partial match like %SI or %RSI%</source>
         <source>Select Retracement high point...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select Retracement low point...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptPage</name>
@@ -1779,6 +1803,10 @@ Are you sure you want to remove this script?</source>
     <name>TrendLine</name>
     <message>
         <source>Select Trend Line starting point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select TrendLine ending point...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

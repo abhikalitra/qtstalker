@@ -26,6 +26,8 @@
 
 class Retracement : public BaseCO
 {
+  Q_OBJECT
+
   public:
     Retracement ();
     void draw (QPixmap &buffer, BarData *data, int startX, int pixelspace, int startIndex, Scaler &scaler);
@@ -35,7 +37,7 @@ class Retracement : public BaseCO
     void getDate (QDateTime &);
     void setDate2 (QDateTime &);
     void getDate2 (QDateTime &);
-    void setSettings (Setting &);
+    void setSettings (QSqlQuery &q);
     void getSettings (QString &);
     void create (QString &_id, QString &_symbol, QString &_indicator);
     int create2 (QDateTime &x, double y);

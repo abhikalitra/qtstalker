@@ -24,8 +24,8 @@
 #include "PrefDialog.h"
 #include "Config.h"
 
-#include <QObject>
 #include <QPainter>
+#include <QDebug>
 
 HorizontalLine::HorizontalLine ()
 {
@@ -87,11 +87,11 @@ void HorizontalLine::draw (QPixmap &buffer, BarData *, int, int, int, Scaler &sc
 
 void HorizontalLine::getInfo (Setting &info)
 {
-  QString k = QObject::tr("Type");
-  QString d = QObject::tr("Sell Arrow");
+  QString k = tr("Type");
+  QString d = tr("Sell Arrow");
   info.setData(k, d);
 
-  k = QObject::tr("Price");
+  k = tr("Price");
   d = QString::number(price);
   info.setData(k, d);
 }
@@ -99,23 +99,23 @@ void HorizontalLine::getInfo (Setting &info)
 void HorizontalLine::dialog ()
 {
   PrefDialog *dialog = new PrefDialog;
-  QString s = QObject::tr("Edit Horizontal Line");
+  QString s = tr("Edit Horizontal Line");
   dialog->setWindowTitle(s);
-  s = QObject::tr("Settings");
+  s = tr("Settings");
   int page = 0;
   dialog->addPage(page, s);
 
-  s = QObject::tr("Color");
+  s = tr("Color");
   dialog->addColorItem(0, page, s, color);
 
-  s = QObject::tr("Price");
+  s = tr("Price");
   dialog->addDoubleItem(1, page, s, price);
 
-  s = QObject::tr("Label");
+  s = tr("Label");
   dialog->addTextItem(2, page, s, label);
 
   int def = FALSE;
-  s = QObject::tr("Set Default");
+  s = tr("Set Default");
   dialog->addCheckItem(3, page, s, def);
 
   int rc = dialog->exec();
@@ -145,18 +145,14 @@ void HorizontalLine::setPrice (double d)
   price = d;
 }
 
-void HorizontalLine::setSettings (Setting &set)
+void HorizontalLine::setSettings (QSqlQuery &q)
 {
-  QString k = QString::number(ParmColor);
-  QString d;
-  set.getData(k, d);
-  color.setNamedColor(d);
-
-  k = QString::number(ParmPrice);
-  price = set.getDouble(k);
-
-  k = QString::number(ParmLabel);
-  set.getData(k, label);
+  id = q.value(0).toString();
+  symbol = q.value(1).toString();
+  indicator = q.value(2).toString();
+  color.setNamedColor(q.value(4).toString());
+  price = q.value(7).toDouble();
+  label = q.value(12).toString();
 }
 
 void HorizontalLine::getSettings (QString &set)
