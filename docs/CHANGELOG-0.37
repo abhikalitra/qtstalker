@@ -261,6 +261,11 @@
 
            Renamed FiboLine chart object to Retracement (which is more accurate).
 
+20100218:  Added new toolbar that groups the cursor controls and chart object creation.
+
+           Added 'N' field format option to CSV app. This allows the symbol name to be imported
+           within each line of text in a csv quote file.
+
 
 
 

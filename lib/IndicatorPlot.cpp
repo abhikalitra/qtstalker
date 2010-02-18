@@ -86,7 +86,7 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 
   setFocusPolicy(Qt::ClickFocus);
 
-//  externalChartObjectFlag = FALSE;
+  externalChartObjectFlag = FALSE;
 }
 
 IndicatorPlot::~IndicatorPlot ()
@@ -302,8 +302,12 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       break;
     case ClickWait:
     {
-//      if (externalChartObjectFlag)
-//	emit signalNewExternalChartObjectDone();
+      if (externalChartObjectFlag)
+      {
+	QString s;
+	coSelected->getID(s);
+	emit signalNewExternalChartObjectDone(s.toInt());
+      }
       int rc = coSelected->create2(x1, y1);
       if (rc)
 	mouseFlag = ClickWait2;
@@ -354,12 +358,10 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
       coSelected->moving(x1, y1, 0);
       draw();
       break;
-    case None:
+    default:
       // update the data panel with new data
       if (infoFlag)
         getInfo(event->x(), event->y());
-      break;
-    default:
       break;
   }
 }
@@ -371,7 +373,11 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
 
   switch (mouseFlag)
   {
-    case None:
+    case COSelected:
+      if (coSelected)
+        slotObjectDialog();
+      break;
+    default:
     {
       rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
       mouseOrigin = event->pos();
@@ -381,34 +387,32 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
       setCursor(QCursor(Qt::SizeFDiagCursor));
       break;
     }
-    case COSelected:
-      if (coSelected)
-        slotObjectDialog();
-    default:
-      break;
   }
 }
 
 void IndicatorPlot::mouseReleaseEvent(QMouseEvent *)
 {
-  if (mouseFlag != RubberBand)
-    return;
-
-  if (rubberBand->width() < pixelspace)
-    return;
-
-  // calculate new pixel spacing and position here
-  int x = convertXToDataIndex(mouseOrigin.x());
-
-  int ti = rubberBand->width() / pixelspace;
-  ti = this->width() / ti;
-
-  delete rubberBand;
-  mouseFlag = None;
-  unsetCursor();
-  if (ti < pixelspace)
-    return;
-  emit signalPixelspaceChanged(x, ti);
+  switch (mouseFlag)
+  {
+    case RubberBand:
+    {
+      if (rubberBand->width() < pixelspace)
+        return;
+      // calculate new pixel spacing and position here
+      int x = convertXToDataIndex(mouseOrigin.x());
+      int ti = rubberBand->width() / pixelspace;
+      ti = this->width() / ti;
+      delete rubberBand;
+      mouseFlag = None;
+      unsetCursor();
+      if (ti < pixelspace)
+        return;
+      emit signalPixelspaceChanged(x, ti);
+      break;
+    }
+    default:
+      break;
+  }
 }
 
 void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
@@ -800,8 +804,6 @@ void IndicatorPlot::setScale ()
     for (loop = 0; loop < plotList.count(); loop++)
     {
       PlotLine *line = plotList.at(loop);
-      if (line->getType() == PlotLine::Invisible)
-	continue;
 
       if (line->getScaleFlag())
         continue;
@@ -1249,29 +1251,23 @@ void IndicatorPlot::drawBar ()
 
   int loop = currentLine->getSize() - data->count() + startIndex;
   int x = startX;
-  double o = 0;
-  double h = 0;
-  double l = 0;
-  double cl = 0;
-  bool ff = FALSE;
   QColor c;
 
   while ((x < buffer.width()) && (loop < (int) currentLine->getSize()))
   {
     if (loop > -1)
     {
-      currentLine->getData(loop, c, o, h, l, cl, ff);
-
+      currentLine->getColorBar(loop, c);
       painter.setPen(c);
 
-      int y = scaler.convertToY(o);
+      int y = scaler.convertToY(data->getOpen(loop));
       painter.drawLine (x - 2, y, x, y);
 
-      y = scaler.convertToY(cl);
+      y = scaler.convertToY(data->getClose(loop));
       painter.drawLine (x + 2, y, x, y);
 
-      y = scaler.convertToY(h);
-      int y2 = scaler.convertToY(l);
+      y = scaler.convertToY(data->getHigh(loop));
+      int y2 = scaler.convertToY(data->getLow(loop));
       painter.drawLine (x, y, x, y2);
     }
 
@@ -1289,10 +1285,6 @@ void IndicatorPlot::drawCandle ()
 
   int loop = currentLine->getSize() - data->count() + startIndex;
   int x = startX;
-  double o = 0;
-  double h = 0;
-  double l = 0;
-  double cl = 0;
   QColor c;
   bool ff = FALSE;
 
@@ -1300,14 +1292,17 @@ void IndicatorPlot::drawCandle ()
   {
     if (loop > -1)
     {
-      currentLine->getData(loop, c, o, h, l, cl, ff);
+      ff = FALSE;
+      if (data->getClose(loop) < data->getOpen(loop))
+        ff = TRUE;
 
+      currentLine->getColorBar(loop, c);
       painter.setPen(c);
 
-      int xh = scaler.convertToY(h);
-      int xl = scaler.convertToY(l);
-      int xc = scaler.convertToY(cl);
-      int xo = scaler.convertToY(o);
+      int xh = scaler.convertToY(data->getHigh(loop));
+      int xl = scaler.convertToY(data->getLow(loop));
+      int xc = scaler.convertToY(data->getClose(loop));
+      int xo = scaler.convertToY(data->getOpen(loop));
 
       if (! ff)
       {
@@ -1394,10 +1389,18 @@ void IndicatorPlot::slotNewVerticalLine ()
   slotNewChartObject((int) BaseCO::COVerticalLine);
 }
 
-/*
-void IndicatorPlot::setExternalChartObjectFlag (int d)
+void IndicatorPlot::setExternalChartObjectFlag (int id)
 {
-  externalChartObjectFlag = d;
+  externalChartObjectFlag = FALSE;
+  QString s;
+  coSelected->getID(s);
+  if (s.toInt() != id)
+  {
+    mouseFlag = None;
+    delete coSelected;
+    coList.remove(s);
+    setCursor(QCursor(Qt::ArrowCursor));
+  }
 }
 
 void IndicatorPlot::newExternalChartObject (int d)
@@ -1405,7 +1408,6 @@ void IndicatorPlot::newExternalChartObject (int d)
   externalChartObjectFlag = TRUE;
   slotNewChartObject(d);
 }
-*/
 
 void IndicatorPlot::slotNewChartObject (int selection)
 {

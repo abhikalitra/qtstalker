@@ -60,8 +60,8 @@ class QtstalkerApp : public QMainWindow
     void signalDraw (bool);
     void signalNewIndicator ();
     void signalCrossHair (int, int, bool);
-//    void signalNewExternalChartObject (int);
-//    void signalSetExternalChartObject (int);
+    void signalNewExternalChartObject (int);
+    void signalSetExternalChartObject (int);
 
   public:
     enum MenuAction
@@ -136,15 +136,8 @@ class QtstalkerApp : public QMainWindow
     void loadIndicator (QString &d);
     void refreshIndicator (QString);
     void cursorButtonPressed (int id);
-
-//    void buyArrowButtonPressed ();
-//    void fiboButtonPressed ();
-//    void horizontalButtonPressed ();
-//    void sellArrowButtonPressed ();
-//    void textButtonPressed ();
-//    void trendButtonPressed ();
-//    void verticalButtonPressed ();
-//    void newExternalChartObjectDone ();
+    void coButtonPressed (int id);
+    void newExternalChartObjectDone (int);
 
   protected:
     void closeEvent(QCloseEvent *event);
@@ -172,7 +165,7 @@ class QtstalkerApp : public QMainWindow
     QTimer *refreshTimer;
     Assistant *assistant;
     QButtonGroup *barButtonGroup;
-//    QToolBar *toolBar2;
+    QToolBar *toolBar2;
 };
 
 #endif

@@ -20,32 +20,6 @@
  */
 
 
-// 'S' is symbol
-// 'D' is date
-// 'T' is time
-// 'O' is open
-// 'H' is high
-// 'L' = low
-// 'C' is close
-// 'V' is volume
-// 'I' is open interest
-
-// 'i' is an input file containing quotes
-// 'd' is date format
-// 't' is time format
-// 'f' is csv field format 'D,O,H,L,C,V,I'
-// 's' is the delimiter
-
-// to import a csv file with same symbol 'FOO', an example would be:
-//	CSV -i /home/user/csv.txt -d yyyy/MM/dd -f D,O,H,L,C,V,I -s , -S FOO
-
-// to import a csv file with multiple symbols, an example would be:
-//	CSV -i /home/user/csv.txt -d yyyy/MM/dd -f S,D,O,H,L,C,V,I -s ,
-
-// to import a single quote, an example would be:
-//	CSV -d yyyy/MM/dd -s , -S FOO -D 2009/11/11 -O 100.5 -H 150.75 -L 50 -C 125.75 -V 100000 -I 123456
-
-
 #ifndef CSV_H
 #define CSV_H
 
@@ -94,6 +68,7 @@ class CSV
     int setBarClose (Bar &r, QString &d);
     int setBarVolume (Bar &r, QString &d);
     int setBarOI (Bar &r, QString &d);
+    int setBarName (Bar &r, QString &d);
 
     void convertSymbol (QString &symbol);
 

@@ -32,7 +32,6 @@
 #include <QObject>
 
 
-
 CSV::CSV ()
 {
   clear();
@@ -202,6 +201,12 @@ void CSV::import ()
 	  break;
 	case 'G':
 	  // we just ignore this field. its a place holder
+	  break;
+	case 'N':
+          if (setBarName(r, listItem))
+	  {
+            qDebug() << "Line:" << lineCount << "Bad value:" << listItem;
+          }
 	  break;
 	default:
 	  break;
@@ -540,6 +545,13 @@ int CSV::setBarOI (Bar &r, QString &d)
     r.setData(k, d);
   }
   return flag;
+}
+
+int CSV::setBarName (Bar &r, QString &d)
+{
+  convertSymbol(d);
+  r.setName(d);
+  return 0;
 }
 
 // remove any unwanted characters in the symbol name

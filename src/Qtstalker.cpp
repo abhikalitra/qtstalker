@@ -66,13 +66,13 @@
 #include "../pics/zoomout.xpm"
 #include "../pics/refresh.xpm"
 #include "../pics/script.xpm"
-//#include "../pics/buyarrow.xpm"
-//#include "../pics/fib.xpm"
-//#include "../pics/horizontal.xpm"
-//#include "../pics/sellarrow.xpm"
-//#include "../pics/text.xpm"
-//#include "../pics/trend.xpm"
-//#include "../pics/vertical.xpm"
+#include "../pics/buyarrow.xpm"
+#include "../pics/fib.xpm"
+#include "../pics/horizontal.xpm"
+#include "../pics/sellarrow.xpm"
+#include "../pics/text.xpm"
+#include "../pics/trend.xpm"
+#include "../pics/vertical.xpm"
 #include "../pics/cursor_arrow.xpm"
 
 
@@ -127,7 +127,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   baseWidget->setLayout(hbox);
 
   // add the side toolBar first
-//  hbox->addWidget(toolBar2);
+  hbox->addWidget(toolBar2);
 
   navSplitter = new QSplitter;
   navSplitter->setOrientation(Qt::Horizontal);
@@ -342,63 +342,84 @@ void QtstalkerApp::createMenuBar()
 
 void QtstalkerApp::createToolBars ()
 {
-/*
   // construct the side toolbar
   toolBar2 = addToolBar("sideToolBar");
   toolBar2->setOrientation(Qt::Vertical);
 
+  QButtonGroup *bg = new QButtonGroup(this);
+  connect(bg, SIGNAL(buttonClicked(int)), this, SLOT(cursorButtonPressed(int)));
+
+  // normal cursor button
+  QToolButton *b = new QToolButton;
+  b->setToolTip(tr("Select Cursor"));
+  b->setIcon(QIcon(cursor_arrow_xpm));
+  b->setCheckable(TRUE);
+  b->setChecked(TRUE);
+  toolBar2->addWidget(b);
+  bg->addButton(b, 0);
+
+  // crosshair button
+  b = new QToolButton;
+  b->setToolTip(tr("Crosshairs Cursor"));
+  b->setIcon(QIcon(crosshair));
+  b->setCheckable(TRUE);
+  toolBar2->addWidget(b);
+  bg->addButton(b, 1);
 
   toolBar2->addSeparator();
 
+  bg = new QButtonGroup(this);
+  connect(bg, SIGNAL(buttonClicked(int)), this, SLOT(coButtonPressed(int)));
+
   // buy arrow button
   b = new QToolButton;
-  b->setToolTip(tr("Buy Arrow Object"));
+  b->setToolTip(tr("Buy Arrow"));
   b->setIcon(QIcon(buyarrow_xpm));
-  connect(b, SIGNAL(clicked()), this, SLOT(buyArrowButtonPressed()));
   toolBar2->addWidget(b);
-
-  // fibo arrow button
-  b = new QToolButton;
-  b->setToolTip(tr("Retracement Level Object"));
-  b->setIcon(QIcon(fib_xpm));
-  connect(b, SIGNAL(clicked()), this, SLOT(fiboButtonPressed()));
-  toolBar2->addWidget(b);
+  bg->addButton(b, 0);
 
   // horizontal button
   b = new QToolButton;
-  b->setToolTip(tr("Horizontal Line Object"));
+  b->setToolTip(tr("Horizontal Line"));
   b->setIcon(QIcon(horizontal_xpm));
-  connect(b, SIGNAL(clicked()), this, SLOT(horizontalButtonPressed()));
   toolBar2->addWidget(b);
+  bg->addButton(b, 1);
+
+  // retracement button
+  b = new QToolButton;
+  b->setToolTip(tr("Retracement"));
+  b->setIcon(QIcon(fib_xpm));
+  toolBar2->addWidget(b);
+  bg->addButton(b, 2);
 
   // sell arrow button
   b = new QToolButton;
-  b->setToolTip(tr("Sell Arrow Object"));
+  b->setToolTip(tr("Sell Arrow"));
   b->setIcon(QIcon(sellarrow_xpm));
-  connect(b, SIGNAL(clicked()), this, SLOT(sellArrowButtonPressed()));
   toolBar2->addWidget(b);
+  bg->addButton(b, 3);
 
   // text button
   b = new QToolButton;
-  b->setToolTip(tr("Text Object"));
+  b->setToolTip(tr("Text"));
   b->setIcon(QIcon(text_xpm));
-  connect(b, SIGNAL(clicked()), this, SLOT(textButtonPressed()));
   toolBar2->addWidget(b);
+  bg->addButton(b, 4);
 
   // trend line button
   b = new QToolButton;
-  b->setToolTip(tr("Trend Line Object"));
+  b->setToolTip(tr("Trend Line"));
   b->setIcon(QIcon(trend_xpm));
-  connect(b, SIGNAL(clicked()), this, SLOT(trendButtonPressed()));
   toolBar2->addWidget(b);
+  bg->addButton(b, 5);
 
   // vertical button
   b = new QToolButton;
-  b->setToolTip(tr("Vertical Line Object"));
+  b->setToolTip(tr("Vertical Line"));
   b->setIcon(QIcon(vertical_xpm));
-  connect(b, SIGNAL(clicked()), this, SLOT(verticalButtonPressed()));
   toolBar2->addWidget(b);
-*/
+  bg->addButton(b, 6);
+
 
   //construct main toolbar
   QToolBar *toolbar = addToolBar("buttonToolBar");
@@ -412,29 +433,6 @@ void QtstalkerApp::createToolBars ()
   toolbar->addAction(actionList.value(NewIndicator));
   toolbar->addAction(actionList.value(DataWindow1));
   toolbar->addAction(actionList.value(Help));
-
-  toolbar->addSeparator();
-
-  QButtonGroup *bg = new QButtonGroup(this);
-  connect(bg, SIGNAL(buttonClicked(int)), this, SLOT(cursorButtonPressed(int)));
-
-  // normal cursor button
-  QToolButton *b = new QToolButton;
-  b->setToolTip(tr("Select Cursor"));
-  b->setIcon(QIcon(cursor_arrow_xpm));
-  b->setCheckable(TRUE);
-  b->setChecked(TRUE);
-  toolbar->addWidget(b);
-  bg->addButton(b, 0);
-
-  // crosshair button
-  b = new QToolButton;
-  b->setToolTip(tr("Crosshairs Cursor"));
-  b->setIcon(QIcon(crosshair));
-  b->setCheckable(TRUE);
-  toolbar->addWidget(b);
-  bg->addButton(b, 1);
-
 
   toolbar->addSeparator();
 
@@ -1005,9 +1003,9 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(this, SIGNAL(signalGrid(bool)), indy, SLOT(slotGridChanged(bool)));
   connect(this, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
 
-//  connect(this, SIGNAL(signalNewExternalChartObject(int)), indy, SLOT(newExternalChartObject(int)));
-//  connect(indy, SIGNAL(signalNewExternalChartObjectDone()), this, SLOT(newExternalChartObjectDone()));
-//  connect(this, SIGNAL(signalSetExternalChartObject(int)), indy, SLOT(setExternalChartObjectFlag(int)));
+  connect(this, SIGNAL(signalNewExternalChartObject(int)), indy, SLOT(newExternalChartObject(int)));
+  connect(indy, SIGNAL(signalNewExternalChartObjectDone(int)), this, SLOT(newExternalChartObjectDone(int)));
+  connect(this, SIGNAL(signalSetExternalChartObject(int)), indy, SLOT(setExternalChartObjectFlag(int)));
 }
 
 void QtstalkerApp::slotChartUpdated ()
@@ -1253,50 +1251,19 @@ void QtstalkerApp::cursorButtonPressed (int id)
 // ******************************************************************************
 // **************************** Side Toolbar Functions **************************
 // ******************************************************************************
-/*
-void QtstalkerApp::buyArrowButtonPressed ()
-{
-  emit signalNewExternalChartObject((int) COSettings::COBuyArrow);
-}
 
-void QtstalkerApp::fiboButtonPressed ()
+void QtstalkerApp::coButtonPressed (int id)
 {
-  emit signalNewExternalChartObject((int) COSettings::COFiboLine);
-}
-
-void QtstalkerApp::horizontalButtonPressed ()
-{
-  emit signalNewExternalChartObject((int) COSettings::COHorizontalLine);
-}
-
-void QtstalkerApp::sellArrowButtonPressed ()
-{
-  emit signalNewExternalChartObject((int) COSettings::COSellArrow);
-}
-
-void QtstalkerApp::textButtonPressed ()
-{
-  emit signalNewExternalChartObject((int) COSettings::COText);
-}
-
-void QtstalkerApp::trendButtonPressed ()
-{
-  emit signalNewExternalChartObject((int) COSettings::COTrendLine);
-}
-
-void QtstalkerApp::verticalButtonPressed ()
-{
-  emit signalNewExternalChartObject((int) COSettings::COVerticalLine);
+  emit signalNewExternalChartObject(id);
 }
 
 // this slot is connected to a plot that is triggered when mouse has clicked the plot
 // during external chart object creation
 // we then turn off all the plots waiting for a click from the mouse
-void QtstalkerApp::newExternalChartObjectDone ()
+void QtstalkerApp::newExternalChartObjectDone (int id)
 {
-  emit signalSetExternalChartObject(0);
+  emit signalSetExternalChartObject(id);
 }
-*/
 
 // ******************************************************************************
 // **************************** Zoom Functions **********************************

@@ -30,6 +30,7 @@
 #include <QDir>
 #include <QtDebug>
 #include <QIcon>
+#include <QSqlQuery>
 
 #include "../pics/done.xpm"
 #include "../pics/newchart.xpm"
@@ -87,6 +88,7 @@ QtStalkerTester::QtStalkerTester ()
 //  connect(buttonBox, SIGNAL(helpRequested()), this, SLOT(help()));
   vbox->addWidget(buttonBox);
 
+  createRankTab();
   createRuleTab();
   createStopsTab();
   createReportTab();
@@ -105,6 +107,27 @@ QtStalkerTester::QtStalkerTester ()
 
 QtStalkerTester::~QtStalkerTester ()
 {
+}
+
+void QtStalkerTester::createRankTab()
+{
+  QWidget *w = new QWidget(this);
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(0);
+  vbox->setSpacing(0);
+  w->setLayout(vbox);
+
+  rankTree = new QTreeWidget;
+  rankTree->setColumnCount(4);
+  QStringList l;
+  l << tr("Test Name") << tr("Win/Loss Ratio") << tr("Gross Profit") << tr("Net Profit");
+  rankTree->setHeaderLabels(l);
+  vbox->addWidget(rankTree);
+
+  updateRankings();
+
+  tabs->addTab(w, tr("Rank"));
 }
 
 void QtStalkerTester::createRuleTab()
@@ -1163,5 +1186,19 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
   saveTest();
 }
 
+void QtStalkerTester::updateRankings ()
+{
+  TestDataBase db;
+  QSqlQuery q;
+  db.getRankings(q);
 
+  while (q.next())
+  {
+    QTreeWidgetItem *item = new QTreeWidgetItem(rankTree);
+    item->setText(0, q.value(0).toString());
+    item->setText(1, q.value(1).toString());
+    item->setText(2, q.value(2).toString());
+    item->setText(3, q.value(3).toString());
+  }
+}
 

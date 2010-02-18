@@ -91,6 +91,10 @@ int main (int argc, char **argv)
         s = argv[loop + 1];
 	csv.setOI(s);
         break;
+      case 'N':
+        s = argv[loop + 1];
+	csv.setName(s);
+        break;
       default:
         break;
     }

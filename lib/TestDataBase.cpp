@@ -55,9 +55,9 @@ void TestDataBase::init ()
     return;
   }
 
-  // create the index table
+  // create the results table
   QSqlQuery q(db);
-  s = "CREATE TABLE IF NOT EXISTS testIndex (";
+  s = "CREATE TABLE IF NOT EXISTS results (";
   s.append("name TEXT PRIMARY KEY");
   s.append(",script TEXT");
   s.append(",symbol TEXT");
@@ -117,7 +117,7 @@ void TestDataBase::getTests (QStringList &l)
   l.clear();
 
   QSqlQuery q(QSqlDatabase::database("testData"));
-  QString s = "SELECT name FROM testIndex";
+  QString s = "SELECT name FROM results";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -137,7 +137,7 @@ void TestDataBase::getTest (Test &test)
   test.getName(name);
 
   QSqlQuery q(QSqlDatabase::database("testData"));
-  QString s = "SELECT * FROM testIndex WHERE name='" + name + "'";
+  QString s = "SELECT * FROM results WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -201,7 +201,7 @@ void TestDataBase::setTest (Test &test)
   transaction();
 
   QSqlQuery q(QSqlDatabase::database("testData"));
-  QString s = "INSERT OR REPLACE INTO testIndex  VALUES (";
+  QString s = "INSERT OR REPLACE INTO results  VALUES (";
 
   s.append("'" + name + "'");
 
@@ -264,10 +264,25 @@ void TestDataBase::deleteTest (Test &test)
   test.getName(name);
 
   QSqlQuery q(QSqlDatabase::database("testData"));
-  QString s = "DELETE FROM testIndex WHERE name='" + name + "'";
+  QString s = "DELETE FROM results WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "TestDataBase::deleteTest:" << q.lastError().text();
+
+  commit();
+}
+
+void TestDataBase::getRankings (QSqlQuery &rq)
+{
+  transaction();
+
+  QSqlQuery q(QSqlDatabase::database("testData"));
+  QString s = "SELECT name,winLossRatio,grossProfit,netProfit FROM results ORDER BY netProfit DESC";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "TestDataBase::deleteTest:" << q.lastError().text();
+
+  rq = q;
 
   commit();
 }

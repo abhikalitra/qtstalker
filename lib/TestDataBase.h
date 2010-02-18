@@ -24,6 +24,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QSqlQuery>
 
 #include "Test.h"
 
@@ -38,6 +39,7 @@ class TestDataBase
     void getTest (Test &);
     void setTest (Test &);
     void deleteTest (Test &);
+    void getRankings (QSqlQuery &rq);
 };
 
 #endif

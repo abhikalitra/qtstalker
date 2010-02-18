@@ -108,7 +108,7 @@ format.
 and
 automation for your data loading. </p>
 <p>Here are the switches and some examples of usage: </p>
-<pre><br>-S is symbol<br><br>-D is date<br><br>-T is time<br><br>-O is open<br><br>-H is high<br><br>-L is low<br><br>-C is close<br><br>-V is volume<br><br>-I is open interest<br><br>-i is an input file containing quotes<br><br>-d is date format<br><br>-t is time format<br><br>-p is the file path to the database. If not used the default ~/.CSV will be used. This option is used if the user wants to use a different database, or manage multiple databases.<br><br>-s is the delimiter<br><br>-n is the company name eg. 'Microsoft' no spaces allowed.<br><br>-e is the exchange the security trades on.<br><br>-y is the security type. This can be:<br></pre>
+<pre><br>-S is symbol<br><br>-D is date<br><br>-T is time<br><br>-O is open<br><br>-H is high<br><br>-L is low<br><br>-C is close<br><br>-V is volume<br><br>-I is open interest<br><br>-i is an input file containing quotes<br><br>-d is date format<br><br>-t is time format<br><br>-p is the file path to the database. If not used the default ~/.CSV/quotes.sqlite will be used.<br>  &nbsp;This option is used if the user wants to use a different database, or manage multiple databases.<br><br>-s is the delimiter<br><br>-n is the company name eg. 'Microsoft' no spaces allowed.<br><br>-e is the exchange the security trades on.<br><br>-y is the security type. This can be:<br></pre>
 <ul>
   <li>Stock</li>
   <li>Futures</li>
@@ -116,7 +116,7 @@ automation for your data loading. </p>
   <li>Bond<br>
   </li>
 </ul>
-<pre><br>-f is csv field format 'D,O,H,L,C,V,I,G'<br><br>Use these fields to represent each line of text in the csv file.<br>It is important to note that a line must contain at least the D,O,H,L,C,V fields in order to succeed otherwise the text will be rejected.<br></pre>
+<pre><br>-f is csv field format 'D,O,H,L,C,V,I,G,N'<br><br>Use these fields to represent each line of text in the csv file.<br>It is important to note that a line must contain at least the D,O,H,L,C,V fields in order to succeed otherwise the text will be rejected.<br></pre>
 <ul>
   <li>D is a date field</li>
   <li>O is an open price field</li>
@@ -125,7 +125,8 @@ automation for your data loading. </p>
   <li>C is a close price field</li>
   <li>V is a volume field</li>
   <li>I is an open interest field</li>
-  <li>G is used to ignore any unwanted fields in the line of text<br>
+  <li>G is used to ignore any unwanted fields in the line of text</li>
+  <li>N is used for the symbol name eg. Google<br>
   </li>
 </ul>
 <br>

@@ -25,29 +25,20 @@
 #include <QString>
 #include <QList>
 #include <QColor>
-#include <QDateTime>
-
+//#include <QDateTime>
 
 #include "Setting.h"
-
-
 
 typedef struct
 {
   double v;
-  double open;
-  double high;
-  double low;
   QColor color;
-  bool candleFill;
 
 } Val;
-
 
 class PlotLine
 {
   public:
-  
     enum LineType
     {
       Dot,
@@ -55,32 +46,26 @@ class PlotLine
       Histogram,
       HistogramBar,
       Line,
-      Invisible,
       Horizontal,
       Bar,
       Candle
     };
-  
+
     PlotLine ();
     void setColor (QString &);
     void setColor (QColor &);
     void getColor (QColor &);
-    void resetColor ();
     void setType (PlotLine::LineType);
     void setType (QString &);
     PlotLine::LineType getType ();
     void setLabel (QString &);
     void getLabel (QString &);
     void append (double);
-    void append (QColor &, double, double, double, double, bool);
-    void append2 (QColor &, double, double, double, double, bool);
-    void append (QDateTime &);
-    void prepend (QDateTime &);
+    void append (QColor &, double);
     void prepend (double);
-    void prepend (QColor &, double, double, double, double, bool);
+    void prepend (QColor &, double);
     double getData (int);
-    void getData (int, QColor &, double &, double &, double &, double &, bool &);
-    void getData (int, QDateTime &);
+    void getData (int, QColor &, double &);
     void setData (int, double);
     int getSize ();
     double getHigh ();
@@ -98,15 +83,11 @@ class PlotLine
     void getHighLowRange (int, int, double &, double &);
     void getInfo (int, Setting &);
     void strip (double, int, QString &);
-    void getDateList (QList<QDateTime> &);
-    void setDateList (QList<QDateTime> &);
-    void getData (QList<Val> &);
     void setPlotFlag (bool);
     bool getPlotFlag ();
-    
+
   private:
     QList<Val> data;
-    QList<QDateTime> dateList;
     QColor color;
     PlotLine::LineType lineType;
     QString label;

@@ -173,17 +173,17 @@ PlotLine * BARS::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_ne
     if (loop > 0)
     {
       if (data->getClose(loop) > data->getClose(loop - 1))
-        line->append(_up, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop), FALSE);
+        line->append(_up, data->getClose(loop));
       else
       {
         if (data->getClose(loop) < data->getClose(loop - 1))
-          line->append(_down, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop), FALSE);
+          line->append(_down, data->getClose(loop));
         else
-          line->append(_neutral, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop), FALSE);
+          line->append(_neutral, data->getClose(loop));
       }
     }
     else
-      line->append(_neutral, data->getOpen(loop), data->getHigh(loop), data->getLow(loop), data->getClose(loop), FALSE);
+      line->append(_neutral, data->getClose(loop));
   }
 
   return line;

@@ -271,19 +271,7 @@ PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
   int loop;
   int size = data->count();
   for (loop = 0; loop < size; loop++)
-  {
-    double cl = data->getClose(loop);
-    double op = data->getOpen(loop);
-    bool fillFlag = FALSE;
-
-    if (op != 0)
-    {
-      if (cl < op)
-        fillFlag = TRUE;
-    }
-
-    line->append(color, op, data->getHigh(loop), data->getLow(loop), cl, fillFlag);
-  }
+    line->append(color, data->getClose(loop));
 
   return line;
 }

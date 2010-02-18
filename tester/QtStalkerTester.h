@@ -41,6 +41,7 @@
 #include <QSpinBox>
 #include <QList>
 #include <QPushButton>
+#include <QTreeWidget>
 
 #include "Test.h"
 #include "BarData.h"
@@ -61,9 +62,11 @@ class QtStalkerTester : public QMainWindow
     void createMenuBar ();
     void createToolBars ();
     void restoreSettings ();
+    void createSummaryTab();
     void createRuleTab();
     void createStopsTab();
     void createReportTab();
+    void createRankTab();
     void loadTest (QString &);
     void getSettings ();
     void createSignals (BarData *, PlotLine *line, QHash<int, TestSignal *> &);
@@ -73,6 +76,7 @@ class QtStalkerTester : public QMainWindow
     void runTrades (BarData *data, QList<TestTrade *> &trades);
     void createTrades (BarData *data, QList<TestTrade *> &trades, int type,
 		       QHash<int, TestSignal *> &enterSigs, QHash<int, TestSignal *> &exitSigs);
+    void updateRankings ();
 
   public slots:
     void about ();
@@ -119,6 +123,7 @@ class QtStalkerTester : public QMainWindow
     QPushButton *scriptButton;
     QDoubleSpinBox *account;
     QDoubleSpinBox *volumePercentage;
+    QTreeWidget *rankTree;
 
     // summary stuff
     QLabel *grossProfit;

@@ -60,7 +60,7 @@ class IndicatorPlot : public QWidget
     void signalDraw ();
     void signalDateFlag (bool);
     void signalLogFlag (bool);
-//    void signalNewExternalChartObjectDone();
+    void signalNewExternalChartObjectDone(int);
 
   public:
     enum MouseStatus
@@ -134,8 +134,8 @@ class IndicatorPlot : public QWidget
     void slotNewTrendLine ();
     void slotNewVerticalLine ();
     void calculate ();
-//    void newExternalChartObject (int);
-//    void setExternalChartObjectFlag (int);
+    void newExternalChartObject (int);
+    void setExternalChartObjectFlag (int);
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -208,7 +208,7 @@ class IndicatorPlot : public QWidget
     QRubberBand *rubberBand;
     QPoint mouseOrigin;
 
-//    int externalChartObjectFlag;
+    int externalChartObjectFlag;
 };
 
 #endif
