@@ -32,7 +32,6 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QDoubleSpinBox>
-#include <QTextEdit>
 #include <QStringList>
 #include <QString>
 #include <QLabel>
@@ -64,7 +63,6 @@ class QtStalkerTester : public QMainWindow
     void restoreSettings ();
     void createSummaryTab();
     void createRuleTab();
-    void createStopsTab();
     void createReportTab();
     void createRankTab();
     void loadTest (QString &);
@@ -113,7 +111,6 @@ class QtStalkerTester : public QMainWindow
     QComboBox *exitField;
     QCheckBox *trailingCheck;
     QDoubleSpinBox *trailing;
-    QTextEdit *tradeLog;
     QDialogButtonBox *buttonBox;
     QSpinBox *bars;
     QSpinBox *delay;
@@ -124,6 +121,7 @@ class QtStalkerTester : public QMainWindow
     QDoubleSpinBox *account;
     QDoubleSpinBox *volumePercentage;
     QTreeWidget *rankTree;
+    QTreeWidget *tradeLog;
 
     // summary stuff
     QLabel *grossProfit;

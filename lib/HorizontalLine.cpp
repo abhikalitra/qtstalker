@@ -103,20 +103,21 @@ void HorizontalLine::dialog ()
   dialog->setWindowTitle(s);
   s = tr("Settings");
   int page = 0;
+  int pid = 0;
   dialog->addPage(page, s);
 
   s = tr("Color");
-  dialog->addColorItem(0, page, s, color);
+  dialog->addColorItem(pid++, page, s, color);
 
   s = tr("Price");
-  dialog->addDoubleItem(1, page, s, price);
+  dialog->addDoubleItem(pid++, page, s, price);
 
   s = tr("Label");
-  dialog->addTextItem(2, page, s, label);
+  dialog->addTextItem(pid++, page, s, label);
 
   int def = FALSE;
   s = tr("Set Default");
-  dialog->addCheckItem(3, page, s, def);
+  dialog->addCheckItem(pid++, page, s, def);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -125,10 +126,11 @@ void HorizontalLine::dialog ()
     return;
   }
 
-  dialog->getColor(0, color);
-  price = dialog->getDouble(1);
-  dialog->getText(2, label);
-  def = dialog->getCheck(3);
+  pid = 0;
+  dialog->getColor(pid++, color);
+  price = dialog->getDouble(pid++);
+  dialog->getText(pid++, label);
+  def = dialog->getCheck(pid++);
 
   if (def)
   {

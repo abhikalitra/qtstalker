@@ -106,17 +106,18 @@ void SellArrow::dialog ()
   dialog->setWindowTitle(s);
   s = tr("Settings");
   int page = 0;
+  int pid = 0;
   dialog->addPage(page, s);
 
   s = tr("Color");
-  dialog->addColorItem(0, page, s, color);
+  dialog->addColorItem(pid++, page, s, color);
 
   s = tr("Price");
-  dialog->addDoubleItem(1, page, s, price);
+  dialog->addDoubleItem(pid++, page, s, price);
 
   int def = FALSE;
   s = tr("Set Default");
-  dialog->addCheckItem(2, page, s, def);
+  dialog->addCheckItem(pid++, page, s, def);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -125,9 +126,10 @@ void SellArrow::dialog ()
     return;
   }
 
-  dialog->getColor(0, color);
-  price = dialog->getDouble(1);
-  def = dialog->getCheck(2);
+  pid = 0;
+  dialog->getColor(pid++, color);
+  price = dialog->getDouble(pid++);
+  def = dialog->getCheck(pid++);
 
   if (def)
   {

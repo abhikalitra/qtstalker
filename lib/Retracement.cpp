@@ -212,41 +212,46 @@ void Retracement::dialog ()
   dialog->setWindowTitle(s);
   s = tr("Settings");
   int page = 0;
+  int pid = 0;
   dialog->addPage(page, s);
 
   s = tr("Color");
-  dialog->addColorItem(0, page, s, color);
+  dialog->addColorItem(pid++, page, s, color);
 
   s = tr("High Point");
-  dialog->addDoubleItem(1, page, s, high);
+  dialog->addDoubleItem(pid++, page, s, high);
 
   s = tr("Low Point");
-  dialog->addDoubleItem(2, page, s, low);
-
-  s = tr("Line 1");
-  dialog->addDoubleItem(3, page, s, line1);
-
-  s = tr("Line 2");
-  dialog->addDoubleItem(4, page, s, line2);
-
-  s = tr("Line 3");
-  dialog->addDoubleItem(5, page, s, line3);
-
-  s = tr("Line 4");
-  dialog->addDoubleItem(6, page, s, line4);
-
-  s = tr("Line 5");
-  dialog->addDoubleItem(7, page, s, line5);
-
-  s = tr("Line 6");
-  dialog->addDoubleItem(8, page, s, line6);
+  dialog->addDoubleItem(pid++, page, s, low);
 
   s = tr("Extend");
-  dialog->addCheckItem(9, page, s, extend);
+  dialog->addCheckItem(pid++, page, s, extend);
 
   int def = FALSE;
   s = tr("Set Default");
-  dialog->addCheckItem(10, page, s, def);
+  dialog->addCheckItem(pid++, page, s, def);
+
+  page++;
+  s = tr("Lines");
+  dialog->addPage(page, s);
+
+  s = tr("Line 1");
+  dialog->addDoubleItem(pid++, page, s, line1);
+
+  s = tr("Line 2");
+  dialog->addDoubleItem(pid++, page, s, line2);
+
+  s = tr("Line 3");
+  dialog->addDoubleItem(pid++, page, s, line3);
+
+  s = tr("Line 4");
+  dialog->addDoubleItem(pid++, page, s, line4);
+
+  s = tr("Line 5");
+  dialog->addDoubleItem(pid++, page, s, line5);
+
+  s = tr("Line 6");
+  dialog->addDoubleItem(pid++, page, s, line6);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -255,17 +260,18 @@ void Retracement::dialog ()
     return;
   }
 
-  dialog->getColor(0, color);
-  high = dialog->getDouble(1);
-  low = dialog->getDouble(2);
-  line1 = dialog->getDouble(3);
-  line2 = dialog->getDouble(4);
-  line3 = dialog->getDouble(5);
-  line4 = dialog->getDouble(6);
-  line5 = dialog->getDouble(7);
-  line6 = dialog->getDouble(8);
-  extend = dialog->getCheck(9);
-  def = dialog->getCheck(10);
+  pid = 0;
+  dialog->getColor(pid++, color);
+  high = dialog->getDouble(pid++);
+  low = dialog->getDouble(pid++);
+  extend = dialog->getCheck(pid++);
+  def = dialog->getCheck(pid++);
+  line1 = dialog->getDouble(pid++);
+  line2 = dialog->getDouble(pid++);
+  line3 = dialog->getDouble(pid++);
+  line4 = dialog->getDouble(pid++);
+  line5 = dialog->getDouble(pid++);
+  line6 = dialog->getDouble(pid++);
 
   if (def)
   {

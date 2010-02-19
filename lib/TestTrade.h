@@ -23,6 +23,7 @@
 #define TRADE_HPP
 
 #include <QString>
+#include <QStringList>
 #include <QDateTime>
 
 #include "PlotLine.h"
@@ -59,7 +60,7 @@ class TestTrade
     double getValue ();
     double getDrawDown ();
     double getProfit ();
-    void getLogMessage (QString &);
+    void getLogMessage (QStringList &);
     void update (PlotLine *line, BarData *data, double account);
     int getSignal ();
     void setSignal (int);

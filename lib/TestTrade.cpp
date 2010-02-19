@@ -127,48 +127,43 @@ double TestTrade::getProfit ()
   return profit;
 }
 
-void TestTrade::getLogMessage (QString &d)
+void TestTrade::getLogMessage (QStringList &l)
 {
+  l.clear();
+
   QDateTime dt;
   getEnterDate(dt);
-  d = dt.toString(Qt::ISODate);
+  l.append(dt.toString(Qt::ISODate));
 
   if (getType() == 0)
-    d.append(QObject::tr(" Enter Long: "));
+    l.append(QObject::tr("Enter Long"));
   else
-    d.append(QObject::tr(" Enter Short: "));
+    l.append(QObject::tr("Enter Short"));
 
-  d.append(QString::number(getVolume()));
-  d.append(QObject::tr(" at "));
-  d.append(QString::number(getEnterPrice()));
-
-  d.append("  ");
+  l.append(QString::number(getVolume()));
+  l.append(QString::number(getEnterPrice()));
 
   getExitDate(dt);
-  d.append(dt.toString(Qt::ISODate));
+  l.append(dt.toString(Qt::ISODate));
 
   switch ((Signal) signal)
   {
     case SignalTestEnd:
-      d.append(QObject::tr(" Test End: "));
+      l.append(QObject::tr("Test End"));
       break;
     case SignalTrailingStop:
-      d.append(QObject::tr(" Trailing Stop: "));
+      l.append(QObject::tr("Trailing Stop"));
       break;
     default:
       if (getType() == 0)
-        d.append(QObject::tr(" Exit Long: "));
+        l.append(QObject::tr("Exit Long"));
       else
-        d.append(QObject::tr(" Exit Short: "));
+        l.append(QObject::tr("Exit Short"));
       break;
   }
 
-  d.append(QObject::tr(" at "));
-  d.append(QString::number(getExitPrice()));
-  if (getProfit() >= 0)
-    d.append(QObject::tr(" with a profit of $") + QString::number(getProfit()));
-  else
-    d.append(QObject::tr(" with a loss of $") + QString::number(getProfit()));
+  l.append(QString::number(getExitPrice()));
+  l.append(QString::number(getProfit()));
 }
 
 void TestTrade::update (PlotLine *line, BarData *data, double account)
@@ -192,8 +187,6 @@ void TestTrade::update (PlotLine *line, BarData *data, double account)
   }
   else
     signal = (int) SignalExitLong;
-
-  qDebug() << indexStart << enterDate << enterPrice << indexEnd << exitDate << exitPrice;
 
 
   double trail = 0;

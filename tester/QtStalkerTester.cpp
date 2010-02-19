@@ -54,6 +54,7 @@ QtStalkerTester::QtStalkerTester ()
 
 //  setWindowIcon(QIcon());
   QApplication::setOrganizationName("QtStalkerTester");
+  setWindowTitle("QtStalkerTester: " +  tr("Empty"));
 
   // setup the databases, order is important
   TestConfig config;
@@ -90,7 +91,6 @@ QtStalkerTester::QtStalkerTester ()
 
   createRankTab();
   createRuleTab();
-  createStopsTab();
   createReportTab();
 
   // restore app settings from previous session
@@ -120,6 +120,7 @@ void QtStalkerTester::createRankTab()
 
   rankTree = new QTreeWidget;
   rankTree->setColumnCount(4);
+  rankTree->setRootIsDecorated(FALSE);
   QStringList l;
   l << tr("Test Name") << tr("Win/Loss Ratio") << tr("Gross Profit") << tr("Net Profit");
   rankTree->setHeaderLabels(l);
@@ -252,25 +253,8 @@ void QtStalkerTester::createRuleTab()
   volumePercentage->setValue(20);
   grid->addWidget(volumePercentage, row++, col--);
 
-//  grid->setRowStretch(row, 1);
-
-  tabs->addTab(w, tr("Rule"));
-}
-
-void QtStalkerTester::createStopsTab()
-{
-  QWidget *w = new QWidget(this);
-
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(5);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
-
   // trailing stop parms
-  trailingCheck = new QCheckBox(tr("Trailing"));
+  trailingCheck = new QCheckBox(tr("Trailing Stop"));
   grid->addWidget(trailingCheck, row, col++);
 
   trailing = new QDoubleSpinBox;
@@ -279,9 +263,9 @@ void QtStalkerTester::createStopsTab()
   trailing->setValue(7);
   grid->addWidget(trailing, row++, col--);
 
-  grid->setRowStretch(row, 1);
+  //  grid->setRowStretch(row, 1);
 
-  tabs->addTab(w, tr("Stops"));
+  tabs->addTab(w, tr("Rule"));
 }
 
 void QtStalkerTester::createReportTab()
@@ -438,8 +422,13 @@ void QtStalkerTester::createReportTab()
   balance = new QLabel;
   grid->addWidget(balance, row++, col--);
 
-  tradeLog = new QTextEdit;
-  tradeLog->setReadOnly(TRUE);
+  tradeLog = new QTreeWidget;
+  tradeLog->setColumnCount(8);
+  tradeLog->setRootIsDecorated(FALSE);
+  QStringList l;
+  l << tr("Enter Date") << tr("Enter Signal") << tr("Volume") << tr("Enter Price");
+  l << tr("Exit Date") << tr("Exit Signal") << tr("Exit Price") << tr("Profit");
+  tradeLog->setHeaderLabels(l);
   vbox->addWidget(tradeLog);
 
   tabs->addTab(w, tr("Report"));
@@ -457,8 +446,8 @@ void QtStalkerTester::createActions ()
 
   newAction = new QAction(QIcon(newchart_xpm), tr("&New"), this);
   newAction->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
-  newAction->setStatusTip(tr("New Equipment Database"));
-  newAction->setToolTip(tr("New Equipment Database"));
+  newAction->setStatusTip(tr("New Test"));
+  newAction->setToolTip(tr("New Test"));
   connect(newAction, SIGNAL(activated()), this, SLOT(newTest()));
 
   openAction = new QAction(QIcon(open_xpm), tr("&Open"), this);
@@ -646,6 +635,8 @@ void QtStalkerTester::loadTest (QString &s)
   test.setName(s);
   db.getTest(test);
 
+  setWindowTitle("QtStalkerTester: " + s);
+
   QString ts;
   test.getScript(ts);
 //  QFileInfo fi(scriptFile);
@@ -679,7 +670,25 @@ void QtStalkerTester::loadTest (QString &s)
 
   // summary items
   test.getTradeLog(ts);
-  tradeLog->append(ts);
+
+  tradeLog->clear();
+  tradeLog->setSortingEnabled(FALSE);
+
+  QStringList l = ts.split("\n");
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    QStringList l2 = l[loop].split(",");
+    int loop2;
+    QTreeWidgetItem *item = new QTreeWidgetItem(tradeLog);
+    for (loop2 = 0; loop2 < l2.count(); loop2++)
+      item->setText(loop2, l2[loop2]);
+  }
+
+  for (loop = 0; loop < tradeLog->columnCount(); loop++)
+    tradeLog->resizeColumnToContents(loop);
+  tradeLog->setSortingEnabled(TRUE);
+
   grossProfit->setNum(test.getGrossProfit());
   netProfit->setNum(test.getNetProfit());
   maxDrawDown->setNum(test.getMaxDrawDown());
@@ -804,6 +813,8 @@ void QtStalkerTester::run ()
   runTrades(data, trades);
 
   createSummary(trades);
+
+  updateRankings();
 
   delete data;
   qDeleteAll(trades);
@@ -1031,15 +1042,19 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
   double twinLossRatio = 0;
   double profitable = 0;
   double tbalance = account->value();
+  double tprofit = 0;
   int loop;
   QString s;
+  QStringList tradeMessages;
 
   tradeLog->clear();
-  QStringList tradeLogList;
+  tradeLog->setSortingEnabled(FALSE);
 
   for (loop = 0; loop < trades.count(); loop++)
   {
     TestTrade *trade = trades.at(loop);
+
+    tprofit = tprofit + trade->getProfit();
 
     if (trade->getDrawDown() < 0)
     {
@@ -1058,43 +1073,63 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
     if (trade->getProfit() >= 0)
     {
       winTrades++;
+
       gross = gross + trade->getProfit();
+
       if (trade->getProfit() > tmaxWinTrade)
-      {
 	tmaxWinTrade = trade->getProfit();
-	if (trade->getType() == 0)
-	  tmaxWinLong = tmaxWinTrade;
-	else
-	  tmaxWinShort = tmaxWinTrade;
+
+      if (trade->getType() == 0)
+      {
+	if (trade->getProfit() > tmaxWinLong)
+          tmaxWinLong = trade->getProfit();
+      }
+      else
+      {
+	if (trade->getProfit() > tmaxWinShort)
+	  tmaxWinShort = trade->getProfit();
       }
     }
     else
     {
       lossTrades++;
+
       totalLossTrades = totalLossTrades + trade->getProfit();
+
       if (trade->getProfit() < tmaxLossTrade)
-      {
 	tmaxLossTrade = trade->getProfit();
-	if (trade->getType() == 0)
-	  tmaxLossLong = tmaxLossTrade;
-	else
-	  tmaxLossShort = tmaxLossTrade;
+
+      if (trade->getType() == 0)
+      {
+	if (trade->getProfit() < tmaxLossLong)
+	  tmaxLossLong = trade->getProfit();
+      }
+      else
+      {
+	if (trade->getProfit() < tmaxLossShort)
+	  tmaxLossShort = trade->getProfit();
       }
     }
 
-    trade->getLogMessage(s);
-    tradeLogList.append(s);
+    QStringList l;
+    trade->getLogMessage(l);
+    tradeMessages.append(l.join(","));
+
+    int loop2;
+    QTreeWidgetItem *item = new QTreeWidgetItem(tradeLog);
+    for (loop2 = 0; loop2 < l.count(); loop2++)
+      item->setText(loop2, l[loop2]);
   }
 
-  tradeLogList.sort();
-  for (loop = 0; loop < tradeLogList.count(); loop++)
-    tradeLog->append(tradeLogList[loop]);
+  for (loop = 0; loop < tradeLog->columnCount(); loop++)
+    tradeLog->resizeColumnToContents(loop);
+  tradeLog->setSortingEnabled(TRUE);
 
   // commissions
   commission = (entryComm->value() + exitComm->value()) * trades.count();
 
   // net
-  net = gross - commission;
+  net = tprofit - commission;
 
   tbalance = tbalance + net;
 
@@ -1123,7 +1158,7 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
     profitable = ((double) winTrades / (double) trades.count()) * 100;
 
   // update test and report fields
-  s = tradeLog->toPlainText();
+  s = tradeMessages.join("\n");
   test.setTradeLog(s);
 
   grossProfit->setNum(gross);
@@ -1192,6 +1227,10 @@ void QtStalkerTester::updateRankings ()
   QSqlQuery q;
   db.getRankings(q);
 
+  rankTree->clear();
+
+  rankTree->setSortingEnabled(FALSE);
+
   while (q.next())
   {
     QTreeWidgetItem *item = new QTreeWidgetItem(rankTree);
@@ -1200,5 +1239,11 @@ void QtStalkerTester::updateRankings ()
     item->setText(2, q.value(2).toString());
     item->setText(3, q.value(3).toString());
   }
+
+  int loop;
+  for (loop = 0; loop < rankTree->columnCount(); loop++)
+    rankTree->resizeColumnToContents(loop);
+
+  rankTree->setSortingEnabled(TRUE);
 }
 

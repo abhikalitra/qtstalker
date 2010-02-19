@@ -188,29 +188,30 @@ void TrendLine::dialog ()
   dialog->setWindowTitle(s);
   s = tr("Settings");
   int page = 0;
+  int pid = 0;
   dialog->addPage(page, s);
 
   s = tr("Color");
-  dialog->addColorItem(0, page, s, color);
+  dialog->addColorItem(pid++, page, s, color);
 
   s = tr("Start Price");
-  dialog->addDoubleItem(1, page, s, price);
+  dialog->addDoubleItem(pid++, page, s, price);
 
   s = tr("End Price");
-  dialog->addDoubleItem(2, page, s, price2);
+  dialog->addDoubleItem(pid++, page, s, price2);
 
   s = tr("Bar Field");
-  dialog->addComboItem(3, page, s, fieldList, bar);
+  dialog->addComboItem(pid++, page, s, fieldList, bar);
 
   s = tr("Use Bar");
-  dialog->addCheckItem(4, page, s, useBar);
+  dialog->addCheckItem(pid++, page, s, useBar);
 
   s = tr("Extend");
-  dialog->addCheckItem(5, page, s, extend);
+  dialog->addCheckItem(pid++, page, s, extend);
 
   int def = FALSE;
   s = tr("Set Default");
-  dialog->addCheckItem(6, page, s, def);
+  dialog->addCheckItem(pid++, page, s, def);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -219,13 +220,14 @@ void TrendLine::dialog ()
     return;
   }
 
-  dialog->getColor(0, color);
-  price = dialog->getDouble(1);
-  price2 = dialog->getDouble(2);
-  dialog->getCombo(3, bar);
-  useBar = dialog->getCheck(4);
-  extend = dialog->getCheck(5);
-  def = dialog->getCheck(6);
+  pid = 0;
+  dialog->getColor(pid++, color);
+  price = dialog->getDouble(pid++);
+  price2 = dialog->getDouble(pid++);
+  dialog->getCombo(pid++, bar);
+  useBar = dialog->getCheck(pid++);
+  extend = dialog->getCheck(pid++);
+  def = dialog->getCheck(pid++);
 
   if (def)
   {
