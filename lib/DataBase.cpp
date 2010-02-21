@@ -63,6 +63,7 @@ void DataBase::init ()
   s.append(", log INT");
   s.append(", cus INT");
   s.append(", indicator TEXT");
+  s.append(", settings TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -191,10 +192,10 @@ void DataBase::deleteGroup (QString &n)
 /********************* indicator functions *******************************************/
 /********************************************************************************/
 
-void DataBase::getIndicator (Indicator &parms)
+void DataBase::getIndicator (Indicator &i)
 {
   QString name;
-  parms.getName(name);
+  i.getName(name);
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "SELECT * FROM indicatorIndex WHERE name='" + name + "'";
@@ -208,37 +209,23 @@ void DataBase::getIndicator (Indicator &parms)
   if (! q.next())
     return;
 
-  parms.setEnable(q.value(1).toInt());
-  parms.setTabRow(q.value(2).toInt());
-  parms.setDate(q.value(3).toInt());
-  parms.setLog(q.value(4).toInt());
-  parms.setCUS(q.value(5).toInt());
+  i.setEnable(q.value(1).toInt());
+  i.setTabRow(q.value(2).toInt());
+  i.setDate(q.value(3).toInt());
+  i.setLog(q.value(4).toInt());
+  i.setCUS(q.value(5).toInt());
   s = q.value(6).toString();
-  parms.setIndicator(s);
+  i.setIndicator(s);
 
-  // load the parms from the indicator
-  s = "SELECT * FROM INDICATOR_PARMS_" + name;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "DataBase::getIndicator: " << q.lastError().text();
-    return;
-  }
-
+  s = q.value(7).toString();
   Setting set;
-  while (q.next())
-  {
-    QString k = q.value(0).toString();
-    QString d = q.value(1).toString();
-    set.setData(k, d);
-  }
-
-  parms.setSettings(set);
+  set.parse(s);
+  i.setSettings(set);
 }
 
 void DataBase::setIndicator (Indicator &i)
 {
-  QString name, enable, tabRow, date, log, cus, indicator;
+  QString name, enable, tabRow, date, log, cus, indicator, settings;
   i.getName(name);
   enable = QString::number(i.getEnable());
   tabRow = QString::number(i.getTabRow());
@@ -246,6 +233,10 @@ void DataBase::setIndicator (Indicator &i)
   log = QString::number(i.getLog());
   cus = QString::number(i.getCUS());
   i.getIndicator(indicator);
+
+  Setting set;
+  i.getSettings(set);
+  set.getString(settings);
 
   transaction();
 
@@ -258,43 +249,11 @@ void DataBase::setIndicator (Indicator &i)
   s.append("," + log);
   s.append("," + cus);
   s.append(",'" + indicator + "'");
+  s.append(",'" + settings + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::setIndicator: save index" << q.lastError().text();
-
-  // remove the parms table
-  QString table = "INDICATOR_PARMS_" + name;
-  s = "DROP TABLE " + table;
-  q.exec(s);
-
-  // re-create the parms table
-  s = "CREATE TABLE IF NOT EXISTS " + table + " (";
-  s.append("key TEXT");
-  s.append(", data TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::setIndicator: create parms table" << q.lastError().text();
-
-  Setting set;
-  i.getSettings(set);
-  QStringList keyList;
-  set.getKeyList(keyList);
-  int loop;
-  for (loop = 0; loop < keyList.count(); loop++)
-  {
-    QString d;
-    set.getData(keyList[loop], d);
-
-    s = "INSERT OR REPLACE INTO " + table + " VALUES (";
-    s.append("'" + keyList[loop] + "'");
-    s.append(",'" + d + "'");
-    s.append(")");
-    q.exec(s);
-    if (q.lastError().isValid())
-      qDebug() << "DataBase::setIndicator: save parm" << q.lastError().text();
-  }
 
   commit();
 }
@@ -309,11 +268,6 @@ void DataBase::deleteIndicator (QString &name)
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::deleteIndicatorIndex: " << q.lastError().text();
-
-  s = "DROP TABLE INDICATOR_PARMS_" + name;
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::deleteIndicator: drop parms table" << q.lastError().text();
 }
 
 void DataBase::getIndicatorList (QStringList &l)

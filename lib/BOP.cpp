@@ -148,7 +148,7 @@ PlotLine * BOP::getBOP (BarData *data, int smoothing, int type)
   return line;
 }
 
-int BOP::dialog ()
+int BOP::dialog (int)
 {
   int page = 0;
   QString k, d;

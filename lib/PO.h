@@ -43,7 +43,7 @@ class PO : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getPO (PlotLine *in, int fast, int slow, int ma, int method);
-    int dialog ();
+    int dialog (int);
 
   private:
     QStringList methodList;

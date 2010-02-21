@@ -195,7 +195,7 @@ PlotLine * RSI::getRSI (PlotLine *in, int period, int smoothing, int type)
   return line;
 }
 
-int RSI::dialog ()
+int RSI::dialog (int)
 {
   int page = 0;
   QString k, d;

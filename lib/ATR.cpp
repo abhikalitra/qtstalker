@@ -148,7 +148,7 @@ PlotLine * ATR::getATR (BarData *data, int period, int method)
   return line;
 }
 
-int ATR::dialog ()
+int ATR::dialog (int)
 {
   int page = 0;
   QString k, d;

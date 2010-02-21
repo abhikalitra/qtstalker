@@ -35,6 +35,7 @@
 #include "Indicator.h"
 #include "Setting.h"
 #include "PrefDialog.h"
+#include "TestSignal.h"
 
 
 class IndicatorBase
@@ -94,13 +95,15 @@ class IndicatorBase
     virtual ~IndicatorBase ();
     virtual int getIndicator (Indicator &ind, BarData *data);
     virtual int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    virtual int dialog ();
+    virtual int dialog (int);
+    virtual int test (BarData *data, TestSignal &sigs);
     PlotLine * getMA (PlotLine *_in, int period, int type);
     void setSettings (Indicator &_indicator);
     void getSettings (Indicator &_indicator);
     void getIndicatorList (QStringList &, int flag);
     void getMAList (QStringList &);
     void getDialogSettings (PrefDialog *dialog);
+    void getIndicator (QString &);
 
   protected:
     Setting settings;

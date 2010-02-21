@@ -52,6 +52,7 @@ class Indicator
     void setSettings(Setting &);
     void getSettings(Setting &);
     void addLine (PlotLine *);
+    void deleteAll ();
 
   protected:
     QList<PlotLine *> lines;

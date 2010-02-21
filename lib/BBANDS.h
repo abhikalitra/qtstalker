@@ -51,7 +51,7 @@ class BBANDS : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getBBANDS (PlotLine *in, int period, double udev, double ldev, int ma, QList<PlotLine *> &l);
-    int dialog ();
+    int dialog (int);
 
   private:
     QString ucKey;

@@ -46,7 +46,7 @@ class QuoteDataBase
     void getLastDate (QString &table, QDateTime &date);
     void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate,
 			   BarData::BarLength barLength);
-    int getTableName (QString &symbol, QString &table);
+    int getIndexData (QString &symbol, QString &table, BarData *data);
     void setChart (QList<Bar> *bars);
 };
 

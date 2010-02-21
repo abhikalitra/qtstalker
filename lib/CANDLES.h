@@ -124,7 +124,7 @@ class CANDLES : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getCANDLES (BarData *data, QColor &color);
-    int dialog ();
+    int dialog (int);
     PlotLine * getMethod (BarData *data, int method, double pen);
 
   protected:

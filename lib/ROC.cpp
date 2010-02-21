@@ -211,7 +211,7 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int
   return line;
 }
 
-int ROC::dialog ()
+int ROC::dialog (int)
 {
   int page = 0;
   QString k, d;

@@ -41,7 +41,7 @@ class BETA : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getBETA (PlotLine *in, PlotLine *in2, int period);
-    int dialog ();
+    int dialog (int);
 
   private:
 };

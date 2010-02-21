@@ -49,7 +49,7 @@ class MAMA : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getMAMA (PlotLine *in, double fast, double slow, QList<PlotLine *> &l);
-    int dialog ();
+    int dialog (int);
 
   protected:
 };

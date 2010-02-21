@@ -217,7 +217,7 @@ PlotLine * CORREL::getCORREL (PlotLine *in, PlotLine *in2, int period)
   return line;
 }
 
-int CORREL::dialog ()
+int CORREL::dialog (int)
 {
   int page = 0;
   QString k, d;

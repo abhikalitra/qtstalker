@@ -28,6 +28,7 @@
 
 #include "PlotLine.h"
 #include "BarData.h"
+#include "TestSignal.h"
 
 class TestTrade
 {
@@ -66,6 +67,11 @@ class TestTrade
     void setSignal (int);
     void setTrailing (double);
     double calculateTrailingStop (double price);
+    void createTrades (BarData *data, QList<TestTrade *> &trades, int type, double volPer,
+		       int delay, int fieldIndex, TestSignal &enterSigs, TestSignal &exitSigs);
+    void startTrade (int pos, BarData *data, TestTrade *trade, int delay, int fieldIndex);
+    void endTrade (int pos, BarData *data, TestTrade *trade, int delay, int fieldIndex);
+
 
   private:
     QDateTime enterDate;

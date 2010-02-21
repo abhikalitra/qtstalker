@@ -60,6 +60,10 @@ void TestDataBase::init ()
   s = "CREATE TABLE IF NOT EXISTS results (";
   s.append("name TEXT PRIMARY KEY");
   s.append(",script TEXT");
+  s.append(",scriptCheck INT");
+  s.append(",shellCommand TEXT");
+  s.append(",longCheck INT");
+  s.append(",shortCheck INT");
   s.append(",symbol TEXT");
   s.append(",enterField INT");
   s.append(",exitField INT");
@@ -72,6 +76,14 @@ void TestDataBase::init ()
   s.append(",volumePercentage REAL");
   s.append(",trailingStop REAL");
   s.append(",trailingCheck INT");
+  s.append(",enterLongIndicator TEXT");
+  s.append(",exitLongIndicator TEXT");
+  s.append(",enterShortIndicator TEXT");
+  s.append(",exitShortIndicator TEXT");
+  s.append(",enterLongIndicatorSettings TEXT");
+  s.append(",exitLongIndicatorSettings TEXT");
+  s.append(",enterShortIndicatorSettings TEXT");
+  s.append(",exitShortIndicatorSettings TEXT");
 
   // summary data
   s.append(",grossProfit REAL");
@@ -131,137 +143,38 @@ void TestDataBase::getTests (QStringList &l)
   l.sort();
 }
 
-void TestDataBase::getTest (Test &test)
+void TestDataBase::getTest (QString &name, QSqlQuery &q)
 {
-  QString name;
-  test.getName(name);
-
-  QSqlQuery q(QSqlDatabase::database("testData"));
+  QSqlQuery tq(QSqlDatabase::database("testData"));
   QString s = "SELECT * FROM results WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
+  tq.exec(s);
+  if (tq.lastError().isValid())
   {
-    qDebug() << "TestDataBase::getTest: " << q.lastError().text();
+    qDebug() << "TestDataBase::getTest: " << tq.lastError().text();
     return;
   }
 
-  while (q.next())
-  {
-    int col = 1;
-    s = q.value(col++).toString();
-    test.setScript(s);
-
-    s = q.value(col++).toString();
-    test.setSymbol(s);
-
-    test.setEnterField(q.value(col++).toInt());
-    test.setExitField(q.value(col++).toInt());
-    test.setBars(q.value(col++).toInt());
-    test.setBarLength(q.value(col++).toInt());
-    test.setEntryComm(q.value(col++).toDouble());
-    test.setExitComm(q.value(col++).toDouble());
-    test.setDelay(q.value(col++).toInt());
-    test.setAccount(q.value(col++).toDouble());
-    test.setVolumePercentage(q.value(col++).toDouble());
-    test.setTrailingStop(q.value(col++).toDouble());
-    test.setTrailingCheck(q.value(col++).toInt());
-
-    // summary stuff
-    test.setGrossProfit(q.value(col++).toDouble());
-    test.setNetProfit(q.value(col++).toDouble());
-    test.setMaxDrawDown(q.value(col++).toDouble());
-    test.setAvgDrawDown(q.value(col++).toDouble());
-    test.setCommissions(q.value(col++).toDouble());
-    test.setWinLossRatio(q.value(col++).toDouble());
-    test.setTrades(q.value(col++).toInt());
-    test.setProfitable(q.value(col++).toDouble());
-    test.setWinTrades(q.value(col++).toInt());
-    test.setLossTrades(q.value(col++).toInt());
-    test.setMaxWinTrade(q.value(col++).toDouble());
-    test.setMaxLossTrade(q.value(col++).toDouble());
-    test.setAvgWinTrade(q.value(col++).toDouble());
-    test.setAvgLossTrade(q.value(col++).toDouble());
-    test.setMaxWinLong(q.value(col++).toDouble());
-    test.setMaxLossLong(q.value(col++).toDouble());
-    test.setMaxWinShort(q.value(col++).toDouble());
-    test.setMaxLossShort(q.value(col++).toDouble());
-
-    s = q.value(col++).toString();
-    test.setTradeLog(s);
-
-    test.setBalance(q.value(col++).toDouble());
-  }
+  q = tq;
 }
 
-void TestDataBase::setTest (Test &test)
+void TestDataBase::setTest (QString &d)
 {
-  QString name, ts;
-  test.getName(name);
-
   transaction();
 
   QSqlQuery q(QSqlDatabase::database("testData"));
-  QString s = "INSERT OR REPLACE INTO results  VALUES (";
-
-  s.append("'" + name + "'");
-
-  test.getScript(ts);
-  s.append(",'" + ts + "'");
-
-  test.getSymbol(ts);
-  s.append(",'" + ts + "'");
-
-  s.append("," + QString::number(test.getEnterField()));
-  s.append("," + QString::number(test.getExitField()));
-  s.append("," + QString::number(test.getBars()));
-  s.append("," + QString::number(test.getBarLength()));
-  s.append("," + QString::number(test.getEntryComm()));
-  s.append("," + QString::number(test.getExitComm()));
-  s.append("," + QString::number(test.getDelay()));
-  s.append("," + QString::number(test.getAccount()));
-  s.append("," + QString::number(test.getVolumePercentage()));
-  s.append("," + QString::number(test.getTrailingStop()));
-  s.append("," + QString::number(test.getTrailingCheck()));
-
-  // summary stuff
-  s.append("," + QString::number(test.getGrossProfit()));
-  s.append("," + QString::number(test.getNetProfit()));
-  s.append("," + QString::number(test.getMaxDrawDown()));
-  s.append("," + QString::number(test.getAvgDrawDown()));
-  s.append("," + QString::number(test.getCommissions()));
-  s.append("," + QString::number(test.getWinLossRatio()));
-  s.append("," + QString::number(test.getTrades()));
-  s.append("," + QString::number(test.getProfitable()));
-  s.append("," + QString::number(test.getWinTrades()));
-  s.append("," + QString::number(test.getLossTrades()));
-  s.append("," + QString::number(test.getMaxWinTrade()));
-  s.append("," + QString::number(test.getMaxLossTrade()));
-  s.append("," + QString::number(test.getAvgWinTrade()));
-  s.append("," + QString::number(test.getAvgLossTrade()));
-  s.append("," + QString::number(test.getMaxWinLong()));
-  s.append("," + QString::number(test.getMaxLossLong()));
-  s.append("," + QString::number(test.getMaxWinShort()));
-  s.append("," + QString::number(test.getMaxLossShort()));
-
-  test.getTradeLog(ts);
-  s.append(",'" + ts + "'");
-
-  s.append("," + QString::number(test.getBalance()));
-
-  s.append(")");
-  q.exec(s);
+  q.exec(d);
   if (q.lastError().isValid())
+  {
     qDebug() << "TestDataBase::setTest:" << q.lastError().text();
+    qDebug() << d;
+  }
 
   commit();
 }
 
-void TestDataBase::deleteTest (Test &test)
+void TestDataBase::deleteTest (QString &name)
 {
   transaction();
-
-  QString name;
-  test.getName(name);
 
   QSqlQuery q(QSqlDatabase::database("testData"));
   QString s = "DELETE FROM results WHERE name='" + name + "'";

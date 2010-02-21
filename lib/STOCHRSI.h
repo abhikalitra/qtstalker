@@ -50,7 +50,7 @@ class STOCHRSI : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getSTOCHRSI (PlotLine *in, int period, int fkp, int fdp, int ma, QList<PlotLine *> &l);
-    int dialog ();
+    int dialog (int);
 
   protected:
 };

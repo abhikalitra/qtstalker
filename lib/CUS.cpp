@@ -50,7 +50,7 @@ int CUS::getIndicator (Indicator &_ind, BarData *_data)
   return rc;
 }
 
-int CUS::dialog ()
+int CUS::dialog (int)
 {
   int page = 0;
   QString k, d;

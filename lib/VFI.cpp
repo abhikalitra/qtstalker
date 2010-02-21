@@ -148,7 +148,7 @@ PlotLine * VFI::getVFI (BarData *data, int period)
   return vfi;
 }
 
-int VFI::dialog ()
+int VFI::dialog (int)
 {
   int page = 0;
   QString k, d;

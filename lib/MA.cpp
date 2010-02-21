@@ -21,6 +21,7 @@
 
 #include "MA.h"
 #include "BARS.h"
+#include "COMPARE.h"
 
 #include <QtDebug>
 
@@ -35,6 +36,9 @@ MA::MA ()
   settings.setData(Input, "Close");
   settings.setData(Period, 14);
   settings.setData(Method, "SMA");
+  settings.setData(OptPeriodLow, 10);
+  settings.setData(OptPeriodHigh, 20);
+  settings.setData(Operator, "<");
 
   methodList << "EMA";
   methodList << "DEMA";
@@ -213,7 +217,7 @@ PlotLine * MA::getMA (PlotLine *in, int period, int method)
   return line;
 }
 
-int MA::dialog ()
+int MA::dialog (int f)
 {
   int page = 0;
   QString k, d;
@@ -240,6 +244,9 @@ int MA::dialog ()
   settings.getData(Method, d);
   dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
+  if (f)
+    testDialog(dialog, page);
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -251,5 +258,73 @@ int MA::dialog ()
 
   delete dialog;
   return rc;
+}
+
+void MA::testDialog (PrefDialog *dialog, int page)
+{
+  page++;
+  QString d;
+  QString k = QObject::tr("Test");
+  dialog->addPage(page, k);
+
+  settings.getData(Operator, d);
+  dialog->addComboItem(Operator, page, QObject::tr("Input <Operator> MA"), opList, d);
+
+  dialog->addIntItem(OptPeriodLow, page, QObject::tr("Optimazation Period Low"),
+		     settings.getInt(OptPeriodLow), -100000, 100000);
+
+  dialog->addIntItem(OptPeriodHigh, page, QObject::tr("Optimazation Period High"),
+		     settings.getInt(OptPeriodHigh), -100000, 100000);
+}
+
+int MA::test (BarData *data, TestSignal &sigs)
+{
+  QString s;
+  settings.getData(Input, s);
+  PlotLine *in = data->getInput(data->getInputType(s));
+  if (! in)
+  {
+    qDebug() << indicator << "::test: input not found" << s;
+    return 1;
+  }
+
+  int period = settings.getInt(Period);
+
+  settings.getData(Method, s);
+  int method = methodList.indexOf(s);
+
+  PlotLine *ma = getMA(in, period, method);
+  if (! ma)
+  {
+    qDebug() << indicator << "::test: getMA error" << s;
+    delete in;
+    return 1;
+  }
+
+  COMPARE c;
+  settings.getData(Operator, s);
+  int op = opList.indexOf(s);
+  PlotLine *comp = c.compareAA(in, ma, op);
+  if (! comp)
+  {
+    qDebug() << indicator << "::test: compare error" << s;
+    delete in;
+    delete ma;
+    return 1;
+  }
+
+  qDebug() << in->getSize() << ma->getSize() << comp->getSize();
+
+  delete in;
+  delete ma;
+
+  if (sigs.createSignals(data, comp))
+  {
+    qDebug() << indicator << "::test: createSignals error" << s;
+    return 1;
+  }
+
+  delete comp;
+  return 0;
 }
 

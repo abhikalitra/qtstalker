@@ -232,7 +232,7 @@ int STOCHRSI::getSTOCHRSI (PlotLine *in, int period, int fkp, int fdp, int ma, Q
   return 0;
 }
 
-int STOCHRSI::dialog ()
+int STOCHRSI::dialog (int)
 {
   int page = 0;
   QString k, d;

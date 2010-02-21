@@ -178,7 +178,7 @@ PlotLine * CCI::getCCI (BarData *data, int period, int smoothing, int type)
   return line;
 }
 
-int CCI::dialog ()
+int CCI::dialog (int)
 {
   int page = 0;
   QString k, d;

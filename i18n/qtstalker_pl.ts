@@ -2,9 +2,72 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
+    <name>BaseCO</name>
+    <message>
+        <source>Buy Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trend Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BuyArrow</name>
     <message>
         <source>Select point to place Buy Arrow...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buy Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Buy Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Default</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -527,10 +590,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invisible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Horizontal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -551,87 +610,11 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Buy Arrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High Point</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low Point</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Horizontal Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sell Arrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trend Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vertical Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1179,87 +1162,43 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> Enter Long: </source>
+        <source>Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> at </source>
+        <source>Input &lt;Operator&gt; MA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> Enter Short: </source>
+        <source>Optimazation Period Low</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> Exit Long: </source>
+        <source>Optimazation Period High</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> with a profit of $</source>
+        <source>Enter Long</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> with a loss of $</source>
+        <source>Enter Short</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> Exit Short: </source>
+        <source>Test End</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Retracement</source>
+        <source>Trailing Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit Buy Arrow</source>
+        <source>Exit Long</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Set Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Sell Arrow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Test End: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Trailing Stop: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Vertical Line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TrendLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit TrendLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Bar</source>
+        <source>Exit Short</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1279,14 +1218,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trailing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stops</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1378,10 +1309,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New Equipment Database</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Open</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1434,10 +1361,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select Test Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbol</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1470,10 +1393,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Trade Delay</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1487,6 +1406,78 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Account Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rank</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shell Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trailing Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1684,6 +1675,34 @@ a partial match like %SI or %RSI%</source>
         <source>1 Minute Bars</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Buy Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trend Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Line</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Retracement</name>
@@ -1693,6 +1712,70 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Select Retracement low point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lines</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1791,11 +1874,79 @@ Are you sure you want to remove this script?</source>
         <source>Select point to place Sell Arrow...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Sell Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Default</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Text</name>
     <message>
         <source>Select point to place Text...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Vertical Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Default</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1809,11 +1960,107 @@ Are you sure you want to remove this script?</source>
         <source>Select TrendLine ending point...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TrendLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit TrendLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Default</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>VerticalLine</name>
     <message>
         <source>Select point to place Vertical Line...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Vertical Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Default</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

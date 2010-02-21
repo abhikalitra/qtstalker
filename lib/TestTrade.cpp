@@ -270,4 +270,111 @@ double TestTrade::calculateTrailingStop (double price)
   return ts;
 }
 
+void TestTrade::createTrades (BarData *data, QList<TestTrade *> &trades, int type, double volPer,
+			      int delay, int fieldIndex, TestSignal &enterSigs, TestSignal &exitSigs)
+{
+  int loop;
+  int status = 0;
+  for (loop = 0; loop < data->count(); loop++)
+  {
+    switch (status)
+    {
+      case 1: // currently in trade, check if we exit trade
+      {
+	if (exitSigs.getBar(loop))
+	{
+	  status = 0; // exit
+	  TestTrade *trade = trades.at(trades.count() - 1);
+	  endTrade(loop, data, trade, delay, fieldIndex);
+	}
+	break;
+      }
+      default:
+      {
+	if (enterSigs.getBar(loop))
+	{
+	  status = 1; // we are in a trade
+	  TestTrade *trade = new TestTrade;
+	  trade->setType(type);
+          trade->setVolumePercentage(volPer);
+	  startTrade(loop, data, trade, delay, fieldIndex);
+	  trades.append(trade);
+	}
+	break;
+      }
+    }
+  }
+}
+
+void TestTrade::startTrade (int pos, BarData *data, TestTrade *trade, int delay, int fieldIndex)
+{
+  int offset = pos + delay;
+  if (offset >= data->count())
+    offset = pos;
+
+  QDateTime dt;
+  data->getDate(offset, dt);
+  trade->setEnterDate(dt, offset);
+
+  switch (fieldIndex)
+  {
+    case 0:
+      trade->setEnterPrice(data->getOpen(offset));
+      break;
+    case 1:
+      trade->setEnterPrice(data->getHigh(offset));
+      break;
+    case 2:
+      trade->setEnterPrice(data->getLow(offset));
+      break;
+    case 4:
+      trade->setEnterPrice(data->getAvgPrice(offset));
+      break;
+    case 5:
+      trade->setEnterPrice(data->getMedianPrice(offset));
+      break;
+    case 6:
+      trade->setEnterPrice(data->getTypicalPrice(offset));
+      break;
+    default:
+      trade->setEnterPrice(data->getClose(offset));
+      break;
+  }
+}
+
+void TestTrade::endTrade (int pos, BarData *data, TestTrade *trade, int delay, int fieldIndex)
+{
+  int offset = pos + delay;
+  if (offset >= data->count())
+    offset = pos;
+
+  QDateTime dt;
+  data->getDate(offset, dt);
+  trade->setExitDate(dt, offset);
+
+  switch (fieldIndex)
+  {
+    case 0:
+      trade->setExitPrice(data->getOpen(offset));
+      break;
+    case 1:
+      trade->setExitPrice(data->getHigh(offset));
+      break;
+    case 2:
+      trade->setExitPrice(data->getLow(offset));
+      break;
+    case 4:
+      trade->setExitPrice(data->getAvgPrice(offset));
+      break;
+    case 5:
+      trade->setExitPrice(data->getMedianPrice(offset));
+      break;
+    case 6:
+      trade->setExitPrice(data->getTypicalPrice(offset));
+      break;
+    default:
+      trade->setExitPrice(data->getClose(offset));
+      break;
+  }
+}
 

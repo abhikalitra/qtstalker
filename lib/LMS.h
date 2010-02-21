@@ -50,7 +50,7 @@ class LMS : public IndicatorBase
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     void getLMS (QList<PlotLine *> &l, BarData *data);
     PlotLine * slowK(PlotLine * inLine, int kPeriod, int slowKperiod);
-    int dialog ();
+    int dialog (int);
 
   protected:
     int cycleFlag;

@@ -266,7 +266,7 @@ int BBANDS::getBBANDS (PlotLine *in, int period, double udev, double ldev, int m
   return 0;
 }
 
-int BBANDS::dialog ()
+int BBANDS::dialog (int)
 {
   int page = 0;
   QString k, d;

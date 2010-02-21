@@ -176,7 +176,7 @@ PlotLine * MOM::getMOM (PlotLine *in, int period, int smoothing, int type)
   return line;
 }
 
-int MOM::dialog ()
+int MOM::dialog (int)
 {
   int page = 0;
   QString k, d;

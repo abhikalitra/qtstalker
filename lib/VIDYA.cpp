@@ -262,7 +262,7 @@ PlotLine * VIDYA::getVIDYA (PlotLine *inSignal, int period, int volPeriod)
   return out;
 }
 
-int VIDYA::dialog ()
+int VIDYA::dialog (int)
 {
   int page = 0;
   QString k, d;

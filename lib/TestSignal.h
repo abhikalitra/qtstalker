@@ -22,18 +22,20 @@
 #ifndef TESTSIGNAL_HPP
 #define TESTSIGNAL_HPP
 
+#include "BarData.h"
+#include "PlotLine.h"
+
+#include <QHash>
+
 class TestSignal
 {
   public:
     TestSignal ();
-    int getBar ();
-    void setBar (int);
-    int getSignal ();
-    void addSignal ();
-    
+    int createSignals (BarData *data, PlotLine *line);
+    int getBar (int);
+
   protected:
-    int bar;
-    int signal;
+    QHash<int, int> sigs;
 };
 
 #endif

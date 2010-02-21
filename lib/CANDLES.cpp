@@ -276,7 +276,7 @@ PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
   return line;
 }
 
-int CANDLES::dialog ()
+int CANDLES::dialog (int)
 {
   int page = 0;
   QString k, d;

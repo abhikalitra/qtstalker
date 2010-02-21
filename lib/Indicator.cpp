@@ -128,3 +128,9 @@ void Indicator::addLine(PlotLine *d)
   lines.append(d);
 }
 
+void Indicator::deleteAll ()
+{
+  qDeleteAll(lines);
+  lines.clear();
+}
+

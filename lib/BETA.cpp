@@ -190,7 +190,7 @@ PlotLine * BETA::getBETA (PlotLine *in, PlotLine *in2, int period)
   return line;
 }
 
-int BETA::dialog ()
+int BETA::dialog (int)
 {
   int page = 0;
   QString k, d;

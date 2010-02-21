@@ -42,7 +42,7 @@ class VIDYA : public IndicatorBase
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     void calcCMO (PlotLine *outSignal, PlotLine *inSignal, int iPeriod);
     PlotLine * getVIDYA (PlotLine *inSignal, int period, int volPeriod);
-    int dialog ();
+    int dialog (int);
 
   protected:
 };

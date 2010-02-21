@@ -41,7 +41,7 @@ class LINEARREG : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getLINEARREG (PlotLine *in, int period, int method);
-    int dialog ();
+    int dialog (int);
 
   protected:
     QStringList methodList;

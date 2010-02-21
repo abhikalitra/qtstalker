@@ -222,7 +222,7 @@ int MAMA::getMAMA (PlotLine *in, double fast, double slow, QList<PlotLine *> &l)
   return 0;
 }
 
-int MAMA::dialog ()
+int MAMA::dialog (int)
 {
   int page = 0;
   QString k, d;

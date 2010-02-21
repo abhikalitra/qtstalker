@@ -67,10 +67,15 @@ void PrefDialog::addPage (int page, QString &title)
 {
   QWidget *w = new QWidget(this);
 
+  QVBoxLayout *vbox = new QVBoxLayout;
+  w->setLayout(vbox);
+
   QGridLayout *grid = new QGridLayout;
   grid->setSpacing(5);
   grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
+  vbox->addLayout(grid);
+
+  vbox->addStretch(1);
 
   tabs->addTab(w, title);
 

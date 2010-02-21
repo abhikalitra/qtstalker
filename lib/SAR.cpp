@@ -139,7 +139,7 @@ PlotLine * SAR::getSAR (BarData *data, double init, double max)
   return line;
 }
 
-int SAR::dialog ()
+int SAR::dialog (int)
 {
   int page = 0;
   QString k, d;

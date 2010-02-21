@@ -21,29 +21,49 @@
 
 #include "TestSignal.h"
 
+#include <QDebug>
+
 TestSignal::TestSignal ()
 {
-  bar = -1;
-  signal = 0;
 }
 
-int TestSignal::getBar ()
+int TestSignal::createSignals (BarData *data, PlotLine *line)
 {
-  return bar;
+  int barLoop = data->count() - line->getSize();
+  if (barLoop < 0)
+  {
+    qDebug() << "IndicatorBase::createSignals" << line->getSize() << "size > bars size";
+    return 1;
+  }
+
+  int status = 0;
+  int lineLoop;
+  for (lineLoop = 0; lineLoop < line->getSize(); lineLoop++, barLoop++)
+  {
+    switch (status)
+    {
+      case 1: // we are inside a signal
+        if (line->getData(lineLoop) == 0)
+          status = 0;
+	break;
+      default: // we are outside a signal
+        if (line->getData(lineLoop) == 1)
+        {
+          status = 1;
+	  sigs.insert(barLoop, barLoop);
+	}
+	break;
+    }
+  }
+
+  return 0;
 }
 
-void TestSignal::setBar (int d)
+int TestSignal::getBar (int i)
 {
-  bar = d;
-}
-
-int TestSignal::getSignal ()
-{
-  return signal;
-}
-
-void TestSignal::addSignal ()
-{
-  signal++;
+  int rc = 0;
+  if (sigs.contains(i))
+    rc = sigs.value(i);
+  return rc;
 }
 

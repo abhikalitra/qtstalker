@@ -44,10 +44,21 @@
 #include "BarData.h"
 #include "ExScript.h"
 #include "QuoteDataBase.h"
+#include "IndicatorFactory.h"
+#include "Indicator.h"
+#include "Setting.h"
 
 QtStalkerTester::QtStalkerTester ()
 {
+  enterLongIndicator = 0;
+  exitLongIndicator = 0;
+  enterShortIndicator = 0;
+  exitShortIndicator = 0;
+
   priceList << "Open" << "High" << "Low" << "Close" << "AvgPrice" << "MedianPrice" << "TypicalPrice";
+
+  IndicatorBase ib;
+  ib.getIndicatorList(indicatorList, 1);
 
   BarData bd;
   bd.getBarLengthList(barLengthList);
@@ -107,6 +118,17 @@ QtStalkerTester::QtStalkerTester ()
 
 QtStalkerTester::~QtStalkerTester ()
 {
+  if (enterLongIndicator)
+    delete enterLongIndicator;
+
+  if (exitLongIndicator)
+    delete exitLongIndicator;
+
+  if (enterShortIndicator)
+    delete enterShortIndicator;
+
+  if (exitShortIndicator)
+    delete exitShortIndicator;
 }
 
 void QtStalkerTester::createRankTab()
@@ -135,25 +157,141 @@ void QtStalkerTester::createRuleTab()
 {
   QWidget *w = new QWidget(this);
 
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setMargin(5);
+  hbox->setSpacing(10);
+  w->setLayout(hbox);
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(0);
+  vbox->setSpacing(5);
+  hbox->addLayout(vbox);
+
   QGridLayout *grid = new QGridLayout;
   grid->setSpacing(5);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
+  vbox->addLayout(grid);
   int row = 0;
   int col = 0;
 
-  // script parms
-  QLabel *label = new QLabel(tr("Script Command"));
-  grid->addWidget(label, row, col++);
+  // script box area
+  scriptCheck = new QGroupBox;
+  scriptCheck->setCheckable(TRUE);
+  scriptCheck->setTitle(tr("Run Script"));
+  scriptCheck->setChecked(FALSE);
+  connect(scriptCheck, SIGNAL(toggled(bool)), this, SLOT(scriptCheckChanged(bool)));
+  grid->addWidget(scriptCheck, row++, col);
 
-//  scriptButton = new QPushButton;
-//  grid->addWidget(scriptButton, row++, col--);
-//  connect(scriptButton, SIGNAL(pressed()), this, SLOT(scriptButtonPressed()));
-  script = new QLineEdit;
-  grid->addWidget(script, row++, col--);
+    QGridLayout *tgrid = new QGridLayout;
+    tgrid->setSpacing(5);
+    tgrid->setColumnStretch(1, 1);
+    scriptCheck->setLayout(tgrid);
+
+    QLabel *label = new QLabel(tr("Shell Command"));
+    tgrid->addWidget(label, 0, 0);
+
+    shellCommand = new QLineEdit;
+    tgrid->addWidget(shellCommand, 0, 1);
+
+    label = new QLabel(tr("Script File"));
+    tgrid->addWidget(label, 1, 0);
+
+    script = new QLineEdit;
+    tgrid->addWidget(script, 1, 1);
+
+    scriptButton = new QToolButton;
+    scriptButton->setText(QString("..."));
+    tgrid->addWidget(scriptButton, 1, 2);
+    connect(scriptButton, SIGNAL(pressed()), this, SLOT(scriptButtonPressed()));
+
+
+  // long box area
+  longCheck = new QGroupBox;
+  longCheck->setCheckable(TRUE);
+  longCheck->setTitle(tr("Long"));
+  longCheck->setChecked(FALSE);
+  grid->addWidget(longCheck, row++, col);
+
+    tgrid = new QGridLayout;
+    tgrid->setSpacing(5);
+    tgrid->setColumnStretch(1, 1);
+    longCheck->setLayout(tgrid);
+
+    // enter long line
+    label = new QLabel(tr("Enter Long"));
+    tgrid->addWidget(label, 0, 0);
+
+    enterLongCombo = new QComboBox;
+    connect(enterLongCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(enterLongComboChanged()));
+    enterLongCombo->addItems(indicatorList);
+    tgrid->addWidget(enterLongCombo, 0, 1);
+
+    enterLongButton = new QToolButton;
+    tgrid->addWidget(enterLongButton, 0, 2);
+    enterLongButton->setText(QString("..."));
+    connect(enterLongButton, SIGNAL(pressed()), this, SLOT(enterLongButtonPressed()));
+
+    // exit long line
+    label = new QLabel(tr("Exit Long"));
+    tgrid->addWidget(label, 1, 0);
+
+    exitLongCombo = new QComboBox;
+    connect(exitLongCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(exitLongComboChanged()));
+    exitLongCombo->addItems(indicatorList);
+    tgrid->addWidget(exitLongCombo, 1, 1);
+
+    exitLongButton = new QToolButton;
+    tgrid->addWidget(exitLongButton, 1, 2);
+    exitLongButton->setText(QString("..."));
+    connect(exitLongButton, SIGNAL(pressed()), this, SLOT(exitLongButtonPressed()));
+
+  // short box area
+  shortCheck = new QGroupBox;
+  shortCheck->setCheckable(TRUE);
+  shortCheck->setTitle(tr("Short"));
+  shortCheck->setChecked(FALSE);
+  grid->addWidget(shortCheck, row++, col);
+
+    tgrid = new QGridLayout;
+    tgrid->setSpacing(5);
+    tgrid->setColumnStretch(1, 1);
+    shortCheck->setLayout(tgrid);
+
+    // enter short line
+    label = new QLabel(tr("Enter Short"));
+    tgrid->addWidget(label, 0, 0);
+
+    enterShortCombo = new QComboBox;
+    connect(enterShortCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(enterShortComboChanged()));
+    enterShortCombo->addItems(indicatorList);
+    tgrid->addWidget(enterShortCombo, 0, 1);
+
+    enterShortButton = new QToolButton;
+    tgrid->addWidget(enterShortButton, 0, 2);
+    enterShortButton->setText(QString("..."));
+    connect(enterShortButton, SIGNAL(pressed()), this, SLOT(enterShortButtonPressed()));
+
+    // exit short line
+    label = new QLabel(tr("Exit Short"));
+    tgrid->addWidget(label, 1, 0);
+
+    exitShortCombo = new QComboBox;
+    connect(exitShortCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(exitShortComboChanged()));
+    exitShortCombo->addItems(indicatorList);
+    tgrid->addWidget(exitShortCombo, 1, 1);
+
+    exitShortButton = new QToolButton;
+    tgrid->addWidget(exitShortButton, 1, 2);
+    exitShortButton->setText(QString("..."));
+    connect(exitShortButton, SIGNAL(pressed()), this, SLOT(exitShortButtonPressed()));
 
   // symbol parms
+  grid = new QGridLayout;
+  grid->setSpacing(5);
+  grid->setColumnStretch(1, 1);
+  vbox->addLayout(grid);
+  row = 0;
+  col = 0;
+
   label = new QLabel(tr("Symbol"));
   grid->addWidget(label, row, col++);
 
@@ -163,21 +301,15 @@ void QtStalkerTester::createRuleTab()
   symbol = new QLineEdit;
   grid->addWidget(symbol, row++, col--);
 
-  // enter field parms
-  label = new QLabel(tr("Enter Price"));
-  grid->addWidget(label, row, col++);
+  vbox->addStretch(1);
 
-  enterField = new QComboBox;
-  enterField->addItems(priceList);
-  grid->addWidget(enterField, row++, col--);
-
-  // exit field parms
-  label = new QLabel(tr("Exit Price"));
-  grid->addWidget(label, row, col++);
-
-  exitField = new QComboBox;
-  exitField->addItems(priceList);
-  grid->addWidget(exitField, row++, col--);
+  // right side of page
+  grid = new QGridLayout;
+  grid->setSpacing(5);
+  grid->setColumnStretch(1, 1);
+  hbox->addLayout(grid);
+  row = 0;
+  col = 0;
 
   // bar length parm
   label = new QLabel(tr("Bar Length"));
@@ -198,10 +330,31 @@ void QtStalkerTester::createRuleTab()
   bars->setValue(275);
   grid->addWidget(bars, row++, col--);
 
-  // start a new parm section on the right side of the page
-  grid->setRowStretch(row, 1);
-  row = 0;
-  col = 2;
+  // trade delay
+  label = new QLabel(tr("Trade Delay"));
+  grid->addWidget(label, row, col++);
+
+  delay = new QSpinBox;
+  delay->setMinimum(0);
+  delay->setMaximum(100);
+  delay->setValue(1);
+  grid->addWidget(delay, row++, col--);
+
+  // enter field parms
+  label = new QLabel(tr("Enter Price"));
+  grid->addWidget(label, row, col++);
+
+  enterField = new QComboBox;
+  enterField->addItems(priceList);
+  grid->addWidget(enterField, row++, col--);
+
+  // exit field parms
+  label = new QLabel(tr("Exit Price"));
+  grid->addWidget(label, row, col++);
+
+  exitField = new QComboBox;
+  exitField->addItems(priceList);
+  grid->addWidget(exitField, row++, col--);
 
   // entry comm
   label = new QLabel(tr("Entry Commission"));
@@ -222,16 +375,6 @@ void QtStalkerTester::createRuleTab()
   exitComm->setMaximum(999999);
   exitComm->setValue(10);
   grid->addWidget(exitComm, row++, col--);
-
-  // trade delay
-  label = new QLabel(tr("Trade Delay"));
-  grid->addWidget(label, row, col++);
-
-  delay = new QSpinBox;
-  delay->setMinimum(0);
-  delay->setMaximum(100);
-  delay->setValue(1);
-  grid->addWidget(delay, row++, col--);
 
   // account
   label = new QLabel(tr("Account"));
@@ -263,9 +406,9 @@ void QtStalkerTester::createRuleTab()
   trailing->setValue(7);
   grid->addWidget(trailing, row++, col--);
 
-  //  grid->setRowStretch(row, 1);
+  grid->setRowStretch(row, 1);
 
-  tabs->addTab(w, tr("Rule"));
+  tabs->addTab(w, tr("Settings"));
 }
 
 void QtStalkerTester::createReportTab()
@@ -290,70 +433,70 @@ void QtStalkerTester::createReportTab()
   QLabel *label = new QLabel(tr("Gross Profit"));
   grid->addWidget(label, row, col++);
 
-  grossProfit = new QLabel;
+  grossProfit = new QLabel("0");
   grid->addWidget(grossProfit, row++, col--);
 
   // net profit
   label = new QLabel(tr("Net Profit"));
   grid->addWidget(label, row, col++);
 
-  netProfit = new QLabel;
+  netProfit = new QLabel("0");
   grid->addWidget(netProfit, row++, col--);
 
   // max drawdown
   label = new QLabel(tr("Maximum Drawdown"));
   grid->addWidget(label, row, col++);
 
-  maxDrawDown = new QLabel;
+  maxDrawDown = new QLabel("0");
   grid->addWidget(maxDrawDown, row++, col--);
 
   // avg drawdown
   label = new QLabel(tr("Average Drawdown"));
   grid->addWidget(label, row, col++);
 
-  avgDrawDown = new QLabel;
+  avgDrawDown = new QLabel("0");
   grid->addWidget(avgDrawDown, row++, col--);
 
   // commissions
   label = new QLabel(tr("Commissions"));
   grid->addWidget(label, row, col++);
 
-  commissions = new QLabel;
+  commissions = new QLabel("0");
   grid->addWidget(commissions, row++, col--);
 
   // win/loss ratio
   label = new QLabel(tr("Win/Loss Ratio"));
   grid->addWidget(label, row, col++);
 
-  winLossRatio = new QLabel;
+  winLossRatio = new QLabel("0");
   grid->addWidget(winLossRatio, row++, col--);
 
   // total trades
   label = new QLabel(tr("Total Trades"));
   grid->addWidget(label, row, col++);
 
-  totalTrades = new QLabel;
+  totalTrades = new QLabel("0");
   grid->addWidget(totalTrades, row++, col--);
 
   // percent profitable
   label = new QLabel(tr("Percent Profitable"));
   grid->addWidget(label, row, col++);
 
-  percentProfitable = new QLabel;
+  percentProfitable = new QLabel("0");
   grid->addWidget(percentProfitable, row++, col--);
 
   // winning trades
   label = new QLabel(tr("Winning Trades"));
   grid->addWidget(label, row, col++);
 
-  winningTrades = new QLabel;
+  winningTrades = new QLabel("0");
   grid->addWidget(winningTrades, row++, col--);
 
   // losing trades
   label = new QLabel(tr("Losing Trades"));
   grid->addWidget(label, row, col++);
 
-  losingTrades = new QLabel;
+  losingTrades = new QLabel("0");
   grid->addWidget(losingTrades, row++, col--);
 
   col = 2;
@@ -363,63 +506,63 @@ void QtStalkerTester::createReportTab()
   label = new QLabel(tr("Largest Winning Trade"));
   grid->addWidget(label, row, col++);
 
-  maxWinTrade = new QLabel;
+  maxWinTrade = new QLabel("0");
   grid->addWidget(maxWinTrade, row++, col--);
 
   // maxLosingTrade
   label = new QLabel(tr("Largest Losing Trade"));
   grid->addWidget(label, row, col++);
 
-  maxLossTrade = new QLabel;
+  maxLossTrade = new QLabel("0");
   grid->addWidget(maxLossTrade, row++, col--);
 
   // avgWinTrade
   label = new QLabel(tr("Average Winning Trade"));
   grid->addWidget(label, row, col++);
 
-  avgWinTrade = new QLabel;
+  avgWinTrade = new QLabel("0");
   grid->addWidget(avgWinTrade, row++, col--);
 
   // avgLosingTrade
   label = new QLabel(tr("Average Losing Trade"));
   grid->addWidget(label, row, col++);
 
-  avgLossTrade = new QLabel;
+  avgLossTrade = new QLabel("0");
   grid->addWidget(avgLossTrade, row++, col--);
 
   // maxWinLong
   label = new QLabel(tr("Largest Winning Long"));
   grid->addWidget(label, row, col++);
 
-  maxWinLong = new QLabel;
+  maxWinLong = new QLabel("0");
   grid->addWidget(maxWinLong, row++, col--);
 
   // maxLosingLong
   label = new QLabel(tr("Largest Losing Long"));
   grid->addWidget(label, row, col++);
 
-  maxLossLong = new QLabel;
+  maxLossLong = new QLabel("0");
   grid->addWidget(maxLossLong, row++, col--);
 
   // maxWinShort
   label = new QLabel(tr("Largest Winning Short"));
   grid->addWidget(label, row, col++);
 
-  maxWinShort = new QLabel;
+  maxWinShort = new QLabel("0");
   grid->addWidget(maxWinShort, row++, col--);
 
   // maxLosingShort
   label = new QLabel(tr("Largest Losing Short"));
   grid->addWidget(label, row, col++);
 
-  maxLossShort = new QLabel;
+  maxLossShort = new QLabel("0");
   grid->addWidget(maxLossShort, row++, col--);
 
   // balance
   label = new QLabel(tr("Account Balance"));
   grid->addWidget(label, row, col++);
 
-  balance = new QLabel;
+  balance = new QLabel("0");
   grid->addWidget(balance, row++, col--);
 
   tradeLog = new QTreeWidget;
@@ -431,7 +574,7 @@ void QtStalkerTester::createReportTab()
   tradeLog->setHeaderLabels(l);
   vbox->addWidget(tradeLog);
 
-  tabs->addTab(w, tr("Report"));
+  tabs->addTab(w, tr("Results"));
 }
 
 void QtStalkerTester::createActions ()
@@ -546,10 +689,146 @@ void QtStalkerTester::about ()
 
 void QtStalkerTester::saveTest ()
 {
-  getSettings();
+  if (name.isEmpty())
+    return;
+
+  QString s = "INSERT OR REPLACE INTO results  VALUES (";
+  s.append("'" + name + "'");
+
+  if (script->text().isEmpty())
+    s.append(",' '");
+  else
+    s.append(",'" + script->text() + "'");
+
+  s.append("," + QString::number(scriptCheck->isChecked()));
+
+  if (shellCommand->text().isEmpty())
+    s.append(",' '");
+  else
+    s.append(",'" + shellCommand->text() + "'");
+
+  s.append("," + QString::number(longCheck->isChecked()));
+  s.append("," + QString::number(shortCheck->isChecked()));
+
+  if (symbol->text().isEmpty())
+    s.append(",' '");
+  else
+    s.append(",'" + symbol->text() + "'");
+
+  s.append("," + QString::number(enterField->currentIndex()));
+  s.append("," + QString::number(exitField->currentIndex()));
+  s.append("," + QString::number(bars->value()));
+  s.append("," + QString::number(barLength->currentIndex()));
+  s.append("," + QString::number(entryComm->value()));
+  s.append("," + QString::number(exitComm->value()));
+  s.append("," + QString::number(delay->value()));
+  s.append("," + QString::number(account->value()));
+  s.append("," + QString::number(volumePercentage->value()));
+  s.append("," + QString::number(trailing->value()));
+  s.append("," + QString::number(trailingCheck->isChecked()));
+  s.append(",'" + enterLongCombo->currentText() + "'");
+  s.append(",'" + exitLongCombo->currentText() + "'");
+  s.append(",'" + enterShortCombo->currentText() + "'");
+  s.append(",'" + exitShortCombo->currentText() + "'");
+
+  if (enterLongIndicator)
+  {
+    Indicator ind;
+    enterLongIndicator->getSettings(ind);
+    Setting set;
+    ind.getSettings(set);
+    QString ts;
+    set.getString(ts);
+    s.append(",'" + ts + "'");
+  }
+  else
+    s.append(",' '");
+
+  if (exitLongIndicator)
+  {
+    Indicator ind;
+    exitLongIndicator->getSettings(ind);
+    Setting set;
+    ind.getSettings(set);
+    QString ts;
+    set.getString(ts);
+    s.append(",'" + ts + "'");
+  }
+  else
+    s.append(",' '");
+
+  if (enterShortIndicator)
+  {
+    Indicator ind;
+    enterShortIndicator->getSettings(ind);
+    Setting set;
+    ind.getSettings(set);
+    QString ts;
+    set.getString(ts);
+    s.append(",'" + ts + "'");
+  }
+  else
+    s.append(",' '");
+
+  if (exitShortIndicator)
+  {
+    Indicator ind;
+    exitShortIndicator->getSettings(ind);
+    Setting set;
+    ind.getSettings(set);
+    QString ts;
+    set.getString(ts);
+    s.append(",'" + ts + "'");
+  }
+  else
+    s.append(",' '");
+
+  // summary stuff
+  s.append("," + grossProfit->text());
+  s.append("," + netProfit->text());
+  s.append("," + maxDrawDown->text());
+  s.append("," + avgDrawDown->text());
+  s.append("," + commissions->text());
+  s.append("," + winLossRatio->text());
+  s.append("," + totalTrades->text());
+  s.append("," + percentProfitable->text());
+  s.append("," + winningTrades->text());
+  s.append("," + losingTrades->text());
+  s.append("," + maxWinTrade->text());
+  s.append("," + maxLossTrade->text());
+  s.append("," + avgWinTrade->text());
+  s.append("," + avgLossTrade->text());
+  s.append("," + maxWinLong->text());
+  s.append("," + maxLossLong->text());
+  s.append("," + maxWinShort->text());
+  s.append("," + maxLossShort->text());
+
+  // get tradelog data
+  QStringList l;
+  int loop;
+  for (loop = 0; loop < tradeLog->topLevelItemCount(); loop++)
+  {
+    QTreeWidgetItem *item = tradeLog->topLevelItem(loop);
+    if (! item)
+      continue;
+
+    int loop2;
+    QStringList l2;
+    for (loop2 = 0; loop2 < item->columnCount(); loop2++)
+      l2.append(item->text(loop2));
+
+    l.append(l2.join(","));
+  }
+  if (l.count())
+    s.append(",'" + l.join("\n") + "'");
+  else
+    s.append(",' '");
+
+  s.append("," + balance->text());
+  s.append(")");
 
   TestDataBase db;
-  db.setTest(test);
+  db.setTest(s);
 }
 
 void QtStalkerTester::newTest ()
@@ -608,20 +887,32 @@ void QtStalkerTester::scriptButtonPressed ()
   if (dir.isEmpty())
     dir = QDir::homePath();
 
-  scriptFile = QFileDialog::getOpenFileName(this,
-					    QString(tr("Select Test Script")),
-					    dir,
-					    QString(),
-					    0,
-					    0);
-  if (scriptFile.isEmpty())
+  QString s = QFileDialog::getOpenFileName(this,
+					   QString(tr("Select Test Script")),
+					   dir,
+					   QString(),
+					   0,
+					   0);
+  if (s.isEmpty())
     return;
 
-  QFileInfo fi(scriptFile);
-  QString s = fi.absolutePath();
   config.setData(TestConfig::ScriptDirectory, s);
 
-  scriptButton->setText(fi.completeBaseName());
+  script->setText(s);
+}
+
+void QtStalkerTester::scriptCheckChanged (bool d)
+{
+  if (! d)
+  {
+    longCheck->setEnabled(TRUE);
+    shortCheck->setEnabled(TRUE);
+  }
+  else
+  {
+    longCheck->setEnabled(FALSE);
+    shortCheck->setEnabled(FALSE);
+  }
 }
 
 void QtStalkerTester::symbolButtonPressed ()
@@ -629,118 +920,167 @@ void QtStalkerTester::symbolButtonPressed ()
   // custom symbol selection dialog here
 }
 
+void QtStalkerTester::enterLongComboChanged ()
+{
+  if (enterLongIndicator)
+    delete enterLongIndicator;
+
+  IndicatorFactory fac;
+  QString s = enterLongCombo->currentText();
+  enterLongIndicator = fac.getFunction(s);
+}
+
+void QtStalkerTester::exitLongComboChanged ()
+{
+  if (exitLongIndicator)
+    delete exitLongIndicator;
+
+  IndicatorFactory fac;
+  QString s = exitLongCombo->currentText();
+  exitLongIndicator = fac.getFunction(s);
+}
+
+void QtStalkerTester::enterShortComboChanged ()
+{
+  if (enterShortIndicator)
+    delete enterShortIndicator;
+
+  IndicatorFactory fac;
+  QString s = enterShortCombo->currentText();
+  enterShortIndicator = fac.getFunction(s);
+}
+
+void QtStalkerTester::exitShortComboChanged ()
+{
+  if (exitShortIndicator)
+    delete exitShortIndicator;
+
+  IndicatorFactory fac;
+  QString s = exitShortCombo->currentText();
+  exitShortIndicator = fac.getFunction(s);
+}
+
+void QtStalkerTester::enterLongButtonPressed ()
+{
+  enterLongIndicator->dialog(1);
+}
+
+void QtStalkerTester::exitLongButtonPressed ()
+{
+  exitLongIndicator->dialog(1);
+}
+
+void QtStalkerTester::enterShortButtonPressed ()
+{
+  enterShortIndicator->dialog(1);
+}
+
+void QtStalkerTester::exitShortButtonPressed ()
+{
+  exitShortIndicator->dialog(1);
+}
+
 void QtStalkerTester::loadTest (QString &s)
 {
+  name = s;
+
   TestDataBase db;
-  test.setName(s);
-  db.getTest(test);
+  QSqlQuery q;
+  db.getTest(s, q);
 
   setWindowTitle("QtStalkerTester: " + s);
 
-  QString ts;
-  test.getScript(ts);
-//  QFileInfo fi(scriptFile);
-//  scriptButton->setText(fi.completeBaseName());
-  script->setText(ts);
-
-  test.getSymbol(ts);
-  symbol->setText(ts);
-
-  enterField->setCurrentIndex(test.getEnterField());
-
-  exitField->setCurrentIndex(test.getExitField());
-
-  barLength->setCurrentIndex(test.getBarLength());
-
-  bars->setValue(test.getBars());
-
-  entryComm->setValue(test.getEntryComm());
-
-  exitComm->setValue(test.getExitComm());
-
-  delay->setValue(test.getDelay());
-
-  account->setValue(test.getAccount());
-
-  volumePercentage->setValue(test.getVolumePercentage());
-
-  trailingCheck->setChecked(test.getTrailingCheck());
-
-  trailing->setValue(test.getTrailingStop());
-
-  // summary items
-  test.getTradeLog(ts);
-
-  tradeLog->clear();
-  tradeLog->setSortingEnabled(FALSE);
-
-  QStringList l = ts.split("\n");
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
+  while (q.next())
   {
-    QStringList l2 = l[loop].split(",");
-    int loop2;
-    QTreeWidgetItem *item = new QTreeWidgetItem(tradeLog);
-    for (loop2 = 0; loop2 < l2.count(); loop2++)
-      item->setText(loop2, l2[loop2]);
+    int col = 1;
+    script->setText(q.value(col++).toString());
+    scriptCheck->setChecked(q.value(col++).toInt());
+    shellCommand->setText(q.value(col++).toString());
+    longCheck->setChecked(q.value(col++).toInt());
+    shortCheck->setChecked(q.value(col++).toInt());
+    symbol->setText(q.value(col++).toString());
+    enterField->setCurrentIndex(q.value(col++).toInt());
+    exitField->setCurrentIndex(q.value(col++).toInt());
+    bars->setValue(q.value(col++).toInt());
+    barLength->setCurrentIndex(q.value(col++).toInt());
+    entryComm->setValue(q.value(col++).toDouble());
+    exitComm->setValue(q.value(col++).toDouble());
+    delay->setValue(q.value(col++).toInt());
+    account->setValue(q.value(col++).toDouble());
+    volumePercentage->setValue(q.value(col++).toDouble());
+    trailing->setValue(q.value(col++).toDouble());
+    trailingCheck->setChecked(q.value(col++).toInt());
+    enterLongCombo->setCurrentIndex(indicatorList.indexOf(q.value(col++).toString()));
+    exitLongCombo->setCurrentIndex(indicatorList.indexOf(q.value(col++).toString()));
+    enterShortCombo->setCurrentIndex(indicatorList.indexOf(q.value(col++).toString()));
+    exitShortCombo->setCurrentIndex(indicatorList.indexOf(q.value(col++).toString()));
+
+    Indicator ind;
+    Setting set;
+    QString s = q.value(col++).toString();
+    set.parse(s);
+    ind.setSettings(set);
+    enterLongIndicator->setSettings(ind);
+
+    set.clear();
+    s = q.value(col++).toString();
+    set.parse(s);
+    ind.setSettings(set);
+    exitLongIndicator->setSettings(ind);
+
+    set.clear();
+    s = q.value(col++).toString();
+    set.parse(s);
+    ind.setSettings(set);
+    enterShortIndicator->setSettings(ind);
+
+    set.clear();
+    s = q.value(col++).toString();
+    set.parse(s);
+    ind.setSettings(set);
+    exitShortIndicator->setSettings(ind);
+
+    // summary stuff
+    grossProfit->setNum(q.value(col++).toDouble());
+    netProfit->setNum(q.value(col++).toDouble());
+    maxDrawDown->setNum(q.value(col++).toDouble());
+    avgDrawDown->setNum(q.value(col++).toDouble());
+    commissions->setNum(q.value(col++).toDouble());
+    winLossRatio->setNum(q.value(col++).toDouble());
+    totalTrades->setNum(q.value(col++).toInt());
+    percentProfitable->setNum(q.value(col++).toDouble());
+    winningTrades->setNum(q.value(col++).toInt());
+    losingTrades->setNum(q.value(col++).toInt());
+    maxWinTrade->setNum(q.value(col++).toDouble());
+    maxLossTrade->setNum(q.value(col++).toDouble());
+    avgWinTrade->setNum(q.value(col++).toDouble());
+    avgLossTrade->setNum(q.value(col++).toDouble());
+    maxWinLong->setNum(q.value(col++).toDouble());
+    maxLossLong->setNum(q.value(col++).toDouble());
+    maxWinShort->setNum(q.value(col++).toDouble());
+    maxLossShort->setNum(q.value(col++).toDouble());
+
+    // summary items
+    tradeLog->clear();
+    tradeLog->setSortingEnabled(FALSE);
+
+    QStringList l = q.value(col++).toString().split("\n");
+    int loop;
+    for (loop = 0; loop < l.count(); loop++)
+    {
+      QStringList l2 = l[loop].split(",");
+      int loop2;
+      QTreeWidgetItem *item = new QTreeWidgetItem(tradeLog);
+      for (loop2 = 0; loop2 < l2.count(); loop2++)
+        item->setText(loop2, l2[loop2]);
+    }
+
+    for (loop = 0; loop < tradeLog->columnCount(); loop++)
+      tradeLog->resizeColumnToContents(loop);
+    tradeLog->setSortingEnabled(TRUE);
+
+    balance->setNum(q.value(col++).toDouble());
   }
-
-  for (loop = 0; loop < tradeLog->columnCount(); loop++)
-    tradeLog->resizeColumnToContents(loop);
-  tradeLog->setSortingEnabled(TRUE);
-
-  grossProfit->setNum(test.getGrossProfit());
-  netProfit->setNum(test.getNetProfit());
-  maxDrawDown->setNum(test.getMaxDrawDown());
-  avgDrawDown->setNum(test.getAvgDrawDown());
-  commissions->setNum(test.getTotalComm());
-  winLossRatio->setNum(test.getWinLossRatio());
-  totalTrades->setNum(test.getTrades());
-  percentProfitable->setNum(test.getProfitable());
-  winningTrades->setNum(test.getWinTrades());
-  losingTrades->setNum(test.getLossTrades());
-  maxWinTrade->setNum(test.getMaxWinTrade());
-  maxLossTrade->setNum(test.getMaxLossTrade());
-  avgWinTrade->setNum(test.getAvgWinTrade());
-  avgLossTrade->setNum(test.getAvgLossTrade());
-  maxWinLong->setNum(test.getMaxWinLong());
-  maxLossLong->setNum(test.getMaxLossLong());
-  maxWinShort->setNum(test.getMaxWinShort());
-  maxLossShort->setNum(test.getMaxLossShort());
-  balance->setNum(test.getBalance());
-}
-
-void QtStalkerTester::getSettings ()
-{
-  QString ts;
-//  test.setScript(scriptFile);
-  ts = script->text();
-  test.setScript(ts);
-
-  ts = symbol->text();
-  test.setSymbol(ts);
-
-  test.setEnterField(enterField->currentIndex());
-
-  test.setExitField(exitField->currentIndex());
-
-  test.setBarLength(barLength->currentIndex());
-
-  test.setBars(bars->value());
-
-  test.setEntryComm(entryComm->value());
-
-  test.setExitComm(exitComm->value());
-
-  test.setDelay(delay->value());
-
-  test.setAccount(account->value());
-
-  test.setVolumePercentage(volumePercentage->value());
-
-  test.setTrailingCheck(trailingCheck->isChecked());
-
-  test.setTrailingStop(trailing->value());
 }
 
 void QtStalkerTester::cancelTest ()
@@ -749,25 +1089,31 @@ void QtStalkerTester::cancelTest ()
 
 void QtStalkerTester::run ()
 {
-  getSettings();
-
-  QString s;
-  test.getScript(s);
-  if (s.isEmpty())
+  if (scriptCheck->isChecked())
   {
-    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Invalid script command."));
-    return;
+    QString s = script->text();
+    if (s.isEmpty())
+    {
+      QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing script file."));
+      return;
+    }
+
+    s = shellCommand->text();
+    if (s.isEmpty())
+    {
+      QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing shell command."));
+      return;
+    }
   }
 
-  test.getSymbol(s);
+  QString s = symbol->text();
   if (s.isEmpty())
   {
-    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Invalid symbol setting."));
+    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing symbol."));
     return;
   }
 
   BarData *data = new BarData;
-  s = symbol->text();
   data->setSymbol(s);
   data->setBarLength((BarData::BarLength) barLength->currentIndex());
   data->setBarsRequested(bars->value());
@@ -780,35 +1126,91 @@ void QtStalkerTester::run ()
     return;
   }
 
-  ExScript server;
-  server.setBarData(data);
-  server.setDeleteFlag(TRUE);
-  test.getScript(s);
-  server.calculate(s); // we are calling the blocking version of calculate() here
+  TestSignal enterLongSigs;
+  TestSignal exitLongSigs;
+  TestSignal enterShortSigs;
+  TestSignal exitShortSigs;
 
-  QHash<int, TestSignal *> enterLongSigs;
-  PlotLine *l = server.getEnterLong();
-  if (l)
-    createSignals(data, l, enterLongSigs);
+  if (scriptCheck->isChecked())
+  {
+    ExScript server;
+    server.setBarData(data);
+    server.setDeleteFlag(TRUE);
+    s = shellCommand->text() + " " + script->text();
+    server.calculate(s); // we are calling the blocking version of calculate() here
 
-  QHash<int, TestSignal *> exitLongSigs;
-  l = server.getExitLong();
-  if (l)
-    createSignals(data, l, exitLongSigs);
+    PlotLine *l = server.getEnterLong();
+    if (l)
+      enterLongSigs.createSignals(data, l);
 
-  QHash<int, TestSignal *> enterShortSigs;
-  l = server.getEnterShort();
-  if (l)
-    createSignals(data, l, enterShortSigs);
+    l = server.getExitLong();
+    if (l)
+      exitLongSigs.createSignals(data, l);
 
-  QHash<int, TestSignal *> exitShortSigs;
-  l = server.getExitShort();
-  if (l)
-    createSignals(data,l, exitShortSigs);
+    l = server.getEnterShort();
+    if (l)
+      enterShortSigs.createSignals(data, l);
+
+    l = server.getExitShort();
+    if (l)
+      exitShortSigs.createSignals(data, l);
+  }
+  else
+  {
+    if (longCheck->isChecked())
+    {
+      if (enterLongIndicator->test(data, enterLongSigs))
+      {
+        qDebug() << "QtStalkerTester::runDialog: enterLong error";
+        return;
+      }
+
+      if (exitLongIndicator->test(data, exitLongSigs))
+      {
+        qDebug() << "QtStalkerTester::runDialog: exitLong error";
+        return;
+      }
+    }
+
+    if (shortCheck->isChecked())
+    {
+      if (enterShortIndicator->test(data, enterShortSigs))
+      {
+        qDebug() << "QtStalkerTester::runDialog: enterShort error";
+        return;
+      }
+
+      if (exitShortIndicator->test(data, exitShortSigs))
+      {
+        qDebug() << "QtStalkerTester::runDialog: exitShort error";
+        return;
+      }
+    }
+  }
 
   QList<TestTrade *> trades;
-  createTrades(data, trades, 0, enterLongSigs, exitLongSigs);
-  createTrades(data, trades, 1, enterShortSigs, exitShortSigs);
+  TestTrade ttrade;
+  if (scriptCheck->isChecked())
+  {
+    ttrade.createTrades(data, trades, 0, volumePercentage->value(), delay->value(),
+		        enterField->currentIndex(), enterLongSigs, exitLongSigs);
+    ttrade.createTrades(data, trades, 1, volumePercentage->value(), delay->value(),
+	                exitField->currentIndex(), enterShortSigs, exitShortSigs);
+  }
+  else
+  {
+    if (longCheck->isChecked())
+    {
+      ttrade.createTrades(data, trades, 0, volumePercentage->value(), delay->value(),
+		          enterField->currentIndex(), enterLongSigs, exitLongSigs);
+    }
+
+    if (shortCheck->isChecked())
+    {
+      ttrade.createTrades(data, trades, 1, volumePercentage->value(), delay->value(),
+	                  exitField->currentIndex(), enterShortSigs, exitShortSigs);
+    }
+  }
 
   runTrades(data, trades);
 
@@ -818,163 +1220,10 @@ void QtStalkerTester::run ()
 
   delete data;
   qDeleteAll(trades);
-  qDeleteAll(enterLongSigs);
-  qDeleteAll(exitLongSigs);
-  qDeleteAll(enterShortSigs);
-  qDeleteAll(exitShortSigs);
-}
-
-void QtStalkerTester::createSignals (BarData *data, PlotLine *line, QHash<int, TestSignal*> &sigs)
-{
-  int barLoop = data->count() - line->getSize();
-  if (barLoop < 0)
-  {
-    qDebug() << "QtStalkerTester::createSignals" << line->getSize() << "size > bars size";
-    return;
-  }
-
-  int status = 0;
-  int lineLoop;
-  for (lineLoop = 0; lineLoop < line->getSize(); lineLoop++, barLoop++)
-  {
-    switch (status)
-    {
-      case 1: // we are inside a signal
-        if (line->getData(lineLoop) == 0)
-          status = 0;
-	break;
-      default: // we are outside a signal
-        if (line->getData(lineLoop) == 1)
-        {
-          status = 1;
-          TestSignal *sig = new TestSignal;
-	  sig->setBar(barLoop);
-	  sigs.insert(barLoop, sig);
-	  QDateTime dt;
-	  data->getDate(barLoop, dt);
-	}
-	break;
-    }
-  }
-}
-
-void QtStalkerTester::createTrades (BarData *data, QList<TestTrade *> &trades, int type,
-				    QHash<int, TestSignal *> &enterSigs, QHash<int, TestSignal *> &exitSigs)
-{
-  int loop;
-  int status = 0;
-  for (loop = 0; loop < data->count(); loop++)
-  {
-    switch (status)
-    {
-      case 1: // currently in trade, check if we exit trade
-      {
-	TestSignal *sig = exitSigs.value(loop);
-	if (sig)
-	{
-	  status = 0; // exit
-	  TestTrade *trade = trades.at(trades.count() - 1);
-	  endTrade(loop, data, trade);
-	}
-	break;
-      }
-      default:
-      {
-	TestSignal *sig = enterSigs.value(loop);
-	if (sig)
-	{
-	  status = 1; // we are in a trade
-	  TestTrade *trade = new TestTrade;
-	  trade->setType(type);
-          trade->setVolumePercentage(volumePercentage->value());
-	  startTrade(loop, data, trade);
-	  trades.append(trade);
-	}
-	break;
-      }
-    }
-  }
-}
-
-void QtStalkerTester::startTrade (int pos, BarData *data, TestTrade *trade)
-{
-  int offset = pos + delay->value();
-  if (offset >= data->count())
-    offset = pos;
-
-  QDateTime dt;
-  data->getDate(offset, dt);
-  trade->setEnterDate(dt, offset);
-
-  int i = enterField->currentIndex();
-
-  switch (i)
-  {
-    case 0:
-      trade->setEnterPrice(data->getOpen(offset));
-      break;
-    case 1:
-      trade->setEnterPrice(data->getHigh(offset));
-      break;
-    case 2:
-      trade->setEnterPrice(data->getLow(offset));
-      break;
-    case 4:
-      trade->setEnterPrice(data->getAvgPrice(offset));
-      break;
-    case 5:
-      trade->setEnterPrice(data->getMedianPrice(offset));
-      break;
-    case 6:
-      trade->setEnterPrice(data->getTypicalPrice(offset));
-      break;
-    default:
-      trade->setEnterPrice(data->getClose(offset));
-      break;
-  }
-}
-
-void QtStalkerTester::endTrade (int pos, BarData *data, TestTrade *trade)
-{
-  int offset = pos + delay->value();
-  if (offset >= data->count())
-    offset = pos;
-
-  QDateTime dt;
-  data->getDate(offset, dt);
-  trade->setExitDate(dt, offset);
-
-  int i = exitField->currentIndex();
-
-  switch (i)
-  {
-    case 0:
-      trade->setExitPrice(data->getOpen(offset));
-      break;
-    case 1:
-      trade->setExitPrice(data->getHigh(offset));
-      break;
-    case 2:
-      trade->setExitPrice(data->getLow(offset));
-      break;
-    case 4:
-      trade->setExitPrice(data->getAvgPrice(offset));
-      break;
-    case 5:
-      trade->setExitPrice(data->getMedianPrice(offset));
-      break;
-    case 6:
-      trade->setExitPrice(data->getTypicalPrice(offset));
-      break;
-    default:
-      trade->setExitPrice(data->getClose(offset));
-      break;
-  }
 }
 
 void QtStalkerTester::runTrades (BarData *data, QList<TestTrade *> &trades)
 {
-
   PlotLine *line = 0;
   switch (exitField->currentIndex())
   {
@@ -1045,7 +1294,6 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
   double tprofit = 0;
   int loop;
   QString s;
-  QStringList tradeMessages;
 
   tradeLog->clear();
   tradeLog->setSortingEnabled(FALSE);
@@ -1113,7 +1361,6 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
 
     QStringList l;
     trade->getLogMessage(l);
-    tradeMessages.append(l.join(","));
 
     int loop2;
     QTreeWidgetItem *item = new QTreeWidgetItem(tradeLog);
@@ -1157,66 +1404,25 @@ void QtStalkerTester::createSummary (QList<TestTrade *> &trades)
   if (winTrades && trades.count())
     profitable = ((double) winTrades / (double) trades.count()) * 100;
 
-  // update test and report fields
-  s = tradeMessages.join("\n");
-  test.setTradeLog(s);
-
   grossProfit->setNum(gross);
-  test.setGrossProfit(gross);
-
   netProfit->setNum(net);
-  test.setNetProfit(net);
-
   maxDrawDown->setNum(tmaxDrawDown);
-  test.setMaxDrawDown(tmaxDrawDown);
-
   avgDrawDown->setNum(tavgDrawDown);
-  test.setAvgDrawDown(tavgDrawDown);
-
   commissions->setNum(commission);
-  test.setCommissions(commission);
-
   winLossRatio->setNum(twinLossRatio);
-  test.setWinLossRatio(twinLossRatio);
-
   totalTrades->setNum(trades.count());
-  test.setTrades(trades.count());
-
   percentProfitable->setNum(profitable);
-  test.setProfitable(profitable);
-
   winningTrades->setNum(winTrades);
-  test.setWinTrades(winTrades);
-
   losingTrades->setNum(lossTrades);
-  test.setLossTrades(lossTrades);
-
   maxWinTrade->setNum(tmaxWinTrade);
-  test.setMaxWinTrade(tmaxWinTrade);
-
   maxLossTrade->setNum(tmaxLossTrade);
-  test.setMaxLossTrade(tmaxLossTrade);
-
   avgWinTrade->setNum(tavgWinTrade);
-  test.setAvgWinTrade(tavgWinTrade);
-
   avgLossTrade->setNum(tavgLossTrade);
-  test.setAvgLossTrade(tavgLossTrade);
-
   maxWinLong->setNum(tmaxWinLong);
-  test.setMaxWinLong(tmaxWinLong);
-
   maxLossLong->setNum(tmaxLossLong);
-  test.setMaxLossLong(tmaxLossLong);
-
   maxWinShort->setNum(tmaxWinShort);
-  test.setMaxWinShort(tmaxWinShort);
-
   maxLossShort->setNum(tmaxLossShort);
-  test.setMaxLossShort(tmaxLossShort);
-
   balance->setNum(tbalance);
-  test.setBalance(tbalance);
 
   saveTest();
 }

@@ -102,10 +102,17 @@ int IndicatorBase::getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData 
 }
 
 // virtual function
-int IndicatorBase::dialog ()
+int IndicatorBase::dialog (int)
 {
   return 0;
 }
+
+// virtual function
+int IndicatorBase::test (BarData *, TestSignal &)
+{
+  return 0;
+}
+
 
 PlotLine * IndicatorBase::getMA (PlotLine *_in, int period, int type)
 {
@@ -179,4 +186,8 @@ void IndicatorBase::getDialogSettings (PrefDialog *dialog)
   }
 }
 
+void IndicatorBase::getIndicator (QString &d)
+{
+  d = indicator;
+}
 

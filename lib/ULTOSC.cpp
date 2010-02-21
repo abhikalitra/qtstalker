@@ -165,7 +165,7 @@ PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp)
   return line;
 }
 
-int ULTOSC::dialog ()
+int ULTOSC::dialog (int)
 {
   int page = 0;
   QString k, d;

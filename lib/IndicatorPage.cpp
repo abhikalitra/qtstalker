@@ -166,7 +166,7 @@ void IndicatorPage::newIndicator ()
   if (! ib2)
     return;
 
-  rc = ib2->dialog();
+  rc = ib2->dialog(0);
   if (rc == QDialog::Rejected)
   {
     delete ib2;
@@ -215,7 +215,7 @@ void IndicatorPage::editIndicator (QString &name)
 
   ib2->setSettings(i);
 
-  int rc = ib2->dialog();
+  int rc = ib2->dialog(0);
   if (rc == QDialog::Rejected)
   {
     delete ib2;

@@ -199,7 +199,7 @@ PlotLine * AROON::getAROON (BarData *data, int period, int method)
   return line;
 }
 
-int AROON::dialog ()
+int AROON::dialog (int)
 {
   int page = 0;
   QString k, d;

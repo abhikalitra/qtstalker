@@ -237,7 +237,7 @@ PlotLine * ADX::getLine (BarData *data, int period, int method)
   return line;
 }
 
-int ADX::dialog ()
+int ADX::dialog (int)
 {
   int page = 0;
   QString k, d;

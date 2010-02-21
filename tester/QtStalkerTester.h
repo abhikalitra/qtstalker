@@ -41,12 +41,14 @@
 #include <QList>
 #include <QPushButton>
 #include <QTreeWidget>
+#include <QToolButton>
+#include <QGroupBox>
 
-#include "Test.h"
 #include "BarData.h"
 #include "PlotLine.h"
 #include "TestSignal.h"
 #include "TestTrade.h"
+#include "IndicatorBase.h"
 
 class QtStalkerTester : public QMainWindow
 {
@@ -66,14 +68,8 @@ class QtStalkerTester : public QMainWindow
     void createReportTab();
     void createRankTab();
     void loadTest (QString &);
-    void getSettings ();
-    void createSignals (BarData *, PlotLine *line, QHash<int, TestSignal *> &);
-    void startTrade (int pos, BarData *data, TestTrade *trade);
-    void endTrade (int pos, BarData *data, TestTrade *trade);
     void createSummary (QList<TestTrade *> &trades);
     void runTrades (BarData *data, QList<TestTrade *> &trades);
-    void createTrades (BarData *data, QList<TestTrade *> &trades, int type,
-		       QHash<int, TestSignal *> &enterSigs, QHash<int, TestSignal *> &exitSigs);
     void updateRankings ();
 
   public slots:
@@ -86,14 +82,24 @@ class QtStalkerTester : public QMainWindow
     void symbolButtonPressed ();
     void run ();
     void cancelTest ();
+    void enterLongButtonPressed ();
+    void exitLongButtonPressed ();
+    void enterShortButtonPressed ();
+    void exitShortButtonPressed ();
+    void enterLongComboChanged ();
+    void exitLongComboChanged ();
+    void enterShortComboChanged ();
+    void exitShortComboChanged ();
+    void scriptCheckChanged (bool);
 
   protected:
     void closeEvent(QCloseEvent *event);
 
   private:
-    Test test;
+    QString name;
     QStringList priceList;
     QStringList barLengthList;
+    QStringList indicatorList;
     QString scriptFile;
 
     QAction *exitAction;
@@ -106,7 +112,16 @@ class QtStalkerTester : public QMainWindow
     QStatusBar *statusbar;
     QTabWidget *tabs;
     QLineEdit *symbol;
+    QGroupBox *scriptCheck;
+    QGroupBox *longCheck;
+    QGroupBox *shortCheck;
     QLineEdit *script;
+    QLineEdit *shellCommand;
+    QToolButton *scriptButton;
+    QToolButton *enterLongButton;
+    QToolButton *exitLongButton;
+    QToolButton *enterShortButton;
+    QToolButton *exitShortButton;
     QComboBox *enterField;
     QComboBox *exitField;
     QCheckBox *trailingCheck;
@@ -117,11 +132,18 @@ class QtStalkerTester : public QMainWindow
     QDoubleSpinBox *entryComm;
     QDoubleSpinBox *exitComm;
     QComboBox *barLength;
-    QPushButton *scriptButton;
     QDoubleSpinBox *account;
     QDoubleSpinBox *volumePercentage;
     QTreeWidget *rankTree;
     QTreeWidget *tradeLog;
+    QComboBox *enterLongCombo;
+    QComboBox *exitLongCombo;
+    QComboBox *enterShortCombo;
+    QComboBox *exitShortCombo;
+    IndicatorBase *enterLongIndicator;
+    IndicatorBase *exitLongIndicator;
+    IndicatorBase *enterShortIndicator;
+    IndicatorBase *exitShortIndicator;
 
     // summary stuff
     QLabel *grossProfit;

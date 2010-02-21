@@ -189,7 +189,7 @@ PlotLine * PO::getPO (PlotLine *in, int fast, int slow, int ma, int method)
   return line;
 }
 
-int PO::dialog ()
+int PO::dialog (int)
 {
   int page = 0;
   QString k, d;

@@ -306,7 +306,7 @@ PlotLine * HT::getHT (PlotLine *in, int method)
   return line;
 }
 
-int HT::dialog ()
+int HT::dialog (int)
 {
   int page = 0;
   QString k, d;

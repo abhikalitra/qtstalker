@@ -151,7 +151,7 @@ PlotLine * VAR::getVAR (PlotLine *in, int period, double dev)
   return line;
 }
 
-int VAR::dialog ()
+int VAR::dialog (int)
 {
   int page = 0;
   QString k, d;

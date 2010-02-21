@@ -196,7 +196,7 @@ PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period, int method)
   return line;
 }
 
-int LINEARREG::dialog ()
+int LINEARREG::dialog (int)
 {
   int page = 0;
   QString k, d;

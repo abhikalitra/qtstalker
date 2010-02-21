@@ -212,7 +212,7 @@ PlotLine * AD::getAD (BarData *data, int method, int fast, int slow)
   return line;
 }
 
-int AD::dialog ()
+int AD::dialog (int)
 {
   int page = 0;
   QString k, d;

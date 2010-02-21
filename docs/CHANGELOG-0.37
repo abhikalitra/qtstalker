@@ -266,6 +266,14 @@
            Added 'N' field format option to CSV app. This allows the symbol name to be imported
            within each line of text in a csv quote file.
 
+20100219:  Added symbol name and bar length information to the window title as in version 0.36.
+
+20100220:  Changed the indicator SQL table format. CVS users will can to either delete the
+           ~/.qtstalker/data.sqlite file or drop the indicatorIndex table in the file. Then
+           recreate the indicators.
+
+
+
 
 
 

@@ -237,7 +237,7 @@ PlotLine * PP::getPP (BarData *data, int point)
   return output;
 }
 
-int PP::dialog ()
+int PP::dialog (int)
 {
   int page = 0;
   QString k, d;

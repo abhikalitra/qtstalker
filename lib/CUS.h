@@ -34,7 +34,7 @@ class CUS : public IndicatorBase
 
     CUS ();
     int getIndicator (Indicator &_ind, BarData *_data);
-    int dialog ();
+    int dialog (int);
 
   private:
 };

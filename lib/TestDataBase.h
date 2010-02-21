@@ -26,8 +26,6 @@
 #include <QStringList>
 #include <QSqlQuery>
 
-#include "Test.h"
-
 class TestDataBase
 {
   public:
@@ -36,9 +34,9 @@ class TestDataBase
     void transaction ();
     void commit ();
     void getTests (QStringList &);
-    void getTest (Test &);
-    void setTest (Test &);
-    void deleteTest (Test &);
+    void getTest (QString &name, QSqlQuery &q);
+    void setTest (QString &d);
+    void deleteTest (QString &name);
     void getRankings (QSqlQuery &rq);
 };
 

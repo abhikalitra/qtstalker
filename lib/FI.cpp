@@ -130,7 +130,7 @@ PlotLine * FI::getFI (BarData *data, int period, int type)
   return line;
 }
 
-int FI::dialog ()
+int FI::dialog (int)
 {
   int page = 0;
   QString k, d;

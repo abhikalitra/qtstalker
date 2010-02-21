@@ -143,7 +143,7 @@ PlotLine * TRIX::getTRIX (PlotLine *in, int period)
   return line;
 }
 
-int TRIX::dialog ()
+int TRIX::dialog (int)
 {
   int page = 0;
   QString k, d;

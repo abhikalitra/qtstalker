@@ -250,7 +250,7 @@ PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline
   return pl;
 }
 
-int SZ::dialog ()
+int SZ::dialog (int)
 {
   int page = 0;
   QString k, d;

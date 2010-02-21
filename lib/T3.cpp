@@ -162,7 +162,7 @@ PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor)
   return line;
 }
 
-int T3::dialog ()
+int T3::dialog (int)
 {
   int page = 0;
   QString k, d;

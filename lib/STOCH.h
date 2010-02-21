@@ -50,7 +50,7 @@ class STOCH : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getSTOCH (BarData *data, int fkp, int skp, int skma, int sdp, int sdma, QList<PlotLine *> &l);
-    int dialog ();
+    int dialog (int);
 
   protected:
 };

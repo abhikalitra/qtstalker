@@ -143,7 +143,7 @@ PlotLine * CMO::getCMO (PlotLine *in, int period)
   return line;
 }
 
-int CMO::dialog ()
+int CMO::dialog (int)
 {
   int page = 0;
   QString k, d;

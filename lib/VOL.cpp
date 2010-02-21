@@ -195,7 +195,7 @@ PlotLine * VOL::getVOL (BarData *data, int method)
   return line;
 }
 
-int VOL::dialog ()
+int VOL::dialog (int)
 {
   int page = 0;
   QString k, d;

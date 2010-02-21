@@ -158,7 +158,7 @@ PlotLine * MFI::getMFI (BarData *data, int period, int smoothing, int type)
   return line;
 }
 
-int MFI::dialog ()
+int MFI::dialog (int)
 {
   int page = 0;
   QString k, d;

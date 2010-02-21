@@ -203,7 +203,7 @@ PlotLine * MAVP::getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma)
   return line;
 }
 
-int MAVP::dialog ()
+int MAVP::dialog (int)
 {
   int page = 0;
   QString k, d;

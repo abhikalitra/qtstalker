@@ -266,7 +266,7 @@ int MACD::getMACD (PlotLine *in, int fast, int fma, int slow, int sma, int signa
   return 0;
 }
 
-int MACD::dialog ()
+int MACD::dialog (int)
 {
   int page = 0;
   QString k, d;

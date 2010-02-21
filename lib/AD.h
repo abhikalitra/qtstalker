@@ -47,7 +47,7 @@ class AD : public IndicatorBase
     int getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getAD (BarData *data, int method, int fast, int slow);
-    int dialog ();
+    int dialog (int);
 
   private:
     QStringList methodList;

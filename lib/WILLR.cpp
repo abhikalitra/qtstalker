@@ -122,7 +122,7 @@ PlotLine * WILLR::getWILLR (BarData *data, int period)
   return line;
 }
 
-int WILLR::dialog ()
+int WILLR::dialog (int)
 {
   int page = 0;
   QString k, d;

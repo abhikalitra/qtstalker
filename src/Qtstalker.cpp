@@ -843,7 +843,9 @@ QString QtstalkerApp::getWindowCaption ()
   if (! s2.isEmpty())
     caption.append(" (" + s2 + ")");
 
-//  caption.append(" " + compressionCombo->currentText());
+  QStringList l;
+  recordList->getBarLengthList(l);
+  caption.append(" " + l[barButtonGroup->checkedId()]);
 
   return caption;
 }

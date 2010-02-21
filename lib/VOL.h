@@ -47,7 +47,7 @@ class VOL : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getVOL (BarData *data, int method);
-    int dialog ();
+    int dialog (int);
 
   protected:
     QStringList methodList;

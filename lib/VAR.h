@@ -41,7 +41,7 @@ class VAR : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getVAR (PlotLine *in, int period, double dev);
-    int dialog ();
+    int dialog (int);
 
   protected:
 };

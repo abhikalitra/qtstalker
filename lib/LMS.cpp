@@ -401,7 +401,7 @@ PlotLine *LMS::slowK(PlotLine * inLine, int kPeriod, int slowKperiod)
   return k;
 }
 
-int LMS::dialog ()
+int LMS::dialog (int)
 {
   int page = 0;
   QString k, d;

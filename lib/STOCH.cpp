@@ -223,7 +223,7 @@ int STOCH::getSTOCH (BarData *data, int fkp, int skp, int skma, int sdp, int sdm
   return 0;
 }
 
-int STOCH::dialog ()
+int STOCH::dialog (int)
 {
   int page = 0;
   QString k, d;

@@ -117,7 +117,7 @@ void QuoteDataBase::getChart (BarData *data)
 
   QString symbol, ts, ts2, s, table;
   data->getSymbol(symbol);
-  if (getTableName(symbol, table))
+  if (getIndexData(symbol, table, data))
     return;
 
   QDateTime firstDate;
@@ -330,12 +330,12 @@ void QuoteDataBase::setStartEndDates (QDateTime &date, QDateTime &startDate, QDa
   }
 }
 
-int QuoteDataBase::getTableName (QString &symbol, QString &table)
+int QuoteDataBase::getIndexData (QString &symbol, QString &table, BarData *data)
 {
   table.clear();
 
   QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT tableName FROM symbolIndex WHERE symbol='" + symbol + "'";
+  QString s = "SELECT name,tableName FROM symbolIndex WHERE symbol='" + symbol + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -344,7 +344,12 @@ int QuoteDataBase::getTableName (QString &symbol, QString &table)
   }
 
   if (q.next())
-    table = q.value(0).toString();
+  {
+    s = q.value(0).toString();
+    data->setName(s);
+
+    table = q.value(1).toString();
+  }
 
   return 0;
 }
@@ -366,7 +371,8 @@ void QuoteDataBase::setChart (QList<Bar> *bars)
   transaction();
 
   QString table;
-  if (getTableName(tsymbol, table))
+  BarData data;
+  if (getIndexData(tsymbol, table, &data))
     return;
 
   if (table.isEmpty())

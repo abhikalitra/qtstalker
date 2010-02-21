@@ -34,14 +34,19 @@ class MA : public IndicatorBase
       Plot,
       Label,
       Input,
-      Period
+      Period,
+      OptPeriodLow,
+      OptPeriodHigh,
+      Operator
     };
 
     MA ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getMA (PlotLine *in, int period, int method);
-    int dialog ();
+    int dialog (int);
+    void testDialog (PrefDialog *, int);
+    int test (BarData *data, TestSignal &sigs);
 
   protected:
     QString methodKey;

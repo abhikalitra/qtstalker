@@ -189,7 +189,7 @@ PlotLine * BARS::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_ne
   return line;
 }
 
-int BARS::dialog ()
+int BARS::dialog (int)
 {
   int page = 0;
   QString k, d;

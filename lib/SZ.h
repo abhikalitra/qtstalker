@@ -42,7 +42,7 @@ class SZ : public IndicatorBase
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getSZ (BarData *data, QString &method, int period, int no_decline_period, double coefficient);
-    int dialog ();
+    int dialog (int);
 
   protected:
     QStringList methodList;
