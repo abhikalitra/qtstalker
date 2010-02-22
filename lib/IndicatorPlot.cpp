@@ -472,7 +472,28 @@ void IndicatorPlot::getInfo (int x, int y)
       PlotLine *line = plotList.at(loop);
       int li = line->getSize() - data->count() + i;
       if (li > -1 && li < line->getSize())
-        line->getInfo(li, tr);
+      {
+	if (line->getType() == PlotLine::Bar || line->getType() == PlotLine::Candle)
+	{
+	  s = "O";
+          strip(data->getOpen(li), 4, k);
+          tr.setData(s, k);
+
+	  s = "H";
+          strip(data->getHigh(li), 4, k);
+          tr.setData(s, k);
+
+	  s = "L";
+          strip(data->getLow(li), 4, k);
+          tr.setData(s, k);
+
+	  s = "C";
+          strip(data->getClose(li), 4, k);
+          tr.setData(s, k);
+	}
+	else
+          line->getInfo(li, tr);
+      }
     }
   }
 

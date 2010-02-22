@@ -28,49 +28,27 @@
 #include <QAction>
 #include <QStatusBar>
 #include <QTabWidget>
-#include <QLineEdit>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QDoubleSpinBox>
-#include <QStringList>
 #include <QString>
-#include <QLabel>
-#include <QDialogButtonBox>
-#include <QHash>
-#include <QSpinBox>
 #include <QList>
-#include <QPushButton>
-#include <QTreeWidget>
-#include <QToolButton>
-#include <QGroupBox>
 
 #include "BarData.h"
-#include "PlotLine.h"
-#include "TestSignal.h"
 #include "TestTrade.h"
-#include "IndicatorBase.h"
+#include "TestRankings.h"
+#include "TestSettings.h"
+#include "TestReport.h"
 
 class QtStalkerTester : public QMainWindow
 {
   Q_OBJECT
 
-  signals:
-
   public:
     QtStalkerTester ();
-    ~QtStalkerTester ();
     void createActions ();
     void createMenuBar ();
     void createToolBars ();
     void restoreSettings ();
-    void createSummaryTab();
-    void createRuleTab();
-    void createReportTab();
-    void createRankTab();
     void loadTest (QString &);
-    void createSummary (QList<TestTrade *> &trades);
     void runTrades (BarData *data, QList<TestTrade *> &trades);
-    void updateRankings ();
 
   public slots:
     void about ();
@@ -78,93 +56,25 @@ class QtStalkerTester : public QMainWindow
     void newTest ();
     void openTest ();
     void saveTest ();
-    void scriptButtonPressed ();
-    void symbolButtonPressed ();
     void run ();
     void cancelTest ();
-    void enterLongButtonPressed ();
-    void exitLongButtonPressed ();
-    void enterShortButtonPressed ();
-    void exitShortButtonPressed ();
-    void enterLongComboChanged ();
-    void exitLongComboChanged ();
-    void enterShortComboChanged ();
-    void exitShortComboChanged ();
-    void scriptCheckChanged (bool);
 
   protected:
     void closeEvent(QCloseEvent *event);
 
   private:
     QString name;
-    QStringList priceList;
-    QStringList barLengthList;
-    QStringList indicatorList;
-    QString scriptFile;
-
     QAction *exitAction;
     QAction *aboutAction;
     QAction *newAction;
     QAction *openAction;
     QAction *saveAction;
-
-    QWidget *baseWidget;
+    QAction *runAction;
     QStatusBar *statusbar;
     QTabWidget *tabs;
-    QLineEdit *symbol;
-    QGroupBox *scriptCheck;
-    QGroupBox *longCheck;
-    QGroupBox *shortCheck;
-    QLineEdit *script;
-    QLineEdit *shellCommand;
-    QToolButton *scriptButton;
-    QToolButton *enterLongButton;
-    QToolButton *exitLongButton;
-    QToolButton *enterShortButton;
-    QToolButton *exitShortButton;
-    QComboBox *enterField;
-    QComboBox *exitField;
-    QCheckBox *trailingCheck;
-    QDoubleSpinBox *trailing;
-    QDialogButtonBox *buttonBox;
-    QSpinBox *bars;
-    QSpinBox *delay;
-    QDoubleSpinBox *entryComm;
-    QDoubleSpinBox *exitComm;
-    QComboBox *barLength;
-    QDoubleSpinBox *account;
-    QDoubleSpinBox *volumePercentage;
-    QTreeWidget *rankTree;
-    QTreeWidget *tradeLog;
-    QComboBox *enterLongCombo;
-    QComboBox *exitLongCombo;
-    QComboBox *enterShortCombo;
-    QComboBox *exitShortCombo;
-    IndicatorBase *enterLongIndicator;
-    IndicatorBase *exitLongIndicator;
-    IndicatorBase *enterShortIndicator;
-    IndicatorBase *exitShortIndicator;
-
-    // summary stuff
-    QLabel *grossProfit;
-    QLabel *netProfit;
-    QLabel *maxDrawDown;
-    QLabel *avgDrawDown;
-    QLabel *commissions;
-    QLabel *winLossRatio;
-    QLabel *totalTrades;
-    QLabel *percentProfitable;
-    QLabel *winningTrades;
-    QLabel *losingTrades;
-    QLabel *maxWinTrade;
-    QLabel *maxLossTrade;
-    QLabel *avgWinTrade;
-    QLabel *avgLossTrade;
-    QLabel *maxWinLong;
-    QLabel *maxLossLong;
-    QLabel *maxWinShort;
-    QLabel *maxLossShort;
-    QLabel *balance;
+    TestRankings *rankings;
+    TestSettings *settings;
+    TestReport *report;
 };
 
 #endif

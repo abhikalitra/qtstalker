@@ -7,9 +7,15 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math
 
 HEADERS += QtStalkerTester.h
 HEADERS += TestConfig.h
+HEADERS += TestRankings.h
+HEADERS += TestSettings.h
+HEADERS += TestReport.h
 
 SOURCES += QtStalkerTester.cpp
 SOURCES += TestConfig.cpp
+SOURCES += TestRankings.cpp
+SOURCES += TestSettings.cpp
+SOURCES += TestReport.cpp
 SOURCES += main.cpp
 
 TARGET = QtStalkerTester

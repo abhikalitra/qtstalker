@@ -272,6 +272,12 @@
            ~/.qtstalker/data.sqlite file or drop the indicatorIndex table in the file. Then
            recreate the indicators.
 
+20100222:  Restored OHLC bar values to the data window and data panel as in version 0.36
+
+
+
+
+
 
 
 

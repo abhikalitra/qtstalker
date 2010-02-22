@@ -65,12 +65,15 @@ void DataWindow::setBars (BarData *d)
   if (! d->count())
     return;
 
-  table->setColumnCount(2);
+  table->setColumnCount(5);
   table->setRowCount(d->count());
 
   QStringList sl;
   sl.append(tr("Date"));
-  sl.append(tr("Time"));
+  sl.append(tr("Open"));
+  sl.append(tr("High"));
+  sl.append(tr("Low"));
+  sl.append(tr("Close"));
   table->setHorizontalHeaderLabels(sl);
 
   int loop;
@@ -78,13 +81,25 @@ void DataWindow::setBars (BarData *d)
   {
     QDateTime dt;
     d->getDate(loop, dt);
-    QString s = dt.toString("yyyy-MM-dd");
+    QString s = dt.toString(Qt::ISODate);
     QTableWidgetItem *ti = new QTableWidgetItem(s, 0);
     table->setItem(loop, 0, ti);
 
-    s = dt.toString("HH:mm:ss");
+    s = QString::number(d->getOpen(loop));
     ti = new QTableWidgetItem(s, 0);
     table->setItem(loop, 1, ti);
+
+    s = QString::number(d->getHigh(loop));
+    ti = new QTableWidgetItem(s, 0);
+    table->setItem(loop, 2, ti);
+
+    s = QString::number(d->getLow(loop));
+    ti = new QTableWidgetItem(s, 0);
+    table->setItem(loop, 3, ti);
+
+    s = QString::number(d->getClose(loop));
+    ti = new QTableWidgetItem(s, 0);
+    table->setItem(loop, 4, ti);
   }
 }
 
@@ -99,7 +114,9 @@ void DataWindow::setPlot (Plot *d)
   for (loop2 = 0; loop2 < lines.count(); loop2++)
   {
     PlotLine *line = lines.at(loop2);
-    if (line->getType() == PlotLine::Horizontal)
+    if (line->getType() == PlotLine::Horizontal
+        || line->getType() == PlotLine::Bar
+        || line->getType() == PlotLine::Candle)
       continue;
 
     table->setColumnCount(table->columnCount() + 1);
@@ -145,6 +162,7 @@ QString DataWindow::strip (double d, int p)
 void DataWindow::scrollToBottom ()
 {
   table->scrollToBottom();
+  table->resizeColumnsToContents();
 }
 
 

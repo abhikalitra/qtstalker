@@ -260,6 +260,8 @@ int MA::dialog (int f)
   return rc;
 }
 
+// test functions
+
 void MA::testDialog (PrefDialog *dialog, int page)
 {
   page++;
@@ -313,7 +315,7 @@ int MA::test (BarData *data, TestSignal &sigs)
     return 1;
   }
 
-  qDebug() << in->getSize() << ma->getSize() << comp->getSize();
+//  qDebug() << in->getSize() << ma->getSize() << comp->getSize();
 
   delete in;
   delete ma;

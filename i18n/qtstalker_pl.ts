@@ -1217,10 +1217,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Gross Profit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1290,10 +1286,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Largest Losing Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1385,14 +1377,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invalid script command.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid symbol setting.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Trade Delay</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1410,14 +1394,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Empty</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Test Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rank</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1478,6 +1454,46 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rankings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Run</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Test Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing script file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing shell command.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing symbol.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1904,6 +1920,25 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Set Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TestRankings</name>
+    <message>
+        <source>Test Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Win/Loss Ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gross Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Net Profit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
