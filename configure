@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo -n "Determining Qt version ..."
+printf "Determining Qt version ..."
 qtVersionMajorRequired="4"
 qtVersionMinorRequired="5"
 qtMessage="This version of Qtstalker requires Qt$qtVersionMajorRequired.$qtVersionMinorRequired or better"
@@ -8,13 +8,13 @@ qmakeCmd=`command -v qmake`
 qtVersionOk="false"
 if [ -z "$qmakeCmd" ] ; then
   qmakeOk="false"
-  echo " not found"
-  echo "ERROR: Qt is not properly installed - cannot find 'qmake'"
+  printf " not found\n"
+  printf "ERROR: Qt is not properly installed - cannot find 'qmake'\n"
 else
   qmakeOk="true"
   qtVersionOk="true"
   qtVersion=`"$qmakeCmd" --version 2>&1 | sed -n '/[0-9]\.[0-9]\.[0-9]/s/^.*\([0-9]\.[0-9]\.[0-9]\).*$/\1/p'`
-  echo -n " $qtVersion ..."
+  printf " %s ..." "$qtVersion"
   qtVersionMajor=`echo $qtVersion | sed 's/^\([0-9]\)\..*$/\1/'`
   qtVersionMinor=`echo $qtVersion | sed 's/^[0-9]\.\([0-9]\)\..*$/\1/'`
   if [ $qtVersionMajor -ne $qtVersionMajorRequired ]; then
@@ -23,71 +23,64 @@ else
     qtVersionOk="false"
   fi
   if [ "$qtVersionOk" != "true" ]; then
-    echo " not okay"
-    echo "ERROR: $qtMessage"
+    printf " not okay\n"
+    printf "ERROR: %s\n" "$qtMessage"
   else
-    echo " okay"
+    printf " okay\n"
   fi
 fi
 
-echo -n "Determining TA-Lib version ..."
+printf "Determining TA-Lib version ..."
 talibCmd=`command -v ta-lib-config`
 if [ -z "$talibCmd" ] ; then
   talibOk="false"
-  echo " not found"
-  echo "ERROR: TA-Lib is not properly installed - cannot find 'ta-lib-config'"
+  printf " not found\n"
+  printf "ERROR: TA-Lib is not properly installed - cannot find 'ta-lib-config'\n"
 else
   talibOk="true"
   talibVersion=`"$talibCmd" --version`
-  echo -n " $talibVersion ..."
-  echo " okay"
+  printf " %s ... okay\n" "$talibVersion"
 fi
 if [ "$qmakeOk" != "true" ] || [ "$qtVersionOk" != "true" ] || [ "$talibOk" != "true" ]; then
-  echo "ERROR: There were configuration issues. See docs/install.html"
+  printf "ERROR: There were configuration issues. See docs/install.html\n"
   exit 1
 fi
 
-echo
-echo "Building Makefile ..."
+printf "\nBuilding Makefile ...\n"
 qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" -o Makefile qtstalker.pro
 if [ "$?" -ne "0" ]; then
-  echo "ERROR: See configuration messages above."
+  printf "ERROR: See configuration messages above.\n"
   exit 1
 else
-  echo "Done"
+  printf "Done\n"
 fi
 
-echo
-echo "Generating source code API documentation ..."
+printf "\nGenerating source code API documentation ...\n"
 dxCmd=`command -v doxygen`
 if [ -z "$dxCmd" ] ; then
-  echo "WARNING: Cannot find 'doxygen'."
+  printf "WARNING: Cannot find 'doxygen'.\n"
 else
   cd docs
   $dxCmd ../misc/doxygen/config.txt
-  echo "Done"
+  printf "Done\n"
   cd ..
 fi
 
-echo
-echo "Indexing and creating the documentation collection ..."
+printf "\nIndexing and creating the documentation collection ...\n"
 qcCmd=`command -v qcollectiongenerator`
 if [ -z "$qcCmd" ] ; then
-  echo "ERROR: Cannot find 'qcollectiongenerator'."
+  printf "ERROR: Cannot find 'qcollectiongenerator'.\n"
 else
   $qcCmd docs/doc.qhcp -o docs/doc.qhc
-  echo "Done"
+  printf "Done\n"
 fi
 
-echo
-echo "Creating national language files in i18n ..."
+printf "\nCreating national language files in i18n ...\n"
 qmake -project -r -o qtstalker_single.pro .
 lupdate qtstalker_single.pro
-echo "Done"
-echo "Compiling existing translations ..."
+printf "Done\n"
+printf "Compiling existing translations ...\n"
 lrelease i18n/qtstalker_??.ts
-echo "Done"
+printf "Done\n"
 
-echo
-echo "You may now 'make && sudo make install'"
-
+printf "\nYou may now 'make && sudo make install'\n"
