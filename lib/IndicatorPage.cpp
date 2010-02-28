@@ -23,8 +23,8 @@
 #include "DataBase.h"
 #include "Indicator.h"
 #include "Config.h"
-#include "IndicatorBase.h"
-#include "IndicatorFactory.h"
+#include "IndicatorPlugin.h"
+#include "PluginFactory.h"
 #include "PrefDialog.h"
 
 #include "../pics/ok.xpm"
@@ -102,9 +102,9 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 
 void IndicatorPage::newIndicator ()
 {
-  IndicatorBase ib;
+  Config config;
   QStringList l;
-  ib.getIndicatorList(l, 1);
+  config.getBaseData(Config::IndicatorPluginList, l);
 
   PrefDialog *dialog = new PrefDialog;
   dialog->setWindowTitle(tr("New Indicator"));
@@ -161,23 +161,18 @@ void IndicatorPage::newIndicator ()
   i.setName(name);
   i.setTabRow(tabRow);
 
-  IndicatorFactory fac;
-  IndicatorBase *ib2 = fac.getFunction(indicator);
-  if (! ib2)
+  PluginFactory fac;
+  IndicatorPlugin *ip = fac.getIndicator(indicator);
+  if (! ip)
     return;
 
-  rc = ib2->dialog(0);
+  rc = ip->dialog(0);
   if (rc == QDialog::Rejected)
-  {
-    delete ib2;
     return;
-  }
 
-  ib2->getSettings(i);
+  ip->getSettings(i);
 
   db.setIndicator(i);
-
-  delete ib2;
 
   emit signalNewIndicator(name);
 
@@ -208,25 +203,20 @@ void IndicatorPage::editIndicator (QString &name)
   QString indicator;
   i.getIndicator(indicator);
 
-  IndicatorFactory fac;
-  IndicatorBase *ib2 = fac.getFunction(indicator);
-  if (! ib2)
+  PluginFactory fac;
+  IndicatorPlugin *ip = fac.getIndicator(indicator);
+  if (! ip)
     return;
 
-  ib2->setSettings(i);
+  ip->setSettings(i);
 
-  int rc = ib2->dialog(0);
+  int rc = ip->dialog(0);
   if (rc == QDialog::Rejected)
-  {
-    delete ib2;
     return;
-  }
 
-  ib2->getSettings(i);
+  ip->getSettings(i);
 
   db.setIndicator(i);
-
-  delete ib2;
 
   emit signalRefreshIndicator(name);
 }

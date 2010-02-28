@@ -61,8 +61,8 @@ int SCIndicator::getIndicator (QStringList &l, QByteArray &ba, QHash<QString, Pl
   if (bars == 0)
     loop = 0;
   else
-    loop = in->getSize() - bars;
-  for (; loop < in->getSize(); loop++)
+    loop = in->count() - bars;
+  for (; loop < in->count(); loop++)
     l2.append(QString::number(in->getData(loop)));
 
   ba.clear();
@@ -100,7 +100,7 @@ int SCIndicator::getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, Q
     return 1;
   }
 
-  int offset = line->getSize() - 1 - index;
+  int offset = line->count() - 1 - index;
   if (offset < 0)
   {
     qDebug() << "SCIndicator::getIndex: offset greater than" << l[1] << "size";
@@ -137,8 +137,9 @@ int SCIndicator::setIndicator (QStringList &l, QHash<QString, PlotLine *> &tline
 
   line = new PlotLine;
   int loop;
+  QColor color("red");
   for (loop = 2; loop < l.count(); loop++)
-    line->append(l[loop].toDouble());
+    line->append(color, l[loop].toDouble());
 
   tlines.insert(l[1], line);
 
@@ -168,7 +169,7 @@ int SCIndicator::getSize (QStringList &l, QHash<QString, PlotLine *> &tlines, QB
     return 1;
   }
 
-  int size = line->getSize();
+  int size = line->count();
 
   ba.clear();
   ba.append(QString::number(size));

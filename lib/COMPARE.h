@@ -22,9 +22,9 @@
 #ifndef COMPARE_HPP
 #define COMPARE_HPP
 
-#include "IndicatorBase.h"
+#include "IndicatorPlugin.h"
 
-class COMPARE : public IndicatorBase
+class COMPARE : public IndicatorPlugin
 {
   public:
     COMPARE ();

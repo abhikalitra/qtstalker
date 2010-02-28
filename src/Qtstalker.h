@@ -60,7 +60,7 @@ class QtstalkerApp : public QMainWindow
     void signalDraw (bool);
     void signalNewIndicator ();
     void signalCrossHair (int, int, bool);
-    void signalNewExternalChartObject (int);
+    void signalNewExternalChartObject (QString);
     void signalSetExternalChartObject (int);
 
   public:

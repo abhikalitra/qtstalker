@@ -26,8 +26,14 @@
 #include "SCGroup.h"
 #include "SCSymbolList.h"
 #include "SCTest.h"
-#include "IndicatorFactory.h"
-#include "IndicatorBase.h"
+#include "IndicatorPlugin.h"
+#include "PluginFactory.h"
+#include "COLOR.h"
+#include "COMPARE.h"
+#include "MATH1.h"
+#include "RANGE.h"
+#include "REF.h"
+#include "SYMBOL.h"
 
 #include <QByteArray>
 #include <QtDebug>
@@ -51,6 +57,8 @@ ExScript::ExScript ()
   functionList << "PLOT";
   functionList << "SYMBOL_GET" << "SYMBOL_LIST";
   functionList << "TEST_ENTER_LONG" << "TEST_EXIT_LONG" << "TEST_ENTER_SHORT" << "TEST_EXIT_SHORT";
+  
+  notPluginList << "COLOR" << "COMPARE" << "MATH1" << "RANGE" << "REF" << "SYMBOL";
 
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
@@ -169,18 +177,52 @@ void ExScript::readFromStdout ()
     }
     case INDICATOR:
     {
-      IndicatorFactory fac;
-      IndicatorBase *ib = fac.getFunction(l[1]);
-      if (! ib)
+      int delFlag = 0;
+      PluginFactory fac;
+      IndicatorPlugin *ip = fac.getIndicator(l[1]);
+      if (! ip)
       {
-        proc->write("1\n");
-        break;
+        int i = notPluginList.indexOf(l[1]);
+        switch (i)
+        {
+          case 0: // COLOR
+            ip = new COLOR;
+	    delFlag = TRUE;
+            break;
+          case 1: // COMPARE
+            ip = new COMPARE;
+	    delFlag = TRUE;
+            break;
+          case 2: // MATH1
+            ip = new MATH1;
+	    delFlag = TRUE;
+            break;
+          case 3: // RANGE
+            ip = new RANGE;
+	    delFlag = TRUE;
+            break;
+          case 4: // REF
+            ip = new REF;
+	    delFlag = TRUE;
+            break;
+          case 5: // SYMBOL
+            ip = new SYMBOL;
+	    delFlag = TRUE;
+            break;
+          default:
+            proc->write("1\n");
+            break;
+        }
+  
+        if (! ip)
+          break;
       }
 
-      int rc = ib->getCUS(l, tlines, data);
+      int rc = ip->getCUS(l, tlines, data);
       ba.append(QString::number(rc) + '\n');
       proc->write(ba);
-      delete ib;
+      if (delFlag)
+	delete ip;
       break;
     }
     case INDICATOR_GET:

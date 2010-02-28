@@ -45,8 +45,8 @@
 #include "Config.h"
 #include "IndicatorPage.h"
 #include "GroupPage.h"
-#include "IndicatorFactory.h"
-#include "IndicatorBase.h"
+#include "PluginFactory.h"
+#include "IndicatorPlugin.h"
 #include "ScriptPage.h"
 #include "QuoteDataBase.h"
 
@@ -66,13 +66,6 @@
 #include "../pics/zoomout.xpm"
 #include "../pics/refresh.xpm"
 #include "../pics/script.xpm"
-#include "../pics/buyarrow.xpm"
-#include "../pics/fib.xpm"
-#include "../pics/horizontal.xpm"
-#include "../pics/sellarrow.xpm"
-#include "../pics/text.xpm"
-#include "../pics/trend.xpm"
-#include "../pics/vertical.xpm"
 #include "../pics/cursor_arrow.xpm"
 
 
@@ -101,6 +94,9 @@ QtstalkerApp::QtstalkerApp(QString session)
   QString dbFile;
   config.getData(Config::DbName, dbFile);
   qdb.init(dbFile);
+
+  PluginFactory pfac;
+  pfac.setup();
 
   assistant = new Assistant;
 
@@ -370,55 +366,26 @@ void QtstalkerApp::createToolBars ()
 
   bg = new QButtonGroup(this);
   connect(bg, SIGNAL(buttonClicked(int)), this, SLOT(coButtonPressed(int)));
-
-  // buy arrow button
-  b = new QToolButton;
-  b->setToolTip(tr("Buy Arrow"));
-  b->setIcon(QIcon(buyarrow_xpm));
-  toolBar2->addWidget(b);
-  bg->addButton(b, 0);
-
-  // horizontal button
-  b = new QToolButton;
-  b->setToolTip(tr("Horizontal Line"));
-  b->setIcon(QIcon(horizontal_xpm));
-  toolBar2->addWidget(b);
-  bg->addButton(b, 1);
-
-  // retracement button
-  b = new QToolButton;
-  b->setToolTip(tr("Retracement"));
-  b->setIcon(QIcon(fib_xpm));
-  toolBar2->addWidget(b);
-  bg->addButton(b, 2);
-
-  // sell arrow button
-  b = new QToolButton;
-  b->setToolTip(tr("Sell Arrow"));
-  b->setIcon(QIcon(sellarrow_xpm));
-  toolBar2->addWidget(b);
-  bg->addButton(b, 3);
-
-  // text button
-  b = new QToolButton;
-  b->setToolTip(tr("Text"));
-  b->setIcon(QIcon(text_xpm));
-  toolBar2->addWidget(b);
-  bg->addButton(b, 4);
-
-  // trend line button
-  b = new QToolButton;
-  b->setToolTip(tr("Trend Line"));
-  b->setIcon(QIcon(trend_xpm));
-  toolBar2->addWidget(b);
-  bg->addButton(b, 5);
-
-  // vertical button
-  b = new QToolButton;
-  b->setToolTip(tr("Vertical Line"));
-  b->setIcon(QIcon(vertical_xpm));
-  toolBar2->addWidget(b);
-  bg->addButton(b, 6);
+  
+  Config config;
+  QStringList l;
+  config.getBaseData(Config::COPluginList, l);
+  int loop;
+  PluginFactory fac;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    COPlugin *plug = fac.getCO(l[loop]);
+    if (! plug)
+      continue;
+    
+    b = new QToolButton;
+    QIcon icon;
+    plug->getIcon(icon);
+    b->setIcon(icon);
+    b->setToolTip(l[loop]);
+    toolBar2->addWidget(b);
+    bg->addButton(b, loop);
+  }
 
 
   //construct main toolbar
@@ -514,7 +481,6 @@ void QtstalkerApp::createToolBars ()
   barButtonGroup->addButton(b, 0);
 
   // set the button to last used position
-  Config config;
   b = (QToolButton *) barButtonGroup->button(config.getInt((int) Config::BarLength));
   b->setChecked(TRUE);
 
@@ -582,7 +548,6 @@ void QtstalkerApp::createToolBars ()
   toolbar->addSeparator();
 
   // recent charts combo
-  QStringList l;
   config.getBaseData((int) Config::RecentChartsList, l);
   recentCharts = new QComboBox;
   recentCharts->setMaxCount(10);
@@ -789,23 +754,20 @@ void QtstalkerApp::loadIndicator (QString &d)
   db.getIndicator(i);
 
   QList<PlotLine *> lines;
-  IndicatorFactory fac;
+  PluginFactory fac;
   QString s;
   i.getIndicator(s);
-  IndicatorBase *ib = fac.getFunction(s);
-  if (! ib)
+  IndicatorPlugin *ip = fac.getIndicator(s);
+  if (! ip)
     return;
 
-  ib->setSettings(i);
+  ip->setSettings(i);
 
-  if (ib->getIndicator(i, recordList))
+  if (ip->getIndicator(i, recordList))
   {
     qDebug() << "Qtstalker::loadIndicator: getIndicator failed";
-    delete ib;
     return;
   }
-
-  delete ib;
 
   i.getLines(lines);
 
@@ -1005,7 +967,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(this, SIGNAL(signalGrid(bool)), indy, SLOT(slotGridChanged(bool)));
   connect(this, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
 
-  connect(this, SIGNAL(signalNewExternalChartObject(int)), indy, SLOT(newExternalChartObject(int)));
+  connect(this, SIGNAL(signalNewExternalChartObject(QString)), indy, SLOT(newExternalChartObject(QString)));
   connect(indy, SIGNAL(signalNewExternalChartObjectDone(int)), this, SLOT(newExternalChartObjectDone(int)));
   connect(this, SIGNAL(signalSetExternalChartObject(int)), indy, SLOT(setExternalChartObjectFlag(int)));
 }
@@ -1256,7 +1218,10 @@ void QtstalkerApp::cursorButtonPressed (int id)
 
 void QtstalkerApp::coButtonPressed (int id)
 {
-  emit signalNewExternalChartObject(id);
+  Config config;
+  QStringList l;
+  config.getBaseData(Config::COPluginList, l);
+  emit signalNewExternalChartObject(l[id]);
 }
 
 // this slot is connected to a plot that is triggered when mouse has clicked the plot

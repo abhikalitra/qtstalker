@@ -22,9 +22,9 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
-#include "IndicatorBase.h"
+#include "IndicatorPlugin.h"
 
-class COLOR : public IndicatorBase
+class COLOR : public IndicatorPlugin
 {
   public:
     COLOR ();

@@ -29,16 +29,16 @@ TestSignal::TestSignal ()
 
 int TestSignal::createSignals (BarData *data, PlotLine *line)
 {
-  int barLoop = data->count() - line->getSize();
+  int barLoop = data->count() - line->count();
   if (barLoop < 0)
   {
-    qDebug() << "IndicatorBase::createSignals" << line->getSize() << "size > bars size";
+    qDebug() << "IndicatorBase::createSignals" << line->count() << "size > bars size";
     return 1;
   }
 
   int status = 0;
   int lineLoop;
-  for (lineLoop = 0; lineLoop < line->getSize(); lineLoop++, barLoop++)
+  for (lineLoop = 0; lineLoop < line->count(); lineLoop++, barLoop++)
   {
     switch (status)
     {

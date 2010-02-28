@@ -180,7 +180,7 @@ void TestTrade::update (PlotLine *line, BarData *data, double account)
   if (indexEnd == 0)
   {
     // no exit signal provided, we exit on last data bar
-    indexEnd = line->getSize() - 1;
+    indexEnd = line->count() - 1;
     exitPrice = line->getData(indexEnd);
     data->getDate(indexEnd, exitDate);
     signal = (int) SignalTestEnd;

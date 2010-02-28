@@ -80,9 +80,8 @@ int COLOR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  int inboolLoop = in->getSize() - 1;
-  in2->setColorFlag(TRUE);
-  int incolLoop = in2->getSize() - 1;
+  int inboolLoop = in->count() - 1;
+  int incolLoop = in2->count() - 1;
 
   while (inboolLoop > -1 && incolLoop > -1)
   {

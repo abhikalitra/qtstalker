@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef INDICATORPLOT_HPP
-#define INDICATORPLOT_HPP
+#ifndef INDICATOR_PLOT_HPP
+#define INDICATOR_PLOT_HPP
 
 #include <QWidget>
 #include <QString>
@@ -45,7 +45,8 @@
 #include "PlotLine.h"
 #include "Scaler.h"
 #include "BarData.h"
-#include "BaseCO.h"
+#include "ChartObject.h"
+#include "Setting.h"
 
 class IndicatorPlot : public QWidget
 {
@@ -94,13 +95,6 @@ class IndicatorPlot : public QWidget
     void getCOInfo ();
     void setXGrid (QVector<int> &);
     void setMenuFlag (bool);
-    void drawLine ();
-    void drawHorizontalLine ();
-    void drawHistogram ();
-    void drawHistogramBar ();
-    void drawDot ();
-    void drawBar ();
-    void drawCandle ();
     void getPlotList (QList<PlotLine *> &);
     void setPlotList (QList<PlotLine *> &);
     void setIndicator (QString &);
@@ -126,15 +120,8 @@ class IndicatorPlot : public QWidget
     void slotScaleToScreenChanged (bool);
     void slotLogScaleChanged (bool);
     void setInterval(BarData::BarLength);
-    void slotNewBuyArrow ();
-    void slotNewRetracement ();
-    void slotNewHorizontalLine ();
-    void slotNewSellArrow ();
-    void slotNewText ();
-    void slotNewTrendLine ();
-    void slotNewVerticalLine ();
     void calculate ();
-    void newExternalChartObject (int);
+    void newExternalChartObject (QString);
     void setExternalChartObjectFlag (int);
 
   protected:
@@ -157,7 +144,7 @@ class IndicatorPlot : public QWidget
     int getXFromDate (QDateTime &);
     void getXY (int, int);
     void slotMessage (QString);
-    void slotNewChartObject (int);
+    void slotNewChartObject (QString);
     void slotDeleteAllChartObjects ();
     void slotChartObjectDeleted ();
     void toggleDate ();
@@ -167,8 +154,6 @@ class IndicatorPlot : public QWidget
 
   private:
     QFont plotFont;
-    QFontMetrics *plotFontMetrics;
-    PlotLine *currentLine;
     QPixmap buffer;
     int pixelspace;
     int startX;
@@ -191,14 +176,13 @@ class IndicatorPlot : public QWidget
     double y1;
     QDateTime x1;
     MouseStatus mouseFlag;
-    QHash<QString, BaseCO *> coList;
-    BaseCO *coSelected;
-    BaseCO *coDraw;
+    QHash<QString, ChartObject *> coList;
+    ChartObject *coSelected;
+    ChartObject *coDraw;
     QString indicator;
     BarData *data;
     QVector<int> xGrid;
     QMenu *chartMenu;
-    QMenu *chartObjectMenu;
     QMenu *coMenu;
     QList<PlotLine *> plotList;
     QString chartSymbol;

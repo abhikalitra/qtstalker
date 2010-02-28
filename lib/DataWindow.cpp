@@ -114,20 +114,22 @@ void DataWindow::setPlot (Plot *d)
   for (loop2 = 0; loop2 < lines.count(); loop2++)
   {
     PlotLine *line = lines.at(loop2);
-    if (line->getType() == PlotLine::Horizontal
-        || line->getType() == PlotLine::Bar
-        || line->getType() == PlotLine::Candle)
+    
+    line->getPlugin(s);
+    if (s == "OHLC" || s == "Candle" || s == "Horizontal")
       continue;
 
+    // increase # of columns to fit new 
     table->setColumnCount(table->columnCount() + 1);
-
+    
+    // add new column header to table
     line->getLabel(s);
     QTableWidgetItem *ti = new QTableWidgetItem(s, 0);
     table->setHorizontalHeaderItem(table->columnCount() - 1, ti);
 
     int loop3;
-    int offset = table->rowCount() - line->getSize();
-    for (loop3 = 0; loop3 < line->getSize(); loop3++)
+    int offset = table->rowCount() - line->count();
+    for (loop3 = 0; loop3 < line->count(); loop3++)
     {
       ti = new QTableWidgetItem(strip(line->getData(loop3), 4), 0);
       table->setItem(loop3 + offset, table->columnCount() - 1, ti);

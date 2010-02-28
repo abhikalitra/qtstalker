@@ -41,7 +41,7 @@ class Config : public BaseConfig
       BackgroundColor, // color of chart background
       BorderColor, // color of chart borders
       GridColor, // color of chart grid
-      DefaultBuyArrowColor, // default buy arrow color
+      DefaultBuyColor, // default buy arrow color
       DbName, // sql db name
       Crosshairs, // char crosshairs on/off
       DrawMode, // chart draw mode on/off
@@ -56,8 +56,8 @@ class Config : public BaseConfig
       MainWindowPos, // app position
       PrefDlgWindowSize, // preferences dialog window size
       DbUserName, // sql quotes db user name needed for login
-      BackTesterWindowSize, // ********* UNUSED *************
-      ScannerWindowSize,  // ********* UNUSED *************
+      IndicatorPluginPath, // path to the indicator plugins
+      IndicatorPluginList,  // csv list of current indicator plugins from startup inventory
       Version,  // current qtstalker version
       PlotSizes, // csv list of plot row sizes
       DbPassword, // sql db user password
@@ -69,10 +69,10 @@ class Config : public BaseConfig
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
       ShowSidePanel, // side panel flag
-      ShowQuitButton, // ********* UNUSED *************
-      ShowPrefButton,  // ********* UNUSED *************
-      ShowSidePanelButton, // ********* UNUSED *************
-      ShowGridButton, // ********* UNUSED *************
+      COPluginPath, // path where chart object plugins are stored
+      COPluginList,  // csv list of current chart object plugins from startup inventory
+      PlotPluginPath, // path where plot plugins are stored
+      PlotPluginList, // csv list of current plot plugins from startup inventory
       ShowScaleToScreenButton, // ********* UNUSED *************
       ShowCrosshairButton, // ********* UNUSED *************
       DbSearchSymbols, // the sql command to get a symbol search
@@ -112,15 +112,15 @@ class Config : public BaseConfig
       DefaultRetracementLine4,
       DefaultRetracementLine5,
       DefaultRetracementLine6,
-      DefaultHorizontalLineColor,
-      DefaultSellArrowColor,
+      DefaultHLineColor,
+      DefaultSellColor,
       DefaultTextColor,
       DefaultTextFont,
-      DefaultTrendLineColor,
-      DefaultTrendLineBar,
-      DefaultTrendLineExtend,
-      DefaultTrendLineUseBar,
-      DefaultVerticalLineColor, // default vertical line color
+      DefaultTLineColor,
+      DefaultTLineBar,
+      DefaultTLineExtend,
+      DefaultTLineUseBar,
+      DefaultVLineColor, // default vertical line color
       IndicatorTabRows, // # of indicator tab rows
       UNUSED5, // ************ UNUSED ****************************
       UNUSED6 // ************ UNUSED ***********************

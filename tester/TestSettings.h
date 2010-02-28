@@ -35,7 +35,7 @@
 #include <QGroupBox>
 #include <QWidget>
 
-#include "IndicatorBase.h"
+#include "IndicatorPlugin.h"
 
 class TestSettings : public QWidget
 {
@@ -143,10 +143,10 @@ class TestSettings : public QWidget
     QComboBox *exitLongCombo;
     QComboBox *enterShortCombo;
     QComboBox *exitShortCombo;
-    IndicatorBase *enterLongIndicator;
-    IndicatorBase *exitLongIndicator;
-    IndicatorBase *enterShortIndicator;
-    IndicatorBase *exitShortIndicator;
+    IndicatorPlugin *enterLongIndicator;
+    IndicatorPlugin *exitLongIndicator;
+    IndicatorPlugin *enterShortIndicator;
+    IndicatorPlugin *exitShortIndicator;
 };
 
 #endif

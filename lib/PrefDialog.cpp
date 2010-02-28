@@ -22,7 +22,6 @@
 #include "PrefDialog.h"
 #include "Config.h"
 #include "PlotLine.h"
-#include "IndicatorBase.h"
 #include "BarData.h"
 
 #include <QHBoxLayout>

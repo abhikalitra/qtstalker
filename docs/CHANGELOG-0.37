@@ -274,6 +274,20 @@
 
 20100222:  Restored OHLC bar values to the data window and data panel as in version 0.36
 
+20100227:  Plugins...plugins...plugins...they are back. Long story short, I have been contracted
+           hurry up and finish this project and to convert qtstalker to full use of plugins
+           where possible. For now, I have converted the indicators, chart objects and line types
+           to plugins. The bulk is complete. I will have to split up some of the indicators that
+           have multiple methods to keep code and interface clean and consistant.
+           This will entail some script interface changes to some of the indicators.
+
+           NOTE: Lots of changes to the local database, so it would be best to remove the
+           ~/.qtstalker/config.sqlite* and ~/.qtstalker/data.sqlite files before installing the
+           current CVS.
+
+
+
+
 
 
 

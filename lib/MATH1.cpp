@@ -21,8 +21,10 @@
 
 #include "MATH1.h"
 #include "math.h" // for fabs
+#include "ta_libc.h"
 
 #include <QtDebug>
+#include <QObject>
 
 
 MATH1::MATH1 ()
@@ -50,6 +52,15 @@ MATH1::MATH1 ()
   methodList << QObject::tr("MULT");
   methodList << QObject::tr("SUB");
   methodList << QObject::tr("STDDEV");
+  
+  maList << "EMA";
+  maList << "DEMA";
+  maList << "KAMA";
+  maList << "SMA";
+  maList << "TEMA";
+  maList << "TRIMA";
+  maList << "Wilder";
+  maList << "WMA";
 }
 
 int MATH1::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
@@ -118,29 +129,29 @@ PlotLine * MATH1::getMATH1 (PlotLine *in, int method)
 {
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
+  TA_Real input[in->count()];
+  TA_Real out[in->count()];
   int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
+  for (loop = 0; loop < in->count(); loop++)
     input[loop] = (TA_Real) in->getData(loop);
 
   TA_RetCode rc = TA_SUCCESS;
   switch (method)
   {
     case 0:
-      rc = TA_CEIL(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CEIL(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 1:
-      rc = TA_EXP(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_EXP(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 2:
-      rc = TA_FLOOR(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_FLOOR(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 3:
-      rc = TA_LN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_LN(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 4:
-      rc = TA_LOG10(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_LOG10(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 5:
     {
@@ -148,7 +159,7 @@ PlotLine * MATH1::getMATH1 (PlotLine *in, int method)
       double range = 0;
       double max = -99999999.0;
       double min = 99999999.0;
-      for (loop = 0; loop < in->getSize(); loop++)
+      for (loop = 0; loop < in->count(); loop++)
       {
         if (in->getData(loop) > max)
           max = in->getData(loop);
@@ -156,39 +167,39 @@ PlotLine * MATH1::getMATH1 (PlotLine *in, int method)
           min = in->getData(loop);
       }
       range = fabs(max) + fabs(min);
-      for (loop = 0; loop < in->getSize(); loop++)
+      for (loop = 0; loop < in->count(); loop++)
         out[loop] = (TA_Real) ((in->getData(loop) - min) / range) * 100;
       break;
     }
     case 6:
-      rc = TA_SQRT(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_SQRT(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 7:
-      rc = TA_ACOS(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_ACOS(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 8:
-      rc = TA_ASIN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_ASIN(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 9:
-      rc = TA_ATAN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_ATAN(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 10:
-      rc = TA_COS(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_COS(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 11:
-      rc = TA_COSH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_COSH(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 12:
-      rc = TA_SIN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_SIN(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 13:
-      rc = TA_SINH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_SINH(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 14:
-      rc = TA_TAN(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_TAN(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     case 15:
-      rc = TA_TANH(0, in->getSize() - 1, &input[0], &outBeg, &outNb, &out[0]);
+      rc = TA_TANH(0, in->count() - 1, &input[0], &outBeg, &outNb, &out[0]);
       break;
     default:
       break;
@@ -268,9 +279,9 @@ int MATH1::getCUS3 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
 
 PlotLine * MATH1::getMATH2 (PlotLine *in, PlotLine *in2, int method)
 {
-  int size = in->getSize();
-  if (in2->getSize() < size)
-    size = in2->getSize();
+  int size = in->count();
+  if (in2->count() < size)
+    size = in2->count();
 
   TA_Real input[size];
   TA_Real input2[size];
@@ -278,8 +289,8 @@ PlotLine * MATH1::getMATH2 (PlotLine *in, PlotLine *in2, int method)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = in->getSize() - 1;
-  int loop2 = in2->getSize() - 1;
+  int loop = in->count() - 1;
+  int loop2 = in2->count() - 1;
   int count = size - 1;
   for (; count > -1; loop--, loop2--, count--)
   {
@@ -384,13 +395,13 @@ PlotLine * MATH1::getSTDDEV (PlotLine *in, int period, double dev)
 {
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_Real input[in->getSize()];
-  TA_Real out[in->getSize()];
+  TA_Real input[in->count()];
+  TA_Real out[in->count()];
   int loop;
-  for (loop = 0; loop < in->getSize(); loop++)
+  for (loop = 0; loop < in->count(); loop++)
     input[loop] = (TA_Real) in->getData(loop);
 
-  TA_RetCode rc = TA_STDDEV(0, in->getSize() - 1, &input[0], period, dev, &outBeg, &outNb, &out[0]);
+  TA_RetCode rc = TA_STDDEV(0, in->count() - 1, &input[0], period, dev, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
     qDebug() << indicator << "::calculate: TA-Lib error" << rc;
@@ -400,6 +411,114 @@ PlotLine * MATH1::getSTDDEV (PlotLine *in, int period, double dev)
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
     line->append(out[loop]);
+
+  return line;
+}
+
+PlotLine * MATH1::getMA (PlotLine *in, int period, int method)
+{
+  int size = in->count();
+  TA_Real input[size];
+  TA_Real out[size];
+  int loop;
+  for (loop = 0; loop < size; loop++)
+    input[loop] = (TA_Real) in->getData(loop);
+
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_RetCode rc = TA_SUCCESS;
+  switch (method)
+  {
+    case 0:
+      rc = TA_EMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 1:
+      rc = TA_DEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 2:
+      rc = TA_KAMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 3:
+      rc = TA_SMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 4:
+      rc = TA_TEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 5:
+      rc = TA_TRIMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 6: // Wilder
+    {
+      PlotLine *line = new PlotLine;
+      double t = 0;
+      int loop;
+      for (loop = 0; loop < period; loop++)
+        t = t + input[loop];
+      double yesterday = t / period;
+      line->append(yesterday);
+      for (; loop < size; loop++)
+      {
+        double t  = (yesterday * (period - 1) + input[loop]) / period;
+        yesterday = t;
+        line->append(t);
+      }
+      return line;
+      break;
+    }
+    case 7:
+      rc = TA_WMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  PlotLine *line = new PlotLine;
+  for (loop = 0; loop < outNb; loop++)
+    line->append(out[loop]);
+
+  return line;
+}
+
+void MATH1::getMAList (QStringList &l)
+{
+  l = maList;
+}
+
+PlotLine * MATH1::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral)
+{
+  int size = data->count();
+  PlotLine *line = new PlotLine;
+  
+  QString s = "OHLC";
+  line->setPlugin(s);
+  
+  s = QObject::tr("C");
+  line->setLabel(s);
+  
+  int loop;
+  for (loop = 0; loop < size; loop++)
+  {
+    if (loop > 0)
+    {
+      if (data->getClose(loop) > data->getClose(loop - 1))
+        line->append(_up, data->getClose(loop));
+      else
+      {
+        if (data->getClose(loop) < data->getClose(loop - 1))
+          line->append(_down, data->getClose(loop));
+        else
+          line->append(_neutral, data->getClose(loop));
+      }
+    }
+    else
+      line->append(_neutral, data->getClose(loop));
+  }
 
   return line;
 }

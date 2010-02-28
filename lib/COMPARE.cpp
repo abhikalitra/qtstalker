@@ -62,19 +62,19 @@ int COMPARE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
   }
 
   PlotLine *line = 0;
-  if (in->getSize() > 1 && in2->getSize() > 1) // A - A
+  if (in->count() > 1 && in2->count() > 1) // A - A
     line = compareAA(in, in2, op);
   else
   {
-    if (in->getSize() > 1 && in2->getSize() == 1) // A - V
+    if (in->count() > 1 && in2->count() == 1) // A - V
       line = compareAV(in, in2, op);
     else
     {
-      if (in->getSize() == 1 && in2->getSize() == 1) // V - V
+      if (in->count() == 1 && in2->count() == 1) // V - V
         line = compareVV(in, in2, op);
       else
       {
-        if (in->getSize() == 1 && in2->getSize() > 1) // V - A
+        if (in->count() == 1 && in2->count() > 1) // V - A
           line = compareVA(in, in2, op);
 	else
 	  return 1;
@@ -89,8 +89,8 @@ int COMPARE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
 
 PlotLine * COMPARE::compareAA (PlotLine *in, PlotLine *in2, int op)
 {
-  int loop = in->getSize() - 1;
-  int loop2 = in2->getSize() - 1;
+  int loop = in->count() - 1;
+  int loop2 = in2->count() - 1;
   PlotLine *line = new PlotLine;
 
   while (loop > -1 && loop2 > -1)
@@ -143,7 +143,7 @@ PlotLine * COMPARE::compareAA (PlotLine *in, PlotLine *in2, int op)
 
 PlotLine * COMPARE::compareAV (PlotLine *in, PlotLine *in2, int op)
 {
-  int loop = in->getSize() - 1;
+  int loop = in->count() - 1;
   PlotLine *line = new PlotLine;
 
   while (loop > -1)
@@ -241,7 +241,7 @@ PlotLine * COMPARE::compareVV (PlotLine *in, PlotLine *in2, int op)
 
 PlotLine * COMPARE::compareVA (PlotLine *in, PlotLine *in2, int op)
 {
-  int loop = in2->getSize() - 1;
+  int loop = in2->count() - 1;
   PlotLine *line = new PlotLine;
 
   while (loop > -1)

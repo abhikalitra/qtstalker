@@ -22,9 +22,9 @@
 #ifndef RANGE_HPP
 #define RANGE_HPP
 
-#include "IndicatorBase.h"
+#include "IndicatorPlugin.h"
 
-class RANGE : public IndicatorBase
+class RANGE : public IndicatorPlugin
 {
   public:
     RANGE ();

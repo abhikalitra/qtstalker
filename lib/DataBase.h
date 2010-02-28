@@ -30,7 +30,7 @@
 #include "BarData.h"
 #include "Indicator.h"
 #include "Script.h"
-#include "BaseCO.h"
+#include "ChartObject.h"
 
 
 class DataBase
@@ -68,8 +68,8 @@ class DataBase
     void deleteChartObjects (QString &symbol);
     void deleteChartObjectsIndicator (QString &indicator);
     void deleteChartObject (QString &id);
-    void getChartObjects (QString &symbol, QString &indicator, QHash<QString, BaseCO *> &list);
-    void setChartObject (BaseCO *);
+    void getChartObjects (QString &symbol, QString &indicator, QHash<QString, ChartObject *> &list);
+    void setChartObject (ChartObject *);
 
     // script functions
     void getScripts (QStringList &);

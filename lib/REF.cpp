@@ -69,7 +69,7 @@ int REF::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
   PlotLine *line = new PlotLine;
   int loop = 0;
-  for (loop = 0; loop < in->getSize(); loop++)
+  for (loop = 0; loop < in->count(); loop++)
   {
     if (loop - period < 0)
       continue;

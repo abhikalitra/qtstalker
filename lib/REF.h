@@ -22,9 +22,9 @@
 #ifndef REF_HPP
 #define REF_HPP
 
-#include "IndicatorBase.h"
+#include "IndicatorPlugin.h"
 
-class REF : public IndicatorBase
+class REF : public IndicatorPlugin
 {
   public:
     REF ();

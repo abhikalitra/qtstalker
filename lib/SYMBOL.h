@@ -22,9 +22,9 @@
 #ifndef SYMBOL_HPP
 #define SYMBOL_HPP
 
-#include "IndicatorBase.h"
+#include "IndicatorPlugin.h"
 
-class SYMBOL : public IndicatorBase
+class SYMBOL : public IndicatorPlugin
 {
   public:
     SYMBOL ();

@@ -58,52 +58,65 @@ PlotLine * BarData::getInput (BarData::InputType field)
 {
   PlotLine *in = new PlotLine;
   int loop;
+  QColor color("red");
   for (loop = 0; loop < count(); loop++)
   {
     switch (field)
     {
       case Open:
-        in->append(getOpen(loop));
+      {
+        in->append(color, getOpen(loop));
         break;
+      }
       case High:
-        in->append(getHigh(loop));
+      {
+        in->append(color, getHigh(loop));
         break;
+      }
       case Low:
-        in->append(getLow(loop));
+      {
+        in->append(color, getLow(loop));
         break;
+      }
       case Volume:
-        in->append(getVolume(loop));
+      {
+        in->append(color, getVolume(loop));
         break;
+      }
       case OI:
-        in->append(getOI(loop));
+      {
+        in->append(color, getOI(loop));
         break;
+      }
       case AveragePrice:
       {
         double t = (getOpen(loop) + getHigh(loop) + getLow(loop) + getClose(loop)) / 4.0;
-        in->append(t);
+        in->append(color, t);
         break;
       }
       case MedianPrice:
       {
         double t = (getHigh(loop) + getLow(loop)) / 2.0;
-        in->append(t);
+        in->append(color, t);
         break;
       }
       case TypicalPrice:
       {
         double t = (getHigh(loop) + getLow(loop) + getClose(loop)) / 3.0;
-        in->append(t);
+        in->append(color, t);
         break;
       }
       case WeightedClosePrice:
       {
         double t = (getHigh(loop) + getLow(loop) + (getClose(loop) * 2)) / 4.0;
-        in->append(t);
+        in->append(color, t);
         break;
       }
       default:
-        in->append(getClose(loop));
+      {
+        in->append(color, getClose(loop));
         break;
+      }
     }
   }
 

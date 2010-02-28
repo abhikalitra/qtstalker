@@ -25,49 +25,26 @@
 #include <QString>
 #include <QList>
 #include <QColor>
-//#include <QDateTime>
 
+#include "PlotLineBar.h"
 #include "Setting.h"
-
-typedef struct
-{
-  double v;
-  QColor color;
-
-} Val;
 
 class PlotLine
 {
   public:
-    enum LineType
-    {
-      Dot,
-      Dash,
-      Histogram,
-      HistogramBar,
-      Line,
-      Horizontal,
-      Bar,
-      Candle
-    };
-
     PlotLine ();
-    void setColor (QString &);
-    void setColor (QColor &);
-    void getColor (QColor &);
-    void setType (PlotLine::LineType);
-    void setType (QString &);
-    PlotLine::LineType getType ();
+    void setPlugin (QString &);
+    void getPlugin (QString &);
     void setLabel (QString &);
     void getLabel (QString &);
     void append (double);
     void append (QColor &, double);
     void prepend (double);
     void prepend (QColor &, double);
+    double getData (int, QColor &);
     double getData (int);
-    void getData (int, QColor &, double &);
     void setData (int, double);
-    int getSize ();
+    int count ();
     double getHigh ();
     void setHigh (double);
     double getLow ();
@@ -75,28 +52,26 @@ class PlotLine
     void checkHighLow (double);
     void setScaleFlag (bool);
     bool getScaleFlag ();
-    void setColorFlag (bool);
-    bool getColorFlag ();
-    void getLineTypes (QStringList &);
-    void setColorBar (int, QColor &);
-    void getColorBar (int, QColor &);
-    void getHighLowRange (int, int, double &, double &);
-    void getInfo (int, Setting &);
-    void strip (double, int, QString &);
     void setPlotFlag (bool);
     bool getPlotFlag ();
+    void getHighLowRange (int, int, double &, double &);
+    void setOffset (int);
+    int getOffset ();
+    void getInfo (int, Setting &);
+    void setColor (QColor &);
+    void setColor (QString &);
+    void setColorBar (int, QColor &);
+    void setType (QString &);
 
   private:
-    QList<Val> data;
-    QColor color;
-    PlotLine::LineType lineType;
+    QList<PlotLineBar> data;
     QString label;
+    QString plugin;
     double high;
     double low;
     bool scaleFlag;
-    bool colorFlag;
     bool plotFlag;
-    QStringList typeList;
+    int offset;
 };
 
 #endif

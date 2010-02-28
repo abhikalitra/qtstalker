@@ -85,14 +85,75 @@ TEMPLATE = subdirs
 # compile qtstalker lib
 SUBDIRS += lib
 
+# compile indicator plugins
+SUBDIRS += plugins/indicators/AD
+SUBDIRS += plugins/indicators/ADX
+SUBDIRS += plugins/indicators/AROON
+SUBDIRS += plugins/indicators/ATR
+SUBDIRS += plugins/indicators/BARS
+SUBDIRS += plugins/indicators/BBANDS
+SUBDIRS += plugins/indicators/BETA
+SUBDIRS += plugins/indicators/BOP
+SUBDIRS += plugins/indicators/CANDLES
+SUBDIRS += plugins/indicators/CCI
+SUBDIRS += plugins/indicators/CMO
+SUBDIRS += plugins/indicators/CORREL
+SUBDIRS += plugins/indicators/CUS
+SUBDIRS += plugins/indicators/FI
+SUBDIRS += plugins/indicators/HT
+SUBDIRS += plugins/indicators/LINEARREG
+SUBDIRS += plugins/indicators/LMS
+SUBDIRS += plugins/indicators/MA
+SUBDIRS += plugins/indicators/MACD
+SUBDIRS += plugins/indicators/MAMA
+SUBDIRS += plugins/indicators/MAVP
+SUBDIRS += plugins/indicators/MFI
+SUBDIRS += plugins/indicators/MOM
+SUBDIRS += plugins/indicators/PO
+SUBDIRS += plugins/indicators/PP
+SUBDIRS += plugins/indicators/ROC
+SUBDIRS += plugins/indicators/RSI
+SUBDIRS += plugins/indicators/SAR
+SUBDIRS += plugins/indicators/STOCH
+SUBDIRS += plugins/indicators/STOCHRSI
+SUBDIRS += plugins/indicators/SZ
+SUBDIRS += plugins/indicators/T3
+SUBDIRS += plugins/indicators/THERM
+SUBDIRS += plugins/indicators/TRIX
+SUBDIRS += plugins/indicators/ULTOSC
+SUBDIRS += plugins/indicators/VAR
+SUBDIRS += plugins/indicators/VFI
+SUBDIRS += plugins/indicators/VIDYA
+SUBDIRS += plugins/indicators/VOL
+SUBDIRS += plugins/indicators/WILLR
+
+# compile object plugins
+SUBDIRS += plugins/objects/Buy
+SUBDIRS += plugins/objects/HLine
+SUBDIRS += plugins/objects/Retracement
+SUBDIRS += plugins/objects/Sell
+SUBDIRS += plugins/objects/Text
+SUBDIRS += plugins/objects/TLine
+SUBDIRS += plugins/objects/VLine
+
+# compile plot plugins
+SUBDIRS += plugins/plots/OHLC
+SUBDIRS += plugins/plots/Candle
+SUBDIRS += plugins/plots/Dash
+SUBDIRS += plugins/plots/Dot
+SUBDIRS += plugins/plots/Histogram
+SUBDIRS += plugins/plots/HistogramBar
+SUBDIRS += plugins/plots/Horizontal
+SUBDIRS += plugins/plots/Line
+
 # compile app
 SUBDIRS += src
 
 # compile tester
-SUBDIRS += tester
+#SUBDIRS += tester
 
 # compile CSV app
-SUBDIRS += csv
+#SUBDIRS += csv
 
 # install docs and i18n
-SUBDIRS += docs
+#SUBDIRS += docs

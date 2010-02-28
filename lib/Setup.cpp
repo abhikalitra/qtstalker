@@ -24,8 +24,8 @@
 #include "Config.h"
 #include "DataBase.h"
 #include "Indicator.h"
-#include "IndicatorFactory.h"
-#include "IndicatorBase.h"
+#include "PluginFactory.h"
+#include "IndicatorPlugin.h"
 #include "ta_libc.h"
 
 
@@ -224,76 +224,6 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::ShowSidePanel, d);
   }
 
-  config.getData(Config::ShowQuitButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowQuitButton, d);
-  }
-
-  config.getData(Config::ShowPrefButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowPrefButton, d);
-  }
-
-  config.getData(Config::ShowSidePanelButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowSidePanelButton, d);
-  }
-
-  config.getData(Config::ShowGridButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowGridButton, d);
-  }
-
-  config.getData(Config::ShowScaleToScreenButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowScaleToScreenButton, d);
-  }
-
-  config.getData(Config::ShowCrosshairButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowCrosshairButton, d);
-  }
-
-  config.getData(Config::ShowDrawModeButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowDrawModeButton, d);
-  }
-
-  config.getData(Config::ShowNewIndicatorButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowNewIndicatorButton, d);
-  }
-
-  config.getData(Config::ShowDataWindowButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowDataWindowButton, d);
-  }
-
-  config.getData(Config::ShowHelpButton, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    config.setData(Config::ShowHelpButton, d);
-  }
-
   config.getData(Config::ShowRecentCharts, d);
   if (d.isEmpty())
   {
@@ -394,32 +324,32 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::DefaultIndicators, d);
   }
 
-  config.getData(Config::DefaultBuyArrowColor, d);
+  config.getData(Config::DefaultBuyColor, d);
   if (d.isEmpty())
   {
     d = "green";
-    config.setData(Config::DefaultBuyArrowColor, d);
+    config.setData(Config::DefaultBuyColor, d);
   }
 
-  config.getData(Config::DefaultSellArrowColor, d);
+  config.getData(Config::DefaultSellColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    config.setData(Config::DefaultSellArrowColor, d);
+    config.setData(Config::DefaultSellColor, d);
   }
 
-  config.getData(Config::DefaultHorizontalLineColor, d);
+  config.getData(Config::DefaultHLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    config.setData(Config::DefaultHorizontalLineColor, d);
+    config.setData(Config::DefaultHLineColor, d);
   }
 
-  config.getData(Config::DefaultVerticalLineColor, d);
+  config.getData(Config::DefaultVLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    config.setData(Config::DefaultVerticalLineColor, d);
+    config.setData(Config::DefaultVLineColor, d);
   }
 
   config.getData(Config::DefaultRetracementColor, d);
@@ -492,47 +422,32 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::DefaultTextLabel, d);
   }
 
-  config.getData(Config::DefaultTrendLineColor, d);
+  config.getData(Config::DefaultTLineColor, d);
   if (d.isEmpty())
   {
     d = "red";
-    config.setData(Config::DefaultTrendLineColor, d);
+    config.setData(Config::DefaultTLineColor, d);
   }
 
-  config.getData(Config::DefaultTrendLineBar, d);
+  config.getData(Config::DefaultTLineBar, d);
   if (d.isEmpty())
   {
     d = "Close";
-    config.setData(Config::DefaultTrendLineBar, d);
+    config.setData(Config::DefaultTLineBar, d);
   }
 
-  config.getData(Config::DefaultTrendLineExtend, d);
+  config.getData(Config::DefaultTLineExtend, d);
   if (d.isEmpty())
   {
     d = "1";
-    config.setData(Config::DefaultTrendLineExtend, d);
+    config.setData(Config::DefaultTLineExtend, d);
   }
 
-  config.getData(Config::DefaultTrendLineUseBar, d);
+  config.getData(Config::DefaultTLineUseBar, d);
   if (d.isEmpty())
   {
     d = "0";
-    config.setData(Config::DefaultTrendLineUseBar, d);
-  }
-
-  config.getData(Config::IndicatorScriptCommand, d);
-  if (d.isEmpty())
-  {
-    d = "perl";
-    config.setData(Config::IndicatorScriptCommand, d);
-  }
-
-  config.getData(Config::IndicatorScriptPath, d);
-  if (d.isEmpty())
-  {
-    d = INSTALL_DATA_DIR;
-    d.append("/qtstalker/indicator");
-    config.setData(Config::IndicatorScriptPath, d);
+    config.setData(Config::DefaultTLineUseBar, d);
   }
 
   config.getData(Config::Refresh, d);
@@ -549,6 +464,27 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::RefreshStatus, d);
   }
 
+  config.getData(Config::IndicatorPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/indicator";
+    config.setData(Config::IndicatorPluginPath, d);
+  }
+
+  config.getData(Config::COPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/object";
+    config.setData(Config::COPluginPath, d);
+  }
+
+  config.getData(Config::PlotPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/plot";
+    config.setData(Config::PlotPluginPath, d);
+  }
+
   config.commit();
 }
 
@@ -561,39 +497,37 @@ void Setup::setupDefaultIndicators ()
     return;
 
   // create the Bars indicator
-  IndicatorFactory fac;
+  PluginFactory fac;
   DataBase db;
   QString s = "BARS";
-  IndicatorBase *ib = fac.getFunction(s);
-  if (! ib)
+  IndicatorPlugin *ip = fac.getIndicator(s);
+  if (! ip)
     qDebug() << "Setup::setupDefaultIndicators: BARS error";
   else
   {
     Indicator i;
-    ib->getSettings(i);
+    ip->getSettings(i);
     i.setTabRow(1);
     i.setEnable(1);
     s = "Bars";
     i.setName(s);
     db.setIndicator(i);
-    delete ib;
   }
 
   // lets add the Volume indicator
   s = "VOL";
-  ib = fac.getFunction(s);
-  if (! ib)
+  ip = fac.getIndicator(s);
+  if (! ip)
     qDebug() << "Setup::setupDefaultIndicators: VOL error";
   else
   {
     Indicator i;
-    ib->getSettings(i);
+    ip->getSettings(i);
     i.setTabRow(2);
     i.setEnable(1);
     s = "Volume";
     i.setName(s);
     db.setIndicator(i);
-    delete ib;
   }
 
   config.setBaseData((int) Config::DefaultIndicators, 1);

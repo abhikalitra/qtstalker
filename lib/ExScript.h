@@ -84,6 +84,7 @@ class ExScript : public QObject
   private:
     QProcess *proc;
     QStringList functionList;
+    QStringList notPluginList;
     QHash<QString, PlotLine *> tlines;
     QStringList plotOrder;
     BarData *data;

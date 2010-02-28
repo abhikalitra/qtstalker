@@ -20,6 +20,7 @@
  */
 
 #include "SCPlot.h"
+#include "Config.h"
 
 #include <QtDebug>
 
@@ -46,10 +47,26 @@ int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, Pl
     qDebug() << "SCPlot::calculate: invalid line name" << l[1];
     return 1;
   }
+  
+  QColor color(l[3]);
+  if (! color.isValid())
+  {
+    qDebug() << "SCPlot::calculate: invalid color" << l[3];
+    return 1;
+  }
+
+  Config config;
+  QStringList pl;
+  config.getBaseData(Config::PlotPluginList, pl);
+  if (pl.indexOf(l[4]) == -1)
+  {
+    qDebug() << "SCPlot::calculate: invalid line type" << l[4];
+    return 1;
+  }
 
   line->setLabel(l[2]);
-  line->setColor(l[3]);
-  line->setType(l[4]);
+  line->setColor(color);
+  line->setPlugin(l[4]);
   line->setPlotFlag(TRUE);
 
   plotOrder.append(l[1]);

@@ -21,65 +21,22 @@
 
 #include "PlotLine.h"
 
-#include <QObject>
-
 PlotLine::PlotLine ()
 {
-  color.setNamedColor("red");
-  lineType = PlotLine::Line;
   high = -99999999;
   low = 99999999;
   scaleFlag = FALSE;
-  colorFlag = FALSE;
   plotFlag = FALSE;
-
-  typeList << QObject::tr("Dot") << QObject::tr("Dash") << QObject::tr("Histogram");
-  typeList << QObject::tr("Histogram Bar") << QObject::tr("Line") << QObject::tr("Horizontal");
-  typeList << QObject::tr("Bar") << QObject::tr("Candle");
 }
 
-void PlotLine::setColor (QString &d)
+void PlotLine::setPlugin (QString &d)
 {
-  color.setNamedColor(d);
+  plugin = d;
 }
 
-void PlotLine::setColor (QColor &d)
+void PlotLine::getPlugin (QString &d)
 {
-  color = d;
-}
-
-void PlotLine::getColor (QColor &d)
-{
-  d = color;
-}
-
-void PlotLine::setColorBar (int i, QColor &d)
-{
-  Val r = data[i];
-  r.color = d;
-  data.replace(i, r);
-}
-
-void PlotLine::getColorBar (int i, QColor &d)
-{
-  d = data[i].color;
-}
-
-void PlotLine::setType (PlotLine::LineType d)
-{
-  lineType = d;
-}
-
-void PlotLine::setType (QString &d)
-{
-  int lt = typeList.indexOf(d);
-  if (lt != -1)
-    lineType = (LineType) lt;
-}
-
-PlotLine::LineType PlotLine::getType ()
-{
-  return lineType;
+  d = plugin;
 }
 
 void PlotLine::setLabel (QString &d)
@@ -94,44 +51,55 @@ void PlotLine::getLabel (QString &d)
 
 void PlotLine::append (double d)
 {
-  Val r;
-  memset(&r, 0, sizeof(Val));
-  r.color = color;
-  r.v = d;
-  data.append(r);
+  QColor color("red");
+  append(color, d);
+}
+
+void PlotLine::append (QColor &c, double d)
+{
+  PlotLineBar bar;
+  bar.setData(d);
+  bar.setColor(c);
+  data.append(bar);
   checkHighLow(d);
 }
 
 void PlotLine::prepend (double d)
 {
-  Val r;
-  memset(&r, 0, sizeof(Val));
-  r.color = color;
-  r.v = d;
-  data.prepend(r);
+  QColor color("red");
+  prepend(color, d);
+}
+
+void PlotLine::prepend (QColor &c, double d)
+{
+  PlotLineBar bar;
+  bar.setData(d);
+  bar.setColor(c);
+  data.prepend(bar);
   checkHighLow(d);
 }
 
-double PlotLine::getData (int d)
+double PlotLine::getData (int i, QColor &c)
 {
-  return data[d].v;
+  PlotLineBar bar = data.at(i);
+  bar.getColor(c);
+  return bar.getData();
 }
 
-void PlotLine::getData (int i, QColor &c, double &d)
+double PlotLine::getData (int i)
 {
-  Val r = data.at(i);
-  c = r.color;
-  d = r.v;
+  PlotLineBar bar = data.at(i);
+  return bar.getData();
 }
 
 void PlotLine::setData (int i, double d)
 {
-  Val r = data[i];
-  r.v = d;
-  checkHighLow(d);
+  PlotLineBar bar = data.at(i);
+  bar.setData(d);
+  data.replace(i, bar);
 }
 
-int PlotLine::getSize ()
+int PlotLine::count ()
 {
   return (int) data.count();
 }
@@ -174,44 +142,6 @@ bool PlotLine::getScaleFlag ()
   return scaleFlag;
 }
 
-void PlotLine::setColorFlag (bool d)
-{
-  colorFlag = d;
-}
-
-bool PlotLine::getColorFlag ()
-{
-  return colorFlag;
-}
-
-void PlotLine::getLineTypes (QStringList &l)
-{
-  l = typeList;
-  l.removeAll(QObject::tr("Horizontal"));
-  l.removeAll(QObject::tr("Bar"));
-  l.removeAll(QObject::tr("Candle"));
-}
-
-void PlotLine::append (QColor &c, double d)
-{
-  Val r;
-  memset(&r, 0, sizeof(Val));
-  r.color = c;
-  r.v = d;
-  data.append(r);
-  checkHighLow(d);
-}
-
-void PlotLine::prepend (QColor &c, double d)
-{
-  Val r;
-  memset(&r, 0, sizeof(Val));
-  r.color = c;
-  r.v = d;
-  data.prepend(r);
-  checkHighLow(d);
-}
-
 void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
 {
   int loop;
@@ -219,39 +149,11 @@ void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
   l = 99999999;
   for (loop = start; loop <= end; loop++)
   {
-    Val r = data[loop];
-    if (r.v > h)
-      h = r.v;
-    if (r.v < l)
-      l = r.v;
-  }
-}
-
-void PlotLine::getInfo (int i, Setting &r)
-{
-  QString s;
-  strip(getData(i), 4, s);
-  r.setData(label, s);
-}
-
-void PlotLine::strip (double d, int p, QString &s)
-{
-  s = QString::number(d, 'f', p);
-
-  while (1)
-  {
-    if (s.indexOf('.', -1, Qt::CaseSensitive) != -1)
-    {
-      s.truncate(s.length() - 1);
-      break;
-    }
-    else
-    {
-      if (s.indexOf('0', -1, Qt::CaseSensitive) != -1)
-        s.truncate(s.length() - 1);
-      else
-        break;
-    }
+    PlotLineBar r = data.at(loop);
+    if (r.getData() > h)
+      h = r.getData();
+    if (r.getData() < l)
+      l = r.getData();
   }
 }
 
@@ -263,6 +165,47 @@ void PlotLine::setPlotFlag (bool d)
 bool PlotLine::getPlotFlag ()
 {
   return plotFlag;
+}
+
+void PlotLine::setOffset (int d)
+{
+  offset = d;
+}
+
+int PlotLine::getOffset ()
+{
+  return offset;
+}
+
+void PlotLine::getInfo (int i, Setting &set)
+{
+  QString d = QString::number(getData(i));
+  set.setData(label, d);
+}
+
+void PlotLine::setColor (QColor &color)
+{
+  int loop;
+  for (loop = 0; loop < count(); loop++)
+    setColorBar(loop, color);
+}
+
+void PlotLine::setColor (QString &d)
+{
+  QColor color(d);
+  setColor(color);
+}
+
+void PlotLine::setColorBar (int i, QColor &color)
+{
+  PlotLineBar bar = data.at(i);
+  bar.setColor(color);
+  data.replace(i, bar);
+}
+
+void PlotLine::setType (QString &d)
+{
+  setPlugin(d);
 }
 
 

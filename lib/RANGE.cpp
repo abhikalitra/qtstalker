@@ -20,6 +20,7 @@
  */
 
 #include "RANGE.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -93,7 +94,7 @@ int RANGE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
 
 PlotLine * RANGE::getRANGE (PlotLine *in, BarData *data, int period, int method)
 {
-  int size = in->getSize();
+  int size = in->count();
   TA_Integer outBeg;
   TA_Integer outNb;
   TA_Real input[size];

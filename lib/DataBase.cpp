@@ -22,7 +22,8 @@
 #include "DataBase.h"
 #include "Bar.h"
 #include "Setting.h"
-#include "COFactory.h"
+#include "PluginFactory.h"
+#include "COPlugin.h"
 
 #include <QtDebug>
 #include <QtSql>
@@ -74,7 +75,7 @@ void DataBase::init ()
   s.append("id INT PRIMARY KEY"); // 0
   s.append(", symbol TEXT"); // 1
   s.append(", indicator TEXT"); // 2
-  s.append(", type INT"); // 3
+  s.append(", plugin TEXT"); // 3
   s.append(", color TEXT"); // 4
   s.append(", date TEXT"); // 5
   s.append(", date2 TEXT"); // 6
@@ -379,7 +380,7 @@ void DataBase::deleteChartObject (QString &id)
   }
 }
 
-void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QString, BaseCO *> &list)
+void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QString, ChartObject *> &list)
 {
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "SELECT * FROM chartObjects WHERE symbol='" + symbol + "' AND indicator='" + indicator + "'";
@@ -392,24 +393,31 @@ void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QStri
 
   while (q.next())
   {
-    COFactory fac;
-    BaseCO *co = fac.getCO(q.value(3).toInt());
-    if (! co)
+    PluginFactory fac;
+    s = q.value(3).toString();
+    COPlugin *plug = fac.getCO(s);
+    if (! plug)
     {
-      qDebug() << "DataBase::getChartObjects: error creating co";
+      qDebug() << "DataBase::getChartObjects: error loading plugin" << s;
       continue;
     }
-
-    co->setSettings(q);
+    
+    ChartObject *co = new ChartObject;
+    plug->setSettings(co, q);
     list.insert(q.value(0).toString(), co);
   }
 }
 
-void DataBase::setChartObject (BaseCO *co)
+void DataBase::setChartObject (ChartObject *co)
 {
   QSqlQuery q(QSqlDatabase::database("data"));
+  PluginFactory fac;
   QString s;
-  co->getSettings(s);
+  co->getData(ChartObject::ParmPlugin, s);  
+  COPlugin *plug = fac.getCO(s);
+    
+  plug->getSettings(co, s);
+  
   q.exec(s);
   if (q.lastError().isValid())
   {
