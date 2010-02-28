@@ -623,7 +623,7 @@ void QtStalkerTester::run ()
   {
     if (settings->getLongCheck())
     {
-      IndicatorBase *ib = settings->getEnterLongIndicator();
+      IndicatorPlugin *ib = settings->getEnterLongIndicator();
       if (ib->test(data, enterLongSigs))
       {
         qDebug() << "QtStalkerTester::runDialog: enterLong error";
@@ -640,7 +640,7 @@ void QtStalkerTester::run ()
 
     if (settings->getShortCheck())
     {
-      IndicatorBase *ib = settings->getEnterShortIndicator();
+      IndicatorPlugin *ib = settings->getEnterShortIndicator();
       if (ib->test(data, enterShortSigs))
       {
         qDebug() << "QtStalkerTester::runDialog: enterShort error";

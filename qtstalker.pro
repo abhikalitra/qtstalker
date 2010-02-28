@@ -150,10 +150,10 @@ SUBDIRS += plugins/plots/Line
 SUBDIRS += src
 
 # compile tester
-#SUBDIRS += tester
+SUBDIRS += tester
 
 # compile CSV app
-#SUBDIRS += csv
+SUBDIRS += csv
 
 # install docs and i18n
-#SUBDIRS += docs
+SUBDIRS += docs

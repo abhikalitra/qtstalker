@@ -31,7 +31,8 @@
 #include "TestSettings.h"
 #include "BarData.h"
 #include "TestConfig.h"
-#include "IndicatorFactory.h"
+#include "PluginFactory.h"
+#include "Config.h"
 
 TestSettings::TestSettings ()
 {
@@ -42,8 +43,8 @@ TestSettings::TestSettings ()
 
   priceList << "Open" << "High" << "Low" << "Close" << "AvgPrice" << "MedianPrice" << "TypicalPrice";
 
-  IndicatorBase ib;
-  ib.getIndicatorList(indicatorList, 1);
+  Config config;
+  config.getBaseData(Config::IndicatorPluginList, indicatorList);
 
   BarData bd;
   bd.getBarLengthList(barLengthList);
@@ -361,9 +362,9 @@ void TestSettings::enterLongComboChanged ()
   if (enterLongIndicator)
     delete enterLongIndicator;
 
-  IndicatorFactory fac;
+  PluginFactory fac;
   QString s = enterLongCombo->currentText();
-  enterLongIndicator = fac.getFunction(s);
+  enterLongIndicator = fac.getIndicator(s);
 }
 
 void TestSettings::exitLongComboChanged ()
@@ -371,9 +372,9 @@ void TestSettings::exitLongComboChanged ()
   if (exitLongIndicator)
     delete exitLongIndicator;
 
-  IndicatorFactory fac;
+  PluginFactory fac;
   QString s = exitLongCombo->currentText();
-  exitLongIndicator = fac.getFunction(s);
+  exitLongIndicator = fac.getIndicator(s);
 }
 
 void TestSettings::enterShortComboChanged ()
@@ -381,9 +382,9 @@ void TestSettings::enterShortComboChanged ()
   if (enterShortIndicator)
     delete enterShortIndicator;
 
-  IndicatorFactory fac;
+  PluginFactory fac;
   QString s = enterShortCombo->currentText();
-  enterShortIndicator = fac.getFunction(s);
+  enterShortIndicator = fac.getIndicator(s);
 }
 
 void TestSettings::exitShortComboChanged ()
@@ -391,9 +392,9 @@ void TestSettings::exitShortComboChanged ()
   if (exitShortIndicator)
     delete exitShortIndicator;
 
-  IndicatorFactory fac;
+  PluginFactory fac;
   QString s = exitShortCombo->currentText();
-  exitShortIndicator = fac.getFunction(s);
+  exitShortIndicator = fac.getIndicator(s);
 }
 
 void TestSettings::enterLongButtonPressed ()
@@ -626,22 +627,22 @@ void TestSettings::setExitShortCombo (QString &d)
   exitShortCombo->setCurrentIndex(indicatorList.indexOf(d));
 }
 
-IndicatorBase * TestSettings::getEnterLongIndicator ()
+IndicatorPlugin * TestSettings::getEnterLongIndicator ()
 {
   return enterLongIndicator;
 }
 
-IndicatorBase * TestSettings::getExitLongIndicator ()
+IndicatorPlugin * TestSettings::getExitLongIndicator ()
 {
   return exitLongIndicator;
 }
 
-IndicatorBase * TestSettings::getEnterShortIndicator ()
+IndicatorPlugin * TestSettings::getEnterShortIndicator ()
 {
   return enterShortIndicator;
 }
 
-IndicatorBase * TestSettings::getExitShortIndicator ()
+IndicatorPlugin * TestSettings::getExitShortIndicator ()
 {
   return exitShortIndicator;
 }

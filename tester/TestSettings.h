@@ -86,10 +86,10 @@ class TestSettings : public QWidget
     void setEnterShortCombo (QString &);
     void getExitShortCombo (QString &);
     void setExitShortCombo (QString &);
-    IndicatorBase * getEnterLongIndicator ();
-    IndicatorBase * getExitLongIndicator ();
-    IndicatorBase * getEnterShortIndicator ();
-    IndicatorBase * getExitShortIndicator ();
+    IndicatorPlugin * getEnterLongIndicator ();
+    IndicatorPlugin * getExitLongIndicator ();
+    IndicatorPlugin * getEnterShortIndicator ();
+    IndicatorPlugin * getExitShortIndicator ();
     void getEnterLongSettings (QString &d);
     void setEnterLongSettings (QString &d);
     void getExitLongSettings (QString &d);
