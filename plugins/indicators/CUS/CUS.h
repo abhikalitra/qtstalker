@@ -35,8 +35,6 @@ class CUS : public IndicatorPlugin
     CUS ();
     int getIndicator (Indicator &_ind, BarData *_data);
     int dialog (int);
-
-  private:
 };
 
 extern "C"

@@ -57,7 +57,6 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
   }
 
   int period = settings.getInt(Period);
-
   int smoothing = settings.getInt(Smoothing);
 
   MATH1 m;
@@ -79,13 +78,10 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
 
   settings.getData(Color, s);
   line->setColor(s);
-
   settings.getData(Plot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   delete in;

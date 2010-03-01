@@ -203,10 +203,3 @@ void PlotLine::setColorBar (int i, QColor &color)
   data.replace(i, bar);
 }
 
-void PlotLine::setType (QString &d)
-{
-  setPlugin(d);
-}
-
-
-

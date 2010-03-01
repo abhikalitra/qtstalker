@@ -187,6 +187,8 @@ class IndicatorPlot : public QWidget
     QList<PlotLine *> plotList;
     QString chartSymbol;
     int moveFlag;
+    QString plotPluginPath;
+    QString coPluginPath;
 
     int tx, ty;
     QRubberBand *rubberBand;

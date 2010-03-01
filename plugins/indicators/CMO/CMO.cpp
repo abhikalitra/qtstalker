@@ -30,7 +30,7 @@ CMO::CMO ()
   indicator = "CMO";
 
   settings.setData(Color, "red");
-  settings.setData(Plot, "Histogram Bar");
+  settings.setData(Plot, "HistogramBar");
   settings.setData(Label, indicator);
   settings.setData(Input, "Close");
   settings.setData(Period, 14);
@@ -58,13 +58,10 @@ int CMO::getIndicator (Indicator &ind, BarData *data)
 
   settings.getData(Color, s);
   line->setColor(s);
-
   settings.getData(Plot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   delete in;

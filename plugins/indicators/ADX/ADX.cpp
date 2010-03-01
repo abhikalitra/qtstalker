@@ -69,13 +69,10 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
     QString s;
     settings.getData(MDIColor, s);
     line->setColor(s);
-
     settings.getData(MDIPlot, s);
-    line->setType(s);
-
+    line->setPlugin(s);
     settings.getData(MDILabel, s);
     line->setLabel(s);
-
     ind.addLine(line);
   }
 
@@ -88,13 +85,10 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
     QString s;
     settings.getData(PDIColor, s);
     line->setColor(s);
-
     settings.getData(PDIPlot, s);
-    line->setType(s);
-
+    line->setPlugin(s);
     settings.getData(PDILabel, s);
     line->setLabel(s);
-
     ind.addLine(line);
   }
 
@@ -107,13 +101,10 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
     QString s;
     settings.getData(ADXColor, s);
     line->setColor(s);
-
     settings.getData(ADXPlot, s);
-    line->setType(s);
-
+    line->setPlugin(s);
     settings.getData(ADXLabel, s);
     line->setLabel(s);
-
     ind.addLine(line);
   }
 
@@ -126,13 +117,10 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
     QString s;
     settings.getData(ADXRColor, s);
     line->setColor(s);
-
     settings.getData(ADXRPlot, s);
-    line->setType(s);
-
+    line->setPlugin(s);
     settings.getData(ADXRLabel, s);
     line->setLabel(s);
-
     ind.addLine(line);
   }
 

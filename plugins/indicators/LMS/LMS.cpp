@@ -67,39 +67,30 @@ int LMS::getIndicator (Indicator &ind, BarData *data)
   PlotLine *line = l.at(0);
   settings.getData(SlowkColor, s);
   line->setColor(s);
-
   settings.getData(SlowkPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(SlowkLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   // 2Day line
   line = l.at(1);
   settings.getData(Day2Color, s);
   line->setColor(s);
-
   settings.getData(Day2Plot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(Day2Label, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   // 5Day line
   line = l.at(2);
   settings.getData(Day5Color, s);
   line->setColor(s);
-
   settings.getData(Day5Plot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(Day5Label, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   return 0;

@@ -496,11 +496,14 @@ void Setup::setupDefaultIndicators ()
   if (d.toInt())
     return;
 
+  QString path;
+  config.getData(Config::IndicatorPluginPath, path);
+
   // create the Bars indicator
   PluginFactory fac;
   DataBase db;
   QString s = "BARS";
-  IndicatorPlugin *ip = fac.getIndicator(s);
+  IndicatorPlugin *ip = fac.getIndicator(path, s);
   if (! ip)
     qDebug() << "Setup::setupDefaultIndicators: BARS error";
   else
@@ -516,7 +519,7 @@ void Setup::setupDefaultIndicators ()
 
   // lets add the Volume indicator
   s = "VOL";
-  ip = fac.getIndicator(s);
+  ip = fac.getIndicator(path, s);
   if (! ip)
     qDebug() << "Setup::setupDefaultIndicators: VOL error";
   else

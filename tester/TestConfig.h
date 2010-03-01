@@ -44,7 +44,9 @@ class TestConfig : public BaseConfig
       DbSearchSymbols, // the sql command to get a symbol search
       DbFirstDate, // the sql command to get the first date for a symbol
       DbLastDate, // the sql command to get the last date for a symbol
-      DbGetSymbol // the sql command to get symbol quotes
+      DbGetSymbol, // the sql command to get symbol quotes
+      IndicatorPluginPath,
+      IndicatorPluginList
     };
 
     TestConfig ();

@@ -89,39 +89,30 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
   PlotLine *line = l.at(2);
   settings.getData(HistColor, s);
   line->setColor(s);
-
   settings.getData(HistPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(HistLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   // macd line
   line = l.at(0);
   settings.getData(MACDColor, s);
   line->setColor(s);
-
   settings.getData(MACDPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(MACDLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   // signal line
   line = l.at(1);
   settings.getData(SignalColor, s);
   line->setColor(s);
-
   settings.getData(SignalPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(SignalLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   delete in;

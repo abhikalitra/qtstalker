@@ -89,7 +89,10 @@ ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
   vbox->addWidget(list);
 
   // setup the script server
-  scriptServer = new ExScript;
+  Config config;
+  QString path;
+  config.getData(Config::IndicatorPluginPath, path);
+  scriptServer = new ExScript(path);
   scriptServer->setDeleteFlag(TRUE);
   connect(scriptServer, SIGNAL(signalDone()), this, SLOT(scriptDone()));
 

@@ -47,6 +47,13 @@ int VOL::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
+  QString s;
+  settings.getData(Plot, s);
+  line->setPlugin(s);
+  settings.getData(Label, s);
+  line->setLabel(s);
+  ind.addLine(line);
+
   // vol ma
   int period = settings.getInt(MAPeriod);
 
@@ -54,34 +61,20 @@ int VOL::getIndicator (Indicator &ind, BarData *data)
   QStringList maList;
   m.getMAList(maList);
   
-  QString s;
   settings.getData(MAType, s);
   int type = maList.indexOf(s);
 
   PlotLine *ma = m.getMA(line, period, type);
-  if (! ma)
+  if (ma)
   {
-    delete line;
-    return 1;
+    settings.getData(MAColor, s);
+    ma->setColor(s);
+    settings.getData(MAPlot, s);
+    ma->setPlugin(s);
+    settings.getData(MALabel, s);
+    ma->setLabel(s);
+    ind.addLine(ma);
   }
-
-  settings.getData(MAColor, s);
-  ma->setColor(s);
-
-  settings.getData(MAPlot, s);
-  ma->setPlugin(s);
-
-  settings.getData(MALabel, s);
-  ma->setLabel(s);
-
-  settings.getData(Plot, s);
-  line->setPlugin(s);
-
-  settings.getData(Label, s);
-  line->setLabel(s);
-
-  ind.addLine(line);
-  ind.addLine(ma);
 
   return 0;
 }

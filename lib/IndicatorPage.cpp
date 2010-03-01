@@ -161,8 +161,11 @@ void IndicatorPage::newIndicator ()
   i.setName(name);
   i.setTabRow(tabRow);
 
+  QString path;
+  config.getBaseData(Config::IndicatorPluginPath, path);
+  
   PluginFactory fac;
-  IndicatorPlugin *ip = fac.getIndicator(indicator);
+  IndicatorPlugin *ip = fac.getIndicator(path, indicator);
   if (! ip)
     return;
 
@@ -203,8 +206,12 @@ void IndicatorPage::editIndicator (QString &name)
   QString indicator;
   i.getIndicator(indicator);
 
+  Config config;
+  QString path;
+  config.getBaseData(Config::IndicatorPluginPath, path);
+  
   PluginFactory fac;
-  IndicatorPlugin *ip = fac.getIndicator(indicator);
+  IndicatorPlugin *ip = fac.getIndicator(path, indicator);
   if (! ip)
     return;
 

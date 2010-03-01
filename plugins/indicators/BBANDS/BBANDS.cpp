@@ -100,39 +100,30 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
   PlotLine *line = l.at(0);
   settings.getData(UpColor, s);
   line->setColor(s);
-
   settings.getData(UpPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(UpLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   // middle line
   line = l.at(1);
   settings.getData(MidColor, s);
   line->setColor(s);
-
   settings.getData(MidPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(MidLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   // lower line
   line = l.at(2);
   settings.getData(DownColor, s);
   line->setColor(s);
-
   settings.getData(DownPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(DownLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   delete in;

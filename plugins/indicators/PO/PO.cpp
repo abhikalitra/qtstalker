@@ -55,7 +55,6 @@ int PO::getIndicator (Indicator &ind, BarData *data)
   }
 
   int fast = settings.getInt(FastPeriod);
-
   int slow = settings.getInt(SlowPeriod);
 
   MATH1 m;
@@ -77,13 +76,10 @@ int PO::getIndicator (Indicator &ind, BarData *data)
 
   settings.getData(Color, s);
   line->setColor(s);
-
   settings.getData(Plot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   delete in;

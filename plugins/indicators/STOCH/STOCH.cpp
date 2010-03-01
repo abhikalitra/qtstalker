@@ -92,26 +92,20 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
   PlotLine *line = l.at(0);
   settings.getData(SlowkColor, s);
   line->setColor(s);
-
   settings.getData(SlowkPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(SlowkLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   // slowd line
   line = l.at(1);
   settings.getData(SlowdColor, s);
   line->setColor(s);
-
   settings.getData(SlowdPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(SlowdLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   return 0;

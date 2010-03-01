@@ -36,7 +36,7 @@ AROON::AROON ()
   settings.setData(DownLabel, "AROOND");
   settings.setData(UpLabel, "AROONU");
   settings.setData(OSCColor, "red");
-  settings.setData(OSCPlot, "Histogram Bar");
+  settings.setData(OSCPlot, "HistogramBar");
   settings.setData(OSCLabel, "AROONOSC");
   settings.setData(Period, 14);
 
@@ -56,59 +56,53 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
 
   int period = settings.getInt(Period);
 
-  if (method == 1)
+  switch (method)
   {
-    PlotLine *line = getAROON(data, period, 2);
-    if (! line)
-      return 1;
+    case 1:
+    {
+      PlotLine *line = getAROON(data, period, 2);
+      if (! line)
+        return 1;
+      settings.getData(OSCColor, s);
+      line->setColor(s);
+      settings.getData(OSCPlot, s);
+      line->setPlugin(s);
+      settings.getData(OSCLabel, s);
+      line->setLabel(s);
+      ind.addLine(line);
+      break;
+    }
+    default:
+    {
+      // get arron up line
+      PlotLine *up = getAROON(data, period, 0);
+      if (! up)
+        return 1;
+      settings.getData(UpColor, s);
+      up->setColor(s);
+      settings.getData(UpPlot, s);
+      up->setPlugin(s);
+      settings.getData(UpLabel, s);
+      up->setLabel(s);
 
-    settings.getData(OSCColor, s);
-    line->setColor(s);
-
-    settings.getData(OSCPlot, s);
-    line->setType(s);
-
-    settings.getData(OSCLabel, s);
-    line->setLabel(s);
-
-    ind.addLine(line);
-
-    return 0;
+      // get aroon down line
+      PlotLine *down = getAROON(data, period, 1);
+      if (! down)
+      {
+        delete up;
+        return 1;
+      }
+      settings.getData(DownColor, s);
+      down->setColor(s);
+      settings.getData(DownPlot, s);
+      down->setPlugin(s);
+      settings.getData(DownLabel, s);
+      down->setLabel(s);
+      ind.addLine(up);
+      ind.addLine(down);
+      break;
+    }
   }
-
-  // get arron up line
-  PlotLine *up = getAROON(data, period, 0);
-  if (! up)
-    return 1;
-
-  settings.getData(UpColor, s);
-  up->setColor(s);
-
-  settings.getData(UpPlot, s);
-  up->setType(s);
-
-  settings.getData(UpLabel, s);
-  up->setLabel(s);
-
-  // get aroon down line
-  PlotLine *down = getAROON(data, period, 1);
-  if (! down)
-  {
-    delete up;
-    return 1;
-  }
-
-  settings.getData(DownColor, s);
-  down->setColor(s);
-
-  settings.getData(DownPlot, s);
-  down->setType(s);
-
-  settings.getData(DownLabel, s);
-  down->setLabel(s);
-
-  ind.addLine(up);
-  ind.addLine(down);
 
   return 0;
 }

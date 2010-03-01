@@ -39,9 +39,9 @@
 #include <QtDebug>
 
 
-ExScript::ExScript ()
+ExScript::ExScript (QString &pp)
 {
-//  proc = 0;
+  pluginPath = pp;
   data = 0;
   deleteFlag = 0;
   killFlag = 0;
@@ -179,7 +179,7 @@ void ExScript::readFromStdout ()
     {
       int delFlag = 0;
       PluginFactory fac;
-      IndicatorPlugin *ip = fac.getIndicator(l[1]);
+      IndicatorPlugin *ip = fac.getIndicator(pluginPath, l[1]);
       if (! ip)
       {
         int i = notPluginList.indexOf(l[1]);

@@ -24,6 +24,7 @@
 #include "Setting.h"
 #include "PluginFactory.h"
 #include "COPlugin.h"
+#include "Config.h"
 
 #include <QtDebug>
 #include <QtSql>
@@ -391,11 +392,15 @@ void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QStri
     return;
   }
 
+  PluginFactory fac;
+  Config config;
+  QString path;
+  config.getData(Config::COPluginPath, path);
+  
   while (q.next())
   {
-    PluginFactory fac;
     s = q.value(3).toString();
-    COPlugin *plug = fac.getCO(s);
+    COPlugin *plug = fac.getCO(path, s);
     if (! plug)
     {
       qDebug() << "DataBase::getChartObjects: error loading plugin" << s;
@@ -410,11 +415,15 @@ void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QStri
 
 void DataBase::setChartObject (ChartObject *co)
 {
+  Config config;
+  QString path;
+  config.getData(Config::COPluginPath, path);
+
   QSqlQuery q(QSqlDatabase::database("data"));
   PluginFactory fac;
   QString s;
   co->getData(ChartObject::ParmPlugin, s);  
-  COPlugin *plug = fac.getCO(s);
+  COPlugin *plug = fac.getCO(path, s);
     
   plug->getSettings(co, s);
   

@@ -32,19 +32,13 @@
 #include "BarData.h"
 #include "TestConfig.h"
 #include "PluginFactory.h"
-#include "Config.h"
 
 TestSettings::TestSettings ()
 {
-  enterLongIndicator = 0;
-  exitLongIndicator = 0;
-  enterShortIndicator = 0;
-  exitShortIndicator = 0;
-
   priceList << "Open" << "High" << "Low" << "Close" << "AvgPrice" << "MedianPrice" << "TypicalPrice";
-
-  Config config;
-  config.getBaseData(Config::IndicatorPluginList, indicatorList);
+  
+  TestConfig config;
+  config.getBaseData(TestConfig::IndicatorPluginList, indicatorList);
 
   BarData bd;
   bd.getBarLengthList(barLengthList);
@@ -113,8 +107,8 @@ TestSettings::TestSettings ()
     tgrid->addWidget(label, 0, 0);
 
     enterLongCombo = new QComboBox;
-    connect(enterLongCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(enterLongComboChanged()));
     enterLongCombo->addItems(indicatorList);
+    connect(enterLongCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(enterLongComboChanged()));
     tgrid->addWidget(enterLongCombo, 0, 1);
 
     enterLongButton = new QToolButton;
@@ -127,8 +121,8 @@ TestSettings::TestSettings ()
     tgrid->addWidget(label, 1, 0);
 
     exitLongCombo = new QComboBox;
-    connect(exitLongCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(exitLongComboChanged()));
     exitLongCombo->addItems(indicatorList);
+    connect(exitLongCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(exitLongComboChanged()));
     tgrid->addWidget(exitLongCombo, 1, 1);
 
     exitLongButton = new QToolButton;
@@ -153,8 +147,8 @@ TestSettings::TestSettings ()
     tgrid->addWidget(label, 0, 0);
 
     enterShortCombo = new QComboBox;
-    connect(enterShortCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(enterShortComboChanged()));
     enterShortCombo->addItems(indicatorList);
+    connect(enterShortCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(enterShortComboChanged()));
     tgrid->addWidget(enterShortCombo, 0, 1);
 
     enterShortButton = new QToolButton;
@@ -167,8 +161,8 @@ TestSettings::TestSettings ()
     tgrid->addWidget(label, 1, 0);
 
     exitShortCombo = new QComboBox;
-    connect(exitShortCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(exitShortComboChanged()));
     exitShortCombo->addItems(indicatorList);
+    connect(exitShortCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(exitShortComboChanged()));
     tgrid->addWidget(exitShortCombo, 1, 1);
 
     exitShortButton = new QToolButton;
@@ -303,17 +297,10 @@ TestSettings::TestSettings ()
 
 TestSettings::~TestSettings ()
 {
-  if (enterLongIndicator)
-    delete enterLongIndicator;
-
-  if (exitLongIndicator)
-    delete exitLongIndicator;
-
-  if (enterShortIndicator)
-    delete enterShortIndicator;
-
-  if (exitShortIndicator)
-    delete exitShortIndicator;
+  enterLongIndicator.deleteAll();
+  exitLongIndicator.deleteAll();
+  enterShortIndicator.deleteAll();
+  exitShortIndicator.deleteAll();
 }
 
 void TestSettings::scriptButtonPressed ()
@@ -359,62 +346,154 @@ void TestSettings::symbolButtonPressed ()
 
 void TestSettings::enterLongComboChanged ()
 {
-  if (enterLongIndicator)
-    delete enterLongIndicator;
+  enterLongIndicator.deleteAll();
+  
+  QString s = enterLongCombo->currentText();
+  if (s.isEmpty())
+    return;
+  
+  TestConfig config;
+  QString path;
+  config.getData(TestConfig::IndicatorPluginPath, path);
 
   PluginFactory fac;
-  QString s = enterLongCombo->currentText();
-  enterLongIndicator = fac.getIndicator(s);
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+    return;
+  
+  plug->getSettings(enterLongIndicator);
+  enterLongIndicator.setIndicator(s);
 }
 
 void TestSettings::exitLongComboChanged ()
 {
-  if (exitLongIndicator)
-    delete exitLongIndicator;
+  exitLongIndicator.deleteAll();
+
+  QString s = exitLongCombo->currentText();
+  if (s.isEmpty())
+    return;
+
+  TestConfig config;
+  QString path;
+  config.getData(TestConfig::IndicatorPluginPath, path);
 
   PluginFactory fac;
-  QString s = exitLongCombo->currentText();
-  exitLongIndicator = fac.getIndicator(s);
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+    return;
+  
+  plug->getSettings(exitLongIndicator);
+  exitLongIndicator.setIndicator(s);
 }
 
 void TestSettings::enterShortComboChanged ()
 {
-  if (enterShortIndicator)
-    delete enterShortIndicator;
+  enterShortIndicator.deleteAll();
+
+  QString s = enterShortCombo->currentText();
+  if (s.isEmpty())
+    return;
+  
+  TestConfig config;
+  QString path;
+  config.getData(TestConfig::IndicatorPluginPath, path);
 
   PluginFactory fac;
-  QString s = enterShortCombo->currentText();
-  enterShortIndicator = fac.getIndicator(s);
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+    return;
+  
+  plug->getSettings(enterShortIndicator);
+  enterShortIndicator.setIndicator(s);
 }
 
 void TestSettings::exitShortComboChanged ()
 {
-  if (exitShortIndicator)
-    delete exitShortIndicator;
+  exitShortIndicator.deleteAll();
+
+  QString s = exitShortCombo->currentText();
+  if (s.isEmpty())
+    return;
+  
+  TestConfig config;
+  QString path;
+  config.getData(TestConfig::IndicatorPluginPath, path);
 
   PluginFactory fac;
-  QString s = exitShortCombo->currentText();
-  exitShortIndicator = fac.getIndicator(s);
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+    return;
+  
+  plug->getSettings(exitShortIndicator);
+  exitShortIndicator.setIndicator(s);
 }
 
 void TestSettings::enterLongButtonPressed ()
 {
-  enterLongIndicator->dialog(1);
+  TestConfig config;
+  QString path;
+  config.getData(TestConfig::IndicatorPluginPath, path);
+
+  QString s;
+  enterLongIndicator.getIndicator(s);
+  PluginFactory fac;
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+    return;
+
+  plug->setSettings(enterLongIndicator);
+  plug->dialog(1);
 }
 
 void TestSettings::exitLongButtonPressed ()
 {
-  exitLongIndicator->dialog(1);
+  TestConfig config;
+  QString path;
+  config.getData(TestConfig::IndicatorPluginPath, path);
+
+  QString s;
+  exitLongIndicator.getIndicator(s);
+  PluginFactory fac;
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+    return;
+
+  plug->setSettings(exitLongIndicator);
+  plug->dialog(1);
 }
 
 void TestSettings::enterShortButtonPressed ()
 {
-  enterShortIndicator->dialog(1);
+  TestConfig config;
+  QString path;
+  config.getData(TestConfig::IndicatorPluginPath, path);
+
+  QString s;
+  enterShortIndicator.getIndicator(s);
+  PluginFactory fac;
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+    return;
+
+  plug->setSettings(enterShortIndicator);
+  plug->dialog(1);
 }
 
 void TestSettings::exitShortButtonPressed ()
 {
-  exitShortIndicator->dialog(1);
+  TestConfig config;
+  QString path;
+  config.getData(TestConfig::IndicatorPluginPath, path);
+
+  QString s;
+  exitShortIndicator.getIndicator(s);
+  PluginFactory fac;
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+    return;
+
+  plug->setSettings(exitShortIndicator);
+  plug->dialog(1);
 }
 
 void TestSettings::getScript (QString &d)
@@ -627,124 +706,84 @@ void TestSettings::setExitShortCombo (QString &d)
   exitShortCombo->setCurrentIndex(indicatorList.indexOf(d));
 }
 
-IndicatorPlugin * TestSettings::getEnterLongIndicator ()
+void TestSettings::getEnterLongIndicator (Indicator &d)
 {
-  return enterLongIndicator;
+  d = enterLongIndicator;
 }
 
-IndicatorPlugin * TestSettings::getExitLongIndicator ()
+void TestSettings::getExitLongIndicator (Indicator &d)
 {
-  return exitLongIndicator;
+  d = exitLongIndicator;
 }
 
-IndicatorPlugin * TestSettings::getEnterShortIndicator ()
+void TestSettings::getEnterShortIndicator (Indicator &d)
 {
-  return enterShortIndicator;
+  d = enterShortIndicator;
 }
 
-IndicatorPlugin * TestSettings::getExitShortIndicator ()
+void TestSettings::getExitShortIndicator (Indicator &d)
 {
-  return exitShortIndicator;
+  d = exitShortIndicator;
 }
 
 void TestSettings::getEnterLongSettings (QString &d)
 {
   d = " ";
-  if (enterLongIndicator)
-  {
-    Indicator ind;
-    enterLongIndicator->getSettings(ind);
-    Setting set;
-    ind.getSettings(set);
-    set.getString(d);
-  }
+  Setting set;
+  enterLongIndicator.getSettings(set);
+  set.getString(d);
 }
 
 void TestSettings::setEnterLongSettings (QString &d)
 {
-  if (! enterLongIndicator)
-    return;
-
-  Indicator ind;
   Setting set;
   set.parse(d);
-  ind.setSettings(set);
-  enterLongIndicator->setSettings(ind);
+  enterLongIndicator.setSettings(set);
 }
 
 void TestSettings::getExitLongSettings (QString &d)
 {
   d = " ";
-  if (exitLongIndicator)
-  {
-    Indicator ind;
-    exitLongIndicator->getSettings(ind);
-    Setting set;
-    ind.getSettings(set);
-    set.getString(d);
-  }
+  Setting set;
+  exitLongIndicator.getSettings(set);
+  set.getString(d);
 }
 
 void TestSettings::setExitLongSettings (QString &d)
 {
-  if (! exitLongIndicator)
-    return;
-
-  Indicator ind;
   Setting set;
   set.parse(d);
-  ind.setSettings(set);
-  exitLongIndicator->setSettings(ind);
+  exitLongIndicator.setSettings(set);
 }
 
 void TestSettings::getEnterShortSettings (QString &d)
 {
   d = " ";
-  if (enterShortIndicator)
-  {
-    Indicator ind;
-    enterShortIndicator->getSettings(ind);
-    Setting set;
-    ind.getSettings(set);
-    set.getString(d);
-  }
+  Setting set;
+  enterShortIndicator.getSettings(set);
+  set.getString(d);
 }
 
 void TestSettings::setEnterShortSettings (QString &d)
 {
-  if (! enterShortIndicator)
-    return;
-
-  Indicator ind;
   Setting set;
   set.parse(d);
-  ind.setSettings(set);
-  enterShortIndicator->setSettings(ind);
+  enterShortIndicator.setSettings(set);
 }
 
 void TestSettings::getExitShortSettings (QString &d)
 {
   d = " ";
-  if (exitShortIndicator)
-  {
-    Indicator ind;
-    exitShortIndicator->getSettings(ind);
-    Setting set;
-    ind.getSettings(set);
-    set.getString(d);
-  }
+  Setting set;
+  exitShortIndicator.getSettings(set);
+  set.getString(d);
 }
 
 void TestSettings::setExitShortSettings (QString &d)
 {
-  if (! exitShortIndicator)
-    return;
-
-  Indicator ind;
   Setting set;
   set.parse(d);
-  ind.setSettings(set);
-  exitShortIndicator->setSettings(ind);
+  exitShortIndicator.setSettings(set);
 }
 
 

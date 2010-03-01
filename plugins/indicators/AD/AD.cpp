@@ -36,7 +36,7 @@ AD::AD ()
   settings.setData(FastPeriod, 3);
   settings.setData(SlowPeriod, 10);
   settings.setData(OSCColor, QString("red"));
-  settings.setData(OSCPlot, QString("Histogram Bar"));
+  settings.setData(OSCPlot, QString("HistogramBar"));
   settings.setData(OSCLabel, QString("ADOSC"));
 
   methodList << "AD";
@@ -49,37 +49,39 @@ int AD::getIndicator (Indicator &ind, BarData *data)
   settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
-  PlotLine *line = 0;
   switch (method)
   {
     case 1:
     {
       int fp = settings.getInt(FastPeriod);
       int sp = settings.getInt(SlowPeriod);
-      line = getAD(data, 1, fp, sp);
+      PlotLine *line = getAD(data, 1, fp, sp);
+      if (! line)
+	return 1;
       settings.getData(OSCColor, s);
       line->setColor(s);
       settings.getData(OSCPlot, s);
-      line->setType(s);
+      line->setPlugin(s);
       settings.getData(OSCLabel, s);
       line->setLabel(s);
+      ind.addLine(line);
       break;
     }
     default:
-      line = getAD(data, 0, 0, 0);
+    {
+      PlotLine *line = getAD(data, 0, 0, 0);
+      if (! line)
+	return 1;
       settings.getData(ADColor, s);
       line->setColor(s);
       settings.getData(ADPlot, s);
-      line->setType(s);
+      line->setPlugin(s);
       settings.getData(ADLabel, s);
       line->setLabel(s);
+      ind.addLine(line);
       break;
+    }
   }
-
-  if (! line)
-    return 1;
-
-  ind.addLine(line);
 
   return 0;
 }

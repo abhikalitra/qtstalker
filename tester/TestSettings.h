@@ -86,10 +86,10 @@ class TestSettings : public QWidget
     void setEnterShortCombo (QString &);
     void getExitShortCombo (QString &);
     void setExitShortCombo (QString &);
-    IndicatorPlugin * getEnterLongIndicator ();
-    IndicatorPlugin * getExitLongIndicator ();
-    IndicatorPlugin * getEnterShortIndicator ();
-    IndicatorPlugin * getExitShortIndicator ();
+    void getEnterLongIndicator (Indicator &);
+    void getExitLongIndicator (Indicator &);
+    void getEnterShortIndicator (Indicator &);
+    void getExitShortIndicator (Indicator &);
     void getEnterLongSettings (QString &d);
     void setEnterLongSettings (QString &d);
     void getExitLongSettings (QString &d);
@@ -143,10 +143,10 @@ class TestSettings : public QWidget
     QComboBox *exitLongCombo;
     QComboBox *enterShortCombo;
     QComboBox *exitShortCombo;
-    IndicatorPlugin *enterLongIndicator;
-    IndicatorPlugin *exitLongIndicator;
-    IndicatorPlugin *enterShortIndicator;
-    IndicatorPlugin *exitShortIndicator;
+    Indicator enterLongIndicator;
+    Indicator exitLongIndicator;
+    Indicator enterShortIndicator;
+    Indicator exitShortIndicator;
 };
 
 #endif

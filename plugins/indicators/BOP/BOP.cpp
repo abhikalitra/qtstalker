@@ -31,7 +31,7 @@ BOP::BOP ()
   indicator = "BOP";
 
   settings.setData(Color, "red");
-  settings.setData(Plot, "Histogram Bar");
+  settings.setData(Plot, "HistogramBar");
   settings.setData(Label, indicator);
   settings.setData(Smoothing, 10);
   settings.setData(SmoothingType, "SMA");
@@ -55,13 +55,10 @@ int BOP::getIndicator (Indicator &ind, BarData *data)
 
   settings.getData(Color, s);
   line->setColor(s);
-
   settings.getData(Plot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   return 0;

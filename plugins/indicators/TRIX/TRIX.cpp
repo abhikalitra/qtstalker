@@ -30,7 +30,7 @@ TRIX::TRIX ()
   indicator = "TRIX";
 
   settings.setData(Color, "red");
-  settings.setData(Plot, "Histogram Bar");
+  settings.setData(Plot, "HistogramBar");
   settings.setData(Label, indicator);
   settings.setData(Period, 30);
   settings.setData(Input, "Close");
@@ -58,13 +58,10 @@ int TRIX::getIndicator (Indicator &ind, BarData *data)
 
   settings.getData(Color, s);
   line->setColor(s);
-
   settings.getData(Plot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   delete in;

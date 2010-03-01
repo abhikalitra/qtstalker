@@ -36,13 +36,10 @@ class PluginFactory
   public:
     PluginFactory ();
     ~PluginFactory ();
-    void setup ();
-    IndicatorPlugin * getIndicator (QString &indicator);
-    IndicatorPlugin * getIndicatorPlugin (QString &indicator, QString &file);
-    COPlugin * getCO (QString &co);
-    COPlugin * getCOPlugin (QString &co, QString &file);
-    PlotPlugin * getPlot (QString &co);
-    PlotPlugin * getPlotPlugin (QString &co, QString &file);
+    void getPluginList (QString &path, QStringList &list);
+    IndicatorPlugin * getIndicator (QString &path, QString &indicator);
+    COPlugin * getCO (QString &path, QString &co);
+    PlotPlugin * getPlot (QString &path, QString &plot);
     
   protected:
     QStringList notPluginList;

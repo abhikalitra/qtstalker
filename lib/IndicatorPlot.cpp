@@ -83,6 +83,10 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   setFocusPolicy(Qt::ClickFocus);
 
   externalChartObjectFlag = FALSE;
+  
+  Config config;
+  config.getData(Config::PlotPluginPath, plotPluginPath);
+  config.getData(Config::COPluginPath, coPluginPath);
 }
 
 IndicatorPlot::~IndicatorPlot ()
@@ -178,6 +182,7 @@ void IndicatorPlot::drawRefresh ()
 
 void IndicatorPlot::drawLines ()
 {
+  PluginFactory fac;
   int loop;
   for (loop = 0; loop < plotList.count(); loop++)
   {
@@ -186,10 +191,9 @@ void IndicatorPlot::drawLines ()
     if (! line->count())
       continue;
 
-    PluginFactory fac;
     QString s;
     line->getPlugin(s);
-    PlotPlugin *plug = fac.getPlot(s);
+    PlotPlugin *plug = fac.getPlot(plotPluginPath, s);
     if (! plug)
     {
       qDebug() << "IndicatorPlot::drawLines: error loading plugin" << s;
@@ -293,7 +297,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       PluginFactory fac;
       QString s;
       coSelected->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(s);
+      COPlugin *plug = fac.getCO(coPluginPath, s);
       int rc = plug->create2(coSelected, x1, y1);
       if (rc)
 	mouseFlag = ClickWait2;
@@ -311,7 +315,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       PluginFactory fac;
       QString s;
       coSelected->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(s);
+      COPlugin *plug = fac.getCO(coPluginPath, s);
       int rc = plug->create3(coSelected, x1, y1);
       if (! rc)
       {
@@ -344,7 +348,7 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
       PluginFactory fac;
       QString s;
       coSelected->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(s);
+      COPlugin *plug = fac.getCO(coPluginPath, s);
       plug->moving(coSelected, x1, y1, moveFlag);
       draw();
       break;
@@ -355,7 +359,7 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
       PluginFactory fac;
       QString s;
       coSelected->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(s);
+      COPlugin *plug = fac.getCO(coPluginPath, s);
       plug->moving(coSelected, x1, y1, 0);
       draw();
       break;
@@ -435,6 +439,7 @@ void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
 void IndicatorPlot::getInfo (int x, int y)
 {
   Setting tr;
+  PluginFactory fac;
 
   // determine if we are over a chart object, if so we display parms in the data panel
   QHashIterator<QString, ChartObject *> it(coList);
@@ -445,10 +450,9 @@ void IndicatorPlot::getInfo (int x, int y)
     QPoint p(x, y);
     if (co->isSelected(p))
     {
-      PluginFactory fac;
       QString s;
       co->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(s);
+      COPlugin *plug = fac.getCO(coPluginPath, s);
       plug->getInfo(co, tr);
       if (tr.count())
       {
@@ -523,7 +527,7 @@ void IndicatorPlot::getCOInfo ()
   PluginFactory fac;
   QString s;
   coSelected->getData(ChartObject::ParmPlugin, s);
-  COPlugin *plug = fac.getCO(s);
+  COPlugin *plug = fac.getCO(coPluginPath, s);
   plug->getInfo(coSelected, tr);
 
   if (tr.count())
@@ -816,16 +820,16 @@ void IndicatorPlot::setScale ()
 
   if (! scaleToScreen)
   {
+    PluginFactory fac;
     QHashIterator<QString, ChartObject *> it(coList);
     while (it.hasNext())
     {
       it.next();
       ChartObject *co = it.value();
       
-      PluginFactory fac;
       QString s;
       co->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(s);
+      COPlugin *plug = fac.getCO(coPluginPath, s);
       plug->getHighLow(co);
       
       double h = co->getDouble(ChartObject::ParmHigh);
@@ -1026,7 +1030,7 @@ void IndicatorPlot::slotNewChartObject (QString selection)
   coSelected->setData(ChartObject::ParmPlugin, selection);
   
   PluginFactory fac;
-  COPlugin *plug = fac.getCO(selection);
+  COPlugin *plug = fac.getCO(coPluginPath, selection);
   
   plug->create(coSelected);
 
@@ -1037,16 +1041,16 @@ void IndicatorPlot::slotNewChartObject (QString selection)
 
 void IndicatorPlot::drawObjects ()
 {
+  PluginFactory fac;
   QHashIterator<QString, ChartObject *> it(coList);
   while (it.hasNext())
   {
     it.next();
     coDraw = it.value();
     
-    PluginFactory fac;
     QString s;
     coDraw->getData(ChartObject::ParmPlugin, s);
-    COPlugin *plug = fac.getCO(s);
+    COPlugin *plug = fac.getCO(coPluginPath, s);
     if (! plug)
     {
       qDebug() << "IndicatorPlot::drawObjects: plugin load error" << s;
@@ -1133,7 +1137,7 @@ void IndicatorPlot::slotObjectDialog ()
   PluginFactory fac;
   QString s;
   coSelected->getData(ChartObject::ParmPlugin, s);
-  COPlugin *plug = fac.getCO(s);
+  COPlugin *plug = fac.getCO(coPluginPath, s);
   plug->dialog(coSelected);
   draw();
 }

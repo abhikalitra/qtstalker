@@ -57,13 +57,10 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
   QString s;
   settings.getData(Color, s);
   line->setColor(s);
-
   settings.getData(Plot, s);
   line->setPlugin(s);
-
   settings.getData(Label, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   return 0;

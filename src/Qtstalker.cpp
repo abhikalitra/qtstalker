@@ -95,8 +95,19 @@ QtstalkerApp::QtstalkerApp(QString session)
   config.getData(Config::DbName, dbFile);
   qdb.init(dbFile);
 
+  // get complete plugin inventory
   PluginFactory pfac;
-  pfac.setup();
+  QStringList l;
+  QString path;
+  config.getData(Config::IndicatorPluginPath, path);
+  pfac.getPluginList(path, l);
+  config.setBaseData(Config::IndicatorPluginList, l);
+  config.getData(Config::COPluginPath, path);
+  pfac.getPluginList(path, l);
+  config.setBaseData(Config::COPluginList, l);
+  config.getData(Config::PlotPluginPath, path);
+  pfac.getPluginList(path, l);
+  config.setBaseData(Config::PlotPluginList, l);
 
   assistant = new Assistant;
 
@@ -181,7 +192,6 @@ QtstalkerApp::QtstalkerApp(QString session)
   initScriptNav();
 
   // setup the initial indicators
-  QStringList l;
   db.getActiveIndicatorList(l);
   for (loop = 0; loop < l.count(); loop++)
   {
@@ -369,12 +379,14 @@ void QtstalkerApp::createToolBars ()
   
   Config config;
   QStringList l;
+  QString path;
   config.getBaseData(Config::COPluginList, l);
+  config.getData(Config::COPluginPath, path);
   int loop;
   PluginFactory fac;
   for (loop = 0; loop < l.count(); loop++)
   {
-    COPlugin *plug = fac.getCO(l[loop]);
+    COPlugin *plug = fac.getCO(path, l[loop]);
     if (! plug)
       continue;
     
@@ -753,11 +765,15 @@ void QtstalkerApp::loadIndicator (QString &d)
   i.setName(d);
   db.getIndicator(i);
 
+  Config config;
+  QString path;
+  config.getData(Config::IndicatorPluginPath, path);
+  
   QList<PlotLine *> lines;
   PluginFactory fac;
   QString s;
   i.getIndicator(s);
-  IndicatorPlugin *ip = fac.getIndicator(s);
+  IndicatorPlugin *ip = fac.getIndicator(path, s);
   if (! ip)
     return;
 

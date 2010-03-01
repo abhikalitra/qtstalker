@@ -93,7 +93,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
       settings.getData(PhaseColor, s);
       phase->setColor(s);
       settings.getData(PhasePlot, s);
-      phase->setType(s);
+      phase->setPlugin(s);
       settings.getData(PhaseLabel, s);
       phase->setLabel(s);
 
@@ -108,7 +108,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
       settings.getData(QuadColor, s);
       quad->setColor(s);
       settings.getData(QuadPlot, s);
-      quad->setType(s);
+      quad->setPlugin(s);
       settings.getData(QuadLabel, s);
       quad->setLabel(s);
 
@@ -128,7 +128,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
       settings.getData(SineColor, s);
       sine->setColor(s);
       settings.getData(SinePlot, s);
-      sine->setType(s);
+      sine->setPlugin(s);
       settings.getData(SineLabel, s);
       sine->setLabel(s);
 
@@ -143,7 +143,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
       settings.getData(LeadColor, s);
       lead->setColor(s);
       settings.getData(LeadPlot, s);
-      lead->setType(s);
+      lead->setPlugin(s);
       settings.getData(LeadLabel, s);
       lead->setLabel(s);
 
@@ -174,7 +174,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
       settings.getData(Color, s);
       line->setColor(s);
       settings.getData(Plot, s);
-      line->setType(s);
+      line->setPlugin(s);
       settings.getData(Label, s);
       line->setLabel(s);
       ind.addLine(line);

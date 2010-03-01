@@ -65,84 +65,84 @@ int PP::getIndicator (Indicator &ind, BarData *data)
   if (settings.getInt(R1Show))
   {
     PlotLine *line = getPP(data, 0);
-
-    settings.getData(R1Color, s);
-    line->setColor(s);
-
-    settings.getData(R1Label, s);
-    line->setLabel(s);
-
-    ind.addLine(line);
+    if (line)
+    {
+      settings.getData(R1Color, s);
+      line->setColor(s);
+      settings.getData(R1Label, s);
+      line->setLabel(s);
+      ind.addLine(line);
+    }
   }
 
   // 2R line
   if (settings.getInt(R2Show))
   {
     PlotLine *line = getPP(data, 1);
-
-    settings.getData(R2Color, s);
-    line->setColor(s);
-
-    settings.getData(R2Label, s);
-    line->setLabel(s);
-
-    ind.addLine(line);
+    if (line)
+    {
+      settings.getData(R2Color, s);
+      line->setColor(s);
+      settings.getData(R2Label, s);
+      line->setLabel(s);
+      ind.addLine(line);
+    }
   }
 
   // 3R line
   if (settings.getInt(R3Show))
   {
     PlotLine *line = getPP(data, 2);
-
-    settings.getData(R3Color, s);
-    line->setColor(s);
-
-    settings.getData(R3Label, s);
-    line->setLabel(s);
-
-    ind.addLine(line);
+    if (line)
+    {
+      settings.getData(R3Color, s);
+      line->setColor(s);
+      settings.getData(R3Label, s);
+      line->setLabel(s);
+      ind.addLine(line);
+    }
   }
 
   // 1S line
   if (settings.getInt(S1Show))
   {
     PlotLine *line = getPP(data, 3);
-
-    settings.getData(S1Color, s);
-    line->setColor(s);
-
-    settings.getData(S1Label, s);
-    line->setLabel(s);
-
-    ind.addLine(line);
+    if (line)
+    {
+      settings.getData(S1Color, s);
+      line->setColor(s);
+      settings.getData(S1Label, s);
+      line->setLabel(s);
+      ind.addLine(line);
+    }
   }
 
   // 2S line
   if (settings.getInt(S2Show))
   {
     PlotLine *line = getPP(data, 4);
-
-    settings.getData(S2Color, s);
-    line->setColor(s);
-
-    settings.getData(S2Label, s);
-    line->setLabel(s);
-
-    ind.addLine(line);
+    if (line)
+    {
+      settings.getData(S2Color, s);
+      line->setColor(s);
+      settings.getData(S2Label, s);
+      line->setLabel(s);
+      ind.addLine(line);
+    }
   }
 
   // 3S line
   if (settings.getInt(S3Show))
   {
     PlotLine *line = getPP(data, 5);
-
-    settings.getData(S3Color, s);
-    line->setColor(s);
-
-    settings.getData(S3Label, s);
-    line->setLabel(s);
-
-    ind.addLine(line);
+    if (line)
+    {
+      settings.getData(S3Color, s);
+      line->setColor(s);
+      settings.getData(S3Label, s);
+      line->setLabel(s);
+      ind.addLine(line);
+    }
   }
 
   return 0;

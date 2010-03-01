@@ -143,8 +143,14 @@ void TestConfig::setDefaults ()
     d = "SELECT date,open,high,low,close,volume,oi FROM $symbol WHERE date >= $sd AND date <= $ed ORDER BY date DESC LIMIT $records";
     setData(DbGetSymbol, d);
   }
+  
+  getData(IndicatorPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/indicator";
+    setData(IndicatorPluginPath, d);
+  }
 
   commit();
 }
-
 

@@ -61,7 +61,7 @@ class ExScript : public QObject
       TEST_EXIT_SHORT
     };
 
-    ExScript ();
+    ExScript (QString &);
     ~ExScript ();
     void clear ();
     void setBarData (BarData *d);
@@ -95,6 +95,7 @@ class ExScript : public QObject
     PlotLine * enterShort;
     PlotLine * exitShort;
     int killFlag;
+    QString pluginPath;
 };
 
 #endif

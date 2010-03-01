@@ -61,7 +61,6 @@ class PlotLine
     void setColor (QColor &);
     void setColor (QString &);
     void setColorBar (int, QColor &);
-    void setType (QString &);
 
   private:
     QList<PlotLineBar> data;

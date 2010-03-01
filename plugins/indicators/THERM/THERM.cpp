@@ -70,6 +70,11 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
+  s = "HistogramBar";
+  line->setPlugin(s);
+  settings.getData(Label, s);
+  line->setLabel(s);
+
   // therm ma
   int maPeriod = settings.getInt(MAPeriod);
 
@@ -91,19 +96,14 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   ma->setLabel(s);
 
   // assign therm colors
-  s = "HistogramBar";
-  line->setPlugin(s);
-  
   int thermLoop = line->count() - 1;
   int maLoop = ma->count() - 1;
   double threshold = settings.getDouble(Threshold);
 
   settings.getData(ThreshColor, s);
   QColor threshColor(s);
-
   settings.getData(UpColor, s);
   QColor upColor(s);
-
   settings.getData(DownColor, s);
   QColor downColor(s);
 
@@ -131,11 +131,7 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
     maLoop--;
   }
 
-  settings.getData(Label, s);
-  line->setLabel(s);
-
   ind.addLine(line);
-
   ind.addLine(ma);
 
   return 0;

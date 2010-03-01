@@ -77,10 +77,8 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
     PlotLine *line = new PlotLine;
     s = "HistogramBar";
     line->setPlugin(s);
-
     settings.getData(OSCColor, s);
     line->setColor(s);
-
     settings.getData(OSCLabel, s);
     line->setLabel(s);
 
@@ -102,25 +100,19 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
     
     settings.getData(MAMAColor, s);
     mama->setColor(s);
-
     settings.getData(MAMAPlot, s);
-    mama->setType(s);
-
+    mama->setPlugin(s);
     settings.getData(MAMALabel, s);
     mama->setLabel(s);
-
     ind.addLine(mama);
 
     // fama line
     settings.getData(FAMAColor, s);
     fama->setColor(s);
-
     settings.getData(FAMAPlot, s);
-    fama->setType(s);
-
+    fama->setPlugin(s);
     settings.getData(FAMALabel, s);
     fama->setLabel(s);
-
     ind.addLine(fama);
   }
 

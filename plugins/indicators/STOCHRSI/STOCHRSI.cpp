@@ -98,26 +98,20 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
   PlotLine *line = l.at(0);
   settings.getData(FastkColor, s);
   line->setColor(s);
-
   settings.getData(FastkPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(FastkLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   // fastd line
   line = l.at(1);
   settings.getData(FastdColor, s);
   line->setColor(s);
-
   settings.getData(FastdPlot, s);
-  line->setType(s);
-
+  line->setPlugin(s);
   settings.getData(FastdLabel, s);
   line->setLabel(s);
-
   ind.addLine(line);
 
   delete in;

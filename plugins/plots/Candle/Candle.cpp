@@ -44,7 +44,7 @@ void Candle::draw (PlotLine *line, BarData *data, QPixmap &buffer, int startX, i
       if (data->getClose(loop) < data->getOpen(loop))
         ff = TRUE;
 
-      double d = line->getData(loop, c);
+      line->getData(loop, c);
       painter.setPen(c);
 
       int xh = scaler.convertToY(data->getHigh(loop));

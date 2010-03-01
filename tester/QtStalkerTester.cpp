@@ -43,10 +43,10 @@
 #include "TestConfig.h"
 #include "TestDataBase.h"
 #include "QuoteDataBase.h"
-
 #include "ExScript.h"
 #include "Indicator.h"
 #include "Setting.h"
+#include "PluginFactory.h"
 
 QtStalkerTester::QtStalkerTester ()
 {
@@ -57,6 +57,13 @@ QtStalkerTester::QtStalkerTester ()
   // setup the databases, order is important
   TestConfig config;
   config.init(QString("0"));
+  
+  PluginFactory fac;
+  QString s;
+  config.getData(TestConfig::IndicatorPluginPath, s);
+  QStringList l;
+  fac.getPluginList(s, l);
+  config.setBaseData(TestConfig::IndicatorPluginList, l);
 
   TestDataBase tdb;
   tdb.init();
@@ -584,6 +591,7 @@ void QtStalkerTester::run ()
   if (data->count() == 0)
   {
     qDebug() << "QtStalkerTester::run: 0 bars loaded";
+    delete data;
     return;
   }
 
@@ -591,10 +599,16 @@ void QtStalkerTester::run ()
   TestSignal exitLongSigs;
   TestSignal enterShortSigs;
   TestSignal exitShortSigs;
+  
+  TestConfig config;
+  QString path;
+  config.getData(TestConfig::IndicatorPluginPath, path);
+
+  PluginFactory fac;
 
   if (settings->getScriptCheck())
   {
-    ExScript server;
+    ExScript server(path);
     server.setBarData(data);
     server.setDeleteFlag(TRUE);
     settings->getShellCommand(s);
@@ -623,15 +637,38 @@ void QtStalkerTester::run ()
   {
     if (settings->getLongCheck())
     {
-      IndicatorPlugin *ib = settings->getEnterLongIndicator();
-      if (ib->test(data, enterLongSigs))
+      // enter long indicator
+      Indicator i;
+      settings->getEnterLongIndicator(i);
+      QString s;
+      i.getIndicator(s);
+      IndicatorPlugin *plug = fac.getIndicator(path, s);
+      if (! plug)
+      {
+	delete data;
+        return;
+      }
+      
+      plug->setSettings(i);
+      if (plug->test(data, enterLongSigs))
       {
         qDebug() << "QtStalkerTester::runDialog: enterLong error";
         return;
       }
 
-      ib = settings->getExitLongIndicator();
-      if (ib->test(data, exitLongSigs))
+      // exit long indicator
+      i.deleteAll();
+      settings->getExitLongIndicator(i);
+      i.getIndicator(s);
+      plug = fac.getIndicator(path, s);
+      if (! plug)
+      {
+	delete data;
+        return;
+      }
+      
+      plug->setSettings(i);
+      if (plug->test(data, exitLongSigs))
       {
         qDebug() << "QtStalkerTester::runDialog: exitLong error";
         return;
@@ -640,15 +677,38 @@ void QtStalkerTester::run ()
 
     if (settings->getShortCheck())
     {
-      IndicatorPlugin *ib = settings->getEnterShortIndicator();
-      if (ib->test(data, enterShortSigs))
+      // enter short indicator
+      Indicator i;
+      settings->getEnterShortIndicator(i);
+      QString s;
+      i.getIndicator(s);
+      IndicatorPlugin *plug = fac.getIndicator(path, s);
+      if (! plug)
+      {
+	delete data;
+        return;
+      }
+      
+      plug->setSettings(i);
+      if (plug->test(data, enterShortSigs))
       {
         qDebug() << "QtStalkerTester::runDialog: enterShort error";
         return;
       }
 
-      ib = settings->getExitShortIndicator();
-      if (ib->test(data, exitShortSigs))
+      // exit short indicator
+      i.deleteAll();
+      settings->getExitShortIndicator(i);
+      i.getIndicator(s);
+      plug = fac.getIndicator(path, s);
+      if (! plug)
+      {
+	delete data;
+        return;
+      }
+      
+      plug->setSettings(i);
+      if (plug->test(data, exitShortSigs))
       {
         qDebug() << "QtStalkerTester::runDialog: exitShort error";
         return;
@@ -684,9 +744,9 @@ void QtStalkerTester::run ()
 
   report->createSummary(trades, settings->getAccount(), settings->getEntryComm(), settings->getExitComm());
 
-  rankings->update();
-
   saveTest();
+
+  rankings->update();
 
   delete data;
   qDeleteAll(trades);

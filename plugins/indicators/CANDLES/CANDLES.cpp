@@ -136,17 +136,19 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
     double pen = settings.getDouble(Penetration);
 
     PlotLine *line2 = getMethod(data, method, pen);
-    if (! line2)
-      return 1;
-
-    settings.getData(MethodColor, s);
-    QColor c(s);
-
-    int loop;
-    for (loop = 0; loop < line2->count(); loop++)
+    if (line2)
     {
-      if (line2->getData(loop) > 0)
-        line->setColorBar(loop, c);
+      settings.getData(MethodColor, s);
+      QColor c(s);
+
+      int loop;
+      for (loop = 0; loop < line2->count(); loop++)
+      {
+        if (line2->getData(loop) > 0)
+          line->setColorBar(loop, c);
+      }
+      
+      delete line2;
     }
   }
 
@@ -162,13 +164,16 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
     settings.getData(MAType, s);
     int type = maList.indexOf(s);
     PlotLine *ma = m.getMA(line, period, type);
-    settings.getData(MAColor, s);
-    ma->setColor(s);
-    settings.getData(MAPlot, s);
-    ma->setType(s);
-    settings.getData(MALabel, s);
-    ma->setLabel(s);
-    ind.addLine(ma);
+    if (ma)
+    {
+      settings.getData(MAColor, s);
+      ma->setColor(s);
+      settings.getData(MAPlot, s);
+      ma->setPlugin(s);
+      settings.getData(MALabel, s);
+      ma->setLabel(s);
+      ind.addLine(ma);
+    }
   }
 
   period = settings.getInt(MA2Period);
@@ -177,13 +182,16 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
     settings.getData(MA2Type, s);
     int type = maList.indexOf(s);
     PlotLine *ma = m.getMA(line, period, type);
-    settings.getData(MA2Color, s);
-    ma->setColor(s);
-    settings.getData(MA2Plot, s);
-    ma->setType(s);
-    settings.getData(MA2Label, s);
-    ma->setLabel(s);
-    ind.addLine(ma);
+    if (ma)
+    {
+      settings.getData(MA2Color, s);
+      ma->setColor(s);
+      settings.getData(MA2Plot, s);
+      ma->setPlugin(s);
+      settings.getData(MA2Label, s);
+      ma->setLabel(s);
+      ind.addLine(ma);
+    }
   }
 
   period = settings.getInt(MA3Period);
@@ -192,13 +200,16 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
     settings.getData(MA3Type, s);
     int type = maList.indexOf(s);
     PlotLine *ma = m.getMA(line, period, type);
-    settings.getData(MA3Color, s);
-    ma->setColor(s);
-    settings.getData(MA3Plot, s);
-    ma->setType(s);
-    settings.getData(MA3Label, s);
-    ma->setLabel(s);
-    ind.addLine(ma);
+    if (ma)
+    {
+      settings.getData(MA3Color, s);
+      ma->setColor(s);
+      settings.getData(MA3Plot, s);
+      ma->setPlugin(s);
+      settings.getData(MA3Label, s);
+      ma->setLabel(s);
+      ind.addLine(ma);
+    }
   }
 
   return 0;
