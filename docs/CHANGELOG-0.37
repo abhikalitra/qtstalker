@@ -285,6 +285,11 @@
            ~/.qtstalker/config.sqlite* and ~/.qtstalker/data.sqlite files before installing the
            current CVS.
 
+20100301:  Added expansion fields to the local database to enable future growth. CVS users will
+           need to delete their ~/.qtstalker/data.sqlite file before installing. Hopefully this will
+           be the last time for a while :-)
+
+
 
 
 

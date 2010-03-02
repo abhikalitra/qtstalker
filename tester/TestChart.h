@@ -1,5 +1,5 @@
 /*
- *  Qtstalker stock charter
+ *  TestChart
  *
  *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
@@ -19,35 +19,31 @@
  *  USA.
  */
 
-#ifndef SAR_HPP
-#define SAR_HPP
 
-#include "IndicatorPlugin.h"
 
-class SAR : public IndicatorPlugin
+#ifndef TEST_CHART_HPP
+#define TEST_CHART_HPP
+
+#include <QWidget>
+#include <QSlider>
+#include <QList>
+
+#include "Plot.h"
+#include "BarData.h"
+#include "TestTrade.h"
+
+class TestChart : public QWidget
 {
+  Q_OBJECT
+
   public:
-    enum Parm
-    {
-      Color,
-      Plot,
-      Label,
-      Init,
-      Max
-    };
+    TestChart ();
+    void update (BarData *, QList<TestTrade *> &);
 
-    SAR ();
-    int getIndicator (Indicator &, BarData *);
-    int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
-    PlotLine * getSAR (BarData *, double, double);
-    int dialog (int);
-
-  protected:
+  private:
+    Plot *plot;
+    QSlider *slider;
 };
 
-extern "C"
-{
-  IndicatorPlugin * createIndicatorPlugin ();
-}
-
 #endif
+

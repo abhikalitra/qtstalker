@@ -81,6 +81,33 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
+  // 1 reference line
+  PlotLine *hline = new PlotLine;
+  s = "Horizontal";
+  hline->setPlugin(s);
+  hline->append(1);
+  settings.getData(Ref3Color, s);
+  hline->setColor(s);
+  ind.addLine(hline);
+
+  // 0 reference line
+  hline = new PlotLine;
+  s = "Horizontal";
+  hline->setPlugin(s);
+  hline->append(0);
+  settings.getData(Ref2Color, s);
+  hline->setColor(s);
+  ind.addLine(hline);
+
+  // -1 reference line
+  hline = new PlotLine;
+  s = "Horizontal";
+  hline->setPlugin(s);
+  hline->append(-1);
+  settings.getData(Ref1Color, s);
+  hline->setColor(s);
+  ind.addLine(hline);
+
   settings.getData(Color, s);
   line->setColor(s);
   settings.getData(Plot, s);
@@ -88,33 +115,6 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
-
-  // 1 reference line
-  PlotLine *hline = new PlotLine;
-  settings.getData(Ref3Color, s);
-  hline->setColor(s);
-  s = "Horizontal";
-  hline->setPlugin(s);
-  hline->append(1);
-  ind.addLine(hline);
-
-  // 0 reference line
-  hline = new PlotLine;
-  settings.getData(Ref2Color, s);
-  hline->setColor(s);
-  s = "Horizontal";
-  hline->setPlugin(s);
-  hline->append(0);
-  ind.addLine(hline);
-
-  // -1 reference line
-  hline = new PlotLine;
-  settings.getData(Ref1Color, s);
-  hline->setColor(s);
-  s = "Horizontal";
-  hline->setPlugin(s);
-  hline->append(-1);
-  ind.addLine(hline);
 
   delete in;
   delete in2;

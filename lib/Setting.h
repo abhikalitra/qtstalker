@@ -33,6 +33,7 @@ class Setting
     void setData (QString &, QString &);
     void setData (int, QString);
     void setData (int, int);
+    void setData (int, double);
     void setData (QString &, int);
     void setData (QString &, double);
     void getData (QString &, QString &);
@@ -49,6 +50,7 @@ class Setting
     int count ();
     void copy (Setting *);
     void copy (Setting &);
+    void strip (QString &);
 
   protected:
     QHash<QString, QString> dict;

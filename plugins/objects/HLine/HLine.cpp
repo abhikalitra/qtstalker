@@ -55,16 +55,17 @@ void HLine::draw (ChartObject *co, QPixmap &buffer, BarData *, int startX, int, 
 
   int y = scaler.convertToY(price);
   
-  painter.drawLine (0, y, buffer.width(), y);
-
   // test start
   QString s = QString::number(price);
-  painter.setBackgroundMode(Qt::OpaqueMode);
+//  painter.setBackgroundMode(Qt::OpaqueMode);
   QFontMetrics fm(font);
   QRect rc = painter.boundingRect(startX, y - (fm.height() / 2), 1, 1, 0, s);
   painter.drawText(rc, s);
   painter.drawRect(rc);
-  painter.setBackgroundMode(Qt::TransparentMode);
+  
+  painter.drawLine (rc.x() + rc.width(), y, buffer.width(), y);
+
+//  painter.setBackgroundMode(Qt::TransparentMode);
   // test end
   
 //  QFontMetrics fm(font);
@@ -186,19 +187,19 @@ void HLine::setSettings (ChartObject *co, QSqlQuery &q)
   s = q.value(3).toString();
   co->setData(ChartObject::ParmPlugin, s);
 
-  s = q.value(4).toString();
+  s = q.value(4).toString(); // t1 field
   co->setData(ChartObject::ParmColor, s);
 
-  s = q.value(7).toString();
-  co->setData(ChartObject::ParmPrice, s);
-
-  s = q.value(12).toString();
+  s = q.value(5).toString(); // t2 field
   co->setData(ChartObject::ParmLabel, s);
+
+  s = q.value(24).toString(); // d1 field
+  co->setData(ChartObject::ParmPrice, s);
 }
 
 void HLine::getSettings (ChartObject *co, QString &set)
 {
-  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,color,price,label) VALUES (";
+  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,d1,t2) VALUES (";
 
   QString s;
   co->getData(ChartObject::ParmID, s);

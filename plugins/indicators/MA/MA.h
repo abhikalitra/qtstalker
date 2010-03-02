@@ -35,11 +35,7 @@ class MA : public IndicatorPlugin
       Label,
       Input,
       Period,
-      OptPeriodLow,
-      OptPeriodHigh,
-      Operator,
-      OptPeriodStep,
-      OptCheck
+      TestOperator
     };
 
     MA ();

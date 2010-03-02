@@ -781,7 +781,7 @@ void QtstalkerApp::loadIndicator (QString &d)
 
   if (ip->getIndicator(i, recordList))
   {
-    qDebug() << "Qtstalker::loadIndicator: getIndicator failed";
+//    qDebug() << "Qtstalker::loadIndicator: getIndicator failed";
     return;
   }
 

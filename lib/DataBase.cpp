@@ -51,21 +51,43 @@ void DataBase::init ()
 
   // create the group index table
   QSqlQuery q(db);
-  s = "CREATE TABLE IF NOT EXISTS groupIndex (name TEXT PRIMARY KEY, parms TEXT)";
+  s = "CREATE TABLE IF NOT EXISTS groupIndex (";
+  s.append("name TEXT PRIMARY KEY");
+  s.append(", parms TEXT");
+  s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createGroupIndexTable: " << q.lastError().text();
 
   // create the indicator index table
   s = "CREATE TABLE IF NOT EXISTS indicatorIndex (";
-  s.append("name TEXT PRIMARY KEY");
-  s.append(", enable INT");
-  s.append(", tabRow INT");
-  s.append(", date INT");
-  s.append(", log INT");
-  s.append(", cus INT");
-  s.append(", indicator TEXT");
-  s.append(", settings TEXT");
+  s.append("name TEXT PRIMARY KEY"); // 0
+  s.append(", enable INT"); // 1
+  s.append(", tabRow INT"); // 2
+  s.append(", date INT"); // 3
+  s.append(", log INT"); // 4
+  s.append(", cus INT"); // 5
+  s.append(", indicator TEXT"); // 6
+  s.append(", settings TEXT"); // 7
+
+  s.append(", t1 TEXT"); // 8
+  s.append(", t2 TEXT"); // 9
+  s.append(", t3 TEXT"); // 10
+  s.append(", t4 TEXT"); // 11
+  s.append(", t5 TEXT"); // 12
+
+  s.append(", i1 INT"); // 13
+  s.append(", i2 INT"); // 14
+  s.append(", i3 INT"); // 15
+  s.append(", i4 INT"); // 16
+  s.append(", i5 INT"); // 17
+
+  s.append(", d1 REAL"); // 18
+  s.append(", d2 REAL"); // 19
+  s.append(", d3 REAL"); // 20
+  s.append(", d4 REAL"); // 21
+  s.append(", d5 REAL"); // 22
+
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -77,45 +99,70 @@ void DataBase::init ()
   s.append(", symbol TEXT"); // 1
   s.append(", indicator TEXT"); // 2
   s.append(", plugin TEXT"); // 3
-  s.append(", color TEXT"); // 4
-  s.append(", date TEXT"); // 5
-  s.append(", date2 TEXT"); // 6
-  s.append(", price REAL"); // 7
-  s.append(", price2 REAL"); // 8
-  s.append(", high REAL"); // 9
-  s.append(", low REAL"); // 10
-  s.append(", font TEXT"); // 11
-  s.append(", label TEXT"); // 12
-  s.append(", extend INT"); // 13
-  s.append(", line1 REAL"); // 14
-  s.append(", line2 REAL"); // 15
-  s.append(", line3 REAL"); // 16
-  s.append(", line4 REAL"); // 17
-  s.append(", line5 REAL"); // 18
-  s.append(", line6 REAL"); // 19
-  s.append(", barField TEXT"); // 20
-  s.append(", useBar INT"); // 21
+  
+  s.append(", t1 TEXT"); // 4
+  s.append(", t2 TEXT"); // 5
+  s.append(", t3 TEXT"); // 6
+  s.append(", t4 TEXT"); // 7
+  s.append(", t5 TEXT"); // 8
+  s.append(", t6 TEXT"); // 9
+  s.append(", t7 TEXT"); // 10
+  s.append(", t8 TEXT"); // 11
+  s.append(", t9 TEXT"); // 12
+  s.append(", t10 TEXT"); // 13
+  
+  s.append(", i1 INT"); // 14
+  s.append(", i2 INT"); // 15
+  s.append(", i3 INT"); // 16
+  s.append(", i4 INT"); // 17
+  s.append(", i5 INT"); // 18
+  s.append(", i6 INT"); // 19
+  s.append(", i7 INT"); // 20
+  s.append(", i8 INT"); // 21
+  s.append(", i9 INT"); // 22
+  s.append(", i10 INT"); // 23
+  
+  s.append(", d1 REAL"); // 24
+  s.append(", d2 REAL"); // 25
+  s.append(", d3 REAL"); // 26
+  s.append(", d4 REAL"); // 27
+  s.append(", d5 REAL"); // 28
+  s.append(", d6 REAL"); // 29
+  s.append(", d7 REAL"); // 30
+  s.append(", d8 REAL"); // 31
+  s.append(", d9 REAL"); // 32
+  s.append(", d10 REAL"); // 33
+  
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DataBase::createChartObjectsTable: " << q.lastError().text();
 
-  // create the indicator settings table
-  s = "CREATE TABLE IF NOT EXISTS indicatorSettings (";
-  s.append("indicator TEXT PRIMARY KEY UNIQUE");
-  s.append(", name TEXT");
-  s.append(", settings TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DataBase::createIndicatorSettingsTable: " << q.lastError().text();
-
   // create the script table
   s = "CREATE TABLE IF NOT EXISTS script (";
-  s.append("name TEXT PRIMARY KEY UNIQUE");
-  s.append(", command TEXT");
-  s.append(", comment TEXT");
-  s.append(", lastRun TEXT");
+  s.append("name TEXT PRIMARY KEY UNIQUE"); // 0
+  s.append(", command TEXT"); // 1
+  s.append(", comment TEXT"); // 2
+  s.append(", lastRun TEXT"); // 3
+  
+  s.append(", t1 TEXT"); // 4
+  s.append(", t2 TEXT"); // 5
+  s.append(", t3 TEXT"); // 6
+  s.append(", t4 TEXT"); // 7
+  s.append(", t5 TEXT"); // 8
+  
+  s.append(", i1 INT"); // 9
+  s.append(", i2 INT"); // 10
+  s.append(", i3 INT"); // 11
+  s.append(", i4 INT"); // 12
+  s.append(", i5 INT"); // 13
+
+  s.append(", d1 REAL"); // 14
+  s.append(", d2 REAL"); // 15
+  s.append(", d3 REAL"); // 16
+  s.append(", d4 REAL"); // 17
+  s.append(", d5 REAL"); // 18
+
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -200,7 +247,7 @@ void DataBase::getIndicator (Indicator &i)
   i.getName(name);
 
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT * FROM indicatorIndex WHERE name='" + name + "'";
+  QString s = "SELECT enable,tabRow,date,log,cus,indicator,settings FROM indicatorIndex WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -211,15 +258,16 @@ void DataBase::getIndicator (Indicator &i)
   if (! q.next())
     return;
 
-  i.setEnable(q.value(1).toInt());
-  i.setTabRow(q.value(2).toInt());
-  i.setDate(q.value(3).toInt());
-  i.setLog(q.value(4).toInt());
-  i.setCUS(q.value(5).toInt());
-  s = q.value(6).toString();
+  int pos = 0;
+  i.setEnable(q.value(pos++).toInt());
+  i.setTabRow(q.value(pos++).toInt());
+  i.setDate(q.value(pos++).toInt());
+  i.setLog(q.value(pos++).toInt());
+  i.setCUS(q.value(pos++).toInt());
+  s = q.value(pos++).toString();
   i.setIndicator(s);
 
-  s = q.value(7).toString();
+  s = q.value(pos++).toString();
   Setting set;
   set.parse(s);
   i.setSettings(set);
@@ -243,7 +291,7 @@ void DataBase::setIndicator (Indicator &i)
   transaction();
 
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO indicatorIndex VALUES (";
+  QString s = "INSERT OR REPLACE INTO indicatorIndex (name,enable,tabRow,date,log,cus,indicator,settings) VALUES (";
   s.append("'" + name + "'");
   s.append("," + enable);
   s.append("," + tabRow);
@@ -495,7 +543,7 @@ void DataBase::setScript (Script &script)
   lastRun = dt.toString(Qt::ISODate);
 
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO script VALUES (";
+  QString s = "INSERT OR REPLACE INTO script (name,command,comment,lastRun) VALUES (";
   s.append("'" + name + "'");
   s.append(",'" + command + "'");
   s.append(",'" + comment + "'");

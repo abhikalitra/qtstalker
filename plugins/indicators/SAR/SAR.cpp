@@ -30,7 +30,7 @@ SAR::SAR ()
 {
   indicator = "SAR";
 
-  settings.setData(Color, "red");
+  settings.setData(Color, "yellow");
   settings.setData(Plot, "Dot");
   settings.setData(Label, indicator);
   settings.setData(Init, 0.02);
@@ -39,9 +39,9 @@ SAR::SAR ()
 
 int SAR::getIndicator (Indicator &ind, BarData *data)
 {
-  double init = settings.getDouble(Init);
-  double max = settings.getDouble(Max);
-  
+  double tinit = settings.getDouble(Init);
+  double tmax = settings.getDouble(Max);
+
   MATH1 m;
   QColor up("green");
   QColor down("red");
@@ -50,7 +50,7 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
   if (bars)
     ind.addLine(bars);
 
-  PlotLine *line = getSAR(data, init, max);
+  PlotLine *line = getSAR(data, tinit, tmax);
   if (! line)
     return 1;
 
@@ -107,7 +107,7 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * SAR::getSAR (BarData *data, double init, double max)
+PlotLine * SAR::getSAR (BarData *data, double _init, double _max)
 {
   int size = data->count();
   TA_Real high[size];
@@ -122,7 +122,7 @@ PlotLine * SAR::getSAR (BarData *data, double init, double max)
 
   TA_Integer outBeg;
   TA_Integer outNb;
-  TA_RetCode rc = TA_SAR(0, size - 1, &high[0], &low[0], init, max, &outBeg, &outNb, &out[0]);
+  TA_RetCode rc = TA_SAR(0, size - 1, &high[0], &low[0], _init, _max, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
     qDebug() << indicator << "::calculate: TA-Lib error" << rc;
@@ -155,9 +155,9 @@ int SAR::dialog (int)
   settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addDoubleItem(Init, page, QObject::tr("Initial"), settings.getDouble(Init), 0, 100000);
+  dialog->addDoubleItem(Init, page, QObject::tr("Initial"), settings.getDouble(Init), 0.0, 100000.0);
 
-  dialog->addDoubleItem(Max, page, QObject::tr("Max"), settings.getDouble(Max), 0, 100000);
+  dialog->addDoubleItem(Max, page, QObject::tr("Max"), settings.getDouble(Max), 0.0, 100000.0);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

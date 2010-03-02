@@ -59,32 +59,32 @@ int CCI::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
-  settings.getData(Color, s);
-  line->setColor(s);
+  // create the ref1 line
+  int ref = settings.getInt(Ref1);
+  PlotLine *rline = new PlotLine;
+  s = "Horizontal";
+  rline->setPlugin(s);
+  rline->append(ref);
+  settings.getData(Ref1Color, s);
+  rline->setColor(s);
+  ind.addLine(rline);
+
+  // create the ref2 line
+  ref = settings.getInt(Ref2);
+  rline = new PlotLine;
+  s = "Horizontal";
+  rline->setPlugin(s);
+  rline->append(ref);
+  settings.getData(Ref2Color, s);
+  rline->setColor(s);
+  ind.addLine(rline);
+
   settings.getData(Plot, s);
   line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
-
-  // create the ref1 line
-  int ref = settings.getInt(Ref1);
-  line = new PlotLine;
-  settings.getData(Ref1Color, s);
+  settings.getData(Color, s);
   line->setColor(s);
-  s = "Horizontal";
-  line->setPlugin(s);
-  line->append(ref);
-  ind.addLine(line);
-
-  // create the ref2 line
-  ref = settings.getInt(Ref2);
-  line = new PlotLine;
-  settings.getData(Ref2Color, s);
-  line->setColor(s);
-  s = "Horizontal";
-  line->setPlugin(s);
-  line->append(ref);
   ind.addLine(line);
 
   return 0;

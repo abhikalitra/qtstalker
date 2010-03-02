@@ -174,13 +174,13 @@ void Buy::setSettings (ChartObject *co, QSqlQuery &q)
   s = q.value(5).toString();
   co->setData(ChartObject::ParmDate, s);
 
-  s = q.value(7).toString();
+  s = q.value(24).toString();
   co->setData(ChartObject::ParmPrice, s);
 }
 
 void Buy::getSettings (ChartObject *co, QString &set)
 {
-  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,color,date,price) VALUES (";
+  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,t2,d1) VALUES (";
   
   QString s;
   co->getData(ChartObject::ParmID, s);

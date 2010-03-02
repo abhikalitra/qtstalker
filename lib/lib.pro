@@ -51,6 +51,8 @@ HEADERS += MATH1.h
 HEADERS += RANGE.h
 HEADERS += REF.h
 HEADERS += SYMBOL.h
+HEADERS += SymbolButton.h
+HEADERS += SymbolDialog.h
 
 
 SOURCES += Setting.cpp
@@ -99,6 +101,8 @@ SOURCES += MATH1.cpp
 SOURCES += RANGE.cpp
 SOURCES += REF.cpp
 SOURCES += SYMBOL.cpp
+SOURCES += SymbolButton.cpp
+SOURCES += SymbolDialog.cpp
 
 
 TARGET = qtstalker

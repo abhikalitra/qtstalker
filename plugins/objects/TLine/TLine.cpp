@@ -306,34 +306,34 @@ void TLine::setSettings (ChartObject *co, QSqlQuery &q)
   s = q.value(3).toString();
   co->setData(ChartObject::ParmPlugin, s);
 
-  s = q.value(4).toString();
+  s = q.value(4).toString(); // t1 field
   co->setData(ChartObject::ParmColor, s);
 
-  s = q.value(5).toString();
+  s = q.value(5).toString(); // t2 field
   co->setData(ChartObject::ParmDate, s);
 
-  s = q.value(6).toString();
+  s = q.value(6).toString(); // t3 field
   co->setData(ChartObject::ParmDate2, s);
 
-  s = q.value(7).toString();
-  co->setData(ChartObject::ParmPrice, s);
+  s = q.value(7).toString(); // t4 field
+  co->setData(ChartObject::ParmBarField, s);
 
-  s = q.value(8).toString();
-  co->setData(ChartObject::ParmPrice2, s);
-
-  s = q.value(13).toString();
+  s = q.value(14).toString(); // i1 field
   co->setData(ChartObject::ParmExtend, s);
 
-  s = q.value(21).toString();
+  s = q.value(15).toString(); // i2 field
   co->setData(ChartObject::ParmUseBar, s);
 
-  s = q.value(20).toString();
-  co->setData(ChartObject::ParmBarField, s);
+  s = q.value(24).toString(); // d1 field
+  co->setData(ChartObject::ParmPrice, s);
+
+  s = q.value(25).toString(); // d2 field
+  co->setData(ChartObject::ParmPrice2, s);
 }
 
 void TLine::getSettings (ChartObject *co, QString &set)
 {
-  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,color,date,date2,price,price2,extend,useBar,barField) VALUES (";
+  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,t2,t3,d1,d2,i1,i2,t4) VALUES (";
   
   QString s;
   co->getData(ChartObject::ParmID, s);

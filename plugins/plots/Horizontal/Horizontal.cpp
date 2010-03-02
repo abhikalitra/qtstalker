@@ -39,14 +39,12 @@ void Horizontal::draw (PlotLine *line, BarData *, QPixmap &buffer, int startX, i
   
   int y = scaler.convertToY(d);
 
-  painter.drawLine (0, y, buffer.width(), y);
-
   QString s, s2;
   strip(d, 4, s);
   line->getLabel(s2);
   s = s2 + s;
 
-  painter.setBackgroundMode(Qt::OpaqueMode);
+//  painter.setBackgroundMode(Qt::OpaqueMode);
 //  painter.setBackground(QBrush(backgroundColor));
 //  painter.setFont(plotFont);
 
@@ -55,6 +53,9 @@ void Horizontal::draw (PlotLine *line, BarData *, QPixmap &buffer, int startX, i
   QRect rc = painter.boundingRect(startX, y - (fm.height() / 2), 1, 1, 0, s);
   painter.drawText(rc, s);
   painter.drawRect(rc);
+  
+  painter.drawLine (rc.x() + rc.width(), y, buffer.width(), y);
+
   painter.end();
 }
 

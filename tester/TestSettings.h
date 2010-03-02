@@ -36,6 +36,7 @@
 #include <QWidget>
 
 #include "IndicatorPlugin.h"
+#include "SymbolButton.h"
 
 class TestSettings : public QWidget
 {
@@ -101,7 +102,6 @@ class TestSettings : public QWidget
 
   public slots:
     void scriptButtonPressed ();
-    void symbolButtonPressed ();
     void enterLongButtonPressed ();
     void exitLongButtonPressed ();
     void enterShortButtonPressed ();
@@ -117,7 +117,6 @@ class TestSettings : public QWidget
     QStringList barLengthList;
     QStringList indicatorList;
 
-    QLineEdit *symbol;
     QGroupBox *scriptCheck;
     QGroupBox *longCheck;
     QGroupBox *shortCheck;
@@ -128,6 +127,7 @@ class TestSettings : public QWidget
     QToolButton *exitLongButton;
     QToolButton *enterShortButton;
     QToolButton *exitShortButton;
+    SymbolButton *symbolButton;
     QComboBox *enterField;
     QComboBox *exitField;
     QCheckBox *trailingCheck;

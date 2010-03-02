@@ -163,7 +163,6 @@ void IndicatorPlot::draw ()
     setScale();
     drawXGrid();
     drawYGrid();
-    drawInfo();
     drawLines();
     drawObjects();
     drawCrossHair();
@@ -675,9 +674,12 @@ void IndicatorPlot::drawInfo ()
     for (loop = 0; loop < plotList.count(); loop++)
     {
       PlotLine *line = plotList.at(loop);
+      
+      if (! line->count())
+	continue;
+      
       QString ts;
       line->getPlugin(ts);
-      
       if (ts == "Horizontal")
 	continue;
       
@@ -1140,5 +1142,12 @@ void IndicatorPlot::slotObjectDialog ()
   COPlugin *plug = fac.getCO(coPluginPath, s);
   plug->dialog(coSelected);
   draw();
+}
+
+void IndicatorPlot::addChartObject (ChartObject *co)
+{
+  QString s;
+  co->getData(ChartObject::ParmID, s);
+  coList.insert(s, co);
 }
 

@@ -170,25 +170,10 @@ TestSettings::TestSettings ()
     exitShortButton->setText(QString("..."));
     connect(exitShortButton, SIGNAL(pressed()), this, SLOT(exitShortButtonPressed()));
 
-  // symbol parms
-  grid = new QGridLayout;
-  grid->setSpacing(5);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-  row = 0;
-  col = 0;
-
-  label = new QLabel(tr("Symbol"));
-  grid->addWidget(label, row, col++);
-
-//  QPushButton *pb = new QPushButton(QString::number(0) + tr(" Symbols"));
-//  pb->setToolTip(tr("Select symbols for test"));
-//  connect(pb, SIGNAL(pressed()), this, SLOT(symbolButtonPressed()));
-  symbol = new QLineEdit;
-  grid->addWidget(symbol, row++, col--);
-
   vbox->addStretch(1);
 
+
+  
   // right side of page
   grid = new QGridLayout;
   grid->setSpacing(5);
@@ -197,6 +182,13 @@ TestSettings::TestSettings ()
   row = 0;
   col = 0;
 
+  label = new QLabel(tr("Symbol"));
+  grid->addWidget(label, row, col++);
+
+  symbolButton = new SymbolButton(this);
+  grid->addWidget(symbolButton, row++, col--);
+  connect(symbolButton, SIGNAL(pressed()), symbolButton, SLOT(symbolDialog()));
+  
   // bar length parm
   label = new QLabel(tr("Bar Length"));
   grid->addWidget(label, row, col++);
@@ -339,11 +331,6 @@ void TestSettings::scriptCheckChanged (bool d)
   }
 }
 
-void TestSettings::symbolButtonPressed ()
-{
-  // custom symbol selection dialog here
-}
-
 void TestSettings::enterLongComboChanged ()
 {
   enterLongIndicator.deleteAll();
@@ -443,6 +430,7 @@ void TestSettings::enterLongButtonPressed ()
 
   plug->setSettings(enterLongIndicator);
   plug->dialog(1);
+  plug->getSettings(enterLongIndicator);
 }
 
 void TestSettings::exitLongButtonPressed ()
@@ -460,6 +448,7 @@ void TestSettings::exitLongButtonPressed ()
 
   plug->setSettings(exitLongIndicator);
   plug->dialog(1);
+  plug->getSettings(exitLongIndicator);
 }
 
 void TestSettings::enterShortButtonPressed ()
@@ -477,6 +466,7 @@ void TestSettings::enterShortButtonPressed ()
 
   plug->setSettings(enterShortIndicator);
   plug->dialog(1);
+  plug->getSettings(enterShortIndicator);
 }
 
 void TestSettings::exitShortButtonPressed ()
@@ -494,6 +484,7 @@ void TestSettings::exitShortButtonPressed ()
 
   plug->setSettings(exitShortIndicator);
   plug->dialog(1);
+  plug->getSettings(exitShortIndicator);
 }
 
 void TestSettings::getScript (QString &d)
@@ -548,12 +539,16 @@ void TestSettings::setShortCheck (bool d)
 
 void TestSettings::getSymbol (QString &d)
 {
-  d = symbol->text();
+  QStringList l;
+  symbolButton->getSymbols(l);
+  d = l.join(",");
 }
 
 void TestSettings::setSymbol (QString &d)
 {
-  symbol->setText(d);
+  QStringList l;
+  l = d.split(",");
+  symbolButton->setSymbols(l);
 }
 
 int TestSettings::getEnterField ()

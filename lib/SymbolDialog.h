@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2008 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,35 +19,38 @@
  *  USA.
  */
 
-#ifndef SAR_HPP
-#define SAR_HPP
+#ifndef SYMBOL_DIALOG_HPP
+#define SYMBOL_DIALOG_HPP
 
-#include "IndicatorPlugin.h"
+#include <QStringList>
+#include <QString>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QListWidget>
+#include <QPushButton>
 
-class SAR : public IndicatorPlugin
+class SymbolDialog : public QDialog
 {
+  Q_OBJECT
+
   public:
-    enum Parm
-    {
-      Color,
-      Plot,
-      Label,
-      Init,
-      Max
-    };
+    SymbolDialog ();
+    void setSymbols (QStringList &);
+    void getSymbols (QStringList &);
+    void updateLeftSymbols ();
 
-    SAR ();
-    int getIndicator (Indicator &, BarData *);
-    int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
-    PlotLine * getSAR (BarData *, double, double);
-    int dialog (int);
+  public slots:
+    void cancelPressed ();
+    void leftButtonPressed ();
+    void rightButtonPressed ();
 
-  protected:
+  private:
+    int modified;
+    QDialogButtonBox *buttonBox;
+    QListWidget *leftSymbols;
+    QListWidget *rightSymbols;
+    QPushButton *leftButton;
+    QPushButton *rightButton;
 };
-
-extern "C"
-{
-  IndicatorPlugin * createIndicatorPlugin ();
-}
 
 #endif

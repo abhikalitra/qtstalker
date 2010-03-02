@@ -37,11 +37,7 @@ MA::MA ()
   settings.setData(Input, "Close");
   settings.setData(Period, 14);
   settings.setData(Method, "SMA");
-  settings.setData(OptPeriodLow, 10);
-  settings.setData(OptPeriodHigh, 20);
-  settings.setData(Operator, "<");
-  settings.setData(OptPeriodStep, 2);
-  settings.setData(OptCheck, 0);
+  settings.setData(TestOperator, "<");
 
   methodList << "EMA";
   methodList << "DEMA";
@@ -210,19 +206,8 @@ void MA::testDialog (PrefDialog *dialog, int page)
   QString k = QObject::tr("Test");
   dialog->addPage(page, k);
 
-  settings.getData(Operator, d);
-  dialog->addComboItem(Operator, page, QObject::tr("Input <Operator> MA"), opList, d);
-
-  dialog->addCheckItem(OptCheck, page, QObject::tr("Optimazation"), settings.getInt(OptCheck));
-
-  dialog->addIntItem(OptPeriodLow, page, QObject::tr("Optimazation Period Low"),
-		     settings.getInt(OptPeriodLow), -100000, 100000);
-
-  dialog->addIntItem(OptPeriodHigh, page, QObject::tr("Optimazation Period High"),
-		     settings.getInt(OptPeriodHigh), -100000, 100000);
-
-  dialog->addIntItem(OptPeriodStep, page, QObject::tr("Optimazation Period Step"),
-		     settings.getInt(OptPeriodStep), 1, 100000);
+  settings.getData(TestOperator, d);
+  dialog->addComboItem(TestOperator, page, QObject::tr("Input <Operator> MA"), opList, d);
 }
 
 int MA::test (BarData *data, TestSignal &sigs)
@@ -249,7 +234,7 @@ int MA::test (BarData *data, TestSignal &sigs)
     return 1;
   }
 
-  settings.getData(Operator, s);
+  settings.getData(TestOperator, s);
   int op = opList.indexOf(s);
   
   COMPARE c;
@@ -261,8 +246,6 @@ int MA::test (BarData *data, TestSignal &sigs)
     delete ma;
     return 1;
   }
-
-//  qDebug() << in->getSize() << ma->getSize() << comp->getSize();
 
   delete in;
   delete ma;

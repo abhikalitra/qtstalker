@@ -1208,6 +1208,10 @@ a partial match like %SI or %RSI%</source>
         <source>Select point to place VLine...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>C</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtStalkerTester</name>

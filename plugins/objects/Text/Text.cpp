@@ -183,25 +183,25 @@ void Text::setSettings (ChartObject *co, QSqlQuery &q)
   s = q.value(3).toString();
   co->setData(ChartObject::ParmPlugin, s);
 
-  s = q.value(4).toString();
+  s = q.value(4).toString(); // t1 field
   co->setData(ChartObject::ParmColor, s);
 
-  s = q.value(5).toString();
+  s = q.value(5).toString(); // t2 field
   co->setData(ChartObject::ParmDate, s);
 
-  s = q.value(7).toString();
-  co->setData(ChartObject::ParmPrice, s);
-
-  s = q.value(12).toString();
+  s = q.value(6).toString(); // t3 field
   co->setData(ChartObject::ParmLabel, s);
 
-  s = q.value(11).toString();
+  s = q.value(7).toString(); // t4 field
   co->setData(ChartObject::ParmFont, s);
+
+  s = q.value(24).toString(); // d1 field
+  co->setData(ChartObject::ParmPrice, s);
 }
 
 void Text::getSettings (ChartObject *co, QString &set)
 {
-  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,color,date,price,label,font) VALUES (";
+  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,t2,d1,t3,t4) VALUES (";
   
   QString s;
   co->getData(ChartObject::ParmID, s);

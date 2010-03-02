@@ -155,16 +155,16 @@ void VLine::setSettings (ChartObject *co, QSqlQuery &q)
   s = q.value(3).toString();
   co->setData(ChartObject::ParmPlugin, s);
 
-  s = q.value(4).toString();
+  s = q.value(4).toString(); // t1 field
   co->setData(ChartObject::ParmColor, s);
 
-  s = q.value(5).toString();
+  s = q.value(5).toString(); // t2 field
   co->setData(ChartObject::ParmDate, s);
 }
 
 void VLine::getSettings (ChartObject *co, QString &set)
 {
-  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,color,date) VALUES (";
+  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,t2) VALUES (";
   
   QString s;
   co->getData(ChartObject::ParmID, s);

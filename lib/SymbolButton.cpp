@@ -19,35 +19,49 @@
  *  USA.
  */
 
-#ifndef SAR_HPP
-#define SAR_HPP
+#include "SymbolButton.h"
+#include "SymbolDialog.h"
 
-#include "IndicatorPlugin.h"
-
-class SAR : public IndicatorPlugin
+SymbolButton::SymbolButton (QWidget *w) : QPushButton (w)
 {
-  public:
-    enum Parm
-    {
-      Color,
-      Plot,
-      Label,
-      Init,
-      Max
-    };
-
-    SAR ();
-    int getIndicator (Indicator &, BarData *);
-    int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
-    PlotLine * getSAR (BarData *, double, double);
-    int dialog (int);
-
-  protected:
-};
-
-extern "C"
-{
-  IndicatorPlugin * createIndicatorPlugin ();
+  QObject::connect(this, SIGNAL(clicked()), this, SLOT(symbolDialog()));
+  setMaximumHeight(25);
+  updateButtonText();
 }
 
-#endif
+void SymbolButton::getSymbols (QStringList &l)
+{
+  l = symbolList;
+}
+
+void SymbolButton::setSymbols (QStringList &l)
+{
+  symbolList = l;
+  updateButtonText();
+}
+
+void SymbolButton::symbolDialog ()
+{
+  SymbolDialog *dialog = new SymbolDialog;
+  dialog->setSymbols(symbolList);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return;
+  }
+
+  dialog->getSymbols(symbolList);
+
+  updateButtonText();
+  
+  delete dialog;  
+}
+
+void SymbolButton::updateButtonText ()
+{
+  setText(QString::number(symbolList.count()) + " " + tr("Symbols"));
+}
+
+

@@ -78,7 +78,7 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
 
   QList<PlotLine *> l;
   int rc = getMACD(in, fast, fastma, slow, slowma, signal, signalma, l);
-  if (rc)
+  if (rc || l.count() != 3)
   {
     qDeleteAll(l);
     delete in;

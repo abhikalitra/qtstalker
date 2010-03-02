@@ -74,17 +74,17 @@ int RSI::getIndicator (Indicator &ind, BarData *data)
   PlotLine *ref1 = new PlotLine;
   s = "Horizontal";
   ref1->setPlugin(s);
+  ref1->append(settings.getInt(Ref1));
   settings.getData(Ref1Color, s);
   ref1->setColor(s);
-  ref1->append(settings.getInt(Ref1));
   ind.addLine(ref1);
 
   PlotLine *ref2 = new PlotLine;
   s = "Horizontal";
   ref2->setPlugin(s);
+  ref2->append(settings.getInt(Ref2));
   settings.getData(Ref2Color, s);
   ref2->setColor(s);
-  ref2->append(settings.getInt(Ref2));
   ind.addLine(ref2);
 
   settings.getData(Color, s);

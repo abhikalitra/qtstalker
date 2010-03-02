@@ -101,6 +101,7 @@ class IndicatorPlot : public QWidget
     void loadChartObjects ();
     void addLine (PlotLine *);
     void drawRubberBand (QRect &r);
+    void addChartObject (ChartObject *);
 
   public slots:
     void draw();

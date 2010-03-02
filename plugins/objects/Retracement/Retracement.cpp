@@ -340,46 +340,46 @@ void Retracement::setSettings (ChartObject *co, QSqlQuery &q)
   s = q.value(3).toString();
   co->setData(ChartObject::ParmPlugin, s);
 
-  s = q.value(4).toString();
+  s = q.value(4).toString(); // t1 field
   co->setData(ChartObject::ParmColor, s);
 
-  s = q.value(5).toString();
+  s = q.value(5).toString(); // t2 field
   co->setData(ChartObject::ParmDate, s);
 
-  s = q.value(6).toString();
+  s = q.value(6).toString(); // t3 field
   co->setData(ChartObject::ParmDate2, s);
 
-  s = q.value(9).toString();
+  s = q.value(24).toString(); // d1 field
   co->setData(ChartObject::ParmHigh, s);
 
-  s = q.value(10).toString();
+  s = q.value(25).toString(); // d2 field
   co->setData(ChartObject::ParmLow, s);
 
-  s = q.value(14).toString();
+  s = q.value(26).toString(); // d3 field
   co->setData(ChartObject::ParmLine1, s);
 
-  s = q.value(15).toString();
+  s = q.value(27).toString(); // d4 field
   co->setData(ChartObject::ParmLine2, s);
 
-  s = q.value(16).toString();
+  s = q.value(28).toString(); // d5 field
   co->setData(ChartObject::ParmLine3, s);
 
-  s = q.value(17).toString();
+  s = q.value(29).toString(); // d6 field
   co->setData(ChartObject::ParmLine4, s);
 
-  s = q.value(18).toString();
+  s = q.value(30).toString(); // d7 field
   co->setData(ChartObject::ParmLine5, s);
 
-  s = q.value(19).toString();
+  s = q.value(31).toString(); // d8 field
   co->setData(ChartObject::ParmLine6, s);
 
-  s = q.value(13).toString();
+  s = q.value(14).toString(); // i1 field
   co->setData(ChartObject::ParmExtend, s);
 }
 
 void Retracement::getSettings (ChartObject *co, QString &set)
 {
-  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,color,high,low,line1,line2,line3,line4,line5,line6,extend,date,date2) VALUES (";
+  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,d1,d2,d3,d4,d5,d6,d7,d8,i1,t2,t3) VALUES (";
   
   QString s;
   co->getData(ChartObject::ParmID, s);

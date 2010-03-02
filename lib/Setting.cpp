@@ -28,13 +28,19 @@ Setting::Setting ()
 
 void Setting::setData (QString &k, QString &d)
 {
-  dict.insert(k, d);
+  QString s = k;
+  strip(s);
+  QString s2 = d;
+  strip(s2);
+  dict.insert(s, s2);
 }
 
 void Setting::setData (int k, QString d)
 {
   QString s = QString::number(k);
-  dict.insert(s, d);
+  QString s2 = d;
+  strip(s2);
+  dict.insert(s, s2);
 }
 
 void Setting::setData (int k, int d)
@@ -44,16 +50,27 @@ void Setting::setData (int k, int d)
   dict.insert(s, s2);
 }
 
+void Setting::setData (int k, double d)
+{
+  QString s = QString::number(k);
+  QString s2 = QString::number(d);
+  dict.insert(s, s2);
+}
+
 void Setting::setData (QString &k, int d)
 {
+  QString s = k;
+  strip(s);
   QString s2 = QString::number(d);
-  dict.insert(k, s2);
+  dict.insert(s, s2);
 }
 
 void Setting::setData (QString &k, double d)
 {
+  QString s = k;
+  strip(s);
   QString s2 = QString::number(d);
-  dict.insert(k, s2);
+  dict.insert(s, s2);
 }
 
 void Setting::getData (QString &k, QString &d)
@@ -183,5 +200,12 @@ void Setting::copy (Setting &r)
     d = it.value();
     r.setData(k, d);
   }
+}
+
+void Setting::strip (QString &d)
+{
+  d = d.remove(QString("="), Qt::CaseSensitive);
+  d = d.remove(QString("|"), Qt::CaseSensitive);
+  d = d.remove(QString("'"), Qt::CaseSensitive);
 }
 

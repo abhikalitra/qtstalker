@@ -98,6 +98,9 @@ QtStalkerTester::QtStalkerTester ()
   report = new TestReport;
   tabs->addTab(report, tr("Report"));
 
+  chart = new TestChart;
+  tabs->addTab(chart, tr("Chart"));
+
   // restore app settings from previous session
   restoreSettings();
 
@@ -747,6 +750,8 @@ void QtStalkerTester::run ()
   saveTest();
 
   rankings->update();
+  
+  chart->update(data, trades);
 
   delete data;
   qDeleteAll(trades);

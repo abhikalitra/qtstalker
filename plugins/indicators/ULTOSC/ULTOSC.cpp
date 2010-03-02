@@ -54,25 +54,25 @@ int ULTOSC::getIndicator (Indicator &ind, BarData *data)
   PlotLine *ref30 = new PlotLine;
   s = "Horizontal";
   ref30->setPlugin(s);
+  ref30->append(30);
   settings.getData(Ref1Color, s);
   ref30->setColor(s);
-  ref30->append(30);
   ind.addLine(ref30);
 
   PlotLine *ref50 = new PlotLine;
   s = "Horizontal";
   ref50->setPlugin(s);
+  ref50->append(50);
   settings.getData(Ref2Color, s);
   ref50->setColor(s);
-  ref50->append(50);
   ind.addLine(ref50);
 
   PlotLine *ref70 = new PlotLine;
   s = "Horizontal";
   ref70->setPlugin(s);
+  ref70->append(70);
   settings.getData(Ref3Color, s);
   ref70->setColor(s);
-  ref70->append(70);
   ind.addLine(ref70);
 
   settings.getData(Color, s);
