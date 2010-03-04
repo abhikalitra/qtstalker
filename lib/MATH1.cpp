@@ -20,11 +20,11 @@
  */
 
 #include "MATH1.h"
-#include "math.h" // for fabs
 #include "ta_libc.h"
 
 #include <QtDebug>
 #include <QObject>
+#include <cmath> // for fabs
 
 
 MATH1::MATH1 ()

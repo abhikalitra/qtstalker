@@ -29,7 +29,7 @@ class Retracement : public COPlugin
   public:
     Retracement ();
     void draw (ChartObject *, QPixmap &, DateBar &, int, int, int, Scaler &);
-    void getInfo (ChartObject *, Setting &);
+    void getInfo (ChartObject *, Setting *);
     void dialog (ChartObject *);
     void setSettings (ChartObject *, QSqlQuery &q);
     void getSettings (ChartObject *, QString &);

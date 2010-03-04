@@ -22,7 +22,7 @@
 #include "VIDYA.h"
 #include "ta_libc.h"
 
-#include <math.h>
+#include <cmath>
 #include <QVector>
 #include <QtDebug>
 

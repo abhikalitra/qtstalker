@@ -20,6 +20,8 @@
  */
 
 #include "Plot.h"
+#include "PlotGrid.h"
+
 #include <QLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -63,6 +65,7 @@ void Plot::setData (BarData *l)
     return;
 
   datePlot->setData(l);
+
   indicatorPlot->setXGrid(datePlot->getXGrid());
 
   scalePlot->setData(l->getClose(l->count() - 1));

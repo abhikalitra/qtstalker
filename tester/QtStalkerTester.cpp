@@ -667,7 +667,7 @@ void QtStalkerTester::run ()
       }
 
       // exit long indicator
-      i.deleteAll();
+      i.clear();
       settings->getExitLongIndicator(i);
       i.getIndicator(s);
       plug = fac.getIndicator(path, s);
@@ -707,7 +707,7 @@ void QtStalkerTester::run ()
       }
 
       // exit short indicator
-      i.deleteAll();
+      i.clear();
       settings->getExitShortIndicator(i);
       i.getIndicator(s);
       plug = fac.getIndicator(path, s);

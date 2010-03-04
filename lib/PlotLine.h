@@ -59,7 +59,7 @@ class PlotLine
     void getHighLowRange (int, int, double &, double &);
     void setOffset (int);
     int getOffset ();
-    void getInfo (int, Setting &);
+    void getInfo (int, Setting *);
     void setColor (QColor &);
     void setColor (QString &);
     void setColorBar (int, QColor &);

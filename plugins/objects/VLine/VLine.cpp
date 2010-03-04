@@ -87,15 +87,15 @@ void VLine::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, i
   painter.end();
 }
 
-void VLine::getInfo (ChartObject *co, Setting &info)
+void VLine::getInfo (ChartObject *co, Setting *info)
 {
   QString k = QObject::tr("Type");
   QString d = "VLine";
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Date");
   co->getData(ChartObject::ParmDate, d);
-  info.setData(k, d);
+  info->setData(k, d);
 }
 
 void VLine::dialog (ChartObject *co)
@@ -219,6 +219,11 @@ void VLine::moving (ChartObject *co, QDateTime &x, double, int)
 void VLine::getIcon (QIcon &d)
 {
   d = QIcon(vertical_xpm);
+}
+
+int VLine::getHighLow (ChartObject *)
+{
+  return 1;
 }
 
 int VLine::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)

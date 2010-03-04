@@ -61,7 +61,7 @@ class QtstalkerApp : public QMainWindow
     void signalNewIndicator ();
     void signalCrossHair (int, int, bool);
     void signalNewExternalChartObject (QString);
-    void signalSetExternalChartObject (int);
+    void signalSetExternalChartObject ();
 
   public:
     enum MenuAction
@@ -137,7 +137,7 @@ class QtstalkerApp : public QMainWindow
     void refreshIndicator (QString);
     void cursorButtonPressed (int id);
     void coButtonPressed (int id);
-    void newExternalChartObjectDone (int);
+    void newExternalChartObjectDone ();
 
   protected:
     void closeEvent(QCloseEvent *event);

@@ -20,6 +20,7 @@
  */
 
 #include "Horizontal.h"
+#include "Utils.h"
 
 #include <QFontMetrics>
 #include <QFont>
@@ -39,8 +40,9 @@ void Horizontal::draw (PlotLine *line, QPixmap &buffer, int startX, int, int, Sc
   
   int y = scaler.convertToY(d);
 
+  Utils util;
   QString s, s2;
-  strip(d, 4, s);
+  util.strip(d, 4, s);
   line->getLabel(s2);
   s = s2 + s;
 

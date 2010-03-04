@@ -29,7 +29,7 @@ class Buy : public COPlugin
   public:
     Buy ();
     void draw (ChartObject *, QPixmap &, DateBar &, int startX, int pixelspace, int startIndex, Scaler &);
-    void getInfo (ChartObject *, Setting &);
+    void getInfo (ChartObject *, Setting *);
     void dialog (ChartObject *);
     void setSettings (ChartObject *, QSqlQuery &);
     void getSettings (ChartObject *, QString &);
@@ -37,7 +37,7 @@ class Buy : public COPlugin
     int create2 (ChartObject *, QDateTime &, double);
     void moving (ChartObject *, QDateTime &, double, int);
     void getIcon (QIcon &);
-    void getHighLow (ChartObject *);
+    int getHighLow (ChartObject *);
     int inDateRange (ChartObject *, QDateTime &, QDateTime &);
 };
 

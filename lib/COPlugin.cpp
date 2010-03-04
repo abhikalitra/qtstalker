@@ -39,12 +39,13 @@ void COPlugin::draw (ChartObject *, QPixmap &, DateBar &, int, int, int, Scaler 
 }
 
 // virtual
-void COPlugin::getHighLow (ChartObject *)
+int COPlugin::getHighLow (ChartObject *)
 {
+  return 0;
 }
 
 // virtual
-void COPlugin::getInfo (ChartObject *, Setting &)
+void COPlugin::getInfo (ChartObject *, Setting *)
 {
 }
 

@@ -19,31 +19,32 @@
  *  USA.
  */
 
-#ifndef TEXT_HPP
-#define TEXT_HPP
+#ifndef PLOT_GRID_HPP
+#define PLOT_GRID_HPP
 
-#include "COPlugin.h"
+#include <QPixmap>
+#include <QColor>
+#include <QVector>
 
-class Text : public COPlugin
+#include "Scaler.h"
+
+class PlotGrid
 {
   public:
-    Text ();
-    void draw (ChartObject *, QPixmap &, DateBar &, int, int, int, Scaler &);
-    void getInfo (ChartObject *, Setting *);
-    void dialog (ChartObject *);
-    void setSettings (ChartObject *, QSqlQuery &q);
-    void getSettings (ChartObject *, QString &);
-    void create (ChartObject *);
-    int create2 (ChartObject *, QDateTime &, double);
-    void moving (ChartObject *, QDateTime &, double, int);
-    void getIcon (QIcon &);
-    int getHighLow (ChartObject *);
-    int inDateRange (ChartObject *, QDateTime &, QDateTime &);
+    PlotGrid ();
+    void draw (QPixmap &, int startX, int startIndex, int pixelspace, Scaler &);
+    void setGridFlag (int);
+    void setXGrid (QVector<int> &);
+    void setGridColor (QColor &);
+    void drawXGrid (QPixmap &, int startX, int startIndex, int pixelspace);
+    void drawYGrid (QPixmap &, Scaler &, int startX);
+
+  private:
+    QColor gridColor;
+    int gridFlag;
+    QVector<int> xGrid;
 };
 
-extern "C"
-{
-  COPlugin * createCOPlugin ();
-}
-
 #endif
+
+

@@ -20,12 +20,12 @@
  */
 
 #include "ScalePlot.h"
+#include "Utils.h"
 
 #include <QPainter>
 #include <QPen>
 #include <QPoint>
 #include <QPolygon>
-#include <math.h>
 #include <QString>
 #include <QVector>
 
@@ -145,6 +145,7 @@ void ScalePlot::drawScale ()
 
   int x = 0;
   int loop;
+  Utils util;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
     int y = scaler.convertToY(scaleArray[loop]);
@@ -152,7 +153,7 @@ void ScalePlot::drawScale ()
 
     // draw the text
     QString s;
-    strip(scaleArray[loop], 4, s);
+    util.strip(scaleArray[loop], 4, s);
     
     // abbreviate too many (>=3) trailing zeroes in large numbers on y-axes
     if (! mainFlag)
@@ -167,14 +168,14 @@ void ScalePlot::drawScale ()
       
       if (s.toDouble() >= 1000000000)
       {
-        strip(s.toDouble() / 1000000000, 4, s);
+        util.strip(s.toDouble() / 1000000000, 4, s);
 	s.append("b");
       }
       else
       {
         if (s.toDouble() >= 1000000)
         {
-          strip(s.toDouble() / 1000000, 4, s);
+          util.strip(s.toDouble() / 1000000, 4, s);
 	  s.append("m");
         }
       }
@@ -199,27 +200,6 @@ void ScalePlot::drawScale ()
   painter.drawPolygon(array, Qt::OddEvenFill);
 
   painter.end();
-}
-
-void ScalePlot::strip (double d, int p, QString &s)
-{
-  s = QString::number(d, 'f', p);
-
-  while (1)
-  {
-    if (s.indexOf('.', -1, Qt::CaseSensitive) != -1)
-    {
-      s.truncate(s.length() - 1);
-      break;
-    }
-    else
-    {
-      if (s.indexOf('0', -1, Qt::CaseSensitive) != -1)
-        s.truncate(s.length() - 1);
-      else
-        break;
-    }
-  }
 }
 
 void ScalePlot::slotScaleToScreenChanged (bool d)

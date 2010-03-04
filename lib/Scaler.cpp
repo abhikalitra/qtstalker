@@ -20,8 +20,17 @@
  */
 
 #include "Scaler.h"
-#include <math.h>
-#include <QVector>
+#include "PlotLine.h"
+#include "ChartObject.h"
+#include "PluginFactory.h"
+#include "COPlugin.h"
+
+#include <cmath>
+#include <QList>
+#include <QDateTime>
+#include <QString>
+#include <QHash>
+#include <QHashIterator>
 
 Scaler::Scaler ()
 {
@@ -219,6 +228,111 @@ bool Scaler::getLogFlag ()
 double Scaler::getLow ()
 {
   return scaleLow;
+}
+
+void Scaler::setScale (Indicator &indicator, DateBar &dateBars, int scaleToScreen, int startIndex,
+		       int width, int theight, QString &coPluginPath)
+{
+  double tscaleHigh = -99999999;
+  double tscaleLow = 99999999;
+
+  QList<PlotLine *> plotList;
+  indicator.getLines(plotList);
+  
+  int loop;
+  for (loop = 0; loop < plotList.count(); loop++)
+  {
+    PlotLine *line = plotList.at(loop);
+
+    if (line->getScaleFlag())
+      continue;
+
+    if (! scaleToScreen)
+    {
+      if (line->getHigh() > tscaleHigh)
+        tscaleHigh = line->getHigh();
+
+      if (line->getLow() < tscaleLow)
+        tscaleLow = line->getLow();
+    }
+    else
+    {
+      int start = line->count() - dateBars.count() + startIndex;
+      int end = width + start;
+      if (start < 0)
+        start = 0;
+      if (end > line->count())
+        end = line->count();
+
+      double h, l;
+      line->getHighLowRange(start, end - 1, h, l);
+      if (h > tscaleHigh)
+        tscaleHigh = h;
+      if (l < tscaleLow)
+        tscaleLow = l;
+    }
+  }
+
+  // do this anyway for scaleToScreen even if we dont use it
+  int start = startIndex;
+  int end = width + startIndex;
+  if (start < 0)
+    start = 0;
+  if (end > dateBars.count())
+    end = dateBars.count();
+  QDateTime sd;
+  dateBars.getDate(start, sd);
+  QDateTime ed;
+  dateBars.getDate(end - 1, ed);
+
+  QHash<QString, ChartObject *> coList;
+  indicator.getChartObjects(coList);
+  PluginFactory fac;
+  QHashIterator<QString, ChartObject *> it(coList);
+  while (it.hasNext())
+  {
+    it.next();
+    ChartObject *co = it.value();
+      
+    QString s;
+    co->getData(ChartObject::ParmPlugin, s);
+    COPlugin *plug = fac.getCO(coPluginPath, s);
+    
+    if (scaleToScreen)
+    {
+      if (! plug->inDateRange(co, sd, ed))
+        continue;
+    }
+      
+    if (plug->getHighLow(co))
+      continue;
+    
+    double h = co->getDouble(ChartObject::ParmHigh);
+    double l = co->getDouble(ChartObject::ParmLow);
+      
+    if (h > tscaleHigh)
+      tscaleHigh = h;
+
+    if (l < tscaleLow)
+      tscaleLow = l;
+  }
+
+  // create a little more room between chart edges and plots
+  double t = (tscaleHigh - tscaleLow) * 0.02; // get 2% of the range
+  tscaleHigh = tscaleHigh + t;
+  tscaleLow = tscaleLow - t;
+
+  // handle log scaling if toggled
+  double tlogScaleHigh = 1;
+  double tlogRange = 0;
+  if (indicator.getLog())
+  {
+    tlogScaleHigh = tscaleHigh > 0.0 ? log(tscaleHigh) : 1;
+    double tlogScaleLow = tscaleLow > 0.0 ? log(tscaleLow) : 0;
+    tlogRange = tlogScaleHigh - tlogScaleLow;
+  }
+
+  set(theight, tscaleHigh, tscaleLow, tlogScaleHigh, tlogRange, indicator.getLog());
 }
 
 

@@ -43,7 +43,6 @@ class DataWindow : public QDialog
     void setDates (DateBar &);
     void setLine (PlotLine *);
     void setOHLC (PlotLine *);
-    QString strip (double, int);
     void scrollToBottom ();
 
   private:

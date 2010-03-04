@@ -103,15 +103,15 @@ void HLine::draw (ChartObject *co, QPixmap &buffer, DateBar &, int startX, int, 
   painter.end();
 }
 
-void HLine::getInfo (ChartObject *co, Setting &info)
+void HLine::getInfo (ChartObject *co, Setting *info)
 {
   QString k = QObject::tr("Type");
   QString d = QObject::tr("HLine");
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Price");
   co->getData(ChartObject::ParmPrice, d);
-  info.setData(k, d);
+  info->setData(k, d);
 }
 
 void HLine::dialog (ChartObject *co)
@@ -257,11 +257,13 @@ void HLine::getIcon (QIcon &d)
   d = QIcon(horizontal_xpm);
 }
 
-void HLine::getHighLow (ChartObject *co)
+int HLine::getHighLow (ChartObject *co)
 {
   double price = co->getDouble(ChartObject::ParmPrice);
   co->setData(ChartObject::ParmHigh, price);
   co->setData(ChartObject::ParmLow, price);
+  
+  return 0;
 }
 
 int HLine::inDateRange (ChartObject *, QDateTime &, QDateTime &)

@@ -54,6 +54,9 @@ HEADERS += SYMBOL.h
 HEADERS += SymbolButton.h
 HEADERS += SymbolDialog.h
 HEADERS += DateBar.h
+HEADERS += PlotGrid.h
+HEADERS += PlotInfo.h
+HEADERS += Utils.h
 
 
 SOURCES += Setting.cpp
@@ -105,6 +108,9 @@ SOURCES += SYMBOL.cpp
 SOURCES += SymbolButton.cpp
 SOURCES += SymbolDialog.cpp
 SOURCES += DateBar.cpp
+SOURCES += PlotGrid.cpp
+SOURCES += PlotInfo.cpp
+SOURCES += Utils.cpp
 
 
 TARGET = qtstalker

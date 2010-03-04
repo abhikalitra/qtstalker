@@ -23,6 +23,8 @@
 #include "Config.h"
 #include "DataBase.h"
 #include "PluginFactory.h"
+#include "PlotInfo.h"
+#include "Utils.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -36,18 +38,15 @@
 #include <QImage>
 #include <QMessageBox>
 #include <QtDebug>
-#include <math.h> // only for fabs()
 #include <iostream>
-
+#include <cmath>
 
 IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
 {
   startX = 2;
   backgroundColor.setNamedColor("black");
   borderColor.setNamedColor("white");
-  gridColor.setNamedColor("#626262");
   pixelspace = 0;
-  gridFlag = TRUE;
   interval = BarData::DailyBar;
   scaleToScreen = FALSE;
   startIndex = 0;
@@ -76,8 +75,6 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   setMouseTracking(TRUE);
 
   setFocusPolicy(Qt::ClickFocus);
-
-  externalChartObjectFlag = FALSE;
 }
 
 IndicatorPlot::~IndicatorPlot ()
@@ -141,13 +138,15 @@ void IndicatorPlot::draw ()
 
   if (dateBars.count())
   {
-    setScale();
-    drawXGrid();
-    drawYGrid();
+    scaler.setScale(indicator, dateBars, scaleToScreen, startIndex, (buffer.width() / pixelspace),
+		    buffer.height(), coPluginPath);
+    grid.draw(buffer, startX, startIndex, pixelspace, scaler);
     drawLines();
     drawObjects();
     drawCrossHair();
-    drawInfo();
+
+    PlotInfo info;
+    info.drawInfo(buffer, borderColor, backgroundColor, plotFont, startX, dateBars, indicator);
   }
 
   update();
@@ -236,7 +235,10 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
         {
           mouseFlag = COSelected;
           coSelected->setData(ChartObject::ParmSelected, TRUE);
-          getCOInfo();
+          PlotInfo info;
+          Setting *mess = info.getCOInfo(coSelected, coPluginPath);
+          if (mess)
+            emit infoMessage(mess);
 	  draw();
           return;
         }
@@ -267,13 +269,6 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       break;
     case ClickWait:
     {
-      if (externalChartObjectFlag)
-      {
-	QString s;
-	coSelected->getData(ChartObject::ParmID, s);
-	emit signalNewExternalChartObjectDone(s.toInt());
-      }
-      
       PluginFactory fac;
       QString s;
       coSelected->getData(ChartObject::ParmPlugin, s);
@@ -283,7 +278,6 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 	mouseFlag = ClickWait2;
       else
       {
-	indicator.addChartObject(coSelected);
         mouseFlag = None;
         draw();
         emit statusMessage(QString());
@@ -300,13 +294,19 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       int rc = plug->create3(coSelected, x1, y1);
       if (! rc)
       {
-	indicator.addChartObject(coSelected);
         mouseFlag = None;
         draw();
         emit statusMessage(QString());
         setCursor(QCursor(Qt::ArrowCursor));
       }
       break;
+    }
+    case NewObjectWait:
+    {
+      mouseFlag = ClickWait;
+      emit signalNewExternalChartObjectDone();
+      slotNewChartObject(newChartObject);
+      mousePressEvent(event); // recursive call to simulate 1 click instead of 2
     }
     default:
       break;
@@ -347,10 +347,19 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
       break;
     }
     default:
+    {
       // update the data panel with new data
       if (infoFlag)
-        getInfo(event->x(), event->y());
+      {
+        PlotInfo info;
+        QPoint p(event->x(), event->y());
+        int index = convertXToDataIndex(event->x());
+        Setting *mess = info.getInfo(p, indicator, index, dateBars, coPluginPath);
+        if (mess)
+          emit infoMessage(mess);
+      }
       break;
+    }
   }
 }
 
@@ -361,6 +370,11 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
 
   switch (mouseFlag)
   {
+    case ClickWait:
+    case Moving:
+    case ClickWait2:
+    case NewObjectWait:
+      break;
     case COSelected:
       if (coSelected)
         slotObjectDialog();
@@ -418,88 +432,6 @@ void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
   }
 }
 
-void IndicatorPlot::getInfo (int x, int y)
-{
-  Setting tr;
-  PluginFactory fac;
-
-  // determine if we are over a chart object, if so we display parms in the data panel
-  QHash<QString, ChartObject *> coList;
-  indicator.getChartObjects(coList);
-  QHashIterator<QString, ChartObject *> it(coList);
-  while (it.hasNext())
-  {
-    it.next();
-    ChartObject *co = it.value();
-    QPoint p(x, y);
-    if (co->isSelected(p))
-    {
-      QString s;
-      co->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(coPluginPath, s);
-      plug->getInfo(co, tr);
-      if (tr.count())
-      {
-        Setting *r = new Setting;
-        tr.copy(r);
-        emit infoMessage(r);
-        return;
-      }
-    }
-  }
-
-  int i = convertXToDataIndex(x);
-
-  QString s, k;
-  dateBars.getDateString(i, s);
-  k = "D";
-  tr.setData(k, s);
-  dateBars.getTimeString(i, s);
-  k = "T";
-  tr.setData(k, s);
-  
-  QList<PlotLine *> plotList;
-  indicator.getLines(plotList);
-
-  int loop;
-  for (loop = 0; loop < plotList.count(); loop++)
-  {
-    PlotLine *line = plotList.at(loop);
-    line->getPlugin(s);
-
-    if (s == "Horizontal")
-      continue;
-      
-    int li = line->count() - dateBars.count() + i;
-    if (li > -1 && li < line->count())
-      line->getInfo(li, tr);
-  }
-
-  if (tr.count())
-  {
-    Setting *r = new Setting;
-    tr.copy(r);
-    emit infoMessage(r);
-  }
-}
-
-void IndicatorPlot::getCOInfo ()
-{
-  Setting tr;
-  PluginFactory fac;
-  QString s;
-  coSelected->getData(ChartObject::ParmPlugin, s);
-  COPlugin *plug = fac.getCO(coPluginPath, s);
-  plug->getInfo(coSelected, tr);
-
-  if (tr.count())
-  {
-    Setting *r = new Setting;
-    tr.copy(r);
-    emit infoMessage(r);
-  }
-}
-
 void IndicatorPlot::keyPressEvent (QKeyEvent *key)
 {
   // process for plot keyevents
@@ -535,7 +467,7 @@ void IndicatorPlot::setBorderColor (QColor &d)
 
 void IndicatorPlot::setGridColor (QColor &d)
 {
-  gridColor = d;
+  grid.setGridColor(d);
 }
 
 void IndicatorPlot::setPlotFont (QFont &d)
@@ -545,7 +477,7 @@ void IndicatorPlot::setPlotFont (QFont &d)
 
 void IndicatorPlot::setGridFlag (bool d)
 {
-  gridFlag = d;
+  grid.setGridFlag(d);
 }
 
 void IndicatorPlot::setMenuFlag (bool d)
@@ -565,104 +497,7 @@ void IndicatorPlot::setIndex (int d)
 
 void IndicatorPlot::setXGrid (QVector<int> &d)
 {
-  xGrid = d;
-}
-
-void IndicatorPlot::drawXGrid ()
-{
-  if (gridFlag == FALSE)
-    return;
-
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setPen(QPen(gridColor, 1, Qt::DotLine));
-
-  int loop;
-  for (loop = 0; loop < (int) xGrid.size(); loop++)
-  {
-    if (xGrid[loop] >= startIndex)
-    {
-      int x = startX + (xGrid[loop] * pixelspace) - (startIndex * pixelspace);
-      painter.drawLine (x, 0, x, buffer.height());
-    }
-  }
-
-  painter.end();
-}
-
-void IndicatorPlot::drawYGrid ()
-{
-  if (! gridFlag)
-    return;
-
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setPen(QPen(gridColor, 1, Qt::DotLine));
-
-  QVector<double> scaleArray;
-  scaler.getScaleArray(scaleArray);
-
-  int loop;
-  for (loop = 0; loop < (int) scaleArray.size(); loop++)
-  {
-    int y = scaler.convertToY(scaleArray[loop]);
-    painter.drawLine (startX, y, buffer.width(), y);
-  }
-
-  painter.end();
-}
-
-// plot the indicator values at the top of the screen
-void IndicatorPlot::drawInfo ()
-{
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setPen(borderColor);
-  painter.setFont(plotFont);
-  painter.setBackgroundMode(Qt::OpaqueMode);
-  painter.setBackground(QBrush(backgroundColor));
-
-  QFontMetrics fm(plotFont);
-  int pos = startX;
-
-  QString s;
-  dateBars.getDateString(dateBars.count() - 1, s);
-  s.append(" ");
-  painter.drawText(pos, 10, s);
-  pos = pos + fm.width(s);
-
-  QList<PlotLine *> plotList;
-  indicator.getLines(plotList);
-  
-  int loop;
-  for (loop = 0; loop < plotList.count(); loop++)
-  {
-    PlotLine *line = plotList.at(loop);
-      
-    if (! line->count())
-      continue;
-      
-    QString ts;
-    line->getPlugin(ts);
-    if (ts == "Horizontal")
-      continue;
-      
-    QColor c;
-    double d = line->getData(line->count() - 1, c);
-	
-    line->getLabel(s);
-    s.append("=");
-    QString str;
-    strip(d, 4, str);
-    s.append(str);
-    s.append(" ");
-
-    painter.setPen(c);
-    painter.drawText(pos, 10, s);
-    pos = pos + fm.width(s);
-  }
-
-  painter.end();
+  grid.setXGrid(d);
 }
 
 /******************************************************************/
@@ -735,137 +570,11 @@ void IndicatorPlot::updateStatusBar (int x, int y)
   QString s;
   dateBars.getDateTimeString(i, s);
   s.append(" ");
+  Utils util;
   QString str;
-  strip(scaler.convertToVal(y), 4, str);
+  util.strip(scaler.convertToVal(y), 4, str);
   s.append(str);
   emit statusMessage(s);
-}
-
-void IndicatorPlot::setScale ()
-{
-  double scaleHigh = -99999999;
-  double scaleLow = 99999999;
-
-  QList<PlotLine *> plotList;
-  indicator.getLines(plotList);
-  
-  int loop;
-  for (loop = 0; loop < plotList.count(); loop++)
-  {
-    PlotLine *line = plotList.at(loop);
-
-    if (line->getScaleFlag())
-      continue;
-
-    if (! scaleToScreen)
-    {
-      if (line->getHigh() > scaleHigh)
-        scaleHigh = line->getHigh();
-
-      if (line->getLow() < scaleLow)
-        scaleLow = line->getLow();
-    }
-    else
-    {
-      int loop2 = line->count() - dateBars.count() + startIndex;
-      int end = (buffer.width() / pixelspace) + loop2;
-      if (loop2 < 0)
-        loop2 = 0;
-      if (end > line->count())
-        end = line->count();
-
-      double h, l;
-      line->getHighLowRange(loop2, end - 1, h, l);
-      if (h > scaleHigh)
-        scaleHigh = h;
-      if (l < scaleLow)
-        scaleLow = l;
-    }
-  }
-
-  if (! scaleToScreen)
-  {
-    QHash<QString, ChartObject *> coList;
-    indicator.getChartObjects(coList);
-    PluginFactory fac;
-    QHashIterator<QString, ChartObject *> it(coList);
-    while (it.hasNext())
-    {
-      it.next();
-      ChartObject *co = it.value();
-      
-      QString s;
-      co->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(coPluginPath, s);
-      plug->getHighLow(co);
-      
-      double h = co->getDouble(ChartObject::ParmHigh);
-      double l = co->getDouble(ChartObject::ParmLow);
-      
-      if (h > scaleHigh)
-        scaleHigh = h;
-
-      if (l < scaleLow)
-        scaleLow = l;
-    }
-  }
-  else
-  {
-    int start = startIndex;
-    int end = (buffer.width() / pixelspace) + startIndex;
-    if (start < 0)
-      start = 0;
-    if (end > dateBars.count())
-      end = dateBars.count();
-    
-    QDateTime sd;
-    dateBars.getDate(start, sd);
-    QDateTime ed;
-    dateBars.getDate(end - 1, ed);
-
-    QHash<QString, ChartObject *> coList;
-    indicator.getChartObjects(coList);
-    PluginFactory fac;
-    QHashIterator<QString, ChartObject *> it(coList);
-    while (it.hasNext())
-    {
-      it.next();
-      ChartObject *co = it.value();
- 
-      QString s;
-      co->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(coPluginPath, s);
-      if (plug->inDateRange(co, sd, ed))
-      {
-	plug->getHighLow(co);
-        double h = co->getDouble(ChartObject::ParmHigh);
-        double l = co->getDouble(ChartObject::ParmLow);
-      
-        if (h > scaleHigh)
-          scaleHigh = h;
-
-        if (l < scaleLow)
-          scaleLow = l;
-      }
-    }
-  }
-
-  // create a little more room between chart edges and plots
-  double t = (scaleHigh - scaleLow) * 0.02; // get 2% of the range
-  scaleHigh = scaleHigh + t;
-  scaleLow = scaleLow - t;
-
-  // handle log scaling if toggled
-  double logScaleHigh = 1;
-  double logRange = 0;
-  if (indicator.getLog())
-  {
-    logScaleHigh = scaleHigh > 0.0 ? log(scaleHigh) : 1;
-    double logScaleLow = scaleLow > 0.0 ? log(scaleLow) : 0;
-    logRange = logScaleHigh - logScaleLow;
-  }
-
-  scaler.set(buffer.height(), scaleHigh, scaleLow, logScaleHigh, logRange, indicator.getLog());
 }
 
 int IndicatorPlot::getXFromDate (QDateTime &d)
@@ -877,19 +586,6 @@ int IndicatorPlot::getXFromDate (QDateTime &d)
   int x = startX + (x2 * pixelspace) - (startIndex * pixelspace);
 
   return x;
-}
-
-void IndicatorPlot::strip (double d, int p, QString &s)
-{
-  if (fabs(d) < 1)
-    s = QString::number(d, 'f', p);
-  else
-  {
-    if (fabs(d) > 1000)
-      s = QString::number(d, 'f', 0);
-    else
-      s = QString::number(d, 'f', 2);
-  }
 }
 
 void IndicatorPlot::showPopupMenu ()
@@ -934,7 +630,7 @@ void IndicatorPlot::slotSliderChanged (int v)
 
 void IndicatorPlot::slotGridChanged (bool d)
 {
-  setGridFlag(d);
+  grid.setGridFlag(d);
   draw();
 }
 
@@ -977,10 +673,6 @@ Scaler & IndicatorPlot::getScaler ()
 
 void IndicatorPlot::drawRubberBand (QRect &r)
 {
-  // remove the old band by refreshing with pixmap
-//  QPainter painter(this);
-//  painter.drawPixmap(0, 0, buffer);
-
   // draw rubber band on widget
   QPainter painter;
   painter.begin(&buffer);
@@ -1012,23 +704,21 @@ void IndicatorPlot::getDateBar (DateBar &d)
 //******************** chart object functions *****************************
 //*************************************************************************
 
-void IndicatorPlot::setExternalChartObjectFlag (int id)
+void IndicatorPlot::setExternalChartObjectFlag ()
 {
-  externalChartObjectFlag = FALSE;
-  QString s;  
-  coSelected->getData(ChartObject::ParmID, s);
-  if (s.toInt() != id)
+  if (mouseFlag == NewObjectWait)
   {
     mouseFlag = None;
-    delete coSelected;
     setCursor(QCursor(Qt::ArrowCursor));
   }
 }
 
 void IndicatorPlot::newExternalChartObject (QString d)
 {
-  externalChartObjectFlag = TRUE;
-  slotNewChartObject(d);
+  mouseFlag = NewObjectWait;
+  newChartObject = d;
+  setCursor(QCursor(Qt::PointingHandCursor));
+  statusMessage(QString(tr("Select point to place object...")));
 }
 
 void IndicatorPlot::slotNewChartObject (QString selection)
@@ -1054,7 +744,9 @@ void IndicatorPlot::slotNewChartObject (QString selection)
   COPlugin *plug = fac.getCO(coPluginPath, selection);
   
   plug->create(coSelected);
-
+  
+  indicator.addChartObject(coSelected);
+  
   mouseFlag = ClickWait;
 
   setCursor(QCursor(Qt::PointingHandCursor));
@@ -1062,9 +754,9 @@ void IndicatorPlot::slotNewChartObject (QString selection)
 
 void IndicatorPlot::drawObjects ()
 {
+  PluginFactory fac;
   QHash<QString, ChartObject *> coList;
   indicator.getChartObjects(coList);
-  PluginFactory fac;
   QHashIterator<QString, ChartObject *> it(coList);
   while (it.hasNext())
   {

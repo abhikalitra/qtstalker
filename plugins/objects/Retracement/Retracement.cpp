@@ -26,6 +26,7 @@
 #include "fib.xpm"
 
 #include <QObject>
+#include <QDebug>
 
 Retracement::Retracement ()
 {
@@ -170,43 +171,43 @@ void Retracement::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int sta
   painter.end();
 }
 
-void Retracement::getInfo (ChartObject *co, Setting &info)
+void Retracement::getInfo (ChartObject *co, Setting *info)
 {
   QString k = QObject::tr("Type");
   QString d = QObject::tr("Retracement");
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("High Point");
   co->getData(ChartObject::ParmHigh, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Low Point");
   co->getData(ChartObject::ParmLow, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Line 1");
   co->getData(ChartObject::ParmLine1, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Line 2");
   co->getData(ChartObject::ParmLine2, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Line 3");
   co->getData(ChartObject::ParmLine3, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Line 4");
   co->getData(ChartObject::ParmLine4, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Line 5");
   co->getData(ChartObject::ParmLine5, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Line 6");
   co->getData(ChartObject::ParmLine6, d);
-  info.setData(k, d);
+  info->setData(k, d);
 }
 
 void Retracement::dialog (ChartObject *co)
@@ -455,6 +456,7 @@ int Retracement::create2 (ChartObject *co, QDateTime &x, double y)
 {
   co->setData(ChartObject::ParmDate, x);
   co->setData(ChartObject::ParmPrice, y);
+  co->setData(ChartObject::ParmHigh, y);
   
   QString s = QObject::tr("Select Retracement low point...");
   co->message(s);

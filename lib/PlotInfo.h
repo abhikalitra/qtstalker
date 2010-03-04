@@ -19,31 +19,28 @@
  *  USA.
  */
 
-#ifndef TEXT_HPP
-#define TEXT_HPP
+#ifndef PLOT_INFO_HPP
+#define PLOT_INFO_HPP
 
-#include "COPlugin.h"
+#include <QString>
+#include <QPixmap>
+#include <QColor>
+#include <QPoint>
+#include <QFont>
 
-class Text : public COPlugin
+#include "Scaler.h"
+#include "DateBar.h"
+#include "Indicator.h"
+
+class PlotInfo
 {
   public:
-    Text ();
-    void draw (ChartObject *, QPixmap &, DateBar &, int, int, int, Scaler &);
-    void getInfo (ChartObject *, Setting *);
-    void dialog (ChartObject *);
-    void setSettings (ChartObject *, QSqlQuery &q);
-    void getSettings (ChartObject *, QString &);
-    void create (ChartObject *);
-    int create2 (ChartObject *, QDateTime &, double);
-    void moving (ChartObject *, QDateTime &, double, int);
-    void getIcon (QIcon &);
-    int getHighLow (ChartObject *);
-    int inDateRange (ChartObject *, QDateTime &, QDateTime &);
+    PlotInfo ();
+    Setting * getInfo (QPoint &, Indicator &, int, DateBar &, QString &);
+    Setting * getCOInfo (ChartObject *, QString &);
+    void drawInfo (QPixmap &, QColor &, QColor &, QFont &, int, DateBar &, Indicator &);
 };
 
-extern "C"
-{
-  COPlugin * createCOPlugin ();
-}
-
 #endif
+
+

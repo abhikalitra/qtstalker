@@ -29,7 +29,7 @@ class VLine : public COPlugin
   public:
     VLine ();
     void draw (ChartObject *, QPixmap &, DateBar &, int, int, int, Scaler &);
-    void getInfo (ChartObject *, Setting &);
+    void getInfo (ChartObject *, Setting *);
     void dialog (ChartObject *);
     void setSettings (ChartObject *, QSqlQuery &q);
     void getSettings (ChartObject *, QString &);
@@ -37,6 +37,7 @@ class VLine : public COPlugin
     int create2 (ChartObject *, QDateTime &, double);
     void moving (ChartObject *, QDateTime &, double, int);
     void getIcon (QIcon &);
+    int getHighLow (ChartObject *);
     int inDateRange (ChartObject *, QDateTime &, QDateTime &);
 };
 

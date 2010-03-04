@@ -21,8 +21,6 @@
 
 #include "PlotPlugin.h"
 
-#include <math.h> // only for fabs()
-
 PlotPlugin::PlotPlugin ()
 {
 }
@@ -36,17 +34,4 @@ void PlotPlugin::draw (PlotLine *, QPixmap &, int, int, int, Scaler &)
 {
 }
 
-
-void PlotPlugin::strip (double d, int p, QString &s)
-{
-  if (fabs(d) < 1)
-    s = QString::number(d, 'f', p);
-  else
-  {
-    if (fabs(d) > 1000)
-      s = QString::number(d, 'f', 0);
-    else
-      s = QString::number(d, 'f', 2);
-  }
-}
 

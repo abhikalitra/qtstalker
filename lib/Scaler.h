@@ -25,6 +25,9 @@
 #include <QStringList>
 #include <QVector>
 
+#include "Indicator.h"
+#include "DateBar.h"
+
 class Scaler
 {
   public:
@@ -39,6 +42,7 @@ class Scaler
     bool getDateFlag ();
     bool getLogFlag ();
     double getLow ();
+    void setScale (Indicator &, DateBar &, int, int, int, int, QString &);
 
   protected:
     int height;

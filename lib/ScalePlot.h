@@ -42,7 +42,6 @@ class ScalePlot : public QWidget
     void setScaleWidth (int);
     void setLogScale (bool);
     void setScaleToScreen (bool);
-    void strip (double, int, QString &);
     void setScaler (Scaler &);
 
   public slots:

@@ -33,7 +33,7 @@
 #include "MATH1.h"
 
 #include <QtDebug>
-#include <math.h>
+#include <cmath>
 
 
 THERM::THERM ()

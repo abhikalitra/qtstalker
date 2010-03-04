@@ -21,6 +21,7 @@
 
 #include "DataWindow.h"
 #include "IndicatorPlot.h"
+#include "Utils.h"
 
 #include <QLayout>
 #include <QVBoxLayout>
@@ -107,6 +108,7 @@ void DataWindow::setDates (DateBar &dates)
 
 void DataWindow::setLine (PlotLine *line)
 {
+  Utils util;
   QString s;
   line->getLabel(s);
 
@@ -118,7 +120,7 @@ void DataWindow::setLine (PlotLine *line)
   int loop;
   for (loop = 0; loop < line->count(); loop++, dataLoop++)
   {
-    s = strip(line->getData(loop), 4);
+    util.strip(line->getData(loop), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
     table->setItem(dataLoop, table->columnCount() - 1, item);
   }
@@ -126,6 +128,7 @@ void DataWindow::setLine (PlotLine *line)
 
 void DataWindow::setOHLC (PlotLine *line)
 {
+  Utils util;
   QStringList l;
   l << tr("Open") << tr("High") << tr("Low") << tr("Close");
   
@@ -142,47 +145,25 @@ void DataWindow::setOHLC (PlotLine *line)
     PlotLineBar bar;
     line->getData(loop, bar);
     
-    QString s = strip(bar.getData(0), 4);
+    QString s;
+    util.strip(bar.getData(0), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 4, item);
 
-    s = strip(bar.getData(1), 4);
+    util.strip(bar.getData(1), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 3, item);
 
-    s = strip(bar.getData(2), 4);
+    util.strip(bar.getData(2), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 2, item);
 
-    s = strip(bar.getData(3), 4);
+    util.strip(bar.getData(3), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 1, item);
   }
   
   ohlcFlag = TRUE;
-}
-
-QString DataWindow::strip (double d, int p)
-{
-  QString s = QString::number(d, 'f', p);
-
-  while (1)
-  {
-    if (s.indexOf('.', -1, Qt::CaseSensitive) != -1)
-    {
-      s.truncate(s.length() - 1);
-      break;
-    }
-    else
-    {
-      if (s.indexOf('0', -1, Qt::CaseSensitive) != -1)
-        s.truncate(s.length() - 1);
-      else
-        break;
-    }
-  }
-
-  return s;
 }
 
 void DataWindow::scrollToBottom ()

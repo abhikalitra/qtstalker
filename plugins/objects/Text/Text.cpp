@@ -90,15 +90,15 @@ void Text::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, in
   painter.end();
 }
 
-void Text::getInfo (ChartObject *co, Setting &info)
+void Text::getInfo (ChartObject *co, Setting *info)
 {
   QString k = QObject::tr("Type");
   QString d = QObject::tr("Text");
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Label");
   co->getData(ChartObject::ParmLabel, d);
-  info.setData(k, d);
+  info->setData(k, d);
 }
 
 void Text::dialog (ChartObject *co)
@@ -271,11 +271,13 @@ void Text::getIcon (QIcon &d)
   d = QIcon(text_xpm);
 }
 
-void Text::getHighLow (ChartObject *co)
+int Text::getHighLow (ChartObject *co)
 {
   double price = co->getDouble(ChartObject::ParmPrice);
   co->setData(ChartObject::ParmHigh, price);
   co->setData(ChartObject::ParmLow, price);
+  
+  return 0;
 }
 
 int Text::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)

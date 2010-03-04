@@ -289,10 +289,10 @@ TestSettings::TestSettings ()
 
 TestSettings::~TestSettings ()
 {
-  enterLongIndicator.deleteAll();
-  exitLongIndicator.deleteAll();
-  enterShortIndicator.deleteAll();
-  exitShortIndicator.deleteAll();
+  enterLongIndicator.clear();
+  exitLongIndicator.clear();
+  enterShortIndicator.clear();
+  exitShortIndicator.clear();
 }
 
 void TestSettings::scriptButtonPressed ()
@@ -333,7 +333,7 @@ void TestSettings::scriptCheckChanged (bool d)
 
 void TestSettings::enterLongComboChanged ()
 {
-  enterLongIndicator.deleteAll();
+  enterLongIndicator.clear();
   
   QString s = enterLongCombo->currentText();
   if (s.isEmpty())
@@ -354,7 +354,7 @@ void TestSettings::enterLongComboChanged ()
 
 void TestSettings::exitLongComboChanged ()
 {
-  exitLongIndicator.deleteAll();
+  exitLongIndicator.clear();
 
   QString s = exitLongCombo->currentText();
   if (s.isEmpty())
@@ -375,7 +375,7 @@ void TestSettings::exitLongComboChanged ()
 
 void TestSettings::enterShortComboChanged ()
 {
-  enterShortIndicator.deleteAll();
+  enterShortIndicator.clear();
 
   QString s = enterShortCombo->currentText();
   if (s.isEmpty())
@@ -396,7 +396,7 @@ void TestSettings::enterShortComboChanged ()
 
 void TestSettings::exitShortComboChanged ()
 {
-  exitShortIndicator.deleteAll();
+  exitShortIndicator.clear();
 
   QString s = exitShortCombo->currentText();
   if (s.isEmpty())

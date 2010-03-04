@@ -26,7 +26,6 @@
 #include <QStringList>
 #include <QDateTime>
 #include <QVBoxLayout>
-#include <math.h> // only for fabs()
 #include <QtDebug>
 #include <QToolButton>
 #include <QApplication>
@@ -960,8 +959,8 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(this, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
 
   connect(this, SIGNAL(signalNewExternalChartObject(QString)), indy, SLOT(newExternalChartObject(QString)));
-  connect(indy, SIGNAL(signalNewExternalChartObjectDone(int)), this, SLOT(newExternalChartObjectDone(int)));
-  connect(this, SIGNAL(signalSetExternalChartObject(int)), indy, SLOT(setExternalChartObjectFlag(int)));
+  connect(indy, SIGNAL(signalNewExternalChartObjectDone()), this, SLOT(newExternalChartObjectDone()));
+  connect(this, SIGNAL(signalSetExternalChartObject()), indy, SLOT(setExternalChartObjectFlag()));
 }
 
 void QtstalkerApp::slotChartUpdated ()
@@ -1033,6 +1032,24 @@ void QtstalkerApp::slotHideNav (bool d)
 
 void QtstalkerApp::slotUpdateInfo (Setting *r)
 {
+  QStringList l;
+  r->getKeyList(l);
+  l.sort();
+  
+  QString str;
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    QString s;
+    r->getData(l[loop], s);
+    str.append(l[loop] + " " + s + "\n");
+  }
+
+  delete r;
+
+  infoLabel->setText(str);
+
+/*  
   // list bar values first
   QStringList l;
   l.append("D");
@@ -1073,6 +1090,7 @@ void QtstalkerApp::slotUpdateInfo (Setting *r)
   delete r;
 
   infoLabel->setText(str);
+*/
 }
 
 void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool)
@@ -1219,9 +1237,9 @@ void QtstalkerApp::coButtonPressed (int id)
 // this slot is connected to a plot that is triggered when mouse has clicked the plot
 // during external chart object creation
 // we then turn off all the plots waiting for a click from the mouse
-void QtstalkerApp::newExternalChartObjectDone (int id)
+void QtstalkerApp::newExternalChartObjectDone ()
 {
-  emit signalSetExternalChartObject(id);
+  emit signalSetExternalChartObject();
 }
 
 // ******************************************************************************

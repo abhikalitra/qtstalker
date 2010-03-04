@@ -40,8 +40,8 @@ class COPlugin
     virtual ~COPlugin ();
     virtual void draw (ChartObject *, QPixmap &, DateBar &, int startX, int pixelspace,
 		       int startIndex, Scaler &);
-    virtual void getHighLow (ChartObject *);
-    virtual void getInfo (ChartObject *, Setting &);
+    virtual int getHighLow (ChartObject *);
+    virtual void getInfo (ChartObject *, Setting *);
     virtual void dialog (ChartObject *);
     virtual void setSettings (ChartObject *, QSqlQuery &q);
     virtual void getSettings (ChartObject *, QString &);

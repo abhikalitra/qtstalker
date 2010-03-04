@@ -20,6 +20,7 @@
  */
 
 #include "PlotLine.h"
+#include "Utils.h"
 
 PlotLine::PlotLine ()
 {
@@ -187,33 +188,37 @@ int PlotLine::getOffset ()
   return offset;
 }
 
-void PlotLine::getInfo (int i, Setting &set)
+void PlotLine::getInfo (int i, Setting *set)
 {
+  Utils util;
+  
   if (plugin == "OHLC" || plugin == "Candle")
   {
     PlotLineBar bar;
     getData(i, bar);
     
     QString k = "O";
-    QString d = QString::number(bar.getData(0));
-    set.setData(k, d);
+    QString d;
+    util.strip(bar.getData(0), 4, d);
+    set->setData(k, d);
 	
     k = "H";
-    d = QString::number(bar.getData(1));
-    set.setData(k, d);
+    util.strip(bar.getData(1), 4, d);
+    set->setData(k, d);
 	
     k = "L";
-    d = QString::number(bar.getData(2));
-    set.setData(k, d);
+    util.strip(bar.getData(2), 4, d);
+    set->setData(k, d);
 	
     k = "C";
-    d = QString::number(bar.getData(3));
-    set.setData(k, d);
+    util.strip(bar.getData(3), 4, d);
+    set->setData(k, d);
   }
   else
   {
-    QString d = QString::number(getData(i));
-    set.setData(label, d);
+    QString d;
+    util.strip(getData(i), 4, d);
+    set->setData(label, d);
   }
 }
 

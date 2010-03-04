@@ -19,31 +19,34 @@
  *  USA.
  */
 
-#ifndef TEXT_HPP
-#define TEXT_HPP
+#include "Utils.h"
 
-#include "COPlugin.h"
+#include <QtDebug>
+#include <cmath>
 
-class Text : public COPlugin
+Utils::Utils ()
 {
-  public:
-    Text ();
-    void draw (ChartObject *, QPixmap &, DateBar &, int, int, int, Scaler &);
-    void getInfo (ChartObject *, Setting *);
-    void dialog (ChartObject *);
-    void setSettings (ChartObject *, QSqlQuery &q);
-    void getSettings (ChartObject *, QString &);
-    void create (ChartObject *);
-    int create2 (ChartObject *, QDateTime &, double);
-    void moving (ChartObject *, QDateTime &, double, int);
-    void getIcon (QIcon &);
-    int getHighLow (ChartObject *);
-    int inDateRange (ChartObject *, QDateTime &, QDateTime &);
-};
-
-extern "C"
-{
-  COPlugin * createCOPlugin ();
 }
 
-#endif
+void Utils::strip (double d, int p, QString &s)
+{
+  int y = d;
+  int z = (d - y) * 100;
+  if (z == 0)
+  {
+    // no decimal
+    s = QString::number(d, 'f', 0);
+    return;
+  }
+
+  if (fabs(d) < 1)
+    s = QString::number(d, 'f', p);
+  else
+  {
+    if (fabs(d) > 1000)
+      s = QString::number(d, 'f', 0);
+    else
+      s = QString::number(d, 'f', 2);
+  }
+}
+

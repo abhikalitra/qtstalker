@@ -23,7 +23,7 @@
 #include "ta_libc.h"
 
 #include <QtDebug>
-#include <math.h>
+#include <cmath>
 
 
 VFI::VFI ()

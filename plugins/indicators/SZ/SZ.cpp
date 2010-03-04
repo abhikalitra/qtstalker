@@ -27,7 +27,7 @@
 #include "ta_libc.h"
 
 #include <QtDebug>
-#include <math.h>
+#include <cmath>
 
 
 SZ::SZ ()

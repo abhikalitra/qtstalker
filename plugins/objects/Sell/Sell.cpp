@@ -86,19 +86,19 @@ void Sell::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, in
   painter.end();
 }
 
-void Sell::getInfo (ChartObject *co, Setting &info)
+void Sell::getInfo (ChartObject *co, Setting *info)
 {
   QString k = QObject::tr("Type");
   QString d = QObject::tr("Sell");
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Date");
   co->getData(ChartObject::ParmDate, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Price");
   co->getData(ChartObject::ParmPrice, d);
-  info.setData(k, d);
+  info->setData(k, d);
 }
 
 
@@ -243,11 +243,13 @@ void Sell::getIcon (QIcon &d)
   d = QIcon(sellarrow_xpm);
 }
 
-void Sell::getHighLow (ChartObject *co)
+int Sell::getHighLow (ChartObject *co)
 {
   double price = co->getDouble(ChartObject::ParmPrice);
   co->setData(ChartObject::ParmHigh, price);
   co->setData(ChartObject::ParmLow, price);
+  
+  return 0;
 }
 
 int Sell::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)

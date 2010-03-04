@@ -130,27 +130,27 @@ void TLine::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, i
   painter.end();
 }
 
-void TLine::getInfo (ChartObject *co, Setting &info)
+void TLine::getInfo (ChartObject *co, Setting *info)
 {
   QString k = QObject::tr("Type");
   QString d = "TLine";
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Start Date");
   co->getData(ChartObject::ParmDate, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Start Price");
   co->getData(ChartObject::ParmPrice, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("End Date");
   co->getData(ChartObject::ParmDate2, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("End Price");
   co->getData(ChartObject::ParmPrice2, d);
-  info.setData(k, d);
+  info->setData(k, d);
 }
 
 void TLine::dialog (ChartObject *co)
@@ -217,28 +217,6 @@ void TLine::dialog (ChartObject *co)
   co->setData(ChartObject::ParmSave, TRUE);
   
   delete dialog;
-}
-
-void TLine::getHighLow (ChartObject *co)
-{
-  double h = -99999999.0;
-  double l = 99999999.0;
-  
-  double price = co->getDouble(ChartObject::ParmPrice);
-  double price2 = co->getDouble(ChartObject::ParmPrice2);
-
-  if (price > h)
-    h = price;
-  if (price < l)
-    l = price;
-
-  if (price2 > h)
-    h = price2;
-  if (price2 < l)
-    l = price2;
-  
-  co->setData(ChartObject::ParmPrice, price);
-  co->setData(ChartObject::ParmPrice2, price2);
 }
 
 void TLine::setSettings (ChartObject *co, QSqlQuery &q)
@@ -412,6 +390,30 @@ void TLine::moving (ChartObject *co, QDateTime &x, double y, int moveFlag)
 void TLine::getIcon (QIcon &d)
 {
   d = QIcon(trend_xpm);
+}
+
+int TLine::getHighLow (ChartObject *co)
+{
+  double h = -99999999.0;
+  double l = 99999999.0;
+  
+  double price = co->getDouble(ChartObject::ParmPrice);
+  double price2 = co->getDouble(ChartObject::ParmPrice2);
+
+  if (price > h)
+    h = price;
+  if (price < l)
+    l = price;
+
+  if (price2 > h)
+    h = price2;
+  if (price2 < l)
+    l = price2;
+  
+  co->setData(ChartObject::ParmHigh, h);
+  co->setData(ChartObject::ParmLow, l);
+  
+  return 0;
 }
 
 int TLine::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)

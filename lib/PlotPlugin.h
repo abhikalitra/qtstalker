@@ -36,7 +36,6 @@ class PlotPlugin
     virtual ~PlotPlugin ();
     // ints are startX, pixelspace, pos
     virtual void draw (PlotLine *, QPixmap &, int, int, int, Scaler &);
-    void strip (double, int, QString &);
 };
 
 #endif

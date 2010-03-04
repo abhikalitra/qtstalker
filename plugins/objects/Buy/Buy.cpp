@@ -87,19 +87,19 @@ void Buy::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, int
   painter.end();
 }
 
-void Buy::getInfo (ChartObject *co, Setting &info)
+void Buy::getInfo (ChartObject *co, Setting *info)
 {
   QString k = QObject::tr("Type");
   QString d = QObject::tr("Buy");
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Date");
   co->getData(ChartObject::ParmDate, d);
-  info.setData(k, d);
+  info->setData(k, d);
 
   k = QObject::tr("Price");
   co->getData(ChartObject::ParmPrice, d);
-  info.setData(k, d);
+  info->setData(k, d);
 }
 
 
@@ -244,11 +244,13 @@ void Buy::getIcon (QIcon &d)
   d = QIcon(buyarrow_xpm);
 }
 
-void Buy::getHighLow (ChartObject *co)
+int Buy::getHighLow (ChartObject *co)
 {
   double price = co->getDouble(ChartObject::ParmPrice);
   co->setData(ChartObject::ParmHigh, price);
   co->setData(ChartObject::ParmLow, price);
+  
+  return 0;
 }
 
 int Buy::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)
