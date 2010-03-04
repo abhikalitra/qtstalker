@@ -31,7 +31,7 @@ Sell::Sell ()
 {
 }
 
-void Sell::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, int pixelspace,
+void Sell::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, int pixelspace,
 		 int startIndex, Scaler &scaler)
 {
   QPainter painter;
@@ -39,7 +39,7 @@ void Sell::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, in
 
   QDateTime date;
   co->getDate(ChartObject::ParmDate, date);
-  int x2 = data->getX(date);
+  int x2 = data.getX(date);
   if (x2 == -1)
     return;
 
@@ -241,6 +241,24 @@ void Sell::moving (ChartObject *co, QDateTime &x, double y, int)
 void Sell::getIcon (QIcon &d)
 {
   d = QIcon(sellarrow_xpm);
+}
+
+void Sell::getHighLow (ChartObject *co)
+{
+  double price = co->getDouble(ChartObject::ParmPrice);
+  co->setData(ChartObject::ParmHigh, price);
+  co->setData(ChartObject::ParmLow, price);
+}
+
+int Sell::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)
+{
+  int rc = FALSE;
+  QDateTime dt;
+  co->getDate(ChartObject::ParmDate, dt);
+  if (dt >= startDate && dt <= endDate)
+    rc = TRUE;
+  
+  return rc;
 }
 
 //*************************************************************

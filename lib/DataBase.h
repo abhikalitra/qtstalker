@@ -68,7 +68,7 @@ class DataBase
     void deleteChartObjects (QString &symbol);
     void deleteChartObjectsIndicator (QString &indicator);
     void deleteChartObject (QString &id);
-    void getChartObjects (QString &symbol, QString &indicator, QHash<QString, ChartObject *> &list);
+    void getChartObjects (QString &symbol, QString &indicator, Indicator &);
     void setChartObject (ChartObject *);
 
     // script functions

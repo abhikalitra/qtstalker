@@ -57,13 +57,20 @@ QtStalkerTester::QtStalkerTester ()
   // setup the databases, order is important
   TestConfig config;
   config.init(QString("0"));
-  
+
+  // get the plugin inventory
   PluginFactory fac;
   QString s;
   config.getData(TestConfig::IndicatorPluginPath, s);
   QStringList l;
   fac.getPluginList(s, l);
   config.setBaseData(TestConfig::IndicatorPluginList, l);
+  config.getData(TestConfig::PlotPluginPath, s);
+  fac.getPluginList(s, l);
+  config.setBaseData(TestConfig::PlotPluginList, l);
+  config.getData(TestConfig::COPluginPath, s);
+  fac.getPluginList(s, l);
+  config.setBaseData(TestConfig::COPluginList, l);
 
   TestDataBase tdb;
   tdb.init();
@@ -98,8 +105,8 @@ QtStalkerTester::QtStalkerTester ()
   report = new TestReport;
   tabs->addTab(report, tr("Report"));
 
-  chart = new TestChart;
-  tabs->addTab(chart, tr("Chart"));
+//  chart = new TestChart;
+//  tabs->addTab(chart, tr("Chart"));
 
   // restore app settings from previous session
   restoreSettings();
@@ -751,7 +758,7 @@ void QtStalkerTester::run ()
 
   rankings->update();
   
-  chart->update(data, trades);
+//  chart->update(data, trades);
 
   delete data;
   qDeleteAll(trades);

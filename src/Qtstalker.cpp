@@ -71,7 +71,7 @@
 
 QtstalkerApp::QtstalkerApp(QString session)
 {
-  recordList = 0;
+  barCount = 0;
   refreshTimer = 0;
   zoomPos = -1;
   setWindowIcon(QIcon(qtstalker));
@@ -625,10 +625,6 @@ void QtstalkerApp::slotQuit()
   config.setBaseData((int) Config::RecentChartsList, l);
 
   config.commit();
-
-  // delete any BarData
-  if (recordList)
-    delete recordList;
 }
 
 void QtstalkerApp::closeEvent(QCloseEvent *)
@@ -728,15 +724,17 @@ void QtstalkerApp::loadChart (QString d)
   config.setData(Config::CurrentChart, chartPath);
 
   // create and populate the quote data
-  if (recordList)
-    delete recordList;
-  recordList = new BarData;
+  BarData *recordList = new BarData;
   recordList->setSymbol(chartPath);
   recordList->setBarLength((BarData::BarLength) barButtonGroup->checkedId());
   recordList->setBarsRequested(barCount->value());
 
   QuoteDataBase qdb;
   qdb.getChart(recordList);
+  
+  recordList->getSymbol(chartSymbol);
+  recordList->getName(chartName);
+  barsLoaded = recordList->count();
 
   DataBase db;
   QStringList indicatorList;
@@ -744,21 +742,23 @@ void QtstalkerApp::loadChart (QString d)
 
   int loop;
   for (loop = 0; loop < indicatorList.count(); loop++)
-    loadIndicator(indicatorList[loop]);
+    loadIndicator(recordList, indicatorList[loop]);
+
+  setSliderStart(barsLoaded);
+  emit signalIndex(slider->value());
 
   resetZoomSettings();
-  setSliderStart();
-
   Setting set = zoomList[0];
   emit signalPixelspace(set.getInt(1));
 
-  emit signalIndex(slider->value());
   slotDrawPlots();
+  
   setWindowTitle(getWindowCaption());
+  
   slotStatusMessage(QString());
 }
 
-void QtstalkerApp::loadIndicator (QString &d)
+void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
 {
   Indicator i;
   DataBase db;
@@ -769,7 +769,6 @@ void QtstalkerApp::loadIndicator (QString &d)
   QString path;
   config.getData(Config::IndicatorPluginPath, path);
   
-  QList<PlotLine *> lines;
   PluginFactory fac;
   QString s;
   i.getIndicator(s);
@@ -778,29 +777,21 @@ void QtstalkerApp::loadIndicator (QString &d)
     return;
 
   ip->setSettings(i);
-
   if (ip->getIndicator(i, recordList))
-  {
-//    qDebug() << "Qtstalker::loadIndicator: getIndicator failed";
     return;
-  }
-
-  i.getLines(lines);
 
   Plot *plot = plotList[d];
   if (! plot)
     return;
 
   plot->setData(recordList);
-  plot->calculate();
-  plot->getIndicatorPlot()->setPlotList(lines);
+  plot->getIndicatorPlot()->setIndicator(i);
   plot->loadChartObjects();
 }
 
-void QtstalkerApp::refreshIndicator (QString d)
+void QtstalkerApp::refreshIndicator (QString)
 {
-  loadIndicator(d);
-  slotDrawPlots();
+  loadChart(chartPath);
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -808,21 +799,13 @@ QString QtstalkerApp::getWindowCaption ()
   // update the main window text
 
   QString caption = tr("Qtstalker");
+  caption.append(": " + chartSymbol);
+  if (! chartName.isEmpty())
+    caption.append(" (" + chartName + ")");
 
-  if (! recordList)
-    return caption;
-
-  QString s;
-  recordList->getSymbol(s);
-  caption.append(": " + s);
-
-  QString s2;
-  recordList->getName(s2);
-  if (! s2.isEmpty())
-    caption.append(" (" + s2 + ")");
-
+  BarData bd;
   QStringList l;
-  recordList->getBarLengthList(l);
+  bd.getBarLengthList(l);
   caption.append(" " + l[barButtonGroup->checkedId()]);
 
   return caption;
@@ -832,12 +815,8 @@ void QtstalkerApp::slotDataWindow ()
 {
   // show the datawindow dialog
 
-  if (! recordList)
-    return;
-
   DataWindow *dw = new DataWindow(this);
   dw->setWindowTitle(getWindowCaption());
-  dw->setBars(recordList);
 
   DataBase db;
   QStringList l;
@@ -866,11 +845,7 @@ void QtstalkerApp::slotNewIndicator (QString n)
 {
   // add a new indicator
   addIndicatorButton(n);
-
-  if (! recordList)
-    return;
-
-  loadIndicator(n);
+  loadChart(chartPath);
 }
 
 void QtstalkerApp::slotDeleteIndicator (QString text)
@@ -906,11 +881,7 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 {
   // enable indicator
   addIndicatorButton(name);
-
-  if (! recordList)
-    return;
-
-  loadIndicator(name);
+  loadChart(chartPath);
 }
 
 void QtstalkerApp::addIndicatorButton (QString d)
@@ -966,7 +937,12 @@ void QtstalkerApp::addIndicatorButton (QString d)
   plot->setCrosshairsStatus(config.getBool(Config::Crosshairs));
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
-  indy->setIndicator(d);
+  
+  QString s;
+  config.getData(Config::PlotPluginPath, s);
+  indy->setPlotPluginPath(s);
+  config.getData(Config::COPluginPath, s);
+  indy->setCOPluginPath(s);
 
   connect(indy, SIGNAL(signalPixelspaceChanged(int, int)), this, SLOT(slotPlotZoom(int, int)));
   connect(indy, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
@@ -992,7 +968,7 @@ void QtstalkerApp::slotChartUpdated ()
 {
   chartNav->updateList();
 
-  if (! recordList)
+  if (chartPath.isEmpty())
     return;
 
   Config config;
@@ -1135,7 +1111,7 @@ void QtstalkerApp::slotAppFont (QFont d)
 /************************ TOOLBAR FUNCTIONS ***************************/
 /**********************************************************************/
 
-void QtstalkerApp::setSliderStart ()
+void QtstalkerApp::setSliderStart (int count)
 {
   QTabWidget *tw = tabList.at(0);
   Plot *plot = plotList[tw->tabText(tw->currentIndex())];
@@ -1144,13 +1120,13 @@ void QtstalkerApp::setSliderStart ()
 
   Setting set = zoomList[0];
   int page = plot->getWidth() / set.getInt(1);
-  int max = recordList->count() - page;
+  int max = count - page;
   if (max < 0)
     max = 0;
   slider->blockSignals(TRUE);
-  slider->setRange(0, recordList->count() - 1);
+  slider->setRange(0, count - 1);
 
-  if (recordList->count() < page)
+  if (count < page)
   {
     slider->setValue(0);
     set.setData(0, 0);
@@ -1174,7 +1150,7 @@ void QtstalkerApp::ps1ButtonClicked ()
   set.setData(1, ti);
   zoomList[0] = set;
 
-  setSliderStart();
+  setSliderStart(barsLoaded);
   emit signalPixelspace(ti);
   emit signalIndex(slider->value());
   slotDrawPlots();
@@ -1194,7 +1170,7 @@ void QtstalkerApp::ps2ButtonClicked ()
   set.setData(1, ti);
   zoomList[0] = set;
 
-  setSliderStart();
+  setSliderStart(barsLoaded);
   emit signalPixelspace(ti);
   emit signalIndex(slider->value());
   slotDrawPlots();

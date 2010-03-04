@@ -53,6 +53,7 @@ HEADERS += REF.h
 HEADERS += SYMBOL.h
 HEADERS += SymbolButton.h
 HEADERS += SymbolDialog.h
+HEADERS += DateBar.h
 
 
 SOURCES += Setting.cpp
@@ -103,6 +104,7 @@ SOURCES += REF.cpp
 SOURCES += SYMBOL.cpp
 SOURCES += SymbolButton.cpp
 SOURCES += SymbolDialog.cpp
+SOURCES += DateBar.cpp
 
 
 TARGET = qtstalker

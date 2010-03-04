@@ -31,7 +31,7 @@ VLine::VLine ()
 {
 }
 
-void VLine::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, int pixelspace,
+void VLine::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, int pixelspace,
 		  int startIndex, Scaler &)
 {
   QPainter painter;
@@ -39,7 +39,7 @@ void VLine::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, i
 
   QDateTime date;
   co->getDate(ChartObject::ParmDate, date);
-  int x2 = data->getX(date);
+  int x2 = data.getX(date);
   if (x2 == -1)
     return;
 
@@ -219,6 +219,17 @@ void VLine::moving (ChartObject *co, QDateTime &x, double, int)
 void VLine::getIcon (QIcon &d)
 {
   d = QIcon(vertical_xpm);
+}
+
+int VLine::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)
+{
+  int rc = FALSE;
+  QDateTime dt;
+  co->getDate(ChartObject::ParmDate, dt);
+  if (dt >= startDate && dt <= endDate)
+    rc = TRUE;
+  
+  return rc;
 }
 
 //*************************************************************

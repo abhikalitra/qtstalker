@@ -238,11 +238,6 @@ void Plot::setMenuFlag (bool d)
   indicatorPlot->setMenuFlag(d);
 }
 
-void Plot::calculate ()
-{
-  indicatorPlot->calculate();
-}
-
 void Plot::loadChartObjects ()
 {
   indicatorPlot->loadChartObjects();

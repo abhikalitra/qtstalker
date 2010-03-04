@@ -36,7 +36,7 @@
 #include "TestRankings.h"
 #include "TestSettings.h"
 #include "TestReport.h"
-#include "TestChart.h"
+//#include "TestChart.h"
 
 class QtStalkerTester : public QMainWindow
 {
@@ -76,7 +76,7 @@ class QtStalkerTester : public QMainWindow
     TestRankings *rankings;
     TestSettings *settings;
     TestReport *report;
-    TestChart *chart;
+//    TestChart *chart;
 };
 
 #endif

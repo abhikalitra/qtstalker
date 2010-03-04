@@ -26,6 +26,7 @@
 #include <QHash>
 #include <QStringList>
 #include <QDateTime>
+
 #include "Bar.h"
 #include "PlotLine.h"
 
@@ -70,10 +71,8 @@ class BarData
     double getVolume (int);
     double getOI (int);
     void prepend (Bar *bar);
-    int getX (QDateTime &);
     double getMax ();
     double getMin ();
-    void createDateList ();
     void getInputFields (QStringList &);
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
@@ -100,7 +99,6 @@ class BarData
 
   protected:
     QList<Bar *> barList;
-    QHash<QString, int> dateList;
     double high;
     double low;
     BarData::BarLength barLength;

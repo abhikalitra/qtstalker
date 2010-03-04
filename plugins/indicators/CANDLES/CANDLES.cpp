@@ -288,7 +288,15 @@ PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
   int loop;
   int size = data->count();
   for (loop = 0; loop < size; loop++)
-    line->append(color, data->getClose(loop));
+  {
+    PlotLineBar bar;
+    bar.append(data->getOpen(loop));
+    bar.append(data->getHigh(loop));
+    bar.append(data->getLow(loop));
+    bar.append(data->getClose(loop));
+    bar.setColor(color);
+    line->append(bar);
+  }
 
   return line;
 }

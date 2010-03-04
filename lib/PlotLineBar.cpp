@@ -26,14 +26,17 @@ PlotLineBar::PlotLineBar ()
   color.setNamedColor("red");
 }
 
-void PlotLineBar::setData (double d)
+void PlotLineBar::append (double d)
 {
-  data = d;
+  data.append(d);
 }
 
-double PlotLineBar::getData ()
+double PlotLineBar::getData (int i)
 {
-  return data;
+  if (i >= data.count())
+    return 0;
+  else
+    return data.at(i);
 }
 
 void PlotLineBar::setColor (QColor &d)

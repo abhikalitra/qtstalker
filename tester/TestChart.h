@@ -43,6 +43,7 @@ class TestChart : public QWidget
   private:
     Plot *plot;
     QSlider *slider;
+    BarData *data;
 };
 
 #endif

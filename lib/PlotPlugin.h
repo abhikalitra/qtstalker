@@ -28,7 +28,6 @@
 
 #include "PlotLine.h"
 #include "Scaler.h"
-#include "BarData.h"
 
 class PlotPlugin
 {
@@ -36,7 +35,7 @@ class PlotPlugin
     PlotPlugin ();
     virtual ~PlotPlugin ();
     // ints are startX, pixelspace, pos
-    virtual void draw (PlotLine *, BarData *, QPixmap &, int, int, int, Scaler &);
+    virtual void draw (PlotLine *, QPixmap &, int, int, int, Scaler &);
     void strip (double, int, QString &);
 };
 

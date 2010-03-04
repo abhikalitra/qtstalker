@@ -24,11 +24,7 @@
 
 Indicator::Indicator ()
 {
-  enable = 0;
-  tabRow = 1;
-  date = 1;
-  log = 0;
-  cus = 0;
+  clear();
 }
 
 void Indicator::setName(QString &d)
@@ -128,9 +124,54 @@ void Indicator::addLine(PlotLine *d)
   lines.append(d);
 }
 
-void Indicator::deleteAll ()
+void Indicator::clear ()
 {
+  enable = 0;
+  tabRow = 1;
+  date = 1;
+  log = 0;
+  cus = 0;
+  name.clear();
+  indicator.clear();
+
+  settings.clear();
+  
   qDeleteAll(lines);
   lines.clear();
+
+  clearChartObjects();
+}
+
+void Indicator::setChartObjects(QHash<QString, ChartObject *> &d)
+{
+  chartObjects = d;
+}
+
+void Indicator::getChartObjects(QHash<QString, ChartObject *> &d)
+{
+  d = chartObjects;
+}
+
+void Indicator::addChartObject(ChartObject *d)
+{
+  QString s;
+  d->getData(ChartObject::ParmID, s);
+  chartObjects.insert(s, d);
+}
+
+void Indicator::clearChartObjects()
+{
+  qDeleteAll(chartObjects);
+  chartObjects.clear();
+}
+
+void Indicator::deleteChartObject(QString &d)
+{
+  ChartObject *co = chartObjects.value(d);
+  if (! co)
+    return;
+  
+  delete co;
+  chartObjects.remove(d);
 }
 

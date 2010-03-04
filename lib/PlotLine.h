@@ -39,10 +39,12 @@ class PlotLine
     void getLabel (QString &);
     void append (double);
     void append (QColor &, double);
+    void append (PlotLineBar &);
     void prepend (double);
     void prepend (QColor &, double);
     double getData (int, QColor &);
     double getData (int);
+    void getData (int, PlotLineBar &);
     void setData (int, double);
     int count ();
     double getHigh ();

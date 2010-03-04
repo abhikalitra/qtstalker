@@ -31,7 +31,7 @@ Retracement::Retracement ()
 {
 }
 
-void Retracement::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, int pixelspace,
+void Retracement::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, int pixelspace,
 			int startIndex, Scaler &scaler)
 {
   QPainter painter;
@@ -43,7 +43,7 @@ void Retracement::draw (ChartObject *co, QPixmap &buffer, BarData *data, int sta
 
   QDateTime date;
   co->getDate(ChartObject::ParmDate, date);
-  int x2 = data->getX(date);
+  int x2 = data.getX(date);
   if (x2 == -1)
     return;
 
@@ -57,9 +57,9 @@ void Retracement::draw (ChartObject *co, QPixmap &buffer, BarData *data, int sta
 
   int extend = co->getInt(ChartObject::ParmExtend);
   if (extend)
-    data->getDate(data->count() - 1, dt);
+    data.getDate(data.count() - 1, dt);
 
-  x2 = data->getX(dt);
+  x2 = data.getX(dt);
   if (x2 == -1)
     return;
 
@@ -546,6 +546,31 @@ void Retracement::moving (ChartObject *co, QDateTime &x, double y, int moveFlag)
 void Retracement::getIcon (QIcon &d)
 {
   d = QIcon(fib_xpm);
+}
+
+int Retracement::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)
+{
+  int rc = FALSE;
+  QDateTime sd;
+  co->getDate(ChartObject::ParmDate, sd);
+  QDateTime ed;
+  co->getDate(ChartObject::ParmDate2, ed);
+  
+  // is start past our end?
+  if (startDate > ed)
+    return rc;
+  
+  // is end before our start?
+  if (endDate < sd)
+    return rc;
+  
+  if (startDate >= sd && startDate <= ed)
+    return TRUE;
+  
+  if (endDate >= sd && endDate <= ed)
+    return TRUE;
+  
+  return rc;
 }
 
 //*************************************************************

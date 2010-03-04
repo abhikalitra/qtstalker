@@ -63,9 +63,7 @@ class ChartObject : public QObject
       ParmLine3,
       ParmLine4,
       ParmLine5,
-      ParmLine6,
-      ParmUseBar,
-      ParmBarField
+      ParmLine6
     };
 
     ChartObject ();

@@ -46,7 +46,11 @@ class TestConfig : public BaseConfig
       DbLastDate, // the sql command to get the last date for a symbol
       DbGetSymbol, // the sql command to get symbol quotes
       IndicatorPluginPath,
-      IndicatorPluginList
+      IndicatorPluginList,
+      PlotPluginPath,
+      PlotPluginList,
+      COPluginPath,
+      COPluginList
     };
 
     TestConfig ();

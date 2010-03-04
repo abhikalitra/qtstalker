@@ -1013,14 +1013,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Optimazation Period Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Optimazation Period High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enter Long</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1042,14 +1034,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Exit Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Optimazation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Optimazation Period Step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1174,14 +1158,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Edit TLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1605,6 +1581,36 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>&amp;Remove Script From Queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SymbolButton</name>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SymbolDialog</name>
+    <message>
+        <source>Select Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols Available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols Selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Items modified. Are you sure you want to discard changes?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

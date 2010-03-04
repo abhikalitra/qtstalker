@@ -25,25 +25,31 @@
 #include <QString>
 #include <QDialog>
 #include <QTableWidget>
+#include <QList>
+
 #include "BarData.h"
 #include "Plot.h"
-
+#include "Setting.h"
+#include "DateBar.h"
+#include "PlotLine.h"
 
 class DataWindow : public QDialog
 {
   Q_OBJECT
 
   public:
-    DataWindow(QWidget *);
-    void setData (int, int, QString &);
-    void setHeader (int, QString &);
-    void setBars (BarData *);
+    DataWindow (QWidget *);
     void setPlot (Plot *);
+    void setDates (DateBar &);
+    void setLine (PlotLine *);
+    void setOHLC (PlotLine *);
     QString strip (double, int);
     void scrollToBottom ();
 
   private:
     QTableWidget *table;
+    int dateFlag;
+    int ohlcFlag;
 };
 
 #endif

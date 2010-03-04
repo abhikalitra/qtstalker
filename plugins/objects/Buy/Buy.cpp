@@ -31,7 +31,7 @@ Buy::Buy ()
 {
 }
 
-void Buy::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, int pixelspace,
+void Buy::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, int pixelspace,
 		int startIndex, Scaler &scaler)
 {
   QPainter painter;
@@ -39,7 +39,7 @@ void Buy::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, int
 
   QDateTime date;
   co->getDate(ChartObject::ParmDate, date);
-  int x2 = data->getX(date);
+  int x2 = data.getX(date);
   if (x2 == -1)
     return;
 
@@ -242,6 +242,24 @@ void Buy::moving (ChartObject *co, QDateTime &x, double y, int)
 void Buy::getIcon (QIcon &d)
 {
   d = QIcon(buyarrow_xpm);
+}
+
+void Buy::getHighLow (ChartObject *co)
+{
+  double price = co->getDouble(ChartObject::ParmPrice);
+  co->setData(ChartObject::ParmHigh, price);
+  co->setData(ChartObject::ParmLow, price);
+}
+
+int Buy::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)
+{
+  int rc = FALSE;
+  QDateTime dt;
+  co->getDate(ChartObject::ParmDate, dt);
+  if (dt >= startDate && dt <= endDate)
+    rc = TRUE;
+  
+  return rc;
 }
 
 //*************************************************************

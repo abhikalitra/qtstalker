@@ -19,34 +19,33 @@
  *  USA.
  */
 
-#include "PlotPlugin.h"
+#ifndef DATE_BAR_HPP
+#define DATE_BAR_HPP
 
-#include <math.h> // only for fabs()
+#include <QHash>
+#include <QDateTime>
 
-PlotPlugin::PlotPlugin ()
+#include "BarData.h"
+
+class DateBar
 {
-}
+  public:
+    DateBar ();
+    void clear ();
+    int count ();
+    void getDate (int, QDateTime &);
+    int getX (QDateTime &);
+    void createDateList (BarData *);
+    void getDateString (int, QString &);
+    void getTimeString (int, QString &);
+    void getDateTimeString (int, QString &);
+    void setBarLength (int);
+    int getBarLength ();
 
-PlotPlugin::~PlotPlugin ()
-{
-}
+  protected:
+    QHash<QString, int> data;
+    QList<QDateTime> dateList;
+    int barLength;
+};
 
-// virtual function
-void PlotPlugin::draw (PlotLine *, QPixmap &, int, int, int, Scaler &)
-{
-}
-
-
-void PlotPlugin::strip (double d, int p, QString &s)
-{
-  if (fabs(d) < 1)
-    s = QString::number(d, 'f', p);
-  else
-  {
-    if (fabs(d) > 1000)
-      s = QString::number(d, 'f', 0);
-    else
-      s = QString::number(d, 'f', 2);
-  }
-}
-
+#endif

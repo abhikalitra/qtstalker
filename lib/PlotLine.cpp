@@ -58,10 +58,15 @@ void PlotLine::append (double d)
 void PlotLine::append (QColor &c, double d)
 {
   PlotLineBar bar;
-  bar.setData(d);
+  bar.append(d);
   bar.setColor(c);
   data.append(bar);
   checkHighLow(d);
+}
+
+void PlotLine::append (PlotLineBar &d)
+{
+  data.append(d);
 }
 
 void PlotLine::prepend (double d)
@@ -73,30 +78,35 @@ void PlotLine::prepend (double d)
 void PlotLine::prepend (QColor &c, double d)
 {
   PlotLineBar bar;
-  bar.setData(d);
+  bar.append(d);
   bar.setColor(c);
   data.prepend(bar);
   checkHighLow(d);
+}
+
+void PlotLine::setData (int i, double d)
+{
+  PlotLineBar bar = data.at(i);
+  bar.append(d);
+  data.replace(i, bar);
 }
 
 double PlotLine::getData (int i, QColor &c)
 {
   PlotLineBar bar = data.at(i);
   bar.getColor(c);
-  return bar.getData();
+  return bar.getData(0);
 }
 
 double PlotLine::getData (int i)
 {
   PlotLineBar bar = data.at(i);
-  return bar.getData();
+  return bar.getData(0);
 }
 
-void PlotLine::setData (int i, double d)
+void PlotLine::getData (int i, PlotLineBar &d)
 {
-  PlotLineBar bar = data.at(i);
-  bar.setData(d);
-  data.replace(i, bar);
+  d = data.at(i);
 }
 
 int PlotLine::count ()
@@ -150,10 +160,10 @@ void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
   for (loop = start; loop <= end; loop++)
   {
     PlotLineBar r = data.at(loop);
-    if (r.getData() > h)
-      h = r.getData();
-    if (r.getData() < l)
-      l = r.getData();
+    if (r.getData(0) > h)
+      h = r.getData(0);
+    if (r.getData(0) < l)
+      l = r.getData(0);
   }
 }
 
@@ -179,8 +189,32 @@ int PlotLine::getOffset ()
 
 void PlotLine::getInfo (int i, Setting &set)
 {
-  QString d = QString::number(getData(i));
-  set.setData(label, d);
+  if (plugin == "OHLC" || plugin == "Candle")
+  {
+    PlotLineBar bar;
+    getData(i, bar);
+    
+    QString k = "O";
+    QString d = QString::number(bar.getData(0));
+    set.setData(k, d);
+	
+    k = "H";
+    d = QString::number(bar.getData(1));
+    set.setData(k, d);
+	
+    k = "L";
+    d = QString::number(bar.getData(2));
+    set.setData(k, d);
+	
+    k = "C";
+    d = QString::number(bar.getData(3));
+    set.setData(k, d);
+  }
+  else
+  {
+    QString d = QString::number(getData(i));
+    set.setData(label, d);
+  }
 }
 
 void PlotLine::setColor (QColor &color)

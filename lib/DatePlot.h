@@ -48,7 +48,6 @@ class DatePlot : public QWidget
 
   public:
     DatePlot (QWidget *);
-    ~DatePlot ();
     void clear ();
     void setData (BarData *);
     QVector<int> & getXGrid ();
@@ -68,10 +67,10 @@ class DatePlot : public QWidget
     virtual void resizeEvent (QResizeEvent *);
 
   private slots:
-    void getDailyDate ();
-    void getWeeklyDate ();
-    void getMonthlyDate ();
-    void getMinuteDate ();
+    void getDailyDate (BarData *);
+    void getWeeklyDate (BarData *);
+    void getMonthlyDate (BarData *);
+    void getMinuteDate (BarData *);
 
   private:
     QFont plotFont;
@@ -83,8 +82,7 @@ class DatePlot : public QWidget
     BarData::BarLength interval;
     QColor backgroundColor;
     QColor borderColor;
-    BarData *data;
-    QList<TickItem *> dateList;
+    QList<TickItem> dateList;
     QVector<int> xGrid;
 };
 

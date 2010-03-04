@@ -25,8 +25,7 @@ Histogram::Histogram ()
 {
 }
 
-void Histogram::draw (PlotLine *line, BarData *, QPixmap &buffer, int startX, int pixelspace,
-		      int pos, Scaler &scaler)
+void Histogram::draw (PlotLine *line, QPixmap &buffer, int startX, int pixelspace, int pos, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&buffer);

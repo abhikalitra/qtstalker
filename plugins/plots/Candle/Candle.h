@@ -28,7 +28,7 @@ class Candle : public PlotPlugin
 {
   public:
     Candle ();
-    void draw (PlotLine *, BarData *, QPixmap &, int, int, int, Scaler &);
+    void draw (PlotLine *, QPixmap &, int, int, int, Scaler &);
 };
 
 extern "C"

@@ -28,7 +28,7 @@ Horizontal::Horizontal ()
 {
 }
 
-void Horizontal::draw (PlotLine *line, BarData *, QPixmap &buffer, int startX, int, int, Scaler &scaler)
+void Horizontal::draw (PlotLine *line, QPixmap &buffer, int startX, int, int, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&buffer);

@@ -20,6 +20,7 @@
  */
 
 #include "DatePlot.h"
+
 #include <QPainter>
 #include <QString>
 #include <QDateTime>
@@ -36,7 +37,6 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   pixelspace = 0;
   interval = BarData::DailyBar;
   startIndex = 0;
-  data = 0;
   setFocusPolicy(Qt::ClickFocus);
 
   plotFont.setFamily("Helvetica");
@@ -47,25 +47,16 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   setMaximumHeight(DATE_HEIGHT);
 }
 
-DatePlot::~DatePlot ()
-{
-  qDeleteAll(dateList);
-}
-
 void DatePlot::clear ()
 {
-  data = 0;
-  qDeleteAll(dateList);
   dateList.clear();
 }
 
-void DatePlot::setData (BarData *l)
+void DatePlot::setData (BarData *data)
 {
-  if (! l->count())
+  if (! data->count())
     return;
     
-  data = l;
-  qDeleteAll(dateList);  
   dateList.clear();
     
   switch (interval)
@@ -76,16 +67,16 @@ void DatePlot::setData (BarData *l)
     case BarData::Minute15:
     case BarData::Minute30:
     case BarData::Minute60:
-      getMinuteDate();
+      getMinuteDate(data);
       break;
     case BarData::WeeklyBar:
-      getWeeklyDate();
+      getWeeklyDate(data);
       break;
     case BarData::MonthlyBar:
-      getMonthlyDate();
+      getMonthlyDate(data);
       break;
     default:
-      getDailyDate();
+      getDailyDate(data);
       break;
   }
 }
@@ -97,7 +88,7 @@ void DatePlot::draw ()
   
   buffer.fill(backgroundColor);
 
-  if (dateList.count() && isVisible() && data)
+  if (dateList.count() && isVisible())
   {
     QPainter painter;
     painter.begin(&buffer);
@@ -116,27 +107,25 @@ void DatePlot::draw ()
 
     while(x <= (buffer.width() - scaleWidth) && loop < (int) dateList.count())
     {
-      TickItem *item = dateList.at(loop);
+      TickItem item = dateList.at(loop);
       
-      if (item->flag)
+      if (item.flag)
       {
-        if (! item->tick)
+        if (! item.tick)
 	{
 	  // draw the short tick
           painter.drawLine (x, 1, x, 4);
-	  
-          painter.drawText (x - (fm.width(item->text, -1) / 2),
+          painter.drawText (x - (fm.width(item.text, -1) / 2),
 	                    fm.height() + 2,
-			    item->text);
+			    item.text);
 	}
 	else
 	{
 	  // draw the long tick
           painter.drawLine (x, 1, x, buffer.height() - fm.height() - 2);
-	  
-          painter.drawText (x - (fm.width(item->text, -1) / 2),
+          painter.drawText (x - (fm.width(item.text, -1) / 2),
 	                    buffer.height() - 2,
-			    item->text);
+			    item.text);
 	}
       }
               
@@ -197,7 +186,7 @@ void DatePlot::setInterval (BarData::BarLength d)
   interval = d;
 }
 
-void DatePlot::getMinuteDate ()
+void DatePlot::getMinuteDate (BarData *data)
 {
   xGrid.resize(0);
   int loop = 0;
@@ -217,14 +206,14 @@ void DatePlot::getMinuteDate ()
     QDateTime date;
     data->getDate(loop, date);
     
-    TickItem *item = new TickItem;
-    item->flag = 0;
+    TickItem item;
+    item.flag = 0;
     
     if (date.date().day() != oldDay.date().day())
     {
-      item->flag = 1;
-      item->tick = 1;
-      item->text = date.date().toString("MMM d");
+      item.flag = 1;
+      item.tick = 1;
+      item.text = date.date().toString("MMM d");
       oldDay = date;
       
       xGrid.resize(xGrid.size() + 1);
@@ -236,9 +225,9 @@ void DatePlot::getMinuteDate ()
       {
         if (interval < BarData::Minute30)
 	{
-          item->flag = 1;
-          item->tick = 0;
-          item->text = QString::number(date.time().hour()) + ":00";
+          item.flag = 1;
+          item.tick = 0;
+          item.text = QString::number(date.time().hour()) + ":00";
 	  
           xGrid.resize(xGrid.size() + 1);
           xGrid[xGrid.size() - 1] = loop;
@@ -262,7 +251,7 @@ void DatePlot::getMinuteDate ()
   }
 }
 
-void DatePlot::getDailyDate ()
+void DatePlot::getDailyDate (BarData *data)
 {
   int loop = 0;
   xGrid.resize(0);
@@ -275,17 +264,17 @@ void DatePlot::getDailyDate ()
 
   while(loop < (int) data->count())
   {
-    TickItem *item = new TickItem;
-    item->flag = 0;
+    TickItem item;
+    item.flag = 0;
   
     data->getDate(loop, dt);
     QDate date = dt.date();
 
     if (date.month() != oldDate.month())
     {
-      item->flag = 1;
-      item->tick = 1;
-      item->text = date.toString("MMM-yy");
+      item.flag = 1;
+      item.tick = 1;
+      item.text = date.toString("MMM-yy");
       oldDate = date;
       oldWeek = date;
       oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
@@ -298,9 +287,9 @@ void DatePlot::getDailyDate ()
       // if start of new week make a tick
       if (date > oldWeek)
       {
-        item->flag = 1;
-        item->tick = 0;
-        item->text = date.toString("d");
+        item.flag = 1;
+        item.tick = 0;
+        item.text = date.toString("d");
   	oldWeek = date;
         oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
       }
@@ -311,7 +300,7 @@ void DatePlot::getDailyDate ()
   }
 }
 
-void DatePlot::getWeeklyDate ()
+void DatePlot::getWeeklyDate (BarData *data)
 {
   xGrid.resize(0);
   int loop = 0;
@@ -322,8 +311,8 @@ void DatePlot::getWeeklyDate ()
 
   while(loop < (int) data->count())
   {
-    TickItem *item = new TickItem;
-    item->flag = 0;
+    TickItem item;
+    item.flag = 0;
   
     data->getDate(loop, dt);
     QDate date = dt.date();
@@ -337,15 +326,15 @@ void DatePlot::getWeeklyDate ()
     if (date.month() != oldMonth.month())
     {
       oldMonth = date;
-      item->flag = 1;
-      item->tick = 0;
-      item->text = date.toString("MMM");
-      item->text.chop(2);
+      item.flag = 1;
+      item.tick = 0;
+      item.text = date.toString("MMM");
+      item.text.chop(2);
       
       if (date.month() == 1)
       {
-        item->tick = 1;
-        item->text = date.toString("yy");
+        item.tick = 1;
+        item.text = date.toString("yy");
       }
     }
     
@@ -354,7 +343,7 @@ void DatePlot::getWeeklyDate ()
   }
 }
 
-void DatePlot::getMonthlyDate ()
+void DatePlot::getMonthlyDate (BarData *data)
 {
   xGrid.resize(0);
   int loop = 0;
@@ -364,8 +353,8 @@ void DatePlot::getMonthlyDate ()
 
   while(loop < (int) data->count())
   {
-    TickItem *item = new TickItem;
-    item->flag = 0;
+    TickItem item;
+    item.flag = 0;
   
     data->getDate(loop, dt);
     QDate date = dt.date();
@@ -373,9 +362,9 @@ void DatePlot::getMonthlyDate ()
     if (date.year() != oldYear.year())
     {
       oldYear = date;
-      item->flag = 1;
-      item->tick = 1;
-      item->text = date.toString("yy");
+      item.flag = 1;
+      item.tick = 1;
+      item.text = date.toString("yy");
       
       xGrid.resize(xGrid.size() + 1);
       xGrid[xGrid.size() - 1] = loop;

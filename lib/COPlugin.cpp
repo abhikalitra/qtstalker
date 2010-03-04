@@ -28,12 +28,13 @@ COPlugin::COPlugin ()
   handleWidth = 6;
 }
 
+// virtual
 COPlugin::~COPlugin ()
 {
 }
 
 // virtual
-void COPlugin::draw (ChartObject *, QPixmap &, BarData *, int, int, int, Scaler &)
+void COPlugin::draw (ChartObject *, QPixmap &, DateBar &, int, int, int, Scaler &)
 {
 }
 
@@ -87,5 +88,11 @@ void COPlugin::moving (ChartObject *, QDateTime &, double, int)
 // virtual
 void COPlugin::getIcon (QIcon &)
 {
+}
+
+// virtual
+int COPlugin::inDateRange (ChartObject *, QDateTime &, QDateTime &)
+{
+  return 0;
 }
 

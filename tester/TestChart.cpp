@@ -28,9 +28,14 @@
 #include "Plot.h"
 #include "PluginFactory.h"
 #include "COPlugin.h"
+#include "QuoteDataBase.h"
+#include "TestConfig.h"
+#include "IndicatorPlot.h"
 
 TestChart::TestChart ()
 {
+  data = 0;
+  
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
   vbox->setSpacing(5);
@@ -65,24 +70,54 @@ TestChart::TestChart ()
   plot->setIndex(0);
   plot->setInterval((BarData::DailyBar));
   plot->setCrosshairsStatus(0);
+  
+  TestConfig config;
+  QString s;
+  config.getData(TestConfig::PlotPluginPath, s);
+  IndicatorPlot *ip = plot->getIndicatorPlot();
+  ip->setPlotPluginPath(s);
+  config.getData(TestConfig::COPluginPath, s);
+  ip->setCOPluginPath(s);
 
 //  connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
 //  connect(this, SIGNAL(signalInterval(BarData::BarLength)), plot, SLOT(setInterval(BarData::BarLength)));
   connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
 }
 
-void TestChart::update (BarData *data, QList<TestTrade *> &trades)
+void TestChart::update (BarData *_data, QList<TestTrade *> &trades)
 {
   plot->clear();
   
+  if (data)
+    delete data;
+  
+  BarData *data = new BarData;
+  QString s;
+  _data->getSymbol(s);
+  data->setSymbol(s);
+  data->setBarLength((BarData::BarLength) _data->getBarLength());
+  data->setBarsRequested(_data->getBarsRequested());
+
+  QuoteDataBase qdb;
+  qdb.getChart(data);
+  if (data->count() == 0)
+  {
+    qDebug() << "TestChart::update: 0 bars loaded";
+    delete data;
+    data = 0;
+    return;
+  }
+
   PlotLine *bars = data->getInput(BarData::Close);
   if (! bars)
   {
     qDebug() << "TestChart::update: no bars";
+    delete data;
+    data = 0;
     return;
   }
   
-  QString s = "OHLC";
+  s = "OHLC";
   bars->setPlugin(s);
   s = "green";
   bars->setColor(s);
@@ -95,6 +130,8 @@ void TestChart::update (BarData *data, QList<TestTrade *> &trades)
   {
     qDebug() << "TestChart::update: no VLine plugin";
     delete bars;
+    delete data;
+    data = 0;
     return;
   }
   
@@ -102,6 +139,7 @@ void TestChart::update (BarData *data, QList<TestTrade *> &trades)
   int id = 0;
   IndicatorPlot *ip = plot->getIndicatorPlot();
   ip->addLine(bars);
+  ip->setData(data);
   
   for (loop = 0; loop < trades.count(); loop++)
   {

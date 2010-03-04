@@ -28,7 +28,7 @@ class HistogramBar : public PlotPlugin
 {
   public:
     HistogramBar ();
-    void draw (PlotLine *, BarData *, QPixmap &, int, int, int, Scaler &);
+    void draw (PlotLine *, QPixmap &, int, int, int, Scaler &);
 };
 
 extern "C"

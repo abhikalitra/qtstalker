@@ -98,7 +98,7 @@ class QtstalkerApp : public QMainWindow
     void initScriptNav ();
     QString getWindowCaption ();
     void loadChart (QString);
-    void setSliderStart ();
+    void setSliderStart (int);
 
   public slots:
     void slotAbout ();
@@ -133,7 +133,7 @@ class QtstalkerApp : public QMainWindow
     void slotRefreshChart (bool);
     void slotReloadChart ();
     void slotRefreshUpdated (int);
-    void loadIndicator (QString &d);
+    void loadIndicator (BarData *, QString &);
     void refreshIndicator (QString);
     void cursorButtonPressed (int id);
     void coButtonPressed (int id);
@@ -152,7 +152,6 @@ class QtstalkerApp : public QMainWindow
     ChartPage *chartNav;
     QHash<QString, Plot *> plotList;
     QString chartPath;
-    BarData *recordList;
     QTextEdit *infoLabel;
     QStatusBar *statusbar;
     QList<QTabWidget*> tabList;
@@ -166,6 +165,9 @@ class QtstalkerApp : public QMainWindow
     Assistant *assistant;
     QButtonGroup *barButtonGroup;
     QToolBar *toolBar2;
+    QString chartSymbol;
+    QString chartName;
+    int barsLoaded;
 };
 
 #endif

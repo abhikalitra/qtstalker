@@ -30,7 +30,7 @@ class TLine : public COPlugin
 {
   public:
     TLine ();
-    void draw (ChartObject *, QPixmap &, BarData *, int, int, int, Scaler &);
+    void draw (ChartObject *, QPixmap &, DateBar &, int, int, int, Scaler &);
     void getInfo (ChartObject *, Setting &);
     void dialog (ChartObject *);
     void getHighLow (ChartObject *);
@@ -41,6 +41,7 @@ class TLine : public COPlugin
     int create3 (ChartObject *, QDateTime &, double);
     void moving (ChartObject *, QDateTime &, double, int);
     void getIcon (QIcon &);
+    int inDateRange (ChartObject *, QDateTime &, QDateTime &);
 
   protected:
     QStringList fieldList;

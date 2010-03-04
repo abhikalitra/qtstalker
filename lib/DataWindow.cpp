@@ -21,121 +21,145 @@
 
 #include "DataWindow.h"
 #include "IndicatorPlot.h"
+
 #include <QLayout>
 #include <QVBoxLayout>
-#include <QStringList>
 #include <QTableWidgetItem>
-#include <QList>
 #include <QtDebug>
-
 
 DataWindow::DataWindow (QWidget *w) : QDialog (w, 0)
 {
+  dateFlag = 0;
+  ohlcFlag = 0;
+  
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(5);
   vbox->setMargin(5);
   setLayout(vbox);
 
   table = new QTableWidget;
-//  table->setSelectionMode(QTableWidget::Single);
-//  table->setReadOnly(TRUE);
-//  table->setColumnWidth(col, 80);
+  table->setSortingEnabled(FALSE);
   vbox->addWidget (table);
 
   resize(750, 550);
 }
 
-void DataWindow::setData (int row, int col, QString &data)
-{
-  if (row > table->rowCount() -1)
-    table->setRowCount(row + 1);
-
-  QTableWidgetItem *ti = new QTableWidgetItem(data, 0);
-  table->setItem(row, col, ti);
-}
-
-void DataWindow::setHeader (int col, QString &d)
-{
-  QTableWidgetItem *ti = new QTableWidgetItem(d, 0);
-  table->setHorizontalHeaderItem(col, ti);
-}
-
-void DataWindow::setBars (BarData *d)
-{
-  if (! d->count())
-    return;
-
-  table->setColumnCount(5);
-  table->setRowCount(d->count());
-
-  QStringList sl;
-  sl.append(tr("Date"));
-  sl.append(tr("Open"));
-  sl.append(tr("High"));
-  sl.append(tr("Low"));
-  sl.append(tr("Close"));
-  table->setHorizontalHeaderLabels(sl);
-
-  int loop;
-  for (loop = 0; loop < (int) d->count(); loop++)
-  {
-    QDateTime dt;
-    d->getDate(loop, dt);
-    QString s = dt.toString(Qt::ISODate);
-    QTableWidgetItem *ti = new QTableWidgetItem(s, 0);
-    table->setItem(loop, 0, ti);
-
-    s = QString::number(d->getOpen(loop));
-    ti = new QTableWidgetItem(s, 0);
-    table->setItem(loop, 1, ti);
-
-    s = QString::number(d->getHigh(loop));
-    ti = new QTableWidgetItem(s, 0);
-    table->setItem(loop, 2, ti);
-
-    s = QString::number(d->getLow(loop));
-    ti = new QTableWidgetItem(s, 0);
-    table->setItem(loop, 3, ti);
-
-    s = QString::number(d->getClose(loop));
-    ti = new QTableWidgetItem(s, 0);
-    table->setItem(loop, 4, ti);
-  }
-}
-
 void DataWindow::setPlot (Plot *d)
 {
-  IndicatorPlot *i = d->getIndicatorPlot();
+  IndicatorPlot *ip = d->getIndicatorPlot();
+  Indicator indicator;
+  ip->getIndicator(indicator);
   QList<PlotLine *> lines;
-  i->getPlotList(lines);
-
-  int loop2;
-  QString s;
-  for (loop2 = 0; loop2 < lines.count(); loop2++)
+  indicator.getLines(lines);
+  
+  if (! dateFlag)
   {
-    PlotLine *line = lines.at(loop2);
+    // get the dates
+    DateBar dates;
+    ip->getDateBar(dates);
+    setDates(dates);
+  }
+
+  // get the plot data
+  QString s;
+  int loop;
+  for (loop = 0; loop < lines.count(); loop++)
+  {
+    PlotLine *line = lines.at(loop);
     
     line->getPlugin(s);
-    if (s == "OHLC" || s == "Candle" || s == "Horizontal")
+    if (s == "Horizontal")
       continue;
 
-    // increase # of columns to fit new 
-    table->setColumnCount(table->columnCount() + 1);
-    
-    // add new column header to table
-    line->getLabel(s);
-    QTableWidgetItem *ti = new QTableWidgetItem(s, 0);
-    table->setHorizontalHeaderItem(table->columnCount() - 1, ti);
-
-    int loop3;
-    int offset = table->rowCount() - line->count();
-    for (loop3 = 0; loop3 < line->count(); loop3++)
+    if (s == "OHLC" || s == "Candle")
     {
-      ti = new QTableWidgetItem(strip(line->getData(loop3), 4), 0);
-      table->setItem(loop3 + offset, table->columnCount() - 1, ti);
+      if (ohlcFlag)
+	continue;
+      
+      setOHLC(line);
     }
-//    table->adjustColumn(table->columnCount() - 1);
+    else
+      setLine(line);
   }
+}
+
+void DataWindow::setDates (DateBar &dates)
+{
+  table->setColumnCount(table->columnCount() + 1);
+  QTableWidgetItem *item = new QTableWidgetItem(tr("Date"));
+  table->setHorizontalHeaderItem(table->columnCount() - 1, item);
+
+  table->setRowCount(dates.count());
+  
+  int loop;
+  for (loop = 0; loop < (int) dates.count(); loop++)
+  {
+    QDateTime dt;
+    dates.getDate(loop, dt);
+    QString s = dt.toString(Qt::ISODate);
+    
+    QTableWidgetItem *item = new QTableWidgetItem(s);
+    table->setItem(loop, table->columnCount() - 1, item);
+  }
+  
+  dateFlag = TRUE;
+}
+
+void DataWindow::setLine (PlotLine *line)
+{
+  QString s;
+  line->getLabel(s);
+
+  table->setColumnCount(table->columnCount() + 1);
+  QTableWidgetItem *item = new QTableWidgetItem(s);
+  table->setHorizontalHeaderItem(table->columnCount() - 1, item);
+
+  int dataLoop = table->rowCount() - line->count();
+  int loop;
+  for (loop = 0; loop < line->count(); loop++, dataLoop++)
+  {
+    s = strip(line->getData(loop), 4);
+    QTableWidgetItem *item = new QTableWidgetItem(s);
+    table->setItem(dataLoop, table->columnCount() - 1, item);
+  }
+}
+
+void DataWindow::setOHLC (PlotLine *line)
+{
+  QStringList l;
+  l << tr("Open") << tr("High") << tr("Low") << tr("Close");
+  
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    table->setColumnCount(table->columnCount() + 1);
+    QTableWidgetItem *item = new QTableWidgetItem(l[loop]);
+    table->setHorizontalHeaderItem(table->columnCount() - 1, item);
+  }
+
+  for (loop = 0; loop < line->count(); loop++)
+  {
+    PlotLineBar bar;
+    line->getData(loop, bar);
+    
+    QString s = strip(bar.getData(0), 4);
+    QTableWidgetItem *item = new QTableWidgetItem(s);
+    table->setItem(loop, table->columnCount() - 4, item);
+
+    s = strip(bar.getData(1), 4);
+    item = new QTableWidgetItem(s);
+    table->setItem(loop, table->columnCount() - 3, item);
+
+    s = strip(bar.getData(2), 4);
+    item = new QTableWidgetItem(s);
+    table->setItem(loop, table->columnCount() - 2, item);
+
+    s = strip(bar.getData(3), 4);
+    item = new QTableWidgetItem(s);
+    table->setItem(loop, table->columnCount() - 1, item);
+  }
+  
+  ohlcFlag = TRUE;
 }
 
 QString DataWindow::strip (double d, int p)

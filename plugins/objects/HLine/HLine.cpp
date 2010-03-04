@@ -31,7 +31,7 @@ HLine::HLine ()
 {
 }
 
-void HLine::draw (ChartObject *co, QPixmap &buffer, BarData *, int startX, int, int, Scaler &scaler)
+void HLine::draw (ChartObject *co, QPixmap &buffer, DateBar &, int startX, int, int, Scaler &scaler)
 {
   double price = co->getDouble(ChartObject::ParmPrice);
 
@@ -255,6 +255,19 @@ void HLine::moving (ChartObject *co, QDateTime &, double y, int)
 void HLine::getIcon (QIcon &d)
 {
   d = QIcon(horizontal_xpm);
+}
+
+void HLine::getHighLow (ChartObject *co)
+{
+  double price = co->getDouble(ChartObject::ParmPrice);
+  co->setData(ChartObject::ParmHigh, price);
+  co->setData(ChartObject::ParmLow, price);
+}
+
+int HLine::inDateRange (ChartObject *, QDateTime &, QDateTime &)
+{
+  int rc = TRUE;
+  return rc;
 }
 
 //*************************************************************

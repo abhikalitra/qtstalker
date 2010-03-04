@@ -47,6 +47,8 @@
 #include "BarData.h"
 #include "ChartObject.h"
 #include "Setting.h"
+#include "DateBar.h"
+#include "Indicator.h"
 
 class IndicatorPlot : public QWidget
 {
@@ -95,13 +97,13 @@ class IndicatorPlot : public QWidget
     void getCOInfo ();
     void setXGrid (QVector<int> &);
     void setMenuFlag (bool);
-    void getPlotList (QList<PlotLine *> &);
-    void setPlotList (QList<PlotLine *> &);
-    void setIndicator (QString &);
+    void setIndicator (Indicator &);
+    void getIndicator (Indicator &);
     void loadChartObjects ();
-    void addLine (PlotLine *);
     void drawRubberBand (QRect &r);
-    void addChartObject (ChartObject *);
+    void setPlotPluginPath (QString &);
+    void setCOPluginPath (QString &);
+    void getDateBar (DateBar &);
 
   public slots:
     void draw();
@@ -121,7 +123,6 @@ class IndicatorPlot : public QWidget
     void slotScaleToScreenChanged (bool);
     void slotLogScaleChanged (bool);
     void setInterval(BarData::BarLength);
-    void calculate ();
     void newExternalChartObject (QString);
     void setExternalChartObjectFlag (int);
 
@@ -154,6 +155,7 @@ class IndicatorPlot : public QWidget
     void slotObjectDialog ();
 
   private:
+    Indicator indicator;
     QFont plotFont;
     QPixmap buffer;
     int pixelspace;
@@ -165,11 +167,9 @@ class IndicatorPlot : public QWidget
     QColor borderColor;
     bool gridFlag;
     bool scaleToScreen;
-    bool logScale;
     bool crossHairFlag;
     bool crosshairs;
     bool infoFlag;
-    bool dateFlag;
     bool menuFlag;
     QDateTime crossHairX;
     double crossHairY;
@@ -177,24 +177,19 @@ class IndicatorPlot : public QWidget
     double y1;
     QDateTime x1;
     MouseStatus mouseFlag;
-    QHash<QString, ChartObject *> coList;
     ChartObject *coSelected;
     ChartObject *coDraw;
-    QString indicator;
-    BarData *data;
     QVector<int> xGrid;
     QMenu *chartMenu;
     QMenu *coMenu;
-    QList<PlotLine *> plotList;
     QString chartSymbol;
     int moveFlag;
     QString plotPluginPath;
     QString coPluginPath;
-
+    DateBar dateBars;
     int tx, ty;
     QRubberBand *rubberBand;
     QPoint mouseOrigin;
-
     int externalChartObjectFlag;
 };
 

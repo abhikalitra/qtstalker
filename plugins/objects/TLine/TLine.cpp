@@ -32,7 +32,7 @@ TLine::TLine ()
   fieldList << QObject::tr("Open") << QObject::tr("High") << QObject::tr("Low") << QObject::tr("Close");
 }
 
-void TLine::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, int pixelspace,
+void TLine::draw (ChartObject *co, QPixmap &buffer, DateBar &data, int startX, int pixelspace,
 		  int startIndex, Scaler &scaler)
 {
   QPainter painter;
@@ -40,7 +40,7 @@ void TLine::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, i
 
   QDateTime date;
   co->getDate(ChartObject::ParmDate, date);
-  int x2 = data->getX(date);
+  int x2 = data.getX(date);
   if (x2 == -1)
     return;
 
@@ -50,7 +50,7 @@ void TLine::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, i
 
   QDateTime date2;
   co->getDate(ChartObject::ParmDate2, date2);
-  x2 = data->getX(date2);
+  x2 = data.getX(date2);
   if (x2 == -1)
     return;
 
@@ -58,44 +58,10 @@ void TLine::draw (ChartObject *co, QPixmap &buffer, BarData *data, int startX, i
   if (x2 == -1)
     return;
 
-  int y = 0;
-  int y2 = 0;
-  if (co->getInt(ChartObject::ParmUseBar))
-  {
-    int i = data->getX(date);
-    int i2 = data->getX(date2);
-
-    QString bar;
-    co->getData(ChartObject::ParmBarField, bar);
-    switch (fieldList.indexOf(bar))
-    {
-      case 0: // open
-        y = scaler.convertToY(data->getOpen(i));
-        y2 = scaler.convertToY(data->getOpen(i2));
-	break;
-      case 1: // high
-        y = scaler.convertToY(data->getHigh(i));
-        y2 = scaler.convertToY(data->getHigh(i2));
-	break;
-      case 2: // low
-        y = scaler.convertToY(data->getLow(i));
-        y2 = scaler.convertToY(data->getLow(i2));
-	break;
-      default:
-        // assume Close, for now. Need to display a warning.
-        y = scaler.convertToY(data->getClose(i));
-        y2 = scaler.convertToY(data->getClose(i2));
-	break;
-    }
-  }
-  else
-  {
-    double price = co->getDouble(ChartObject::ParmPrice);
-    y = scaler.convertToY(price);
-    
-    price = co->getDouble(ChartObject::ParmPrice2);
-    y2 = scaler.convertToY(price);
-  }
+  double price = co->getDouble(ChartObject::ParmPrice);
+  int y = scaler.convertToY(price);
+  price = co->getDouble(ChartObject::ParmPrice2);
+  int y2 = scaler.convertToY(price);
 
   QColor color;
   co->getColor(ChartObject::ParmColor, color);
@@ -210,15 +176,6 @@ void TLine::dialog (ChartObject *co)
   double price2 = co->getDouble(ChartObject::ParmPrice2);
   dialog->addDoubleItem(pid++, page, s, price2);
 
-  s = QObject::tr("Bar Field");
-  QString bar;
-  co->getData(ChartObject::ParmBarField, bar);
-  dialog->addComboItem(pid++, page, s, fieldList, bar);
-
-  s = QObject::tr("Use Bar");
-  int useBar = co->getInt(ChartObject::ParmUseBar);
-  dialog->addCheckItem(pid++, page, s, useBar);
-
   s = QObject::tr("Extend");
   int extend = co->getInt(ChartObject::ParmExtend);
   dialog->addCheckItem(pid++, page, s, extend);
@@ -245,12 +202,6 @@ void TLine::dialog (ChartObject *co)
   price2 = dialog->getDouble(pid++);
   co->setData(ChartObject::ParmPrice2, price2);
   
-  dialog->getCombo(pid++, bar);
-  co->setData(ChartObject::ParmBarField, bar);
-  
-  useBar = dialog->getCheck(pid++);
-  co->setData(ChartObject::ParmUseBar, useBar);
-
   extend = dialog->getCheck(pid++);
   co->setData(ChartObject::ParmExtend, extend);
 
@@ -260,8 +211,6 @@ void TLine::dialog (ChartObject *co)
   {
     Config config;
     config.setBaseData((int) Config::DefaultTLineColor, color);
-    config.setData(Config::DefaultTLineBar, bar);
-    config.setBaseData((int) Config::DefaultTLineUseBar, useBar);
     config.setBaseData((int) Config::DefaultTLineExtend, extend);
   }
 
@@ -315,14 +264,8 @@ void TLine::setSettings (ChartObject *co, QSqlQuery &q)
   s = q.value(6).toString(); // t3 field
   co->setData(ChartObject::ParmDate2, s);
 
-  s = q.value(7).toString(); // t4 field
-  co->setData(ChartObject::ParmBarField, s);
-
   s = q.value(14).toString(); // i1 field
   co->setData(ChartObject::ParmExtend, s);
-
-  s = q.value(15).toString(); // i2 field
-  co->setData(ChartObject::ParmUseBar, s);
 
   s = q.value(24).toString(); // d1 field
   co->setData(ChartObject::ParmPrice, s);
@@ -333,7 +276,7 @@ void TLine::setSettings (ChartObject *co, QSqlQuery &q)
 
 void TLine::getSettings (ChartObject *co, QString &set)
 {
-  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,t2,t3,d1,d2,i1,i2,t4) VALUES (";
+  set = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,t2,t3,d1,d2,i1) VALUES (";
   
   QString s;
   co->getData(ChartObject::ParmID, s);
@@ -366,12 +309,6 @@ void TLine::getSettings (ChartObject *co, QString &set)
   co->getData(ChartObject::ParmExtend, s);
   set.append("," + s);
   
-  co->getData(ChartObject::ParmUseBar, s);
-  set.append("," + s);
-  
-  co->getData(ChartObject::ParmBarField, s);
-  set.append(",'" + s + "'");
-  
   set.append(")");
 }
 
@@ -385,14 +322,9 @@ void TLine::create (ChartObject *co)
 
   co->setData(ChartObject::ParmExtend, 0);
 
-  co->setData(ChartObject::ParmUseBar, 0);
-
   co->setData(ChartObject::ParmPrice, 0);
 
   co->setData(ChartObject::ParmPrice2, 0);
-
-  s = QObject::tr("Close");
-  co->setData(ChartObject::ParmBarField, s);
 
   s = QObject::tr("Select TLine starting point...");
   co->message(s);
@@ -480,6 +412,31 @@ void TLine::moving (ChartObject *co, QDateTime &x, double y, int moveFlag)
 void TLine::getIcon (QIcon &d)
 {
   d = QIcon(trend_xpm);
+}
+
+int TLine::inDateRange (ChartObject *co, QDateTime &startDate, QDateTime &endDate)
+{
+  int rc = FALSE;
+  QDateTime sd;
+  co->getDate(ChartObject::ParmDate, sd);
+  QDateTime ed;
+  co->getDate(ChartObject::ParmDate2, ed);
+  
+  // is start past our end?
+  if (startDate > ed)
+    return rc;
+  
+  // is end before our start?
+  if (endDate < sd)
+    return rc;
+  
+  if (startDate >= sd && startDate <= ed)
+    return TRUE;
+  
+  if (endDate >= sd && endDate <= ed)
+    return TRUE;
+  
+  return rc;
 }
 
 //*************************************************************

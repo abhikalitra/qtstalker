@@ -429,7 +429,7 @@ void DataBase::deleteChartObject (QString &id)
   }
 }
 
-void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QString, ChartObject *> &list)
+void DataBase::getChartObjects (QString &symbol, QString &indicator, Indicator &i)
 {
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "SELECT * FROM chartObjects WHERE symbol='" + symbol + "' AND indicator='" + indicator + "'";
@@ -457,7 +457,7 @@ void DataBase::getChartObjects (QString &symbol, QString &indicator, QHash<QStri
     
     ChartObject *co = new ChartObject;
     plug->setSettings(co, q);
-    list.insert(q.value(0).toString(), co);
+    i.addChartObject(co);
   }
 }
 

@@ -20,10 +20,9 @@
  */
 
 #include "BarData.h"
+
 #include <QObject>
 #include <QtDebug>
-
-
 
 BarData::BarData ()
 {
@@ -90,19 +89,19 @@ PlotLine * BarData::getInput (BarData::InputType field)
       }
       case AveragePrice:
       {
-        double t = (getOpen(loop) + getHigh(loop) + getLow(loop) + getClose(loop)) / 4.0;
+        double t = getAvgPrice(loop);
         in->append(color, t);
         break;
       }
       case MedianPrice:
       {
-        double t = (getHigh(loop) + getLow(loop)) / 2.0;
+        double t = getMedianPrice(loop);
         in->append(color, t);
         break;
       }
       case TypicalPrice:
       {
-        double t = (getHigh(loop) + getLow(loop) + getClose(loop)) / 3.0;
+        double t = getTypicalPrice(loop);
         in->append(color, t);
         break;
       }
@@ -133,32 +132,9 @@ void BarData::prepend (Bar *bar)
   barList.prepend(bar);
 }
 
-void BarData::createDateList ()
-{
-  dateList.clear();
-
-  int loop;
-  for (loop = 0; loop < (int) barList.count(); loop++)
-  {
-    Bar *bar = barList.at(loop);
-    QString s;
-    bar->getDateTimeString(s);
-    dateList.insert(s, loop);
-  }
-}
-
 void BarData::getDate (int i, QDateTime &dt)
 {
   barList.at(i)->getDate(dt);
-}
-
-int BarData::getX (QDateTime &date)
-{
-  int x = -1;
-  QString s = date.toString(Qt::ISODate);
-  if (dateList.contains(s))
-    x = dateList.value(s);
-  return x;
 }
 
 double BarData::getOpen (int i)

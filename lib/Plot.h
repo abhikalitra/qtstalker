@@ -54,7 +54,6 @@ class Plot : public QWidget
     IndicatorPlot * getIndicatorPlot ();
     DatePlot * getDatePlot ();
     void setMenuFlag (bool);
-    void calculate ();
 
   public slots:
     void draw();

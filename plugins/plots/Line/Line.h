@@ -28,7 +28,7 @@ class Line : public PlotPlugin
 {
   public:
     Line ();
-    void draw (PlotLine *, BarData *, QPixmap &, int, int, int, Scaler &);
+    void draw (PlotLine *, QPixmap &, int, int, int, Scaler &);
 };
 
 extern "C"

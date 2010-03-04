@@ -232,7 +232,7 @@ void QuoteDataBase::getChart (BarData *data)
   for (loop = 0; loop < dateList.count(); loop++)
     data->prepend(bars[dateList[loop]]);
 
-  data->createDateList();
+//  data->createDateList();
 }
 
 void QuoteDataBase::getFirstDate (QString &table, QDateTime &date)

@@ -28,7 +28,7 @@ class Sell : public COPlugin
 {
   public:
     Sell ();
-    void draw (ChartObject *, QPixmap &, BarData *, int startX, int pixelspace, int startIndex, Scaler &);
+    void draw (ChartObject *, QPixmap &, DateBar &, int startX, int pixelspace, int startIndex, Scaler &);
     void getInfo (ChartObject *, Setting &);
     void dialog (ChartObject *);
     void setSettings (ChartObject *, QSqlQuery &);
@@ -37,6 +37,8 @@ class Sell : public COPlugin
     int create2 (ChartObject *, QDateTime &, double);
     void moving (ChartObject *, QDateTime &, double, int);
     void getIcon (QIcon &);
+    void getHighLow (ChartObject *);
+    int inDateRange (ChartObject *, QDateTime &, QDateTime &);
 };
 
 extern "C"

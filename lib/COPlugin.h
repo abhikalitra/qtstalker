@@ -28,7 +28,7 @@
 #include <QIcon>
 #include <QPainter>
 
-#include "BarData.h"
+#include "DateBar.h"
 #include "Scaler.h"
 #include "Setting.h"
 #include "ChartObject.h"
@@ -38,7 +38,7 @@ class COPlugin
   public:
     COPlugin ();
     virtual ~COPlugin ();
-    virtual void draw (ChartObject *, QPixmap &, BarData *, int startX, int pixelspace,
+    virtual void draw (ChartObject *, QPixmap &, DateBar &, int startX, int pixelspace,
 		       int startIndex, Scaler &);
     virtual void getHighLow (ChartObject *);
     virtual void getInfo (ChartObject *, Setting &);
@@ -50,6 +50,7 @@ class COPlugin
     virtual int create3 (ChartObject *, QDateTime &, double);
     virtual void moving (ChartObject *, QDateTime &, double, int moveFlag);
     virtual void getIcon (QIcon &);
+    virtual int inDateRange (ChartObject *, QDateTime &, QDateTime &);
 
   protected:
     int handleWidth;

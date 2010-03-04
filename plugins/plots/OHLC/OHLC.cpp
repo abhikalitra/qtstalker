@@ -25,8 +25,7 @@ OHLC::OHLC ()
 {
 }
 
-void OHLC::draw (PlotLine *line, BarData *data, QPixmap &buffer, int startX, int pixelspace,
-		 int pos, Scaler &scaler)
+void OHLC::draw (PlotLine *line, QPixmap &buffer, int startX, int pixelspace, int pos, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&buffer);
@@ -39,17 +38,20 @@ void OHLC::draw (PlotLine *line, BarData *data, QPixmap &buffer, int startX, int
   {
     if (loop > -1)
     {
-      line->getData(loop, c);
+      PlotLineBar bar;
+      line->getData(loop, bar);
+
+      bar.getColor(c);
       painter.setPen(c);
 
-      int y = scaler.convertToY(data->getOpen(loop));
+      int y = scaler.convertToY(bar.getData(0));
       painter.drawLine (x - 2, y, x, y);
 
-      y = scaler.convertToY(data->getClose(loop));
+      y = scaler.convertToY(bar.getData(3));
       painter.drawLine (x + 2, y, x, y);
 
-      y = scaler.convertToY(data->getHigh(loop));
-      int y2 = scaler.convertToY(data->getLow(loop));
+      y = scaler.convertToY(bar.getData(1));
+      int y2 = scaler.convertToY(bar.getData(2));
       painter.drawLine (x, y, x, y2);
     }
 

@@ -507,20 +507,28 @@ PlotLine * MATH1::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_n
   int loop;
   for (loop = 0; loop < size; loop++)
   {
+    PlotLineBar bar;
+    bar.append(data->getOpen(loop));
+    bar.append(data->getHigh(loop));
+    bar.append(data->getLow(loop));
+    bar.append(data->getClose(loop));
+    
     if (loop > 0)
     {
       if (data->getClose(loop) > data->getClose(loop - 1))
-        line->append(_up, data->getClose(loop));
+        bar.setColor(_up);
       else
       {
         if (data->getClose(loop) < data->getClose(loop - 1))
-          line->append(_down, data->getClose(loop));
+          bar.setColor(_down);
         else
-          line->append(_neutral, data->getClose(loop));
+          bar.setColor(_neutral);
       }
     }
     else
-      line->append(_neutral, data->getClose(loop));
+      bar.setColor(_neutral);
+    
+    line->append(bar);
   }
 
   return line;

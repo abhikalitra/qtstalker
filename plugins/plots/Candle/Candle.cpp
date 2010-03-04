@@ -25,8 +25,7 @@ Candle::Candle ()
 {
 }
 
-void Candle::draw (PlotLine *line, BarData *data, QPixmap &buffer, int startX, int pixelspace,
-		   int pos, Scaler &scaler)
+void Candle::draw (PlotLine *line, QPixmap &buffer, int startX, int pixelspace, int pos, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&buffer);
@@ -41,16 +40,19 @@ void Candle::draw (PlotLine *line, BarData *data, QPixmap &buffer, int startX, i
     if (loop > -1)
     {
       ff = FALSE;
-      if (data->getClose(loop) < data->getOpen(loop))
+      PlotLineBar bar;
+      line->getData(loop, bar);
+      
+      if (bar.getData(3) < bar.getData(0))
         ff = TRUE;
 
-      line->getData(loop, c);
+      bar.getColor(c);
       painter.setPen(c);
 
-      int xh = scaler.convertToY(data->getHigh(loop));
-      int xl = scaler.convertToY(data->getLow(loop));
-      int xc = scaler.convertToY(data->getClose(loop));
-      int xo = scaler.convertToY(data->getOpen(loop));
+      int xh = scaler.convertToY(bar.getData(1));
+      int xl = scaler.convertToY(bar.getData(2));
+      int xc = scaler.convertToY(bar.getData(3));
+      int xo = scaler.convertToY(bar.getData(0));
 
       if (! ff)
       {

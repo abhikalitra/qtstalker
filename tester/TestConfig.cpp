@@ -151,6 +151,20 @@ void TestConfig::setDefaults ()
     setData(IndicatorPluginPath, d);
   }
 
+  getData(PlotPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/plot";
+    setData(PlotPluginPath, d);
+  }
+
+  getData(COPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/object";
+    setData(COPluginPath, d);
+  }
+
   commit();
 }
 
