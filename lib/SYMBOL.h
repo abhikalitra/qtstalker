@@ -29,7 +29,7 @@ class SYMBOL : public IndicatorPlugin
   public:
     SYMBOL ();
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getSYMBOL (QString &sym, QString &field, QString &length, int bars);
+    PlotLine * getSYMBOL (QString &ex, QString &sym, QString &field, QString &length, int bars);
 };
 
 #endif

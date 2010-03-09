@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -68,6 +68,10 @@ void PlotLine::append (QColor &c, double d)
 void PlotLine::append (PlotLineBar &d)
 {
   data.append(d);
+  
+  int loop;
+  for (loop = 0; loop < d.count(); loop++)
+    checkHighLow(d.getData(loop));
 }
 
 void PlotLine::prepend (double d)
@@ -161,10 +165,15 @@ void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
   for (loop = start; loop <= end; loop++)
   {
     PlotLineBar r = data.at(loop);
-    if (r.getData(0) > h)
-      h = r.getData(0);
-    if (r.getData(0) < l)
-      l = r.getData(0);
+    int loop2;
+    for (loop2 = 0; loop2 < r.count(); loop2++)
+    {
+      double t = r.getData(loop2);
+      if (t > h)
+        h = t;
+      if (t < l)
+        l = t;
+    }
   }
 }
 

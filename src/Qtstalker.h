@@ -97,7 +97,7 @@ class QtstalkerApp : public QMainWindow
     void initIndicatorNav ();
     void initScriptNav ();
     QString getWindowCaption ();
-    void loadChart (QString);
+    void loadChart (QString, QString);
     void setSliderStart (int);
 
   public slots:
@@ -105,7 +105,7 @@ class QtstalkerApp : public QMainWindow
     void slotStartDocumentation ();
     void slotShowDocumentation (QString);
     void slotQuit();
-    void slotOpenChart (QString);
+    void slotOpenChart (BarData *);
     void slotOpenChart (int);
     void slotOptions ();
     void slotDataWindow ();
@@ -125,7 +125,7 @@ class QtstalkerApp : public QMainWindow
     void slotHideNav (bool d);
     void ps1ButtonClicked ();
     void ps2ButtonClicked ();
-    void slotAddRecentChart (QString);
+    void slotAddRecentChart (BarData *);
     void slotZoomIn ();
     void slotZoomOut ();
     void slotPlotZoom (int, int);
@@ -167,6 +167,7 @@ class QtstalkerApp : public QMainWindow
     QToolBar *toolBar2;
     QString chartSymbol;
     QString chartName;
+    QString chartExchange;
     int barsLoaded;
 };
 

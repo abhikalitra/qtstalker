@@ -21,8 +21,9 @@
 
 #include "ChartPage.h"
 #include "DataBase.h"
-#include "QuoteDataBase.h"
+#include "DBPlugin.h"
 #include "Config.h"
+#include "SymbolDialog.h"
 
 #include "../pics/addgroup.xpm"
 #include "../pics/search.xpm"
@@ -42,8 +43,6 @@
 
 ChartPage::ChartPage (QWidget *w) : QWidget (w)
 {
-  activeSearch = 0;
-
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
   vbox->setSpacing(0);
@@ -53,13 +52,6 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   hbox->setMargin(5);
   hbox->setSpacing(2);
   vbox->addLayout(hbox);
-
-  allButton = new QToolButton;
-  allButton->setToolTip(tr("All Symbols"));
-  allButton->setIcon(QIcon(asterisk_xpm));
-  connect(allButton, SIGNAL(clicked()), this, SLOT(allButtonPressed()));
-  allButton->setMaximumSize(25, 25);
-  hbox->addWidget(allButton);
 
   symbolButton = new QToolButton;
   symbolButton->setToolTip(tr("Symbol Search"));
@@ -73,26 +65,22 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   nav = new QListWidget;
   nav->setContextMenuPolicy(Qt::CustomContextMenu);
   nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  nav->setSortingEnabled(TRUE);
+  nav->setSortingEnabled(FALSE);
   connect(nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   connect(nav, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
   vbox->addWidget(nav);
 
   menu = new QMenu(this);
-  menu->addAction(QIcon(addgroup), tr("Add To &Group	Ctrl+G"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
+  menu->addAction(QIcon(addgroup), tr("Add To &Group"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
   menu->addAction(QIcon(asterisk_xpm), tr("&All Symbols"), this, SLOT(updateList()), QKeySequence(Qt::CTRL+Qt::Key_A));
   menu->addAction(QIcon(search_xpm), tr("&Symbol Search"), this, SLOT(symbolSearch()), QKeySequence(Qt::CTRL+Qt::Key_S));
 
   // update to last symbol search before displaying
   Config config;
-  config.getData(Config::LastSymbolSearch, searchString);
-  if (searchString.isEmpty())
-    updateList();
-  else
-  {
-    activeSearch = 1;
-    updateList();
-  }
+  config.getData(Config::LastChartPanelExchangeSearch, searchExchange);
+  config.getData(Config::LastChartPanelSymbolSearch, searchString);
+  qDebug() << searchString << searchExchange;
+  updateList();
 }
 
 void ChartPage::chartOpened (QListWidgetItem *item)
@@ -100,8 +88,9 @@ void ChartPage::chartOpened (QListWidgetItem *item)
   if (! item)
     return;
 
-  emit fileSelected(item->text());
-  emit addRecentChart(item->text());
+  BarData *bd = symbols.at(nav->currentRow());
+  emit fileSelected(bd);
+  emit addRecentChart(bd);
 }
 
 void ChartPage::rightClick (const QPoint &)
@@ -111,6 +100,7 @@ void ChartPage::rightClick (const QPoint &)
 
 void ChartPage::addToGroup ()
 {
+/*
   QList<QListWidgetItem *> sl = nav->selectedItems();
   if (! sl.count())
     return;
@@ -142,6 +132,7 @@ void ChartPage::addToGroup ()
   db.setGroupList(group, tl);
 
   emit signalAddToGroup();
+*/
 }
 
 void ChartPage::doKeyPress (QKeyEvent *key)
@@ -171,56 +162,34 @@ void ChartPage::doKeyPress (QKeyEvent *key)
 
 void ChartPage::updateList ()
 {
-  QuoteDataBase db;
-  Config config;
-  QStringList l;
-  QString s;
-
   nav->clear();
+  qDeleteAll(symbols);
 
-  switch (activeSearch)
+  DBPlugin db;
+  db.getSearchList(searchExchange, searchString, symbols);
+
+  int loop;
+  for (loop = 0; loop < symbols.count(); loop++)
   {
-    case 1:
-      db.getSearchList(searchString, l);
-      break;
-    default:
-      db.getAllChartsList(l);
-      break;
+    BarData *bd = symbols.at(loop);
+    nav->addItem(bd->getSymbol());
   }
-
-  nav->addItems(l);
 }
 
 void ChartPage::symbolSearch ()
 {
-  bool ok;
-  searchString = QInputDialog::getText(this,
-				       tr("Symbol Search"),
-                                       tr("Enter either a specific symbol like IBM or\na partial match like %BM or %IBM%"),
-                                       QLineEdit::Normal,
-                                       QString(),
-                                       &ok,
-                                       0);
-  if (! ok)
+  SymbolDialog dialog(1);
+  dialog.setSymbols(searchExchange, searchString);
+  int rc = dialog.exec();
+  if (rc == QDialog::Rejected)
     return;
 
-  activeSearch = 1;
-
-  QuoteDataBase db;
-  QStringList l;
+  dialog.getSymbolSearch(searchExchange, searchString);
+  
   Config config;
-  QString s;
-  db.getSearchList(searchString, l);
-
-  nav->clear();
-  nav->addItems(l);
-
-  config.setData(Config::LastSymbolSearch, searchString);
-}
-
-void ChartPage::allButtonPressed ()
-{
-  activeSearch = 0;
+  config.setData(Config::LastChartPanelSymbolSearch, searchString);
+  config.setData(Config::LastChartPanelExchangeSearch, searchExchange);
+  
   updateList();
 }
 

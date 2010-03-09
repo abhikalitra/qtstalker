@@ -20,7 +20,7 @@
  */
 
 #include "SYMBOL.h"
-#include "QuoteDataBase.h"
+#include "DBPlugin.h"
 
 #include <QtDebug>
 
@@ -32,9 +32,9 @@ SYMBOL::SYMBOL ()
 
 int SYMBOL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *)
 {
-  // INDICATOR,SYMBOL,<NAME>,<SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
+  // INDICATOR,SYMBOL,<NAME>,<EXCHANGE>,><SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
 
-  if (set.count() != 7)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
@@ -48,14 +48,14 @@ int SYMBOL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   }
 
   bool ok;
-  int bars = set[6].toInt(&ok);
+  int bars = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid bars" << set[6];
+    qDebug() << indicator << "::calculate: invalid bars" << set[7];
     return 1;
   }
 
-  PlotLine *line = getSYMBOL(set[3], set[4], set[5], bars);
+  PlotLine *line = getSYMBOL(set[3], set[4], set[5], set[6], bars);
   if (! line)
     return 1;
 
@@ -64,15 +64,16 @@ int SYMBOL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   return 0;
 }
 
-PlotLine * SYMBOL::getSYMBOL (QString &sym, QString &field, QString &length, int bars)
+PlotLine * SYMBOL::getSYMBOL (QString &ex, QString &sym, QString &field, QString &length, int bars)
 {
   BarData symbol;
+  symbol.setExchange(ex);
   symbol.setSymbol(sym);
   symbol.setBarLength(length);
   symbol.setBarsRequested(bars);
 
-  QuoteDataBase db;
-  db.getChart(&symbol);
+  DBPlugin db;
+  db.getBars(symbol);
 
   BarData::InputType it = symbol.getInputType(field);
   PlotLine *line = symbol.getInput(it);

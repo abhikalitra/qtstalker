@@ -93,7 +93,7 @@ IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
   actions.append(action);
   action = menu->addAction(QIcon(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
   actions.append(action);
-  action = menu->addAction(QIcon(deleteitem), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
+  action = menu->addAction(QIcon(delete_xpm), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
   actions.append(action);
 
   listFlag = 0;

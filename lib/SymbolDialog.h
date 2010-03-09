@@ -26,31 +26,39 @@
 #include <QString>
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QListWidget>
-#include <QPushButton>
+#include <QTreeWidget>
+#include <QToolButton>
+#include <QComboBox>
+#include <QLineEdit>
+
+#include "BarData.h"
 
 class SymbolDialog : public QDialog
 {
   Q_OBJECT
 
   public:
-    SymbolDialog ();
-    void setSymbols (QStringList &);
-    void getSymbols (QStringList &);
-    void updateLeftSymbols ();
+    SymbolDialog (int);
+    void setSymbols (QString &ex, QString &ss);
+    void getSymbols (QList<BarData *> &);
+    void getSymbolSearch (QString &ex, QString &ss);
 
   public slots:
     void cancelPressed ();
-    void leftButtonPressed ();
-    void rightButtonPressed ();
+    void deleteButtonPressed ();
+    void addButtonPressed ();
+    void searchButtonPressed ();
 
   private:
     int modified;
     QDialogButtonBox *buttonBox;
-    QListWidget *leftSymbols;
-    QListWidget *rightSymbols;
-    QPushButton *leftButton;
-    QPushButton *rightButton;
+    QTreeWidget *leftSymbols;
+    QTreeWidget *rightSymbols;
+    QToolButton *deleteButton;
+    QToolButton *addButton;
+    QComboBox *exchanges;
+    QLineEdit *search;
+    QToolButton *searchButton;
 };
 
 #endif

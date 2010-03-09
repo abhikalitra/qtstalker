@@ -41,14 +41,6 @@ class DataBase
     void transaction ();
     void commit ();
 
-    // chart functions
-//    void getAllChartsList (QStringList &);
-//    void getSearchList (QString &pat, QStringList &l);
-//    void getChart (BarData *);
-//    void getFirstDate (QDateTime &date, QString &symbol);
-//    void getLastDate (QDateTime &date, QString &symbol);
-//    void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate, BarData::BarLength barLength);
-
     // group functions
     void getAllGroupsList (QStringList &);
     void getGroupList (QString &, QStringList &);

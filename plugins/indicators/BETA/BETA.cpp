@@ -20,7 +20,7 @@
  */
 
 #include "BETA.h"
-#include "QuoteDataBase.h"
+#include "DBPlugin.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -50,20 +50,19 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
   }
 
   settings.getData(Index, s);
-  BarData *bd = new BarData;
-  bd->setSymbol(s);
-  bd->setBarLength(data->getBarLength());
-  bd->setBarsRequested(data->getBarsRequested());
+  BarData bd;
+  bd.setSymbol(s);
+  bd.setBarLength(data->getBarLength());
+  bd.setBarsRequested(data->getBarsRequested());
 
-  QuoteDataBase db;
-  db.getChart(bd);
+  DBPlugin db;
+  db.getBars(bd);
 
-  PlotLine *in2 = bd->getInput(BarData::Close);
+  PlotLine *in2 = bd.getInput(BarData::Close);
   if (! in2)
   {
     qDebug() << indicator << "::calculate: index not found";
     delete in;
-    delete bd;
     return 1;
   }
 
@@ -74,7 +73,6 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
   {
     delete in;
     delete in2;
-    delete bd;
     return 1;
   }
 
@@ -88,7 +86,6 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
 
   delete in;
   delete in2;
-  delete bd;
 
   return 0;
 }

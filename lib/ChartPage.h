@@ -31,18 +31,19 @@
 #include <QPoint>
 #include <QToolButton>
 #include <QComboBox>
+#include <QHash>
 
-
+#include "BarData.h"
 
 class ChartPage : public QWidget
 {
   Q_OBJECT
 
   signals:
-    void fileSelected (QString);
+    void fileSelected (BarData *);
     void signalAddToGroup ();
     void signalReloadChart ();
-    void addRecentChart (QString);
+    void addRecentChart (BarData *);
 
   public:
     ChartPage (QWidget *);
@@ -54,15 +55,14 @@ class ChartPage : public QWidget
     void addToGroup ();
     void updateList ();
     void symbolSearch ();
-    void allButtonPressed ();
 
   protected:
-    int activeSearch;
     QString searchString;
+    QString searchExchange;
     QListWidget *nav;
     QMenu *menu;
-    QToolButton *allButton;
     QToolButton *symbolButton;
+    QList<BarData *> symbols;
 };
 
 #endif

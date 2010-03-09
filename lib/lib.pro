@@ -38,7 +38,6 @@ HEADERS += Script.h
 HEADERS += TestDataBase.h
 HEADERS += TestTrade.h
 HEADERS += TestSignal.h
-HEADERS += QuoteDataBase.h
 HEADERS += IndicatorPlugin.h
 HEADERS += PluginFactory.h
 HEADERS += COPlugin.h
@@ -51,12 +50,14 @@ HEADERS += MATH1.h
 HEADERS += RANGE.h
 HEADERS += REF.h
 HEADERS += SYMBOL.h
-HEADERS += SymbolButton.h
+#HEADERS += SymbolButton.h
 HEADERS += SymbolDialog.h
 HEADERS += DateBar.h
 HEADERS += PlotGrid.h
 HEADERS += PlotInfo.h
 HEADERS += Utils.h
+HEADERS += DBPlugin.h
+HEADERS += SCQuote.h
 
 
 SOURCES += Setting.cpp
@@ -92,7 +93,6 @@ SOURCES += Script.cpp
 SOURCES += TestDataBase.cpp
 SOURCES += TestTrade.cpp
 SOURCES += TestSignal.cpp
-SOURCES += QuoteDataBase.cpp
 SOURCES += IndicatorPlugin.cpp
 SOURCES += PluginFactory.cpp
 SOURCES += COPlugin.cpp
@@ -105,12 +105,14 @@ SOURCES += MATH1.cpp
 SOURCES += RANGE.cpp
 SOURCES += REF.cpp
 SOURCES += SYMBOL.cpp
-SOURCES += SymbolButton.cpp
+#SOURCES += SymbolButton.cpp
 SOURCES += SymbolDialog.cpp
 SOURCES += DateBar.cpp
 SOURCES += PlotGrid.cpp
 SOURCES += PlotInfo.cpp
 SOURCES += Utils.cpp
+SOURCES += DBPlugin.cpp
+SOURCES += SCQuote.cpp
 
 
 TARGET = qtstalker

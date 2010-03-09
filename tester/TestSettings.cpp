@@ -31,41 +31,26 @@
 #include "TestSettings.h"
 #include "BarData.h"
 #include "TestConfig.h"
-#include "PluginFactory.h"
 
 TestSettings::TestSettings ()
 {
   priceList << "Open" << "High" << "Low" << "Close" << "AvgPrice" << "MedianPrice" << "TypicalPrice";
   
-  TestConfig config;
-  config.getBaseData(TestConfig::IndicatorPluginList, indicatorList);
-
   BarData bd;
   bd.getBarLengthList(barLengthList);
 
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(5);
-  hbox->setSpacing(10);
-  setLayout(hbox);
-
   QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(0);
+  vbox->setMargin(5);
   vbox->setSpacing(5);
-  hbox->addLayout(vbox);
-
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(5);
-  vbox->addLayout(grid);
-  int row = 0;
-  int col = 0;
+  setLayout(vbox);
 
   // script box area
-  scriptCheck = new QGroupBox;
-  scriptCheck->setCheckable(TRUE);
+  QGroupBox *scriptCheck = new QGroupBox;
+  scriptCheck->setCheckable(FALSE);
   scriptCheck->setTitle(tr("Run Script"));
-  scriptCheck->setChecked(FALSE);
-  connect(scriptCheck, SIGNAL(toggled(bool)), this, SLOT(scriptCheckChanged(bool)));
-  grid->addWidget(scriptCheck, row++, col);
+//  scriptCheck->setChecked(FALSE);
+//  connect(scriptCheck, SIGNAL(toggled(bool)), this, SLOT(scriptCheckChanged(bool)));
+  vbox->addWidget(scriptCheck);
 
     QGridLayout *tgrid = new QGridLayout;
     tgrid->setSpacing(5);
@@ -89,98 +74,19 @@ TestSettings::TestSettings ()
     tgrid->addWidget(scriptButton, 1, 2);
     connect(scriptButton, SIGNAL(pressed()), this, SLOT(scriptButtonPressed()));
 
+    label = new QLabel(tr("Comment"));
+    tgrid->addWidget(label, 2, 0);
 
-  // long box area
-  longCheck = new QGroupBox;
-  longCheck->setCheckable(TRUE);
-  longCheck->setTitle(tr("Long"));
-  longCheck->setChecked(FALSE);
-  grid->addWidget(longCheck, row++, col);
-
-    tgrid = new QGridLayout;
-    tgrid->setSpacing(5);
-    tgrid->setColumnStretch(1, 1);
-    longCheck->setLayout(tgrid);
-
-    // enter long line
-    label = new QLabel(tr("Enter Long"));
-    tgrid->addWidget(label, 0, 0);
-
-    enterLongCombo = new QComboBox;
-    enterLongCombo->addItems(indicatorList);
-    connect(enterLongCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(enterLongComboChanged()));
-    tgrid->addWidget(enterLongCombo, 0, 1);
-
-    enterLongButton = new QToolButton;
-    tgrid->addWidget(enterLongButton, 0, 2);
-    enterLongButton->setText(QString("..."));
-    connect(enterLongButton, SIGNAL(pressed()), this, SLOT(enterLongButtonPressed()));
-
-    // exit long line
-    label = new QLabel(tr("Exit Long"));
-    tgrid->addWidget(label, 1, 0);
-
-    exitLongCombo = new QComboBox;
-    exitLongCombo->addItems(indicatorList);
-    connect(exitLongCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(exitLongComboChanged()));
-    tgrid->addWidget(exitLongCombo, 1, 1);
-
-    exitLongButton = new QToolButton;
-    tgrid->addWidget(exitLongButton, 1, 2);
-    exitLongButton->setText(QString("..."));
-    connect(exitLongButton, SIGNAL(pressed()), this, SLOT(exitLongButtonPressed()));
-
-  // short box area
-  shortCheck = new QGroupBox;
-  shortCheck->setCheckable(TRUE);
-  shortCheck->setTitle(tr("Short"));
-  shortCheck->setChecked(FALSE);
-  grid->addWidget(shortCheck, row++, col);
-
-    tgrid = new QGridLayout;
-    tgrid->setSpacing(5);
-    tgrid->setColumnStretch(1, 1);
-    shortCheck->setLayout(tgrid);
-
-    // enter short line
-    label = new QLabel(tr("Enter Short"));
-    tgrid->addWidget(label, 0, 0);
-
-    enterShortCombo = new QComboBox;
-    enterShortCombo->addItems(indicatorList);
-    connect(enterShortCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(enterShortComboChanged()));
-    tgrid->addWidget(enterShortCombo, 0, 1);
-
-    enterShortButton = new QToolButton;
-    tgrid->addWidget(enterShortButton, 0, 2);
-    enterShortButton->setText(QString("..."));
-    connect(enterShortButton, SIGNAL(pressed()), this, SLOT(enterShortButtonPressed()));
-
-    // exit short line
-    label = new QLabel(tr("Exit Short"));
-    tgrid->addWidget(label, 1, 0);
-
-    exitShortCombo = new QComboBox;
-    exitShortCombo->addItems(indicatorList);
-    connect(exitShortCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(exitShortComboChanged()));
-    tgrid->addWidget(exitShortCombo, 1, 1);
-
-    exitShortButton = new QToolButton;
-    tgrid->addWidget(exitShortButton, 1, 2);
-    exitShortButton->setText(QString("..."));
-    connect(exitShortButton, SIGNAL(pressed()), this, SLOT(exitShortButtonPressed()));
-
-  vbox->addStretch(1);
+    comment = new QTextEdit;
+    tgrid->addWidget(comment, 2, 1);
 
 
-  
-  // right side of page
-  grid = new QGridLayout;
+  QGridLayout *grid = new QGridLayout;
   grid->setSpacing(5);
   grid->setColumnStretch(1, 1);
-  hbox->addLayout(grid);
-  row = 0;
-  col = 0;
+  vbox->addLayout(grid);
+  int row = 0;
+  int col = 0;
 
   label = new QLabel(tr("Symbol"));
   grid->addWidget(label, row, col++);
@@ -284,15 +190,9 @@ TestSettings::TestSettings ()
   trailing->setValue(7);
   grid->addWidget(trailing, row++, col--);
 
-  grid->setRowStretch(row, 1);
-}
-
-TestSettings::~TestSettings ()
-{
-  enterLongIndicator.clear();
-  exitLongIndicator.clear();
-  enterShortIndicator.clear();
-  exitShortIndicator.clear();
+  vbox->addStretch();
+  
+//  grid->setRowStretch(row, 1);
 }
 
 void TestSettings::scriptButtonPressed ()
@@ -317,176 +217,6 @@ void TestSettings::scriptButtonPressed ()
   script->setText(s);
 }
 
-void TestSettings::scriptCheckChanged (bool d)
-{
-  if (! d)
-  {
-    longCheck->setEnabled(TRUE);
-    shortCheck->setEnabled(TRUE);
-  }
-  else
-  {
-    longCheck->setEnabled(FALSE);
-    shortCheck->setEnabled(FALSE);
-  }
-}
-
-void TestSettings::enterLongComboChanged ()
-{
-  enterLongIndicator.clear();
-  
-  QString s = enterLongCombo->currentText();
-  if (s.isEmpty())
-    return;
-  
-  TestConfig config;
-  QString path;
-  config.getData(TestConfig::IndicatorPluginPath, path);
-
-  PluginFactory fac;
-  IndicatorPlugin *plug = fac.getIndicator(path, s);
-  if (! plug)
-    return;
-  
-  plug->getSettings(enterLongIndicator);
-  enterLongIndicator.setIndicator(s);
-}
-
-void TestSettings::exitLongComboChanged ()
-{
-  exitLongIndicator.clear();
-
-  QString s = exitLongCombo->currentText();
-  if (s.isEmpty())
-    return;
-
-  TestConfig config;
-  QString path;
-  config.getData(TestConfig::IndicatorPluginPath, path);
-
-  PluginFactory fac;
-  IndicatorPlugin *plug = fac.getIndicator(path, s);
-  if (! plug)
-    return;
-  
-  plug->getSettings(exitLongIndicator);
-  exitLongIndicator.setIndicator(s);
-}
-
-void TestSettings::enterShortComboChanged ()
-{
-  enterShortIndicator.clear();
-
-  QString s = enterShortCombo->currentText();
-  if (s.isEmpty())
-    return;
-  
-  TestConfig config;
-  QString path;
-  config.getData(TestConfig::IndicatorPluginPath, path);
-
-  PluginFactory fac;
-  IndicatorPlugin *plug = fac.getIndicator(path, s);
-  if (! plug)
-    return;
-  
-  plug->getSettings(enterShortIndicator);
-  enterShortIndicator.setIndicator(s);
-}
-
-void TestSettings::exitShortComboChanged ()
-{
-  exitShortIndicator.clear();
-
-  QString s = exitShortCombo->currentText();
-  if (s.isEmpty())
-    return;
-  
-  TestConfig config;
-  QString path;
-  config.getData(TestConfig::IndicatorPluginPath, path);
-
-  PluginFactory fac;
-  IndicatorPlugin *plug = fac.getIndicator(path, s);
-  if (! plug)
-    return;
-  
-  plug->getSettings(exitShortIndicator);
-  exitShortIndicator.setIndicator(s);
-}
-
-void TestSettings::enterLongButtonPressed ()
-{
-  TestConfig config;
-  QString path;
-  config.getData(TestConfig::IndicatorPluginPath, path);
-
-  QString s;
-  enterLongIndicator.getIndicator(s);
-  PluginFactory fac;
-  IndicatorPlugin *plug = fac.getIndicator(path, s);
-  if (! plug)
-    return;
-
-  plug->setSettings(enterLongIndicator);
-  plug->dialog(1);
-  plug->getSettings(enterLongIndicator);
-}
-
-void TestSettings::exitLongButtonPressed ()
-{
-  TestConfig config;
-  QString path;
-  config.getData(TestConfig::IndicatorPluginPath, path);
-
-  QString s;
-  exitLongIndicator.getIndicator(s);
-  PluginFactory fac;
-  IndicatorPlugin *plug = fac.getIndicator(path, s);
-  if (! plug)
-    return;
-
-  plug->setSettings(exitLongIndicator);
-  plug->dialog(1);
-  plug->getSettings(exitLongIndicator);
-}
-
-void TestSettings::enterShortButtonPressed ()
-{
-  TestConfig config;
-  QString path;
-  config.getData(TestConfig::IndicatorPluginPath, path);
-
-  QString s;
-  enterShortIndicator.getIndicator(s);
-  PluginFactory fac;
-  IndicatorPlugin *plug = fac.getIndicator(path, s);
-  if (! plug)
-    return;
-
-  plug->setSettings(enterShortIndicator);
-  plug->dialog(1);
-  plug->getSettings(enterShortIndicator);
-}
-
-void TestSettings::exitShortButtonPressed ()
-{
-  TestConfig config;
-  QString path;
-  config.getData(TestConfig::IndicatorPluginPath, path);
-
-  QString s;
-  exitShortIndicator.getIndicator(s);
-  PluginFactory fac;
-  IndicatorPlugin *plug = fac.getIndicator(path, s);
-  if (! plug)
-    return;
-
-  plug->setSettings(exitShortIndicator);
-  plug->dialog(1);
-  plug->getSettings(exitShortIndicator);
-}
-
 void TestSettings::getScript (QString &d)
 {
   d = script->text();
@@ -495,16 +225,6 @@ void TestSettings::getScript (QString &d)
 void TestSettings::setScript (QString &d)
 {
   script->setText(d);
-}
-
-bool TestSettings::getScriptCheck ()
-{
-  return scriptCheck->isChecked();
-}
-
-void TestSettings::setScriptCheck (bool d)
-{
-  scriptCheck->setChecked(d);
 }
 
 void TestSettings::getShellCommand (QString &d)
@@ -517,24 +237,15 @@ void TestSettings::setShellCommand (QString &d)
   shellCommand->setText(d);
 }
 
-bool TestSettings::getLongCheck ()
+void TestSettings::getComment (QString &d)
 {
-  return longCheck->isChecked();
+  d = comment->toPlainText();
 }
 
-void TestSettings::setLongCheck (bool d)
+void TestSettings::setComment (QString &d)
 {
-  longCheck->setChecked(d);
-}
-
-bool TestSettings::getShortCheck ()
-{
-  return shortCheck->isChecked();
-}
-
-void TestSettings::setShortCheck (bool d)
-{
-  shortCheck->setChecked(d);
+  comment->clear();
+  comment->append(d);
 }
 
 void TestSettings::getSymbol (QString &d)
@@ -660,127 +371,4 @@ void TestSettings::setTrailingCheck (bool d)
 {
   trailingCheck->setChecked(d);
 }
-
-void TestSettings::getEnterLongCombo (QString &d)
-{
-  d = enterLongCombo->currentText();
-}
-
-void TestSettings::setEnterLongCombo (QString &d)
-{
-  enterLongCombo->setCurrentIndex(indicatorList.indexOf(d));
-}
-
-void TestSettings::getExitLongCombo (QString &d)
-{
-  d = exitLongCombo->currentText();
-}
-
-void TestSettings::setExitLongCombo (QString &d)
-{
-  exitLongCombo->setCurrentIndex(indicatorList.indexOf(d));
-}
-
-void TestSettings::getEnterShortCombo (QString &d)
-{
-  d = enterShortCombo->currentText();
-}
-
-void TestSettings::setEnterShortCombo (QString &d)
-{
-  enterShortCombo->setCurrentIndex(indicatorList.indexOf(d));
-}
-
-void TestSettings::getExitShortCombo (QString &d)
-{
-  d = exitShortCombo->currentText();
-}
-
-void TestSettings::setExitShortCombo (QString &d)
-{
-  exitShortCombo->setCurrentIndex(indicatorList.indexOf(d));
-}
-
-void TestSettings::getEnterLongIndicator (Indicator &d)
-{
-  d = enterLongIndicator;
-}
-
-void TestSettings::getExitLongIndicator (Indicator &d)
-{
-  d = exitLongIndicator;
-}
-
-void TestSettings::getEnterShortIndicator (Indicator &d)
-{
-  d = enterShortIndicator;
-}
-
-void TestSettings::getExitShortIndicator (Indicator &d)
-{
-  d = exitShortIndicator;
-}
-
-void TestSettings::getEnterLongSettings (QString &d)
-{
-  d = " ";
-  Setting set;
-  enterLongIndicator.getSettings(set);
-  set.getString(d);
-}
-
-void TestSettings::setEnterLongSettings (QString &d)
-{
-  Setting set;
-  set.parse(d);
-  enterLongIndicator.setSettings(set);
-}
-
-void TestSettings::getExitLongSettings (QString &d)
-{
-  d = " ";
-  Setting set;
-  exitLongIndicator.getSettings(set);
-  set.getString(d);
-}
-
-void TestSettings::setExitLongSettings (QString &d)
-{
-  Setting set;
-  set.parse(d);
-  exitLongIndicator.setSettings(set);
-}
-
-void TestSettings::getEnterShortSettings (QString &d)
-{
-  d = " ";
-  Setting set;
-  enterShortIndicator.getSettings(set);
-  set.getString(d);
-}
-
-void TestSettings::setEnterShortSettings (QString &d)
-{
-  Setting set;
-  set.parse(d);
-  enterShortIndicator.setSettings(set);
-}
-
-void TestSettings::getExitShortSettings (QString &d)
-{
-  d = " ";
-  Setting set;
-  exitShortIndicator.getSettings(set);
-  set.getString(d);
-}
-
-void TestSettings::setExitShortSettings (QString &d)
-{
-  Setting set;
-  set.parse(d);
-  exitShortIndicator.setSettings(set);
-}
-
-
-
 

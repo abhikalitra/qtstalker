@@ -35,4 +35,9 @@ indicator.path = "$${INSTALL_DATA_DIR}/qtstalker/indicator"
 indicator.files = ../misc/CUS_examples/*.perl
 INSTALLS += indicator
 
+# install the db update files
+dbUpdate.path = "$${INSTALL_DATA_DIR}/qtstalker/db"
+dbUpdate.files = *.csv
+INSTALLS += dbUpdate
+
 

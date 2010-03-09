@@ -20,7 +20,11 @@
  */
 
 #include "SymbolDialog.h"
-#include "QuoteDataBase.h"
+#include "DBPlugin.h"
+
+#include "../pics/search.xpm"
+#include "../pics/add.xpm"
+#include "../pics/delete.xpm"
 
 #include <QLabel>
 #include <QLayout>
@@ -29,49 +33,64 @@
 #include <QtDebug>
 #include <QMessageBox>
 #include <QGroupBox>
+#include <QTreeWidgetItem>
 
-SymbolDialog::SymbolDialog () : QDialog (0, 0)
+SymbolDialog::SymbolDialog (int flag) : QDialog (0, 0)
 {
   modified = 0;
   setWindowTitle(tr("Select Symbols"));
 
   QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(5);
+  vbox->setSpacing(5);
   setLayout(vbox);
 
   QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setMargin(0);
+  hbox->setSpacing(5);
   vbox->addLayout(hbox);
   
   // construct left box
   QGroupBox *gbox = new QGroupBox;
-  gbox->setTitle(tr("Symbols Available"));
+  gbox->setTitle(tr("Symbols"));
   hbox->addWidget(gbox);
   
   QVBoxLayout *tvbox = new QVBoxLayout;
   tvbox->setMargin(5);
   gbox->setLayout(tvbox);
 
-  leftSymbols = new QListWidget;
+  QHBoxLayout *thbox = new QHBoxLayout;
+  thbox->setSpacing(2);
+  tvbox->addLayout(thbox);
+  
+  exchanges = new QComboBox;
+  DBPlugin db;
+  QStringList l;
+  db.getExchangeList(l);
+  exchanges->addItems(l);
+  exchanges->setCurrentIndex(0);
+  exchanges->setToolTip(QString(tr("Exchange")));
+  thbox->addWidget(exchanges);
+  
+  search = new QLineEdit;
+  search->setToolTip(QString(tr("Symbol pattern")));
+  thbox->addWidget(search);
+  
+  searchButton = new QToolButton;
+  searchButton->setIcon(QIcon(search_xpm));
+  searchButton->setToolTip(QString(tr("Search")));
+  connect(searchButton, SIGNAL(clicked()), this, SLOT(searchButtonPressed()));
+  thbox->addWidget(searchButton);
+  
+  l.clear();
+  l << tr("Symbol") << tr("Name") << tr("Exchange");
+
+  leftSymbols = new QTreeWidget;
+  leftSymbols->setRootIsDecorated(FALSE);
+  leftSymbols->setHeaderLabels(l);
   leftSymbols->setSelectionMode(QAbstractItemView::ExtendedSelection);
   tvbox->addWidget(leftSymbols);
   
-  // construct middle button box
-  tvbox = new QVBoxLayout;
-  tvbox->setMargin(5);
-  tvbox->setSpacing(5);
-  hbox->addLayout(tvbox);
-
-  rightButton = new QPushButton;
-  rightButton->setText(QString(">>"));
-  connect(rightButton, SIGNAL(clicked()), this, SLOT(rightButtonPressed()));
-  tvbox->addWidget(rightButton);
-
-  leftButton = new QPushButton;
-  leftButton->setText(QString("<<"));
-  connect(leftButton, SIGNAL(clicked()), this, SLOT(leftButtonPressed()));
-  tvbox->addWidget(leftButton);
-  
-//  tvbox->addStretch(1);
-
   // construct right box
   gbox = new QGroupBox;
   gbox->setTitle(tr("Symbols Selected"));
@@ -81,7 +100,27 @@ SymbolDialog::SymbolDialog () : QDialog (0, 0)
   tvbox->setMargin(5);
   gbox->setLayout(tvbox);
 
-  rightSymbols = new QListWidget;
+  thbox = new QHBoxLayout;
+  thbox->setSpacing(2);
+  tvbox->addLayout(thbox);
+  
+  addButton = new QToolButton;
+  addButton->setIcon(QIcon(add_xpm));
+  addButton->setToolTip(QString(tr("Add selected symbols")));
+  connect(addButton, SIGNAL(clicked()), this, SLOT(addButtonPressed()));
+  thbox->addWidget(addButton);
+
+  deleteButton = new QToolButton;
+  deleteButton->setIcon(QIcon(delete_xpm));
+  deleteButton->setToolTip(QString(tr("Remove selected symbols")));
+  connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteButtonPressed()));
+  thbox->addWidget(deleteButton);
+  
+  thbox->addStretch();
+  
+  rightSymbols = new QTreeWidget;
+  rightSymbols->setRootIsDecorated(FALSE);
+  rightSymbols->setHeaderLabels(l);
   rightSymbols->setSelectionMode(QAbstractItemView::ExtendedSelection);
   tvbox->addWidget(rightSymbols);
 
@@ -89,26 +128,39 @@ SymbolDialog::SymbolDialog () : QDialog (0, 0)
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancelPressed()));
   vbox->addWidget(buttonBox);
-
-  updateLeftSymbols();
-}
-
-void SymbolDialog::setSymbols (QStringList &l)
-{
-  rightSymbols->clear();
-  rightSymbols->addItems(l);
-}
-
-void SymbolDialog::getSymbols (QStringList &l)
-{
-  l.clear();
   
+  if (flag)
+    gbox->hide();
+}
+
+void SymbolDialog::setSymbols (QString &ex, QString &ss)
+{
+  exchanges->setCurrentIndex(exchanges->findText(ex, Qt::MatchExactly));
+  search->setText(ss);
+  searchButtonPressed();
+}
+
+void SymbolDialog::getSymbols (QList<BarData *> &l)
+{
   int loop;
-  for (loop = 0; loop < rightSymbols->count(); loop++)
+  for (loop = 0; loop < rightSymbols->columnCount(); loop++)
   {
-    QListWidgetItem *item = rightSymbols->item(loop);
-    l.append(item->text());
+    QTreeWidgetItem *item = rightSymbols->topLevelItem(loop);
+    BarData *bd = new BarData;
+    QString s = item->text(0);
+    bd->setSymbol(s);
+    s = item->text(1);
+    bd->setName(s);
+    s = item->text(2);
+    bd->setExchange(s);
+    l.append(bd);
   }
+}
+
+void SymbolDialog::getSymbolSearch (QString &ex, QString &ss)
+{
+  ex = exchanges->currentText();
+  ss = search->text();
 }
 
 void SymbolDialog::cancelPressed()
@@ -128,9 +180,9 @@ void SymbolDialog::cancelPressed()
   reject();
 }
 
-void SymbolDialog::leftButtonPressed ()
+void SymbolDialog::deleteButtonPressed ()
 {
-  QList<QListWidgetItem *> l = rightSymbols->selectedItems();
+  QList<QTreeWidgetItem *> l = rightSymbols->selectedItems();
   if (! l.count())
     return;
   
@@ -138,33 +190,60 @@ void SymbolDialog::leftButtonPressed ()
   for (loop = 0; loop < l.count(); loop++)
     delete l.at(loop);
 
+  for (loop = 0; loop < rightSymbols->columnCount(); loop++)
+    rightSymbols->resizeColumnToContents(loop);
+
   modified++;
 }
 
-void SymbolDialog::rightButtonPressed ()
+void SymbolDialog::addButtonPressed ()
 {
-  QList<QListWidgetItem *> l = leftSymbols->selectedItems();
+  QList<QTreeWidgetItem *> l = leftSymbols->selectedItems();
   if (! l.count())
     return;
   
   int loop;
   for (loop = 0; loop < l.count(); loop++)
   {
-    QListWidgetItem *item = l.at(loop);
-    rightSymbols->addItem(item->text());
+    QTreeWidgetItem *item = l.at(loop);
+    QTreeWidgetItem *item2 = new QTreeWidgetItem(rightSymbols);
+    int loop;
+    for (loop = 0; loop < 3; loop++)
+      item2->setText(loop, item->text(loop));
   }
-  
+
+  for (loop = 0; loop < rightSymbols->columnCount(); loop++)
+    rightSymbols->resizeColumnToContents(loop);
+
   modified++;
 }
 
-void SymbolDialog::updateLeftSymbols ()
+void SymbolDialog::searchButtonPressed ()
 {
-  QuoteDataBase db;
-  QStringList l;
-  db.getAllChartsList(l);
-  
+  DBPlugin db;
+  QList<BarData *> l;
+  QString s = search->text();
+  QString ex = exchanges->currentText();
+  if (ex.contains("<NONE>"))
+    ex.clear();
+  db.getSearchList(ex, s, l);
+
   leftSymbols->clear();
-  leftSymbols->addItems(l);
+  
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    QTreeWidgetItem *item = new QTreeWidgetItem(leftSymbols);
+    BarData *bd = l.at(loop);
+    item->setText(0, bd->getSymbol());
+    item->setText(1, bd->getName());
+    item->setText(2, bd->getExchange());
+  }
+  
+  qDeleteAll(l);
+  
+  for (loop = 0; loop < leftSymbols->columnCount(); loop++)
+    leftSymbols->resizeColumnToContents(loop);
 }
 
 

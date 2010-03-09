@@ -1,5 +1,5 @@
 /* XPM */
-static const char *deleteitem[]={
+static const char *delete_xpm[]={
 "16 16 167 2",
 ".C c None",
 ".j c None",

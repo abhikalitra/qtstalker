@@ -73,10 +73,10 @@ class Config : public BaseConfig
       COPluginList,  // csv list of current chart object plugins from startup inventory
       PlotPluginPath, // path where plot plugins are stored
       PlotPluginList, // csv list of current plot plugins from startup inventory
-      ShowScaleToScreenButton, // ********* UNUSED *************
-      ShowCrosshairButton, // ********* UNUSED *************
+      DBPluginPath, // path where db plugins are stored
+      DBPluginList, // csv list of current db plugins from startup inventory
       DbSearchSymbols, // the sql command to get a symbol search
-      ShowDrawModeButton, // ********* UNUSED *************
+      LastChartPanelExchangeSearch, // last exchange search used on the chart panel
       ShowNewIndicatorButton, // ********* UNUSED *************
       ShowDataWindowButton, // ********* UNUSED *************
       ShowHelpButton, // ********* UNUSED *************
@@ -104,7 +104,7 @@ class Config : public BaseConfig
       RecentChartsList, // csv list of the contents of the recent charts combobox
       LastChartObjectID, // used to assign a new co object id number
       DefaultTextLabel,
-      LastSymbolSearch,
+      LastChartPanelSymbolSearch, // the last symbol search used in the chart panel
       DefaultRetracementColor,
       DefaultRetracementLine1,
       DefaultRetracementLine2,

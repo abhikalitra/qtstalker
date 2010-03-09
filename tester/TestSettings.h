@@ -34,6 +34,7 @@
 #include <QToolButton>
 #include <QGroupBox>
 #include <QWidget>
+#include <QTextEdit>
 
 #include "IndicatorPlugin.h"
 #include "SymbolButton.h"
@@ -44,17 +45,12 @@ class TestSettings : public QWidget
 
   public:
     TestSettings ();
-    ~TestSettings ();
     void getScript (QString &);
     void setScript (QString &);
-    bool getScriptCheck ();
-    void setScriptCheck (bool);
     void getShellCommand (QString &);
     void setShellCommand (QString &);
-    bool getLongCheck ();
-    void setLongCheck (bool);
-    bool getShortCheck ();
-    void setShortCheck (bool);
+    void getComment (QString &);
+    void setComment (QString &);
     void getSymbol (QString &);
     void setSymbol (QString &);
     int getEnterField ();
@@ -79,54 +75,16 @@ class TestSettings : public QWidget
     void setTrailing (double);
     bool getTrailingCheck ();
     void setTrailingCheck (bool);
-    void getEnterLongCombo (QString &);
-    void setEnterLongCombo (QString &);
-    void getExitLongCombo (QString &);
-    void setExitLongCombo (QString &);
-    void getEnterShortCombo (QString &);
-    void setEnterShortCombo (QString &);
-    void getExitShortCombo (QString &);
-    void setExitShortCombo (QString &);
-    void getEnterLongIndicator (Indicator &);
-    void getExitLongIndicator (Indicator &);
-    void getEnterShortIndicator (Indicator &);
-    void getExitShortIndicator (Indicator &);
-    void getEnterLongSettings (QString &d);
-    void setEnterLongSettings (QString &d);
-    void getExitLongSettings (QString &d);
-    void setExitLongSettings (QString &d);
-    void getEnterShortSettings (QString &d);
-    void setEnterShortSettings (QString &d);
-    void getExitShortSettings (QString &d);
-    void setExitShortSettings (QString &d);
 
   public slots:
     void scriptButtonPressed ();
-    void enterLongButtonPressed ();
-    void exitLongButtonPressed ();
-    void enterShortButtonPressed ();
-    void exitShortButtonPressed ();
-    void enterLongComboChanged ();
-    void exitLongComboChanged ();
-    void enterShortComboChanged ();
-    void exitShortComboChanged ();
-    void scriptCheckChanged (bool);
 
   private:
     QStringList priceList;
     QStringList barLengthList;
-    QStringList indicatorList;
-
-    QGroupBox *scriptCheck;
-    QGroupBox *longCheck;
-    QGroupBox *shortCheck;
     QLineEdit *script;
     QLineEdit *shellCommand;
     QToolButton *scriptButton;
-    QToolButton *enterLongButton;
-    QToolButton *exitLongButton;
-    QToolButton *enterShortButton;
-    QToolButton *exitShortButton;
     SymbolButton *symbolButton;
     QComboBox *enterField;
     QComboBox *exitField;
@@ -139,14 +97,7 @@ class TestSettings : public QWidget
     QComboBox *barLength;
     QDoubleSpinBox *account;
     QDoubleSpinBox *volumePercentage;
-    QComboBox *enterLongCombo;
-    QComboBox *exitLongCombo;
-    QComboBox *enterShortCombo;
-    QComboBox *exitShortCombo;
-    Indicator enterLongIndicator;
-    Indicator exitLongIndicator;
-    Indicator enterShortIndicator;
-    Indicator exitShortIndicator;
+    QTextEdit *comment;
 };
 
 #endif

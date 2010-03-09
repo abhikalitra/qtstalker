@@ -36,13 +36,14 @@ CUS::CUS ()
 int CUS::getIndicator (Indicator &_ind, BarData *_data)
 {
   Config config;
-  QString path;
-  config.getData(Config::IndicatorPluginPath, path);
+  QString ipp, dbpp;
+  config.getData(Config::IndicatorPluginPath, ipp);
+  config.getData(Config::DBPluginPath, dbpp);
   
   QString s;
   settings.getData(Script, s);
 
-  ExScript script(path);
+  ExScript script(ipp, dbpp);
   script.setBarData(_data);
   int rc = script.calculate(s);
   if (! rc)

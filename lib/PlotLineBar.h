@@ -33,6 +33,7 @@ class PlotLineBar
     double getData (int);
     void setColor (QColor &);
     void getColor (QColor &);
+    int count ();
 
   protected:
     QList<double> data;

@@ -34,7 +34,10 @@ void BaseConfig::createTable ()
 {
   QSqlDatabase db = QSqlDatabase::database("config");
   QSqlQuery q(db);
-  QString s = "CREATE TABLE IF NOT EXISTS config (key INT PRIMARY KEY, setting TEXT)";
+  QString s = "CREATE TABLE IF NOT EXISTS config (";
+  s.append("key INT PRIMARY KEY UNIQUE");
+  s.append(", setting TEXT");
+  s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "BaseConfig::createTable: " << q.lastError().text();
@@ -71,7 +74,10 @@ void BaseConfig::getBaseData (int p, QString &d)
 void BaseConfig::setBaseData (int p, QString &d)
 {
   QSqlQuery q(QSqlDatabase::database("config"));
-  QString s = "INSERT OR REPLACE INTO config (key,setting) VALUES (" + QString::number(p) + ",'" + d + "')";
+  QString s = "INSERT OR REPLACE INTO config (key,setting) VALUES (";
+  s.append(QString::number(p)); // key
+  s.append(",'" + d + "'"); // setting
+  s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
   {

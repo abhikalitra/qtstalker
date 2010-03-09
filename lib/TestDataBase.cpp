@@ -60,10 +60,8 @@ void TestDataBase::init ()
   s = "CREATE TABLE IF NOT EXISTS results (";
   s.append("name TEXT PRIMARY KEY");
   s.append(",script TEXT");
-  s.append(",scriptCheck INT");
   s.append(",shellCommand TEXT");
-  s.append(",longCheck INT");
-  s.append(",shortCheck INT");
+  s.append(",comment TEXT");
   s.append(",symbol TEXT");
   s.append(",enterField INT");
   s.append(",exitField INT");
@@ -76,14 +74,6 @@ void TestDataBase::init ()
   s.append(",volumePercentage REAL");
   s.append(",trailingStop REAL");
   s.append(",trailingCheck INT");
-  s.append(",enterLongIndicator TEXT");
-  s.append(",exitLongIndicator TEXT");
-  s.append(",enterShortIndicator TEXT");
-  s.append(",exitShortIndicator TEXT");
-  s.append(",enterLongIndicatorSettings TEXT");
-  s.append(",exitLongIndicatorSettings TEXT");
-  s.append(",enterShortIndicatorSettings TEXT");
-  s.append(",exitShortIndicatorSettings TEXT");
 
   // summary data
   s.append(",grossProfit REAL");

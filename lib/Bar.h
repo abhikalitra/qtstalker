@@ -27,8 +27,6 @@
 #include <QDateTime>
 #include <QHash>
 
-
-
 class Bar
 {
   public:
@@ -51,25 +49,13 @@ class Bar
     void getDateString (QString &);
     void getDateTimeString (QString &);
     void getTimeString (QString &);
-    void setSymbol (QString &);
-    void getSymbol (QString &);
-    void setName (QString &);
-    void getName (QString &);
-    void setType (QString &);
-    void getType (QString &);
-    void setExchange (QString &);
-    void getExchange (QString &);
     void setTime (QTime &);
-    void setData (QString &, QString &);
-    void getData (QString &, QString &);
     bool getValidDate ();
     void getDateNumber (QString &);
-    void getKeys (QStringList &);
-    void copy (Bar *);
     void clear ();
 
   protected:
-    QHash<QString, QString> data;
+    QHash<int, double> data;
     QDateTime date;
     bool emptyFlag;
 };

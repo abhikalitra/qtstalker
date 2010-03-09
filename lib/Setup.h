@@ -30,10 +30,10 @@ class Setup
 {
   public:
     Setup ();
-    void setup ();
     void setupConfigDefaults ();
     void setupDirectories ();
     void setupDefaultIndicators ();
+    void setupExchanges ();
 
   protected:
     QString home;

@@ -19,34 +19,20 @@
  *  USA.
  */
 
-#include "Utils.h"
+#ifndef SC_QUOTE_HPP
+#define SC_QUOTE_HPP
 
-#include <QtDebug>
-#include <cmath>
+#include <QStringList>
+#include <QString>
+#include <QByteArray>
 
-Utils::Utils ()
+class SCQuote
 {
-}
+  public:
+    SCQuote ();
+    void calculate (QStringList &, QByteArray &, QString &);
+    void quoteSet (QStringList &, QByteArray &, QString &);
+    void quoteSetName (QStringList &, QByteArray &, QString &);
+};
 
-void Utils::strip (double d, int p, QString &s)
-{
-  int y = d;
-  int z = (d - y) * 100;
-  if (z == 0)
-  {
-    // no decimal
-    s = QString::number(d, 'f', 0);
-    return;
-  }
-
-  if (fabs(d) < 1)
-    s = QString::number(d, 'f', p);
-  else
-  {
-    if (fabs(d) > 1000)
-      s = QString::number(d, 'f', 0);
-    else
-      s = QString::number(d, 'f', 2);
-  }
-}
-
+#endif

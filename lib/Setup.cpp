@@ -26,28 +26,22 @@
 #include "Indicator.h"
 #include "PluginFactory.h"
 #include "IndicatorPlugin.h"
+#include "DBPlugin.h"
 #include "ta_libc.h"
-
 
 #include <QtDebug>
 #include <QtSql>
 #include <QDir>
 #include <QObject>
-
+#include <QFile>
+#include <QTextStream>
+#include <QStringList>
 
 Setup::Setup ()
-{
-}
-
-void Setup::setup ()
 {
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("TALIB::setDefaults:error on TA_Initialize");
-
-  setupDirectories();
-  setupConfigDefaults();
-  setupDefaultIndicators();
 }
 
 void Setup::setupDirectories ()
@@ -262,7 +256,7 @@ void Setup::setupConfigDefaults ()
   config.getData(Config::DbName, d);
   if (d.isEmpty())
   {
-    d = QDir::homePath() + "/.CSV/quotes.sqlite";
+    d = QDir::homePath() + "/.qtstalker/quotes.sqlite";
     config.setData(Config::DbName, d);
   }
 
@@ -485,6 +479,13 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::PlotPluginPath, d);
   }
 
+  config.getData(Config::DBPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/database";
+    config.setData(Config::DBPluginPath, d);
+  }
+
   config.commit();
 }
 
@@ -534,5 +535,35 @@ void Setup::setupDefaultIndicators ()
   }
 
   config.setBaseData((int) Config::DefaultIndicators, 1);
+}
+
+void Setup::setupExchanges ()
+{
+  QFile file("/usr/local/share/qtstalker/db/exchanges.csv");
+  if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
+    return;
+
+  QTextStream in(&file);
+  in.readLine(); // skip past first line
+ 
+  DBPlugin db;
+  db.transaction();
+ 
+  while (! in.atEnd())
+  {
+    QString s = in.readLine();
+    QStringList l = s.split(",");
+   
+    s = "REPLACE INTO exchangeIndex (name,country,gmt,currency) VALUES(";
+    s.append("'" + l[0] + "'");
+    s.append(",'" + l[1] + "'");
+    s.append("," + l[2]);
+    s.append(",'" + l[3] + "'");
+    s.append(")");
+    db.command(s, QString("Setup::setupExchanges:"));
+  }
+  
+  db.commit();
+  file.close();
 }
 

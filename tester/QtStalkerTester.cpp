@@ -105,8 +105,8 @@ QtStalkerTester::QtStalkerTester ()
   report = new TestReport;
   tabs->addTab(report, tr("Report"));
 
-//  chart = new TestChart;
-//  tabs->addTab(chart, tr("Chart"));
+  chart = new TestChart;
+  tabs->addTab(chart, tr("Chart"));
 
   // restore app settings from previous session
   restoreSettings();
@@ -254,16 +254,18 @@ void QtStalkerTester::saveTest ()
   else
     s.append(",'" + ts + "'");
 
-  s.append("," + QString::number(settings->getScriptCheck()));
-
   settings->getShellCommand(ts);
+  ts = ts.remove(QString("'"), Qt::CaseSensitive);
   if (ts.isEmpty())
     s.append(",' '");
   else
     s.append(",'" + ts + "'");
 
-  s.append("," + QString::number(settings->getLongCheck()));
-  s.append("," + QString::number(settings->getShortCheck()));
+  settings->getComment(ts);
+  if (ts.isEmpty())
+    s.append(",' '");
+  else
+    s.append(",'" + ts + "'");
 
   settings->getSymbol(ts);
   if (ts.isEmpty())
@@ -282,30 +284,6 @@ void QtStalkerTester::saveTest ()
   s.append("," + QString::number(settings->getVolumePercentage()));
   s.append("," + QString::number(settings->getTrailing()));
   s.append("," + QString::number(settings->getTrailingCheck()));
-
-  settings->getEnterLongCombo(ts);
-  s.append(",'" + ts + "'");
-
-  settings->getExitLongCombo(ts);
-  s.append(",'" + ts + "'");
-
-  settings->getEnterShortCombo(ts);
-  s.append(",'" + ts + "'");
-
-  settings->getExitShortCombo(ts);
-  s.append(",'" + ts + "'");
-
-  settings->getEnterLongSettings(ts);
-  s.append(",'" + ts + "'");
-
-  settings->getExitLongSettings(ts);
-  s.append(",'" + ts + "'");
-
-  settings->getEnterShortSettings(ts);
-  s.append(",'" + ts + "'");
-
-  settings->getExitShortSettings(ts);
-  s.append(",'" + ts + "'");
 
   // summary stuff
   report->getGrossProfit(ts);
@@ -438,14 +416,11 @@ void QtStalkerTester::loadTest (QString &s)
     QString ts = q.value(col++).toString();
     settings->setScript(ts);
 
-    settings->setScriptCheck(q.value(col++).toBool());
-
     ts = q.value(col++).toString();
     settings->setShellCommand(ts);
 
-    settings->setLongCheck(q.value(col++).toBool());
-
-    settings->setShortCheck(q.value(col++).toBool());
+    ts = q.value(col++).toString();
+    settings->setComment(ts);
 
     ts = q.value(col++).toString();
     settings->setSymbol(ts);
@@ -471,30 +446,6 @@ void QtStalkerTester::loadTest (QString &s)
     settings->setTrailing(q.value(col++).toDouble());
 
     settings->setTrailingCheck(q.value(col++).toBool());
-
-    ts = q.value(col++).toString();
-    settings->setEnterLongCombo(ts);
-
-    ts = q.value(col++).toString();
-    settings->setExitLongCombo(ts);
-
-    ts = q.value(col++).toString();
-    settings->setEnterShortCombo(ts);
-
-    ts = q.value(col++).toString();
-    settings->setExitShortCombo(ts);
-
-    ts = q.value(col++).toString();
-    settings->setEnterLongSettings(ts);
-
-    ts = q.value(col++).toString();
-    settings->setExitLongSettings(ts);
-
-    ts = q.value(col++).toString();
-    settings->setEnterShortSettings(ts);
-
-    ts = q.value(col++).toString();
-    settings->setExitShortSettings(ts);
 
     // summary stuff
     ts = q.value(col++).toString();
@@ -565,25 +516,242 @@ void QtStalkerTester::cancelTest ()
 
 void QtStalkerTester::run ()
 {
-  if (settings->getScriptCheck())
+  QString s;
+  settings->getScript(s);
+  if (s.isEmpty())
   {
-    QString s;
-    settings->getScript(s);
-    if (s.isEmpty())
-    {
-      QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing script file."));
-      return;
-    }
-
-    settings->getShellCommand(s);
-    if (s.isEmpty())
-    {
-      QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing shell command."));
-      return;
-    }
+    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing script file."));
+    return;
   }
 
+  settings->getShellCommand(s);
+  if (s.isEmpty())
+  {
+    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing shell command."));
+    return;
+  }
+
+  settings->getSymbol(s);
+  if (s.isEmpty())
+  {
+    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing symbol."));
+    return;
+  }
+
+  BarData *data = new BarData;
+  data->setSymbol(s);
+  data->setBarLength((BarData::BarLength) settings->getBarLength());
+  data->setBarsRequested(settings->getBars());
+
+  QuoteDataBase qdb;
+  qdb.getChart(data);
+  if (data->count() == 0)
+  {
+    qDebug() << "QtStalkerTester::run: 0 bars loaded";
+    delete data;
+    return;
+  }
+  
+  PlotLine *ep = data->getInput((BarData::InputType) settings->getEnterField());
+  if (! ep)
+  {
+    qDebug() << "QtStalkerTester::run: no enter price line";
+    delete data;
+    return;
+  }
+  
+  PlotLine *xp = data->getInput((BarData::InputType) settings->getExitField());
+  if (! xp)
+  {
+    qDebug() << "QtStalkerTester::run: no exit price line";
+    delete data;
+    return;
+  }
+
+  TestConfig config;
+  QString path, coPluginPath;
+  config.getData(TestConfig::IndicatorPluginPath, path);
+  config.getData(TestConfig::COPluginPath, coPluginPath);
+
+  ExScript server(path);
+  server.setBarData(data);
+  server.setDeleteFlag(TRUE);
+  settings->getShellCommand(s);
+  QString ts;
+  settings->getScript(ts);
+  s.append(" " + ts);
+  server.calculate(s); // we are calling the blocking version of calculate() here
+
+  // find the smallest line
+  int pos = 99999999;
+  PlotLine *el = server.getEnterLong();
+  if (el)
+  {
+    if (el->count() < pos)
+      pos = el->count();
+  }
+  PlotLine *xl = server.getExitLong();
+  if (xl)
+  {
+    if (xl->count() < pos)
+      pos = xl->count();
+  }
+  PlotLine *es = server.getEnterShort();
+  if (es)
+  {
+    if (es->count() < pos)
+      pos = es->count();
+  }
+  PlotLine *xs = server.getExitShort();
+  if (xs)
+  {
+    if (xs->count() < pos)
+      pos = xs->count();
+  }
+  
+  // calculate line start points
+  int elLoop = 0;
+  if (el)
+    elLoop = el->count() - pos;
+  int xlLoop = 0;
+  if (xl)
+    xlLoop = xl->count() - pos;
+  int esLoop = 0;
+  if (es)
+    esLoop = es->count() - pos;
+  int xsLoop = 0;
+  if (xs)
+    xsLoop = xs->count() - pos;
+  int dataLoop = data->count() - pos;
+  
+  int status = 0;
+  int loop;
+  double money = settings->getAccount();
+  TestTrade *trade = 0;
+  for (loop = dataLoop; loop < data->count(); dataLoop++, elLoop++,xlLoop++,esLoop++,xsLoop++)
+  {
+    switch (status)
+    {
+      case 1: // long position
+	// check if we exit long
+        if (xl->getData(xlLoop) > 0)
+        {
+	  // exit the trade
+          status = 0;
+          QDateTime dt;
+          data->getDate(dataLoop + settings->getDelay(), dt);
+          trade->setExitDate(dt);
+	    
+	  double price = xp->getData(dataLoop + settings->getDelay());
+          trade->setExitPrice(price);
+	  break;
+	}
+	
+	// continue in position
+        break;
+      case 2: // short position
+        break;
+      default: // no position
+        if (el)
+        {
+          if (el->getData(elLoop) > 0)
+          {
+	    // are we entering a trade on the last bar?
+	    if (dataLoop + settings->getDelay() >= data->count())
+	      break; // we are out of bars
+	  
+	    // enter long positon
+	    status = 1;
+	    trade = new TestTrade;
+	    trade->setType(0);
+            if (settings->getTrailingCheck())
+              trade->setTrailing(settings->getTrailing());
+	    
+            QDateTime dt;
+            data->getDate(dataLoop + settings->getDelay(), dt);
+            trade->setEnterDate(dt);
+	    
+	    double price = ep->getData(dataLoop + settings->getDelay());
+            trade->setEnterPrice(price);
+	    
+            double t = money * (settings->getVolumePercentage() / 100);
+            int volume = money / price;
+	    trade->setVolume(volume);
+	    break;
+          }
+        }
+
+        if (es)
+        {
+          if (es->getData(esLoop) > 0)
+          {
+	    // are we entering a trade on the last bar?
+	    if (dataLoop + settings->getDelay() >= data->count())
+	      break; // we are out of bars
+	  
+	    // enter short positon
+	    status = 2;
+	    trade = new TestTrade;
+	    trade->setType(1);
+            if (settings->getTrailingCheck())
+              trade->setTrailing(settings->getTrailing());
+	    
+            QDateTime dt;
+            data->getDate(dataLoop + settings->getDelay(), dt);
+            trade->setEnterDate(dt);
+	    
+	    double price = ep->getData(dataLoop + settings->getDelay());
+            trade->setEnterPrice(price);
+	    
+            double t = money * (settings->getVolumePercentage() / 100);
+            int volume = money / price;
+	    trade->setVolume(volume);
+	    break;
+          }
+        }
+
+        break;
+    }
+  }
+  
+  QList<TestTrade *> trades;
+  TestTrade ttrade;
+  ttrade.createTrades(data, trades, 0, settings->getVolumePercentage(), settings->getDelay(),
+                      settings->getEnterField(), enterLongSigs, exitLongSigs);
+  ttrade.createTrades(data, trades, 1, settings->getVolumePercentage(), settings->getDelay(),
+                      settings->getExitField(), enterShortSigs, exitShortSigs);
+
+  runTrades(data, trades);
+
+  report->createSummary(trades, settings->getAccount(), settings->getEntryComm(), settings->getExitComm());
+
+  saveTest();
+
+  rankings->update();
+  
+  chart->update(data, trades, coPluginPath);
+
+  delete data;
+  qDeleteAll(trades);
+}
+/*
+void QtStalkerTester::run ()
+{
   QString s;
+  settings->getScript(s);
+  if (s.isEmpty())
+  {
+    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing script file."));
+    return;
+  }
+
+  settings->getShellCommand(s);
+  if (s.isEmpty())
+  {
+    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing shell command."));
+    return;
+  }
+
   settings->getSymbol(s);
   if (s.isEmpty())
   {
@@ -611,144 +779,44 @@ void QtStalkerTester::run ()
   TestSignal exitShortSigs;
   
   TestConfig config;
-  QString path;
+  QString path, coPluginPath;
   config.getData(TestConfig::IndicatorPluginPath, path);
+  config.getData(TestConfig::COPluginPath, coPluginPath);
 
   PluginFactory fac;
 
-  if (settings->getScriptCheck())
-  {
-    ExScript server(path);
-    server.setBarData(data);
-    server.setDeleteFlag(TRUE);
-    settings->getShellCommand(s);
-    QString ts;
-    settings->getScript(ts);
-    s.append(" " + ts);
-    server.calculate(s); // we are calling the blocking version of calculate() here
+  ExScript server(path);
+  server.setBarData(data);
+  server.setDeleteFlag(TRUE);
+  settings->getShellCommand(s);
+  QString ts;
+  settings->getScript(ts);
+  s.append(" " + ts);
+  server.calculate(s); // we are calling the blocking version of calculate() here
 
-    PlotLine *l = server.getEnterLong();
-    if (l)
-      enterLongSigs.createSignals(data, l);
+  PlotLine *l = server.getEnterLong();
+  if (l)
+    enterLongSigs.createSignals(data, l);
 
-    l = server.getExitLong();
-    if (l)
-      exitLongSigs.createSignals(data, l);
+  l = server.getExitLong();
+  if (l)
+    exitLongSigs.createSignals(data, l);
 
-    l = server.getEnterShort();
-    if (l)
-      enterShortSigs.createSignals(data, l);
+  l = server.getEnterShort();
+  if (l)
+    enterShortSigs.createSignals(data, l);
 
-    l = server.getExitShort();
-    if (l)
-      exitShortSigs.createSignals(data, l);
-  }
-  else
-  {
-    if (settings->getLongCheck())
-    {
-      // enter long indicator
-      Indicator i;
-      settings->getEnterLongIndicator(i);
-      QString s;
-      i.getIndicator(s);
-      IndicatorPlugin *plug = fac.getIndicator(path, s);
-      if (! plug)
-      {
-	delete data;
-        return;
-      }
-      
-      plug->setSettings(i);
-      if (plug->test(data, enterLongSigs))
-      {
-        qDebug() << "QtStalkerTester::runDialog: enterLong error";
-        return;
-      }
+  l = server.getExitShort();
+  if (l)
+    exitShortSigs.createSignals(data, l);
 
-      // exit long indicator
-      i.clear();
-      settings->getExitLongIndicator(i);
-      i.getIndicator(s);
-      plug = fac.getIndicator(path, s);
-      if (! plug)
-      {
-	delete data;
-        return;
-      }
-      
-      plug->setSettings(i);
-      if (plug->test(data, exitLongSigs))
-      {
-        qDebug() << "QtStalkerTester::runDialog: exitLong error";
-        return;
-      }
-    }
-
-    if (settings->getShortCheck())
-    {
-      // enter short indicator
-      Indicator i;
-      settings->getEnterShortIndicator(i);
-      QString s;
-      i.getIndicator(s);
-      IndicatorPlugin *plug = fac.getIndicator(path, s);
-      if (! plug)
-      {
-	delete data;
-        return;
-      }
-      
-      plug->setSettings(i);
-      if (plug->test(data, enterShortSigs))
-      {
-        qDebug() << "QtStalkerTester::runDialog: enterShort error";
-        return;
-      }
-
-      // exit short indicator
-      i.clear();
-      settings->getExitShortIndicator(i);
-      i.getIndicator(s);
-      plug = fac.getIndicator(path, s);
-      if (! plug)
-      {
-	delete data;
-        return;
-      }
-      
-      plug->setSettings(i);
-      if (plug->test(data, exitShortSigs))
-      {
-        qDebug() << "QtStalkerTester::runDialog: exitShort error";
-        return;
-      }
-    }
-  }
-
+  
   QList<TestTrade *> trades;
   TestTrade ttrade;
-  if (settings->getScriptCheck())
-  {
-    ttrade.createTrades(data, trades, 0, settings->getVolumePercentage(), settings->getDelay(),
-		        settings->getEnterField(), enterLongSigs, exitLongSigs);
-    ttrade.createTrades(data, trades, 1, settings->getVolumePercentage(), settings->getDelay(),
-	                settings->getExitField(), enterShortSigs, exitShortSigs);
-  }
-  else
-  {
-    if (settings->getLongCheck())
-    {
-      ttrade.createTrades(data, trades, 0, settings->getVolumePercentage(), settings->getDelay(),
-		          settings->getEnterField(), enterLongSigs, exitLongSigs);
-    }
-
-    if (settings->getShortCheck())
-    {
-      ttrade.createTrades(data, trades, 1, settings->getVolumePercentage(), settings->getDelay(),
-	                  settings->getExitField(), enterShortSigs, exitShortSigs);
-    }
-  }
+  ttrade.createTrades(data, trades, 0, settings->getVolumePercentage(), settings->getDelay(),
+                      settings->getEnterField(), enterLongSigs, exitLongSigs);
+  ttrade.createTrades(data, trades, 1, settings->getVolumePercentage(), settings->getDelay(),
+                      settings->getExitField(), enterShortSigs, exitShortSigs);
 
   runTrades(data, trades);
 
@@ -758,12 +826,12 @@ void QtStalkerTester::run ()
 
   rankings->update();
   
-//  chart->update(data, trades);
+  chart->update(data, trades, coPluginPath);
 
   delete data;
   qDeleteAll(trades);
 }
-
+*/
 void QtStalkerTester::runTrades (BarData *data, QList<TestTrade *> &trades)
 {
   PlotLine *line = 0;

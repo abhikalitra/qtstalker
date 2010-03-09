@@ -32,15 +32,15 @@
 #include <QAction>
 #include <QComboBox>
 
-
+#include "BarData.h"
 
 class GroupPage : public QWidget
 {
   Q_OBJECT
 
   signals:
-    void fileSelected (QString);
-    void addRecentChart (QString);
+    void fileSelected (BarData *);
+    void addRecentChart (BarData *);
 
   public:
     GroupPage (QWidget *);
@@ -62,6 +62,7 @@ class GroupPage : public QWidget
     QMenu *menu;
     QComboBox *group;
     QList<QAction *> actionList;
+    QList<BarData *> symbols;
 };
 
 #endif

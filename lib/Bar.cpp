@@ -23,7 +23,6 @@
 
 #include <QtDebug>
 
-
 Bar::Bar ()
 {
   emptyFlag = TRUE;
@@ -45,86 +44,68 @@ void Bar::getDate (QDateTime &d)
 
 void Bar::setOpen (double d)
 {
-  QString k("Open");
-  QString s = QString::number(d);
-  data.insert(k, s);
+  data.insert(0, d);
   emptyFlag = FALSE;
 }
 
 double Bar::getOpen ()
 {
-  QString k("Open");
-  return data.value(k).toDouble();
+  return data.value(0);
 }
 
 void Bar::setHigh (double d)
 {
-  QString k("High");
-  QString s = QString::number(d);
-  data.insert(k, s);
+  data.insert(1, d);
   emptyFlag = FALSE;
 }
 
 double Bar::getHigh ()
 {
-  QString k("High");
-  return data.value(k).toDouble();
+  return data.value(1);
 }
 
 void Bar::setLow (double d)
 {
-  QString k("Low");
-  QString s = QString::number(d);
-  data.insert(k, s);
+  data.insert(2, d);
   emptyFlag = FALSE;
 }
 
 double Bar::getLow ()
 {
-  QString k("Low");
-  return data.value(k).toDouble();
+  return data.value(2);
 }
 
 void Bar::setClose (double d)
 {
-  QString k("Close");
-  QString s = QString::number(d);
-  data.insert(k, s);
+  data.insert(3, d);
   emptyFlag = FALSE;
 }
 
 double Bar::getClose ()
 {
-  QString k("Close");
-  return data.value(k).toDouble();
+  return data.value(3);
 }
 
 void Bar::setVolume (double d)
 {
-  QString k("Volume");
-  QString s = QString::number(d);
-  data.insert(k, s);
+  data.insert(4, d);
   emptyFlag = FALSE;
 }
 
 double Bar::getVolume ()
 {
-  QString k("Volume");
-  return data.value(k).toDouble();
+  return data.value(4);
 }
 
 void Bar::setOI (double d)
 {
-  QString k("OI");
-  QString s = QString::number(d);
-  data.insert(k, s);
+  data.insert(5, d);
   emptyFlag = FALSE;
 }
 
 double Bar::getOI ()
 {
-  QString k("OI");
-  return data.value(k).toDouble();
+  return data.value(5);
 }
 
 bool Bar::getEmptyFlag ()
@@ -147,58 +128,6 @@ void Bar::getTimeString (QString &d)
   d = date.toString("HH:mm:ss");
 }
 
-void Bar::setSymbol (QString &d)
-{
-  QString k("Symbol");
-  data.insert(k, d);
-}
-
-void Bar::getSymbol (QString &d)
-{
-  d.clear();
-  QString k("Symbol");
-  d = data.value(k);
-}
-
-void Bar::setName (QString &d)
-{
-  QString k("Name");
-  data.insert(k, d);
-}
-
-void Bar::getName (QString &d)
-{
-  d.clear();
-  QString k("Name");
-  d = data.value(k);
-}
-
-void Bar::setType (QString &d)
-{
-  QString k("Type");
-  data.insert(k, d);
-}
-
-void Bar::getType (QString &d)
-{
-  d.clear();
-  QString k("Type");
-  d = data.value(k);
-}
-
-void Bar::setExchange (QString &d)
-{
-  QString k("Exchange");
-  data.insert(k, d);
-}
-
-void Bar::getExchange (QString &d)
-{
-  d.clear();
-  QString k("Exchange");
-  d = data.value(k);
-}
-
 void Bar::setTime (QTime &d)
 {
   if (! d.isValid())
@@ -206,18 +135,6 @@ void Bar::setTime (QTime &d)
 
   date.setTime(d);
   return;
-}
-
-void Bar::setData (QString &k, QString &d)
-{
-  data.insert(k, d);
-  emptyFlag = FALSE;
-}
-
-void Bar::getData (QString &k, QString &d)
-{
-  d.clear();
-  d = data.value(k);
 }
 
 bool Bar::getValidDate ()
@@ -228,35 +145,6 @@ bool Bar::getValidDate ()
 void Bar::getDateNumber (QString &d)
 {
   d = date.toString("yyyyMMddHHmmss");
-}
-
-void Bar::copy (Bar *bar)
-{
-  bar->getDate(date);
-
-  QStringList keys;
-  bar->getKeys(keys);
-
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString s;
-    bar->getData(keys[loop], s);
-    setData(keys[loop], s);
-  }
-
-  emptyFlag = FALSE;
-}
-
-void Bar::getKeys (QStringList &l)
-{
-  l.clear();
-  QHashIterator<QString, QString> i(data);
-  while (i.hasNext())
-  {
-    i.next();
-    l.append(i.key());
-  }
 }
 
 void Bar::clear ()

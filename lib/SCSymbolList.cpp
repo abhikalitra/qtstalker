@@ -20,10 +20,11 @@
  */
 
 #include "SCSymbolList.h"
-#include "QuoteDataBase.h"
+#include "DBPlugin.h"
+#include "BarData.h"
 
 #include <QtDebug>
-
+#include <QList>
 
 SCSymbolList::SCSymbolList ()
 {
@@ -31,26 +32,33 @@ SCSymbolList::SCSymbolList ()
 
 int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
 {
-  // format = SYMBOL_LIST,SEARCH_STRING
+  // format = SYMBOL_LIST,EXCHANGE,SEARCH_STRING
 
   ba.clear();
   ba.append("ERROR\n");
 
-  if (l.count() != 2)
+  if (l.count() != 3)
   {
     qDebug() << "SCSymbolList::calculate: invalid parm count" << l.count();
     return 1;
   }
 
-  QuoteDataBase db;
-  QStringList symbolList;
-  if (l[1] == "*")
-    db.getAllChartsList(symbolList);
-  else
-    db.getSearchList(l[1], symbolList);
+  DBPlugin db;
+  QList<BarData *> bdl;
+  db.getSearchList(l[1], l[2], bdl);
+  
+  int loop;
+  QStringList sl;
+  for (loop = 0; loop < bdl.count(); loop++)
+  {
+     BarData *bd = bdl.at(loop); 
+     sl.append(bd->getSymbol());
+  }
+  
+  qDeleteAll(bdl);
 
   ba.clear();
-  ba.append(symbolList.join(","));
+  ba.append(sl.join(","));
   ba.append('\n');
 
   return 0;

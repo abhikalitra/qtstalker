@@ -47,7 +47,7 @@
 #include "PluginFactory.h"
 #include "IndicatorPlugin.h"
 #include "ScriptPage.h"
-#include "QuoteDataBase.h"
+#include "DBPlugin.h"
 
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
@@ -87,12 +87,15 @@ QtstalkerApp::QtstalkerApp(QString session)
   DataBase db;
   db.init();
 
-  setup.setup();
+  setup.setupConfigDefaults();
+  setup.setupDefaultIndicators();
 
-  QuoteDataBase qdb;
+  DBPlugin qdb;
   QString dbFile;
   config.getData(Config::DbName, dbFile);
   qdb.init(dbFile);
+
+  setup.setupExchanges();
 
   // get complete plugin inventory
   PluginFactory pfac;
@@ -549,7 +552,7 @@ void QtstalkerApp::createToolBars ()
 
   //bars to load
   barCount = new QSpinBox;
-  barCount->setRange(1, 9999);
+  barCount->setRange(1, 99999);
   barCount->setValue(config.getInt(Config::BarsToLoad));
   barCount->setToolTip(tr("Total bars to load"));
   connect(barCount, SIGNAL(editingFinished()), this, SLOT(slotChartUpdated()));
@@ -667,12 +670,15 @@ void QtstalkerApp::slotShowDocumentation(QString doc)
   assistant->showDocumentation(doc);
 }
 
-void QtstalkerApp::slotOpenChart (QString selection)
+void QtstalkerApp::slotOpenChart (BarData *bd)
 {
   // load a chart slot
+  chartExchange = bd->getExchange();
+  chartSymbol = bd->getSymbol();
+  
   slider->setEnabled(TRUE);
   qApp->processEvents();
-  loadChart(selection);
+  loadChart(chartExchange, chartSymbol);
 }
 
 // sent here if user selected chart from recent charts combobox
@@ -683,7 +689,7 @@ void QtstalkerApp::slotOpenChart (int row)
   recentCharts->removeItem(row);
   recentCharts->insertItem(0, s);
   recentCharts->setCurrentIndex(0);
-  slotOpenChart(s);
+//  slotOpenChart(s);
 }
 
 void QtstalkerApp::slotOptions ()
@@ -699,7 +705,7 @@ void QtstalkerApp::slotOptions ()
   dialog->show();
 }
 
-void QtstalkerApp::loadChart (QString d)
+void QtstalkerApp::loadChart (QString ex, QString d)
 {
   // do all the stuff we need to do to load a chart
   if (d.length() == 0)
@@ -711,6 +717,8 @@ void QtstalkerApp::loadChart (QString d)
     reload = TRUE;
 
   chartPath = d;
+  chartSymbol = d;
+  chartExchange = ex;
 
   // set plots to empty
   emit signalClearIndicator();
@@ -723,17 +731,30 @@ void QtstalkerApp::loadChart (QString d)
   config.setData(Config::CurrentChart, chartPath);
 
   // create and populate the quote data
-  BarData *recordList = new BarData;
-  recordList->setSymbol(chartPath);
-  recordList->setBarLength((BarData::BarLength) barButtonGroup->checkedId());
-  recordList->setBarsRequested(barCount->value());
+  BarData recordList;
+  recordList.setSymbol(chartPath);
+  recordList.setExchange(chartExchange);
+  recordList.setBarLength((BarData::BarLength) barButtonGroup->checkedId());
+  recordList.setBarsRequested(barCount->value());
 
-  QuoteDataBase qdb;
-  qdb.getChart(recordList);
+  DBPlugin qdb;
+  qdb.getIndexData(recordList);
+
+  PluginFactory fac;
+  QString path;
+  config.getData(Config::DBPluginPath, path);
+  DBPlugin *qdb2 = fac.getDB(path, recordList.getPlugin());
+  if (! qdb2)
+  {
+    qDebug() << "QtStalkerApp::loadChart: no DB plugin";
+    return;
+  }
   
-  recordList->getSymbol(chartSymbol);
-  recordList->getName(chartName);
-  barsLoaded = recordList->count();
+  qdb2->getBars(recordList);
+  
+  chartSymbol = recordList.getSymbol();
+  chartName = recordList.getName();
+  barsLoaded = recordList.count();
 
   DataBase db;
   QStringList indicatorList;
@@ -741,7 +762,7 @@ void QtstalkerApp::loadChart (QString d)
 
   int loop;
   for (loop = 0; loop < indicatorList.count(); loop++)
-    loadIndicator(recordList, indicatorList[loop]);
+    loadIndicator(&recordList, indicatorList[loop]);
 
   setSliderStart(barsLoaded);
   emit signalIndex(slider->value());
@@ -790,7 +811,7 @@ void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
 
 void QtstalkerApp::refreshIndicator (QString)
 {
-  loadChart(chartPath);
+  loadChart(chartExchange, chartPath);
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -837,14 +858,14 @@ void QtstalkerApp::slotDataWindow ()
 void QtstalkerApp::slotBarLengthChanged(int barLength)
 {
   emit signalInterval((BarData::BarLength) barLength);
-  loadChart(chartPath);
+  loadChart(chartExchange, chartPath);
 }
 
 void QtstalkerApp::slotNewIndicator (QString n)
 {
   // add a new indicator
   addIndicatorButton(n);
-  loadChart(chartPath);
+  loadChart(chartExchange, chartPath);
 }
 
 void QtstalkerApp::slotDeleteIndicator (QString text)
@@ -880,7 +901,7 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 {
   // enable indicator
   addIndicatorButton(name);
-  loadChart(chartPath);
+  loadChart(chartExchange, chartPath);
 }
 
 void QtstalkerApp::addIndicatorButton (QString d)
@@ -973,7 +994,7 @@ void QtstalkerApp::slotChartUpdated ()
   Config config;
   config.setBaseData((int) Config::BarsToLoad, barCount->value());
 
-  loadChart(chartPath);
+  loadChart(chartExchange, chartPath);
 }
 
 void QtstalkerApp::slotStatusMessage (QString d)
@@ -985,8 +1006,8 @@ void QtstalkerApp::slotStatusMessage (QString d)
 void QtstalkerApp::initChartNav ()
 {
   chartNav = new ChartPage(baseWidget);
-  connect(chartNav, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
-  connect(chartNav, SIGNAL(addRecentChart(QString)), this, SLOT(slotAddRecentChart(QString)));
+  connect(chartNav, SIGNAL(fileSelected(BarData *)), this, SLOT(slotOpenChart(BarData *)));
+  connect(chartNav, SIGNAL(addRecentChart(BarData *)), this, SLOT(slotAddRecentChart(BarData *)));
   connect(chartNav, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
   navTab->addTab(chartNav, QIcon(plainitem), QString());
   navTab->setTabToolTip(0, tr("Charts"));
@@ -995,9 +1016,9 @@ void QtstalkerApp::initChartNav ()
 void QtstalkerApp::initGroupNav ()
 {
   GroupPage *gp = new GroupPage(baseWidget);
-  connect(gp, SIGNAL(fileSelected(QString)), this, SLOT(slotOpenChart(QString)));
+  connect(gp, SIGNAL(fileSelected(BarData *)), this, SLOT(slotOpenChart(BarData *)));
   connect(chartNav, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
-  connect(gp, SIGNAL(addRecentChart(QString)), this, SLOT(slotAddRecentChart(QString)));
+  connect(gp, SIGNAL(addRecentChart(BarData *)), this, SLOT(slotAddRecentChart(BarData *)));
   navTab->addTab(gp, QIcon(dirclosed), QString());
   navTab->setTabToolTip(1, tr("Groups"));
 }
@@ -1199,12 +1220,12 @@ void QtstalkerApp::ps2ButtonClicked ()
   actionList.value(ZoomOut)->setEnabled(FALSE);
 }
 
-void QtstalkerApp::slotAddRecentChart (QString d)
+void QtstalkerApp::slotAddRecentChart (BarData *bd)
 {
-  if (recentCharts->findText(d, Qt::MatchExactly) > -1)
+  if (recentCharts->findText(bd->getSymbol(), Qt::MatchExactly) > -1)
     return;
 
-  recentCharts->insertItem(0, d);
+  recentCharts->insertItem(0, bd->getSymbol());
 }
 
 void QtstalkerApp::cursorButtonPressed (int id)
@@ -1339,7 +1360,7 @@ void QtstalkerApp::slotReloadChart ()
   if (chartPath.isEmpty())
     return;
 
-  loadChart(chartPath);
+  loadChart(chartExchange, chartPath);
 }
 
 void QtstalkerApp::slotRefreshUpdated (int minutes)

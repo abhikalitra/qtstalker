@@ -1,0 +1,51 @@
+Code,Name,Country,GMT,Currency
+<NONE>,<NONE>,0,<NONE>
+American Stock Exchange,USA,-5,USD
+Chicago Board of Trade,USA,-6,USD
+Chicago Mercantile Exchange,USA,-6,USD
+NASDAQ,USA,-5,USD
+New York Board of Trade,USA,-5,USD
+New York Commodities Exchange,USA,-5,USD
+New York Mercantile Exchange,USA,-5,USD
+New York Stock Exchange,USA,-5,USD
+Buenos Aires Stock Exchange,ARG,-3,ARS
+Vienna Stock Exchange,AUT,1,EUR
+Australian Securities Exchange,AUS,10,AUD
+Sao Paolo Stock Exchange,BRA,-3,BRL
+Toronto Stock Exchange,CAN,-5,CAD
+TSX Venture Exchange,CAN,-5,CAD
+Shanghai Stock Exchange,CHN,8,CNY
+Shenzhen Stock Exchange,CHN,8,CNY
+Copenhagen Stock Exchange,DNK,1,DKK
+Paris Stock Exchange,FRA,1,EUR
+Berlin Stock Exchange,DEU,1,EUR
+Bremen Stock Exchange,DEU,1,EUR
+Dusseldorf Stock Exchange,DEU,1,EUR
+Frankfurt Stock Exchange,DEU,1,EUR
+Hamburg Stock Exchange,DEU,1,EUR
+Hanover Stock Exchange,DEU,1,EUR
+Munich Stock Exchange,DEU,1,EUR
+Stuttgart Stock Exchange,DEU,1,EUR
+XETRA Stock Exchange,DEU,1,EUR
+Hong Kong Stock Exchange,CHN,8,HKD
+Bombay Stock Exchange,IND,5.5,INR
+National Stock Exchange of India,IND,5.5,INR
+Jakarta Stock Exchange,IDN,7,IDR
+Tel Aviv Stock Exchange,ISR,2,ILS
+Milan Stock Exchange,ITA,1,EUR
+Korea Stock Exchange,KOR,9,KRW
+KOSDAQ,KOR,9,KRW
+Mexico Stock Exchange,MEX,-6,MXN
+Amsterdam Stock Exchange,NLD,1,EUR
+New Zealand Stock Exchange,NZL,12,NZD
+Oslo Stock Exchange,NOR,1,NOK
+Singapore Stock Exchange,SGP,8,SGD
+Barcelona Stock Exchange,ESP,1,EUR
+Bilbao Stock Exchange,ESP,1,EUR
+Madrid Stock Exchange,ESP,1,EUR
+Stockholm Stock Exchange,SWE,1,SEK
+Swiss Stock Exchange,CHE,1,EUR
+Taiwan Stock Exchange,TWN,8,TWD
+Thailand Stock Exchange,THA,7,THB
+London Stock Exchange,GBR,0,GBP
+London Metal Exchange,GBR,0,GBP

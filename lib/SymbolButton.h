@@ -32,8 +32,8 @@ class SymbolButton : public QPushButton
 
   public:
     SymbolButton (QWidget *);
-    void getSymbols (QStringList &);
-    void setSymbols (QStringList &);
+    void getSymbols (QList<BarData *> &);
+    void setSymbols (QString &ex, QString &ss);
     void updateButtonText ();
     
   public slots:
@@ -41,6 +41,7 @@ class SymbolButton : public QPushButton
       
   private:
     QStringList symbolList;
+    
 };
 
 #endif

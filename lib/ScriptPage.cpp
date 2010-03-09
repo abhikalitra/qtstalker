@@ -90,9 +90,10 @@ ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
 
   // setup the script server
   Config config;
-  QString path;
-  config.getData(Config::IndicatorPluginPath, path);
-  scriptServer = new ExScript(path);
+  QString ipp, dbpp;
+  config.getData(Config::IndicatorPluginPath, ipp);
+  config.getData(Config::DBPluginPath, dbpp);
+  scriptServer = new ExScript(ipp, dbpp);
   scriptServer->setDeleteFlag(TRUE);
   connect(scriptServer, SIGNAL(signalDone()), this, SLOT(scriptDone()));
 
@@ -253,12 +254,12 @@ void ScriptPage::rightClick (const QPoint &)
   switch (status)
   {
     case StatusQueue:
-      menu->addAction(QIcon(deleteitem), tr("&Remove Script From Queue"), this, SLOT(removeScriptQueue()), QKeySequence(Qt::CTRL+Qt::Key_R));
+      menu->addAction(QIcon(delete_xpm), tr("&Remove Script From Queue"), this, SLOT(removeScriptQueue()), QKeySequence(Qt::CTRL+Qt::Key_R));
       break;
     default:
       menu->addAction(QIcon(newchart_xpm), tr("&New Script"), this, SLOT(newScript()), QKeySequence(Qt::CTRL+Qt::Key_N));
       menu->addAction(QIcon(edit), tr("&Edit Script"), this, SLOT(editScript()), QKeySequence(Qt::CTRL+Qt::Key_E));
-      menu->addAction(QIcon(deleteitem), tr("&Delete Script"), this, SLOT(deleteScript()), QKeySequence(Qt::CTRL+Qt::Key_D));
+      menu->addAction(QIcon(delete_xpm), tr("&Delete Script"), this, SLOT(deleteScript()), QKeySequence(Qt::CTRL+Qt::Key_D));
       break;
   }
 

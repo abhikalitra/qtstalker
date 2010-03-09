@@ -41,6 +41,9 @@ BarData::BarData ()
   inputList << QObject::tr("MedianPrice");
   inputList << QObject::tr("TypicalPrice");
   inputList << QObject::tr("WCPrice");
+  
+  exchangeList << "NYSE";
+  exchangeList << "";
 }
 
 BarData::~BarData ()
@@ -132,6 +135,11 @@ void BarData::prepend (Bar *bar)
   barList.prepend(bar);
 }
 
+void BarData::append (Bar *bar)
+{
+  barList.append(bar);
+}
+
 void BarData::getDate (int i, QDateTime &dt)
 {
   barList.at(i)->getDate(dt);
@@ -200,9 +208,9 @@ void BarData::getBarLengthList (QStringList &l)
   l.append(QObject::tr("Monthly"));
 }
 
-void BarData::getBar (int d, Bar *bar)
+Bar * BarData::getBar (int d)
 {
-  bar = barList.at(d);
+  return barList.at(d);
 }
 
 void BarData::setMinMax ()
@@ -237,9 +245,9 @@ BarData::BarLength BarData::getBarLength ()
   return barLength;
 }
 
-void BarData::getSymbol (QString &d)
+QString & BarData::getSymbol ()
 {
-  d = symbol;
+  return symbol;
 }
 
 void BarData::setSymbol (QString &d)
@@ -247,24 +255,14 @@ void BarData::setSymbol (QString &d)
   symbol = d;
 }
 
-void BarData::getName (QString &d)
+QString & BarData::getName ()
 {
-  d = name;
+  return name;
 }
 
 void BarData::setName (QString &d)
 {
   name = d;
-}
-
-void BarData::getType (QString &d)
-{
-  d = type;
-}
-
-void BarData::setType (QString &d)
-{
-  type = d;
 }
 
 int BarData::getBarsRequested ()
@@ -308,5 +306,45 @@ double BarData::getTypicalPrice (int d)
 {
   double t = (getHigh(d) + getLow(d) + getClose(d)) / 3.0;
   return t;
+}
+
+QString & BarData::getTableName ()
+{
+  return tableName;
+}
+
+void BarData::setTableName (QString &d)
+{
+  tableName = d;
+}
+
+QString & BarData::getPlugin ()
+{
+  return plugin;
+}
+
+void BarData::setPlugin (QString &d)
+{
+  plugin = d;
+}
+
+QString & BarData::getExchange ()
+{
+  return exchange;
+}
+
+void BarData::setExchange (QString &d)
+{
+  exchange = d;
+}
+
+QString & BarData::getCurrency ()
+{
+  return currency;
+}
+
+void BarData::setCurrency (QString &d)
+{
+  currency = d;
 }
 

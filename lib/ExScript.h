@@ -22,7 +22,6 @@
 #ifndef EXSCRIPT_HPP
 #define EXSCRIPT_HPP
 
-
 #include "BarData.h"
 #include "PlotLine.h"
 
@@ -31,7 +30,6 @@
 #include <QString>
 #include <QStringList>
 #include <QObject>
-
 
 class ExScript : public QObject
 {
@@ -53,15 +51,17 @@ class ExScript : public QObject
       GROUP_DELETE, // deletes a group and contents
       GROUP_GET, // returns a csv list of the group contents
       PLOT, // plot the desired indicator
+      QUOTE_SET, // adds or replaces a quote(s) in the database
+      QUOTE_SET_NAME, // updates the name of the symbol
       SYMBOL_GET, // get the current symbol
       SYMBOL_LIST, // get a list of symbols in the db
-      TEST_ENTER_LONG,
-      TEST_EXIT_LONG,
-      TEST_ENTER_SHORT,
-      TEST_EXIT_SHORT
+      TEST_ENTER_LONG, // sets the enter long indicator for the tester
+      TEST_EXIT_LONG,  // sets the exit long indicator for the tester
+      TEST_ENTER_SHORT,  // sets the enter short indicator for the tester
+      TEST_EXIT_SHORT  // sets the exit short indicator for the tester
     };
 
-    ExScript (QString &);
+    ExScript (QString &, QString &);
     ~ExScript ();
     void clear ();
     void setBarData (BarData *d);
@@ -95,7 +95,8 @@ class ExScript : public QObject
     PlotLine * enterShort;
     PlotLine * exitShort;
     int killFlag;
-    QString pluginPath;
+    QString indicatorPluginPath;
+    QString dbPluginPath;
 };
 
 #endif

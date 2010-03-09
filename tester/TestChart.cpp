@@ -28,20 +28,26 @@
 #include "Plot.h"
 #include "PluginFactory.h"
 #include "COPlugin.h"
-#include "QuoteDataBase.h"
 #include "TestConfig.h"
 #include "IndicatorPlot.h"
+#include "ChartObject.h"
+#include "MATH1.h"
 
 TestChart::TestChart ()
 {
-  data = 0;
-  
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
   vbox->setSpacing(5);
   setLayout(vbox);
 
   plot = new Plot(this);
+  plot->setDateFlag(1);
+  plot->setLogScale(0);
+  plot->setGridFlag(0);
+  plot->setScaleToScreen(0);
+  plot->setPixelspace(6);
+  plot->setIndex(0);
+  plot->setCrosshairsStatus(0);
   vbox->addWidget(plot);
 
   slider = new QSlider;
@@ -64,13 +70,6 @@ TestChart::TestChart ()
   QFont font;
   plot->setPlotFont(font);
 
-  plot->setGridFlag(1);
-  plot->setScaleToScreen(1);
-  plot->setPixelspace(6);
-  plot->setIndex(0);
-  plot->setInterval((BarData::DailyBar));
-  plot->setCrosshairsStatus(0);
-  
   TestConfig config;
   QString s;
   config.getData(TestConfig::PlotPluginPath, s);
@@ -84,103 +83,101 @@ TestChart::TestChart ()
   connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
 }
 
-void TestChart::update (BarData *_data, QList<TestTrade *> &trades)
+void TestChart::update (BarData *data, QList<TestTrade *> &trades, QString &coPluginPath)
 {
   plot->clear();
-  
-  if (data)
-    delete data;
-  
-  BarData *data = new BarData;
-  QString s;
-  _data->getSymbol(s);
-  data->setSymbol(s);
-  data->setBarLength((BarData::BarLength) _data->getBarLength());
-  data->setBarsRequested(_data->getBarsRequested());
+  plot->setInterval(data->getBarLength());
 
-  QuoteDataBase qdb;
-  qdb.getChart(data);
-  if (data->count() == 0)
-  {
-    qDebug() << "TestChart::update: 0 bars loaded";
-    delete data;
-    data = 0;
-    return;
-  }
-
-  PlotLine *bars = data->getInput(BarData::Close);
+  MATH1 m;
+  QColor up("green");
+  QColor down("red");
+  QColor neutral("blue");
+  PlotLine *bars = m.getBARS(data, up, down, neutral);
   if (! bars)
   {
     qDebug() << "TestChart::update: no bars";
-    delete data;
-    data = 0;
     return;
   }
   
-  s = "OHLC";
-  bars->setPlugin(s);
-  s = "green";
-  bars->setColor(s);
+  Indicator i;
+  QString s = "QtStalkerTester";
+  i.setName(s);
+  i.setIndicator(s);
+  i.setEnable(1);
+  i.setDate(1);
+  i.addLine(bars);
   
   PluginFactory fac;
-  QString path = "/usr/local/lib/qtstalker/plugins/object";
   QString plugin = "VLine";
-  COPlugin *plug = fac.getCO(path, plugin);
+  COPlugin *plug = fac.getCO(coPluginPath, plugin);
   if (! plug)
   {
     qDebug() << "TestChart::update: no VLine plugin";
-    delete bars;
-    delete data;
-    data = 0;
+    i.clear();
     return;
   }
   
   int loop;
   int id = 0;
   IndicatorPlot *ip = plot->getIndicatorPlot();
-  ip->addLine(bars);
   ip->setData(data);
   
   for (loop = 0; loop < trades.count(); loop++)
   {
     TestTrade *trade = trades.at(loop);
     
-    ChartObject *co = new ChartObject;
-    ChartObject *co2 = new ChartObject;
+    ChartObject *buy = new ChartObject;
+    ChartObject *sell = new ChartObject;
 
     s = QString::number(id++);
-    co->setData(ChartObject::ParmID, s);
+    buy->setData(ChartObject::ParmID, s);
     s = QString::number(id++);
-    co2->setData(ChartObject::ParmID, s);
+    sell->setData(ChartObject::ParmID, s);
+    
+    data->getSymbol(s);
+    buy->setData(ChartObject::ParmSymbol, s);
+    sell->setData(ChartObject::ParmSymbol, s);
+    
+    s = "QtStalkerTester";
+    buy->setData(ChartObject::ParmIndicator, s);
+    sell->setData(ChartObject::ParmIndicator, s);
 
     s = "VLine";
-    co->setData(ChartObject::ParmPlugin, s);
-    co2->setData(ChartObject::ParmPlugin, s);
+    buy->setData(ChartObject::ParmPlugin, s);
+    sell->setData(ChartObject::ParmPlugin, s);
     
+    buy->setData(ChartObject::ParmColor, up);
+    sell->setData(ChartObject::ParmColor, down);
+    
+    QDateTime sd, ed;
+    double sp, ep;
+    trade->getEnterDate(sd);
+    trade->getExitDate(ed);
+    sp = trade->getEnterPrice();
+    ep = trade->getExitPrice();
     if (trade->getType() == 0)
     {
-      s = "green";
-      co->setData(ChartObject::ParmColor, s);
-      s = "red";
-      co2->setData(ChartObject::ParmColor, s);
+      buy->setData(ChartObject::ParmDate, sd);
+      buy->setData(ChartObject::ParmPrice, sp);
+      sell->setData(ChartObject::ParmDate, ed);
+      sell->setData(ChartObject::ParmPrice, ep);
     }
     else
     {
-      s = "red";
-      co->setData(ChartObject::ParmColor, s);
-      s = "green";
-      co2->setData(ChartObject::ParmColor, s);
+      sell->setData(ChartObject::ParmDate, sd);
+      sell->setData(ChartObject::ParmPrice, sp);
+      buy->setData(ChartObject::ParmDate, ed);
+      buy->setData(ChartObject::ParmPrice, ep);
     }
     
-    QDateTime dt;
-    trade->getEnterDate(dt);
-    co->setData(ChartObject::ParmDate, dt);
-    trade->getExitDate(dt);
-    co2->setData(ChartObject::ParmDate, dt);
-    
-    ip->addChartObject(co);  
-    ip->addChartObject(co2);  
+    i.addChartObject(buy);  
+    i.addChartObject(sell);  
   }
+
+  ip->setIndicator(i);
+  
+  slider->setRange(0, data->count() - 1);
+  slider->setValue(0);
   
   plot->draw();
 }

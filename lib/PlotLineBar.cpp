@@ -49,3 +49,8 @@ void PlotLineBar::getColor (QColor &d)
   d = color;
 }
 
+int PlotLineBar::count ()
+{
+  return data.count();
+}
+

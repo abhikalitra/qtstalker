@@ -27,6 +27,7 @@
 #include <QWidget>
 #include <QSlider>
 #include <QList>
+#include <QString>
 
 #include "Plot.h"
 #include "BarData.h"
@@ -38,12 +39,11 @@ class TestChart : public QWidget
 
   public:
     TestChart ();
-    void update (BarData *, QList<TestTrade *> &);
+    void update (BarData *, QList<TestTrade *> &, QString &);
 
   private:
     Plot *plot;
     QSlider *slider;
-    BarData *data;
 };
 
 #endif

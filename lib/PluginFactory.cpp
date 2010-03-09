@@ -34,6 +34,7 @@ PluginFactory::~PluginFactory ()
   qDeleteAll(indicatorPlugins);
   qDeleteAll(coPlugins);
   qDeleteAll(plotPlugins);
+  qDeleteAll(dbPlugins);
   qDeleteAll(libs);
 }
 
@@ -119,6 +120,30 @@ PlotPlugin * PluginFactory::getPlot (QString &path, QString &plot)
     plug = (*so)();
     libs.insert(plot, lib);
     plotPlugins.insert(plot, plug);
+  }
+  else
+    delete lib;
+
+  return plug;
+}
+
+DBPlugin * PluginFactory::getDB (QString &path, QString &db)
+{
+  DBPlugin *plug = dbPlugins.value(db);
+  if (plug)
+    return plug;
+
+  QString file = path;
+  file.append("/lib" + db + ".so");
+
+  QLibrary *lib = new QLibrary(file);
+  DBPlugin *(*so)() = 0;
+  so = (DBPlugin *(*)()) lib->resolve("createDBPlugin");
+  if (so)
+  {
+    plug = (*so)();
+    libs.insert(db, lib);
+    dbPlugins.insert(db, plug);
   }
   else
     delete lib;

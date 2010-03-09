@@ -146,14 +146,14 @@ SUBDIRS += plugins/plots/HistogramBar
 SUBDIRS += plugins/plots/Horizontal
 SUBDIRS += plugins/plots/Line
 
+# compile database plugins
+SUBDIRS += plugins/database/Stock
+
 # compile app
 SUBDIRS += src
 
 # compile tester
 SUBDIRS += tester
-
-# compile CSV app
-SUBDIRS += csv
 
 # install docs and i18n
 SUBDIRS += docs

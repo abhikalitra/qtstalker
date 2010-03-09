@@ -10,14 +10,14 @@ HEADERS += TestConfig.h
 HEADERS += TestRankings.h
 HEADERS += TestSettings.h
 HEADERS += TestReport.h
-#HEADERS += TestChart.h
+HEADERS += TestChart.h
 
 SOURCES += QtStalkerTester.cpp
 SOURCES += TestConfig.cpp
 SOURCES += TestRankings.cpp
 SOURCES += TestSettings.cpp
 SOURCES += TestReport.cpp
-#SOURCES += TestChart.cpp
+SOURCES += TestChart.cpp
 SOURCES += main.cpp
 
 TARGET = QtStalkerTester

@@ -26,6 +26,7 @@
 #include "SCGroup.h"
 #include "SCSymbolList.h"
 #include "SCTest.h"
+#include "SCQuote.h"
 #include "IndicatorPlugin.h"
 #include "PluginFactory.h"
 #include "COLOR.h"
@@ -39,9 +40,10 @@
 #include <QtDebug>
 
 
-ExScript::ExScript (QString &pp)
+ExScript::ExScript (QString &ipp, QString &dbpp)
 {
-  pluginPath = pp;
+  indicatorPluginPath = ipp;
+  dbPluginPath = dbpp;
   data = 0;
   deleteFlag = 0;
   killFlag = 0;
@@ -55,6 +57,7 @@ ExScript::ExScript (QString &pp)
   functionList << "INDICATOR_SET";
   functionList << "GROUP_ADD" << "GROUP_DELETE" << "GROUP_GET";
   functionList << "PLOT";
+  functionList << "QUOTE_SET" << "QUOTE_SET_NAME";
   functionList << "SYMBOL_GET" << "SYMBOL_LIST";
   functionList << "TEST_ENTER_LONG" << "TEST_EXIT_LONG" << "TEST_ENTER_SHORT" << "TEST_EXIT_SHORT";
   
@@ -179,7 +182,7 @@ void ExScript::readFromStdout ()
     {
       int delFlag = 0;
       PluginFactory fac;
-      IndicatorPlugin *ip = fac.getIndicator(pluginPath, l[1]);
+      IndicatorPlugin *ip = fac.getIndicator(indicatorPluginPath, l[1]);
       if (! ip)
       {
         int i = notPluginList.indexOf(l[1]);
@@ -281,14 +284,21 @@ void ExScript::readFromStdout ()
       proc->write(ba);
       break;
     }
+    case QUOTE_SET:
+    case QUOTE_SET_NAME:
+    {
+      SCQuote sc;
+      sc.calculate(l, ba, dbPluginPath);
+      proc->write(ba);
+      break;
+    }
     case SYMBOL_GET:
     {
       if (! data)
         ba.append("1\n"); // we don't have any data, so return an error
       else
       {
-        QString symbol;
-        data->getSymbol(symbol);
+        QString symbol = data->getSymbol();
         ba.append(symbol + '\n');
       }
       proc->write(ba);

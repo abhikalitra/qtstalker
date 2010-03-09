@@ -71,23 +71,22 @@ class BarData
     double getVolume (int);
     double getOI (int);
     void prepend (Bar *bar);
+    void append (Bar *bar);
     double getMax ();
     double getMin ();
     void getInputFields (QStringList &);
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
     void getBarLengthList (QStringList &);
-    void getBar (int, Bar *);
+    Bar *getBar (int);
     void setMinMax ();
     void setBarLength (BarData::BarLength);
     void setBarLength (QString &);
     BarData::BarLength getBarLength ();
-    void getSymbol (QString &);
+    QString & getSymbol ();
     void setSymbol (QString &);
-    void getName (QString &);
+    QString & getName ();
     void setName (QString &);
-    void getType (QString &);
-    void setType (QString &);
     int getBarsRequested ();
     void setBarsRequested (int);
     void getDateString (int, QString &);
@@ -96,6 +95,14 @@ class BarData
     double getAvgPrice (int);
     double getMedianPrice (int);
     double getTypicalPrice (int);
+    QString & getTableName ();
+    void setTableName (QString &);
+    QString & getPlugin ();
+    void setPlugin (QString &);
+    QString & getExchange ();
+    void setExchange (QString &);
+    QString & getCurrency ();
+    void setCurrency (QString &);
 
   protected:
     QList<Bar *> barList;
@@ -104,9 +111,13 @@ class BarData
     BarData::BarLength barLength;
     QString symbol;
     QString name;
-    QString type;
     int barsRequested;
     QStringList inputList;
+    QString tableName;
+    QString plugin;
+    QString exchange;
+    QString currency;
+    QStringList exchangeList;
 };
 
 #endif

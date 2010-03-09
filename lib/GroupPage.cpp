@@ -65,15 +65,15 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   vbox->addWidget(nav);
 
   menu = new QMenu(this);
-  QAction *action = menu->addAction(QIcon(newchart_xpm), tr("&New Group		Ctrl+N"), this, SLOT(newGroup()), QKeySequence(Qt::CTRL+Qt::Key_N));
+  QAction *action = menu->addAction(QIcon(newchart_xpm), tr("&New Group"), this, SLOT(newGroup()), QKeySequence(Qt::CTRL+Qt::Key_N));
   actionList.append(action);
-  action = menu->addAction(QIcon(addgroup), tr("Add To &Group	Ctrl+G"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
+  action = menu->addAction(QIcon(addgroup), tr("Add To &Group"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
   actionList.append(action);
-  action = menu->addAction(QIcon(deleteitem), tr("&Delete Group Items	Ctrl+D"), this, SLOT(deleteGroupItem()), QKeySequence(Qt::CTRL+Qt::Key_D));
+  action = menu->addAction(QIcon(delete_xpm), tr("&Delete Group Items"), this, SLOT(deleteGroupItem()), QKeySequence(Qt::CTRL+Qt::Key_D));
   actionList.append(action);
-  action = menu->addAction(QIcon(delgroup), tr("De&lete Group	Ctrl+L"), this, SLOT(deleteGroup()), QKeySequence(Qt::CTRL+Qt::Key_L));
+  action = menu->addAction(QIcon(delgroup), tr("De&lete Group"), this, SLOT(deleteGroup()), QKeySequence(Qt::CTRL+Qt::Key_L));
   actionList.append(action);
-  action = menu->addAction(QIcon(), tr("&Refresh List	Ctrl+R"), this, SLOT(updateGroups()), QKeySequence(Qt::CTRL+Qt::Key_R));
+  action = menu->addAction(QIcon(), tr("&Refresh List"), this, SLOT(updateGroups()), QKeySequence(Qt::CTRL+Qt::Key_R));
   actionList.append(action);
 
   loadGroups();
@@ -187,8 +187,15 @@ void GroupPage::groupSelected (int i)
 
 void GroupPage::chartOpened (QListWidgetItem *item)
 {
-  emit fileSelected(item->text());
-  emit addRecentChart(item->text());
+  if (! item)
+    return;
+  
+  BarData *bd = symbols.at(nav->currentRow());
+  if (! bd)
+    return;
+  
+  emit fileSelected(bd);
+  emit addRecentChart(bd);
 }
 
 void GroupPage::rightClick (const QPoint &)

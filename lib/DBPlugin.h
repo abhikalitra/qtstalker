@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,35 +19,43 @@
  *  USA.
  */
 
-#ifndef QUOTEDATABASE_HPP
-#define QUOTEDATABASE_HPP
+#ifndef DB_PLUGIN_HPP
+#define DB_PLUGIN_HPP
 
 #include <QString>
 #include <QStringList>
 #include <QDateTime>
-#include <QHash>
 #include <QList>
 
 #include "BarData.h"
-#include "Bar.h"
 
-
-class QuoteDataBase
+class DBPlugin
 {
   public:
-    QuoteDataBase ();
-    void init (QString &dbFile);
+    DBPlugin ();
+    virtual ~DBPlugin ();
+    virtual void getBars (BarData &);
+    virtual void setBars (BarData &);
+    virtual void dialog ();
+    virtual int scriptCommand (QStringList &);
+    
+    void init (QString &);
     void transaction ();
     void commit ();
-    void getAllChartsList (QStringList &);
-    void getSearchList (QString &pat, QStringList &l);
-    void getChart (BarData *);
+    void getSearchList (QString &ex, QString &pat, QList<BarData *> &);
     void getFirstDate (QString &table, QDateTime &date);
     void getLastDate (QString &table, QDateTime &date);
     void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate,
 			   BarData::BarLength barLength);
-    int getIndexData (QString &symbol, QString &table, BarData *data);
-    void setChart (QList<Bar> *bars);
+    int getIndexData (BarData &);
+    int setIndexData (BarData &);
+    int command (QString &, QString);
+    int addSymbolIndex (BarData &);
+    void getExchangeList (QStringList &);
+    int verifyExchangeName (QString &);
+    
+  protected:
+    QString dbName;
 };
 
 #endif

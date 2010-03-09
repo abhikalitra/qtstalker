@@ -40,6 +40,10 @@ int TestSignal::createSignals (BarData *data, PlotLine *line)
   int lineLoop;
   for (lineLoop = 0; lineLoop < line->count(); lineLoop++, barLoop++)
   {
+    if (line->getData(lineLoop) == 1)
+      sigs.insert(barLoop, barLoop);
+
+/*
     switch (status)
     {
       case 1: // we are inside a signal
@@ -54,6 +58,7 @@ int TestSignal::createSignals (BarData *data, PlotLine *line)
 	}
 	break;
     }
+*/
   }
 
   return 0;
