@@ -137,6 +137,7 @@ void ChartPage::addToGroup ()
   db.setGroup(group);
 
   emit signalAddToGroup();
+  emit signalMessage(QString(tr("Symbol(s) added.")));
 }
 
 void ChartPage::doKeyPress (QKeyEvent *key)

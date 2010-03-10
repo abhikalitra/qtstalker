@@ -31,15 +31,15 @@ class Script
   public:
     Script ();
     void setName (QString &);
-    void getName (QString &);
+    QString & getName ();
     void setCommand (QString &);
-    void getCommand (QString &);
+    QString & getCommand ();
     void setComment (QString &);
-    void getComment (QString &);
+    QString & getComment ();
     void setStatus (int);
     int getStatus ();
     void setLastRun (QDateTime &);
-    void getLastRun (QDateTime &);
+    QDateTime & getLastRun ();
 
   protected:
     QString name;

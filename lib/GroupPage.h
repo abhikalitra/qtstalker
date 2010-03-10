@@ -41,6 +41,7 @@ class GroupPage : public QWidget
   signals:
     void fileSelected (BarData *);
     void addRecentChart (BarData *);
+    void signalMessage (QString);
 
   public:
     GroupPage (QWidget *);

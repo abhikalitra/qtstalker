@@ -107,8 +107,12 @@ void DBPlugin::commit ()
 
 void DBPlugin::getSearchList (QString &ex, QString &pat, Group &l)
 {
-  // if exchange is empty then get all symbols from all exchanges that match pat
+  // if exchange and pat is empty then get all symbols from all exchanges will be returned
   QString s;
+  if (ex.isEmpty() && pat.isEmpty())
+    s = "SELECT symbol,name FROM symbolIndex";
+
+  // if exchange is empty then get all symbols from all exchanges that match pat
   if (ex.isEmpty() && ! pat.isEmpty())
     s = "SELECT symbol,name FROM symbolIndex WHERE symbol LIKE '" + pat + "'";
 

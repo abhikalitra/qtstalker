@@ -45,7 +45,11 @@ for (my $i = ($periodUnstable - 1); $i <= $#close_0; $i++)
 printf STDOUT "INDICATOR_SET,disparity_13," . join(",", @values);
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "PLOT,disparity_13,Disparity-13,red,Line";
+# color the disparity_13 line
+print STDOUT "INDICATOR,COLOR,All,disparity_13,red";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+print STDOUT "PLOT,disparity_13,Disparity-13,Line";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # Calculate the 200-bar index
@@ -65,6 +69,10 @@ for (my $i = ($periodUnstable - 1); $i <= $#close_0; $i++)
 printf STDOUT "INDICATOR_SET,disparity_200," . join(",", @values);
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "PLOT,disparity_200,Disparity-200,orange,Line";
+# color the disparity_200 line
+print STDOUT "INDICATOR,COLOR,All,disparity_200,orange";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+print STDOUT "PLOT,disparity_200,Disparity-200,Line";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 

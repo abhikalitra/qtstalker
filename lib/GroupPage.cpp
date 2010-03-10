@@ -111,6 +111,8 @@ void GroupPage::newGroup()
   db.setGroup(g);
 
   updateGroups();
+  
+  emit signalMessage(QString(tr("Group created.")));
 }
 
 void GroupPage::deleteGroupItem ()
@@ -168,6 +170,8 @@ void GroupPage::deleteGroup()
   }
 
   updateGroups();
+  
+  emit signalMessage(QString(tr("Group deleted.")));
 }
 
 void GroupPage::groupSelected (int i)
@@ -309,6 +313,8 @@ void GroupPage::addToGroup ()
   db.setGroup(tg);
 
   updateGroups();
+  
+  emit signalMessage(QString(tr("Group item(s) added.")));
 }
 
 void GroupPage::updateList ()

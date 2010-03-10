@@ -93,8 +93,7 @@ void ScriptDataBase::getScripts (QStringList &l)
 
 void ScriptDataBase::getScript (Script &script)
 {
-  QString name;
-  script.getName(name);
+  QString name = script.getName();
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "SELECT command,comment,lastRun FROM script WHERE name='" + name + "'";
@@ -120,20 +119,14 @@ void ScriptDataBase::getScript (Script &script)
 
 void ScriptDataBase::setScript (Script &script)
 {
-  QString name, command, comment, lastRun;
-  script.getName(name);
-  script.getCommand(command);
-  script.getComment(comment);
-  QDateTime dt;
-  script.getLastRun(dt);
-  lastRun = dt.toString(Qt::ISODate);
+  QDateTime dt = script.getLastRun();
 
   QSqlQuery q(QSqlDatabase::database("data"));
   QString s = "INSERT OR REPLACE INTO script (name,command,comment,lastRun) VALUES (";
-  s.append("'" + name + "'");
-  s.append(",'" + command + "'");
-  s.append(",'" + comment + "'");
-  s.append(",'" + lastRun + "'");
+  s.append("'" + script.getName() + "'");
+  s.append(",'" + script.getCommand() + "'");
+  s.append(",'" + script.getComment() + "'");
+  s.append(",'" + dt.toString(Qt::ISODate) + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -142,11 +135,8 @@ void ScriptDataBase::setScript (Script &script)
 
 void ScriptDataBase::deleteScript (Script &script)
 {
-  QString name;
-  script.getName(name);
-
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM script WHERE name='" + name + "'";
+  QString s = "DELETE FROM script WHERE name='" + script.getName() + "'";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ScriptDataBase::deleteScript: " << q.lastError().text();

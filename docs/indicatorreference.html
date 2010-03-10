@@ -28,6 +28,67 @@
 <br>
 <p></p>
 <hr>
+<h3 style="text-decoration: underline;">Quotes</h3>
+<br>
+<span style="font-weight: bold;">QUOTE_SET,&lt;PLUGIN&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;DATE_FORMAT&gt;,&lt;?&gt;<br>
+<br>
+</span><span style="font-weight: bold;"></span>This function is used to
+save quotes into the database.<br>
+<ul>
+  <li>&lt;PLUGIN&gt; is the quote type to use (Stock, Futures).</li>
+  <li>&lt;EXCHANGE&gt; is the exchange the quote originates from. ie.
+'New York Stock Exchange' See here for a list of exchanges used.<br>
+  </li>
+  <li>&lt;SYMBOL&gt; is the security symbol ie. GOOG</li>
+  <li>&lt;DATE_FORMAT&gt; is the date format. See here for the date
+format structure.</li>
+  <li>&lt;?&gt; This is the quote data separated by commas. You may put
+as many quotes together as desired as long as they belong to the same
+symbol. The format is determined by the &lt;PLUGIN&gt; used are:<br>
+  </li>
+  <ul>
+    <li>Stock - Date,Open,High,Low,Close,Volume</li>
+    <li>Futures - Date,Open,High,Low,Close,Volume,OI</li>
+  </ul>
+</ul>
+<br>
+For example. If we wanted to save 2 quotes for a symbol, the text would
+be:<br>
+<br>
+"QUOTE_SET,Stock,NASDAQ,MSFT,yyyy-MM-dd HH:MM:SS,2010-03-09
+13:24:00,25.50,27.25,23.75,26.25,123456789,2010-03-10
+09:59:00,26.50,28.25,24.75,27.25,123456789"<br>
+<br>
+<br>
+On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<span style="font-weight: bold;"></span><span style="font-weight: bold;"><br>
+<br>
+</span><span style="font-weight: bold;">QUOTE_SET_NAME,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;NAME&gt;</span><br>
+<br>
+<br>
+This function will set the company name of the symbol.<br>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the exchange the symbol trades on. ie.
+'NASDAQ'<br>
+  </li>
+  <li>&lt;SYMBOL&gt; is the symbol. ie. 'MSFT'<br>
+  </li>
+  <li>&lt;NAME&gt; is the company name to use. ie. 'Microsoft
+Corporation'</li>
+</ul>
+<br>
+For example. Setting the company name for MSFT would be:<br>
+<br>
+"QUOTE_SET_NAME,NASDAQ,MSFT,Microsoft Corporation"<br>
+<br>
+<br>
+&nbsp;On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
 <h3 style="text-decoration: underline;">Symbols</h3>
 <br>
 <span style="font-weight: bold;">SYMBOL_GET</span><br>
@@ -38,17 +99,23 @@ returned.<br>
 <br>
 <br>
 <br>
-<span style="font-weight: bold;">SYMBOL_LIST,&lt;SEARCH_STRING</span>&gt;<br>
+<span style="font-weight: bold;">SYMBOL_LIST,&lt;EXCHANGE&gt;,&lt;SEARCH_STRING</span>&gt;<br>
 <br>
 This function allow scripts to return a list of symbols in the quote
 database. On success a csv list of symbols is returned. On failure, the
-string "ERROR" is returned.<br>
+string "ERROR" is returned. If both fields are left blank, then all
+symbols in the database will be retrurned.<br>
 <br>
 <ul>
-  <li>SEARCH_STRING is the search string pattern. A '*' will return all
-symbols in the database. The % is used to match any length. ie %IBM%
+  <li>&lt;EXCHANGE&gt; Specifies a particular exchange to search on. If
+left blank, exchange field will be ignored and all symbols from all
+exchanges that match &lt;SEARCH_STRING&gt; will be returned.<br>
+  </li>
+  <li>&lt;SEARCH_STRING&gt; Is the search string pattern. The % is used
+to match any length. ie %IBM%
 would return any symbols containing IBM. The _ is used to match on a
-single character.<br>
+single character. If left blank, then all symbols that match the
+&lt;EXCHANGE&gt; field will be returned.<br>
   </li>
 </ul>
 <br>
@@ -200,7 +267,7 @@ INDICATOR_SET,&lt;NAME&gt;,&lt;STRING&gt;<br>
 </h3>
 <p></p>
 <span style="font-weight: bold;"><br>
-PLOT,&lt;NAME&gt;,&lt;LABEL&gt;,&lt;COLOR&gt;,&lt;PLOT_TYPE&gt;<br>
+PLOT,&lt;NAME&gt;,&lt;LABEL&gt;,&lt;PLOT_TYPE&gt;<br>
 <br>
 </span>
 <p>This function allows the indicator script to plot indicators.<br>
@@ -210,7 +277,6 @@ PLOT,&lt;NAME&gt;,&lt;LABEL&gt;,&lt;COLOR&gt;,&lt;PLOT_TYPE&gt;<br>
   <li>PLOT is the command.</li>
   <li>NAME is the indicator previously created to plot.</li>
   <li>LABEL is the string used to identify the plot on the chart.</li>
-  <li>COLOR is the color of the plot.</li>
   <li>PLOT_TYPE is the type of plot desired.</li>
 </ul>
 <p><br>
@@ -482,14 +548,26 @@ other methods will return a boolean array of values.
 <h3><br>
 </h3>
 <h3>COLOR</h3>
-<p>INDICATOR,COLOR,&lt;INPUT&gt;,&lt;INPUT_2&gt;,&lt;VALUE&gt;,&lt;COLOR&gt;</p>
+<p>INDICATOR,COLOR,All,&lt;INPUT&gt;,&lt;COLOR&gt;</p>
 <p></p>
-<p><br>
-This function compares the values of &lt;INPUT&gt; data array with
+<p>INDICATOR,COLOR,Compare,&lt;INPUT&gt;,&lt;INPUT_2&gt;,&lt;VALUE&gt;,&lt;COLOR&gt;</p>
+<br>
+This function has 2 methods. The 'All' method will color all bars with
+the same color. The 'Compare' method compares the values of
+&lt;INPUT&gt; data array with
 the
 number &lt;VALUE&gt;. If they are equal then &lt;COLOR&gt; is applied
 to the &lt;INPUT_2&gt; data array.<br>
-</p>
+<br>
+<br>
+All method:<br>
+<ul>
+  <li>&lt;INPUT&gt; is the array to color.</li>
+  <li>&lt;COLOR&gt; is the color to use. Either a RGB value (#FF0000)
+or english word (red) can be used.</li>
+</ul>
+<br>
+The Compare method:<br>
 <ul>
   <li>&lt;INPUT&gt; is the line that determines the color</li>
   <li>&lt;INPUT_2&gt; is the line that receives the color</li>
@@ -497,7 +575,10 @@ to the &lt;INPUT_2&gt; data array.<br>
 &lt;VALUE&gt; and
 &lt;INPUT&gt; are equal, then &lt;COLOR&gt; is applied to
 &lt;INPUT_2&gt;</li>
-  <li>&lt;COLOR&gt; is the color name that is applied to &lt;INPUT_2&gt;</li>
+  <li>&lt;COLOR&gt; is the color name that is applied to
+&lt;INPUT_2&gt;. The color can either be an RGB value (#FF0000) or
+english word (red).<br>
+  </li>
 </ul>
 <br>
 <h3>COMPARE</h3>

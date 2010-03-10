@@ -40,7 +40,7 @@ class ScriptPage : public QWidget
   Q_OBJECT
 
   signals:
-//    void signalRefreshIndicator (QString);
+    void signalMessage (QString);
 
   public:
     enum Status

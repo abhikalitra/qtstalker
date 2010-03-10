@@ -302,6 +302,21 @@
            these lastest changes yet as I am still fine tuning the database structure as my testing
            continues.
 
+20100310:  Group sql tables have changed, so any groups will have to be recreated.
+
+           PLOT script function has changed. Removed the color field parameter in order to accomodate
+           the ability to color line segments. CUS_examples have been updated.
+
+           COLOR script function has changed. A methods parameter has been added. There are 2 methods.
+           The 'All' method will change all bars to the same color. The 'Compare' method operates the
+           same as the previous version. CUS_examples have been updated.
+
+           CVS users, update your personal indicator scripts to reflect the above changes.
+
+
+
+
+
 
 
 

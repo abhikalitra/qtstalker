@@ -29,6 +29,11 @@ class COLOR : public IndicatorPlugin
   public:
     COLOR ();
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCompare (QStringList &set, QHash<QString, PlotLine *> &tlines);
+    int getAll (QStringList &set, QHash<QString, PlotLine *> &tlines);
+    
+  protected:
+    QStringList methodList;
 };
 
 #endif

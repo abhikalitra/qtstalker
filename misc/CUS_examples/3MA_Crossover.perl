@@ -1,77 +1,53 @@
 # qtstalker 3MA_Crossover (OHLC Bars, 10 period SMA, 20 period SMA, 50 period SMA) indicator
 
-$|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
+$|++;
 
-print STDOUT "INDICATOR,BARS,Bars,green,red,blue"; # create the BARS indicator
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# create the BARS indicator
+print STDOUT "INDICATOR,BARS,Bars,green,red,blue";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # get some close bars
 print STDOUT "INDICATOR,REF,cl,Close,0";
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-print STDOUT "INDICATOR,MA,SMA,10MA,cl,10"; # create the 10 SMA indicator
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# create the 10 SMA indicator
+print STDOUT "INDICATOR,MA,SMA,10MA,cl,10";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-print STDOUT "INDICATOR,MA,SMA,20MA,cl,20"; # create the 20 SMA indicator
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# create the 20 SMA indicator
+print STDOUT "INDICATOR,MA,SMA,20MA,cl,20";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-print STDOUT "INDICATOR,MA,SMA,50MA,cl,50"; # create the 50 SMA indicator
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# create the 50 SMA indicator
+print STDOUT "INDICATOR,MA,SMA,50MA,cl,50";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-print STDOUT "PLOT,Bars,C,red,Bar"; # plot BARS
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# plot BARS
+print STDOUT "PLOT,Bars,C,Bar";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-print STDOUT "PLOT,10MA,10MA,blue,Line"; # plot 10 SMA
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# color the 10MA line prior to plotting
+print STDOUT "INDICATOR,COLOR,All,10MA,blue";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-print STDOUT "PLOT,20MA,20MA,red,Line"; # plot 20 SMA
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# plot 10 SMA
+print STDOUT "PLOT,10MA,10MA,Line";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-print STDOUT "PLOT,50MA,50MA,yellow,Line"; # plot 50 SMA
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# color the 20MA line prior to plotting
+print STDOUT "INDICATOR,COLOR,All,20MA,red";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# plot 20 SMA
+print STDOUT "PLOT,20MA,20MA,Line";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# color the 50MA line prior to plotting
+print STDOUT "INDICATOR,COLOR,All,50MA,yellow";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# plot 50 SMA
+print STDOUT "PLOT,50MA,50MA,Line";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
 

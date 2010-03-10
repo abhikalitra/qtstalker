@@ -45,7 +45,6 @@
 #include <QtDebug>
 #include <QLabel>
 
-
 IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 {
   QVBoxLayout *vbox = new QVBoxLayout;
@@ -184,6 +183,8 @@ void IndicatorPage::newIndicator ()
 
   if (listFlag == 1)
     showAll();
+  
+  emit signalMessage(QString(tr("New indicator created.")));
 }
 
 void IndicatorPage::editIndicator ()
@@ -226,6 +227,8 @@ void IndicatorPage::editIndicator (QString &name)
   db.setIndicator(i);
 
   emit signalRefreshIndicator(name);
+  
+  emit signalMessage(QString(tr("Indicator settings saved.")));
 }
 
 void IndicatorPage::deleteIndicator ()
@@ -251,6 +254,8 @@ void IndicatorPage::deleteIndicator ()
   emit signalDeleteIndicator(s);
 
   delete item;
+
+  emit signalMessage(QString(tr("Indicator deleted.")));
 }
 
 void IndicatorPage::doubleClick (QListWidgetItem *item)
@@ -272,6 +277,7 @@ void IndicatorPage::doubleClick (QListWidgetItem *item)
     db.setIndicatorEnable(i);
     item->setIcon(QIcon(disable));
     emit signalDisableIndicator(s);
+    emit signalMessage(QString(tr("Indicator ")) + s + tr(" disabled"));
   }
   else
   {
@@ -279,6 +285,7 @@ void IndicatorPage::doubleClick (QListWidgetItem *item)
     db.setIndicatorEnable(i);
     item->setIcon(QIcon(ok));
     emit signalEnableIndicator(s);
+    emit signalMessage(QString(tr("Indicator ")) + s + tr(" enabled"));
   }
 }
 

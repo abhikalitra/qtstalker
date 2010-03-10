@@ -1,19 +1,19 @@
 # qtstalker Candle indicator
-$|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
+$|++;
 
 print STDOUT "INDICATOR,CANDLES,NONE,candles,green"; # get the Candle indicator
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
+$a = <STDIN>;
+chomp($a);
 if ($a ne "0")
 {
-  exit; # we have a non zero return code, exit script
+  exit;
 }
 
-print STDOUT "PLOT,candles,C,green,Candle";
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n 
+print STDOUT "PLOT,candles,C,Candle";
+$a = <STDIN>;
+chomp($a);
 if ($a ne "0")
 {
-  exit; # we have a non zero return code, exit script
+  exit;
 }
 

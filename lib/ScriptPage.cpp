@@ -160,13 +160,11 @@ void ScriptPage::editScript (QString &d)
   dialog->addPage(0, s);
 
   s = tr("Command");
-  QString command;
-  script.getCommand(command);
+  QString command = script.getCommand();
   dialog->addTextItem(0, 0, s, command);
 
   s = tr("Comment");
-  QString comment;
-  script.getComment(comment);
+  QString comment = script.getComment();
   dialog->addTextEditItem(1, 0, s, comment);
 
   int rc = dialog->exec();
@@ -190,6 +188,8 @@ void ScriptPage::editScript (QString &d)
 
   if (status == StatusAll)
     update();
+  
+  emit signalMessage(QString(tr("Script saved.")));
 }
 
 void ScriptPage::deleteScript ()
@@ -214,6 +214,8 @@ void ScriptPage::deleteScript ()
   script.setName(s);
   db.deleteScript(script);
   delete item;
+  
+  emit signalMessage(QString(tr("Script deleted.")));
 }
 
 void ScriptPage::doubleClick (QListWidgetItem *item)
@@ -322,8 +324,7 @@ void ScriptPage::showQueue ()
   for (loop = 0; loop < scriptList.count(); loop++)
   {
     Script script = scriptList.at(loop);
-    QString s;
-    script.getName(s);
+    QString s = script.getName();
     if (loop == 0)
       new QListWidgetItem(QIcon(ok), s, list);
     else
@@ -349,6 +350,8 @@ void ScriptPage::showSearch ()
 void ScriptPage::addScriptQueue (Script &script)
 {
   scriptList.append(script);
+  
+  emit signalMessage(QString(tr("Script ")) + script.getName() + tr(" added to que."));
 
   if (scriptList.count() > 1)
     return;
@@ -364,6 +367,9 @@ void ScriptPage::scriptDone ()
   if (! scriptList.count())
     return;
 
+  Script script = scriptList.at(0);
+  emit signalMessage(QString(tr("Script ")) + script.getName() + tr(" completed."));
+  
   scriptList.removeAt(0);
   if (! scriptList.count())
     return;
@@ -377,9 +383,9 @@ void ScriptPage::scriptDone ()
 void ScriptPage::startScript ()
 {
   Script script = scriptList.at(0);
-  QString command;
-  script.getCommand(command);
+  QString command = script.getCommand();
   scriptServer->calculate2(command);
+  emit signalMessage(QString(tr("Script ")) + script.getName() + tr(" started."));
 }
 
 void ScriptPage::removeScriptQueue ()
@@ -403,9 +409,13 @@ void ScriptPage::removeScriptQueue ()
       return;
 
     scriptServer->stop();
+    
+    emit signalMessage(QString(tr("Script cancelled.")));
   }
 
   scriptList.removeAt(index);
   delete item;
+  
+  emit signalMessage(QString(tr("Script removed.")));
 }
 

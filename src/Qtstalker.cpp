@@ -1021,6 +1021,7 @@ void QtstalkerApp::initChartNav ()
   connect(chartNav, SIGNAL(fileSelected(BarData *)), this, SLOT(slotOpenChart(BarData *)));
   connect(chartNav, SIGNAL(addRecentChart(BarData *)), this, SLOT(slotAddRecentChart(BarData *)));
   connect(chartNav, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
+  connect(chartNav, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addTab(chartNav, QIcon(plainitem), QString());
   navTab->setTabToolTip(0, tr("Charts"));
 }
@@ -1031,6 +1032,7 @@ void QtstalkerApp::initGroupNav ()
   connect(gp, SIGNAL(fileSelected(BarData *)), this, SLOT(slotOpenChart(BarData *)));
   connect(chartNav, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
   connect(gp, SIGNAL(addRecentChart(BarData *)), this, SLOT(slotAddRecentChart(BarData *)));
+  connect(gp, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addTab(gp, QIcon(dirclosed), QString());
   navTab->setTabToolTip(1, tr("Groups"));
 }
@@ -1044,6 +1046,7 @@ void QtstalkerApp::initIndicatorNav ()
   connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
   connect(this, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
   connect(ip, SIGNAL(signalRefreshIndicator(QString)), this, SLOT(refreshIndicator(QString)));
+  connect(ip, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addTab(ip, QIcon(indicator), QString());
   navTab->setTabToolTip(2, tr("Indicators"));
 }
@@ -1051,6 +1054,7 @@ void QtstalkerApp::initIndicatorNav ()
 void QtstalkerApp::initScriptNav ()
 {
   ScriptPage *sp = new ScriptPage(baseWidget);
+  connect(sp, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   navTab->addTab(sp, QIcon(script_xpm), QString());
   navTab->setTabToolTip(3, tr("Scripts"));
 }

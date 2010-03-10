@@ -32,9 +32,9 @@ void Script::setName (QString &d)
   name = d;
 }
 
-void Script::getName (QString &d)
+QString & Script::getName ()
 {
-  d = name;
+  return name;
 }
 
 void Script::setCommand (QString &d)
@@ -42,9 +42,9 @@ void Script::setCommand (QString &d)
   command = d;
 }
 
-void Script::getCommand (QString &d)
+QString & Script::getCommand ()
 {
-  d = command;
+  return command;
 }
 
 void Script::setComment (QString &d)
@@ -52,9 +52,9 @@ void Script::setComment (QString &d)
   comment = d;
 }
 
-void Script::getComment (QString &d)
+QString & Script::getComment ()
 {
-  d = comment;
+  return comment;
 }
 
 void Script::setStatus (int d)
@@ -72,8 +72,8 @@ void Script::setLastRun (QDateTime &d)
   lastRun = d;
 }
 
-void Script::getLastRun (QDateTime &d)
+QDateTime & Script::getLastRun ()
 {
-  d = lastRun;
+  return lastRun;
 }
 

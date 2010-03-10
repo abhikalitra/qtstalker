@@ -35,8 +35,8 @@ void SCQuote::calculate (QStringList &l, QByteArray &ba, QString &pp)
   // determine what function is desired and call it
   
   ba.clear();
-  ba.append("ERROR\n");
-  
+  ba.append("1\n");
+
   if (l.count() < 1)
   {
     qDebug() << "SCQuote::calculate: invalid parm count" << l.count();
@@ -52,7 +52,7 @@ void SCQuote::calculate (QStringList &l, QByteArray &ba, QString &pp)
 
 void SCQuote::quoteSet (QStringList &l, QByteArray &ba, QString &pp)
 {
-  // format = QUOTE_SET,PLUGIN,EXCHANGE,SYMBOL,DATE_FORMAT,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME*
+  // format = QUOTE_SET,PLUGIN,EXCHANGE,SYMBOL,DATE_FORMAT,?
   // we are only concerned with the first 2 parms, the plugin will check the rest
 
   if (l.count() < 2)

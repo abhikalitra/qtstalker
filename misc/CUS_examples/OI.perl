@@ -1,21 +1,17 @@
 # qtstalker OI (Open Interest) indicator
 
-$|++; # turn on autoflush, qtstalker needs this to know when data is finished being sent/recieved
+$|++;
 
-print STDOUT "INDICATOR,REF,oi,OI,0"; # create the OI line
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# create the OI line
+print STDOUT "INDICATOR,REF,oi,OI,0";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-print STDOUT "PLOT,oi,OI,yellow,Line"; # plot the OI line
-$a = <STDIN>; # get the return code
-chomp($a); # remove the \n
-if ($a ne "0")
-{
-  exit; # we have a non zero return code, exit script
-}
+# color the OI line
+print STDOUT "INDICATOR,COLOR,All,oi,yellow";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# plot the OI line
+print STDOUT "PLOT,oi,OI,Line";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 

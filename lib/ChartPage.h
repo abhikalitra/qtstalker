@@ -45,6 +45,7 @@ class ChartPage : public QWidget
     void signalAddToGroup ();
     void signalReloadChart ();
     void addRecentChart (BarData *);
+    void signalMessage (QString);
 
   public:
     ChartPage (QWidget *);
