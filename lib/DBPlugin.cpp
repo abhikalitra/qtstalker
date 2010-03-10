@@ -105,7 +105,7 @@ void DBPlugin::commit ()
   db.commit();
 }
 
-void DBPlugin::getSearchList (QString &ex, QString &pat, QList<BarData *> &l)
+void DBPlugin::getSearchList (QString &ex, QString &pat, Group &l)
 {
   // if exchange is empty then get all symbols from all exchanges that match pat
   QString s;

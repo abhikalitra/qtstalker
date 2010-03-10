@@ -19,47 +19,64 @@
  *  USA.
  */
 
-#include "SCSymbolList.h"
-#include "DBPlugin.h"
-#include "BarData.h"
 #include "Group.h"
 
-#include <QtDebug>
-#include <QList>
-
-SCSymbolList::SCSymbolList ()
+Group::Group ()
 {
 }
 
-int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
+Group::~Group ()
 {
-  // format = SYMBOL_LIST,EXCHANGE,SEARCH_STRING
+  clear();
+}
 
-  ba.clear();
-  ba.append("ERROR\n");
+void Group::clear ()
+{
+  qDeleteAll(symbols);
+  symbols.clear();
+  name.clear();
+}
 
-  if (l.count() != 3)
+QString & Group::getName ()
+{
+  return name;
+}
+
+void Group::setName (QString &d)
+{
+  name = d;
+}
+
+int Group::deleteItem (int row)
+{
+  int rc = 1;
+  BarData *bd = symbols.at(row);
+  if (bd)
   {
-    qDebug() << "SCSymbolList::calculate: invalid parm count" << l.count();
-    return 1;
-  }
-
-  DBPlugin db;
-  Group bdl;
-  db.getSearchList(l[1], l[2], bdl);
-  
-  int loop;
-  QStringList sl;
-  for (loop = 0; loop < bdl.count(); loop++)
-  {
-     BarData *bd = bdl.getItem(loop); 
-     sl.append(bd->getSymbol());
+    delete bd;
+    symbols.removeAt(row);
+    rc = 0;
   }
   
-  ba.clear();
-  ba.append(sl.join(","));
-  ba.append('\n');
+  return rc;
+}
 
-  return 0;
+BarData * Group::getItem (int row)
+{
+  return symbols.at(row);
+}
+
+int Group::count ()
+{
+  return symbols.count();
+}
+
+void Group::append (BarData *d)
+{
+  BarData *bd = new BarData;
+  bd->setExchange(d->getExchange());
+  bd->setSymbol(d->getSymbol());
+  bd->setName(d->getName());
+  symbols.append(bd);
 }
 

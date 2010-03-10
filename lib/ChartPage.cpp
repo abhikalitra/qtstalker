@@ -20,14 +20,13 @@
  */
 
 #include "ChartPage.h"
-#include "DataBase.h"
+#include "GroupDataBase.h"
 #include "DBPlugin.h"
 #include "Config.h"
 #include "SymbolDialog.h"
 
 #include "../pics/addgroup.xpm"
 #include "../pics/search.xpm"
-#include "../pics/asterisk.xpm"
 
 #include <QMessageBox>
 #include <QCursor>
@@ -39,7 +38,7 @@
 #include <QtDebug>
 #include <QInputDialog>
 #include <QGridLayout>
-
+#include <QList>
 
 ChartPage::ChartPage (QWidget *w) : QWidget (w)
 {
@@ -72,14 +71,13 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
 
   menu = new QMenu(this);
   menu->addAction(QIcon(addgroup), tr("Add To &Group"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
-  menu->addAction(QIcon(asterisk_xpm), tr("&All Symbols"), this, SLOT(updateList()), QKeySequence(Qt::CTRL+Qt::Key_A));
   menu->addAction(QIcon(search_xpm), tr("&Symbol Search"), this, SLOT(symbolSearch()), QKeySequence(Qt::CTRL+Qt::Key_S));
 
   // update to last symbol search before displaying
   Config config;
   config.getData(Config::LastChartPanelExchangeSearch, searchExchange);
   config.getData(Config::LastChartPanelSymbolSearch, searchString);
-  qDebug() << searchString << searchExchange;
+
   updateList();
 }
 
@@ -88,7 +86,10 @@ void ChartPage::chartOpened (QListWidgetItem *item)
   if (! item)
     return;
 
-  BarData *bd = symbols.at(nav->currentRow());
+  BarData *bd = symbols.getItem(nav->currentRow());
+  if (! bd)
+    return;
+  
   emit fileSelected(bd);
   emit addRecentChart(bd);
 }
@@ -100,16 +101,15 @@ void ChartPage::rightClick (const QPoint &)
 
 void ChartPage::addToGroup ()
 {
-/*
   QList<QListWidgetItem *> sl = nav->selectedItems();
   if (! sl.count())
     return;
 
-  DataBase db;
+  GroupDataBase db;
   QStringList tl;
   db.getAllGroupsList(tl);
   bool ok;
-  QString group = QInputDialog::getItem(this,
+  QString name = QInputDialog::getItem(this,
 					QString(tr("Add To Group")),
 					QString(tr("Select group to add selected charts")),
                                         tl,
@@ -117,22 +117,26 @@ void ChartPage::addToGroup ()
 					FALSE,
                                         &ok,
 					0);
-  if (! group.length())
+  if (! ok || ! name.length())
     return;
 
-  db.getGroupList(group, tl);
+  Group group;
+  group.setName(name);
+  db.getGroup(group);
 
   int loop;
   for (loop = 0; loop < sl.count(); loop++)
-    tl.append(sl.value(loop)->text());
+  {
+    BarData *bd = symbols.getItem(nav->row(sl.at(loop)));
+    if (! bd)
+      continue;
+    
+    group.append(bd);
+  }
 
-  tl.removeDuplicates();
-  tl.removeAll(QString());
-
-  db.setGroupList(group, tl);
+  db.setGroup(group);
 
   emit signalAddToGroup();
-*/
 }
 
 void ChartPage::doKeyPress (QKeyEvent *key)
@@ -163,7 +167,7 @@ void ChartPage::doKeyPress (QKeyEvent *key)
 void ChartPage::updateList ()
 {
   nav->clear();
-  qDeleteAll(symbols);
+  symbols.clear();
 
   DBPlugin db;
   db.getSearchList(searchExchange, searchString, symbols);
@@ -171,8 +175,12 @@ void ChartPage::updateList ()
   int loop;
   for (loop = 0; loop < symbols.count(); loop++)
   {
-    BarData *bd = symbols.at(loop);
-    nav->addItem(bd->getSymbol());
+    BarData *bd = symbols.getItem(loop);
+    
+    QListWidgetItem *item = new QListWidgetItem;
+    item->setText(bd->getSymbol());
+    item->setToolTip(QString(tr("Name: ") + bd->getName() + "\n" + tr("Exchange: ") + bd->getExchange()));
+    nav->addItem(item);
   }
 }
 

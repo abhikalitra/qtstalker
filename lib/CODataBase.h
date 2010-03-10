@@ -19,56 +19,26 @@
  *  USA.
  */
 
-#ifndef DATABASE_HPP
-#define DATABASE_HPP
+#ifndef CO_DATA_BASE_HPP
+#define CO_DATA_BASE_HPP
 
 #include <QString>
-#include <QStringList>
-#include <QDateTime>
-#include <QHash>
 
-#include "BarData.h"
-#include "Indicator.h"
-#include "Script.h"
 #include "ChartObject.h"
+#include "Indicator.h"
 
-
-class DataBase
+class CODataBase
 {
   public:
-    DataBase ();
+    CODataBase ();
     void init (); // called only at qtstalker startup, initializes database tables
     void transaction ();
     void commit ();
-
-    // group functions
-    void getAllGroupsList (QStringList &);
-    void getGroupList (QString &, QStringList &);
-    void deleteGroup (QString &);
-    void setGroupList (QString &, QStringList &);
-
-    // indicator functions
-    void getIndicator (Indicator &);
-    void setIndicator (Indicator &);
-    void deleteIndicator (QString &);
-    void getIndicatorList (QStringList &);
-    void getActiveIndicatorList (QStringList &);
-    void getSearchIndicatorList (QString &pattern, QStringList &list);
-    void setIndicatorEnable (Indicator &);
-
-    // chart object functions
     void deleteChartObjects (QString &symbol);
     void deleteChartObjectsIndicator (QString &indicator);
     void deleteChartObject (QString &id);
     void getChartObjects (QString &symbol, QString &indicator, Indicator &);
     void setChartObject (ChartObject *);
-
-    // script functions
-    void getScripts (QStringList &);
-    void getScript (Script &);
-    void deleteScript (Script &);
-    void setScript (Script &);
-    void getScriptSearch (QString &pattern, QStringList &list);
 };
 
 #endif

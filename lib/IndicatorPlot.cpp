@@ -21,7 +21,7 @@
 
 #include "IndicatorPlot.h"
 #include "Config.h"
-#include "DataBase.h"
+#include "CODataBase.h"
 #include "PluginFactory.h"
 #include "PlotInfo.h"
 #include "Utils.h"
@@ -793,7 +793,7 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
 
   indicator.clearChartObjects();
 
-  DataBase db;
+  CODataBase db;
   db.deleteChartObjects(chartSymbol);
 
   mouseFlag = None;
@@ -811,7 +811,7 @@ void IndicatorPlot::slotChartObjectDeleted ()
   indicator.deleteChartObject(s);
   coSelected = 0;
 
-  DataBase db;
+  CODataBase db;
   db.deleteChartObject(s);
 
   mouseFlag = None;
@@ -824,7 +824,7 @@ void IndicatorPlot::saveChartObjects ()
   if (! chartSymbol.length())
     return;
 
-  DataBase db;
+  CODataBase db;
   QHash<QString, ChartObject *> coList;
   indicator.getChartObjects(coList);
   QHashIterator<QString, ChartObject *> it(coList);
@@ -845,7 +845,7 @@ void IndicatorPlot::loadChartObjects ()
 
   QString s;
   indicator.getName(s);
-  DataBase db;
+  CODataBase db;
   db.getChartObjects(chartSymbol, s, indicator);
 }
 

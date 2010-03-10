@@ -20,7 +20,6 @@
  */
 
 #include "ExScript.h"
-#include "DataBase.h"
 #include "SCIndicator.h"
 #include "SCPlot.h"
 #include "SCGroup.h"

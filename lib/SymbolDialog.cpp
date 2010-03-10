@@ -21,6 +21,7 @@
 
 #include "SymbolDialog.h"
 #include "DBPlugin.h"
+#include "Group.h"
 
 #include "../pics/search.xpm"
 #include "../pics/add.xpm"
@@ -221,7 +222,7 @@ void SymbolDialog::addButtonPressed ()
 void SymbolDialog::searchButtonPressed ()
 {
   DBPlugin db;
-  QList<BarData *> l;
+  Group l;
   QString s = search->text();
   QString ex = exchanges->currentText();
   if (ex.contains("<NONE>"))
@@ -234,13 +235,11 @@ void SymbolDialog::searchButtonPressed ()
   for (loop = 0; loop < l.count(); loop++)
   {
     QTreeWidgetItem *item = new QTreeWidgetItem(leftSymbols);
-    BarData *bd = l.at(loop);
+    BarData *bd = l.getItem(loop);
     item->setText(0, bd->getSymbol());
     item->setText(1, bd->getName());
     item->setText(2, bd->getExchange());
   }
-  
-  qDeleteAll(l);
   
   for (loop = 0; loop < leftSymbols->columnCount(); loop++)
     leftSymbols->resizeColumnToContents(loop);

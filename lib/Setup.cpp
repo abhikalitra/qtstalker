@@ -22,7 +22,7 @@
 #include "Setup.h"
 #include "qtstalker_defines.h"
 #include "Config.h"
-#include "DataBase.h"
+#include "IndicatorDataBase.h"
 #include "Indicator.h"
 #include "PluginFactory.h"
 #include "IndicatorPlugin.h"
@@ -56,6 +56,15 @@ void Setup::setupDirectories ()
     if (! dir.mkdir(home))
       qDebug() << "Unable to create" << home <<  "directory.";
   }
+  
+  QString s = home + "/data.sqlite";
+  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "data");
+  db.setHostName("me");
+  db.setDatabaseName(s);
+  db.setUserName("qtstalker");
+  db.setPassword("qtstalker");
+  if (! db.open())
+    qDebug() << "Setup::setupDirectories:" << db.lastError().text();
 
   version = "0.37";
 }
@@ -502,7 +511,7 @@ void Setup::setupDefaultIndicators ()
 
   // create the Bars indicator
   PluginFactory fac;
-  DataBase db;
+  IndicatorDataBase db;
   QString s = "BARS";
   IndicatorPlugin *ip = fac.getIndicator(path, s);
   if (! ip)

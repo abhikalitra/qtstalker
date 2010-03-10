@@ -28,6 +28,7 @@
 #include <QList>
 
 #include "BarData.h"
+#include "Group.h"
 
 class DBPlugin
 {
@@ -42,7 +43,7 @@ class DBPlugin
     void init (QString &);
     void transaction ();
     void commit ();
-    void getSearchList (QString &ex, QString &pat, QList<BarData *> &);
+    void getSearchList (QString &ex, QString &pat, Group &);
     void getFirstDate (QString &table, QDateTime &date);
     void getLastDate (QString &table, QDateTime &date);
     void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate,

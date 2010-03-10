@@ -153,7 +153,7 @@ SUBDIRS += plugins/database/Stock
 SUBDIRS += src
 
 # compile tester
-SUBDIRS += tester
+#SUBDIRS += tester
 
 # install docs and i18n
 SUBDIRS += docs

@@ -19,47 +19,31 @@
  *  USA.
  */
 
-#include "SCSymbolList.h"
-#include "DBPlugin.h"
-#include "BarData.h"
-#include "Group.h"
+#ifndef GROUP_HPP
+#define GROUP_HPP
 
-#include <QtDebug>
+#include <QString>
 #include <QList>
 
-SCSymbolList::SCSymbolList ()
+#include "BarData.h"
+
+class Group
 {
-}
+  public:
+    Group ();
+    ~Group ();
+    void clear ();
+    QString & getName ();
+    void setName (QString &);
+    int deleteItem (int);
+    BarData * getItem (int);
+    int count ();
+    void append (BarData *);
 
-int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
-{
-  // format = SYMBOL_LIST,EXCHANGE,SEARCH_STRING
+  protected:
+    QString name;
+    QList<BarData *> symbols;
+};
 
-  ba.clear();
-  ba.append("ERROR\n");
-
-  if (l.count() != 3)
-  {
-    qDebug() << "SCSymbolList::calculate: invalid parm count" << l.count();
-    return 1;
-  }
-
-  DBPlugin db;
-  Group bdl;
-  db.getSearchList(l[1], l[2], bdl);
-  
-  int loop;
-  QStringList sl;
-  for (loop = 0; loop < bdl.count(); loop++)
-  {
-     BarData *bd = bdl.getItem(loop); 
-     sl.append(bd->getSymbol());
-  }
-  
-  ba.clear();
-  ba.append(sl.join(","));
-  ba.append('\n');
-
-  return 0;
-}
+#endif
 

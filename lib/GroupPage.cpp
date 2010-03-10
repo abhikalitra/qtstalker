@@ -20,7 +20,7 @@
  */
 
 #include "GroupPage.h"
-#include "DataBase.h"
+#include "GroupDataBase.h"
 #include "Config.h"
 
 #include "../pics/delete.xpm"
@@ -41,8 +41,6 @@
 #include <QLayout>
 #include <QFileInfo>
 
-
-
 GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
   QVBoxLayout *vbox = new QVBoxLayout;
@@ -50,11 +48,11 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   vbox->setSpacing(5);
   setLayout(vbox);
 
-  group = new QComboBox;
-  connect(group, SIGNAL(currentIndexChanged(int)), this, SLOT(groupSelected(int)));
-  group->setToolTip(tr("Current Group"));
-  group->setFocusPolicy(Qt::NoFocus);
-  vbox->addWidget(group);
+  groups = new QComboBox;
+  connect(groups, SIGNAL(currentIndexChanged(int)), this, SLOT(groupSelected(int)));
+  groups->setToolTip(tr("Current Group"));
+  groups->setFocusPolicy(Qt::NoFocus);
+  vbox->addWidget(groups);
 
   nav = new QListWidget;
   nav->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -81,23 +79,26 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   QString s;
   Config config;
   config.getData(Config::LastGroupUsed, s);
-  group->setCurrentIndex(group->findText(s, Qt::MatchExactly));
+  groups->setCurrentIndex(groups->findText(s, Qt::MatchExactly));
 }
 
 void GroupPage::newGroup()
 {
   bool ok;
   QString selection = QInputDialog::getText(this,
-				    tr("New Group"),
-  				    tr("Enter new group symbol."),
-				    QLineEdit::Normal,
-				    tr("NewGroup"),
-				    &ok);
+					    tr("New Group"),
+					    tr("Enter new group symbol."),
+					    QLineEdit::Normal,
+					    tr("NewGroup"),
+					    &ok);
   if (selection.isEmpty())
     return;
+  
+  // remove any forbidden sql characters
+  selection = selection.remove(QString("'"), Qt::CaseSensitive);
 
   QStringList l;
-  DataBase db;
+  GroupDataBase db;
   db.getAllGroupsList(l);
   if (l.contains(selection))
   {
@@ -105,8 +106,9 @@ void GroupPage::newGroup()
     return;
   }
 
-  l.clear();
-  db.setGroupList(selection, l);
+  Group g;
+  g.setName(selection);
+  db.setGroup(g);
 
   updateGroups();
 }
@@ -118,34 +120,30 @@ void GroupPage::deleteGroupItem ()
     return;
 
   int rc = QMessageBox::warning(this,
-		            tr("Qtstalker: Warning"),
-			    tr("Are you sure you want to delete group items?"),
-			    QMessageBox::Yes,
-			    QMessageBox::No,
-			    QMessageBox::NoButton);
+				tr("Qtstalker: Warning"),
+				tr("Are you sure you want to delete group items?"),
+				QMessageBox::Yes,
+				QMessageBox::No,
+				QMessageBox::NoButton);
 
   if (rc == QMessageBox::No)
     return;
 
-  DataBase db;
-  QStringList l;
-  QString s = group->currentText();
-  db.getGroupList(s, l);
-
   int loop;
-  for (loop = 0; loop < sl.count(); loop++)
+  for (loop = sl.count() - 1; loop > -1; loop--)
   {
     QListWidgetItem *item = sl.at(loop);
-    l.removeOne(item->text());
-    delete item;
+    if (! group.deleteItem(nav->row(item)))
+      delete item;
   }
 
-  db.setGroupList(s, l);
+  GroupDataBase db;
+  db.setGroup(group);
 }
 
 void GroupPage::deleteGroup()
 {
-  QString g = group->currentText();
+  QString g = groups->currentText();
   if (! g.length())
     return;
 
@@ -160,27 +158,32 @@ void GroupPage::deleteGroup()
   if (rc == QMessageBox::No)
     return;
 
-  DataBase db;
+  GroupDataBase db;
   db.deleteGroup(g);
 
-  if (g == group->currentText())
+  if (g == groups->currentText())
+  {
     nav->clear();
+    group.clear();
+  }
 
   updateGroups();
 }
 
 void GroupPage::groupSelected (int i)
 {
-  QString s = group->itemText(i);
+  QString s = groups->itemText(i);
   if (! s.length())
     return;
 
-  DataBase db;
-  QStringList l;
-  db.getGroupList(s, l);
-  nav->clear();
-  nav->addItems(l);
-
+  group.clear();
+  group.setName(s);
+  
+  GroupDataBase db;
+  db.getGroup(group);
+  
+  updateList();
+  
   Config config;
   config.setData(Config::LastGroupUsed, s);
 }
@@ -190,7 +193,7 @@ void GroupPage::chartOpened (QListWidgetItem *item)
   if (! item)
     return;
   
-  BarData *bd = symbols.at(nav->currentRow());
+  BarData *bd = group.getItem(nav->currentRow());
   if (! bd)
     return;
   
@@ -236,25 +239,27 @@ void GroupPage::doKeyPress (QKeyEvent *key)
 
 void GroupPage::loadGroups ()
 {
-  group->clear();
+  groups->clear();
+  
   QStringList l;
-  DataBase db;
+  GroupDataBase db;
   db.getAllGroupsList(l);
-  group->addItems(l);
+  
+  groups->addItems(l);
 }
 
 void GroupPage::updateGroups ()
 {
-  int cg = group->currentIndex();
+  int cg = groups->currentIndex();
   if (cg < 0)
     cg = 0;
   int cr = nav->currentRow();
   if (cr < 0)
     cr = 0;
 
-  group->blockSignals(TRUE);
+  groups->blockSignals(TRUE);
   loadGroups();
-  group->blockSignals(FALSE);
+  groups->blockSignals(FALSE);
 
   groupSelected(cg);
 
@@ -267,33 +272,63 @@ void GroupPage::addToGroup ()
   if (! sl.count())
     return;
 
-  DataBase db;
+  GroupDataBase db;
   QStringList tl;
   db.getAllGroupsList(tl);
   bool ok;
-  QString group = QInputDialog::getItem(this,
-					QString(tr("Add To Group")),
-					QString(tr("Select group to add selected charts")),
-                                        tl,
-					0,
-					FALSE,
-                                        &ok,
-					0);
-  if (! group.length())
+  QString g = QInputDialog::getItem(this,
+				    QString(tr("Add To Group")),
+				    QString(tr("Select group to add selected charts")),
+                                    tl,
+				    0,
+				    FALSE,
+                                    &ok,
+				    0);
+  if (! g.length())
     return;
 
-  db.getGroupList(group, tl);
+  Group tg;
+  tg.setName(g);
+  db.getGroup(tg);
 
   int loop;
   for (loop = 0; loop < sl.count(); loop++)
-    tl.append(sl.value(loop)->text());
+  {
+    int row = nav->row(sl.at(loop));
+    BarData *bd = group.getItem(row);
+    if (bd)
+    {
+      BarData *bd2 = new BarData;
+      bd2->setExchange(bd->getExchange());
+      bd2->setSymbol(bd->getSymbol());
+      bd2->setName(bd->getName());
+      tg.append(bd2);
+    }
+  }
 
-  tl.removeDuplicates();
-  tl.removeAll(QString());
-
-  db.setGroupList(group, tl);
+  db.setGroup(tg);
 
   updateGroups();
 }
+
+void GroupPage::updateList ()
+{
+  nav->clear();
+  
+  int loop;
+  for (loop = 0; loop < group.count(); loop++)
+  {
+    BarData *bd = group.getItem(loop);
+    if (! bd)
+      continue;
+    
+    QListWidgetItem *item = new QListWidgetItem;
+    item->setText(bd->getSymbol());
+    item->setToolTip(QString(tr("Name: ") + bd->getName() + "\n" + tr("Exchange: ") + bd->getExchange()));
+    nav->addItem(item);
+  }
+}
+
+
 
 

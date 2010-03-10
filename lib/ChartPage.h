@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CHARTPAGE_HPP
-#define CHARTPAGE_HPP
+#ifndef CHART_PAGE_HPP
+#define CHART_PAGE_HPP
 
 #include <QString>
 #include <QWidget>
@@ -34,6 +34,7 @@
 #include <QHash>
 
 #include "BarData.h"
+#include "Group.h"
 
 class ChartPage : public QWidget
 {
@@ -62,7 +63,7 @@ class ChartPage : public QWidget
     QListWidget *nav;
     QMenu *menu;
     QToolButton *symbolButton;
-    QList<BarData *> symbols;
+    Group symbols;
 };
 
 #endif

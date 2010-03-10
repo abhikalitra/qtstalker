@@ -20,7 +20,7 @@
  */
 
 #include "ScriptPage.h"
-#include "DataBase.h"
+#include "ScriptDataBase.h"
 #include "Config.h"
 #include "PrefDialog.h"
 
@@ -125,7 +125,7 @@ void ScriptPage::newScript ()
 
   // check is name already exists
   QStringList l;
-  DataBase db;
+  ScriptDataBase db;
   db.getScripts(l);
   if (l.contains(s))
   {
@@ -148,7 +148,7 @@ void ScriptPage::editScript ()
 
 void ScriptPage::editScript (QString &d)
 {
-  DataBase db;
+  ScriptDataBase db;
   Script script;
   script.setName(d);
   db.getScript(script);
@@ -209,7 +209,7 @@ void ScriptPage::deleteScript ()
 
   QString s = item->text();
 
-  DataBase db;
+  ScriptDataBase db;
   Script script;
   script.setName(s);
   db.deleteScript(script);
@@ -239,7 +239,7 @@ void ScriptPage::doubleClick (QListWidgetItem *item)
       QString s = item->text();
       Script script;
       script.setName(s);
-      DataBase db;
+      ScriptDataBase db;
       db.getScript(script);
       addScriptQueue(script);
       break;
@@ -276,7 +276,7 @@ void ScriptPage::search ()
                                     QString(),
                                     &aok,
                                     0);
-  if (! aok)
+  if (! aok || s.isEmpty())
     return;
 
   status = StatusSearch;
@@ -306,7 +306,7 @@ void ScriptPage::showAllScripts ()
 
   list->clear();
 
-  DataBase db;
+  ScriptDataBase db;
   QStringList l;
   db.getScripts(l);
   list->addItems(l);
@@ -337,7 +337,7 @@ void ScriptPage::showSearch ()
 
   list->clear();
 
-  DataBase db;
+  ScriptDataBase db;
   QStringList l;
   db.getScriptSearch(searchString, l);
 

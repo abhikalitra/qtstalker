@@ -21,7 +21,6 @@ HEADERS += ScalePlot.h
 HEADERS += IndicatorPlot.h
 HEADERS += DataWindow.h
 HEADERS += Preferences.h
-HEADERS += DataBase.h
 HEADERS += Setup.h
 HEADERS += ChartPage.h
 HEADERS += GroupPage.h
@@ -58,6 +57,11 @@ HEADERS += PlotInfo.h
 HEADERS += Utils.h
 HEADERS += DBPlugin.h
 HEADERS += SCQuote.h
+HEADERS += GroupDataBase.h
+HEADERS += Group.h
+HEADERS += ScriptDataBase.h
+HEADERS += IndicatorDataBase.h
+HEADERS += CODataBase.h
 
 
 SOURCES += Setting.cpp
@@ -76,7 +80,6 @@ SOURCES += ScalePlot.cpp
 SOURCES += IndicatorPlot.cpp
 SOURCES += DataWindow.cpp
 SOURCES += Preferences.cpp
-SOURCES += DataBase.cpp
 SOURCES += Setup.cpp
 SOURCES += ChartPage.cpp
 SOURCES += GroupPage.cpp
@@ -113,6 +116,11 @@ SOURCES += PlotInfo.cpp
 SOURCES += Utils.cpp
 SOURCES += DBPlugin.cpp
 SOURCES += SCQuote.cpp
+SOURCES += GroupDataBase.cpp
+SOURCES += Group.cpp
+SOURCES += ScriptDataBase.cpp
+SOURCES += IndicatorDataBase.cpp
+SOURCES += CODataBase.cpp
 
 
 TARGET = qtstalker

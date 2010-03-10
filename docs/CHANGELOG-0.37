@@ -289,7 +289,18 @@
            need to delete their ~/.qtstalker/data.sqlite file before installing. Hopefully this will
            be the last time for a while :-)
 
+20100309:  Big Changes. Removed the CSV app. I have added a script interface to replace the CSV app.
+           This was done so we could keep a single scriptable interface. Having CSV app and
+           scripting is twice the work. The script interface will also be MUCH more flexible.
 
+           Quote database changes. The quote database will be more centralized so we can better
+           manage a proposed plugin interface for quotes. More on this later. The biggest change
+           is a restructure that requires a symbol and its exchange listing to be provided for
+           all quote queries. This is to allow multiple listings of the same symbol and the
+           occassional duplicate symbol name among the world exchanges. The quotes.sqlite database
+           has been moved to the ~/.qtstalker directory. I would advise CVS users to avoid using
+           these lastest changes yet as I am still fine tuning the database structure as my testing
+           continues.
 
 
 

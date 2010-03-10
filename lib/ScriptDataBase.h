@@ -19,47 +19,26 @@
  *  USA.
  */
 
-#include "SCSymbolList.h"
-#include "DBPlugin.h"
-#include "BarData.h"
-#include "Group.h"
+#ifndef SCRIPT_DATA_BASE_HPP
+#define SCRIPT_DATA_BASE_HPP
 
-#include <QtDebug>
-#include <QList>
+#include <QString>
+#include <QStringList>
 
-SCSymbolList::SCSymbolList ()
+#include "Script.h"
+
+class ScriptDataBase
 {
-}
+  public:
+    ScriptDataBase ();
+    void init (); // called only at qtstalker startup, initializes database tables
+    void transaction ();
+    void commit ();
+    void getScripts (QStringList &);
+    void getScript (Script &);
+    void deleteScript (Script &);
+    void setScript (Script &);
+    void getScriptSearch (QString &pattern, QStringList &list);
+};
 
-int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
-{
-  // format = SYMBOL_LIST,EXCHANGE,SEARCH_STRING
-
-  ba.clear();
-  ba.append("ERROR\n");
-
-  if (l.count() != 3)
-  {
-    qDebug() << "SCSymbolList::calculate: invalid parm count" << l.count();
-    return 1;
-  }
-
-  DBPlugin db;
-  Group bdl;
-  db.getSearchList(l[1], l[2], bdl);
-  
-  int loop;
-  QStringList sl;
-  for (loop = 0; loop < bdl.count(); loop++)
-  {
-     BarData *bd = bdl.getItem(loop); 
-     sl.append(bd->getSymbol());
-  }
-  
-  ba.clear();
-  ba.append(sl.join(","));
-  ba.append('\n');
-
-  return 0;
-}
-
+#endif

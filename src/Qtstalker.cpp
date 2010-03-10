@@ -38,7 +38,6 @@
 #include "PlotLine.h"
 #include "PrefDialog.h"
 #include "Preferences.h"
-#include "DataBase.h"
 #include "Indicator.h"
 #include "Setup.h"
 #include "Config.h"
@@ -48,6 +47,10 @@
 #include "IndicatorPlugin.h"
 #include "ScriptPage.h"
 #include "DBPlugin.h"
+#include "GroupDataBase.h"
+#include "IndicatorDataBase.h"
+#include "CODataBase.h"
+#include "ScriptDataBase.h"
 
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
@@ -84,9 +87,6 @@ QtstalkerApp::QtstalkerApp(QString session)
   Config config;
   config.init(session);
 
-  DataBase db;
-  db.init();
-
   setup.setupConfigDefaults();
   setup.setupDefaultIndicators();
 
@@ -110,6 +110,18 @@ QtstalkerApp::QtstalkerApp(QString session)
   config.getData(Config::PlotPluginPath, path);
   pfac.getPluginList(path, l);
   config.setBaseData(Config::PlotPluginList, l);
+  
+  GroupDataBase gdb;
+  gdb.init();
+
+  ScriptDataBase sdb;
+  sdb.init();
+
+  IndicatorDataBase idb;
+  idb.init();
+
+  CODataBase codb;
+  codb.init();
 
   assistant = new Assistant;
 
@@ -194,12 +206,12 @@ QtstalkerApp::QtstalkerApp(QString session)
   initScriptNav();
 
   // setup the initial indicators
-  db.getActiveIndicatorList(l);
+  idb.getActiveIndicatorList(l);
   for (loop = 0; loop < l.count(); loop++)
   {
     Indicator i;
     i.setName(l[loop]);
-    db.getIndicator(i);
+    idb.getIndicator(i);
 
     if (i.getTabRow() > tabList.count())
       continue;
@@ -756,7 +768,7 @@ void QtstalkerApp::loadChart (QString ex, QString d)
   chartName = recordList.getName();
   barsLoaded = recordList.count();
 
-  DataBase db;
+  IndicatorDataBase db;
   QStringList indicatorList;
   db.getActiveIndicatorList(indicatorList);
 
@@ -781,7 +793,7 @@ void QtstalkerApp::loadChart (QString ex, QString d)
 void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
 {
   Indicator i;
-  DataBase db;
+  IndicatorDataBase db;
   i.setName(d);
   db.getIndicator(i);
 
@@ -838,7 +850,7 @@ void QtstalkerApp::slotDataWindow ()
   DataWindow *dw = new DataWindow(this);
   dw->setWindowTitle(getWindowCaption());
 
-  DataBase db;
+  IndicatorDataBase db;
   QStringList l;
   db.getIndicatorList(l);
   int loop;
@@ -906,7 +918,7 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 
 void QtstalkerApp::addIndicatorButton (QString d)
 {
-  DataBase db;
+  IndicatorDataBase db;
   Indicator i;
   i.setName(d);
   db.getIndicator(i);

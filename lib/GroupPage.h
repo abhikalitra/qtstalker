@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef GROUPPAGE_HPP
-#define GROUPPAGE_HPP
+#ifndef GROUP_PAGE_HPP
+#define GROUP_PAGE_HPP
 
 #include <QString>
 #include <QWidget>
@@ -32,7 +32,7 @@
 #include <QAction>
 #include <QComboBox>
 
-#include "BarData.h"
+#include "Group.h"
 
 class GroupPage : public QWidget
 {
@@ -44,6 +44,7 @@ class GroupPage : public QWidget
 
   public:
     GroupPage (QWidget *);
+    void updateList ();
 
   public slots:
     void newGroup ();
@@ -60,9 +61,9 @@ class GroupPage : public QWidget
   protected:
     QListWidget *nav;
     QMenu *menu;
-    QComboBox *group;
+    QComboBox *groups;
     QList<QAction *> actionList;
-    QList<BarData *> symbols;
+    Group group;
 };
 
 #endif

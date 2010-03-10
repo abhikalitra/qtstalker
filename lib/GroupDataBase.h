@@ -19,47 +19,27 @@
  *  USA.
  */
 
-#include "SCSymbolList.h"
-#include "DBPlugin.h"
+#ifndef GROUP_DATA_BASE_HPP
+#define GROUP_DATA_BASE_HPP
+
+#include <QString>
+#include <QStringList>
+#include <QList>
+
 #include "BarData.h"
 #include "Group.h"
 
-#include <QtDebug>
-#include <QList>
-
-SCSymbolList::SCSymbolList ()
+class GroupDataBase
 {
-}
+  public:
+    GroupDataBase ();
+    void init (); // called only at qtstalker startup, initializes database tables
+    void transaction ();
+    void commit ();
+    void getAllGroupsList (QStringList &);
+    void getGroup (Group &);
+    void deleteGroup (QString &);
+    void setGroup (Group &);
+};
 
-int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
-{
-  // format = SYMBOL_LIST,EXCHANGE,SEARCH_STRING
-
-  ba.clear();
-  ba.append("ERROR\n");
-
-  if (l.count() != 3)
-  {
-    qDebug() << "SCSymbolList::calculate: invalid parm count" << l.count();
-    return 1;
-  }
-
-  DBPlugin db;
-  Group bdl;
-  db.getSearchList(l[1], l[2], bdl);
-  
-  int loop;
-  QStringList sl;
-  for (loop = 0; loop < bdl.count(); loop++)
-  {
-     BarData *bd = bdl.getItem(loop); 
-     sl.append(bd->getSymbol());
-  }
-  
-  ba.clear();
-  ba.append(sl.join(","));
-  ba.append('\n');
-
-  return 0;
-}
-
+#endif

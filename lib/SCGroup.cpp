@@ -20,10 +20,11 @@
  */
 
 #include "SCGroup.h"
-#include "DataBase.h"
+#include "GroupDataBase.h"
+#include "BarData.h"
+#include "Group.h"
 
 #include <QtDebug>
-
 
 SCGroup::SCGroup ()
 {
@@ -31,23 +32,28 @@ SCGroup::SCGroup ()
 
 int SCGroup::addGroup (QStringList &l, QByteArray &ba)
 {
-  // format = GROUP_ADD,GROUP,ITEM
+  // format = GROUP_ADD,GROUP,EXCHANGE,SYMBOL
 
   ba.clear();
   ba.append("1\n");
 
-  if (l.count() != 3)
+  if (l.count() != 4)
   {
     qDebug() << "SCGroup::addGroup: invalid parm count" << l.count();
     return 1;
   }
 
-  DataBase db;
-  QStringList groupList;
-  db.getGroupList(l[1], groupList);
-  groupList.append(l[2]);
-  groupList.removeDuplicates();
-  db.setGroupList(l[1], groupList);
+  GroupDataBase db;
+  Group g;
+  g.setName(l[1]);
+  db.getGroup(g);
+  
+  BarData *bd = new BarData;
+  bd->setExchange(l[2]);
+  bd->setSymbol(l[3]);
+  g.append(bd);
+  
+  db.setGroup(g);
 
   ba.clear();
   ba.append("0\n");
@@ -68,7 +74,7 @@ int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
     return 1;
   }
 
-  DataBase db;
+  GroupDataBase db;
   db.deleteGroup(l[1]);
 
   ba.clear();
@@ -90,12 +96,22 @@ int SCGroup::getGroup (QStringList &l, QByteArray &ba)
     return 1;
   }
 
-  DataBase db;
-  QStringList groupList;
-  db.getGroupList(l[1], groupList);
+  GroupDataBase db;
+  Group g;
+  g.setName(l[1]);
+  db.getGroup(g);
+  
+  int loop;
+  QStringList rl;
+  for (loop = 0; loop < g.count(); loop++)
+  {
+    BarData *bd = g.getItem(loop);
+    rl.append(bd->getExchange());
+    rl.append(bd->getSymbol());
+  }
 
   ba.clear();
-  ba.append(groupList.join(","));
+  ba.append(rl.join(","));
   ba.append("\n");
 
   return 0;

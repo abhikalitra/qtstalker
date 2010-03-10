@@ -20,7 +20,7 @@
  */
 
 #include "IndicatorPage.h"
-#include "DataBase.h"
+#include "IndicatorDataBase.h"
 #include "Indicator.h"
 #include "Config.h"
 #include "IndicatorPlugin.h"
@@ -148,7 +148,7 @@ void IndicatorPage::newIndicator ()
 
   // check is name already exists
   l.clear();
-  DataBase db;
+  IndicatorDataBase db;
   db.getIndicatorList(l);
   if (l.contains(name))
   {
@@ -201,7 +201,7 @@ void IndicatorPage::editIndicator (QString &name)
   Indicator i;
   i.setName(name);
 
-  DataBase db;
+  IndicatorDataBase db;
   db.getIndicator(i);
   QString indicator;
   i.getIndicator(indicator);
@@ -245,7 +245,7 @@ void IndicatorPage::deleteIndicator ()
 
   QString s = item->text();
 
-  DataBase db;
+  IndicatorDataBase db;
   db.deleteIndicator(s);
 
   emit signalDeleteIndicator(s);
@@ -260,7 +260,7 @@ void IndicatorPage::doubleClick (QListWidgetItem *item)
 
   QString s = item->text();
 
-  DataBase db;
+  IndicatorDataBase db;
   Indicator i;
   i.setName(s);
 
@@ -339,7 +339,7 @@ void IndicatorPage::indicatorSearch ()
 
   listFlag = 2; // set to search mode
 
-  DataBase db;
+  IndicatorDataBase db;
   QStringList l, al;
   db.getSearchIndicatorList(s, l);
   db.getActiveIndicatorList(al);
@@ -360,7 +360,7 @@ void IndicatorPage::showActive ()
 {
   listFlag = 0;
 
-  DataBase db;
+  IndicatorDataBase db;
   QStringList l;
   db.getActiveIndicatorList(l);
 
@@ -377,7 +377,7 @@ void IndicatorPage::showAll ()
 
   list->clear();
 
-  DataBase db;
+  IndicatorDataBase db;
   QStringList l, al;
   db.getIndicatorList(l);
   db.getActiveIndicatorList(al);
