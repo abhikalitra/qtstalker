@@ -11,6 +11,9 @@ HEADERS += TestRankings.h
 HEADERS += TestSettings.h
 HEADERS += TestReport.h
 HEADERS += TestChart.h
+HEADERS += TestDataBase.h
+HEADERS += TestTrade.h
+HEADERS += TestSignal.h
 
 SOURCES += QtStalkerTester.cpp
 SOURCES += TestConfig.cpp
@@ -18,6 +21,9 @@ SOURCES += TestRankings.cpp
 SOURCES += TestSettings.cpp
 SOURCES += TestReport.cpp
 SOURCES += TestChart.cpp
+SOURCES += TestDataBase.cpp
+SOURCES += TestTrade.cpp
+SOURCES += TestSignal.cpp
 SOURCES += main.cpp
 
 TARGET = QtStalkerTester

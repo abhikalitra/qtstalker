@@ -44,10 +44,9 @@ TestChart::TestChart ()
   plot->setDateFlag(1);
   plot->setLogScale(0);
   plot->setGridFlag(0);
-  plot->setScaleToScreen(0);
+  plot->setScaleToScreen(1);
   plot->setPixelspace(6);
   plot->setIndex(0);
-  plot->setCrosshairsStatus(0);
   vbox->addWidget(plot);
 
   slider = new QSlider;
@@ -83,16 +82,16 @@ TestChart::TestChart ()
   connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
 }
 
-void TestChart::update (BarData *data, QList<TestTrade *> &trades, QString &coPluginPath)
+void TestChart::update (BarData &data, QList<TestTrade *> &trades, QString &)
 {
   plot->clear();
-  plot->setInterval(data->getBarLength());
+  plot->setInterval(data.getBarLength());
 
   MATH1 m;
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = m.getBARS(data, up, down, neutral);
+  PlotLine *bars = m.getBARS(&data, up, down, neutral);
   if (! bars)
   {
     qDebug() << "TestChart::update: no bars";
@@ -107,20 +106,9 @@ void TestChart::update (BarData *data, QList<TestTrade *> &trades, QString &coPl
   i.setDate(1);
   i.addLine(bars);
   
-  PluginFactory fac;
-  QString plugin = "VLine";
-  COPlugin *plug = fac.getCO(coPluginPath, plugin);
-  if (! plug)
-  {
-    qDebug() << "TestChart::update: no VLine plugin";
-    i.clear();
-    return;
-  }
-  
   int loop;
   int id = 0;
-  IndicatorPlot *ip = plot->getIndicatorPlot();
-  ip->setData(data);
+  plot->setData(&data);
   
   for (loop = 0; loop < trades.count(); loop++)
   {
@@ -134,7 +122,7 @@ void TestChart::update (BarData *data, QList<TestTrade *> &trades, QString &coPl
     s = QString::number(id++);
     sell->setData(ChartObject::ParmID, s);
     
-    data->getSymbol(s);
+    s = data.getSymbol();
     buy->setData(ChartObject::ParmSymbol, s);
     sell->setData(ChartObject::ParmSymbol, s);
     
@@ -142,41 +130,41 @@ void TestChart::update (BarData *data, QList<TestTrade *> &trades, QString &coPl
     buy->setData(ChartObject::ParmIndicator, s);
     sell->setData(ChartObject::ParmIndicator, s);
 
-    s = "VLine";
+    s = "Buy";
     buy->setData(ChartObject::ParmPlugin, s);
+    s = "Sell";
     sell->setData(ChartObject::ParmPlugin, s);
     
     buy->setData(ChartObject::ParmColor, up);
     sell->setData(ChartObject::ParmColor, down);
     
-    QDateTime sd, ed;
-    double sp, ep;
-    trade->getEnterDate(sd);
-    trade->getExitDate(ed);
-    sp = trade->getEnterPrice();
-    ep = trade->getExitPrice();
+    QDateTime sd = trade->getEnterDate();
+    QDateTime ed = trade->getExitDate();
+    double low = trade->getLow() * 0.99;
+    double high = trade->getHigh() * 1.01;
     if (trade->getType() == 0)
     {
       buy->setData(ChartObject::ParmDate, sd);
-      buy->setData(ChartObject::ParmPrice, sp);
+      buy->setData(ChartObject::ParmPrice, low);
       sell->setData(ChartObject::ParmDate, ed);
-      sell->setData(ChartObject::ParmPrice, ep);
+      sell->setData(ChartObject::ParmPrice, high);
     }
     else
     {
       sell->setData(ChartObject::ParmDate, sd);
-      sell->setData(ChartObject::ParmPrice, sp);
+      sell->setData(ChartObject::ParmPrice, high);
       buy->setData(ChartObject::ParmDate, ed);
-      buy->setData(ChartObject::ParmPrice, ep);
+      buy->setData(ChartObject::ParmPrice, low);
     }
     
     i.addChartObject(buy);  
     i.addChartObject(sell);  
   }
 
+  IndicatorPlot *ip = plot->getIndicatorPlot();
   ip->setIndicator(i);
   
-  slider->setRange(0, data->count() - 1);
+  slider->setRange(0, data.count() - 1);
   slider->setValue(0);
   
   plot->draw();

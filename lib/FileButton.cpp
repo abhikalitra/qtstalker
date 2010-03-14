@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,35 +19,49 @@
  *  USA.
  */
 
-#ifndef SYMBOL_BUTTON_HPP
-#define SYMBOL_BUTTON_HPP
+#include "FileButton.h"
 
-#include <QWidget>
-#include <QPushButton>
-#include <QStringList>
-#include <QString>
+#include <QFileDialog>
+#include <QFileInfo>
 
-#include "Group.h"
-
-class SymbolButton : public QPushButton
+FileButton::FileButton (QWidget *w, QString &f) : QPushButton (w)
 {
-  Q_OBJECT
+  connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
+  file = f;
+  updateButtonText();
+}
 
-  public:
-    SymbolButton (QWidget *);
-    Group & getSymbols ();
-    void setSymbols (QString &ex, QString &ss);
-    void setSymbols (Group &);
-    void updateButtonText ();
-    
-  public slots:
-    void symbolDialog ();
-      
-  private:
-    QString exchangeSearch;
-    QString symbolSearch;
-    Group symbols;
-    
-};
+QString & FileButton::getFile ()
+{
+  return file;
+}
 
-#endif
+void FileButton::setFile (QString &d)
+{
+  file = d;
+  updateButtonText();
+}
+
+void FileButton::fileDialog ()
+{
+  QString f = QFileDialog::getOpenFileName(this,
+					   tr("Select File"),
+					   file,
+					   QString(),
+					   0,
+					   0);
+					      
+  if (f.isEmpty())
+    return;
+  
+  file = f;
+  
+  updateButtonText();
+}
+
+void FileButton::updateButtonText ()
+{
+  QFileInfo fi(file);
+  setText(fi.fileName());
+}
+

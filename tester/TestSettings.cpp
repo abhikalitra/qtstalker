@@ -31,6 +31,7 @@
 #include "TestSettings.h"
 #include "BarData.h"
 #include "TestConfig.h"
+#include "DBPlugin.h"
 
 TestSettings::TestSettings ()
 {
@@ -66,13 +67,14 @@ TestSettings::TestSettings ()
     label = new QLabel(tr("Script File"));
     tgrid->addWidget(label, 1, 0);
 
-    script = new QLineEdit;
-    tgrid->addWidget(script, 1, 1);
+    QString s;
+    TestConfig config;
+    config.getData(TestConfig::ScriptDirectory, s);
+    if (s.isEmpty())
+      s = QDir::homePath();
 
-    scriptButton = new QToolButton;
-    scriptButton->setText(QString("..."));
-    tgrid->addWidget(scriptButton, 1, 2);
-    connect(scriptButton, SIGNAL(pressed()), this, SLOT(scriptButtonPressed()));
+    scriptButton = new FileButton(this, s);
+    tgrid->addWidget(scriptButton, 1, 1);
 
     label = new QLabel(tr("Comment"));
     tgrid->addWidget(label, 2, 0);
@@ -88,12 +90,21 @@ TestSettings::TestSettings ()
   int row = 0;
   int col = 0;
 
+  label = new QLabel(tr("Exchange"));
+  grid->addWidget(label, row, col++);
+
+  DBPlugin db;
+  QStringList l;
+  db.getExchangeList(l);
+  exchanges = new QComboBox;
+  exchanges->addItems(l);
+  grid->addWidget(exchanges, row++, col--);
+  
   label = new QLabel(tr("Symbol"));
   grid->addWidget(label, row, col++);
 
-  symbolButton = new SymbolButton(this);
-  grid->addWidget(symbolButton, row++, col--);
-  connect(symbolButton, SIGNAL(pressed()), symbolButton, SLOT(symbolDialog()));
+  symbol = new QLineEdit;
+  grid->addWidget(symbol, row++, col--);
   
   // bar length parm
   label = new QLabel(tr("Bar Length"));
@@ -195,36 +206,14 @@ TestSettings::TestSettings ()
 //  grid->setRowStretch(row, 1);
 }
 
-void TestSettings::scriptButtonPressed ()
-{
-  QString dir;
-  TestConfig config;
-  config.getData(TestConfig::ScriptDirectory, dir);
-  if (dir.isEmpty())
-    dir = QDir::homePath();
-
-  QString s = QFileDialog::getOpenFileName(this,
-					   QString(tr("Select Test Script")),
-					   dir,
-					   QString(),
-					   0,
-					   0);
-  if (s.isEmpty())
-    return;
-
-  config.setData(TestConfig::ScriptDirectory, s);
-
-  script->setText(s);
-}
-
 void TestSettings::getScript (QString &d)
 {
-  d = script->text();
+  d = scriptButton->getFile();
 }
 
 void TestSettings::setScript (QString &d)
 {
-  script->setText(d);
+  scriptButton->setFile(d);
 }
 
 void TestSettings::getShellCommand (QString &d)
@@ -248,23 +237,34 @@ void TestSettings::setComment (QString &d)
   comment->append(d);
 }
 
+void TestSettings::getExchange (QString &d)
+{
+  d = exchanges->currentText();
+}
+
+void TestSettings::setExchange (QString &d)
+{
+  exchanges->setCurrentIndex(exchanges->findText(d, Qt::MatchExactly));
+}
+
 void TestSettings::getSymbol (QString &d)
 {
-  QStringList l;
-  symbolButton->getSymbols(l);
-  d = l.join(",");
+  d = symbol->text();
 }
 
 void TestSettings::setSymbol (QString &d)
 {
-  QStringList l;
-  l = d.split(",");
-  symbolButton->setSymbols(l);
+  symbol->setText(d);
 }
 
 int TestSettings::getEnterField ()
 {
   return enterField->currentIndex();
+}
+
+void TestSettings::getEnterFieldText (QString &d)
+{
+  d = enterField->currentText();
 }
 
 void TestSettings::setEnterField (int d)
@@ -275,6 +275,11 @@ void TestSettings::setEnterField (int d)
 int TestSettings::getExitField ()
 {
   return exitField->currentIndex();
+}
+
+void TestSettings::getExitFieldText (QString &d)
+{
+  d = exitField->currentText();
 }
 
 void TestSettings::setExitField (int d)

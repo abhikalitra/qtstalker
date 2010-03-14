@@ -43,13 +43,21 @@ class QtStalkerTester : public QMainWindow
   Q_OBJECT
 
   public:
+    enum Status
+    {
+      None,
+      Long,
+      Short,
+      WaitShort,
+      WaitLong
+    };
+
     QtStalkerTester ();
     void createActions ();
     void createMenuBar ();
     void createToolBars ();
     void restoreSettings ();
     void loadTest (QString &);
-    void runTrades (BarData *data, QList<TestTrade *> &trades);
 
   public slots:
     void about ();

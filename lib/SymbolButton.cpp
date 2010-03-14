@@ -25,25 +25,31 @@
 SymbolButton::SymbolButton (QWidget *w) : QPushButton (w)
 {
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(symbolDialog()));
-  setMaximumHeight(25);
   updateButtonText();
 }
 
-void SymbolButton::getSymbols (QStringList &l)
+Group & SymbolButton::getSymbols ()
 {
-  l = symbolList;
+  return symbols;
 }
 
-void SymbolButton::setSymbols (QStringList &l)
+void SymbolButton::setSymbols (QString &ex, QString &ss)
 {
-  symbolList = l;
+  exchangeSearch = ex;
+  symbolSearch = ss;
+  updateButtonText();
+}
+
+void SymbolButton::setSymbols (Group &d)
+{
+  symbols = d;
   updateButtonText();
 }
 
 void SymbolButton::symbolDialog ()
 {
-  SymbolDialog *dialog = new SymbolDialog;
-  dialog->setSymbols(symbolList);
+  SymbolDialog *dialog = new SymbolDialog(0);
+  dialog->setSymbols(exchangeSearch, symbolSearch);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -52,7 +58,8 @@ void SymbolButton::symbolDialog ()
     return;
   }
 
-  dialog->getSymbols(symbolList);
+  dialog->getSymbols(symbols);
+  dialog->getSymbolSearch(exchangeSearch, symbolSearch);
 
   updateButtonText();
   
@@ -61,7 +68,7 @@ void SymbolButton::symbolDialog ()
 
 void SymbolButton::updateButtonText ()
 {
-  setText(QString::number(symbolList.count()) + " " + tr("Symbols"));
+  setText(QString::number(symbols.count()) + " " + tr("Symbols"));
 }
 
 

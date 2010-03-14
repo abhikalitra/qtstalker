@@ -42,7 +42,7 @@
 #include "QtStalkerTester.h"
 #include "TestConfig.h"
 #include "TestDataBase.h"
-#include "QuoteDataBase.h"
+#include "DBPlugin.h"
 #include "ExScript.h"
 #include "Indicator.h"
 #include "Setting.h"
@@ -71,11 +71,14 @@ QtStalkerTester::QtStalkerTester ()
   config.getData(TestConfig::COPluginPath, s);
   fac.getPluginList(s, l);
   config.setBaseData(TestConfig::COPluginList, l);
+  config.getData(TestConfig::DBPluginPath, s);
+  fac.getPluginList(s, l);
+  config.setBaseData(TestConfig::DBPluginList, l);
 
   TestDataBase tdb;
   tdb.init();
 
-  QuoteDataBase qdb;
+  DBPlugin qdb;
   QString dbFile;
   config.getData(TestConfig::DbName, dbFile);
   qdb.init(dbFile);
@@ -273,6 +276,12 @@ void QtStalkerTester::saveTest ()
   else
     s.append(",'" + ts + "'");
 
+  settings->getExchange(ts);
+  if (ts.isEmpty())
+    s.append(",' '");
+  else
+    s.append(",'" + ts + "'");
+
   s.append("," + QString::number(settings->getEnterField()));
   s.append("," + QString::number(settings->getExitField()));
   s.append("," + QString::number(settings->getBars()));
@@ -425,6 +434,9 @@ void QtStalkerTester::loadTest (QString &s)
     ts = q.value(col++).toString();
     settings->setSymbol(ts);
 
+    ts = q.value(col++).toString();
+    settings->setExchange(ts);
+
     settings->setEnterField(q.value(col++).toInt());
 
     settings->setExitField(q.value(col++).toInt());
@@ -538,50 +550,73 @@ void QtStalkerTester::run ()
     return;
   }
 
-  BarData *data = new BarData;
-  data->setSymbol(s);
-  data->setBarLength((BarData::BarLength) settings->getBarLength());
-  data->setBarsRequested(settings->getBars());
-
-  QuoteDataBase qdb;
-  qdb.getChart(data);
-  if (data->count() == 0)
+  settings->getExchange(s);
+  if (s.isEmpty())
   {
-    qDebug() << "QtStalkerTester::run: 0 bars loaded";
-    delete data;
+    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing exchange."));
+    return;
+  }
+
+  BarData data;
+  settings->getSymbol(s);
+  data.setSymbol(s);
+  settings->getExchange(s);
+  data.setExchange(s);
+  data.setBarLength((BarData::BarLength) settings->getBarLength());
+  data.setBarsRequested(settings->getBars());
+
+  DBPlugin qdb;
+  qdb.getIndexData(data);
+
+  TestConfig config;
+  
+  PluginFactory fac;
+  QString path;
+  config.getData(TestConfig::DBPluginPath, path);
+  DBPlugin *qdb2 = fac.getDB(path, data.getPlugin());
+  if (! qdb2)
+  {
+    qDebug() << "QtStalkerTester::run: no DB plugin";
     return;
   }
   
-  PlotLine *ep = data->getInput((BarData::InputType) settings->getEnterField());
+  qdb2->getBars(data);
+  if (data.count() == 0)
+  {
+    qDebug() << "QtStalkerTester::run: 0 bars loaded";
+    return;
+  }
+
+  settings->getEnterFieldText(s);
+  PlotLine *ep = data.getInput(data.getInputType(s));
   if (! ep)
   {
     qDebug() << "QtStalkerTester::run: no enter price line";
-    delete data;
     return;
   }
   
-  PlotLine *xp = data->getInput((BarData::InputType) settings->getExitField());
+  settings->getExitFieldText(s);
+  PlotLine *xp = data.getInput(data.getInputType(s));
   if (! xp)
   {
     qDebug() << "QtStalkerTester::run: no exit price line";
-    delete data;
     return;
   }
 
-  TestConfig config;
-  QString path, coPluginPath;
-  config.getData(TestConfig::IndicatorPluginPath, path);
+  QString indicatorPluginPath, coPluginPath, dbPluginPath;
+  config.getData(TestConfig::IndicatorPluginPath, indicatorPluginPath);
   config.getData(TestConfig::COPluginPath, coPluginPath);
+  config.getData(TestConfig::DBPluginPath, dbPluginPath);
 
-  ExScript server(path);
-  server.setBarData(data);
+  ExScript server(indicatorPluginPath, dbPluginPath);
+  server.setBarData(&data);
   server.setDeleteFlag(TRUE);
   settings->getShellCommand(s);
   QString ts;
   settings->getScript(ts);
   s.append(" " + ts);
   server.calculate(s); // we are calling the blocking version of calculate() here
-
+  
   // find the smallest line
   int pos = 99999999;
   PlotLine *el = server.getEnterLong();
@@ -608,74 +643,115 @@ void QtStalkerTester::run ()
     if (xs->count() < pos)
       pos = xs->count();
   }
-  
+
   // calculate line start points
   int elLoop = 0;
   if (el)
     elLoop = el->count() - pos;
+  
   int xlLoop = 0;
   if (xl)
     xlLoop = xl->count() - pos;
+  
   int esLoop = 0;
   if (es)
     esLoop = es->count() - pos;
+  
   int xsLoop = 0;
   if (xs)
     xsLoop = xs->count() - pos;
-  int dataLoop = data->count() - pos;
   
-  int status = 0;
-  int loop;
+  int dataLoop = data.count() - pos;
+
+  QList<TestTrade *> trades;
+  Status status = None;
   double money = settings->getAccount();
   TestTrade *trade = 0;
-  for (loop = dataLoop; loop < data->count(); dataLoop++, elLoop++,xlLoop++,esLoop++,xsLoop++)
+  for (; dataLoop < data.count(); dataLoop++, elLoop++,xlLoop++,esLoop++,xsLoop++)
   {
     switch (status)
     {
-      case 1: // long position
+      case Long:
+      {
 	// check if we exit long
-        if (xl->getData(xlLoop) > 0)
-        {
-	  // exit the trade
-          status = 0;
-          QDateTime dt;
-          data->getDate(dataLoop + settings->getDelay(), dt);
-          trade->setExitDate(dt);
+        QDateTime dt;
+        data.getDate(dataLoop, dt);
+        trade->setExitDate(dt);
 	    
-	  double price = xp->getData(dataLoop + settings->getDelay());
-          trade->setExitPrice(price);
+	double price = xp->getData(dataLoop);
+        trade->setExitPrice(price, data.getHigh(dataLoop));
+
+	if (trade->update())
+	{
+	  // stop triggered, exit the trade
+          status = None;
+	  trades.append(trade);
+	  money = money + trade->getProfit();
 	  break;
 	}
 	
-	// continue in position
+        if (xl->getData(xlLoop) > 0)
+        {
+          // exit the trade
+          status = None;
+	  trade->setSignal((int) TestTrade::SignalExitLong);
+	  trades.append(trade);
+	  money = money + trade->getProfit();
+	}
+
         break;
-      case 2: // short position
+      }
+      case Short:
+      {
+	// check if we exit short
+        QDateTime dt;
+        data.getDate(dataLoop, dt);
+        trade->setExitDate(dt);
+	    
+	double price = xp->getData(dataLoop);
+        trade->setExitPrice(price, data.getHigh(dataLoop));
+
+        if (trade->update())
+	{
+	  // stop triggered, exit the trade
+          status = None;
+	  trades.append(trade);
+	  money = money + trade->getProfit();
+	  break;
+	}
+	
+        if (xs->getData(xsLoop) > 0)
+        {
+	  // exit the trade
+          status = None;
+	  trade->setSignal((int) TestTrade::SignalExitShort);
+	  trades.append(trade);
+	  money = money + trade->getProfit();
+	}
+
         break;
-      default: // no position
+      }
+      default:
         if (el)
         {
-          if (el->getData(elLoop) > 0)
+          if (el->getData(elLoop) > 0 && xl->getData(xlLoop) < 1)
           {
-	    // are we entering a trade on the last bar?
-	    if (dataLoop + settings->getDelay() >= data->count())
-	      break; // we are out of bars
-	  
 	    // enter long positon
-	    status = 1;
+	    status = Long;
 	    trade = new TestTrade;
 	    trade->setType(0);
             if (settings->getTrailingCheck())
               trade->setTrailing(settings->getTrailing());
 	    
             QDateTime dt;
-            data->getDate(dataLoop + settings->getDelay(), dt);
+            data.getDate(dataLoop, dt);
             trade->setEnterDate(dt);
 	    
-	    double price = ep->getData(dataLoop + settings->getDelay());
-            trade->setEnterPrice(price);
+	    double price = ep->getData(dataLoop);
+            trade->setEnterPrice(price, data.getLow(dataLoop));
 	    
-            double t = money * (settings->getVolumePercentage() / 100);
-            int volume = money / price;
+            double t = money * (settings->getVolumePercentage() / (double) 100);
+            int volume = t / price;
 	    trade->setVolume(volume);
 	    break;
           }
@@ -683,28 +759,24 @@ void QtStalkerTester::run ()
 
         if (es)
         {
-          if (es->getData(esLoop) > 0)
+          if (es->getData(esLoop) > 0 && xs->getData(xsLoop) < 1)
           {
-	    // are we entering a trade on the last bar?
-	    if (dataLoop + settings->getDelay() >= data->count())
-	      break; // we are out of bars
-	  
 	    // enter short positon
-	    status = 2;
+	    status = Short;
 	    trade = new TestTrade;
 	    trade->setType(1);
             if (settings->getTrailingCheck())
               trade->setTrailing(settings->getTrailing());
 	    
             QDateTime dt;
-            data->getDate(dataLoop + settings->getDelay(), dt);
+            data.getDate(dataLoop, dt);
             trade->setEnterDate(dt);
 	    
-	    double price = ep->getData(dataLoop + settings->getDelay());
-            trade->setEnterPrice(price);
+	    double price = ep->getData(dataLoop);
+            trade->setEnterPrice(price, data.getLow(dataLoop));
 	    
-            double t = money * (settings->getVolumePercentage() / 100);
-            int volume = money / price;
+            double t = money * (settings->getVolumePercentage() / (double) 100);
+            int volume = t / price;
 	    trade->setVolume(volume);
 	    break;
           }
@@ -713,166 +785,23 @@ void QtStalkerTester::run ()
         break;
     }
   }
-  
-  QList<TestTrade *> trades;
-  TestTrade ttrade;
-  ttrade.createTrades(data, trades, 0, settings->getVolumePercentage(), settings->getDelay(),
-                      settings->getEnterField(), enterLongSigs, exitLongSigs);
-  ttrade.createTrades(data, trades, 1, settings->getVolumePercentage(), settings->getDelay(),
-                      settings->getExitField(), enterShortSigs, exitShortSigs);
 
-  runTrades(data, trades);
-
-  report->createSummary(trades, settings->getAccount(), settings->getEntryComm(), settings->getExitComm());
-
-  saveTest();
-
-  rankings->update();
-  
-  chart->update(data, trades, coPluginPath);
-
-  delete data;
-  qDeleteAll(trades);
-}
-/*
-void QtStalkerTester::run ()
-{
-  QString s;
-  settings->getScript(s);
-  if (s.isEmpty())
+  // deal with last dangling trade
+  if (trade)
   {
-    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing script file."));
-    return;
-  }
-
-  settings->getShellCommand(s);
-  if (s.isEmpty())
-  {
-    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing shell command."));
-    return;
-  }
-
-  settings->getSymbol(s);
-  if (s.isEmpty())
-  {
-    QMessageBox::information(this, tr("QtStalkerTest: Error"), tr("Missing symbol."));
-    return;
-  }
-
-  BarData *data = new BarData;
-  data->setSymbol(s);
-  data->setBarLength((BarData::BarLength) settings->getBarLength());
-  data->setBarsRequested(settings->getBars());
-
-  QuoteDataBase qdb;
-  qdb.getChart(data);
-  if (data->count() == 0)
-  {
-    qDebug() << "QtStalkerTester::run: 0 bars loaded";
-    delete data;
-    return;
-  }
-
-  TestSignal enterLongSigs;
-  TestSignal exitLongSigs;
-  TestSignal enterShortSigs;
-  TestSignal exitShortSigs;
-  
-  TestConfig config;
-  QString path, coPluginPath;
-  config.getData(TestConfig::IndicatorPluginPath, path);
-  config.getData(TestConfig::COPluginPath, coPluginPath);
-
-  PluginFactory fac;
-
-  ExScript server(path);
-  server.setBarData(data);
-  server.setDeleteFlag(TRUE);
-  settings->getShellCommand(s);
-  QString ts;
-  settings->getScript(ts);
-  s.append(" " + ts);
-  server.calculate(s); // we are calling the blocking version of calculate() here
-
-  PlotLine *l = server.getEnterLong();
-  if (l)
-    enterLongSigs.createSignals(data, l);
-
-  l = server.getExitLong();
-  if (l)
-    exitLongSigs.createSignals(data, l);
-
-  l = server.getEnterShort();
-  if (l)
-    enterShortSigs.createSignals(data, l);
-
-  l = server.getExitShort();
-  if (l)
-    exitShortSigs.createSignals(data, l);
-
-  
-  QList<TestTrade *> trades;
-  TestTrade ttrade;
-  ttrade.createTrades(data, trades, 0, settings->getVolumePercentage(), settings->getDelay(),
-                      settings->getEnterField(), enterLongSigs, exitLongSigs);
-  ttrade.createTrades(data, trades, 1, settings->getVolumePercentage(), settings->getDelay(),
-                      settings->getExitField(), enterShortSigs, exitShortSigs);
-
-  runTrades(data, trades);
-
-  report->createSummary(trades, settings->getAccount(), settings->getEntryComm(), settings->getExitComm());
-
-  saveTest();
-
-  rankings->update();
-  
-  chart->update(data, trades, coPluginPath);
-
-  delete data;
-  qDeleteAll(trades);
-}
-*/
-void QtStalkerTester::runTrades (BarData *data, QList<TestTrade *> &trades)
-{
-  PlotLine *line = 0;
-  switch (settings->getExitField())
-  {
-    case 0:
-      line = data->getInput((BarData::Open));
-      break;
-    case 1:
-      line = data->getInput((BarData::High));
-      break;
-    case 2:
-      line = data->getInput((BarData::Low));
-      break;
-    case 4:
-      line = data->getInput((BarData::AveragePrice));
-      break;
-    case 5:
-      line = data->getInput((BarData::MedianPrice));
-      break;
-    case 6:
-      line = data->getInput((BarData::TypicalPrice));
-      break;
-    default:
-      line = data->getInput((BarData::Close));
-      break;
-  }
-  if (! line)
-    return;
-
-  int loop;
-  double money = settings->getAccount();
-  for (loop = 0; loop < trades.count(); loop++)
-  {
-    TestTrade *trade = trades.at(loop);
-    if (settings->getTrailingCheck())
-      trade->setTrailing(settings->getTrailing());
-    trade->update(line, data, money);
+    trade->update();
+    trade->setSignal((int) TestTrade::SignalTestEnd);
+    trades.append(trade);
     money = money + trade->getProfit();
   }
 
-  delete line;
-}
+  report->createSummary(trades, settings->getAccount(), settings->getEntryComm(), settings->getExitComm());
 
+  saveTest();
+
+  rankings->update();
+  
+  chart->update(data, trades, coPluginPath);
+
+  qDeleteAll(trades);
+}

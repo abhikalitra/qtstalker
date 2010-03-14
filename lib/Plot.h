@@ -45,12 +45,10 @@ class Plot : public QWidget
     void setLogScale (bool);
     void updateStatusBar (int, int);
     void setInfoFlag (bool);
-    void drawCrossHair ();
     int getWidth ();
     void setGridFlag (bool);
     void setScaleToScreen (bool);
     void setDateFlag (bool);
-    void setCrosshairsFlag (bool);
     IndicatorPlot * getIndicatorPlot ();
     DatePlot * getDatePlot ();
     void setMenuFlag (bool);
@@ -65,9 +63,7 @@ class Plot : public QWidget
     void setPlotFont (QFont);
     void setIndex (int);
     void setInterval(BarData::BarLength);
-    void crossHair (int, int, bool);
     void setChartPath (QString);
-    void setCrosshairsStatus (bool);
     void slotSliderChanged (int);
     void slotGridChanged (bool);
     void slotScaleToScreenChanged (bool);

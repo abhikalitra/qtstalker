@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,8 +31,6 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 
-
-
 PrefDialog::PrefDialog (QWidget *w) : QDialog (w, 0)
 {
   init();
@@ -58,7 +56,7 @@ void PrefDialog::init ()
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 //  connect(buttonBox, SIGNAL(helpRequested()), this, SLOT(help()));
   vbox->addWidget(buttonBox);
-
+  
   keys.clear();
 }
 
@@ -472,6 +470,13 @@ void PrefDialog::getItem (int key, QString &s)
     getTextEdit(key, s);
     return;
   }
+
+  // check for fileButton
+  if (fileButtonList.contains(key))
+  {
+    getFile(key, s);
+    return;
+  }
 }
 
 void PrefDialog::getKeyList (QList<int> &l)
@@ -505,5 +510,32 @@ void PrefDialog::getTextEdit (int key, QString &s)
   QTextEdit *edit = textEditList.value(key);
   if (edit)
     s = edit->toPlainText();
+}
+
+void PrefDialog::addFileItem (int key, int page, QString name, QString &t)
+{
+  QGridLayout *grid = gridList.value(page);
+  if (! grid)
+  {
+    qDebug() << "PrefDialog::addFileItem: page number not found";
+    return;
+  }
+
+  QLabel *label = new QLabel(name);
+  grid->addWidget(label, grid->rowCount(), 0);
+
+  FileButton *fileButton = new FileButton(this, t);
+  grid->addWidget(fileButton, grid->rowCount() - 1, 1);
+  fileButtonList.insert(key, fileButton);
+
+  keys.append(key);
+}
+
+void PrefDialog::getFile (int key, QString &s)
+{
+  s.clear();
+  FileButton *button = fileButtonList.value(key);
+  if (button)
+    s = button->getFile();
 }
 

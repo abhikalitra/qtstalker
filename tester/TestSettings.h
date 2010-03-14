@@ -37,7 +37,7 @@
 #include <QTextEdit>
 
 #include "IndicatorPlugin.h"
-#include "SymbolButton.h"
+#include "FileButton.h"
 
 class TestSettings : public QWidget
 {
@@ -51,11 +51,15 @@ class TestSettings : public QWidget
     void setShellCommand (QString &);
     void getComment (QString &);
     void setComment (QString &);
+    void getExchange (QString &);
+    void setExchange (QString &);
     void getSymbol (QString &);
     void setSymbol (QString &);
     int getEnterField ();
+    void getEnterFieldText (QString &);
     void setEnterField (int);
     int getExitField ();
+    void getExitFieldText (QString &);
     void setExitField (int);
     int getBars ();
     void setBars (int);
@@ -76,16 +80,13 @@ class TestSettings : public QWidget
     bool getTrailingCheck ();
     void setTrailingCheck (bool);
 
-  public slots:
-    void scriptButtonPressed ();
-
   private:
     QStringList priceList;
     QStringList barLengthList;
-    QLineEdit *script;
     QLineEdit *shellCommand;
-    QToolButton *scriptButton;
-    SymbolButton *symbolButton;
+    FileButton *scriptButton;
+    QLineEdit *symbol;
+    QComboBox *exchanges;
     QComboBox *enterField;
     QComboBox *exitField;
     QCheckBox *trailingCheck;

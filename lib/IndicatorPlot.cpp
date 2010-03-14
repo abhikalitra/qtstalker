@@ -51,12 +51,11 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   scaleToScreen = FALSE;
   startIndex = 0;
   mouseFlag = None;
-  crossHairFlag = FALSE;
   chartMenu = 0;
-  crosshairs = TRUE;
   infoFlag = TRUE;
   coSelected = 0;
   menuFlag = TRUE;
+  rubberBand = 0;
 
   plotFont.setFamily("Helvetica");
   plotFont.setPointSize(12);
@@ -88,7 +87,6 @@ void IndicatorPlot::clear ()
   indicator.clear();
   dateBars.clear();
   mouseFlag = None;
-  crossHairFlag = FALSE;
 }
 
 void IndicatorPlot::setData (BarData *l)
@@ -143,7 +141,7 @@ void IndicatorPlot::draw ()
     grid.draw(buffer, startX, startIndex, pixelspace, scaler);
     drawLines();
     drawObjects();
-    drawCrossHair();
+    drawCursor();
 
     PlotInfo info;
     info.drawInfo(buffer, borderColor, backgroundColor, plotFont, startX, dateBars, indicator);
@@ -187,6 +185,28 @@ void IndicatorPlot::drawLines ()
   }
 }
 
+void IndicatorPlot::drawCursor ()
+{
+  switch (mouseFlag)
+  {
+    case CursorCrosshair:
+    {
+      int y = scaler.convertToY(crossHairY);
+      int x = startX + (dateBars.getX(crossHairX) * pixelspace) - (startIndex * pixelspace);
+
+      QPainter painter;
+      painter.begin(&buffer);
+      painter.setPen(QPen(borderColor, 1, Qt::DotLine));
+      painter.drawLine (0, y, buffer.width(), y);
+      painter.drawLine (x, 0, x, buffer.height());
+      painter.end();
+      break;
+    }
+    default:
+      break;
+  }
+}
+
 void IndicatorPlot::paintEvent (QPaintEvent *)
 {
   QPainter p(this);
@@ -199,6 +219,27 @@ void IndicatorPlot::resizeEvent (QResizeEvent *event)
   draw();
 }
 
+void IndicatorPlot::cursorChanged (int d)
+{
+  switch (d)
+  {
+    case 0: // normal cursor
+      mouseFlag = None;
+      setCursor(QCursor(Qt::ArrowCursor));
+      break;
+    case 1:
+      mouseFlag = CursorZoom;
+      setCursor(QCursor(Qt::ArrowCursor));
+      break;
+    case 2:
+      mouseFlag = CursorCrosshair;
+      setCursor(QCursor(Qt::CrossCursor));
+      break;
+    default:
+      break;
+  }
+}
+
 //*********************************************************************
 //*************** MOUSE EVENTS ***************************************
 //********************************************************************
@@ -208,20 +249,20 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
   if (! dateBars.count()  || event->button() != Qt::LeftButton)
     return;
 
-  getXY(event->x(), event->y());
-
   switch (mouseFlag)
   {
+    case CursorCrosshair:
+    {
+      updateStatusBar(event->x(), event->y());
+      getXY(event->x(), event->y());
+      crossHairY = y1;
+      crossHairX = x1;
+      draw();
+      break;
+    }
     case None:
     {
-      if (crosshairs)
-      {
-        crossHair(event->x(), event->y(), TRUE);
-        updateStatusBar(event->x(), event->y());
-        emit leftMouseButton(event->x(), event->y(), 0);
-      }
-      else
-        updateStatusBar(event->x(), event->y());
+      updateStatusBar(event->x(), event->y());
 
       QHash<QString, ChartObject *> coList;
       indicator.getChartObjects(coList);
@@ -269,6 +310,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       break;
     case ClickWait:
     {
+      getXY(event->x(), event->y());
       PluginFactory fac;
       QString s;
       coSelected->getData(ChartObject::ParmPlugin, s);
@@ -287,6 +329,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
     }
     case ClickWait2:
     {
+      getXY(event->x(), event->y());
       PluginFactory fac;
       QString s;
       coSelected->getData(ChartObject::ParmPlugin, s);
@@ -307,6 +350,31 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       emit signalNewExternalChartObjectDone();
       slotNewChartObject(newChartObject);
       mousePressEvent(event); // recursive call to simulate 1 click instead of 2
+      break;
+    }
+    case CursorZoom:
+    {
+      if (! rubberBand)
+	return;
+      
+      if (rubberBand->width() < pixelspace)
+        return;
+      
+      // calculate new pixel spacing and position here
+      int x = convertXToDataIndex(mouseOrigin.x());
+      int ti = rubberBand->width() / pixelspace;
+      ti = this->width() / ti;
+      
+      delete rubberBand;
+      rubberBand = 0;
+      
+      unsetCursor();
+      
+      if (ti < pixelspace)
+        return;
+      
+      emit signalPixelspaceChanged(x, ti);
+      break;
     }
     default:
       break;
@@ -321,8 +389,9 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
 
   switch (mouseFlag)
   {
-    case RubberBand:
-      rubberBand->setGeometry(QRect(mouseOrigin, event->pos()).normalized());
+    case CursorZoom:
+      if (rubberBand)
+        rubberBand->setGeometry(QRect(mouseOrigin, event->pos()).normalized());
       break;
     case Moving:
     {
@@ -349,15 +418,15 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
     default:
     {
       // update the data panel with new data
-      if (infoFlag)
-      {
-        PlotInfo info;
-        QPoint p(event->x(), event->y());
-        int index = convertXToDataIndex(event->x());
-        Setting *mess = info.getInfo(p, indicator, index, dateBars, coPluginPath);
-        if (mess)
-          emit infoMessage(mess);
-      }
+      if (! infoFlag)
+	return;
+      
+      PlotInfo info;
+      QPoint p(event->x(), event->y());
+      int index = convertXToDataIndex(event->x());
+      Setting *mess = info.getInfo(p, indicator, index, dateBars, coPluginPath);
+      if (mess)
+        emit infoMessage(mess);
       break;
     }
   }
@@ -370,46 +439,20 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
 
   switch (mouseFlag)
   {
-    case ClickWait:
-    case Moving:
-    case ClickWait2:
-    case NewObjectWait:
-      break;
     case COSelected:
       if (coSelected)
         slotObjectDialog();
       break;
-    default:
+    case CursorZoom:
     {
+      if (rubberBand)
+	return;
+      
       rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
       mouseOrigin = event->pos();
       rubberBand->setGeometry(QRect(mouseOrigin, QSize()));
       rubberBand->show();
-      mouseFlag = RubberBand;
       setCursor(QCursor(Qt::SizeFDiagCursor));
-      break;
-    }
-  }
-}
-
-void IndicatorPlot::mouseReleaseEvent(QMouseEvent *)
-{
-  switch (mouseFlag)
-  {
-    case RubberBand:
-    {
-      if (rubberBand->width() < pixelspace)
-        return;
-      // calculate new pixel spacing and position here
-      int x = convertXToDataIndex(mouseOrigin.x());
-      int ti = rubberBand->width() / pixelspace;
-      ti = this->width() / ti;
-      delete rubberBand;
-      mouseFlag = None;
-      unsetCursor();
-      if (ti < pixelspace)
-        return;
-      emit signalPixelspaceChanged(x, ti);
       break;
     }
     default:
@@ -498,51 +541,6 @@ void IndicatorPlot::setIndex (int d)
 void IndicatorPlot::setXGrid (QVector<int> &d)
 {
   grid.setXGrid(d);
-}
-
-/******************************************************************/
-/********** Crosshair functions ***********************************/
-/*****************************************************************/
-
-void IndicatorPlot::crossHair (int x, int y, bool f)
-{
-  crossHairFlag = TRUE;
-  getXY(x, y);
-  crossHairY = y1;
-  crossHairX = x1;
-  if (f)
-    draw();
-}
-
-void IndicatorPlot::drawCrossHair ()
-{
-  if (! crosshairs)
-    return;
-
-  if (! crossHairFlag)
-    return;
-
-  int y = scaler.convertToY(crossHairY);
-  int x = startX + (dateBars.getX(crossHairX) * pixelspace) - (startIndex * pixelspace);
-
-  QPainter painter;
-  painter.begin(&buffer);
-  painter.setPen(QPen(borderColor, 1, Qt::DotLine));
-  painter.drawLine (0, y, buffer.width(), y);
-  painter.drawLine (x, 0, x, buffer.height());
-  painter.end();
-}
-
-void IndicatorPlot::setCrosshairsStatus (bool status)
-{
-  crosshairs = status;
-  crossHairFlag = FALSE;
-  draw();
-}
-
-void IndicatorPlot::setCrosshairsFlag (bool d)
-{
-  crosshairs = d;
 }
 
 void IndicatorPlot::getXY (int x, int y)
@@ -669,20 +667,6 @@ void IndicatorPlot::setScaler (Scaler &d)
 Scaler & IndicatorPlot::getScaler ()
 {
   return scaler;
-}
-
-void IndicatorPlot::drawRubberBand (QRect &r)
-{
-  // draw rubber band on widget
-  QPainter painter;
-  painter.begin(&buffer);
-
-  painter.setPen(QColor("red"));
-  painter.drawRect(r);
-
-  painter.end();
-
-  update();
 }
 
 void IndicatorPlot::setPlotPluginPath (QString &d)

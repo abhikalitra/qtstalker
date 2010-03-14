@@ -30,7 +30,8 @@ CUS::CUS ()
 {
   indicator = "CUS";
 
-  settings.setData(Script, "perl /usr/local/share/qtstalker/indicator/");
+  settings.setData(Command, "perl");
+  settings.setData(Script, "/usr/local/share/qtstalker/indicator/");
 }
 
 int CUS::getIndicator (Indicator &_ind, BarData *_data)
@@ -40,8 +41,10 @@ int CUS::getIndicator (Indicator &_ind, BarData *_data)
   config.getData(Config::IndicatorPluginPath, ipp);
   config.getData(Config::DBPluginPath, dbpp);
   
-  QString s;
-  settings.getData(Script, s);
+  QString s, s2;
+  settings.getData(Command, s);
+  settings.getData(Script, s2);
+  s.append(" " + s2);
 
   ExScript script(ipp, dbpp);
   script.setBarData(_data);
@@ -66,8 +69,11 @@ int CUS::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
+  settings.getData(Command, d);
+  dialog->addTextItem(Command, page, QObject::tr("Command"), d);
+
   settings.getData(Script, d);
-  dialog->addTextItem(Script, page, QObject::tr("Script"), d);
+  dialog->addFileItem(Script, page, QObject::tr("Script"), d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

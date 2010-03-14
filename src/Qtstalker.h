@@ -53,15 +53,14 @@ class QtstalkerApp : public QMainWindow
     void signalIndex (int);
     void signalInterval(BarData::BarLength);
     void signalChartPath (QString);
-    void signalCrosshairsStatus(bool);
     void signalClearIndicator ();
     void signalGrid (bool);
     void signalScale (bool);
     void signalDraw (bool);
     void signalNewIndicator ();
-    void signalCrossHair (int, int, bool);
     void signalNewExternalChartObject (QString);
     void signalSetExternalChartObject ();
+    void signalCursorChanged (int);
 
   public:
     enum MenuAction
@@ -115,7 +114,6 @@ class QtstalkerApp : public QMainWindow
     void slotChartUpdated ();
     void slotStatusMessage (QString);
     void slotUpdateInfo (Setting *);
-    void slotPlotLeftMouseButton (int, int, bool);
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
     void slotDrawPlots ();

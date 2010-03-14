@@ -39,19 +39,20 @@ class TestTrade
       SignalEnterLong,
       SignalExitLong,
       SignalEnterShort,
+      SignalExitShort,
       SignalTestEnd,
       SignalTrailingStop
     };
 
     TestTrade ();
-    void getEnterDate (QDateTime &);
-    void setEnterDate (QDateTime &, int index);
-    void getExitDate (QDateTime &);
-    void setExitDate (QDateTime &, int index);
+    QDateTime & getEnterDate ();
+    void setEnterDate (QDateTime &);
+    QDateTime & getExitDate ();
+    void setExitDate (QDateTime &);
     double getEnterPrice ();
-    void setEnterPrice (double);
+    void setEnterPrice (double, double);
     double getExitPrice ();
-    void setExitPrice (double);
+    void setExitPrice (double, double);
     int getType ();
     void setType (int);
     int getVolume ();
@@ -62,16 +63,14 @@ class TestTrade
     double getDrawDown ();
     double getProfit ();
     void getLogMessage (QStringList &);
-    void update (PlotLine *line, BarData *data, double account);
+    int update ();
     int getSignal ();
     void setSignal (int);
     void setTrailing (double);
     double calculateTrailingStop (double price);
-    void createTrades (BarData *data, QList<TestTrade *> &trades, int type, double volPer,
-		       int delay, int fieldIndex, TestSignal &enterSigs, TestSignal &exitSigs);
-    void startTrade (int pos, BarData *data, TestTrade *trade, int delay, int fieldIndex);
-    void endTrade (int pos, BarData *data, TestTrade *trade, int delay, int fieldIndex);
-
+    double getTrail ();
+    double getHigh ();
+    double getLow ();
 
   private:
     QDateTime enterDate;
@@ -84,10 +83,11 @@ class TestTrade
     double drawDown;
     double value;
     double profit;
-    int indexStart;
-    int indexEnd;
     int signal;
     double trailing;
+    double trail;
+    double high;
+    double low;
 };
 
 #endif

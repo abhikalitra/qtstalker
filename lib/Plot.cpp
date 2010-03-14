@@ -172,11 +172,6 @@ void Plot::setDateFlag (bool d)
     datePlot->hide();
 }
 
-void Plot::setCrosshairsStatus (bool status)
-{
-  indicatorPlot->setCrosshairsStatus(status);
-}
-
 void Plot::slotSliderChanged (int v)
 {
   setIndex(v);
@@ -203,16 +198,6 @@ void Plot::slotLogScaleChanged (bool d)
 {
   setLogScale(d);
   indicatorPlot->draw();
-}
-
-void Plot::setCrosshairsFlag (bool d)
-{
-  indicatorPlot->setCrosshairsFlag(d);
-}
-
-void Plot::crossHair (int d, int d2, bool d3)
-{
-  indicatorPlot->crossHair(d, d2, d3);
 }
 
 int Plot::getWidth ()

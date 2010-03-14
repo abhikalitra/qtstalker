@@ -69,6 +69,7 @@
 #include "../pics/refresh.xpm"
 #include "../pics/script.xpm"
 #include "../pics/cursor_arrow.xpm"
+#include "../pics/cursorZoom.xpm"
 
 
 QtstalkerApp::QtstalkerApp(QString session)
@@ -371,12 +372,20 @@ void QtstalkerApp::createToolBars ()
 
   // normal cursor button
   QToolButton *b = new QToolButton;
-  b->setToolTip(tr("Select Cursor"));
+  b->setToolTip(tr("Normal Cursor"));
   b->setIcon(QIcon(cursor_arrow_xpm));
   b->setCheckable(TRUE);
   b->setChecked(TRUE);
   toolBar2->addWidget(b);
   bg->addButton(b, 0);
+
+  // zoom cursor button
+  b = new QToolButton;
+  b->setToolTip(tr("Zoom Cursor"));
+  b->setIcon(QIcon(cursorZoom_xpm));
+  b->setCheckable(TRUE);
+  toolBar2->addWidget(b);
+  bg->addButton(b, 1);
 
   // crosshair button
   b = new QToolButton;
@@ -384,7 +393,7 @@ void QtstalkerApp::createToolBars ()
   b->setIcon(QIcon(crosshair));
   b->setCheckable(TRUE);
   toolBar2->addWidget(b);
-  bg->addButton(b, 1);
+  bg->addButton(b, 2);
 
   toolBar2->addSeparator();
 
@@ -966,7 +975,6 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   plot->setIndex(slider->value());
   plot->setInterval((BarData::BarLength) barButtonGroup->checkedId());
-  plot->setCrosshairsStatus(config.getBool(Config::Crosshairs));
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
   
@@ -979,9 +987,9 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(indy, SIGNAL(signalPixelspaceChanged(int, int)), this, SLOT(slotPlotZoom(int, int)));
   connect(indy, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(indy, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
-  connect(indy, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
-  connect(this, SIGNAL(signalCrossHair(int, int, bool)), indy, SLOT(crossHair(int, int, bool)));
-  connect(this, SIGNAL(signalCrosshairsStatus(bool)), indy, SLOT(setCrosshairsStatus(bool)));
+//  connect(indy, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
+//  connect(this, SIGNAL(signalCrossHair(int, int, bool)), indy, SLOT(crossHair(int, int, bool)));
+//  connect(this, SIGNAL(signalCrosshairsStatus(bool)), indy, SLOT(setCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(BarData::BarLength)), plot, SLOT(setInterval(BarData::BarLength)));
@@ -994,6 +1002,8 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(this, SIGNAL(signalNewExternalChartObject(QString)), indy, SLOT(newExternalChartObject(QString)));
   connect(indy, SIGNAL(signalNewExternalChartObjectDone()), this, SLOT(newExternalChartObjectDone()));
   connect(this, SIGNAL(signalSetExternalChartObject()), indy, SLOT(setExternalChartObjectFlag()));
+
+  connect(this, SIGNAL(signalCursorChanged(int)), indy, SLOT(cursorChanged(int)));
 }
 
 void QtstalkerApp::slotChartUpdated ()
@@ -1130,12 +1140,6 @@ void QtstalkerApp::slotUpdateInfo (Setting *r)
 */
 }
 
-void QtstalkerApp::slotPlotLeftMouseButton (int x, int y, bool)
-{
-  emit signalCrossHair(x, y, FALSE);
-  slotDrawPlots();
-}
-
 void QtstalkerApp::slotDrawPlots ()
 {
   int loop;
@@ -1246,17 +1250,7 @@ void QtstalkerApp::slotAddRecentChart (BarData *bd)
 
 void QtstalkerApp::cursorButtonPressed (int id)
 {
-  switch (id)
-  {
-    case 0:
-      emit signalCrosshairsStatus(FALSE);
-      break;
-    case 1:
-      emit signalCrosshairsStatus(TRUE);
-      break;
-    default:
-      break;
-  }
+  emit signalCursorChanged(id);
 }
 
 // ******************************************************************************

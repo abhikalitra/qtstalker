@@ -79,8 +79,6 @@ class TestReport : public QWidget
     void getBalance (QString &);
     void setBalance (QString &);
 
-
-
   private:
     QTreeWidget *tradeLog;
     QLabel *grossProfit;

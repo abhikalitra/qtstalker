@@ -91,7 +91,7 @@ void TestConfig::setDefaults ()
   getData(DbName, d);
   if (d.isEmpty())
   {
-    d = QDir::homePath() + "/.CSV/quotes.sqlite";
+    d = QDir::homePath() + "/.qtstalker/quotes.sqlite";
     setData(DbName, d);
   }
 
@@ -109,41 +109,6 @@ void TestConfig::setDefaults ()
     setData(DbPassword, d);
   }
 
-  getData(DbAllSymbols, d);
-  if (d.isEmpty())
-  {
-    d = "SELECT symbol FROM symbolIndex";
-    setData(DbAllSymbols, d);
-  }
-
-  getData(DbSearchSymbols, d);
-  if (d.isEmpty())
-  {
-    d = "SELECT symbol FROM symbolIndex WHERE symbol LIKE";
-    setData(DbSearchSymbols, d);
-  }
-
-  getData(DbFirstDate, d);
-  if (d.isEmpty())
-  {
-    d = "SELECT min(date) FROM $symbol";
-    setData(DbFirstDate, d);
-  }
-
-  getData(DbLastDate, d);
-  if (d.isEmpty())
-  {
-    d = "SELECT max(date) FROM $symbol";
-    setData(DbLastDate, d);
-  }
-
-  getData(DbGetSymbol, d);
-  if (d.isEmpty())
-  {
-    d = "SELECT date,open,high,low,close,volume,oi FROM $symbol WHERE date >= $sd AND date <= $ed ORDER BY date DESC LIMIT $records";
-    setData(DbGetSymbol, d);
-  }
-  
   getData(IndicatorPluginPath, d);
   if (d.isEmpty())
   {
@@ -163,6 +128,13 @@ void TestConfig::setDefaults ()
   {
     d = "/usr/local/lib/qtstalker/plugins/object";
     setData(COPluginPath, d);
+  }
+
+  getData(DBPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/database";
+    setData(DBPluginPath, d);
   }
 
   commit();

@@ -4,19 +4,7 @@
 <context>
     <name>ChartPage</name>
     <message>
-        <source>Add To &amp;Group	Ctrl+G</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbol Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;All Symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -32,8 +20,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter either a specific symbol like IBM or
-a partial match like %BM or %IBM%</source>
+        <source>Add To &amp;Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol(s) added.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -61,6 +60,13 @@ a partial match like %BM or %IBM%</source>
     </message>
 </context>
 <context>
+    <name>FileButton</name>
+    <message>
+        <source>Select File</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FontButton</name>
     <message>
         <source>Font</source>
@@ -71,18 +77,6 @@ a partial match like %BM or %IBM%</source>
     <name>GroupPage</name>
     <message>
         <source>Current Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;New Group		Ctrl+N</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Group Items	Ctrl+D</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>De&amp;lete Group	Ctrl+L</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -114,10 +108,6 @@ a partial match like %BM or %IBM%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add To &amp;Group	Ctrl+G</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Add To Group</source>
         <translation type="unfinished"></translation>
     </message>
@@ -130,7 +120,43 @@ a partial match like %BM or %IBM%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Refresh List	Ctrl+R</source>
+        <source>&amp;New Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add To &amp;Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Group Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>De&amp;lete Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Refresh List</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group created.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group item(s) added.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -209,6 +235,30 @@ a partial match like %SI or %RSI%</source>
         <source>Tab Row</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>New indicator created.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator settings saved.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IndicatorPlot</name>
@@ -238,6 +288,10 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>&amp;Delete Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select point to place object...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1188,6 +1242,10 @@ a partial match like %SI or %RSI%</source>
         <source>C</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtStalkerTester</name>
@@ -1297,6 +1355,10 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1451,10 +1513,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select Cursor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Crosshairs Cursor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1492,6 +1550,14 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>1 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Normal Cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom Cursor</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1583,6 +1649,38 @@ Are you sure you want to remove this script?</source>
         <source>&amp;Remove Script From Queue</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Script saved.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> added to que.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> completed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script cancelled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script removed.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SymbolButton</name>
@@ -1598,10 +1696,6 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbols Available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbols Selected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1611,6 +1705,38 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Items modified. Are you sure you want to discard changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add selected symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove selected symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1759,30 +1885,6 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Long</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Long</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Long</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbol</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1828,6 +1930,10 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Select Test Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comment</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

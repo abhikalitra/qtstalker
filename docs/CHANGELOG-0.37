@@ -313,6 +313,15 @@
 
            CVS users, update your personal indicator scripts to reflect the above changes.
 
+           CUS indicator now has 2 parms. The script command is now split into 2 parts. A command
+           parm and the script file. Use the command parm to set the interpreter and any command
+           line switches desired. CUS indicators can be reset from qtstalker by editing the indicator
+           from the indicator panel.
+
+20100311:  Added new cursor zoom toolbar button. This helps create a class of cursor behaviours that
+           are selectable from the toolbar.
+
+
 
 
 

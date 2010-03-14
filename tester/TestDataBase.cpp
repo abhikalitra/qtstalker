@@ -63,6 +63,7 @@ void TestDataBase::init ()
   s.append(",shellCommand TEXT");
   s.append(",comment TEXT");
   s.append(",symbol TEXT");
+  s.append(",exchange TEXT");
   s.append(",enterField INT");
   s.append(",exitField INT");
   s.append(",bars INT");

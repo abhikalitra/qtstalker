@@ -54,7 +54,6 @@ class IndicatorPlot : public QWidget
   signals:
     void statusMessage (QString);
     void infoMessage (Setting *);
-    void leftMouseButton (int, int, bool);
     void keyPressed (QKeyEvent *);
     void signalPixelspaceChanged (int, int);
     void signalDraw ();
@@ -69,9 +68,10 @@ class IndicatorPlot : public QWidget
       ClickWait,
       COSelected,
       Moving,
-      RubberBand,
       ClickWait2,
-      NewObjectWait
+      NewObjectWait,
+      CursorZoom,
+      CursorCrosshair
     };
 
     IndicatorPlot (QWidget *);
@@ -81,13 +81,11 @@ class IndicatorPlot : public QWidget
     void setLogScale (bool);
     void updateStatusBar (int, int);
     void setInfoFlag (bool);
-    void drawCrossHair ();
     int getWidth ();
     int convertXToDataIndex (int);
     void setGridFlag (bool);
     void setScaleToScreen (bool);
     void setDateFlag (bool);
-    void setCrosshairsFlag (bool);
     void setScaler (Scaler &);
     Scaler & getScaler ();
     void setXGrid (QVector<int> &);
@@ -95,7 +93,6 @@ class IndicatorPlot : public QWidget
     void setIndicator (Indicator &);
     void getIndicator (Indicator &);
     void loadChartObjects ();
-    void drawRubberBand (QRect &r);
     void setPlotPluginPath (QString &);
     void setCOPluginPath (QString &);
     void getDateBar (DateBar &);
@@ -109,10 +106,8 @@ class IndicatorPlot : public QWidget
     void setGridColor (QColor &);
     void setPlotFont (QFont &);
     void setIndex (int);
-    void crossHair (int, int, bool);
     void showPopupMenu ();
     void setChartPath (QString &);
-    void setCrosshairsStatus (bool);
     void slotSliderChanged (int);
     void slotGridChanged (bool);
     void slotScaleToScreenChanged (bool);
@@ -120,6 +115,7 @@ class IndicatorPlot : public QWidget
     void setInterval(BarData::BarLength);
     void newExternalChartObject (QString);
     void setExternalChartObjectFlag ();
+    void cursorChanged (int);
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -129,11 +125,11 @@ class IndicatorPlot : public QWidget
     virtual void keyPressEvent (QKeyEvent *);
     virtual void mouseDoubleClickEvent (QMouseEvent *);
     virtual void contextMenuEvent (QContextMenuEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
 
   private slots:
     void drawObjects ();
     void drawLines ();
+    void drawCursor ();
     int getXFromDate (QDateTime &);
     void getXY (int, int);
     void slotMessage (QString);
@@ -157,12 +153,8 @@ class IndicatorPlot : public QWidget
     QColor backgroundColor;
     QColor borderColor;
     bool scaleToScreen;
-    bool crossHairFlag;
-    bool crosshairs;
     bool infoFlag;
     bool menuFlag;
-    QDateTime crossHairX;
-    double crossHairY;
     Scaler scaler;
     double y1;
     QDateTime x1;
@@ -179,6 +171,8 @@ class IndicatorPlot : public QWidget
     int tx, ty;
     QRubberBand *rubberBand;
     QPoint mouseOrigin;
+    QDateTime crossHairX;
+    double crossHairY;
     QString newChartObject;
 };
 

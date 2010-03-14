@@ -38,16 +38,11 @@ void Stock::getBars (BarData &data)
 {
   QSqlQuery q(QSqlDatabase::database("quotes"));
 
-  if (getIndexData(data))
-    return;
-
-  QString table = data.getTableName();
-  
   QDateTime firstDate;
-  getFirstDate(table, firstDate);
+  getFirstDate(data.getTableName(), firstDate);
 
   QDateTime lastDate;
-  getLastDate(table, lastDate);
+  getLastDate(data.getTableName(), lastDate);
 
   QHash<QString, Bar *> bars;
   QStringList dateList;
@@ -57,7 +52,7 @@ void Stock::getBars (BarData &data)
     QString sd = firstDate.toString(Qt::ISODate);
     QString ed = lastDate.toString(Qt::ISODate);
 
-    QString s = "SELECT date,open,high,low,close,volume FROM " + table;
+    QString s = "SELECT date,open,high,low,close,volume FROM " + data.getTableName();
     s.append(" WHERE date >='" + sd + "' AND date <='" + ed + "'");
     s.append(" ORDER BY date DESC");
     s.append(" LIMIT " + QString::number(data.getBarsRequested() * 2));
@@ -222,9 +217,8 @@ int Stock::scriptCommand (QStringList &l)
     return 1;
   }
   
-  int count = (l.count() - 5) / 6;
   int record = 1;
-  for (; pos < count; pos = pos + 6, record++)
+  for (; pos < l.count(); pos = pos + 6, record++)
   {
     QDateTime date = QDateTime::fromString(l[pos], format);
     if (! date.isValid())

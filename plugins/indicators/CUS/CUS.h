@@ -29,7 +29,8 @@ class CUS : public IndicatorPlugin
   public:
     enum Parm
     {
-      Script
+      Script,
+      Command
     };
 
     CUS ();

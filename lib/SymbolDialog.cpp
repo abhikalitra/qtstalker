@@ -21,7 +21,7 @@
 
 #include "SymbolDialog.h"
 #include "DBPlugin.h"
-#include "Group.h"
+#include "BarData.h"
 
 #include "../pics/search.xpm"
 #include "../pics/add.xpm"
@@ -141,12 +141,15 @@ void SymbolDialog::setSymbols (QString &ex, QString &ss)
   searchButtonPressed();
 }
 
-void SymbolDialog::getSymbols (QList<BarData *> &l)
+void SymbolDialog::getSymbols (Group &l)
 {
   int loop;
   for (loop = 0; loop < rightSymbols->columnCount(); loop++)
   {
     QTreeWidgetItem *item = rightSymbols->topLevelItem(loop);
+    if (! item)
+      continue;
+    
     BarData *bd = new BarData;
     QString s = item->text(0);
     bd->setSymbol(s);

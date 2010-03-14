@@ -1,7 +1,7 @@
 /*
- *  TestChart
+ *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,32 +19,28 @@
  *  USA.
  */
 
-
-
-#ifndef TEST_CHART_HPP
-#define TEST_CHART_HPP
+#ifndef FILE_BUTTON_HPP
+#define FILE_BUTTON_HPP
 
 #include <QWidget>
-#include <QSlider>
-#include <QList>
-#include <QString>
+#include <QPushButton>
+#include <QStringList>
 
-#include "Plot.h"
-#include "BarData.h"
-#include "TestTrade.h"
-
-class TestChart : public QWidget
+class FileButton : public QPushButton
 {
   Q_OBJECT
 
   public:
-    TestChart ();
-    void update (BarData &, QList<TestTrade *> &, QString &);
+    FileButton (QWidget *, QString &);
+    QString & getFile ();
+    void setFile (QString &);
+    void updateButtonText ();
 
+  public slots:
+    void fileDialog ();
+        
   private:
-    Plot *plot;
-    QSlider *slider;
+    QString file;
 };
 
 #endif
-

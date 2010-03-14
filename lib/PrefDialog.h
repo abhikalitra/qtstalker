@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,12 +19,13 @@
  *  USA.
  */
 
-#ifndef PREFDIALOG_HPP
-#define PREFDIALOG_HPP
+#ifndef PREF_DIALOG_HPP
+#define PREF_DIALOG_HPP
 
 #include "ColorButton.h"
 #include "FontButton.h"
 #include "Indicator.h"
+#include "FileButton.h"
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -47,7 +48,6 @@
 #include <QGridLayout>
 #include <QList>
 #include <QTextEdit>
-
 
 class PrefDialog : public QDialog
 {
@@ -89,8 +89,10 @@ class PrefDialog : public QDialog
     void getKeyList (QList<int> &);
     void addTextEditItem (int key, int page, QString, QString &);
     void getTextEdit (int key, QString &);
+    void addFileItem (int key, int page, QString, QString &);
+    void getFile (int key, QString &);
 
-  public slots:
+//  public slots:
 
   private:
     QHash<int, ColorButton *> colorButtonList;
@@ -105,6 +107,7 @@ class PrefDialog : public QDialog
     QHash<int, QTimeEdit *> timeList;
     QHash<int, QTextEdit *> textEditList;
     QHash<int, QGridLayout *> gridList;
+    QHash<int, FileButton *> fileButtonList;
     QDialogButtonBox *buttonBox;
     QGridLayout *grid;
     QTabWidget *tabs;

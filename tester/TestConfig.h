@@ -50,7 +50,9 @@ class TestConfig : public BaseConfig
       PlotPluginPath,
       PlotPluginList,
       COPluginPath,
-      COPluginList
+      COPluginList,
+      DBPluginPath,
+      DBPluginList
     };
 
     TestConfig ();

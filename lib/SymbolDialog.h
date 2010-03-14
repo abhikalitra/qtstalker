@@ -31,7 +31,7 @@
 #include <QComboBox>
 #include <QLineEdit>
 
-#include "BarData.h"
+#include "Group.h"
 
 class SymbolDialog : public QDialog
 {
@@ -40,7 +40,7 @@ class SymbolDialog : public QDialog
   public:
     SymbolDialog (int);
     void setSymbols (QString &ex, QString &ss);
-    void getSymbols (QList<BarData *> &);
+    void getSymbols (Group &);
     void getSymbolSearch (QString &ex, QString &ss);
 
   public slots:
