@@ -34,8 +34,7 @@ class MA : public IndicatorPlugin
       Plot,
       Label,
       Input,
-      Period,
-      TestOperator
+      Period
     };
 
     MA ();
@@ -43,8 +42,6 @@ class MA : public IndicatorPlugin
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getMA (PlotLine *in, int period, int method);
     int dialog (int);
-    void testDialog (PrefDialog *, int);
-    int test (BarData *data, TestSignal &sigs);
 
   protected:
     QStringList methodList;

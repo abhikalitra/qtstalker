@@ -59,13 +59,9 @@ int IndicatorPlugin::dialog (int)
   return 0;
 }
 
-// virtual function
-int IndicatorPlugin::test (BarData *, TestSignal &)
-{
-  return 0;
-}
-
-
+//****************************************************
+//*************** NON VIRTUAL FUNCTIONS **************
+//****************************************************
 
 void IndicatorPlugin::setSettings (Indicator &ind)
 {

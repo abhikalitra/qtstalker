@@ -36,7 +36,7 @@ int TestSignal::createSignals (BarData *data, PlotLine *line)
     return 1;
   }
 
-  int status = 0;
+//  int status = 0;
   int lineLoop;
   for (lineLoop = 0; lineLoop < line->count(); lineLoop++, barLoop++)
   {

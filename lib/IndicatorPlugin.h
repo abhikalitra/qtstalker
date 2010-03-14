@@ -29,7 +29,6 @@
 #include "BarData.h"
 #include "PlotLine.h"
 #include "Indicator.h"
-#include "TestSignal.h"
 #include "Setting.h"
 #include "PrefDialog.h"
 
@@ -41,7 +40,6 @@ class IndicatorPlugin
     virtual int getIndicator (Indicator &, BarData *);
     virtual int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
     virtual int dialog (int);
-    virtual int test (BarData *, TestSignal &);
 
     void setSettings (Indicator &);
     void getSettings (Indicator &);

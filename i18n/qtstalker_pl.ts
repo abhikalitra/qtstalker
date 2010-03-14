@@ -1361,6 +1361,10 @@ a partial match like %SI or %RSI%</source>
         <source>Chart</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Missing exchange.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -1929,11 +1933,11 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select Test Script</source>
+        <source>Comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Comment</source>
+        <source>Exchange</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
