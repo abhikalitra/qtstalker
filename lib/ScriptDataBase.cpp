@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,24 +36,25 @@ void ScriptDataBase::init ()
   s.append(", command TEXT"); // 1
   s.append(", comment TEXT"); // 2
   s.append(", lastRun TEXT"); // 3
+  s.append(", file TEXT"); // 4
   
-  s.append(", t1 TEXT"); // 4
-  s.append(", t2 TEXT"); // 5
-  s.append(", t3 TEXT"); // 6
-  s.append(", t4 TEXT"); // 7
-  s.append(", t5 TEXT"); // 8
+  s.append(", t1 TEXT"); // 5
+  s.append(", t2 TEXT"); // 6
+  s.append(", t3 TEXT"); // 7
+  s.append(", t4 TEXT"); // 8
+  s.append(", t5 TEXT"); // 9
   
-  s.append(", i1 INT"); // 9
-  s.append(", i2 INT"); // 10
-  s.append(", i3 INT"); // 11
-  s.append(", i4 INT"); // 12
-  s.append(", i5 INT"); // 13
+  s.append(", i1 INT"); // 10
+  s.append(", i2 INT"); // 11
+  s.append(", i3 INT"); // 12
+  s.append(", i4 INT"); // 13
+  s.append(", i5 INT"); // 14
 
-  s.append(", d1 REAL"); // 14
-  s.append(", d2 REAL"); // 15
-  s.append(", d3 REAL"); // 16
-  s.append(", d4 REAL"); // 17
-  s.append(", d5 REAL"); // 18
+  s.append(", d1 REAL"); // 15
+  s.append(", d2 REAL"); // 16
+  s.append(", d3 REAL"); // 17
+  s.append(", d4 REAL"); // 18
+  s.append(", d5 REAL"); // 19
 
   s.append(")");
   q.exec(s);
@@ -96,7 +97,7 @@ void ScriptDataBase::getScript (Script &script)
   QString name = script.getName();
 
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT command,comment,lastRun FROM script WHERE name='" + name + "'";
+  QString s = "SELECT command,comment,lastRun,file FROM script WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -106,14 +107,19 @@ void ScriptDataBase::getScript (Script &script)
 
   if (q.next())
   {
-    s = q.value(0).toString();
+    int pos = 0;
+    
+    s = q.value(pos++).toString();
     script.setCommand(s);
 
-    s = q.value(1).toString();
+    s = q.value(pos++).toString();
     script.setComment(s);
 
-    QDateTime dt = q.value(2).toDateTime();
+    QDateTime dt = q.value(pos++).toDateTime();
     script.setLastRun(dt);
+
+    s = q.value(pos++).toString();
+    script.setFile(s);
   }
 }
 
@@ -122,11 +128,12 @@ void ScriptDataBase::setScript (Script &script)
   QDateTime dt = script.getLastRun();
 
   QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO script (name,command,comment,lastRun) VALUES (";
+  QString s = "INSERT OR REPLACE INTO script (name,command,comment,lastRun,file) VALUES (";
   s.append("'" + script.getName() + "'");
   s.append(",'" + script.getCommand() + "'");
   s.append(",'" + script.getComment() + "'");
   s.append(",'" + dt.toString(Qt::ISODate) + "'");
+  s.append(",'" + script.getFile() + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -163,9 +163,13 @@ void ScriptPage::editScript (QString &d)
   QString command = script.getCommand();
   dialog->addTextItem(0, 0, s, command);
 
+  s = tr("Script File");
+  QString file = script.getFile();
+  dialog->addFileItem(1, 0, s, file);
+
   s = tr("Comment");
   QString comment = script.getComment();
-  dialog->addTextEditItem(1, 0, s, comment);
+  dialog->addTextEditItem(2, 0, s, comment);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -174,15 +178,14 @@ void ScriptPage::editScript (QString &d)
     return;
   }
 
-  s = tr("Command");
   dialog->getItem(0, command);
-
-  s = tr("Comment");
-  dialog->getItem(1, comment);
+  dialog->getItem(1, file);
+  dialog->getItem(2, comment);
 
   delete dialog;
 
   script.setCommand(command);
+  script.setFile(file);
   script.setComment(comment);
   db.setScript(script);
 
@@ -383,7 +386,7 @@ void ScriptPage::scriptDone ()
 void ScriptPage::startScript ()
 {
   Script script = scriptList.at(0);
-  QString command = script.getCommand();
+  QString command = script.getCommand() + " " + script.getFile();
   scriptServer->calculate2(command);
   emit signalMessage(QString(tr("Script ")) + script.getName() + tr(" started."));
 }

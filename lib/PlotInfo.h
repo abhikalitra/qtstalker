@@ -39,6 +39,7 @@ class PlotInfo
     Setting * getInfo (QPoint &, Indicator &, int, DateBar &, QString &);
     Setting * getCOInfo (ChartObject *, QString &);
     void drawInfo (QPixmap &, QColor &, QColor &, QFont &, int, DateBar &, Indicator &);
+    void getPointInfo (Indicator &, int, DateBar &, QList<Setting> &);
 };
 
 #endif

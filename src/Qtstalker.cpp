@@ -1,19 +1,23 @@
-/***************************************************************************
-                          qtstalker.cpp  -  description
-                             -------------------
-    begin                : Thu Mar  7 22:43:41 EST 2002
-    copyright            : (C) 2001-2009 by Stefan Stratigakos
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/*
+ *  Qtstalker stock charter
+ *
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  USA.
+ */
 
 #include <QLayout>
 #include <QMessageBox>
@@ -254,27 +258,27 @@ void QtstalkerApp::createActions ()
 
   QAction *action  = new QAction(QIcon(done_xpm), tr("E&xit"), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_Q));
-  action->setStatusTip(tr("Quit Qtstalker (Ctrl+Q)"));
-  action->setToolTip(tr("Quit Qtstalker (Ctrl+Q)"));
+  action->setStatusTip(tr("Quit Qtstalker"));
+  action->setToolTip(tr("Quit Qtstalker"));
   connect(action, SIGNAL(activated()), qApp, SLOT(quit()));
   actionList.insert(Exit, action);
 
   action = new QAction(QIcon(indicator), tr("New &Indicator"), this);
-  action->setStatusTip(tr("Add a new indicator to chart (Ctrl+2)"));
-  action->setToolTip(tr("Add a new indicator to chart (Ctrl+2)"));
+  action->setStatusTip(tr("Add a new indicator to chart"));
+  action->setToolTip(tr("Add a new indicator to chart"));
   connect(action, SIGNAL(activated()), this, SIGNAL(signalNewIndicator()));
   actionList.insert(NewIndicator, action);
 
   action = new QAction(QIcon(configure), tr("Edit &Preferences"), this);
-  action->setStatusTip(tr("Modify user preferences  (Ctrl+3)"));
-  action->setToolTip(tr("Modify user preferences  (Ctrl+3)"));
+  action->setStatusTip(tr("Modify user preferences"));
+  action->setToolTip(tr("Modify user preferences"));
   connect(action, SIGNAL(activated()), this, SLOT(slotOptions()));
   actionList.insert(Options, action);
 
   Config config;
   action = new QAction(QIcon(gridicon), tr("Chart &Grid"), this);
-  action->setStatusTip(tr("Toggle the chart grid  (Ctrl+4)"));
-  action->setToolTip(tr("Toggle the chart grid  (Ctrl+4)"));
+  action->setStatusTip(tr("Toggle the chart grid"));
+  action->setToolTip(tr("Toggle the chart grid"));
   action->setCheckable(TRUE);
   action->setChecked(config.getBool(Config::Grid));
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalGrid(bool)));
@@ -282,8 +286,8 @@ void QtstalkerApp::createActions ()
 
   action = new QAction(QIcon(datawindow), tr("&Data Window"), this);
   action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_1));
-  action->setStatusTip(tr("Show the data window (Alt+1)"));
-  action->setToolTip(tr("Show the data window (Alt+1)"));
+  action->setStatusTip(tr("Show the data window"));
+  action->setToolTip(tr("Show the data window"));
   connect(action, SIGNAL(activated()), this, SLOT(slotDataWindow()));
   actionList.insert(DataWindow1, action);
 
@@ -300,16 +304,16 @@ void QtstalkerApp::createActions ()
   actionList.insert(Help, action);
 
   action = new QAction(QIcon(scaletoscreen), tr("&Scale To Screen"), this);
-  action->setStatusTip(tr("Scale chart to current screen data (Ctrl+5)"));
-  action->setToolTip(tr("Scale chart to current screen data (Ctrl+5)"));
+  action->setStatusTip(tr("Scale chart to current screen data"));
+  action->setToolTip(tr("Scale chart to current screen data"));
   action->setCheckable(TRUE);
   action->setChecked(config.getBool(Config::ScaleToScreen));
   connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalScale(bool)));
   actionList.insert(ScaleToScreen, action);
 
   action = new QAction(QIcon(nav), tr("Side Pa&nel"), this);
-  action->setStatusTip(tr("Toggle the side panel area from view (Ctrl+7)"));
-  action->setToolTip(tr("Toggle the side panel area from view (Ctrl+7)"));
+  action->setStatusTip(tr("Toggle the side panel area from view"));
+  action->setToolTip(tr("Toggle the side panel area from view"));
   action->setCheckable(TRUE);
   action->setChecked(config.getBool(Config::ShowSidePanel));
   connect(action, SIGNAL(toggled(bool)), this, SLOT(slotHideNav(bool)));
@@ -371,27 +375,18 @@ void QtstalkerApp::createToolBars ()
   connect(bg, SIGNAL(buttonClicked(int)), this, SLOT(cursorButtonPressed(int)));
 
   // normal cursor button
-  QToolButton *b = new QToolButton;
-  b->setToolTip(tr("Normal Cursor"));
-  b->setIcon(QIcon(cursor_arrow_xpm));
-  b->setCheckable(TRUE);
+  QToolButton *b = createToolButton(QIcon(cursor_arrow_xpm), QString(), QString(tr("Normal Cursor")), TRUE);
   b->setChecked(TRUE);
   toolBar2->addWidget(b);
   bg->addButton(b, 0);
 
   // zoom cursor button
-  b = new QToolButton;
-  b->setToolTip(tr("Zoom Cursor"));
-  b->setIcon(QIcon(cursorZoom_xpm));
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(cursorZoom_xpm), QString(), QString(tr("Zoom Cursor")), TRUE);
   toolBar2->addWidget(b);
   bg->addButton(b, 1);
 
   // crosshair button
-  b = new QToolButton;
-  b->setToolTip(tr("Crosshairs Cursor"));
-  b->setIcon(QIcon(crosshair));
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(crosshair), QString(), QString(tr("Crosshairs Cursor")), TRUE);
   toolBar2->addWidget(b);
   bg->addButton(b, 2);
 
@@ -413,11 +408,9 @@ void QtstalkerApp::createToolBars ()
     if (! plug)
       continue;
     
-    b = new QToolButton;
     QIcon icon;
     plug->getIcon(icon);
-    b->setIcon(icon);
-    b->setToolTip(l[loop]);
+    b = createToolButton(icon, QString(), QString(l[loop]), FALSE);
     toolBar2->addWidget(b);
     bg->addButton(b, loop);
   }
@@ -442,76 +435,40 @@ void QtstalkerApp::createToolBars ()
   // button group for the bars group
   barButtonGroup = new QButtonGroup(this);
   connect(barButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(slotBarLengthChanged(int)));
-
-  // monthly compression button
-  b = new QToolButton;
-  b->setToolTip(tr("Monthly Bars"));
-  b->setText("M");
-  b->setCheckable(TRUE);
+  
+  b = createToolButton(QIcon(), QString("M"), QString(tr("Monthly Bars")), TRUE);
   toolbar->addWidget(b);
   barButtonGroup->addButton(b, 8);
 
-  // weekly compression button
-  b = new QToolButton;
-  b->setToolTip(tr("Weekly Bars"));
-  b->setText("W");
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(), QString("W"), QString(tr("Weekly Bars")), TRUE);
   toolbar->addWidget(b);
   barButtonGroup->addButton(b, 7);
 
-  // daily compression button
-  b = new QToolButton;
-  b->setToolTip(tr("Daily Bars"));
-  b->setText("D");
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(), QString("D"), QString(tr("Daily Bars")), TRUE);
   toolbar->addWidget(b);
   barButtonGroup->addButton(b, 6);
 
-  // 60 minute compression button
-  b = new QToolButton;
-  b->setToolTip(tr("60 Minute Bars"));
-  b->setText("60");
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(), QString("60"), QString(tr("60 Minute Bars")), TRUE);
   toolbar->addWidget(b);
   barButtonGroup->addButton(b, 5);
 
-  // 30 minute compression button
-  b = new QToolButton;
-  b->setToolTip(tr("30 Minute Bars"));
-  b->setText("30");
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(), QString("30"), QString(tr("30 Minute Bars")), TRUE);
   toolbar->addWidget(b);
   barButtonGroup->addButton(b, 4);
 
-  // 15 minute compression button
-  b = new QToolButton;
-  b->setToolTip(tr("15 Minute Bars"));
-  b->setText("15");
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(), QString("15"), QString(tr("15 Minute Bars")), TRUE);
   toolbar->addWidget(b);
   barButtonGroup->addButton(b, 3);
 
-  // 10 minute compression button
-  b = new QToolButton;
-  b->setToolTip(tr("10 Minute Bars"));
-  b->setText("10");
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(), QString("10"), QString(tr("10 Minute Bars")), TRUE);
   toolbar->addWidget(b);
   barButtonGroup->addButton(b, 2);
 
-  // 5 minute compression button
-  b = new QToolButton;
-  b->setToolTip(tr("5 Minute Bars"));
-  b->setText("5");
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(), QString("5"), QString(tr("5 Minute Bars")), TRUE);
   toolbar->addWidget(b);
   barButtonGroup->addButton(b, 1);
 
-  // 1 minute compression button
-  b = new QToolButton;
-  b->setToolTip(tr("1 Minute Bars"));
-  b->setText("1");
-  b->setCheckable(TRUE);
+  b = createToolButton(QIcon(), QString("1"), QString(tr("1 Minute Bars")), TRUE);
   toolbar->addWidget(b);
   barButtonGroup->addButton(b, 0);
 
@@ -530,22 +487,18 @@ void QtstalkerApp::createToolBars ()
   zoomPos = 0;
 
   // zoom in button
-  b = new QToolButton;
+  b = createToolButton(QIcon(zoomin_xpm), QString(), QString(tr("Zoom In")), FALSE);
   connect(b, SIGNAL(clicked()), this, SLOT(slotZoomIn()));
   QAction *action = toolbar->addWidget(b);
   actionList.insert(ZoomIn, action);
-  b->setToolTip(tr("Zoom In"));
-  b->setIcon(QIcon(zoomin_xpm));
   action->setEnabled(FALSE);
   action->setStatusTip(tr("Zoom In"));
 
   // zoom out button
-  b = new QToolButton;
+  b = createToolButton(QIcon(zoomout_xpm), QString(), QString(tr("Zoom Out")), FALSE);
   connect(b, SIGNAL(clicked()), this, SLOT(slotZoomOut()));
   action = toolbar->addWidget(b);
   actionList.insert(ZoomOut, action);
-  b->setToolTip(tr("Zoom Out"));
-  b->setIcon(QIcon(zoomout_xpm));
   action->setEnabled(FALSE);
   action->setStatusTip(tr("Zoom Out"));
 
@@ -595,6 +548,16 @@ void QtstalkerApp::createToolBars ()
   action = toolbar->addWidget(recentCharts);
   actionList.insert(RecentCharts, action);
   action->setVisible(config.getBool(Config::ShowRecentCharts));
+}
+
+QToolButton * QtstalkerApp::createToolButton (QIcon icon, QString text, QString tip, int checkable)
+{
+  QToolButton *b = new QToolButton;
+  b->setIcon(icon);
+  b->setToolTip(tip);
+  b->setText(text);
+  b->setCheckable(checkable);
+  return b;
 }
 
 void QtstalkerApp::slotQuit()
@@ -987,9 +950,6 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(indy, SIGNAL(signalPixelspaceChanged(int, int)), this, SLOT(slotPlotZoom(int, int)));
   connect(indy, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(indy, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
-//  connect(indy, SIGNAL(leftMouseButton(int, int, bool)), this, SLOT(slotPlotLeftMouseButton(int, int, bool)));
-//  connect(this, SIGNAL(signalCrossHair(int, int, bool)), indy, SLOT(crossHair(int, int, bool)));
-//  connect(this, SIGNAL(signalCrosshairsStatus(bool)), indy, SLOT(setCrosshairsStatus(bool)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(BarData::BarLength)), plot, SLOT(setInterval(BarData::BarLength)));

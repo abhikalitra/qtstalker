@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -70,7 +70,6 @@ void TestDataBase::init ()
   s.append(",barLength INT");
   s.append(",entryComm REAL");
   s.append(",exitComm REAL");
-  s.append(",delay INT");
   s.append(",account REAL");
   s.append(",volumePercentage REAL");
   s.append(",trailingStop REAL");

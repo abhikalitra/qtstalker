@@ -38,6 +38,7 @@
 #include <QMenu>
 #include <QRubberBand>
 #include <QPoint>
+#include <QList>
 
 #include "Setting.h"
 #include "BarData.h"
@@ -96,6 +97,7 @@ class IndicatorPlot : public QWidget
     void setPlotPluginPath (QString &);
     void setCOPluginPath (QString &);
     void getDateBar (DateBar &);
+    void getScalePoints (QList<Setting> &);
 
   public slots:
     void draw();
@@ -130,7 +132,6 @@ class IndicatorPlot : public QWidget
     void drawObjects ();
     void drawLines ();
     void drawCursor ();
-    int getXFromDate (QDateTime &);
     void getXY (int, int);
     void slotMessage (QString);
     void slotNewChartObject (QString);

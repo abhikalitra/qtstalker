@@ -1,7 +1,7 @@
 /*
  *  TestSettings
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -124,16 +124,6 @@ TestSettings::TestSettings ()
   bars->setMaximum(999999);
   bars->setValue(275);
   grid->addWidget(bars, row++, col--);
-
-  // trade delay
-  label = new QLabel(tr("Trade Delay"));
-  grid->addWidget(label, row, col++);
-
-  delay = new QSpinBox;
-  delay->setMinimum(0);
-  delay->setMaximum(100);
-  delay->setValue(1);
-  grid->addWidget(delay, row++, col--);
 
   // enter field parms
   label = new QLabel(tr("Enter Price"));
@@ -325,16 +315,6 @@ double TestSettings::getExitComm ()
 void TestSettings::setExitComm (double d)
 {
   exitComm->setValue(d);
-}
-
-int TestSettings::getDelay ()
-{
-  return delay->value();
-}
-
-void TestSettings::setDelay (int d)
-{
-  delay->setValue(d);
 }
 
 double TestSettings::getAccount ()

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 #include <QString>
 #include <QDateTime>
 
-
 class Script
 {
   public:
@@ -34,6 +33,8 @@ class Script
     QString & getName ();
     void setCommand (QString &);
     QString & getCommand ();
+    void setFile (QString &);
+    QString & getFile ();
     void setComment (QString &);
     QString & getComment ();
     void setStatus (int);
@@ -44,6 +45,7 @@ class Script
   protected:
     QString name;
     QString command;
+    QString file;
     QString comment;
     int status;
     QDateTime lastRun;

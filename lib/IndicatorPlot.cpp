@@ -240,6 +240,16 @@ void IndicatorPlot::cursorChanged (int d)
   }
 }
 
+void IndicatorPlot::getScalePoints (QList<Setting> &l)
+{
+  if (! dateBars.count())
+    return;
+  
+  int i = convertXToDataIndex(buffer.width());
+  PlotInfo info;
+  info.getPointInfo(indicator, i, dateBars, l);
+}
+
 //*********************************************************************
 //*************** MOUSE EVENTS ***************************************
 //********************************************************************
@@ -573,17 +583,6 @@ void IndicatorPlot::updateStatusBar (int x, int y)
   util.strip(scaler.convertToVal(y), 4, str);
   s.append(str);
   emit statusMessage(s);
-}
-
-int IndicatorPlot::getXFromDate (QDateTime &d)
-{
-  int x2 = dateBars.getX(d);
-  if (x2 == -1)
-    return -1;
-
-  int x = startX + (x2 * pixelspace) - (startIndex * pixelspace);
-
-  return x;
 }
 
 void IndicatorPlot::showPopupMenu ()

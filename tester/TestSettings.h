@@ -1,7 +1,7 @@
 /*
  *  TestSettings
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -69,8 +69,6 @@ class TestSettings : public QWidget
     void setEntryComm (double);
     double getExitComm ();
     void setExitComm (double);
-    int getDelay ();
-    void setDelay (int);
     double getAccount ();
     void setAccount (double);
     double getVolumePercentage ();
@@ -92,7 +90,6 @@ class TestSettings : public QWidget
     QCheckBox *trailingCheck;
     QDoubleSpinBox *trailing;
     QSpinBox *bars;
-    QSpinBox *delay;
     QDoubleSpinBox *entryComm;
     QDoubleSpinBox *exitComm;
     QComboBox *barLength;

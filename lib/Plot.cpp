@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,10 +21,12 @@
 
 #include "Plot.h"
 #include "PlotGrid.h"
+#include "Setting.h"
 
 #include <QLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QList>
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
@@ -46,7 +48,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
 
   datePlot = new DatePlot(this);
   vbox->addWidget(datePlot);
-
+  
   connect(indicatorPlot, SIGNAL(signalDraw()), this, SLOT(slotUpdateScalePlot()));
   connect(indicatorPlot, SIGNAL(signalDateFlag(bool)), this, SLOT(slotDateFlagChanged(bool)));
   connect(indicatorPlot, SIGNAL(signalLogFlag(bool)), this, SLOT(slotLogScaleChanged(bool)));
@@ -67,8 +69,6 @@ void Plot::setData (BarData *l)
   datePlot->setData(l);
 
   indicatorPlot->setXGrid(datePlot->getXGrid());
-
-  scalePlot->setData(l->getClose(l->count() - 1));
 
   indicatorPlot->setData(l);
 }
@@ -100,6 +100,10 @@ void Plot::draw ()
   datePlot->draw();
   indicatorPlot->draw();
   scalePlot->setScaler(indicatorPlot->getScaler());
+  
+  QList<Setting> l;
+  indicatorPlot->getScalePoints(l);
+  scalePlot->setScalePoints(l);
   scalePlot->draw();
 }
 

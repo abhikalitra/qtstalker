@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  * 
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,8 +28,10 @@
 #include <QFont>
 #include <QPaintEvent>
 #include <QResizeEvent>
+#include <QList>
 
 #include "Scaler.h"
+#include "Setting.h"
 
 class ScalePlot : public QWidget
 {
@@ -38,11 +40,12 @@ class ScalePlot : public QWidget
   public:
     ScalePlot (QWidget *);
     void clear ();
-    void setData (double);
+    void setScalePoints (QList<Setting> &);
     void setScaleWidth (int);
     void setLogScale (bool);
     void setScaleToScreen (bool);
     void setScaler (Scaler &);
+    void drawPoints (QPainter &);
 
   public slots:
     void draw();
@@ -71,6 +74,7 @@ class ScalePlot : public QWidget
     Scaler scaler;
     bool mainFlag;
     bool activeFlag;
+    QList<Setting> points;
 };
 
 #endif

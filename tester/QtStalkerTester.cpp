@@ -1,7 +1,7 @@
 /*
  *  QtStalkerTester
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -288,7 +288,6 @@ void QtStalkerTester::saveTest ()
   s.append("," + QString::number(settings->getBarLength()));
   s.append("," + QString::number(settings->getEntryComm()));
   s.append("," + QString::number(settings->getExitComm()));
-  s.append("," + QString::number(settings->getDelay()));
   s.append("," + QString::number(settings->getAccount()));
   s.append("," + QString::number(settings->getVolumePercentage()));
   s.append("," + QString::number(settings->getTrailing()));
@@ -448,8 +447,6 @@ void QtStalkerTester::loadTest (QString &s)
     settings->setEntryComm(q.value(col++).toDouble());
 
     settings->setExitComm(q.value(col++).toDouble());
-
-    settings->setDelay(q.value(col++).toInt());
 
     settings->setAccount(q.value(col++).toDouble());
 
@@ -801,7 +798,8 @@ void QtStalkerTester::run ()
 
   rankings->update();
   
-  chart->update(data, trades, coPluginPath);
+  chart->update(data, trades);
 
   qDeleteAll(trades);
 }
+

@@ -169,3 +169,39 @@ void PlotInfo::drawInfo (QPixmap &buffer, QColor &borderColor, QColor &backColor
   painter.end();
 }
 
+void PlotInfo::getPointInfo (Indicator &indicator, int index, DateBar &dateBars, QList<Setting> &l)
+{
+  l.clear();
+  
+  QList<PlotLine *> plotList;
+  indicator.getLines(plotList);
+
+  Utils util;
+  int loop;
+  for (loop = 0; loop < plotList.count(); loop++)
+  {
+    PlotLine *line = plotList.at(loop);
+    QString s;
+    line->getPlugin(s);
+
+    if (s == "Horizontal")
+      continue;
+      
+    int li = line->count() - dateBars.count() + index;
+    if (li > -1 && li < line->count())
+    {
+      Setting set;
+      QColor color;
+      double v = line->getData(li, color);
+
+      s = color.name();
+      set.setData(0, s);
+
+      util.strip(v, 4, s);
+      set.setData(1, s);
+      
+      l.append(set);
+    }
+  }
+}
+

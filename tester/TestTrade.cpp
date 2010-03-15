@@ -171,6 +171,9 @@ void TestTrade::getLogMessage (QStringList &l)
 
   l.append(QString::number(getExitPrice()));
   l.append(QString::number(getProfit()));
+  
+  l.append(QString::number(getHigh())); // hidden column
+  l.append(QString::number(getLow())); // hidden column
 }
 
 int TestTrade::update ()

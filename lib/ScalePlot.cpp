@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include <QString>
 #include <QVector>
 
-#define SCALE_WIDTH 60
+#define SCALE_WIDTH 70
 
 ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
 {
@@ -52,13 +52,7 @@ ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
 
 void ScalePlot::clear ()
 {
-  close = 0;
-}
-
-void ScalePlot::setData (double c)
-{
-  close = c;
-  activeFlag = TRUE;
+  points.clear();
 }
 
 void ScalePlot::setMainFlag (bool d)
@@ -189,15 +183,7 @@ void ScalePlot::drawScale ()
 
   painter.drawLine (x, 0, x, buffer.height());
 
-  // draw the last value pointer on the scale of main plot
-  int y = scaler.convertToY(close);
-    
-  QPolygon array;
-  array.setPoints(3, x + 2, y,
-                  x + 8, y - 4,
-                  x + 8, y + 4);
-  painter.setBrush(borderColor);
-  painter.drawPolygon(array, Qt::OddEvenFill);
+  drawPoints(painter);
 
   painter.end();
 }
@@ -217,5 +203,38 @@ void ScalePlot::slotLogScaleChanged (bool d)
 void ScalePlot::setScaler (Scaler &d)
 {
   scaler = d;
+}
+
+void ScalePlot::setScalePoints (QList<Setting> &d)
+{
+  points = d;
+  activeFlag = TRUE;
+}
+
+void ScalePlot::drawPoints (QPainter &painter)
+{
+  QFontMetrics fm(plotFont);
+
+  int loop;
+  for (loop = 0; loop < points.count(); loop++)
+  {
+    Setting set = points.at(loop);
+    QColor color;
+    QString d;
+    set.getData(0, d);
+    color.setNamedColor(d);
+    set.getData(1, d);
+    double v = set.getDouble(1);
+    
+    int y = scaler.convertToY(v);
+    QRect rc = painter.boundingRect(1, y - (fm.height() / 2), 1, 1, 0, d);
+    painter.fillRect(rc, color);
+    
+    color.setRed(color.red() || borderColor.red());
+    color.setGreen(color.green() || borderColor.green());
+    color.setBlue(color.blue() || borderColor.blue());
+    painter.setPen(color);
+    painter.drawText(rc, d);
+  }
 }
 

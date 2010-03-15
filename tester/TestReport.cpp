@@ -1,7 +1,7 @@
 /*
  *  TestReport
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -178,12 +178,15 @@ TestReport::TestReport ()
   grid->addWidget(balance, row++, col--);
 
   tradeLog = new QTreeWidget;
-  tradeLog->setColumnCount(8);
+  tradeLog->setColumnCount(10);
   tradeLog->setRootIsDecorated(FALSE);
   QStringList l;
   l << tr("Enter Date") << tr("Enter Signal") << tr("Volume") << tr("Enter Price");
   l << tr("Exit Date") << tr("Exit Signal") << tr("Exit Price") << tr("Profit");
+  l << "High" << "Low";
   tradeLog->setHeaderLabels(l);
+  tradeLog->setColumnHidden(8, TRUE);
+  tradeLog->setColumnHidden(9, TRUE);
   vbox->addWidget(tradeLog);
 }
 

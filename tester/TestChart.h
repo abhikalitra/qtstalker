@@ -1,7 +1,7 @@
 /*
  *  TestChart
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ class TestChart : public QWidget
 
   public:
     TestChart ();
-    void update (BarData &, QList<TestTrade *> &, QString &);
+    void update (BarData &, QList<TestTrade *> &);
 
   private:
     Plot *plot;
