@@ -100,7 +100,10 @@ double PlotLine::getData (int i, QColor &c)
 {
   PlotLineBar bar = data.at(i);
   bar.getColor(c);
-  return bar.getData(0);
+  if (bar.count() == 4) // is it a Bar or Candle?
+    return bar.getData(3); // return the close
+  else
+    return bar.getData(0);
 }
 
 double PlotLine::getData (int i)

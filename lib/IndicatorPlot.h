@@ -53,7 +53,7 @@ class IndicatorPlot : public QWidget
   Q_OBJECT
 
   signals:
-    void statusMessage (QString);
+    void signalStatusMessage (QString);
     void infoMessage (Setting *);
     void keyPressed (QKeyEvent *);
     void signalPixelspaceChanged (int, int);
@@ -80,7 +80,6 @@ class IndicatorPlot : public QWidget
     void clear ();
     void setData (BarData *);
     void setLogScale (bool);
-    void updateStatusBar (int, int);
     void setInfoFlag (bool);
     int getWidth ();
     int convertXToDataIndex (int);
@@ -131,9 +130,7 @@ class IndicatorPlot : public QWidget
   private slots:
     void drawObjects ();
     void drawLines ();
-    void drawCursor ();
     void getXY (int, int);
-    void slotMessage (QString);
     void slotNewChartObject (QString);
     void slotDeleteAllChartObjects ();
     void slotChartObjectDeleted ();
@@ -172,8 +169,6 @@ class IndicatorPlot : public QWidget
     int tx, ty;
     QRubberBand *rubberBand;
     QPoint mouseOrigin;
-    QDateTime crossHairX;
-    double crossHairY;
     QString newChartObject;
 };
 

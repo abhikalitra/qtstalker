@@ -205,3 +205,19 @@ void PlotInfo::getPointInfo (Indicator &indicator, int index, DateBar &dateBars,
   }
 }
 
+Setting * PlotInfo::getCursorInfo (int i, int y, DateBar &dateBars, Scaler &scaler)
+{
+  Setting *set = new Setting;
+  QString d;
+  QString k = "X";
+  dateBars.getDateTimeString(i, d);
+  set->setData(k, d);
+  
+  Utils util;
+  util.strip(scaler.convertToVal(y), 4, d);
+  k = "Y";
+  set->setData(k, d);
+  
+  return set;
+}
+

@@ -121,7 +121,7 @@ void DBPlugin::getSearchList (QString &ex, QString &pat, Group &l)
     s = "SELECT symbol,name FROM symbolIndex WHERE exchange='" + ex + "'";
     
   // exchange = yes and pat = yes, get pat from the exchange
-  if (ex.isEmpty() && pat.isEmpty())
+  if (! ex.isEmpty() && ! pat.isEmpty())
   {
     s = "SELECT symbol,name FROM symbolIndex WHERE symbol LIKE";
     s.append(" '" + pat + "'");

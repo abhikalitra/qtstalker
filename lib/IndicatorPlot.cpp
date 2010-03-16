@@ -141,7 +141,6 @@ void IndicatorPlot::draw ()
     grid.draw(buffer, startX, startIndex, pixelspace, scaler);
     drawLines();
     drawObjects();
-    drawCursor();
 
     PlotInfo info;
     info.drawInfo(buffer, borderColor, backgroundColor, plotFont, startX, dateBars, indicator);
@@ -185,28 +184,6 @@ void IndicatorPlot::drawLines ()
   }
 }
 
-void IndicatorPlot::drawCursor ()
-{
-  switch (mouseFlag)
-  {
-    case CursorCrosshair:
-    {
-      int y = scaler.convertToY(crossHairY);
-      int x = startX + (dateBars.getX(crossHairX) * pixelspace) - (startIndex * pixelspace);
-
-      QPainter painter;
-      painter.begin(&buffer);
-      painter.setPen(QPen(borderColor, 1, Qt::DotLine));
-      painter.drawLine (0, y, buffer.width(), y);
-      painter.drawLine (x, 0, x, buffer.height());
-      painter.end();
-      break;
-    }
-    default:
-      break;
-  }
-}
-
 void IndicatorPlot::paintEvent (QPaintEvent *)
 {
   QPainter p(this);
@@ -226,14 +203,17 @@ void IndicatorPlot::cursorChanged (int d)
     case 0: // normal cursor
       mouseFlag = None;
       setCursor(QCursor(Qt::ArrowCursor));
+      draw();
       break;
     case 1:
       mouseFlag = CursorZoom;
       setCursor(QCursor(Qt::ArrowCursor));
+      draw();
       break;
     case 2:
       mouseFlag = CursorCrosshair;
       setCursor(QCursor(Qt::CrossCursor));
+      draw();
       break;
     default:
       break;
@@ -245,7 +225,7 @@ void IndicatorPlot::getScalePoints (QList<Setting> &l)
   if (! dateBars.count())
     return;
   
-  int i = convertXToDataIndex(buffer.width());
+  int i = convertXToDataIndex(buffer.width() - pixelspace);
   PlotInfo info;
   info.getPointInfo(indicator, i, dateBars, l);
 }
@@ -261,41 +241,6 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 
   switch (mouseFlag)
   {
-    case CursorCrosshair:
-    {
-      updateStatusBar(event->x(), event->y());
-      getXY(event->x(), event->y());
-      crossHairY = y1;
-      crossHairX = x1;
-      draw();
-      break;
-    }
-    case None:
-    {
-      updateStatusBar(event->x(), event->y());
-
-      QHash<QString, ChartObject *> coList;
-      indicator.getChartObjects(coList);
-      QHashIterator<QString, ChartObject *> it(coList);
-      while (it.hasNext())
-      {
-        it.next();
-        coSelected = it.value();
-        QPoint p(event->x(), event->y());
-        if (coSelected->isSelected(p))
-        {
-          mouseFlag = COSelected;
-          coSelected->setData(ChartObject::ParmSelected, TRUE);
-          PlotInfo info;
-          Setting *mess = info.getCOInfo(coSelected, coPluginPath);
-          if (mess)
-            emit infoMessage(mess);
-	  draw();
-          return;
-        }
-      }
-      break;
-    }
     case COSelected:
     {
       QPoint p;
@@ -332,7 +277,13 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       {
         mouseFlag = None;
         draw();
-        emit statusMessage(QString());
+	
+        int i = convertXToDataIndex(event->x());
+        PlotInfo info;
+        Setting *mess = info.getCursorInfo(i, event->y(), dateBars, scaler);
+        if (mess)
+          emit infoMessage(mess);
+      
         setCursor(QCursor(Qt::ArrowCursor));
       }
       break;
@@ -349,7 +300,13 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       {
         mouseFlag = None;
         draw();
-        emit statusMessage(QString());
+	
+        int i = convertXToDataIndex(event->x());
+        PlotInfo info;
+        Setting *mess = info.getCursorInfo(i, event->y(), dateBars, scaler);
+        if (mess)
+          emit infoMessage(mess);
+      
         setCursor(QCursor(Qt::ArrowCursor));
       }
       break;
@@ -386,7 +343,32 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       emit signalPixelspaceChanged(x, ti);
       break;
     }
+    case None:
+    {
+      QHash<QString, ChartObject *> coList;
+      indicator.getChartObjects(coList);
+      QHashIterator<QString, ChartObject *> it(coList);
+      while (it.hasNext())
+      {
+        it.next();
+        coSelected = it.value();
+        QPoint p(event->x(), event->y());
+        if (coSelected->isSelected(p))
+        {
+          mouseFlag = COSelected;
+          coSelected->setData(ChartObject::ParmSelected, TRUE);
+          PlotInfo info;
+          Setting *mess = info.getCOInfo(coSelected, coPluginPath);
+          if (mess)
+            emit infoMessage(mess);
+	  draw();
+          return;
+        }
+      }
+      break;
+    }
     default:
+      QWidget::mousePressEvent(event);
       break;
   }
 }
@@ -399,10 +381,42 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
 
   switch (mouseFlag)
   {
+    case CursorCrosshair:
+    {
+      draw();
+      
+      getXY(event->x(), event->y());
+
+      int y = scaler.convertToY(y1);
+      int x = startX + (dateBars.getX(x1) * pixelspace) - (startIndex * pixelspace);
+
+      QPainter painter;
+      painter.begin(&buffer);
+      painter.setPen(QPen(borderColor, 1, Qt::DotLine));
+      painter.drawLine (0, y, buffer.width(), y);
+      painter.drawLine (x, 0, x, buffer.height());
+      painter.end();
+      
+      int i = convertXToDataIndex(event->x());
+      PlotInfo info;
+      Setting *mess = info.getCursorInfo(i, event->y(), dateBars, scaler);
+      if (mess)
+        emit infoMessage(mess);
+      
+      break;
+    }
     case CursorZoom:
+    {
+      int i = convertXToDataIndex(event->x());
+      PlotInfo info;
+      Setting *mess = info.getCursorInfo(i, event->y(), dateBars, scaler);
+      if (mess)
+        emit infoMessage(mess);
+      
       if (rubberBand)
         rubberBand->setGeometry(QRect(mouseOrigin, event->pos()).normalized());
       break;
+    }
     case Moving:
     {
       getXY(event->x(), event->y());
@@ -425,20 +439,42 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
       draw();
       break;
     }
-    default:
+    case None:
     {
       // update the data panel with new data
       if (! infoFlag)
 	return;
       
-      PlotInfo info;
+      // determine if we are over a chart object, if so update cursor
       QPoint p(event->x(), event->y());
+      QHash<QString, ChartObject *> coList;
+      indicator.getChartObjects(coList);
+      QHashIterator<QString, ChartObject *> it(coList);
+      int flag = 0;
+      while (it.hasNext())
+      {
+        it.next();
+        ChartObject *co = it.value();
+        if (co->isSelected(p))
+        {
+          setCursor(QCursor(Qt::PointingHandCursor));
+	  flag = 1;
+	  break;
+        }
+      }
+      if (! flag)
+        setCursor(QCursor(Qt::ArrowCursor));
+
+      PlotInfo info;
       int index = convertXToDataIndex(event->x());
       Setting *mess = info.getInfo(p, indicator, index, dateBars, coPluginPath);
       if (mess)
         emit infoMessage(mess);
       break;
     }
+    default:
+      QWidget::mouseMoveEvent(event);
+      break;
   }
 }
 
@@ -466,6 +502,7 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
       break;
     }
     default:
+      QWidget::mouseDoubleClickEvent(event);
       break;
   }
 }
@@ -571,20 +608,6 @@ int IndicatorPlot::convertXToDataIndex (int x)
   return i;
 }
 
-void IndicatorPlot::updateStatusBar (int x, int y)
-{
-  int i = convertXToDataIndex(x);
-
-  QString s;
-  dateBars.getDateTimeString(i, s);
-  s.append(" ");
-  Utils util;
-  QString str;
-  util.strip(scaler.convertToVal(y), 4, str);
-  s.append(str);
-  emit statusMessage(s);
-}
-
 void IndicatorPlot::showPopupMenu ()
 {
   chartMenu->exec(QCursor::pos());
@@ -612,11 +635,6 @@ void IndicatorPlot::toggleLog ()
   indicator.setLog(flag);
 
   emit signalLogFlag(flag);
-}
-
-void IndicatorPlot::slotMessage (QString d)
-{
-  emit statusMessage(d);
 }
 
 void IndicatorPlot::slotSliderChanged (int v)
@@ -701,7 +719,7 @@ void IndicatorPlot::newExternalChartObject (QString d)
   mouseFlag = NewObjectWait;
   newChartObject = d;
   setCursor(QCursor(Qt::PointingHandCursor));
-  statusMessage(QString(tr("Select point to place object...")));
+  emit signalStatusMessage(QString(tr("Select point to place object...")));
 }
 
 void IndicatorPlot::slotNewChartObject (QString selection)
@@ -710,7 +728,7 @@ void IndicatorPlot::slotNewChartObject (QString selection)
     return;
 
   coSelected = new ChartObject;
-  connect(coSelected, SIGNAL(signalMessage(QString)), this, SIGNAL(statusMessage(QString)));
+  connect(coSelected, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
 
   Config config;
   QString id = QString::number(config.getInt(Config::LastChartObjectID) + 1);

@@ -948,8 +948,8 @@ void QtstalkerApp::addIndicatorButton (QString d)
   indy->setCOPluginPath(s);
 
   connect(indy, SIGNAL(signalPixelspaceChanged(int, int)), this, SLOT(slotPlotZoom(int, int)));
-  connect(indy, SIGNAL(statusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(indy, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
+  connect(indy, SIGNAL(signalStatusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(BarData::BarLength)), plot, SLOT(setInterval(BarData::BarLength)));
