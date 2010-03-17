@@ -31,8 +31,6 @@ class SCQuote
   public:
     SCQuote ();
     void calculate (QStringList &, QByteArray &, QString &);
-    void quoteSet (QStringList &, QByteArray &, QString &);
-    void quoteSetName (QStringList &, QByteArray &, QString &);
 };
 
 #endif

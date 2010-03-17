@@ -23,24 +23,19 @@
 #define PLOT_INFO_HPP
 
 #include <QString>
-#include <QPixmap>
-#include <QColor>
 #include <QPoint>
-#include <QFont>
 
-#include "Scaler.h"
-#include "DateBar.h"
-#include "Indicator.h"
+#include "IndicatorPlotData.h"
 
 class PlotInfo
 {
   public:
     PlotInfo ();
-    Setting * getInfo (QPoint &, Indicator &, int, DateBar &, QString &);
+    Setting * getInfo (QPoint &, indicatorPlotData &);
     Setting * getCOInfo (ChartObject *, QString &);
-    void drawInfo (QPixmap &, QColor &, QColor &, QFont &, int, DateBar &, Indicator &);
-    void getPointInfo (Indicator &, int, DateBar &, QList<Setting> &);
-    Setting * getCursorInfo (int i, int y, DateBar &, Scaler &);
+    void drawInfo (indicatorPlotData &);
+    void getPointInfo (indicatorPlotData &, QList<Setting> &);
+    Setting * getCursorInfo (int i, int y, indicatorPlotData &);
 };
 
 #endif

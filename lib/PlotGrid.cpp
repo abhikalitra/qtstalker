@@ -30,13 +30,13 @@ PlotGrid::PlotGrid ()
   gridFlag = TRUE;
 }
 
-void PlotGrid::draw (QPixmap &buffer, int startX, int startIndex, int pixelspace, Scaler &scaler)
+void PlotGrid::draw (indicatorPlotData &pd)
 {
   if (gridFlag == FALSE)
     return;
 
-  drawXGrid(buffer, startX, startIndex, pixelspace);
-  drawYGrid(buffer, scaler, startX);
+  drawXGrid(pd);
+  drawYGrid(pd);
 }
 
 void PlotGrid::setGridColor (QColor &d)
@@ -54,39 +54,39 @@ void PlotGrid::setXGrid (QVector<int> &d)
   xGrid = d;
 }
 
-void PlotGrid::drawXGrid (QPixmap &buffer, int startX, int startIndex, int pixelspace)
+void PlotGrid::drawXGrid (indicatorPlotData &pd)
 {
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(&pd.buffer);
   painter.setPen(QPen(gridColor, 1, Qt::DotLine));
 
   int loop;
   for (loop = 0; loop < (int) xGrid.size(); loop++)
   {
-    if (xGrid[loop] >= startIndex)
+    if (xGrid[loop] >= pd.startIndex)
     {
-      int x = startX + (xGrid[loop] * pixelspace) - (startIndex * pixelspace);
-      painter.drawLine (x, 0, x, buffer.height());
+      int x = pd.startX + (xGrid[loop] * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
+      painter.drawLine (x, 0, x, pd.buffer.height());
     }
   }
 
   painter.end();
 }
 
-void PlotGrid::drawYGrid (QPixmap &buffer, Scaler &scaler, int startX)
+void PlotGrid::drawYGrid (indicatorPlotData &pd)
 {
   QPainter painter;
-  painter.begin(&buffer);
+  painter.begin(&pd.buffer);
   painter.setPen(QPen(gridColor, 1, Qt::DotLine));
 
   QVector<double> scaleArray;
-  scaler.getScaleArray(scaleArray);
+  pd.scaler.getScaleArray(scaleArray);
 
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = scaler.convertToY(scaleArray[loop]);
-    painter.drawLine (startX, y, buffer.width(), y);
+    int y = pd.scaler.convertToY(scaleArray[loop]);
+    painter.drawLine (pd.startX, y, pd.buffer.width(), y);
   }
 
   painter.end();

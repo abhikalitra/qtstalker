@@ -19,37 +19,34 @@
  *  USA.
  */
 
-#ifndef VIDYA_HPP
-#define VIDYA_HPP
+#ifndef INDICATOR_PLOT_DATA_HPP
+#define INDICATOR_PLOT_DATA_HPP
 
-#include "IndicatorPlugin.h"
+#include <QString>
+#include <QPixmap>
+#include <QFont>
+#include <QColor>
 
-class VIDYA : public IndicatorPlugin
+#include "Scaler.h"
+#include "Indicator.h"
+#include "DateBar.h"
+
+struct indicatorPlotData
 {
-  public:
-    enum Parm
-    {
-      Input,
-      Color,
-      Plot,
-      Label,
-      Period,
-      VPeriod
-    };
-
-    VIDYA ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    void calcCMO (PlotLine *outSignal, PlotLine *inSignal, int iPeriod);
-    PlotLine * getVIDYA (PlotLine *inSignal, int period, int volPeriod);
-    int dialog (int);
-
-  protected:
+  Indicator indicator;
+  QPixmap buffer;
+  int pixelspace;
+  int startX;
+  int startIndex;
+  int scaleToScreen;
+  Scaler scaler;
+  QString plotPluginPath;
+  QString coPluginPath;
+  DateBar dateBars;
+  QFont plotFont;
+  QColor backgroundColor;
+  QColor borderColor;
+  int infoIndex;
 };
-
-extern "C"
-{
-  IndicatorPlugin * createIndicatorPlugin ();
-}
 
 #endif

@@ -93,7 +93,6 @@ QtstalkerApp::QtstalkerApp(QString session)
   config.init(session);
 
   setup.setupConfigDefaults();
-  setup.setupDefaultIndicators();
 
   DBPlugin qdb;
   QString dbFile;
@@ -101,6 +100,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   qdb.init(dbFile);
 
   setup.setupExchanges();
+  setup.setupFutures();
 
   // get complete plugin inventory
   PluginFactory pfac;
@@ -124,6 +124,7 @@ QtstalkerApp::QtstalkerApp(QString session)
 
   IndicatorDataBase idb;
   idb.init();
+  setup.setupDefaultIndicators();
 
   CODataBase codb;
   codb.init();

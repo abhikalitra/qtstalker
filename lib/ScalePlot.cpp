@@ -208,7 +208,11 @@ void ScalePlot::setScaler (Scaler &d)
 void ScalePlot::setScalePoints (QList<Setting> &d)
 {
   points = d;
-  activeFlag = TRUE;
+  
+  if (d.count())
+    activeFlag = TRUE;
+  else
+    activeFlag = FALSE;
 }
 
 void ScalePlot::drawPoints (QPainter &painter)

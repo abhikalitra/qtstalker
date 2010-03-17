@@ -517,6 +517,43 @@ void QtStalkerTester::loadTest (QString &s)
     ts = q.value(col++).toString();
     report->setBalance(ts);
   }
+  
+  BarData data;
+  QString ts;
+  settings->getSymbol(ts);
+  data.setSymbol(ts);
+  settings->getExchange(ts);
+  data.setExchange(ts);
+  data.setBarLength((BarData::BarLength) settings->getBarLength());
+  data.setBarsRequested(settings->getBars());
+
+  DBPlugin qdb;
+  qdb.getIndexData(data);
+
+  TestConfig config;
+  PluginFactory fac;
+  QString path;
+  config.getData(TestConfig::DBPluginPath, path);
+  DBPlugin *qdb2 = fac.getDB(path, data.getPlugin());
+  if (! qdb2)
+  {
+    qDebug() << "QtStalkerTester::loadTest: no DB plugin";
+    return;
+  }
+  
+  qdb2->getBars(data);
+  if (data.count() == 0)
+  {
+    qDebug() << "QtStalkerTester::loadTest: 0 bars loaded";
+    return;
+  }
+  
+  QList<TestTrade *> l;
+  report->getTrades(l);
+
+  chart->update(data, l);
+
+  qDeleteAll(l);
 }
 
 void QtStalkerTester::cancelTest ()

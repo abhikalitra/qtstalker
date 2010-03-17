@@ -586,3 +586,44 @@ void TestReport::setBalance (QString &d)
   balance->setText(d);
 }
 
+void TestReport::getTrades (QList<TestTrade *> &trades)
+{
+  int loop;
+  for (loop = 0; loop < tradeLog->topLevelItemCount(); loop++)
+  {
+    QTreeWidgetItem *item = tradeLog->topLevelItem(loop);
+    if (! item)
+      continue;
+
+    int pos = 0;
+    TestTrade *trade = new TestTrade;
+    
+    QDateTime dt = QDateTime::fromString(item->text(pos++), Qt::ISODate);
+    trade->setEnterDate(dt);
+    
+    QString s = item->text(pos++);
+    if (s == "Enter Long")
+      trade->setType(0);
+    else
+      trade->setType(1);
+
+    pos++;
+    double ep = item->text(pos++).toDouble();
+    
+    dt = QDateTime::fromString(item->text(pos++), Qt::ISODate);
+    trade->setExitDate(dt);
+    
+    pos++;
+    double xp = item->text(pos++).toDouble();
+    
+    pos++;
+    double high = item->text(pos++).toDouble();
+    double low = item->text(pos++).toDouble();
+    
+    trade->setEnterPrice(ep, low);
+    trade->setExitPrice(xp, high);
+
+    trades.append(trade);
+  }
+}
+

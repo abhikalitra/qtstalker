@@ -38,15 +38,14 @@ PlotInfo::PlotInfo ()
 {
 }
 
-Setting * PlotInfo::getInfo (QPoint &p, Indicator &indicator, int index, DateBar &dateBars,
-			     QString &coPluginPath)
+Setting * PlotInfo::getInfo (QPoint &p, indicatorPlotData &pd)
 {
   PluginFactory fac;
   Setting *r = new Setting;
 
   // determine if we are over a chart object, if so we display parms in the data panel
   QHash<QString, ChartObject *> coList;
-  indicator.getChartObjects(coList);
+  pd.indicator.getChartObjects(coList);
   QHashIterator<QString, ChartObject *> it(coList);
   while (it.hasNext())
   {
@@ -56,7 +55,7 @@ Setting * PlotInfo::getInfo (QPoint &p, Indicator &indicator, int index, DateBar
     {
       QString s;
       co->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(coPluginPath, s);
+      COPlugin *plug = fac.getCO(pd.coPluginPath, s);
       plug->getInfo(co, r);
       if (r->count())
         return r;
@@ -64,15 +63,15 @@ Setting * PlotInfo::getInfo (QPoint &p, Indicator &indicator, int index, DateBar
   }
 
   QString s, k;
-  dateBars.getDateString(index, s);
+  pd.dateBars.getDateString(pd.infoIndex, s);
   k = "D";
   r->setData(k, s);
-  dateBars.getTimeString(index, s);
+  pd.dateBars.getTimeString(pd.infoIndex, s);
   k = "T";
   r->setData(k, s);
   
   QList<PlotLine *> plotList;
-  indicator.getLines(plotList);
+  pd.indicator.getLines(plotList);
 
   int loop;
   for (loop = 0; loop < plotList.count(); loop++)
@@ -83,7 +82,7 @@ Setting * PlotInfo::getInfo (QPoint &p, Indicator &indicator, int index, DateBar
     if (s == "Horizontal")
       continue;
       
-    int li = line->count() - dateBars.count() + index;
+    int li = line->count() - pd.dateBars.count() + pd.infoIndex;
     if (li > -1 && li < line->count())
       line->getInfo(li, r);
   }
@@ -115,27 +114,26 @@ Setting * PlotInfo::getCOInfo (ChartObject *co, QString &coPluginPath)
   return tr;
 }
 
-void PlotInfo::drawInfo (QPixmap &buffer, QColor &borderColor, QColor &backColor, QFont &font, int startX,
-			 DateBar &dateBars, Indicator &indicator)
+void PlotInfo::drawInfo (indicatorPlotData &pd)
 {
   QPainter painter;
-  painter.begin(&buffer);
-  painter.setPen(borderColor);
-  painter.setFont(font);
+  painter.begin(&pd.buffer);
+  painter.setPen(pd.borderColor);
+  painter.setFont(pd.plotFont);
   painter.setBackgroundMode(Qt::OpaqueMode);
-  painter.setBackground(QBrush(backColor));
+  painter.setBackground(QBrush(pd.backgroundColor));
 
-  QFontMetrics fm(font);
-  int pos = startX;
+  QFontMetrics fm(pd.plotFont);
+  int pos = pd.startX;
 
   QString s;
-  dateBars.getDateString(dateBars.count() - 1, s);
+  pd.dateBars.getDateString(pd.infoIndex, s);
   s.append(" ");
   painter.drawText(pos, 10, s);
   pos = pos + fm.width(s);
 
   QList<PlotLine *> plotList;
-  indicator.getLines(plotList);
+  pd.indicator.getLines(plotList);
   
   int loop;
   Utils util;
@@ -152,7 +150,11 @@ void PlotInfo::drawInfo (QPixmap &buffer, QColor &borderColor, QColor &backColor
       continue;
       
     QColor c;
-    double d = line->getData(line->count() - 1, c);
+    int index = line->count() - pd.dateBars.count() + pd.infoIndex;
+    if (index < 0 || index >= line->count())
+      continue;
+    
+    double d = line->getData(index, c);
 	
     line->getLabel(s);
     s.append("=");
@@ -169,12 +171,12 @@ void PlotInfo::drawInfo (QPixmap &buffer, QColor &borderColor, QColor &backColor
   painter.end();
 }
 
-void PlotInfo::getPointInfo (Indicator &indicator, int index, DateBar &dateBars, QList<Setting> &l)
+void PlotInfo::getPointInfo (indicatorPlotData &pd, QList<Setting> &l)
 {
   l.clear();
   
   QList<PlotLine *> plotList;
-  indicator.getLines(plotList);
+  pd.indicator.getLines(plotList);
 
   Utils util;
   int loop;
@@ -187,7 +189,7 @@ void PlotInfo::getPointInfo (Indicator &indicator, int index, DateBar &dateBars,
     if (s == "Horizontal")
       continue;
       
-    int li = line->count() - dateBars.count() + index;
+    int li = line->count() - pd.dateBars.count() + pd.infoIndex;
     if (li > -1 && li < line->count())
     {
       Setting set;
@@ -205,16 +207,16 @@ void PlotInfo::getPointInfo (Indicator &indicator, int index, DateBar &dateBars,
   }
 }
 
-Setting * PlotInfo::getCursorInfo (int i, int y, DateBar &dateBars, Scaler &scaler)
+Setting * PlotInfo::getCursorInfo (int i, int y, indicatorPlotData &pd)
 {
   Setting *set = new Setting;
   QString d;
   QString k = "X";
-  dateBars.getDateTimeString(i, d);
+  pd.dateBars.getDateTimeString(i, d);
   set->setData(k, d);
   
   Utils util;
-  util.strip(scaler.convertToVal(y), 4, d);
+  util.strip(pd.scaler.convertToVal(y), 4, d);
   k = "Y";
   set->setData(k, d);
   

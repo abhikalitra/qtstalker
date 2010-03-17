@@ -21,7 +21,6 @@
 
 #include "SCQuote.h"
 #include "DBPlugin.h"
-#include "BarData.h"
 #include "PluginFactory.h"
 
 #include <QtDebug>
@@ -32,30 +31,13 @@ SCQuote::SCQuote ()
 
 void SCQuote::calculate (QStringList &l, QByteArray &ba, QString &pp)
 {
-  // determine what function is desired and call it
+  // format = QUOTE,PLUGIN,METHOD,*
+  // we are only concerned with the first 3 parms, the plugin will check the rest
   
   ba.clear();
   ba.append("1\n");
 
-  if (l.count() < 1)
-  {
-    qDebug() << "SCQuote::calculate: invalid parm count" << l.count();
-    return;
-  }
-  
-  if (l[0] == "QUOTE_SET")
-    quoteSet(l, ba, pp);
-
-  if (l[0] == "QUOTE_SET_NAME")
-    quoteSetName(l, ba, pp);
-}
-
-void SCQuote::quoteSet (QStringList &l, QByteArray &ba, QString &pp)
-{
-  // format = QUOTE_SET,PLUGIN,EXCHANGE,SYMBOL,DATE_FORMAT,?
-  // we are only concerned with the first 2 parms, the plugin will check the rest
-
-  if (l.count() < 2)
+  if (l.count() < 3)
   {
     qDebug() << "SCQuote::quoteSet: invalid parm count" << l.count();
     return;
@@ -75,36 +57,5 @@ void SCQuote::quoteSet (QStringList &l, QByteArray &ba, QString &pp)
     ba.clear();
     ba.append("0\n");
   }
-}
-
-void SCQuote::quoteSetName (QStringList &l, QByteArray &ba, QString &)
-{
-  // format = QUOTE_SET_NAME,EXCHANGE,SYMBOL,NAME
-
-  if (l.count() != 4)
-  {
-    qDebug() << "SCQuote::quoteSetName: invalid parm count" << l.count();
-    return;
-  }
-  
-  DBPlugin db;
-  BarData bd;
-  bd.setExchange(l[1]);
-  bd.setSymbol(l[2]);
-  if (db.getIndexData(bd))
-  {
-    qDebug() << "SCQuote::quoteSetName: symbol not found in database" << l[1] << l[2];
-    return;
-  }
-  
-  bd.setName(l[3]);
-  if (db.setIndexData(bd))
-  {
-    qDebug() << "SCQuote::quoteSetName: error setting index";
-    return;
-  }
-  
-  ba.clear();
-  ba.append("0\n");
 }
 

@@ -19,37 +19,21 @@
  *  USA.
  */
 
-#ifndef VIDYA_HPP
-#define VIDYA_HPP
+#ifndef FUTURES_DATA_BASE_HPP
+#define FUTURES_DATA_BASE_HPP
 
-#include "IndicatorPlugin.h"
+#include <QString>
 
-class VIDYA : public IndicatorPlugin
+class FuturesDataBase
 {
   public:
-    enum Parm
-    {
-      Input,
-      Color,
-      Plot,
-      Label,
-      Period,
-      VPeriod
-    };
-
-    VIDYA ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    void calcCMO (PlotLine *outSignal, PlotLine *inSignal, int iPeriod);
-    PlotLine * getVIDYA (PlotLine *inSignal, int period, int volPeriod);
-    int dialog (int);
-
+    FuturesDataBase ();
+    void transaction ();
+    void commit ();
+    int createFutures ();
+    
   protected:
+    QString dbName;
 };
-
-extern "C"
-{
-  IndicatorPlugin * createIndicatorPlugin ();
-}
 
 #endif

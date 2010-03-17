@@ -148,6 +148,7 @@ SUBDIRS += plugins/plots/Line
 
 # compile database plugins
 SUBDIRS += plugins/database/Stock
+SUBDIRS += plugins/database/Futures
 
 # compile app
 SUBDIRS += src

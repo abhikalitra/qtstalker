@@ -25,7 +25,7 @@
 #include <QString>
 #include <QDateTime>
 
-#define SCALE_WIDTH 60
+#define SCALE_WIDTH 70
 #define DATE_HEIGHT 30
 
 DatePlot::DatePlot (QWidget *w) : QWidget(w)

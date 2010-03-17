@@ -28,12 +28,10 @@
 #include <QFont>
 #include <QStringList>
 
-#include "Scaler.h"
 #include "BarData.h"
 #include "DatePlot.h"
 #include "ScalePlot.h"
 #include "IndicatorPlot.h"
-
 
 class Plot : public QWidget
 {

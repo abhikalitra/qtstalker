@@ -22,22 +22,24 @@
 #ifndef PLOT_GRID_HPP
 #define PLOT_GRID_HPP
 
-#include <QPixmap>
 #include <QColor>
 #include <QVector>
 
-#include "Scaler.h"
+#include "IndicatorPlotData.h"
 
 class PlotGrid
 {
   public:
     PlotGrid ();
-    void draw (QPixmap &, int startX, int startIndex, int pixelspace, Scaler &);
+//    void draw (QPixmap &, int startX, int startIndex, int pixelspace, Scaler &);
+    void draw (indicatorPlotData &);
     void setGridFlag (int);
     void setXGrid (QVector<int> &);
     void setGridColor (QColor &);
-    void drawXGrid (QPixmap &, int startX, int startIndex, int pixelspace);
-    void drawYGrid (QPixmap &, Scaler &, int startX);
+//    void drawXGrid (QPixmap &, int startX, int startIndex, int pixelspace);
+    void drawXGrid (indicatorPlotData &);
+//    void drawYGrid (QPixmap &, Scaler &, int startX);
+    void drawYGrid (indicatorPlotData &);
 
   private:
     QColor gridColor;

@@ -60,6 +60,9 @@ HEADERS += ScriptDataBase.h
 HEADERS += IndicatorDataBase.h
 HEADERS += CODataBase.h
 HEADERS += FileButton.h
+HEADERS += IndicatorPlotData.h
+HEADERS += ExchangeDataBase.h
+HEADERS += FuturesDataBase.h
 
 
 SOURCES += Setting.cpp
@@ -117,6 +120,8 @@ SOURCES += ScriptDataBase.cpp
 SOURCES += IndicatorDataBase.cpp
 SOURCES += CODataBase.cpp
 SOURCES += FileButton.cpp
+SOURCES += ExchangeDataBase.cpp
+SOURCES += FuturesDataBase.cpp
 
 
 TARGET = qtstalker

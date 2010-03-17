@@ -23,7 +23,6 @@
 #ifndef SETUP_HPP
 #define SETUP_HPP
 
-
 #include <QString>
 
 class Setup
@@ -34,6 +33,7 @@ class Setup
     void setupDirectories ();
     void setupDefaultIndicators ();
     void setupExchanges ();
+    void setupFutures ();
 
   protected:
     QString home;

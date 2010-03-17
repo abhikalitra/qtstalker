@@ -19,37 +19,22 @@
  *  USA.
  */
 
-#ifndef VIDYA_HPP
-#define VIDYA_HPP
+#ifndef EXCHANGE_DATA_BASE_HPP
+#define EXCHANGE_DATA_BASE_HPP
 
-#include "IndicatorPlugin.h"
+#include <QString>
 
-class VIDYA : public IndicatorPlugin
+class ExchangeDataBase
 {
   public:
-    enum Parm
-    {
-      Input,
-      Color,
-      Plot,
-      Label,
-      Period,
-      VPeriod
-    };
-
-    VIDYA ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    void calcCMO (PlotLine *outSignal, PlotLine *inSignal, int iPeriod);
-    PlotLine * getVIDYA (PlotLine *inSignal, int period, int volPeriod);
-    int dialog (int);
-
+    ExchangeDataBase ();
+    void transaction ();
+    void commit ();
+    int verifyExchangeName (QString &);
+    int createExchanges ();
+    
   protected:
+    QString dbName;
 };
-
-extern "C"
-{
-  IndicatorPlugin * createIndicatorPlugin ();
-}
 
 #endif

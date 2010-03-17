@@ -28,6 +28,8 @@
 #include "IndicatorPlugin.h"
 #include "DBPlugin.h"
 #include "ta_libc.h"
+#include "ExchangeDataBase.h"
+#include "FuturesDataBase.h"
 
 #include <QtDebug>
 #include <QtSql>
@@ -548,31 +550,13 @@ void Setup::setupDefaultIndicators ()
 
 void Setup::setupExchanges ()
 {
-  QFile file("/usr/local/share/qtstalker/db/exchanges.csv");
-  if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
-    return;
+  ExchangeDataBase db;
+  db.createExchanges();  
+}
 
-  QTextStream in(&file);
-  in.readLine(); // skip past first line
- 
-  DBPlugin db;
-  db.transaction();
- 
-  while (! in.atEnd())
-  {
-    QString s = in.readLine();
-    QStringList l = s.split(",");
-   
-    s = "REPLACE INTO exchangeIndex (name,country,gmt,currency) VALUES(";
-    s.append("'" + l[0] + "'");
-    s.append(",'" + l[1] + "'");
-    s.append("," + l[2]);
-    s.append(",'" + l[3] + "'");
-    s.append(")");
-    db.command(s, QString("Setup::setupExchanges:"));
-  }
-  
-  db.commit();
-  file.close();
+void Setup::setupFutures ()
+{
+  FuturesDataBase db;
+  db.createFutures();  
 }
 

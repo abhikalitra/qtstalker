@@ -21,6 +21,7 @@
 
 #include "Stock.h"
 #include "Bar.h"
+#include "ExchangeDataBase.h"
 
 #include <QtSql>
 #include <QtDebug>
@@ -32,6 +33,7 @@
 
 Stock::Stock ()
 {
+  scriptMethods << "SET_QUOTE" << "SET_NAME";
 }
 
 void Stock::getBars (BarData &data)
@@ -187,30 +189,52 @@ int Stock::createTable (BarData &bars)
 
 int Stock::scriptCommand (QStringList &l)
 {
-  // format = QUOTE_SET,PLUGIN,EXCHANGE,SYMBOL,DATE_FORMAT,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME*
+  // format = QUOTE,PLUGIN,METHOD,*
   
-  if (l.count() < 11)
+  int rc = -1;
+  switch ((ScriptMethod) scriptMethods.indexOf(l[2]))
+  {
+    case SET_QUOTE:
+      rc = scriptSetQuote(l);
+      break;
+    case SET_NAME:
+      rc = scriptSetName(l);
+      break;
+    default:
+      break;
+  }
+  
+  return rc;
+}
+
+int Stock::scriptSetQuote (QStringList &l)
+{
+  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,DATE_FORMAT,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME*
+  
+  if (l.count() < 12)
   {
     qDebug() << "Stock::scriptCommand: invalid parm count" << l.count();
     qDebug() << l;
     return 1;
   }
 
-  if (verifyExchangeName(l[2]))
+  ExchangeDataBase edb;
+  if (edb.verifyExchangeName(l[3]))
   {
-    qDebug() << "Stock::scriptCommand: invalid exchange" << l[2];
+    qDebug() << "Stock::scriptCommand: invalid exchange" << l[3];
     return 1;
   }
   
   int pos = 1;
   BarData bd;
   bd.setPlugin(l[pos++]);
+  pos++;
   bd.setExchange(l[pos++]);
   bd.setSymbol(l[pos++]);
   
   QString format = l[pos++];
   
-  int t = (l.count() - 5) % 6;
+  int t = (l.count() - 6) % 6;
   if (t)
   {
     qDebug() << "Stock::scriptCommand: # of fields incorrect";
@@ -319,6 +343,36 @@ int Stock::scriptCommand (QStringList &l)
   setBars(bd);
   commit();
   
+  return 0;
+}
+
+int Stock::scriptSetName (QStringList &l)
+{
+  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,NAME
+
+  if (l.count() != 6)
+  {
+    qDebug() << "Stock::scriptSetName: invalid parm count" << l.count();
+    return 1;
+  }
+  
+  DBPlugin db;
+  BarData bd;
+  bd.setExchange(l[3]);
+  bd.setSymbol(l[4]);
+  if (db.getIndexData(bd))
+  {
+    qDebug() << "Stock::scriptSetName: symbol not found in database" << l[3] << l[4];
+    return 1;
+  }
+  
+  bd.setName(l[5]);
+  if (db.setIndexData(bd))
+  {
+    qDebug() << "Stock::scriptSetName: error setting index";
+    return 1;
+  }
+
   return 0;
 }
 

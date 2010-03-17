@@ -30,7 +30,7 @@
 <hr>
 <h3 style="text-decoration: underline;">Quotes</h3>
 <br>
-<span style="font-weight: bold;">QUOTE_SET,&lt;PLUGIN&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;DATE_FORMAT&gt;,&lt;?&gt;<br>
+<span style="font-weight: bold;">QUOTE,&lt;PLUGIN&gt;,SET_QUOTE&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;DATE_FORMAT&gt;,&lt;?&gt;<br>
 <br>
 </span><span style="font-weight: bold;"></span>This function is used to
 save quotes into the database.<br>
@@ -38,8 +38,7 @@ save quotes into the database.<br>
   <li>&lt;PLUGIN&gt; is the quote type to use (Stock, Futures).</li>
   <li>&lt;EXCHANGE&gt; is the exchange the quote originates from. ie.
 'New York Stock Exchange' <a href="exchanges.csv">See here for a list
-of exchanges used.</a><br>
-  </li>
+of exchanges used.</a></li>
   <li>&lt;SYMBOL&gt; is the security symbol ie. GOOG</li>
   <li>&lt;DATE_FORMAT&gt; is the date format. <a
  href="http://doc.qtsoftware.com/qdatetime.html#fromString-2">See here
@@ -57,7 +56,7 @@ symbol. The format is determined by the &lt;PLUGIN&gt; used are:<br>
 For example. If we wanted to save 2 quotes for a symbol, the text would
 be:<br>
 <br>
-"QUOTE_SET,Stock,NASDAQ,MSFT,yyyy-MM-dd HH:MM:SS,2010-03-09
+"QUOTE,Stock,SET_QUOTE,NASDAQ,MSFT,yyyy-MM-dd HH:MM:SS,2010-03-09
 13:24:00,25.50,27.25,23.75,26.25,123456789,2010-03-10
 09:59:00,26.50,28.25,24.75,27.25,123456789"<br>
 <br>
@@ -67,11 +66,12 @@ returned.<br>
 <br>
 <span style="font-weight: bold;"></span><span style="font-weight: bold;"><br>
 <br>
-</span><span style="font-weight: bold;">QUOTE_SET_NAME,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;NAME&gt;</span><br>
+</span><span style="font-weight: bold;">QUOTE,&lt;PLUGIN&gt;,SET_NAME,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;NAME&gt;</span><br>
 <br>
 <br>
 This function will set the company name of the symbol.<br>
 <ul>
+  <li>&lt;PLUGIN&gt; is the quote type to use (Stock, Futures).</li>
   <li>&lt;EXCHANGE&gt; is the exchange the symbol trades on. ie.
 'NASDAQ'<br>
   </li>
@@ -83,7 +83,7 @@ Corporation'</li>
 <br>
 For example. Setting the company name for MSFT would be:<br>
 <br>
-"QUOTE_SET_NAME,NASDAQ,MSFT,Microsoft Corporation"<br>
+"QUOTE,Stock,SET_NAME,NASDAQ,MSFT,Microsoft Corporation"<br>
 <br>
 <br>
 &nbsp;On success a '0' is returned. On failure, a '1' is

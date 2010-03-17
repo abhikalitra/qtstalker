@@ -53,7 +53,6 @@ class DBPlugin
     int command (QString &, QString);
     int addSymbolIndex (BarData &);
     void getExchangeList (QStringList &);
-    int verifyExchangeName (QString &);
     
   protected:
     QString dbName;

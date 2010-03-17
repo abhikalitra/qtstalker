@@ -1059,14 +1059,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Test</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input &lt;Operator&gt; MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enter Long</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1385,15 +1377,7 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Quit Qtstalker (Ctrl+Q)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>New &amp;Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add a new indicator to chart (Ctrl+2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1401,23 +1385,11 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Modify user preferences  (Ctrl+3)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Chart &amp;Grid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Toggle the chart grid  (Ctrl+4)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Data Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show the data window (Alt+1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1433,15 +1405,7 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scale chart to current screen data (Ctrl+5)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Side Pa&amp;nel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle the side panel area from view (Ctrl+7)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1564,6 +1528,34 @@ a partial match like %SI or %RSI%</source>
         <source>Zoom Cursor</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Quit Qtstalker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add a new indicator to chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Modify user preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle the chart grid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show the data window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale chart to current screen data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle the side panel area from view</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptPage</name>
@@ -1683,6 +1675,10 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Script removed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script File</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1898,10 +1894,6 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trade Delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

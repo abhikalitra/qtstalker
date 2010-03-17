@@ -81,16 +81,6 @@ void DBPlugin::init (QString &dbFile)
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "DBPlugin::init:" << q.lastError().text();
-
-  s = "CREATE TABLE IF NOT EXISTS exchangeIndex (";
-  s.append("name TEXT PRIMARY KEY UNIQUE");
-  s.append(", country TEXT");
-  s.append(", gmt REAL");
-  s.append(", currency TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DBPlugin::init:" << q.lastError().text();
 }
 
 void DBPlugin::transaction ()
@@ -361,20 +351,4 @@ void DBPlugin::getExchangeList (QStringList &l)
 
   l.sort();
 }
-
-int DBPlugin::verifyExchangeName (QString &exchange)
-{
-  QSqlQuery q(QSqlDatabase::database(dbName));
-  QString s = "SELECT name FROM exchangeIndex WHERE name='" + exchange + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "DBPlugin::verifyExchangeName: " << q.lastError().text();
-
-  int rc = 1;
-  if (q.next())
-    rc = 0;
-  
-  return rc;
-}
-
 

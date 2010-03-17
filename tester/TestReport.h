@@ -78,6 +78,7 @@ class TestReport : public QWidget
     void setTradeLog (QString &);
     void getBalance (QString &);
     void setBalance (QString &);
+    void getTrades (QList<TestTrade *> &);
 
   private:
     QTreeWidget *tradeLog;

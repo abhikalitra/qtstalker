@@ -56,7 +56,7 @@ ExScript::ExScript (QString &ipp, QString &dbpp)
   functionList << "INDICATOR_SET";
   functionList << "GROUP_ADD" << "GROUP_DELETE" << "GROUP_GET";
   functionList << "PLOT";
-  functionList << "QUOTE_SET" << "QUOTE_SET_NAME";
+  functionList << "QUOTE";
   functionList << "SYMBOL_GET" << "SYMBOL_LIST";
   functionList << "TEST_ENTER_LONG" << "TEST_EXIT_LONG" << "TEST_ENTER_SHORT" << "TEST_EXIT_SHORT";
   
@@ -283,8 +283,7 @@ void ExScript::readFromStdout ()
       proc->write(ba);
       break;
     }
-    case QUOTE_SET:
-    case QUOTE_SET_NAME:
+    case QUOTE:
     {
       SCQuote sc;
       sc.calculate(l, ba, dbPluginPath);

@@ -28,11 +28,23 @@
 class Stock : public DBPlugin
 {
   public:
+    enum ScriptMethod
+    {
+      SET_QUOTE,
+      SET_NAME
+    };
+    
     Stock ();
     void getBars (BarData &);
     void setBars (BarData &);
     int createTable (BarData &);
     int scriptCommand (QStringList &);
+
+    int scriptSetQuote (QStringList &);
+    int scriptSetName (QStringList &);
+    
+  protected:
+    QStringList scriptMethods;
 };
 
 extern "C"
