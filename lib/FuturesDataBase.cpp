@@ -119,3 +119,22 @@ int FuturesDataBase::createFutures ()
   return 0;
 }
 
+void FuturesDataBase::getCodeList (QStringList &l)
+{
+  l.clear();
+  
+  QSqlQuery q(QSqlDatabase::database(dbName));
+  QString s = "SELECT DISTINCT code FROM futuresIndex";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "FuturesDataBase::getCodeList: " << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+    l.append(q.value(0).toString());
+
+  l.sort();
+}
+

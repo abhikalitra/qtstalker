@@ -19,23 +19,44 @@
  *  USA.
  */
 
-#ifndef FUTURES_DATA_BASE_HPP
-#define FUTURES_DATA_BASE_HPP
+#ifndef FUTURES_HPP
+#define FUTURES_HPP
 
-#include <QString>
-#include <QStringList>
+#include "DBPlugin.h"
+#include "BarData.h"
 
-class FuturesDataBase
+class Futures : public DBPlugin
 {
   public:
-    FuturesDataBase ();
-    void transaction ();
-    void commit ();
-    int createFutures ();
-    void getCodeList (QStringList &);
+    enum ScriptMethod
+    {
+      SET_QUOTE,
+      SET_NAME,
+      SET_CODE,
+      SET_MONTH,
+      SET_YEAR
+    };
     
+    Futures ();
+    void getBars (BarData &);
+    void setBars (BarData &);
+    int createTable (BarData &);
+    int scriptCommand (QStringList &);
+    int addParms (BarData &);
+    
+    int scriptSetQuote (QStringList &);
+    int scriptSetName (QStringList &);
+    int scriptSetCode (QStringList &);
+    int scriptSetMonth (QStringList &);
+    int scriptSetYear (QStringList &);
+
   protected:
-    QString dbName;
+    QStringList scriptMethods;
 };
+
+extern "C"
+{
+  DBPlugin * createDBPlugin ();
+}
 
 #endif
