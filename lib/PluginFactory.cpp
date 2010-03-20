@@ -32,8 +32,6 @@ PluginFactory::PluginFactory ()
 PluginFactory::~PluginFactory ()
 {
   qDeleteAll(indicatorPlugins);
-  qDeleteAll(coPlugins);
-  qDeleteAll(plotPlugins);
   qDeleteAll(dbPlugins);
   qDeleteAll(libs);
 }
@@ -76,54 +74,6 @@ IndicatorPlugin * PluginFactory::getIndicator (QString &path, QString &indicator
   else
     delete lib;
   
-  return plug;
-}
-
-COPlugin * PluginFactory::getCO (QString &path, QString &co)
-{
-  COPlugin *plug = coPlugins.value(co);
-  if (plug)
-    return plug;
-
-  QString file = path;
-  file.append("/lib" + co + ".so");
-
-  QLibrary *lib = new QLibrary(file);
-  COPlugin *(*so)() = 0;
-  so = (COPlugin *(*)()) lib->resolve("createCOPlugin");
-  if (so)
-  {
-    plug = (*so)();
-    libs.insert(co, lib);
-    coPlugins.insert(co, plug);
-  }
-  else
-    delete lib;
-
-  return plug;
-}
-
-PlotPlugin * PluginFactory::getPlot (QString &path, QString &plot)
-{
-  PlotPlugin *plug = plotPlugins.value(plot);
-  if (plug)
-    return plug;
-
-  QString file = path;
-  file.append("/lib" + plot + ".so");
-
-  QLibrary *lib = new QLibrary(file);
-  PlotPlugin *(*so)() = 0;
-  so = (PlotPlugin *(*)()) lib->resolve("createPlotPlugin");
-  if (so)
-  {
-    plug = (*so)();
-    libs.insert(plot, lib);
-    plotPlugins.insert(plot, plug);
-  }
-  else
-    delete lib;
-
   return plug;
 }
 

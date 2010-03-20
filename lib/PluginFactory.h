@@ -23,8 +23,6 @@
 #define PLUGIN_FACTORY_HPP
 
 #include "IndicatorPlugin.h"
-#include "COPlugin.h"
-#include "PlotPlugin.h"
 #include "DBPlugin.h"
 
 #include <QString>
@@ -39,16 +37,12 @@ class PluginFactory
     ~PluginFactory ();
     void getPluginList (QString &path, QStringList &list);
     IndicatorPlugin * getIndicator (QString &path, QString &indicator);
-    COPlugin * getCO (QString &path, QString &co);
-    PlotPlugin * getPlot (QString &path, QString &plot);
     DBPlugin * getDB (QString &path, QString &db);
     
   protected:
     QStringList notPluginList;
     QHash<QString, QLibrary *> libs;
     QHash<QString, IndicatorPlugin *> indicatorPlugins;
-    QHash<QString, COPlugin *> coPlugins;
-    QHash<QString, PlotPlugin *> plotPlugins;
     QHash<QString, DBPlugin *> dbPlugins;
 };
 

@@ -26,63 +26,68 @@
 COPlugin::COPlugin ()
 {
   handleWidth = 6;
+  selected = 0;
+  saveFlag = 0;
+  id = 0;
 }
 
 // virtual
 COPlugin::~COPlugin ()
 {
+  qDeleteAll(grabHandles);
+  qDeleteAll(selectionArea);
 }
 
 // virtual
-void COPlugin::draw (ChartObject *, QPixmap &, DateBar &, int, int, int, Scaler &)
+void COPlugin::draw (PlotData &)
 {
 }
 
 // virtual
-int COPlugin::getHighLow (ChartObject *)
-{
-  return 0;
-}
-
-// virtual
-void COPlugin::getInfo (ChartObject *, Setting *)
-{
-}
-
-// virtual
-void COPlugin::dialog (ChartObject *)
-{
-}
-
-// virtual
-void COPlugin::setSettings (ChartObject *, QSqlQuery &)
-{
-}
-
-// virtual
-void COPlugin::getSettings (ChartObject *, QString &)
-{
-}
-
-// virtual
-void COPlugin::create (ChartObject *)
-{
-}
-
-// virtual
-int COPlugin::create2 (ChartObject *, QDateTime &, double)
+int COPlugin::getHighLow (double &, double &)
 {
   return 0;
 }
 
 // virtual
-int COPlugin::create3 (ChartObject *, QDateTime &, double)
+void COPlugin::getInfo (Setting *)
+{
+}
+
+// virtual
+void COPlugin::dialog ()
+{
+}
+
+// virtual
+void COPlugin::load (QSqlQuery &)
+{
+}
+
+// virtual
+void COPlugin::save ()
+{
+}
+
+// virtual
+void COPlugin::create ()
+{
+}
+
+// virtual
+int COPlugin::create2 (QDateTime &, double)
 {
   return 0;
 }
 
 // virtual
-void COPlugin::moving (ChartObject *, QDateTime &, double, int)
+int COPlugin::create3 (QDateTime &, double)
+{
+  return 0;
+}
+
+// virtual
+void COPlugin::moving (QDateTime &, double, int)
 {
 }
 
@@ -92,8 +97,85 @@ void COPlugin::getIcon (QIcon &)
 }
 
 // virtual
-int COPlugin::inDateRange (ChartObject *, QDateTime &, QDateTime &)
+int COPlugin::inDateRange (QDateTime &, QDateTime &)
 {
   return 0;
+}
+
+//************************************************
+//************ NON VIRTUAL ***********************
+//************************************************
+
+void COPlugin::setSelected (int d)
+{
+  selected = d;
+}
+
+void COPlugin::clearGrabHandles ()
+{
+  qDeleteAll(grabHandles);
+  grabHandles.clear();
+}
+
+void COPlugin::setGrabHandle (QRegion *d)
+{
+  grabHandles.append(d);
+}
+
+void COPlugin::clearSelectionArea ()
+{
+  qDeleteAll(selectionArea);
+  selectionArea.clear();
+}
+
+void COPlugin::setSelectionArea (QRegion *d)
+{
+  selectionArea.append(d);
+}
+
+int COPlugin::isSelected (QPoint &point)
+{
+  int loop;
+  for (loop = 0; loop < (int) selectionArea.count(); loop++)
+  {
+    QRegion *r = selectionArea.at(loop);
+    if (r->contains(point))
+      return 1;
+  }
+
+  return 0;
+}
+
+int COPlugin::isGrabSelected (QPoint &point)
+{
+  int loop;
+  for (loop = 0; loop < (int) grabHandles.count(); loop++)
+  {
+    QRegion *r = grabHandles.at(loop);
+    if (r->contains(point))
+      return loop + 1;
+  }
+
+  return 0;
+}
+
+int COPlugin::getID ()
+{
+  return id;
+}
+
+void COPlugin::setID (int d)
+{
+  id = d;
+}
+
+void COPlugin::setSymbol (QString &d)
+{
+  symbol = d;
+}
+
+void COPlugin::setIndicator (QString &d)
+{
+  indicator = d;
 }
 

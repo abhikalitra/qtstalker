@@ -28,8 +28,7 @@
 
 #include "PlotLine.h"
 #include "Setting.h"
-#include "ChartObject.h"
-
+#include "COPlugin.h"
 
 class Indicator
 {
@@ -55,15 +54,15 @@ class Indicator
     void getSettings(Setting &);
     void addLine (PlotLine *);
     void clear ();
-    void setChartObjects(QHash<QString, ChartObject *> &);
-    void getChartObjects(QHash<QString, ChartObject *> &);
-    void addChartObject (ChartObject *);
+    void setChartObjects(QHash<QString, COPlugin *> &);
+    void getChartObjects(QHash<QString, COPlugin *> &);
+    void addChartObject (COPlugin *);
     void clearChartObjects ();
     void deleteChartObject (QString &);
 
   protected:
     QList<PlotLine *> lines;
-    QHash<QString, ChartObject *> chartObjects;
+    QHash<QString, COPlugin *> chartObjects;
     Setting settings;
     QString name;
     QString indicator;

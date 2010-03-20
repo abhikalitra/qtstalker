@@ -19,31 +19,37 @@
  *  USA.
  */
 
-#ifndef PLOT_GRID_HPP
-#define PLOT_GRID_HPP
+#ifndef PLOT_DATA_HPP
+#define PLOT_DATA_HPP
 
+#include <QString>
+#include <QFont>
 #include <QColor>
-#include <QVector>
+#include <QDateTime>
+#include <QPixmap>
 
-#include "PlotData.h"
+#include "Scaler.h"
+#include "DateBar.h"
 
-class PlotGrid
+struct PlotData
 {
-  public:
-    PlotGrid ();
-    void draw (PlotData &);
-    void setGridFlag (int);
-    void setXGrid (QVector<int> &);
-    void setGridColor (QColor &);
-    void drawXGrid (PlotData &);
-    void drawYGrid (PlotData &);
-
-  private:
-    QColor gridColor;
-    int gridFlag;
-    QVector<int> xGrid;
+  Scaler scaler;
+  DateBar dateBars;
+  QPixmap buffer;
+  int pixelspace;
+  int startX;
+  int startIndex;
+  int scaleToScreen;
+  int infoIndex; // calculated position for info 
+  int x; // raw mouse x position from event->x()
+  int y; // raw mouse y position from event-y()
+  int infoFlag;
+  int pos;
+  double y1; // scaler y position
+  QFont plotFont;
+  QColor backgroundColor;
+  QColor borderColor;
+  QDateTime x1; // dateBars bar position
 };
 
 #endif
-
-

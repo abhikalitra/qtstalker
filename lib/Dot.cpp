@@ -19,19 +19,52 @@
  *  USA.
  */
 
-#include "PlotPlugin.h"
+#include "Dot.h"
 
-PlotPlugin::PlotPlugin ()
+Dot::Dot ()
 {
 }
 
-PlotPlugin::~PlotPlugin ()
+void Dot::draw (PlotLine *line, PlotData &pd)
 {
-}
+  QPainter painter;
+  painter.begin(&pd.buffer);
 
-// virtual function
-void PlotPlugin::draw (PlotLine *, PlotData &)
-{
-}
+  int x = pd.startX;
+  int loop = pd.pos;
 
+  Scaler scale;
+  if (line->getScaleFlag())
+  {
+    scale.set(pd.scaler.getHeight(),
+  	      line->getHigh(),
+	      line->getLow(),
+	      pd.scaler.getLogScaleHigh(),
+	      pd.scaler.getLogRange(),
+	      pd.scaler.getLogFlag());
+  }
+
+  while ((x < pd.buffer.width()) && (loop < (int) line->count()))
+  {
+    if (loop > -1)
+    {
+      int y;
+      QColor color;
+      double d = line->getData(loop, color);
+      
+      if (line->getScaleFlag())
+        y = scale.convertToY(d);
+      else
+        y = pd.scaler.convertToY(d);
+
+      painter.setPen(color);
+      painter.drawPoint(x, y);
+    }
+
+    x = x + pd.pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
 

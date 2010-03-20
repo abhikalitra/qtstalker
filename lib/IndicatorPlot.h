@@ -38,14 +38,12 @@
 #include <QPoint>
 #include <QList>
 
+#include "COPlugin.h"
 #include "Setting.h"
 #include "BarData.h"
-//#include "Scaler.h"
-//#include "Indicator.h"
-//#include "DateBar.h"
 #include "PlotGrid.h"
-#include "ChartObject.h"
-#include "IndicatorPlotData.h"
+#include "PlotData.h"
+#include "Indicator.h"
 
 class IndicatorPlot : public QWidget
 {
@@ -92,10 +90,9 @@ class IndicatorPlot : public QWidget
     void setIndicator (Indicator &);
     void getIndicator (Indicator &);
     void loadChartObjects ();
-    void setPlotPluginPath (QString &);
-    void setCOPluginPath (QString &);
     void getDateBar (DateBar &);
     void getScalePoints (QList<Setting> &);
+    void setScale ();
 
   public slots:
     void draw();
@@ -139,34 +136,17 @@ class IndicatorPlot : public QWidget
     void slotObjectDialog ();
 
   private:
-    indicatorPlotData plotData;
-//    Indicator indicator;
+    Indicator indicator;
+    PlotData plotData;
     PlotGrid grid;
-//    QFont plotFont;
-//    QPixmap buffer;
-//    int pixelspace;
-//    int startX;
-//    int startIndex;
     BarData::BarLength interval;
-//    QColor backgroundColor;
-//    QColor borderColor;
-//    int scaleToScreen;
-    bool infoFlag;
     bool menuFlag;
-//    Scaler scaler;
-    double y1;
-    QDateTime x1;
     MouseStatus mouseFlag;
-    ChartObject *coSelected;
-    ChartObject *coDraw;
+    COPlugin *coSelected;
     QMenu *chartMenu;
     QMenu *coMenu;
     QString chartSymbol;
     int moveFlag;
-//    QString plotPluginPath;
-//    QString coPluginPath;
-//    DateBar dateBars;
-    int tx, ty;
     QRubberBand *rubberBand;
     QPoint mouseOrigin;
     QString newChartObject;

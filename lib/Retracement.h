@@ -19,31 +19,41 @@
  *  USA.
  */
 
-#ifndef PLOT_GRID_HPP
-#define PLOT_GRID_HPP
+#ifndef RETRACEMENT_HPP
+#define RETRACEMENT_HPP
 
-#include <QColor>
-#include <QVector>
+#include "COPlugin.h"
 
-#include "PlotData.h"
-
-class PlotGrid
+class Retracement : public COPlugin
 {
   public:
-    PlotGrid ();
+    Retracement ();
     void draw (PlotData &);
-    void setGridFlag (int);
-    void setXGrid (QVector<int> &);
-    void setGridColor (QColor &);
-    void drawXGrid (PlotData &);
-    void drawYGrid (PlotData &);
-
-  private:
-    QColor gridColor;
-    int gridFlag;
-    QVector<int> xGrid;
+    void getInfo (Setting *);
+    void dialog ();
+    void load (QSqlQuery &q);
+    void save ();
+    void create ();
+    int create2 (QDateTime &, double);
+    int create3 (QDateTime &, double);
+    void moving (QDateTime &, double, int);
+    void getIcon (QIcon &);
+    int inDateRange (QDateTime &, QDateTime &);
+    int getHighLow (double &, double &);
+    
+  protected:
+    QDateTime date;
+    QDateTime date2;
+    QColor color;
+    double high;
+    double low;
+    int extend;
+    double line1;
+    double line2;
+    double line3;
+    double line4;
+    double line5;
+    double line6;
 };
 
 #endif
-
-

@@ -19,31 +19,30 @@
  *  USA.
  */
 
-#ifndef PLOT_GRID_HPP
-#define PLOT_GRID_HPP
+#ifndef CO_FACTORY_HPP
+#define CO_FACTORY_HPP
 
-#include <QColor>
-#include <QVector>
+#include "COPlugin.h"
 
-#include "PlotData.h"
+#include <QString>
+#include <QStringList>
 
-class PlotGrid
+class COFactory
 {
   public:
-    PlotGrid ();
-    void draw (PlotData &);
-    void setGridFlag (int);
-    void setXGrid (QVector<int> &);
-    void setGridColor (QColor &);
-    void drawXGrid (PlotData &);
-    void drawYGrid (PlotData &);
+    enum COType
+    {
+      COTypeBuy,
+      COTypeHLine,
+      COTypeRetracement,
+      COTypeSell,
+      COTypeText,
+      COTypeTLine,
+      COTypeVLine
+    };
 
-  private:
-    QColor gridColor;
-    int gridFlag;
-    QVector<int> xGrid;
+    COFactory ();
+    COPlugin * getCO (QString &co);
 };
 
 #endif
-
-

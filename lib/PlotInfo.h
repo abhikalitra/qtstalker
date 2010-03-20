@@ -25,17 +25,19 @@
 #include <QString>
 #include <QPoint>
 
-#include "IndicatorPlotData.h"
+#include "PlotData.h"
+#include "COPlugin.h"
+#include "Indicator.h"
 
 class PlotInfo
 {
   public:
     PlotInfo ();
-    Setting * getInfo (QPoint &, indicatorPlotData &);
-    Setting * getCOInfo (ChartObject *, QString &);
-    void drawInfo (indicatorPlotData &);
-    void getPointInfo (indicatorPlotData &, QList<Setting> &);
-    Setting * getCursorInfo (int i, int y, indicatorPlotData &);
+    Setting * getInfo (QPoint &, PlotData &, Indicator &);
+    Setting * getCOInfo (COPlugin *);
+    void drawInfo (PlotData &, Indicator &);
+    void getPointInfo (PlotData &, QList<Setting> &, Indicator &);
+    Setting * getCursorInfo (int i, int y, PlotData &);
 };
 
 #endif

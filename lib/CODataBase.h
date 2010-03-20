@@ -24,7 +24,6 @@
 
 #include <QString>
 
-#include "ChartObject.h"
 #include "Indicator.h"
 
 class CODataBase
@@ -38,7 +37,10 @@ class CODataBase
     void deleteChartObjectsIndicator (QString &indicator);
     void deleteChartObject (QString &id);
     void getChartObjects (QString &symbol, QString &indicator, Indicator &);
-    void setChartObject (ChartObject *);
+    void setChartObject (QString &);
+    
+  protected:
+    QString dbName;
 };
 
 #endif

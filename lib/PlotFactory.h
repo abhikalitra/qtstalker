@@ -19,31 +19,31 @@
  *  USA.
  */
 
-#ifndef PLOT_GRID_HPP
-#define PLOT_GRID_HPP
+#ifndef PLOT_FACTORY_HPP
+#define PLOT_FACTORY_HPP
 
-#include <QColor>
-#include <QVector>
+#include "PlotPlugin.h"
 
-#include "PlotData.h"
+#include <QString>
+#include <QStringList>
 
-class PlotGrid
+class PlotFactory
 {
   public:
-    PlotGrid ();
-    void draw (PlotData &);
-    void setGridFlag (int);
-    void setXGrid (QVector<int> &);
-    void setGridColor (QColor &);
-    void drawXGrid (PlotData &);
-    void drawYGrid (PlotData &);
+    enum PlotType
+    {
+      PlotTypeCandle,
+      PlotTypeDash,
+      PlotTypeDot,
+      PlotTypeHistogram,
+      PlotTypeHistogramBar,
+      PlotTypeHorizontal,
+      PlotTypeLine,
+      PlotTypeOHLC
+    };
 
-  private:
-    QColor gridColor;
-    int gridFlag;
-    QVector<int> xGrid;
+    PlotFactory ();
+    PlotPlugin * getPlot (QString &plot);
 };
 
 #endif
-
-

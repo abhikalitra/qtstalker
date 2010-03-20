@@ -19,29 +19,16 @@
  *  USA.
  */
 
-#ifndef PLOT_GRID_HPP
-#define PLOT_GRID_HPP
+#ifndef DASH_HPP
+#define DASH_HPP
 
-#include <QColor>
-#include <QVector>
+#include "PlotPlugin.h"
 
-#include "PlotData.h"
-
-class PlotGrid
+class Dash : public PlotPlugin
 {
   public:
-    PlotGrid ();
-    void draw (PlotData &);
-    void setGridFlag (int);
-    void setXGrid (QVector<int> &);
-    void setGridColor (QColor &);
-    void drawXGrid (PlotData &);
-    void drawYGrid (PlotData &);
-
-  private:
-    QColor gridColor;
-    int gridFlag;
-    QVector<int> xGrid;
+    Dash ();
+    void draw (PlotLine *, PlotData &);
 };
 
 #endif

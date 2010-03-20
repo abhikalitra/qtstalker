@@ -26,11 +26,11 @@
 
 #include "TestChart.h"
 #include "Plot.h"
-#include "PluginFactory.h"
+#include "COFactory.h"
 #include "COPlugin.h"
 #include "TestConfig.h"
 #include "IndicatorPlot.h"
-#include "ChartObject.h"
+#include "COPlugin.h"
 #include "MATH1.h"
 
 TestChart::TestChart ()
@@ -69,14 +69,6 @@ TestChart::TestChart ()
   QFont font;
   plot->setPlotFont(font);
 
-  TestConfig config;
-  QString s;
-  config.getData(TestConfig::PlotPluginPath, s);
-  IndicatorPlot *ip = plot->getIndicatorPlot();
-  ip->setPlotPluginPath(s);
-  config.getData(TestConfig::COPluginPath, s);
-  ip->setCOPluginPath(s);
-
 //  connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
 //  connect(this, SIGNAL(signalInterval(BarData::BarLength)), plot, SLOT(setInterval(BarData::BarLength)));
   connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
@@ -110,51 +102,44 @@ void TestChart::update (BarData &data, QList<TestTrade *> &trades)
   int id = 0;
   plot->setData(&data);
   
+  COFactory fac;
   for (loop = 0; loop < trades.count(); loop++)
   {
     TestTrade *trade = trades.at(loop);
     
-    ChartObject *buy = new ChartObject;
-    ChartObject *sell = new ChartObject;
+    s = "Buy";
+    COPlugin *buy = fac.getCO(s);
+    s = "Sell";
+    COPlugin *sell = fac.getCO(s);;
 
-    s = QString::number(id++);
-    buy->setData(ChartObject::ParmID, s);
-    s = QString::number(id++);
-    sell->setData(ChartObject::ParmID, s);
+    buy->setID(id++);
+    sell->setID(id++);
     
     s = data.getSymbol();
-    buy->setData(ChartObject::ParmSymbol, s);
-    sell->setData(ChartObject::ParmSymbol, s);
+    buy->setSymbol(s);
+    sell->setSymbol(s);
     
     s = "QtStalkerTester";
-    buy->setData(ChartObject::ParmIndicator, s);
-    sell->setData(ChartObject::ParmIndicator, s);
+    buy->setIndicator(s);
+    sell->setIndicator(s);
 
-    s = "Buy";
-    buy->setData(ChartObject::ParmPlugin, s);
-    s = "Sell";
-    sell->setData(ChartObject::ParmPlugin, s);
-    
-    buy->setData(ChartObject::ParmColor, up);
-    sell->setData(ChartObject::ParmColor, down);
-    
     QDateTime sd = trade->getEnterDate();
     QDateTime ed = trade->getExitDate();
     double low = trade->getLow() * 0.99;
     double high = trade->getHigh() * 1.01;
     if (trade->getType() == 0)
     {
-      buy->setData(ChartObject::ParmDate, sd);
-      buy->setData(ChartObject::ParmPrice, low);
-      sell->setData(ChartObject::ParmDate, ed);
-      sell->setData(ChartObject::ParmPrice, high);
+//      buy->setData(ChartObject::ParmDate, sd);
+//      buy->setData(ChartObject::ParmPrice, low);
+//      sell->setData(ChartObject::ParmDate, ed);
+//      sell->setData(ChartObject::ParmPrice, high);
     }
     else
     {
-      sell->setData(ChartObject::ParmDate, sd);
-      sell->setData(ChartObject::ParmPrice, high);
-      buy->setData(ChartObject::ParmDate, ed);
-      buy->setData(ChartObject::ParmPrice, low);
+//      sell->setData(ChartObject::ParmDate, sd);
+//      sell->setData(ChartObject::ParmPrice, high);
+//      buy->setData(ChartObject::ParmDate, ed);
+//      buy->setData(ChartObject::ParmPrice, low);
     }
     
     i.addChartObject(buy);  

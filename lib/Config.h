@@ -69,10 +69,10 @@ class Config : public BaseConfig
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
       ShowSidePanel, // side panel flag
-      COPluginPath, // path where chart object plugins are stored
-      COPluginList,  // csv list of current chart object plugins from startup inventory
-      PlotPluginPath, // path where plot plugins are stored
-      PlotPluginList, // csv list of current plot plugins from startup inventory
+      COPluginPath, // UNUSED
+      COPluginList,  // UNUSED
+      PlotPluginPath, // UNUSED
+      PlotPluginList, // UNUSED
       DBPluginPath, // path where db plugins are stored
       DBPluginList, // csv list of current db plugins from startup inventory
       DbSearchSymbols, // the sql command to get a symbol search

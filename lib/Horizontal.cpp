@@ -19,19 +19,45 @@
  *  USA.
  */
 
-#include "PlotPlugin.h"
+#include "Horizontal.h"
+#include "Utils.h"
 
-PlotPlugin::PlotPlugin ()
+#include <QFontMetrics>
+#include <QFont>
+
+Horizontal::Horizontal ()
 {
 }
 
-PlotPlugin::~PlotPlugin ()
+void Horizontal::draw (PlotLine *line, PlotData &pd)
 {
-}
+  QPainter painter;
+  painter.begin(&pd.buffer);
 
-// virtual function
-void PlotPlugin::draw (PlotLine *, PlotData &)
-{
-}
+  QColor color;
+  double d = line->getData(line->count() - 1, color);
+  painter.setPen(color);
+  
+  int y = pd.scaler.convertToY(d);
 
+  Utils util;
+  QString s, s2;
+  util.strip(d, 4, s);
+  line->getLabel(s2);
+  s = s2 + s;
+
+//  painter.setBackgroundMode(Qt::OpaqueMode);
+//  painter.setBackground(QBrush(backgroundColor));
+//  painter.setFont(plotFont);
+
+  QFont font;
+  QFontMetrics fm(font);
+  QRect rc = painter.boundingRect(pd.startX, y - (fm.height() / 2), 1, 1, 0, s);
+  painter.drawText(rc, s);
+  painter.drawRect(rc);
+  
+  painter.drawLine (rc.x() + rc.width(), y, pd.buffer.width(), y);
+
+  painter.end();
+}
 

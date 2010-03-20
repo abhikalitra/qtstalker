@@ -27,15 +27,14 @@
 #include <QString>
 
 #include "PlotLine.h"
-#include "Scaler.h"
+#include "PlotData.h"
 
 class PlotPlugin
 {
   public:
     PlotPlugin ();
     virtual ~PlotPlugin ();
-    // ints are startX, pixelspace, pos
-    virtual void draw (PlotLine *, QPixmap &, int, int, int, Scaler &);
+    virtual void draw (PlotLine *, PlotData &);
 };
 
 #endif

@@ -23,37 +23,63 @@
 #define CO_PLUGIN_HPP
 
 #include <QString>
-#include <QPixmap>
-#include <QSqlQuery>
 #include <QIcon>
-#include <QPainter>
+#include <QList>
+#include <QRegion>
+#include <QDateTime>
+#include <QPoint>
+#include <QObject>
+#include <QtSql>
+#include <QPixmap>
 
-#include "DateBar.h"
-#include "Scaler.h"
 #include "Setting.h"
-#include "ChartObject.h"
+#include "PlotData.h"
 
-class COPlugin
+class COPlugin : public QObject
 {
+  Q_OBJECT
+
+  signals:
+    void signalMessage (QString);
+
   public:
     COPlugin ();
     virtual ~COPlugin ();
-    virtual void draw (ChartObject *, QPixmap &, DateBar &, int startX, int pixelspace,
-		       int startIndex, Scaler &);
-    virtual int getHighLow (ChartObject *);
-    virtual void getInfo (ChartObject *, Setting *);
-    virtual void dialog (ChartObject *);
-    virtual void setSettings (ChartObject *, QSqlQuery &q);
-    virtual void getSettings (ChartObject *, QString &);
-    virtual void create (ChartObject *);
-    virtual int create2 (ChartObject *, QDateTime &, double);
-    virtual int create3 (ChartObject *, QDateTime &, double);
-    virtual void moving (ChartObject *, QDateTime &, double, int moveFlag);
+    virtual void draw (PlotData &);
+    virtual int getHighLow (double &, double &);
+    virtual void getInfo (Setting *);
+    virtual void dialog ();
+    virtual void load (QSqlQuery &);
+    virtual void save ();
+    virtual void create ();
+    virtual int create2 (QDateTime &, double);
+    virtual int create3 (QDateTime &, double);
+    virtual void moving (QDateTime &, double, int moveFlag);
     virtual void getIcon (QIcon &);
-    virtual int inDateRange (ChartObject *, QDateTime &, QDateTime &);
+    virtual int inDateRange (QDateTime &, QDateTime &);
+
+    void setSelected (int);
+    void clearGrabHandles ();
+    void setGrabHandle (QRegion *);
+    void clearSelectionArea ();
+    void setSelectionArea (QRegion *);
+    int isSelected (QPoint &);
+    int isGrabSelected (QPoint &);
+    int getID ();
+    void setID (int);
+    void setSymbol (QString &);
+    void setIndicator (QString &);
 
   protected:
     int handleWidth;
+    int selected;
+    int saveFlag;
+    int id;
+    QString symbol;
+    QString indicator;
+    QString plugin;
+    QList<QRegion *> grabHandles;
+    QList<QRegion *> selectionArea;
 };
 
 #endif

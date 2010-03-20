@@ -21,105 +21,104 @@
 
 #include "Indicator.h"
 
-
 Indicator::Indicator ()
 {
   clear();
 }
 
-void Indicator::setName(QString &d)
+void Indicator::setName (QString &d)
 {
   name = d;
 }
 
-void Indicator::getName(QString &d)
+void Indicator::getName (QString &d)
 {
   d = name;
 }
 
-void Indicator::setEnable(int d)
+void Indicator::setEnable (int d)
 {
   enable = d;
 }
 
-int Indicator::getEnable()
+int Indicator::getEnable ()
 {
   return enable;
 }
 
-void Indicator::setTabRow(int d)
+void Indicator::setTabRow (int d)
 {
   tabRow = d;
 }
 
-int Indicator::getTabRow()
+int Indicator::getTabRow ()
 {
   return tabRow;
 }
 
-void Indicator::setDate(int d)
+void Indicator::setDate (int d)
 {
   date = d;
 }
 
-int Indicator::getDate()
+int Indicator::getDate ()
 {
   return date;
 }
 
-void Indicator::setCUS(int d)
+void Indicator::setCUS (int d)
 {
   cus = d;
 }
 
-int Indicator::getCUS()
+int Indicator::getCUS ()
 {
   return cus;
 }
 
-void Indicator::setLog(int d)
+void Indicator::setLog (int d)
 {
   log = d;
 }
 
-int Indicator::getLog()
+int Indicator::getLog ()
 {
   return log;
 }
 
-void Indicator::setIndicator(QString &d)
+void Indicator::setIndicator (QString &d)
 {
   indicator = d;
   if (d == "CUS")
     cus = 1;
 }
 
-void Indicator::getIndicator(QString &d)
+void Indicator::getIndicator (QString &d)
 {
   d = indicator;
 }
 
-void Indicator::setLines(QList<PlotLine *> &d)
+void Indicator::setLines (QList<PlotLine *> &d)
 {
   lines = d;
 }
 
-void Indicator::getLines(QList<PlotLine *> &d)
+void Indicator::getLines (QList<PlotLine *> &d)
 {
   d = lines;
 }
 
-void Indicator::setSettings(Setting &d)
+void Indicator::setSettings (Setting &d)
 {
   settings = d;
 }
 
-void Indicator::getSettings(Setting &d)
+void Indicator::getSettings (Setting &d)
 {
   d = settings;
 }
 
-void Indicator::addLine(PlotLine *d)
+void Indicator::addLine (PlotLine *d)
 {
   lines.append(d);
 }
@@ -142,32 +141,30 @@ void Indicator::clear ()
   clearChartObjects();
 }
 
-void Indicator::setChartObjects(QHash<QString, ChartObject *> &d)
+void Indicator::setChartObjects (QHash<QString, COPlugin *> &d)
 {
   chartObjects = d;
 }
 
-void Indicator::getChartObjects(QHash<QString, ChartObject *> &d)
+void Indicator::getChartObjects (QHash<QString, COPlugin *> &d)
 {
   d = chartObjects;
 }
 
-void Indicator::addChartObject(ChartObject *d)
+void Indicator::addChartObject (COPlugin *d)
 {
-  QString s;
-  d->getData(ChartObject::ParmID, s);
-  chartObjects.insert(s, d);
+  chartObjects.insert(QString::number(d->getID()), d);
 }
 
-void Indicator::clearChartObjects()
+void Indicator::clearChartObjects ()
 {
   qDeleteAll(chartObjects);
   chartObjects.clear();
 }
 
-void Indicator::deleteChartObject(QString &d)
+void Indicator::deleteChartObject (QString &d)
 {
-  ChartObject *co = chartObjects.value(d);
+  COPlugin *co = chartObjects.value(d);
   if (! co)
     return;
   

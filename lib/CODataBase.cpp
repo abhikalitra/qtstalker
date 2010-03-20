@@ -20,20 +20,21 @@
  */
 
 #include "CODataBase.h"
-#include "PluginFactory.h"
 #include "COPlugin.h"
 #include "Config.h"
+#include "COFactory.h"
 
 #include <QtDebug>
 #include <QtSql>
 
 CODataBase::CODataBase ()
 {
+  dbName = "data";
 }
 
 void CODataBase::init ()
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "CREATE TABLE IF NOT EXISTS chartObjects (";
   s.append("id INT PRIMARY KEY"); // 0
   s.append(", symbol TEXT"); // 1
@@ -81,19 +82,19 @@ void CODataBase::init ()
 
 void CODataBase::transaction ()
 {
-  QSqlDatabase db = QSqlDatabase::database("data");
+  QSqlDatabase db = QSqlDatabase::database(dbName);
   db.transaction();
 }
 
 void CODataBase::commit ()
 {
-  QSqlDatabase db = QSqlDatabase::database("data");
+  QSqlDatabase db = QSqlDatabase::database(dbName);
   db.commit();
 }
 
 void CODataBase::deleteChartObjects (QString &symbol)
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "DELETE FROM chartObjects WHERE symbol='" + symbol + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -105,7 +106,7 @@ void CODataBase::deleteChartObjects (QString &symbol)
 
 void CODataBase::deleteChartObjectsIndicator (QString &indicator)
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "DELETE FROM chartObjects WHERE indicator='" + indicator + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -117,7 +118,7 @@ void CODataBase::deleteChartObjectsIndicator (QString &indicator)
 
 void CODataBase::deleteChartObject (QString &id)
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "DELETE FROM chartObjects WHERE id=" + id;
   q.exec(s);
   if (q.lastError().isValid())
@@ -129,7 +130,7 @@ void CODataBase::deleteChartObject (QString &id)
 
 void CODataBase::getChartObjects (QString &symbol, QString &indicator, Indicator &i)
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "SELECT * FROM chartObjects WHERE symbol='" + symbol + "' AND indicator='" + indicator + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -138,7 +139,7 @@ void CODataBase::getChartObjects (QString &symbol, QString &indicator, Indicator
     return;
   }
 
-  PluginFactory fac;
+  COFactory fac;
   Config config;
   QString path;
   config.getData(Config::COPluginPath, path);
@@ -146,34 +147,22 @@ void CODataBase::getChartObjects (QString &symbol, QString &indicator, Indicator
   while (q.next())
   {
     s = q.value(3).toString();
-    COPlugin *plug = fac.getCO(path, s);
-    if (! plug)
+    COPlugin *co = fac.getCO(s);
+    if (! co)
     {
       qDebug() << "CODataBase::getChartObjects: error loading plugin" << s;
       continue;
     }
     
-    ChartObject *co = new ChartObject;
-    plug->setSettings(co, q);
+    co->load(q);
     i.addChartObject(co);
   }
 }
 
-void CODataBase::setChartObject (ChartObject *co)
+void CODataBase::setChartObject (QString &co)
 {
-  Config config;
-  QString path;
-  config.getData(Config::COPluginPath, path);
-
-  QSqlQuery q(QSqlDatabase::database("data"));
-  PluginFactory fac;
-  QString s;
-  co->getData(ChartObject::ParmPlugin, s);  
-  COPlugin *plug = fac.getCO(path, s);
-    
-  plug->getSettings(co, s);
-  
-  q.exec(s);
+  QSqlQuery q(QSqlDatabase::database(dbName));
+  q.exec(co);
   if (q.lastError().isValid())
   {
     qDebug() << "CODataBase::setChartObject: " << q.lastError().text();

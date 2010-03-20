@@ -55,6 +55,7 @@
 #include "IndicatorDataBase.h"
 #include "CODataBase.h"
 #include "ScriptDataBase.h"
+#include "COFactory.h"
 
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
@@ -402,10 +403,10 @@ void QtstalkerApp::createToolBars ()
   config.getBaseData(Config::COPluginList, l);
   config.getData(Config::COPluginPath, path);
   int loop;
-  PluginFactory fac;
+  COFactory fac;
   for (loop = 0; loop < l.count(); loop++)
   {
-    COPlugin *plug = fac.getCO(path, l[loop]);
+    COPlugin *plug = fac.getCO(l[loop]);
     if (! plug)
       continue;
     
@@ -414,6 +415,8 @@ void QtstalkerApp::createToolBars ()
     b = createToolButton(icon, QString(), QString(l[loop]), FALSE);
     toolBar2->addWidget(b);
     bg->addButton(b, loop);
+    
+    delete plug;
   }
 
 
@@ -942,12 +945,6 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
   
-  QString s;
-  config.getData(Config::PlotPluginPath, s);
-  indy->setPlotPluginPath(s);
-  config.getData(Config::COPluginPath, s);
-  indy->setCOPluginPath(s);
-
   connect(indy, SIGNAL(signalPixelspaceChanged(int, int)), this, SLOT(slotPlotZoom(int, int)));
   connect(indy, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
   connect(indy, SIGNAL(signalStatusMessage(QString)), this, SLOT(slotStatusMessage(QString)));

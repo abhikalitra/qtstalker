@@ -19,31 +19,38 @@
  *  USA.
  */
 
-#ifndef PLOT_GRID_HPP
-#define PLOT_GRID_HPP
+#ifndef TLINE_HPP
+#define TLINE_HPP
 
-#include <QColor>
-#include <QVector>
+#include <QStringList>
 
-#include "PlotData.h"
+#include "COPlugin.h"
 
-class PlotGrid
+class TLine : public COPlugin
 {
   public:
-    PlotGrid ();
+    TLine ();
     void draw (PlotData &);
-    void setGridFlag (int);
-    void setXGrid (QVector<int> &);
-    void setGridColor (QColor &);
-    void drawXGrid (PlotData &);
-    void drawYGrid (PlotData &);
+    void getInfo (Setting *);
+    void dialog ();
+    void load (QSqlQuery &q);
+    void save ();
+    void create ();
+    int create2 (QDateTime &, double);
+    int create3 (QDateTime &, double);
+    void moving (QDateTime &, double, int);
+    void getIcon (QIcon &);
+    int getHighLow (double &, double &);
+    int inDateRange (QDateTime &, QDateTime &);
 
-  private:
-    QColor gridColor;
-    int gridFlag;
-    QVector<int> xGrid;
+  protected:
+    QStringList fieldList;
+    QColor color;
+    double price;
+    double price2;
+    QDateTime date;
+    QDateTime date2;
+    int extend;
 };
 
 #endif
-
-

@@ -19,31 +19,46 @@
  *  USA.
  */
 
-#ifndef PLOT_GRID_HPP
-#define PLOT_GRID_HPP
+#include "OHLC.h"
 
-#include <QColor>
-#include <QVector>
-
-#include "PlotData.h"
-
-class PlotGrid
+OHLC::OHLC ()
 {
-  public:
-    PlotGrid ();
-    void draw (PlotData &);
-    void setGridFlag (int);
-    void setXGrid (QVector<int> &);
-    void setGridColor (QColor &);
-    void drawXGrid (PlotData &);
-    void drawYGrid (PlotData &);
+}
 
-  private:
-    QColor gridColor;
-    int gridFlag;
-    QVector<int> xGrid;
-};
+void OHLC::draw (PlotLine *line, PlotData &pd)
+{
+  QPainter painter;
+  painter.begin(&pd.buffer);
 
-#endif
+  int loop = pd.pos;
+  int x = pd.startX;
+  QColor c;
 
+  while ((x < pd.buffer.width()) && (loop < (int) line->count()))
+  {
+    if (loop > -1)
+    {
+      PlotLineBar bar;
+      line->getData(loop, bar);
+
+      bar.getColor(c);
+      painter.setPen(c);
+
+      int y = pd.scaler.convertToY(bar.getData(0));
+      painter.drawLine (x - 2, y, x, y);
+
+      y = pd.scaler.convertToY(bar.getData(3));
+      painter.drawLine (x + 2, y, x, y);
+
+      y = pd.scaler.convertToY(bar.getData(1));
+      int y2 = pd.scaler.convertToY(bar.getData(2));
+      painter.drawLine (x, y, x, y2);
+    }
+
+    x = x + pd.pixelspace;
+    loop++;
+  }
+
+  painter.end();
+}
 

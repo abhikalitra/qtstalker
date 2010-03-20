@@ -127,25 +127,6 @@ SUBDIRS += plugins/indicators/VIDYA
 SUBDIRS += plugins/indicators/VOL
 SUBDIRS += plugins/indicators/WILLR
 
-# compile object plugins
-SUBDIRS += plugins/objects/Buy
-SUBDIRS += plugins/objects/HLine
-SUBDIRS += plugins/objects/Retracement
-SUBDIRS += plugins/objects/Sell
-SUBDIRS += plugins/objects/Text
-SUBDIRS += plugins/objects/TLine
-SUBDIRS += plugins/objects/VLine
-
-# compile plot plugins
-SUBDIRS += plugins/plots/OHLC
-SUBDIRS += plugins/plots/Candle
-SUBDIRS += plugins/plots/Dash
-SUBDIRS += plugins/plots/Dot
-SUBDIRS += plugins/plots/Histogram
-SUBDIRS += plugins/plots/HistogramBar
-SUBDIRS += plugins/plots/Horizontal
-SUBDIRS += plugins/plots/Line
-
 # compile database plugins
 SUBDIRS += plugins/database/Stock
 SUBDIRS += plugins/database/Futures

@@ -37,6 +37,17 @@
     </message>
 </context>
 <context>
+    <name>CursorSelect</name>
+    <message>
+        <source>&amp;Edit Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DataWindow</name>
     <message>
         <source>Date</source>

@@ -20,10 +20,7 @@
  */
 
 #include "PlotInfo.h"
-#include "PluginFactory.h"
 #include "Setting.h"
-#include "ChartObject.h"
-#include "COPlugin.h"
 #include "PlotLine.h"
 #include "Utils.h"
 
@@ -38,25 +35,21 @@ PlotInfo::PlotInfo ()
 {
 }
 
-Setting * PlotInfo::getInfo (QPoint &p, indicatorPlotData &pd)
+Setting * PlotInfo::getInfo (QPoint &p, PlotData &pd, Indicator &indicator)
 {
-  PluginFactory fac;
   Setting *r = new Setting;
 
   // determine if we are over a chart object, if so we display parms in the data panel
-  QHash<QString, ChartObject *> coList;
-  pd.indicator.getChartObjects(coList);
-  QHashIterator<QString, ChartObject *> it(coList);
+  QHash<QString, COPlugin *> coList;
+  indicator.getChartObjects(coList);
+  QHashIterator<QString, COPlugin *> it(coList);
   while (it.hasNext())
   {
     it.next();
-    ChartObject *co = it.value();
+    COPlugin *co = it.value();
     if (co->isSelected(p))
     {
-      QString s;
-      co->getData(ChartObject::ParmPlugin, s);
-      COPlugin *plug = fac.getCO(pd.coPluginPath, s);
-      plug->getInfo(co, r);
+      co->getInfo(r);
       if (r->count())
         return r;
     }
@@ -71,7 +64,7 @@ Setting * PlotInfo::getInfo (QPoint &p, indicatorPlotData &pd)
   r->setData(k, s);
   
   QList<PlotLine *> plotList;
-  pd.indicator.getLines(plotList);
+  indicator.getLines(plotList);
 
   int loop;
   for (loop = 0; loop < plotList.count(); loop++)
@@ -96,14 +89,11 @@ Setting * PlotInfo::getInfo (QPoint &p, indicatorPlotData &pd)
   return r;
 }
 
-Setting * PlotInfo::getCOInfo (ChartObject *co, QString &coPluginPath)
+Setting * PlotInfo::getCOInfo (COPlugin *co)
 {
   Setting *tr = new Setting;
-  PluginFactory fac;
   QString s;
-  co->getData(ChartObject::ParmPlugin, s);
-  COPlugin *plug = fac.getCO(coPluginPath, s);
-  plug->getInfo(co, tr);
+  co->getInfo(tr);
 
   if (! tr->count())
   {
@@ -114,7 +104,7 @@ Setting * PlotInfo::getCOInfo (ChartObject *co, QString &coPluginPath)
   return tr;
 }
 
-void PlotInfo::drawInfo (indicatorPlotData &pd)
+void PlotInfo::drawInfo (PlotData &pd, Indicator &indicator)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
@@ -133,7 +123,7 @@ void PlotInfo::drawInfo (indicatorPlotData &pd)
   pos = pos + fm.width(s);
 
   QList<PlotLine *> plotList;
-  pd.indicator.getLines(plotList);
+  indicator.getLines(plotList);
   
   int loop;
   Utils util;
@@ -171,12 +161,12 @@ void PlotInfo::drawInfo (indicatorPlotData &pd)
   painter.end();
 }
 
-void PlotInfo::getPointInfo (indicatorPlotData &pd, QList<Setting> &l)
+void PlotInfo::getPointInfo (PlotData &pd, QList<Setting> &l, Indicator &indicator)
 {
   l.clear();
   
   QList<PlotLine *> plotList;
-  pd.indicator.getLines(plotList);
+  indicator.getLines(plotList);
 
   Utils util;
   int loop;
@@ -207,7 +197,7 @@ void PlotInfo::getPointInfo (indicatorPlotData &pd, QList<Setting> &l)
   }
 }
 
-Setting * PlotInfo::getCursorInfo (int i, int y, indicatorPlotData &pd)
+Setting * PlotInfo::getCursorInfo (int i, int y, PlotData &pd)
 {
   Setting *set = new Setting;
   QString d;

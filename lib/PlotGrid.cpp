@@ -30,7 +30,7 @@ PlotGrid::PlotGrid ()
   gridFlag = TRUE;
 }
 
-void PlotGrid::draw (indicatorPlotData &pd)
+void PlotGrid::draw (PlotData &pd)
 {
   if (gridFlag == FALSE)
     return;
@@ -54,7 +54,7 @@ void PlotGrid::setXGrid (QVector<int> &d)
   xGrid = d;
 }
 
-void PlotGrid::drawXGrid (indicatorPlotData &pd)
+void PlotGrid::drawXGrid (PlotData &pd)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
@@ -73,7 +73,7 @@ void PlotGrid::drawXGrid (indicatorPlotData &pd)
   painter.end();
 }
 
-void PlotGrid::drawYGrid (indicatorPlotData &pd)
+void PlotGrid::drawYGrid (PlotData &pd)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
