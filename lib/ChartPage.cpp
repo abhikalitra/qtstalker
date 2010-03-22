@@ -27,6 +27,7 @@
 
 #include "../pics/addgroup.xpm"
 #include "../pics/search.xpm"
+#include "../pics/asterisk.xpm"
 
 #include <QMessageBox>
 #include <QCursor>
@@ -58,6 +59,13 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   connect(symbolButton, SIGNAL(clicked()), this, SLOT(symbolSearch()));
   symbolButton->setMaximumSize(25, 25);
   hbox->addWidget(symbolButton);
+
+  allButton = new QToolButton;
+  allButton->setToolTip(tr("Show All Symbols"));
+  allButton->setIcon(QIcon(asterisk_xpm));
+  connect(allButton, SIGNAL(clicked()), this, SLOT(allButtonPressed()));
+  allButton->setMaximumSize(25, 25);
+  hbox->addWidget(allButton);
 
   hbox->addStretch(1);
 
@@ -199,6 +207,13 @@ void ChartPage::symbolSearch ()
   config.setData(Config::LastChartPanelSymbolSearch, searchString);
   config.setData(Config::LastChartPanelExchangeSearch, searchExchange);
   
+  updateList();
+}
+
+void ChartPage::allButtonPressed ()
+{
+  searchExchange.clear();
+  searchString.clear();
   updateList();
 }
 

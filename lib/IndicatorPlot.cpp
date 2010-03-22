@@ -63,6 +63,7 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   coSelected = 0;
   menuFlag = TRUE;
   rubberBand = 0;
+  newObjectFlag = 0;
 
   plotData.plotFont.setFamily("Helvetica");
   plotData.plotFont.setPointSize(12);
@@ -302,7 +303,7 @@ void IndicatorPlot::setScale ()
     COPlugin *co = it.value();
     if (plotData.scaleToScreen)
     {
-      if (! co->inDateRange(sd, ed))
+      if (! co->inDateRange(plotData, sd, ed))
         continue;
     }
       
@@ -412,8 +413,7 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
     {
       mouseFlag = ClickWait;
       emit signalNewExternalChartObjectDone();
-      slotNewChartObject(newChartObject);
-      mousePressEvent(event); // recursive call to simulate 1 click instead of 2
+      mousePressEvent(event); // recursive call to capture first mouse click again
       break;
     }
     case CursorZoom:
@@ -786,19 +786,22 @@ void IndicatorPlot::getDateBar (DateBar &d)
 
 void IndicatorPlot::setExternalChartObjectFlag ()
 {
-  if (mouseFlag == NewObjectWait)
-  {
-    mouseFlag = None;
-    setCursor(QCursor(Qt::ArrowCursor));
-  }
+  if (mouseFlag != NewObjectWait)
+    return;
+  
+  mouseFlag = None;
+  newObjectFlag = FALSE;
+  setCursor(QCursor(Qt::ArrowCursor));
+  QString s = QString::number(coSelected->getID());
+  indicator.deleteChartObject(s);
+  coSelected = 0;
 }
 
 void IndicatorPlot::newExternalChartObject (QString d)
 {
+  newObjectFlag = TRUE;
   mouseFlag = NewObjectWait;
-  newChartObject = d;
-  setCursor(QCursor(Qt::PointingHandCursor));
-  emit signalStatusMessage(QString(tr("Select point to place object...")));
+  slotNewChartObject(d);
 }
 
 void IndicatorPlot::slotNewChartObject (QString selection)
@@ -830,8 +833,9 @@ void IndicatorPlot::slotNewChartObject (QString selection)
   coSelected->create();
   
   indicator.addChartObject(coSelected);
-  
-  mouseFlag = ClickWait;
+
+  if (! newObjectFlag)
+    mouseFlag = ClickWait;
 
   setCursor(QCursor(Qt::PointingHandCursor));
 }

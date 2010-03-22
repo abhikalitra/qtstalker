@@ -26,35 +26,37 @@
 
 ScriptDataBase::ScriptDataBase ()
 {
+  dbName = "data";
 }
 
 void ScriptDataBase::init ()
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "CREATE TABLE IF NOT EXISTS script (";
   s.append("name TEXT PRIMARY KEY UNIQUE"); // 0
   s.append(", command TEXT"); // 1
   s.append(", comment TEXT"); // 2
   s.append(", lastRun TEXT"); // 3
   s.append(", file TEXT"); // 4
+  s.append(", refresh INT"); // 5
   
-  s.append(", t1 TEXT"); // 5
-  s.append(", t2 TEXT"); // 6
-  s.append(", t3 TEXT"); // 7
-  s.append(", t4 TEXT"); // 8
-  s.append(", t5 TEXT"); // 9
+  s.append(", t1 TEXT"); // 6
+  s.append(", t2 TEXT"); // 7
+  s.append(", t3 TEXT"); // 8
+  s.append(", t4 TEXT"); // 9
+  s.append(", t5 TEXT"); // 10
   
-  s.append(", i1 INT"); // 10
-  s.append(", i2 INT"); // 11
-  s.append(", i3 INT"); // 12
-  s.append(", i4 INT"); // 13
-  s.append(", i5 INT"); // 14
+  s.append(", i1 INT"); // 11
+  s.append(", i2 INT"); // 12
+  s.append(", i3 INT"); // 13
+  s.append(", i4 INT"); // 14
+  s.append(", i5 INT"); // 15
 
-  s.append(", d1 REAL"); // 15
-  s.append(", d2 REAL"); // 16
-  s.append(", d3 REAL"); // 17
-  s.append(", d4 REAL"); // 18
-  s.append(", d5 REAL"); // 19
+  s.append(", d1 REAL"); // 16
+  s.append(", d2 REAL"); // 17
+  s.append(", d3 REAL"); // 18
+  s.append(", d4 REAL"); // 19
+  s.append(", d5 REAL"); // 20
 
   s.append(")");
   q.exec(s);
@@ -64,20 +66,20 @@ void ScriptDataBase::init ()
 
 void ScriptDataBase::transaction ()
 {
-  QSqlDatabase db = QSqlDatabase::database("data");
+  QSqlDatabase db = QSqlDatabase::database(dbName);
   db.transaction();
 }
 
 void ScriptDataBase::commit ()
 {
-  QSqlDatabase db = QSqlDatabase::database("data");
+  QSqlDatabase db = QSqlDatabase::database(dbName);
   db.commit();
 }
 
 void ScriptDataBase::getScripts (QStringList &l)
 {
   l.clear();
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "SELECT name FROM script";
   q.exec(s);
   if (q.lastError().isValid())
@@ -92,12 +94,12 @@ void ScriptDataBase::getScripts (QStringList &l)
   l.sort();
 }
 
-void ScriptDataBase::getScript (Script &script)
+void ScriptDataBase::getScript (Script *script)
 {
-  QString name = script.getName();
+  QString name = script->getName();
 
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "SELECT command,comment,lastRun,file FROM script WHERE name='" + name + "'";
+  QSqlQuery q(QSqlDatabase::database(dbName));
+  QString s = "SELECT command,comment,lastRun,file,refresh FROM script WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -110,40 +112,43 @@ void ScriptDataBase::getScript (Script &script)
     int pos = 0;
     
     s = q.value(pos++).toString();
-    script.setCommand(s);
+    script->setCommand(s);
 
     s = q.value(pos++).toString();
-    script.setComment(s);
+    script->setComment(s);
 
     QDateTime dt = q.value(pos++).toDateTime();
-    script.setLastRun(dt);
+    script->setLastRun(dt);
 
     s = q.value(pos++).toString();
-    script.setFile(s);
+    script->setFile(s);
+
+    script->setRefresh(q.value(pos++).toInt());
   }
 }
 
-void ScriptDataBase::setScript (Script &script)
+void ScriptDataBase::setScript (Script *script)
 {
-  QDateTime dt = script.getLastRun();
+  QDateTime dt = script->getLastRun();
 
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "INSERT OR REPLACE INTO script (name,command,comment,lastRun,file) VALUES (";
-  s.append("'" + script.getName() + "'");
-  s.append(",'" + script.getCommand() + "'");
-  s.append(",'" + script.getComment() + "'");
+  QSqlQuery q(QSqlDatabase::database(dbName));
+  QString s = "INSERT OR REPLACE INTO script (name,command,comment,lastRun,file,refresh) VALUES (";
+  s.append("'" + script->getName() + "'");
+  s.append(",'" + script->getCommand() + "'");
+  s.append(",'" + script->getComment() + "'");
   s.append(",'" + dt.toString(Qt::ISODate) + "'");
-  s.append(",'" + script.getFile() + "'");
+  s.append(",'" + script->getFile() + "'");
+  s.append("," + QString::number(script->getRefresh()));
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ScriptDataBase::setScript: " << q.lastError().text();
 }
 
-void ScriptDataBase::deleteScript (Script &script)
+void ScriptDataBase::deleteScript (Script *script)
 {
-  QSqlQuery q(QSqlDatabase::database("data"));
-  QString s = "DELETE FROM script WHERE name='" + script.getName() + "'";
+  QSqlQuery q(QSqlDatabase::database(dbName));
+  QString s = "DELETE FROM script WHERE name='" + script->getName() + "'";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ScriptDataBase::deleteScript: " << q.lastError().text();
@@ -153,7 +158,7 @@ void ScriptDataBase::getScriptSearch (QString &pattern, QStringList &list)
 {
   list.clear();
 
-  QSqlQuery q(QSqlDatabase::database("data"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "SELECT name FROM script WHERE name LIKE '" + pattern + "'";
   q.exec(s);
   if (q.lastError().isValid())

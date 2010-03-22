@@ -268,6 +268,8 @@ int TLine::create3 (QDateTime &x, double y)
   price2 = y;
   saveFlag = TRUE;
   
+  emit signalMessage(QString());
+
   return 0;
 }
 
@@ -337,22 +339,26 @@ int TLine::getHighLow (double &h, double &l)
   return 0;
 }
 
-int TLine::inDateRange (QDateTime &startDate, QDateTime &endDate)
+int TLine::inDateRange (PlotData &pd, QDateTime &startDate, QDateTime &endDate)
 {
   int rc = FALSE;
+
+  QDateTime dt = date2;
+  if (extend)
+    pd.dateBars.getDate(pd.dateBars.count() - 1, dt);
   
   // is start past our end?
-  if (startDate > date2)
+  if (startDate > dt)
     return rc;
   
   // is end before our start?
   if (endDate < date)
     return rc;
   
-  if (startDate >= date && startDate <= date2)
+  if (startDate >= date && startDate <= dt)
     return TRUE;
   
-  if (endDate >= date && endDate <= date2)
+  if (endDate >= date && endDate <= dt)
     return TRUE;
   
   return rc;

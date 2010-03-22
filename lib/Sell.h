@@ -38,7 +38,7 @@ class Sell : public COPlugin
     void moving (QDateTime &, double, int);
     void getIcon (QIcon &);
     int getHighLow (double &, double &);
-    int inDateRange (QDateTime &, QDateTime &);
+    int inDateRange (PlotData &, QDateTime &, QDateTime &);
     
   protected:
     QDateTime date;

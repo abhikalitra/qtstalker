@@ -20,11 +20,29 @@
  */
 
 #include "Script.h"
+#include "Config.h"
 
+#include <QDebug>
 
 Script::Script ()
 {
   status = 0;
+  refresh = 0;
+  scriptServer = 0;
+
+  timer = new QTimer(this);
+  connect(timer, SIGNAL(timeout()), this, SLOT(timerDone()));
+}
+
+Script::~Script ()
+{
+  timer->stop();
+  
+  if (scriptServer)
+  {
+    scriptServer->stop();
+    delete scriptServer;
+  }
 }
 
 void Script::setName (QString &d)
@@ -86,4 +104,75 @@ QDateTime & Script::getLastRun ()
 {
   return lastRun;
 }
+
+void Script::setRefresh (int d)
+{
+  refresh = d;
+}
+
+int Script::getRefresh ()
+{
+  return refresh;
+}
+
+void Script::start ()
+{
+  if (timer->isActive())
+    return;
+  
+  if (! scriptServer)
+  {
+    // setup the script server
+    Config config;
+    QString ipp, dbpp;
+    config.getData(Config::IndicatorPluginPath, ipp);
+    config.getData(Config::DBPluginPath, dbpp);
+    scriptServer = new ExScript(ipp, dbpp);
+    scriptServer->setDeleteFlag(TRUE);
+    connect(scriptServer, SIGNAL(signalDone()), this, SLOT(scriptDone()));
+  }
+    
+  if (refresh > 0)
+    timer->start(1000 * refresh);	
+  else
+    startScript();
+}
+
+void Script::stop ()
+{
+  timer->stop();	
+
+  if (scriptServer)
+    scriptServer->stop();
+
+  emit signalMessage(QString(tr("Script ")) + name + tr(" cancelled."));
+}
+
+void Script::scriptDone ()
+{
+  if (! timer->isActive())
+  {
+    emit signalMessage(QString(tr("Script ")) + name + tr(" completed."));
+    emit signalDone(name);
+  }
+}
+
+void Script::startScript ()
+{
+  if (! scriptServer)
+    return;
+  
+  if (scriptServer->getState())
+    return;
+  
+  QString s = command + " " + file;
+  emit signalMessage(QString(tr("Script ")) + name + tr(" started."));
+  scriptServer->calculate2(s);
+}
+
+void Script::timerDone ()
+{
+  startScript();
+}
+
 

@@ -21,17 +21,15 @@
 
 #include "ScriptPage.h"
 #include "ScriptDataBase.h"
-#include "Config.h"
 #include "PrefDialog.h"
 
+#include "../pics/asterisk.xpm"
+#include "../pics/search.xpm"
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/newchart.xpm"
-#include "../pics/search.xpm"
-#include "../pics/asterisk.xpm"
-#include "../pics/script.xpm"
-#include "../pics/que.xpm"
 #include "../pics/ok.xpm"
+#include "../pics/refresh.xpm"
 
 #include <QCursor>
 #include <QInputDialog>
@@ -42,9 +40,7 @@
 #include <QIcon>
 #include <QtDebug>
 #include <QLabel>
-#include <QButtonGroup>
 #include <QListWidgetItem>
-
 
 ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
 {
@@ -65,13 +61,6 @@ ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
   allButton->setMaximumSize(25, 25);
   hbox->addWidget(allButton);
 
-  queueButton = new QToolButton;
-  queueButton->setToolTip(tr("Show script queue"));
-  queueButton->setIcon(QIcon(script_xpm));
-  connect(queueButton, SIGNAL(clicked()), this, SLOT(showQueue()));
-  queueButton->setMaximumSize(25, 25);
-  hbox->addWidget(queueButton);
-
   searchButton = new QToolButton;
   searchButton->setToolTip(tr("Search"));
   searchButton->setIcon(QIcon(search_xpm));
@@ -84,30 +73,29 @@ ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
   list = new QListWidget;
   list->setContextMenuPolicy(Qt::CustomContextMenu);
   list->setSortingEnabled(TRUE);
-  connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doubleClick(QListWidgetItem *)));
-  connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
+  connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(listDoubleClick(QListWidgetItem *)));
+  connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(listRightClick(const QPoint &)));
   vbox->addWidget(list);
 
-  // setup the script server
-  Config config;
-  QString ipp, dbpp;
-  config.getData(Config::IndicatorPluginPath, ipp);
-  config.getData(Config::DBPluginPath, dbpp);
-  scriptServer = new ExScript(ipp, dbpp);
-  scriptServer->setDeleteFlag(TRUE);
-  connect(scriptServer, SIGNAL(signalDone()), this, SLOT(scriptDone()));
+  vbox->addSpacing(5);
+  
+  QLabel *label = new QLabel(tr("Active Scripts"));
+  vbox->addWidget(label);
+  
+  queList = new QListWidget;
+  queList->setContextMenuPolicy(Qt::CustomContextMenu);
+  queList->setSortingEnabled(TRUE);
+  connect(queList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(queRightClick(const QPoint &)));
+  vbox->addWidget(queList);
 
   menu = new QMenu(this);
-
-  status = StatusAll;
-
-  update();
+  
+  showAllScripts();
 }
 
 ScriptPage::~ScriptPage ()
 {
-  scriptServer->stop();
-  delete scriptServer;
+  qDeleteAll(scripts);
 }
 
 void ScriptPage::newScript ()
@@ -149,27 +137,36 @@ void ScriptPage::editScript ()
 void ScriptPage::editScript (QString &d)
 {
   ScriptDataBase db;
-  Script script;
-  script.setName(d);
+  Script *script = new Script;
+  script->setName(d);
   db.getScript(script);
 
   PrefDialog *dialog = new PrefDialog;
   QString s = tr("Edit Script ") + d;
   dialog->setWindowTitle(s);
   s = tr("Settings");
-  dialog->addPage(0, s);
+  int page = 0;
+  dialog->addPage(page, s);
 
+  int pos = 0;
+  
   s = tr("Command");
-  QString command = script.getCommand();
-  dialog->addTextItem(0, 0, s, command);
+  QString command = script->getCommand();
+  if (command.isEmpty())
+    command = "perl";
+  dialog->addTextItem(pos++, page, s, command);
 
   s = tr("Script File");
-  QString file = script.getFile();
-  dialog->addFileItem(1, 0, s, file);
+  QString file = script->getFile();
+  dialog->addFileItem(pos++, page, s, file);
+
+  s = tr("Run every X seconds");
+  int refresh = script->getRefresh();
+  dialog->addIntItem(pos++, page, s, refresh, 0, 999999);
 
   s = tr("Comment");
-  QString comment = script.getComment();
-  dialog->addTextEditItem(2, 0, s, comment);
+  QString comment = script->getComment();
+  dialog->addTextEditItem(pos++, page, s, comment);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -178,19 +175,35 @@ void ScriptPage::editScript (QString &d)
     return;
   }
 
-  dialog->getItem(0, command);
-  dialog->getItem(1, file);
-  dialog->getItem(2, comment);
+  pos = 0;
+  dialog->getItem(pos++, command);
+  dialog->getItem(pos++, file);
+  refresh = dialog->getInt(pos++);
+  dialog->getItem(pos++, comment);
 
   delete dialog;
 
-  script.setCommand(command);
-  script.setFile(file);
-  script.setComment(comment);
+  script->setCommand(command);
+  script->setFile(file);
+  script->setRefresh(refresh);
+  script->setComment(comment);
   db.setScript(script);
-
-  if (status == StatusAll)
-    update();
+  
+  // check if script is refreshing
+  if (scripts.contains(script->getName()))
+  {
+    Script *tscript = scripts.value(script->getName());
+    scripts.remove(script->getName());
+    delete tscript;
+    
+    if (script->getRefresh() > 0)
+    {
+      scripts.insert(script->getName(), script);
+      script->start();
+    }
+  }
+  else
+    delete script;
   
   emit signalMessage(QString(tr("Script saved.")));
 }
@@ -210,63 +223,77 @@ void ScriptPage::deleteScript ()
   if (! item)
     return;
 
-  QString s = item->text();
+  QString name = item->text();
 
   ScriptDataBase db;
   Script script;
-  script.setName(s);
-  db.deleteScript(script);
+  script.setName(name);
+  db.deleteScript(&script);
   delete item;
-  
+
+  // check if script is in the refresh que
+  if (scripts.contains(name))
+  {
+    Script *tscript = scripts.value(name);
+    scripts.remove(name); // remove the refresh que hash list
+    delete tscript;
+    updateQueList();
+  }
+
   emit signalMessage(QString(tr("Script deleted.")));
 }
 
-void ScriptPage::doubleClick (QListWidgetItem *item)
+void ScriptPage::listDoubleClick (QListWidgetItem *item)
 {
   if (! item)
     return;
 
-  switch (status)
+  int rc = QMessageBox::warning(this,
+    			        tr("Qtstalker: Warning"),
+			        tr("Are you sure you want to execute this script?"),
+			        QMessageBox::Yes,
+			        QMessageBox::No,
+			        QMessageBox::NoButton);
+  if (rc == QMessageBox::No)
+    return;
+      
+  QString name = item->text();
+  Script *script = new Script;
+  script->setName(name);
+  ScriptDataBase db;
+  db.getScript(script);
+      
+  if (scripts.contains(name))
   {
-    case StatusQueue:
-      removeScriptQueue();
-      break;
-    default:
-    {
-      int rc = QMessageBox::warning(this,
-    			            tr("Qtstalker: Warning"),
-			            tr("Are you sure you want to execute this script?"),
-			            QMessageBox::Yes,
-			            QMessageBox::No,
-			            QMessageBox::NoButton);
-      if (rc == QMessageBox::No)
-        return;
-      QString s = item->text();
-      Script script;
-      script.setName(s);
-      ScriptDataBase db;
-      db.getScript(script);
-      addScriptQueue(script);
-      break;
-    }
+    QMessageBox mb;
+    mb.setText(tr("This script is currently running. Request denied."));
+    mb.exec();
+    return;
   }
+	
+  scripts.insert(name, script);
+  connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptDone(QString)));
+  script->start();
+  
+  updateQueList();
 }
 
-void ScriptPage::rightClick (const QPoint &)
+void ScriptPage::listRightClick (const QPoint &)
 {
   menu->clear();
 
-  switch (status)
-  {
-    case StatusQueue:
-      menu->addAction(QIcon(delete_xpm), tr("&Remove Script From Queue"), this, SLOT(removeScriptQueue()), QKeySequence(Qt::CTRL+Qt::Key_R));
-      break;
-    default:
-      menu->addAction(QIcon(newchart_xpm), tr("&New Script"), this, SLOT(newScript()), QKeySequence(Qt::CTRL+Qt::Key_N));
-      menu->addAction(QIcon(edit), tr("&Edit Script"), this, SLOT(editScript()), QKeySequence(Qt::CTRL+Qt::Key_E));
-      menu->addAction(QIcon(delete_xpm), tr("&Delete Script"), this, SLOT(deleteScript()), QKeySequence(Qt::CTRL+Qt::Key_D));
-      break;
-  }
+  menu->addAction(QIcon(newchart_xpm), tr("&New Script"), this, SLOT(newScript()), QKeySequence(Qt::CTRL+Qt::Key_N));
+  menu->addAction(QIcon(edit), tr("&Edit Script"), this, SLOT(editScript()), QKeySequence(Qt::CTRL+Qt::Key_E));
+  menu->addAction(QIcon(delete_xpm), tr("&Delete Script"), this, SLOT(deleteScript()), QKeySequence(Qt::CTRL+Qt::Key_D));
+
+  menu->exec(QCursor::pos());
+}
+
+void ScriptPage::queRightClick (const QPoint &)
+{
+  menu->clear();
+
+  menu->addAction(QIcon(delete_xpm), tr("&Remove Script From Queue"), this, SLOT(removeScriptQueue()), QKeySequence(Qt::CTRL+Qt::Key_R));
 
   menu->exec(QCursor::pos());
 }
@@ -284,61 +311,8 @@ void ScriptPage::search ()
   if (! aok || s.isEmpty())
     return;
 
-  status = StatusSearch;
   searchString = s;
-  update();
-}
-
-void ScriptPage::update ()
-{
-  switch (status)
-  {
-    case StatusQueue:
-      showQueue();
-      break;
-    case StatusSearch:
-      showQueue();
-      break;
-    default:
-      showAllScripts();
-      break;
-  }
-}
-
-void ScriptPage::showAllScripts ()
-{
-  status = StatusAll;
-
-  list->clear();
-
-  ScriptDataBase db;
-  QStringList l;
-  db.getScripts(l);
-  list->addItems(l);
-}
-
-void ScriptPage::showQueue ()
-{
-  status = StatusQueue;
-
-  list->clear();
-
-  int loop;
-  for (loop = 0; loop < scriptList.count(); loop++)
-  {
-    Script script = scriptList.at(loop);
-    QString s = script.getName();
-    if (loop == 0)
-      new QListWidgetItem(QIcon(ok), s, list);
-    else
-      new QListWidgetItem(QIcon(que_xpm), s, list);
-  }
-}
-
-void ScriptPage::showSearch ()
-{
-  status = StatusSearch;
-
+  
   list->clear();
 
   ScriptDataBase db;
@@ -350,74 +324,69 @@ void ScriptPage::showSearch ()
     list->addItem(l[loop]);
 }
 
-void ScriptPage::addScriptQueue (Script &script)
+void ScriptPage::showAllScripts ()
 {
-  scriptList.append(script);
-  
-  emit signalMessage(QString(tr("Script ")) + script.getName() + tr(" added to que."));
+  list->clear();
 
-  if (scriptList.count() > 1)
-    return;
-
-  if (status == StatusQueue)
-    update();
-
-  startScript();
+  ScriptDataBase db;
+  QStringList l;
+  db.getScripts(l);
+  list->addItems(l);
 }
 
-void ScriptPage::scriptDone ()
+void ScriptPage::updateQueList ()
 {
-  if (! scriptList.count())
-    return;
+  queList->clear();
 
-  Script script = scriptList.at(0);
-  emit signalMessage(QString(tr("Script ")) + script.getName() + tr(" completed."));
-  
-  scriptList.removeAt(0);
-  if (! scriptList.count())
-    return;
+  QHashIterator<QString, Script *> it(scripts);
+  while (it.hasNext())
+  {
+    it.next();
+    Script *script = it.value();
 
-  if (status == StatusQueue)
-    update();
-
-  startScript();
+    QString name = script->getName();
+    
+    if (script->getRefresh())
+      new QListWidgetItem(QIcon(refresh_xpm), name, queList);
+    else
+      new QListWidgetItem(QIcon(ok), name, queList);
+  }
 }
 
-void ScriptPage::startScript ()
+void ScriptPage::scriptDone (QString name)
 {
-  Script script = scriptList.at(0);
-  QString command = script.getCommand() + " " + script.getFile();
-  scriptServer->calculate2(command);
-  emit signalMessage(QString(tr("Script ")) + script.getName() + tr(" started."));
+  if (! scripts.contains(name))
+    return;
+  
+  Script *script = scripts.value(name);
+  scripts.remove(name);
+  delete script;
+
+  updateQueList();
 }
 
 void ScriptPage::removeScriptQueue ()
 {
-  QListWidgetItem *item = list->currentItem();
+  QListWidgetItem *item = queList->currentItem();
   if (! item)
     return;
 
-  QString s = item->text();
-  int index = list->currentRow();
+  int rc = QMessageBox::warning(this,
+   			        tr("Qtstalker: Warning"),
+			        tr("Script currently executing.\nAre you sure you want to remove this script?"),
+			        QMessageBox::Yes,
+			        QMessageBox::No,
+			        QMessageBox::NoButton);
+  if (rc == QMessageBox::No)
+    return;
 
-  if (index == 0)
-  {
-    int rc = QMessageBox::warning(this,
-    			          tr("Qtstalker: Warning"),
-			          tr("Script currently executing.\nAre you sure you want to remove this script?"),
-			          QMessageBox::Yes,
-			          QMessageBox::No,
-			          QMessageBox::NoButton);
-    if (rc == QMessageBox::No)
-      return;
-
-    scriptServer->stop();
-    
-    emit signalMessage(QString(tr("Script cancelled.")));
-  }
-
-  scriptList.removeAt(index);
-  delete item;
+  QString name = item->text();
+  Script *script = scripts.value(name);
+  script->stop();
+  scripts.remove(name);
+  delete script;
+  
+  updateQueList();
   
   emit signalMessage(QString(tr("Script removed.")));
 }

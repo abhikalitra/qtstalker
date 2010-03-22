@@ -38,7 +38,7 @@ class Retracement : public COPlugin
     int create3 (QDateTime &, double);
     void moving (QDateTime &, double, int);
     void getIcon (QIcon &);
-    int inDateRange (QDateTime &, QDateTime &);
+    int inDateRange (PlotData &, QDateTime &, QDateTime &);
     int getHighLow (double &, double &);
     
   protected:

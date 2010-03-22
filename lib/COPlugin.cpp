@@ -97,7 +97,7 @@ void COPlugin::getIcon (QIcon &)
 }
 
 // virtual
-int COPlugin::inDateRange (QDateTime &, QDateTime &)
+int COPlugin::inDateRange (PlotData &, QDateTime &, QDateTime &)
 {
   return 0;
 }

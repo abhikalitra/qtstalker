@@ -187,6 +187,7 @@ int Buy::create2 (QDateTime &x, double y)
   saveFlag = TRUE;
   date = x;
   price = y;
+  emit signalMessage(QString());
   return 0;
 }
 
@@ -211,7 +212,7 @@ int Buy::getHighLow (double &h, double &l)
   return 0;
 }
 
-int Buy::inDateRange (QDateTime &startDate, QDateTime &endDate)
+int Buy::inDateRange (PlotData &, QDateTime &startDate, QDateTime &endDate)
 {
   int rc = FALSE;
   if (date >= startDate && date <= endDate)

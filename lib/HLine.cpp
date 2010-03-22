@@ -59,8 +59,9 @@ void HLine::draw (PlotData &pd)
   QString s = QString::number(price);
   QFontMetrics fm(font);
   QRect rc = painter.boundingRect(pd.startX, y - (fm.height() / 2), 1, 1, 0, s);
-  painter.drawText(rc, s);
-  painter.drawRect(rc);
+  painter.fillRect(rc, pd.backgroundColor); // fill in behind text first
+  painter.drawText(rc, s); // draw text
+  painter.drawRect(rc); // draw a nice little box around text
   
   painter.drawLine (rc.x() + rc.width(), y, pd.buffer.width(), y);
 
@@ -191,6 +192,7 @@ int HLine::create2 (QDateTime &, double y)
 {
   saveFlag = TRUE;
   price = y;
+  emit signalMessage(QString());
   return 0;
 }
 
@@ -213,7 +215,7 @@ int HLine::getHighLow (double &h, double &l)
   return 0;
 }
 
-int HLine::inDateRange (QDateTime &, QDateTime &)
+int HLine::inDateRange (PlotData &, QDateTime &, QDateTime &)
 {
   int rc = TRUE;
   return rc;

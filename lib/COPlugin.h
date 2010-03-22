@@ -56,7 +56,7 @@ class COPlugin : public QObject
     virtual int create3 (QDateTime &, double);
     virtual void moving (QDateTime &, double, int moveFlag);
     virtual void getIcon (QIcon &);
-    virtual int inDateRange (QDateTime &, QDateTime &);
+    virtual int inDateRange (PlotData &, QDateTime &, QDateTime &);
 
     void setSelected (int);
     void clearGrabHandles ();

@@ -201,10 +201,9 @@ QtstalkerApp::QtstalkerApp(QString session)
   navTab = new QTabWidget;
   dpSplitter->addWidget(navTab);
 
-  // setup the data panel area
-  infoLabel = new QTextEdit;
-  dpSplitter->addWidget(infoLabel);
-  infoLabel->setReadOnly(TRUE);
+  // setup the info panel area
+  infoPanel = new InfoPanel;
+  dpSplitter->addWidget(infoPanel);
 
   // create the side panels
   initChartNav();
@@ -946,7 +945,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   IndicatorPlot *indy = plot->getIndicatorPlot();
   
   connect(indy, SIGNAL(signalPixelspaceChanged(int, int)), this, SLOT(slotPlotZoom(int, int)));
-  connect(indy, SIGNAL(infoMessage(Setting *)), this, SLOT(slotUpdateInfo(Setting *)));
+  connect(indy, SIGNAL(infoMessage(Setting *)), infoPanel, SLOT(showInfo(Setting *)));
   connect(indy, SIGNAL(signalStatusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
@@ -1033,69 +1032,6 @@ void QtstalkerApp::slotHideNav (bool d)
     navBase->show();
   else
     navBase->hide();
-}
-
-void QtstalkerApp::slotUpdateInfo (Setting *r)
-{
-  QStringList l;
-  r->getKeyList(l);
-  l.sort();
-  
-  QString str;
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    QString s;
-    r->getData(l[loop], s);
-    str.append(l[loop] + " " + s + "\n");
-  }
-
-  delete r;
-
-  infoLabel->setText(str);
-
-/*  
-  // list bar values first
-  QStringList l;
-  l.append("D");
-  l.append("T");
-  l.append("O");
-  l.append("H");
-  l.append("L");
-  l.append("C");
-  l.append("VOL");
-  l.append("OI");
-  QString s, s2, str;
-  int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    r->getData(l[loop], s);
-    if (s.length())
-    {
-      str.append(l[loop] + " " + s + "\n");
-      r->remove(l[loop]);
-    }
-  }
-
-  r->getKeyList(l);
-  l.sort();
-  for (loop = 0; loop < (int) l.count(); loop++)
-  {
-    r->getData(l[loop], s);
-    // If it is a big number, then use zero precision.
-    bool ok;
-    double sn = s.toDouble(&ok);
-    if (ok) {
-      if (fabs(sn) > 1000)
-        s = QString::number(sn, 'f', 0);
-    }
-    str.append(l[loop] + " " + s + "\n");
-  }
-
-  delete r;
-
-  infoLabel->setText(str);
-*/
 }
 
 void QtstalkerApp::slotDrawPlots ()

@@ -35,6 +35,10 @@
         <source>Exchange: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Show All Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CursorSelect</name>
@@ -301,10 +305,6 @@ a partial match like %SI or %RSI%</source>
         <source>&amp;Delete Chart Object</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Select point to place object...</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Preferences</name>
@@ -357,26 +357,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qt DB Driver</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Db Host Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Db Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Db User Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Db Password</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Qtstalker: Warning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -396,26 +376,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Maximum number of tabbed chart rows.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qt4 SQL driver required for database.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Network hostname of database. If local, use localhost</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The database user name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The database user password.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -444,10 +404,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Refresh chart every x minutes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The database name. If using the sqlite driver use the file path to the database.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1649,10 +1605,6 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show script queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Remove Script From Queue</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1690,6 +1642,14 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Script File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run every X seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This script is currently running on a timer.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

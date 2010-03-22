@@ -180,6 +180,7 @@ void Text::save ()
   s.append(QString::number(id));
   s.append(",'" + symbol + "'");
   s.append(",'" + indicator + "'");
+  s.append(",'" + plugin + "'");
   s.append(",'" + color.name() + "'");
   s.append(",'" + date.toString(Qt::ISODate) + "'");
   s.append("," + QString::number(price));
@@ -211,6 +212,7 @@ int Text::create2 (QDateTime &x, double y)
   saveFlag = TRUE;
   date = x;
   price = y;
+  emit signalMessage(QString());
   return 0;
 }
 
@@ -235,7 +237,7 @@ int Text::getHighLow (double &h, double &l)
   return 0;
 }
 
-int Text::inDateRange (QDateTime &startDate, QDateTime &endDate)
+int Text::inDateRange (PlotData &, QDateTime &startDate, QDateTime &endDate)
 {
   int rc = FALSE;
   if (date >= startDate && date <= endDate)

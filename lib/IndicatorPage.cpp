@@ -104,14 +104,25 @@ void IndicatorPage::newIndicator ()
   Config config;
   QStringList l;
   config.getBaseData(Config::IndicatorPluginList, l);
-
+  
   PrefDialog *dialog = new PrefDialog;
   dialog->setWindowTitle(tr("New Indicator"));
   QString s = tr("Main");
   dialog->addPage(0, s);
 
-  s = tr("Name");
+  // create a unique default name
+  QStringList nl;
+  IndicatorDataBase db;
+  db.getIndicatorList(nl);
+  int loop = 0;
   QString name;
+  do
+  {
+    name = tr("Indicator") + QString::number(loop);
+  }
+  while (nl.indexOf(name) > -1);
+
+  s = tr("Name");
   dialog->addTextItem(0, 0, s, name);
 
   s = tr("Indicator");
@@ -146,10 +157,9 @@ void IndicatorPage::newIndicator ()
   delete dialog;
 
   // check is name already exists
-  l.clear();
-  IndicatorDataBase db;
-  db.getIndicatorList(l);
-  if (l.contains(name))
+  nl.clear();
+  db.getIndicatorList(nl);
+  if (nl.indexOf(name) > -1)
   {
     QMessageBox::information(this, tr("Qtstalker: Error"), tr("This indicator already exists."));
     return;

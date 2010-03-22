@@ -77,7 +77,7 @@ void Sell::draw (PlotData &pd)
 		  QRegion::Rectangle));
 
     painter.fillRect(x - (handleWidth / 2),
-		     y - handleWidth,
+		     y + (handleWidth / 2),
 		     handleWidth,
 		     handleWidth,
 		     color);
@@ -185,6 +185,7 @@ int Sell::create2 (QDateTime &x, double y)
   saveFlag = TRUE;
   date = x;
   price = y;
+  emit signalMessage(QString());
   return 0;
 }
 
@@ -209,7 +210,7 @@ int Sell::getHighLow (double &h, double &l)
   return 0;
 }
 
-int Sell::inDateRange (QDateTime &startDate, QDateTime &endDate)
+int Sell::inDateRange (PlotData &, QDateTime &startDate, QDateTime &endDate)
 {
   int rc = FALSE;
   if (date >= startDate && date <= endDate)

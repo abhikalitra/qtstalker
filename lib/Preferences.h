@@ -52,7 +52,7 @@ class Preferences : public QDialog
   public:
     Preferences (QWidget *);
     void createGeneralPage ();
-    void createDatabasePage ();
+//    void createDatabasePage ();
 //    void createSQLPage ();
     void createColorPage ();
     void createFontPage ();
@@ -87,11 +87,13 @@ class Preferences : public QDialog
     FontButton *appFontButton;
 
     // db page
+/*
     QComboBox *dbDriver;
     QLineEdit *dbHostName;
     QLineEdit *dbName;
     QLineEdit *dbUserName;
     QLineEdit *dbPassword;
+*/
 
     // sql page
 /*

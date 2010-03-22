@@ -47,10 +47,6 @@ void Dash::draw (PlotLine *line, PlotData &pd)
 	      pd.scaler.getLogFlag());
   }
 
-  QPen pen;
-  pen.setStyle(Qt::SolidLine);
-  painter.setPen(pen);
-
   while ((x2 < pd.buffer.width()) && (loop < (int) line->count()))
   {
     if (loop > -1)
@@ -65,7 +61,11 @@ void Dash::draw (PlotLine *line, PlotData &pd)
 
       if (y != -1)
       {
-        painter.setPen(color);
+        QPen pen;
+        pen.setStyle(Qt::DashLine);
+	pen.setWidth(1);
+	pen.setColor(color);
+        painter.setPen(pen);
         painter.drawLine (x, y, x2, y2);
       }
       

@@ -325,6 +325,15 @@
 
 20100317:  Changed the script format for QUOTE command. See docs.
 
+20100320:  Moved the plot and object plugins back into qtstalkerlib in order to best work with
+           upcoming improvements.
+
+           As per user (lvgandhi) request, I have reinstated the sorting of DTOHLCVI data appearing
+           in the info panel. Also added a "Show All Symbols" button in the chart panel.
+
+20100321:  Added an active script list to the script panel. Scripts can now be run on a timer that will
+           repeat every X seconds. Also, you are able to run as many scripts simultaneously as desired.
+           
 
 
 

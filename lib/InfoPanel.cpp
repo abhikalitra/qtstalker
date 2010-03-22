@@ -19,29 +19,57 @@
  *  USA.
  */
 
-#ifndef SCRIPT_DATA_BASE_HPP
-#define SCRIPT_DATA_BASE_HPP
+#include "InfoPanel.h"
 
+#include <QDebug>
 #include <QString>
 #include <QStringList>
+#include <cmath>
 
-#include "Script.h"
-
-class ScriptDataBase
+InfoPanel::InfoPanel ()
 {
-  public:
-    ScriptDataBase ();
-    void init (); // called only at qtstalker startup, initializes database tables
-    void transaction ();
-    void commit ();
-    void getScripts (QStringList &);
-    void getScript (Script *);
-    void deleteScript (Script *);
-    void setScript (Script *);
-    void getScriptSearch (QString &pattern, QStringList &list);
-    
-  protected:
-    QString dbName;
-};
+  setReadOnly(TRUE);
+}
 
-#endif
+void InfoPanel::showInfo (Setting *d)
+{
+  // list bar values first
+  QStringList l;
+  l << "D" << "T" << "O" << "H" << "L" << "C" << "VOL" << "OI";
+  
+  QString s, s2, str;
+  int loop;
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    d->getData(l[loop], s);
+    if (s.length())
+    {
+      str.append(l[loop] + " " + s + "\n");
+      d->remove(l[loop]);
+    }
+  }
+
+  d->getKeyList(l);
+  l.sort();
+  
+  for (loop = 0; loop < (int) l.count(); loop++)
+  {
+    d->getData(l[loop], s);
+    
+    // If it is a big number, then use zero precision.
+    bool ok;
+    double sn = s.toDouble(&ok);
+    if (ok)
+    {
+      if (fabs(sn) > 1000)
+        s = QString::number(sn, 'f', 0);
+    }
+    
+    str.append(l[loop] + " " + s + "\n");
+  }
+
+  delete d;
+
+  setText(str);
+}
+

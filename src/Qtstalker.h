@@ -36,13 +36,12 @@
 #include <QTimer>
 #include <QButtonGroup>
 
-
 #include "Plot.h"
 #include "Setting.h"
 #include "ChartPage.h"
 #include "assistant.h"
 #include "BarData.h"
-
+#include "InfoPanel.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -118,7 +117,6 @@ class QtstalkerApp : public QMainWindow
     void slotBarLengthChanged (int);
     void slotChartUpdated ();
     void slotStatusMessage (QString);
-    void slotUpdateInfo (Setting *);
     void slotDisableIndicator (QString);
     void slotEnableIndicator (QString);
     void slotDrawPlots ();
@@ -155,7 +153,7 @@ class QtstalkerApp : public QMainWindow
     ChartPage *chartNav;
     QHash<QString, Plot *> plotList;
     QString chartPath;
-    QTextEdit *infoLabel;
+    InfoPanel *infoPanel;
     QStatusBar *statusbar;
     QList<QTabWidget*> tabList;
     QHash<MenuAction, QAction*> actionList;

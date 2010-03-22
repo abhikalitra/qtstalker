@@ -24,11 +24,22 @@
 
 #include <QString>
 #include <QDateTime>
+#include <QTimer>
+#include <QObject>
 
-class Script
+#include "ExScript.h"
+
+class Script : public QObject
 {
+  Q_OBJECT
+  
+  signals:
+    void signalDone (QString);
+    void signalMessage (QString);
+  
   public:
     Script ();
+    ~Script ();
     void setName (QString &);
     QString & getName ();
     void setCommand (QString &);
@@ -41,14 +52,26 @@ class Script
     int getStatus ();
     void setLastRun (QDateTime &);
     QDateTime & getLastRun ();
-
+    void setRefresh (int);
+    int getRefresh ();
+    void start ();
+    void stop ();
+    void startScript ();
+    
+  public slots:
+    void timerDone ();
+    void scriptDone ();
+    
   protected:
+    ExScript *scriptServer;
+    QTimer *timer;
     QString name;
     QString command;
     QString file;
     QString comment;
     int status;
     QDateTime lastRun;
+    int refresh;
 };
 
 #endif

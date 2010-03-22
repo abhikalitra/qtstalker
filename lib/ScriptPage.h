@@ -30,10 +30,9 @@
 #include <QList>
 #include <QAction>
 #include <QToolButton>
+#include <QHash>
 
-#include "ExScript.h"
 #include "Script.h"
-
 
 class ScriptPage : public QWidget
 {
@@ -43,44 +42,33 @@ class ScriptPage : public QWidget
     void signalMessage (QString);
 
   public:
-    enum Status
-    {
-      StatusAll,
-      StatusQueue,
-      StatusSearch
-    };
-
     ScriptPage (QWidget *);
     ~ScriptPage ();
     void startScript ();
 
   public slots:
-    void doubleClick (QListWidgetItem *);
-    void rightClick (const QPoint &);
     void newScript ();
     void editScript ();
     void editScript (QString &);
     void deleteScript ();
+    void listDoubleClick (QListWidgetItem *);
+    void listRightClick (const QPoint &);
+    void queRightClick (const QPoint &);
     void search ();
-    void update ();
     void showAllScripts ();
-    void showQueue ();
-    void showSearch ();
-    void addScriptQueue (Script &);
-    void scriptDone ();
+    void updateQueList ();
+    void scriptDone (QString);
     void removeScriptQueue ();
 
   protected:
-    ExScript *scriptServer;
-    Status status;
     QListWidget *list;
+    QListWidget *queList;
     QMenu *menu;
     QList<QAction *> actions;
     QToolButton *allButton;
-    QToolButton *queueButton;
     QToolButton *searchButton;
-    QList<Script> scriptList;
     QString searchString;
+    QHash<QString, Script *> scripts;
 };
 
 #endif

@@ -149,7 +149,7 @@ class IndicatorPlot : public QWidget
     int moveFlag;
     QRubberBand *rubberBand;
     QPoint mouseOrigin;
-    QString newChartObject;
+    int newObjectFlag;
 };
 
 #endif

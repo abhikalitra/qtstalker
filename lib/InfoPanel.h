@@ -19,38 +19,24 @@
  *  USA.
  */
 
-#ifndef TLINE_HPP
-#define TLINE_HPP
+#ifndef INFO_PANEL_HPP
+#define INFO_PANEL_HPP
 
-#include <QStringList>
+#include <QTextEdit>
 
-#include "COPlugin.h"
+#include "Setting.h"
 
-class TLine : public COPlugin
+class InfoPanel : public QTextEdit
 {
+  Q_OBJECT
+
   public:
-    TLine ();
-    void draw (PlotData &);
-    void getInfo (Setting *);
-    void dialog ();
-    void load (QSqlQuery &q);
-    void save ();
-    void create ();
-    int create2 (QDateTime &, double);
-    int create3 (QDateTime &, double);
-    void moving (QDateTime &, double, int);
-    void getIcon (QIcon &);
-    int getHighLow (double &, double &);
-    int inDateRange (PlotData &, QDateTime &, QDateTime &);
+    InfoPanel ();
+    
+  public slots:
+    void showInfo (Setting *);
 
   protected:
-    QStringList fieldList;
-    QColor color;
-    double price;
-    double price2;
-    QDateTime date;
-    QDateTime date2;
-    int extend;
 };
 
 #endif

@@ -79,6 +79,7 @@ HEADERS += HistogramBar.h
 HEADERS += Horizontal.h
 HEADERS += Line.h
 HEADERS += OHLC.h
+HEADERS += InfoPanel.h
 
 
 SOURCES += Setting.cpp
@@ -154,6 +155,7 @@ SOURCES += HistogramBar.cpp
 SOURCES += Horizontal.cpp
 SOURCES += Line.cpp
 SOURCES += OHLC.cpp
+SOURCES += InfoPanel.cpp
 
 
 TARGET = qtstalker

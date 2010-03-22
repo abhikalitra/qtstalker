@@ -48,7 +48,7 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
   vbox->addWidget(buttonBox);
 
   createGeneralPage();
-  createDatabasePage();
+//  createDatabasePage();
 //  createSQLPage();
   createColorPage();
   createFontPage();
@@ -132,6 +132,7 @@ void Preferences::createGeneralPage ()
   tabs->addTab(w, tr("General"));
 }
 
+/*
 void Preferences::createDatabasePage ()
 {
   // database parms page
@@ -220,6 +221,7 @@ void Preferences::createDatabasePage ()
 
   tabs->addTab(w, tr("DB"));
 }
+*/
 
 /*
 void Preferences::createSQLPage ()
@@ -480,6 +482,7 @@ void Preferences::slotSave ()
   }
 
   // save database parms
+/*
   s = dbDriver->currentText();
   config.setData(Config::DbPlugin, s);
 
@@ -494,6 +497,7 @@ void Preferences::slotSave ()
 
   s = dbPassword->text();
   config.setData(Config::DbPassword, s);
+*/
 
   // save sql commands
 /*

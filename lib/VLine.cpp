@@ -175,6 +175,7 @@ int VLine::create2 (QDateTime &x, double)
 {
   saveFlag = TRUE;
   date = x;
+  emit signalMessage(QString());
   return 0;
 }
 
@@ -196,7 +197,7 @@ int VLine::getHighLow (double &, double &)
   return 1;
 }
 
-int VLine::inDateRange (QDateTime &startDate, QDateTime &endDate)
+int VLine::inDateRange (PlotData &, QDateTime &startDate, QDateTime &endDate)
 {
   int rc = FALSE;
   if (date >= startDate && date <= endDate)

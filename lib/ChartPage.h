@@ -57,6 +57,7 @@ class ChartPage : public QWidget
     void addToGroup ();
     void updateList ();
     void symbolSearch ();
+    void allButtonPressed ();
 
   protected:
     QString searchString;
@@ -64,6 +65,7 @@ class ChartPage : public QWidget
     QListWidget *nav;
     QMenu *menu;
     QToolButton *symbolButton;
+    QToolButton *allButton;
     Group symbols;
 };
 
