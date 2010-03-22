@@ -51,8 +51,7 @@ void Text::draw (PlotData &pd)
   if (x == -1)
     return;
 
-  QFont font;
-  painter.setFont(font);
+  painter.setFont(pd.plotFont);
 
   painter.setPen(color);
 
@@ -142,9 +141,9 @@ void Text::dialog ()
   if (def)
   {
     Config config;
-    config.setBaseData((int) Config::DefaultTextColor, color);
+    config.setData((int) Config::DefaultTextColor, color);
     config.setData(Config::DefaultTextLabel, label);
-    config.setBaseData((int) Config::DefaultTextFont, font);
+    config.setData((int) Config::DefaultTextFont, font);
   }
 
   saveFlag = TRUE;

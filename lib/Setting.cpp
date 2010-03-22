@@ -176,32 +176,6 @@ int Setting::count ()
   return (int) dict.count();
 }
 
-void Setting::copy (Setting *r)
-{
-  QString k, d;
-  QHashIterator<QString, QString> it(dict);
-  while (it.hasNext())
-  {
-    it.next();
-    k = it.key();
-    d = it.value();
-    r->setData(k, d);
-  }
-}
-
-void Setting::copy (Setting &r)
-{
-  QString k, d;
-  QHashIterator<QString, QString> it(dict);
-  while (it.hasNext())
-  {
-    it.next();
-    k = it.key();
-    d = it.value();
-    r.setData(k, d);
-  }
-}
-
 void Setting::strip (QString &d)
 {
   d = d.remove(QString("="), Qt::CaseSensitive);

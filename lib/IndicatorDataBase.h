@@ -26,14 +26,13 @@
 #include <QStringList>
 
 #include "Indicator.h"
+#include "DataBase.h"
 
-class IndicatorDataBase
+class IndicatorDataBase : public DataBase
 {
   public:
     IndicatorDataBase ();
     void init (); // called only at qtstalker startup, initializes database tables
-    void transaction ();
-    void commit ();
     void getIndicator (Indicator &);
     void setIndicator (Indicator &);
     void deleteIndicator (QString &);

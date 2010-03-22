@@ -51,8 +51,7 @@ void Retracement::draw (PlotData &pd)
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  QFont font;
-  painter.setFont(font);
+  painter.setFont(pd.plotFont);
 
   int x = pd.dateBars.getX(date);
   if (x == -1)
@@ -282,13 +281,13 @@ void Retracement::dialog ()
   if (def)
   {
     Config config;
-    config.setBaseData((int) Config::DefaultRetracementColor, color);
-    config.setBaseData((int) Config::DefaultRetracementLine1, line1);
-    config.setBaseData((int) Config::DefaultRetracementLine2, line2);
-    config.setBaseData((int) Config::DefaultRetracementLine3, line3);
-    config.setBaseData((int) Config::DefaultRetracementLine4, line4);
-    config.setBaseData((int) Config::DefaultRetracementLine5, line5);
-    config.setBaseData((int) Config::DefaultRetracementLine6, line6);
+    config.setData((int) Config::DefaultRetracementColor, color);
+    config.setData((int) Config::DefaultRetracementLine1, line1);
+    config.setData((int) Config::DefaultRetracementLine2, line2);
+    config.setData((int) Config::DefaultRetracementLine3, line3);
+    config.setData((int) Config::DefaultRetracementLine4, line4);
+    config.setData((int) Config::DefaultRetracementLine5, line5);
+    config.setData((int) Config::DefaultRetracementLine6, line6);
   }
 
   saveFlag = TRUE;

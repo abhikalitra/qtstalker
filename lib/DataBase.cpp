@@ -19,30 +19,38 @@
  *  USA.
  */
 
-#include "Config.h"
+#include "DataBase.h"
 
-#include <QtDebug>
-#include <QDir>
+#include <QDebug>
 #include <QtSql>
 
-Config::Config ()
+DataBase::DataBase ()
 {
+  dbName = "data";
 }
 
-void Config::init (QString session)
+void DataBase::transaction ()
 {
-  QString s = QDir::homePath() + "/.qtstalker/config.sqlite" + session;
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", dbName);
-  db.setHostName("me");
-  db.setDatabaseName(s);
-  db.setUserName("qtstalker");
-  db.setPassword("qtstalker");
-  if (! db.open())
+  QSqlDatabase db = QSqlDatabase::database(dbName);
+  db.transaction();
+}
+
+void DataBase::commit ()
+{
+  QSqlDatabase db = QSqlDatabase::database(dbName);
+  db.commit();
+}
+
+int DataBase::command (QString &sql, QString errMess)
+{
+  QSqlQuery q(QSqlDatabase::database(dbName));
+  q.exec(sql);
+  if (q.lastError().isValid())
   {
-    qDebug() << "Config::Config:" << db.lastError().text();
-    return;
+    qDebug() << errMess << q.lastError().text();
+    return 1;
   }
 
-  createTable();
+  return 0;
 }
 

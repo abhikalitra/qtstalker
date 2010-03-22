@@ -49,7 +49,6 @@
 #include "GroupPage.h"
 #include "PluginFactory.h"
 #include "IndicatorPlugin.h"
-#include "ScriptPage.h"
 #include "DBPlugin.h"
 #include "GroupDataBase.h"
 #include "IndicatorDataBase.h"
@@ -109,13 +108,7 @@ QtstalkerApp::QtstalkerApp(QString session)
   QString path;
   config.getData(Config::IndicatorPluginPath, path);
   pfac.getPluginList(path, l);
-  config.setBaseData(Config::IndicatorPluginList, l);
-  config.getData(Config::COPluginPath, path);
-  pfac.getPluginList(path, l);
-  config.setBaseData(Config::COPluginList, l);
-  config.getData(Config::PlotPluginPath, path);
-  pfac.getPluginList(path, l);
-  config.setBaseData(Config::PlotPluginList, l);
+  config.setData(Config::IndicatorPluginList, l);
   
   GroupDataBase gdb;
   gdb.init();
@@ -227,22 +220,22 @@ QtstalkerApp::QtstalkerApp(QString session)
 
   // set the app font
   QFont font;
-  config.getBaseData((int) Config::AppFont, font);
+  config.getData((int) Config::AppFont, font);
   slotAppFont(font);
 
   // restore the splitter sizes
-  config.getBaseData((int) Config::PlotSizes, split);
-  config.getBaseData((int) Config::NavAreaSize, navSplitter);
-  config.getBaseData((int) Config::DataPanelSize, dpSplitter);
+  config.getData((int) Config::PlotSizes, split);
+  config.getData((int) Config::NavAreaSize, navSplitter);
+  config.getData((int) Config::DataPanelSize, dpSplitter);
 
   // restore the size of the app
   QSize sz;
-  config.getBaseData((int) Config::MainWindowSize, sz);
+  config.getData((int) Config::MainWindowSize, sz);
   resize(sz);
 
   // restore the position of the app
   QPoint p;
-  config.getBaseData((int) Config::MainWindowPos, p);
+  config.getData((int) Config::MainWindowPos, p);
   move(p);
 
   // catch any kill signals and try to save config
@@ -376,7 +369,7 @@ void QtstalkerApp::createToolBars ()
   connect(bg, SIGNAL(buttonClicked(int)), this, SLOT(cursorButtonPressed(int)));
 
   // normal cursor button
-  QToolButton *b = createToolButton(QIcon(cursor_arrow_xpm), QString(), QString(tr("Normal Cursor")), TRUE);
+  QToolButton *b = createToolButton(QIcon(cursor_arrow_xpm), QString(), QString(tr("Select Cursor")), TRUE);
   b->setChecked(TRUE);
   toolBar2->addWidget(b);
   bg->addButton(b, 0);
@@ -396,13 +389,11 @@ void QtstalkerApp::createToolBars ()
   bg = new QButtonGroup(this);
   connect(bg, SIGNAL(buttonClicked(int)), this, SLOT(coButtonPressed(int)));
   
-  Config config;
-  QStringList l;
-  QString path;
-  config.getBaseData(Config::COPluginList, l);
-  config.getData(Config::COPluginPath, path);
-  int loop;
   COFactory fac;
+  QStringList l;
+  fac.getList(l);
+  
+  int loop;
   for (loop = 0; loop < l.count(); loop++)
   {
     COPlugin *plug = fac.getCO(l[loop]);
@@ -476,6 +467,7 @@ void QtstalkerApp::createToolBars ()
   barButtonGroup->addButton(b, 0);
 
   // set the button to last used position
+  Config config;
   b = (QToolButton *) barButtonGroup->button(config.getInt((int) Config::BarLength));
   b->setChecked(TRUE);
 
@@ -539,7 +531,7 @@ void QtstalkerApp::createToolBars ()
   toolbar->addSeparator();
 
   // recent charts combo
-  config.getBaseData((int) Config::RecentChartsList, l);
+  config.getData((int) Config::RecentChartsList, l);
   recentCharts = new QComboBox;
   recentCharts->setMaxCount(10);
   recentCharts->setSizeAdjustPolicy(QComboBox::AdjustToContents);
@@ -581,37 +573,39 @@ void QtstalkerApp::slotQuit()
     QString s = tw->tabText(tw->currentIndex());
     l.append(s);
   }
-  config.setBaseData((int) Config::LastIndicatorUsed, l);
+  config.setData((int) Config::LastIndicatorUsed, l);
 
   // save window sizes
-  config.setBaseData((int) Config::PlotSizes, split);
-  config.setBaseData((int) Config::DataPanelSize, dpSplitter);
-  config.setBaseData((int) Config::NavAreaSize, navSplitter);
+  config.setData((int) Config::PlotSizes, split);
+  config.setData((int) Config::DataPanelSize, dpSplitter);
+  config.setData((int) Config::NavAreaSize, navSplitter);
 
   // save app size and position
   QSize sz = size();
-  config.setBaseData((int) Config::MainWindowSize, sz);
+  config.setData((int) Config::MainWindowSize, sz);
   QPoint pt = pos();
-  config.setBaseData((int) Config::MainWindowPos, pt);
+  config.setData((int) Config::MainWindowPos, pt);
 
   // save menubar settings
-  config.setBaseData((int) Config::ScaleToScreen, actionList.value(ScaleToScreen)->isChecked());
-  config.setBaseData((int) Config::Grid, actionList.value(Grid)->isChecked());
-  config.setBaseData((int) Config::ShowSidePanel, actionList.value(SidePanel)->isChecked());
-  config.setBaseData((int) Config::RefreshStatus, actionList.value(Refresh)->isChecked());
+  config.setData((int) Config::ScaleToScreen, actionList.value(ScaleToScreen)->isChecked());
+  config.setData((int) Config::Grid, actionList.value(Grid)->isChecked());
+  config.setData((int) Config::ShowSidePanel, actionList.value(SidePanel)->isChecked());
+  config.setData((int) Config::RefreshStatus, actionList.value(Refresh)->isChecked());
 
   // save toolbar settings
-  config.setBaseData((int) Config::BarsToLoad, barCount->value());
-  config.setBaseData((int) Config::BarLength, barButtonGroup->checkedId());
+  config.setData((int) Config::BarsToLoad, barCount->value());
+  config.setData((int) Config::BarLength, barButtonGroup->checkedId());
 
   Setting set = zoomList[0];
-  config.setBaseData((int) Config::Pixelspace, set.getInt(1)); // save base zoom amount
+  config.setData((int) Config::Pixelspace, set.getInt(1)); // save base zoom amount
 
   // save recent charts combo
   l.clear();
   for (loop = 0; loop < recentCharts->count(); loop++)
    l.append(recentCharts->itemText(loop));
-  config.setBaseData((int) Config::RecentChartsList, l);
+  config.setData((int) Config::RecentChartsList, l);
+  
+  scriptPage->saveRunningScripts();
 
   config.commit();
 }
@@ -915,22 +909,22 @@ void QtstalkerApp::addIndicatorButton (QString d)
 
   Config config;
   QColor color;
-  config.getBaseData((int) Config::BackgroundColor, color);
+  config.getData((int) Config::BackgroundColor, color);
 
   connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
   plot->setBackgroundColor(color);
 
-  config.getBaseData((int) Config::BorderColor, color);
+  config.getData((int) Config::BorderColor, color);
   connect(this, SIGNAL(signalBorderColor(QColor)), plot, SLOT(setBorderColor(QColor)));
   plot->setBorderColor(color);
 
-  config.getBaseData((int) Config::GridColor, color);
+  config.getData((int) Config::GridColor, color);
   connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
   plot->setGridColor(color);
 
   connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
   QFont font;
-  config.getBaseData((int) Config::PlotFont, font);
+  config.getData((int) Config::PlotFont, font);
   plot->setPlotFont(font);
 
   plot->setGridFlag(actionList.value(Grid)->isChecked());
@@ -971,7 +965,7 @@ void QtstalkerApp::slotChartUpdated ()
     return;
 
   Config config;
-  config.setBaseData((int) Config::BarsToLoad, barCount->value());
+  config.setData((int) Config::BarsToLoad, barCount->value());
 
   loadChart(chartExchange, chartPath);
 }
@@ -1020,9 +1014,9 @@ void QtstalkerApp::initIndicatorNav ()
 
 void QtstalkerApp::initScriptNav ()
 {
-  ScriptPage *sp = new ScriptPage(baseWidget);
-  connect(sp, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  navTab->addTab(sp, QIcon(script_xpm), QString());
+  scriptPage = new ScriptPage(baseWidget);
+  connect(scriptPage, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  navTab->addTab(scriptPage, QIcon(script_xpm), QString());
   navTab->setTabToolTip(3, tr("Scripts"));
 }
 
@@ -1155,7 +1149,7 @@ void QtstalkerApp::coButtonPressed (int id)
 {
   Config config;
   QStringList l;
-  config.getBaseData(Config::COPluginList, l);
+  config.getData(Config::COPluginList, l);
   emit signalNewExternalChartObject(l[id]);
 }
 

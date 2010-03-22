@@ -37,7 +37,7 @@ COFactory::COFactory ()
 COPlugin * COFactory::getCO (QString &co)
 {
   QStringList l;
-  l << "Buy" << "HLine" << "Retracement" << "Sell" << "Text" << "TLine" << "VLine";
+  getList(l);
   
   COPlugin *plug = 0;
   
@@ -69,5 +69,11 @@ COPlugin * COFactory::getCO (QString &co)
   }
   
   return plug;
+}
+
+void COFactory::getList (QStringList &l)
+{
+  l.clear();
+  l << "Buy" << "HLine" << "Retracement" << "Sell" << "Text" << "TLine" << "VLine";
 }
 

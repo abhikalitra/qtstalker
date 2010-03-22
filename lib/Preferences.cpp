@@ -55,7 +55,7 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
 
   Config config;
   QSize sz;
-  config.getBaseData((int) Config::PrefDlgWindowSize, sz);
+  config.getData((int) Config::PrefDlgWindowSize, sz);
   resize(sz);
 
   modified = 0;
@@ -339,7 +339,7 @@ void Preferences::createColorPage ()
   backgroundColorButton = new ColorButton(w, color);
   backgroundColorButton->setToolTip(tr("Background color for charts."));
   grid->addWidget(backgroundColorButton, row++, col--);
-  config.getBaseData((int) Config::BackgroundColor, color);
+  config.getData((int) Config::BackgroundColor, color);
   backgroundColorButton->setColor(color);
   connect(backgroundColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -350,7 +350,7 @@ void Preferences::createColorPage ()
   borderColorButton = new ColorButton(w, color);
   borderColorButton->setToolTip(tr("Border line color for charts. Used for seperators, ticks etc."));
   grid->addWidget(borderColorButton, row++, col--);
-  config.getBaseData((int) Config::BorderColor, color);
+  config.getData((int) Config::BorderColor, color);
   borderColorButton->setColor(color);
   connect(borderColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -361,7 +361,7 @@ void Preferences::createColorPage ()
   gridColorButton = new ColorButton(w, color);
   gridColorButton->setToolTip(tr("Grid color for charts."));
   grid->addWidget(gridColorButton, row++, col--);
-  config.getBaseData((int) Config::GridColor, color);
+  config.getData((int) Config::GridColor, color);
   gridColorButton->setColor(color);
   connect(gridColorButton, SIGNAL(valueChanged()), this, SLOT(slotModified()));
 
@@ -397,7 +397,7 @@ void Preferences::createFontPage ()
   grid->addWidget(label, row, col++);
 
   QFont font;
-  config.getBaseData((int) Config::PlotFont, font);
+  config.getData((int) Config::PlotFont, font);
   plotFontButton = new FontButton(w, font);
   plotFontButton->setToolTip(tr("Font used for text that appears on the chart."));
   grid->addWidget(plotFontButton, row++, col--);
@@ -408,7 +408,7 @@ void Preferences::createFontPage ()
   label = new QLabel(tr("App Font"));
   grid->addWidget(label, row, col++);
 
-  config.getBaseData((int) Config::AppFont, font);
+  config.getData((int) Config::AppFont, font);
   appFontButton = new FontButton(w, font);
   appFontButton->setToolTip(tr("Font used for everything but charts."));
   grid->addWidget(appFontButton, row++, col--);
@@ -426,58 +426,58 @@ void Preferences::slotSave ()
   if (! modified)
   {
     QSize sz = size();
-    config.setBaseData((int) Config::PrefDlgWindowSize, sz);
+    config.setData((int) Config::PrefDlgWindowSize, sz);
     accept();
   }
 
   config.transaction();
 
-  config.setBaseData((int) Config::PSButton1, bs1Spinner->value());
-  config.setBaseData((int) Config::PSButton2, bs2Spinner->value());
-  config.setBaseData((int) Config::IndicatorTabRows, tabRows->value());
+  config.setData((int) Config::PSButton1, bs1Spinner->value());
+  config.setData((int) Config::PSButton2, bs2Spinner->value());
+  config.setData((int) Config::IndicatorTabRows, tabRows->value());
 
-  config.setBaseData((int) Config::Refresh, refreshSpinner->value());
+  config.setData((int) Config::Refresh, refreshSpinner->value());
   if (refreshModified)
     emit signalRefreshChanged(refreshSpinner->value());
 
   QColor c, c2;
   backgroundColorButton->getColor(c);
-  config.getBaseData((int) Config::BackgroundColor, c2);
+  config.getData((int) Config::BackgroundColor, c2);
   if (c != c2)
   {
-    config.setBaseData((int) Config::BackgroundColor, c);
+    config.setData((int) Config::BackgroundColor, c);
     emit signalBackgroundColor(c);
   }
 
   borderColorButton->getColor(c);
-  config.getBaseData((int) Config::BorderColor, c2);
+  config.getData((int) Config::BorderColor, c2);
   if (c != c2)
   {
-    config.setBaseData((int) Config::BorderColor, c);
+    config.setData((int) Config::BorderColor, c);
     emit signalBorderColor(c);
   }
 
   gridColorButton->getColor(c);
-  config.getBaseData((int) Config::GridColor, c2);
+  config.getData((int) Config::GridColor, c2);
   if (c != c2)
   {
-    config.setBaseData((int) Config::GridColor, c);
+    config.setData((int) Config::GridColor, c);
     emit signalGridColor(c);
   }
 
   QFont f, f2;
   plotFontButton->getFont(f);
-  config.getBaseData((int) Config::PlotFont, f2);
+  config.getData((int) Config::PlotFont, f2);
   if (f != f2)
   {
-    config.setBaseData((int) Config::PlotFont, f);
+    config.setData((int) Config::PlotFont, f);
   }
 
   appFontButton->getFont(f);
-  config.getBaseData((int) Config::AppFont, f2);
+  config.getData((int) Config::AppFont, f2);
   if (f != f2)
   {
-    config.setBaseData((int) Config::AppFont, f);
+    config.setData((int) Config::AppFont, f);
     emit signalAppFont(f);
   }
 
@@ -520,7 +520,7 @@ void Preferences::slotSave ()
   emit signalLoadChart();
 
   QSize sz = size();
-  config.setBaseData((int) Config::PrefDlgWindowSize, sz);
+  config.setData((int) Config::PrefDlgWindowSize, sz);
 
   config.commit();
 
@@ -553,7 +553,7 @@ void Preferences::cancelPressed()
 
   Config config;
   QSize sz = size();
-  config.setBaseData((int) Config::PrefDlgWindowSize, sz);
+  config.setData((int) Config::PrefDlgWindowSize, sz);
 
   reject();
 }

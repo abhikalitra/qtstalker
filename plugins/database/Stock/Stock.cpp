@@ -33,6 +33,7 @@
 
 Stock::Stock ()
 {
+  plugin = "Stock";
   scriptMethods << "SET_QUOTE" << "SET_NAME";
 }
 
@@ -255,91 +256,28 @@ int Stock::scriptSetQuote (QStringList &l)
       continue;
     }
   
-    bool ok;
-    double open = l[pos + 1].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Stock::scriptCommand: invalid open, record#" << record << l[pos + 1];
-      continue;
-    }
-
-    double high = l[pos + 2].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Stock::scriptCommand: invalid high, record#" << record << l[pos + 2];
-      continue;
-    }
-
-    double low = l[pos + 3].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Stock::scriptCommand: invalid low, record#" << record << l[pos + 3];
-      continue;
-    }
-
-    double close = l[pos + 4].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Stock::scriptCommand: invalid close, record#" << record << l[pos + 4];
-      continue;
-    }
-
-    double volume = l[pos + 5].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Stock::scriptCommand: invalid volume, record#" << record << l[pos + 5];
-      continue;
-    }
-  
-    if (open > high)
-    {
-      qDebug() << "Stock::scriptCommand: open > high, record#" << record << open << high;
-      continue;
-    }
-    
-    if (open < low)
-    {
-      qDebug() << "Stock::scriptCommand: open < low, record#" << record << open << low;
-      continue;
-    }
-    
-    if (close > high)
-    {
-      qDebug() << "Stock::scriptCommand: close > high, record#" << record << close << high;
-      continue;
-    }
-    
-    if (close < low)
-    {
-      qDebug() << "Stock::scriptCommand: close < low, record#" << record << close << low;
-      continue;
-    }
-    
-    if (volume < 0)
-    {
-      qDebug() << "Stock::scriptCommand: negative volume, record#" << record << volume;
-      continue;
-    }
-    
-    if (low > high)
-    {
-      qDebug() << "Stock::scriptCommand: low > high, record#" << record << low << high;
-      continue;
-    }
-    
-    if (high < low)
-    {
-      qDebug() << "Stock::scriptCommand: high < low, record#" << record << high << low;
-      continue;
-    }
-    
     Bar *bar = new Bar;
     bar->setDate(date);
-    bar->setOpen(open);
-    bar->setHigh(high);
-    bar->setLow(low);
-    bar->setClose(close);
-    bar->setVolume(volume);
+    bar->setOpen(l[pos + 1]);
+    bar->setHigh(l[pos + 2]);
+    bar->setLow(l[pos + 3]);
+    bar->setClose(l[pos + 4]);
+    bar->setVolume(l[pos + 5]);
+    if (bar->getError())
+    {
+      barErrorMessage(bar->getError(), record);
+      delete bar;
+      continue;
+    }
+    
+    bar->verify();
+    if (bar->getError())
+    {
+      barErrorMessage(bar->getError(), record);
+      delete bar;
+      continue;
+    }
+    
     bd.append(bar);
   }
 

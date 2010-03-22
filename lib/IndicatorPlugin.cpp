@@ -27,7 +27,7 @@
 IndicatorPlugin::IndicatorPlugin ()
 {
   Config config;
-  config.getBaseData(Config::PlotPluginList, plotList);
+  config.getData(Config::PlotPluginList, plotList);
   plotList.removeAll("Candle");
   plotList.removeAll("OHLC");
 

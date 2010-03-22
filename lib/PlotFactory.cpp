@@ -38,7 +38,7 @@ PlotFactory::PlotFactory ()
 PlotPlugin * PlotFactory::getPlot (QString &plot)
 {
   QStringList l;
-  l << "Candle" << "Dash" << "Dot" << "Histogram" << "HistogramBar" << "Horizontal" << "Line" << "OHLC";
+  getList(l);
   
   PlotPlugin *plug = 0;
   
@@ -74,4 +74,11 @@ PlotPlugin * PlotFactory::getPlot (QString &plot)
   
   return plug;
 }
+
+void PlotFactory::getList (QStringList &l)
+{
+  l.clear();
+  l << "Candle" << "Dash" << "Dot" << "Histogram" << "HistogramBar" << "Horizontal" << "Line" << "OHLC";
+}
+
 

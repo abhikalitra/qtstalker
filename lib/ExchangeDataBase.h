@@ -24,17 +24,14 @@
 
 #include <QString>
 
-class ExchangeDataBase
+#include "DataBase.h"
+
+class ExchangeDataBase : public DataBase
 {
   public:
     ExchangeDataBase ();
-    void transaction ();
-    void commit ();
     int verifyExchangeName (QString &);
     int createExchanges ();
-    
-  protected:
-    QString dbName;
 };
 
 #endif

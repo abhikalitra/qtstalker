@@ -22,6 +22,7 @@
 #include "ScriptPage.h"
 #include "ScriptDataBase.h"
 #include "PrefDialog.h"
+#include "Config.h"
 
 #include "../pics/asterisk.xpm"
 #include "../pics/search.xpm"
@@ -91,6 +92,8 @@ ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
   menu = new QMenu(this);
   
   showAllScripts();
+  
+  loadSavedScripts();
 }
 
 ScriptPage::~ScriptPage ()
@@ -117,8 +120,14 @@ void ScriptPage::newScript ()
   db.getScripts(l);
   if (l.contains(s))
   {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("This script already exists."));
-    return;
+    int rc = QMessageBox::warning(this,
+    			          tr("Qtstalker: Warning"),
+			          tr("This script already exists. Replace it?"),
+			          QMessageBox::Yes,
+			          QMessageBox::No,
+			          QMessageBox::NoButton);
+    if (rc == QMessageBox::No)
+      return;
   }
 
   editScript(s);
@@ -188,19 +197,26 @@ void ScriptPage::editScript (QString &d)
   script->setRefresh(refresh);
   script->setComment(comment);
   db.setScript(script);
-  
-  // check if script is refreshing
+
+  // check if script is running and restart it with the new parms
   if (scripts.contains(script->getName()))
   {
+    int rc = QMessageBox::warning(this,
+    			          tr("Qtstalker: Warning"),
+			          tr("The script edited is currently running. Restart script?"),
+			          QMessageBox::Yes,
+			          QMessageBox::No,
+			          QMessageBox::NoButton);
+    if (rc == QMessageBox::No)
+      return;
+    
     Script *tscript = scripts.value(script->getName());
     scripts.remove(script->getName());
     delete tscript;
     
-    if (script->getRefresh() > 0)
-    {
-      scripts.insert(script->getName(), script);
-      script->start();
-    }
+    scripts.insert(script->getName(), script);
+    script->start();
+    updateQueList();
   }
   else
     delete script;
@@ -231,13 +247,24 @@ void ScriptPage::deleteScript ()
   db.deleteScript(&script);
   delete item;
 
-  // check if script is in the refresh que
+  // check if script is running
   if (scripts.contains(name))
   {
-    Script *tscript = scripts.value(name);
-    scripts.remove(name); // remove the refresh que hash list
-    delete tscript;
-    updateQueList();
+    rc = QMessageBox::warning(this,
+    			      tr("Qtstalker: Warning"),
+			      tr("The script deleted is currently running. Terminate script?"),
+			      QMessageBox::Yes,
+			      QMessageBox::No,
+			      QMessageBox::NoButton);
+    if (rc == QMessageBox::No)
+      return;
+    else
+    {
+      Script *tscript = scripts.value(name);
+      scripts.remove(name); // remove the refresh que hash list
+      delete tscript;
+      updateQueList();
+    }
   }
 
   emit signalMessage(QString(tr("Script deleted.")));
@@ -273,6 +300,7 @@ void ScriptPage::listDoubleClick (QListWidgetItem *item)
 	
   scripts.insert(name, script);
   connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptDone(QString)));
+  connect(script, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   script->start();
   
   updateQueList();
@@ -347,9 +375,15 @@ void ScriptPage::updateQueList ()
     QString name = script->getName();
     
     if (script->getRefresh())
-      new QListWidgetItem(QIcon(refresh_xpm), name, queList);
+    {
+      QListWidgetItem *item = new QListWidgetItem(QIcon(refresh_xpm), name, queList);
+      item->setToolTip(QString(tr("Run every ") + QString::number(script->getRefresh()) + tr(" seconds.")));
+    }
     else
-      new QListWidgetItem(QIcon(ok), name, queList);
+    {
+      QListWidgetItem *item = new QListWidgetItem(QIcon(ok), name, queList);
+      item->setToolTip(QString(tr("Running...")));
+    }
   }
 }
 
@@ -389,5 +423,48 @@ void ScriptPage::removeScriptQueue ()
   updateQueList();
   
   emit signalMessage(QString(tr("Script removed.")));
+}
+
+void ScriptPage::saveRunningScripts ()
+{
+  QStringList l;
+  QHashIterator<QString, Script *> it(scripts);
+  while (it.hasNext())
+  {
+    it.next();
+    Script *script = it.value();
+    if (script->getRefresh())
+      l.append(script->getName());
+  }
+  
+  Config config;
+  config.setData(Config::SavedRunningScripts, l);
+}
+
+void ScriptPage::loadSavedScripts ()
+{
+  QStringList l;
+  Config config;
+  config.getData(Config::SavedRunningScripts, l);
+  
+  ScriptDataBase db;
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    Script *script = new Script;
+    script->setName(l[loop]);
+    if (db.getScript(script))
+    {
+      delete script;
+      continue;
+    }
+      
+    scripts.insert(l[loop], script);
+    connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptDone(QString)));
+    connect(script, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+    script->start();
+  }
+  
+  updateQueList();
 }
 

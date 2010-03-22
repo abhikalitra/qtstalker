@@ -137,7 +137,7 @@ void Buy::dialog ()
   if (def)
   {
     Config config;
-    config.setBaseData((int) Config::DefaultBuyColor, color);
+    config.setData((int) Config::DefaultBuyColor, color);
   }
 
   saveFlag = TRUE;

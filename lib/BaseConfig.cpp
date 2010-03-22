@@ -25,14 +25,14 @@
 #include <QtSql>
 #include <QDir>
 
-
 BaseConfig::BaseConfig ()
 {
+  dbName = "config";
 }
 
 void BaseConfig::createTable ()
 {
-  QSqlDatabase db = QSqlDatabase::database("config");
+  QSqlDatabase db = QSqlDatabase::database(dbName);
   QSqlQuery q(db);
   QString s = "CREATE TABLE IF NOT EXISTS config (";
   s.append("key INT PRIMARY KEY UNIQUE");
@@ -43,27 +43,15 @@ void BaseConfig::createTable ()
     qDebug() << "BaseConfig::createTable: " << q.lastError().text();
 }
 
-void BaseConfig::transaction ()
-{
-  QSqlDatabase db = QSqlDatabase::database("config");
-  db.transaction();
-}
-
-void BaseConfig::commit ()
-{
-  QSqlDatabase db = QSqlDatabase::database("config");
-  db.commit();
-}
-
-void BaseConfig::getBaseData (int p, QString &d)
+void BaseConfig::getData (int p, QString &d)
 {
   d.clear();
-  QSqlQuery q(QSqlDatabase::database("config"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "SELECT setting FROM config WHERE key=" + QString::number(p);
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "BaseConfig::getBaseData: " << q.lastError().text();
+    qDebug() << "BaseConfig::getData: " << q.lastError().text();
     return;
   }
 
@@ -71,9 +59,9 @@ void BaseConfig::getBaseData (int p, QString &d)
     d = q.value(0).toString();
 }
 
-void BaseConfig::setBaseData (int p, QString &d)
+void BaseConfig::setData (int p, QString &d)
 {
-  QSqlQuery q(QSqlDatabase::database("config"));
+  QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "INSERT OR REPLACE INTO config (key,setting) VALUES (";
   s.append(QString::number(p)); // key
   s.append(",'" + d + "'"); // setting
@@ -81,15 +69,15 @@ void BaseConfig::setBaseData (int p, QString &d)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "BaseConfig::setBaseData: " << q.lastError().text() << p << " " << d;
+    qDebug() << "BaseConfig::setData: " << q.lastError().text() << p << " " << d;
     return;
   }
 }
 
-void BaseConfig::getBaseData (int p, QSplitter *sp)
+void BaseConfig::getData (int p, QSplitter *sp)
 {
   QString s;
-  getBaseData(p, s);
+  getData(p, s);
 
   QStringList l = s.split(",");
   QList<int> sizeList = sp->sizes();
@@ -109,7 +97,7 @@ void BaseConfig::getBaseData (int p, QSplitter *sp)
   sp->setSizes(sizeList);
 }
 
-void BaseConfig::setBaseData (int p, QSplitter *sp)
+void BaseConfig::setData (int p, QSplitter *sp)
 {
   QStringList l;
   QList<int> sizeList = sp->sizes();
@@ -119,27 +107,27 @@ void BaseConfig::setBaseData (int p, QSplitter *sp)
     l.append(QString::number(sizeList[loop]));
 
   QString s(l.join(","));
-  setBaseData(p,s);
+  setData(p,s);
 }
 
-void BaseConfig::getBaseData (int name, QColor &color)
+void BaseConfig::getData (int name, QColor &color)
 {
   QString c;
-  getBaseData(name, c);
+  getData(name, c);
   if (c.length())
     color.setNamedColor(c);
 }
 
-void BaseConfig::setBaseData (int name, QColor &color)
+void BaseConfig::setData (int name, QColor &color)
 {
   QString c = color.name();
-  setBaseData(name, c);
+  setData(name, c);
 }
 
-void BaseConfig::getBaseData (int name, QFont &font)
+void BaseConfig::getData (int name, QFont &font)
 {
   QString f;
-  getBaseData(name, f);
+  getData(name, f);
   if (! f.length())
     return;
 
@@ -152,7 +140,7 @@ void BaseConfig::getBaseData (int name, QFont &font)
   font.setBold(l[4].toInt());
 }
 
-void BaseConfig::setBaseData (int name, QFont &font)
+void BaseConfig::setData (int name, QFont &font)
 {
   QString f = font.family() + "," +
               QString::number(font.pointSize()) + "," +
@@ -160,13 +148,13 @@ void BaseConfig::setBaseData (int name, QFont &font)
               QString::number(font.italic ()) + "," +
               QString::number(font.bold ());
 
-  setBaseData(name, f);
+  setData(name, f);
 }
 
-void BaseConfig::getBaseData (int name, QPoint &p)
+void BaseConfig::getData (int name, QPoint &p)
 {
   QString s;
-  getBaseData(name, s);
+  getData(name, s);
   if (! s.length())
     return;
 
@@ -175,16 +163,16 @@ void BaseConfig::getBaseData (int name, QPoint &p)
   p.setY(l[1].toInt());
 }
 
-void BaseConfig::setBaseData (int name, QPoint &p)
+void BaseConfig::setData (int name, QPoint &p)
 {
   QString s = QString::number(p.x()) + "," + QString::number(p.y());
-  setBaseData(name, s);
+  setData(name, s);
 }
 
-void BaseConfig::getBaseData (int name, QSize &sz)
+void BaseConfig::getData (int name, QSize &sz)
 {
   QString s;
-  getBaseData(name, s);
+  getData(name, s);
   if (! s.length())
     return;
 
@@ -193,73 +181,73 @@ void BaseConfig::getBaseData (int name, QSize &sz)
   sz.setHeight(l[1].toInt());
 }
 
-void BaseConfig::setBaseData (int name, QSize &sz)
+void BaseConfig::setData (int name, QSize &sz)
 {
   QString s = QString::number(sz.width()) + "," + QString::number(sz.height());
-  setBaseData(name, s);
+  setData(name, s);
 }
 
 bool BaseConfig::getBool (int name)
 {
   QString s;
   bool b = FALSE;
-  getBaseData(name, s);
+  getData(name, s);
   if (s.length())
     b = s.toInt();
   return b;
 }
 
-void BaseConfig::setBaseData (int name, bool b)
+void BaseConfig::setData (int name, bool b)
 {
   QString s = QString::number(b);
-  setBaseData(name, s);
+  setData(name, s);
 }
 
 int BaseConfig::getInt (int name)
 {
   QString s;
   int i = 0;
-  getBaseData(name, s);
+  getData(name, s);
   if (s.length())
     i = s.toInt();
   return i;
 }
 
-void BaseConfig::setBaseData (int name, int i)
+void BaseConfig::setData (int name, int i)
 {
   QString s = QString::number(i);
-  setBaseData(name, s);
+  setData(name, s);
 }
 
 double BaseConfig::getDouble (int name)
 {
   QString s;
   double d = 0;
-  getBaseData(name, s);
+  getData(name, s);
   if (s.length())
     d = s.toDouble();
   return d;
 }
 
-void BaseConfig::setBaseData (int name, double d)
+void BaseConfig::setData (int name, double d)
 {
   QString s = QString::number(d);
-  setBaseData(name, s);
+  setData(name, s);
 }
 
-void BaseConfig::getBaseData (int name, QStringList &l)
+void BaseConfig::getData (int name, QStringList &l)
 {
   l.clear();
   QString s;
-  getBaseData(name, s);
+  getData(name, s);
   if (s.length())
     l = s.split(",");
 }
 
-void BaseConfig::setBaseData (int name, QStringList &l)
+void BaseConfig::setData (int name, QStringList &l)
 {
   QString s = l.join(",");
-  setBaseData(name, s);
+  setData(name, s);
 }
 
 

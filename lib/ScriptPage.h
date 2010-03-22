@@ -45,6 +45,8 @@ class ScriptPage : public QWidget
     ScriptPage (QWidget *);
     ~ScriptPage ();
     void startScript ();
+    void saveRunningScripts ();
+    void loadSavedScripts ();
 
   public slots:
     void newScript ();

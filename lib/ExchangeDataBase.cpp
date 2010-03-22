@@ -32,18 +32,6 @@ ExchangeDataBase::ExchangeDataBase ()
   dbName = "quotes";
 }
 
-void ExchangeDataBase::transaction ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.transaction();
-}
-
-void ExchangeDataBase::commit ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.commit();
-}
-
 int ExchangeDataBase::verifyExchangeName (QString &exchange)
 {
   QSqlQuery q(QSqlDatabase::database(dbName));

@@ -29,8 +29,9 @@
 
 #include "BarData.h"
 #include "Group.h"
+#include "DataBase.h"
 
-class DBPlugin
+class DBPlugin : public DataBase
 {
   public:
     DBPlugin ();
@@ -41,8 +42,6 @@ class DBPlugin
     virtual int scriptCommand (QStringList &);
     
     void init (QString &);
-    void transaction ();
-    void commit ();
     void getSearchList (QString &ex, QString &pat, Group &);
     void getFirstDate (QString &table, QDateTime &date);
     void getLastDate (QString &table, QDateTime &date);
@@ -50,12 +49,12 @@ class DBPlugin
 			   BarData::BarLength barLength);
     int getIndexData (BarData &);
     int setIndexData (BarData &);
-    int command (QString &, QString);
     int addSymbolIndex (BarData &);
     void getExchangeList (QStringList &);
+    void barErrorMessage (int, int);
     
   protected:
-    QString dbName;
+    QString plugin;
 };
 
 #endif

@@ -48,8 +48,6 @@ class Setting
     void parse (QString &);
     void clear ();
     int count ();
-    void copy (Setting *);
-    void copy (Setting &);
     void strip (QString &);
 
   protected:

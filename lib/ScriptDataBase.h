@@ -26,22 +26,18 @@
 #include <QStringList>
 
 #include "Script.h"
+#include "DataBase.h"
 
-class ScriptDataBase
+class ScriptDataBase : public DataBase
 {
   public:
     ScriptDataBase ();
     void init (); // called only at qtstalker startup, initializes database tables
-    void transaction ();
-    void commit ();
     void getScripts (QStringList &);
-    void getScript (Script *);
+    int getScript (Script *);
     void deleteScript (Script *);
     void setScript (Script *);
     void getScriptSearch (QString &pattern, QStringList &list);
-    
-  protected:
-    QString dbName;
 };
 
 #endif

@@ -80,6 +80,7 @@ HEADERS += Horizontal.h
 HEADERS += Line.h
 HEADERS += OHLC.h
 HEADERS += InfoPanel.h
+HEADERS += DataBase.h
 
 
 SOURCES += Setting.cpp
@@ -156,6 +157,7 @@ SOURCES += Horizontal.cpp
 SOURCES += Line.cpp
 SOURCES += OHLC.cpp
 SOURCES += InfoPanel.cpp
+SOURCES += DataBase.cpp
 
 
 TARGET = qtstalker

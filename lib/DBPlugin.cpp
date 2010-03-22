@@ -20,6 +20,7 @@
  */
 
 #include "DBPlugin.h"
+#include "Bar.h"
 
 #include <QDebug>
 #include <QtSql>
@@ -83,37 +84,25 @@ void DBPlugin::init (QString &dbFile)
     qDebug() << "DBPlugin::init:" << q.lastError().text();
 }
 
-void DBPlugin::transaction ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.transaction();
-}
-
-void DBPlugin::commit ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.commit();
-}
-
 void DBPlugin::getSearchList (QString &ex, QString &pat, Group &l)
 {
   // if exchange and pat is empty then get all symbols from all exchanges will be returned
   QString s;
   if (ex.isEmpty() && pat.isEmpty())
-    s = "SELECT symbol,name FROM symbolIndex";
+    s = "SELECT symbol,name,exchange FROM symbolIndex";
 
   // if exchange is empty then get all symbols from all exchanges that match pat
   if (ex.isEmpty() && ! pat.isEmpty())
-    s = "SELECT symbol,name FROM symbolIndex WHERE symbol LIKE '" + pat + "'";
+    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE symbol LIKE '" + pat + "'";
 
   // exchange = yes and pat = no, get the entire exchange list
   if (! ex.isEmpty() && pat.isEmpty())
-    s = "SELECT symbol,name FROM symbolIndex WHERE exchange='" + ex + "'";
+    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE exchange='" + ex + "'";
     
   // exchange = yes and pat = yes, get pat from the exchange
   if (! ex.isEmpty() && ! pat.isEmpty())
   {
-    s = "SELECT symbol,name FROM symbolIndex WHERE symbol LIKE";
+    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE symbol LIKE";
     s.append(" '" + pat + "'");
     s.append(" AND exchange='" + ex + "'");
   }
@@ -131,15 +120,17 @@ void DBPlugin::getSearchList (QString &ex, QString &pat, Group &l)
 
   while (q.next())
   {
+    int pos = 0;
     BarData *bd = new BarData;
     
-    bd->setExchange(ex);
-    
-    s = q.value(0).toString();
+    s = q.value(pos++).toString();
     bd->setSymbol(s);
     
-    s = q.value(1).toString();
+    s = q.value(pos++).toString();
     bd->setName(s);
+    
+    s = q.value(pos++).toString();
+    bd->setExchange(s);
     
     l.append(bd);
   }
@@ -286,19 +277,6 @@ int DBPlugin::setIndexData (BarData &data)
   return 0;
 }
 
-int DBPlugin::command (QString &sql, QString errMess)
-{
-  QSqlQuery q(QSqlDatabase::database(dbName));
-  q.exec(sql);
-  if (q.lastError().isValid())
-  {
-    qDebug() << errMess << q.lastError().text();
-    return 1;
-  }
-
-  return 0;
-}
-
 int DBPlugin::addSymbolIndex (BarData &bars)
 {
   QSqlQuery q(QSqlDatabase::database(dbName));
@@ -350,5 +328,58 @@ void DBPlugin::getExchangeList (QStringList &l)
     l.append(q.value(0).toString());
 
   l.sort();
+}
+
+void DBPlugin::barErrorMessage (int rc, int record)
+{
+  QString function = "::scriptCommand:";
+  
+  switch ((Bar::RC) rc)
+  {
+    case Bar::RC_InvalidOpen:
+      qDebug() << plugin << function << "invalid open, record#" << record;
+      break;
+    case Bar::RC_InvalidHigh:
+      qDebug() << plugin << function << "invalid high, record#" << record;
+      break;
+    case Bar::RC_InvalidLow:
+      qDebug() << plugin << function << "invalid low, record#" << record;
+      break;
+    case Bar::RC_InvalidClose:
+      qDebug() << plugin << function << "invalid close, record#" << record;
+      break;
+    case Bar::RC_InvalidVolume:
+      qDebug() << plugin << function << "invalid volume, record#" << record;
+      break;
+    case Bar::RC_InvalidOI:
+      qDebug() << plugin << function << "invalid oi, record#" << record;
+      break;
+    case Bar::RC_OGTH: // open > high
+      qDebug() << plugin << function << "open > high, record#" << record;
+      break;
+    case Bar::RC_OLTL: // open < low
+      qDebug() << plugin << function << "open < low, record#" << record;
+      break;
+    case Bar::RC_CGTH: // close > high
+      qDebug() << plugin << function << "close > high, record#" << record;
+      break;
+    case Bar::RC_CLTL: // close < low
+      qDebug() << plugin << function << "close < low, record#" << record;
+      break;
+    case Bar::RC_VLT0: // volume < 0
+      qDebug() << plugin << function << "volume < 0, record#" << record;
+      break;
+    case Bar::RC_LGTH: // low > high
+      qDebug() << plugin << function << "low > high, record#" << record;
+      break;
+    case Bar::RC_HLTL: // high < low
+      qDebug() << plugin << function << "high < low, record#" << record;
+      break;
+    case Bar::RC_OILT0: // oi < 0
+      qDebug() << plugin << function << "oi < 0, record#" << record;
+      break;
+    default:
+      break;
+  }
 }
 

@@ -61,26 +61,20 @@ QtStalkerTester::QtStalkerTester ()
   // get the plugin inventory
   PluginFactory fac;
   QString s;
-  config.getData(TestConfig::IndicatorPluginPath, s);
+  config.getData((int) TestConfig::IndicatorPluginPath, s);
   QStringList l;
   fac.getPluginList(s, l);
-  config.setBaseData(TestConfig::IndicatorPluginList, l);
-  config.getData(TestConfig::PlotPluginPath, s);
+  config.setData((int) TestConfig::IndicatorPluginList, l);
+  config.getData((int) TestConfig::DBPluginPath, s);
   fac.getPluginList(s, l);
-  config.setBaseData(TestConfig::PlotPluginList, l);
-  config.getData(TestConfig::COPluginPath, s);
-  fac.getPluginList(s, l);
-  config.setBaseData(TestConfig::COPluginList, l);
-  config.getData(TestConfig::DBPluginPath, s);
-  fac.getPluginList(s, l);
-  config.setBaseData(TestConfig::DBPluginList, l);
+  config.setData((int) TestConfig::DBPluginList, l);
 
   TestDataBase tdb;
   tdb.init();
 
   DBPlugin qdb;
   QString dbFile;
-  config.getData(TestConfig::DbName, dbFile);
+  config.getData((int) TestConfig::DbName, dbFile);
   qdb.init(dbFile);
 
   createActions();
@@ -204,11 +198,11 @@ void QtStalkerTester::quit ()
 
   // save app size
   QSize sz = size();
-  config.setBaseData((int) TestConfig::MainWindowSize, sz);
+  config.setData((int) TestConfig::MainWindowSize, sz);
 
   // save app position
   QPoint pt = pos();
-  config.setBaseData((int) TestConfig::MainWindowPos, pt);
+  config.setData((int) TestConfig::MainWindowPos, pt);
 
   config.commit();
 }
@@ -219,12 +213,12 @@ void QtStalkerTester::restoreSettings ()
 
   // restore the size of the app
   QSize sz;
-  config.getBaseData((int) TestConfig::MainWindowSize, sz);
+  config.getData((int) TestConfig::MainWindowSize, sz);
   resize(sz);
 
   // restore the position of the app
   QPoint p;
-  config.getBaseData((int) TestConfig::MainWindowPos, p);
+  config.getData((int) TestConfig::MainWindowPos, p);
   move(p);
 }
 
@@ -639,7 +633,6 @@ void QtStalkerTester::run ()
 
   QString indicatorPluginPath, coPluginPath, dbPluginPath;
   config.getData(TestConfig::IndicatorPluginPath, indicatorPluginPath);
-  config.getData(TestConfig::COPluginPath, coPluginPath);
   config.getData(TestConfig::DBPluginPath, dbPluginPath);
 
   ExScript server(indicatorPluginPath, dbPluginPath);

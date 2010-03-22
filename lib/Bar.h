@@ -30,34 +30,66 @@
 class Bar
 {
   public:
+    enum BarField
+    {
+      BarFieldOpen,
+      BarFieldHigh,
+      BarFieldLow,
+      BarFieldClose,
+      BarFieldVolume,
+      BarFieldOI
+    };
+
+    enum RC
+    {
+      RC_None,
+      RC_InvalidOpen,
+      RC_InvalidHigh,
+      RC_InvalidLow,
+      RC_InvalidClose,
+      RC_InvalidVolume,
+      RC_InvalidOI,
+      RC_OGTH, // open > high
+      RC_OLTL, // open < low
+      RC_CGTH, // close > high
+      RC_CLTL, // close < low
+      RC_VLT0, // volume < 0
+      RC_LGTH, // low > high
+      RC_HLTL, // high < low
+      RC_OILT0 // oi < 0
+    };
+
     Bar ();
     int setDate (QDateTime &);
-    void getDate (QDateTime &);
+    QDateTime & getDate ();
     void setOpen (double);
+    void setOpen (QString &);
     double getOpen ();
     void setHigh (double);
+    void setHigh (QString &);
     double getHigh ();
     void setLow (double);
+    void setLow (QString &);
     double getLow ();
     void setClose (double);
+    void setClose (QString &);
     double getClose ();
     void setVolume (double);
+    void setVolume (QString &);
     double getVolume ();
     void setOI (double);
+    void setOI (QString &);
     double getOI ();
-    bool getEmptyFlag ();
     void getDateString (QString &);
     void getDateTimeString (QString &);
     void getTimeString (QString &);
-    void setTime (QTime &);
-    bool getValidDate ();
-    void getDateNumber (QString &);
-    void clear ();
+    void verify ();
+    int getError ();
 
   protected:
     QHash<int, double> data;
     QDateTime date;
-    bool emptyFlag;
+    int error;
 };
 
 #endif

@@ -136,7 +136,7 @@ void Sell::dialog ()
   if (def)
   {
     Config config;
-    config.setBaseData((int) Config::DefaultSellColor, color);
+    config.setData((int) Config::DefaultSellColor, color);
   }
 
   saveFlag = TRUE;

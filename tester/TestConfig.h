@@ -47,18 +47,12 @@ class TestConfig : public BaseConfig
       DbGetSymbol, // the sql command to get symbol quotes
       IndicatorPluginPath,
       IndicatorPluginList,
-      PlotPluginPath,
-      PlotPluginList,
-      COPluginPath,
-      COPluginList,
       DBPluginPath,
       DBPluginList
     };
 
     TestConfig ();
     void init (QString session); // called only at qtstalker startup, initializes tables
-    void setData (Parm, QString &);
-    void getData (Parm, QString &);
     void setDefaults ();
 };
 

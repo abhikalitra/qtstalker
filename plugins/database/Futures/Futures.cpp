@@ -34,6 +34,7 @@
 
 Futures::Futures ()
 {
+  plugin = "Futures";
   scriptMethods << "SET_QUOTE" << "SET_NAME" << "SET_CODE" << "SET_MONTH" << "SET_YEAR";
 }
 
@@ -296,105 +297,29 @@ int Futures::scriptSetQuote (QStringList &l)
       continue;
     }
   
-    bool ok;
-    double open = l[pos + 1].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Futures::scriptCommand: invalid open, record#" << record << l[pos + 1];
-      continue;
-    }
-
-    double high = l[pos + 2].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Futures::scriptCommand: invalid high, record#" << record << l[pos + 2];
-      continue;
-    }
-
-    double low = l[pos + 3].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Futures::scriptCommand: invalid low, record#" << record << l[pos + 3];
-      continue;
-    }
-
-    double close = l[pos + 4].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Futures::scriptCommand: invalid close, record#" << record << l[pos + 4];
-      continue;
-    }
-
-    double volume = l[pos + 5].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Futures::scriptCommand: invalid volume, record#" << record << l[pos + 5];
-      continue;
-    }
-  
-    double oi = l[pos + 6].toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "Futures::scriptCommand: invalid oi, record#" << record << l[pos + 6];
-      continue;
-    }
-  
-    if (open > high)
-    {
-      qDebug() << "Futures::scriptCommand: open > high, record#" << record << open << high;
-      continue;
-    }
-    
-    if (open < low)
-    {
-      qDebug() << "Futures::scriptCommand: open < low, record#" << record << open << low;
-      continue;
-    }
-    
-    if (close > high)
-    {
-      qDebug() << "Futures::scriptCommand: close > high, record#" << record << close << high;
-      continue;
-    }
-    
-    if (close < low)
-    {
-      qDebug() << "Futures::scriptCommand: close < low, record#" << record << close << low;
-      continue;
-    }
-    
-    if (volume < 0)
-    {
-      qDebug() << "Futures::scriptCommand: negative volume, record#" << record << volume;
-      continue;
-    }
-    
-    if (oi < 0)
-    {
-      qDebug() << "Futures::scriptCommand: negative oi, record#" << record << oi;
-      continue;
-    }
-    
-    if (low > high)
-    {
-      qDebug() << "Futures::scriptCommand: low > high, record#" << record << low << high;
-      continue;
-    }
-    
-    if (high < low)
-    {
-      qDebug() << "Futures::scriptCommand: high < low, record#" << record << high << low;
-      continue;
-    }
-    
     Bar *bar = new Bar;
     bar->setDate(date);
-    bar->setOpen(open);
-    bar->setHigh(high);
-    bar->setLow(low);
-    bar->setClose(close);
-    bar->setVolume(volume);
-    bar->setOI(oi);
+    bar->setOpen(l[pos + 1]);
+    bar->setHigh(l[pos + 2]);
+    bar->setLow(l[pos + 3]);
+    bar->setClose(l[pos + 4]);
+    bar->setVolume(l[pos + 5]);
+    bar->setOI(l[pos + 6]);
+    if (bar->getError())
+    {
+      barErrorMessage(bar->getError(), record);
+      delete bar;
+      continue;
+    }
+    
+    bar->verify();
+    if (bar->getError())
+    {
+      barErrorMessage(bar->getError(), record);
+      delete bar;
+      continue;
+    }
+    
     bd.append(bar);
   }
 

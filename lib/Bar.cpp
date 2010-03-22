@@ -25,7 +25,7 @@
 
 Bar::Bar ()
 {
-  emptyFlag = TRUE;
+  error = RC_None;
 }
 
 int Bar::setDate (QDateTime &d)
@@ -37,80 +37,147 @@ int Bar::setDate (QDateTime &d)
   return FALSE;
 }
 
-void Bar::getDate (QDateTime &d)
+QDateTime & Bar::getDate ()
 {
-  d = date;
+  return date;
 }
 
 void Bar::setOpen (double d)
 {
-  data.insert(0, d);
-  emptyFlag = FALSE;
+  data.insert(BarFieldOpen, d);
+}
+
+void Bar::setOpen (QString &s)
+{
+  bool ok;
+  double d = s.toDouble(&ok);
+  if (! ok)
+  {
+    error = RC_InvalidOpen;
+    return;
+  }
+
+  data.insert(BarFieldOpen, d);
 }
 
 double Bar::getOpen ()
 {
-  return data.value(0);
+  return data.value(BarFieldOpen);
 }
 
 void Bar::setHigh (double d)
 {
-  data.insert(1, d);
-  emptyFlag = FALSE;
+  data.insert(BarFieldHigh, d);
+}
+
+void Bar::setHigh (QString &s)
+{
+  bool ok;
+  double d = s.toDouble(&ok);
+  if (! ok)
+  {
+    error = RC_InvalidHigh;
+    return;
+  }
+
+  data.insert(BarFieldHigh, d);
 }
 
 double Bar::getHigh ()
 {
-  return data.value(1);
+  return data.value(BarFieldHigh);
 }
 
 void Bar::setLow (double d)
 {
-  data.insert(2, d);
-  emptyFlag = FALSE;
+  data.insert(BarFieldLow, d);
+}
+
+void Bar::setLow (QString &s)
+{
+  bool ok;
+  double d = s.toDouble(&ok);
+  if (! ok)
+  {
+    error = RC_InvalidLow;
+    return;
+  }
+
+  data.insert(BarFieldLow, d);
 }
 
 double Bar::getLow ()
 {
-  return data.value(2);
+  return data.value(BarFieldLow);
 }
 
 void Bar::setClose (double d)
 {
-  data.insert(3, d);
-  emptyFlag = FALSE;
+  data.insert(BarFieldClose, d);
+}
+
+void Bar::setClose (QString &s)
+{
+  bool ok;
+  double d = s.toDouble(&ok);
+  if (! ok)
+  {
+    error = RC_InvalidClose;
+    return;
+  }
+
+  data.insert(BarFieldClose, d);
 }
 
 double Bar::getClose ()
 {
-  return data.value(3);
+  return data.value(BarFieldClose);
 }
 
 void Bar::setVolume (double d)
 {
-  data.insert(4, d);
-  emptyFlag = FALSE;
+  data.insert(BarFieldVolume, d);
+}
+
+void Bar::setVolume (QString &s)
+{
+  bool ok;
+  double d = s.toDouble(&ok);
+  if (! ok)
+  {
+    error = RC_InvalidVolume;
+    return;
+  }
+
+  data.insert(BarFieldVolume, d);
 }
 
 double Bar::getVolume ()
 {
-  return data.value(4);
+  return data.value(BarFieldVolume);
 }
 
 void Bar::setOI (double d)
 {
-  data.insert(5, d);
-  emptyFlag = FALSE;
+  data.insert(BarFieldOI, d);
+}
+
+void Bar::setOI (QString &s)
+{
+  bool ok;
+  double d = s.toDouble(&ok);
+  if (! ok)
+  {
+    error = RC_InvalidOI;
+    return;
+  }
+
+  data.insert(BarFieldOI, d);
 }
 
 double Bar::getOI ()
 {
-  return data.value(5);
-}
-
-bool Bar::getEmptyFlag ()
-{
-  return emptyFlag;
+  return data.value(BarFieldOI);
 }
 
 void Bar::getDateString (QString &d)
@@ -128,27 +195,66 @@ void Bar::getTimeString (QString &d)
   d = date.toString("HH:mm:ss");
 }
 
-void Bar::setTime (QTime &d)
+void Bar::verify ()
 {
-  if (! d.isValid())
+  double open = getOpen();
+  double high = getHigh();
+  if (open > high)
+  {
+    error = RC_OGTH;
     return;
-
-  date.setTime(d);
-  return;
+  }
+    
+  double low = getLow();
+  if (open < low)
+  {
+    error = RC_OLTL;
+    return;
+  }
+    
+  double close = getClose();
+  if (close > high)
+  {
+    error = RC_CGTH;
+    return;
+  }
+    
+  if (close < low)
+  {
+    error = RC_CLTL;
+    return;
+  }
+    
+  if (getVolume() < 0)
+  {
+    error = RC_VLT0;
+    return;
+  }
+    
+  if (low > high)
+  {
+    error = RC_LGTH;
+    return;
+  }
+    
+  if (high < low)
+  {
+    error = RC_HLTL;
+    return;
+  }
+  
+  if (data.contains(BarFieldOI))
+  {
+    if (getOI() < 0)
+    {
+      error = RC_OILT0;
+      return;
+    }
+  }
 }
 
-bool Bar::getValidDate ()
+int Bar::getError ()
 {
-  return date.isValid();
+  return error;
 }
 
-void Bar::getDateNumber (QString &d)
-{
-  d = date.toString("yyyyMMddHHmmss");
-}
-
-void Bar::clear ()
-{
-  data.clear();
-  emptyFlag = TRUE;
-}

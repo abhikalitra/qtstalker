@@ -25,7 +25,6 @@
 #include <QDir>
 #include <QtSql>
 
-
 TestConfig::TestConfig ()
 {
 }
@@ -44,7 +43,7 @@ void TestConfig::init (QString session)
   }
 
   QString s = home + "/config.sqlite" + session;
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "config");
+  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", dbName);
   db.setHostName("me");
   db.setDatabaseName(s);
   db.setUserName("QtStalkerTest");
@@ -57,16 +56,6 @@ void TestConfig::init (QString session)
 
   createTable();
   setDefaults();
-}
-
-void TestConfig::getData (Parm p, QString &d)
-{
-  getBaseData((int) p, d);
-}
-
-void TestConfig::setData (Parm p, QString &d)
-{
-  setBaseData((int) p, d);
 }
 
 void TestConfig::setDefaults ()
@@ -114,20 +103,6 @@ void TestConfig::setDefaults ()
   {
     d = "/usr/local/lib/qtstalker/plugins/indicator";
     setData(IndicatorPluginPath, d);
-  }
-
-  getData(PlotPluginPath, d);
-  if (d.isEmpty())
-  {
-    d = "/usr/local/lib/qtstalker/plugins/plot";
-    setData(PlotPluginPath, d);
-  }
-
-  getData(COPluginPath, d);
-  if (d.isEmpty())
-  {
-    d = "/usr/local/lib/qtstalker/plugins/object";
-    setData(COPluginPath, d);
   }
 
   getData(DBPluginPath, d);

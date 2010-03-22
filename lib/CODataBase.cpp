@@ -21,7 +21,6 @@
 
 #include "CODataBase.h"
 #include "COPlugin.h"
-#include "Config.h"
 #include "COFactory.h"
 
 #include <QtDebug>
@@ -29,7 +28,6 @@
 
 CODataBase::CODataBase ()
 {
-  dbName = "data";
 }
 
 void CODataBase::init ()
@@ -80,18 +78,6 @@ void CODataBase::init ()
     qDebug() << "CODataBase::createChartObjectsTable: " << q.lastError().text();
 }
 
-void CODataBase::transaction ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.transaction();
-}
-
-void CODataBase::commit ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.commit();
-}
-
 void CODataBase::deleteChartObjects (QString &symbol)
 {
   QSqlQuery q(QSqlDatabase::database(dbName));
@@ -140,10 +126,6 @@ void CODataBase::getChartObjects (QString &symbol, QString &indicator, Indicator
   }
 
   COFactory fac;
-  Config config;
-  QString path;
-  config.getData(Config::COPluginPath, path);
-  
   while (q.next())
   {
     s = q.value(3).toString();

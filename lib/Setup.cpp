@@ -476,20 +476,6 @@ void Setup::setupConfigDefaults ()
     config.setData(Config::IndicatorPluginPath, d);
   }
 
-  config.getData(Config::COPluginPath, d);
-  if (d.isEmpty())
-  {
-    d = "/usr/local/lib/qtstalker/plugins/object";
-    config.setData(Config::COPluginPath, d);
-  }
-
-  config.getData(Config::PlotPluginPath, d);
-  if (d.isEmpty())
-  {
-    d = "/usr/local/lib/qtstalker/plugins/plot";
-    config.setData(Config::PlotPluginPath, d);
-  }
-
   config.getData(Config::DBPluginPath, d);
   if (d.isEmpty())
   {
@@ -545,7 +531,7 @@ void Setup::setupDefaultIndicators ()
     db.setIndicator(i);
   }
 
-  config.setBaseData((int) Config::DefaultIndicators, 1);
+  config.setData((int) Config::DefaultIndicators, 1);
 }
 
 void Setup::setupExchanges ()

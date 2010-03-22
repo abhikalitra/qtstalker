@@ -142,7 +142,7 @@ void BarData::append (Bar *bar)
 
 void BarData::getDate (int i, QDateTime &dt)
 {
-  barList.at(i)->getDate(dt);
+  dt = barList.at(i)->getDate();
 }
 
 double BarData::getOpen (int i)

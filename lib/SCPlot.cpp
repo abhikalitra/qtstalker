@@ -50,7 +50,7 @@ int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, Pl
   
   Config config;
   QStringList pl;
-  config.getBaseData(Config::PlotPluginList, pl);
+  config.getData(Config::PlotPluginList, pl);
   if (pl.indexOf(l[3]) == -1)
   {
     qDebug() << "SCPlot::calculate: invalid line type" << l[3];

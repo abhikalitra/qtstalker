@@ -23,7 +23,7 @@
 #include "Utils.h"
 
 #include <QFontMetrics>
-#include <QFont>
+#include <QDebug>
 
 Horizontal::Horizontal ()
 {
@@ -46,13 +46,11 @@ void Horizontal::draw (PlotLine *line, PlotData &pd)
   line->getLabel(s2);
   s = s2 + s;
 
-//  painter.setBackgroundMode(Qt::OpaqueMode);
-//  painter.setBackground(QBrush(backgroundColor));
-//  painter.setFont(plotFont);
+  painter.setFont(pd.plotFont);
 
-  QFont font;
-  QFontMetrics fm(font);
+  QFontMetrics fm = painter.fontMetrics();
   QRect rc = painter.boundingRect(pd.startX, y - (fm.height() / 2), 1, 1, 0, s);
+  painter.fillRect(rc, pd.backgroundColor); // fill in behind text first
   painter.drawText(rc, s);
   painter.drawRect(rc);
   

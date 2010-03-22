@@ -69,7 +69,7 @@ class Config : public BaseConfig
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
       ShowSidePanel, // side panel flag
-      COPluginPath, // UNUSED
+      SavedRunningScripts, // saved scripts that were running when app terminated
       COPluginList,  // UNUSED
       PlotPluginPath, // UNUSED
       PlotPluginList, // UNUSED
@@ -128,8 +128,6 @@ class Config : public BaseConfig
 
     Config ();
     void init (QString session); // called only at qtstalker startup, initializes tables
-    void setData (Parm, QString &);
-    void getData (Parm, QString &);
 };
 
 #endif

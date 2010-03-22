@@ -155,6 +155,8 @@ void Script::scriptDone ()
     emit signalMessage(QString(tr("Script ")) + name + tr(" completed."));
     emit signalDone(name);
   }
+  else
+    emit signalMessage(QString(tr("Script ")) + name + tr(" completed."));
 }
 
 void Script::startScript ()

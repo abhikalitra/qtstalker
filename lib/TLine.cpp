@@ -196,8 +196,8 @@ void TLine::dialog ()
   if (def)
   {
     Config config;
-    config.setBaseData((int) Config::DefaultTLineColor, color);
-    config.setBaseData((int) Config::DefaultTLineExtend, extend);
+    config.setData((int) Config::DefaultTLineColor, color);
+    config.setData((int) Config::DefaultTLineExtend, extend);
   }
 
   saveFlag = TRUE;

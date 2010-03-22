@@ -43,6 +43,7 @@ class COFactory
 
     COFactory ();
     COPlugin * getCO (QString &co);
+    void getList (QStringList &);
 };
 
 #endif

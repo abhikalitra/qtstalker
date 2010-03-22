@@ -103,7 +103,7 @@ void IndicatorPage::newIndicator ()
 {
   Config config;
   QStringList l;
-  config.getBaseData(Config::IndicatorPluginList, l);
+  config.getData(Config::IndicatorPluginList, l);
   
   PrefDialog *dialog = new PrefDialog;
   dialog->setWindowTitle(tr("New Indicator"));
@@ -171,7 +171,7 @@ void IndicatorPage::newIndicator ()
   i.setTabRow(tabRow);
 
   QString path;
-  config.getBaseData(Config::IndicatorPluginPath, path);
+  config.getData(Config::IndicatorPluginPath, path);
   
   PluginFactory fac;
   IndicatorPlugin *ip = fac.getIndicator(path, indicator);
@@ -219,7 +219,7 @@ void IndicatorPage::editIndicator (QString &name)
 
   Config config;
   QString path;
-  config.getBaseData(Config::IndicatorPluginPath, path);
+  config.getData(Config::IndicatorPluginPath, path);
   
   PluginFactory fac;
   IndicatorPlugin *ip = fac.getIndicator(path, indicator);

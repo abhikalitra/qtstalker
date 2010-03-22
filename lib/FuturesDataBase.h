@@ -25,17 +25,14 @@
 #include <QString>
 #include <QStringList>
 
-class FuturesDataBase
+#include "DataBase.h"
+
+class FuturesDataBase : public DataBase
 {
   public:
     FuturesDataBase ();
-    void transaction ();
-    void commit ();
     int createFutures ();
     void getCodeList (QStringList &);
-    
-  protected:
-    QString dbName;
 };
 
 #endif

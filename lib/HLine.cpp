@@ -48,8 +48,7 @@ void HLine::draw (PlotData &pd)
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  QFont font;
-  painter.setFont(font);
+  painter.setFont(pd.plotFont);
 
   painter.setPen(color);
 
@@ -57,7 +56,7 @@ void HLine::draw (PlotData &pd)
   
   // test start
   QString s = QString::number(price);
-  QFontMetrics fm(font);
+  QFontMetrics fm = painter.fontMetrics();
   QRect rc = painter.boundingRect(pd.startX, y - (fm.height() / 2), 1, 1, 0, s);
   painter.fillRect(rc, pd.backgroundColor); // fill in behind text first
   painter.drawText(rc, s); // draw text
@@ -144,7 +143,7 @@ void HLine::dialog ()
   if (def)
   {
     Config config;
-    config.setBaseData((int) Config::DefaultHLineColor, color);
+    config.setData((int) Config::DefaultHLineColor, color);
   }
 
   saveFlag = TRUE;

@@ -19,30 +19,21 @@
  *  USA.
  */
 
-#include "Config.h"
+#ifndef DATABASE_HPP
+#define DATABASE_HPP
 
-#include <QtDebug>
-#include <QDir>
-#include <QtSql>
+#include <QString>
 
-Config::Config ()
+class DataBase
 {
-}
+  public:
+    DataBase ();
+    void transaction ();
+    void commit ();
+    int command (QString &, QString);
+    
+  protected:
+    QString dbName;
+};
 
-void Config::init (QString session)
-{
-  QString s = QDir::homePath() + "/.qtstalker/config.sqlite" + session;
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", dbName);
-  db.setHostName("me");
-  db.setDatabaseName(s);
-  db.setUserName("qtstalker");
-  db.setPassword("qtstalker");
-  if (! db.open())
-  {
-    qDebug() << "Config::Config:" << db.lastError().text();
-    return;
-  }
-
-  createTable();
-}
-
+#endif

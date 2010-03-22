@@ -44,6 +44,7 @@ class PlotFactory
 
     PlotFactory ();
     PlotPlugin * getPlot (QString &plot);
+    void getList (QStringList &);
 };
 
 #endif

@@ -31,18 +31,6 @@ FuturesDataBase::FuturesDataBase ()
   dbName = "quotes";
 }
 
-void FuturesDataBase::transaction ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.transaction();
-}
-
-void FuturesDataBase::commit ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.commit();
-}
-
 int FuturesDataBase::createFutures ()
 {
   QFile file("/usr/local/share/qtstalker/db/futures.csv");

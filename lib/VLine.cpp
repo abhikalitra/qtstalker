@@ -129,7 +129,7 @@ void VLine::dialog ()
   if (def)
   {
     Config config;
-    config.setBaseData((int) Config::DefaultVLineColor, color);
+    config.setData((int) Config::DefaultVLineColor, color);
   }
 
   saveFlag = TRUE;

@@ -26,7 +26,6 @@
 
 ScriptDataBase::ScriptDataBase ()
 {
-  dbName = "data";
 }
 
 void ScriptDataBase::init ()
@@ -64,18 +63,6 @@ void ScriptDataBase::init ()
     qDebug() << "ScriptDataBase::createScriptTable: " << q.lastError().text();
 }
 
-void ScriptDataBase::transaction ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.transaction();
-}
-
-void ScriptDataBase::commit ()
-{
-  QSqlDatabase db = QSqlDatabase::database(dbName);
-  db.commit();
-}
-
 void ScriptDataBase::getScripts (QStringList &l)
 {
   l.clear();
@@ -94,8 +81,9 @@ void ScriptDataBase::getScripts (QStringList &l)
   l.sort();
 }
 
-void ScriptDataBase::getScript (Script *script)
+int ScriptDataBase::getScript (Script *script)
 {
+  int rc = 1;
   QString name = script->getName();
 
   QSqlQuery q(QSqlDatabase::database(dbName));
@@ -104,11 +92,12 @@ void ScriptDataBase::getScript (Script *script)
   if (q.lastError().isValid())
   {
     qDebug() << "ScriptDataBase::getScript: " << q.lastError().text();
-    return;
+    return rc;
   }
 
   if (q.next())
   {
+    rc = 0;
     int pos = 0;
     
     s = q.value(pos++).toString();
@@ -125,6 +114,8 @@ void ScriptDataBase::getScript (Script *script)
 
     script->setRefresh(q.value(pos++).toInt());
   }
+  
+  return rc;
 }
 
 void ScriptDataBase::setScript (Script *script)

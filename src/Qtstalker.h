@@ -42,6 +42,7 @@
 #include "assistant.h"
 #include "BarData.h"
 #include "InfoPanel.h"
+#include "ScriptPage.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -170,6 +171,7 @@ class QtstalkerApp : public QMainWindow
     QString chartName;
     QString chartExchange;
     int barsLoaded;
+    ScriptPage *scriptPage;
 };
 
 #endif

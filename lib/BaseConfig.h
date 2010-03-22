@@ -31,43 +31,33 @@
 #include <QPoint>
 #include <QSize>
 
-class BaseConfig
+#include "DataBase.h"
+
+class BaseConfig : public DataBase
 {
   public:
     BaseConfig ();
     void createTable ();
-    void transaction ();
-    void commit ();
-
-    void setBaseData (int, QString &);
-    void getBaseData (int, QString &);
-
-    void getBaseData (int, QSplitter *);
-    void setBaseData (int, QSplitter *);
-
+    void setData (int, QString &);
+    void getData (int, QString &);
+    void getData (int, QSplitter *);
+    void setData (int, QSplitter *);
     bool getBool (int);
-    void setBaseData (int, bool);
-
+    void setData (int, bool);
     int getInt (int);
-    void setBaseData (int, int);
-
+    void setData (int, int);
     double getDouble (int);
-    void setBaseData (int, double);
-
-    void getBaseData (int, QColor &);
-    void setBaseData (int, QColor &);
-
-    void getBaseData (int, QFont &);
-    void setBaseData (int, QFont &);
-
-    void getBaseData (int, QPoint &);
-    void setBaseData (int, QPoint &);
-
-    void getBaseData (int, QSize &);
-    void setBaseData (int, QSize &);
-
-    void setBaseData (int, QStringList &);
-    void getBaseData (int, QStringList &);
+    void setData (int, double);
+    void getData (int, QColor &);
+    void setData (int, QColor &);
+    void getData (int, QFont &);
+    void setData (int, QFont &);
+    void getData (int, QPoint &);
+    void setData (int, QPoint &);
+    void getData (int, QSize &);
+    void setData (int, QSize &);
+    void setData (int, QStringList &);
+    void getData (int, QStringList &);
 };
 
 #endif
