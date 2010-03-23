@@ -60,7 +60,7 @@ IndicatorPlugin * PluginFactory::getIndicator (QString &path, QString &indicator
     return plug;
 
   QString file = path;
-  file.append("/lib" + indicator + ".so");
+  file.append("/lib" + indicator);
 
   QLibrary *lib = new QLibrary(file);
   IndicatorPlugin *(*so)() = 0;
@@ -84,7 +84,7 @@ DBPlugin * PluginFactory::getDB (QString &path, QString &db)
     return plug;
 
   QString file = path;
-  file.append("/lib" + db + ".so");
+  file.append("/lib" + db);
 
   QLibrary *lib = new QLibrary(file);
   DBPlugin *(*so)() = 0;
