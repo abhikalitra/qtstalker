@@ -59,9 +59,25 @@ class Bar
       RC_OILT0 // oi < 0
     };
 
+    enum BarLength
+    {
+      Minute1,
+      Minute5,
+      Minute10,
+      Minute15,
+      Minute30,
+      Minute60,
+      DailyBar,
+      WeeklyBar,
+      MonthlyBar
+    };
+
     Bar ();
     int setDate (QDateTime &);
+    void setBarDate (QDateTime &, Bar::BarLength);
     QDateTime & getDate ();
+    QDateTime & getBarDate ();
+    void getStartEndDate (QDateTime &, QDateTime &);
     void setOpen (double);
     void setOpen (QString &);
     double getOpen ();
@@ -83,13 +99,20 @@ class Bar
     void getDateString (QString &);
     void getDateTimeString (QString &);
     void getTimeString (QString &);
+    void getBarDateString (QString &);
+    void getBarDateTimeString (QString &);
+    void getBarTimeString (QString &);
     void verify ();
     int getError ();
+    void getBarDateKey (QString &);
+    void getBarLengthList (QStringList &);
 
   protected:
     QHash<int, double> data;
-    QDateTime date;
+    QDateTime startDate;
+    QDateTime endDate;
     int error;
+    BarLength length;
 };
 
 #endif

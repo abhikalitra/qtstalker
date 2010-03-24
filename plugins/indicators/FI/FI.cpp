@@ -114,8 +114,10 @@ PlotLine * FI::getFI (BarData *data, int period, int type)
   double force = 0;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    double cdiff = data->getClose(loop) - data->getClose(loop - 1);
-    force = data->getVolume(loop) * cdiff;
+    Bar *bar = data->getBar(loop);
+    Bar *pbar = data->getBar(loop - 1);
+    double cdiff = bar->getClose() - pbar->getClose();
+    force = bar->getVolume() * cdiff;
     line->append(force);
   }
 

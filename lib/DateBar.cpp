@@ -26,7 +26,7 @@
 
 DateBar::DateBar ()
 {
-  barLength = (int) BarData::DailyBar;
+  barLength = (int) Bar::DailyBar;
 }
 
 void DateBar::clear ()
@@ -43,16 +43,21 @@ int DateBar::count ()
 void DateBar::createDateList (BarData *bd)
 {
   clear();
+  
+  barLength = bd->getBarLength();
 
   int loop;
   for (loop = 0; loop < (int) bd->count(); loop++)
   {
-    QDateTime dt;
-    bd->getDate(loop, dt);
-    dateList.append(dt);
-    
-    QString s = dt.toString(Qt::ISODate);
+    Bar *bar = bd->getBar(loop);
+    if (! bar)
+      continue;
+
+    QString s;
+    bar->getBarDateKey(s);
     data.insert(s, loop);
+
+    dateList.append(bar->getBarDate());
   }
 }
 
@@ -64,7 +69,11 @@ void DateBar::getDate (int i, QDateTime &dt)
 int DateBar::getX (QDateTime &d)
 {
   int x = -1;
-  QString s = d.toString(Qt::ISODate);
+  Bar bar;
+  bar.setBarDate(d, (Bar::BarLength) barLength);
+  
+  QString s;
+  bar.getBarDateKey(s);
   if (data.contains(s))
     x = data.value(s);
   

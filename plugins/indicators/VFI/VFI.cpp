@@ -99,36 +99,40 @@ PlotLine * VFI::getVFI (BarData *data, int period)
     double inter = 0.0;
     double sma_vol = 0.0;
     int i;
-    double close = data->getClose(loop-period);
-    double high = data->getHigh(loop-period);
-    double low = data->getLow(loop-period);
+    Bar *bar = data->getBar(loop - period);
+    double close = bar->getClose();
+    double high = bar->getHigh();
+    double low = bar->getLow();
     double typical = (high+low+close) / 3.0;
     for (i = loop - period + 1; i <= loop; i++)
     {
+      bar = data->getBar(i);
       double ytypical = typical;
-      close = data->getClose(i);
-      high = data->getHigh(i);
-      low = data->getLow(i);
+      close = bar->getClose();
+      high = bar->getHigh();
+      low = bar->getLow();
       typical = (high + low + close) / 3.0;
       double delta = (log(typical) - log(ytypical));
       inter += delta * delta;
-      sma_vol += data->getVolume(i);
+      sma_vol += bar->getVolume();
     }
     inter = 0.2 * sqrt(inter / (double) period) * typical;
     sma_vol /= (double) period;
 
-    close = data->getClose(loop - period);
-    high = data->getHigh(loop - period);
-    low = data->getLow(loop - period);
+    bar = data->getBar(loop - period);
+    close = bar->getClose();
+    high = bar->getHigh();
+    low = bar->getLow();
     typical = (high + low + close) / 3.0;
     double t = 0;
     for (i = loop - period + 1; i <= loop; i++)
     {
+      bar = data->getBar(i);
       double ytypical = typical;
-      double volume = data->getVolume(i);
-      close = data->getClose(i);
-      high = data->getHigh(i);
-      low = data->getLow(i);
+      double volume = bar->getVolume();
+      close = bar->getClose();
+      high = bar->getHigh();
+      low = bar->getLow();
       typical = (high + low + close) / 3.0;
 
       if (typical > ytypical + inter)

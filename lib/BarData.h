@@ -47,29 +47,9 @@ class BarData
       WeightedClosePrice
     };
 
-    enum BarLength
-    {
-      Minute1,
-      Minute5,
-      Minute10,
-      Minute15,
-      Minute30,
-      Minute60,
-      DailyBar,
-      WeeklyBar,
-      MonthlyBar
-    };
-
     BarData ();
     ~BarData ();
     int count ();
-    void getDate (int, QDateTime &);
-    double getOpen (int);
-    double getHigh (int);
-    double getLow (int);
-    double getClose (int);
-    double getVolume (int);
-    double getOI (int);
     void prepend (Bar *bar);
     void append (Bar *bar);
     double getMax ();
@@ -77,21 +57,17 @@ class BarData
     void getInputFields (QStringList &);
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
-    void getBarLengthList (QStringList &);
     Bar *getBar (int);
     void setMinMax ();
-    void setBarLength (BarData::BarLength);
+    void setBarLength (Bar::BarLength);
     void setBarLength (QString &);
-    BarData::BarLength getBarLength ();
+    Bar::BarLength getBarLength ();
     QString & getSymbol ();
     void setSymbol (QString &);
     QString & getName ();
     void setName (QString &);
     int getBarsRequested ();
     void setBarsRequested (int);
-    void getDateString (int, QString &);
-    void getTimeString (int, QString &);
-    void getDateTimeString (int, QString &);
     double getAvgPrice (int);
     double getMedianPrice (int);
     double getTypicalPrice (int);
@@ -108,16 +84,14 @@ class BarData
     QList<Bar *> barList;
     double high;
     double low;
-    BarData::BarLength barLength;
+    Bar::BarLength length;
     QString symbol;
     QString name;
     int barsRequested;
-    QStringList inputList;
     QString tableName;
     QString plugin;
     QString exchange;
     QString currency;
-    QStringList exchangeList;
 };
 
 #endif

@@ -119,10 +119,11 @@ PlotLine * BOP::getBOP (BarData *data, int smoothing, int type)
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    open[loop] = (TA_Real) data->getOpen(loop);
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
+    Bar *bar = data->getBar(loop);
+    open[loop] = (TA_Real) bar->getOpen();
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
   }
 
   TA_Integer outBeg;

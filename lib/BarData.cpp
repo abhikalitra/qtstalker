@@ -28,22 +28,8 @@ BarData::BarData ()
 {
   high = -99999999;
   low = 99999999;
-  barLength = DailyBar;
+  length = Bar::DailyBar;
   barsRequested = 0;
-
-  inputList << QObject::tr("Open");
-  inputList << QObject::tr("High");
-  inputList << QObject::tr("Low");
-  inputList << QObject::tr("Close");
-  inputList << QObject::tr("Volume");
-  inputList << QObject::tr("OI");
-  inputList << QObject::tr("AvgPrice");
-  inputList << QObject::tr("MedianPrice");
-  inputList << QObject::tr("TypicalPrice");
-  inputList << QObject::tr("WCPrice");
-  
-  exchangeList << "NYSE";
-  exchangeList << "";
 }
 
 BarData::~BarData ()
@@ -53,7 +39,17 @@ BarData::~BarData ()
 
 void BarData::getInputFields (QStringList &l)
 {
-  l = inputList;
+  l.clear();
+  l << QObject::tr("Open");
+  l << QObject::tr("High");
+  l << QObject::tr("Low");
+  l << QObject::tr("Close");
+  l << QObject::tr("Volume");
+  l << QObject::tr("OI");
+  l << QObject::tr("AvgPrice");
+  l << QObject::tr("MedianPrice");
+  l << QObject::tr("TypicalPrice");
+  l << QObject::tr("WCPrice");
 }
 
 PlotLine * BarData::getInput (BarData::InputType field)
@@ -63,31 +59,33 @@ PlotLine * BarData::getInput (BarData::InputType field)
   QColor color("red");
   for (loop = 0; loop < count(); loop++)
   {
+    Bar *bar = getBar(loop);
+    
     switch (field)
     {
       case Open:
       {
-        in->append(color, getOpen(loop));
+        in->append(color, bar->getOpen());
         break;
       }
       case High:
       {
-        in->append(color, getHigh(loop));
+        in->append(color, bar->getHigh());
         break;
       }
       case Low:
       {
-        in->append(color, getLow(loop));
+        in->append(color, bar->getLow());
         break;
       }
       case Volume:
       {
-        in->append(color, getVolume(loop));
+        in->append(color, bar->getVolume());
         break;
       }
       case OI:
       {
-        in->append(color, getOI(loop));
+        in->append(color, bar->getOI());
         break;
       }
       case AveragePrice:
@@ -110,13 +108,13 @@ PlotLine * BarData::getInput (BarData::InputType field)
       }
       case WeightedClosePrice:
       {
-        double t = (getHigh(loop) + getLow(loop) + (getClose(loop) * 2)) / 4.0;
+        double t = (bar->getHigh() + bar->getLow() + (bar->getClose() * 2)) / 4.0;
         in->append(color, t);
         break;
       }
       default:
       {
-        in->append(color, getClose(loop));
+        in->append(color, bar->getClose());
         break;
       }
     }
@@ -140,41 +138,6 @@ void BarData::append (Bar *bar)
   barList.append(bar);
 }
 
-void BarData::getDate (int i, QDateTime &dt)
-{
-  dt = barList.at(i)->getDate();
-}
-
-double BarData::getOpen (int i)
-{
-  return barList.at(i)->getOpen();
-}
-
-double BarData::getHigh (int i)
-{
-  return barList.at(i)->getHigh();
-}
-
-double BarData::getLow (int i)
-{
-  return barList.at(i)->getLow();
-}
-
-double BarData::getClose (int i)
-{
-  return barList.at(i)->getClose();
-}
-
-double BarData::getVolume (int i)
-{
-  return barList.at(i)->getVolume();
-}
-
-double BarData::getOI (int i)
-{
-  return barList.at(i)->getOI();
-}
-
 double BarData::getMax ()
 {
   return high;
@@ -187,25 +150,14 @@ double BarData::getMin ()
 
 BarData::InputType BarData::getInputType (QString &d)
 {
+  QStringList l;
+  getInputFields(l);
+  
   InputType rc = Close;
-  int t = inputList.indexOf(d);
+  int t = l.indexOf(d);
   if (t != -1)
     rc = (InputType) t;
   return rc;
-}
-
-void BarData::getBarLengthList (QStringList &l)
-{
-  l.clear();
-  l.append(QObject::tr("1 Minute"));
-  l.append(QObject::tr("5 Minute"));
-  l.append(QObject::tr("10 Minute"));
-  l.append(QObject::tr("15 Minute"));
-  l.append(QObject::tr("30 Minute"));
-  l.append(QObject::tr("60 Minute"));
-  l.append(QObject::tr("Daily"));
-  l.append(QObject::tr("Weekly"));
-  l.append(QObject::tr("Monthly"));
 }
 
 Bar * BarData::getBar (int d)
@@ -228,21 +180,22 @@ void BarData::setMinMax ()
   }
 }
 
-void BarData::setBarLength (BarData::BarLength d)
+void BarData::setBarLength (Bar::BarLength d)
 {
-  barLength = d;
+  length = d;
 }
 
 void BarData::setBarLength (QString &d)
 {
   QStringList l;
-  getBarLengthList(l);
-  barLength = (BarLength) l.indexOf(d);
+  Bar tbar;
+  tbar.getBarLengthList(l);
+  length = (Bar::BarLength) l.indexOf(d);
 }
 
-BarData::BarLength BarData::getBarLength ()
+Bar::BarLength BarData::getBarLength ()
 {
-  return barLength;
+  return length;
 }
 
 QString & BarData::getSymbol ()
@@ -275,36 +228,24 @@ void BarData::setBarsRequested (int d)
   barsRequested = d;
 }
 
-void BarData::getDateString (int d, QString &s)
-{
-  barList.at(d)->getDateString(s);
-}
-
-void BarData::getTimeString (int d, QString &s)
-{
-  barList.at(d)->getTimeString(s);
-}
-
-void BarData::getDateTimeString (int d, QString &s)
-{
-  barList.at(d)->getDateTimeString(s);
-}
-
 double BarData::getAvgPrice (int d)
 {
-  double t = (getOpen(d) + getHigh(d) + getLow(d) + getClose(d)) / 4.0;
+  Bar *bar = getBar(d);
+  double t = (bar->getOpen() + bar->getHigh() + bar->getLow() + bar->getClose()) / 4.0;
   return t;
 }
 
 double BarData::getMedianPrice (int d)
 {
-  double t = (getHigh(d) + getLow(d)) / 2.0;
+  Bar *bar = getBar(d);
+  double t = (bar->getHigh() + bar->getLow()) / 2.0;
   return t;
 }
 
 double BarData::getTypicalPrice (int d)
 {
-  double t = (getHigh(d) + getLow(d) + getClose(d)) / 3.0;
+  Bar *bar = getBar(d);
+  double t = (bar->getHigh() + bar->getLow() + bar->getClose()) / 3.0;
   return t;
 }
 

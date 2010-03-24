@@ -116,8 +116,9 @@ PlotLine * SAR::getSAR (BarData *data, double _init, double _max)
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
   }
 
   TA_Integer outBeg;

@@ -35,7 +35,7 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   backgroundColor.setNamedColor("black");
   borderColor.setNamedColor("white");
   pixelspace = 0;
-  interval = BarData::DailyBar;
+  interval = Bar::DailyBar;
   startIndex = 0;
   setFocusPolicy(Qt::ClickFocus);
 
@@ -61,18 +61,18 @@ void DatePlot::setData (BarData *data)
     
   switch (interval)
   {
-    case BarData::Minute1:
-    case BarData::Minute5:
-    case BarData::Minute10:
-    case BarData::Minute15:
-    case BarData::Minute30:
-    case BarData::Minute60:
+    case Bar::Minute1:
+    case Bar::Minute5:
+    case Bar::Minute10:
+    case Bar::Minute15:
+    case Bar::Minute30:
+    case Bar::Minute60:
       getMinuteDate(data);
       break;
-    case BarData::WeeklyBar:
+    case Bar::WeeklyBar:
       getWeeklyDate(data);
       break;
-    case BarData::MonthlyBar:
+    case Bar::MonthlyBar:
       getMonthlyDate(data);
       break;
     default:
@@ -181,7 +181,7 @@ void DatePlot::setIndex (int d)
   startIndex = d;
 }
 
-void DatePlot::setInterval (BarData::BarLength d)
+void DatePlot::setInterval (Bar::BarLength d)
 {
   interval = d;
 }
@@ -190,21 +190,21 @@ void DatePlot::getMinuteDate (BarData *data)
 {
   xGrid.resize(0);
   int loop = 0;
-  QDateTime nextHour, oldDay;
-  data->getDate(loop, nextHour);
-  data->getDate(loop, oldDay);
+  Bar *bar = data->getBar(loop);
+  QDateTime nextHour = bar->getBarDate();
+  QDateTime oldDay = nextHour;
   nextHour.setTime(QTime(nextHour.time().hour(), 0, 0, 0));
   
 //  if ((nextHour.getHour() % 2) == 0)
-  if (interval != BarData::Minute1)
+  if (interval != Bar::Minute1)
     nextHour = nextHour.addSecs(7200);
   else
     nextHour = nextHour.addSecs(3600);
 
   while(loop < (int) data->count())
   {
-    QDateTime date;
-    data->getDate(loop, date);
+    bar = data->getBar(loop);
+    QDateTime date = bar->getBarDate();
     
     TickItem item;
     item.flag = 0;
@@ -223,7 +223,7 @@ void DatePlot::getMinuteDate (BarData *data)
     {
       if (date >= nextHour)
       {
-        if (interval < BarData::Minute30)
+        if (interval < Bar::Minute30)
 	{
           item.flag = 1;
           item.tick = 0;
@@ -240,7 +240,7 @@ void DatePlot::getMinuteDate (BarData *data)
       nextHour = date;
       nextHour.setTime(QTime(date.time().hour(), 0, 0, 0));
 //      if ((date.getHour() % 2) == 0)
-      if (interval != BarData::Minute1)
+      if (interval != Bar::Minute1)
         nextHour = nextHour.addSecs(7200);
       else
         nextHour = nextHour.addSecs(3600);
@@ -256,8 +256,8 @@ void DatePlot::getDailyDate (BarData *data)
   int loop = 0;
   xGrid.resize(0);
 
-  QDateTime dt;
-  data->getDate(loop, dt);
+  Bar *bar = data->getBar(loop);
+  QDateTime dt = bar->getBarDate();
   QDate oldDate = dt.date();
   QDate oldWeek = oldDate;
   oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
@@ -267,7 +267,8 @@ void DatePlot::getDailyDate (BarData *data)
     TickItem item;
     item.flag = 0;
   
-    data->getDate(loop, dt);
+    bar = data->getBar(loop);
+    dt = bar->getBarDate();
     QDate date = dt.date();
 
     if (date.month() != oldDate.month())
@@ -305,8 +306,8 @@ void DatePlot::getWeeklyDate (BarData *data)
   xGrid.resize(0);
   int loop = 0;
 
-  QDateTime dt;
-  data->getDate(loop, dt);
+  Bar *bar = data->getBar(loop);
+  QDateTime dt = bar->getBarDate();
   QDate oldMonth = dt.date();
 
   while(loop < (int) data->count())
@@ -314,7 +315,8 @@ void DatePlot::getWeeklyDate (BarData *data)
     TickItem item;
     item.flag = 0;
   
-    data->getDate(loop, dt);
+    bar = data->getBar(loop);
+    dt = bar->getBarDate();
     QDate date = dt.date();
 
     if (date.year() != oldMonth.year())
@@ -347,8 +349,9 @@ void DatePlot::getMonthlyDate (BarData *data)
 {
   xGrid.resize(0);
   int loop = 0;
-  QDateTime dt;
-  data->getDate(loop, dt);
+
+  Bar *bar = data->getBar(loop);
+  QDateTime dt = bar->getBarDate();
   QDate oldYear = dt.date();
 
   while(loop < (int) data->count())
@@ -356,7 +359,8 @@ void DatePlot::getMonthlyDate (BarData *data)
     TickItem item;
     item.flag = 0;
   
-    data->getDate(loop, dt);
+    bar = data->getBar(loop);
+    dt = bar->getBarDate();
     QDate date = dt.date();
 
     if (date.year() != oldYear.year())

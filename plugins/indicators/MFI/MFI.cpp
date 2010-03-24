@@ -128,10 +128,11 @@ PlotLine * MFI::getMFI (BarData *data, int period, int smoothing, int type)
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
-    volume[loop] = (TA_Real) data->getVolume(loop);
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+    volume[loop] = (TA_Real) bar->getVolume();
   }
 
   TA_Integer outBeg;

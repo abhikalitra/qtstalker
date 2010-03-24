@@ -120,11 +120,14 @@ PlotLine * VOL::getVOL (BarData *data)
   QColor neutral("blue");
   for (loop = 1; loop < data->count(); loop++)
   {
-    if (data->getClose(loop) < data->getClose(loop - 1))
+    Bar *bar = data->getBar(loop);
+    Bar *pbar = data->getBar(loop - 1);
+    
+    if (bar->getClose() < pbar->getClose())
       line->setColorBar(loop, down);
     else
     {
-      if (data->getClose(loop) > data->getClose(loop - 1))
+      if (bar->getClose() > pbar->getClose())
 	line->setColorBar(loop, up);
       else
 	line->setColorBar(loop, neutral);

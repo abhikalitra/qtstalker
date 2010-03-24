@@ -22,6 +22,7 @@
 #include "Bar.h"
 
 #include <QtDebug>
+#include <QObject>
 
 Bar::Bar ()
 {
@@ -33,13 +34,103 @@ int Bar::setDate (QDateTime &d)
   if (! d.isValid())
     return TRUE;
 
-  date = d;
+  startDate = d;
   return FALSE;
+}
+
+void Bar::setBarDate (QDateTime &date, Bar::BarLength l)
+{
+  length = l;
+  startDate = date;
+
+  switch (length)
+  {
+    case Bar::Minute1:
+      startDate.setTime(QTime(startDate.time().hour(), startDate.time().minute(), 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(60);
+      break;
+    case Bar::Minute5:
+    {
+      int tint = startDate.time().minute() / 5;
+      startDate.setTime(QTime(startDate.time().hour(), tint * 5, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(300);
+      break;
+    }
+    case Bar::Minute10:
+    {
+      int tint = startDate.time().minute() / 10;
+      startDate.setTime(QTime(startDate.time().hour(), tint * 10, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(600);
+      break;
+    }
+    case Bar::Minute15:
+    {
+      int tint = startDate.time().minute() / 15;
+      startDate.setTime(QTime(startDate.time().hour(), tint * 15, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(900);
+      break;
+    }
+    case Bar::Minute30:
+    {
+      int tint = startDate.time().minute() / 30;
+      startDate.setTime(QTime(startDate.time().hour(), tint * 30, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(1800);
+      break;
+    }
+    case Bar::Minute60:
+      startDate.setTime(QTime(startDate.time().hour(), 0, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addSecs(3600);
+      break;
+    case Bar::DailyBar:
+      startDate.setTime(QTime(0, 0, 0, 0));
+      endDate = startDate;
+      endDate = endDate.addDays(1);
+      break;
+    case Bar::WeeklyBar:
+      startDate.setTime(QTime(0, 0, 0, 0));
+      startDate = startDate.addDays(- startDate.date().dayOfWeek());
+      endDate = startDate;
+      endDate = endDate.addDays(7);
+      break;
+    case Bar::MonthlyBar:
+      startDate.setTime(QTime(0, 0, 0, 0));
+      startDate = startDate.addDays(- (startDate.date().day() - 1));
+      endDate = startDate;
+      endDate = endDate.addDays(endDate.date().daysInMonth());
+      break;
+    default:
+      break;
+  }
 }
 
 QDateTime & Bar::getDate ()
 {
-  return date;
+  return startDate;
+}
+
+QDateTime & Bar::getBarDate ()
+{
+  switch (length)
+  {
+    case Bar::DailyBar:
+      return startDate;
+      break;
+    default:
+      return endDate;
+      break;
+  }
+}
+
+void Bar::getStartEndDate (QDateTime &sd, QDateTime &ed)
+{
+  sd = startDate;
+  ed = endDate;
 }
 
 void Bar::setOpen (double d)
@@ -182,17 +273,35 @@ double Bar::getOI ()
 
 void Bar::getDateString (QString &d)
 {
-  d = date.toString("yyyy-MM-dd");
+  d = startDate.toString("yyyy-MM-dd");
 }
 
 void Bar::getDateTimeString (QString &d)
 {
-  d = date.toString(Qt::ISODate);
+  d = startDate.toString(Qt::ISODate);
 }
 
 void Bar::getTimeString (QString &d)
 {
-  d = date.toString("HH:mm:ss");
+  d = startDate.toString("HH:mm:ss");
+}
+
+void Bar::getBarDateString (QString &d)
+{
+  QDateTime dt = getBarDate();
+  d = dt.toString("yyyy-MM-dd");
+}
+
+void Bar::getBarDateTimeString (QString &d)
+{
+  QDateTime dt = getBarDate();
+  d = dt.toString(Qt::ISODate);
+}
+
+void Bar::getBarTimeString (QString &d)
+{
+  QDateTime dt = getBarDate();
+  d = dt.toString("HH:mm:ss");
 }
 
 void Bar::verify ()
@@ -256,5 +365,24 @@ void Bar::verify ()
 int Bar::getError ()
 {
   return error;
+}
+
+void Bar::getBarDateKey (QString &d)
+{
+  d = startDate.toString(Qt::ISODate) + endDate.toString(Qt::ISODate);
+}
+
+void Bar::getBarLengthList (QStringList &l)
+{
+  l.clear();
+  l << QObject::tr("1 Minute");
+  l << QObject::tr("5 Minute");
+  l << QObject::tr("10 Minute");
+  l << QObject::tr("15 Minute");
+  l << QObject::tr("30 Minute");
+  l << QObject::tr("60 Minute");
+  l << QObject::tr("Daily");
+  l << QObject::tr("Weekly");
+  l << QObject::tr("Monthly");
 }
 

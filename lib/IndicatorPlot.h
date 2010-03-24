@@ -109,7 +109,7 @@ class IndicatorPlot : public QWidget
     void slotGridChanged (bool);
     void slotScaleToScreenChanged (bool);
     void slotLogScaleChanged (bool);
-    void setInterval(BarData::BarLength);
+    void setInterval(Bar::BarLength);
     void newExternalChartObject (QString);
     void setExternalChartObjectFlag ();
     void cursorChanged (int);
@@ -139,7 +139,7 @@ class IndicatorPlot : public QWidget
     Indicator indicator;
     PlotData plotData;
     PlotGrid grid;
-    BarData::BarLength interval;
+    Bar::BarLength interval;
     bool menuFlag;
     MouseStatus mouseFlag;
     COPlugin *coSelected;

@@ -57,7 +57,7 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   plotData.infoFlag = 1;
   plotData.pos = 0;
   
-  interval = BarData::DailyBar;
+  interval = Bar::DailyBar;
   mouseFlag = None;
   chartMenu = 0;
   coSelected = 0;
@@ -130,7 +130,7 @@ void IndicatorPlot::setLogScale (bool d)
   indicator.setLog(d);
 }
 
-void IndicatorPlot::setInterval (BarData::BarLength d)
+void IndicatorPlot::setInterval (Bar::BarLength d)
 {
   interval = d;
 }

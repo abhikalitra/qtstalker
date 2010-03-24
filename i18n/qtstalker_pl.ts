@@ -1488,10 +1488,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Normal Cursor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Zoom Cursor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1523,6 +1519,29 @@ a partial match like %SI or %RSI%</source>
         <source>Toggle the side panel area from view</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select Cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Script</name>
+    <message>
+        <source>Script </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> cancelled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> completed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> started.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptPage</name>
@@ -1540,14 +1559,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Enter name of new script.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This script already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1617,26 +1628,6 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> added to que.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> completed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script cancelled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script removed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1649,7 +1640,35 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>This script is currently running on a timer.</source>
+        <source>Active Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This script already exists. Replace it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The script edited is currently running. Restart script?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The script deleted is currently running. Terminate script?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This script is currently running. Request denied.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run every </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> seconds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Running...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

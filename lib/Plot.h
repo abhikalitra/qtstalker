@@ -60,7 +60,7 @@ class Plot : public QWidget
     void setGridColor (QColor);
     void setPlotFont (QFont);
     void setIndex (int);
-    void setInterval(BarData::BarLength);
+    void setInterval(Bar::BarLength);
     void setChartPath (QString);
     void slotSliderChanged (int);
     void slotGridChanged (bool);

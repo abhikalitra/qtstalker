@@ -200,9 +200,10 @@ int STOCH::getSTOCH (BarData *data, int fkp, int skp, int skma, int sdp, int sdm
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
   }
 
   TA_Integer outBeg;

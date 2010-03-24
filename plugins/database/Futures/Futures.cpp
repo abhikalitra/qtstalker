@@ -49,57 +49,48 @@ void Futures::getBars (BarData &data)
   getLastDate(data.getTableName(), lastDate);
 
   QHash<QString, Bar *> bars;
-  QStringList dateList;
+  QList<Bar *> dateList;
 
-  while (1)
+  QString s = "SELECT date,open,high,low,close,volume,oi FROM " + data.getTableName();
+  s.append(" WHERE date >='" + firstDate.toString(Qt::ISODate) + "'");
+  s.append(" AND date <='" + lastDate.toString(Qt::ISODate) + "'");
+  s.append(" ORDER BY date DESC");
+  q.exec(s);
+  if (q.lastError().isValid())
   {
-    QString sd = firstDate.toString(Qt::ISODate);
-    QString ed = lastDate.toString(Qt::ISODate);
+    qDebug() << "Futures::getBars:" << q.lastError().text();
+    return;
+  }
 
-    QString s = "SELECT date,open,high,low,close,volume,oi FROM " + data.getTableName();
-    s.append(" WHERE date >='" + sd + "' AND date <='" + ed + "'");
-    s.append(" ORDER BY date DESC");
-    s.append(" LIMIT " + QString::number(data.getBarsRequested() * 2));
-    q.exec(s);
-    if (q.lastError().isValid())
+  while (q.next())
+  {
+    lastDate = q.value(0).toDateTime();
+
+    Bar tbar;
+    tbar.setBarDate(lastDate, data.getBarLength());
+    tbar.getBarDateKey(s);
+
+    Bar *bar = bars[s];
+    if (! bar)
     {
-      qDebug() << "Futures::getBars:" << q.lastError().text();
-      break;
-    }
+      if (bars.count() > data.getBarsRequested())
+        break;
 
-    while (q.next())
-    {
-      QDateTime dt = q.value(0).toDateTime();
-      lastDate = dt;
-      
-      QDateTime sd, ed;
-      setStartEndDates(dt, sd, ed, data.getBarLength());
-      
-      s = sd.toString(Qt::ISODate) + ed.toString(Qt::ISODate);
-      Bar *bar = bars[s];
-      if (! bar)
-      {
-	if (bars.count() == data.getBarsRequested())
-	  break;
-
-	dateList.append(s); // save new dateList entry
-	bar = new Bar;
-        bar->setDate(dt); // save actual date
-
-	bars.insert(s, bar);
-
-        bar->setOpen(q.value(1).toDouble());
-        bar->setHigh(q.value(2).toDouble());
-        bar->setLow(q.value(3).toDouble());
-        bar->setClose(q.value(4).toDouble());
-        bar->setVolume(q.value(5).toDouble());
-        bar->setOI(q.value(6).toInt());
-
-	continue;
-      }
-
+      bar = new Bar;
+      bar->setBarDate(lastDate, data.getBarLength());
       bar->setOpen(q.value(1).toDouble());
-
+      bar->setHigh(q.value(2).toDouble());
+      bar->setLow(q.value(3).toDouble());
+      bar->setClose(q.value(4).toDouble());
+      bar->setVolume(q.value(5).toDouble());
+      bar->setOI(q.value(6).toInt());
+      bars.insert(s, bar);
+      dateList.append(bar);
+    }
+    else
+    {
+      bar->setOpen(q.value(1).toDouble());
+      
       double v = q.value(2).toDouble();
       if (v > bar->getHigh())
         bar->setHigh(v);
@@ -107,7 +98,7 @@ void Futures::getBars (BarData &data)
       v = q.value(3).toDouble();
       if (v < bar->getLow())
         bar->setLow(v);
-
+      
       v = q.value(5).toDouble();
       double v2 = bar->getVolume();
       bar->setVolume(v + v2);
@@ -115,17 +106,14 @@ void Futures::getBars (BarData &data)
       bar->setOI(q.value(6).toInt());
     }
 
-    if (bars.count() == data.getBarsRequested())
-      break;
-
-    if (lastDate == firstDate)
+    if (bars.count() > data.getBarsRequested())
       break;
   }
-
+    
   // order the bars from most recent to first
   int loop;
   for (loop = 0; loop < dateList.count(); loop++)
-    data.prepend(bars[dateList[loop]]);
+    data.prepend(dateList.at(loop));
 }
 
 void Futures::setBars (BarData &bars)

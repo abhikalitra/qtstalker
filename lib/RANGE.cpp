@@ -152,8 +152,9 @@ PlotLine * RANGE::getRANGE (PlotLine *in, BarData *data, int period, int method)
       TA_Real low[size];
       for (loop = 0; loop < size; loop++)
       {
-        high[loop] = (TA_Real) data->getHigh(loop);
-        low[loop] = (TA_Real) data->getLow(loop);
+        Bar *bar = data->getBar(loop);
+        high[loop] = (TA_Real) bar->getHigh();
+        low[loop] = (TA_Real) bar->getLow();
       }
       rc = TA_MIDPRICE(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
       break;

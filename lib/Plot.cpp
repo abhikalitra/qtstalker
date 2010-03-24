@@ -157,7 +157,7 @@ void Plot::setIndex (int d)
   indicatorPlot->setIndex(d);
 }
 
-void Plot::setInterval (BarData::BarLength d)
+void Plot::setInterval (Bar::BarLength d)
 {
   datePlot->setInterval(d);
   indicatorPlot->setInterval(d);

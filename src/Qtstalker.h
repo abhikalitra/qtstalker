@@ -55,7 +55,7 @@ class QtstalkerApp : public QMainWindow
     void signalGridColor (QColor);
     void signalPlotFont (QFont);
     void signalIndex (int);
-    void signalInterval(BarData::BarLength);
+    void signalInterval(Bar::BarLength);
     void signalChartPath (QString);
     void signalClearIndicator ();
     void signalGrid (bool);
@@ -153,7 +153,6 @@ class QtstalkerApp : public QMainWindow
     QWidget *navBase;
     ChartPage *chartNav;
     QHash<QString, Plot *> plotList;
-    QString chartPath;
     InfoPanel *infoPanel;
     QStatusBar *statusbar;
     QList<QTabWidget*> tabList;
@@ -167,10 +166,7 @@ class QtstalkerApp : public QMainWindow
     Assistant *assistant;
     QButtonGroup *barButtonGroup;
     QToolBar *toolBar2;
-    QString chartSymbol;
-    QString chartName;
-    QString chartExchange;
-    int barsLoaded;
+    BarData currentChart;
     ScriptPage *scriptPage;
 };
 

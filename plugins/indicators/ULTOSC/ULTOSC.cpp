@@ -144,9 +144,10 @@ PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp)
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
   }
 
   TA_Integer outBeg;

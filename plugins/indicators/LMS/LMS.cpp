@@ -189,7 +189,10 @@ void LMS::getLMS (QList<PlotLine *> &l, BarData *data)
 
   //price = (h + l) / 2
   for (i = 0; i < (int) data->count(); i++)
-    price->append((data->getHigh(i) + data->getLow(i)) / 2);
+  {
+    Bar *bar = data->getBar(i);
+    price->append((bar->getHigh() + bar->getLow()) / 2);
+  }
 
   PlotLine *price_offset_4 = new PlotLine;
   //temps

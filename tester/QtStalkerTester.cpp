@@ -518,7 +518,7 @@ void QtStalkerTester::loadTest (QString &s)
   data.setSymbol(ts);
   settings->getExchange(ts);
   data.setExchange(ts);
-  data.setBarLength((BarData::BarLength) settings->getBarLength());
+  data.setBarLength((Bar::BarLength) settings->getBarLength());
   data.setBarsRequested(settings->getBars());
 
   DBPlugin qdb;
@@ -590,7 +590,7 @@ void QtStalkerTester::run ()
   data.setSymbol(s);
   settings->getExchange(s);
   data.setExchange(s);
-  data.setBarLength((BarData::BarLength) settings->getBarLength());
+  data.setBarLength((Bar::BarLength) settings->getBarLength());
   data.setBarsRequested(settings->getBars());
 
   DBPlugin qdb;
@@ -701,12 +701,12 @@ void QtStalkerTester::run ()
       case Long:
       {
 	// check if we exit long
-        QDateTime dt;
-        data.getDate(dataLoop, dt);
+        Bar *bar = data.getBar(dataLoop);
+        QDateTime dt = bar->getBarDate();
         trade->setExitDate(dt);
 	    
 	double price = xp->getData(dataLoop);
-        trade->setExitPrice(price, data.getHigh(dataLoop));
+        trade->setExitPrice(price, bar->getHigh());
 
 	if (trade->update())
 	{
@@ -731,12 +731,12 @@ void QtStalkerTester::run ()
       case Short:
       {
 	// check if we exit short
-        QDateTime dt;
-        data.getDate(dataLoop, dt);
+        Bar *bar = data.getBar(dataLoop);
+        QDateTime dt = bar->getDate();
         trade->setExitDate(dt);
 	    
 	double price = xp->getData(dataLoop);
-        trade->setExitPrice(price, data.getHigh(dataLoop));
+        trade->setExitPrice(price, bar->getHigh());
 
         if (trade->update())
 	{
@@ -770,12 +770,12 @@ void QtStalkerTester::run ()
             if (settings->getTrailingCheck())
               trade->setTrailing(settings->getTrailing());
 	    
-            QDateTime dt;
-            data.getDate(dataLoop, dt);
+            Bar *bar = data.getBar(dataLoop);
+            QDateTime dt = bar->getDate();
             trade->setEnterDate(dt);
 	    
 	    double price = ep->getData(dataLoop);
-            trade->setEnterPrice(price, data.getLow(dataLoop));
+            trade->setEnterPrice(price, bar->getLow());
 	    
             double t = money * (settings->getVolumePercentage() / (double) 100);
             int volume = t / price;
@@ -795,12 +795,12 @@ void QtStalkerTester::run ()
             if (settings->getTrailingCheck())
               trade->setTrailing(settings->getTrailing());
 	    
-            QDateTime dt;
-            data.getDate(dataLoop, dt);
+            Bar *bar = data.getBar(dataLoop);
+            QDateTime dt = bar->getDate();
             trade->setEnterDate(dt);
 	    
 	    double price = ep->getData(dataLoop);
-            trade->setEnterPrice(price, data.getLow(dataLoop));
+            trade->setEnterPrice(price, bar->getLow());
 	    
             double t = money * (settings->getVolumePercentage() / (double) 100);
             int volume = t / price;

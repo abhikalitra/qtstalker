@@ -196,9 +196,10 @@ PlotLine * PP::getPP (BarData *data, int point)
   QString s = "Horizontal";
   output->setPlugin(s);
 
-  double high = data->getHigh(data->count() - 1);
-  double low = data->getLow(data->count() - 1);
-  double close = data->getClose(data->count() - 1);
+  Bar *bar = data->getBar(data->count() - 1);
+  double high = bar->getHigh();
+  double low = bar->getLow();
+  double close = bar->getClose();
   double pp = 0;
   double t = 0;
 

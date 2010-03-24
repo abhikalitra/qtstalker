@@ -188,8 +188,10 @@ PlotLine * THERM::getTHERM (BarData *data, int smoothing, int type)
   double thermometer = 0;
   for (loop = 1; loop < (int) data->count(); loop++)
   {
-    double high = fabs(data->getHigh(loop) - data->getHigh(loop - 1));
-    double lo = fabs(data->getLow(loop - 1) - data->getLow(loop));
+    Bar *bar = data->getBar(loop);
+    Bar *pbar = data->getBar(loop - 1);
+    double high = fabs(bar->getHigh() - pbar->getHigh());
+    double lo = fabs(pbar->getLow() - bar->getLow());
 
     if (high > lo)
       thermometer = high;

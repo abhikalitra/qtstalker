@@ -37,8 +37,8 @@ TestSettings::TestSettings ()
 {
   priceList << "Open" << "High" << "Low" << "Close" << "AvgPrice" << "MedianPrice" << "TypicalPrice";
   
-  BarData bd;
-  bd.getBarLengthList(barLengthList);
+  Bar bar;
+  bar.getBarLengthList(barLengthList);
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);

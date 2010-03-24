@@ -290,10 +290,11 @@ PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
   for (loop = 0; loop < size; loop++)
   {
     PlotLineBar bar;
-    bar.append(data->getOpen(loop));
-    bar.append(data->getHigh(loop));
-    bar.append(data->getLow(loop));
-    bar.append(data->getClose(loop));
+    Bar *tbar = data->getBar(loop);
+    bar.append(tbar->getOpen());
+    bar.append(tbar->getHigh());
+    bar.append(tbar->getLow());
+    bar.append(tbar->getClose());
     bar.setColor(color);
     line->append(bar);
   }
@@ -410,10 +411,11 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen)
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    open[loop] = (TA_Real) data->getOpen(loop);
-    high[loop] = (TA_Real) data->getHigh(loop);
-    low[loop] = (TA_Real) data->getLow(loop);
-    close[loop] = (TA_Real) data->getClose(loop);
+    Bar *bar = data->getBar(loop);
+    open[loop] = (TA_Real) bar->getOpen();
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
   }
 
   TA_RetCode rc = TA_SUCCESS;

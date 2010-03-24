@@ -60,7 +60,7 @@ class DatePlot : public QWidget
     void setBorderColor (QColor);
     void setPlotFont (QFont);
     void setIndex (int);
-    void setInterval(BarData::BarLength);
+    void setInterval(Bar::BarLength);
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -79,7 +79,7 @@ class DatePlot : public QWidget
     int scaleWidth;
     int startX;
     int startIndex;
-    BarData::BarLength interval;
+    Bar::BarLength interval;
     QColor backgroundColor;
     QColor borderColor;
     QList<TickItem> dateList;

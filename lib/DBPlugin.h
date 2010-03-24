@@ -45,8 +45,6 @@ class DBPlugin : public DataBase
     void getSearchList (QString &ex, QString &pat, Group &);
     void getFirstDate (QString &table, QDateTime &date);
     void getLastDate (QString &table, QDateTime &date);
-    void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate,
-			   BarData::BarLength barLength);
     int getIndexData (BarData &);
     int setIndexData (BarData &);
     int addSymbolIndex (BarData &);

@@ -620,7 +620,7 @@ void QtstalkerApp::slotAbout()
   // display the about dialog
   QString versionString = "Qtstalker\nVersion 0.37-dev (working title)\nBuilt using Qt ";
   versionString += QT_VERSION_STR;
-  versionString += "\n(C) 2001-2009 by Stefan Stratigakos\nqtstalker.sourceforge.net";
+  versionString += "\n(C) 2001-2010 by Stefan Stratigakos\nqtstalker.sourceforge.net";
   versionString += "\nQtstalker is licensed with GNU General Public License (GPL) version 2.";
   versionString += "\nQt Assistant is licensed with GNU General Public License (GPL) version 3.";
   QMessageBox::about(this, tr("About Qtstalker"), versionString);
@@ -654,12 +654,12 @@ void QtstalkerApp::slotShowDocumentation(QString doc)
 void QtstalkerApp::slotOpenChart (BarData *bd)
 {
   // load a chart slot
-  chartExchange = bd->getExchange();
-  chartSymbol = bd->getSymbol();
+  currentChart.setExchange(bd->getExchange());
+  currentChart.setSymbol(bd->getSymbol());
   
   slider->setEnabled(TRUE);
   qApp->processEvents();
-  loadChart(chartExchange, chartSymbol);
+  loadChart(currentChart.getExchange(), currentChart.getSymbol());
 }
 
 // sent here if user selected chart from recent charts combobox
@@ -692,30 +692,24 @@ void QtstalkerApp::loadChart (QString ex, QString d)
   if (d.length() == 0)
     return;
 
-  // check if we need to save the slider position because chart is reloaded
-  bool reload = FALSE;
-  if (! chartPath.compare(d))
-    reload = TRUE;
-
-  chartPath = d;
-  chartSymbol = d;
-  chartExchange = ex;
+  currentChart.setSymbol(d);
+  currentChart.setExchange(ex);
 
   // set plots to empty
   emit signalClearIndicator();
 
   // update each plot with new symbol
-  emit signalChartPath(chartPath);
+  emit signalChartPath(d);
 
   // save the new chart
   Config config;
-  config.setData(Config::CurrentChart, chartPath);
+  config.setData(Config::CurrentChart, d);
 
   // create and populate the quote data
   BarData recordList;
-  recordList.setSymbol(chartPath);
-  recordList.setExchange(chartExchange);
-  recordList.setBarLength((BarData::BarLength) barButtonGroup->checkedId());
+  recordList.setSymbol(d);
+  recordList.setExchange(ex);
+  recordList.setBarLength((Bar::BarLength) barButtonGroup->checkedId());
   recordList.setBarsRequested(barCount->value());
 
   DBPlugin qdb;
@@ -733,9 +727,9 @@ void QtstalkerApp::loadChart (QString ex, QString d)
   
   qdb2->getBars(recordList);
   
-  chartSymbol = recordList.getSymbol();
-  chartName = recordList.getName();
-  barsLoaded = recordList.count();
+  currentChart.setSymbol(recordList.getSymbol());
+  currentChart.setName(recordList.getName());
+  currentChart.setBarsRequested(recordList.count());
 
   IndicatorDataBase db;
   QStringList indicatorList;
@@ -745,7 +739,7 @@ void QtstalkerApp::loadChart (QString ex, QString d)
   for (loop = 0; loop < indicatorList.count(); loop++)
     loadIndicator(&recordList, indicatorList[loop]);
 
-  setSliderStart(barsLoaded);
+  setSliderStart(currentChart.getBarsRequested());
   emit signalIndex(slider->value());
 
   resetZoomSettings();
@@ -792,7 +786,7 @@ void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
 
 void QtstalkerApp::refreshIndicator (QString)
 {
-  loadChart(chartExchange, chartPath);
+  loadChart(currentChart.getExchange(), currentChart.getSymbol());
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -800,13 +794,13 @@ QString QtstalkerApp::getWindowCaption ()
   // update the main window text
 
   QString caption = tr("Qtstalker");
-  caption.append(": " + chartSymbol);
-  if (! chartName.isEmpty())
-    caption.append(" (" + chartName + ")");
+  caption.append(": " + currentChart.getSymbol());
+  if (! currentChart.getName().isEmpty())
+    caption.append(" (" + currentChart.getName() + ")");
 
-  BarData bd;
+  Bar bar;
   QStringList l;
-  bd.getBarLengthList(l);
+  bar.getBarLengthList(l);
   caption.append(" " + l[barButtonGroup->checkedId()]);
 
   return caption;
@@ -838,15 +832,15 @@ void QtstalkerApp::slotDataWindow ()
 
 void QtstalkerApp::slotBarLengthChanged(int barLength)
 {
-  emit signalInterval((BarData::BarLength) barLength);
-  loadChart(chartExchange, chartPath);
+  emit signalInterval((Bar::BarLength) barLength);
+  loadChart(currentChart.getExchange(), currentChart.getSymbol());
 }
 
 void QtstalkerApp::slotNewIndicator (QString n)
 {
   // add a new indicator
   addIndicatorButton(n);
-  loadChart(chartExchange, chartPath);
+  loadChart(currentChart.getExchange(), currentChart.getSymbol());
 }
 
 void QtstalkerApp::slotDeleteIndicator (QString text)
@@ -882,7 +876,7 @@ void QtstalkerApp::slotEnableIndicator (QString name)
 {
   // enable indicator
   addIndicatorButton(name);
-  loadChart(chartExchange, chartPath);
+  loadChart(currentChart.getExchange(), currentChart.getSymbol());
 }
 
 void QtstalkerApp::addIndicatorButton (QString d)
@@ -934,7 +928,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   plot->setPixelspace(set.getInt(1));
 
   plot->setIndex(slider->value());
-  plot->setInterval((BarData::BarLength) barButtonGroup->checkedId());
+  plot->setInterval((Bar::BarLength) barButtonGroup->checkedId());
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
   
@@ -943,7 +937,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(indy, SIGNAL(signalStatusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
-  connect(this, SIGNAL(signalInterval(BarData::BarLength)), plot, SLOT(setInterval(BarData::BarLength)));
+  connect(this, SIGNAL(signalInterval(Bar::BarLength)), plot, SLOT(setInterval(Bar::BarLength)));
   connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
   connect(this, SIGNAL(signalClearIndicator()), plot, SLOT(clear()));
   connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
@@ -961,13 +955,13 @@ void QtstalkerApp::slotChartUpdated ()
 {
   chartNav->updateList();
 
-  if (chartPath.isEmpty())
+  if (currentChart.getSymbol().isEmpty())
     return;
 
   Config config;
   config.setData((int) Config::BarsToLoad, barCount->value());
 
-  loadChart(chartExchange, chartPath);
+  loadChart(currentChart.getExchange(), currentChart.getSymbol());
 }
 
 void QtstalkerApp::slotStatusMessage (QString d)
@@ -1036,6 +1030,7 @@ void QtstalkerApp::slotDrawPlots ()
     QTabWidget *it = tabList.at(loop);
     if (it->isHidden())
       continue;
+    
     QString s = it->tabText(it->currentIndex());
     Plot *p = plotList[s];
     if (p)
@@ -1097,7 +1092,7 @@ void QtstalkerApp::ps1ButtonClicked ()
   set.setData(1, ti);
   zoomList[0] = set;
 
-  setSliderStart(barsLoaded);
+  setSliderStart(currentChart.getBarsRequested());
   emit signalPixelspace(ti);
   emit signalIndex(slider->value());
   slotDrawPlots();
@@ -1117,7 +1112,7 @@ void QtstalkerApp::ps2ButtonClicked ()
   set.setData(1, ti);
   zoomList[0] = set;
 
-  setSliderStart(barsLoaded);
+  setSliderStart(currentChart.getBarsRequested());
   emit signalPixelspace(ti);
   emit signalIndex(slider->value());
   slotDrawPlots();
@@ -1147,9 +1142,9 @@ void QtstalkerApp::cursorButtonPressed (int id)
 
 void QtstalkerApp::coButtonPressed (int id)
 {
-  Config config;
+  COFactory fac;
   QStringList l;
-  config.getData(Config::COPluginList, l);
+  fac.getList(l);
   emit signalNewExternalChartObject(l[id]);
 }
 
@@ -1255,10 +1250,10 @@ void QtstalkerApp::slotRefreshChart (bool status)
 
 void QtstalkerApp::slotReloadChart ()
 {
-  if (chartPath.isEmpty())
+  if (currentChart.getSymbol().isEmpty())
     return;
 
-  loadChart(chartExchange, chartPath);
+  loadChart(currentChart.getExchange(), currentChart.getSymbol());
 }
 
 void QtstalkerApp::slotRefreshUpdated (int minutes)

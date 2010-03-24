@@ -184,10 +184,12 @@ PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline
     double dntrend_noise_cnt = 0;
     for (lbloop = lbstart; lbloop < loop; lbloop++)
     {
-      double lo_curr = data->getLow(lbloop);
-      double lo_last = data->getLow(lbloop - 1);
-      double hi_curr = data->getHigh(lbloop);
-      double hi_last = data->getHigh(lbloop - 1);
+      Bar *bar = data->getBar(lbloop);
+      Bar *pbar = data->getBar(lbloop - 1);
+      double lo_curr = bar->getLow();
+      double lo_last = pbar->getLow();
+      double hi_curr = bar->getHigh();
+      double hi_last = pbar->getHigh();
       if (lo_last > lo_curr)
       {
 	uptrend_noise_avg += lo_last - lo_curr;
@@ -205,8 +207,9 @@ PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline
     if (dntrend_noise_cnt > 0)
       dntrend_noise_avg /= dntrend_noise_cnt;
 
-    double lo_last = data->getLow(loop - 1);
-    double hi_last = data->getHigh(loop - 1);
+    Bar *pbar = data->getBar(loop - 1);
+    double lo_last = pbar->getLow();
+    double hi_last = pbar->getHigh();
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
     dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
 
