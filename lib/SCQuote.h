@@ -29,17 +29,8 @@
 class SCQuote
 {
   public:
-    enum Method
-    {
-      SET_QUOTE // save quotes in the database
-    };
-    
     SCQuote ();
     int calculate (QStringList &, QByteArray &, QString &);
-    int setQuote (QStringList &, QByteArray &, QString &);
-    
-  protected:
-    QStringList methodList;
 };
 
 #endif

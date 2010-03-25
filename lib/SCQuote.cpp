@@ -27,52 +27,27 @@
 
 SCQuote::SCQuote ()
 {
-  methodList << "SET_QUOTE";
 }
 
 int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path)
 {
   // format = QUOTE,PLUGIN,*
-
-  int rc = -1;
-
-  if (l.count() < 2)
-  {
-    qDebug() << "SCQuote::calculate: invalid parm count" << l.count();
-    return rc;
-  }
-  
-  switch ((Method) methodList.indexOf(l[1]))
-  {
-    case SET_QUOTE:
-      rc = setQuote(l, ba, path);
-      break;
-    default:
-      break;
-  }
-  
-  return rc;
-}
-
-int SCQuote::setQuote (QStringList &l, QByteArray &ba, QString &pp)
-{
-  // format = QUOTE,PLUGIN,METHOD,*
-  // we are only concerned with the first 3 parms, the plugin will check the rest
+  // we are only concerned with the first 2 parms, the plugin will check the rest
   
   ba.clear();
   ba.append("1\n");
 
-  if (l.count() < 3)
+  if (l.count() < 2)
   {
-    qDebug() << "SCQuote::quoteSet: invalid parm count" << l.count();
+    qDebug() << "SCQuote::calculate: invalid parm count" << l.count();
     return 1;
   }
   
   PluginFactory fac;
-  DBPlugin *plug = fac.getDB(pp, l[1]);
+  DBPlugin *plug = fac.getDB(path, l[1]);
   if (! plug)
   {
-    qDebug() << "SCQuote::quoteSet: plugin error" << l[1];
+    qDebug() << "SCQuote::calculate: plugin error" << l[1];
     return 1;
   }
   
