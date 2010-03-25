@@ -77,46 +77,46 @@ int VIDYA::getIndicator (Indicator &ind, BarData *data)
 
 int VIDYA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,VIDYA,<NAME>,<INPUT>,<PERIOD>,<VOLUME_PERIOD>
+  // INDICATOR,PLUGIN,VIDYA,<NAME>,<INPUT>,<PERIOD>,<VOLUME_PERIOD>
 
-  if (set.count() != 6)
+  if (set.count() != 7)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *inSignal = tlines.value(set[3]);
+  PlotLine *inSignal = tlines.value(set[4]);
   if (! inSignal)
   {
-    inSignal = data->getInput(data->getInputType(set[3]));
+    inSignal = data->getInput(data->getInputType(set[4]));
     if (! inSignal)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[3], inSignal);
+    tlines.insert(set[4], inSignal);
   }
 
   bool ok;
-  int period = set[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::calculate: invalid fast period settings" << set[4];
-    return 1;
-  }
-
-  int volPeriod = set[5].toInt(&ok);
+  int period = set[5].toInt(&ok);
   if (! ok)
   {
     qDebug() << indicator << "::calculate: invalid fast period settings" << set[5];
+    return 1;
+  }
+
+  int volPeriod = set[6].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid fast period settings" << set[6];
     return 1;
   }
 
@@ -124,7 +124,7 @@ int VIDYA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

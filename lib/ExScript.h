@@ -42,18 +42,11 @@ class ExScript : public QObject
     enum Function
     {
       CLEAR, // clears all data
-      INDICATOR, // get a library indicator
-      INDICATOR_GET, // pass indicator data to the calling script
-      INDICATOR_GET_INDEX, // pass a single indicator value to the calling script
-      INDICATOR_GET_SIZE, // returns the size of the indicator.
-      INDICATOR_SET, // pass indicator data from script to qtstalker
-      GROUP_ADD, // add a group item to a group
-      GROUP_DELETE, // deletes a group and contents
-      GROUP_GET, // returns a csv list of the group contents
+      INDICATOR, // get indicator functions
+      GROUP, // group database functions
       PLOT, // plot the desired indicator
       QUOTE, // quote database functions
-      SYMBOL_GET, // get the current symbol
-      SYMBOL_LIST, // get a list of symbols in the db
+      _SYMBOL, // symbol functions
       TEST_ENTER_LONG, // sets the enter long indicator for the tester
       TEST_EXIT_LONG,  // sets the exit long indicator for the tester
       TEST_ENTER_SHORT,  // sets the enter short indicator for the tester
@@ -83,7 +76,6 @@ class ExScript : public QObject
   private:
     QProcess *proc;
     QStringList functionList;
-    QStringList notPluginList;
     QHash<QString, PlotLine *> tlines;
     QStringList plotOrder;
     BarData *data;

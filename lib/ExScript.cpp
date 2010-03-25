@@ -23,21 +23,12 @@
 #include "SCIndicator.h"
 #include "SCPlot.h"
 #include "SCGroup.h"
-#include "SCSymbolList.h"
 #include "SCTest.h"
 #include "SCQuote.h"
-#include "IndicatorPlugin.h"
-#include "PluginFactory.h"
-#include "COLOR.h"
-#include "COMPARE.h"
-#include "MATH1.h"
-#include "RANGE.h"
-#include "REF.h"
-#include "SYMBOL.h"
+#include "SCSymbol.h"
 
 #include <QByteArray>
 #include <QtDebug>
-
 
 ExScript::ExScript (QString &ipp, QString &dbpp)
 {
@@ -52,16 +43,13 @@ ExScript::ExScript (QString &ipp, QString &dbpp)
   exitShort = 0;
 
   functionList << "CLEAR";
-  functionList << "INDICATOR" << "INDICATOR_GET" << "INDICATOR_GET_INDEX" << "INDICATOR_GET_SIZE";
-  functionList << "INDICATOR_SET";
-  functionList << "GROUP_ADD" << "GROUP_DELETE" << "GROUP_GET";
+  functionList << "INDICATOR";
+  functionList << "GROUP";
   functionList << "PLOT";
   functionList << "QUOTE";
-  functionList << "SYMBOL_GET" << "SYMBOL_LIST";
+  functionList << "SYMBOL";
   functionList << "TEST_ENTER_LONG" << "TEST_EXIT_LONG" << "TEST_ENTER_SHORT" << "TEST_EXIT_SHORT";
   
-  notPluginList << "COLOR" << "COMPARE" << "MATH1" << "RANGE" << "REF" << "SYMBOL";
-
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
   connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
@@ -179,100 +167,15 @@ void ExScript::readFromStdout ()
     }
     case INDICATOR:
     {
-      int delFlag = 0;
-      PluginFactory fac;
-      IndicatorPlugin *ip = fac.getIndicator(indicatorPluginPath, l[1]);
-      if (! ip)
-      {
-        int i = notPluginList.indexOf(l[1]);
-        switch (i)
-        {
-          case 0: // COLOR
-            ip = new COLOR;
-	    delFlag = TRUE;
-            break;
-          case 1: // COMPARE
-            ip = new COMPARE;
-	    delFlag = TRUE;
-            break;
-          case 2: // MATH1
-            ip = new MATH1;
-	    delFlag = TRUE;
-            break;
-          case 3: // RANGE
-            ip = new RANGE;
-	    delFlag = TRUE;
-            break;
-          case 4: // REF
-            ip = new REF;
-	    delFlag = TRUE;
-            break;
-          case 5: // SYMBOL
-            ip = new SYMBOL;
-	    delFlag = TRUE;
-            break;
-          default:
-            proc->write("1\n");
-            break;
-        }
-  
-        if (! ip)
-          break;
-      }
-
-      int rc = ip->getCUS(l, tlines, data);
-      ba.append(QString::number(rc) + '\n');
-      proc->write(ba);
-      if (delFlag)
-	delete ip;
-      break;
-    }
-    case INDICATOR_GET:
-    {
       SCIndicator sc;
-      sc.getIndicator(l, ba, tlines);
+      sc.calculate(l, ba, tlines, data, indicatorPluginPath);
       proc->write(ba);
       break;
     }
-    case INDICATOR_GET_INDEX:
-    {
-      SCIndicator sc;
-      sc.getIndex(l, tlines, ba);
-      proc->write(ba);
-      break;
-    }
-    case INDICATOR_GET_SIZE:
-    {
-      SCIndicator sc;
-      sc.getSize(l, tlines, ba);
-      proc->write(ba);
-      break;
-    }
-    case INDICATOR_SET:
-    {
-      SCIndicator sc;
-      sc.setIndicator(l, tlines, ba);
-      proc->write(ba);
-      break;
-    }
-    case GROUP_ADD:
+    case GROUP:
     {
       SCGroup sc;
-      sc.addGroup(l, ba);
-      proc->write(ba);
-      break;
-    }
-    case GROUP_DELETE:
-    {
-      SCGroup sc;
-      sc.deleteGroup(l, ba);
-      proc->write(ba);
-      break;
-    }
-    case GROUP_GET:
-    {
-      SCGroup sc;
-      sc.getGroup(l, ba);
+      sc.calculate(l, ba);
       proc->write(ba);
       break;
     }
@@ -290,22 +193,10 @@ void ExScript::readFromStdout ()
       proc->write(ba);
       break;
     }
-    case SYMBOL_GET:
+    case _SYMBOL:
     {
-      if (! data)
-        ba.append("1\n"); // we don't have any data, so return an error
-      else
-      {
-        QString symbol = data->getSymbol();
-        ba.append(symbol + '\n');
-      }
-      proc->write(ba);
-      break;
-    }
-    case SYMBOL_LIST:
-    {
-      SCSymbolList sc;
-      sc.calculate(l, ba);
+      SCSymbol sc;
+      sc.calculate(l, ba, data);
       proc->write(ba);
       break;
     }

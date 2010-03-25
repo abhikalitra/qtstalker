@@ -93,15 +93,15 @@ returned.<br>
 <hr style="width: 100%; height: 2px;"><br>
 <h3 style="text-decoration: underline;">Symbols</h3>
 <br>
-<span style="font-weight: bold;">SYMBOL_GET</span><br>
+<span style="font-weight: bold;">SYMBOL,CURRENT</span><br>
 <br>
 This function returns the currently loaded symbol in qtstalker to the
-script. On success the symbol is returned. On failure, a '1' is
+script. On success the symbol is returned. On failure, a 'ERROR' is
 returned.<br>
 <br>
 <br>
 <br>
-<span style="font-weight: bold;">SYMBOL_LIST,&lt;EXCHANGE&gt;,&lt;SEARCH_STRING</span>&gt;<br>
+<span style="font-weight: bold;">SYMBOL,SEARCH,&lt;EXCHANGE&gt;,&lt;SEARCH_STRING</span>&gt;<br>
 <br>
 This function allow scripts to return a list of symbols in the quote
 database. On success a csv list of symbols is returned. On failure, the
@@ -137,23 +137,27 @@ duplicate variable errors. On success a '0' is returned. On failure, a
 <h3 style="text-decoration: underline;">Group Functions</h3>
 <br>
 <br>
-<span style="font-weight: bold;">GROUP_ADD,&lt;GROUP_NAME&gt;,&lt;GROUP_ITEM&gt;</span><br>
+<span style="font-weight: bold;">GROUP,ADD,&lt;GROUP_NAME&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;</span><br>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp; This function will add an item to a Qtstalker
+&nbsp;&nbsp;&nbsp;&nbsp; This function will add an a security symbol
+item to a Qtstalker
 group. If
-&lt;GROUP_NAME&gt; does not exist, it will be created and the
-&lt;GROUP_ITEM&gt; added. On success a '0' is returned. On failure, a
+&lt;GROUP_NAME&gt; does not exist, it will be created and the symbol
+added. On success a '0' is returned. On failure, a
 '1' is returned.<br>
 <br>
 <ul>
   <li>&lt;GROUP_NAME&gt; is the name of the group to add items to.</li>
-  <li>&lt;GROUP_ITEM&gt; is the item we want to add to the group.<br>
+  <li>&lt;EXCHANGE&gt; is the exchange the symbol trades on.<br>
+  </li>
+  <li>&lt;SYMBOL&gt; is the symbol of the item we want to add to the
+group.<br>
   </li>
 </ul>
 <br>
 <br>
 <br>
-<span style="font-weight: bold;">GROUP_DELETE,&lt;GROUP_NAME&gt;</span><br>
+<span style="font-weight: bold;">GROUP,DELETE,&lt;GROUP_NAME&gt;</span><br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp; This function will delete a Qtstalker group
 and all of its contents. On success a '0' is returned. On failure, a
@@ -166,7 +170,7 @@ and all of its contents. On success a '0' is returned. On failure, a
 <br>
 <br>
 <br>
-<span style="font-weight: bold;">GROUP_GET,&lt;GROUP_NAME&gt;</span><br>
+<span style="font-weight: bold;">GROUP,GET,&lt;GROUP_NAME&gt;</span><br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp; This function will return a csv list of
 &lt;GROUP_NAME&gt;. On success a csv list of the group contents is
@@ -188,7 +192,7 @@ script,
 we use the INDICATOR_SET function</p>
 <p></p>
 <p style="font-weight: bold;"><br>
-INDICATOR_GET,&lt;NAME&gt;,&lt;BARS&gt;<br>
+INDICATOR,GET,&lt;NAME&gt;,&lt;BARS&gt;<br>
 </p>
 <p>Request indicator values.</p>
 <ul>
@@ -210,7 +214,7 @@ letters instead of numbers in this case.</p>
 <br>
 <span style="font-weight: bold;"><br>
 <br>
-INDICATOR_GET_INDEX,&lt;NAME&gt;,&lt;OFFSET</span>&gt;<br>
+INDICATOR,GET_INDEX,&lt;NAME&gt;,&lt;OFFSET</span>&gt;<br>
 <br>
 Return a single value in a data array<br>
 <br>
@@ -231,7 +235,7 @@ letters instead of numbers in this case.
 <p><br>
 </p>
 <p><span style="font-weight: bold;"><br>
-INDICATOR_GET_SIZE,&lt;NAME&gt;</span><br>
+INDICATOR,GET_SIZE,&lt;NAME&gt;</span><br>
 <br>
 Returns the size of a data array.<br>
 <br>
@@ -251,7 +255,7 @@ letters instead of numbers in this case.<br>
 <br>
 </p>
 <p style="font-weight: bold;"><br>
-INDICATOR_SET,&lt;NAME&gt;,&lt;STRING&gt;<br>
+INDICATOR,SET,&lt;NAME&gt;,&lt;STRING&gt;<br>
 </p>
 <p>Send data from the script to create a new indicator</p>
 <ul>
@@ -287,9 +291,8 @@ The available values of PLOT_TYPE are:</p>
   <li>Dot</li>
   <li>Dash</li>
   <li>Histogram</li>
-  <li>Histogram Bar</li>
+  <li>HistogramBar</li>
   <li>Line</li>
-  <li>Invisible</li>
   <li>Horizontal</li>
   <li>Bar</li>
   <li>Candle</li>
@@ -343,35 +346,35 @@ indicator or bar data as follows:</p>
 </span>
 <h3>Chaikin Accumulation Distribution<br>
 </h3>
-<p>INDICATOR,AD,AD,&lt;NAME&gt;</p>
+<p>INDICATOR,PLUGIN,AD,AD,&lt;NAME&gt;</p>
 <p></p>
-INDICATOR,AD,ADOSC,&lt;NAME&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;
+INDICATOR,PLUGIN,AD,ADOSC,&lt;NAME&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;
 <p></p>
 <h3><br>
 </h3>
 <h3>Average Directional Movement Index</h3>
-<p>INDICATOR,ADX,ADX,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,ADX,ADX,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>INDICATOR,ADX,ADXR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,ADX,ADXR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>INDICATOR,ADX,DX,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,ADX,DX,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>INDICATOR,ADX,-DI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,ADX,-DI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>INDICATOR,ADX,+DI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,ADX,+DI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>INDICATOR,ADX,-DM,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,ADX,-DM,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>INDICATOR,ADX,+DM,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,ADX,+DM,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
 <br>
 <br>
 <h3>Aroon</h3>
-<p>INDICATOR,AROON,UP,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,AROON,UP,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>INDICATOR,AROON,DOWN,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,AROON,DOWN,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>INDICATOR,AROON,OSC,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,AROON,OSC,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
 <p>
 </p>
@@ -380,156 +383,156 @@ INDICATOR,AD,ADOSC,&lt;NAME&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;
 <br>
 <br>
 <h3>Average True Range</h3>
-<p>INDICATOR,ATR,ATR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,ATR,ATR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
-<p>INDICATOR,ATR,NATR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,ATR,NATR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
 <p><br>
 </p>
 <br>
 <h3>OHLC Bars</h3>
-<p>INDICATOR,BARS,&lt;NAME&gt;,&lt;BAR_UP_COLOR&gt;,&lt;BAR_DOWN_COLOR&gt;,&lt;BAR_NEUTRAL_COLOR&gt;</p>
+<p>INDICATOR,PLUGIN,BARS,&lt;NAME&gt;,&lt;BAR_UP_COLOR&gt;,&lt;BAR_DOWN_COLOR&gt;,&lt;BAR_NEUTRAL_COLOR&gt;</p>
 <p></p>
 <p>This will create OHLC bars.</p>
 <p></p>
 <h3><br>
 </h3>
 <h3>Bollinger Bands</h3>
-<p>INDICATOR,BBANDS,&lt;INPUT&gt;,&lt;NAME_UPPER&gt;,&lt;NAME_MIDDLE&gt;,&lt;NAME_LOWER&gt;,&lt;PERIOD&gt;,&lt;UPPER_DEVIATION&gt;,&lt;LOWER_DEVIATION&gt;,&lt;MA_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,BBANDS,&lt;INPUT&gt;,&lt;NAME_UPPER&gt;,&lt;NAME_MIDDLE&gt;,&lt;NAME_LOWER&gt;,&lt;PERIOD&gt;,&lt;UPPER_DEVIATION&gt;,&lt;LOWER_DEVIATION&gt;,&lt;MA_TYPE&gt;</p>
 <p></p>
 <h3><br>
 </h3>
 <h3>Beta</h3>
-<p>INDICATOR,BETA,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,BETA,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;PERIOD&gt;</p>
 <p></p>
 <h3><br>
 </h3>
 <h3>Balance Of Power</h3>
-<p>INDICATOR,BOP,&lt;NAME&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,BOP,&lt;NAME&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <h3><br>
 </h3>
 <h3>Candles</h3>
-<p>INDICATOR,CANDLES,NONE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;<br>
+<p>INDICATOR,PLUGIN,CANDLES,NONE,&lt;NAME&gt;,&lt;CANDLE_COLOR&gt;<br>
 </p>
-<p>INDICATOR,CANDLES,2CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-<p>INDICATOR,CANDLES,3BLACKCROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-<p>INDICATOR,CANDLES,3INSIDE,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
-INDICATOR,CANDLES,3LINESTRIKE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+<p>INDICATOR,PLUGIN,CANDLES,2CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
+<p>INDICATOR,PLUGIN,CANDLES,3BLACKCROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
+<p>INDICATOR,PLUGIN,CANDLES,3INSIDE,&lt;NAME&gt;,&lt;PENETRATION&gt;</p>
+INDICATOR,PLUGIN,CANDLES,3LINESTRIKE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,3OUTSIDE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,3OUTSIDE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,3STARSINSOUTH,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,3STARSINSOUTH,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,3WHITESOLDIERS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,3WHITESOLDIERS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,ABANDONEDBABY,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,ABANDONEDBABY,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,ADVANCEBLOCK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,ADVANCEBLOCK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,BELTHOLD,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,BELTHOLD,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,BREAKAWAY,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,BREAKAWAY,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,CLOSINGMARUBOZU,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,CLOSINGMARUBOZU,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,CONCEALBABYSWALL,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,CONCEALBABYSWALL,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,COUNTERATTACK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,COUNTERATTACK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,DARKCLOUDCOVER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,DARKCLOUDCOVER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,DOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,DOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,DOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,DOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,DRAGONFLYDOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,DRAGONFLYDOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,ENGULFING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,ENGULFING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,EVENINGDOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,EVENINGDOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,EVENINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,EVENINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,GAPSIDESIDEWHITE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,GAPSIDESIDEWHITE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,GRAVESTONEDOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,GRAVESTONEDOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,HAMMER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,HAMMER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,HANGINGMAN,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,HANGINGMAN,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,HARAMI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,HARAMI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,HARAMICROSS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,HARAMICROSS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,HIGHWAVE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,HIGHWAVE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,HIKKAKE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,HIKKAKE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,HIKKAKEMOD,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,HIKKAKEMOD,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,HOMINGPIGEON,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,HOMINGPIGEON,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,IDENTICAL3CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,IDENTICAL3CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,INNECK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,INNECK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,INVERTEDHAMMER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,INVERTEDHAMMER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,KICKING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,KICKING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,KICKINGBYLENGTH,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,KICKINGBYLENGTH,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,LADDERBOTTOM,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,LADDERBOTTOM,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,LONGLEGGEDDOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,LONGLEGGEDDOJI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,LONGLINE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,LONGLINE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,MARUBOZU,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,MARUBOZU,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,MATCHINGLOW,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,MATCHINGLOW,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,MATHOLD,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,MATHOLD,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,MORNINGDOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,MORNINGDOJISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,MORNINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,MORNINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,ONNECK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,ONNECK,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,PIERCING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,PIERCING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,RICKSHAWMAN,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,RICKSHAWMAN,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,RISEFALL3METHODS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,RISEFALL3METHODS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,SEPARATINGLINES,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,SEPARATINGLINES,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,SHOOTINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,SHOOTINGSTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,SHORTLINE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,SHORTLINE,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,SPINNINGTOP,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,SPINNINGTOP,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,STALLEDPATTERN,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,STALLEDPATTERN,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,STICKSANDWICH,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,STICKSANDWICH,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,TAKURI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,TAKURI,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,TASUKIGAP,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,TASUKIGAP,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,THRUSTING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,THRUSTING,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,TRISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,TRISTAR,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,UNIQUE3RIVER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,UNIQUE3RIVER,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,UPSIDEGAP2CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,UPSIDEGAP2CROWS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
-INDICATOR,CANDLES,XSIDEGAP3METHODS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
+INDICATOR,PLUGIN,CANDLES,XSIDEGAP3METHODS,&lt;NAME&gt;,&lt;PENETRATION&gt;<br>
 <br>
 <p></p>
 <br>
@@ -541,18 +544,18 @@ other methods will return a boolean array of values.
 <h3><br>
 </h3>
 <h3>Commodity Channel Index</h3>
-<p>INDICATOR,CCI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,CCI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <br>
 <h3>Chande Momentum Oscillator</h3>
-<p>INDICATOR,CMO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,CMO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
 <p></p>
 <h3><br>
 </h3>
 <h3>COLOR</h3>
-<p>INDICATOR,COLOR,All,&lt;INPUT&gt;,&lt;COLOR&gt;</p>
+<p>INDICATOR,PLUGIN,COLOR,All,&lt;INPUT&gt;,&lt;COLOR&gt;</p>
 <p></p>
-<p>INDICATOR,COLOR,Compare,&lt;INPUT&gt;,&lt;INPUT_2&gt;,&lt;VALUE&gt;,&lt;COLOR&gt;</p>
+<p>INDICATOR,PLUGIN,COLOR,Compare,&lt;INPUT&gt;,&lt;INPUT_2&gt;,&lt;VALUE&gt;,&lt;COLOR&gt;</p>
 <br>
 This function has 2 methods. The 'All' method will color all bars with
 the same color. The 'Compare' method compares the values of
@@ -584,7 +587,7 @@ english word (red).<br>
 </ul>
 <br>
 <h3>COMPARE</h3>
-<p>INDICATOR,COMPARE,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;OPERATOR&gt;</p>
+<p>INDICATOR,PLUGIN,COMPARE,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;OPERATOR&gt;</p>
 <br>
 Compares&nbsp; &lt;INPUT_1&gt; with
 &lt;INPUT_2&gt; using the &lt;OPERATOR&gt; for comparison.
@@ -597,48 +600,48 @@ made &lt;INPUT_1&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.
 <br>
 <br>
 <h3>Pearson's Correlation Coefficient (r)</h3>
-<p>INDICATOR,CORREL,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,CORREL,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;PERIOD&gt;</p>
 <p></p>
 <br>
 <h3>Force Index<br>
 </h3>
-<p>INDICATOR,FI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;MA_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,FI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;MA_TYPE&gt;</p>
 <br>
 <h3>Hilbert Transform<br>
 </h3>
-<p>INDICATOR,HT,DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<p>INDICATOR,PLUGIN,HT,DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
-<p>INDICATOR,HT,DCPHASE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<p>INDICATOR,PLUGIN,HT,DCPHASE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
-<p>INDICATOR,HT,TRENDLINE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<p>INDICATOR,PLUGIN,HT,TRENDLINE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
-<p>INDICATOR,HT,TRENDMODE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<p>INDICATOR,PLUGIN,HT,TRENDMODE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
-<p>INDICATOR,HT,PHASE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<p>INDICATOR,PLUGIN,HT,PHASE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
-<p>INDICATOR,HT,QUAD,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<p>INDICATOR,PLUGIN,HT,QUAD,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
-<p>INDICATOR,HT,SINE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<p>INDICATOR,PLUGIN,HT,SINE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
-<p>INDICATOR,HT,LEAD,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+<p>INDICATOR,PLUGIN,HT,LEAD,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 </p>
 <p>
 </p>
 <br>
 <br>
 <h3>Linear Regression</h3>
-<p>INDICATOR,LINEARREG,LINEARREG,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,LINEARREG,ANGLE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,LINEARREG,INTERCEPT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,LINEARREG,SLOPE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,LINEARREG,TSF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,LINEARREG,LINEARREG,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,LINEARREG,ANGLE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,LINEARREG,INTERCEPT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,LINEARREG,SLOPE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,LINEARREG,TSF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 </p>
 <span style="font-weight: bold;"><br>
 <br>
 </span>
 <h3>Least Mean Square Predictor<br>
 </h3>
-<p>INDICATOR,LMS,&lt;SLOWK_NAME&gt;,&lt;2DAY_NAME&gt;,&lt;5DAY_NAME&gt;,&lt;FASTK_PERIOD&gt;,&lt;SLOWK_PERIOD&gt;,&lt;CMB_INDEX&gt;<br>
+<p>INDICATOR,PLUGIN,LMS,&lt;SLOWK_NAME&gt;,&lt;2DAY_NAME&gt;,&lt;5DAY_NAME&gt;,&lt;FASTK_PERIOD&gt;,&lt;SLOWK_PERIOD&gt;,&lt;CMB_INDEX&gt;<br>
 </p>
 <ul>
   <li>FASTK_PERIOD usually set to 5</li>
@@ -649,97 +652,97 @@ made &lt;INPUT_1&gt; &lt;OPERATOR&gt; &lt;INPUT_2&gt;.
 <br>
 <br>
 <h3>MA (Moving Average)</h3>
-INDICATOR,MA,EMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,PLUGIN,MA,EMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
-INDICATOR,MA,DEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,PLUGIN,MA,DEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
-INDICATOR,MA,KAMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,PLUGIN,MA,KAMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
-INDICATOR,MA,SMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,PLUGIN,MA,SMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
-INDICATOR,MA,TEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,PLUGIN,MA,TEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
-INDICATOR,MA,TRIMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,PLUGIN,MA,TRIMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
-INDICATOR,MA,Wilder,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,PLUGIN,MA,Wilder,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
-INDICATOR,MA,WMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+INDICATOR,PLUGIN,MA,WMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 <br>
 <br>
 <h3>MACD<br>
 </h3>
-<p>INDICATOR,MACDEXT,&lt;INPUT&gt;,&lt;NAME_MACD&gt;,&lt;NAME_SIGNAL&gt;,&lt;NAME_HIST&gt;,&lt;FAST_PERIOD&gt;,&lt;FAST_MA_TYPE&gt;,&lt;SLOW_PERIOD&gt;,&lt;SLOW_MA_TYPE&gt;,&lt;SIGNAL_PERIOD&gt;,&lt;SIGNAL_MA_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,MACDEXT,&lt;INPUT&gt;,&lt;NAME_MACD&gt;,&lt;NAME_SIGNAL&gt;,&lt;NAME_HIST&gt;,&lt;FAST_PERIOD&gt;,&lt;FAST_MA_TYPE&gt;,&lt;SLOW_PERIOD&gt;,&lt;SLOW_MA_TYPE&gt;,&lt;SIGNAL_PERIOD&gt;,&lt;SIGNAL_MA_TYPE&gt;</p>
 <p></p>
 <span style="font-weight: bold;"><br>
 <br>
 </span>
 <h3>MAMA&nbsp; Adaptive Moving Average</h3>
-<p>INDICATOR,MAMA,&lt;INPUT&gt;,&lt;NAME_MAMA&gt;,&lt;NAME_FAMA&gt;,&lt;FAST_LIMIT&gt;,&lt;SLOW_LIMIT&gt;<br>
+<p>INDICATOR,PLUGIN,MAMA,&lt;INPUT&gt;,&lt;NAME_MAMA&gt;,&lt;NAME_FAMA&gt;,&lt;FAST_LIMIT&gt;,&lt;SLOW_LIMIT&gt;<br>
 </p>
 <p></p>
 <br>
 <h3>MATH1</h3>
-INDICATOR,MATH1,CEIL,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,CEIL,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,EXP,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,EXP,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,FLOOR,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,FLOOR,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,LN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,LN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,LOG10,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,LOG10,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,NORMALIZE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,NORMALIZE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,SQRT,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,SQRT,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,ACOS,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,ACOS,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,ASIN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,ASIN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,ATAN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,ATAN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,COS,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,COS,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,COSH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,COSH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,SIN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,SIN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,SINH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,SINH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,TAN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,TAN,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,TANH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
+INDICATOR,PLUGIN,MATH1,TANH,&lt;NAME&gt;,&lt;INPUT&gt;<br>
 <br>
-INDICATOR,MATH1,ADD,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+INDICATOR,PLUGIN,MATH1,ADD,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
 <br>
-INDICATOR,MATH1,DIV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+INDICATOR,PLUGIN,MATH1,DIV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
 <br>
-INDICATOR,MATH1,MULT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+INDICATOR,PLUGIN,MATH1,MULT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
 <br>
-INDICATOR,MATH1,SUB,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
+INDICATOR,PLUGIN,MATH1,SUB,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;INPUT2&gt;<br>
 <br>
-INDICATOR,MATH1,STDDEV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;
+INDICATOR,PLUGIN,MATH1,STDDEV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;
 <br>
 <br>
 <h3><br>
 </h3>
 <h3>Moving average with variable period</h3>
-<p>INDICATOR,MAVP,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;MIN_PERIOD&gt;,&lt;MAX_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,MAVP,&lt;NAME&gt;,&lt;INPUT_1&gt;,&lt;INPUT_2&gt;,&lt;MIN_PERIOD&gt;,&lt;MAX_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
 <p></p>
 <br>
 <h3>Money Flow Index</h3>
-<p>INDICATOR,MFI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,MFI,&lt;NAME&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <br>
 <br>
 <h3>Momentum</h3>
-<p>INDICATOR,MOM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,MOM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <br>
 <h3>Pivot Point<br>
 </h3>
-<p>INDICATOR,PP,&lt;NAME&gt;,&lt;POINT&gt;<br>
+<p>INDICATOR,PLUGIN,PP,&lt;NAME&gt;,&lt;POINT&gt;<br>
 </p>
 <ul>
   <li>&lt;POINT&gt; is value between 0 and 5<br>
@@ -755,25 +758,25 @@ INDICATOR,MATH1,STDDEV,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&g
 </ul>
 <br>
 <h3>Price Oscillator</h3>
-<p>INDICATOR,PO,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
-<p>INDICATOR,PO,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;<br>
+<p>INDICATOR,PLUGIN,PO,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,PO,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;,&lt;MA_TYPE&gt;<br>
 </p>
 <br>
 <br>
 <h3>RANGE<br>
 </h3>
-<p>INDICATOR,RANGE,MIN,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,RANGE,MININDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,RANGE,MAX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,RANGE,MAXINDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,RANGE,MIDPOINT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,RANGE,MIDPRICE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
-<p>INDICATOR,RANGE,SUM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,RANGE,MIN,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,RANGE,MININDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,RANGE,MAX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,RANGE,MAXINDEX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,RANGE,MIDPOINT,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,RANGE,MIDPRICE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,RANGE,SUM,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;<br>
 </p>
 <br>
 <br>
 <h3>Reference Dataset</h3>
-<p>INDICATOR,REF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,REF,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
 <p></p>
 <p>This function creates a dataset that is &lt;INPUT&gt; -
 &lt;PERIOD&gt;
@@ -786,36 +789,36 @@ today's Close then &lt;PERIOD&gt; would be '0'</p>
 </h3>
 <h3>Rate of change<br>
 </h3>
-<p>INDICATOR,ROC,ROC,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
-<p>INDICATOR,ROC,ROCP,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
-<p>INDICATOR,ROC,ROCR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
-<p>INDICATOR,ROC,ROCR100,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
+<p>INDICATOR,PLUGIN,ROC,ROC,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,ROC,ROCP,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,ROC,ROCR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,ROC,ROCR100,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;<br>
 </p>
 <br>
 <br>
 <h3>Relative Strength Index</h3>
-<p>INDICATOR,RSI,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,RSI,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <h3><br>
 </h3>
 <h3>Parabolic SAR</h3>
-<p>INDICATOR,SAR,&lt;NAME&gt;,&lt;INITIAL_STEP&gt;,&lt;MAX_STEP&gt;</p>
+<p>INDICATOR,PLUGIN,SAR,&lt;NAME&gt;,&lt;INITIAL_STEP&gt;,&lt;MAX_STEP&gt;</p>
 <p></p>
 <span style="font-weight: bold;"><br>
 </span><br>
 <h3>Stochastic</h3>
-<p>INDICATOR,STOCH,&lt;NAME_SLOWK&gt;,&lt;NAME_SLOWD&gt;,&lt;FASTK_PERIOD&gt;,&lt;SLOWK_PERIOD&gt;,&lt;SLOWK_MA_TYPE&gt;,&lt;SLOWD_PERIOD&gt;,&lt;SLOWD_MA_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,STOCH,&lt;NAME_SLOWK&gt;,&lt;NAME_SLOWD&gt;,&lt;FASTK_PERIOD&gt;,&lt;SLOWK_PERIOD&gt;,&lt;SLOWK_MA_TYPE&gt;,&lt;SLOWD_PERIOD&gt;,&lt;SLOWD_MA_TYPE&gt;</p>
 <p></p>
 <span style="font-weight: bold;"><br>
 <br>
 </span>
 <h3>Stochastic Relative Strength Index</h3>
-<p>INDICATOR,STOCHRSI,&lt;INPUT&gt;,&lt;NAME_FASTK&gt;,&lt;NAME_FASTD&gt;,&lt;PERIOD&gt;,&lt;FASTK_PERIOD&gt;,&lt;FASTD_PERIOD&gt;,&lt;FASTD_MA_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,STOCHRSI,&lt;INPUT&gt;,&lt;NAME_FASTK&gt;,&lt;NAME_FASTD&gt;,&lt;PERIOD&gt;,&lt;FASTK_PERIOD&gt;,&lt;FASTD_PERIOD&gt;,&lt;FASTD_MA_TYPE&gt;</p>
 <p></p>
 <br>
 <br>
 <h3>SYMBOL</h3>
-<p>INDICATOR,SYMBOL,&lt;NAME&gt;,&lt;SYMBOL&gt;,&lt;BAR_FIELD&gt;,&lt;BAR_LENGTH&gt;,&lt;BARS&gt;</p>
+<p>INDICATOR,PLUGIN,SYMBOL,&lt;NAME&gt;,&lt;SYMBOL&gt;,&lt;BAR_FIELD&gt;,&lt;BAR_LENGTH&gt;,&lt;BARS&gt;</p>
 <p><br>
 Where &lt;SYMBOL&gt; is the symbol in the quote database.</p>
 <p>&lt;BAR_FIELD&gt; is the bar value ie. Open, High, Low, Close,
@@ -830,7 +833,7 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 </h3>
 <h3>Safe Zone Stop<br>
 </h3>
-<p>INDICATOR,SZ,&lt;NAME&gt;,&lt;METHOD&gt;,&lt;PERIOD&gt;,&lt;NO_DECLINE_PERIOD&gt;,&lt;COEFFICIENT&gt;<br>
+<p>INDICATOR,PLUGIN,SZ,&lt;NAME&gt;,&lt;METHOD&gt;,&lt;PERIOD&gt;,&lt;NO_DECLINE_PERIOD&gt;,&lt;COEFFICIENT&gt;<br>
 </p>
 <ul>
   <li>&lt;METHOD&gt; is either Long or Short</li>
@@ -841,36 +844,36 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 </ul>
 <br>
 <h3>Triple Exponential Moving Average (T3)</h3>
-<p>INDICATOR,T3,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;VFACTOR&gt;</p>
+<p>INDICATOR,PLUGIN,T3,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;VFACTOR&gt;</p>
 <p>&lt;VFACTOR&gt; is a decimal value.</p>
 <p></p>
 <br>
 <br>
 <h3>Market Thermometer<br>
 </h3>
-<p>INDICATOR,THERM,&lt;NAME&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
+<p>INDICATOR,PLUGIN,THERM,&lt;NAME&gt;,&lt;SMOOTHING_PERIOD&gt;,&lt;SMOOTHING_TYPE&gt;</p>
 <p></p>
 <br>
 <br>
 <br>
 <h3>TRIX - 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA</h3>
-<p>INDICATOR,TRIX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,TRIX,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</p>
 <p></p>
 <h3><br>
 </h3>
 <br>
 <h3>Ultimate Oscillator</h3>
-<p>INDICATOR,ULTOSC,&lt;NAME&gt;,&lt;PERIOD_1&gt;,&lt;PERIOD_2&gt;,&lt;PERIOD_3&gt;</p>
+<p>INDICATOR,PLUGIN,ULTOSC,&lt;NAME&gt;,&lt;PERIOD_1&gt;,&lt;PERIOD_2&gt;,&lt;PERIOD_3&gt;</p>
 <p></p>
 <h3><br>
 </h3>
 <h3>Variance</h3>
-<p>INDICATOR,VAR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;</p>
+<p>INDICATOR,PLUGIN,VAR,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;DEVIATION&gt;</p>
 <p></p>
 <h3><br>
 </h3>
 <h3>VFI</h3>
-<p>INDICATOR,VFI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,VFI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
 </p>
 <ul>
   <li>&lt;PERIOD&gt; 100 is a good default<br>
@@ -880,7 +883,7 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 </h3>
 <h3>Variable Index Dynamic Average<br>
 </h3>
-<p>INDICATOR,VIDYA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;VOLUME_PERIOD&gt;<br>
+<p>INDICATOR,PLUGIN,VIDYA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;,&lt;VOLUME_PERIOD&gt;<br>
 </p>
 <ul>
   <li>&lt;PERIOD&gt; default 14<br>
@@ -892,12 +895,12 @@ Minute, 15 Minute, 30 Minute, 60 Minute, Daily, Weekly, Monthly.</p>
 <br>
 <h3>VOL</h3>
 <br>
-INDICATOR,VOL,&lt;NAME&gt;<br>
+INDICATOR,PLUGIN,VOL,&lt;NAME&gt;<br>
 <br>
 <br>
 <br>
 <h3>Williams' %R</h3>
-<p>INDICATOR,WILLR,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
+<p>INDICATOR,PLUGIN,WILLR,&lt;NAME&gt;,&lt;PERIOD&gt;</p>
 <p></p>
 <h3><br>
 </h3>

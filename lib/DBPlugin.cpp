@@ -89,15 +89,15 @@ void DBPlugin::getSearchList (QString &ex, QString &pat, Group &l)
   // if exchange and pat is empty then get all symbols from all exchanges will be returned
   QString s;
   if (ex.isEmpty() && pat.isEmpty())
-    s = "SELECT symbol,name,exchange FROM symbolIndex";
+    s = "SELECT symbol,name,exchange FROM symbolIndex ORDER BY symbol,exchange ASC";
 
   // if exchange is empty then get all symbols from all exchanges that match pat
   if (ex.isEmpty() && ! pat.isEmpty())
-    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE symbol LIKE '" + pat + "'";
+    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE symbol LIKE '" + pat + "'" + "  ORDER BY symbol,exchange ASC";
 
   // exchange = yes and pat = no, get the entire exchange list
   if (! ex.isEmpty() && pat.isEmpty())
-    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE exchange='" + ex + "'";
+    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE exchange='" + ex + "'" + " ORDER BY symbol,exchange ASC";
     
   // exchange = yes and pat = yes, get pat from the exchange
   if (! ex.isEmpty() && ! pat.isEmpty())
@@ -105,6 +105,7 @@ void DBPlugin::getSearchList (QString &ex, QString &pat, Group &l)
     s = "SELECT symbol,name,exchange FROM symbolIndex WHERE symbol LIKE";
     s.append(" '" + pat + "'");
     s.append(" AND exchange='" + ex + "'");
+    s.append(" ORDER BY symbol,exchange ASC");
   }
   
   if (s.isEmpty())

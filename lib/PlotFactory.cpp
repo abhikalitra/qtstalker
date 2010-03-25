@@ -78,7 +78,7 @@ PlotPlugin * PlotFactory::getPlot (QString &plot)
 void PlotFactory::getList (QStringList &l)
 {
   l.clear();
-  l << "Candle" << "Dash" << "Dot" << "Histogram" << "HistogramBar" << "Horizontal" << "Line" << "OHLC";
+  l << "Candle" << "Dash" << "Dot" << "Histogram" << "Histogram Bar" << "Horizontal" << "Line" << "OHLC";
 }
 
 

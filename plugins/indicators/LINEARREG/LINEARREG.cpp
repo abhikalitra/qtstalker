@@ -100,46 +100,46 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
 
 int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,LINEARREG,METHOD,<NAME>,<INPUT>,<PERIOD>
+  // INDICATOR,PLUGIN,LINEARREG,METHOD,<NAME>,<INPUT>,<PERIOD>
 
-  if (set.count() != 6)
+  if (set.count() != 7)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  int method = methodList.indexOf(set[2]);
+  int method = methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[2];
+    qDebug() << indicator << "::calculate: invalid method" << set[3];
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::calculate: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[4]);
+  PlotLine *in = tlines.value(set[5]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[4]));
+    in = data->getInput(data->getInputType(set[5]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
+      qDebug() << indicator << "::calculate: input not found" << set[5];
       return 1;
     }
 
-    tlines.insert(set[4], in);
+    tlines.insert(set[5], in);
   }
 
   bool ok;
-  int period = set[5].toInt(&ok);
+  int period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[5];
+    qDebug() << indicator << "::calculate: invalid period" << set[6];
     return 1;
   }
 
@@ -147,7 +147,7 @@ int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
   if (! line)
     return 1;
 
-  tlines.insert(set[3], line);
+  tlines.insert(set[4], line);
 
   return 0;
 }

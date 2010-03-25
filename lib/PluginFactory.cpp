@@ -20,6 +20,12 @@
  */
 
 #include "PluginFactory.h"
+#include "COLOR.h"
+#include "COMPARE.h"
+#include "MATH1.h"
+#include "RANGE.h"
+#include "REF.h"
+#include "SYMBOL.h"
 
 #include <QDir>
 #include <QDebug>
@@ -55,7 +61,11 @@ void PluginFactory::getPluginList (QString &path, QStringList &list)
 
 IndicatorPlugin * PluginFactory::getIndicator (QString &path, QString &indicator)
 {
-  IndicatorPlugin *plug = indicatorPlugins.value(indicator);
+  IndicatorPlugin *plug = getNotIndicatorPlugin(indicator);
+  if (plug)
+    return plug;
+  
+  plug = indicatorPlugins.value(indicator);
   if (plug)
     return plug;
 
@@ -97,6 +107,40 @@ DBPlugin * PluginFactory::getDB (QString &path, QString &db)
   }
   else
     delete lib;
+
+  return plug;
+}
+
+IndicatorPlugin * PluginFactory::getNotIndicatorPlugin (QString &indicator)
+{
+  QStringList l;
+  l << "COLOR" << "COMPARE" << "MATH1" << "RANGE" << "REF" << "SYMBOL";
+
+  IndicatorPlugin *plug = 0;
+  int i = l.indexOf(indicator);
+  switch (i)
+  {
+    case 0: // COLOR
+      plug = new COLOR;
+      break;
+    case 1: // COMPARE
+      plug = new COMPARE;
+      break;
+    case 2: // MATH1
+      plug = new MATH1;
+      break;
+    case 3: // RANGE
+      plug = new RANGE;
+      break;
+    case 4: // REF
+      plug = new REF;
+      break;
+    case 5: // SYMBOL
+      plug = new SYMBOL;
+      break;
+    default:
+      break;
+  }
 
   return plug;
 }

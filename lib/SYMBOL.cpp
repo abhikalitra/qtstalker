@@ -28,38 +28,39 @@
 SYMBOL::SYMBOL ()
 {
   indicator = "SYMBOL";
+  deleteFlag = TRUE;
 }
 
 int SYMBOL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *)
 {
-  // INDICATOR,SYMBOL,<NAME>,<EXCHANGE>,><SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
+  // INDICATOR,PLUGIN,SYMBOL,<NAME>,<EXCHANGE>,><SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
 
-  if (set.count() != 8)
+  if (set.count() != 9)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   bool ok;
-  int bars = set[7].toInt(&ok);
+  int bars = set[8].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid bars" << set[7];
+    qDebug() << indicator << "::calculate: invalid bars" << set[8];
     return 1;
   }
 
-  PlotLine *line = getSYMBOL(set[3], set[4], set[5], set[6], bars);
+  PlotLine *line = getSYMBOL(set[4], set[5], set[6], set[7], bars);
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

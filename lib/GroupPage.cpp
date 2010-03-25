@@ -288,7 +288,7 @@ void GroupPage::addToGroup ()
 				    FALSE,
                                     &ok,
 				    0);
-  if (! g.length())
+  if (! ok || ! g.length())
     return;
 
   Group tg;
@@ -313,6 +313,12 @@ void GroupPage::addToGroup ()
   db.setGroup(tg);
 
   updateGroups();
+  
+  if (group.getName() == g)
+  {
+    db.getGroup(group);
+    updateList();
+  }
   
   emit signalMessage(QString(tr("Group item(s) added.")));
 }

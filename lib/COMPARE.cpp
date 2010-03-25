@@ -27,37 +27,38 @@
 COMPARE::COMPARE ()
 {
   indicator = "COMPARE";
+  deleteFlag = TRUE;
 }
 
 int COMPARE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,COMPARE,<NAME>,<INPUT_1>,<INPUT_2>,<OPERATOR>
+  // INDICATOR,PLUGIN,COMPARE,<NAME>,<INPUT_1>,<INPUT_2>,<OPERATOR>
 
-  if (set.count() != 6)
+  if (set.count() != 7)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = getInput(set[3], tlines, data);
+  PlotLine *in = getInput(set[4], tlines, data);
   if (! in)
     return 1;
 
-  PlotLine *in2 = getInput(set[4], tlines, data);
+  PlotLine *in2 = getInput(set[5], tlines, data);
   if (! in2)
     return 1;
 
-  int op = opList.indexOf(set[5]);
+  int op = opList.indexOf(set[6]);
   if (op == -1)
   {
-    qDebug() << indicator << "::calculate: invalid operator" << set[5];
+    qDebug() << indicator << "::calculate: invalid operator" << set[6];
     return 1;
   }
 
@@ -82,7 +83,7 @@ int COMPARE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
     }
   }
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }
@@ -145,11 +146,11 @@ PlotLine * COMPARE::compareAV (PlotLine *in, PlotLine *in2, int op)
 {
   int loop = in->count() - 1;
   PlotLine *line = new PlotLine;
+  double t2 = in2->getData(0);
 
   while (loop > -1)
   {
     double t = in->getData(loop);
-    double t2 = in2->getData(0);
 
     switch (op)
     {
@@ -243,10 +244,10 @@ PlotLine * COMPARE::compareVA (PlotLine *in, PlotLine *in2, int op)
 {
   int loop = in2->count() - 1;
   PlotLine *line = new PlotLine;
+  double t = in->getData(0);
 
   while (loop > -1)
   {
-    double t = in->getData(0);
     double t2 = in2->getData(loop);
 
     switch (op)

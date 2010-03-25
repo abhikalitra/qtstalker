@@ -88,40 +88,40 @@ int ULTOSC::getIndicator (Indicator &ind, BarData *data)
 
 int ULTOSC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>
+  // INDICATOR,PLUGIN,ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>
 
-  if (set.count() != 4)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   bool ok;
-  int sp = set[3].toInt(&ok);
+  int sp = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid short period" << set[3];
+    qDebug() << indicator << "::calculate: invalid short period" << set[4];
     return 1;
   }
 
-  int mp = set[4].toInt(&ok);
+  int mp = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid med period" << set[4];
+    qDebug() << indicator << "::calculate: invalid med period" << set[5];
     return 1;
   }
 
-  int lp = set[5].toInt(&ok);
+  int lp = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid long period" << set[5];
+    qDebug() << indicator << "::calculate: invalid long period" << set[6];
     return 1;
   }
 
@@ -129,7 +129,7 @@ int ULTOSC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

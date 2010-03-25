@@ -68,33 +68,33 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
 
 int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>
+  // INDICATOR,PLUGIN,SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>
 
-  if (set.count() != 5)
+  if (set.count() != 6)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   bool ok;
-  double init = set[3].toDouble(&ok);
+  double init = set[4].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid init" << set[3];
+    qDebug() << indicator << "::calculate: invalid init" << set[4];
     return 1;
   }
 
-  double max = set[4].toDouble(&ok);
+  double max = set[5].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid max" << set[4];
+    qDebug() << indicator << "::calculate: invalid max" << set[5];
     return 1;
   }
 
@@ -102,7 +102,7 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

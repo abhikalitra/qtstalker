@@ -1,7 +1,7 @@
 # qtstalker Candle indicator
 $|++;
 
-print STDOUT "INDICATOR,CANDLES,NONE,candles,green"; # get the Candle indicator
+print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,green"; # get the Candle indicator
 $a = <STDIN>;
 chomp($a);
 if ($a ne "0")

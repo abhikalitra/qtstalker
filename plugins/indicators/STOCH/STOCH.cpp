@@ -113,65 +113,65 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
 
 int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,STOCH,<NAME_SLOWK>,<NAME_SLOWD>,<FASTK_PERIOD>,<SLOWK_PERIOD>,<SLOWK_MA_TYPE>,
+  // INDICATOR,PLUGIN,STOCH,<NAME_SLOWK>,<NAME_SLOWD>,<FASTK_PERIOD>,<SLOWK_PERIOD>,<SLOWK_MA_TYPE>,
   // <SLOWD_PERIOD>,<SLOWD_MA_TYPE>
 
-  if (set.count() != 9)
+  if (set.count() != 10)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
-    return 1;
-  }
-
-  tl = tlines.value(set[3]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
     qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
-  bool ok;
-  int fkp = set[4].toInt(&ok);
-  if (! ok)
+  tl = tlines.value(set[4]);
+  if (tl)
   {
-    qDebug() << indicator << "::calculate: invalid fastk period" << set[4];
+    qDebug() << indicator << "::calculate: duplicate name" << set[4];
     return 1;
   }
 
-  int skp = set[5].toInt(&ok);
+  bool ok;
+  int fkp = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid slowk period" << set[5];
+    qDebug() << indicator << "::calculate: invalid fastk period" << set[5];
+    return 1;
+  }
+
+  int skp = set[6].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid slowk period" << set[6];
     return 1;
   }
 
   MATH1 m;
   QStringList maList;
   m.getMAList(maList);
-  int kma = maList.indexOf(set[6]);
+  int kma = maList.indexOf(set[7]);
   if (kma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid slowk ma" << set[6];
+    qDebug() << indicator << "::calculate: invalid slowk ma" << set[7];
     return 1;
   }
 
-  int sdp = set[7].toInt(&ok);
+  int sdp = set[8].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid slowd period" << set[7];
+    qDebug() << indicator << "::calculate: invalid slowd period" << set[8];
     return 1;
   }
 
-  int dma = maList.indexOf(set[8]);
+  int dma = maList.indexOf(set[9]);
   if (dma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid slowd ma" << set[8];
+    qDebug() << indicator << "::calculate: invalid slowd ma" << set[9];
     return 1;
   }
 
@@ -183,8 +183,8 @@ int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  tlines.insert(set[2], l.at(0));
-  tlines.insert(set[3], l.at(1));
+  tlines.insert(set[3], l.at(0));
+  tlines.insert(set[4], l.at(1));
 
   return 0;
 }

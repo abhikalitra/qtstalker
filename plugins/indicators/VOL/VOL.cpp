@@ -33,7 +33,7 @@ VOL::VOL ()
   settings.setData(DownColor, "red");
   settings.setData(NeutralColor, "blue");
   settings.setData(MAColor, "yellow");
-  settings.setData(Plot, "HistogramBar");
+  settings.setData(Plot, "Histogram Bar");
   settings.setData(MAPlot, "Line");
   settings.setData(Label, indicator);
   settings.setData(MALabel, "VOLMA");
@@ -81,18 +81,18 @@ int VOL::getIndicator (Indicator &ind, BarData *data)
 
 int VOL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,VOL,<NAME>
+  // INDICATOR,PLUGIN,VOL,<NAME>
 
-  if (set.count() != 3)
+  if (set.count() != 4)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
@@ -100,7 +100,7 @@ int VOL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

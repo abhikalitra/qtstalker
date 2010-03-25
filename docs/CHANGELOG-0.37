@@ -337,6 +337,11 @@
 20100323:  Chart objects now appear in all bar lengths. Before, they were locked to the original bar length
            and would not plot on charts of differing bar lengths.
 
+20100324:  As per user (lvgandhi) request, the Chart and Group panel lists are sorted.
+
+           Syntax for most script functions has changed in order to keep a common format and
+           future expansion. See docs.
+
 
 
 

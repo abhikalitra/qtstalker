@@ -4,26 +4,26 @@
 $|++;
 
 # Get today's close
-print STDOUT "INDICATOR,REF,cl,Close,0";
+print STDOUT "INDICATOR,PLUGIN,REF,cl,Close,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR_GET,cl,0";
+print STDOUT "INDICATOR,GET,cl,0";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @close_0 = split(",", $rc);
 
 # Get the 13-bar SMA
-print STDOUT "INDICATOR,MA,SMA,sma_13,Close,13";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,sma_13,Close,13";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR_GET,sma_13,0";
+print STDOUT "INDICATOR,GET,sma_13,0";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @sma_13 = split(",", $rc);
 
 # Get the 200-bar SMA
-print STDOUT "INDICATOR,MA,SMA,sma_200,Close,200";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,sma_200,Close,200";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR_GET,sma_200,0";
+print STDOUT "INDICATOR,GET,sma_200,0";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 @sma_200 = split(",", $rc);
 
@@ -42,11 +42,11 @@ for (my $i = ($periodUnstable - 1); $i <= $#close_0; $i++)
   push(@values, $value);
 }
 
-printf STDOUT "INDICATOR_SET,disparity_13," . join(",", @values);
+printf STDOUT "INDICATOR,SET,disparity_13," . join(",", @values);
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # color the disparity_13 line
-print STDOUT "INDICATOR,COLOR,All,disparity_13,red";
+print STDOUT "INDICATOR,PLUGIN,COLOR,All,disparity_13,red";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 print STDOUT "PLOT,disparity_13,Disparity-13,Line";
@@ -66,11 +66,11 @@ for (my $i = ($periodUnstable - 1); $i <= $#close_0; $i++)
   push(@values, $value);
 }
 
-printf STDOUT "INDICATOR_SET,disparity_200," . join(",", @values);
+printf STDOUT "INDICATOR,SET,disparity_200," . join(",", @values);
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # color the disparity_200 line
-print STDOUT "INDICATOR,COLOR,All,disparity_200,orange";
+print STDOUT "INDICATOR,PLUGIN,COLOR,All,disparity_200,orange";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 print STDOUT "PLOT,disparity_200,Disparity-200,Line";

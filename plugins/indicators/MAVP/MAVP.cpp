@@ -101,69 +101,69 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
 
 int MAVP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,MAVP,<NAME>,<INPUT_1>,<INPUT_2>,<MIN_PERIOD>,<MAX_PERIOD>,<MA_TYPE>
+  // INDICATOR,PLUGIN,MAVP,<NAME>,<INPUT_1>,<INPUT_2>,<MIN_PERIOD>,<MAX_PERIOD>,<MA_TYPE>
 
-  if (set.count() != 8)
+  if (set.count() != 9)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data->getInput(data->getInputType(set[4]));
     if (! in)
-    {
-      qDebug() << indicator << "::calculate: input not found" << set[3];
-      return 1;
-    }
-
-    tlines.insert(set[3], in);
-  }
-
-  PlotLine *in2 = tlines.value(set[4]);
-  if (! in2)
-  {
-    in2 = data->getInput(data->getInputType(set[4]));
-    if (! in2)
     {
       qDebug() << indicator << "::calculate: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[4], in2);
+    tlines.insert(set[4], in);
+  }
+
+  PlotLine *in2 = tlines.value(set[5]);
+  if (! in2)
+  {
+    in2 = data->getInput(data->getInputType(set[5]));
+    if (! in2)
+    {
+      qDebug() << indicator << "::calculate: input not found" << set[5];
+      return 1;
+    }
+
+    tlines.insert(set[5], in2);
   }
 
   bool ok;
-  int min = set[5].toInt(&ok);
+  int min = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid min period settings" << set[5];
+    qDebug() << indicator << "::calculate: invalid min period settings" << set[6];
     return 1;
   }
 
-  int max = set[6].toInt(&ok);
+  int max = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid max period settings" << set[6];
+    qDebug() << indicator << "::calculate: invalid max period settings" << set[7];
     return 1;
   }
 
   MATH1 m;
   QStringList maList;
   m.getMAList(maList);
-  int ma = maList.indexOf(set[7]);
+  int ma = maList.indexOf(set[8]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid ma settings" << set[7];
+    qDebug() << indicator << "::calculate: invalid ma settings" << set[8];
     return 1;
   }
 
@@ -171,7 +171,7 @@ int MAVP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

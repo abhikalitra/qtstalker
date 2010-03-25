@@ -136,44 +136,44 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
 
 int BARS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,BARS,<NAME>,<BAR_UP_COLOR>,<BAR_DOWN_COLOR>,<BAR_NEUTRAL_COLOR>
+  // INDICATOR,PLUGIN,BARS,<NAME>,<BAR_UP_COLOR>,<BAR_DOWN_COLOR>,<BAR_NEUTRAL_COLOR>
 
-  if (set.count() != 6)
+  if (set.count() != 7)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
-  QColor barUpColor(set[3]);
+  QColor barUpColor(set[4]);
   if (! barUpColor.isValid())
   {
-    qDebug() << indicator << "::calculate: invalid bar up color" << set[3];
+    qDebug() << indicator << "::calculate: invalid bar up color" << set[4];
     return 1;
   }
 
-  QColor barDownColor(set[4]);
+  QColor barDownColor(set[5]);
   if (! barDownColor.isValid())
   {
-    qDebug() << indicator << "::calculate: invalid bar down color" << set[4];
+    qDebug() << indicator << "::calculate: invalid bar down color" << set[5];
     return 1;
   }
 
-  QColor barNeutralColor(set[5]);
+  QColor barNeutralColor(set[6]);
   if (! barNeutralColor.isValid())
   {
-    qDebug() << indicator << "::calculate: invalid bar neutral color" << set[5];
+    qDebug() << indicator << "::calculate: invalid bar neutral color" << set[6];
     return 1;
   }
 
   PlotLine *line = getBARS(data, barUpColor, barDownColor, barNeutralColor);
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
   return 0;
 }
 

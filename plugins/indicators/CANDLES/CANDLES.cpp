@@ -217,26 +217,26 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
 
 int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,CANDLES,METHOD,<NAME>,<COLOR>
-  // INDICATOR,CANDLES,METHOD,<NAME>,<PENETRATION>
+  // INDICATOR,PLUGIN,CANDLES,METHOD,<NAME>,<COLOR>
+  // INDICATOR,PLUGIN,CANDLES,METHOD,<NAME>,<PENETRATION>
 
-  if (set.count() != 5)
+  if (set.count() != 6)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  int method = methodList.indexOf(set[2]);
+  int method = methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[2];
+    qDebug() << indicator << "::calculate: invalid method" << set[3];
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::calculate: duplicate name" << set[4];
     return 1;
   }
 
@@ -246,10 +246,10 @@ int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
   {
     case 0:
     {
-      QColor color(set[4]);
+      QColor color(set[5]);
       if (! color.isValid())
       {
-        qDebug() << indicator << "::calculate: invalid color" << set[4];
+        qDebug() << indicator << "::calculate: invalid color" << set[5];
         return 1;
       }
 
@@ -259,10 +259,10 @@ int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
     default:
     {
       bool ok;
-      double pen = set[4].toDouble(&ok);
+      double pen = set[5].toDouble(&ok);
       if (! ok)
       {
-        qDebug() << indicator << "::calculate: invalid penetration" << set[4];
+        qDebug() << indicator << "::calculate: invalid penetration" << set[5];
         return 1;
       }
 
@@ -274,7 +274,7 @@ int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
   if (! line)
     return 1;
 
-  tlines.insert(set[3], line);
+  tlines.insert(set[4], line);
 
   return 0;
 }

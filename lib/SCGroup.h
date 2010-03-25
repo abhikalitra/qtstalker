@@ -30,12 +30,21 @@
 class SCGroup
 {
   public:
+    enum Method
+    {
+      ADD,  // add a group item to a group
+      DELETE,  // deletes a group and contents
+      GET  // returns a csv list of the group contents
+    };
+    
     SCGroup ();
+    int calculate (QStringList &l, QByteArray &ba);
     int addGroup (QStringList &l, QByteArray &ba);
     int deleteGroup (QStringList &l, QByteArray &ba);
     int getGroup (QStringList &l, QByteArray &ba);
 
-  private:
+  protected:
+    QStringList methodList;
 };
 
 #endif

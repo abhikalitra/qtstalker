@@ -20,39 +20,78 @@
  */
 
 #include "SCIndicator.h"
+#include "PluginFactory.h"
+#include "IndicatorPlugin.h"
 
 #include <QtDebug>
 
 
 SCIndicator::SCIndicator ()
 {
+  methodList << "GET" << "GET_INDEX" << "GET_SIZE" << "PLUGIN" << "SET";
+}
+
+int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
+			    BarData *data, QString &path)
+{
+  // format = INDICATOR,METHOD,*
+  int rc = -1;
+
+  if (l.count() < 2)
+  {
+    qDebug() << "SCIndicator::calculate: invalid parm count" << l.count();
+    return rc;
+  }
+  
+  switch ((Method) methodList.indexOf(l[1]))
+  {
+    case GET:
+      rc = getIndicator(l, ba, tlines);
+      break;
+    case GET_INDEX:
+      rc = getIndex(l, ba, tlines);
+      break;
+    case GET_SIZE:
+      rc = getSize(l, ba, tlines);
+      break;
+    case PLUGIN:
+      rc = getPlugin(l, ba, tlines, data, path);
+      break;
+    case SET:
+      rc = setIndicator(l, ba, tlines);
+      break;
+    default:
+      break;
+  }
+  
+  return rc;
 }
 
 int SCIndicator::getIndicator (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
-  // format 'INDICATOR_GET,VARIABLE,BARS' returns the requested data in a CSV string
+  // format 'INDICATOR,GET,VARIABLE,BARS' returns the requested data in a CSV string
 
   ba.clear();
   ba.append("ERROR\n");
 
-  if (l.count() != 3)
+  if (l.count() != 4)
   {
     qDebug() << "SCIndicator::getIndicator: invalid parm count" << l.count();
     return 1;
   }
 
-  PlotLine *in = tlines.value(l[1]);
+  PlotLine *in = tlines.value(l[2]);
   if (! in)
   {
-    qDebug() << "SCIndicator::getIndicator: input parm error" << l[1];
+    qDebug() << "SCIndicator::getIndicator: input parm error" << l[2];
     return 1;
   }
 
   bool ok;
-  int bars = l[2].toInt(&ok);
+  int bars = l[3].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "SCIndicator::getIndicator: bars parm error" << l[2];
+    qDebug() << "SCIndicator::getIndicator: bars parm error" << l[3];
     return 1;
   }
 
@@ -72,38 +111,38 @@ int SCIndicator::getIndicator (QStringList &l, QByteArray &ba, QHash<QString, Pl
   return 0;
 }
 
-int SCIndicator::getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba)
+int SCIndicator::getIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
-  // format = INDICATOR_GET_INDEX,INPUT_ARRAY,OFFSET
+  // format = INDICATOR,GET_INDEX,INPUT_ARRAY,OFFSET
 
   ba.clear();
   ba.append("ERROR\n");
 
-  if (l.count() != 3)
+  if (l.count() != 4)
   {
     qDebug() << "SCIndicator::getIndex: invalid parm count" << l.count();
     return 1;
   }
 
-  PlotLine *line = tlines.value(l[1]);
+  PlotLine *line = tlines.value(l[2]);
   if (! line)
   {
-    qDebug() << "SCIndicator::getIndex: invalid input" << l[1];
+    qDebug() << "SCIndicator::getIndex: invalid input" << l[2];
     return 1;
   }
 
   bool ok;
-  int index = l[2].toInt(&ok);
+  int index = l[3].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "SCIndicator::getIndex: invalid index" << l[2];
+    qDebug() << "SCIndicator::getIndex: invalid index" << l[3];
     return 1;
   }
 
   int offset = line->count() - 1 - index;
   if (offset < 0)
   {
-    qDebug() << "SCIndicator::getIndex: offset greater than" << l[1] << "size";
+    qDebug() << "SCIndicator::getIndex: offset greater than" << l[2] << "size";
     return 1;
   }
 
@@ -114,9 +153,9 @@ int SCIndicator::getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, Q
   return 0;
 }
 
-int SCIndicator::setIndicator (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba)
+int SCIndicator::setIndicator (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
-  // format 'INDICATOR_SET,VARIABLE,CSV,DATA,FROM,NOW,ON' - will create a new line using the provided data
+  // format 'INDICATOR,SET,VARIABLE,*' - will create a new line using the provided data
 
   ba.clear();
   ba.append("1\n");
@@ -127,21 +166,21 @@ int SCIndicator::setIndicator (QStringList &l, QHash<QString, PlotLine *> &tline
     return 1;
   }
 
-  PlotLine *line = tlines.value(l[1]);
+  PlotLine *line = tlines.value(l[2]);
   if (line)
   {
     // variable already used, abort
-    qDebug() << "SCIndicator::setIndicator: duplicate variable name" << l[1];
+    qDebug() << "SCIndicator::setIndicator: duplicate variable name" << l[2];
     return 1;
   }
 
   line = new PlotLine;
   int loop;
   QColor color("red");
-  for (loop = 2; loop < l.count(); loop++)
+  for (loop = 3; loop < l.count(); loop++)
     line->append(color, l[loop].toDouble());
 
-  tlines.insert(l[1], line);
+  tlines.insert(l[2], line);
 
   ba.clear();
   ba.append("0\n");
@@ -149,23 +188,23 @@ int SCIndicator::setIndicator (QStringList &l, QHash<QString, PlotLine *> &tline
   return 0;
 }
 
-int SCIndicator::getSize (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba)
+int SCIndicator::getSize (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
-  // format = INDICATOR_GET_SIZE,INPUT_ARRAY
+  // format = INDICATOR,GET_SIZE,INPUT_ARRAY
 
   ba.clear();
   ba.append("ERROR\n");
 
-  if (l.count() != 2)
+  if (l.count() != 3)
   {
     qDebug() << "SCIndicator::getSize: invalid parm count" << l.count();
     return 1;
   }
 
-  PlotLine *line = tlines.value(l[1]);
+  PlotLine *line = tlines.value(l[2]);
   if (! line)
   {
-    qDebug() << "SCIndicator::getSize: invalid input" << l[1];
+    qDebug() << "SCIndicator::getSize: invalid input" << l[2];
     return 1;
   }
 
@@ -174,6 +213,35 @@ int SCIndicator::getSize (QStringList &l, QHash<QString, PlotLine *> &tlines, QB
   ba.clear();
   ba.append(QString::number(size));
   ba.append('\n');
+
+  return 0;
+}
+
+int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
+			    BarData *data, QString &path)
+{
+  // format 'INDICATOR,PLUGIN,PLUGIN,*
+
+  ba.clear();
+  ba.append("1\n");
+
+  if (l.count() < 3)
+  {
+    qDebug() << "SCIndicator::getPlugin: invalid parm count" << l.count();
+    return 1;
+  }
+
+  PluginFactory fac;
+  IndicatorPlugin *ip = fac.getIndicator(path, l[2]);
+  if (! ip)
+    return 1;
+
+  int rc = ip->getCUS(l, tlines, data);
+  if (ip->getDeleteFlag())
+    delete ip;
+
+  ba.clear();
+  ba.append(QString::number(rc) + '\n');
 
   return 0;
 }

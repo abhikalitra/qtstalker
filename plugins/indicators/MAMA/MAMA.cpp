@@ -123,53 +123,53 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
 
 int MAMA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,MAMA,<INPUT>,<NAME_MAMA>,<NAME_FAMA>,<FAST_LIMIT>,<SLOW_LIMIT>
+  // INDICATOR,PLUGIN,MAMA,<INPUT>,<NAME_MAMA>,<NAME_FAMA>,<FAST_LIMIT>,<SLOW_LIMIT>
 
-  if (set.count() != 7)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
-    return 1;
-  }
-
-  tl = tlines.value(set[4]);
+  PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
     qDebug() << indicator << "::calculate: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[2]);
-  if (! in)
+  tl = tlines.value(set[5]);
+  if (tl)
   {
-    in = data->getInput(data->getInputType(set[2]));
-    if (! in)
-    {
-      qDebug() << indicator << "::calculate: input not found" << set[2];
-      return 1;
-    }
-
-    tlines.insert(set[2], in);
-  }
-
-  bool ok;
-  double fast = set[5].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::calculate: invalid fast limit" << set[5];
+    qDebug() << indicator << "::calculate: duplicate name" << set[5];
     return 1;
   }
 
-  double slow = set[6].toDouble(&ok);
+  PlotLine *in = tlines.value(set[3]);
+  if (! in)
+  {
+    in = data->getInput(data->getInputType(set[3]));
+    if (! in)
+    {
+      qDebug() << indicator << "::calculate: input not found" << set[3];
+      return 1;
+    }
+
+    tlines.insert(set[3], in);
+  }
+
+  bool ok;
+  double fast = set[6].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid slow limit" << set[6];
+    qDebug() << indicator << "::calculate: invalid fast limit" << set[6];
+    return 1;
+  }
+
+  double slow = set[7].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::calculate: invalid slow limit" << set[7];
     return 1;
   }
 
@@ -181,8 +181,8 @@ int MAMA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  tlines.insert(set[3], l.at(0));
-  tlines.insert(set[4], l.at(1));
+  tlines.insert(set[4], l.at(0));
+  tlines.insert(set[5], l.at(1));
 
   return 0;
 }

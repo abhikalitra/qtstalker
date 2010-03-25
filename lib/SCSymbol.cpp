@@ -19,34 +19,61 @@
  *  USA.
  */
 
-#include "SCSymbolList.h"
+#include "SCSymbol.h"
 #include "DBPlugin.h"
-#include "BarData.h"
 #include "Group.h"
 
 #include <QtDebug>
 #include <QList>
 
-SCSymbolList::SCSymbolList ()
+SCSymbol::SCSymbol ()
 {
+  methodList << "CURRENT" << "SEARCH";
 }
 
-int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
+int SCSymbol::calculate (QStringList &l, QByteArray &ba, BarData *data)
 {
-  // format = SYMBOL_LIST,EXCHANGE,SEARCH_STRING
+  // format = SYMBOL,METHOD,*
+
+  int rc = -1;
+
+  if (l.count() < 2)
+  {
+    qDebug() << "SCSymbol::calculate: invalid parm count" << l.count();
+    return rc;
+  }
+  
+  switch ((Method) methodList.indexOf(l[1]))
+  {
+    case CURRENT:
+      rc = getCurrent(l, ba, data);
+      break;
+    case SEARCH:
+      rc = getSearch(l, ba);
+      break;
+    default:
+      break;
+  }
+  
+  return rc;
+}
+
+int SCSymbol::getSearch (QStringList &l, QByteArray &ba)
+{
+  // format = SYMBOL,SEARCH,EXCHANGE,SEARCH_STRING
 
   ba.clear();
   ba.append("ERROR\n");
 
-  if (l.count() != 3)
+  if (l.count() != 4)
   {
-    qDebug() << "SCSymbolList::calculate: invalid parm count" << l.count();
+    qDebug() << "SCSymbol::getSearch: invalid parm count" << l.count();
     return 1;
   }
 
   DBPlugin db;
   Group bdl;
-  db.getSearchList(l[1], l[2], bdl);
+  db.getSearchList(l[2], l[3], bdl);
   
   int loop;
   QStringList sl;
@@ -60,6 +87,28 @@ int SCSymbolList::calculate (QStringList &l, QByteArray &ba)
   ba.append(sl.join(","));
   ba.append('\n');
 
+  return 0;
+}
+
+int SCSymbol::getCurrent (QStringList &l, QByteArray &ba, BarData *data)
+{
+  // format = SYMBOL,CURRENT
+
+  ba.clear();
+  ba.append("ERROR\n");
+
+  if (l.count() != 2)
+  {
+    qDebug() << "SCSymbol::getCurrent: invalid parm count" << l.count();
+    return 1;
+  }
+
+  if (! data)
+    return 1;
+  
+  ba.clear();
+  ba.append(data->getSymbol() + '\n');
+  
   return 0;
 }
 

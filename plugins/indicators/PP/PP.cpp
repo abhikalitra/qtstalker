@@ -150,33 +150,33 @@ int PP::getIndicator (Indicator &ind, BarData *data)
 
 int PP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PP,<NAME>,<POINT>
+  // INDICATOR,PLUGIN,PP,<NAME>,<POINT>
 
-  if (set.count() != 4)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   bool ok;
-  int point = set[3].toInt(&ok);
+  int point = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid point" << set[3];
+    qDebug() << indicator << "::calculate: invalid point" << set[4];
     return 1;
   }
   else
   {
     if (point < 0 || point > 5)
     {
-      qDebug() << indicator << "::calculate: invalid point" << set[3];
+      qDebug() << indicator << "::calculate: invalid point" << set[4];
       return 1;
     }
   }
@@ -185,7 +185,7 @@ int PP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

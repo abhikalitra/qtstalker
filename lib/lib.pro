@@ -29,7 +29,6 @@ HEADERS += ExScript.h
 HEADERS += Indicator.h
 HEADERS += SCIndicator.h
 HEADERS += SCPlot.h
-HEADERS += SCSymbolList.h
 HEADERS += SCGroup.h
 HEADERS += SCTest.h
 HEADERS += ScriptPage.h
@@ -81,6 +80,7 @@ HEADERS += Line.h
 HEADERS += OHLC.h
 HEADERS += InfoPanel.h
 HEADERS += DataBase.h
+HEADERS += SCSymbol.h
 
 
 SOURCES += Setting.cpp
@@ -107,7 +107,6 @@ SOURCES += ExScript.cpp
 SOURCES += Indicator.cpp
 SOURCES += SCIndicator.cpp
 SOURCES += SCPlot.cpp
-SOURCES += SCSymbolList.cpp
 SOURCES += SCGroup.cpp
 SOURCES += SCTest.cpp
 SOURCES += ScriptPage.cpp
@@ -158,6 +157,7 @@ SOURCES += Line.cpp
 SOURCES += OHLC.cpp
 SOURCES += InfoPanel.cpp
 SOURCES += DataBase.cpp
+SOURCES += SCSymbol.cpp
 
 
 TARGET = qtstalker

@@ -73,46 +73,46 @@ int VAR::getIndicator (Indicator &ind, BarData *data)
 
 int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,VAR,<NAME>,<INPUT>,<PERIOD>,<DEVIATION>
+  // INDICATOR,PLUGIN,VAR,<NAME>,<INPUT>,<PERIOD>,<DEVIATION>
 
-  if (set.count() != 5)
+  if (set.count() != 6)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[3], in);
+    tlines.insert(set[4], in);
   }
 
   bool ok;
-  int period = set[4].toInt(&ok);
+  int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period settings" << set[4];
+    qDebug() << indicator << "::calculate: invalid period settings" << set[5];
     return 1;
   }
 
-  double dev = set[5].toDouble(&ok);
+  double dev = set[6].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid deviation" << set[5];
+    qDebug() << indicator << "::calculate: invalid deviation" << set[6];
     return 1;
   }
 
@@ -120,7 +120,7 @@ int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

@@ -37,6 +37,7 @@ class PluginFactory
     ~PluginFactory ();
     void getPluginList (QString &path, QStringList &list);
     IndicatorPlugin * getIndicator (QString &path, QString &indicator);
+    IndicatorPlugin * getNotIndicatorPlugin (QString &indicator);
     DBPlugin * getDB (QString &path, QString &db);
     
   protected:

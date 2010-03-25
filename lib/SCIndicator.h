@@ -28,18 +28,30 @@
 #include <QHash>
 
 #include "PlotLine.h"
-
+#include "BarData.h"
 
 class SCIndicator
 {
   public:
+    enum Method
+    {
+      GET, // pass indicator data to the calling script
+      GET_INDEX, // pass a single indicator value to the calling script
+      GET_SIZE, // returns the size of the indicator.
+      PLUGIN, // get a plugin indicator
+      SET // pass indicator data from script to qtstalker
+    };
+    
     SCIndicator ();
-    int getIndicator (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines);
-    int getIndex (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
-    int setIndicator (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
-    int getSize (QStringList &l, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
+    int calculate (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
+    int getIndicator (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
+    int getIndex (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
+    int setIndicator (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
+    int getSize (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
+    int getPlugin (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
 
-  private:
+  protected:
+    QStringList methodList;
 };
 
 #endif

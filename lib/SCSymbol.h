@@ -19,23 +19,30 @@
  *  USA.
  */
 
-#ifndef LINE_HPP
-#define LINE_HPP
+#ifndef SC_SYMBOL_HPP
+#define SC_SYMBOL_HPP
 
-#include "PlotPlugin.h"
+#include <QStringList>
+#include <QByteArray>
 
-class Line : public PlotPlugin
+#include "BarData.h"
+
+class SCSymbol
 {
   public:
-    Line ();
-    void draw (PlotLine *, QPixmap &, int, int, int, Scaler &);
+    enum Method
+    {
+      CURRENT,  // get the current symbol
+      SEARCH // get a list of symbols in the db
+    };
+    
+    SCSymbol ();
+    int calculate (QStringList &, QByteArray &, BarData *);
+    int getCurrent (QStringList &, QByteArray &, BarData *);
+    int getSearch (QStringList &, QByteArray &);
+
+  protected:
+    QStringList methodList;
 };
 
-extern "C"
-{
-  PlotPlugin * createPlotPlugin ();
-}
-
 #endif
-
-

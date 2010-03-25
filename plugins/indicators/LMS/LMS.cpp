@@ -98,67 +98,67 @@ int LMS::getIndicator (Indicator &ind, BarData *data)
 
 int LMS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,LMS,<SLOWK_NAME>,<2DAY_NAME>,<5DAY_NAME>,<FK_PERIOD>,<SK_PERIOD>,<CMB_INDEX>
+  // INDICATOR,PLUGIN,LMS,<SLOWK_NAME>,<2DAY_NAME>,<5DAY_NAME>,<FK_PERIOD>,<SK_PERIOD>,<CMB_INDEX>
 
-  if (set.count() != 8)
+  if (set.count() != 9)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate slowk name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate slowk name" << set[3];
     return 1;
   }
   else
-    slowkName = set[2];
-
-  tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate 2day name" << set[3];
-    return 1;
-  }
-  else
-    Day2Name = set[3];
+    slowkName = set[3];
 
   tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate 5day name" << set[4];
+    qDebug() << indicator << "::calculate: duplicate 2day name" << set[4];
     return 1;
   }
   else
-    Day5Name = set[4];
+    Day2Name = set[4];
+
+  tl = tlines.value(set[5]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate 5day name" << set[5];
+    return 1;
+  }
+  else
+    Day5Name = set[5];
 
   bool ok;
-  fkPeriod = set[5].toInt(&ok);
+  fkPeriod = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fk period" << set[5];
+    qDebug() << indicator << "::calculate: invalid fk period" << set[6];
     return 1;
   }
 
-  skPeriod = set[6].toInt(&ok);
+  skPeriod = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid sk period" << set[6];
+    qDebug() << indicator << "::calculate: invalid sk period" << set[7];
     return 1;
   }
 
-  cmbIndex = set[7].toInt(&ok);
+  cmbIndex = set[8].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid cmb index" << set[7];
+    qDebug() << indicator << "::calculate: invalid cmb index" << set[8];
     return 1;
   }
   else
   {
     if (cmbIndex < 0 || cmbIndex > 1)
     {
-      qDebug() << indicator << "::calculate: invalid cmb index" << set[7];
+      qDebug() << indicator << "::calculate: invalid cmb index" << set[8];
       return 1;
     }
   }
@@ -171,9 +171,9 @@ int LMS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  tlines.insert(set[2], l.at(0));
-  tlines.insert(set[3], l.at(1));
-  tlines.insert(set[4], l.at(2));
+  tlines.insert(set[3], l.at(0));
+  tlines.insert(set[4], l.at(1));
+  tlines.insert(set[5], l.at(2));
 
   return 0;
 }

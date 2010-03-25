@@ -20,7 +20,7 @@
  */
 
 #include "SCPlot.h"
-#include "Config.h"
+#include "IndicatorPlugin.h"
 
 #include <QtDebug>
 
@@ -29,9 +29,11 @@ SCPlot::SCPlot ()
 {
 }
 
-int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, PlotLine *> &tlines, QByteArray &ba)
+int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, PlotLine *> &tlines,
+		       QByteArray &ba)
 {
   // format 'PLOT,NAME,LABEL,LINE_TYPE'
+  
   ba.clear();
   ba.append("1\n");
 
@@ -48,9 +50,9 @@ int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, Pl
     return 1;
   }
   
-  Config config;
+  IndicatorPlugin plug;
   QStringList pl;
-  config.getData(Config::PlotPluginList, pl);
+  plug.getPlotList(pl, 0);
   if (pl.indexOf(l[3]) == -1)
   {
     qDebug() << "SCPlot::calculate: invalid line type" << l[3];

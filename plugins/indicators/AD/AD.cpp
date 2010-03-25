@@ -107,18 +107,18 @@ int AD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
 int AD::getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,AD,AD,<NAME>
+  // INDICATOR,PLUGIN,AD,AD,<NAME>
 
-  if (set.count() != 4)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::calculate: duplicate name" << set[4];
     return 1;
   }
 
@@ -126,40 +126,40 @@ int AD::getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   if (! line)
     return 1;
 
-  tlines.insert(set[3], line);
+  tlines.insert(set[4], line);
 
   return 0;
 }
 
 int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,AD,ADOSC,<NAME>,<FAST_PERIOD>,<SLOW_PERIOD>
+  // INDICATOR,PLUGIN,AD,ADOSC,<NAME>,<FAST_PERIOD>,<SLOW_PERIOD>
 
-  if (set.count() != 6)
+  if (set.count() != 7)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::calculate: duplicate name" << set[4];
     return 1;
   }
 
   bool ok;
-  int fast = set[4].toInt(&ok);
+  int fast = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fast period" << set[4];
+    qDebug() << indicator << "::calculate: invalid fast period" << set[5];
     return 1;
   }
 
-  int slow = set[5].toInt(&ok);
+  int slow = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid slow period" << set[5];
+    qDebug() << indicator << "::calculate: invalid slow period" << set[6];
     return 1;
   }
 
@@ -167,7 +167,7 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   if (! line)
     return 1;
 
-  tlines.insert(set[3], line);
+  tlines.insert(set[4], line);
 
   return 0;
 }

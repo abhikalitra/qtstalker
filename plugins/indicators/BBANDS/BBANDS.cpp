@@ -133,22 +133,15 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
 
 int BBANDS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,BBANDS,<INPUT>,<NAME_UPPER>,<NAME_MIDDLE>,<NAME_LOWER>,<PERIOD>,<UPPER_DEVIATION>,<LOWER_DEVIATION>,<MA_TYPE>
+  // INDICATOR,PLUGIN,BBANDS,<INPUT>,<NAME_UPPER>,<NAME_MIDDLE>,<NAME_LOWER>,<PERIOD>,<UPPER_DEVIATION>,<LOWER_DEVIATION>,<MA_TYPE>
 
-  if (set.count() != 10)
+  if (set.count() != 11)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
-    return 1;
-  }
-
-  tl = tlines.value(set[4]);
+  PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
     qDebug() << indicator << "::calculate: duplicate name" << set[4];
@@ -162,48 +155,55 @@ int BBANDS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[2]);
+  tl = tlines.value(set[6]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate name" << set[6];
+    return 1;
+  }
+
+  PlotLine *in = tlines.value(set[3]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[2]));
+    in = data->getInput(data->getInputType(set[3]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[2];
+      qDebug() << indicator << "::calculate: input not found" << set[3];
       return 1;
     }
 
-    tlines.insert(set[2], in);
+    tlines.insert(set[3], in);
   }
 
   bool ok;
-  int period = set[6].toInt(&ok);
+  int period = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period settings" << set[6];
+    qDebug() << indicator << "::calculate: invalid period settings" << set[7];
     return 1;
   }
 
-  double upDev = set[7].toDouble(&ok);
+  double upDev = set[8].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid up deviation settings" << set[7];
+    qDebug() << indicator << "::calculate: invalid up deviation settings" << set[8];
     return 1;
   }
 
-  double lowDev = set[8].toDouble(&ok);
+  double lowDev = set[9].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid lower deviation settings" << set[8];
+    qDebug() << indicator << "::calculate: invalid lower deviation settings" << set[9];
     return 1;
   }
 
   MATH1 m;
   QStringList maList;
   m.getMAList(maList);
-  int ma = maList.indexOf(set[9]);
+  int ma = maList.indexOf(set[10]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid ma settings" << set[9];
+    qDebug() << indicator << "::calculate: invalid ma settings" << set[10];
     return 1;
   }
 
@@ -223,11 +223,11 @@ int BBANDS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   }
 
   PlotLine *line = l.at(0);
-  tlines.insert(set[3], line);
-  line = l.at(1);
   tlines.insert(set[4], line);
-  line = l.at(2);
+  line = l.at(1);
   tlines.insert(set[5], line);
+  line = l.at(2);
+  tlines.insert(set[6], line);
 
   return 0;
 }

@@ -58,26 +58,26 @@ int VFI::getIndicator (Indicator &ind, BarData *data)
 
 int VFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,VFI,<NAME>,<PERIOD>
+  // INDICATOR,PLUGIN,VFI,<NAME>,<PERIOD>
 
-  if (set.count() != 4)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   bool ok;
-  int period = set[3].toInt(&ok);
+  int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[3];
+    qDebug() << indicator << "::calculate: invalid period" << set[4];
     return 1;
   }
 
@@ -85,7 +85,7 @@ int VFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

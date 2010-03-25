@@ -122,23 +122,16 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
 
 int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<FAST_MA_TYPE>,
+  // INDICATOR,PLUGIN,MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<FAST_MA_TYPE>,
   // <SLOW_PERIOD>,<SLOW_MA_TYPE>,<SIGNAL_PERIOD>,<SIGNAL_MA_TYPE>
 
-  if (set.count() != 12)
+  if (set.count() != 13)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
-    return 1;
-  }
-
-  tl = tlines.value(set[4]);
+  PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
     qDebug() << indicator << "::calculate: duplicate name" << set[4];
@@ -152,62 +145,69 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[2]);
+  tl = tlines.value(set[6]);
+  if (tl)
+  {
+    qDebug() << indicator << "::calculate: duplicate name" << set[6];
+    return 1;
+  }
+
+  PlotLine *in = tlines.value(set[3]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[2]));
+    in = data->getInput(data->getInputType(set[3]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[2];
+      qDebug() << indicator << "::calculate: input not found" << set[3];
       return 1;
     }
 
-    tlines.insert(set[2], in);
+    tlines.insert(set[3], in);
   }
 
   bool ok;
-  int fast = set[6].toInt(&ok);
+  int fast = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fast period" << set[6];
+    qDebug() << indicator << "::calculate: invalid fast period" << set[7];
     return 1;
   }
 
   MATH1 m;
   QStringList maList;
   m.getMAList(maList);
-  int fastma = maList.indexOf(set[7]);
+  int fastma = maList.indexOf(set[8]);
   if (fastma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid fast ma" << set[7];
+    qDebug() << indicator << "::calculate: invalid fast ma" << set[8];
     return 1;
   }
 
-  int slow = set[8].toInt(&ok);
+  int slow = set[9].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid slow period" << set[8];
+    qDebug() << indicator << "::calculate: invalid slow period" << set[9];
     return 1;
   }
 
-  int slowma = maList.indexOf(set[9]);
+  int slowma = maList.indexOf(set[10]);
   if (slowma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid slow ma" << set[9];
+    qDebug() << indicator << "::calculate: invalid slow ma" << set[10];
     return 1;
   }
 
-  int signal = set[10].toInt(&ok);
+  int signal = set[11].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid signal period" << set[9];
+    qDebug() << indicator << "::calculate: invalid signal period" << set[11];
     return 1;
   }
 
-  int signalma = maList.indexOf(set[11]);
+  int signalma = maList.indexOf(set[12]);
   if (signalma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid fast ma" << set[11];
+    qDebug() << indicator << "::calculate: invalid fast ma" << set[12];
     return 1;
   }
 
@@ -219,9 +219,9 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  tlines.insert(set[3], l.at(0));
-  tlines.insert(set[4], l.at(1));
-  tlines.insert(set[5], l.at(2));
+  tlines.insert(set[4], l.at(0));
+  tlines.insert(set[5], l.at(1));
+  tlines.insert(set[6], l.at(2));
 
   return 0;
 }

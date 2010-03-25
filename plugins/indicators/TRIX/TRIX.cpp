@@ -71,39 +71,39 @@ int TRIX::getIndicator (Indicator &ind, BarData *data)
 
 int TRIX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,TRIX,<NAME>,<INPUT>,<PERIOD>
+  // INDICATOR,PLUGIN,TRIX,<NAME>,<INPUT>,<PERIOD>
 
-  if (set.count() != 5)
+  if (set.count() != 6)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::calculate: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[3], in);
+    tlines.insert(set[4], in);
   }
 
   bool ok;
-  int period = set[4].toInt(&ok);
+  int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period parm" << set[4];
+    qDebug() << indicator << "::calculate: invalid period parm" << set[5];
     return 1;
   }
 
@@ -111,7 +111,7 @@ int TRIX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

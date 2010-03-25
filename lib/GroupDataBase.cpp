@@ -45,45 +45,51 @@ void GroupDataBase::getAllGroupsList (QStringList &l)
 {
   l.clear();
   QSqlQuery q(QSqlDatabase::database(dbName));
-  QString s = "SELECT name FROM groupIndex";
+  QString s = "SELECT name FROM groupIndex ORDER BY name ASC";
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "GroupDataBase::getGroupsList: " << q.lastError().text();
+    qDebug() << "GroupDataBase::getAllGroupsList: " << q.lastError().text();
     return;
   }
 
   while (q.next())
     l.append(q.value(0).toString());
-
-  l.sort();
 }
 
 void GroupDataBase::getGroup (Group &group)
 {
+  if (! group.getName().length())
+    return;
+  
   // get the table from the group index
   QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "SELECT tableName FROM groupIndex WHERE name='" + group.getName() + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "GroupDataBase::getGroupList: " << q.lastError().text();
+    qDebug() << "GroupDataBase::getGroup: get tableName" << q.lastError().text();
     return;
   }
 
   QString table;
   if (q.next())
     table = q.value(0).toString();
+  else
+    return;
   
   // get the group contents
-  s = "SELECT exchange,symbol,name FROM " + table;
+  s = "SELECT exchange,symbol,name FROM " + table + " ORDER BY symbol,exchange ASC";
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "GroupDataBase::getGroupList: " << q.lastError().text();
+    qDebug() << "GroupDataBase::getGroup: group contents" << q.lastError().text();
+    qDebug() << s;
     return;
   }
 
+  group.clear();
+  
   while (q.next())
   {
     int pos = 0;
@@ -104,6 +110,12 @@ void GroupDataBase::getGroup (Group &group)
 
 void GroupDataBase::setGroup (Group &group)
 {
+  if (! group.getName().length())
+  {
+    qDebug() << "GroupDataBase::setGroup: no group name";
+    return;
+  }
+  
   transaction();
   
   // get the table from the group index
@@ -112,7 +124,7 @@ void GroupDataBase::setGroup (Group &group)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "GroupDataBase::setGroupList: " << q.lastError().text();
+    qDebug() << "GroupDataBase::setGroup: tableName" << q.lastError().text();
     return;
   }
 
@@ -139,7 +151,7 @@ void GroupDataBase::setGroup (Group &group)
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())
-      qDebug() << "GroupDataBase::setGroup: " << q.lastError().text();
+      qDebug() << "GroupDataBase::setGroup: new index entry" << q.lastError().text();
   }
 
   // create a new one
@@ -151,7 +163,7 @@ void GroupDataBase::setGroup (Group &group)
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "GroupDataBase::setGroup: " << q.lastError().text();
+    qDebug() << "GroupDataBase::setGroup: create table" << q.lastError().text();
 
   int loop;
   for (loop = 0; loop < group.count(); loop++)
@@ -166,7 +178,7 @@ void GroupDataBase::setGroup (Group &group)
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())
-      qDebug() << "GroupDataBase::setGroup: " << q.lastError().text();
+      qDebug() << "GroupDataBase::setGroup: populate table" << q.lastError().text();
   }
   
   commit();
@@ -180,7 +192,7 @@ void GroupDataBase::deleteGroup (QString &n)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "GroupDataBase::deleteGroup: " << q.lastError().text();
+    qDebug() << "GroupDataBase::deleteGroup: get tableName" << q.lastError().text();
     return;
   }
 
@@ -197,7 +209,7 @@ void GroupDataBase::deleteGroup (QString &n)
   s = "DELETE FROM groupIndex WHERE name='" + n + "'";
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "GroupDataBase::deleteGroup: " << q.lastError().text();
+    qDebug() << "GroupDataBase::deleteGroup: delete groupIndex" << q.lastError().text();
   
   // drop the table
   s = "DROP TABLE " + table;

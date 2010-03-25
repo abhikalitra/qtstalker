@@ -27,22 +27,23 @@
 COLOR::COLOR ()
 {
   indicator = "COLOR";
+  deleteFlag = TRUE;
   
   methodList << "All" << "Compare";
 }
 
 int COLOR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *)
 {
-  // INDICATOR,COLOR,METHOD,*
+  // INDICATOR,PLUGIN,COLOR,METHOD,*
 
-  if (set.count() < 3)
+  if (set.count() < 4)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
   
   int rc = 1;
-  switch (methodList.indexOf(set[2]))
+  switch (methodList.indexOf(set[3]))
   {
     case 0:
       rc = getAll(set, tlines);
@@ -59,40 +60,40 @@ int COLOR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
 
 int COLOR::getCompare (QStringList &set, QHash<QString, PlotLine *> &tlines)
 {
-  // INDICATOR,COLOR,METHOD,<INPUT>,<INPUT_2>,<VALUE>,<COLOR>
+  // INDICATOR,PLUGIN,COLOR,METHOD,<INPUT>,<INPUT_2>,<VALUE>,<COLOR>
 
-  if (set.count() != 7)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::getCompare: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    qDebug() << indicator << "::getCompare: input not found" << set[3];
+    qDebug() << indicator << "::getCompare: input not found" << set[4];
     return 1;
   }
 
-  PlotLine *in2 = tlines.value(set[4]);
+  PlotLine *in2 = tlines.value(set[5]);
   if (! in2)
   {
-    qDebug() << indicator << "::getCompare: input2 not found" << set[4];
+    qDebug() << indicator << "::getCompare: input2 not found" << set[5];
     return 1;
   }
 
   bool ok = FALSE;
-  double value = set[5].toDouble(&ok);
+  double value = set[6].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCompare: invalid value" << set[5];
+    qDebug() << indicator << "::getCompare: invalid value" << set[6];
     return 1;
   }
 
-  QColor c(set[6]);
+  QColor c(set[7]);
   if (! c.isValid())
   {
-    qDebug() << indicator << "::getCompare: invalid color" << set[6];
+    qDebug() << indicator << "::getCompare: invalid color" << set[7];
     return 1;
   }
 
@@ -113,25 +114,25 @@ int COLOR::getCompare (QStringList &set, QHash<QString, PlotLine *> &tlines)
 
 int COLOR::getAll (QStringList &set, QHash<QString, PlotLine *> &tlines)
 {
-  // INDICATOR,COLOR,METHOD,<INPUT>,<COLOR>
+  // INDICATOR,PLUGIN,COLOR,METHOD,<INPUT>,<COLOR>
 
-  if (set.count() != 5)
+  if (set.count() != 6)
   {
     qDebug() << indicator << "::getAll: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    qDebug() << indicator << "::getAll: input not found" << set[3];
+    qDebug() << indicator << "::getAll: input not found" << set[4];
     return 1;
   }
 
-  QColor c(set[4]);
+  QColor c(set[5]);
   if (! c.isValid())
   {
-    qDebug() << indicator << "::getAll: invalid color" << set[4];
+    qDebug() << indicator << "::getAll: invalid color" << set[5];
     return 1;
   }
 

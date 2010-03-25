@@ -27,9 +27,34 @@
 
 SCQuote::SCQuote ()
 {
+  methodList << "SET_QUOTE";
 }
 
-void SCQuote::calculate (QStringList &l, QByteArray &ba, QString &pp)
+int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path)
+{
+  // format = QUOTE,PLUGIN,*
+
+  int rc = -1;
+
+  if (l.count() < 2)
+  {
+    qDebug() << "SCQuote::calculate: invalid parm count" << l.count();
+    return rc;
+  }
+  
+  switch ((Method) methodList.indexOf(l[1]))
+  {
+    case SET_QUOTE:
+      rc = setQuote(l, ba, path);
+      break;
+    default:
+      break;
+  }
+  
+  return rc;
+}
+
+int SCQuote::setQuote (QStringList &l, QByteArray &ba, QString &pp)
 {
   // format = QUOTE,PLUGIN,METHOD,*
   // we are only concerned with the first 3 parms, the plugin will check the rest
@@ -40,7 +65,7 @@ void SCQuote::calculate (QStringList &l, QByteArray &ba, QString &pp)
   if (l.count() < 3)
   {
     qDebug() << "SCQuote::quoteSet: invalid parm count" << l.count();
-    return;
+    return 1;
   }
   
   PluginFactory fac;
@@ -48,7 +73,7 @@ void SCQuote::calculate (QStringList &l, QByteArray &ba, QString &pp)
   if (! plug)
   {
     qDebug() << "SCQuote::quoteSet: plugin error" << l[1];
-    return;
+    return 1;
   }
   
   int rc = plug->scriptCommand(l);
@@ -57,5 +82,7 @@ void SCQuote::calculate (QStringList &l, QByteArray &ba, QString &pp)
     ba.clear();
     ba.append("0\n");
   }
+  
+  return 0;
 }
 

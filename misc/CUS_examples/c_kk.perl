@@ -6,27 +6,27 @@
 $|++;
 
 # get the Candles
-print STDOUT "INDICATOR,CANDLES,NONE,candles,dimgray";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Kirikomi
-print STDOUT "INDICATOR,CANDLES,PIERCING,ckk1,0";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,PIERCING,ckk1,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR,COMPARE,c1,ckk1,1,>=";
+print STDOUT "INDICATOR,PLUGIN,COMPARE,c1,ckk1,1,>=";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR,COLOR,Compare,c1,candles,1,green";
+print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,c1,candles,1,green";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Kabuse
-print STDOUT "INDICATOR,CANDLES,DARKCLOUDCOVER,ckk2,0";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,DARKCLOUDCOVER,ckk2,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR,COMPARE,c2,ckk2,-1,<=";
+print STDOUT "INDICATOR,PLUGIN,COMPARE,c2,ckk2,-1,<=";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR,COLOR,Compare,c2,candles,1,red";
+print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,c2,candles,1,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 print STDOUT "PLOT,candles,Candle,Candle";

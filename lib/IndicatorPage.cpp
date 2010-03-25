@@ -114,10 +114,11 @@ void IndicatorPage::newIndicator ()
   QStringList nl;
   IndicatorDataBase db;
   db.getIndicatorList(nl);
-  int loop = 0;
+  int loop = -1;
   QString name;
   do
   {
+    loop++;
     name = tr("Indicator") + QString::number(loop);
   }
   while (nl.indexOf(name) > -1);

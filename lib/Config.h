@@ -70,9 +70,9 @@ class Config : public BaseConfig
       Refresh, // refreshes chart every x minutes
       ShowSidePanel, // side panel flag
       SavedRunningScripts, // saved scripts that were running when app terminated
-      COPluginList,  // UNUSED
-      PlotPluginPath, // UNUSED
-      PlotPluginList, // UNUSED
+      UNUSED10,  // ******** UNUSED ********
+      UNUSED12, // ******* UNUSED *********
+      UNUSED13, // ******** UNUSED ********
       DBPluginPath, // path where db plugins are stored
       DBPluginList, // csv list of current db plugins from startup inventory
       DbSearchSymbols, // the sql command to get a symbol search

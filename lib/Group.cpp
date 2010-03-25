@@ -34,7 +34,6 @@ void Group::clear ()
 {
   qDeleteAll(symbols);
   symbols.clear();
-  name.clear();
 }
 
 QString & Group::getName ()

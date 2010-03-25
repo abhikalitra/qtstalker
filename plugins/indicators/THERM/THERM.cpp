@@ -139,36 +139,36 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
 
 int THERM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,THERM,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
+  // INDICATOR,PLUGIN,THERM,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
 
-  if (set.count() != 5)
+  if (set.count() != 6)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[2]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[2];
+    qDebug() << indicator << "::calculate: duplicate name" << set[3];
     return 1;
   }
 
   bool ok;
-  int smoothing = set[3].toInt(&ok);
+  int smoothing = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing" << set[3];
+    qDebug() << indicator << "::calculate: invalid smoothing" << set[4];
     return 1;
   }
 
   MATH1 m;
   QStringList maList;
   m.getMAList(maList);
-  int type = maList.indexOf(set[4]);
+  int type = maList.indexOf(set[5]);
   if (type == -1)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing type" << set[4];
+    qDebug() << indicator << "::calculate: invalid smoothing type" << set[5];
     return 1;
   }
 
@@ -176,7 +176,7 @@ int THERM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   if (! line)
     return 1;
 
-  tlines.insert(set[2], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }

@@ -28,16 +28,46 @@
 
 SCGroup::SCGroup ()
 {
+  methodList << "ADD" << "DELETE" << "GET";
+}
+
+int SCGroup::calculate (QStringList &l, QByteArray &ba)
+{
+  // format = GROUP,METHOD,*
+  int rc = -1;
+
+  if (l.count() < 2)
+  {
+    qDebug() << "SCGroup::calculate: invalid parm count" << l.count();
+    return rc;
+  }
+  
+  switch ((Method) methodList.indexOf(l[1]))
+  {
+    case ADD:
+      rc = addGroup(l, ba);
+      break;
+    case DELETE:
+      rc = deleteGroup(l, ba);
+      break;
+    case GET:
+      rc = getGroup(l, ba);
+      break;
+    default:
+      break;
+  }
+  
+  return rc;
 }
 
 int SCGroup::addGroup (QStringList &l, QByteArray &ba)
 {
-  // format = GROUP_ADD,GROUP,EXCHANGE,SYMBOL
+  // format = GROUP,ADD,GROUP,EXCHANGE,SYMBOL
 
   ba.clear();
   ba.append("1\n");
 
-  if (l.count() != 4)
+  if (l.count() != 5)
   {
     qDebug() << "SCGroup::addGroup: invalid parm count" << l.count();
     return 1;
@@ -45,12 +75,12 @@ int SCGroup::addGroup (QStringList &l, QByteArray &ba)
 
   GroupDataBase db;
   Group g;
-  g.setName(l[1]);
+  g.setName(l[2]);
   db.getGroup(g);
   
   BarData *bd = new BarData;
-  bd->setExchange(l[2]);
-  bd->setSymbol(l[3]);
+  bd->setExchange(l[3]);
+  bd->setSymbol(l[4]);
   g.append(bd);
   
   db.setGroup(g);
@@ -63,19 +93,19 @@ int SCGroup::addGroup (QStringList &l, QByteArray &ba)
 
 int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
 {
-  // format = GROUP_DELETE,GROUP
+  // format = GROUP,DELETE,GROUP
 
   ba.clear();
   ba.append("1\n");
 
-  if (l.count() != 2)
+  if (l.count() != 3)
   {
     qDebug() << "SCGroup::addGroup: invalid parm count" << l.count();
     return 1;
   }
 
   GroupDataBase db;
-  db.deleteGroup(l[1]);
+  db.deleteGroup(l[2]);
 
   ba.clear();
   ba.append("0\n");
@@ -85,12 +115,12 @@ int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
 
 int SCGroup::getGroup (QStringList &l, QByteArray &ba)
 {
-  // format = GROUP_GET,GROUP
+  // format = GROUP,GET,GROUP
 
   ba.clear();
   ba.append("ERROR\n");
 
-  if (l.count() != 2)
+  if (l.count() != 3)
   {
     qDebug() << "SCGroup::getGroup: invalid parm count" << l.count();
     return 1;
@@ -98,7 +128,7 @@ int SCGroup::getGroup (QStringList &l, QByteArray &ba)
 
   GroupDataBase db;
   Group g;
-  g.setName(l[1]);
+  g.setName(l[2]);
   db.getGroup(g);
   
   int loop;
