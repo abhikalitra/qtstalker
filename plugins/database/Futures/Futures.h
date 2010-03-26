@@ -34,21 +34,23 @@ class Futures : public DBPlugin
       SET_NAME,
       SET_CODE,
       SET_MONTH,
-      SET_YEAR
+      SET_YEAR,
+      SAVE_QUOTES
     };
     
     Futures ();
     void getBars (BarData &);
-    void setBars (BarData &);
-    int createTable (BarData &);
+    void setBars ();
+    int createTable (BarData *);
     int scriptCommand (QStringList &);
-    int addParms (BarData &);
+    int addParms (BarData *);
     
     int scriptSetQuote (QStringList &);
     int scriptSetName (QStringList &);
     int scriptSetCode (QStringList &);
     int scriptSetMonth (QStringList &);
     int scriptSetYear (QStringList &);
+    int scriptSaveQuotes (QStringList &l);
 
   protected:
     QStringList scriptMethods;

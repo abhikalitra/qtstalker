@@ -713,7 +713,7 @@ void QtstalkerApp::loadChart (QString ex, QString d)
   recordList.setBarsRequested(barCount->value());
 
   DBPlugin qdb;
-  qdb.getIndexData(recordList);
+  qdb.getIndexData(&recordList);
 
   PluginFactory fac;
   QString path;
@@ -943,12 +943,14 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
   connect(this, SIGNAL(signalGrid(bool)), indy, SLOT(slotGridChanged(bool)));
   connect(this, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
-
   connect(this, SIGNAL(signalNewExternalChartObject(QString)), indy, SLOT(newExternalChartObject(QString)));
   connect(indy, SIGNAL(signalNewExternalChartObjectDone()), this, SLOT(newExternalChartObjectDone()));
   connect(this, SIGNAL(signalSetExternalChartObject()), indy, SLOT(setExternalChartObjectFlag()));
-
   connect(this, SIGNAL(signalCursorChanged(int)), indy, SLOT(cursorChanged(int)));
+
+//  connect(indy, SIGNAL(signalMoveLeft()), this, SLOT(chartMoveLeft()));
+//  connect(indy, SIGNAL(signalMoveRight()), this, SLOT(chartMoveRight()));
+  connect(indy, SIGNAL(signalIndexChanged(int)), this, SLOT(chartMove(int)));
 }
 
 void QtstalkerApp::slotChartUpdated ()
@@ -1269,5 +1271,12 @@ void QtstalkerApp::slotRefreshUpdated (int minutes)
   }
 }
 
+// ******************************************************************************
+// ******************* Move Chart Functions *************************************
+// ******************************************************************************
 
+void QtstalkerApp::chartMove (int d)
+{
+  slider->setValue(d);
+}
 

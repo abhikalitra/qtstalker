@@ -28,13 +28,13 @@
 #include <QString>
 #include <QStringList>
 #include <QDateTime>
-#include <QHash>
 #include <QList>
+#include <QHashIterator>
 
 Stock::Stock ()
 {
   plugin = "Stock";
-  scriptMethods << "SET_QUOTE" << "SET_NAME";
+  scriptMethods << "SET_QUOTE" << "SET_NAME" << "SAVE_QUOTES";
 }
 
 void Stock::getBars (BarData &data)
@@ -112,58 +112,64 @@ void Stock::getBars (BarData &data)
     data.prepend(dateList.at(loop));
 }
 
-void Stock::setBars (BarData &bars)
+void Stock::setBars ()
 {
-  if (! bars.count())
+  if (! quotes.count())
     return;
 
   QSqlQuery q(QSqlDatabase::database("quotes"));
-
-  transaction();
-
-  if (getIndexData(bars))
-    return;
-
-  QString table = bars.getTableName();
-  if (table.isEmpty())
-  {
-    if(createTable(bars))
-      return;
-  }
   
-  int loop;
-  for (loop = 0; loop < bars.count(); loop++)
+  QHashIterator<QString, BarData *> it(quotes);
+  while (it.hasNext())
   {
-    Bar *bar = bars.getBar(loop);
-    QString s;
-    bar->getDateTimeString(s);
+    it.next();
+    BarData *bd = it.value();
 
-    QString ts = "INSERT OR REPLACE INTO " + bars.getTableName() + " VALUES(";
-    ts.append("'" + s + "'");
-    ts.append("," + QString::number(bar->getOpen()));
-    ts.append("," + QString::number(bar->getHigh()));
-    ts.append("," + QString::number(bar->getLow()));
-    ts.append("," + QString::number(bar->getClose()));
-    ts.append("," + QString::number(bar->getVolume()));
-    ts.append(")");
-    q.exec(ts);
-    if (q.lastError().isValid())
+    if (getIndexData(bd))
+     continue;
+
+    QString table = bd->getTableName();
+    if (table.isEmpty())
     {
-      qDebug() << "Stock::setBars: save quote" << q.lastError().text();
-      qDebug() << ts;
+      if(createTable(bd))
+        continue;
+    }
+  
+    int loop;
+    for (loop = 0; loop < bd->count(); loop++)
+    {
+      Bar *bar = bd->getBar(loop);
+      QString s;
+      bar->getDateTimeString(s);
+
+      QString ts = "INSERT OR REPLACE INTO " + bd->getTableName() + " VALUES(";
+      ts.append("'" + s + "'");
+      ts.append("," + QString::number(bar->getOpen()));
+      ts.append("," + QString::number(bar->getHigh()));
+      ts.append("," + QString::number(bar->getLow()));
+      ts.append("," + QString::number(bar->getClose()));
+      ts.append("," + QString::number(bar->getVolume()));
+      ts.append(")");
+      q.exec(ts);
+      if (q.lastError().isValid())
+      {
+        qDebug() << "Stock::setBars: save quote" << q.lastError().text();
+        qDebug() << ts;
+      }
     }
   }
-
-  commit();
+  
+  qDeleteAll(quotes);
+  quotes.clear();
 }
 
-int Stock::createTable (BarData &bars)
+int Stock::createTable (BarData *bars)
 {
   if (addSymbolIndex(bars))
     return 1;
   
   // new symbol, create new table for it
-  QString s = "CREATE TABLE IF NOT EXISTS " + bars.getTableName() + " (";
+  QString s = "CREATE TABLE IF NOT EXISTS " + bars->getTableName() + " (";
   s.append("date DATETIME PRIMARY KEY UNIQUE");
   s.append(", open REAL");
   s.append(", high REAL");
@@ -193,6 +199,9 @@ int Stock::scriptCommand (QStringList &l)
     case SET_NAME:
       rc = scriptSetName(l);
       break;
+    case SAVE_QUOTES:
+      rc = scriptSaveQuotes(l);
+      break;
     default:
       break;
   }
@@ -202,9 +211,10 @@ int Stock::scriptCommand (QStringList &l)
 
 int Stock::scriptSetQuote (QStringList &l)
 {
-  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,DATE_FORMAT,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME*
+  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,DATE_FORMAT,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME
+  //            0     1      2       3       4        5        6    7    8    9   10     11
   
-  if (l.count() < 12)
+  if (l.count() != 12)
   {
     qDebug() << "Stock::scriptCommand: invalid parm count" << l.count();
     qDebug() << l;
@@ -218,60 +228,47 @@ int Stock::scriptSetQuote (QStringList &l)
     return 1;
   }
   
-  int pos = 1;
-  BarData bd;
-  bd.setPlugin(l[pos++]);
-  pos++;
-  bd.setExchange(l[pos++]);
-  bd.setSymbol(l[pos++]);
-  
-  QString format = l[pos++];
-  
-  int t = (l.count() - 6) % 6;
-  if (t)
+  QDateTime date = QDateTime::fromString(l[6], l[5]);
+  if (! date.isValid())
   {
-    qDebug() << "Stock::scriptCommand: # of fields incorrect";
+    qDebug() << "Stock::scriptCommand: invalid date or date format" << l[5] << l[6];
     return 1;
   }
-  
-  int record = 1;
-  for (; pos < l.count(); pos = pos + 6, record++)
+
+  Bar *bar = new Bar;
+  bar->setDate(date);
+  bar->setOpen(l[7]);
+  bar->setHigh(l[8]);
+  bar->setLow(l[9]);
+  bar->setClose(l[10]);
+  bar->setVolume(l[11]);
+  if (bar->getError())
   {
-    QDateTime date = QDateTime::fromString(l[pos], format);
-    if (! date.isValid())
-    {
-      qDebug() << "Stock::scriptCommand: invalid date or date format, record#" << record << format << l[pos];
-      continue;
-    }
-  
-    Bar *bar = new Bar;
-    bar->setDate(date);
-    bar->setOpen(l[pos + 1]);
-    bar->setHigh(l[pos + 2]);
-    bar->setLow(l[pos + 3]);
-    bar->setClose(l[pos + 4]);
-    bar->setVolume(l[pos + 5]);
-    if (bar->getError())
-    {
-      barErrorMessage(bar->getError(), record);
-      delete bar;
-      continue;
-    }
-    
-    bar->verify();
-    if (bar->getError())
-    {
-      barErrorMessage(bar->getError(), record);
-      delete bar;
-      continue;
-    }
-    
-    bd.append(bar);
+    barErrorMessage(bar->getError());
+    delete bar;
+    return 1;
   }
 
-  transaction();
-  setBars(bd);
-  commit();
+  bar->verify();
+  if (bar->getError())
+  {
+    barErrorMessage(bar->getError());
+    delete bar;
+    return 1;
+  }
+    
+  QString key = l[3] + l[4];
+  BarData *bd = quotes.value(key);
+  if (! bd)
+  {
+    bd = new BarData;
+    bd->setPlugin(l[1]);
+    bd->setExchange(l[3]);
+    bd->setSymbol(l[4]);
+    quotes.insert(key, bd);    
+  }
+  
+  bd->append(bar);
   
   return 0;
 }
@@ -289,18 +286,35 @@ int Stock::scriptSetName (QStringList &l)
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(bd))
+  if (getIndexData(&bd))
   {
     qDebug() << "Stock::scriptSetName: symbol not found in database" << l[3] << l[4];
     return 1;
   }
   
   bd.setName(l[5]);
-  if (setIndexData(bd))
+  if (setIndexData(&bd))
   {
     qDebug() << "Stock::scriptSetName: error setting index";
     return 1;
   }
+
+  return 0;
+}
+
+int Stock::scriptSaveQuotes (QStringList &l)
+{
+  // format = QUOTE,PLUGIN,SAVE_QUOTES
+
+  if (l.count() != 3)
+  {
+    qDebug() << "Stock::scriptSaveQuotes: invalid parm count" << l.count();
+    return 1;
+  }
+
+  transaction();
+  setBars();
+  commit();
 
   return 0;
 }

@@ -33,15 +33,12 @@ DBPlugin::DBPlugin ()
 // virtual
 DBPlugin::~DBPlugin ()
 {
+  if (quotes.count())
+    qDeleteAll(quotes);
 }
 
 // virtual
 void DBPlugin::getBars (BarData &)
-{
-}
-
-// virtual
-void DBPlugin::setBars (BarData &)
 {
 }
 
@@ -167,12 +164,12 @@ void DBPlugin::getLastDate (QString &table, QDateTime &date)
     date = q.value(0).toDateTime();
 }
 
-int DBPlugin::getIndexData (BarData &data)
+int DBPlugin::getIndexData (BarData *data)
 {
   QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "SELECT name,tableName,plugin FROM symbolIndex";
-  s.append(" WHERE symbol='" + data.getSymbol() + "'");
-  s.append(" AND exchange='" + data.getExchange() + "'");
+  s.append(" WHERE symbol='" + data->getSymbol() + "'");
+  s.append(" AND exchange='" + data->getExchange() + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -184,25 +181,25 @@ int DBPlugin::getIndexData (BarData &data)
   {
     int pos = 0;
     s = q.value(pos++).toString();
-    data.setName(s);
+    data->setName(s);
 
     s = q.value(pos++).toString();
-    data.setTableName(s);
+    data->setTableName(s);
     
     s = q.value(pos++).toString();
-    data.setPlugin(s);
+    data->setPlugin(s);
   }
 
   return 0;
 }
 
-int DBPlugin::setIndexData (BarData &data)
+int DBPlugin::setIndexData (BarData *data)
 {
   QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "UPDATE symbolIndex SET ";
-  s.append("name='" + data.getName() + "'");
-  s.append(" WHERE exchange='" + data.getExchange() + "'");
-  s.append(" AND symbol='" + data.getSymbol() + "'");
+  s.append("name='" + data->getName() + "'");
+  s.append(" WHERE exchange='" + data->getExchange() + "'");
+  s.append(" AND symbol='" + data->getSymbol() + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -213,7 +210,7 @@ int DBPlugin::setIndexData (BarData &data)
   return 0;
 }
 
-int DBPlugin::addSymbolIndex (BarData &bars)
+int DBPlugin::addSymbolIndex (BarData *bars)
 {
   QSqlQuery q(QSqlDatabase::database(dbName));
 
@@ -232,10 +229,10 @@ int DBPlugin::addSymbolIndex (BarData &bars)
     
   // add new symbol entry into the symbolIndex table
   ts = "INSERT OR REPLACE INTO symbolIndex (symbol,tableName,exchange,plugin) VALUES(";
-  ts.append("'" + bars.getSymbol() + "'");
+  ts.append("'" + bars->getSymbol() + "'");
   ts.append(",'" + table + "'");
-  ts.append(",'" + bars.getExchange() + "'");
-  ts.append(",'" + bars.getPlugin() + "'");
+  ts.append(",'" + bars->getExchange() + "'");
+  ts.append(",'" + bars->getPlugin() + "'");
   ts.append(")");
   q.exec(ts);
   if (q.lastError().isValid())
@@ -244,7 +241,7 @@ int DBPlugin::addSymbolIndex (BarData &bars)
     return 1;
   }
   
-  bars.setTableName(table);
+  bars->setTableName(table);
   
   return 0;
 }
@@ -266,53 +263,53 @@ void DBPlugin::getExchangeList (QStringList &l)
   l.sort();
 }
 
-void DBPlugin::barErrorMessage (int rc, int record)
+void DBPlugin::barErrorMessage (int rc)
 {
   QString function = "::scriptCommand:";
   
   switch ((Bar::RC) rc)
   {
     case Bar::RC_InvalidOpen:
-      qDebug() << plugin << function << "invalid open, record#" << record;
+      qDebug() << plugin << function << "invalid open";
       break;
     case Bar::RC_InvalidHigh:
-      qDebug() << plugin << function << "invalid high, record#" << record;
+      qDebug() << plugin << function << "invalid high";
       break;
     case Bar::RC_InvalidLow:
-      qDebug() << plugin << function << "invalid low, record#" << record;
+      qDebug() << plugin << function << "invalid low";
       break;
     case Bar::RC_InvalidClose:
-      qDebug() << plugin << function << "invalid close, record#" << record;
+      qDebug() << plugin << function << "invalid close";
       break;
     case Bar::RC_InvalidVolume:
-      qDebug() << plugin << function << "invalid volume, record#" << record;
+      qDebug() << plugin << function << "invalid volume";
       break;
     case Bar::RC_InvalidOI:
-      qDebug() << plugin << function << "invalid oi, record#" << record;
+      qDebug() << plugin << function << "invalid oi";
       break;
     case Bar::RC_OGTH: // open > high
-      qDebug() << plugin << function << "open > high, record#" << record;
+      qDebug() << plugin << function << "open > high";
       break;
     case Bar::RC_OLTL: // open < low
-      qDebug() << plugin << function << "open < low, record#" << record;
+      qDebug() << plugin << function << "open < low";
       break;
     case Bar::RC_CGTH: // close > high
-      qDebug() << plugin << function << "close > high, record#" << record;
+      qDebug() << plugin << function << "close > high";
       break;
     case Bar::RC_CLTL: // close < low
-      qDebug() << plugin << function << "close < low, record#" << record;
+      qDebug() << plugin << function << "close < low";
       break;
     case Bar::RC_VLT0: // volume < 0
-      qDebug() << plugin << function << "volume < 0, record#" << record;
+      qDebug() << plugin << function << "volume < 0";
       break;
     case Bar::RC_LGTH: // low > high
-      qDebug() << plugin << function << "low > high, record#" << record;
+      qDebug() << plugin << function << "low > high";
       break;
     case Bar::RC_HLTL: // high < low
-      qDebug() << plugin << function << "high < low, record#" << record;
+      qDebug() << plugin << function << "high < low";
       break;
     case Bar::RC_OILT0: // oi < 0
-      qDebug() << plugin << function << "oi < 0, record#" << record;
+      qDebug() << plugin << function << "oi < 0";
       break;
     default:
       break;

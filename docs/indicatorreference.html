@@ -43,9 +43,8 @@ of exchanges used.</a></li>
   <li>&lt;DATE_FORMAT&gt; is the date format. <a
  href="http://doc.qtsoftware.com/qdatetime.html#fromString-2">See here
 for the date format structure.</a></li>
-  <li>&lt;?&gt; This is the quote data separated by commas. You may put
-as many quotes together as desired as long as they belong to the same
-symbol. The format is determined by the &lt;PLUGIN&gt; used are:<br>
+  <li>&lt;?&gt; This is the quote data separated by commas. The format
+is determined by the &lt;PLUGIN&gt; used. The formats are:<br>
   </li>
   <ul>
     <li>Stock - Date,Open,High,Low,Close,Volume</li>
@@ -53,12 +52,11 @@ symbol. The format is determined by the &lt;PLUGIN&gt; used are:<br>
   </ul>
 </ul>
 <br>
-For example. If we wanted to save 2 quotes for a symbol, the text would
+For example. If we wanted to save a stock quote, the text would
 be:<br>
 <br>
 "QUOTE,Stock,SET_QUOTE,NASDAQ,MSFT,yyyy-MM-dd HH:MM:SS,2010-03-09
-13:24:00,25.50,27.25,23.75,26.25,123456789,2010-03-10
-09:59:00,26.50,28.25,24.75,27.25,123456789"<br>
+13:24:00,25.50,27.25,23.75,26.25,123456789"<br>
 <br>
 <br>
 On success a '0' is returned. On failure, a '1' is
@@ -66,8 +64,24 @@ returned.<br>
 <br>
 <span style="font-weight: bold;"></span><span style="font-weight: bold;"><br>
 <br>
-</span><span style="font-weight: bold;">QUOTE,&lt;PLUGIN&gt;,SET_NAME,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;NAME&gt;</span><br>
 <br>
+</span><span style="font-weight: bold;">QUOTE,&lt;PLUGIN&gt;,SAVE_QUOTES</span><br>
+<ul>
+  <li>&lt;PLUGIN&gt; is the quote type to use (Stock, Futures).</li>
+</ul>
+<br>
+This function will save quotes to the database after "SET_QUOTE"
+commands have been previously run in the script. If this command is not
+used after quote data has been "SET_QUOTE", then the quote data will be
+lost and NOT saved to the database.<br>
+<br>
+On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<br>
+<span style="font-weight: bold;"><br>
+<br>
+</span><span style="font-weight: bold;">QUOTE,&lt;PLUGIN&gt;,SET_NAME,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;NAME&gt;</span><br>
 <br>
 This function will set the company name of the symbol.<br>
 <ul>
@@ -343,61 +357,7 @@ indicator or bar data as follows:</p>
 <h3><br>
 </h3>
 <span style="font-weight: bold;"><br>
-</span>
-<h3>Chaikin Accumulation Distribution<br>
-</h3>
-<p>INDICATOR,PLUGIN,AD,AD,&lt;NAME&gt;</p>
-<p></p>
-INDICATOR,PLUGIN,AD,ADOSC,&lt;NAME&gt;,&lt;FAST_PERIOD&gt;,&lt;SLOW_PERIOD&gt;
-<p></p>
-<h3><br>
-</h3>
-<h3>Average Directional Movement Index</h3>
-<p>INDICATOR,PLUGIN,ADX,ADX,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>INDICATOR,PLUGIN,ADX,ADXR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>INDICATOR,PLUGIN,ADX,DX,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>INDICATOR,PLUGIN,ADX,-DI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>INDICATOR,PLUGIN,ADX,+DI,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>INDICATOR,PLUGIN,ADX,-DM,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>INDICATOR,PLUGIN,ADX,+DM,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<br>
-<br>
-<h3>Aroon</h3>
-<p>INDICATOR,PLUGIN,AROON,UP,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>INDICATOR,PLUGIN,AROON,DOWN,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>INDICATOR,PLUGIN,AROON,OSC,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>
-</p>
-<p>
-</p>
-<br>
-<br>
-<h3>Average True Range</h3>
-<p>INDICATOR,PLUGIN,ATR,ATR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p>INDICATOR,PLUGIN,ATR,NATR,&lt;NAME&gt;,&lt;PERIOD&gt;<br>
-</p>
-<p><br>
-</p>
-<br>
-<h3>OHLC Bars</h3>
-<p>INDICATOR,PLUGIN,BARS,&lt;NAME&gt;,&lt;BAR_UP_COLOR&gt;,&lt;BAR_DOWN_COLOR&gt;,&lt;BAR_NEUTRAL_COLOR&gt;</p>
-<p></p>
-<p>This will create OHLC bars.</p>
-<p></p>
-<h3><br>
-</h3>
-<h3>Bollinger Bands</h3>
+</span>Bollinger Bands
 <p>INDICATOR,PLUGIN,BBANDS,&lt;INPUT&gt;,&lt;NAME_UPPER&gt;,&lt;NAME_MIDDLE&gt;,&lt;NAME_LOWER&gt;,&lt;PERIOD&gt;,&lt;UPPER_DEVIATION&gt;,&lt;LOWER_DEVIATION&gt;,&lt;MA_TYPE&gt;</p>
 <p></p>
 <h3><br>

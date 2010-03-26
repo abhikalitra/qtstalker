@@ -58,6 +58,7 @@ class IndicatorPlot : public QWidget
     void signalDateFlag (bool);
     void signalLogFlag (bool);
     void signalNewExternalChartObjectDone();
+    void signalIndexChanged (int);
 
   public:
     enum MouseStatus
@@ -150,6 +151,7 @@ class IndicatorPlot : public QWidget
     QRubberBand *rubberBand;
     QPoint mouseOrigin;
     int newObjectFlag;
+    int dragPos;
 };
 
 #endif

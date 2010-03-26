@@ -140,6 +140,7 @@ class QtstalkerApp : public QMainWindow
     void cursorButtonPressed (int id);
     void coButtonPressed (int id);
     void newExternalChartObjectDone ();
+    void chartMove (int);
 
   protected:
     void closeEvent(QCloseEvent *event);

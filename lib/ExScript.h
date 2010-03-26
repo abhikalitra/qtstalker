@@ -24,6 +24,7 @@
 
 #include "BarData.h"
 #include "PlotLine.h"
+#include "SCQuote.h"
 
 #include <QProcess>
 #include <QList>
@@ -88,6 +89,7 @@ class ExScript : public QObject
     int killFlag;
     QString indicatorPluginPath;
     QString dbPluginPath;
+    SCQuote quotes;
 };
 
 #endif

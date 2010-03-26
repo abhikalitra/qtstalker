@@ -24,7 +24,6 @@
 #include "SCPlot.h"
 #include "SCGroup.h"
 #include "SCTest.h"
-#include "SCQuote.h"
 #include "SCSymbol.h"
 
 #include <QByteArray>
@@ -188,8 +187,7 @@ void ExScript::readFromStdout ()
     }
     case QUOTE:
     {
-      SCQuote sc;
-      sc.calculate(l, ba, dbPluginPath);
+      quotes.calculate(l, ba, dbPluginPath);
       proc->write(ba);
       break;
     }
@@ -248,29 +246,24 @@ void ExScript::readFromStdout ()
 
 void ExScript::readFromStderr ()
 {
-  QByteArray ba = proc->readAllStandardError();
-  QString s(ba);
-  qDebug() << "ExScript::readFromStderr:" << s;
+//  QByteArray ba = proc->readAllStandardError();
+//  QString s(ba);
+//  qDebug() << "ExScript::readFromStderr:" << s;
+  qDebug() << "ExScript::readFromStderr:" << proc->readAllStandardError();
 }
 
 void ExScript::getLines (QList<PlotLine *> &lines)
 {
   int loop;
   for (loop = 0; loop < plotOrder.count(); loop++)
-  {
     lines.append(tlines.value(plotOrder[loop]));
-//    qDebug() << "plot order" << loop << plotOrder[loop];
-  }
 
   QHashIterator<QString, PlotLine *> it(tlines);
   while (it.hasNext())
   {
     it.next();
     if (! it.value()->getPlotFlag())
-    {
-//      qDebug() << "deleted" << it.key();
       delete it.value();
-    }
   }
 
   clear();

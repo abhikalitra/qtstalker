@@ -522,7 +522,7 @@ void QtStalkerTester::loadTest (QString &s)
   data.setBarsRequested(settings->getBars());
 
   DBPlugin qdb;
-  qdb.getIndexData(data);
+  qdb.getIndexData(&data);
 
   TestConfig config;
   PluginFactory fac;
@@ -594,7 +594,7 @@ void QtStalkerTester::run ()
   data.setBarsRequested(settings->getBars());
 
   DBPlugin qdb;
-  qdb.getIndexData(data);
+  qdb.getIndexData(&data);
 
   TestConfig config;
   

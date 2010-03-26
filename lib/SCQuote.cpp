@@ -21,7 +21,6 @@
 
 #include "SCQuote.h"
 #include "DBPlugin.h"
-#include "PluginFactory.h"
 
 #include <QtDebug>
 
@@ -43,7 +42,6 @@ int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path)
     return 1;
   }
   
-  PluginFactory fac;
   DBPlugin *plug = fac.getDB(path, l[1]);
   if (! plug)
   {

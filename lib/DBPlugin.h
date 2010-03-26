@@ -26,6 +26,7 @@
 #include <QStringList>
 #include <QDateTime>
 #include <QList>
+#include <QHash>
 
 #include "BarData.h"
 #include "Group.h"
@@ -37,7 +38,6 @@ class DBPlugin : public DataBase
     DBPlugin ();
     virtual ~DBPlugin ();
     virtual void getBars (BarData &);
-    virtual void setBars (BarData &);
     virtual void dialog ();
     virtual int scriptCommand (QStringList &);
     
@@ -45,14 +45,15 @@ class DBPlugin : public DataBase
     void getSearchList (QString &ex, QString &pat, Group &);
     void getFirstDate (QString &table, QDateTime &date);
     void getLastDate (QString &table, QDateTime &date);
-    int getIndexData (BarData &);
-    int setIndexData (BarData &);
-    int addSymbolIndex (BarData &);
+    int getIndexData (BarData *);
+    int setIndexData (BarData *);
+    int addSymbolIndex (BarData *);
     void getExchangeList (QStringList &);
-    void barErrorMessage (int, int);
+    void barErrorMessage (int);
     
   protected:
     QString plugin;
+    QHash<QString, BarData *> quotes;
 };
 
 #endif

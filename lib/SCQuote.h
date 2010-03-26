@@ -26,11 +26,16 @@
 #include <QString>
 #include <QByteArray>
 
+#include "PluginFactory.h"
+
 class SCQuote
 {
   public:
     SCQuote ();
     int calculate (QStringList &, QByteArray &, QString &);
+    
+  protected:
+    PluginFactory fac;
 };
 
 #endif

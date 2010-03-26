@@ -89,51 +89,9 @@ IndicatorPlot::~IndicatorPlot ()
   indicator.clear();
 }
 
-void IndicatorPlot::clear ()
-{
-  saveChartObjects();
-  indicator.clear();
-  plotData.dateBars.clear();
-  mouseFlag = None;
-}
-
-void IndicatorPlot::setData (BarData *l)
-{
-  if (! l->count())
-    return;
-
-  plotData.dateBars.createDateList(l);
-}
-
-void IndicatorPlot::setChartPath (QString &d)
-{
-  chartSymbol = d;
-}
-
-void IndicatorPlot::setScaleToScreen (bool d)
-{
-  plotData.scaleToScreen = d;
-}
-
-void IndicatorPlot::setInfoFlag (bool d)
-{
-  plotData.infoFlag = d;
-}
-
-void IndicatorPlot::setDateFlag (bool d)
-{
-  indicator.setDate(d);
-}
-
-void IndicatorPlot::setLogScale (bool d)
-{
-  indicator.setLog(d);
-}
-
-void IndicatorPlot::setInterval (Bar::BarLength d)
-{
-  interval = d;
-}
+//*********************************************************************
+//*************** DRAW FUNCTIONS **************************************
+//********************************************************************
 
 void IndicatorPlot::draw ()
 {
@@ -227,6 +185,20 @@ void IndicatorPlot::cursorChanged (int d)
     default:
       break;
   }
+}
+
+//*********************************************************************
+//*************** SCALE FUNCTIONS *************************************
+//********************************************************************
+
+void IndicatorPlot::setScaler (Scaler &d)
+{
+  plotData.scaler = d;
+}
+
+Scaler & IndicatorPlot::getScaler ()
+{
+  return plotData.scaler;
 }
 
 void IndicatorPlot::getScalePoints (QList<Setting> &l)
@@ -343,7 +315,10 @@ void IndicatorPlot::setScale ()
 void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 {
   if (! plotData.dateBars.count()  || event->button() != Qt::LeftButton)
+  {
+    QWidget::mousePressEvent(event);
     return;
+  }
 
   switch (mouseFlag)
   {
@@ -474,7 +449,10 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
 {
   // ignore moves above the top of the chart - we get draw errors if we don't
   if (! plotData.dateBars.count() || event->y() <= 0)
+  {
+    QWidget::mouseMoveEvent(event);
     return;
+  }
 
   switch (mouseFlag)
   {
@@ -570,10 +548,26 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
 void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
 {
   if (! plotData.dateBars.count())
+  {
+    QWidget::mouseDoubleClickEvent(event);
     return;
+  }
 
   switch (mouseFlag)
   {
+    case None: // center chart on double click mouse position
+    {
+      int center = (plotData.buffer.width() / plotData.pixelspace) / 2;
+      int i = event->x() / plotData.pixelspace;
+      if (i < center)
+        emit signalIndexChanged(plotData.startIndex - (center - i));
+      else
+      {
+	if (i > center)
+          emit signalIndexChanged(plotData.startIndex + (i - center));
+      }
+      break;
+    }
     case COSelected:
       if (coSelected)
         slotObjectDialog();
@@ -592,21 +586,6 @@ void IndicatorPlot::mouseDoubleClickEvent (QMouseEvent *event)
     }
     default:
       QWidget::mouseDoubleClickEvent(event);
-      break;
-  }
-}
-
-void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
-{
-  switch (mouseFlag)
-  {
-    case COSelected:
-      if (coSelected)
-        coMenu->exec(QCursor::pos());
-      break;
-    default:
-      if (menuFlag)
-        showPopupMenu();
       break;
   }
 }
@@ -634,72 +613,40 @@ void IndicatorPlot::keyPressEvent (QKeyEvent *key)
   }
 }
 
-void IndicatorPlot::setBackgroundColor (QColor &d)
-{
-  plotData.backgroundColor = d;
-}
+//*********************************************************************
+//*************** MENU FUNCTIONS ***************************************
+//********************************************************************
 
-void IndicatorPlot::setBorderColor (QColor &d)
+void IndicatorPlot::contextMenuEvent (QContextMenuEvent *)
 {
-  plotData.borderColor = d;
-}
-
-void IndicatorPlot::setGridColor (QColor &d)
-{
-  grid.setGridColor(d);
-}
-
-void IndicatorPlot::setPlotFont (QFont &d)
-{
-  plotData.plotFont = d;
-}
-
-void IndicatorPlot::setGridFlag (bool d)
-{
-  grid.setGridFlag(d);
-}
-
-void IndicatorPlot::setMenuFlag (bool d)
-{
-  menuFlag = d;
-}
-
-void IndicatorPlot::setPixelspace (int d)
-{
-  plotData.pixelspace = d;
-}
-
-void IndicatorPlot::setIndex (int d)
-{
-  plotData.startIndex = d;
-}
-
-void IndicatorPlot::setXGrid (QVector<int> &d)
-{
-  grid.setXGrid(d);
-}
-
-void IndicatorPlot::getXY (int x, int y)
-{
-  int i = convertXToDataIndex(x);
-  plotData.dateBars.getDate(i, plotData.x1);
-  plotData.y1 = plotData.scaler.convertToVal(y);
-}
-
-int IndicatorPlot::convertXToDataIndex (int x)
-{
-  int i = (x / plotData.pixelspace) + plotData.startIndex;
-  if (i >= (int) plotData.dateBars.count())
-    i = plotData.dateBars.count() - 1;
-  if (i < plotData.startIndex)
-    i = plotData.startIndex;
-
-  return i;
+  switch (mouseFlag)
+  {
+    case COSelected:
+      if (coSelected)
+        coMenu->exec(QCursor::pos());
+      break;
+    default:
+      if (menuFlag)
+        showPopupMenu();
+      break;
+  }
 }
 
 void IndicatorPlot::showPopupMenu ()
 {
   chartMenu->exec(QCursor::pos());
+}
+
+//*********************************************************************
+//*************** SET / GET VARIABLES *********************************
+//********************************************************************
+
+void IndicatorPlot::clear ()
+{
+  saveChartObjects();
+  indicator.clear();
+  plotData.dateBars.clear();
+  mouseFlag = None;
 }
 
 void IndicatorPlot::toggleDate ()
@@ -750,6 +697,89 @@ void IndicatorPlot::slotLogScaleChanged (bool d)
   draw();
 }
 
+void IndicatorPlot::setData (BarData *l)
+{
+  if (! l->count())
+    return;
+
+  plotData.dateBars.createDateList(l);
+}
+
+void IndicatorPlot::setChartPath (QString &d)
+{
+  chartSymbol = d;
+}
+
+void IndicatorPlot::setScaleToScreen (bool d)
+{
+  plotData.scaleToScreen = d;
+}
+
+void IndicatorPlot::setInfoFlag (bool d)
+{
+  plotData.infoFlag = d;
+}
+
+void IndicatorPlot::setDateFlag (bool d)
+{
+  indicator.setDate(d);
+}
+
+void IndicatorPlot::setLogScale (bool d)
+{
+  indicator.setLog(d);
+}
+
+void IndicatorPlot::setInterval (Bar::BarLength d)
+{
+  interval = d;
+}
+
+void IndicatorPlot::setBackgroundColor (QColor &d)
+{
+  plotData.backgroundColor = d;
+}
+
+void IndicatorPlot::setBorderColor (QColor &d)
+{
+  plotData.borderColor = d;
+}
+
+void IndicatorPlot::setGridColor (QColor &d)
+{
+  grid.setGridColor(d);
+}
+
+void IndicatorPlot::setPlotFont (QFont &d)
+{
+  plotData.plotFont = d;
+}
+
+void IndicatorPlot::setGridFlag (bool d)
+{
+  grid.setGridFlag(d);
+}
+
+void IndicatorPlot::setMenuFlag (bool d)
+{
+  menuFlag = d;
+}
+
+void IndicatorPlot::setPixelspace (int d)
+{
+  plotData.pixelspace = d;
+}
+
+void IndicatorPlot::setIndex (int d)
+{
+  plotData.startIndex = d;
+}
+
+void IndicatorPlot::setXGrid (QVector<int> &d)
+{
+  grid.setXGrid(d);
+}
+
 int IndicatorPlot::getWidth ()
 {
   return plotData.buffer.width();
@@ -765,19 +795,31 @@ void IndicatorPlot::getIndicator (Indicator &d)
   d = indicator;
 }
 
-void IndicatorPlot::setScaler (Scaler &d)
-{
-  plotData.scaler = d;
-}
-
-Scaler & IndicatorPlot::getScaler ()
-{
-  return plotData.scaler;
-}
-
 void IndicatorPlot::getDateBar (DateBar &d)
 {
   d = plotData.dateBars;
+}
+
+//*********************************************************************
+//*************** INTERNAL FUNCTIONS **********************************
+//********************************************************************
+
+void IndicatorPlot::getXY (int x, int y)
+{
+  int i = convertXToDataIndex(x);
+  plotData.dateBars.getDate(i, plotData.x1);
+  plotData.y1 = plotData.scaler.convertToVal(y);
+}
+
+int IndicatorPlot::convertXToDataIndex (int x)
+{
+  int i = (x / plotData.pixelspace) + plotData.startIndex;
+  if (i >= (int) plotData.dateBars.count())
+    i = plotData.dateBars.count() - 1;
+  if (i < plotData.startIndex)
+    i = plotData.startIndex;
+
+  return i;
 }
 
 //*************************************************************************

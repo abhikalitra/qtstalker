@@ -29,13 +29,13 @@
 #include <QString>
 #include <QStringList>
 #include <QDateTime>
-#include <QHash>
+#include <QHashIterator>
 #include <QList>
 
 Futures::Futures ()
 {
   plugin = "Futures";
-  scriptMethods << "SET_QUOTE" << "SET_NAME" << "SET_CODE" << "SET_MONTH" << "SET_YEAR";
+  scriptMethods << "SET_QUOTE" << "SET_NAME" << "SET_CODE" << "SET_MONTH" << "SET_YEAR" << "SAVE_QUOTES";
 }
 
 void Futures::getBars (BarData &data)
@@ -116,59 +116,65 @@ void Futures::getBars (BarData &data)
     data.prepend(dateList.at(loop));
 }
 
-void Futures::setBars (BarData &bars)
+void Futures::setBars ()
 {
-  if (! bars.count())
+  if (! quotes.count())
     return;
 
   QSqlQuery q(QSqlDatabase::database("quotes"));
 
-  transaction();
-
-  if (getIndexData(bars))
-    return;
-
-  QString table = bars.getTableName();
-  if (table.isEmpty())
+  QHashIterator<QString, BarData *> it(quotes);
+  while (it.hasNext())
   {
-    if(createTable(bars))
+    it.next();
+    BarData *bd = it.value();
+
+    if (getIndexData(bd))
       return;
-  }
-  
-  int loop;
-  for (loop = 0; loop < bars.count(); loop++)
-  {
-    Bar *bar = bars.getBar(loop);
-    QString s;
-    bar->getDateTimeString(s);
 
-    QString ts = "INSERT OR REPLACE INTO " + bars.getTableName() + " VALUES(";
-    ts.append("'" + s + "'");
-    ts.append("," + QString::number(bar->getOpen()));
-    ts.append("," + QString::number(bar->getHigh()));
-    ts.append("," + QString::number(bar->getLow()));
-    ts.append("," + QString::number(bar->getClose()));
-    ts.append("," + QString::number(bar->getVolume()));
-    ts.append("," + QString::number(bar->getOI()));
-    ts.append(")");
-    q.exec(ts);
-    if (q.lastError().isValid())
+    QString table = bd->getTableName();
+    if (table.isEmpty())
     {
-      qDebug() << "Futures::setBars: save quote" << q.lastError().text();
-      qDebug() << ts;
+      if(createTable(bd))
+        return;
+    }
+  
+    int loop;
+    for (loop = 0; loop < bd->count(); loop++)
+    {
+      Bar *bar = bd->getBar(loop);
+      QString s;
+      bar->getDateTimeString(s);
+
+      QString ts = "INSERT OR REPLACE INTO " + bd->getTableName() + " VALUES(";
+      ts.append("'" + s + "'");
+      ts.append("," + QString::number(bar->getOpen()));
+      ts.append("," + QString::number(bar->getHigh()));
+      ts.append("," + QString::number(bar->getLow()));
+      ts.append("," + QString::number(bar->getClose()));
+      ts.append("," + QString::number(bar->getVolume()));
+      ts.append("," + QString::number(bar->getOI()));
+      ts.append(")");
+      q.exec(ts);
+      if (q.lastError().isValid())
+      {
+        qDebug() << "Futures::setBars: save quote" << q.lastError().text();
+        qDebug() << ts;
+      }
     }
   }
-
-  commit();
+  
+  qDeleteAll(quotes);
+  quotes.clear();
 }
 
-int Futures::createTable (BarData &bars)
+int Futures::createTable (BarData *bars)
 {
   if (addSymbolIndex(bars))
     return 1;
   
   // new symbol, create new table for it
-  QString s = "CREATE TABLE IF NOT EXISTS " + bars.getTableName() + " (";
+  QString s = "CREATE TABLE IF NOT EXISTS " + bars->getTableName() + " (";
   s.append("date DATETIME PRIMARY KEY UNIQUE");
   s.append(", open REAL");
   s.append(", high REAL");
@@ -185,7 +191,7 @@ int Futures::createTable (BarData &bars)
   return rc;
 }
 
-int Futures::addParms (BarData &bars)
+int Futures::addParms (BarData *bars)
 {
   // create a parm table if needed
   QString s = "CREATE TABLE IF NOT EXISTS futuresParms (";
@@ -200,8 +206,8 @@ int Futures::addParms (BarData &bars)
   
   // add new record
   s = "INSERT OR REPLACE INTO futuresParms (symbol,exchange) VALUES(";
-  s.append("'" + bars.getSymbol() + "'");
-  s.append(",'" + bars.getExchange() + "'");
+  s.append("'" + bars->getSymbol() + "'");
+  s.append(",'" + bars->getExchange() + "'");
   s.append(")");
   rc = command(s, QString("Futures::addParms: add new record: "));
   
@@ -234,6 +240,9 @@ int Futures::scriptCommand (QStringList &l)
     case SET_YEAR:
       rc = scriptSetYear(l);
       break;
+    case SAVE_QUOTES:
+      rc = scriptSaveQuotes(l);
+      break;
     default:
       break;
   }
@@ -243,9 +252,10 @@ int Futures::scriptCommand (QStringList &l)
 
 int Futures::scriptSetQuote (QStringList &l)
 {
-  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,DATE_FORMAT,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME,OI*
+  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,DATE_FORMAT,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME,OI
+  //            0     1     2       3        4        5        6    7    8    9    10    11    12
   
-  if (l.count() < 13)
+  if (l.count() != 13)
   {
     qDebug() << "Futures::scriptCommand: invalid parm count" << l.count();
     qDebug() << l;
@@ -259,68 +269,55 @@ int Futures::scriptSetQuote (QStringList &l)
     return 1;
   }
   
-  int pos = 1;
-  BarData bd;
-  bd.setPlugin(l[pos++]);
-  pos++;
-  bd.setExchange(l[pos++]);
-  bd.setSymbol(l[pos++]);
-  
-  QString format = l[pos++];
-  
-  int t = (l.count() - 6) % 7;
-  if (t)
+  QDateTime date = QDateTime::fromString(l[6], l[5]);
+  if (! date.isValid())
   {
-    qDebug() << "Futures::scriptCommand: # of fields incorrect";
+    qDebug() << "Futures::scriptCommand: invalid date or date format" << l[5] << l[6];
     return 1;
   }
   
-  int record = 1;
-  for (; pos < l.count(); pos = pos + 7, record++)
+  Bar *bar = new Bar;
+  bar->setDate(date);
+  bar->setOpen(l[7]);
+  bar->setHigh(l[8]);
+  bar->setLow(l[9]);
+  bar->setClose(l[10]);
+  bar->setVolume(l[11]);
+  bar->setOI(l[12]);
+  if (bar->getError())
   {
-    QDateTime date = QDateTime::fromString(l[pos], format);
-    if (! date.isValid())
-    {
-      qDebug() << "Futures::scriptCommand: invalid date or date format, record#" << record << format << l[pos];
-      continue;
-    }
-  
-    Bar *bar = new Bar;
-    bar->setDate(date);
-    bar->setOpen(l[pos + 1]);
-    bar->setHigh(l[pos + 2]);
-    bar->setLow(l[pos + 3]);
-    bar->setClose(l[pos + 4]);
-    bar->setVolume(l[pos + 5]);
-    bar->setOI(l[pos + 6]);
-    if (bar->getError())
-    {
-      barErrorMessage(bar->getError(), record);
-      delete bar;
-      continue;
-    }
-    
-    bar->verify();
-    if (bar->getError())
-    {
-      barErrorMessage(bar->getError(), record);
-      delete bar;
-      continue;
-    }
-    
-    bd.append(bar);
+    barErrorMessage(bar->getError());
+    delete bar;
+    return 1;
   }
-
-  transaction();
-  setBars(bd);
-  commit();
+    
+  bar->verify();
+  if (bar->getError())
+  {
+    barErrorMessage(bar->getError());
+    delete bar;
+    return 1;
+  }
+    
+  QString key = l[3] + l[4];
+  BarData *bd = quotes.value(key);
+  if (! bd)
+  {
+    bd = new BarData;
+    bd->setPlugin(l[1]);
+    bd->setExchange(l[3]);
+    bd->setSymbol(l[4]);
+    quotes.insert(key, bd);    
+  }
+  
+  bd->append(bar);
   
   return 0;
 }
 
 int Futures::scriptSetName (QStringList &l)
 {
-  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,NAME
+  // format = QUOTE,PLUGIN,SET_NAME,EXCHANGE,SYMBOL,NAME
 
   if (l.count() != 6)
   {
@@ -331,14 +328,14 @@ int Futures::scriptSetName (QStringList &l)
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(bd))
+  if (getIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetName: symbol not found in database" << l[3] << l[4];
     return 1;
   }
   
   bd.setName(l[5]);
-  if (setIndexData(bd))
+  if (setIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetName: error setting index";
     return 1;
@@ -360,7 +357,7 @@ int Futures::scriptSetCode (QStringList &l)
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(bd))
+  if (getIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetCode: symbol not found in database" << l[3] << l[4];
     return 1;
@@ -396,7 +393,7 @@ int Futures::scriptSetMonth (QStringList &l)
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(bd))
+  if (getIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetMonth: symbol not found in database" << l[3] << l[4];
     return 1;
@@ -431,7 +428,7 @@ int Futures::scriptSetYear (QStringList &l)
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(bd))
+  if (getIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetYear: symbol not found in database" << l[3] << l[4];
     return 1;
@@ -459,6 +456,23 @@ int Futures::scriptSetYear (QStringList &l)
   int rc = command(s, QString("Futures::scriptSetYear: "));
   
   return rc;
+}
+
+int Futures::scriptSaveQuotes (QStringList &l)
+{
+  // format = QUOTE,PLUGIN,SAVE_QUOTES
+
+  if (l.count() != 3)
+  {
+    qDebug() << "Stock::scriptSaveQuotes: invalid parm count" << l.count();
+    return 1;
+  }
+
+  transaction();
+  setBars();
+  commit();
+
+  return 0;
 }
 
 //*************************************************************
