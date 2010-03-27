@@ -59,6 +59,7 @@ IndicatorPlot::IndicatorPlot (QWidget *w) : QWidget(w)
   
   interval = Bar::DailyBar;
   mouseFlag = None;
+  saveMouseFlag = None;
   chartMenu = 0;
   coSelected = 0;
   menuFlag = TRUE;
@@ -169,20 +170,30 @@ void IndicatorPlot::cursorChanged (int d)
   {
     case 0: // normal cursor
       mouseFlag = None;
-      setCursor(QCursor(Qt::ArrowCursor));
-      draw();
       break;
     case 1:
       mouseFlag = CursorZoom;
-      setCursor(QCursor(Qt::ArrowCursor));
-      draw();
       break;
     case 2:
       mouseFlag = CursorCrosshair;
-      setCursor(QCursor(Qt::CrossCursor));
-      draw();
       break;
     default:
+      break;
+  }
+  
+  updateCursor();
+  draw();
+}
+
+void IndicatorPlot::updateCursor ()
+{
+  switch (mouseFlag)
+  {
+    case CursorCrosshair:
+      setCursor(QCursor(Qt::CrossCursor));
+      break;
+    default:
+      setCursor(QCursor(Qt::ArrowCursor));
       break;
   }
 }
@@ -352,7 +363,8 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
 	mouseFlag = ClickWait2;
       else
       {
-        mouseFlag = None;
+	mouseFlag = saveMouseFlag;
+	updateCursor();
         draw();
 	
         int i = convertXToDataIndex(event->x());
@@ -360,8 +372,6 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
         Setting *mess = info.getCursorInfo(i, event->y(), plotData);
         if (mess)
           emit infoMessage(mess);
-      
-        setCursor(QCursor(Qt::ArrowCursor));
       }
       break;
     }
@@ -371,7 +381,8 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
       int rc = coSelected->create3(plotData.x1, plotData.y1);
       if (! rc)
       {
-        mouseFlag = None;
+	mouseFlag = saveMouseFlag;
+	updateCursor();
         draw();
 	
         int i = convertXToDataIndex(event->x());
@@ -379,8 +390,6 @@ void IndicatorPlot::mousePressEvent (QMouseEvent *event)
         Setting *mess = info.getCursorInfo(i, event->y(), plotData);
         if (mess)
           emit infoMessage(mess);
-      
-        setCursor(QCursor(Qt::ArrowCursor));
       }
       break;
     }
@@ -831,17 +840,21 @@ void IndicatorPlot::setExternalChartObjectFlag ()
   if (mouseFlag != NewObjectWait)
     return;
   
-  mouseFlag = None;
+  mouseFlag = saveMouseFlag;
   newObjectFlag = FALSE;
-  setCursor(QCursor(Qt::ArrowCursor));
+
   QString s = QString::number(coSelected->getID());
   indicator.deleteChartObject(s);
   coSelected = 0;
+
+  updateCursor();
+  draw();
 }
 
 void IndicatorPlot::newExternalChartObject (QString d)
 {
   newObjectFlag = TRUE;
+  saveMouseFlag = mouseFlag;
   mouseFlag = NewObjectWait;
   slotNewChartObject(d);
 }

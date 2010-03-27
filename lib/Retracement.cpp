@@ -270,13 +270,13 @@ void Retracement::dialog ()
   high = dialog->getDouble(pid++);
   low = dialog->getDouble(pid++);
   extend = dialog->getCheck(pid++);
+  def = dialog->getCheck(pid++);
   line1 = dialog->getDouble(pid++);
   line2 = dialog->getDouble(pid++);
   line3 = dialog->getDouble(pid++);
   line4 = dialog->getDouble(pid++);
   line5 = dialog->getDouble(pid++);
   line6 = dialog->getDouble(pid++);
-  def = dialog->getCheck(pid++);
 
   if (def)
   {
@@ -395,7 +395,7 @@ void Retracement::moving (QDateTime &x, double y, int moveFlag)
       break;
     }
     case 2:
-    default: // new object moving
+    default: // bottom right corner
     {
       if (x < date)
         return;

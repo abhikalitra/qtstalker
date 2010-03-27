@@ -80,7 +80,7 @@ int SCSymbol::getSearch (QStringList &l, QByteArray &ba)
   for (loop = 0; loop < bdl.count(); loop++)
   {
      BarData *bd = bdl.getItem(loop); 
-     sl.append(bd->getSymbol());
+     sl.append(bd->getExchange() + "," + bd->getSymbol());
   }
   
   ba.clear();
@@ -107,7 +107,7 @@ int SCSymbol::getCurrent (QStringList &l, QByteArray &ba, BarData *data)
     return 1;
   
   ba.clear();
-  ba.append(data->getSymbol() + '\n');
+  ba.append(data->getExchange() + "," + data->getSymbol() + '\n');
   
   return 0;
 }

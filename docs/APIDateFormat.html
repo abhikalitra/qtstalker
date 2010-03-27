@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>Script API - Date Format</title>
+</head>
+<body>
+<h3><span style="font-weight: bold; text-decoration: underline;">Script
+API - Date Format<br>
+</span></h3>
+<p><br>
+</p>
+These expressions may be used for the date part of the format string:
+<table class="generic" border="0" cellpadding="2" cellspacing="1"
+ align="center">
+  <thead><tr class="qt-style" valign="top">
+    <th>Expression</th>
+    <th>Output</th>
+  </tr>
+  </thead><tbody>
+    <tr class="odd" valign="top">
+      <td>d</td>
+      <td>the day as number without a leading zero (1 to 31)</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>dd</td>
+      <td>the day as number with a leading zero (01 to 31)</td>
+    </tr>
+    <tr class="odd" valign="top">
+      <td>ddd</td>
+      <td>the abbreviated localized day name (e.g. 'Mon' to 'Sun').
+Uses <a href="file:///usr/share/doc/qt/html/qdate.html#shortDayName">QDate::shortDayName</a>().</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>dddd</td>
+      <td>the long localized day name (e.g. 'Monday' to 'Sunday'). Uses
+      <a href="file:///usr/share/doc/qt/html/qdate.html#longDayName">QDate::longDayName</a>().</td>
+    </tr>
+    <tr class="odd" valign="top">
+      <td>M</td>
+      <td>the month as number without a leading zero (1-12)</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>MM</td>
+      <td>the month as number with a leading zero (01-12)</td>
+    </tr>
+    <tr class="odd" valign="top">
+      <td>MMM</td>
+      <td>the abbreviated localized month name (e.g. 'Jan' to 'Dec').
+Uses <a href="file:///usr/share/doc/qt/html/qdate.html#shortMonthName">QDate::shortMonthName</a>().</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>MMMM</td>
+      <td>the long localized month name (e.g. 'January' to 'December').
+Uses <a href="file:///usr/share/doc/qt/html/qdate.html#longMonthName">QDate::longMonthName</a>().</td>
+    </tr>
+    <tr class="odd" valign="top">
+      <td>yy</td>
+      <td>the year as two digit number (00-99)</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>yyyy</td>
+      <td>the year as four digit number</td>
+    </tr>
+  </tbody>
+</table>
+<p><b>Note:</b> Unlike the other version of this function, day and
+month names must be given in the user's local language. It is only
+possible to use the English names if the user's language is English.</p>
+<p>These expressions may be used for the time part of the format string:</p>
+<table class="generic" border="0" cellpadding="2" cellspacing="1"
+ align="center">
+  <thead><tr class="qt-style" valign="top">
+    <th>Expression</th>
+    <th>Output</th>
+  </tr>
+  </thead><tbody>
+    <tr class="odd" valign="top">
+      <td>h</td>
+      <td>the hour without a leading zero (0 to 23 or 1 to 12 if AM/PM
+display)</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>hh</td>
+      <td>the hour with a leading zero (00 to 23 or 01 to 12 if AM/PM
+display)</td>
+    </tr>
+    <tr class="odd" valign="top">
+      <td>H</td>
+      <td>the hour without a leading zero (0 to 23, even with AM/PM
+display)</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>HH</td>
+      <td>the hour with a leading zero (00 to 23, even with AM/PM
+display)</td>
+    </tr>
+    <tr class="odd" valign="top">
+      <td>m</td>
+      <td>the minute without a leading zero (0 to 59)</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>mm</td>
+      <td>the minute with a leading zero (00 to 59)</td>
+    </tr>
+    <tr class="odd" valign="top">
+      <td>s</td>
+      <td>the second without a leading zero (0 to 59)</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>ss</td>
+      <td>the second with a leading zero (00 to 59)</td>
+    </tr>
+    <tr class="odd" valign="top">
+      <td>z</td>
+      <td>the milliseconds without leading zeroes (0 to 999)</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>zzz</td>
+      <td>the milliseconds with leading zeroes (000 to 999)</td>
+    </tr>
+    <tr class="odd" valign="top">
+      <td>AP or A</td>
+      <td>interpret as an AM/PM time. <i>AP</i> must be either "AM" or
+"PM".</td>
+    </tr>
+    <tr class="even" valign="top">
+      <td>ap or a</td>
+      <td>Interpret as an AM/PM time. <i>ap</i> must be either "am" or
+"pm".</td>
+    </tr>
+  </tbody>
+</table>
+<p>All other input characters will be treated as text. Any sequence of
+characters that are enclosed in singlequotes will also be treated as
+text and not be used as an expression.<br>
+</p>
+<p><br>
+</p>
+</body>
+</html>

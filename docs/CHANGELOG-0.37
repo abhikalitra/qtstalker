@@ -345,9 +345,14 @@
 20100325:  Added feature. If cursor is in select mode, a double mouse click will center the chart
            on the mouse position.
 
-20100326:  Quote script functions have changed. See docs. These changes allow one quote at a time to be saved
-           in a batch using the "SAVE_QUOTES" command. This gives a HUGE speed increase saving all quotes
-           once rather than one at a time.
+20100326:  Quote script functions have changed. See docs. These changes allow one quote at a time to be
+           collected into a group, then can be saved in a batch using the "SAVE_QUOTES" command.
+           Each quote can be a different symbol if desired. This gives a HUGE speed increase saving
+           all quotes in one go rather than one at a time.
+
+20100327:  Fixed bug ID: 2977532 (Retracement lines bug).
+
+           SYMBOLS script commands changed to return exchange/symbol pairs. See docs.
 
 
 

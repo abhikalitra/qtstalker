@@ -114,6 +114,7 @@ class IndicatorPlot : public QWidget
     void newExternalChartObject (QString);
     void setExternalChartObjectFlag ();
     void cursorChanged (int);
+    void updateCursor ();
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -152,6 +153,7 @@ class IndicatorPlot : public QWidget
     QPoint mouseOrigin;
     int newObjectFlag;
     int dragPos;
+    MouseStatus saveMouseFlag;
 };
 
 #endif

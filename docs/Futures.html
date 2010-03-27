@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>Script API - Futures Quotes</title>
+</head>
+<body>
+<h3 style="text-decoration: underline;">Script API - Futures Quotes<br>
+</h3>
+<br>
+<span style="font-weight: bold;">QUOTE,Futures,SET_QUOTE,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;DATE
+FORMAT&gt;,&lt;DATE&gt;,&lt;OPEN&gt;,&lt;HIGH&gt;,&lt;LOW&gt;,&lt;CLOSE&gt;,&lt;VOLUME&gt;,&lt;OPEN
+INTEREST&gt;</span><br>
+<br>
+This script command is used to
+save futures quotes into the database.<br>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
+quote originates from. ie.
+'Chicago Board of Trade'<a
+ href="file:///media/data/mystuff/prog/qtstalker/docs/exchanges.csv"><br>
+    </a></li>
+  <li>&lt;SYMBOL&gt; is the futures symbol ie. 'C_2010_Z'</li>
+  <li>&lt;DATE FORMAT&gt; is the <a href="APIDateFormat.html">date
+format</a>.<a
+ href="http://doc.qtsoftware.com/qdatetime.html#fromString-2"><br>
+    </a></li>
+  <li>&lt;DATE&gt; this is the date value that conforms to the &lt;DATE
+FORMAT&gt; format</li>
+  <li>&lt;OPEN&gt; open value</li>
+  <li>&lt;HIGH&gt; high value</li>
+  <li>&lt;LOW&gt; low value</li>
+  <li>&lt;CLOSE&gt; close value</li>
+  <li>&lt;VOLUME&gt; volume value</li>
+  <li>&lt;OPEN INTEREST&gt; open interest value<br>
+  </li>
+</ul>
+<br>
+For example. If we wanted to save a futures quote, the text would
+be:<br>
+<br>
+"QUOTE,Futures,SET_QUOTE,Chicago Board of Trade,C_2010_Z,yyyy-MM-dd
+HH:MM:SS,2010-03-09
+13:24:00,25.50,27.25,23.75,26.25,123456789,123456"<br>
+<br>
+<br>
+On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<span style="font-weight: bold;"></span><span style="font-weight: bold;"><br>
+</span>
+<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><br>
+</span><span style="font-weight: bold;">QUOTE,Futures,SAVE_QUOTES</span><br>
+<br>
+This function will save quotes to the database after "SET_QUOTE"
+commands have been previously run in the script. If this command is not
+used after quote data has been "SET_QUOTE", then the quote data will be
+<span
+ style="font-style: italic; font-weight: bold; text-decoration: underline;">lost</span>
+and <span
+ style="font-weight: bold; font-style: italic; text-decoration: underline;">NOT</span>
+saved to the database when the script completes.<br>
+<span style="font-weight: bold;"></span><br>
+On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><br>
+</span><span style="font-weight: bold;">QUOTE,Futures,SET_NAME,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;NAME&gt;</span><br>
+<br>
+This function will set the name of the futures symbol.<br>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
+symbol trades on. ie.
+'Chicago Board of Trade'<br>
+  </li>
+  <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'C_2010_Z'<br>
+  </li>
+  <li>&lt;NAME&gt; is the name to use. ie. 'Corn 2010 December'</li>
+</ul>
+<br>
+For example. Setting the name for C_2010_Z would be:<br>
+<br>
+"QUOTE,Futures,SET_NAME,Chicago Board of Trade,C_2010_Z,Corn 2010
+December"<br>
+<br>
+<br>
+&nbsp;On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<span style="font-weight: bold;">QUOTE,Futures,SET_CODE,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;CODE&gt;</span><br>
+<br>
+This function will set the exchange futures code. A futures code is the
+commodity exchange code. Corn would be 'C' or S&amp;P 500 index would
+be 'SP'. <br>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
+symbol trades on. ie.
+'Chicago Mercantile Exchange'<br>
+  </li>
+  <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'SP_2010_Z'<br>
+  </li>
+  <li>&lt;CODE&gt; is the exchange code to use. ie. 'SP' for S&amp;P
+500 index futures<br>
+  </li>
+</ul>
+<br>
+For example. Setting the code for SP_2010_Z would be:<br>
+"QUOTE,Futures,SET_CODE,Chicago Mercantile Exchange,SP_2010_Z,SP"<br>
+<br>
+On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<span style="font-weight: bold;"><br>
+QUOTE,Futures,SET_MONTH,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;MONTH&gt;</span><br>
+<br>
+This function will set the futures expiry month code of the futures
+symbol.<br>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
+symbol trades on. ie.
+'Chicago Mercantile Exchange'</li>
+  <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'SP_2010_Z'</li>
+  <li>&lt;MONTH&gt; is the expiry month code to use. ie. 'Z'&nbsp;
+Month codes are:</li>
+  <ul>
+    <li>F - January</li>
+    <li>G - Febuary</li>
+    <li>H - March</li>
+    <li>J - April</li>
+    <li>K - May</li>
+    <li>M - June</li>
+    <li>N - July</li>
+    <li>Q - August</li>
+    <li>U - September</li>
+    <li>V - October</li>
+    <li>X - November</li>
+    <li>Z - December</li>
+  </ul>
+</ul>
+For example. Setting the expiry month code for SP_2010_Z would be:<br>
+"QUOTE,Futures,SET_MONTH,Chicago Mercantile Exchange,SP_2010_Z,Z"<br>
+<br>
+On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<br>
+<span style="font-weight: bold;">QUOTE,Futures,SET_YEAR,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;YEAR&gt;</span><br>
+<br>
+This function will set the futures expiry year.<br>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
+symbol trades on. ie.
+'Chicago Mercantile Exchange'<br>
+  </li>
+  <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'SP_2010_Z'<br>
+  </li>
+  <li>&lt;YEAR&gt; is a 4 digit integer value for the expiry year. ie.
+'2010'<br>
+  </li>
+</ul>
+<br>
+For example. Setting the expiry year for futures symbol 'SP_2010_Z'
+would be:<br>
+"QUOTE,Futures,SET_YEAR,Chicago Mercantile Exchange,SP_2010_Z,2010"<br>
+<br>
+On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<br>
+</body>
+</html>
