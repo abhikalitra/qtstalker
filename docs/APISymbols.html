@@ -16,7 +16,8 @@ This function returns a csv string of the currently loaded exchange and
 symbol to the
 script.<br>
 <br>
-An example would return "NASDAQ,MSFT"<br>
+An example would return "NASDAQ,MSFT" if the user were currently
+viewing this symbol.<br>
 <br>
 On success the exchange symbol pair is returned. On failure, the string
 'ERROR' is
@@ -32,7 +33,8 @@ pairs in the quote
 database. If both fields are left blank, then all
 symbols in the database will be retrurned.<br>
 <ul>
-  <li>&lt;EXCHANGE&gt; Specifies a particular exchange to search on. If
+  <li>&lt;EXCHANGE&gt; Specifies a particular <a href="exchanges.csv">exchange</a>
+to search on. If
 left blank, exchange field will be ignored and all symbols from all
 exchanges that match &lt;SEARCH STRING&gt; will be returned.<br>
   </li>
@@ -50,6 +52,7 @@ The returned string would be "NASDAQ,MSFT,NASDAQ,MSFTX,NASDAQ,MSFTY"<br>
 On success a csv string of exchange,symbol pairs is returned. On
 failure, the
 string "ERROR" is returned.<br>
+<br>
 <br>
 </body>
 </html>

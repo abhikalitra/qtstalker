@@ -19,7 +19,8 @@ group. If
 added.<br>
 <ul>
   <li>&lt;GROUP NAME&gt; is the name of the group to add items to.</li>
-  <li>&lt;EXCHANGE&gt; is the exchange the symbol trades on.<br>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
+symbol trades on.<br>
   </li>
   <li>&lt;SYMBOL&gt; is the symbol of the item we want to add to the
 group.<br>
@@ -46,11 +47,11 @@ On success a '0' is returned. On failure, a
 <span style="font-weight: bold;">GROUP,GET,&lt;GROUP NAME&gt;</span><br>
 <br>
 This function will return a csv list of
-&lt;GROUP NAME&gt;<br>
+&lt;GROUP NAME&gt; contents.<br>
 <ul>
   <li>&lt;GROUP NAME&gt; is the name of the group.</li>
 </ul>
-On success a csv list of the group contents is
+On success a csv string is made up of exchange,symbol pairs is
 returned. On failure, the string "ERROR" is returned.<br>
 <br>
 <br>
