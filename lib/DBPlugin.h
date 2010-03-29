@@ -39,7 +39,7 @@ class DBPlugin : public DataBase
     virtual ~DBPlugin ();
     virtual void getBars (BarData &);
     virtual void dialog ();
-    virtual int scriptCommand (QStringList &);
+    virtual int scriptCommand (QStringList &, QHash<QString, PlotLine *> &);
     
     void init (QString &);
     void getSearchList (QString &ex, QString &pat, Group &);

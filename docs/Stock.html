@@ -84,6 +84,63 @@ For example. Setting the company name for MSFT would be:<br>
 &nbsp;On success a '0' is returned. On failure, a '1' is
 returned.<br>
 <br>
+<hr style="width: 100%; height: 2px;"><br>
+<span style="font-weight: bold;"></span><span style="font-weight: bold;">QUOTE,Stock,DELETE,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;</span><br>
+<br>
+This function will permanently delete the symbol from the quotes
+database.<br>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
+symbol trades on. ie.
+'NASDAQ'<br>
+  </li>
+  <li>&lt;SYMBOL&gt; is the symbol. ie. 'MSFT'<br>
+  </li>
+</ul>
+<br>
+For example. Deleting MSFT from the database would be:<br>
+<br>
+"QUOTE,Stock,DELETE,NASDAQ,MSFT"<br>
+<br>
+&nbsp;On success a '0' is returned. On failure, a '1' is
+returned.<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<p style="font-weight: bold;">QUOTE,Stock,GET_QUOTES,&lt;NAME&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;BAR
+FIELD&gt;,&lt;BAR
+LENGTH&gt;,&lt;BARS&gt;<br>
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable given to the array to create<br>
+  </li>
+  <li>&lt;EXCHANGE&gt; is an <a href="exchanges.csv">exchange</a></li>
+  <li>&lt;SYMBOL&gt; is the quote symbol name</li>
+  <li>&lt;BAR FIELD&gt; is the bar field:<br>
+  </li>
+  <ul>
+    <li>Open</li>
+    <li>High</li>
+    <li>Low</li>
+    <li>Close</li>
+    <li>Volume</li>
+    <li>OI</li>
+  </ul>
+  <li>&lt;BAR LENGTH&gt; is the bar length:</li>
+  <ul>
+    <li>1 Minute</li>
+    <li>5 Minute</li>
+    <li>10 Minute</li>
+    <li>15 Minute</li>
+    <li>30 Minute</li>
+    <li>60 Minute</li>
+    <li>Daily</li>
+    <li>Weekly</li>
+    <li>Monthly</li>
+  </ul>
+  <li>&lt;BARS&gt; is the number of bars to create<br>
+  </li>
+</ul>
+<br>
 <br>
 </body>
 </html>

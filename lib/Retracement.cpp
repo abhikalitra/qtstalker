@@ -298,20 +298,21 @@ void Retracement::dialog ()
 void Retracement::load (QSqlQuery &q)
 {
   id = q.value(0).toInt();
-  symbol = q.value(1).toString();
-  indicator = q.value(2).toString();
-  color.setNamedColor(q.value(4).toString()); // t1 field
-  date = QDateTime::fromString(q.value(5).toString(), Qt::ISODate); // t2 field
-  date2 = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t3 field
-  high = q.value(24).toDouble(); // d1 field
-  low = q.value(25).toDouble(); // d2 field
-  line1 = q.value(26).toDouble(); // d3 field
-  line2 = q.value(27).toDouble(); // d4 field
-  line3 = q.value(28).toDouble(); // d5 field
-  line4 = q.value(29).toDouble(); // d6 field
-  line5 = q.value(30).toDouble(); // d7 field
-  line6 = q.value(31).toDouble(); // d8 field
-  extend = q.value(14).toInt(); // i1 field
+  exchange = q.value(1).toString();
+  symbol = q.value(2).toString();
+  indicator = q.value(3).toString();
+  color.setNamedColor(q.value(5).toString()); // t1 field
+  date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t2 field
+  date2 = QDateTime::fromString(q.value(7).toString(), Qt::ISODate); // t3 field
+  high = q.value(25).toDouble(); // d1 field
+  low = q.value(26).toDouble(); // d2 field
+  line1 = q.value(27).toDouble(); // d3 field
+  line2 = q.value(28).toDouble(); // d4 field
+  line3 = q.value(29).toDouble(); // d5 field
+  line4 = q.value(30).toDouble(); // d6 field
+  line5 = q.value(31).toDouble(); // d7 field
+  line6 = q.value(32).toDouble(); // d8 field
+  extend = q.value(15).toInt(); // i1 field
 }
 
 void Retracement::save ()
@@ -319,8 +320,9 @@ void Retracement::save ()
   if (! saveFlag)
     return;
   
-  QString s = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,d1,d2,d3,d4,d5,d6,d7,d8,i1,t2,t3) VALUES (";
+  QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,d1,d2,d3,d4,d5,d6,d7,d8,i1,t2,t3) VALUES (";
   s.append(QString::number(id));
+  s.append(",'" + exchange + "'");
   s.append(",'" + symbol + "'");
   s.append(",'" + indicator + "'");
   s.append(",'" + plugin + "'");

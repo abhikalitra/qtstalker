@@ -698,9 +698,6 @@ void QtstalkerApp::loadChart (QString ex, QString d)
   // set plots to empty
   emit signalClearIndicator();
 
-  // update each plot with new symbol
-  emit signalChartPath(d);
-
   // save the new chart
   Config config;
   config.setData(Config::CurrentChart, d);
@@ -938,7 +935,6 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(Bar::BarLength)), plot, SLOT(setInterval(Bar::BarLength)));
-  connect(this, SIGNAL(signalChartPath(QString)), plot, SLOT(setChartPath(QString)));
   connect(this, SIGNAL(signalClearIndicator()), plot, SLOT(clear()));
   connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
   connect(this, SIGNAL(signalGrid(bool)), indy, SLOT(slotGridChanged(bool)));

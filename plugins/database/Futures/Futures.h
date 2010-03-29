@@ -35,14 +35,16 @@ class Futures : public DBPlugin
       SET_CODE,
       SET_MONTH,
       SET_YEAR,
-      SAVE_QUOTES
+      SAVE_QUOTES,
+      DELETE,
+      GET_QUOTES
     };
     
     Futures ();
     void getBars (BarData &);
     void setBars ();
     int createTable (BarData *);
-    int scriptCommand (QStringList &);
+    int scriptCommand (QStringList &, QHash<QString, PlotLine *> &);
     int addParms (BarData *);
     
     int scriptSetQuote (QStringList &);
@@ -51,6 +53,8 @@ class Futures : public DBPlugin
     int scriptSetMonth (QStringList &);
     int scriptSetYear (QStringList &);
     int scriptSaveQuotes (QStringList &l);
+    int scriptDelete (QStringList &l);
+    int scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &tlines);
 
   protected:
     QStringList scriptMethods;

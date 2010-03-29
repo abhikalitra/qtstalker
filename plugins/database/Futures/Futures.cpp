@@ -23,6 +23,7 @@
 #include "Bar.h"
 #include "ExchangeDataBase.h"
 #include "FuturesDataBase.h"
+#include "CODataBase.h"
 
 #include <QtSql>
 #include <QtDebug>
@@ -36,6 +37,7 @@ Futures::Futures ()
 {
   plugin = "Futures";
   scriptMethods << "SET_QUOTE" << "SET_NAME" << "SET_CODE" << "SET_MONTH" << "SET_YEAR" << "SAVE_QUOTES";
+  scriptMethods << "DELETE" << "GET_QUOTES";
 }
 
 void Futures::getBars (BarData &data)
@@ -218,7 +220,7 @@ int Futures::addParms (BarData *bars)
 //************** SCRIPT FUNCTIONS *****************************
 //*************************************************************
 
-int Futures::scriptCommand (QStringList &l)
+int Futures::scriptCommand (QStringList &l, QHash<QString, PlotLine *> &tlines)
 {
   // format = QUOTE,PLUGIN,METHOD,*
   
@@ -242,6 +244,12 @@ int Futures::scriptCommand (QStringList &l)
       break;
     case SAVE_QUOTES:
       rc = scriptSaveQuotes(l);
+      break;
+    case DELETE:
+      rc = scriptDelete(l);
+      break;
+    case GET_QUOTES:
+      rc = scriptGetQuotes(l, tlines);
       break;
     default:
       break;
@@ -464,13 +472,104 @@ int Futures::scriptSaveQuotes (QStringList &l)
 
   if (l.count() != 3)
   {
-    qDebug() << "Stock::scriptSaveQuotes: invalid parm count" << l.count();
+    qDebug() << "Futures::scriptSaveQuotes: invalid parm count" << l.count();
     return 1;
   }
 
   transaction();
   setBars();
   commit();
+
+  return 0;
+}
+
+int Futures::scriptDelete (QStringList &l)
+{
+  // format = QUOTE,PLUGIN,DELETE,EXCHANGE,SYMBOL
+  //            0     1      2      3        4
+
+  if (l.count() != 5)
+  {
+    qDebug() << "Futures::scriptDelete: invalid parm count" << l.count();
+    return 1;
+  }
+  
+  BarData bd;
+  bd.setExchange(l[3]);
+  bd.setSymbol(l[4]);
+
+  transaction();
+  
+  if (getIndexData(&bd))
+    return 1;
+
+  // delete any chart objects
+  CODataBase db;
+  db.deleteChartObjects(&bd);
+  
+  // drop quote table
+  QString s = "DROP TABLE " + bd.getTableName();
+  if (command(s, QString("Futures::scriptDelete: drop quotes table")))
+    return 1;
+  
+  // remove parms record
+  s = "DELETE FROM futuresParms";
+  s.append(" WHERE symbol='" + bd.getSymbol() + "'");
+  s.append(" AND exchange='" + bd.getExchange() + "'");
+  if (command(s, QString("Futures::scriptDelete: remove futuresParms record")))
+    return 1;
+  
+  // remove index record
+  s = "DELETE FROM symbolIndex";
+  s.append(" WHERE symbol='" + bd.getSymbol() + "'");
+  s.append(" AND exchange='" + bd.getExchange() + "'");
+  if (command(s, QString("Futures::scriptDelete: remove symbolIndex record")))
+    return 1;
+  
+  commit();
+
+  return 0;
+}
+
+int Futures::scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &tlines)
+{
+  // format = QUOTE,PLUGIN,GET_QUOTES,<NAME>,<EXCHANGE>,<SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
+  //            0     1       2         3         4         5            6         7        8
+
+  if (l.count() != 9)
+  {
+    qDebug() << "Futures::scriptGetQuotes: invalid parm count" << l.count();
+    return 1;
+  }
+
+  PlotLine *tl = tlines.value(l[3]);
+  if (tl)
+  {
+    qDebug() << "Futures::scriptGetQuotes: duplicate name" << l[3];
+    return 1;
+  }
+
+  bool ok;
+  int bars = l[8].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "Futures::scriptGetQuotes: invalid bars" << l[8];
+    return 1;
+  }
+  
+  BarData bd;
+  bd.setExchange(l[4]);
+  bd.setSymbol(l[5]);
+  bd.setBarLength(l[7]);
+  bd.setBarsRequested(bars);
+  getBars(bd);
+  
+  BarData::InputType it = bd.getInputType(l[6]);
+  PlotLine *line = bd.getInput(it);
+  if (! line)
+    return 1;
+  
+  tlines.insert(l[3], line);
 
   return 0;
 }

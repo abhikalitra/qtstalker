@@ -187,7 +187,7 @@ void ExScript::readFromStdout ()
     }
     case QUOTE:
     {
-      quotes.calculate(l, ba, dbPluginPath);
+      quotes.calculate(l, ba, dbPluginPath, tlines);
       proc->write(ba);
       break;
     }

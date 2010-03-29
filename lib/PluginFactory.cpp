@@ -25,7 +25,6 @@
 #include "MATH1.h"
 #include "RANGE.h"
 #include "REF.h"
-#include "SYMBOL.h"
 
 #include <QDir>
 #include <QDebug>
@@ -114,7 +113,7 @@ DBPlugin * PluginFactory::getDB (QString &path, QString &db)
 IndicatorPlugin * PluginFactory::getNotIndicatorPlugin (QString &indicator)
 {
   QStringList l;
-  l << "COLOR" << "COMPARE" << "MATH1" << "RANGE" << "REF" << "SYMBOL";
+  l << "COLOR" << "COMPARE" << "MATH1" << "RANGE" << "REF";
 
   IndicatorPlugin *plug = 0;
   int i = l.indexOf(indicator);
@@ -134,9 +133,6 @@ IndicatorPlugin * PluginFactory::getNotIndicatorPlugin (QString &indicator)
       break;
     case 4: // REF
       plug = new REF;
-      break;
-    case 5: // SYMBOL
-      plug = new SYMBOL;
       break;
     default:
       break;

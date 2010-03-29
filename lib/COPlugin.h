@@ -69,6 +69,7 @@ class COPlugin : public QObject
     void setID (int);
     void setSymbol (QString &);
     void setIndicator (QString &);
+    void setExchange (QString &);
 
   protected:
     int handleWidth;
@@ -78,6 +79,7 @@ class COPlugin : public QObject
     QString symbol;
     QString indicator;
     QString plugin;
+    QString exchange;
     QList<QRegion *> grabHandles;
     QList<QRegion *> selectionArea;
 };

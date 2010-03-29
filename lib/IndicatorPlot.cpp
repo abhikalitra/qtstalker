@@ -712,11 +712,9 @@ void IndicatorPlot::setData (BarData *l)
     return;
 
   plotData.dateBars.createDateList(l);
-}
-
-void IndicatorPlot::setChartPath (QString &d)
-{
-  chartSymbol = d;
+  
+  exchange = l->getExchange();
+  symbol = l->getSymbol();
 }
 
 void IndicatorPlot::setScaleToScreen (bool d)
@@ -861,7 +859,7 @@ void IndicatorPlot::newExternalChartObject (QString d)
 
 void IndicatorPlot::slotNewChartObject (QString selection)
 {
-  if (! chartSymbol.length())
+  if (! symbol.length())
     return;
 
   COFactory fac;
@@ -879,7 +877,8 @@ void IndicatorPlot::slotNewChartObject (QString selection)
   config.setData(Config::LastChartObjectID, id);
 
   coSelected->setID(id.toInt());
-  coSelected->setSymbol(chartSymbol);
+  coSelected->setSymbol(symbol);
+  coSelected->setExchange(exchange);
   
   QString s;
   indicator.getName(s);
@@ -910,7 +909,7 @@ void IndicatorPlot::drawObjects ()
 
 void IndicatorPlot::slotDeleteAllChartObjects ()
 {
-  if (! chartSymbol.length())
+  if (! symbol.length())
     return;
 
   int rc = QMessageBox::warning(this,
@@ -926,7 +925,10 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
   indicator.clearChartObjects();
 
   CODataBase db;
-  db.deleteChartObjects(chartSymbol);
+  BarData bd;
+  bd.setExchange(exchange);
+  bd.setSymbol(symbol);
+  db.deleteChartObjects(&bd);
 
   mouseFlag = None;
 
@@ -935,7 +937,7 @@ void IndicatorPlot::slotDeleteAllChartObjects ()
 
 void IndicatorPlot::slotChartObjectDeleted ()
 {
-  if (! chartSymbol.length() || ! coSelected)
+  if (! symbol.length() || ! coSelected)
     return;
 
   QString s = QString::number(coSelected->getID());
@@ -952,7 +954,7 @@ void IndicatorPlot::slotChartObjectDeleted ()
 
 void IndicatorPlot::saveChartObjects ()
 {
-  if (! chartSymbol.length())
+  if (! symbol.length())
     return;
 
   QHash<QString, COPlugin *> coList;
@@ -975,7 +977,10 @@ void IndicatorPlot::loadChartObjects ()
   QString s;
   indicator.getName(s);
   CODataBase db;
-  db.getChartObjects(chartSymbol, s, indicator);
+  BarData bd;
+  bd.setExchange(exchange);
+  bd.setSymbol(symbol);
+  db.getChartObjects(&bd, s, indicator);
 }
 
 void IndicatorPlot::slotObjectDialog ()

@@ -28,7 +28,7 @@ SCQuote::SCQuote ()
 {
 }
 
-int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path)
+int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path, QHash<QString, PlotLine *> &tlines)
 {
   // format = QUOTE,PLUGIN,*
   // we are only concerned with the first 2 parms, the plugin will check the rest
@@ -49,7 +49,7 @@ int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path)
     return 1;
   }
   
-  int rc = plug->scriptCommand(l);
+  int rc = plug->scriptCommand(l, tlines);
   if (! rc)
   {
     ba.clear();

@@ -61,7 +61,6 @@ class Plot : public QWidget
     void setPlotFont (QFont);
     void setIndex (int);
     void setInterval(Bar::BarLength);
-    void setChartPath (QString);
     void slotSliderChanged (int);
     void slotGridChanged (bool);
     void slotScaleToScreenChanged (bool);

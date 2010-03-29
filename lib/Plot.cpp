@@ -85,11 +85,6 @@ void Plot::setLogScale (bool d)
   scalePlot->setLogScale(d);
 }
 
-void Plot::setChartPath (QString d)
-{
-  indicatorPlot->setChartPath(d);
-}
-
 void Plot::setInfoFlag (bool d)
 {
   indicatorPlot->setInfoFlag(d);

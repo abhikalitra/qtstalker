@@ -48,7 +48,7 @@ void DBPlugin::dialog ()
 }
 
 // virtual
-int DBPlugin::scriptCommand (QStringList &)
+int DBPlugin::scriptCommand (QStringList &, QHash<QString, PlotLine *> &)
 {
   return 0;
 }

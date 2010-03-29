@@ -148,12 +148,13 @@ void Buy::dialog ()
 void Buy::load (QSqlQuery &q)
 {
   id = q.value(0).toInt();
-  symbol = q.value(1).toString();
-  indicator = q.value(2).toString();
-  plugin = q.value(3).toString();
-  color.setNamedColor(q.value(4).toString());
-  date = QDateTime::fromString(q.value(5).toString(), Qt::ISODate);
-  price = q.value(24).toDouble();
+  exchange = q.value(1).toString();
+  symbol = q.value(2).toString();
+  indicator = q.value(3).toString();
+  plugin = q.value(4).toString();
+  color.setNamedColor(q.value(5).toString());
+  date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate);
+  price = q.value(25).toDouble();
 }
 
 void Buy::save ()
@@ -161,8 +162,9 @@ void Buy::save ()
   if (! saveFlag)
     return;
   
-  QString s = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,t2,d1) VALUES (";
+  QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,t2,d1) VALUES (";
   s.append(QString::number(id));
+  s.append(",'" + exchange + "'");
   s.append(",'" + symbol + "'");
   s.append(",'" + indicator + "'");
   s.append(",'" + plugin + "'");

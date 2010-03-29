@@ -179,3 +179,8 @@ void COPlugin::setIndicator (QString &d)
   indicator = d;
 }
 
+void COPlugin::setExchange (QString &d)
+{
+  exchange = d;
+}
+

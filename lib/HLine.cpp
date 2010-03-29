@@ -154,11 +154,12 @@ void HLine::dialog ()
 void HLine::load (QSqlQuery &q)
 {
   id = q.value(0).toInt();
-  symbol = q.value(1).toString();
-  indicator = q.value(2).toString();
-  color.setNamedColor(q.value(4).toString()); // t1 field
-  label = q.value(5).toString(); // t2 field
-  price = q.value(24).toDouble(); // d1 field
+  exchange = q.value(1).toString();
+  symbol = q.value(2).toString();
+  indicator = q.value(3).toString();
+  color.setNamedColor(q.value(5).toString()); // t1 field
+  label = q.value(6).toString(); // t2 field
+  price = q.value(25).toDouble(); // d1 field
 }
 
 void HLine::save ()
@@ -166,8 +167,9 @@ void HLine::save ()
   if (! saveFlag)
     return;
   
-  QString s = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,d1,t2) VALUES (";
+  QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,d1,t2) VALUES (";
   s.append(QString::number(id));
+  s.append(",'" + exchange + "'");
   s.append(",'" + symbol + "'");
   s.append(",'" + indicator + "'");
   s.append(",'" + plugin + "'");

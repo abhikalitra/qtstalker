@@ -105,7 +105,6 @@ class IndicatorPlot : public QWidget
     void setPlotFont (QFont &);
     void setIndex (int);
     void showPopupMenu ();
-    void setChartPath (QString &);
     void slotSliderChanged (int);
     void slotGridChanged (bool);
     void slotScaleToScreenChanged (bool);
@@ -147,7 +146,8 @@ class IndicatorPlot : public QWidget
     COPlugin *coSelected;
     QMenu *chartMenu;
     QMenu *coMenu;
-    QString chartSymbol;
+    QString symbol;
+    QString exchange;
     int moveFlag;
     QRubberBand *rubberBand;
     QPoint mouseOrigin;

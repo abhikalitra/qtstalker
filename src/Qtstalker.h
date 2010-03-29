@@ -56,7 +56,6 @@ class QtstalkerApp : public QMainWindow
     void signalPlotFont (QFont);
     void signalIndex (int);
     void signalInterval(Bar::BarLength);
-    void signalChartPath (QString);
     void signalClearIndicator ();
     void signalGrid (bool);
     void signalScale (bool);

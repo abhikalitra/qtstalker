@@ -354,35 +354,15 @@
 
            SYMBOLS script commands changed to return exchange/symbol pairs. See docs.
 
+20100328:  Changed chartObjects table in ~/.qtstalker/data.sqlite. Delete table and redo your
+           chart objects.
 
+           Added new script commands DELETE and GET_QUOTES for the QUOTE command set. See docs.
+           I see that some of you 'bleeding-edgers' are making some scripts to manipulate the database.
+           Thats's great. However, the quote database is cross linked with other tables and so needs
+           to be properly handled rather than just removing the symbolIndex record. So I have created
+           a DELETE function to properly clean up and remove all the cross links. If there are any
+           script commands you would like to see added, please post your suggestions on the forum.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+           Removed SYMBOL indicator plugin and replaced with script commands GET_QUOTES. See docs.
 

@@ -140,10 +140,11 @@ void VLine::dialog ()
 void VLine::load (QSqlQuery &q)
 {
   id = q.value(0).toInt();
-  symbol = q.value(1).toString();
-  indicator = q.value(2).toString();
-  color.setNamedColor(q.value(4).toString()); // t1 field
-  date = QDateTime::fromString(q.value(5).toString(), Qt::ISODate); // t2 field
+  exchange = q.value(1).toString();
+  symbol = q.value(2).toString();
+  indicator = q.value(3).toString();
+  color.setNamedColor(q.value(5).toString()); // t1 field
+  date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t2 field
 }
 
 void VLine::save ()
@@ -151,8 +152,9 @@ void VLine::save ()
   if (! saveFlag)
     return;
   
-  QString s = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,t2) VALUES (";
+  QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,t2) VALUES (";
   s.append(QString::number(id));
+  s.append(",'" + exchange + "'");
   s.append(",'" + symbol + "'");
   s.append(",'" + indicator + "'");
   s.append(",'" + plugin + "'");

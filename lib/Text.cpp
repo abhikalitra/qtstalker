@@ -154,20 +154,21 @@ void Text::dialog ()
 void Text::load (QSqlQuery &q)
 {
   id = q.value(0).toInt();
-  symbol = q.value(1).toString();
-  indicator = q.value(2).toString();
-  color.setNamedColor(q.value(4).toString()); // t1 field
-  date = QDateTime::fromString(q.value(5).toString(), Qt::ISODate); // t2 field
-  label = q.value(6).toString(); // t3 field
+  exchange = q.value(1).toString();
+  symbol = q.value(2).toString();
+  indicator = q.value(3).toString();
+  color.setNamedColor(q.value(5).toString()); // t1 field
+  date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t2 field
+  label = q.value(7).toString(); // t3 field
 
-  QStringList l = q.value(7).toString().split(","); // t4 field
+  QStringList l = q.value(8).toString().split(","); // t4 field
   font.setFamily(l[0]);
   font.setPointSize(l[1].toInt());
   font.setWeight(l[2].toInt());
   font.setItalic(l[3].toInt());
   font.setBold(l[4].toInt());
 
-  price = q.value(24).toDouble(); // d1 field
+  price = q.value(25).toDouble(); // d1 field
 }
 
 void Text::save ()
@@ -175,8 +176,9 @@ void Text::save ()
   if (! saveFlag)
     return;
   
-  QString s = "INSERT OR REPLACE INTO chartObjects (id,symbol,indicator,plugin,t1,t2,d1,t3,t4) VALUES (";
+  QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,t2,d1,t3,t4) VALUES (";
   s.append(QString::number(id));
+  s.append(",'" + exchange + "'");
   s.append(",'" + symbol + "'");
   s.append(",'" + indicator + "'");
   s.append(",'" + plugin + "'");
