@@ -78,6 +78,7 @@ class IndicatorPlot : public QWidget
     void clear ();
     void setData (BarData *);
     void setLogScale (bool);
+    bool getLogScale ();
     void setInfoFlag (bool);
     int getWidth ();
     int convertXToDataIndex (int);

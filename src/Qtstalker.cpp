@@ -92,8 +92,6 @@ QtstalkerApp::QtstalkerApp(QString session)
   Config config;
   config.init(session);
 
-  setup.setupConfigDefaults();
-
   DBPlugin qdb;
   QString dbFile;
   config.getData(Config::DbName, dbFile);

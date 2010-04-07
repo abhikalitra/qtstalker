@@ -124,7 +124,7 @@ void Preferences::createGeneralPage ()
 
   refreshSpinner = new QSpinBox;
   refreshSpinner->setToolTip(tr("Refresh chart every x minutes"));
-  refreshSpinner->setRange(1, 99);
+  refreshSpinner->setRange(0, 99);
   refreshSpinner->setValue(config.getInt(Config::Refresh));
   connect(refreshSpinner, SIGNAL(valueChanged(int)), this, SLOT(slotRefreshModified()));
   grid->addWidget(refreshSpinner, row++, col--);

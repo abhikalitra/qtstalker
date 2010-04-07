@@ -19,28 +19,20 @@
  *  USA.
  */
 
-#ifndef DATEPLOT_HPP
-#define DATEPLOT_HPP
+#ifndef DATE_PLOT_HPP
+#define DATE_PLOT_HPP
 
 #include <QWidget>
 #include <QPixmap>
 #include <QColor>
 #include <QFont>
-#include <QVector>
 #include <QPaintEvent>
 #include <QResizeEvent>
 #include <QList>
+#include <QPainter>
+#include <QDateTime>
+
 #include "BarData.h"
-
-
-typedef struct
-{
-  QString text;
-  bool flag; // false == ignore
-  bool tick; // true == long tick
-
-} TickItem;
-
 
 class DatePlot : public QWidget
 {
@@ -50,7 +42,12 @@ class DatePlot : public QWidget
     DatePlot (QWidget *);
     void clear ();
     void setData (BarData *);
-    QVector<int> & getXGrid ();
+    void createPixmap ();
+    void drawDailyDate (QPainter &);
+    void drawWeeklyDate (QPainter &);
+    void drawMonthlyDate (QPainter &);
+    void drawMinuteDate (QPainter &);
+
 
   public slots:
     void draw();
@@ -66,24 +63,16 @@ class DatePlot : public QWidget
     virtual void paintEvent (QPaintEvent *);
     virtual void resizeEvent (QResizeEvent *);
 
-  private slots:
-    void getDailyDate (BarData *);
-    void getWeeklyDate (BarData *);
-    void getMonthlyDate (BarData *);
-    void getMinuteDate (BarData *);
-
   private:
     QFont plotFont;
     QPixmap buffer;
     int pixelspace;
-    int scaleWidth;
     int startX;
     int startIndex;
     Bar::BarLength interval;
     QColor backgroundColor;
     QColor borderColor;
-    QList<TickItem> dateList;
-    QVector<int> xGrid;
+    QList<QDateTime> dateList;
 };
 
 #endif

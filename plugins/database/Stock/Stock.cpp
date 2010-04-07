@@ -67,8 +67,8 @@ void Stock::getBars (BarData &data)
     lastDate = q.value(0).toDateTime();
       
     Bar tbar;
-    tbar.setBarDate(lastDate, data.getBarLength());
-    tbar.getBarDateKey(s);
+    tbar.setDateRange(lastDate, data.getBarLength());
+    tbar.getRangeKey(s);
 
     Bar *bar = bars[s];
     if (! bar)
@@ -77,7 +77,7 @@ void Stock::getBars (BarData &data)
         break;
 
       bar = new Bar;
-      bar->setBarDate(lastDate, data.getBarLength());
+      bar->setDateRange(lastDate, data.getBarLength());
       bar->setOpen(q.value(1).toDouble());
       bar->setHigh(q.value(2).toDouble());
       bar->setLow(q.value(3).toDouble());

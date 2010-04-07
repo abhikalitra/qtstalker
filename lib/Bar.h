@@ -74,10 +74,8 @@ class Bar
 
     Bar ();
     int setDate (QDateTime &);
-    void setBarDate (QDateTime &, Bar::BarLength);
+    void setDateRange (QDateTime &, Bar::BarLength);
     QDateTime & getDate ();
-    QDateTime & getBarDate ();
-    void getStartEndDate (QDateTime &, QDateTime &);
     void setOpen (double);
     void setOpen (QString &);
     double getOpen ();
@@ -99,19 +97,18 @@ class Bar
     void getDateString (QString &);
     void getDateTimeString (QString &);
     void getTimeString (QString &);
-    void getBarDateString (QString &);
-    void getBarDateTimeString (QString &);
-    void getBarTimeString (QString &);
     void verify ();
     int getError ();
-    void getBarDateKey (QString &);
+    void getRangeKey (QString &);
     void getBarLengthList (QStringList &);
 
   protected:
     QHash<int, double> data;
     QDateTime startDate;
     QDateTime endDate;
+    QDateTime displayDate;
     int error;
+    int rangeFlag;
     BarLength length;
 };
 

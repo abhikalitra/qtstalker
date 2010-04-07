@@ -655,7 +655,7 @@ void IndicatorPlot::clear ()
   saveChartObjects();
   indicator.clear();
   plotData.dateBars.clear();
-  mouseFlag = None;
+//  mouseFlag = None;
 }
 
 void IndicatorPlot::toggleDate ()
@@ -735,6 +735,11 @@ void IndicatorPlot::setDateFlag (bool d)
 void IndicatorPlot::setLogScale (bool d)
 {
   indicator.setLog(d);
+}
+
+bool IndicatorPlot::getLogScale ()
+{
+  return indicator.getLog();
 }
 
 void IndicatorPlot::setInterval (Bar::BarLength d)

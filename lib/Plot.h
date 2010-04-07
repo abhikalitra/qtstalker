@@ -69,6 +69,8 @@ class Plot : public QWidget
     void slotUpdateScalePlot ();
     void clear ();
     void loadChartObjects ();
+    void toggleDate ();
+    void toggleLog ();
 
   private:
     DatePlot *datePlot;

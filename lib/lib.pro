@@ -43,7 +43,6 @@ HEADERS += COMPARE.h
 HEADERS += MATH1.h
 HEADERS += RANGE.h
 HEADERS += REF.h
-#HEADERS += SYMBOL.h
 HEADERS += SymbolButton.h
 HEADERS += SymbolDialog.h
 HEADERS += DateBar.h
@@ -81,6 +80,7 @@ HEADERS += OHLC.h
 HEADERS += InfoPanel.h
 HEADERS += DataBase.h
 HEADERS += SCSymbol.h
+#HEADERS += PlotButtonBox.h
 
 
 SOURCES += Setting.cpp
@@ -121,7 +121,6 @@ SOURCES += COMPARE.cpp
 SOURCES += MATH1.cpp
 SOURCES += RANGE.cpp
 SOURCES += REF.cpp
-#SOURCES += SYMBOL.cpp
 SOURCES += SymbolButton.cpp
 SOURCES += SymbolDialog.cpp
 SOURCES += DateBar.cpp
@@ -158,6 +157,7 @@ SOURCES += OHLC.cpp
 SOURCES += InfoPanel.cpp
 SOURCES += DataBase.cpp
 SOURCES += SCSymbol.cpp
+#SOURCES += PlotButtonBox.cpp
 
 
 TARGET = qtstalker

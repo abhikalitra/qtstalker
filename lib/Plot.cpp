@@ -22,33 +22,55 @@
 #include "Plot.h"
 #include "PlotGrid.h"
 #include "Setting.h"
+//#include "PlotButtonBox.h"
 
 #include <QLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QList>
+#include <QSpacerItem>
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(0);
-  vbox->setSpacing(0);
-  setLayout(vbox);
-
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setMargin(0);
   hbox->setSpacing(0);
-  vbox->addLayout(hbox);
+  setLayout(hbox);
 
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(0);
+  vbox->setSpacing(0);
+  hbox->addLayout(vbox);
+  
   indicatorPlot = new IndicatorPlot(this);
-  hbox->addWidget(indicatorPlot, 1, 0);
-
-  scalePlot = new ScalePlot(this);
-  hbox->addWidget(scalePlot);
+  vbox->addWidget(indicatorPlot);
 
   datePlot = new DatePlot(this);
   vbox->addWidget(datePlot);
   
+  vbox = new QVBoxLayout;
+  vbox->setMargin(0);
+  vbox->setSpacing(0);
+  hbox->addLayout(vbox);
+  
+  scalePlot = new ScalePlot(this);
+  vbox->addWidget(scalePlot);
+
+  // add a spacer here to keep everything lined up
+  vbox->addSpacerItem(new QSpacerItem(scalePlot->width(), datePlot->height()));
+
+/*
+  // add spacer to line up the date and scale plots
+  PlotButtonBox *pbb = new PlotButtonBox(this);
+  pbb->setMinimumHeight(datePlot->height());
+  pbb->setMaximumHeight(datePlot->height());
+  pbb->setMinimumWidth(scalePlot->width());
+  pbb->setMaximumWidth(scalePlot->width());
+  connect(pbb, SIGNAL(signalDateToggled()), this, SLOT(toggleDate()));
+  connect(pbb, SIGNAL(signalLogToggled()), this, SLOT(toggleLog()));
+  vbox->addWidget(pbb);
+*/
+
   connect(indicatorPlot, SIGNAL(signalDraw()), this, SLOT(slotUpdateScalePlot()));
   connect(indicatorPlot, SIGNAL(signalDateFlag(bool)), this, SLOT(slotDateFlagChanged(bool)));
   connect(indicatorPlot, SIGNAL(signalLogFlag(bool)), this, SLOT(slotLogScaleChanged(bool)));
@@ -68,7 +90,7 @@ void Plot::setData (BarData *l)
 
   datePlot->setData(l);
 
-  indicatorPlot->setXGrid(datePlot->getXGrid());
+//  indicatorPlot->setXGrid(datePlot->getXGrid());
 
   indicatorPlot->setData(l);
 }
@@ -228,6 +250,22 @@ void Plot::setMenuFlag (bool d)
 void Plot::loadChartObjects ()
 {
   indicatorPlot->loadChartObjects();
+}
+
+void Plot::toggleDate ()
+{
+  if (datePlot->isHidden())
+    slotDateFlagChanged(TRUE);
+  else
+    slotDateFlagChanged(FALSE);
+}
+
+void Plot::toggleLog ()
+{
+  if (indicatorPlot->getLogScale())
+    slotLogScaleChanged(FALSE);
+  else
+    slotLogScaleChanged(TRUE);
 }
 
 

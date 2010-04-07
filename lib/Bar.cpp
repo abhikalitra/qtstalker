@@ -27,6 +27,7 @@
 Bar::Bar ()
 {
   error = RC_None;
+  rangeFlag = FALSE;
 }
 
 int Bar::setDate (QDateTime &d)
@@ -34,28 +35,40 @@ int Bar::setDate (QDateTime &d)
   if (! d.isValid())
     return TRUE;
 
-  startDate = d;
+  if (rangeFlag)
+  {
+    if (d > displayDate)
+      displayDate = d;
+  }
+  else
+    startDate = d;
+  
   return FALSE;
 }
 
-void Bar::setBarDate (QDateTime &date, Bar::BarLength l)
+void Bar::setDateRange (QDateTime &dt, Bar::BarLength l)
 {
   length = l;
-  startDate = date;
+  startDate = dt;
+  rangeFlag = TRUE;
 
   switch (length)
   {
     case Bar::Minute1:
       startDate.setTime(QTime(startDate.time().hour(), startDate.time().minute(), 0, 0));
       endDate = startDate;
-      endDate = endDate.addSecs(60);
+      endDate = endDate.addSecs(59);
+      displayDate = endDate;
+      displayDate = displayDate.addSecs(1);
       break;
     case Bar::Minute5:
     {
       int tint = startDate.time().minute() / 5;
       startDate.setTime(QTime(startDate.time().hour(), tint * 5, 0, 0));
       endDate = startDate;
-      endDate = endDate.addSecs(300);
+      endDate = endDate.addSecs(299);
+      displayDate = endDate;
+      displayDate = displayDate.addSecs(1);
       break;
     }
     case Bar::Minute10:
@@ -63,7 +76,9 @@ void Bar::setBarDate (QDateTime &date, Bar::BarLength l)
       int tint = startDate.time().minute() / 10;
       startDate.setTime(QTime(startDate.time().hour(), tint * 10, 0, 0));
       endDate = startDate;
-      endDate = endDate.addSecs(600);
+      endDate = endDate.addSecs(599);
+      displayDate = endDate;
+      displayDate = displayDate.addSecs(1);
       break;
     }
     case Bar::Minute15:
@@ -71,7 +86,9 @@ void Bar::setBarDate (QDateTime &date, Bar::BarLength l)
       int tint = startDate.time().minute() / 15;
       startDate.setTime(QTime(startDate.time().hour(), tint * 15, 0, 0));
       endDate = startDate;
-      endDate = endDate.addSecs(900);
+      endDate = endDate.addSecs(899);
+      displayDate = endDate;
+      displayDate = displayDate.addSecs(1);
       break;
     }
     case Bar::Minute30:
@@ -79,30 +96,40 @@ void Bar::setBarDate (QDateTime &date, Bar::BarLength l)
       int tint = startDate.time().minute() / 30;
       startDate.setTime(QTime(startDate.time().hour(), tint * 30, 0, 0));
       endDate = startDate;
-      endDate = endDate.addSecs(1800);
+      endDate = endDate.addSecs(1799);
+      displayDate = endDate;
+      displayDate = displayDate.addSecs(1);
       break;
     }
     case Bar::Minute60:
       startDate.setTime(QTime(startDate.time().hour(), 0, 0, 0));
       endDate = startDate;
-      endDate = endDate.addSecs(3600);
+      endDate = endDate.addSecs(3599);
+      displayDate = endDate;
+      displayDate = displayDate.addSecs(1);
       break;
     case Bar::DailyBar:
       startDate.setTime(QTime(0, 0, 0, 0));
       endDate = startDate;
       endDate = endDate.addDays(1);
+      endDate = endDate.addSecs(-1);
+      displayDate = dt;
       break;
     case Bar::WeeklyBar:
       startDate.setTime(QTime(0, 0, 0, 0));
       startDate = startDate.addDays(- startDate.date().dayOfWeek());
       endDate = startDate;
       endDate = endDate.addDays(7);
+      endDate = endDate.addSecs(-1);
+      displayDate = dt;
       break;
     case Bar::MonthlyBar:
       startDate.setTime(QTime(0, 0, 0, 0));
       startDate = startDate.addDays(- (startDate.date().day() - 1));
       endDate = startDate;
       endDate = endDate.addDays(endDate.date().daysInMonth());
+      endDate = endDate.addSecs(-1);
+      displayDate = dt;
       break;
     default:
       break;
@@ -111,26 +138,10 @@ void Bar::setBarDate (QDateTime &date, Bar::BarLength l)
 
 QDateTime & Bar::getDate ()
 {
-  return startDate;
-}
-
-QDateTime & Bar::getBarDate ()
-{
-  switch (length)
-  {
-    case Bar::DailyBar:
-      return startDate;
-      break;
-    default:
-      return endDate;
-      break;
-  }
-}
-
-void Bar::getStartEndDate (QDateTime &sd, QDateTime &ed)
-{
-  sd = startDate;
-  ed = endDate;
+  if (rangeFlag)
+    return displayDate;
+  else
+    return startDate;
 }
 
 void Bar::setOpen (double d)
@@ -273,35 +284,29 @@ double Bar::getOI ()
 
 void Bar::getDateString (QString &d)
 {
-  d = startDate.toString("yyyy-MM-dd");
+  d.clear();
+  if (rangeFlag)
+    d = displayDate.toString("yyyy-MM-dd");
+  else
+    d = startDate.toString("yyyy-MM-dd");
 }
 
 void Bar::getDateTimeString (QString &d)
 {
-  d = startDate.toString(Qt::ISODate);
+  d.clear();
+  if (rangeFlag)
+    d = displayDate.toString(Qt::ISODate);
+  else
+    d = startDate.toString(Qt::ISODate);
 }
 
 void Bar::getTimeString (QString &d)
 {
-  d = startDate.toString("HH:mm:ss");
-}
-
-void Bar::getBarDateString (QString &d)
-{
-  QDateTime dt = getBarDate();
-  d = dt.toString("yyyy-MM-dd");
-}
-
-void Bar::getBarDateTimeString (QString &d)
-{
-  QDateTime dt = getBarDate();
-  d = dt.toString(Qt::ISODate);
-}
-
-void Bar::getBarTimeString (QString &d)
-{
-  QDateTime dt = getBarDate();
-  d = dt.toString("HH:mm:ss");
+  d.clear();
+  if (rangeFlag)
+    d = displayDate.toString("HH:mm:ss");
+  else
+    d = startDate.toString("HH:mm:ss");
 }
 
 void Bar::verify ()
@@ -367,9 +372,11 @@ int Bar::getError ()
   return error;
 }
 
-void Bar::getBarDateKey (QString &d)
+void Bar::getRangeKey (QString &d)
 {
-  d = startDate.toString(Qt::ISODate) + endDate.toString(Qt::ISODate);
+  d.clear();
+  if (rangeFlag)
+    d = startDate.toString(Qt::ISODate) + endDate.toString(Qt::ISODate);
 }
 
 void Bar::getBarLengthList (QStringList &l)

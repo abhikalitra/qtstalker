@@ -702,7 +702,7 @@ void QtStalkerTester::run ()
       {
 	// check if we exit long
         Bar *bar = data.getBar(dataLoop);
-        QDateTime dt = bar->getBarDate();
+        QDateTime dt = bar->getDate();
         trade->setExitDate(dt);
 	    
 	double price = xp->getData(dataLoop);

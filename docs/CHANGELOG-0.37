@@ -366,3 +366,16 @@
 
            Removed SYMBOL indicator plugin and replaced with script commands GET_QUOTES. See docs.
 
+20100407:  Opened up a small area that was previously unused in the bottom right corner of charts. Right now
+           it is blank, but I am thinking about using it for a few buttons or drop down items in the future.
+           Suggestions are welcomed.
+
+           Fixed a bug in bar creation that reported incorrect datetime.
+
+           Fixed bug when changing bar lengths or symbols, cursor status was not maintained.
+
+           Recoded the DatePlot drawing code to use a pixmap for updating instead of recalculating every update
+           for a decent speed gain.
+
+
+

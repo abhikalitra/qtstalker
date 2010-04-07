@@ -54,10 +54,10 @@ void DateBar::createDateList (BarData *bd)
       continue;
 
     QString s;
-    bar->getBarDateKey(s);
+    bar->getRangeKey(s);
     data.insert(s, loop);
 
-    dateList.append(bar->getBarDate());
+    dateList.append(bar->getDate());
   }
 }
 
@@ -70,10 +70,10 @@ int DateBar::getX (QDateTime &d)
 {
   int x = -1;
   Bar bar;
-  bar.setBarDate(d, (Bar::BarLength) barLength);
+  bar.setDateRange(d, (Bar::BarLength) barLength);
   
   QString s;
-  bar.getBarDateKey(s);
+  bar.getRangeKey(s);
   if (data.contains(s))
     x = data.value(s);
   

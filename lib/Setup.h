@@ -29,15 +29,10 @@ class Setup
 {
   public:
     Setup ();
-    void setupConfigDefaults ();
     void setupDirectories ();
     void setupDefaultIndicators ();
     void setupExchanges ();
     void setupFutures ();
-
-  protected:
-    QString home;
-    QString version;
 };
 
 #endif
