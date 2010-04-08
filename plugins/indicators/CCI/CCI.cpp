@@ -21,7 +21,6 @@
 
 #include "CCI.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -48,9 +47,8 @@ int CCI::getIndicator (Indicator &ind, BarData *data)
   int period = settings.getInt(Period);
   int smoothing = settings.getInt(Smoothing);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
@@ -122,9 +120,8 @@ int CCI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int ma = maList.indexOf(set[6]);
   if (ma == -1)
   {
@@ -172,10 +169,9 @@ PlotLine * CCI::getCCI (BarData *data, int period, int smoothing, int type)
 
   if (smoothing > 1)
   {
-    MATH1 m;
     QStringList maList;
-    m.getMAList(maList);
-    PlotLine *ma = m.getMA(line, smoothing, type);
+    getMAList(maList);
+    PlotLine *ma = getLocalMA(line, smoothing, type);
     if (! ma)
     {
       delete line;
@@ -212,9 +208,8 @@ int CCI::dialog (int)
 
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);

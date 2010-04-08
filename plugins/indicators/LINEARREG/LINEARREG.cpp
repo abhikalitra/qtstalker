@@ -20,7 +20,6 @@
  */
 
 #include "LINEARREG.h"
-#include "MATH1.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -72,11 +71,10 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
     case 0: // LINEARREG
     case 2: // INTERCEPT
     {
-      MATH1 m;
       QColor up("green");
       QColor down("red");
       QColor neutral("blue");
-      PlotLine *bars = m.getBARS(data, up, down, neutral);
+      PlotLine *bars = getLocalBARS(data, up, down, neutral);
       if (bars)
 	ind.addLine(bars);
       break;

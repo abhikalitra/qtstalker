@@ -21,7 +21,6 @@
 
 #include "MA.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -70,11 +69,10 @@ int MA::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  MATH1 m;
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = m.getBARS(data, up, down, neutral);
+  PlotLine *bars = getLocalBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
 
@@ -147,8 +145,74 @@ int MA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
 PlotLine * MA::getMA (PlotLine *in, int period, int method)
 {
-  MATH1 m;
-  PlotLine *line = m.getMA(in, period, method);
+  if (in->count() < period)
+    return 0;
+  
+  int size = in->count();
+  TA_Real input[size];
+  TA_Real out[size];
+  int loop;
+  for (loop = 0; loop < size; loop++)
+    input[loop] = (TA_Real) in->getData(loop);
+
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_RetCode rc = TA_SUCCESS;
+  switch (method)
+  {
+    case 0:
+      rc = TA_EMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 1:
+      rc = TA_DEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 2:
+      rc = TA_KAMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 3:
+      rc = TA_SMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 4:
+      rc = TA_TEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 5:
+      rc = TA_TRIMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case 6: // Wilder
+    {
+      PlotLine *line = new PlotLine;
+      double t = 0;
+      int loop;
+      for (loop = 0; loop < period; loop++)
+        t = t + input[loop];
+      double yesterday = t / period;
+      line->append(yesterday);
+      for (; loop < size; loop++)
+      {
+        double t  = (yesterday * (period - 1) + input[loop]) / period;
+        yesterday = t;
+        line->append(t);
+      }
+      return line;
+      break;
+    }
+    case 7:
+      rc = TA_WMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  PlotLine *line = new PlotLine;
+  for (loop = 0; loop < outNb; loop++)
+    line->append(out[loop]);
+
   return line;
 }
 
@@ -190,6 +254,11 @@ int MA::dialog (int)
 
   delete dialog;
   return rc;
+}
+
+void MA::getMethodList (QStringList &l)
+{
+  l = methodList;
 }
 
 //*************************************************************

@@ -37,13 +37,9 @@ class MATH1 : public IndicatorPlugin
     PlotLine * getMATH1 (PlotLine *in, int method);
     PlotLine * getMATH2 (PlotLine *in, PlotLine *in2, int method);
     PlotLine * getSTDDEV (PlotLine *in, int period, double dev);
-    PlotLine * getMA (PlotLine *in, int period, int method);
-    void getMAList (QStringList &);
-    PlotLine * getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral);
 
   protected:
     QStringList methodList;
-    QStringList maList;
 };
 
 #endif

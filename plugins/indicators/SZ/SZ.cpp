@@ -23,7 +23,6 @@
    Dr. Alexander Elder's book _Come Into My Trading Room_, p.173 */
 
 #include "SZ.h"
-#include "MATH1.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -55,11 +54,10 @@ int SZ::getIndicator (Indicator &ind, BarData *data)
   int ndperiod = settings.getInt(NoDeclinePeriod);
   double coeff = settings.getDouble(Coefficient);
 
-  MATH1 m;
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = m.getBARS(data, up, down, neutral);
+  PlotLine *bars = getLocalBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
 

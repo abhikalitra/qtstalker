@@ -21,7 +21,6 @@
 
 #include "ROC.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -59,9 +58,8 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
   int period = settings.getInt(Period);
   int smoothing = settings.getInt(Smoothing);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(Method, s);
   int method = methodList.indexOf(s);
@@ -141,9 +139,8 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int type = maList.indexOf(set[8]);
   if (type == -1)
   {
@@ -202,8 +199,7 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int
 
   if (smoothing > 1)
   {
-    MATH1 m;
-    PlotLine *ma = m.getMA(line, smoothing, type);
+    PlotLine *ma = getLocalMA(line, smoothing, type);
     if (! ma)
     {
       delete line;
@@ -240,9 +236,8 @@ int ROC::dialog (int)
 
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);

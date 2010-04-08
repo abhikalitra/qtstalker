@@ -20,7 +20,6 @@
  */
 
 #include "MAVP.h"
-#include "MATH1.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -63,9 +62,8 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   int min = settings.getInt(Min);
   int max = settings.getInt(Max);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(MAType, s);
   int ma = maList.indexOf(s);
@@ -81,7 +79,7 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = m.getBARS(data, up, down, neutral);
+  PlotLine *bars = getLocalBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
 
@@ -157,9 +155,8 @@ int MAVP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int ma = maList.indexOf(set[8]);
   if (ma == -1)
   {
@@ -240,9 +237,8 @@ int MAVP::dialog (int)
 
   dialog->addIntItem(Max, page, QObject::tr("Max"), settings.getInt(Max), 2, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

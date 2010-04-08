@@ -20,7 +20,6 @@
  */
 
 #include "FI.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -41,9 +40,8 @@ int FI::getIndicator (Indicator &ind, BarData *data)
   QString s;
   int period = settings.getInt(Period);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(MAType, s);
   int ma = maList.indexOf(s);
@@ -88,9 +86,8 @@ int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int ma = maList.indexOf(set[5]);
   if (ma == -1)
   {
@@ -123,8 +120,7 @@ PlotLine * FI::getFI (BarData *data, int period, int type)
 
   if (period > 1)
   {
-    MATH1 m;
-    PlotLine *ma = m.getMA(line, period, type);
+    PlotLine *ma = getLocalMA(line, period, type);
     if (! ma)
     {
       delete line;
@@ -159,9 +155,8 @@ int FI::dialog (int)
 
   dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

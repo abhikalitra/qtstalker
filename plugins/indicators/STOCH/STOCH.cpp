@@ -21,7 +21,6 @@
 
 #include "STOCH.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -53,9 +52,8 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
   int slowk = settings.getInt(SlowkPeriod);
   int slowd = settings.getInt(SlowdPeriod);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   QString s;
   settings.getData(SlowkMA, s);
@@ -151,9 +149,8 @@ int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int kma = maList.indexOf(set[7]);
   if (kma == -1)
   {
@@ -252,9 +249,8 @@ int STOCH::dialog (int)
 
   dialog->addIntItem(SlowkPeriod, page, QObject::tr("Period"), settings.getInt(SlowkPeriod), 1, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   settings.getData(SlowkMA, d);
   dialog->addComboItem(SlowkMA, page, QObject::tr("MA Type"), maList, d);

@@ -21,7 +21,6 @@
 
 #include "STOCHRSI.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -62,9 +61,8 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
   int fastk = settings.getInt(FastkPeriod);
   int fastd = settings.getInt(FastdPeriod);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(FastdMA, s);
   int ma = maList.indexOf(s);
@@ -179,9 +177,8 @@ int STOCHRSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   int ma = maList.indexOf(set[9]);
   if (ma == -1)
@@ -282,9 +279,8 @@ int STOCHRSI::dialog (int)
 
   dialog->addIntItem(FastdPeriod, page, QObject::tr("Period"), settings.getInt(FastdPeriod), 1, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(FastdMA, d);
   dialog->addComboItem(FastdMA, page, QObject::tr("MA Type"), maList, d);

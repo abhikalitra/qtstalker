@@ -19,36 +19,39 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLOT_DATA_HPP
-#define INDICATOR_PLOT_DATA_HPP
+#ifndef PLOT_SLIDER_HPP
+#define PLOT_SLIDER_HPP
 
 #include <QString>
-#include <QPixmap>
-#include <QFont>
-#include <QColor>
+#include <QWidget>
+#include <QSlider>
+#include <QList>
 
-#include "Scaler.h"
-#include "Indicator.h"
-#include "DateBar.h"
+#include "Setting.h"
 
-struct indicatorPlotData
+class PlotSlider : public QWidget
 {
-  Indicator indicator;
-  QPixmap buffer;
-  int pixelspace;
-  int startX;
-  int startIndex;
-  int scaleToScreen;
-  Scaler scaler;
-  QString plotPluginPath;
-  QString coPluginPath;
-  DateBar dateBars;
-  QFont plotFont;
-  QColor backgroundColor;
-  QColor borderColor;
-  int infoIndex;
-  int x;
-  int y;
+  Q_OBJECT
+  
+  signals:
+    void signalValueChanged(int);
+    
+  public:
+    PlotSlider ();
+    void setStart (int, int, QList<Setting> &);
+    int getValue ();
+    void setValue (int);
+    
+  public slots:
+    void startButtonClicked ();
+    void pPageButtonClicked ();
+    void pBarButtonClicked ();
+    void nBarButtonClicked ();
+    void nPageButtonClicked ();
+    void endButtonClicked ();
+    
+  protected:
+    QSlider *slider;
 };
 
 #endif

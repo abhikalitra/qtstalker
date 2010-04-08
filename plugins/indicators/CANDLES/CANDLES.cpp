@@ -21,7 +21,6 @@
 
 #include "CANDLES.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -154,16 +153,15 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
 
   ind.addLine(line);
   
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   int period = settings.getInt(MAPeriod);
   if (period > 1)
   {
     settings.getData(MAType, s);
     int type = maList.indexOf(s);
-    PlotLine *ma = m.getMA(line, period, type);
+    PlotLine *ma = getLocalMA(line, period, type);
     if (ma)
     {
       settings.getData(MAColor, s);
@@ -181,7 +179,7 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
   {
     settings.getData(MA2Type, s);
     int type = maList.indexOf(s);
-    PlotLine *ma = m.getMA(line, period, type);
+    PlotLine *ma = getLocalMA(line, period, type);
     if (ma)
     {
       settings.getData(MA2Color, s);
@@ -199,7 +197,7 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
   {
     settings.getData(MA3Type, s);
     int type = maList.indexOf(s);
-    PlotLine *ma = m.getMA(line, period, type);
+    PlotLine *ma = getLocalMA(line, period, type);
     if (ma)
     {
       settings.getData(MA3Color, s);
@@ -341,9 +339,8 @@ int CANDLES::dialog (int)
 
   dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), settings.getInt(MAPeriod), 1, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("Type"), maList, d);

@@ -20,7 +20,6 @@
  */
 
 #include "LMS.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -378,8 +377,7 @@ PlotLine *LMS::slowK(PlotLine * inLine, int kPeriod, int slowKperiod)
     k->append(t);
   }
 
-  MATH1 m;
-  PlotLine *k2 = m.getMA(k, slowKperiod, 3);
+  PlotLine *k2 = getLocalMA(k, slowKperiod, 3);
   delete k;
   k = k2;
   return k;

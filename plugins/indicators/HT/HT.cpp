@@ -20,7 +20,6 @@
  */
 
 #include "HT.h"
-#include "MATH1.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -162,11 +161,10 @@ int HT::getIndicator (Indicator &ind, BarData *data)
 
       if (method != 3)
       {
-	MATH1 m;
 	QColor up("green");
 	QColor down("red");
 	QColor neutral("neutral");
-	PlotLine *bars = m.getBARS(data, up, down, neutral);
+	PlotLine *bars = getLocalBARS(data, up, down, neutral);
 	if (bars)
 	  ind.addLine(bars);
       }

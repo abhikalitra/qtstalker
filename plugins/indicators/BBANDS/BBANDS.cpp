@@ -20,7 +20,6 @@
  */
 
 #include "BBANDS.h"
-#include "MATH1.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -61,9 +60,8 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
   double udev = settings.getDouble(UpDeviation);
   double ldev = settings.getDouble(DownDeviation);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(MAType, s);
   int ma = maList.indexOf(s);
@@ -86,7 +84,7 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = m.getBARS(data, up, down, neutral);
+  PlotLine *bars = getLocalBARS(data, up, down, neutral);
   if (! bars)
   {
     delete in;
@@ -197,9 +195,8 @@ int BBANDS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int ma = maList.indexOf(set[10]);
   if (ma == -1)
   {
@@ -288,9 +285,8 @@ int BBANDS::dialog (int)
 
   dialog->addDoubleItem(DownDeviation, page, QObject::tr("Lower Deviation"), settings.getDouble(DownDeviation), -100000, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

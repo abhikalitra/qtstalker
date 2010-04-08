@@ -20,7 +20,6 @@
  */
 
 #include "PP.h"
-#include "MATH1.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -52,11 +51,10 @@ PP::PP ()
 
 int PP::getIndicator (Indicator &ind, BarData *data)
 {
-  MATH1 m;
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = m.getBARS(data, up, down, neutral);
+  PlotLine *bars = getLocalBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
   

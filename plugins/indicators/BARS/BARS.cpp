@@ -21,7 +21,6 @@
 
 #include "BARS.h"
 #include "PrefDialog.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 #include <QObject>
@@ -73,16 +72,15 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
 
   ind.addLine(line);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   int period = settings.getInt(MAPeriod);
   if (period > 1)
   {
     settings.getData(MAType, s);
     int type = maList.indexOf(s);
-    PlotLine *ma = m.getMA(line, period, type);
+    PlotLine *ma = getLocalMA(line, period, type);
     if (ma)
     {
       settings.getData(MAColor, s);
@@ -100,7 +98,7 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
   {
     settings.getData(MA2Type, s);
     int type = maList.indexOf(s);
-    PlotLine *ma = m.getMA(line, period, type);
+    PlotLine *ma = getLocalMA(line, period, type);
     if (ma)
     {
       settings.getData(MA2Color, s);
@@ -118,7 +116,7 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
   {
     settings.getData(MA3Type, s);
     int type = maList.indexOf(s);
-    PlotLine *ma = m.getMA(line, period, type);
+    PlotLine *ma = getLocalMA(line, period, type);
     if (ma)
     {
       settings.getData(MA3Color, s);
@@ -179,10 +177,44 @@ int BARS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
 
 PlotLine * BARS::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral)
 {
-  MATH1 m;
-  PlotLine *line = m.getBARS(data, _up, _down, _neutral);
+  int size = data->count();
+  PlotLine *line = new PlotLine;
+  
   QString s = "OHLC";
   line->setPlugin(s);
+  
+  s = QObject::tr("C");
+  line->setLabel(s);
+  
+  int loop;
+  for (loop = 0; loop < size; loop++)
+  {
+    PlotLineBar bar;
+    Bar *tbar = data->getBar(loop);
+    bar.append(tbar->getOpen());
+    bar.append(tbar->getHigh());
+    bar.append(tbar->getLow());
+    bar.append(tbar->getClose());
+    
+    if (loop > 0)
+    {
+      Bar *pbar = data->getBar(loop - 1);
+      if (tbar->getClose() > pbar->getClose())
+        bar.setColor(_up);
+      else
+      {
+        if (tbar->getClose() < pbar->getClose())
+          bar.setColor(_down);
+        else
+          bar.setColor(_neutral);
+      }
+    }
+    else
+      bar.setColor(_neutral);
+    
+    line->append(bar);
+  }
+
   return line;
 }
 
@@ -208,9 +240,8 @@ int BARS::dialog (int)
   settings.getData(BarsLabel, d);
   dialog->addTextItem(BarsLabel, page, QObject::tr("Label"), d);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   page++;
   k = QObject::tr("MA 1");

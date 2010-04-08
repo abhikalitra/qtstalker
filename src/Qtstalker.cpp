@@ -129,14 +129,6 @@ QtstalkerApp::QtstalkerApp(QString session)
 
   statusbar = statusBar();
 
-  // slider
-  slider = new QSlider;
-  slider->setOrientation(Qt::Horizontal);
-  slider->setEnabled(FALSE);
-  slider->setToolTip(tr("Scroll Chart"));
-  slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-  statusbar->addPermanentWidget(slider, 0);
-
   baseWidget = new QWidget;
   setCentralWidget (baseWidget);
 
@@ -191,6 +183,10 @@ QtstalkerApp::QtstalkerApp(QString session)
   // setup the side panels
   navTab = new QTabWidget;
   dpSplitter->addWidget(navTab);
+  
+  // setup the plot slider box
+  plotSlider = new PlotSlider;
+  dpSplitter->addWidget(plotSlider);
 
   // setup the info panel area
   infoPanel = new InfoPanel;
@@ -655,7 +651,6 @@ void QtstalkerApp::slotOpenChart (BarData *bd)
   currentChart.setExchange(bd->getExchange());
   currentChart.setSymbol(bd->getSymbol());
   
-  slider->setEnabled(TRUE);
   qApp->processEvents();
   loadChart(currentChart.getExchange(), currentChart.getSymbol());
 }
@@ -735,7 +730,7 @@ void QtstalkerApp::loadChart (QString ex, QString d)
     loadIndicator(&recordList, indicatorList[loop]);
 
   setSliderStart(currentChart.getBarsRequested());
-  emit signalIndex(slider->value());
+  emit signalIndex(plotSlider->getValue()); 
 
   resetZoomSettings();
   Setting set = zoomList[0];
@@ -922,7 +917,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   Setting set = zoomList[zoomPos];
   plot->setPixelspace(set.getInt(1));
 
-  plot->setIndex(slider->value());
+  plot->setIndex(plotSlider->getValue());
   plot->setInterval((Bar::BarLength) barButtonGroup->checkedId());
 
   IndicatorPlot *indy = plot->getIndicatorPlot();
@@ -934,7 +929,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(Bar::BarLength)), plot, SLOT(setInterval(Bar::BarLength)));
   connect(this, SIGNAL(signalClearIndicator()), plot, SLOT(clear()));
-  connect (slider, SIGNAL(valueChanged(int)), plot, SLOT(slotSliderChanged(int)));
+  connect (plotSlider, SIGNAL(signalValueChanged(int)), plot, SLOT(slotSliderChanged(int)));
   connect(this, SIGNAL(signalGrid(bool)), indy, SLOT(slotGridChanged(bool)));
   connect(this, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
   connect(this, SIGNAL(signalNewExternalChartObject(QString)), indy, SLOT(newExternalChartObject(QString)));
@@ -1056,27 +1051,7 @@ void QtstalkerApp::setSliderStart (int count)
   if (! plot)
     return;
 
-  Setting set = zoomList[0];
-  int page = plot->getWidth() / set.getInt(1);
-  int max = count - page;
-  if (max < 0)
-    max = 0;
-  slider->blockSignals(TRUE);
-  slider->setRange(0, count - 1);
-
-  if (count < page)
-  {
-    slider->setValue(0);
-    set.setData(0, 0);
-  }
-  else
-  {
-    slider->setValue(max + 1);
-    set.setData(0, max + 1);
-  }
-  slider->blockSignals(FALSE);
-
-  zoomList[0] = set;
+  plotSlider->setStart(count, plot->getWidth(), zoomList);
 }
 
 void QtstalkerApp::ps1ButtonClicked ()
@@ -1090,7 +1065,7 @@ void QtstalkerApp::ps1ButtonClicked ()
 
   setSliderStart(currentChart.getBarsRequested());
   emit signalPixelspace(ti);
-  emit signalIndex(slider->value());
+  emit signalIndex(plotSlider->getValue());
   slotDrawPlots();
 
   zoomPos = 0;
@@ -1110,7 +1085,7 @@ void QtstalkerApp::ps2ButtonClicked ()
 
   setSliderStart(currentChart.getBarsRequested());
   emit signalPixelspace(ti);
-  emit signalIndex(slider->value());
+  emit signalIndex(plotSlider->getValue());
   slotDrawPlots();
 
   zoomPos = 0;
@@ -1168,7 +1143,7 @@ void QtstalkerApp::slotZoomIn ()
   Setting set = zoomList[zoomPos];
   emit signalPixelspace(set.getInt(1));
   emit signalIndex(set.getInt(0));
-  slider->setValue(set.getInt(0));
+  plotSlider->setValue(set.getInt(0));
   slotDrawPlots();
 }
 
@@ -1184,7 +1159,7 @@ void QtstalkerApp::slotZoomOut ()
   Setting set = zoomList[zoomPos];
   emit signalPixelspace(set.getInt(1));
   emit signalIndex(set.getInt(0));
-  slider->setValue(set.getInt(0));
+  plotSlider->setValue(set.getInt(0));
   slotDrawPlots();
 }
 
@@ -1201,7 +1176,7 @@ void QtstalkerApp::slotPlotZoom (int i, int p)
 
   emit signalPixelspace(p);
   emit signalIndex(i);
-  slider->setValue(i);
+  plotSlider->setValue(i);
   slotDrawPlots();
 }
 
@@ -1271,6 +1246,6 @@ void QtstalkerApp::slotRefreshUpdated (int minutes)
 
 void QtstalkerApp::chartMove (int d)
 {
-  slider->setValue(d);
+  plotSlider->setValue(d);
 }
 

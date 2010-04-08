@@ -21,7 +21,6 @@
 
 #include "BOP.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -42,9 +41,8 @@ int BOP::getIndicator (Indicator &ind, BarData *data)
   QString s;
   int smoothing = settings.getInt(Smoothing);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
@@ -89,9 +87,8 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int ma = maList.indexOf(set[5]);
   if (ma == -1)
   {
@@ -141,8 +138,7 @@ PlotLine * BOP::getBOP (BarData *data, int smoothing, int type)
 
   if (smoothing > 1)
   {
-    MATH1 m;
-    PlotLine *ma = m.getMA(line, smoothing, type);
+    PlotLine *ma = getLocalMA(line, smoothing, type);
     if (! ma)
     {
       delete line;
@@ -177,9 +173,8 @@ int BOP::dialog (int)
 
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);

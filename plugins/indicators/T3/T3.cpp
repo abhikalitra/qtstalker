@@ -21,7 +21,6 @@
 
 #include "T3.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -59,11 +58,10 @@ int T3::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  MATH1 m;
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = m.getBARS(data, up, down, neutral);
+  PlotLine *bars = getLocalBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
 

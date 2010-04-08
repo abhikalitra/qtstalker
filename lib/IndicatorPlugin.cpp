@@ -21,6 +21,8 @@
 
 #include "IndicatorPlugin.h"
 #include "PlotFactory.h"
+#include "Config.h"
+#include "PluginFactory.h"
 
 #include <QList>
 
@@ -55,6 +57,23 @@ int IndicatorPlugin::getCUS (QStringList &, QHash<QString, PlotLine *> &, BarDat
 
 // virtual function
 int IndicatorPlugin::dialog (int)
+{
+  return 0;
+}
+
+// virtual function
+void IndicatorPlugin::getMethodList (QStringList &)
+{
+}
+
+// virtual function
+PlotLine * IndicatorPlugin::getMA (PlotLine *, int, int)
+{
+  return 0;
+}
+
+// virtual function
+PlotLine * IndicatorPlugin::getBARS (BarData *, QColor &, QColor &, QColor &)
 {
   return 0;
 }
@@ -108,5 +127,59 @@ void IndicatorPlugin::getPlotList (QStringList &l, int flag)
     plotList.removeAll("Candle");
     plotList.removeAll("OHLC");
   }
+}
+
+PlotLine * IndicatorPlugin::getLocalMA (PlotLine *in, int period, int method)
+{
+  Config config;
+  QString path;
+  config.getData(Config::IndicatorPluginPath, path);
+  
+  PluginFactory fac;
+  QString s = "MA";
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+  {
+    qDebug() << indicator << "::getLocalMA:" << s << "plugin error";
+    return 0;
+  }
+  
+  return plug->getMA(in, period, method);  
+}
+
+PlotLine * IndicatorPlugin::getLocalBARS (BarData *data, QColor &up, QColor &down, QColor &neutral)
+{
+  Config config;
+  QString path;
+  config.getData(Config::IndicatorPluginPath, path);
+  
+  PluginFactory fac;
+  QString s = "BARS";
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+  {
+    qDebug() << indicator << "::getLocalBars:" << s << "plugin error";
+    return 0;
+  }
+  
+  return plug->getBARS(data, up, down, neutral);  
+}
+
+void IndicatorPlugin::getMAList (QStringList &list)
+{
+  Config config;
+  QString path;
+  config.getData(Config::IndicatorPluginPath, path);
+  
+  PluginFactory fac;
+  QString s = "MA";
+  IndicatorPlugin *plug = fac.getIndicator(path, s);
+  if (! plug)
+  {
+    qDebug() << indicator << "::getMAList:" << s << "plugin error";
+    return;
+  }
+  
+  plug->getMethodList(list);  
 }
 

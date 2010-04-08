@@ -81,6 +81,7 @@ HEADERS += InfoPanel.h
 HEADERS += DataBase.h
 HEADERS += SCSymbol.h
 #HEADERS += PlotButtonBox.h
+HEADERS += PlotSlider.h
 
 
 SOURCES += Setting.cpp
@@ -158,6 +159,7 @@ SOURCES += InfoPanel.cpp
 SOURCES += DataBase.cpp
 SOURCES += SCSymbol.cpp
 #SOURCES += PlotButtonBox.cpp
+SOURCES += PlotSlider.cpp
 
 
 TARGET = qtstalker

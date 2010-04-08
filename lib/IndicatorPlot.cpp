@@ -152,10 +152,23 @@ void IndicatorPlot::drawLines ()
   }
 }
 
-void IndicatorPlot::paintEvent (QPaintEvent *)
+void IndicatorPlot::paintEvent (QPaintEvent *event)
 {
-  QPainter p(this);
-  p.drawPixmap(0, 0, plotData.buffer);
+  QPainter painter(this);
+  
+  if (mouseFlag == CursorZoom)
+    painter.drawPixmap(0, 0, plotData.buffer);
+  else
+    painter.drawPixmap(event->rect(), plotData.buffer);
+  
+  if (mouseFlag == CursorCrosshair)
+  {
+    int y = plotData.scaler.convertToY(plotData.y1);
+    painter.setPen(QPen(plotData.borderColor, 1, Qt::DotLine));
+    painter.drawLine (0, y, plotData.buffer.width(), y);
+    painter.drawLine (plotData.x, 0, plotData.x, plotData.buffer.height());
+    painter.end();
+  }
 }
 
 void IndicatorPlot::resizeEvent (QResizeEvent *event)
@@ -467,8 +480,18 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
   {
     case CursorCrosshair:
     {
-      draw();
+      getXY(event->x(), event->y());
+
+      update();
       
+      int i = convertXToDataIndex(event->x());
+      PlotInfo info;
+      Setting *mess = info.getCursorInfo(i, event->y(), plotData);
+      if (mess)
+        emit infoMessage(mess);
+/*      
+      draw();
+
       getXY(event->x(), event->y());
 
       int y = plotData.scaler.convertToY(plotData.y1);
@@ -486,6 +509,7 @@ void IndicatorPlot::mouseMoveEvent (QMouseEvent *event)
       Setting *mess = info.getCursorInfo(i, event->y(), plotData);
       if (mess)
         emit infoMessage(mess);
+*/
       
       break;
     }
@@ -818,6 +842,8 @@ void IndicatorPlot::getDateBar (DateBar &d)
 
 void IndicatorPlot::getXY (int x, int y)
 {
+  plotData.x = x;
+  plotData.y = y;
   int i = convertXToDataIndex(x);
   plotData.dateBars.getDate(i, plotData.x1);
   plotData.y1 = plotData.scaler.convertToVal(y);

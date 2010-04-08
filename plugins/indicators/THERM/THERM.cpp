@@ -30,7 +30,6 @@
 
 
 #include "THERM.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -59,9 +58,8 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   QString s;
   int smoothing = settings.getInt(Smoothing);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
@@ -81,7 +79,7 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   settings.getData(MAType, s);
   int maType = maList.indexOf(s);
 
-  PlotLine *ma = m.getMA(line, maPeriod, maType);
+  PlotLine *ma = getLocalMA(line, maPeriod, maType);
   if (! ma)
   {
     delete line;
@@ -162,9 +160,8 @@ int THERM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int type = maList.indexOf(set[5]);
   if (type == -1)
   {
@@ -203,8 +200,7 @@ PlotLine * THERM::getTHERM (BarData *data, int smoothing, int type)
 
   if (smoothing > 1)
   {
-    MATH1 m;
-    PlotLine *ma = m.getMA(line, smoothing, type);
+    PlotLine *ma = getLocalMA(line, smoothing, type);
     if (! ma)
     {
       delete line;
@@ -244,9 +240,8 @@ int THERM::dialog (int)
 
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(SmoothingType, d);
   dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);

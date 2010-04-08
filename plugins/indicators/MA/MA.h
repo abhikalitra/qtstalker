@@ -42,6 +42,7 @@ class MA : public IndicatorPlugin
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getMA (PlotLine *in, int period, int method);
     int dialog (int);
+    void getMethodList (QStringList &);
 
   protected:
     QStringList methodList;

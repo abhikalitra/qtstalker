@@ -43,6 +43,7 @@
 #include "BarData.h"
 #include "InfoPanel.h"
 #include "ScriptPage.h"
+#include "PlotSlider.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -158,7 +159,7 @@ class QtstalkerApp : public QMainWindow
     QList<QTabWidget*> tabList;
     QHash<MenuAction, QAction*> actionList;
     QSpinBox *barCount;
-    QSlider *slider;
+//    QSlider *slider;
     QComboBox *recentCharts;
     QList<Setting> zoomList;
     int zoomPos;
@@ -168,6 +169,7 @@ class QtstalkerApp : public QMainWindow
     QToolBar *toolBar2;
     BarData currentChart;
     ScriptPage *scriptPage;
+    PlotSlider *plotSlider;
 };
 
 #endif

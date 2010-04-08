@@ -21,7 +21,6 @@
 
 #include "MACD.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -63,9 +62,8 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
   int slow = settings.getInt(SlowPeriod);
   int signal = settings.getInt(SignalPeriod);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(FastMA, s);
   int fastma = maList.indexOf(s);
@@ -173,9 +171,8 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int fastma = maList.indexOf(set[8]);
   if (fastma == -1)
   {
@@ -283,9 +280,8 @@ int MACD::dialog (int)
 
   dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 2, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(FastMA, d);
   dialog->addComboItem(FastMA, page, QObject::tr("Fast MA"), maList, d);

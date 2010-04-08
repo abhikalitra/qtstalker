@@ -21,7 +21,6 @@
 
 #include "PO.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -57,9 +56,8 @@ int PO::getIndicator (Indicator &ind, BarData *data)
   int fast = settings.getInt(FastPeriod);
   int slow = settings.getInt(SlowPeriod);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   
   settings.getData(MAType, s);
   int ma = maList.indexOf(s);
@@ -139,9 +137,8 @@ int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int ma = maList.indexOf(set[8]);
   if (ma == -1)
   {
@@ -220,9 +217,8 @@ int PO::dialog (int)
 
   dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 2, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

@@ -21,7 +21,6 @@
 
 #include "RSI.h"
 #include "ta_libc.h"
-#include "MATH1.h"
 
 #include <QtDebug>
 
@@ -57,9 +56,8 @@ int RSI::getIndicator (Indicator &ind, BarData *data)
   int period = settings.getInt(Period);
   int smoothing = settings.getInt(Smoothing);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
@@ -145,9 +143,8 @@ int RSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
   int type = maList.indexOf(set[7]);
   if (type == -1)
   {
@@ -188,8 +185,7 @@ PlotLine * RSI::getRSI (PlotLine *in, int period, int smoothing, int type)
 
   if (smoothing > 1)
   {
-    MATH1 m;
-    PlotLine *ma = m.getMA(line, smoothing, type);
+    PlotLine *ma = getLocalMA(line, smoothing, type);
     if (! ma)
     {
       delete line;
@@ -226,9 +222,8 @@ int RSI::dialog (int)
 
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
-  MATH1 m;
   QStringList maList;
-  m.getMAList(maList);
+  getMAList(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);
