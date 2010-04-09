@@ -307,6 +307,52 @@ a partial match like %SI or %RSI%</source>
     </message>
 </context>
 <context>
+    <name>PlotButtonBox</name>
+    <message>
+        <source>Toggle Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle Log Scaling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PlotSlider</name>
+    <message>
+        <source>Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scroll Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Preferences</name>
     <message>
         <source>Bar Spacing 1</source>
@@ -1401,10 +1447,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Total bars to load</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scroll Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

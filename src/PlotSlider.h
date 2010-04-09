@@ -27,7 +27,7 @@
 #include <QSlider>
 #include <QList>
 
-#include "Setting.h"
+#include "ZoomButtons.h"
 
 class PlotSlider : public QWidget
 {
@@ -38,7 +38,7 @@ class PlotSlider : public QWidget
     
   public:
     PlotSlider ();
-    void setStart (int, int, QList<Setting> &);
+    void setStart (int, int, ZoomButtons *);
     int getValue ();
     void setValue (int);
     

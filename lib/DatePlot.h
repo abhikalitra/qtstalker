@@ -42,7 +42,6 @@ class DatePlot : public QWidget
     DatePlot (QWidget *);
     void clear ();
     void setData (BarData *);
-    void createPixmap ();
     void drawDailyDate (QPainter &);
     void drawWeeklyDate (QPainter &);
     void drawMonthlyDate (QPainter &);

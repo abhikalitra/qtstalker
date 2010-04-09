@@ -374,15 +374,19 @@
 
            Fixed bug when changing bar lengths or symbols, cursor status was not maintained.
 
-           Recoded the DatePlot drawing code to use a pixmap for updating instead of recalculating every update
-           for a speed gain.
-
 20100408:  Moved some duplicated code out of MATH1 and into MA and BARS plugins.
 
            Moved the slider control from the status bar and added a new slider/button control area to the panel area.
            I feel this is a good position. A little more efficient, closer to most of the mouse actions and right side
            of the chart area. Not too crazy about the icons for the buttons. Will update them to better ones during the
            'polishing phase' of the release.
+
+20100409:  Attempting to organize all the GUI classes into /src from /lib.
+
+           Moved the side toolbar, zoom control, bar length buttons and refresh functions out of QtstalkerApp
+           into new GUI classes.
+
+
 
 
 

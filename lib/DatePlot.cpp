@@ -22,7 +22,6 @@
 #include "DatePlot.h"
 
 #include <QString>
-#include <QPalette>
 #include <QDebug>
 
 #define DATE_HEIGHT 30
@@ -43,9 +42,6 @@ DatePlot::DatePlot (QWidget *w) : QWidget(w)
   
   setMinimumHeight(DATE_HEIGHT);
   setMaximumHeight(DATE_HEIGHT);
-  
-  setAutoFillBackground(TRUE);
-  setBackgroundColor(backgroundColor);
 }
 
 void DatePlot::clear ()
@@ -66,25 +62,19 @@ void DatePlot::setData (BarData *data)
     Bar *bar = data->getBar(loop);
     dateList.append(bar->getDate());
   }
-   
-  createPixmap();
 }
 
-void DatePlot::createPixmap ()
+void DatePlot::draw ()
 {
-  if (! dateList.count())
-    return;
-  
-  buffer = QPixmap(this->width() + startX + (dateList.count() * pixelspace), DATE_HEIGHT);
-
-  // clear date area
   buffer.fill(backgroundColor);
 
-  QPainter painter;
-  painter.begin(&buffer);
+  if (! dateList.count() || ! isVisible())
+    return;
+  
+  QPainter painter(&buffer);
   painter.setPen(borderColor);
   painter.setFont(plotFont);
-
+  
   // draw the seperator line
   painter.drawLine (0, 0, buffer.width(), 0);
 
@@ -108,10 +98,7 @@ void DatePlot::createPixmap ()
       drawDailyDate(painter);      
       break;
   }
-}
-
-void DatePlot::draw ()
-{
+  
   update();
 }
 
@@ -120,29 +107,21 @@ void DatePlot::drawRefresh ()
   update();
 }
 
-void DatePlot::paintEvent (QPaintEvent *)
+void DatePlot::paintEvent (QPaintEvent *event)
 {
-  if (! dateList.count())
-    return;
-  
-  QPainter p(this);
-  int x = startX + (startIndex * pixelspace);
-  p.drawPixmap(0, 0, buffer, x, 0, this->width(), buffer.height());
+  QPainter painter(this);
+  painter.drawPixmap(event->rect(), buffer);
 }
 
-void DatePlot::resizeEvent (QResizeEvent *)
+void DatePlot::resizeEvent (QResizeEvent *event)
 {
-  createPixmap();
-  paintEvent(0);
+  buffer = QPixmap(event->size());
+  draw();
 }
 
 void DatePlot::setBackgroundColor (QColor d)
 {
   backgroundColor = d;
-  
-  QPalette palet;
-  palet.setColor(backgroundRole(), backgroundColor);
-  setPalette(palet);   
 }
 
 void DatePlot::setBorderColor (QColor d)
@@ -158,7 +137,6 @@ void DatePlot::setPlotFont (QFont d)
 void DatePlot::setPixelspace (int d)
 {
   pixelspace = d;
-  createPixmap();
 }
 
 void DatePlot::setIndex (int d)
@@ -173,7 +151,7 @@ void DatePlot::setInterval (Bar::BarLength d)
 
 void DatePlot::drawMinuteDate (QPainter &painter)
 {
-  int loop = 0;
+  int loop = startIndex;
   QFontMetrics fm(plotFont);
   int x = startX;
 
@@ -186,7 +164,7 @@ void DatePlot::drawMinuteDate (QPainter &painter)
   else
     nextHour = nextHour.addSecs(3600);
 
-  for (; loop < dateList.count(); loop++, x = x + pixelspace)
+  while(x < buffer.width() && loop < dateList.count())
   {
     QDateTime date = dateList.at(loop);
     
@@ -226,12 +204,15 @@ void DatePlot::drawMinuteDate (QPainter &painter)
       else
         nextHour = nextHour.addSecs(3600);
     }
+    
+    loop++;
+    x = x + pixelspace;
   }
 }
 
 void DatePlot::drawDailyDate (QPainter &painter)
 {
-  int loop = 0;
+  int loop = startIndex;
   QFontMetrics fm(plotFont);
   int x = startX;
 
@@ -240,7 +221,7 @@ void DatePlot::drawDailyDate (QPainter &painter)
   QDate oldWeek = oldDate;
   oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
 
-  for (; loop < dateList.count(); loop++, x = x + pixelspace)
+  while(x < buffer.width() && loop < dateList.count())
   {
     dt = dateList.at(loop);
     QDate date = dt.date();
@@ -274,19 +255,22 @@ void DatePlot::drawDailyDate (QPainter &painter)
 			  text);
       }
     }
+    
+    loop++;
+    x = x + pixelspace;
   }
 }
 
 void DatePlot::drawWeeklyDate (QPainter &painter)
 {
-  int loop = 0;
+  int loop = startIndex;
   QFontMetrics fm(plotFont);
   int x = startX;
 
   QDateTime dt = dateList.at(loop);
   QDate oldMonth = dt.date();
 
-  for (; loop < dateList.count(); loop++, x = x + pixelspace)
+  while(x < buffer.width() && loop < dateList.count())
   {
     dt = dateList.at(loop);
     QDate date = dt.date();
@@ -315,19 +299,22 @@ void DatePlot::drawWeeklyDate (QPainter &painter)
 			  text);
       }
     }
+    
+    loop++;
+    x = x + pixelspace;
   }
 }
 
 void DatePlot::drawMonthlyDate (QPainter &painter)
 {
-  int loop = 0;
+  int loop = startIndex;
   QFontMetrics fm(plotFont);
   int x = startX;
 
   QDateTime dt = dateList.at(loop);
   QDate oldYear = dt.date();
 
-  for (; loop < dateList.count(); loop++, x = x + pixelspace)
+  while(x < buffer.width() && loop < dateList.count())
   {
     dt = dateList.at(loop);
     QDate date = dt.date();
@@ -343,6 +330,9 @@ void DatePlot::drawMonthlyDate (QPainter &painter)
 	                buffer.height() - 2,
 			text);
     }
+    
+    loop++;
+    x = x + pixelspace;
   }
 }
 

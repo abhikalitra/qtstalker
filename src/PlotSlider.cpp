@@ -20,6 +20,7 @@
  */
 
 #include "PlotSlider.h"
+#include "Setting.h"
 
 #include <QDebug>
 #include <QLayout>
@@ -45,42 +46,36 @@ PlotSlider::PlotSlider ()
   vbox->addLayout(hbox);
 
   QToolButton *b = new QToolButton;
-//  b->setMaximumHeight(h);
   b->setIcon(QIcon(start_xpm));
   b->setToolTip(QString(tr("Start")));
   connect(b, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
   hbox->addWidget(b);
   
   b = new QToolButton;
-//  b->setMaximumHeight(h);
   b->setIcon(QIcon(ppage_xpm));
   b->setToolTip(QString(tr("Previous Page")));
   connect(b, SIGNAL(clicked()), this, SLOT(pPageButtonClicked()));
   hbox->addWidget(b);
   
   b = new QToolButton;
-//  b->setMaximumHeight(h);
   b->setIcon(QIcon(prev_xpm));
   b->setToolTip(QString(tr("Previous Bar")));
   connect(b, SIGNAL(clicked()), this, SLOT(pBarButtonClicked()));
   hbox->addWidget(b);
   
   b = new QToolButton;
-//  b->setMaximumHeight(h);
   b->setIcon(QIcon(next_xpm));
   b->setToolTip(QString(tr("Next Bar")));
   connect(b, SIGNAL(clicked()), this, SLOT(nBarButtonClicked()));
   hbox->addWidget(b);
   
   b = new QToolButton;
-//  b->setMaximumHeight(h);
   b->setIcon(QIcon(npage_xpm));
   b->setToolTip(QString(tr("Next Page")));
   connect(b, SIGNAL(clicked()), this, SLOT(nPageButtonClicked()));
   hbox->addWidget(b);
   
   b = new QToolButton;
-//  b->setMaximumHeight(h);
   b->setIcon(QIcon(end_xpm));
   b->setToolTip(QString(tr("End")));
   connect(b, SIGNAL(clicked()), this, SLOT(endButtonClicked()));
@@ -128,11 +123,13 @@ void PlotSlider::endButtonClicked ()
   slider->setValue(slider->maximum());
 }
 
-void PlotSlider::setStart (int count, int width, QList<Setting> &zoomList)
+void PlotSlider::setStart (int count, int width, ZoomButtons *zoomBox)
 {
-  Setting set = zoomList[0];
+  int pixelSpace = 0;
+  int index = 0;
+  zoomBox->getSetting(0, index, pixelSpace);
   
-  int page = width / set.getInt(1);
+  int page = width / pixelSpace;
   int max = count - page;
   if (max < 0)
     max = 0;
@@ -143,17 +140,17 @@ void PlotSlider::setStart (int count, int width, QList<Setting> &zoomList)
   if (count < page)
   {
     slider->setValue(0);
-    set.setData(0, 0);
+    index = 0;
   }
   else
   {
     slider->setValue(max + 1);
-    set.setData(0, max + 1);
+    index = max + 1;
   }
   
   slider->blockSignals(FALSE);
 
-  zoomList[0] = set;
+  zoomBox->setSetting(0, index, pixelSpace);
 }
 
 int PlotSlider::getValue ()

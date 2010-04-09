@@ -7,10 +7,38 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math
 
 HEADERS += Qtstalker.h
 HEADERS += assistant.h
+HEADERS += DataWindow.h
+HEADERS += Preferences.h
+HEADERS += ChartPage.h
+HEADERS += GroupPage.h
+HEADERS += IndicatorPage.h
+HEADERS += ScriptPage.h
+HEADERS += InfoPanel.h
+#HEADERS += PlotButtonBox.h
+HEADERS += PlotSlider.h
+HEADERS += COToolBar.h
+HEADERS += ZoomButtons.h
+HEADERS += BarLengthButtons.h
+HEADERS += RefreshAction.h
+
 
 SOURCES += Qtstalker.cpp
 SOURCES += main.cpp
 SOURCES += assistant.cpp
+SOURCES += DataWindow.cpp
+SOURCES += Preferences.cpp
+SOURCES += ChartPage.cpp
+SOURCES += GroupPage.cpp
+SOURCES += IndicatorPage.cpp
+SOURCES += ScriptPage.cpp
+SOURCES += InfoPanel.cpp
+#SOURCES += PlotButtonBox.cpp
+SOURCES += PlotSlider.cpp
+SOURCES += COToolBar.cpp
+SOURCES += ZoomButtons.cpp
+SOURCES += BarLengthButtons.cpp
+SOURCES += RefreshAction.cpp
+
 
 TARGET = qtstalker
 

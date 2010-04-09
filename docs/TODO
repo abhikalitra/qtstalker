@@ -12,8 +12,14 @@ To Do:
 - Improve source code documentation. Javadoc comments are utilised by Doxygen.
 - create an integrated indicator editor.
 - add tooltips
+- interactive scripting
+
+Priority
+========
+
 - documentation
 - update docs regarding '-session' command line option
+- add symbol rename command to the database plugins
 
 
 
