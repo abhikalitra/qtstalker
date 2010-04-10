@@ -39,7 +39,6 @@ class IndicatorPage : public QWidget
   Q_OBJECT
 
   signals:
-    void signalDisableIndicator (QString);
     void signalEnableIndicator (QString);
     void signalDeleteIndicator (QString);
     void signalNewIndicator (QString);

@@ -46,6 +46,7 @@
 #include "COToolBar.h"
 #include "ZoomButtons.h"
 #include "BarLengthButtons.h"
+#include "RecentCharts.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -62,7 +63,6 @@ class QtstalkerApp : public QMainWindow
     void signalClearIndicator ();
     void signalGrid (bool);
     void signalScale (bool);
-    void signalDraw (bool);
     void signalNewIndicator ();
     void signalNewExternalChartObject (QString);
     void signalSetExternalChartObject ();
@@ -80,16 +80,10 @@ class QtstalkerApp : public QMainWindow
       About,
       ScaleToScreen,
       SidePanel,
-      Crosshairs,
-      Help,
-      IndicatorSummary,
-      BarCount,
-      Slider,
-      RecentCharts
+      Help
     };
 
     QtstalkerApp (QString);
-    void initConfig ();
     void createActions ();
     void createMenuBar ();
     void createToolBars ();
@@ -98,43 +92,32 @@ class QtstalkerApp : public QMainWindow
     void initIndicatorNav ();
     void initScriptNav ();
     QString getWindowCaption ();
-    void loadChart (QString, QString);
     void setSliderStart (int);
-    QToolButton * createToolButton (QIcon, QString, QString, int);
 
   public slots:
+    void loadChart (BarData *);
     void slotAbout ();
     void slotStartDocumentation ();
     void slotShowDocumentation (QString);
     void slotQuit();
-    void slotOpenChart (BarData *);
-    void slotOpenChart (int);
     void slotOptions ();
     void slotDataWindow ();
-    void slotNewIndicator (QString);
     void slotDeleteIndicator (QString);
     void barLengthChanged (int);
     void slotChartUpdated ();
     void slotStatusMessage (QString);
-    void slotDisableIndicator (QString);
-    void slotEnableIndicator (QString);
+    void addIndicator (QString);
     void slotDrawPlots ();
     void addIndicatorButton (QString);
-    void slotWakeup ();
+    void wakeup ();
     void slotAppFont (QFont);
     void slotHideNav (bool d);
-    void slotAddRecentChart (BarData *);
     void loadIndicator (BarData *, QString &);
-    void refreshIndicator (QString);
-    void chartMove (int);
     void psButtonClicked (int);
     void zoomChanged(int, int);
     void refreshChart ();
 
   protected:
-    void closeEvent(QCloseEvent *event);
-
-  private:
     QSplitter *split;
     QSplitter *navSplitter;
     QSplitter *dpSplitter;
@@ -148,14 +131,14 @@ class QtstalkerApp : public QMainWindow
     QList<QTabWidget*> tabList;
     QHash<MenuAction, QAction*> actionList;
     QSpinBox *barCount;
-    QComboBox *recentCharts;
+    RecentCharts *recentCharts;
     Assistant *assistant;
     BarLengthButtons *barLengthButtons;
     BarData currentChart;
     ScriptPage *scriptPage;
     PlotSlider *plotSlider;
     COToolBar *toolBar2;
-    ZoomButtons *zoomBox;
+    ZoomButtons *zoomButtons;
 };
 
 #endif

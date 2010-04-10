@@ -18,7 +18,7 @@ save futures quotes into the database.<br>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 quote originates from. ie.
-'Chicago Board of Trade'<a
+'FCBT'<a
  href="file:///media/data/mystuff/prog/qtstalker/docs/exchanges.csv"><br>
     </a></li>
   <li>&lt;SYMBOL&gt; is the futures symbol ie. 'C_2010_Z'</li>
@@ -40,7 +40,7 @@ FORMAT&gt; format</li>
 For example. If we wanted to save a futures quote, the text would
 be:<br>
 <br>
-"QUOTE,Futures,SET_QUOTE,Chicago Board of Trade,C_2010_Z,yyyy-MM-dd
+"QUOTE,Futures,SET_QUOTE,FCBT,C_2010_Z,yyyy-MM-dd
 HH:MM:SS,2010-03-09
 13:24:00,25.50,27.25,23.75,26.25,123456789,123456"<br>
 <br>
@@ -76,7 +76,7 @@ This function will set the name of the futures symbol.<br>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 symbol trades on. ie.
-'Chicago Board of Trade'<br>
+'FCBT'<br>
   </li>
   <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'C_2010_Z'<br>
   </li>
@@ -85,7 +85,7 @@ symbol trades on. ie.
 <br>
 For example. Setting the name for C_2010_Z would be:<br>
 <br>
-"QUOTE,Futures,SET_NAME,Chicago Board of Trade,C_2010_Z,Corn 2010
+"QUOTE,Futures,SET_NAME,FCBT,C_2010_Z,Corn 2010
 December"<br>
 <br>
 <br>
@@ -101,7 +101,7 @@ be 'SP'. <br>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 symbol trades on. ie.
-'Chicago Mercantile Exchange'<br>
+'FCME'<br>
   </li>
   <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'SP_2010_Z'<br>
   </li>
@@ -111,7 +111,7 @@ symbol trades on. ie.
 </ul>
 <br>
 For example. Setting the code for SP_2010_Z would be:<br>
-"QUOTE,Futures,SET_CODE,Chicago Mercantile Exchange,SP_2010_Z,SP"<br>
+"QUOTE,Futures,SET_CODE,FCME,SP_2010_Z,SP"<br>
 <br>
 On success a '0' is returned. On failure, a '1' is
 returned.<br>
@@ -125,7 +125,7 @@ symbol.<br>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 symbol trades on. ie.
-'Chicago Mercantile Exchange'</li>
+'FCME'</li>
   <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'SP_2010_Z'</li>
   <li>&lt;MONTH&gt; is the expiry month code to use. ie. 'Z'&nbsp;
 Month codes are:</li>
@@ -145,7 +145,7 @@ Month codes are:</li>
   </ul>
 </ul>
 For example. Setting the expiry month code for SP_2010_Z would be:<br>
-"QUOTE,Futures,SET_MONTH,Chicago Mercantile Exchange,SP_2010_Z,Z"<br>
+"QUOTE,Futures,SET_MONTH,FCME,SP_2010_Z,Z"<br>
 <br>
 On success a '0' is returned. On failure, a '1' is
 returned.<br>
@@ -158,7 +158,7 @@ This function will set the futures expiry year.<br>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 symbol trades on. ie.
-'Chicago Mercantile Exchange'<br>
+'FCME'<br>
   </li>
   <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'SP_2010_Z'<br>
   </li>
@@ -169,7 +169,7 @@ symbol trades on. ie.
 <br>
 For example. Setting the expiry year for futures symbol 'SP_2010_Z'
 would be:<br>
-"QUOTE,Futures,SET_YEAR,Chicago Mercantile Exchange,SP_2010_Z,2010"<br>
+"QUOTE,Futures,SET_YEAR,FCME,SP_2010_Z,2010"<br>
 <br>
 On success a '0' is returned. On failure, a '1' is
 returned.<br>
@@ -182,7 +182,7 @@ database.<br>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 symbol trades on. ie.
-'Chicago Mercantile Exchange'<br>
+'FCME'<br>
   </li>
   <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'SP_2010_Z'<br>
   </li>
@@ -190,7 +190,7 @@ symbol trades on. ie.
 <br>
 For example. Deleting the 'SP_2010_Z'
 would be:<br>
-"QUOTE,Futures,DELETE,Chicago Mercantile Exchange,SP_2010_Z"<br>
+"QUOTE,Futures,DELETE,FCME,SP_2010_Z"<br>
 <br>
 On success a '0' is returned. On failure, a '1' is
 returned.<br>

@@ -39,6 +39,10 @@ class Group
     BarData * getItem (int);
     int count ();
     void append (BarData *);
+    void prepend (BarData *);
+    void getStringList (QStringList &);
+    int contains (BarData *);
+    void move (int, int);
 
   protected:
     QString name;

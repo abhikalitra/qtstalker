@@ -19,38 +19,32 @@
  *  USA.
  */
 
-#ifndef DATAWINDOW_HPP
-#define DATAWINDOW_HPP
+#ifndef RECENT_CHARTS_HPP
+#define RECENT_CHARTS_HPP
 
-#include <QString>
-#include <QDialog>
-#include <QTableWidget>
-#include <QList>
-#include <QHash>
+#include <QComboBox>
+#include <QToolBar>
 
 #include "BarData.h"
-#include "Plot.h"
-#include "Setting.h"
-#include "DateBar.h"
-#include "PlotLine.h"
+#include "Group.h"
 
-class DataWindow : public QDialog
+class RecentCharts : public QComboBox
 {
   Q_OBJECT
+  
+  signals:
+    void signalChartSelected (BarData *);
 
   public:
-    DataWindow (QWidget *);
-    void setData (QHash<QString, Plot *> &);
-    void setPlot (Plot *);
-    void setDates (DateBar &);
-    void setLine (PlotLine *);
-    void setOHLC (PlotLine *);
-    void scrollToBottom ();
+    RecentCharts (QToolBar *);
+    
+  public slots:
+    void addRecentChart (BarData *bd);
+    void itemSelected (int row);
+    void save ();
 
-  private:
-    QTableWidget *table;
-    int dateFlag;
-    int ohlcFlag;
+  protected:
+    Group group;
 };
 
 #endif

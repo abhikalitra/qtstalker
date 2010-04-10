@@ -22,11 +22,13 @@
 #include "DataWindow.h"
 #include "IndicatorPlot.h"
 #include "Utils.h"
+#include "IndicatorDataBase.h"
 
 #include <QLayout>
 #include <QVBoxLayout>
 #include <QTableWidgetItem>
 #include <QtDebug>
+#include <QStringList>
 
 DataWindow::DataWindow (QWidget *w) : QDialog (w, 0)
 {
@@ -43,6 +45,22 @@ DataWindow::DataWindow (QWidget *w) : QDialog (w, 0)
   vbox->addWidget (table);
 
   resize(750, 550);
+}
+
+void DataWindow::setData (QHash<QString, Plot *> &list)
+{
+  IndicatorDataBase db;
+  QStringList l;
+  db.getIndicatorList(l);
+  int loop;
+  for (loop = 0; loop < l.count(); loop++)
+  {
+    Plot *plot = list.value(l[loop]);
+    if (! plot)
+      continue;
+
+    setPlot(plot);
+  }
 }
 
 void DataWindow::setPlot (Plot *d)

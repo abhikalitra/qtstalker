@@ -386,6 +386,14 @@
            Moved the side toolbar, zoom control, bar length buttons and refresh functions out of QtstalkerApp
            into new GUI classes.
 
+20100410:  Fixed the recent charts toolbar and moved the code into /src/RecentCharts class.
+
+           The exchange names have been changed to use the ISO stanadard. Users will have to re-import your
+           quotes to use the new exchange codes. The good news is that we wont be changing them again, and
+           they are all only 4 characters long for much less typing.
+
+
+
 
 
 

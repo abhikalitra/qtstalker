@@ -17,7 +17,7 @@ save stock quotes into the database.<br>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 quote originates from. ie.
-'New York Stock Exchange'<a
+'XNAS'<a
  href="file:///media/data/mystuff/prog/qtstalker/docs/exchanges.csv"><br>
     </a></li>
   <li>&lt;SYMBOL&gt; is the security symbol ie. GOOG</li>
@@ -38,7 +38,7 @@ value</li>
 For example. If we wanted to save a stock quote, the text would
 be:<br>
 <br>
-"QUOTE,Stock,SET_QUOTE,NASDAQ,MSFT,yyyy-MM-dd HH:MM:SS,2010-03-09
+"QUOTE,Stock,SET_QUOTE,XNAS,MSFT,yyyy-MM-dd HH:MM:SS,2010-03-09
 13:24:00,25.50,27.25,23.75,26.25,123456789"<br>
 <br>
 On success a '0' is returned. On failure, a '1' is
@@ -72,7 +72,7 @@ This function will set the company name of the symbol.<br>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 symbol trades on. ie.
-'NASDAQ'<br>
+'XNAS'<br>
   </li>
   <li>&lt;SYMBOL&gt; is the symbol. ie. 'MSFT'<br>
   </li>
@@ -82,7 +82,7 @@ Corporation'</li>
 <br>
 For example. Setting the company name for MSFT would be:<br>
 <br>
-"QUOTE,Stock,SET_NAME,NASDAQ,MSFT,Microsoft Corporation"<br>
+"QUOTE,Stock,SET_NAME,XNAS,MSFT,Microsoft Corporation"<br>
 <br>
 <br>
 &nbsp;On success a '0' is returned. On failure, a '1' is
@@ -96,7 +96,7 @@ database.<br>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 symbol trades on. ie.
-'NASDAQ'<br>
+'XNAS'<br>
   </li>
   <li>&lt;SYMBOL&gt; is the symbol. ie. 'MSFT'<br>
   </li>
@@ -104,7 +104,7 @@ symbol trades on. ie.
 <br>
 For example. Deleting MSFT from the database would be:<br>
 <br>
-"QUOTE,Stock,DELETE,NASDAQ,MSFT"<br>
+"QUOTE,Stock,DELETE,XNAS,MSFT"<br>
 <br>
 &nbsp;On success a '0' is returned. On failure, a '1' is
 returned.<br>

@@ -20,6 +20,7 @@ HEADERS += COToolBar.h
 HEADERS += ZoomButtons.h
 HEADERS += BarLengthButtons.h
 HEADERS += RefreshAction.h
+HEADERS += RecentCharts.h
 
 
 SOURCES += Qtstalker.cpp
@@ -38,6 +39,7 @@ SOURCES += COToolBar.cpp
 SOURCES += ZoomButtons.cpp
 SOURCES += BarLengthButtons.cpp
 SOURCES += RefreshAction.cpp
+SOURCES += RecentCharts.cpp
 
 
 TARGET = qtstalker

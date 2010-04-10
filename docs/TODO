@@ -20,6 +20,10 @@ Priority
 - documentation
 - update docs regarding '-session' command line option
 - add symbol rename command to the database plugins
+- add change field to the data panel info
+- link to other apps via button control panel
+- add '-asset ASX:BHP' command line option to bring up a chart from the command line.
+
 
 
 

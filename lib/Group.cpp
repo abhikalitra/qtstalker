@@ -79,3 +79,46 @@ void Group::append (BarData *d)
   symbols.append(bd);
 }
 
+void Group::prepend (BarData *d)
+{
+  BarData *bd = new BarData;
+  bd->setExchange(d->getExchange());
+  bd->setSymbol(d->getSymbol());
+  bd->setName(d->getName());
+  symbols.prepend(bd);
+}
+
+void Group::getStringList (QStringList &l)
+{
+  l.clear();
+  
+  int loop;
+  for (loop = 0; loop < symbols.count(); loop++)
+  {
+    BarData *bd = getItem(loop);
+    l.append(bd->getExchange());
+    l.append(bd->getSymbol());
+  }
+}
+
+int Group::contains (BarData *d)
+{
+  int loop;
+  for (loop = 0; loop < count(); loop++)
+  {
+    BarData *bd = getItem(loop);
+    if (d->getSymbol() == bd->getSymbol())
+    {
+      if (d->getExchange() == bd->getExchange())
+	return TRUE;
+    }
+  }
+  
+  return FALSE;
+}
+
+void Group::move (int from, int to)
+{
+  symbols.move(from, to);
+}
+

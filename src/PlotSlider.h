@@ -40,9 +40,9 @@ class PlotSlider : public QWidget
     PlotSlider ();
     void setStart (int, int, ZoomButtons *);
     int getValue ();
-    void setValue (int);
     
   public slots:
+    void setValue (int);
     void startButtonClicked ();
     void pPageButtonClicked ();
     void pBarButtonClicked ();

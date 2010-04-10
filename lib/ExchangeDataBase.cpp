@@ -35,7 +35,7 @@ ExchangeDataBase::ExchangeDataBase ()
 int ExchangeDataBase::verifyExchangeName (QString &exchange)
 {
   QSqlQuery q(QSqlDatabase::database(dbName));
-  QString s = "SELECT name FROM exchangeIndex WHERE name='" + exchange + "'";
+  QString s = "SELECT code FROM exchangeIndex WHERE code='" + exchange + "'";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ExchangeDataBase::verifyExchangeName: " << q.lastError().text();
@@ -65,10 +65,11 @@ int ExchangeDataBase::createExchanges ()
 
   // create the new table
   s = "CREATE TABLE IF NOT EXISTS exchangeIndex (";
-  s.append("name TEXT PRIMARY KEY UNIQUE");
-  s.append(", country TEXT");
-  s.append(", gmt REAL");
-  s.append(", currency TEXT");
+  s.append("code TEXT PRIMARY KEY UNIQUE");
+  s.append(", countryName TEXT");
+  s.append(", countryCode2 TEXT");
+  s.append(", name TEXT");
+  s.append(", city TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -80,11 +81,12 @@ int ExchangeDataBase::createExchanges ()
     s = in.readLine();
     QStringList l = s.split(",");
    
-    s = "REPLACE INTO exchangeIndex (name,country,gmt,currency) VALUES(";
+    s = "REPLACE INTO exchangeIndex (code,countryName,countryCode2,name,city) VALUES(";
     s.append("'" + l[0] + "'");
     s.append(",'" + l[1] + "'");
-    s.append("," + l[2]);
+    s.append(",'" + l[2] + "'");
     s.append(",'" + l[3] + "'");
+    s.append(",'" + l[4] + "'");
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())

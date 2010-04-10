@@ -287,7 +287,7 @@ void IndicatorPage::doubleClick (QListWidgetItem *item)
     i.setEnable(0);
     db.setIndicatorEnable(i);
     item->setIcon(QIcon(disable));
-    emit signalDisableIndicator(s);
+    emit signalDeleteIndicator(s);
     emit signalMessage(QString(tr("Indicator ")) + s + tr(" disabled"));
   }
   else
