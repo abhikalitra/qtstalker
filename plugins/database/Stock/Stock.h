@@ -34,7 +34,8 @@ class Stock : public DBPlugin
       SET_NAME,
       SAVE_QUOTES,
       DELETE,
-      GET_QUOTES
+      GET_QUOTES,
+      RENAME
     };
     
     Stock ();
@@ -47,6 +48,7 @@ class Stock : public DBPlugin
     int scriptSaveQuotes (QStringList &l);
     int scriptDelete (QStringList &l);
     int scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &);
+    int scriptRename (QStringList &l);
     
   protected:
     QStringList scriptMethods;

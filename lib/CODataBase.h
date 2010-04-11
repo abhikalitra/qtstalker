@@ -38,6 +38,7 @@ class CODataBase : public DataBase
     void deleteChartObject (QString &id);
     void getChartObjects (BarData *, QString &indicator, Indicator &);
     void setChartObject (QString &);
+    int renameSymbol (BarData *, BarData *);
 };
 
 #endif

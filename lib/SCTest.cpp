@@ -36,7 +36,7 @@ PlotLine * SCTest::getSig (QStringList &l, QHash<QString, PlotLine *> &tlines, Q
   // format TEST_EXIT_SHORT,INPUT
 
   ba.clear();
-  ba.append("1\n");
+  ba.append("ERROR\n");
 
   if (l.count() != 2)
   {

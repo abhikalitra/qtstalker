@@ -32,28 +32,20 @@
 
 ZoomButtons::ZoomButtons (QToolBar *tb) : QObject (tb)
 {
-  zoomPos = -1;
-  
+  pixelSpace = 6;
   createButtons(tb);
 }
 
 void ZoomButtons::createButtons (QToolBar *tb)
 {
   Config config;
-  int ti = config.getInt(Config::Pixelspace);
-  
-  Setting set;
-  set.setData(0, 0); // save index, 0 for now
-  set.setData(1, ti); // save pixelspace
-  zoomList.append(set);
-  zoomPos = 0;
-  
+  pixelSpace = config.getInt(Config::Pixelspace);
+
   // zoom in button
   zoomInButton = new QToolButton;
   zoomInButton->setIcon(QIcon(zoomin_xpm));
   zoomInButton->setToolTip(QString(tr("Zoom In")));
   zoomInButton->setCheckable(FALSE);
-  zoomInButton->setEnabled(FALSE);
   connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
   tb->addWidget(zoomInButton);
   
@@ -62,7 +54,6 @@ void ZoomButtons::createButtons (QToolBar *tb)
   zoomOutButton->setIcon(QIcon(zoomout_xpm));
   zoomOutButton->setToolTip(QString(tr("Zoom Out")));
   zoomOutButton->setCheckable(FALSE);
-  zoomOutButton->setEnabled(FALSE);
   connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
   tb->addWidget(zoomOutButton);
 
@@ -71,7 +62,6 @@ void ZoomButtons::createButtons (QToolBar *tb)
   config.getData(Config::PSButton1, s);
 
   ps1Button = new QToolButton;
-  ps1Button->setToolTip(QString(tr("Zoom Out")));
   ps1Button->setCheckable(FALSE);
   ps1Button->setToolTip(tr("Set Bar Spacing to ") + s);
   ps1Button->setText(s);
@@ -82,7 +72,6 @@ void ZoomButtons::createButtons (QToolBar *tb)
   config.getData(Config::PSButton2, s);
 
   ps2Button = new QToolButton;
-  ps2Button->setToolTip(QString(tr("Zoom Out")));
   ps2Button->setCheckable(FALSE);
   ps2Button->setToolTip(tr("Set Bar Spacing to ") + s);
   ps2Button->setText(s);
@@ -92,55 +81,22 @@ void ZoomButtons::createButtons (QToolBar *tb)
 
 void ZoomButtons::zoomIn ()
 {
-  zoomPos++;
-  if (zoomPos == zoomList.count() - 1)
-  {
-    zoomInButton->setEnabled(FALSE);
-    zoomOutButton->setEnabled(TRUE);
-  }
-
-  Setting set = zoomList[zoomPos];
-  emit signalZoom(set.getInt(1), set.getInt(0)); 
+  pixelSpace++;
+  emit signalPixelSpace(pixelSpace); 
 }
 
 void ZoomButtons::zoomOut ()
 {
-  zoomPos--;
-  if (zoomPos == 0)
-  {
-    zoomInButton->setEnabled(TRUE);
-    zoomOutButton->setEnabled(FALSE);
-  }
-
-  Setting set = zoomList[zoomPos];
-  emit signalZoom(set.getInt(1), set.getInt(0)); 
+  pixelSpace--;
+  if (pixelSpace < 6)
+    pixelSpace = 6;
+  emit signalPixelSpace(pixelSpace); 
 }
 
-void ZoomButtons::addZoom (int index, int pixelSpace)
+void ZoomButtons::addZoom (int index, int ps)
 {
-  Setting set;
-  set.setData(0, index);
-  set.setData(1, pixelSpace);
-  zoomList.append(set);
-
-  zoomPos++;
-
-  zoomOutButton->setEnabled(TRUE);
-
+  pixelSpace = ps;
   emit signalZoom(pixelSpace, index); 
-}
-
-void ZoomButtons::resetZoom ()
-{
-  // clear the zoomList, leave first item as starting base
-  int loop;
-  for (loop = 1; loop < zoomList.count(); loop++)
-    zoomList.removeAt(loop);
-
-  zoomPos = 0;
-
-  zoomInButton->setEnabled(FALSE);
-  zoomOutButton->setEnabled(FALSE);
 }
 
 void ZoomButtons::ps1ButtonClicked ()
@@ -157,42 +113,16 @@ void ZoomButtons::ps2ButtonClicked ()
   psButtonClicked(pixelSpace);
 }
 
-void ZoomButtons::psButtonClicked (int pixelSpace)
+void ZoomButtons::psButtonClicked (int ps)
 {
-  resetZoom();
-  
-  Setting set = zoomList[0];
-  set.setData(1, pixelSpace);
-  zoomList[0] = set;
-
-  zoomPos = 0;
-  if (zoomList.count() > 1)
-    zoomInButton->setEnabled(TRUE);
-  zoomOutButton->setEnabled(FALSE);
-
+  pixelSpace = ps;
   Config config;
-  config.setData((int) Config::Pixelspace, pixelSpace); // save base zoom amount
-
+  config.setData((int) Config::Pixelspace, pixelSpace);
   emit signalPixelSpace(pixelSpace);
 }
 
 int ZoomButtons::getPixelSpace ()
 {
-  Setting set = zoomList[zoomPos];
-  return set.getInt(1);
-}
-
-void ZoomButtons::setSetting (int pos, int index, int pixelSpace)
-{
-  Setting set = zoomList[pos];
-  set.setData(0, index);
-  set.setData(1, pixelSpace);
-}
-
-void ZoomButtons::getSetting (int pos, int &index, int &pixelSpace)
-{
-  Setting set = zoomList[pos];
-  index = set.getInt(0);
-  pixelSpace = set.getInt(1);
+  return pixelSpace;
 }
 

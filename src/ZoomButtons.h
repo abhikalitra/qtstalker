@@ -27,8 +27,6 @@
 #include <QToolButton>
 #include <QToolBar>
 
-#include "Setting.h"
-
 class ZoomButtons : public QObject
 {
   Q_OBJECT
@@ -40,11 +38,8 @@ class ZoomButtons : public QObject
   public:
     ZoomButtons (QToolBar *);
     void createButtons (QToolBar *);
-    void resetZoom ();
     void psButtonClicked (int);
     int getPixelSpace ();
-    void setSetting (int, int, int); // pos, index, pixelSpace
-    void getSetting (int, int &, int &); // pos, index, pixelSpace
     
   public slots:
     void addZoom (int index, int pixelSpace);
@@ -54,10 +49,9 @@ class ZoomButtons : public QObject
     void ps2ButtonClicked ();
     
   protected:
-    QList<Setting> zoomList;
-    int zoomPos;
     QToolButton *zoomInButton;
     QToolButton *zoomOutButton;
+    int pixelSpace;
     QToolButton *ps1Button;
     QToolButton *ps2Button;
 };

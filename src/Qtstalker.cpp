@@ -35,6 +35,7 @@
 #include <QApplication>
 #include <QDesktopServices>
 #include <QHBoxLayout>
+#include <QTimer>
 
 #include "Qtstalker.h"
 #include "DataWindow.h"
@@ -70,7 +71,7 @@
 #include "../pics/help.xpm"
 #include "../pics/script.xpm"
 
-QtstalkerApp::QtstalkerApp(QString session)
+QtstalkerApp::QtstalkerApp(QString session, QString asset)
 {
   setWindowIcon(QIcon(qtstalker));
   QApplication::setOrganizationName("Qtstalker");
@@ -222,6 +223,10 @@ QtstalkerApp::QtstalkerApp(QString session)
   QPoint p;
   config.getData((int) Config::MainWindowPos, p);
   move(p);
+  
+  // clear current chart from config
+  QString s("");
+  config.setData(Config::CurrentChart, s);
 
   // catch any kill signals and try to save config
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
@@ -229,6 +234,13 @@ QtstalkerApp::QtstalkerApp(QString session)
   statusbar->showMessage(tr("Ready"), 2000);
 
   setUnifiedTitleAndToolBarOnMac(TRUE);
+  
+  // check if we are going to display a chart from the command line
+  if (asset.length())
+  {
+    clAsset = asset;
+    QTimer::singleShot(500, this, SLOT(commandLineAsset()));
+  }
 }
 
 void QtstalkerApp::createActions ()
@@ -432,7 +444,7 @@ void QtstalkerApp::slotQuit()
 
   // save running scripts
   scriptPage->saveRunningScripts();
-
+  
   delete assistant;
   
   config.commit();
@@ -528,7 +540,6 @@ void QtstalkerApp::loadChart (BarData *symbol)
   
   qdb2->getBars(recordList);
   
-  currentChart.setSymbol(recordList.getSymbol());
   currentChart.setName(recordList.getName());
   currentChart.setBarsRequested(recordList.count());
 
@@ -542,11 +553,6 @@ void QtstalkerApp::loadChart (BarData *symbol)
 
   setSliderStart(currentChart.getBarsRequested());
   emit signalIndex(plotSlider->getValue()); 
-
-  // set the default zoom position
-  zoomButtons->resetZoom();
-
-  emit signalPixelspace(zoomButtons->getPixelSpace());
 
   slotDrawPlots();
   
@@ -646,7 +652,6 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
 
 void QtstalkerApp::addIndicator (QString name)
 {
-  // enable indicator
   addIndicatorButton(name);
   loadChart(&currentChart);
 }
@@ -828,7 +833,7 @@ void QtstalkerApp::setSliderStart (int count)
   if (! plot)
     return;
 
-  plotSlider->setStart(count, plot->getWidth(), zoomButtons);
+  plotSlider->setStart(count, plot->getWidth(), zoomButtons->getPixelSpace());
 }
 
 /**********************************************************************/
@@ -837,7 +842,6 @@ void QtstalkerApp::setSliderStart (int count)
 
 void QtstalkerApp::psButtonClicked (int pixelSpace)
 {
-  setSliderStart(currentChart.getBarsRequested());
   emit signalPixelspace(pixelSpace);
   emit signalIndex(plotSlider->getValue());
   slotDrawPlots();
@@ -860,5 +864,26 @@ void QtstalkerApp::refreshChart ()
     return;
 
   loadChart(&currentChart);
+}
+
+// ******************************************************************************
+// ******************* Command Line Asset ***************************************
+// ******************************************************************************
+// if the -asset command was issued from the command line, then we will load
+// a chart on startup
+
+void QtstalkerApp::commandLineAsset ()
+{
+  QStringList l = clAsset.split(":");
+  if (l.count() != 2)
+  {
+    qDebug() << "QtstalkerApp::commandLineAsset: invalid command line asset string" << clAsset;
+    return;
+  }
+  
+  BarData bd;
+  bd.setExchange(l[0]);
+  bd.setSymbol(l[1]);
+  loadChart(&bd);
 }
 

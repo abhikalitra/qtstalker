@@ -32,6 +32,7 @@
 int main(int argc, char *argv[])
 {
   QString session("0");
+  QString asset;
   int loop;
   for (loop = 0; loop <= argc; loop++)
   {
@@ -52,6 +53,18 @@ int main(int argc, char *argv[])
         break;
       }
     }
+
+    if (s == "-asset")
+    {
+      loop++;
+      if (loop > argc)
+        break;
+      else
+      {
+        asset = argv[loop];
+        break;
+      }
+    }
   }
 
   QApplication a(argc, argv);
@@ -64,7 +77,7 @@ int main(int argc, char *argv[])
   tor.load(i18nFilename, i18nDir);
   a.installTranslator( &tor );
 
-  QtstalkerApp *qtstalker = new QtstalkerApp(session);
+  QtstalkerApp *qtstalker = new QtstalkerApp(session, asset);
 
   qtstalker->show();
 

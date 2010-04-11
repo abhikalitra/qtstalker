@@ -154,3 +154,21 @@ void CODataBase::setChartObject (QString &co)
   commit();
 }
 
+int CODataBase::renameSymbol (BarData *obd, BarData *nbd)
+{
+  transaction();
+
+  // update any chart objects with new symbol name
+  QString s = "UPDATE chartObjects";
+  s.append(" SET symbol='" + nbd->getSymbol() + "'");
+  s.append(", exchange='" + nbd->getExchange() + "'");
+  s.append(" WHERE symbol='" + obd->getSymbol() + "'");
+  s.append(" AND exchange='" + obd->getExchange() + "'");
+  if (command(s, QString("CODataBase::renameSymbol")))
+    return 1;
+  
+  commit();
+  
+  return 0;
+}
+

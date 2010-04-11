@@ -22,6 +22,7 @@
 #include "SCSymbol.h"
 #include "DBPlugin.h"
 #include "Group.h"
+#include "Config.h"
 
 #include <QtDebug>
 #include <QList>
@@ -31,11 +32,13 @@ SCSymbol::SCSymbol ()
   methodList << "CURRENT" << "SEARCH";
 }
 
-int SCSymbol::calculate (QStringList &l, QByteArray &ba, BarData *data)
+int SCSymbol::calculate (QStringList &l, QByteArray &ba)
 {
   // format = SYMBOL,METHOD,*
 
-  int rc = -1;
+  int rc = 1;
+  ba.clear();
+  ba.append("ERROR\n");
 
   if (l.count() < 2)
   {
@@ -46,7 +49,7 @@ int SCSymbol::calculate (QStringList &l, QByteArray &ba, BarData *data)
   switch ((Method) methodList.indexOf(l[1]))
   {
     case CURRENT:
-      rc = getCurrent(l, ba, data);
+      rc = getCurrent(l, ba);
       break;
     case SEARCH:
       rc = getSearch(l, ba);
@@ -61,9 +64,6 @@ int SCSymbol::calculate (QStringList &l, QByteArray &ba, BarData *data)
 int SCSymbol::getSearch (QStringList &l, QByteArray &ba)
 {
   // format = SYMBOL,SEARCH,EXCHANGE,SEARCH_STRING
-
-  ba.clear();
-  ba.append("ERROR\n");
 
   if (l.count() != 4)
   {
@@ -91,12 +91,9 @@ int SCSymbol::getSearch (QStringList &l, QByteArray &ba)
   return 0;
 }
 
-int SCSymbol::getCurrent (QStringList &l, QByteArray &ba, BarData *data)
+int SCSymbol::getCurrent (QStringList &l, QByteArray &ba)
 {
   // format = SYMBOL,CURRENT
-
-  ba.clear();
-  ba.append("ERROR\n");
 
   if (l.count() != 2)
   {
@@ -104,11 +101,15 @@ int SCSymbol::getCurrent (QStringList &l, QByteArray &ba, BarData *data)
     return 1;
   }
 
-  if (! data)
-    return 1;
-  
+  Config config;
+  QStringList l2;
+  config.getData(Config::CurrentChart, l2);
+  QString s = "NONE";
+  if (l2.count() == 2)
+    s = l2.join(",");
+
   ba.clear();
-  ba.append(data->getExchange() + "," + data->getSymbol() + '\n');
+  ba.append(s + '\n');
   
   return 0;
 }

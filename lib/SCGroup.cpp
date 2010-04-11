@@ -34,7 +34,9 @@ SCGroup::SCGroup ()
 int SCGroup::calculate (QStringList &l, QByteArray &ba)
 {
   // format = GROUP,METHOD,*
-  int rc = -1;
+  int rc = 1;
+  ba.clear();
+  ba.append("ERROR\n");
 
   if (l.count() < 2)
   {
@@ -54,6 +56,7 @@ int SCGroup::calculate (QStringList &l, QByteArray &ba)
       rc = getGroup(l, ba);
       break;
     default:
+      qDebug() << "SCGroup::calculate: invalid method" << l[1];
       break;
   }
   
@@ -63,9 +66,6 @@ int SCGroup::calculate (QStringList &l, QByteArray &ba)
 int SCGroup::addGroup (QStringList &l, QByteArray &ba)
 {
   // format = GROUP,ADD,GROUP,EXCHANGE,SYMBOL
-
-  ba.clear();
-  ba.append("1\n");
 
   if (l.count() != 5)
   {
@@ -95,9 +95,6 @@ int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
 {
   // format = GROUP,DELETE,GROUP
 
-  ba.clear();
-  ba.append("1\n");
-
   if (l.count() != 3)
   {
     qDebug() << "SCGroup::addGroup: invalid parm count" << l.count();
@@ -116,9 +113,6 @@ int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
 int SCGroup::getGroup (QStringList &l, QByteArray &ba)
 {
   // format = GROUP,GET,GROUP
-
-  ba.clear();
-  ba.append("ERROR\n");
 
   if (l.count() != 3)
   {
@@ -141,8 +135,7 @@ int SCGroup::getGroup (QStringList &l, QByteArray &ba)
   }
 
   ba.clear();
-  ba.append(rl.join(","));
-  ba.append("\n");
+  ba.append(rl.join(",") + "\n");
 
   return 0;
 }

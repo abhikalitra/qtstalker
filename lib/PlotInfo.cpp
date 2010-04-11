@@ -114,14 +114,15 @@ void PlotInfo::drawInfo (PlotData &pd, Indicator &indicator)
   painter.setBackground(QBrush(pd.backgroundColor));
 
   QFontMetrics fm(pd.plotFont);
-  int pos = pd.startX;
+  int pos = 0;
 
+  // draw the date
   QString s;
   pd.dateBars.getDateString(pd.infoIndex, s);
   s.append(" ");
   painter.drawText(pos, 10, s);
   pos = pos + fm.width(s);
-
+  
   QList<PlotLine *> plotList;
   indicator.getLines(plotList);
   

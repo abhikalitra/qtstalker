@@ -35,7 +35,7 @@ int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, Pl
   // format 'PLOT,NAME,LABEL,LINE_TYPE'
   
   ba.clear();
-  ba.append("1\n");
+  ba.append("ERROR\n");
 
   if (l.count() != 4)
   {

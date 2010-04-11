@@ -44,14 +44,14 @@ be:<br>
 HH:MM:SS,2010-03-09
 13:24:00,25.50,27.25,23.75,26.25,123456789,123456"<br>
 <br>
-<br>
-On success a '0' is returned. On failure, a '1' is
+On success a '0' is returned. On failure, a 'ERROR' is
 returned.<br>
 <br>
 <span style="font-weight: bold;"></span><span style="font-weight: bold;"><br>
 </span>
 <hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><br>
-</span><span style="font-weight: bold;">QUOTE,Futures,SAVE_QUOTES</span><br>
+</span><span style="font-weight: bold;"><br>
+QUOTE,Futures,SAVE_QUOTES</span><br>
 <br>
 This function will save quotes to the database after "SET_QUOTE"
 commands have been previously run in the script. If this command is not
@@ -66,10 +66,12 @@ saved to the database when the script completes.<br>
 command should be used once after all quotes within a running script
 have been added. You will get a 1000% speed increase.<br>
 <span style="font-weight: bold;"></span><br>
-On success a '0' is returned. On failure, a '1' is
+On success a '0' is returned. On failure, a 'ERROR' is
 returned.<br>
 <br>
+<br>
 <hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><br>
+<br>
 </span><span style="font-weight: bold;">QUOTE,Futures,SET_NAME,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;NAME&gt;</span><br>
 <br>
 This function will set the name of the futures symbol.<br>
@@ -89,10 +91,12 @@ For example. Setting the name for C_2010_Z would be:<br>
 December"<br>
 <br>
 <br>
-&nbsp;On success a '0' is returned. On failure, a '1' is
+&nbsp;On success a '0' is returned. On failure, a 'ERROR' is
 returned.<br>
 <br>
+<br>
 <hr style="width: 100%; height: 2px;"><br>
+<br>
 <span style="font-weight: bold;">QUOTE,Futures,SET_CODE,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;CODE&gt;</span><br>
 <br>
 This function will set the exchange futures code. A futures code is the
@@ -111,10 +115,12 @@ symbol trades on. ie.
 </ul>
 <br>
 For example. Setting the code for SP_2010_Z would be:<br>
+<br>
 "QUOTE,Futures,SET_CODE,FCME,SP_2010_Z,SP"<br>
 <br>
-On success a '0' is returned. On failure, a '1' is
+On success a '0' is returned. On failure, a 'ERROR' is
 returned.<br>
+<br>
 <br>
 <hr style="width: 100%; height: 2px;"><br>
 <span style="font-weight: bold;"><br>
@@ -145,10 +151,12 @@ Month codes are:</li>
   </ul>
 </ul>
 For example. Setting the expiry month code for SP_2010_Z would be:<br>
+<br>
 "QUOTE,Futures,SET_MONTH,FCME,SP_2010_Z,Z"<br>
 <br>
-On success a '0' is returned. On failure, a '1' is
+On success a '0' is returned. On failure, a 'ERROR' is
 returned.<br>
+<br>
 <br>
 <hr style="width: 100%; height: 2px;"><br>
 <br>
@@ -169,12 +177,15 @@ symbol trades on. ie.
 <br>
 For example. Setting the expiry year for futures symbol 'SP_2010_Z'
 would be:<br>
+<br>
 "QUOTE,Futures,SET_YEAR,FCME,SP_2010_Z,2010"<br>
 <br>
-On success a '0' is returned. On failure, a '1' is
+On success a '0' is returned. On failure, a 'ERROR' is
 returned.<br>
 <br>
+<br>
 <hr style="width: 100%; height: 2px;"><br>
+<br>
 <span style="font-weight: bold;">QUOTE,Futures,DELETE,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;</span><br>
 <br>
 This function will permanently delete the symbol from the quotes
@@ -190,16 +201,27 @@ symbol trades on. ie.
 <br>
 For example. Deleting the 'SP_2010_Z'
 would be:<br>
+<br>
 "QUOTE,Futures,DELETE,FCME,SP_2010_Z"<br>
 <br>
-On success a '0' is returned. On failure, a '1' is
+On success a '0' is returned. On failure, a 'ERROR' is
 returned.<br>
+<br>
 <br>
 <hr style="width: 100%; height: 2px;"><br>
 <p style="font-weight: bold;">QUOTE,Futures,GET_QUOTES,&lt;NAME&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;BAR
 FIELD&gt;,&lt;BAR
 LENGTH&gt;,&lt;BARS&gt;<br>
 </p>
+<p>This function will create an array of values using the bar field of
+the symbol requested. These values can be manipulated by the various
+INDICATOR group of script commands.<br>
+</p>
+<p style="font-weight: bold;">
+</p>
+<p>
+</p>
+<p style="font-weight: bold;"></p>
 <ul>
   <li>&lt;NAME&gt; is the variable given to the array to create<br>
   </li>
@@ -230,6 +252,39 @@ LENGTH&gt;,&lt;BARS&gt;<br>
   <li>&lt;BARS&gt; is the number of bars to create<br>
   </li>
 </ul>
+<br>
+For example, if we wanted to create an array of daily close values from
+the SP_2010_Z symbol, we would issue the command:<br>
+<br>
+"QUOTE,Futures,GET_QUOTES,close_array,FCME,SP_2010_Z,Close,Daily,275"<br>
+<br>
+On success a "0" is returned. On failure, a "ERROR" is
+returned.<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<span style="font-weight: bold;"><br>
+QUOTE,Futures,RENAME,&lt;OLD
+EXCHANGE&gt;,&lt;OLD SYMBOL&gt;,&lt;NEW EXCHANGE&gt;,&lt;NEW SYMBOL&gt;</span><br>
+<br>
+This function will rename an existing symbol in the quotes
+database.<br>
+<ul>
+  <li>&lt;OLD EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a>
+of the
+symbol to be renamed e.g.
+'FCME'<br>
+  </li>
+  <li>&lt;OLD SYMBOL&gt; is the futures symbol to be renamed. e.g.
+'SP_2010_Z'</li>
+  <li>&lt;NEW EXCHANGE&gt; is the new <a href="exchanges.csv">exchange</a>
+    <br>
+  </li>
+  <li>&lt;NEW SYMBOL&gt; is the new symbol</li>
+</ul>
+<br>
+On success a '0' is returned. On failure, a 'ERROR' is
+returned.<br>
 <br>
 <br>
 </body>

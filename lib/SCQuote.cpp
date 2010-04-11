@@ -34,7 +34,7 @@ int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path, QHash<QSt
   // we are only concerned with the first 2 parms, the plugin will check the rest
   
   ba.clear();
-  ba.append("1\n");
+  ba.append("ERROR\n");
 
   if (l.count() < 2)
   {
@@ -56,6 +56,6 @@ int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path, QHash<QSt
     ba.append("0\n");
   }
   
-  return 0;
+  return rc;
 }
 

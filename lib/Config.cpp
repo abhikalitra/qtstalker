@@ -414,6 +414,13 @@ void Config::init (QString session)
     setData(DBPluginPath, d);
   }
 
+  getData(ExchangeFileSize, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setData(ExchangeFileSize, d);
+  }
+
   commit();
 }
 

@@ -37,7 +37,7 @@ Futures::Futures ()
 {
   plugin = "Futures";
   scriptMethods << "SET_QUOTE" << "SET_NAME" << "SET_CODE" << "SET_MONTH" << "SET_YEAR" << "SAVE_QUOTES";
-  scriptMethods << "DELETE" << "GET_QUOTES";
+  scriptMethods << "DELETE" << "GET_QUOTES" << "RENAME";
 }
 
 void Futures::getBars (BarData &data)
@@ -250,6 +250,9 @@ int Futures::scriptCommand (QStringList &l, QHash<QString, PlotLine *> &tlines)
       break;
     case GET_QUOTES:
       rc = scriptGetQuotes(l, tlines);
+      break;
+    case RENAME:
+      rc = scriptRename(l);
       break;
     default:
       break;
@@ -570,6 +573,45 @@ int Futures::scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &tlines
     return 1;
   
   tlines.insert(l[3], line);
+
+  return 0;
+}
+
+int Futures::scriptRename (QStringList &l)
+{
+  // format = QUOTE,PLUGIN,RENAME,OLD_EXCHANGE,OLD_SYMBOL,NEW_EXCHANGE,NEW_SYMBOL
+  //            0     1      2          3           4          5          6
+
+  if (l.count() != 7)
+  {
+    qDebug() << "Futures::scriptRename: invalid parm count" << l.count();
+    return 1;
+  }
+  
+  transaction();
+  
+  BarData obd;
+  obd.setExchange(l[3]);
+  obd.setSymbol(l[4]);
+
+  BarData nbd;
+  nbd.setExchange(l[5]);
+  nbd.setSymbol(l[6]);
+  
+  if (rename(&obd, &nbd))
+    return 1;
+
+  // update futures parms with new symbol name
+  QString s = "UPDATE futuresParms";
+  s.append(" SET symbol='" + nbd.getSymbol() + "'");
+  s.append(", exchange='" + nbd.getExchange() + "'");
+  s.append(" WHERE symbol='" + obd.getSymbol() + "'");
+  s.append(" AND exchange='" + obd.getExchange() + "'");
+  CODataBase codb;
+  if (command(s, QString("DBPlugin::rename: futuresParms")))
+    return 1;
+
+  commit();
 
   return 0;
 }

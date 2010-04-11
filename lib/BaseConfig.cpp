@@ -219,6 +219,12 @@ void BaseConfig::setData (int name, int i)
   setData(name, s);
 }
 
+void BaseConfig::setData (int name, qint64 i)
+{
+  QString s = QString::number(i);
+  setData(name, s);
+}
+
 double BaseConfig::getDouble (int name)
 {
   QString s;

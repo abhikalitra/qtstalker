@@ -392,6 +392,26 @@
            quotes to use the new exchange codes. The good news is that we wont be changing them again, and
            they are all only 4 characters long for much less typing.
 
+20100411:  Added -asset command line option. See docs 'Command Line Interface' section.
+
+           Added a RENAME script command. See docs.
+
+           Changed zoom button behaviour to be more obvious. Hopefully it makes more sense now.
+
+           Changed all script commands to return "ERROR" string if an error occurs. Lets keep everything nice
+           and consistant. Please update your personal scripts to reflect these changes.
+
+           Fixed the SYMBOL,CURRENT command which was returning ERROR for all conditions.
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -50,6 +50,7 @@ class DBPlugin : public DataBase
     int addSymbolIndex (BarData *);
     void getExchangeList (QStringList &);
     void barErrorMessage (int);
+    int rename (BarData *, BarData *);
     
   protected:
     QString plugin;

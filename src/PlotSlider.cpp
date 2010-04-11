@@ -123,12 +123,8 @@ void PlotSlider::endButtonClicked ()
   slider->setValue(slider->maximum());
 }
 
-void PlotSlider::setStart (int count, int width, ZoomButtons *zoomBox)
+void PlotSlider::setStart (int count, int width, int pixelSpace)
 {
-  int pixelSpace = 0;
-  int index = 0;
-  zoomBox->getSetting(0, index, pixelSpace);
-  
   int page = width / pixelSpace;
   int max = count - page;
   if (max < 0)
@@ -138,19 +134,11 @@ void PlotSlider::setStart (int count, int width, ZoomButtons *zoomBox)
   slider->setRange(0, count - 1);
 
   if (count < page)
-  {
     slider->setValue(0);
-    index = 0;
-  }
   else
-  {
     slider->setValue(max + 1);
-    index = max + 1;
-  }
   
   slider->blockSignals(FALSE);
-
-  zoomBox->setSetting(0, index, pixelSpace);
 }
 
 int PlotSlider::getValue ()

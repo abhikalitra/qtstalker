@@ -46,6 +46,7 @@ class BaseConfig : public DataBase
     void setData (int, bool);
     int getInt (int);
     void setData (int, int);
+    void setData (int, qint64);
     double getDouble (int);
     void setData (int, double);
     void getData (int, QColor &);

@@ -83,7 +83,7 @@ class QtstalkerApp : public QMainWindow
       Help
     };
 
-    QtstalkerApp (QString);
+    QtstalkerApp (QString session, QString asset);
     void createActions ();
     void createMenuBar ();
     void createToolBars ();
@@ -116,6 +116,7 @@ class QtstalkerApp : public QMainWindow
     void psButtonClicked (int);
     void zoomChanged(int, int);
     void refreshChart ();
+    void commandLineAsset ();
 
   protected:
     QSplitter *split;
@@ -139,6 +140,7 @@ class QtstalkerApp : public QMainWindow
     PlotSlider *plotSlider;
     COToolBar *toolBar2;
     ZoomButtons *zoomButtons;
+    QString clAsset;
 };
 
 #endif

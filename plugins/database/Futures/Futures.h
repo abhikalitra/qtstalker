@@ -37,7 +37,8 @@ class Futures : public DBPlugin
       SET_YEAR,
       SAVE_QUOTES,
       DELETE,
-      GET_QUOTES
+      GET_QUOTES,
+      RENAME
     };
     
     Futures ();
@@ -55,6 +56,7 @@ class Futures : public DBPlugin
     int scriptSaveQuotes (QStringList &l);
     int scriptDelete (QStringList &l);
     int scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &tlines);
+    int scriptRename (QStringList &l);
 
   protected:
     QStringList scriptMethods;

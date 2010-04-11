@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>BOP - Balance of Power</title>
+</head>
+<body>
+<h3 style="text-decoration: underline;">Command Line Interface<br>
+</h3>
+The available command line options and switches are listed here.<br>
+&nbsp;<br>
+<br>
+<span style="font-weight: bold; text-decoration: underline;"></span><span
+ style="font-weight: bold;"><br>
+-session &lt;ID&gt;<br>
+</span>
+<ul>
+  <li>&lt;ID&gt; is an integer<br>
+  </li>
+</ul>
+<span style="font-weight: bold;"></span>
+<p>&nbsp;&nbsp;&nbsp; Allows multiple instances of qtstalker to run by
+creating a unique session id. The deafult is session 0 if not used. So
+for example if I wanted to tun 2 concurrent instances of qtstalker each
+with its own settings, I would issue 2 commands:<br>
+</p>
+<ol>
+  <li>'qtstalker &amp;' (uses the deafult session 0)</li>
+  <li>'qtstalker -session 1 &amp;' (creates a second instance called
+session 1)</li>
+</ol>
+<br>
+<br>
+<span style="font-weight: bold;">-asset &lt;EXCHANGE&gt;:&lt;SYMBOL&gt;<br>
+</span>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
+asset trades on. e.g. 'XNYS'</li>
+  <li>&lt;SYMBOL&gt; is the asset symbol e.g. 'GLD'</li>
+</ul>
+<br>
+&nbsp;&nbsp;&nbsp; Will display a chart of the
+&lt;EXCHANGE&gt;:&lt;SYMBOL&gt; upon starting. Useful for interacting
+with other applications and scripts. For example:<br>
+<ol>
+  <li>'qtstalker -asset XNYS:GLD &amp;'&nbsp;&nbsp; would display the
+GLD chart upon starting.</li>
+</ol>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

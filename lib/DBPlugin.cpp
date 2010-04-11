@@ -21,6 +21,7 @@
 
 #include "DBPlugin.h"
 #include "Bar.h"
+#include "CODataBase.h"
 
 #include <QDebug>
 #include <QtSql>
@@ -314,5 +315,38 @@ void DBPlugin::barErrorMessage (int rc)
     default:
       break;
   }
+}
+
+int DBPlugin::rename (BarData *oldSymbol, BarData *newSymbol)
+{
+  QSqlQuery q(QSqlDatabase::database(dbName));
+  
+  // make sure old symbol exists
+  if (getIndexData(oldSymbol))
+    return 1;
+
+  // make sure new symbol does not exists
+  if (getIndexData(newSymbol))
+    return 1;
+  if (newSymbol->getTableName().length())
+    return 1;
+
+  QString s = "UPDATE symbolIndex";
+  s.append(" SET symbol='" + newSymbol->getSymbol() + "'");
+  s.append(", exchange='" + newSymbol->getExchange() + "'");
+  s.append(" WHERE symbol='" + oldSymbol->getSymbol() + "'");
+  s.append(" AND exchange='" + oldSymbol->getExchange() + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DBPlugin::rename:" << q.lastError().text();
+    return 1;
+  }
+
+  CODataBase codb;
+  if (codb.renameSymbol(oldSymbol, newSymbol))
+    return 1;
+  
+  return 0;
 }
 

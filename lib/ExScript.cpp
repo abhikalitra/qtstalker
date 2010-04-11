@@ -194,7 +194,7 @@ void ExScript::readFromStdout ()
     case _SYMBOL:
     {
       SCSymbol sc;
-      sc.calculate(l, ba, data);
+      sc.calculate(l, ba);
       proc->write(ba);
       break;
     }

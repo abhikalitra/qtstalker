@@ -14,16 +14,15 @@ To Do:
 - add tooltips
 - interactive scripting
 
+
 Priority
 ========
 
 - documentation
-- update docs regarding '-session' command line option
-- add symbol rename command to the database plugins
-- add change field to the data panel info
 - link to other apps via button control panel
-- add '-asset ASX:BHP' command line option to bring up a chart from the command line.
-
+- decide what to fill the lower right plot corner with...
+- add user defined script launch buttons to the script panel
+- add more function buttons for all the panels (not just the menus) - use actions for this
 
 
 

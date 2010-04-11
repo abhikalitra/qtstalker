@@ -16,10 +16,11 @@ This function returns a csv string of the currently loaded exchange and
 symbol to the
 script.<br>
 <br>
-An example would return "NASDAQ,MSFT" if the user were currently
+An example would return "XNAS,MSFT" if the user were currently
 viewing this symbol.<br>
 <br>
-On success the exchange symbol pair is returned. On failure, the string
+On success the exchange symbol pair is returned. If there is no symbol
+currently loaded, then "NONE" is returned. On failure, the string
 'ERROR' is
 returned.<br>
 <br>

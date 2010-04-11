@@ -35,7 +35,7 @@
 Stock::Stock ()
 {
   plugin = "Stock";
-  scriptMethods << "SET_QUOTE" << "SET_NAME" << "SAVE_QUOTES" << "DELETE" << "GET_QUOTES";
+  scriptMethods << "SET_QUOTE" << "SET_NAME" << "SAVE_QUOTES" << "DELETE" << "GET_QUOTES" << "RENAME";
 }
 
 void Stock::getBars (BarData &data)
@@ -208,6 +208,9 @@ int Stock::scriptCommand (QStringList &l, QHash<QString, PlotLine *> &tlines)
       break;
     case GET_QUOTES:
       rc = scriptGetQuotes(l, tlines);
+      break;
+    case RENAME:
+      rc = scriptRename(l);
       break;
     default:
       break;
@@ -406,6 +409,35 @@ int Stock::scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &tlines)
     return 1;
   
   tlines.insert(l[3], line);
+
+  return 0;
+}
+
+int Stock::scriptRename (QStringList &l)
+{
+  // format = QUOTE,PLUGIN,RENAME,OLD_EXCHANGE,OLD_SYMBOL,NEW_EXCHANGE,NEW_SYMBOL
+  //            0     1      2          3           4          5          6
+
+  if (l.count() != 7)
+  {
+    qDebug() << "Stock::scriptRename: invalid parm count" << l.count();
+    return 1;
+  }
+  
+  transaction();
+  
+  BarData obd;
+  obd.setExchange(l[3]);
+  obd.setSymbol(l[4]);
+
+  BarData nbd;
+  nbd.setExchange(l[5]);
+  nbd.setSymbol(l[6]);
+  
+  if (rename(&obd, &nbd))
+    return 1;
+
+  commit();
 
   return 0;
 }

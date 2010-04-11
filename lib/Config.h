@@ -61,8 +61,8 @@ class Config : public BaseConfig
       Version,  // current qtstalker version
       PlotSizes, // csv list of plot row sizes
       DbPassword, // sql db user password
-      ShowRecentCharts, // csv list of last used charts
-      CurrentChart, // currently loaded chart
+      ShowRecentCharts, // csv list (exchange,symbol) of last used charts
+      CurrentChart, // csv string (exchange,symbol) currently loaded chart 
       DefaultIndicators, // install flag for default indicators, == 0 if not installed, == 1 if installed
       DbAllSymbols, // the sql command to get all symbols in db
       PSButton1, // toolbar bar spacing button 1
@@ -70,7 +70,7 @@ class Config : public BaseConfig
       Refresh, // refreshes chart every x minutes
       ShowSidePanel, // side panel flag
       SavedRunningScripts, // saved scripts that were running when app terminated
-      UNUSED10,  // ******** UNUSED ********
+      ExchangeFileSize,  // the file size of /docs/exchanges.csv
       UNUSED12, // ******* UNUSED *********
       UNUSED13, // ******** UNUSED ********
       DBPluginPath, // path where db plugins are stored

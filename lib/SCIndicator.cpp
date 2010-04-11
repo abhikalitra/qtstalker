@@ -35,7 +35,9 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
 			    BarData *data, QString &path)
 {
   // format = INDICATOR,METHOD,*
-  int rc = -1;
+  int rc = 1;
+  ba.clear();
+  ba.append("ERROR\n");
 
   if (l.count() < 2)
   {
@@ -61,6 +63,7 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
       rc = setIndicator(l, ba, tlines);
       break;
     default:
+      qDebug() << "SCIndicator::calculate: invalid method" << l[1];
       break;
   }
   
@@ -70,9 +73,6 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
 int SCIndicator::getIndicator (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
   // format 'INDICATOR,GET,VARIABLE,BARS' returns the requested data in a CSV string
-
-  ba.clear();
-  ba.append("ERROR\n");
 
   if (l.count() != 4)
   {
@@ -105,8 +105,7 @@ int SCIndicator::getIndicator (QStringList &l, QByteArray &ba, QHash<QString, Pl
     l2.append(QString::number(in->getData(loop)));
 
   ba.clear();
-  ba.append(l2.join(","));
-  ba.append('\n');
+  ba.append(l2.join(",") + "\n");
 
   return 0;
 }
@@ -114,9 +113,6 @@ int SCIndicator::getIndicator (QStringList &l, QByteArray &ba, QHash<QString, Pl
 int SCIndicator::getIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
   // format = INDICATOR,GET_INDEX,INPUT_ARRAY,OFFSET
-
-  ba.clear();
-  ba.append("ERROR\n");
 
   if (l.count() != 4)
   {
@@ -147,8 +143,7 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
   }
 
   ba.clear();
-  ba.append(QString::number(line->getData(offset)));
-  ba.append('\n');
+  ba.append(QString::number(line->getData(offset)) + "\n");
 
   return 0;
 }
@@ -156,9 +151,6 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
 int SCIndicator::setIndicator (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
   // format 'INDICATOR,SET,VARIABLE,*' - will create a new line using the provided data
-
-  ba.clear();
-  ba.append("1\n");
 
   if (l.count() < 3)
   {
@@ -192,9 +184,6 @@ int SCIndicator::getSize (QStringList &l, QByteArray &ba, QHash<QString, PlotLin
 {
   // format = INDICATOR,GET_SIZE,INPUT_ARRAY
 
-  ba.clear();
-  ba.append("ERROR\n");
-
   if (l.count() != 3)
   {
     qDebug() << "SCIndicator::getSize: invalid parm count" << l.count();
@@ -211,8 +200,7 @@ int SCIndicator::getSize (QStringList &l, QByteArray &ba, QHash<QString, PlotLin
   int size = line->count();
 
   ba.clear();
-  ba.append(QString::number(size));
-  ba.append('\n');
+  ba.append(QString::number(size) + "\n");
 
   return 0;
 }
@@ -221,9 +209,6 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotL
 			    BarData *data, QString &path)
 {
   // format 'INDICATOR,PLUGIN,PLUGIN,*
-
-  ba.clear();
-  ba.append("1\n");
 
   if (l.count() < 3)
   {

@@ -25,8 +25,6 @@
 #include <QStringList>
 #include <QByteArray>
 
-#include "BarData.h"
-
 class SCSymbol
 {
   public:
@@ -37,8 +35,8 @@ class SCSymbol
     };
     
     SCSymbol ();
-    int calculate (QStringList &, QByteArray &, BarData *);
-    int getCurrent (QStringList &, QByteArray &, BarData *);
+    int calculate (QStringList &, QByteArray &);
+    int getCurrent (QStringList &, QByteArray &);
     int getSearch (QStringList &, QByteArray &);
 
   protected:
