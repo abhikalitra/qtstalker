@@ -388,8 +388,8 @@
 
 20100410:  Fixed the recent charts toolbar and moved the code into /src/RecentCharts class.
 
-           The exchange names have been changed to use the ISO stanadard. Users will have to re-import your
-           quotes to use the new exchange codes. The good news is that we wont be changing them again, and
+           The exchange names have been changed to use the ISO 10383 standard. Users will have to re-import your
+           quotes to use the new exchange codes. The good news is that we will not be changing them again, and
            they are all only 4 characters long for much less typing.
 
 20100411:  Added -asset command line option. See docs 'Command Line Interface' section.
