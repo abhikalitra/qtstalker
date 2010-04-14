@@ -71,8 +71,8 @@ class Config : public BaseConfig
       ShowSidePanel, // side panel flag
       SavedRunningScripts, // saved scripts that were running when app terminated
       ExchangeFileSize,  // the file size of /docs/exchanges.csv
-      UNUSED12, // ******* UNUSED *********
-      UNUSED13, // ******** UNUSED ********
+      LastScriptPath, // the dir of the last script run from a dialog
+      FuturesFileSize,   // the file size of /docs/futures.csv
       DBPluginPath, // path where db plugins are stored
       DBPluginList, // csv list of current db plugins from startup inventory
       DbSearchSymbols, // the sql command to get a symbol search

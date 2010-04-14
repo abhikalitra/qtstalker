@@ -20,6 +20,7 @@
  */
 
 #include "FuturesDataBase.h"
+#include "Config.h"
 
 #include <QDebug>
 #include <QtSql>
@@ -36,6 +37,21 @@ int FuturesDataBase::createFutures ()
   QFile file("/usr/local/share/qtstalker/db/futures.csv");
   if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
     return 1;
+
+  // check if last file size and current file size match
+  // if they match then no changes, no need to re-create the table
+  // if not, new data is in file so re-create the table
+  Config config;
+  qint64 oldSize = (qint64) config.getInt(Config::FuturesFileSize);
+  qint64 size = file.size();
+  if (size == oldSize)
+  {
+    file.close();
+    return 0;
+  }
+  
+  config.setData(Config::FuturesFileSize, size);
+  qDebug() << "FuturesDataBase::createFutures: creating new futures db";
 
   QTextStream in(&file);
   in.readLine(); // skip past first line

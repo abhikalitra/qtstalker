@@ -31,6 +31,9 @@
 #include <QList>
 #include <QAction>
 #include <QComboBox>
+#include <QHash>
+#include <QAction>
+#include <QToolBar>
 
 #include "Group.h"
 
@@ -44,8 +47,19 @@ class GroupPage : public QWidget
     void signalMessage (QString);
 
   public:
+    enum Action
+    {
+      NewGroup,
+      AddGroup,
+      DeleteGroupItems,
+      DeleteGroup,
+      Refresh
+    };
+
     GroupPage (QWidget *);
     void updateList ();
+    void createActions ();
+    void createButtonMenu (QToolBar *);
 
   public slots:
     void newGroup ();
@@ -58,12 +72,13 @@ class GroupPage : public QWidget
     void updateGroups ();
     void addToGroup ();
     void loadGroups ();
+    void listStatus ();
 
   protected:
     QListWidget *nav;
     QMenu *menu;
     QComboBox *groups;
-    QList<QAction *> actionList;
+    QHash<int, QAction *> actions;
     Group group;
 };
 

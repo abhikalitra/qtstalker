@@ -29,9 +29,10 @@
 #include <QListWidget>
 #include <QKeyEvent>
 #include <QPoint>
-#include <QToolButton>
 #include <QComboBox>
 #include <QHash>
+#include <QAction>
+#include <QToolBar>
 
 #include "BarData.h"
 #include "Group.h"
@@ -48,7 +49,16 @@ class ChartPage : public QWidget
     void signalMessage (QString);
 
   public:
+    enum Action
+    {
+      ShowAll,
+      Search,
+      AddGroup
+    };
+
     ChartPage (QWidget *);
+    void createActions ();
+    void createButtonMenu (QToolBar *);
 
   public slots:
     void rightClick (const QPoint &);
@@ -58,15 +68,15 @@ class ChartPage : public QWidget
     void updateList ();
     void symbolSearch ();
     void allButtonPressed ();
+    void listStatus ();
 
   protected:
     QString searchString;
     QString searchExchange;
     QListWidget *nav;
     QMenu *menu;
-    QToolButton *symbolButton;
-    QToolButton *allButton;
     Group symbols;
+    QHash<int, QAction *> actions;
 };
 
 #endif

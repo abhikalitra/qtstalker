@@ -43,43 +43,27 @@
 
 ChartPage::ChartPage (QWidget *w) : QWidget (w)
 {
+  createActions();
+
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
   vbox->setSpacing(0);
   setLayout(vbox);
 
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(5);
-  hbox->setSpacing(2);
-  vbox->addLayout(hbox);
-
-  symbolButton = new QToolButton;
-  symbolButton->setToolTip(tr("Symbol Search"));
-  symbolButton->setIcon(QIcon(search_xpm));
-  connect(symbolButton, SIGNAL(clicked()), this, SLOT(symbolSearch()));
-  symbolButton->setMaximumSize(25, 25);
-  hbox->addWidget(symbolButton);
-
-  allButton = new QToolButton;
-  allButton->setToolTip(tr("Show All Symbols"));
-  allButton->setIcon(QIcon(asterisk_xpm));
-  connect(allButton, SIGNAL(clicked()), this, SLOT(allButtonPressed()));
-  allButton->setMaximumSize(25, 25);
-  hbox->addWidget(allButton);
-
-  hbox->addStretch(1);
-
+  QToolBar *tb = new QToolBar;
+  vbox->addWidget(tb);
+  tb->setIconSize(QSize(18, 18));
+  
+  createButtonMenu(tb);
+  
   nav = new QListWidget;
   nav->setContextMenuPolicy(Qt::CustomContextMenu);
   nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
   nav->setSortingEnabled(FALSE);
+  connect(nav, SIGNAL(itemSelectionChanged()), this, SLOT(listStatus()));
   connect(nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   connect(nav, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
   vbox->addWidget(nav);
-
-  menu = new QMenu(this);
-  menu->addAction(QIcon(addgroup), tr("Add To &Group"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
-  menu->addAction(QIcon(search_xpm), tr("&Symbol Search"), this, SLOT(symbolSearch()), QKeySequence(Qt::CTRL+Qt::Key_S));
 
   // update to last symbol search before displaying
   Config config;
@@ -87,6 +71,41 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   config.getData(Config::LastChartPanelSymbolSearch, searchString);
 
   updateList();
+  listStatus();
+}
+
+void ChartPage::createActions ()
+{
+  QAction *action  = new QAction(QIcon(asterisk_xpm), tr("Show &All Symbols"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_A));
+  action->setToolTip(tr("Show All Symbols"));
+  connect(action, SIGNAL(activated()), this, SLOT(allButtonPressed()));
+  actions.insert(ShowAll, action);
+
+  action  = new QAction(QIcon(search_xpm), tr("Symbol &Search"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
+  action->setToolTip(tr("Symbol Search"));
+  connect(action, SIGNAL(activated()), this, SLOT(symbolSearch()));
+  actions.insert(Search, action);
+
+  action  = new QAction(QIcon(addgroup), tr("Add To &Group"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_G));
+  action->setToolTip(tr("Add symbol to group"));
+  connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
+  actions.insert(AddGroup, action);
+}
+
+void ChartPage::createButtonMenu (QToolBar *tb)
+{
+  tb->addAction(actions.value(ShowAll));
+  tb->addAction(actions.value(Search));
+  tb->addAction(actions.value(AddGroup));
+
+  menu = new QMenu(this);
+  menu->addAction(actions.value(AddGroup));
+  menu->addSeparator();
+  menu->addAction(actions.value(ShowAll));
+  menu->addAction(actions.value(Search));
 }
 
 void ChartPage::chartOpened (QListWidgetItem *item)
@@ -215,5 +234,15 @@ void ChartPage::allButtonPressed ()
   searchExchange.clear();
   searchString.clear();
   updateList();
+}
+
+void ChartPage::listStatus ()
+{
+  bool status = FALSE;
+  QList<QListWidgetItem *> l = nav->selectedItems();
+  if (l.count())
+    status = TRUE;
+  
+  actions.value(AddGroup)->setEnabled(status); 
 }
 

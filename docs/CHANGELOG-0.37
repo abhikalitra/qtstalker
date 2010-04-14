@@ -403,6 +403,14 @@
 
            Fixed the SYMBOL,CURRENT command which was returning ERROR for all conditions.
 
+20100412:  Expanded the function buttons and menus to the side panels.
+
+           Fixed bug that only read 1 command line switch at a time.
+
+
+
+
+
 
 
 

@@ -27,6 +27,7 @@
 #include "../pics/delgroup.xpm"
 #include "../pics/newchart.xpm"
 #include "../pics/addgroup.xpm"
+#include "../pics/refresh.xpm"
 
 #include <QMessageBox>
 #include <QLineEdit>
@@ -43,9 +44,11 @@
 
 GroupPage::GroupPage (QWidget *w) : QWidget (w)
 {
+  createActions();
+
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
-  vbox->setSpacing(5);
+  vbox->setSpacing(3);
   setLayout(vbox);
 
   groups = new QComboBox;
@@ -54,25 +57,20 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   groups->setFocusPolicy(Qt::NoFocus);
   vbox->addWidget(groups);
 
+  QToolBar *tb = new QToolBar;
+  vbox->addWidget(tb);
+  tb->setIconSize(QSize(18, 18));
+  
+  createButtonMenu(tb);
+  
   nav = new QListWidget;
   nav->setContextMenuPolicy(Qt::CustomContextMenu);
   nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
   nav->setSortingEnabled(FALSE);
+  connect(nav, SIGNAL(itemSelectionChanged()), this, SLOT(listStatus()));
   connect(nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   connect(nav, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
   vbox->addWidget(nav);
-
-  menu = new QMenu(this);
-  QAction *action = menu->addAction(QIcon(newchart_xpm), tr("&New Group"), this, SLOT(newGroup()), QKeySequence(Qt::CTRL+Qt::Key_N));
-  actionList.append(action);
-  action = menu->addAction(QIcon(addgroup), tr("Add To &Group"), this, SLOT(addToGroup()), QKeySequence(Qt::CTRL+Qt::Key_G));
-  actionList.append(action);
-  action = menu->addAction(QIcon(delete_xpm), tr("&Delete Group Items"), this, SLOT(deleteGroupItem()), QKeySequence(Qt::CTRL+Qt::Key_D));
-  actionList.append(action);
-  action = menu->addAction(QIcon(delgroup), tr("De&lete Group"), this, SLOT(deleteGroup()), QKeySequence(Qt::CTRL+Qt::Key_L));
-  actionList.append(action);
-  action = menu->addAction(QIcon(), tr("&Refresh List"), this, SLOT(updateGroups()), QKeySequence(Qt::CTRL+Qt::Key_R));
-  actionList.append(action);
 
   loadGroups();
 
@@ -80,6 +78,58 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   Config config;
   config.getData(Config::LastGroupUsed, s);
   groups->setCurrentIndex(groups->findText(s, Qt::MatchExactly));
+
+  listStatus();
+}
+
+void GroupPage::createActions ()
+{
+  QAction *action  = new QAction(QIcon(newchart_xpm), tr("&New Group"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
+  action->setToolTip(tr("Create a new group"));
+  connect(action, SIGNAL(activated()), this, SLOT(newGroup()));
+  actions.insert(NewGroup, action);
+
+  action  = new QAction(QIcon(addgroup), tr("&Add To Group"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_A));
+  action->setToolTip(tr("Add symbol to group"));
+  connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
+  actions.insert(AddGroup, action);
+
+  action  = new QAction(QIcon(delete_xpm), tr("&Delete Group Items"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
+  action->setToolTip(tr("Delete group items"));
+  connect(action, SIGNAL(activated()), this, SLOT(deleteGroupItem()));
+  actions.insert(DeleteGroupItems, action);
+
+  action  = new QAction(QIcon(delgroup), tr("De&lete Group"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
+  action->setToolTip(tr("Delete group"));
+  connect(action, SIGNAL(activated()), this, SLOT(deleteGroup()));
+  actions.insert(DeleteGroup, action);
+
+  action  = new QAction(QIcon(refresh_xpm), tr("&Refresh List"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
+  action->setToolTip(tr("Refresh List"));
+  connect(action, SIGNAL(activated()), this, SLOT(updateGroups()));
+  actions.insert(Refresh, action);
+}
+
+void GroupPage::createButtonMenu (QToolBar *tb)
+{
+  tb->addAction(actions.value(Refresh));
+  tb->addAction(actions.value(NewGroup));
+  tb->addAction(actions.value(AddGroup));
+  tb->addAction(actions.value(DeleteGroup));
+  tb->addAction(actions.value(DeleteGroupItems));
+
+  menu = new QMenu(this);
+  menu->addAction(actions.value(Refresh));
+  menu->addSeparator();
+  menu->addAction(actions.value(NewGroup));
+  menu->addAction(actions.value(AddGroup));
+  menu->addAction(actions.value(DeleteGroup));
+  menu->addAction(actions.value(DeleteGroupItems));
 }
 
 void GroupPage::newGroup()
@@ -268,6 +318,8 @@ void GroupPage::updateGroups ()
   groupSelected(cg);
 
   nav->setCurrentRow(cr);
+  
+  listStatus();
 }
 
 void GroupPage::addToGroup ()
@@ -339,6 +391,22 @@ void GroupPage::updateList ()
     item->setToolTip(QString(tr("Name: ") + bd->getName() + "\n" + tr("Exchange: ") + bd->getExchange()));
     nav->addItem(item);
   }
+}
+
+void GroupPage::listStatus ()
+{
+  bool status = FALSE;
+  QList<QListWidgetItem *> l = nav->selectedItems();
+  if (l.count())
+    status = TRUE;
+  
+  actions.value(AddGroup)->setEnabled(status); 
+  actions.value(DeleteGroupItems)->setEnabled(status);
+  
+  if (groups->count())
+    actions.value(DeleteGroup)->setEnabled(TRUE); 
+  else
+    actions.value(DeleteGroup)->setEnabled(FALSE); 
 }
 
 

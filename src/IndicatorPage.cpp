@@ -47,56 +47,90 @@
 
 IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
 {
+  createActions();
+
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
   vbox->setSpacing(0);
   setLayout(vbox);
 
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(5);
-  hbox->setSpacing(2);
-  vbox->addLayout(hbox);
-
-  activeButton = new QToolButton;
-  activeButton->setToolTip(tr("Show active indicators"));
-  activeButton->setIcon(QIcon(ok));
-  connect(activeButton, SIGNAL(clicked()), this, SLOT(showActive()));
-  activeButton->setMaximumSize(25, 25);
-  hbox->addWidget(activeButton);
-
-  allButton = new QToolButton;
-  allButton->setToolTip(tr("Show all indicators"));
-  allButton->setIcon(QIcon(asterisk_xpm));
-  connect(allButton, SIGNAL(clicked()), this, SLOT(showAll()));
-  allButton->setMaximumSize(25, 25);
-  hbox->addWidget(allButton);
-
-  searchButton = new QToolButton;
-  searchButton->setToolTip(tr("Search"));
-  searchButton->setIcon(QIcon(search_xpm));
-  connect(searchButton, SIGNAL(clicked()), this, SLOT(indicatorSearch()));
-  searchButton->setMaximumSize(25, 25);
-  hbox->addWidget(searchButton);
-
-  hbox->addStretch(1);
-
+  QToolBar *tb = new QToolBar;
+  vbox->addWidget(tb);
+  tb->setIconSize(QSize(18, 18));
+  
+  createButtonMenu(tb);
+  
   list = new QListWidget;
   list->setContextMenuPolicy(Qt::CustomContextMenu);
   list->setSortingEnabled(TRUE);
+  connect(list, SIGNAL(itemSelectionChanged()), this, SLOT(listStatus()));
   connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doubleClick(QListWidgetItem *)));
   connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   vbox->addWidget(list);
 
-  menu = new QMenu(this);
-  QAction *action = menu->addAction(QIcon(newchart_xpm), tr("&New Indicator"), this, SLOT(newIndicator()), QKeySequence(Qt::CTRL+Qt::Key_N));
-  actions.append(action);
-  action = menu->addAction(QIcon(edit), tr("&Edit Indicator"), this, SLOT(editIndicator()), QKeySequence(Qt::CTRL+Qt::Key_E));
-  actions.append(action);
-  action = menu->addAction(QIcon(delete_xpm), tr("&Delete Indicator"), this, SLOT(deleteIndicator()), QKeySequence(Qt::CTRL+Qt::Key_D));
-  actions.append(action);
-
   listFlag = 0;
   showActive();
+
+  listStatus();
+}
+
+void IndicatorPage::createActions ()
+{
+  QAction *action  = new QAction(QIcon(ok), tr("Show Acti&ve Indicators"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_V));
+  action->setToolTip(tr("Show active indicators"));
+  connect(action, SIGNAL(activated()), this, SLOT(showActive()));
+  actions.insert(ShowActive, action);
+
+  action  = new QAction(QIcon(asterisk_xpm), tr("Show &All Indicators"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_A));
+  action->setToolTip(tr("Show all indicators"));
+  connect(action, SIGNAL(activated()), this, SLOT(showAll()));
+  actions.insert(ShowAll, action);
+
+  action  = new QAction(QIcon(search_xpm), tr("&Search"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
+  action->setToolTip(tr("Search indicators"));
+  connect(action, SIGNAL(activated()), this, SLOT(indicatorSearch()));
+  actions.insert(Search, action);
+
+  action  = new QAction(QIcon(newchart_xpm), tr("&New Indicator"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
+  action->setToolTip(tr("New indicator"));
+  connect(action, SIGNAL(activated()), this, SLOT(newIndicator()));
+  actions.insert(NewIndicator, action);
+
+  action  = new QAction(QIcon(edit), tr("&Edit Indicator"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
+  action->setToolTip(tr("Edit indicator"));
+  connect(action, SIGNAL(activated()), this, SLOT(editIndicator()));
+  actions.insert(EditIndicator, action);
+
+  action  = new QAction(QIcon(delete_xpm), tr("&Delete Indicator"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
+  action->setToolTip(tr("Delete indicator"));
+  connect(action, SIGNAL(activated()), this, SLOT(deleteIndicator()));
+  actions.insert(DeleteIndicator, action);
+}
+
+void IndicatorPage::createButtonMenu (QToolBar *tb)
+{
+  tb->addAction(actions.value(ShowAll));
+  tb->addAction(actions.value(ShowActive));
+  tb->addAction(actions.value(Search));
+  tb->addSeparator();
+  tb->addAction(actions.value(NewIndicator));
+  tb->addAction(actions.value(EditIndicator));
+  tb->addAction(actions.value(DeleteIndicator));
+
+  menu = new QMenu(this);
+  menu->addAction(actions.value(NewIndicator));
+  menu->addAction(actions.value(EditIndicator));
+  menu->addAction(actions.value(DeleteIndicator));
+  menu->addSeparator();
+  menu->addAction(actions.value(ShowAll));
+  menu->addAction(actions.value(ShowActive));
+  menu->addAction(actions.value(Search));
 }
 
 void IndicatorPage::newIndicator ()
@@ -302,15 +336,6 @@ void IndicatorPage::doubleClick (QListWidgetItem *item)
 
 void IndicatorPage::rightClick (const QPoint &)
 {
-  bool b = FALSE;
-  if (list->currentItem())
-    b = TRUE;
-
-  int loop;
-  // menu items 1,2 only
-  for (loop = 1; loop < 3; loop++)
-    actions.at(loop)->setEnabled(b);
-
   menu->exec(QCursor::pos());
 }
 
@@ -409,5 +434,18 @@ void IndicatorPage::showAll ()
       new QListWidgetItem(QIcon(disable), l[loop], list, 0);
   }
 }
+
+void IndicatorPage::listStatus ()
+{
+  bool status = FALSE;
+  QList<QListWidgetItem *> l = list->selectedItems();
+  if (l.count())
+    status = TRUE;
+  
+  actions.value(EditIndicator)->setEnabled(status); 
+  actions.value(DeleteIndicator)->setEnabled(status);
+}
+
+
 
 

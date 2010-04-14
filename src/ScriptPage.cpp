@@ -31,6 +31,7 @@
 #include "../pics/newchart.xpm"
 #include "../pics/ok.xpm"
 #include "../pics/refresh.xpm"
+#include "../pics/script.xpm"
 
 #include <QCursor>
 #include <QInputDialog>
@@ -42,42 +43,37 @@
 #include <QtDebug>
 #include <QLabel>
 #include <QListWidgetItem>
+#include <QToolButton>
+#include <QSize>
 
 ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
 {
+  createActions();
+  
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
   vbox->setSpacing(0);
   setLayout(vbox);
-
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(5);
-  hbox->setSpacing(2);
-  vbox->addLayout(hbox);
-
-  allButton = new QToolButton;
-  allButton->setToolTip(tr("Show all scripts"));
-  allButton->setIcon(QIcon(asterisk_xpm));
-  connect(allButton, SIGNAL(clicked()), this, SLOT(showAllScripts()));
-  allButton->setMaximumSize(25, 25);
-  hbox->addWidget(allButton);
-
-  searchButton = new QToolButton;
-  searchButton->setToolTip(tr("Search"));
-  searchButton->setIcon(QIcon(search_xpm));
-  connect(searchButton, SIGNAL(clicked()), this, SLOT(search()));
-  searchButton->setMaximumSize(25, 25);
-  hbox->addWidget(searchButton);
-
-  hbox->addStretch(1);
-
+  
+  QToolBar *tb = new QToolBar;
+  vbox->addWidget(tb);
+  tb->setIconSize(QSize(18, 18));
+  
+  createButtonMenu(tb);
+  
   list = new QListWidget;
   list->setContextMenuPolicy(Qt::CustomContextMenu);
   list->setSortingEnabled(TRUE);
+  connect(list, SIGNAL(itemSelectionChanged()), this, SLOT(listStatus()));
   connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(listDoubleClick(QListWidgetItem *)));
   connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(listRightClick(const QPoint &)));
   vbox->addWidget(list);
-
+  
+  // create first row of launch buttons
+//  tb = new QToolBar;
+//  vbox->addWidget(tb);
+//  createLaunchButtons(tb);
+  
   vbox->addSpacing(5);
   
   QLabel *label = new QLabel(tr("Active Scripts"));
@@ -86,19 +82,100 @@ ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
   queList = new QListWidget;
   queList->setContextMenuPolicy(Qt::CustomContextMenu);
   queList->setSortingEnabled(TRUE);
+  connect(queList, SIGNAL(itemSelectionChanged()), this, SLOT(queStatus()));
   connect(queList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(queRightClick(const QPoint &)));
   vbox->addWidget(queList);
 
-  menu = new QMenu(this);
-  
   showAllScripts();
   
   loadSavedScripts();
+
+  listStatus();
+  queStatus();
 }
 
 ScriptPage::~ScriptPage ()
 {
   qDeleteAll(scripts);
+}
+
+void ScriptPage::createActions ()
+{
+  QAction *action  = new QAction(QIcon(asterisk_xpm), tr("Show &All Scripts"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_A));
+  action->setToolTip(tr("Show All Scripts"));
+  connect(action, SIGNAL(activated()), this, SLOT(showAllScripts()));
+  actions.insert(ShowAllScripts, action);
+
+  action  = new QAction(QIcon(search_xpm), tr("&Search"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
+  action->setToolTip(tr("Search"));
+  connect(action, SIGNAL(activated()), this, SLOT(search()));
+  actions.insert(SearchScript, action);
+
+  action  = new QAction(QIcon(newchart_xpm), tr("&New Script"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
+  action->setToolTip(tr("New Script"));
+  connect(action, SIGNAL(activated()), this, SLOT(newScript()));
+  actions.insert(NewScript, action);
+
+  action  = new QAction(QIcon(edit), tr("&Edit Script"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
+  action->setToolTip(tr("Edit Script"));
+  connect(action, SIGNAL(activated()), this, SLOT(editScript()));
+  actions.insert(EditScript, action);
+
+  action  = new QAction(QIcon(delete_xpm), tr("&Delete Script"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
+  action->setToolTip(tr("Delete Script"));
+  connect(action, SIGNAL(activated()), this, SLOT(deleteScript()));
+  actions.insert(DeleteScript, action);
+
+  action  = new QAction(QIcon(delete_xpm), tr("&Cancel Script"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
+  action->setToolTip(tr("Cancel script"));
+  connect(action, SIGNAL(activated()), this, SLOT(removeScriptQueue()));
+  actions.insert(CancelScript, action);
+
+  action  = new QAction(QIcon(script_xpm), tr("&Run Script"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
+  action->setToolTip(tr("Run script"));
+  connect(action, SIGNAL(activated()), this, SLOT(runScriptDialog()));
+  actions.insert(RunScript, action);
+}
+
+void ScriptPage::createButtonMenu (QToolBar *tb)
+{
+  tb->addAction(actions.value(ShowAllScripts));
+  tb->addAction(actions.value(SearchScript));
+  tb->addSeparator();
+  tb->addAction(actions.value(NewScript));
+  tb->addSeparator();
+  tb->addAction(actions.value(RunScript));
+
+  listMenu = new QMenu(this);
+  listMenu->addAction(actions.value(NewScript));
+  listMenu->addAction(actions.value(EditScript));
+  listMenu->addAction(actions.value(DeleteScript));
+  listMenu->addSeparator();
+  listMenu->addAction(actions.value(RunScript));
+  listMenu->addSeparator();
+  listMenu->addAction(actions.value(ShowAllScripts));
+  listMenu->addAction(actions.value(SearchScript));
+
+  queMenu = new QMenu(this);
+  queMenu->addAction(actions.value(CancelScript));
+}
+
+void ScriptPage::createLaunchButtons (QToolBar *tb)
+{
+  int loop;
+  for (loop = 0; loop < 5; loop++)
+  {
+    QToolButton *b = new QToolButton;
+    b->setText(QString::number(loop + 1));
+    tb->addWidget(b);
+  }
 }
 
 void ScriptPage::newScript ()
@@ -285,45 +362,23 @@ void ScriptPage::listDoubleClick (QListWidgetItem *item)
     return;
       
   QString name = item->text();
+
   Script *script = new Script;
   script->setName(name);
   ScriptDataBase db;
   db.getScript(script);
       
-  if (scripts.contains(name))
-  {
-    QMessageBox mb;
-    mb.setText(tr("This script is currently running. Request denied."));
-    mb.exec();
-    return;
-  }
-	
-  scripts.insert(name, script);
-  connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptDone(QString)));
-  connect(script, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  script->start();
-  
-  updateQueList();
+  runScript(script);
 }
 
 void ScriptPage::listRightClick (const QPoint &)
 {
-  menu->clear();
-
-  menu->addAction(QIcon(newchart_xpm), tr("&New Script"), this, SLOT(newScript()), QKeySequence(Qt::CTRL+Qt::Key_N));
-  menu->addAction(QIcon(edit), tr("&Edit Script"), this, SLOT(editScript()), QKeySequence(Qt::CTRL+Qt::Key_E));
-  menu->addAction(QIcon(delete_xpm), tr("&Delete Script"), this, SLOT(deleteScript()), QKeySequence(Qt::CTRL+Qt::Key_D));
-
-  menu->exec(QCursor::pos());
+  listMenu->exec(QCursor::pos());
 }
 
 void ScriptPage::queRightClick (const QPoint &)
 {
-  menu->clear();
-
-  menu->addAction(QIcon(delete_xpm), tr("&Remove Script From Queue"), this, SLOT(removeScriptQueue()), QKeySequence(Qt::CTRL+Qt::Key_R));
-
-  menu->exec(QCursor::pos());
+  queMenu->exec(QCursor::pos());
 }
 
 void ScriptPage::search ()
@@ -466,5 +521,109 @@ void ScriptPage::loadSavedScripts ()
   }
   
   updateQueList();
+}
+
+void ScriptPage::runScript (Script *script)
+{
+  QString name = script->getName();
+  
+  if (scripts.contains(name))
+  {
+    QMessageBox mb;
+    mb.setText(tr("This script is currently running. Request denied."));
+    mb.exec();
+    return;
+  }
+	
+  scripts.insert(name, script);
+  connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptDone(QString)));
+  connect(script, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  script->start();
+  
+  updateQueList();
+}
+
+void ScriptPage::runScriptDialog ()
+{
+  // create a dialog to obtain script settings
+  
+  PrefDialog *dialog = new PrefDialog;
+  QString s = tr("Run Script");
+  dialog->setWindowTitle(s);
+  s = tr("Settings");
+  int page = 0;
+  dialog->addPage(page, s);
+
+  int pos = 0;
+  
+  s = tr("Command");
+  QString command = "perl";
+  dialog->addTextItem(pos++, page, s, command);
+
+  Config config;
+  QString file;
+  config.getData(Config::LastScriptPath, file);
+  if (file.isEmpty())
+    file = QDir::homePath();
+  
+  s = tr("Script File");
+  dialog->addFileItem(pos++, page, s, file);
+
+  s = tr("Run every X seconds");
+  int refresh = 0;
+  dialog->addIntItem(pos++, page, s, refresh, 0, 999999);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return;
+  }
+
+  // get the dialog settings
+  pos = 0;
+  dialog->getItem(pos++, command);
+  dialog->getItem(pos++, file);
+  refresh = dialog->getInt(pos++);
+
+  delete dialog;
+
+  // get the script file name
+  QFileInfo fi(file);
+  QString name = fi.fileName();
+  
+  // save the script path
+  config.setData(Config::LastScriptPath, file);
+  
+  // create the script and settings
+  Script *script = new Script;
+  script->setName(name);
+  script->setCommand(command);
+  script->setFile(file);
+  script->setRefresh(refresh);
+  
+  // run the script
+  runScript(script);
+}
+
+void ScriptPage::listStatus ()
+{
+  bool status = FALSE;
+  QList<QListWidgetItem *> l = list->selectedItems();
+  if (l.count())
+    status = TRUE;
+  
+  actions.value(EditScript)->setEnabled(status); 
+  actions.value(DeleteScript)->setEnabled(status); 
+}
+
+void ScriptPage::queStatus ()
+{
+  bool status = FALSE;
+  QList<QListWidgetItem *> l = queList->selectedItems();
+  if (l.count())
+    status = TRUE;
+  
+  actions.value(CancelScript)->setEnabled(status); 
 }
 

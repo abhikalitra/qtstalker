@@ -356,9 +356,11 @@ void QtstalkerApp::createToolBars ()
   connect(toolBar2, SIGNAL(signalCOButtonClicked(QString)), this, SIGNAL(signalNewExternalChartObject(QString)));
   addToolBar(toolBar2);
   toolBar2->setOrientation(Qt::Vertical);
+  toolBar2->setIconSize(QSize(18, 18));
   
   //construct main toolbar
   QToolBar *toolbar = addToolBar("buttonToolBar");
+  toolbar->setIconSize(QSize(18, 18));
 
   // add the toolbar actions
   toolbar->addAction(actionList.value(Exit));
@@ -744,6 +746,7 @@ void QtstalkerApp::slotStatusMessage (QString d)
   wakeup();
 }
 
+// create the chart panel
 void QtstalkerApp::initChartNav ()
 {
   chartNav = new ChartPage(baseWidget);
@@ -755,6 +758,7 @@ void QtstalkerApp::initChartNav ()
   navTab->setTabToolTip(0, tr("Charts"));
 }
 
+// create the group panel
 void QtstalkerApp::initGroupNav ()
 {
   GroupPage *gp = new GroupPage(baseWidget);
@@ -766,6 +770,7 @@ void QtstalkerApp::initGroupNav ()
   navTab->setTabToolTip(1, tr("Groups"));
 }
 
+// create the indicator panel
 void QtstalkerApp::initIndicatorNav ()
 {
   IndicatorPage *ip = new IndicatorPage(baseWidget);
@@ -779,6 +784,7 @@ void QtstalkerApp::initIndicatorNav ()
   navTab->setTabToolTip(2, tr("Indicators"));
 }
 
+// create the script panel
 void QtstalkerApp::initScriptNav ()
 {
   scriptPage = new ScriptPage(baseWidget);
@@ -787,6 +793,7 @@ void QtstalkerApp::initScriptNav ()
   navTab->setTabToolTip(3, tr("Scripts"));
 }
 
+// enable / disable the side panels
 void QtstalkerApp::slotHideNav (bool d)
 {
   if (d)
@@ -795,6 +802,7 @@ void QtstalkerApp::slotHideNav (bool d)
     navBase->hide();
 }
 
+// draw the charts, but only the visible ones to save time
 void QtstalkerApp::slotDrawPlots ()
 {
   int loop;

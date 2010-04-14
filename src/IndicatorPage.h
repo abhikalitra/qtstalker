@@ -30,6 +30,8 @@
 #include <QList>
 #include <QAction>
 #include <QToolButton>
+#include <QHash>
+#include <QToolBar>
 
 #include "Setting.h"
 
@@ -46,7 +48,19 @@ class IndicatorPage : public QWidget
     void signalMessage (QString);
 
   public:
+    enum Action
+    {
+      ShowActive,
+      ShowAll,
+      Search,
+      NewIndicator,
+      EditIndicator,
+      DeleteIndicator
+    };
+
     IndicatorPage (QWidget *);
+    void createActions ();
+    void createButtonMenu (QToolBar *);
 
   public slots:
     void doubleClick (QListWidgetItem *);
@@ -59,6 +73,7 @@ class IndicatorPage : public QWidget
     void indicatorSearch ();
     void showAll ();
     void showActive ();
+    void listStatus ();
 
   protected:
     virtual void keyPressEvent (QKeyEvent *);
@@ -66,10 +81,7 @@ class IndicatorPage : public QWidget
     int listFlag;
     QListWidget *list;
     QMenu *menu;
-    QList<QAction *> actions;
-    QToolButton *searchButton;
-    QToolButton *allButton;
-    QToolButton *activeButton;
+    QHash<int, QAction *> actions;
 };
 
 #endif

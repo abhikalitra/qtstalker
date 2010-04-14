@@ -27,10 +27,10 @@
 #include <QMenu>
 #include <QListWidget>
 #include <QKeyEvent>
-#include <QList>
 #include <QAction>
 #include <QToolButton>
 #include <QHash>
+#include <QToolBar>
 
 #include "Script.h"
 
@@ -42,11 +42,25 @@ class ScriptPage : public QWidget
     void signalMessage (QString);
 
   public:
+    enum Action
+    {
+      RunScript,
+      ShowAllScripts,
+      SearchScript,
+      NewScript,
+      EditScript,
+      DeleteScript,
+      CancelScript
+    };
+
     ScriptPage (QWidget *);
     ~ScriptPage ();
+    void createActions ();
     void startScript ();
     void saveRunningScripts ();
     void loadSavedScripts ();
+    void createButtonMenu (QToolBar *);
+    void createLaunchButtons (QToolBar *);
 
   public slots:
     void newScript ();
@@ -61,12 +75,17 @@ class ScriptPage : public QWidget
     void updateQueList ();
     void scriptDone (QString);
     void removeScriptQueue ();
+    void runScript (Script *);
+    void runScriptDialog ();
+    void listStatus ();
+    void queStatus ();
 
   protected:
     QListWidget *list;
     QListWidget *queList;
-    QMenu *menu;
-    QList<QAction *> actions;
+    QMenu *listMenu;
+    QMenu *queMenu;
+    QHash<int, QAction *> actions;
     QToolButton *allButton;
     QToolButton *searchButton;
     QString searchString;

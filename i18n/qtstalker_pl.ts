@@ -2,13 +2,63 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>ChartPage</name>
+    <name>BarLengthButtons</name>
     <message>
-        <source>Symbol Search</source>
+        <source>Monthly Bars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Symbol Search</source>
+        <source>Weekly Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Daily Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>60 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>30 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>15 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>10 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>5 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 Minute Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>COToolBar</name>
+    <message>
+        <source>Select Cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom Cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Crosshairs Cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartPage</name>
+    <message>
+        <source>Symbol Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -37,6 +87,18 @@
     </message>
     <message>
         <source>Show All Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show &amp;All Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol &amp;Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add symbol to group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -139,10 +201,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add To &amp;Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Delete Group Items</source>
         <translation type="unfinished"></translation>
     </message>
@@ -174,6 +232,30 @@
         <source>Exchange: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Create a new group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Add To Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add symbol to group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete group items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh List</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IndicatorPage</name>
@@ -203,10 +285,6 @@
     </message>
     <message>
         <source>Show all indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -272,6 +350,34 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source> enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Acti&amp;ve Indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show &amp;All Indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1442,15 +1548,7 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Set Bar Spacing to </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Total bars to load</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Recent Charts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1466,71 +1564,11 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Zoom In</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zoom Out</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Refresh Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh chart every x minutes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Show documentation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Crosshairs Cursor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Monthly Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Weekly Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Daily Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>60 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>30 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>15 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>10 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>5 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>1 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zoom Cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1561,8 +1599,18 @@ a partial match like %SI or %RSI%</source>
         <source>Toggle the side panel area from view</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>RecentCharts</name>
     <message>
-        <source>Select Cursor</source>
+        <source>Recent Charts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RefreshAction</name>
+    <message>
+        <source>Refresh chart every x minutes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1587,10 +1635,6 @@ a partial match like %SI or %RSI%</source>
 </context>
 <context>
     <name>ScriptPage</name>
-    <message>
-        <source>Show all scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Search</source>
         <translation type="unfinished"></translation>
@@ -1658,10 +1702,6 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Remove Script From Queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script saved.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1711,6 +1751,46 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Running...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show &amp;All Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show All Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1962,6 +2042,21 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ZoomButtons</name>
+    <message>
+        <source>Zoom In</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom Out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Bar Spacing to </source>
         <translation type="unfinished"></translation>
     </message>
 </context>

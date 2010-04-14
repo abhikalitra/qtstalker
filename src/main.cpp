@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
         if (! ok)
           break;
         session = argv[loop];
-        break;
+	continue;
       }
     }
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
       else
       {
         asset = argv[loop];
-        break;
+        continue;
       }
     }
   }
