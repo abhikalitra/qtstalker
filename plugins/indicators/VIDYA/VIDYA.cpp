@@ -20,7 +20,6 @@
  */
 
 #include "VIDYA.h"
-#include "ta_libc.h"
 
 #include <cmath>
 #include <QVector>

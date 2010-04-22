@@ -29,17 +29,11 @@ class STOCHRSI : public IndicatorPlugin
   public:
     enum Parm
     {
-      FastkColor,
-      FastdColor,
+      Color,
       Ref1Color,
       Ref2Color,
-      FastkPlot,
-      FastdPlot,
-      FastkLabel,
-      FastdLabel,
-      FastkPeriod,
-      FastdPeriod,
-      FastdMA,
+      Plot,
+      Label,
       Ref1,
       Ref2,
       Input,
@@ -49,7 +43,7 @@ class STOCHRSI : public IndicatorPlugin
     STOCHRSI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getSTOCHRSI (PlotLine *in, int period, int fkp, int fdp, int ma, QList<PlotLine *> &l);
+    PlotLine * getSTOCHRSI (PlotLine *in, int period);
     int dialog (int);
 
   protected:

@@ -21,6 +21,8 @@
 
 #include "BARS.h"
 #include "PrefDialog.h"
+#include "MAUtils.h"
+#include "BARSUtils.h"
 
 #include <QtDebug>
 #include <QObject>
@@ -63,7 +65,8 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
   settings.getData(NeutralColor, s);
   QColor neutral(s);
 
-  PlotLine *line = getBARS(data, up, down, neutral);
+  BARSUtils b;
+  PlotLine *line = b.getBARS(data, up, down, neutral);
   if (! line)
     return 1;
 
@@ -72,15 +75,16 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
 
   ind.addLine(line);
 
+  MAUtils mau;
   QStringList maList;
-  getMAList(maList);
+  mau.getMAList(maList);
   
   int period = settings.getInt(MAPeriod);
   if (period > 1)
   {
     settings.getData(MAType, s);
     int type = maList.indexOf(s);
-    PlotLine *ma = getLocalMA(line, period, type);
+    PlotLine *ma = mau.getMA(line, period, type);
     if (ma)
     {
       settings.getData(MAColor, s);
@@ -98,7 +102,7 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
   {
     settings.getData(MA2Type, s);
     int type = maList.indexOf(s);
-    PlotLine *ma = getLocalMA(line, period, type);
+    PlotLine *ma = mau.getMA(line, period, type);
     if (ma)
     {
       settings.getData(MA2Color, s);
@@ -116,7 +120,7 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
   {
     settings.getData(MA3Type, s);
     int type = maList.indexOf(s);
-    PlotLine *ma = getLocalMA(line, period, type);
+    PlotLine *ma = mau.getMA(line, period, type);
     if (ma)
     {
       settings.getData(MA3Color, s);
@@ -170,52 +174,10 @@ int BARS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  PlotLine *line = getBARS(data, barUpColor, barDownColor, barNeutralColor);
+  BARSUtils b;
+  PlotLine *line = b.getBARS(data, barUpColor, barDownColor, barNeutralColor);
   tlines.insert(set[3], line);
   return 0;
-}
-
-PlotLine * BARS::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral)
-{
-  int size = data->count();
-  PlotLine *line = new PlotLine;
-  
-  QString s = "OHLC";
-  line->setPlugin(s);
-  
-  s = QObject::tr("C");
-  line->setLabel(s);
-  
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    PlotLineBar bar;
-    Bar *tbar = data->getBar(loop);
-    bar.append(tbar->getOpen());
-    bar.append(tbar->getHigh());
-    bar.append(tbar->getLow());
-    bar.append(tbar->getClose());
-    
-    if (loop > 0)
-    {
-      Bar *pbar = data->getBar(loop - 1);
-      if (tbar->getClose() > pbar->getClose())
-        bar.setColor(_up);
-      else
-      {
-        if (tbar->getClose() < pbar->getClose())
-          bar.setColor(_down);
-        else
-          bar.setColor(_neutral);
-      }
-    }
-    else
-      bar.setColor(_neutral);
-    
-    line->append(bar);
-  }
-
-  return line;
 }
 
 int BARS::dialog (int)
@@ -241,7 +203,8 @@ int BARS::dialog (int)
   dialog->addTextItem(BarsLabel, page, QObject::tr("Label"), d);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   page++;
   k = QObject::tr("MA 1");

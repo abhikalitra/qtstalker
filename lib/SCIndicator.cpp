@@ -21,7 +21,15 @@
 
 #include "SCIndicator.h"
 #include "PluginFactory.h"
-#include "IndicatorPlugin.h"
+#include "COLOR.h"
+#include "COMPARE.h"
+#include "REF.h"
+#include "NORMALIZE.h"
+#include "STDDEV.h"
+#include "ADD.h"
+#include "DIV.h"
+#include "MULT.h"
+#include "SUB.h"
 
 #include <QtDebug>
 
@@ -29,6 +37,7 @@
 SCIndicator::SCIndicator ()
 {
   methodList << "GET" << "GET_INDEX" << "GET_SIZE" << "PLUGIN" << "SET";
+  localList << "COLOR" << "COMPARE" << "REF" << "NORMALIZE" << "STDDEV" << "ADD" << "DIV" << "MULT" << "SUB";
 }
 
 int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
@@ -216,10 +225,21 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotL
     return 1;
   }
 
-  PluginFactory fac;
-  IndicatorPlugin *ip = fac.getIndicator(path, l[2]);
-  if (! ip)
-    return 1;
+  IndicatorPlugin *ip = 0;
+  int i = localList.indexOf(l[2]);
+  if (i != -1)
+  {
+    ip = getLocalPlugin(i);
+    if (! ip)
+      return 1;
+  }
+  else
+  {
+    PluginFactory fac;
+    IndicatorPlugin *ip = fac.getIndicator(path, l[2]);
+    if (! ip)
+      return 1;
+  }
 
   int rc = ip->getCUS(l, tlines, data);
   if (ip->getDeleteFlag())
@@ -229,5 +249,44 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotL
   ba.append(QString::number(rc) + '\n');
 
   return 0;
+}
+
+IndicatorPlugin * SCIndicator::getLocalPlugin (int i)
+{
+  IndicatorPlugin *plug = 0;
+  switch ((Local) i)
+  {
+    case _COLOR:
+      plug = new COLOR;
+      break;
+    case _COMPARE:
+      plug = new COMPARE;
+      break;
+    case _REF:
+      plug = new REF;
+      break;
+    case _NORMALIZE:
+      plug = new NORMALIZE;
+      break;
+    case _STDDEV:
+      plug = new STDDEV;
+      break;
+    case _ADD:
+      plug = new ADD;
+      break;
+    case _DIV:
+      plug = new DIV;
+      break;
+    case _MULT:
+      plug = new MULT;
+      break;
+    case _SUB:
+      plug = new SUB;
+      break;
+    default:
+      break;
+  }
+
+  return plug;
 }
 

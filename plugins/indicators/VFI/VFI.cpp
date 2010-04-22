@@ -20,7 +20,6 @@
  */
 
 #include "VFI.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 #include <cmath>

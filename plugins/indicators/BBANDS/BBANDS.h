@@ -47,24 +47,27 @@ class BBANDS : public IndicatorPlugin
       MAType
     };
 
+    enum Method
+    {
+      Upper,
+      Middle,
+      Lower
+    };
+
     BBANDS ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getBBANDS (PlotLine *in, int period, double udev, double ldev, int ma, QList<PlotLine *> &l);
     int dialog (int);
 
+    int getCUSUpper (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUSMiddle (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUSLower (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getUpper (PlotLine *, PlotLine *, int, double);
+    PlotLine * getLower (PlotLine *, PlotLine *, int, double);
+    PlotLine * getMiddle (PlotLine *, int, int);
+
   private:
-    QString ucKey;
-    QString mcKey;
-    QString lcKey;
-    QString upKey;
-    QString mpKey;
-    QString lpKey;
-    QString ulKey;
-    QString mlKey;
-    QString llKey;
-    QString udKey;
-    QString ldKey;
+    QStringList methodList;
 };
 
 extern "C"

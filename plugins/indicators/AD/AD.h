@@ -46,7 +46,8 @@ class AD : public IndicatorPlugin
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getAD (BarData *data, int method, int fast, int slow);
+    PlotLine * getAD (BarData *data);
+    PlotLine * getADOSC (BarData *data, int fast, int slow);
     int dialog (int);
 
   private:

@@ -20,7 +20,7 @@
  */
 
 #include "TRIX.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
 
@@ -118,6 +118,48 @@ int TRIX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
 
 PlotLine * TRIX::getTRIX (PlotLine *in, int period)
 {
+  if (in->count() < period)
+    return 0;
+
+  MAUtils mau;
+  PlotLine *ema1 = mau.getMA(in, period, MAUtils::EMA);
+  if (! ema1)
+    return 0;
+  
+  PlotLine *ema2 = mau.getMA(ema1, period, MAUtils::EMA);
+  if (! ema2)
+  {
+    delete ema1;
+    return 0;
+  }
+  
+  PlotLine *ema3 = mau.getMA(ema2, period, MAUtils::EMA);
+  if (! ema3)
+  {
+    delete ema1;
+    delete ema2;
+    return 0;
+  }
+
+  PlotLine *line = new PlotLine;
+  int loop = 1;
+  int size = ema3->count();
+  for (; loop < size; loop++)
+  {
+    double roc = ((ema3->getData(loop) - ema3->getData(loop - 1)) / ema3->getData(loop)) * 100;
+    line->append(roc);
+  }
+
+  delete ema1;
+  delete ema2;
+  delete ema3;
+
+  return line;
+}
+
+/*
+PlotLine * TRIX::getTRIX (PlotLine *in, int period)
+{
   int size = in->count();
   TA_Real input[size];
   TA_Real out[size];
@@ -140,6 +182,7 @@ PlotLine * TRIX::getTRIX (PlotLine *in, int period)
 
   return line;
 }
+*/
 
 int TRIX::dialog (int)
 {

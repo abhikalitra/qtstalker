@@ -27,7 +27,6 @@
 #include "PluginFactory.h"
 #include "IndicatorPlugin.h"
 #include "DBPlugin.h"
-#include "ta_libc.h"
 #include "ExchangeDataBase.h"
 #include "FuturesDataBase.h"
 
@@ -41,9 +40,6 @@
 
 Setup::Setup ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("TALIB::setDefaults:error on TA_Initialize");
 }
 
 void Setup::setupDirectories ()

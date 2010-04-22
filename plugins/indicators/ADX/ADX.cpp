@@ -20,13 +20,20 @@
  */
 
 #include "ADX.h"
-#include "ta_libc.h"
+//#include "ta_libc.h"
+#include "MAUtils.h"
+#include "DIV.h"
+#include "TR.h"
 
 #include <QtDebug>
 
 
 ADX::ADX ()
 {
+//  TA_RetCode rc = TA_Initialize();
+//  if (rc != TA_SUCCESS)
+//    qDebug("TALIB::setDefaults:error on TA_Initialize");
+
   indicator = "ADX";
 
   settings.setData(ADXColor, "blue");
@@ -47,13 +54,7 @@ ADX::ADX ()
   settings.setData(MDICheck, 1);
   settings.setData(Period, 14);
 
-  methodList << "ADX";
-  methodList << "ADXR";
-  methodList << "+DI";
-  methodList << "-DI";
-  methodList << "DX";
-  methodList << "-DM";
-  methodList << "+DM";
+  methodList << "ADX" << "ADXR" << "+DI" << "-DI" << "DX" << "-DM" << "+DM";
 }
 
 int ADX::getIndicator (Indicator &ind, BarData *data)
@@ -62,7 +63,7 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
 
   if (settings.getInt(MDICheck))
   {
-    PlotLine *line = getLine(data, period, 0);
+    PlotLine *line = getLine(data, period, MDI);
     if (! line)
       return 1;
 
@@ -78,7 +79,7 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
 
   if (settings.getInt(PDICheck))
   {
-    PlotLine *line = getLine(data, period, 1);
+    PlotLine *line = getLine(data, period, PDI);
     if (! line)
       return 1;
 
@@ -94,7 +95,7 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
 
   if (settings.getInt(ADXCheck))
   {
-    PlotLine *line = getLine(data, period, 2);
+    PlotLine *line = getLine(data, period, _ADX);
     if (! line)
       return 1;
 
@@ -110,7 +111,7 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
 
   if (settings.getInt(ADXRCheck))
   {
-    PlotLine *line = getLine(data, period, 3);
+    PlotLine *line = getLine(data, period, ADXR);
     if (! line)
       return 1;
 
@@ -170,6 +171,170 @@ int ADX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * ADX::getLine (BarData *data, int period, int method)
 {
+  PlotLine *line = 0;
+
+  switch ((Method) method)
+  {
+    case MDI:
+      line = getDI(data, period, 0);
+      break;
+    case PDI:
+      line = getDI(data, period, 1);
+      break;
+    case _ADX:
+      line = getADX(data, period);
+      break;
+    case ADXR:
+      line = getADXR(data, period);
+      break;
+    case DX:
+      line = getDX(data, period);
+      break;
+    case MDM:
+      line = getDM(data, 0);
+      break;
+    case PDM:
+      line = getDM(data, 1);
+      break;
+    default:
+      break;
+  }
+
+  return line;
+}
+
+PlotLine * ADX::getADXR (BarData *data, int period)
+{
+  PlotLine *adx = getADX(data, period);
+  if (! adx)
+    return 0;
+
+  PlotLine *adxr = new PlotLine;
+  int loop = period;
+  for (; loop < adx->count(); loop++)
+    adxr->append((adx->getData(loop) + adx->getData(loop - period)) / 2);
+
+  delete adx;
+  return adxr;
+}
+
+PlotLine * ADX::getADX (BarData *data, int period)
+{
+  PlotLine *dx = getDX(data, period);
+  if (! dx)
+    return 0;
+
+  MAUtils mau;
+  PlotLine *adx = mau.getMA(dx, period, MAUtils::Wilder);
+  
+  delete dx;
+  return adx;
+}
+
+PlotLine * ADX::getDX (BarData *data, int period)
+{
+  PlotLine *pdi = getDI(data, period, 1);
+  if (! pdi)
+    return 0;
+
+  PlotLine *mdi = getDI(data, period, 0);
+  if (! mdi)
+  {
+    delete pdi;
+    return 0;
+  }
+
+  PlotLine *dx = new PlotLine;
+  int loop = 0;
+  for (; loop < pdi->count(); loop++)
+  {
+    double t = fabs(pdi->getData(loop) - mdi->getData(loop));
+    double t2 = pdi->getData(loop) + mdi->getData(loop);
+    dx->append((t / t2) * 100);
+  }
+
+  delete pdi;
+  delete mdi;
+  
+  return dx;  
+}
+
+PlotLine * ADX::getDI (BarData *data, int period, int flag)
+{
+  PlotLine *dm = getDM(data, flag);
+  if (! dm)
+    return 0;
+  
+  MAUtils mau;
+  PlotLine *dmma = mau.getMA(dm, period, MAUtils::Wilder);
+  if (! dmma)
+  {
+    delete dm;
+    return 0;
+  }
+
+  TR ttr;
+  PlotLine *tr = ttr.getTR(data);
+  PlotLine *trma = mau.getMA(tr, period, MAUtils::Wilder);
+  if (! trma)
+  {
+    delete dm;
+    delete dmma;
+    delete tr;
+    return 0;
+  }
+
+  DIV div;
+  PlotLine *tdi = div.getDIV(dmma, trma);
+
+  PlotLine *di = new PlotLine;
+  int loop = 0;
+  for (; loop < tdi->count(); loop++)
+  {
+    di->append(tdi->getData(loop) * 100);
+  }
+
+  delete dm;
+  delete dmma;
+  delete tr;
+  delete trma;
+  delete tdi;
+  
+  return di;
+}
+
+PlotLine * ADX::getDM (BarData *data, int flag)
+{
+  PlotLine *line = new PlotLine;
+  int loop = 1;
+  for (; loop < data->count(); loop++)
+  {
+    double pdm = 0;
+    double mdm = 0;
+    
+    Bar *pbar = data->getBar(loop - 1);
+    Bar *bar = data->getBar(loop);
+
+    double pd = bar->getHigh() - pbar->getHigh();
+    double md = pbar->getLow() - bar->getLow();
+
+    if ((pd > 0) && (pd > md))
+      pdm = pd;
+    else if ((md > 0) && (md > pd))
+        mdm = md;
+
+    if (flag)
+      line->append(pdm);
+    else
+      line->append(mdm);
+  }
+
+  return line;
+}
+
+/*
+PlotLine * ADX::getLine (BarData *data, int period, int method)
+{
   int size = data->count();
   TA_Real high[size];
   TA_Real low[size];
@@ -226,6 +391,7 @@ PlotLine * ADX::getLine (BarData *data, int period, int method)
 
   return line;
 }
+*/
 
 int ADX::dialog (int)
 {

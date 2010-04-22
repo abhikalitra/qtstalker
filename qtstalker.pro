@@ -115,6 +115,7 @@ SUBDIRS += plugins/indicators/ROC
 SUBDIRS += plugins/indicators/RSI
 SUBDIRS += plugins/indicators/SAR
 SUBDIRS += plugins/indicators/STOCH
+SUBDIRS += plugins/indicators/STOCHS
 SUBDIRS += plugins/indicators/STOCHRSI
 SUBDIRS += plugins/indicators/SZ
 SUBDIRS += plugins/indicators/T3

@@ -21,6 +21,7 @@
 
 #include "PP.h"
 #include "ta_libc.h"
+#include "BARSUtils.h"
 
 #include <QtDebug>
 
@@ -54,7 +55,8 @@ int PP::getIndicator (Indicator &ind, BarData *data)
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = getLocalBARS(data, up, down, neutral);
+  BARSUtils b;
+  PlotLine *bars = b.getBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
   

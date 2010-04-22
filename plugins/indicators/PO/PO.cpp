@@ -20,7 +20,7 @@
  */
 
 #include "PO.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
 
@@ -29,11 +29,10 @@ PO::PO ()
 {
   indicator = "PO";
 
-  methodList << "APO";
-  methodList << "PPO";
+  methodList << "APO" << "PPO";
 
   settings.setData(Color, "red");
-  settings.setData(Plot, "HistogramBar");
+  settings.setData(Plot, "Histogram Bar");
   settings.setData(Label, indicator);
   settings.setData(Input, "Close");
   settings.setData(FastPeriod, 12);
@@ -57,7 +56,8 @@ int PO::getIndicator (Indicator &ind, BarData *data)
   int slow = settings.getInt(SlowPeriod);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(MAType, s);
   int ma = maList.indexOf(s);
@@ -138,7 +138,8 @@ int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   }
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   int ma = maList.indexOf(set[8]);
   if (ma == -1)
   {
@@ -157,36 +158,87 @@ int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
 PlotLine * PO::getPO (PlotLine *in, int fast, int slow, int ma, int method)
 {
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
-  int loop;
-  for (loop = 0; loop < in->count(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
+  if (in->count() < fast || in->count() < slow)
+    return 0;
 
-  TA_RetCode rc = TA_SUCCESS;
-  switch (method)
+  PlotLine *line = 0;
+
+  switch ((_Method) method)
   {
-    case 0:
-      rc = TA_APO(0, in->count() - 1, &input[0], fast, slow, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
+    case APO:
+      line = getAPO(in, fast, slow, ma);
       break;
-    case 1:
-      rc = TA_PPO(0, in->count() - 1, &input[0], fast, slow, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
+    case PPO:
+      line = getPPO(in, fast, slow, ma);
       break;
     default:
       break;
   }
+      
+  if (! line)
+    return 0;
 
-  if (rc != TA_SUCCESS)
+  return line;
+}
+
+PlotLine * PO::getAPO (PlotLine *in, int fast, int slow, int ma)
+{
+  MAUtils mau;
+  PlotLine *fma = mau.getMA(in, fast, ma);
+  if (! fma)
+    return 0;
+
+  PlotLine *sma = mau.getMA(in, slow, ma);
+  if (! sma)
   {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    delete fma;
     return 0;
   }
 
+  int slowLoop = sma->count() - 1;
+  int fastLoop = fma->count() - 1;
   PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  
+  while (fastLoop > -1 && slowLoop > -1)
+  {
+    line->prepend(fma->getData(fastLoop) - sma->getData(slowLoop));
+    fastLoop--;
+    slowLoop--;
+  }
+
+  delete fma;
+  delete sma;
+
+  return line;
+}
+
+PlotLine * PO::getPPO (PlotLine *in, int fast, int slow, int ma)
+{
+  MAUtils mau;
+  PlotLine *fma = mau.getMA(in, fast, ma);
+  if (! fma)
+    return 0;
+
+  PlotLine *sma = mau.getMA(in, slow, ma);
+  if (! sma)
+  {
+    delete fma;
+    return 0;
+  }
+
+  int slowLoop = sma->count() - 1;
+  int fastLoop = fma->count() - 1;
+  PlotLine *line = new PlotLine;
+
+  while (fastLoop > -1 && slowLoop > -1)
+  {
+    line->prepend(((fma->getData(fastLoop) - sma->getData(slowLoop)) / sma->getData(slowLoop)) * 100);
+    fastLoop--;
+    slowLoop--;
+  }
+
+  delete fma;
+  delete sma;
 
   return line;
 }
@@ -218,7 +270,8 @@ int PO::dialog (int)
   dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 2, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
 
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

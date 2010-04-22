@@ -20,9 +20,10 @@
  */
 
 #include "CCI.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
+#include <cmath>
 
 
 CCI::CCI ()
@@ -34,7 +35,7 @@ CCI::CCI ()
   settings.setData(Label, indicator);
   settings.setData(Smoothing, 10);
   settings.setData(SmoothingType, "SMA");
-  settings.setData(Period, 14);
+  settings.setData(Period, 20);
   settings.setData(Ref1, 100);
   settings.setData(Ref2, -100);
   settings.setData(Ref1Color, "white");
@@ -48,7 +49,8 @@ int CCI::getIndicator (Indicator &ind, BarData *data)
   int smoothing = settings.getInt(Smoothing);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
@@ -121,7 +123,8 @@ int CCI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   }
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   int ma = maList.indexOf(set[6]);
   if (ma == -1)
   {
@@ -140,49 +143,57 @@ int CCI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * CCI::getCCI (BarData *data, int period, int smoothing, int type)
 {
+  if (data->count() < period)
+    return 0;
+  
   int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
+  int loop = 0;
+  PlotLine *tp = new PlotLine;
+  for (; loop < size; loop++)
   {
     Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    tp->append((bar->getHigh() + bar->getLow() + bar->getClose()) / 3);
   }
 
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_CCI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
+  MAUtils mau;
+  PlotLine *smatp = mau.getMA(tp, period, MAUtils::SMA);
+  if (! smatp)
   {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    delete tp;
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  int tpLoop = tp->count() - 1;
+  int smatpLoop = smatp->count() - 1;
+  PlotLine *cci = new PlotLine;
+  while (tpLoop >= period && smatpLoop >= period)
+  {
+    double t = 0;
+    int count = 0;
+    for (; count < period; count++)
+      t += fabs(tp->getData(tpLoop - count) - smatp->getData(smatpLoop - count));
+    double b = (t / (double) period) * 0.015;
 
+    double a = tp->getData(tpLoop) - smatp->getData(smatpLoop);
+    cci->prepend(a / b);
+
+    tpLoop--;
+    smatpLoop--;
+  }
+  
   if (smoothing > 1)
   {
     QStringList maList;
-    getMAList(maList);
-    PlotLine *ma = getLocalMA(line, smoothing, type);
-    if (! ma)
-    {
-      delete line;
-      return 0;
-    }
-
-    delete line;
-    line = ma;
+    mau.getMAList(maList);
+    PlotLine *ma = mau.getMA(cci, smoothing, type);
+    delete cci;
+    cci = ma;
   }
 
-  return line;
+  delete tp;
+  delete smatp;
+  
+  return cci;
 }
 
 int CCI::dialog (int)
@@ -209,7 +220,8 @@ int CCI::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);

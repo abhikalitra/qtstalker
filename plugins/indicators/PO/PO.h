@@ -39,11 +39,19 @@ class PO : public IndicatorPlugin
       MAType
     };
 
+    enum _Method
+    {
+      APO,
+      PPO
+    };
+
     PO ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getPO (PlotLine *in, int fast, int slow, int ma, int method);
     int dialog (int);
+    PlotLine * getPO (PlotLine *in, int fast, int slow, int ma, int method);
+    PlotLine * getAPO (PlotLine *in, int fast, int slow, int ma);
+    PlotLine * getPPO (PlotLine *in, int fast, int slow, int ma);
 
   private:
     QStringList methodList;

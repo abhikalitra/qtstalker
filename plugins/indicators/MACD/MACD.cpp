@@ -20,7 +20,7 @@
  */
 
 #include "MACD.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
 
@@ -33,8 +33,8 @@ MACD::MACD ()
   settings.setData(SignalColor, "yellow");
   settings.setData(HistColor, "blue");
   settings.setData(MACDPlot, "Line");
-  settings.setData(SignalPlot, "Dash");
-  settings.setData(HistPlot, "Histogram");
+  settings.setData(SignalPlot, "Dot");
+  settings.setData(HistPlot, "Histogram Bar");
   settings.setData(MACDLabel, "MACD");
   settings.setData(SignalLabel, "SIG");
   settings.setData(HistLabel, "HIST");
@@ -63,7 +63,8 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
   int signal = settings.getInt(SignalPeriod);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(FastMA, s);
   int fastma = maList.indexOf(s);
@@ -74,44 +75,56 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
   settings.getData(SignalMA, s);
   int signalma = maList.indexOf(s);
 
-  QList<PlotLine *> l;
-  int rc = getMACD(in, fast, fastma, slow, slowma, signal, signalma, l);
-  if (rc || l.count() != 3)
+  PlotLine *macd = getMACD(in, fast, fastma, slow, slowma);
+  if (! macd)
   {
-    qDeleteAll(l);
     delete in;
     return 1;
   }
 
-  // hist line first so we dont blot out the macd and  signal lines
-  PlotLine *line = l.at(2);
+  PlotLine *sigma = getSignal(macd, signal, signalma);
+  if (! sigma)
+  {
+    delete in;
+    delete macd;
+    return 1;
+  }
+
+  PlotLine *hist = getHistogram(macd, sigma);
+  if (! hist)
+  {
+    delete in;
+    delete macd;
+    delete sigma;
+    return 1;
+  }
+
+  // hist line
   settings.getData(HistColor, s);
-  line->setColor(s);
+  hist->setColor(s);
   settings.getData(HistPlot, s);
-  line->setPlugin(s);
+  hist->setPlugin(s);
   settings.getData(HistLabel, s);
-  line->setLabel(s);
-  ind.addLine(line);
+  hist->setLabel(s);
+  ind.addLine(hist);
 
   // macd line
-  line = l.at(0);
   settings.getData(MACDColor, s);
-  line->setColor(s);
+  macd->setColor(s);
   settings.getData(MACDPlot, s);
-  line->setPlugin(s);
+  macd->setPlugin(s);
   settings.getData(MACDLabel, s);
-  line->setLabel(s);
-  ind.addLine(line);
+  macd->setLabel(s);
+  ind.addLine(macd);
 
   // signal line
-  line = l.at(1);
   settings.getData(SignalColor, s);
-  line->setColor(s);
+  sigma->setColor(s);
   settings.getData(SignalPlot, s);
-  line->setPlugin(s);
+  sigma->setPlugin(s);
   settings.getData(SignalLabel, s);
-  line->setLabel(s);
-  ind.addLine(line);
+  sigma->setLabel(s);
+  ind.addLine(sigma);
 
   delete in;
 
@@ -172,7 +185,8 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   }
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   int fastma = maList.indexOf(set[8]);
   if (fastma == -1)
   {
@@ -208,59 +222,86 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  QList<PlotLine *> l;
-  int rc = getMACD(in, fast, fastma, slow, slowma, signal, signalma, l);
-  if (rc)
-  {
-    qDeleteAll(l);
+  PlotLine *macd = getMACD(in, fast, fastma, slow, slowma);
+  if (! macd)
     return 1;
-  }
+  
+  tlines.insert(set[4], macd);
 
-  tlines.insert(set[4], l.at(0));
-  tlines.insert(set[5], l.at(1));
-  tlines.insert(set[6], l.at(2));
+  PlotLine *sigma = getSignal(macd, signal, signalma);
+  if (! sigma)
+    return 1;
+
+  tlines.insert(set[5], sigma);
+
+  PlotLine *hist = getHistogram(macd, sigma);
+  if (! hist)
+    return 1;
+  
+  tlines.insert(set[6], hist);
 
   return 0;
 }
 
-int MACD::getMACD (PlotLine *in, int fast, int fma, int slow, int sma, int signal,
-			 int sigma, QList<PlotLine *> &l)
+PlotLine * MACD::getMACD (PlotLine *in, int fast, int fmaType, int slow, int smaType)
 {
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Real out3[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-    input[loop] = (TA_Real) in->getData(loop);
+  if (in->count() < fast || in->count() < slow)
+    return 0;
+  
+  MAUtils mau;
+  PlotLine *fma = mau.getMA(in, fast, fmaType);
+  if (! fma)
+    return 0;
 
-  TA_RetCode rc = TA_MACDEXT(0, size - 1, &input[0], fast, (TA_MAType) fma,
-			     slow, (TA_MAType) sma, signal, (TA_MAType) sigma,
-			     &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
-  if (rc != TA_SUCCESS)
+  PlotLine *sma = mau.getMA(in, slow, smaType);
+  if (! sma)
   {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
-    return 1;
+    delete fma;
+    return 0;
   }
 
-  PlotLine *line = new PlotLine;
-  PlotLine *sig = new PlotLine;
+  int smaLoop = sma->count() - 1;
+  int fmaLoop = fma->count() - 1;
+
+  PlotLine *macd = new PlotLine;
+  while (fmaLoop > -1 && smaLoop > -1)
+  {
+    macd->prepend(fma->getData(fmaLoop) - sma->getData(smaLoop));
+    fmaLoop--;
+    smaLoop--;
+  }
+
+  delete fma;
+  delete sma;
+
+  return macd;
+}
+
+PlotLine * MACD::getSignal (PlotLine *macd, int period, int maType)
+{
+  if (macd->count() < period)
+    return 0;
+
+  MAUtils mau;
+  PlotLine *sig = mau.getMA(macd, period, maType);
+
+  return sig;
+}
+
+PlotLine * MACD::getHistogram (PlotLine *macd, PlotLine *sig)
+{
   PlotLine *hist = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
+  int sigLoop = sig->count() - 1;
+  int macdLoop = macd->count() - 1;
+
+  while (sigLoop > -1 && macdLoop > -1)
   {
-    line->append(out[loop]);
-    sig->append(out2[loop]);
-    hist->append(out3[loop]);
+    hist->prepend(macd->getData(macdLoop) - sig->getData(sigLoop));
+    sigLoop--;
+    macdLoop--;
   }
 
-  l.append(line);
-  l.append(sig);
-  l.append(hist);
-
-  return 0;
+  return hist;
 }
 
 int MACD::dialog (int)
@@ -281,7 +322,8 @@ int MACD::dialog (int)
   dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 2, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(FastMA, d);
   dialog->addComboItem(FastMA, page, QObject::tr("Fast MA"), maList, d);

@@ -28,6 +28,10 @@
 
 CORREL::CORREL ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TALIB::setDefaults:error on TA_Initialize");
+
   indicator = "CORREL";
 
   settings.setData(Color, "red");

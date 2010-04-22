@@ -21,12 +21,18 @@
 
 #include "MAVP.h"
 #include "ta_libc.h"
+#include "MAUtils.h"
+#include "BARSUtils.h"
 
 #include <QtDebug>
 
 
 MAVP::MAVP ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TALIB::setDefaults:error on TA_Initialize");
+
   indicator = "MAVP";
 
   settings.setData(Color, "red");
@@ -63,7 +69,8 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   int max = settings.getInt(Max);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(MAType, s);
   int ma = maList.indexOf(s);
@@ -79,7 +86,8 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = getLocalBARS(data, up, down, neutral);
+  BARSUtils b;
+  PlotLine *bars = b.getBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
 
@@ -156,7 +164,8 @@ int MAVP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   }
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   int ma = maList.indexOf(set[8]);
   if (ma == -1)
   {
@@ -238,7 +247,8 @@ int MAVP::dialog (int)
   dialog->addIntItem(Max, page, QObject::tr("Max"), settings.getInt(Max), 2, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
 
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

@@ -20,10 +20,10 @@
  */
 
 #include "ATR.h"
-#include "ta_libc.h"
+#include "TR.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
-
 
 ATR::ATR ()
 {
@@ -35,8 +35,7 @@ ATR::ATR ()
   settings.setData(Plot, "Line");
   settings.setData(Label, indicator);
 
-  methodList << "ATR";
-  methodList << "NATR";
+  methodList << "ATR" << "NATR";
 }
 
 int ATR::getIndicator (Indicator &ind, BarData *data)
@@ -47,7 +46,7 @@ int ATR::getIndicator (Indicator &ind, BarData *data)
   settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
-  PlotLine *line = getATR(data, period, method);
+  PlotLine *line = getLine(data, period, method);
   if (! line)
     return 1;
 
@@ -94,7 +93,7 @@ int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getATR(data, period, method);
+  PlotLine *line = getLine(data, period, method);
   if (! line)
     return 1;
 
@@ -103,48 +102,58 @@ int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * ATR::getATR (BarData *data, int period, int method)
+PlotLine * ATR::getLine (BarData *data, int period, int method)
 {
-  int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
+  PlotLine *line = 0;
+  
+  switch ((_Method) method)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_SUCCESS;
-  switch (method)
-  {
-    case 0:
-      rc = TA_ATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
+    case _ATR:
+      line = getATR(data, period);
       break;
-    case 1:
-      rc = TA_NATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
+    case NATR:
+      line = getNATR(data, period);
       break;
     default:
       break;
   }
 
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
   return line;
+}
+
+PlotLine * ATR::getATR (BarData *data, int period)
+{
+  if (data->count() < period)
+    return 0;
+
+  TR ttr;
+  PlotLine *tr = ttr.getTR(data);
+  if (! tr)
+    return 0;
+
+  MAUtils mau;
+  PlotLine *atr = mau.getMA(tr, period, MAUtils::Wilder);
+
+  delete tr;
+  return atr;
+}
+
+PlotLine * ATR::getNATR (BarData *data, int period)
+{
+  if (data->count() < period)
+    return 0;
+
+  TR ttr;
+  PlotLine *ntr = ttr.getNTR(data);
+  if (! ntr)
+    return 0;
+
+  MAUtils mau;
+  PlotLine *natr = mau.getMA(ntr, period, MAUtils::Wilder);
+
+  delete ntr;
+  
+  return natr;
 }
 
 int ATR::dialog (int)

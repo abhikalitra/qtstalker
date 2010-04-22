@@ -20,7 +20,7 @@
  */
 
 #include "ULTOSC.h"
-#include "ta_libc.h"
+#include "TR.h"
 
 #include <QtDebug>
 
@@ -136,36 +136,71 @@ int ULTOSC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
 
 PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp)
 {
-  int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_ULTOSC(0, size - 1, &high[0], &low[0], &close[0], sp, mp, lp, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+  if (data->count() <= sp || data->count() <= mp || data->count() <= lp)
     return 0;
+
+  PlotLine *bp = getBP(data);
+
+  TR ttr;
+  PlotLine *tr = ttr.getTR(data);
+  
+  PlotLine *line = new PlotLine;
+  int size = bp->count();
+  int loop = lp - 1;
+  for (; loop < size; loop++)
+  {
+    double bpsum1 = 0;
+    double trsum1 = 0;
+    int count = 0;
+    for (; count < sp; count++)
+    {
+      bpsum1 += bp->getData(loop - count);
+      trsum1 += tr->getData(loop - count);
+    }
+
+    double bpsum2 = 0;
+    double trsum2 = 0;
+    for (count = 0; count < mp; count++)
+    {
+      bpsum2 += bp->getData(loop - count);
+      trsum2 += tr->getData(loop - count);
+    }
+
+    double bpsum3 = 0;
+    double trsum3 = 0;
+    for (count = 0; count < lp; count++)
+    {
+      bpsum3 += bp->getData(loop - count);
+      trsum3 += tr->getData(loop - count);
+    }
+
+    double raw = (4 * (bpsum1 / trsum1)) + (2 * (bpsum2 / trsum2)) + (bpsum3 / trsum3);
+    line->append((raw / 7) * 100);
   }
 
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
+  delete bp;
+  delete tr;
   return line;
 }
 
+PlotLine * ULTOSC::getBP (BarData *data)
+{
+  PlotLine *line = new PlotLine;
+  int size = data->count();
+  int loop = 1;
+  for (; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+    Bar *pbar = data->getBar(loop - 1);
+    double tl = bar->getLow();
+    if (pbar->getLow() < tl)
+      tl = pbar->getLow();
+    line->append(bar->getClose() - tl);
+  }
+
+  return line;
+}
+  
 int ULTOSC::dialog (int)
 {
   int page = 0;

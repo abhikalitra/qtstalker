@@ -34,8 +34,6 @@ HEADERS += PlotLineBar.h
 HEADERS += PlotPlugin.h
 HEADERS += COLOR.h
 HEADERS += COMPARE.h
-HEADERS += MATH1.h
-HEADERS += RANGE.h
 HEADERS += REF.h
 HEADERS += SymbolButton.h
 HEADERS += SymbolDialog.h
@@ -73,6 +71,19 @@ HEADERS += Line.h
 HEADERS += OHLC.h
 HEADERS += DataBase.h
 HEADERS += SCSymbol.h
+HEADERS += MAUtils.h
+HEADERS += BARSUtils.h
+HEADERS += NORMALIZE.h
+HEADERS += STDDEV.h
+HEADERS += ADD.h
+HEADERS += DIV.h
+HEADERS += MULT.h
+HEADERS += SUB.h
+HEADERS += TR.h
+HEADERS += MIN.h
+HEADERS += MAX.h
+HEADERS += RSIUtils.h
+HEADERS += STOCHUtils.h
 
 
 SOURCES += Setting.cpp
@@ -104,8 +115,6 @@ SOURCES += PlotPlugin.cpp
 SOURCES += PlotLineBar.cpp
 SOURCES += COLOR.cpp
 SOURCES += COMPARE.cpp
-SOURCES += MATH1.cpp
-SOURCES += RANGE.cpp
 SOURCES += REF.cpp
 SOURCES += SymbolButton.cpp
 SOURCES += SymbolDialog.cpp
@@ -142,6 +151,20 @@ SOURCES += Line.cpp
 SOURCES += OHLC.cpp
 SOURCES += DataBase.cpp
 SOURCES += SCSymbol.cpp
+SOURCES += MAUtils.cpp
+SOURCES += BARSUtils.cpp
+SOURCES += NORMALIZE.cpp
+SOURCES += STDDEV.cpp
+SOURCES += ADD.cpp
+SOURCES += DIV.cpp
+SOURCES += MULT.cpp
+SOURCES += SUB.cpp
+SOURCES += TR.cpp
+SOURCES += MIN.cpp
+SOURCES += MAX.cpp
+SOURCES += RSIUtils.cpp
+SOURCES += STOCHUtils.cpp
+
 
 
 TARGET = qtstalker
@@ -156,14 +179,14 @@ unix {
   }
 }
 
-TA_LIB_VERSION = $$system(ta-lib-config --version)
-contains(TA_LIB_VERSION, 0.3.0) {
-    LIBS += -lta_abstract
-    LIBS += -lta_common
-    LIBS += -lta_func
-  } else {
-    LIBS += -lta_lib
-  }
+#TA_LIB_VERSION = $$system(ta-lib-config --version)
+#contains(TA_LIB_VERSION, 0.3.0) {
+#    LIBS += -lta_abstract
+#    LIBS += -lta_common
+#    LIBS += -lta_func
+#  } else {
+#    LIBS += -lta_lib
+#  }
 
 #unix:linux-g++:LIBS += -ldl
 

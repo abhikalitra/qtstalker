@@ -53,7 +53,6 @@ class BARS : public IndicatorPlugin
     BARS ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral);
     int dialog (int);
 
   private:

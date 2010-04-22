@@ -19,27 +19,19 @@
  *  USA.
  */
 
-#ifndef MATH1_HPP
-#define MATH1_HPP
-
-#include "IndicatorPlugin.h"
+#ifndef BARS_UTILS_HPP
+#define BARS_UTILS_HPP
 
 #include <QColor>
 
-class MATH1 : public IndicatorPlugin
+#include "PlotLine.h"
+#include "BarData.h"
+
+class BARSUtils
 {
   public:
-    MATH1 ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getCUS2 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getCUS3 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getCUS4 (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getMATH1 (PlotLine *in, int method);
-    PlotLine * getMATH2 (PlotLine *in, PlotLine *in2, int method);
-    PlotLine * getSTDDEV (PlotLine *in, int period, double dev);
-
-  protected:
-    QStringList methodList;
+    BARSUtils ();
+    PlotLine * getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral);
 };
 
 #endif

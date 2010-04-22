@@ -20,7 +20,10 @@
  */
 
 #include "STOCHRSI.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
+#include "RSIUtils.h"
+#include "MAX.h"
+#include "MIN.h"
 
 #include <QtDebug>
 
@@ -29,26 +32,35 @@ STOCHRSI::STOCHRSI ()
 {
   indicator = "STOCHRSI";
 
-  settings.setData(FastkColor, "red");
-  settings.setData(FastdColor, "yellow");
+  settings.setData(Color, "red");
   settings.setData(Ref1Color, "white");
   settings.setData(Ref2Color, "white");
-  settings.setData(FastkPlot, "Line");
-  settings.setData(FastdPlot, "Dash");
-  settings.setData(FastkLabel, "STORSIK");
-  settings.setData(FastdLabel, "STORSID");
-  settings.setData(FastkPeriod, 5);
-  settings.setData(FastdPeriod, 3);
-  settings.setData(FastdMA, "SMA");
-  settings.setData(Ref1, 25);
-  settings.setData(Ref2, 75);
-  settings.setData(Input, "SMA");
+  settings.setData(Plot, "Line");
+  settings.setData(Label, "STOCHRSI");
+  settings.setData(Ref1, 0.2);
+  settings.setData(Ref2, 0.8);
+  settings.setData(Input, "Close");
   settings.setData(Period, 14);
 }
 
 int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
 {
-  QString s;
+  PlotLine *ref1 = new PlotLine;
+  QString s = "Horizontal";
+  ref1->setPlugin(s);
+  settings.getData(Ref1Color, s);
+  ref1->setColor(s);
+  ref1->append(settings.getDouble(Ref1));
+  ind.addLine(ref1);
+
+  PlotLine *ref2 = new PlotLine;
+  s = "Horizontal";
+  ref2->setPlugin(s);
+  settings.getData(Ref2Color, s);
+  ref2->setColor(s);
+  ref2->append(settings.getDouble(Ref2));
+  ind.addLine(ref2);
+
   settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
@@ -58,57 +70,18 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
   }
 
   int period = settings.getInt(Period);
-  int fastk = settings.getInt(FastkPeriod);
-  int fastd = settings.getInt(FastdPeriod);
-
-  QStringList maList;
-  getMAList(maList);
-  
-  settings.getData(FastdMA, s);
-  int ma = maList.indexOf(s);
-
-  QList<PlotLine *> l;
-  int rc = getSTOCHRSI(in, period, fastk, fastd, ma, l);
-  if (rc || l.count() != 2)
+  PlotLine *line = getSTOCHRSI(in, period);
+  if (! line)
   {
-    qDeleteAll(l);
     delete in;
     return 1;
   }
-
-  PlotLine *ref1 = new PlotLine;
-  s = "Horizontal";
-  ref1->setPlugin(s);
-  settings.getData(Ref1Color, s);
-  ref1->setColor(s);
-  ref1->append(settings.getInt(Ref1));
-  ind.addLine(ref1);
-
-  PlotLine *ref2 = new PlotLine;
-  s = "Horizontal";
-  ref2->setPlugin(s);
-  settings.getData(Ref2Color, s);
-  ref2->setColor(s);
-  ref2->append(settings.getInt(Ref2));
-  ind.addLine(ref2);
-
-  // fastk line
-  PlotLine *line = l.at(0);
-  settings.getData(FastkColor, s);
+  
+  settings.getData(Color, s);
   line->setColor(s);
-  settings.getData(FastkPlot, s);
+  settings.getData(Plot, s);
   line->setPlugin(s);
-  settings.getData(FastkLabel, s);
-  line->setLabel(s);
-  ind.addLine(line);
-
-  // fastd line
-  line = l.at(1);
-  settings.getData(FastdColor, s);
-  line->setColor(s);
-  settings.getData(FastdPlot, s);
-  line->setPlugin(s);
-  settings.getData(FastdLabel, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
 
@@ -119,119 +92,99 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
 
 int STOCHRSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,STOCHRSI,<INPUT>,<NAME_FASTK>,<NAME_FASTD>,<PERIOD>,<FASTK_PERIOD>,<FASTD_PERIOD>,
-  // <FASTD_MA_TYPE>
+  // INDICATOR,PLUGIN,STOCHRSI,<NAME>,<INPUT>,<PERIOD>
+  //    0        1       2       3       4       5
 
-  if (set.count() != 10)
+  if (set.count() != 6)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  PlotLine *tl = tlines.value(set[3]);
+  if (tl)
+  {
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[3];
+      qDebug() << indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[3], in);
-  }
-
-  PlotLine *tl = tlines.value(set[4]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
-    return 1;
-  }
-
-  tl = tlines.value(set[5]);
-  if (tl)
-  {
-    qDebug() << indicator << "::calculate: duplicate name" << set[5];
-    return 1;
+    tlines.insert(set[4], in);
   }
 
   bool ok;
-  int period = set[6].toInt(&ok);
+  int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid period" << set[5];
     return 1;
   }
 
-  int fkp = set[7].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::calculate: invalid fastkk period" << set[7];
+  PlotLine *line = getSTOCHRSI(in, period);
+  if (! line)
     return 1;
-  }
 
-  int fdp = set[8].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::calculate: invalid fastd period" << set[8];
-    return 1;
-  }
-
-  QStringList maList;
-  getMAList(maList);
-  
-  int ma = maList.indexOf(set[9]);
-  if (ma == -1)
-  {
-    qDebug() << indicator << "::calculate: invalid ma settings" << set[9];
-    return 1;
-  }
-
-  QList<PlotLine *> l;
-  int rc = getSTOCHRSI(in, period, fkp, fdp, ma, l);
-  if (rc || l.count() != 2)
-  {
-    qDeleteAll(l);
-    return 1;
-  }
-
-  tlines.insert(set[4], l.at(0));
-  tlines.insert(set[5], l.at(1));
+  tlines.insert(set[3], line);
 
   return 0;
 }
 
-int STOCHRSI::getSTOCHRSI (PlotLine *in, int period, int fkp, int fdp, int ma, QList<PlotLine *> &l)
+PlotLine * STOCHRSI::getSTOCHRSI (PlotLine *in, int period)
 {
-  int size = in->count();
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-    input[loop] = (TA_Real) in->getData(loop);
+  if (in->count() < period)
+    return 0;
 
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_STOCHRSI(0, in->count() - 1, &input[0], period, fkp, fdp, (TA_MAType) ma, &outBeg, &outNb, &out[0], &out2[0]);
-  if (rc != TA_SUCCESS)
+  RSIUtils rsiu;
+  PlotLine *rsi = rsiu.getRSI(in, period);
+  if (! rsi)
+    return 0;
+
+  MAX max;
+  PlotLine *hh = max.getMAX(rsi, period);
+  if (! hh)
   {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
-    return 1;
+    delete rsi;
+    return 0;
   }
 
+  MIN min;
+  PlotLine *ll = min.getMIN(rsi, period);
+  if (! ll)
+  {
+    delete rsi;
+    delete hh;
+    return 0;
+  }
+
+  int loop = rsi->count() - 1;
+  int minLoop = ll->count() - 1;
+  int maxLoop = hh->count() - 1;
   PlotLine *line = new PlotLine;
-  PlotLine *line2 = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
+  while (loop > -1 && minLoop > -1 && maxLoop > -1)
   {
-    line->append(out[loop]);
-    line2->append(out2[loop]);
+    double t = rsi->getData(loop) - ll->getData(minLoop);
+    double t2 = hh->getData(maxLoop) - ll->getData(minLoop);
+    line->prepend(t / t2);
+
+    loop--;
+    minLoop--;
+    maxLoop--;
   }
 
-  l.append(line);
-  l.append(line2);
+  delete rsi;
+  delete hh;
+  delete ll;
 
-  return 0;
+  return line;
 }
 
 int STOCHRSI::dialog (int)
@@ -244,46 +197,19 @@ int STOCHRSI::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
+  settings.getData(Color, d);
+  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
+
+  settings.getData(Plot, d);
+  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
+
+  settings.getData(Label, d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+
   dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
 
   settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  page++;
-  k = QObject::tr("FastK");
-  dialog->addPage(page, k);
-
-  settings.getData(FastkColor, d);
-  dialog->addColorItem(FastkColor, page, QObject::tr("Color"), d);
-
-  settings.getData(FastkPlot, d);
-  dialog->addComboItem(FastkPlot, page, QObject::tr("Plot"), plotList, d);
-
-  settings.getData(FastkLabel, d);
-  dialog->addTextItem(FastkLabel, page, QObject::tr("Label"), d);
-
-  dialog->addIntItem(FastkPeriod, page, QObject::tr("Period"), settings.getInt(FastkPeriod), 1, 100000);
-
-  page++;
-  k = QObject::tr("FastD");
-  dialog->addPage(page, k);
-
-  settings.getData(FastdColor, d);
-  dialog->addColorItem(FastdColor, page, QObject::tr("Color"), d);
-
-  settings.getData(FastdPlot, d);
-  dialog->addComboItem(FastdPlot, page, QObject::tr("Plot"), plotList, d);
-
-  settings.getData(FastdLabel, d);
-  dialog->addTextItem(FastdLabel, page, QObject::tr("Label"), d);
-
-  dialog->addIntItem(FastdPeriod, page, QObject::tr("Period"), settings.getInt(FastdPeriod), 1, 100000);
-
-  QStringList maList;
-  getMAList(maList);
-  
-  settings.getData(FastdMA, d);
-  dialog->addComboItem(FastdMA, page, QObject::tr("MA Type"), maList, d);
 
   page++;
   k = QObject::tr("Ref");
@@ -295,9 +221,9 @@ int STOCHRSI::dialog (int)
   settings.getData(Ref2Color, d);
   dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
 
-  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), settings.getInt(Ref1), 0, 100);
+  dialog->addDoubleItem(Ref1, page, QObject::tr("Ref. 1"), settings.getDouble(Ref1), 0.0, 1.0);
 
-  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), settings.getInt(Ref2), 0, 100);
+  dialog->addDoubleItem(Ref2, page, QObject::tr("Ref. 2"), settings.getDouble(Ref2), 0.0, 1.0);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

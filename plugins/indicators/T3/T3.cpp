@@ -20,7 +20,8 @@
  */
 
 #include "T3.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
+#include "BARSUtils.h"
 
 #include <QtDebug>
 
@@ -61,7 +62,8 @@ int T3::getIndicator (Indicator &ind, BarData *data)
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = getLocalBARS(data, up, down, neutral);
+  BARSUtils b;
+  PlotLine *bars = b.getBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
 
@@ -134,6 +136,70 @@ int T3::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
 PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor)
 {
+  if (in->count() < period)
+    return 0;
+
+  PlotLine *gd1 = getGD(in, period, vfactor);
+  if (! gd1)
+    return 0;
+
+  PlotLine *gd2 = getGD(gd1, period, vfactor);
+  if (! gd2)
+  {
+    delete gd1;
+    return 0;
+  }
+
+  PlotLine *gd3 = getGD(gd2, period, vfactor);
+  if (! gd3)
+  {
+    delete gd1;
+    delete gd2;
+    return 0;
+  }
+
+  delete gd1;
+  delete gd2;
+  
+  return gd3;  
+}
+
+PlotLine * T3::getGD (PlotLine *in, int period, double vfactor)
+{
+  if (in->count() < period)
+    return 0;
+
+  MAUtils mau;
+  PlotLine *ema = mau.getMA(in, period, MAUtils::EMA);
+  if (! ema)
+    return 0;
+
+  PlotLine *ema2 = mau.getMA(ema, period, MAUtils::EMA);
+  if (! ema2)
+  {
+    delete ema;
+    return 0;
+  }
+
+  int emaLoop = ema->count() - 1;
+  int ema2Loop = ema2->count() - 1;
+
+  PlotLine *line = new PlotLine;
+
+  while (emaLoop > -1 && ema2Loop > -1)
+  {
+    double gd = (ema->getData(emaLoop) * (1 + vfactor)) - (ema2->getData(ema2Loop) * vfactor);
+    line->prepend(gd);
+    emaLoop--;
+    ema2Loop--;
+  }
+
+  return line;
+}
+
+/*
+PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor)
+{
   TA_Integer outBeg;
   TA_Integer outNb;
   TA_Real input[in->count()];
@@ -155,6 +221,7 @@ PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor)
 
   return line;
 }
+*/
 
 int T3::dialog (int)
 {

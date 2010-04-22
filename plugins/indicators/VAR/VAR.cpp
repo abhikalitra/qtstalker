@@ -20,7 +20,6 @@
  */
 
 #include "VAR.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -34,7 +33,6 @@ VAR::VAR ()
   settings.setData(Label, indicator);
   settings.setData(Period, 5);
   settings.setData(Input, "Close");
-  settings.setData(Deviation, 2);
 }
 
 int VAR::getIndicator (Indicator &ind, BarData *data)
@@ -49,9 +47,8 @@ int VAR::getIndicator (Indicator &ind, BarData *data)
   }
 
   int period = settings.getInt(Period);
-  double dev = settings.getDouble(Deviation);
 
-  PlotLine *line = getVAR(in, period, dev);
+  PlotLine *line = getVAR(in, period);
   if (! line)
   {
     delete in;
@@ -73,9 +70,9 @@ int VAR::getIndicator (Indicator &ind, BarData *data)
 
 int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,VAR,<NAME>,<INPUT>,<PERIOD>,<DEVIATION>
+  // INDICATOR,PLUGIN,VAR,<NAME>,<INPUT>,<PERIOD>
 
-  if (set.count() != 6)
+  if (set.count() != 5)
   {
     qDebug() << indicator << "::calculate: invalid settings count" << set.count();
     return 1;
@@ -109,14 +106,7 @@ int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  double dev = set[6].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::calculate: invalid deviation" << set[6];
-    return 1;
-  }
-
-  PlotLine *line = getVAR(in, period, dev);
+  PlotLine *line = getVAR(in, period);
   if (! line)
     return 1;
 
@@ -125,26 +115,32 @@ int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * VAR::getVAR (PlotLine *in, int period, double dev)
+PlotLine * VAR::getVAR (PlotLine *in, int period)
 {
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
-  int loop;
-  for (loop = 0; loop < in->count(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
-  TA_RetCode rc = TA_VAR(0, in->count() - 1, &input[0], period, dev, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+  if (in->count() < period)
     return 0;
-  }
 
   PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  int size = in->count();
+
+  int loop = period;
+  for (; loop < size; loop++)
+  {
+    double mean = 0;
+    int count = 0;
+    for (; count < period; count++)
+      mean += in->getData(loop - count);
+    mean = mean / period;
+
+    double total = 0;
+    for (count = 0; count < period; count++)
+    {
+      double t = in->getData(loop - count) - mean;
+      total += t * t;
+    }
+
+    line->append(total / (double) period);
+  }
 
   return line;
 }
@@ -172,8 +168,6 @@ int VAR::dialog (int)
 
   settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  dialog->addDoubleItem(Deviation, page, QObject::tr("Deviation"), settings.getDouble(Deviation), -100000, 100000);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

@@ -34,7 +34,11 @@ class MFI : public IndicatorPlugin
       Label,
       Period,
       Smoothing,
-      SmoothingType
+      SmoothingType,
+      Ref1,
+      Ref2,
+      Ref1Color,
+      Ref2Color
     };
 
     MFI ();

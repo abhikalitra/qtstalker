@@ -19,20 +19,17 @@
  *  USA.
  */
 
-#ifndef RANGE_HPP
-#define RANGE_HPP
+#ifndef TR_HPP
+#define TR_HPP
 
-#include "IndicatorPlugin.h"
+#include "BarData.h"
 
-class RANGE : public IndicatorPlugin
+class TR
 {
   public:
-    RANGE ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getRANGE (PlotLine *in, BarData *data, int period, int method);
-
-  protected:
-    QStringList methodList;
+    TR ();
+    PlotLine * getTR (BarData *data);
+    PlotLine * getNTR (BarData *data);
 };
 
 #endif

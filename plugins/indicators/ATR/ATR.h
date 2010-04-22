@@ -36,10 +36,18 @@ class ATR : public IndicatorPlugin
       Label
     };
 
+    enum _Method
+    {
+      _ATR,
+      NATR
+    };
+
     ATR ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getATR (BarData *data, int period, int method);
+    PlotLine * getLine (BarData *, int, int);
+    PlotLine * getATR (BarData *, int);
+    PlotLine * getNATR (BarData *, int);
     int dialog (int);
 
   protected:

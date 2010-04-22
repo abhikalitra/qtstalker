@@ -21,12 +21,17 @@
 
 #include "SAR.h"
 #include "ta_libc.h"
+#include "BARSUtils.h"
 
 #include <QtDebug>
 
 
 SAR::SAR ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TALIB::setDefaults:error on TA_Initialize");
+
   indicator = "SAR";
 
   settings.setData(Color, "yellow");
@@ -44,7 +49,8 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = getLocalBARS(data, up, down, neutral);
+  BARSUtils b;
+  PlotLine *bars = b.getBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
 

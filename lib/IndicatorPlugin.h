@@ -41,9 +41,6 @@ class IndicatorPlugin
     virtual int getIndicator (Indicator &, BarData *);
     virtual int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
     virtual int dialog (int);
-    virtual void getMethodList (QStringList &);
-    virtual PlotLine * getMA (PlotLine *, int, int);
-    virtual PlotLine * getBARS (BarData *, QColor &, QColor &, QColor &);
 
     void setSettings (Indicator &);
     void getSettings (Indicator &);
@@ -51,9 +48,6 @@ class IndicatorPlugin
     void getDialogSettings (PrefDialog *);
     int getDeleteFlag ();
     void getPlotList (QStringList &, int);
-    PlotLine * getLocalMA (PlotLine *, int, int);
-    PlotLine * getLocalBARS (BarData *, QColor &, QColor &, QColor &);
-    void getMAList (QStringList &);
 
   protected:
     Setting settings;

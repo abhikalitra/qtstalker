@@ -29,19 +29,17 @@ class STOCH : public IndicatorPlugin
   public:
     enum Parm
     {
-      SlowkColor,
-      SlowdColor,
+      FastKColor,
+      FastDColor,
       Ref1Color,
       Ref2Color,
-      SlowkPlot,
-      SlowdPlot,
-      SlowkLabel,
-      SlowdLabel,
-      FastkPeriod,
-      SlowkPeriod,
-      SlowdPeriod,
-      SlowkMA,
-      SlowdMA,
+      FastKPlot,
+      FastDPlot,
+      FastKLabel,
+      FastDLabel,
+      FastKPeriod,
+      FastDPeriod,
+      FastDMA,
       Ref1,
       Ref2
     };
@@ -49,10 +47,7 @@ class STOCH : public IndicatorPlugin
     STOCH ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getSTOCH (BarData *data, int fkp, int skp, int skma, int sdp, int sdma, QList<PlotLine *> &l);
     int dialog (int);
-
-  protected:
 };
 
 extern "C"

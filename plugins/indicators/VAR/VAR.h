@@ -33,14 +33,13 @@ class VAR : public IndicatorPlugin
       Color,
       Plot,
       Label,
-      Period,
-      Deviation
+      Period
     };
 
     VAR ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getVAR (PlotLine *in, int period, double dev);
+    PlotLine * getVAR (PlotLine *in, int period);
     int dialog (int);
 
   protected:

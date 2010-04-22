@@ -20,7 +20,6 @@
  */
 
 #include "WILLR.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -91,33 +90,31 @@ int WILLR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
 
 PlotLine * WILLR::getWILLR (BarData *data, int period)
 {
-  int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_WILLR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+  if (data->count() < period)
     return 0;
-  }
-
+  
   PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
+  int size = data->count();
+  int loop = period - 1;
+  for (; loop < size; loop++)
+  {
+    int count = 0;
+    double high = -99999999;
+    double low = 99999999;
+    for (; count < period; count++)
+    {
+      Bar *bar = data->getBar(loop - count);
+      if (bar->getHigh() > high)
+	high = bar->getHigh();
+      if (bar->getLow() < low)
+	low = bar->getLow();
+    }
+    
+    Bar *bar = data->getBar(loop);
+    double r = ((high - bar->getClose()) / (high - low)) * -100;
+    line->append(r);
+  }
+  
   return line;
 }
 

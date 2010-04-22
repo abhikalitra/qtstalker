@@ -20,7 +20,7 @@
  */
 
 #include "MOM.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
 
@@ -30,7 +30,7 @@ MOM::MOM ()
   indicator = "MOM";
 
   settings.setData(Color, "red");
-  settings.setData(Plot, "HistogramBar");
+  settings.setData(Plot, "Histogram Bar");
   settings.setData(Label, indicator);
   settings.setData(Period, 10);
   settings.setData(Smoothing, 1);
@@ -53,7 +53,8 @@ int MOM::getIndicator (Indicator &ind, BarData *data)
   int smoothing = settings.getInt(Smoothing);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
@@ -124,7 +125,8 @@ int MOM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   }
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   int type = maList.indexOf(set[7]);
   if (type == -1)
   {
@@ -143,35 +145,19 @@ int MOM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * MOM::getMOM (PlotLine *in, int period, int smoothing, int type)
 {
-  int size = in->count();
-  TA_Real input[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_MOM(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+  if (in->count() < period)
     return 0;
-  }
-
+  
   PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  int size = in->count();
+  int loop = period;
+  for (; loop < size; loop++)
+    line->append(in->getData(loop) - in->getData(loop - period));
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getLocalMA(line, smoothing, type);
-    if (! ma)
-    {
-      delete line;
-      return 0;
-    }
-
+    MAUtils mau;
+    PlotLine *ma = mau.getMA(line, smoothing, type);
     delete line;
     line = ma;
   }
@@ -203,7 +189,8 @@ int MOM::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);

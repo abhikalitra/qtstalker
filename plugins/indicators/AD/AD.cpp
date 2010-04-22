@@ -20,7 +20,7 @@
  */
 
 #include "AD.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
 
@@ -55,9 +55,10 @@ int AD::getIndicator (Indicator &ind, BarData *data)
     {
       int fp = settings.getInt(FastPeriod);
       int sp = settings.getInt(SlowPeriod);
-      PlotLine *line = getAD(data, 1, fp, sp);
+      PlotLine *line = getADOSC(data, fp, sp);
       if (! line)
 	return 1;
+      
       settings.getData(OSCColor, s);
       line->setColor(s);
       settings.getData(OSCPlot, s);
@@ -69,9 +70,10 @@ int AD::getIndicator (Indicator &ind, BarData *data)
     }
     default:
     {
-      PlotLine *line = getAD(data, 0, 0, 0);
+      PlotLine *line = getAD(data);
       if (! line)
 	return 1;
+      
       settings.getData(ADColor, s);
       line->setColor(s);
       settings.getData(ADPlot, s);
@@ -122,7 +124,7 @@ int AD::getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  PlotLine *line = getAD(data, 0, 0, 0);
+  PlotLine *line = getAD(data);
   if (! line)
     return 1;
 
@@ -163,7 +165,7 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
     return 1;
   }
 
-  PlotLine *line = getAD(data, 1, fast, slow);
+  PlotLine *line = getADOSC(data, fast, slow);
   if (! line)
     return 1;
 
@@ -172,47 +174,60 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   return 0;
 }
 
-PlotLine * AD::getAD (BarData *data, int method, int fast, int slow)
+PlotLine * AD::getAD (BarData *data)
 {
+  PlotLine *line = new PlotLine;
   int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real volume[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
+  int loop = 0;
+  double ad = 0;
+  for (; loop < size; loop++)
   {
     Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
-    volume[loop] = (TA_Real) bar->getVolume();
+    ad += (((bar->getClose() - bar->getLow()) - (bar->getHigh() - bar->getClose())) / (bar->getHigh() - bar->getLow())) * (bar->getVolume());
+    line->append(ad);
   }
 
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_SUCCESS;
-  switch (method)
-  {
-    case 1:
-      rc = TA_ADOSC(0, size - 1, &high[0], &low[0], &close[0], &volume[0], fast, slow, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      rc = TA_AD(0, size - 1, &high[0], &low[0], &close[0], &volume[0], &outBeg, &outNb, &out[0]);
-      break;
-  }
+  return line;
+}
 
-  if (rc != TA_SUCCESS)
+PlotLine * AD::getADOSC (BarData *data, int fast, int slow)
+{
+  PlotLine *ad = getAD(data);
+  if (! ad)
+    return 0;
+
+  MAUtils mau;
+  PlotLine *fma = mau.getMA(ad, fast, MAUtils::EMA);
+  if (! fma)
   {
-    qDebug() << indicator << "::calculate: : TA-Lib error" << rc;
+    delete ad;
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  PlotLine *sma = mau.getMA(ad, slow, MAUtils::EMA);
+  if (! sma)
+  {
+    delete ad;
+    delete fma;
+    return 0;
+  }
 
+  int fmaLoop = fma->count() - 1;
+  int smaLoop = sma->count() - 1;
+
+  PlotLine *line = new PlotLine;
+
+  while (fmaLoop > -1 && smaLoop > -1)
+  {
+    line->prepend(fma->getData(fmaLoop) - sma->getData(smaLoop));
+    fmaLoop--;
+    smaLoop--;
+  }
+
+  delete ad;
+  delete fma;
+  delete sma;
+  
   return line;
 }
 

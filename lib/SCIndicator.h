@@ -29,6 +29,7 @@
 
 #include "PlotLine.h"
 #include "BarData.h"
+#include "IndicatorPlugin.h"
 
 class SCIndicator
 {
@@ -42,6 +43,19 @@ class SCIndicator
       SET // pass indicator data from script to qtstalker
     };
     
+    enum Local
+    {
+      _COLOR,
+      _COMPARE,
+      _REF,
+      _NORMALIZE,
+      _STDDEV,
+      _ADD,
+      _DIV,
+      _MULT,
+      _SUB
+    };
+
     SCIndicator ();
     int calculate (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
     int getIndicator (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
@@ -49,9 +63,11 @@ class SCIndicator
     int setIndicator (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
     int getSize (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
     int getPlugin (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
+    IndicatorPlugin * getLocalPlugin (int);
 
   protected:
     QStringList methodList;
+    QStringList localList;
 };
 
 #endif

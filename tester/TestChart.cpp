@@ -31,7 +31,7 @@
 #include "TestConfig.h"
 #include "IndicatorPlot.h"
 #include "COPlugin.h"
-#include "MATH1.h"
+#include "BARSUtils.h"
 
 TestChart::TestChart ()
 {
@@ -79,11 +79,11 @@ void TestChart::update (BarData &data, QList<TestTrade *> &trades)
   plot->clear();
   plot->setInterval(data.getBarLength());
 
-  MATH1 m;
+  BARSUtils b;
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = m.getBARS(&data, up, down, neutral);
+  PlotLine *bars = b.getBARS(&data, up, down, neutral);
   if (! bars)
   {
     qDebug() << "TestChart::update: no bars";

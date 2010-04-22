@@ -20,7 +20,7 @@
  */
 
 #include "BOP.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
 
@@ -30,7 +30,7 @@ BOP::BOP ()
   indicator = "BOP";
 
   settings.setData(Color, "red");
-  settings.setData(Plot, "HistogramBar");
+  settings.setData(Plot, "Histogram Bar");
   settings.setData(Label, indicator);
   settings.setData(Smoothing, 10);
   settings.setData(SmoothingType, "SMA");
@@ -42,7 +42,8 @@ int BOP::getIndicator (Indicator &ind, BarData *data)
   int smoothing = settings.getInt(Smoothing);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
@@ -88,7 +89,8 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   }
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   int ma = maList.indexOf(set[5]);
   if (ma == -1)
   {
@@ -107,44 +109,22 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * BOP::getBOP (BarData *data, int smoothing, int type)
 {
+  if (! data->count())
+    return 0;
+  
+  PlotLine *line = new PlotLine;
   int size = data->count();
-  TA_Real open[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
+  int loop = 0;
+  for (; loop < size; loop++)
   {
     Bar *bar = data->getBar(loop);
-    open[loop] = (TA_Real) bar->getOpen();
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    line->append((bar->getClose() - bar->getOpen()) / (bar->getHigh() - bar->getLow()));
   }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_BOP(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getLocalMA(line, smoothing, type);
-    if (! ma)
-    {
-      delete line;
-      return 0;
-    }
-
+    MAUtils mau;
+    PlotLine *ma = mau.getMA(line, smoothing, type);
     delete line;
     line = ma;
   }
@@ -174,7 +154,8 @@ int BOP::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);

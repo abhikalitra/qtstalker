@@ -20,10 +20,11 @@
  */
 
 #include "MA.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
+#include "BARSUtils.h"
 
 #include <QtDebug>
-
+#include <cmath>
 
 MA::MA ()
 {
@@ -35,15 +36,6 @@ MA::MA ()
   settings.setData(Input, "Close");
   settings.setData(Period, 14);
   settings.setData(Method, "SMA");
-
-  methodList << "EMA";
-  methodList << "DEMA";
-  methodList << "KAMA";
-  methodList << "SMA";
-  methodList << "TEMA";
-  methodList << "TRIMA";
-  methodList << "Wilder";
-  methodList << "WMA";
 }
 
 int MA::getIndicator (Indicator &ind, BarData *data)
@@ -60,9 +52,12 @@ int MA::getIndicator (Indicator &ind, BarData *data)
   int period = settings.getInt(Period);
 
   settings.getData(Method, s);
+  QStringList methodList;
+  MAUtils mau;
+  mau.getMAList(methodList);
   int method = methodList.indexOf(s);
 
-  PlotLine *line = getMA(in, period, method);
+  PlotLine *line = mau.getMA(in, period, method);
   if (! line)
   {
     delete in;
@@ -72,7 +67,8 @@ int MA::getIndicator (Indicator &ind, BarData *data)
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  PlotLine *bars = getLocalBARS(data, up, down, neutral);
+  BARSUtils b;
+  PlotLine *bars = b.getBARS(data, up, down, neutral);
   if (bars)
     ind.addLine(bars);
 
@@ -99,6 +95,9 @@ int MA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     return 1;
   }
 
+  MAUtils mau;
+  QStringList methodList;
+  mau.getMAList(methodList);
   int method = methodList.indexOf(set[3]);
   if (method == -1)
   {
@@ -134,7 +133,7 @@ int MA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     return 1;
   }
 
-  PlotLine *line = getMA(in, period, method);
+  PlotLine *line = mau.getMA(in, period, method);
   if (! line)
     return 1;
 
@@ -145,73 +144,30 @@ int MA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
 PlotLine * MA::getMA (PlotLine *in, int period, int method)
 {
-  if (in->count() < period)
-    return 0;
+  PlotLine *line = 0;
+  MAUtils mau;
   
-  int size = in->count();
-  TA_Real input[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_SUCCESS;
-  switch (method)
+  switch ((MAUtils::Method) method)
   {
-    case 0:
-      rc = TA_EMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 1:
-      rc = TA_DEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 2:
-      rc = TA_KAMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 3:
-      rc = TA_SMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 4:
-      rc = TA_TEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 5:
-      rc = TA_TRIMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 6: // Wilder
-    {
-      PlotLine *line = new PlotLine;
-      double t = 0;
-      int loop;
-      for (loop = 0; loop < period; loop++)
-        t = t + input[loop];
-      double yesterday = t / period;
-      line->append(yesterday);
-      for (; loop < size; loop++)
-      {
-        double t  = (yesterday * (period - 1) + input[loop]) / period;
-        yesterday = t;
-        line->append(t);
-      }
-      return line;
-      break;
-    }
-    case 7:
-      rc = TA_WMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
+    case MAUtils::EMA:
+      line = mau.getEMA(in, period);
+    case MAUtils::DEMA:
+      line = mau.getDEMA(in, period);
+    case MAUtils::KAMA:
+      line = mau.getKAMA(in, period);
+    case MAUtils::SMA:
+      line = mau.getSMA(in, period);
+    case MAUtils::TEMA:
+      line = mau.getTEMA(in, period);
+    case MAUtils::TRIMA:
+      line = mau.getTRIMA(in, period);
+    case MAUtils::Wilder:
+      line = mau.getWilder(in, period);
+    case MAUtils::WMA:
+      line = mau.getWMA(in, period);
     default:
       break;
   }
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
 
   return line;
 }
@@ -240,6 +196,9 @@ int MA::dialog (int)
 
   dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
 
+  QStringList methodList;
+  MAUtils mau;
+  mau.getMAList(methodList);
   settings.getData(Method, d);
   dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
@@ -254,11 +213,6 @@ int MA::dialog (int)
 
   delete dialog;
   return rc;
-}
-
-void MA::getMethodList (QStringList &l)
-{
-  l = methodList;
 }
 
 //*************************************************************

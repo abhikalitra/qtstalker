@@ -20,7 +20,7 @@
  */
 
 #include "MFI.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
 
@@ -35,6 +35,10 @@ MFI::MFI ()
   settings.setData(Period, 14);
   settings.setData(Smoothing, 10);
   settings.setData(SmoothingType, "SMA");
+  settings.setData(Ref1Color, "white");
+  settings.setData(Ref2Color, "white");
+  settings.setData(Ref1, 20);
+  settings.setData(Ref2, 80);
 }
 
 int MFI::getIndicator (Indicator &ind, BarData *data)
@@ -44,7 +48,8 @@ int MFI::getIndicator (Indicator &ind, BarData *data)
   int smoothing = settings.getInt(Smoothing);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
@@ -52,6 +57,22 @@ int MFI::getIndicator (Indicator &ind, BarData *data)
   PlotLine *line = getMFI(data, period, smoothing, type);
   if (! line)
     return 1;
+
+  PlotLine *ref1 = new PlotLine;
+  s = "Horizontal";
+  ref1->setPlugin(s);
+  ref1->append(settings.getInt(Ref1));
+  settings.getData(Ref1Color, s);
+  ref1->setColor(s);
+  ind.addLine(ref1);
+
+  PlotLine *ref2 = new PlotLine;
+  s = "Horizontal";
+  ref2->setPlugin(s);
+  ref2->append(settings.getInt(Ref2));
+  settings.getData(Ref2Color, s);
+  ref2->setColor(s);
+  ind.addLine(ref2);
 
   settings.getData(Color, s);
   line->setColor(s);
@@ -97,7 +118,8 @@ int MFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   }
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   int ma = maList.indexOf(set[6]);
   if (ma == -1)
   {
@@ -116,44 +138,40 @@ int MFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * MFI::getMFI (BarData *data, int period, int smoothing, int type)
 {
-  int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real volume[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
-    volume[loop] = (TA_Real) bar->getVolume();
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_MFI(0, size - 1, &high[0], &low[0], &close[0], &volume[0], period, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+  if (data->count() < period)
     return 0;
-  }
 
+  int size = data->count();
   PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  int loop = period;
+  for (; loop < size; loop++)
+  {
+    double up = 0;
+    double down = 0;
+    int count = 0;
+    for (; count < period; count++)
+    {
+      Bar *bar = data->getBar(loop - count);
+      Bar *pbar = data->getBar(loop - count - 1);
+      double tp = (bar->getHigh() + bar->getLow() + bar->getClose()) / 3;
+      double ptp = (pbar->getHigh() + pbar->getLow() + pbar->getClose()) / 3;
+      if (tp > ptp)
+	up += tp * bar->getVolume();
+      else
+      {
+        if (tp < ptp)
+	  down += tp * bar->getVolume();
+      }
+    }
+
+    double mr = up / down;
+    line->append(100 - (100 / (1 + mr)));
+  }
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getLocalMA(line, smoothing, type);
-    if (! ma)
-    {
-      delete line;
-      return 0;
-    }
-
+    MAUtils mau;
+    PlotLine *ma = mau.getMA(line, smoothing, type);
     delete line;
     line = ma;
   }
@@ -185,10 +203,25 @@ int MFI::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);
+
+  page++;
+  k = QObject::tr("Ref");
+  dialog->addPage(page, k);
+
+  settings.getData(Ref1Color, d);
+  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
+
+  settings.getData(Ref2Color, d);
+  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
+
+  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), settings.getInt(Ref1), 0, 100);
+
+  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), settings.getInt(Ref2), 0, 100);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

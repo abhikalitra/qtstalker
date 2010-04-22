@@ -790,10 +790,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>FastK Period</source>
         <translation type="unfinished"></translation>
     </message>
@@ -858,50 +854,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>CEIL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>EXP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FLOOR</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>LN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>LOG10</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>NORMALIZE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SQRT</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>DIV</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MULT</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SUB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ROC</source>
         <translation type="unfinished"></translation>
     </message>
@@ -939,42 +891,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ACOS</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ASIN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ATAN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>COS</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>COSH</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SIN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SINH</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TAN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TANH</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1071,10 +987,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Sine Wave</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>STDDEV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

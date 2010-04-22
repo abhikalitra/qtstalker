@@ -20,7 +20,7 @@
  */
 
 #include "ROC.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
 
@@ -30,7 +30,7 @@ ROC::ROC ()
   indicator = "ROC";
 
   settings.setData(Color, "red");
-  settings.setData(Plot, "HistogramBar");
+  settings.setData(Plot, "Histogram Bar");
   settings.setData(Label, indicator);
   settings.setData(Period, 10);
   settings.setData(Smoothing, 1);
@@ -38,10 +38,7 @@ ROC::ROC ()
   settings.setData(Input, "Close");
   settings.setData(Method, "ROC");
 
-  methodList << QObject::tr("ROC");
-  methodList << QObject::tr("ROCP");
-  methodList << QObject::tr("ROCR");
-  methodList << QObject::tr("ROC100");
+  methodList << "ROC" << "ROCP" << "ROCR" << "ROCR100";
 }
 
 int ROC::getIndicator (Indicator &ind, BarData *data)
@@ -59,13 +56,13 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
   int smoothing = settings.getInt(Smoothing);
 
   QStringList maList;
-  getMAList(maList);
-  
-  settings.getData(Method, s);
-  int method = methodList.indexOf(s);
-
+  MAUtils mau;
+  mau.getMAList(maList);
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
+
+  settings.getData(Method, s);
+  int method = methodList.indexOf(s);
 
   PlotLine *line = getROC(in, period, method, smoothing, type);
   if (! line)
@@ -140,7 +137,8 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   }
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;  
+  mau.getMAList(maList);
   int type = maList.indexOf(set[8]);
   if (type == -1)
   {
@@ -159,57 +157,79 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int type)
 {
-  int size = in->count();
-  TA_Real input[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-    input[loop] = (TA_Real) in->getData(loop);
+  if (in->count() < period)
+    return 0;
 
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_SUCCESS;
-  switch (method)
+  PlotLine *line = 0;
+  switch ((_Method) method)
   {
-    case 0:
-      rc = TA_ROC(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+    case ROCN:
+      line = getROCN(in, period);
       break;
-    case 1:
-      rc = TA_ROCP(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+    case ROCP:
+      line = getROCP(in, period);
       break;
-    case 2:
-      rc = TA_ROCR(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+    case ROCR:
+      line = getROCR(in, period);
       break;
-    case 3:
-      rc = TA_ROCR100(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+    case ROCR100:
+      line = getROCR100(in, period);
       break;
     default:
       break;
   }
 
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+  if (! line)
     return 0;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
+  
   if (smoothing > 1)
   {
-    PlotLine *ma = getLocalMA(line, smoothing, type);
-    if (! ma)
-    {
-      delete line;
-      return 0;
-    }
-
+    MAUtils mau;
+    PlotLine *ma = mau.getMA(line, smoothing, type);
     delete line;
     line = ma;
   }
 
+  return line;
+}
+
+PlotLine * ROC::getROCN (PlotLine *in, int period)
+{
+  PlotLine *line = new PlotLine;
+  int size = in->count();
+  int loop = period;
+  for (; loop < size; loop++)
+    line->append(((in->getData(loop) / in->getData(loop - period)) -1) * 100);
+  return line;
+}
+
+PlotLine * ROC::getROCP (PlotLine *in, int period)
+{
+  PlotLine *line = new PlotLine;
+  int size = in->count();
+  int loop = period;
+  for (; loop < size; loop++)
+    line->append((in->getData(loop) - in->getData(loop - period)) / in->getData(loop - period));
+  return line;
+}
+
+PlotLine * ROC::getROCR (PlotLine *in, int period)
+{
+  PlotLine *line = new PlotLine;
+  int size = in->count();
+  int loop = period;
+  for (; loop < size; loop++)
+    line->append(in->getData(loop) / in->getData(loop - period));
+  return line;
+}
+
+PlotLine * ROC::getROCR100 (PlotLine *in, int period)
+{
+  PlotLine *line = new PlotLine;
+  int size = in->count();
+  int loop = period;
+  for (; loop < size; loop++)
+    line->append((in->getData(loop) / in->getData(loop - period)) * 100);
   return line;
 }
 
@@ -237,7 +257,8 @@ int ROC::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);

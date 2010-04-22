@@ -20,7 +20,8 @@
  */
 
 #include "RSI.h"
-#include "ta_libc.h"
+#include "MAUtils.h"
+#include "RSIUtils.h"
 
 #include <QtDebug>
 
@@ -57,7 +58,8 @@ int RSI::getIndicator (Indicator &ind, BarData *data)
   int smoothing = settings.getInt(Smoothing);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
 
   settings.getData(SmoothingType, s);
   int type = maList.indexOf(s);
@@ -144,7 +146,8 @@ int RSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   }
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   int type = maList.indexOf(set[7]);
   if (type == -1)
   {
@@ -163,35 +166,18 @@ int RSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * RSI::getRSI (PlotLine *in, int period, int smoothing, int type)
 {
-  int size = in->count();
-  TA_Real input[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_RSI(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+  if (in->count() < period)
     return 0;
-  }
 
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  RSIUtils rsi;
+  PlotLine *line = rsi.getRSI(in, period);
+  if (! line)
+    return 0;
 
   if (smoothing > 1)
   {
-    PlotLine *ma = getLocalMA(line, smoothing, type);
-    if (! ma)
-    {
-      delete line;
-      return 0;
-    }
-
+    MAUtils mau;
+    PlotLine *ma = mau.getMA(line, smoothing, type);
     delete line;
     line = ma;
   }
@@ -223,7 +209,8 @@ int RSI::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);

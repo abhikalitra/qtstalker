@@ -20,6 +20,7 @@
  */
 
 #include "VOL.h"
+#include "MAUtils.h"
 
 #include <QtDebug>
 
@@ -57,12 +58,13 @@ int VOL::getIndicator (Indicator &ind, BarData *data)
   int period = settings.getInt(MAPeriod);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(MAType, s);
   int type = maList.indexOf(s);
 
-  PlotLine *ma = getLocalMA(line, period, type);
+  PlotLine *ma = mau.getMA(line, period, type);
   if (ma)
   {
     settings.getData(MAColor, s);
@@ -176,7 +178,8 @@ int VOL::dialog (int)
   dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), settings.getInt(MAPeriod), 1, 100000);
 
   QStringList maList;
-  getMAList(maList);
+  MAUtils mau;
+  mau.getMAList(maList);
   
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("Type"), maList, d);

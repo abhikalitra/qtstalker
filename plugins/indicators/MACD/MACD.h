@@ -24,8 +24,6 @@
 
 #include "IndicatorPlugin.h"
 
-#include <QList>
-
 class MACD : public IndicatorPlugin
 {
   public:
@@ -52,8 +50,10 @@ class MACD : public IndicatorPlugin
     MACD ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getMACD (PlotLine *in, int fast, int fma, int slow, int sma, int signal, int sigma, QList<PlotLine *> &l);
     int dialog (int);
+    PlotLine * getMACD (PlotLine *, int, int, int, int);
+    PlotLine * getSignal (PlotLine *, int, int);
+    PlotLine * getHistogram (PlotLine *macd, PlotLine *signal);
 };
 
 extern "C"

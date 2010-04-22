@@ -27,6 +27,10 @@
 
 AROON::AROON ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TALIB::setDefaults:error on TA_Initialize");
+
   indicator = "AROON";
   settings.setData(Method, "AROON");
   settings.setData(DownColor, "red");
