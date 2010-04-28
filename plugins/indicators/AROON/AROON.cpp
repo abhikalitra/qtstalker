@@ -20,17 +20,14 @@
  */
 
 #include "AROON.h"
-#include "ta_libc.h"
+#include "MAXINDEX.h"
+#include "MININDEX.h"
 
 #include <QtDebug>
 
 
 AROON::AROON ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("TALIB::setDefaults:error on TA_Initialize");
-
   indicator = "AROON";
   settings.setData(Method, "AROON");
   settings.setData(DownColor, "red");
@@ -64,9 +61,10 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
   {
     case 1:
     {
-      PlotLine *line = getAROON(data, period, 2);
+      PlotLine *line = getOSC(data, period);
       if (! line)
         return 1;
+
       settings.getData(OSCColor, s);
       line->setColor(s);
       settings.getData(OSCPlot, s);
@@ -79,9 +77,10 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
     default:
     {
       // get arron up line
-      PlotLine *up = getAROON(data, period, 0);
+      PlotLine *up = getUP(data, period);
       if (! up)
         return 1;
+
       settings.getData(UpColor, s);
       up->setColor(s);
       settings.getData(UpPlot, s);
@@ -90,12 +89,13 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
       up->setLabel(s);
 
       // get aroon down line
-      PlotLine *down = getAROON(data, period, 1);
+      PlotLine *down = getDOWN(data, period);
       if (! down)
       {
         delete up;
         return 1;
       }
+
       settings.getData(DownColor, s);
       down->setColor(s);
       settings.getData(DownPlot, s);
@@ -113,25 +113,56 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
 
 int AROON::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,AROON,<METHOD>,<NAME>,<PERIOD>
+  // INDICATOR,PLUGIN,AROON,<METHOD>,*
+  //      0       1     2      3
 
-  if (set.count() != 6)
+  if (set.count() < 4)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   int method = methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[3];
+    qDebug() << indicator << "::getCUS: invalid method" << set[3];
+    return 1;
+  }
+
+  int rc = 1;
+
+  switch ((_Method) method)
+  {
+    case Up:
+      rc = getCUSUP(set, tlines, data);
+      break;
+    case Down:
+      rc = getCUSDOWN(set, tlines, data);
+      break;
+    case OSC:
+      rc = getCUSOSC(set, tlines, data);
+      break;
+    default:
+      break;
+  }
+
+  return rc;
+}
+
+int AROON::getCUSUP (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // INDICATOR,PLUGIN,AROON,UP,<NAME>,<PERIOD>
+
+  if (set.count() != 6)
+  {
+    qDebug() << indicator << "::getCUSUP: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUSUP: duplicate name" << set[4];
     return 1;
   }
 
@@ -139,11 +170,11 @@ int AROON::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[5];
+    qDebug() << indicator << "::getCUSUP: invalid period" << set[5];
     return 1;
   }
 
-  PlotLine *line = getAROON(data, period, method);
+  PlotLine *line = getUP(data, period);
   if (! line)
     return 1;
 
@@ -152,49 +183,157 @@ int AROON::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   return 0;
 }
 
-PlotLine * AROON::getAROON (BarData *data, int period, int method)
+int AROON::getCUSDOWN (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
+  // INDICATOR,PLUGIN,AROON,DOWN,<NAME>,<PERIOD>
+
+  if (set.count() != 6)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
+    qDebug() << indicator << "::getCUSDOWN: invalid settings count" << set.count();
+    return 1;
   }
 
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_SUCCESS;
-  switch (method)
+  PlotLine *tl = tlines.value(set[4]);
+  if (tl)
   {
-    case 0:
-      rc = TA_AROON(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0], &out2[0]);
-      break;
-    case 1:
-      // we switch out with out2 only here
-      rc = TA_AROON(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out2[0], &out[0]);
-      break;
-    case 2:
-      rc = TA_AROONOSC(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
+    qDebug() << indicator << "::getCUSDOWN: duplicate name" << set[4];
+    return 1;
   }
 
-  if (rc != TA_SUCCESS)
+  bool ok;
+  int period = set[5].toInt(&ok);
+  if (! ok)
   {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    qDebug() << indicator << "::getCUSDOWN: invalid period" << set[5];
+    return 1;
+  }
+
+  PlotLine *line = getDOWN(data, period);
+  if (! line)
+    return 1;
+
+  tlines.insert(set[4], line);
+
+  return 0;
+}
+
+int AROON::getCUSOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // INDICATOR,PLUGIN,AROON,OSC,<NAME>,<PERIOD>
+
+  if (set.count() != 6)
+  {
+    qDebug() << indicator << "::getCUSOSC: invalid settings count" << set.count();
+    return 1;
+  }
+
+  PlotLine *tl = tlines.value(set[4]);
+  if (tl)
+  {
+    qDebug() << indicator << "::getCUSOSC: duplicate name" << set[4];
+    return 1;
+  }
+
+  bool ok;
+  int period = set[5].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::getCUSOSC: invalid period" << set[5];
+    return 1;
+  }
+
+  PlotLine *line = getOSC(data, period);
+  if (! line)
+    return 1;
+
+  tlines.insert(set[4], line);
+
+  return 0;
+}
+
+PlotLine * AROON::getUP (BarData *data, int period)
+{
+  if (data->count() < period)
+    return 0;
+
+  PlotLine *high = data->getInput(BarData::High);
+  if (! high)
+    return 0;
+
+  MAXINDEX tmi;
+  PlotLine *mi = tmi.getMAXINDEX(high, period);
+  if (! mi)
+  {
+    delete high;
     return 0;
   }
 
+  int loop = 0;
   PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  for (; loop < mi->count(); loop++)
+    line->append(((period - mi->getData(loop)) / period) * 100);
+
+  delete high;
+
+  return line;
+}
+
+PlotLine * AROON::getDOWN (BarData *data, int period)
+{
+  if (data->count() < period)
+    return 0;
+
+  PlotLine *low = data->getInput(BarData::Low);
+  if (! low)
+    return 0;
+
+  MININDEX tmi;
+  PlotLine *mi = tmi.getMININDEX(low, period);
+  if (! mi)
+  {
+    delete low;
+    return 0;
+  }
+
+  int loop = 0;
+  PlotLine *line = new PlotLine;
+  for (; loop < mi->count(); loop++)
+    line->append(((period - mi->getData(loop)) / period) * 100);
+
+  delete low;
+
+  return line;
+}
+
+PlotLine * AROON::getOSC (BarData *data, int period)
+{
+  if (data->count() < period)
+    return 0;
+
+  PlotLine *up = getUP(data, period);
+  if (! up)
+    return 0;
+
+  PlotLine *down = getDOWN(data, period);
+  if (! down)
+  {
+    delete up;
+    return 0;
+  }
+
+  int upLoop = up->count() - 1;
+  int downLoop = down->count() - 1;
+  PlotLine *line = new PlotLine;
+
+  while (upLoop > -1 && downLoop > -1)
+  {
+    line->prepend(up->getData(upLoop) - down->getData(downLoop));
+    upLoop--;
+    downLoop--;
+  }
+
+  delete up;
+  delete down;
 
   return line;
 }

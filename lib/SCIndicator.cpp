@@ -43,7 +43,7 @@ SCIndicator::SCIndicator ()
 int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
 			    BarData *data, QString &path)
 {
-  // format = INDICATOR,METHOD,*
+  // format = INDICATOR,PLUGIN,*
   int rc = 1;
   ba.clear();
   ba.append("ERROR\n");
@@ -217,7 +217,7 @@ int SCIndicator::getSize (QStringList &l, QByteArray &ba, QHash<QString, PlotLin
 int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
 			    BarData *data, QString &path)
 {
-  // format 'INDICATOR,PLUGIN,PLUGIN,*
+  // format 'INDICATOR,PLUGIN,<PLUGIN>,*
 
   if (l.count() < 3)
   {
@@ -236,11 +236,11 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotL
   else
   {
     PluginFactory fac;
-    IndicatorPlugin *ip = fac.getIndicator(path, l[2]);
+    ip = fac.getIndicator(path, l[2]);
     if (! ip)
       return 1;
   }
-
+  
   int rc = ip->getCUS(l, tlines, data);
   if (ip->getDeleteFlag())
     delete ip;

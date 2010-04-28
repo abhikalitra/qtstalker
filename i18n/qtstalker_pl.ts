@@ -854,22 +854,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ROC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ROCP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ROCR</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ROC100</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>SlowK</source>
         <translation type="unfinished"></translation>
     </message>

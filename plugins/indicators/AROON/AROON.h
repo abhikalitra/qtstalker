@@ -44,10 +44,22 @@ class AROON : public IndicatorPlugin
       Period
     };
 
+    enum _Method
+    {
+      Up,
+      Down,
+      OSC
+    };
+
     AROON ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getAROON (BarData *data, int period, int method);
+    int getIndicator (Indicator &, BarData *);
+    int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
+    int getCUSUP (QStringList &, QHash<QString, PlotLine *> &, BarData *);
+    int getCUSDOWN (QStringList &, QHash<QString, PlotLine *> &, BarData *);
+    int getCUSOSC (QStringList &, QHash<QString, PlotLine *> &, BarData *);
+    PlotLine * getUP (BarData *, int);
+    PlotLine * getDOWN (BarData *, int);
+    PlotLine * getOSC (BarData *, int);
     int dialog (int);
 
   private:

@@ -26,7 +26,6 @@
 
 #include <QColor>
 
-
 class CANDLES : public IndicatorPlugin
 {
   public:
@@ -121,11 +120,11 @@ class CANDLES : public IndicatorPlugin
     };
 
     CANDLES ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getCANDLES (BarData *data, QColor &color);
+    int getIndicator (Indicator &, BarData *);
+    int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
     int dialog (int);
-    PlotLine * getMethod (BarData *data, int method, double pen);
+    PlotLine * getMethod (BarData *, int, double);
+    PlotLine * getCANDLES (BarData *, QColor &);
 
   protected:
     QStringList methodList;

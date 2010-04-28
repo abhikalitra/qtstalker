@@ -84,6 +84,8 @@ HEADERS += MIN.h
 HEADERS += MAX.h
 HEADERS += RSIUtils.h
 HEADERS += STOCHUtils.h
+HEADERS += MININDEX.h
+HEADERS += MAXINDEX.h
 
 
 SOURCES += Setting.cpp
@@ -164,6 +166,8 @@ SOURCES += MIN.cpp
 SOURCES += MAX.cpp
 SOURCES += RSIUtils.cpp
 SOURCES += STOCHUtils.cpp
+SOURCES += MININDEX.cpp
+SOURCES += MAXINDEX.cpp
 
 
 
@@ -201,6 +205,4 @@ INSTALLS += target
 QMAKE_DISTCLEAN += qtstalker_defines.h
 
 QT += sql
-
-
 

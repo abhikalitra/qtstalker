@@ -33,6 +33,7 @@ COMPARE::COMPARE ()
 int COMPARE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,PLUGIN,COMPARE,<NAME>,<INPUT_1>,<INPUT_2>,<OPERATOR>
+  //     0       1      2       3       4         5          6
 
   if (set.count() != 7)
   {
@@ -296,26 +297,27 @@ PlotLine * COMPARE::getInput (QString &name, QHash<QString, PlotLine *> &tlines,
 {
   // check if an existing array
   PlotLine *in = tlines.value(name);
-  if (! in)
+  if (in)
   {
-    // check if its a Open, High, Low, Close, Volume etc array
-    in = data->getInput(data->getInputType(name));
-    if (! in)
-    {
-      // check if its a value
-      bool ok;
-      double value = name.toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << indicator << "::calculate: invalid input" << name;
-        return 0;
-      }
-
-      // its a number so create a line for it
-      in = new PlotLine;
-      in->append(value);
-    }
+    qDebug() << "existing array" << name;
+    return in;
   }
+  
+  // check if its a value
+  bool ok;
+  double value = name.toDouble(&ok);
+  if (ok)
+  {
+    qDebug() << "value" << name;
+    // its a number so create a line for it
+    in = new PlotLine;
+    in->append(value);
+    return in;
+  }
+    
+  // check if its a Open, High, Low, Close, Volume etc array
+  in = data->getInput(data->getInputType(name)); // will return a default of close values if name is invalid
+  qDebug() << "bar array" << name;
 
   return in;
 }

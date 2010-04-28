@@ -25,9 +25,12 @@
 
 #include <QtDebug>
 
-
 CANDLES::CANDLES ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TALIB::setDefaults:error on TA_Initialize");
+
   indicator = "CANDLES";
 
   settings.setData(Penetration, 0.3);
@@ -217,9 +220,10 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
 
 int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,CANDLES,METHOD,<NAME>,<COLOR>
-  // INDICATOR,PLUGIN,CANDLES,METHOD,<NAME>,<PENETRATION>
-
+  // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<COLOR>
+  // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<PENETRATION>
+  //    0        1       2       3       4        5
+  
   if (set.count() != 6)
   {
     qDebug() << indicator << "::calculate: invalid parm count" << set.count();
