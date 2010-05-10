@@ -20,67 +20,688 @@
  */
 
 #include "Plot.h"
-#include "PlotGrid.h"
-#include "Setting.h"
-//#include "PlotButtonBox.h"
+#include "Config.h"
+#include "CODataBase.h"
+#include "COFactory.h"
+#include "PlotFactory.h"
+#include "PlotInfo.h"
+#include "Utils.h"
 
-#include <QLayout>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QList>
-#include <QSpacerItem>
+#include "../pics/loggrid.xpm"
+#include "../pics/date.xpm"
+#include "../pics/delete.xpm"
+#include "../pics/edit.xpm"
+
+#include <QPainter>
+#include <QPen>
+#include <QPolygon>
+#include <QCursor>
+#include <QImage>
+#include <QMessageBox>
+#include <QtDebug>
+#include <iostream>
+#include <cmath>
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(0);
-  hbox->setSpacing(0);
-  setLayout(hbox);
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(0);
-  vbox->setSpacing(0);
-  hbox->addLayout(vbox);
+  _plotData.startX = 2;
+  _plotData.pixelspace = 0;
+  _plotData.startIndex = 0;
+  _plotData.backgroundColor.setNamedColor("black");
+  _plotData.borderColor.setNamedColor("white");
+  _plotData.scaleToScreen = FALSE;
+  _plotData.infoIndex = 0;
+  _plotData.x = 0;
+  _plotData.y = 0;
+  _plotData.y1 = 0;
+  _plotData.infoFlag = 1;
+  _plotData.pos = 0;
+  _plotData.interval = Bar::DailyBar;
+  _plotData.dateHeight = 30;
+  _plotData.scaleWidth = 70;
   
-  indicatorPlot = new IndicatorPlot(this);
-  vbox->addWidget(indicatorPlot);
+  _mouseFlag = None;
+  _saveMouseFlag = None;
+  _chartMenu = 0;
+  _coSelected = 0;
+  _menuFlag = TRUE;
+  _rubberBand = 0;
+  _newObjectFlag = 0;
 
-  datePlot = new DatePlot(this);
-  vbox->addWidget(datePlot);
+  _plotData.plotFont.setFamily("Helvetica");
+  _plotData.plotFont.setPointSize(12);
+  _plotData.plotFont.setWeight(50);
+
+  _coMenu = new QMenu(this);
+  _coMenu->addAction(QPixmap(edit), tr("&Edit Chart Object"), this, SLOT(objectDialog()), Qt::CTRL+Qt::Key_E);
+  _coMenu->addAction(QPixmap(delete_xpm), tr("&Delete Chart Object"), this, SLOT(chartObjectDeleted()), Qt::CTRL+Qt::Key_D);
   
-  vbox = new QVBoxLayout;
-  vbox->setMargin(0);
-  vbox->setSpacing(0);
-  hbox->addLayout(vbox);
-  
-  scalePlot = new ScalePlot(this);
-  vbox->addWidget(scalePlot);
+  _chartMenu = new QMenu(this);
+  _chartMenu->addAction(QPixmap(delete_xpm), tr("Delete &All Chart Objects"), this, SLOT(deleteAllChartObjects()), Qt::CTRL+Qt::Key_A);
+  _chartMenu->addSeparator ();
+  _chartMenu->addAction(QPixmap(date), tr("Date"), this, SLOT(toggleDate()), Qt::CTRL+Qt::Key_D);
+  _chartMenu->addAction(QPixmap(loggridicon), tr("Log Scaling"), this, SLOT(toggleLog()), Qt::CTRL+Qt::Key_L);
 
-  // add a spacer here to keep everything lined up
-  vbox->addSpacerItem(new QSpacerItem(scalePlot->width(), datePlot->height()));
+  setMouseTracking(TRUE);
 
-/*
-  // add spacer to line up the date and scale plots
-  PlotButtonBox *pbb = new PlotButtonBox(this);
-  pbb->setMinimumHeight(datePlot->height());
-  pbb->setMaximumHeight(datePlot->height());
-  pbb->setMinimumWidth(scalePlot->width());
-  pbb->setMaximumWidth(scalePlot->width());
-  connect(pbb, SIGNAL(signalDateToggled()), this, SLOT(toggleDate()));
-  connect(pbb, SIGNAL(signalLogToggled()), this, SLOT(toggleLog()));
-  vbox->addWidget(pbb);
-*/
-
-  connect(indicatorPlot, SIGNAL(signalDraw()), this, SLOT(slotUpdateScalePlot()));
-  connect(indicatorPlot, SIGNAL(signalDateFlag(bool)), this, SLOT(slotDateFlagChanged(bool)));
-  connect(indicatorPlot, SIGNAL(signalLogFlag(bool)), this, SLOT(slotLogScaleChanged(bool)));
+  setFocusPolicy(Qt::ClickFocus);
 }
+
+Plot::~Plot ()
+{
+  _indicator.clear();
+}
+
+//*********************************************************************
+//*************** DRAW FUNCTIONS **************************************
+//********************************************************************
+
+void Plot::draw ()
+{
+  if (_plotData.buffer.isNull())
+    return;
+
+  _plotData.buffer.fill(_plotData.backgroundColor);
+
+  if (_plotData.dateBars.count())
+  {
+    setScale();
+
+    _datePlot.draw(_plotData);
+    
+    _scalePlot.draw(_plotData);
+    
+    _plotData.infoIndex = convertXToDataIndex((_plotData.buffer.width() - _plotData.scaleWidth)- _plotData.pixelspace);
+    PlotInfo info;
+    QList<Setting> points;
+    info.getPointInfo(_plotData, points, _indicator);
+    _scalePlot.drawPoints(_plotData, points);
+
+    _grid.drawXGrid(_plotData);
+    _grid.drawYGrid(_plotData);
+    
+    drawLines();
+    drawObjects();
+
+    info.drawInfo(_plotData, _indicator);
+  }
+
+  update();
+
+//  emit signalDraw();
+}
+
+void Plot::drawRefresh ()
+{
+  update();
+}
+
+void Plot::drawLines ()
+{
+  PlotFactory fac;
+  int loop;
+  QList<PlotLine *> plotList;
+  _indicator.getLines(plotList);
+  
+  for (loop = 0; loop < plotList.count(); loop++)
+  {
+    PlotLine *line = plotList.at(loop);
+
+    if (! line->count())
+      continue;
+
+    QString s;
+    line->getPlugin(s);
+    PlotPlugin *plug = fac.getPlot(s);
+    if (! plug)
+    {
+      qDebug() << "Plot::drawLines: error loading plugin" << s;
+      continue;
+    }
+
+    _plotData.pos = line->count() - _plotData.dateBars.count() + _plotData.startIndex;
+    plug->draw(line, _plotData);
+    delete plug;
+  }
+}
+
+void Plot::paintEvent (QPaintEvent *event)
+{
+  QPainter painter(this);
+  
+  if (_mouseFlag == CursorZoom)
+    painter.drawPixmap(0, 0, _plotData.buffer);
+  else
+    painter.drawPixmap(event->rect(), _plotData.buffer);
+  
+  if (_mouseFlag == CursorCrosshair)
+  {
+    int y = _plotData.scaler.convertToY(_plotData.y1);
+    painter.setPen(QPen(_plotData.borderColor, 1, Qt::DotLine));
+    painter.drawLine (0, y, _plotData.buffer.width(), y);
+    painter.drawLine (_plotData.x, 0, _plotData.x, _plotData.buffer.height());
+    painter.end();
+  }
+}
+
+void Plot::resizeEvent (QResizeEvent *event)
+{
+  _plotData.buffer = QPixmap(event->size());
+  draw();
+}
+
+void Plot::cursorChanged (int d)
+{
+  switch (d)
+  {
+    case 0: // normal cursor
+      _mouseFlag = None;
+      break;
+    case 1:
+      _mouseFlag = CursorZoom;
+      break;
+    case 2:
+      _mouseFlag = CursorCrosshair;
+      break;
+    default:
+      break;
+  }
+  
+  updateCursor();
+  draw();
+}
+
+void Plot::updateCursor ()
+{
+  switch (_mouseFlag)
+  {
+    case CursorCrosshair:
+      setCursor(QCursor(Qt::CrossCursor));
+      break;
+    default:
+      setCursor(QCursor(Qt::ArrowCursor));
+      break;
+  }
+}
+
+//*********************************************************************
+//*************** SCALE FUNCTIONS *************************************
+//********************************************************************
+
+void Plot::setScale ()
+{
+  double tscaleHigh = -99999999;
+  double tscaleLow = 99999999;
+  int width = _plotData.buffer.width() / _plotData.pixelspace;
+
+  QList<PlotLine *> plotList;
+  _indicator.getLines(plotList);
+  
+  int loop;
+  for (loop = 0; loop < plotList.count(); loop++)
+  {
+    PlotLine *line = plotList.at(loop);
+
+    if (line->getScaleFlag())
+      continue;
+
+    if (! _plotData.scaleToScreen)
+    {
+      if (line->getHigh() > tscaleHigh)
+        tscaleHigh = line->getHigh();
+
+      if (line->getLow() < tscaleLow)
+        tscaleLow = line->getLow();
+    }
+    else
+    {
+      int start = line->count() - _plotData.dateBars.count() + _plotData.startIndex;
+      int end = width + start;
+      if (start < 0)
+        start = 0;
+      if (end > line->count())
+        end = line->count();
+
+      double h, l;
+      line->getHighLowRange(start, end - 1, h, l);
+      if (h > tscaleHigh)
+        tscaleHigh = h;
+      if (l < tscaleLow)
+        tscaleLow = l;
+    }
+  }
+
+  // do this anyway for scaleToScreen even if we dont use it
+  int start = _plotData.startIndex;
+  int end = width + _plotData.startIndex;
+  if (start < 0)
+    start = 0;
+  if (end > _plotData.dateBars.count())
+    end = _plotData.dateBars.count();
+  QDateTime sd;
+  _plotData.dateBars.getDate(start, sd);
+  QDateTime ed;
+  _plotData.dateBars.getDate(end - 1, ed);
+
+  QHash<QString, COPlugin *> coList;
+  _indicator.getChartObjects(coList);
+  QHashIterator<QString, COPlugin *> it(coList);
+  while (it.hasNext())
+  {
+    it.next();
+    COPlugin *co = it.value();
+    if (_plotData.scaleToScreen)
+    {
+      if (! co->inDateRange(_plotData, sd, ed))
+        continue;
+    }
+      
+    double h, l;
+    if (co->getHighLow(h, l))
+      continue;
+    
+    if (h > tscaleHigh)
+      tscaleHigh = h;
+
+    if (l < tscaleLow)
+      tscaleLow = l;
+  }
+
+  // create a little more room between chart edges and plots
+  double t = (tscaleHigh - tscaleLow) * 0.02; // get 2% of the range
+  tscaleHigh = tscaleHigh + t;
+  tscaleLow = tscaleLow - t;
+
+  // handle log scaling if toggled
+  double tlogScaleHigh = 1;
+  double tlogRange = 0;
+  if (_indicator.getLog())
+  {
+    tlogScaleHigh = tscaleHigh > 0.0 ? log(tscaleHigh) : 1;
+    double tlogScaleLow = tscaleLow > 0.0 ? log(tscaleLow) : 0;
+    tlogRange = tlogScaleHigh - tlogScaleLow;
+  }
+
+  _plotData.scaler.set(_plotData.buffer.height() - _plotData.dateHeight,
+                       tscaleHigh,
+                       tscaleLow,
+                       tlogScaleHigh,
+                       tlogRange,
+                       _indicator.getLog());
+}
+
+//*********************************************************************
+//*************** MOUSE EVENTS ***************************************
+//********************************************************************
+
+void Plot::mousePressEvent (QMouseEvent *event)
+{
+  if (! _plotData.dateBars.count()  || event->button() != Qt::LeftButton)
+  {
+    QWidget::mousePressEvent(event);
+    return;
+  }
+
+  switch (_mouseFlag)
+  {
+    case COSelected:
+    {
+      QPoint p;
+      p.setX(event->x());
+      p.setY(event->y());
+      _moveFlag = _coSelected->isGrabSelected(p);
+      if (_moveFlag)
+        _mouseFlag = Moving;
+      else
+      {
+        if (! _coSelected->isSelected(p))
+        {
+          _mouseFlag = None;
+	  _coSelected->setSelected(FALSE);
+          draw();
+        }
+      }
+      break;
+    }
+    case Moving:
+      _mouseFlag = COSelected;
+      break;
+    case ClickWait:
+    {
+      getXY(event->x(), event->y());
+      int rc = _coSelected->create2(_plotData.x1, _plotData.y1);
+      if (rc)
+	_mouseFlag = ClickWait2;
+      else
+      {
+	_mouseFlag = _saveMouseFlag;
+	updateCursor();
+        draw();
+	
+        int i = convertXToDataIndex(event->x());
+        PlotInfo info;
+        Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
+        if (mess)
+          emit signalInfoMessage(mess);
+      }
+      break;
+    }
+    case ClickWait2:
+    {
+      getXY(event->x(), event->y());
+      int rc = _coSelected->create3(_plotData.x1, _plotData.y1);
+      if (! rc)
+      {
+	_mouseFlag = _saveMouseFlag;
+	updateCursor();
+        draw();
+	
+        int i = convertXToDataIndex(event->x());
+        PlotInfo info;
+        Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
+        if (mess)
+          emit signalInfoMessage(mess);
+      }
+      break;
+    }
+    case NewObjectWait:
+    {
+      _mouseFlag = ClickWait;
+      emit signalNewExternalChartObjectDone();
+      mousePressEvent(event); // recursive call to capture first mouse click again
+      break;
+    }
+    case CursorZoom:
+    {
+      if (! _rubberBand)
+	return;
+      
+      if (_rubberBand->width() < _plotData.pixelspace)
+        return;
+      
+      // calculate new pixel spacing and position here
+      int x = convertXToDataIndex(_mouseOrigin.x());
+      int ti = _rubberBand->width() / _plotData.pixelspace;
+      ti = this->width() / ti;
+      
+      delete _rubberBand;
+      _rubberBand = 0;
+      
+      unsetCursor();
+      
+      if (ti < _plotData.pixelspace)
+        return;
+      
+      emit signalPixelspaceChanged(x, ti);
+      break;
+    }
+    case None:
+    {
+      QHash<QString, COPlugin *> coList;
+      _indicator.getChartObjects(coList);
+      QHashIterator<QString, COPlugin *> it(coList);
+      while (it.hasNext())
+      {
+        it.next();
+        _coSelected = it.value();
+        QPoint p(event->x(), event->y());
+        if (_coSelected->isSelected(p))
+        {
+          _mouseFlag = COSelected;
+          _coSelected->setSelected(TRUE);
+          PlotInfo info;
+          Setting *mess = info.getCOInfo(_coSelected);
+          if (mess)
+            emit signalInfoMessage(mess);
+	  draw();
+          return;
+        }
+      }
+      break;
+    }
+    default:
+      QWidget::mousePressEvent(event);
+      break;
+  }
+}
+
+void Plot::mouseMoveEvent (QMouseEvent *event)
+{
+  // ignore moves above the top of the chart - we get draw errors if we don't
+  if (! _plotData.dateBars.count() || event->y() <= 0)
+  {
+    QWidget::mouseMoveEvent(event);
+    return;
+  }
+
+  switch (_mouseFlag)
+  {
+    case CursorCrosshair:
+    {
+      getXY(event->x(), event->y());
+
+      update();
+      
+      int i = convertXToDataIndex(event->x());
+      PlotInfo info;
+      Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
+      if (mess)
+        emit signalInfoMessage(mess);
+/*      
+      draw();
+
+      getXY(event->x(), event->y());
+
+      int y = _plotData.scaler.convertToY(_plotData.y1);
+      int x = _plotData.startX + (_plotData.dateBars.getX(_plotData.x1) * _plotData.pixelspace) - (_plotData.startIndex * _plotData.pixelspace);
+
+      QPainter painter;
+      painter.begin(&_plotData.buffer);
+      painter.setPen(QPen(_plotData.borderColor, 1, Qt::DotLine));
+      painter.drawLine (0, y, _plotData.buffer.width(), y);
+      painter.drawLine (x, 0, x, _plotData.buffer.height());
+      painter.end();
+      
+      int i = convertXToDataIndex(event->x());
+      PlotInfo info;
+      Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
+      if (mess)
+        emit infoMessage(mess);
+*/
+      
+      break;
+    }
+    case CursorZoom:
+    {
+      int i = convertXToDataIndex(event->x());
+      PlotInfo info;
+      Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
+      if (mess)
+        emit signalInfoMessage(mess);
+      
+      if (_rubberBand)
+        _rubberBand->setGeometry(QRect(_mouseOrigin, event->pos()).normalized());
+      break;
+    }
+    case Moving:
+    {
+      getXY(event->x(), event->y());
+      _coSelected->moving(_plotData.x1, _plotData.y1, _moveFlag);
+      draw();
+      break;
+    }
+    case ClickWait2:
+    {
+      getXY(event->x(), event->y());
+      _coSelected->moving(_plotData.x1, _plotData.y1, 0);
+      draw();
+      break;
+    }
+    case None:
+    {
+      // update the data panel with new data
+      if (! _plotData.infoFlag)
+	return;
+      
+      // determine if we are over a chart object, if so update cursor
+      QPoint p(event->x(), event->y());
+      QHash<QString, COPlugin *> coList;
+      _indicator.getChartObjects(coList);
+      QHashIterator<QString, COPlugin *> it(coList);
+      int flag = 0;
+      while (it.hasNext())
+      {
+        it.next();
+        COPlugin *co = it.value();
+        if (co->isSelected(p))
+        {
+          setCursor(QCursor(Qt::PointingHandCursor));
+	  flag = 1;
+	  break;
+        }
+      }
+      if (! flag)
+        setCursor(QCursor(Qt::ArrowCursor));
+
+      PlotInfo info;
+      _plotData.infoIndex = convertXToDataIndex(event->x());
+      Setting *mess = info.getInfo(p, _plotData, _indicator);
+      if (mess)
+        emit signalInfoMessage(mess);
+      break;
+    }
+    default:
+      QWidget::mouseMoveEvent(event);
+      break;
+  }
+}
+
+void Plot::mouseDoubleClickEvent (QMouseEvent *event)
+{
+  if (! _plotData.dateBars.count())
+  {
+    QWidget::mouseDoubleClickEvent(event);
+    return;
+  }
+
+  switch (_mouseFlag)
+  {
+    case None: // center chart on double click mouse position
+    {
+      int center = (_plotData.buffer.width() / _plotData.pixelspace) / 2;
+      int i = event->x() / _plotData.pixelspace;
+      if (i < center)
+        emit signalIndexChanged(_plotData.startIndex - (center - i));
+      else
+      {
+	if (i > center)
+          emit signalIndexChanged(_plotData.startIndex + (i - center));
+      }
+      break;
+    }
+    case COSelected:
+      if (_coSelected)
+        objectDialog();
+      break;
+    case CursorZoom:
+    {
+      if (_rubberBand)
+	return;
+      
+      _rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+      _mouseOrigin = event->pos();
+      _rubberBand->setGeometry(QRect(_mouseOrigin, QSize()));
+      _rubberBand->show();
+      setCursor(QCursor(Qt::SizeFDiagCursor));
+      break;
+    }
+    default:
+      QWidget::mouseDoubleClickEvent(event);
+      break;
+  }
+}
+
+//*********************************************************************
+//*************** MENU FUNCTIONS ***************************************
+//********************************************************************
+
+void Plot::contextMenuEvent (QContextMenuEvent *)
+{
+  switch (_mouseFlag)
+  {
+    case COSelected:
+      if (_coSelected)
+        _coMenu->exec(QCursor::pos());
+      break;
+    default:
+      if (_menuFlag)
+        showPopupMenu();
+      break;
+  }
+}
+
+void Plot::showPopupMenu ()
+{
+  _chartMenu->exec(QCursor::pos());
+}
+
+//*********************************************************************
+//*************** SET / GET VARIABLES *********************************
+//********************************************************************
 
 void Plot::clear ()
 {
-  datePlot->clear();
-  scalePlot->clear();
-  indicatorPlot->clear();
+  saveChartObjects();
+  _indicator.clear();
+  _plotData.dateBars.clear();
+}
+
+void Plot::toggleDate ()
+{
+  int flag = _indicator.getDate();
+  if (flag == FALSE)
+    flag = TRUE;
+  else
+    flag = FALSE;
+  _indicator.setDate(flag);
+
+  emit signalDateFlag(flag);
+}
+
+void Plot::toggleLog ()
+{
+  int flag = _indicator.getLog();
+  if (flag == FALSE)
+    flag = TRUE;
+  else
+    flag = FALSE;
+  _indicator.setLog(flag);
+
+  emit signalLogFlag(flag);
+}
+
+void Plot::sliderChanged (int v)
+{
+  setIndex(v);
+  draw();
+}
+
+void Plot::gridChanged (bool d)
+{
+  _grid.setGridFlag(d);
+  draw();
+}
+
+void Plot::scaleToScreenChanged (bool d)
+{
+  setScaleToScreen(d);
+  draw();
+}
+
+void Plot::logScaleChanged (bool d)
+{
+  setLogScale(d);
+  draw();
 }
 
 void Plot::setData (BarData *l)
@@ -88,185 +709,283 @@ void Plot::setData (BarData *l)
   if (! l->count())
     return;
 
-  datePlot->setData(l);
-
-//  indicatorPlot->setXGrid(datePlot->getXGrid());
-
-  indicatorPlot->setData(l);
+  _plotData.dateBars.createDateList(l);
+  
+  _exchange = l->getExchange();
+  _symbol = l->getSymbol();
 }
 
 void Plot::setScaleToScreen (bool d)
 {
-  indicatorPlot->setScaleToScreen(d);
-  scalePlot->setScaleToScreen(d);
-}
-
-void Plot::setLogScale (bool d)
-{
-  indicatorPlot->setLogScale(d);
-  scalePlot->setLogScale(d);
+  _plotData.scaleToScreen = d;
 }
 
 void Plot::setInfoFlag (bool d)
 {
-  indicatorPlot->setInfoFlag(d);
-}
-
-void Plot::draw ()
-{
-  datePlot->draw();
-  indicatorPlot->draw();
-  scalePlot->setScaler(indicatorPlot->getScaler());
-  
-  QList<Setting> l;
-  indicatorPlot->getScalePoints(l);
-  scalePlot->setScalePoints(l);
-  scalePlot->draw();
-}
-
-void Plot::drawRefresh ()
-{
-  datePlot->drawRefresh();
-  indicatorPlot->drawRefresh();
-  scalePlot->drawRefresh();
-}
-
-void Plot::setBackgroundColor (QColor d)
-{
-  datePlot->setBackgroundColor(d);
-  scalePlot->setBackgroundColor(d);
-  indicatorPlot->setBackgroundColor(d);
-}
-
-void Plot::setBorderColor (QColor d)
-{
-  datePlot->setBorderColor(d);
-  scalePlot->setBorderColor(d);
-  indicatorPlot->setBorderColor(d);
-}
-
-void Plot::setGridColor (QColor d)
-{
-  indicatorPlot->setGridColor(d);
-}
-
-void Plot::setPlotFont (QFont d)
-{
-  datePlot->setPlotFont(d);
-  scalePlot->setPlotFont(d);
-  indicatorPlot->setPlotFont(d);
-}
-
-void Plot::setGridFlag (bool d)
-{
-  indicatorPlot->setGridFlag(d);
-}
-
-void Plot::setPixelspace (int d)
-{
-  datePlot->setPixelspace(d);
-  indicatorPlot->setPixelspace(d);
-}
-
-void Plot::setIndex (int d)
-{
-  datePlot->setIndex(d);
-  indicatorPlot->setIndex(d);
-}
-
-void Plot::setInterval (Bar::BarLength d)
-{
-  datePlot->setInterval(d);
-  indicatorPlot->setInterval(d);
+  _plotData.infoFlag = d;
 }
 
 void Plot::setDateFlag (bool d)
 {
-  indicatorPlot->setDateFlag(d);
-
-  if (d)
-  {
-    datePlot->show();
-    datePlot->draw();
-  }
-  else
-    datePlot->hide();
+  _indicator.setDate(d);
 }
 
-void Plot::slotSliderChanged (int v)
+void Plot::setLogScale (bool d)
 {
-  setIndex(v);
-  draw();
+  _indicator.setLog(d);
 }
 
-void Plot::slotGridChanged (bool d)
+bool Plot::logScale ()
 {
-  setGridFlag(d);
+  return _indicator.getLog();
 }
 
-void Plot::slotScaleToScreenChanged (bool d)
+void Plot::setInterval (Bar::BarLength d)
 {
-  setScaleToScreen(d);
-  indicatorPlot->draw();
+  _plotData.interval = d;
 }
 
-void Plot::slotDateFlagChanged (bool d)
+void Plot::setBackgroundColor (QColor d)
 {
-  setDateFlag(d);
+  _plotData.backgroundColor = d;
 }
 
-void Plot::slotLogScaleChanged (bool d)
+void Plot::setBorderColor (QColor d)
 {
-  setLogScale(d);
-  indicatorPlot->draw();
+  _plotData.borderColor = d;
 }
 
-int Plot::getWidth ()
+void Plot::setGridColor (QColor d)
 {
-  return indicatorPlot->getWidth();
+  _grid.setGridColor(d);
 }
 
-IndicatorPlot * Plot::getIndicatorPlot ()
+void Plot::setPlotFont (QFont d)
 {
-  return indicatorPlot;
+  _plotData.plotFont = d;
 }
 
-DatePlot * Plot::getDatePlot ()
+void Plot::setGridFlag (bool d)
 {
-  return datePlot;
-}
-
-void Plot::slotUpdateScalePlot ()
-{
-  scalePlot->setScaler(indicatorPlot->getScaler());
-  scalePlot->draw();
+  _grid.setGridFlag(d);
 }
 
 void Plot::setMenuFlag (bool d)
 {
-  indicatorPlot->setMenuFlag(d);
+  _menuFlag = d;
+}
+
+void Plot::setPixelspace (int d)
+{
+  _plotData.pixelspace = d;
+}
+
+void Plot::setIndex (int d)
+{
+  _plotData.startIndex = d;
+}
+
+void Plot::setIndicator (Indicator &d)
+{
+  _indicator = d;
+}
+
+Indicator & Plot::indicator ()
+{
+  return _indicator;
+}
+
+DateBar & Plot::dateBars ()
+{
+  return _plotData.dateBars;
+}
+
+int Plot::width ()
+{
+  return _plotData.buffer.width() - _plotData.scaleWidth;
+}
+
+//*********************************************************************
+//*************** INTERNAL FUNCTIONS **********************************
+//********************************************************************
+
+void Plot::getXY (int x, int y)
+{
+  _plotData.x = x;
+  _plotData.y = y;
+  int i = convertXToDataIndex(x);
+  _plotData.dateBars.getDate(i, _plotData.x1);
+  _plotData.y1 = _plotData.scaler.convertToVal(y);
+}
+
+int Plot::convertXToDataIndex (int x)
+{
+  int i = (x / _plotData.pixelspace) + _plotData.startIndex;
+  if (i >= (int) _plotData.dateBars.count())
+    i = _plotData.dateBars.count() - 1;
+  if (i < _plotData.startIndex)
+    i = _plotData.startIndex;
+
+  return i;
+}
+
+//*************************************************************************
+//******************** chart object functions *****************************
+//*************************************************************************
+
+void Plot::setExternalChartObjectFlag ()
+{
+  if (_mouseFlag != NewObjectWait)
+    return;
+  
+  _mouseFlag = _saveMouseFlag;
+  _newObjectFlag = FALSE;
+
+  QString s = QString::number(_coSelected->getID());
+  _indicator.deleteChartObject(s);
+  _coSelected = 0;
+
+  updateCursor();
+  draw();
+}
+
+void Plot::newExternalChartObject (QString d)
+{
+  _newObjectFlag = TRUE;
+  _saveMouseFlag = _mouseFlag;
+  _mouseFlag = NewObjectWait;
+  newChartObject(d);
+}
+
+void Plot::newChartObject (QString selection)
+{
+  if (! _symbol.length())
+    return;
+
+  COFactory fac;
+  _coSelected = fac.getCO(selection);
+  if (! _coSelected)
+  {
+    qDebug() << "Plot::slotNewChartObject: no co" << selection;
+    return;
+  }
+  
+  connect(_coSelected, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
+
+  Config config;
+  QString id = QString::number(config.getInt(Config::LastChartObjectID) + 1);
+  config.setData(Config::LastChartObjectID, id);
+
+  _coSelected->setID(id.toInt());
+  _coSelected->setSymbol(_symbol);
+  _coSelected->setExchange(_exchange);
+  
+  QString s;
+  _indicator.getName(s);
+  _coSelected->setIndicator(s);
+  
+  _coSelected->create();
+  
+  _indicator.addChartObject(_coSelected);
+
+  if (! _newObjectFlag)
+    _mouseFlag = ClickWait;
+
+  setCursor(QCursor(Qt::PointingHandCursor));
+}
+
+void Plot::drawObjects ()
+{
+  QHash<QString, COPlugin *> coList;
+  _indicator.getChartObjects(coList);
+  QHashIterator<QString, COPlugin *> it(coList);
+  while (it.hasNext())
+  {
+    it.next();
+    COPlugin *co = it.value();
+    co->draw(_plotData);
+  }
+}
+
+void Plot::deleteAllChartObjects ()
+{
+  if (! _symbol.length())
+    return;
+
+  int rc = QMessageBox::warning(this,
+		            	tr("Qtstalker: Warning"),
+			    	tr("Are you sure you want to delete all chart objects?"),
+			    	QMessageBox::Yes,
+			    	QMessageBox::No,
+			    	QMessageBox::NoButton);
+
+  if (rc == QMessageBox::No)
+    return;
+
+  _indicator.clearChartObjects();
+
+  CODataBase db;
+  BarData bd;
+  bd.setExchange(_exchange);
+  bd.setSymbol(_symbol);
+  db.deleteChartObjects(&bd);
+
+  _mouseFlag = None;
+
+  draw();
+}
+
+void Plot::chartObjectDeleted ()
+{
+  if (! _symbol.length() || ! _coSelected)
+    return;
+
+  QString s = QString::number(_coSelected->getID());
+  _indicator.deleteChartObject(s);
+  _coSelected = 0;
+
+  CODataBase db;
+  db.deleteChartObject(s);
+
+  _mouseFlag = None;
+
+  draw();
+}
+
+void Plot::saveChartObjects ()
+{
+  if (! _symbol.length())
+    return;
+
+  QHash<QString, COPlugin *> coList;
+  _indicator.getChartObjects(coList);
+  QHashIterator<QString, COPlugin *> it(coList);
+  while (it.hasNext())
+  {
+    it.next();
+    COPlugin *co = it.value();
+    co->save();
+  }
 }
 
 void Plot::loadChartObjects ()
 {
-  indicatorPlot->loadChartObjects();
+  saveChartObjects();
+
+  _indicator.clearChartObjects();
+
+  QString s;
+  _indicator.getName(s);
+  CODataBase db;
+  BarData bd;
+  bd.setExchange(_exchange);
+  bd.setSymbol(_symbol);
+  db.getChartObjects(&bd, s, _indicator);
 }
 
-void Plot::toggleDate ()
+void Plot::objectDialog ()
 {
-  if (datePlot->isHidden())
-    slotDateFlagChanged(TRUE);
-  else
-    slotDateFlagChanged(FALSE);
+  _coSelected->dialog();
+  draw();
 }
-
-void Plot::toggleLog ()
-{
-  if (indicatorPlot->getLogScale())
-    slotLogScaleChanged(FALSE);
-  else
-    slotLogScaleChanged(TRUE);
-}
-
-
 

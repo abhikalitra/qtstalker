@@ -382,7 +382,15 @@ a partial match like %SI or %RSI%</source>
     </message>
 </context>
 <context>
-    <name>IndicatorPlot</name>
+    <name>Plot</name>
+    <message>
+        <source>&amp;Edit Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Delete &amp;All Chart Objects</source>
         <translation type="unfinished"></translation>
@@ -401,14 +409,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Are you sure you want to delete all chart objects?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Chart Object</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -54,7 +54,10 @@ void Horizontal::draw (PlotLine *line, PlotData &pd)
   painter.drawText(rc, s);
   painter.drawRect(rc);
   
-  painter.drawLine (rc.x() + rc.width(), y, pd.buffer.width(), y);
+  painter.drawLine (rc.x() + rc.width(),
+                    y,
+                    pd.buffer.width() - pd.scaleWidth,
+                    y);
 
   painter.end();
 }

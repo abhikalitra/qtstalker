@@ -590,7 +590,7 @@ void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
     return;
 
   plot->setData(recordList);
-  plot->getIndicatorPlot()->setIndicator(i);
+  plot->setIndicator(i);
   plot->loadChartObjects();
 }
 
@@ -708,23 +708,21 @@ void QtstalkerApp::addIndicatorButton (QString d)
   plot->setIndex(plotSlider->getValue());
   plot->setInterval((Bar::BarLength) barLengthButtons->getCurrentButton());
 
-  IndicatorPlot *indy = plot->getIndicatorPlot();
-  
-  connect(indy, SIGNAL(signalPixelspaceChanged(int, int)), zoomButtons, SLOT(addZoom(int, int)));
-  connect(indy, SIGNAL(infoMessage(Setting *)), infoPanel, SLOT(showInfo(Setting *)));
-  connect(indy, SIGNAL(signalStatusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  connect(plot, SIGNAL(signalPixelspaceChanged(int, int)), zoomButtons, SLOT(addZoom(int, int)));
+  connect(plot, SIGNAL(signalInfoMessage(Setting *)), infoPanel, SLOT(showInfo(Setting *)));
+  connect(plot, SIGNAL(signalStatusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(Bar::BarLength)), plot, SLOT(setInterval(Bar::BarLength)));
   connect(this, SIGNAL(signalClearIndicator()), plot, SLOT(clear()));
-  connect (plotSlider, SIGNAL(signalValueChanged(int)), plot, SLOT(slotSliderChanged(int)));
-  connect(this, SIGNAL(signalGrid(bool)), indy, SLOT(slotGridChanged(bool)));
-  connect(this, SIGNAL(signalScale(bool)), plot, SLOT(slotScaleToScreenChanged(bool)));
-  connect(this, SIGNAL(signalNewExternalChartObject(QString)), indy, SLOT(newExternalChartObject(QString)));
-  connect(indy, SIGNAL(signalNewExternalChartObjectDone()), this, SIGNAL(signalSetExternalChartObject()));
-  connect(this, SIGNAL(signalSetExternalChartObject()), indy, SLOT(setExternalChartObjectFlag()));
-  connect(this, SIGNAL(signalCursorChanged(int)), indy, SLOT(cursorChanged(int)));
-  connect(indy, SIGNAL(signalIndexChanged(int)), plotSlider, SLOT(setValue(int)));
+  connect (plotSlider, SIGNAL(signalValueChanged(int)), plot, SLOT(sliderChanged(int)));
+  connect(this, SIGNAL(signalGrid(bool)), plot, SLOT(gridChanged(bool)));
+  connect(this, SIGNAL(signalScale(bool)), plot, SLOT(scaleToScreenChanged(bool)));
+  connect(this, SIGNAL(signalNewExternalChartObject(QString)), plot, SLOT(newExternalChartObject(QString)));
+  connect(plot, SIGNAL(signalNewExternalChartObjectDone()), this, SIGNAL(signalSetExternalChartObject()));
+  connect(this, SIGNAL(signalSetExternalChartObject()), plot, SLOT(setExternalChartObjectFlag()));
+  connect(this, SIGNAL(signalCursorChanged(int)), plot, SLOT(cursorChanged(int)));
+  connect(plot, SIGNAL(signalIndexChanged(int)), plotSlider, SLOT(setValue(int)));
 }
 
 void QtstalkerApp::slotChartUpdated ()
@@ -841,7 +839,7 @@ void QtstalkerApp::setSliderStart (int count)
   if (! plot)
     return;
 
-  plotSlider->setStart(count, plot->getWidth(), zoomButtons->getPixelSpace());
+  plotSlider->setStart(count, plot->width(), zoomButtons->getPixelSpace());
 }
 
 /**********************************************************************/

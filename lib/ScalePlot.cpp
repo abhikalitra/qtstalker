@@ -27,197 +27,80 @@
 #include <QPoint>
 #include <QPolygon>
 #include <QString>
-#include <QVector>
 
-#define SCALE_WIDTH 70
-
-ScalePlot::ScalePlot (QWidget *w) : QWidget(w)
+ScalePlot::ScalePlot ()
 {
-  scaleWidth = SCALE_WIDTH;
-  backgroundColor.setNamedColor("black");
-  borderColor.setNamedColor("white");
-  mainFlag = FALSE;
-  scaleToScreen = FALSE;
-  logScale = FALSE;
-  close = 0;
-  activeFlag = FALSE;
-
-  plotFont.setFamily("Helvetica");
-  plotFont.setPointSize(12);
-  plotFont.setWeight(50);
-  
-  setMinimumWidth(scaleWidth);
-  setMaximumWidth(scaleWidth);
 }
 
-void ScalePlot::clear ()
-{
-  points.clear();
-}
-
-void ScalePlot::setMainFlag (bool d)
-{
-  mainFlag = d;
-}
-
-void ScalePlot::setScaleToScreen (bool d)
-{
-  scaleToScreen = d;
-}
-
-void ScalePlot::setLogScale (bool d)
-{
-  logScale = d;
-}
-
-void ScalePlot::draw ()
-{
-  if (buffer.isNull())
-    return;
-  
-  buffer.fill(backgroundColor);
-
-  if (activeFlag)
-    drawScale();
-
-  update();
-}
-
-void ScalePlot::drawRefresh ()
-{
-  update();
-}
-
-void ScalePlot::paintEvent (QPaintEvent *)
-{
-  QPainter p(this);
-  p.drawPixmap(0, 0, buffer);
-}
-
-void ScalePlot::resizeEvent (QResizeEvent *event)
-{
-  buffer = QPixmap(event->size());
-  draw();
-}
-
-void ScalePlot::setScaleWidth (int d)
-{
-  if (d > 999 || d < SCALE_WIDTH)
-    return;
-  else
-    scaleWidth = d;
-}
-
-void ScalePlot::setBackgroundColor (QColor &d)
-{
-  backgroundColor = d;
-}
-
-void ScalePlot::setBorderColor (QColor &d)
-{
-  borderColor = d;
-}
-
-void ScalePlot::setPlotFont (QFont &d)
-{
-  plotFont = d;
-}
-
-void ScalePlot::drawScale ()
+void ScalePlot::draw (PlotData &pd)
 {
   QPainter painter;
-  painter.begin(&buffer);
-  painter.setFont(plotFont);
-  painter.setPen(QPen(borderColor, 1, Qt::SolidLine));
+  painter.begin(&pd.buffer);
+  painter.setFont(pd.plotFont);
+  painter.setPen(QPen(pd.borderColor, 1, Qt::SolidLine));
 
-  painter.fillRect(0, 0, buffer.width(), buffer.height(), backgroundColor);
+  QList<double> scaleArray;
+  pd.scaler.scaleArray(scaleArray);
   
-  QVector<double> scaleArray;
-  scaler.getScaleArray(scaleArray);
-  
-  QFontMetrics fm(plotFont);
+  QFontMetrics fm(pd.plotFont);
 
-  int x = 0;
+  int x = pd.buffer.width() - pd.scaleWidth;
   int loop;
   Utils util;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = scaler.convertToY(scaleArray[loop]);
+    int y = pd.scaler.convertToY(scaleArray.at(loop));
     painter.drawLine (x, y, x + 4, y);
 
     // draw the text
     QString s;
-    util.strip(scaleArray[loop], 4, s);
+    util.strip(scaleArray.at(loop), 4, s);
     
     // abbreviate too many (>=3) trailing zeroes in large numbers on y-axes
-    if (! mainFlag)
+    bool flag = FALSE;
+      
+    if (s.toDouble() < 0)
     {
-      bool flag = FALSE;
-      
-      if (s.toDouble() < 0)
-      {
-        flag = TRUE;
-	s.remove(0, 1);  
-      }
-      
-      if (s.toDouble() >= 1000000000)
-      {
-        util.strip(s.toDouble() / 1000000000, 4, s);
-	s.append("b");
-      }
-      else
-      {
-        if (s.toDouble() >= 1000000)
-        {
-          util.strip(s.toDouble() / 1000000, 4, s);
-	  s.append("m");
-        }
-      }
-      
-      if (flag)
-        s.prepend("-");
+      flag = TRUE;
+      s.remove(0, 1);
     }
+      
+    if (s.toDouble() >= 1000000000)
+    {
+      util.strip(s.toDouble() / 1000000000, 4, s);
+      s.append("B");
+    }
+    else
+    {
+      if (s.toDouble() >= 1000000)
+      {
+        util.strip(s.toDouble() / 1000000, 4, s);
+	s.append("M");
+      }
+    }
+      
+    if (flag)
+      s.prepend("-");
     
     painter.drawText(x + 7, y + (fm.height() / 2), s);
   }
 
-  painter.drawLine (x, 0, x, buffer.height());
-
-  drawPoints(painter);
+  // draw the vertical separator line
+  painter.drawLine (x, 0, x, pd.buffer.height() - pd.dateHeight);
 
   painter.end();
 }
 
-void ScalePlot::slotScaleToScreenChanged (bool d)
+void ScalePlot::drawPoints (PlotData &pd, QList<Setting> &points)
 {
-  setScaleToScreen(d);
-  draw();
-}
+  QPainter painter;
+  painter.begin(&pd.buffer);
+  painter.setFont(pd.plotFont);
 
-void ScalePlot::slotLogScaleChanged (bool d)
-{
-  setLogScale(d);
-  draw();
-}
+  QFontMetrics fm(pd.plotFont);
 
-void ScalePlot::setScaler (Scaler &d)
-{
-  scaler = d;
-}
-
-void ScalePlot::setScalePoints (QList<Setting> &d)
-{
-  points = d;
-  
-  if (d.count())
-    activeFlag = TRUE;
-  else
-    activeFlag = FALSE;
-}
-
-void ScalePlot::drawPoints (QPainter &painter)
-{
-  QFontMetrics fm(plotFont);
+  int offset = 8;
+  int x = pd.buffer.width() - pd.scaleWidth + 1;
 
   int loop;
   for (loop = 0; loop < points.count(); loop++)
@@ -229,14 +112,29 @@ void ScalePlot::drawPoints (QPainter &painter)
     color.setNamedColor(d);
     set.getData(1, d);
     double v = set.getDouble(1);
+    int y = pd.scaler.convertToY(v);
+
+    QRect rc = painter.boundingRect(x + offset,
+                                    y - (fm.height() / 2),
+                                    1,
+                                    1,
+                                    0,
+                                    d);
+
+    // draw the left arrow portion of the box shape
+    QPolygon arrow(4);
+    arrow.setPoint(0, x, y);
+    arrow.setPoint(1, x + offset, rc.top() - 1);
+    arrow.setPoint(2, x + offset, rc.bottom() + 1);
+    arrow.setPoint(3, x, y);
+    painter.setBrush(color);
+    painter.drawPolygon(arrow, Qt::OddEvenFill);
     
-    int y = scaler.convertToY(v);
-    QRect rc = painter.boundingRect(1, y - (fm.height() / 2), 1, 1, 0, d);
     painter.fillRect(rc, color);
     
-    color.setRed(color.red() || borderColor.red());
-    color.setGreen(color.green() || borderColor.green());
-    color.setBlue(color.blue() || borderColor.blue());
+    color.setRed(color.red() || pd.borderColor.red());
+    color.setGreen(color.green() || pd.borderColor.green());
+    color.setBlue(color.blue() || pd.borderColor.blue());
     painter.setPen(color);
     painter.drawText(rc, d);
   }

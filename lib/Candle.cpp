@@ -35,7 +35,7 @@ void Candle::draw (PlotLine *line, PlotData &pd)
   QColor c;
   bool ff = FALSE;
 
-  while ((x < pd.buffer.width()) && (loop < (int) line->count()))
+  while ((x < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
   {
     if (loop > -1)
     {

@@ -23,7 +23,7 @@
 #define PLOT_GRID_HPP
 
 #include <QColor>
-#include <QVector>
+#include <QList>
 
 #include "PlotData.h"
 
@@ -31,17 +31,16 @@ class PlotGrid
 {
   public:
     PlotGrid ();
-    void draw (PlotData &);
     void setGridFlag (int);
-    void setXGrid (QVector<int> &);
+    void setXGrid (QList<int> &);
     void setGridColor (QColor &);
     void drawXGrid (PlotData &);
     void drawYGrid (PlotData &);
 
   private:
-    QColor gridColor;
-    int gridFlag;
-    QVector<int> xGrid;
+    QColor _gridColor;
+    int _gridFlag;
+    QList<int> _xGrid;
 };
 
 #endif

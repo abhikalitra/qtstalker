@@ -20,8 +20,7 @@
  */
 
 #include "AROON.h"
-#include "MAXINDEX.h"
-#include "MININDEX.h"
+//#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -37,7 +36,7 @@ AROON::AROON ()
   settings.setData(DownLabel, "AROOND");
   settings.setData(UpLabel, "AROONU");
   settings.setData(OSCColor, "red");
-  settings.setData(OSCPlot, "HistogramBar");
+  settings.setData(OSCPlot, "Histogram Bar");
   settings.setData(OSCLabel, "AROONOSC");
   settings.setData(Period, 14);
 
@@ -62,6 +61,7 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
     case 1:
     {
       PlotLine *line = getOSC(data, period);
+//      PlotLine *line = getAROON(data, period, 2);
       if (! line)
         return 1;
 
@@ -78,6 +78,7 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
     {
       // get arron up line
       PlotLine *up = getUP(data, period);
+//      PlotLine *up = getAROON(data, period, 0);
       if (! up)
         return 1;
 
@@ -90,6 +91,7 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
 
       // get aroon down line
       PlotLine *down = getDOWN(data, period);
+//      PlotLine *down = getAROON(data, period, 1);
       if (! down)
       {
         delete up;
@@ -260,18 +262,25 @@ PlotLine * AROON::getUP (BarData *data, int period)
   if (! high)
     return 0;
 
-  MAXINDEX tmi;
-  PlotLine *mi = tmi.getMAXINDEX(high, period);
-  if (! mi)
-  {
-    delete high;
-    return 0;
-  }
-
-  int loop = 0;
+  int loop = period;
   PlotLine *line = new PlotLine;
-  for (; loop < mi->count(); loop++)
-    line->append(((period - mi->getData(loop)) / period) * 100);
+  for (; loop < high->count(); loop++)
+  {
+    int count = 0;
+    double max = -9999999;
+    int pos = 0;
+    for (; count <= period; count++)
+    {
+      if (high->getData(loop - count) > max)
+      {
+        pos = count;
+	max = high->getData(loop - count);
+      }
+    }
+
+    double aroon = ((period - pos) / (double) period) * 100;
+    line->append(aroon);
+  }
 
   delete high;
 
@@ -287,18 +296,25 @@ PlotLine * AROON::getDOWN (BarData *data, int period)
   if (! low)
     return 0;
 
-  MININDEX tmi;
-  PlotLine *mi = tmi.getMININDEX(low, period);
-  if (! mi)
-  {
-    delete low;
-    return 0;
-  }
-
-  int loop = 0;
+  int loop = period;
   PlotLine *line = new PlotLine;
-  for (; loop < mi->count(); loop++)
-    line->append(((period - mi->getData(loop)) / period) * 100);
+  for (; loop < low->count(); loop++)
+  {
+    int count = 0;
+    double min = 99999999;
+    int pos = 0;
+    for (; count <= period; count++)
+    {
+      if (low->getData(loop - count) < min)
+      {
+        pos = count;
+	min = low->getData(loop - count);
+      }
+    }
+
+    double aroon = ((period - pos) / (double) period) * 100;
+    line->append(aroon);
+  }
 
   delete low;
 
@@ -337,6 +353,55 @@ PlotLine * AROON::getOSC (BarData *data, int period)
 
   return line;
 }
+
+/*
+PlotLine * AROON::getAROON (BarData *data, int period, int method)
+{
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  int loop;
+  for (loop = 0; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+  }
+
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_RetCode rc = TA_SUCCESS;
+  switch (method)
+  {
+    case 0:
+      rc = TA_AROON(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0], &out2[0]);
+      break;
+    case 1:
+      // we switch out with out2 only here
+      rc = TA_AROON(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out2[0], &out[0]);
+      break;
+    case 2:
+      rc = TA_AROONOSC(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  PlotLine *line = new PlotLine;
+  for (loop = 0; loop < outNb; loop++)
+    line->append(out[loop]);
+
+  return line;
+}
+*/
 
 int AROON::dialog (int)
 {

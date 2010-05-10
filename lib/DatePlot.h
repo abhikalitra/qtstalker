@@ -22,56 +22,17 @@
 #ifndef DATE_PLOT_HPP
 #define DATE_PLOT_HPP
 
-#include <QWidget>
-#include <QPixmap>
-#include <QColor>
-#include <QFont>
-#include <QPaintEvent>
-#include <QResizeEvent>
-#include <QList>
-#include <QPainter>
-#include <QDateTime>
+#include "PlotData.h"
 
-#include "BarData.h"
-
-class DatePlot : public QWidget
+class DatePlot
 {
-  Q_OBJECT
-
   public:
-    DatePlot (QWidget *);
-    void clear ();
-    void setData (BarData *);
-    void drawDailyDate (QPainter &);
-    void drawWeeklyDate (QPainter &);
-    void drawMonthlyDate (QPainter &);
-    void drawMinuteDate (QPainter &);
-
-
-  public slots:
-    void draw();
-    void drawRefresh();
-    void setPixelspace (int);
-    void setBackgroundColor (QColor);
-    void setBorderColor (QColor);
-    void setPlotFont (QFont);
-    void setIndex (int);
-    void setInterval(Bar::BarLength);
-
-  protected:
-    virtual void paintEvent (QPaintEvent *);
-    virtual void resizeEvent (QResizeEvent *);
-
-  private:
-    QFont plotFont;
-    QPixmap buffer;
-    int pixelspace;
-    int startX;
-    int startIndex;
-    Bar::BarLength interval;
-    QColor backgroundColor;
-    QColor borderColor;
-    QList<QDateTime> dateList;
+    DatePlot ();
+    void draw (PlotData &);
+    void drawDailyDate (PlotData &, QPainter &);
+    void drawWeeklyDate (PlotData &, QPainter &);
+    void drawMonthlyDate (PlotData &, QPainter &);
+    void drawMinuteDate (PlotData &, QPainter &);
 };
 
 #endif

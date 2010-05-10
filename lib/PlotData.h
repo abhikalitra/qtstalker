@@ -45,6 +45,9 @@ struct PlotData
   int y; // raw mouse y position from event-y()
   int infoFlag;
   int pos;
+  int interval;
+  int dateHeight;
+  int scaleWidth;
   double y1; // scaler y position
   QFont plotFont;
   QColor backgroundColor;

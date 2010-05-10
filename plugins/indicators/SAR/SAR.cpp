@@ -111,6 +111,37 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
+/*
+PlotLine * SAR::getSAR (BarData *data, double _init, double _max)
+{
+  if (data->count() < 2)
+    return 0;
+
+  double af = _init;
+  double max = _max;
+
+  Bar *pbar = data->getBar(0);
+  Bar *bar = data->getBar(1);
+  int direction = 0; // 0 == long, 1 == short
+  if (bar->getClose() < pbar->getClose())
+    direction = 1; // we are short
+
+
+
+
+  int size = data->count();
+  int loop = 0;
+  PlotLine *line = new PlotLine;
+  for (loop = 0; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+  }
+
+
+  return line;
+}
+*/
+
 PlotLine * SAR::getSAR (BarData *data, double _init, double _max)
 {
   int size = data->count();

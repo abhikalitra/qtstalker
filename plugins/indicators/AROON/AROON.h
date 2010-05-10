@@ -61,6 +61,7 @@ class AROON : public IndicatorPlugin
     PlotLine * getDOWN (BarData *, int);
     PlotLine * getOSC (BarData *, int);
     int dialog (int);
+    PlotLine * getAROON (BarData *data, int period, int method);
 
   private:
     QStringList methodList;

@@ -20,7 +20,7 @@
  */
 
 #include "DataWindow.h"
-#include "IndicatorPlot.h"
+#include "Plot.h"
 #include "Utils.h"
 #include "IndicatorDataBase.h"
 
@@ -65,17 +65,14 @@ void DataWindow::setData (QHash<QString, Plot *> &list)
 
 void DataWindow::setPlot (Plot *d)
 {
-  IndicatorPlot *ip = d->getIndicatorPlot();
-  Indicator indicator;
-  ip->getIndicator(indicator);
+  Indicator indicator = d->indicator();
   QList<PlotLine *> lines;
   indicator.getLines(lines);
   
   if (! dateFlag)
   {
     // get the dates
-    DateBar dates;
-    ip->getDateBar(dates);
+    DateBar dates = d->dateBars();
     setDates(dates);
   }
 

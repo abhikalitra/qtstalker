@@ -29,7 +29,6 @@
 #include "COFactory.h"
 #include "COPlugin.h"
 #include "TestConfig.h"
-#include "IndicatorPlot.h"
 #include "COPlugin.h"
 #include "BARSUtils.h"
 
@@ -146,8 +145,7 @@ void TestChart::update (BarData &data, QList<TestTrade *> &trades)
     i.addChartObject(sell);  
   }
 
-  IndicatorPlot *ip = plot->getIndicatorPlot();
-  ip->setIndicator(i);
+  plot->setIndicator(i);
   
   slider->setRange(0, data.count() - 1);
   slider->setValue(0);

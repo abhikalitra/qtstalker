@@ -39,19 +39,19 @@ void Line::draw (PlotLine *line, PlotData &pd)
   Scaler scale;
   if (line->getScaleFlag())
   {
-    scale.set(pd.scaler.getHeight(),
+    scale.set(pd.scaler.height(),
   	      line->getHigh(),
 	      line->getLow(),
-	      pd.scaler.getLogScaleHigh(),
-	      pd.scaler.getLogRange(),
-	      pd.scaler.getLogFlag());
+	      pd.scaler.logScaleHigh(),
+	      pd.scaler.logRange(),
+	      pd.scaler.logFlag());
   }
 
   QPen pen;
   pen.setStyle(Qt::SolidLine);
   painter.setPen(pen);
 
-  while ((x2 < pd.buffer.width()) && (loop < (int) line->count()))
+  while ((x2 < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
   {
     if (loop > -1)
     {

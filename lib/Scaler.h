@@ -23,7 +23,7 @@
 #define SCALER_HPP
 
 #include <QStringList>
-#include <QVector>
+#include <QList>
 
 class Scaler
 {
@@ -32,24 +32,24 @@ class Scaler
     void set (int ht, double h, double l, double lh, double lr, bool lf);
     int convertToY (double);
     double convertToVal (int);
-    void getScaleArray (QVector<double> &);
-    double getLogScaleHigh ();
-    double getLogRange();
-    int getHeight ();
-    bool getDateFlag ();
-    bool getLogFlag ();
-    double getLow ();
+    void scaleArray (QList<double> &);
+    double logScaleHigh ();
+    double logRange();
+    int height ();
+    bool dateFlag ();
+    bool logFlag ();
+    double low ();
  
   protected:
-    int height;
-    bool logScale;
-    double scaleHigh;
-    double scaleLow;
-    double logScaleHigh;
-    double logRange;
-    double range;
-    double scaler;
-    QStringList scaleList;
+    int _height;
+    bool _logScale;
+    double _scaleHigh;
+    double _scaleLow;
+    double _logScaleHigh;
+    double _logRange;
+    double _range;
+    double _scaler;
+    QStringList _scaleList;
 };
 
 #endif

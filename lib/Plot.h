@@ -24,32 +24,72 @@
 
 #include <QWidget>
 #include <QString>
-#include <QColor>
-#include <QFont>
-#include <QStringList>
+#include <QRect>
+#include <QPaintEvent>
+#include <QResizeEvent>
+#include <QMouseEvent>
+#include <QContextMenuEvent>
+#include <QDateTime>
+#include <QPixmap>
+#include <QMenu>
+#include <QRubberBand>
+#include <QPoint>
+#include <QList>
 
+#include "COPlugin.h"
+#include "Setting.h"
 #include "BarData.h"
+#include "PlotGrid.h"
+#include "PlotData.h"
+#include "Indicator.h"
 #include "DatePlot.h"
 #include "ScalePlot.h"
-#include "IndicatorPlot.h"
 
 class Plot : public QWidget
 {
   Q_OBJECT
 
+  signals:
+    void signalStatusMessage (QString);
+    void signalInfoMessage (Setting *);
+    void signalPixelspaceChanged (int, int);
+//    void signalDraw ();
+    void signalDateFlag (bool);
+    void signalLogFlag (bool);
+    void signalNewExternalChartObjectDone();
+    void signalIndexChanged (int);
+
   public:
+    enum MouseStatus
+    {
+      None,
+      ClickWait,
+      COSelected,
+      Moving,
+      ClickWait2,
+      NewObjectWait,
+      CursorZoom,
+      CursorCrosshair
+    };
+
     Plot (QWidget *);
+    ~Plot ();
     void setData (BarData *);
     void setLogScale (bool);
-    void updateStatusBar (int, int);
+    bool logScale ();
     void setInfoFlag (bool);
-    int getWidth ();
+    int convertXToDataIndex (int);
     void setGridFlag (bool);
     void setScaleToScreen (bool);
     void setDateFlag (bool);
-    IndicatorPlot * getIndicatorPlot ();
-    DatePlot * getDatePlot ();
+    void setXGrid (QList<int> &);
     void setMenuFlag (bool);
+    void setIndicator (Indicator &);
+    Indicator & indicator ();
+    void loadChartObjects ();
+    void setScale ();
+    DateBar & dateBars ();
+    int width ();
 
   public slots:
     void draw();
@@ -60,22 +100,57 @@ class Plot : public QWidget
     void setGridColor (QColor);
     void setPlotFont (QFont);
     void setIndex (int);
+    void showPopupMenu ();
+    void sliderChanged (int);
+    void gridChanged (bool);
+    void scaleToScreenChanged (bool);
+    void logScaleChanged (bool);
     void setInterval(Bar::BarLength);
-    void slotSliderChanged (int);
-    void slotGridChanged (bool);
-    void slotScaleToScreenChanged (bool);
-    void slotDateFlagChanged (bool);
-    void slotLogScaleChanged (bool);
-    void slotUpdateScalePlot ();
+    void newExternalChartObject (QString);
+    void setExternalChartObjectFlag ();
+    void cursorChanged (int);
+    void updateCursor ();
     void clear ();
-    void loadChartObjects ();
+
+  protected:
+    virtual void paintEvent (QPaintEvent *);
+    virtual void resizeEvent (QResizeEvent *);
+    virtual void mousePressEvent (QMouseEvent *);
+    virtual void mouseMoveEvent (QMouseEvent *);
+    virtual void mouseDoubleClickEvent (QMouseEvent *);
+    virtual void contextMenuEvent (QContextMenuEvent *);
+
+  private slots:
+    void drawObjects ();
+    void drawLines ();
+    void getXY (int, int);
+    void newChartObject (QString);
+    void deleteAllChartObjects ();
+    void chartObjectDeleted ();
     void toggleDate ();
     void toggleLog ();
+    void saveChartObjects ();
+    void objectDialog ();
 
   private:
-    DatePlot *datePlot;
-    ScalePlot *scalePlot;
-    IndicatorPlot *indicatorPlot;
+    Indicator _indicator;
+    PlotData _plotData;
+    PlotGrid _grid;
+    bool _menuFlag;
+    MouseStatus _mouseFlag;
+    COPlugin *_coSelected;
+    QMenu *_chartMenu;
+    QMenu *_coMenu;
+    QString _symbol;
+    QString _exchange;
+    int _moveFlag;
+    QRubberBand *_rubberBand;
+    QPoint _mouseOrigin;
+    int _newObjectFlag;
+    int _dragPos;
+    MouseStatus _saveMouseFlag;
+    DatePlot _datePlot;
+    ScalePlot _scalePlot;
 };
 
 #endif

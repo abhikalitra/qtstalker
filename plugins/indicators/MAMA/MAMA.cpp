@@ -79,7 +79,7 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
   if (osc)
   {
     PlotLine *line = new PlotLine;
-    s = "HistogramBar";
+    s = "Histogram Bar";
     line->setPlugin(s);
     settings.getData(OSCColor, s);
     line->setColor(s);
@@ -101,7 +101,7 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
     PlotLine *bars = b.getBARS(data, up, down, neutral);
     if (bars)
       ind.addLine(bars);
-    
+
     settings.getData(MAMAColor, s);
     mama->setColor(s);
     settings.getData(MAMAPlot, s);

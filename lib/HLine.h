@@ -41,9 +41,9 @@ class HLine : public COPlugin
     int inDateRange (PlotData &, QDateTime &, QDateTime &);
     
   protected:
-    QColor color;
-    double price;
-    QString label;
+    QColor _color;
+    double _price;
+    QString _label;
 };
 
 #endif

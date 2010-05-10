@@ -20,21 +20,16 @@
  */
 
 #include "CMO.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
 
 CMO::CMO ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("TALIB::setDefaults:error on TA_Initialize");
-
   indicator = "CMO";
 
   settings.setData(Color, "red");
-  settings.setData(Plot, "HistogramBar");
+  settings.setData(Plot, "Histogram Bar");
   settings.setData(Label, indicator);
   settings.setData(Input, "Close");
   settings.setData(Period, 14);
@@ -47,7 +42,7 @@ int CMO::getIndicator (Indicator &ind, BarData *data)
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
@@ -76,17 +71,18 @@ int CMO::getIndicator (Indicator &ind, BarData *data)
 int CMO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,PLUGIN,CMO,<NAME>,<INPUT>,<PERIOD>
+  //     0       1     2    3       4       5
 
   if (set.count() != 6)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -96,7 +92,7 @@ int CMO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
+      qDebug() << indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
@@ -107,7 +103,7 @@ int CMO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period parm" << set[5];
+    qDebug() << indicator << "::getCUS: invalid period parm" << set[5];
     return 1;
   }
 
@@ -122,25 +118,27 @@ int CMO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * CMO::getCMO (PlotLine *in, int period)
 {
-  int size = in->count();
-  TA_Real input[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_CMO(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+  if (in->count() < period)
     return 0;
-  }
 
   PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  int loop = period;
+  for (; loop < in->count(); loop++)
+  {
+    int count = 0;
+    double wt = 0;
+    double lt = 0;
+    for (; count < period; count++)
+    {
+      double t = in->getData(loop - count) - in->getData(loop - count - 1);
+      if (t >= 0)
+	wt += t;
+      else
+	lt += in->getData(loop - count - 1) - in->getData(loop - count);
+    }
+
+    line->append(((wt - lt) / (wt + lt)) * 100);
+  }
 
   return line;
 }

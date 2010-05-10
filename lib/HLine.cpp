@@ -34,15 +34,15 @@
 HLine::HLine ()
 {
   plugin = "HLine";
-  color.setNamedColor("red");
-  price = 0;
-  label = plugin;
+  _color.setNamedColor("red");
+  _price = 0;
+  _label = plugin;
 }
 
 void HLine::draw (PlotData &pd)
 {
   // if value is off chart then don't draw it
-  if (price < pd.scaler.getLow())
+  if (_price < pd.scaler.low())
     return;
 
   QPainter painter;
@@ -50,12 +50,12 @@ void HLine::draw (PlotData &pd)
 
   painter.setFont(pd.plotFont);
 
-  painter.setPen(color);
+  painter.setPen(_color);
 
-  int y = pd.scaler.convertToY(price);
+  int y = pd.scaler.convertToY(_price);
   
   // test start
-  QString s = QString::number(price);
+  QString s = QString::number(_price);
   QFontMetrics fm = painter.fontMetrics();
   QRect rc = painter.boundingRect(pd.startX, y - (fm.height() / 2), 1, 1, 0, s);
   painter.fillRect(rc, pd.backgroundColor); // fill in behind text first
@@ -86,7 +86,7 @@ void HLine::draw (PlotData &pd)
 		       y - (handleWidth / 2),
 		       handleWidth,
 		       handleWidth,
-		       color);
+		       _color);
     }
   }
 
@@ -100,7 +100,7 @@ void HLine::getInfo (Setting *info)
   info->setData(k, d);
 
   k = QObject::tr("Price");
-  d = QString::number(price);
+  d = QString::number(_price);
   info->setData(k, d);
 }
 
@@ -115,13 +115,13 @@ void HLine::dialog ()
   dialog->addPage(page, s);
 
   s = QObject::tr("Color");
-  dialog->addColorItem(pid++, page, s, color);
+  dialog->addColorItem(pid++, page, s, _color);
 
   s = QObject::tr("Price");
-  dialog->addDoubleItem(pid++, page, s, price);
+  dialog->addDoubleItem(pid++, page, s, _price);
 
   s = QObject::tr("Label");
-  dialog->addTextItem(pid++, page, s, label);
+  dialog->addTextItem(pid++, page, s, _label);
 
   int def = FALSE;
   s = QObject::tr("Default");
@@ -135,15 +135,15 @@ void HLine::dialog ()
   }
 
   pid = 0;
-  dialog->getColor(pid++, color);
-  price = dialog->getDouble(pid++);
-  dialog->getText(pid++, label);
+  dialog->getColor(pid++, _color);
+  _price = dialog->getDouble(pid++);
+  dialog->getText(pid++, _label);
   def = dialog->getCheck(pid++);
 
   if (def)
   {
     Config config;
-    config.setData((int) Config::DefaultHLineColor, color);
+    config.setData((int) Config::DefaultHLineColor, _color);
   }
 
   saveFlag = TRUE;
@@ -157,9 +157,9 @@ void HLine::load (QSqlQuery &q)
   exchange = q.value(1).toString();
   symbol = q.value(2).toString();
   indicator = q.value(3).toString();
-  color.setNamedColor(q.value(5).toString()); // t1 field
-  label = q.value(6).toString(); // t2 field
-  price = q.value(25).toDouble(); // d1 field
+  _color.setNamedColor(q.value(5).toString()); // t1 field
+  _label = q.value(6).toString(); // t2 field
+  _price = q.value(25).toDouble(); // d1 field
 }
 
 void HLine::save ()
@@ -173,9 +173,9 @@ void HLine::save ()
   s.append(",'" + symbol + "'");
   s.append(",'" + indicator + "'");
   s.append(",'" + plugin + "'");
-  s.append(",'" + color.name() + "'");
-  s.append("," + QString::number(price));
-  s.append(",'" + label + "'");
+  s.append(",'" + _color.name() + "'");
+  s.append("," + QString::number(_price));
+  s.append(",'" + _label + "'");
   s.append(")");
 
   CODataBase db;
@@ -192,7 +192,7 @@ void HLine::create ()
 int HLine::create2 (QDateTime &, double y)
 {
   saveFlag = TRUE;
-  price = y;
+  _price = y;
   emit signalMessage(QString());
   return 0;
 }
@@ -200,7 +200,7 @@ int HLine::create2 (QDateTime &, double y)
 void HLine::moving (QDateTime &, double y, int)
 {
   saveFlag = TRUE;
-  price = y;
+  _price = y;
   emit signalMessage(QString::number(y));
 }
 
@@ -211,8 +211,8 @@ void HLine::getIcon (QIcon &d)
 
 int HLine::getHighLow (double &h, double &l)
 {
-  h = price;
-  l = price;
+  h = _price;
+  l = _price;
   return 0;
 }
 

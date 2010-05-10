@@ -136,7 +136,7 @@ SUBDIRS += plugins/database/Futures
 SUBDIRS += src
 
 # compile tester
-SUBDIRS += tester
+#SUBDIRS += tester
 
 # install docs and i18n
 SUBDIRS += docs

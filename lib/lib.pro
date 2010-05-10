@@ -18,7 +18,6 @@ HEADERS += Config.h
 HEADERS += Plot.h
 HEADERS += DatePlot.h
 HEADERS += ScalePlot.h
-HEADERS += IndicatorPlot.h
 HEADERS += Setup.h
 HEADERS += ExScript.h
 HEADERS += Indicator.h
@@ -84,8 +83,6 @@ HEADERS += MIN.h
 HEADERS += MAX.h
 HEADERS += RSIUtils.h
 HEADERS += STOCHUtils.h
-HEADERS += MININDEX.h
-HEADERS += MAXINDEX.h
 
 
 SOURCES += Setting.cpp
@@ -101,7 +98,6 @@ SOURCES += Config.cpp
 SOURCES += Plot.cpp
 SOURCES += DatePlot.cpp
 SOURCES += ScalePlot.cpp
-SOURCES += IndicatorPlot.cpp
 SOURCES += Setup.cpp
 SOURCES += ExScript.cpp
 SOURCES += Indicator.cpp
@@ -166,8 +162,6 @@ SOURCES += MIN.cpp
 SOURCES += MAX.cpp
 SOURCES += RSIUtils.cpp
 SOURCES += STOCHUtils.cpp
-SOURCES += MININDEX.cpp
-SOURCES += MAXINDEX.cpp
 
 
 

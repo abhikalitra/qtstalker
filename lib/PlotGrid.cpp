@@ -26,47 +26,41 @@
 
 PlotGrid::PlotGrid ()
 {
-  gridColor.setNamedColor("#626262");
-  gridFlag = TRUE;
-}
-
-void PlotGrid::draw (PlotData &pd)
-{
-  if (gridFlag == FALSE)
-    return;
-
-  drawXGrid(pd);
-  drawYGrid(pd);
+  _gridColor.setNamedColor("#626262");
+  _gridFlag = TRUE;
 }
 
 void PlotGrid::setGridColor (QColor &d)
 {
-  gridColor = d;
+  _gridColor = d;
 }
 
 void PlotGrid::setGridFlag (int d)
 {
-  gridFlag = d;
+  _gridFlag = d;
 }
 
-void PlotGrid::setXGrid (QVector<int> &d)
+void PlotGrid::setXGrid (QList<int> &d)
 {
-  xGrid = d;
+  _xGrid = d;
 }
 
 void PlotGrid::drawXGrid (PlotData &pd)
 {
+  if (_gridFlag == FALSE)
+    return;
+
   QPainter painter;
   painter.begin(&pd.buffer);
-  painter.setPen(QPen(gridColor, 1, Qt::DotLine));
+  painter.setPen(QPen(_gridColor, 1, Qt::DotLine));
 
   int loop;
-  for (loop = 0; loop < (int) xGrid.size(); loop++)
+  for (loop = 0; loop < (int) _xGrid.size(); loop++)
   {
-    if (xGrid[loop] >= pd.startIndex)
+    if (_xGrid.at(loop) >= pd.startIndex)
     {
-      int x = pd.startX + (xGrid[loop] * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
-      painter.drawLine (x, 0, x, pd.buffer.height());
+      int x = pd.startX + (_xGrid.at(loop) * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
+      painter.drawLine (x, 0, x, pd.buffer.height() - pd.dateHeight);
     }
   }
 
@@ -75,18 +69,21 @@ void PlotGrid::drawXGrid (PlotData &pd)
 
 void PlotGrid::drawYGrid (PlotData &pd)
 {
+  if (_gridFlag == FALSE)
+    return;
+
   QPainter painter;
   painter.begin(&pd.buffer);
-  painter.setPen(QPen(gridColor, 1, Qt::DotLine));
+  painter.setPen(QPen(_gridColor, 1, Qt::DotLine));
 
-  QVector<double> scaleArray;
-  pd.scaler.getScaleArray(scaleArray);
+  QList<double> scaleArray;
+  pd.scaler.scaleArray(scaleArray);
 
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = pd.scaler.convertToY(scaleArray[loop]);
-    painter.drawLine (pd.startX, y, pd.buffer.width(), y);
+    int y = pd.scaler.convertToY(scaleArray.at(loop));
+    painter.drawLine (pd.startX, y, pd.buffer.width() - pd.scaleWidth, y);
   }
 
   painter.end();

@@ -407,7 +407,17 @@
 
            Fixed bug that only read 1 command line switch at a time.
 
+20100510:  Cleaning up Plot code to increase speed. Have been seeing some odd slowdowns when using a
+           non-accelerated X11 driver in various linux distributions.
 
+           Changed scale value markers in the plots to a more pleasing shape?
+
+           Scripting interface has some issues still needed to be fixed. Very unstable right now as I work
+           on some big changes. Working on a vector based plotting structure. This will simplify and unify
+           the scripting and non-scripted interfaces. Instead of one big massive change to everything, I have
+           opted to make the changes incrementally so that bugs can be found and fixed faster.
+
+           
 
 
 

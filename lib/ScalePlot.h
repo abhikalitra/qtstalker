@@ -22,59 +22,17 @@
 #ifndef SCALEPLOT_HPP
 #define SCALEPLOT_HPP
 
-#include <QWidget>
-#include <QPixmap>
-#include <QColor>
-#include <QFont>
-#include <QPaintEvent>
-#include <QResizeEvent>
 #include <QList>
 
-#include "Scaler.h"
+#include "PlotData.h"
 #include "Setting.h"
 
-class ScalePlot : public QWidget
+class ScalePlot
 {
-  Q_OBJECT
-
   public:
-    ScalePlot (QWidget *);
-    void clear ();
-    void setScalePoints (QList<Setting> &);
-    void setScaleWidth (int);
-    void setLogScale (bool);
-    void setScaleToScreen (bool);
-    void setScaler (Scaler &);
-    void drawPoints (QPainter &);
-
-  public slots:
-    void draw();
-    void drawRefresh();
-    void setBackgroundColor (QColor &);
-    void setBorderColor (QColor &);
-    void setPlotFont (QFont &);
-    void slotScaleToScreenChanged (bool);
-    void slotLogScaleChanged (bool);
-    void drawScale ();
-    void setMainFlag (bool);
-
-  protected:
-    virtual void paintEvent (QPaintEvent *);
-    virtual void resizeEvent (QResizeEvent *);
-
-  private:    
-    QFont plotFont;
-    QPixmap buffer;
-    QColor backgroundColor;
-    QColor borderColor;
-    bool scaleToScreen;
-    bool logScale;
-    int scaleWidth;
-    double close;
-    Scaler scaler;
-    bool mainFlag;
-    bool activeFlag;
-    QList<Setting> points;
+    ScalePlot ();
+    void draw (PlotData &);
+    void drawPoints (PlotData &, QList<Setting> &);
 };
 
 #endif

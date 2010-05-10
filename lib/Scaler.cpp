@@ -27,133 +27,133 @@
 
 Scaler::Scaler ()
 {
-  height = 0;
-  logScale = 0;
-  scaleHigh = 0;
-  scaleLow = 0;
-  logScaleHigh = 0;
-  logRange = 0;
-  range = 0;
-  scaler = 0;
+  _height = 0;
+  _logScale = 0;
+  _scaleHigh = 0;
+  _scaleLow = 0;
+  _logScaleHigh = 0;
+  _logRange = 0;
+  _range = 0;
+  _scaler = 0;
 
-  scaleList.append(".00001");
-  scaleList.append(".00002");
-  scaleList.append(".00005");
-  scaleList.append(".0001");
-  scaleList.append(".0002");
-  scaleList.append(".0005");
-  scaleList.append(".001");
-  scaleList.append(".002");
-  scaleList.append(".005");
-  scaleList.append(".01");
-  scaleList.append(".02");
-  scaleList.append(".05");
-  scaleList.append(".1");
-  scaleList.append(".2");
-  scaleList.append(".5");
-  scaleList.append("1");
-  scaleList.append("2");
-  scaleList.append("5");
-  scaleList.append("10");
-  scaleList.append("25");
-  scaleList.append("50");
-  scaleList.append("100");
-  scaleList.append("250");
-  scaleList.append("500");
-  scaleList.append("1000");
-  scaleList.append("2500");
-  scaleList.append("5000");
-  scaleList.append("10000");
-  scaleList.append("25000");
-  scaleList.append("50000");
-  scaleList.append("100000");
-  scaleList.append("250000");
-  scaleList.append("500000");
-  scaleList.append("1000000");
-  scaleList.append("2500000");
-  scaleList.append("5000000");
-  scaleList.append("10000000");
-  scaleList.append("25000000");
-  scaleList.append("50000000");
-  scaleList.append("100000000");
-  scaleList.append("250000000");
-  scaleList.append("500000000");
-  scaleList.append("1000000000");
-  scaleList.append("2500000000");
-  scaleList.append("5000000000");
-  scaleList.append("10000000000");
-  scaleList.append("25000000000");
-  scaleList.append("50000000000");
-  scaleList.append("100000000000");
-  scaleList.append("250000000000");
-  scaleList.append("500000000000");
+  _scaleList.append(".00001");
+  _scaleList.append(".00002");
+  _scaleList.append(".00005");
+  _scaleList.append(".0001");
+  _scaleList.append(".0002");
+  _scaleList.append(".0005");
+  _scaleList.append(".001");
+  _scaleList.append(".002");
+  _scaleList.append(".005");
+  _scaleList.append(".01");
+  _scaleList.append(".02");
+  _scaleList.append(".05");
+  _scaleList.append(".1");
+  _scaleList.append(".2");
+  _scaleList.append(".5");
+  _scaleList.append("1");
+  _scaleList.append("2");
+  _scaleList.append("5");
+  _scaleList.append("10");
+  _scaleList.append("25");
+  _scaleList.append("50");
+  _scaleList.append("100");
+  _scaleList.append("250");
+  _scaleList.append("500");
+  _scaleList.append("1000");
+  _scaleList.append("2500");
+  _scaleList.append("5000");
+  _scaleList.append("10000");
+  _scaleList.append("25000");
+  _scaleList.append("50000");
+  _scaleList.append("100000");
+  _scaleList.append("250000");
+  _scaleList.append("500000");
+  _scaleList.append("1000000");
+  _scaleList.append("2500000");
+  _scaleList.append("5000000");
+  _scaleList.append("10000000");
+  _scaleList.append("25000000");
+  _scaleList.append("50000000");
+  _scaleList.append("100000000");
+  _scaleList.append("250000000");
+  _scaleList.append("500000000");
+  _scaleList.append("1000000000");
+  _scaleList.append("2500000000");
+  _scaleList.append("5000000000");
+  _scaleList.append("10000000000");
+  _scaleList.append("25000000000");
+  _scaleList.append("50000000000");
+  _scaleList.append("100000000000");
+  _scaleList.append("250000000000");
+  _scaleList.append("500000000000");
 }
 
 void Scaler::set (int ht, double h, double l, double lh, double lr, bool lf)
 {
-  height = 0;
-  logScale = 0;
-  scaleHigh = 0;
-  scaleLow = 0;
-  logScaleHigh = 0;
-  logRange = 0;
-  range = 0;
-  scaler = 0;
+  _height = 0;
+  _logScale = 0;
+  _scaleHigh = 0;
+  _scaleLow = 0;
+  _logScaleHigh = 0;
+  _logRange = 0;
+  _range = 0;
+  _scaler = 0;
 
   if (h - l == 0)
     return;
     
-  height = ht;
-  logScale = lf;
-  scaleHigh = h;
-  scaleLow = l;
-  logScaleHigh = lh;
-  logRange = lr;
+  _height = ht;
+  _logScale = lf;
+  _scaleHigh = h;
+  _scaleLow = l;
+  _logScaleHigh = lh;
+  _logRange = lr;
 
-  range = scaleHigh - scaleLow;
-  scaler = height / range;
+  _range = _scaleHigh - _scaleLow;
+  _scaler = _height / _range;
 }
 
 int Scaler::convertToY (double val)
 {
-  if (logScale)
+  if (_logScale)
   {
     if (val <= 0.0)
-      return height;
+      return _height;
     else
-      return (int) (height * (logScaleHigh - log(val)) / logRange);
+      return (int) (_height * (_logScaleHigh - log(val)) / _logRange);
   }
 
-  double t = val - scaleLow;
-  int y = (int) (t * scaler);
-  y = height - y;
-  if (y > height)
-    y = height;
+  double t = val - _scaleLow;
+  int y = (int) (t * _scaler);
+  y = _height - y;
+  if (y > _height)
+    y = _height;
   return y;
 }
 
 double Scaler::convertToVal (int y)
 {
-  if (logScale)
+  if (_logScale)
   {
-    if (y >= height)
-      return scaleLow;
+    if (y >= _height)
+      return _scaleLow;
     else
-      return exp(logScaleHigh - ((y * logRange) / height));
+      return exp(_logScaleHigh - ((y * _logRange) / _height));
   }
 
-  if (height == 0)
+  if (_height == 0)
     return 0;
     
-  int p = height - y;
-  double val = scaleLow + (p / scaler) ;
+  int p = _height - y;
+  double val = _scaleLow + (p / _scaler) ;
   return val;
 }
 
-void Scaler::getScaleArray (QVector<double> &scaleArray)
+void Scaler::scaleArray (QList<double> &scaleArray)
 {
   int ticks;
-  for (ticks = 2; (ticks * 15) < height; ticks++)
+  for (ticks = 2; (ticks * 15) < _height; ticks++)
     ;
   ticks--;
   if (ticks > 10)
@@ -161,59 +161,49 @@ void Scaler::getScaleArray (QVector<double> &scaleArray)
     
   double interval = 0;
   int loop;
-  for (loop = 0; loop < (int) scaleList.count(); loop++)
+  for (loop = 0; loop < (int) _scaleList.count(); loop++)
   {
-    interval = scaleList[loop].toDouble();
-    if ((range / interval) < ticks)
+    interval = _scaleList.at(loop).toDouble();
+    if ((_range / interval) < ticks)
       break;
   }
 
-  scaleArray.resize(20);
-
-  loop = 0;
   double t = 0 - (ticks * interval);
   
   if (interval > 0)
   {
-    while (t <= scaleHigh)
+    while (t <= _scaleHigh)
     {
-      t = t + interval;
+      t += interval;
 
-      if (t >= scaleLow)
-      {
-        scaleArray[loop] = t;
-        loop++;
-      }
+      if (t >= _scaleLow)
+        scaleArray.append(t);
     }
   }
-
-  scaleArray.resize(loop);
 }
 
-double Scaler::getLogScaleHigh ()
+double Scaler::logScaleHigh ()
 {
-  return logScaleHigh;
+  return _logScaleHigh;
 }
 
-double Scaler::getLogRange ()
+double Scaler::logRange ()
 {
-  return logRange;
+  return _logRange;
 }
 
-int Scaler::getHeight ()
+int Scaler::height ()
 {
-  return height;
+  return _height;
 }
 
-bool Scaler::getLogFlag ()
+bool Scaler::logFlag ()
 {
-  return logScale;
+  return _logScale;
 }
 
-double Scaler::getLow ()
+double Scaler::low ()
 {
-  return scaleLow;
+  return _scaleLow;
 }
-
-
 
