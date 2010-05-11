@@ -455,7 +455,7 @@ void QtstalkerApp::slotQuit()
 void QtstalkerApp::slotAbout()
 {
   // display the about dialog
-  QString versionString = "Qtstalker\nVersion 0.37-dev (working title)\nBuilt using Qt ";
+  QString versionString = "Qtstalker version 0.37-dev (working title)\nBuilt using Qt ";
   versionString += QT_VERSION_STR;
   versionString += "\n(C) 2001-2010 by Stefan Stratigakos\nqtstalker.sourceforge.net";
   versionString += "\nQtstalker is licensed with GNU General Public License (GPL) version 2.";
