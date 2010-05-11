@@ -27,74 +27,8 @@
       <file>qtstalker.png</file>
       <file>screen-1.png</file>
       <file>screen-2.png</file>
-      <file>AD.html</file>
-      <file>ADX.html</file>
-      <file>APIDateFormat.html</file>
-      <file>APIGroups.html</file>
-      <file>APIIndicators.html</file>
-      <file>APIPlotting.html</file>
-      <file>APISymbols.html</file>
-      <file>APIUtilities.html</file>
-      <file>AROON.html</file>
-      <file>ATR.html</file>
-      <file>BARS.html</file>
-      <file>BBANDS.html</file>
-      <file>BETA.html</file>
-      <file>BOP.html</file>
-      <file>CANDLES.html</file>
-      <file>CCI.html</file>
-      <file>CLI.html</file>
-      <file>CMO.html</file>
-      <file>COLOR.html</file>
-      <file>COMPARE.html</file>
-      <file>CORREL.html</file>
-      <file>FI.html</file>
-      <file>Futures.html</file>
-      <file>HT.html</file>
-      <file>InputTypes.html</file>
-      <file>LINEARREG.html</file>
-      <file>LMS.html</file>
-      <file>MA.html</file>
-      <file>MACD.html</file>
-      <file>MAMA.html</file>
-      <file>MATH1.html</file>
-      <file>MATypes.html</file>
-      <file>MAVP.html</file>
-      <file>MFI.html</file>
-      <file>MOM.html</file>
-      <file>Operators.html</file>
-      <file>PO.html</file>
-      <file>PP.html</file>
-      <file>RANGE.html</file>
-      <file>REF.html</file>
-      <file>ROC.html</file>
-      <file>RSI.html</file>
-      <file>SAR.html</file>
-      <file>STOCH.html</file>
-      <file>STOCHRSI.html</file>
-      <file>SZ.html</file>
-      <file>Stock.html</file>
-      <file>T3.html</file>
-      <file>THERM.html</file>
-      <file>TRIX.html</file>
-      <file>ULTOSC.html</file>
-      <file>VAR.html</file>
-      <file>VFI.html</file>
-      <file>VIDYA.html</file>
-      <file>VOL.html</file>
-      <file>WILLR.html</file>
-      <file>chartobjects.html</file>
-      <file>cus.html</file>
-      <file>dev.html</file>
-      <file>doc-template.html</file>
-      <file>docs.html</file>
-      <file>faq.html</file>
-      <file>index.html</file>
-      <file>indicatorreference.html</file>
-      <file>install.html</file>
-      <file>main.html</file>
-      <file>quick.html</file>
-      <file>toc.html</file>
+<!-- Note that no files are yet excluded, so wildcard will suffice. -->
+      <file>*.html</file>
     </files>
   </filterSection>
 </QtHelpProject>
