@@ -28,7 +28,7 @@ class OHLC : public PlotPlugin
 {
   public:
     OHLC ();
-    void draw (PlotLine *, PlotData &);
+    void draw (PlotLine *, PlotData &, Scaler &);
 };
 
 #endif

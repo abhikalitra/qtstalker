@@ -20,20 +20,16 @@
  */
 
 #include "ADX.h"
-//#include "ta_libc.h"
 #include "MAUtils.h"
 #include "DIV.h"
 #include "TR.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
 
 ADX::ADX ()
 {
-//  TA_RetCode rc = TA_Initialize();
-//  if (rc != TA_SUCCESS)
-//    qDebug("TALIB::setDefaults:error on TA_Initialize");
-
   indicator = "ADX";
 
   settings.setData(ADXColor, "blue");
@@ -332,67 +328,6 @@ PlotLine * ADX::getDM (BarData *data, int flag)
   return line;
 }
 
-/*
-PlotLine * ADX::getLine (BarData *data, int period, int method)
-{
-  int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_SUCCESS;
-  switch (method)
-  {
-    case 0:
-      rc = TA_MINUS_DI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 1:
-      rc = TA_PLUS_DI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 2:
-      rc = TA_ADX(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 3:
-      rc = TA_ADXR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 4:
-      rc = TA_DX(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 5:
-      rc = TA_MINUS_DM(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 6:
-      rc = TA_PLUS_DM(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  return line;
-}
-*/
-
 int ADX::dialog (int)
 {
   int page = 0;
@@ -411,6 +346,10 @@ int ADX::dialog (int)
 
   settings.getData(MDIColor, d);
   dialog->addColorItem(MDIColor, page, QObject::tr("Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(MDIPlot, d);
   dialog->addComboItem(MDIPlot, page, QObject::tr("Plot"), plotList, d);

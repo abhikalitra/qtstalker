@@ -44,8 +44,7 @@
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
-  _plotData.startX = 2;
-  _plotData.pixelspace = 0;
+  _plotData.barSpacing = 0;
   _plotData.startIndex = 0;
   _plotData.backgroundColor.setNamedColor("black");
   _plotData.borderColor.setNamedColor("white");
@@ -59,6 +58,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _plotData.interval = Bar::DailyBar;
   _plotData.dateHeight = 30;
   _plotData.scaleWidth = 70;
+  _plotData.barWidth = 5;
   
   _mouseFlag = None;
   _saveMouseFlag = None;
@@ -103,27 +103,38 @@ void Plot::draw ()
 
   _plotData.buffer.fill(_plotData.backgroundColor);
 
-  if (_plotData.dateBars.count())
+  if (_dateBars.count())
   {
+    // set the current scale
     setScale();
 
-    _datePlot.draw(_plotData);
-    
-    _scalePlot.draw(_plotData);
-    
-    _plotData.infoIndex = convertXToDataIndex((_plotData.buffer.width() - _plotData.scaleWidth)- _plotData.pixelspace);
-    PlotInfo info;
-    QList<Setting> points;
-    info.getPointInfo(_plotData, points, _indicator);
-    _scalePlot.drawPoints(_plotData, points);
+    // calculate the right most bar on screen
+    _plotData.infoIndex = convertXToDataIndex((_plotData.buffer.width() - _plotData.scaleWidth));
 
+    // draw the date section
+    _datePlot.draw(_plotData, _dateBars);
+
+    // draw the grid
     _grid.drawXGrid(_plotData);
-    _grid.drawYGrid(_plotData);
-    
+    _grid.drawYGrid(_plotData, _scaler);
+
+    // draw plots
     drawLines();
+
+    // draw chart objects
     drawObjects();
 
-    info.drawInfo(_plotData, _indicator);
+    // draw the top left indicator stats of the right most bar on screen
+    PlotInfo info;
+    info.drawInfo(_plotData, _indicator, _dateBars);
+
+    // draw the scale
+    _scalePlot.draw(_plotData, _scaler);
+
+    // draw the scale markers
+    QList<Setting> points;
+    info.getPointInfo(_plotData, points, _indicator, _dateBars);
+    _scalePlot.drawPoints(_plotData, points, _scaler);
   }
 
   update();
@@ -152,15 +163,15 @@ void Plot::drawLines ()
 
     QString s;
     line->getPlugin(s);
-    PlotPlugin *plug = fac.getPlot(s);
+    PlotPlugin *plug = fac.plot(s);
     if (! plug)
     {
       qDebug() << "Plot::drawLines: error loading plugin" << s;
       continue;
     }
 
-    _plotData.pos = line->count() - _plotData.dateBars.count() + _plotData.startIndex;
-    plug->draw(line, _plotData);
+    _plotData.pos = line->count() - _dateBars.count() + _plotData.startIndex;
+    plug->draw(line, _plotData, _scaler);
     delete plug;
   }
 }
@@ -176,7 +187,7 @@ void Plot::paintEvent (QPaintEvent *event)
   
   if (_mouseFlag == CursorCrosshair)
   {
-    int y = _plotData.scaler.convertToY(_plotData.y1);
+    int y = _scaler.convertToY(_plotData.y1);
     painter.setPen(QPen(_plotData.borderColor, 1, Qt::DotLine));
     painter.drawLine (0, y, _plotData.buffer.width(), y);
     painter.drawLine (_plotData.x, 0, _plotData.x, _plotData.buffer.height());
@@ -232,7 +243,7 @@ void Plot::setScale ()
 {
   double tscaleHigh = -99999999;
   double tscaleLow = 99999999;
-  int width = _plotData.buffer.width() / _plotData.pixelspace;
+  int width = _plotData.buffer.width() / _plotData.barSpacing;
 
   QList<PlotLine *> plotList;
   _indicator.getLines(plotList);
@@ -255,7 +266,7 @@ void Plot::setScale ()
     }
     else
     {
-      int start = line->count() - _plotData.dateBars.count() + _plotData.startIndex;
+      int start = line->count() - _dateBars.count() + _plotData.startIndex;
       int end = width + start;
       if (start < 0)
         start = 0;
@@ -276,12 +287,12 @@ void Plot::setScale ()
   int end = width + _plotData.startIndex;
   if (start < 0)
     start = 0;
-  if (end > _plotData.dateBars.count())
-    end = _plotData.dateBars.count();
+  if (end > _dateBars.count())
+    end = _dateBars.count();
   QDateTime sd;
-  _plotData.dateBars.getDate(start, sd);
+  _dateBars.getDate(start, sd);
   QDateTime ed;
-  _plotData.dateBars.getDate(end - 1, ed);
+  _dateBars.getDate(end - 1, ed);
 
   QHash<QString, COPlugin *> coList;
   _indicator.getChartObjects(coList);
@@ -292,7 +303,7 @@ void Plot::setScale ()
     COPlugin *co = it.value();
     if (_plotData.scaleToScreen)
     {
-      if (! co->inDateRange(_plotData, sd, ed))
+      if (! co->inDateRange(sd, ed, _dateBars))
         continue;
     }
       
@@ -322,7 +333,7 @@ void Plot::setScale ()
     tlogRange = tlogScaleHigh - tlogScaleLow;
   }
 
-  _plotData.scaler.set(_plotData.buffer.height() - _plotData.dateHeight,
+  _scaler.set(_plotData.buffer.height() - _plotData.dateHeight,
                        tscaleHigh,
                        tscaleLow,
                        tlogScaleHigh,
@@ -336,7 +347,7 @@ void Plot::setScale ()
 
 void Plot::mousePressEvent (QMouseEvent *event)
 {
-  if (! _plotData.dateBars.count()  || event->button() != Qt::LeftButton)
+  if (! _dateBars.count()  || event->button() != Qt::LeftButton)
   {
     QWidget::mousePressEvent(event);
     return;
@@ -380,7 +391,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	
         int i = convertXToDataIndex(event->x());
         PlotInfo info;
-        Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
+        Setting *mess = info.getCursorInfo(i, event->y(), _dateBars, _scaler);
         if (mess)
           emit signalInfoMessage(mess);
       }
@@ -398,7 +409,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	
         int i = convertXToDataIndex(event->x());
         PlotInfo info;
-        Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
+        Setting *mess = info.getCursorInfo(i, event->y(), _dateBars, _scaler);
         if (mess)
           emit signalInfoMessage(mess);
       }
@@ -416,12 +427,12 @@ void Plot::mousePressEvent (QMouseEvent *event)
       if (! _rubberBand)
 	return;
       
-      if (_rubberBand->width() < _plotData.pixelspace)
+      if (_rubberBand->width() < _plotData.barSpacing)
         return;
       
       // calculate new pixel spacing and position here
       int x = convertXToDataIndex(_mouseOrigin.x());
-      int ti = _rubberBand->width() / _plotData.pixelspace;
+      int ti = _rubberBand->width() / _plotData.barSpacing;
       ti = this->width() / ti;
       
       delete _rubberBand;
@@ -429,7 +440,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
       
       unsetCursor();
       
-      if (ti < _plotData.pixelspace)
+      if (ti < _plotData.barSpacing)
         return;
       
       emit signalPixelspaceChanged(x, ti);
@@ -468,7 +479,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
 void Plot::mouseMoveEvent (QMouseEvent *event)
 {
   // ignore moves above the top of the chart - we get draw errors if we don't
-  if (! _plotData.dateBars.count() || event->y() <= 0)
+  if (! _dateBars.count() || event->y() <= 0)
   {
     QWidget::mouseMoveEvent(event);
     return;
@@ -484,7 +495,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       
       int i = convertXToDataIndex(event->x());
       PlotInfo info;
-      Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
+      Setting *mess = info.getCursorInfo(i, event->y(), _dateBars, _scaler);
       if (mess)
         emit signalInfoMessage(mess);
 /*      
@@ -492,8 +503,8 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
 
       getXY(event->x(), event->y());
 
-      int y = _plotData.scaler.convertToY(_plotData.y1);
-      int x = _plotData.startX + (_plotData.dateBars.getX(_plotData.x1) * _plotData.pixelspace) - (_plotData.startIndex * _plotData.pixelspace);
+      int y = _scaler.convertToY(_plotData.y1);
+      int x = _plotData.startX + (_dateBars.getX(_plotData.x1) * _plotData.barSpacing) - (_plotData.startIndex * _plotData.barSpacing);
 
       QPainter painter;
       painter.begin(&_plotData.buffer);
@@ -515,7 +526,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     {
       int i = convertXToDataIndex(event->x());
       PlotInfo info;
-      Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
+      Setting *mess = info.getCursorInfo(i, event->y(), _dateBars, _scaler);
       if (mess)
         emit signalInfoMessage(mess);
       
@@ -565,7 +576,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
 
       PlotInfo info;
       _plotData.infoIndex = convertXToDataIndex(event->x());
-      Setting *mess = info.getInfo(p, _plotData, _indicator);
+      Setting *mess = info.getInfo(p, _plotData, _indicator, _dateBars);
       if (mess)
         emit signalInfoMessage(mess);
       break;
@@ -578,7 +589,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
 
 void Plot::mouseDoubleClickEvent (QMouseEvent *event)
 {
-  if (! _plotData.dateBars.count())
+  if (! _dateBars.count())
   {
     QWidget::mouseDoubleClickEvent(event);
     return;
@@ -588,8 +599,8 @@ void Plot::mouseDoubleClickEvent (QMouseEvent *event)
   {
     case None: // center chart on double click mouse position
     {
-      int center = (_plotData.buffer.width() / _plotData.pixelspace) / 2;
-      int i = event->x() / _plotData.pixelspace;
+      int center = (_plotData.buffer.width() / _plotData.barSpacing) / 2;
+      int i = event->x() / _plotData.barSpacing;
       if (i < center)
         emit signalIndexChanged(_plotData.startIndex - (center - i));
       else
@@ -653,7 +664,7 @@ void Plot::clear ()
 {
   saveChartObjects();
   _indicator.clear();
-  _plotData.dateBars.clear();
+  _dateBars.clear();
 }
 
 void Plot::toggleDate ()
@@ -709,7 +720,7 @@ void Plot::setData (BarData *l)
   if (! l->count())
     return;
 
-  _plotData.dateBars.createDateList(l);
+  _dateBars.createDateList(l);
   
   _exchange = l->getExchange();
   _symbol = l->getSymbol();
@@ -777,7 +788,7 @@ void Plot::setMenuFlag (bool d)
 
 void Plot::setPixelspace (int d)
 {
-  _plotData.pixelspace = d;
+  _plotData.barSpacing = d;
 }
 
 void Plot::setIndex (int d)
@@ -797,7 +808,7 @@ Indicator & Plot::indicator ()
 
 DateBar & Plot::dateBars ()
 {
-  return _plotData.dateBars;
+  return _dateBars;
 }
 
 int Plot::width ()
@@ -814,15 +825,15 @@ void Plot::getXY (int x, int y)
   _plotData.x = x;
   _plotData.y = y;
   int i = convertXToDataIndex(x);
-  _plotData.dateBars.getDate(i, _plotData.x1);
-  _plotData.y1 = _plotData.scaler.convertToVal(y);
+  _dateBars.getDate(i, _plotData.x1);
+  _plotData.y1 = _scaler.convertToVal(y);
 }
 
 int Plot::convertXToDataIndex (int x)
 {
-  int i = (x / _plotData.pixelspace) + _plotData.startIndex;
-  if (i >= (int) _plotData.dateBars.count())
-    i = _plotData.dateBars.count() - 1;
+  int i = (x / _plotData.barSpacing) + _plotData.startIndex;
+  if (i >= (int) _dateBars.count())
+    i = _dateBars.count() - 1;
   if (i < _plotData.startIndex)
     i = _plotData.startIndex;
 
@@ -903,7 +914,7 @@ void Plot::drawObjects ()
   {
     it.next();
     COPlugin *co = it.value();
-    co->draw(_plotData);
+    co->draw(_plotData, _dateBars, _scaler);
   }
 }
 

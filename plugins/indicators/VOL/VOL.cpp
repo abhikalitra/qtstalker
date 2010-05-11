@@ -21,6 +21,7 @@
 
 #include "VOL.h"
 #include "MAUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -155,6 +156,10 @@ int VOL::dialog (int)
 
   settings.getData(NeutralColor, d);
   dialog->addColorItem(NeutralColor, page, QObject::tr("Neutral Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);

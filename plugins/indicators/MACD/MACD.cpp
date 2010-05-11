@@ -21,6 +21,7 @@
 
 #include "MACD.h"
 #include "MAUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -314,6 +315,10 @@ int MACD::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
+  BarData bd;
+  QStringList inputList;
+  bd.getInputFields(inputList);
+
   settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
@@ -337,6 +342,10 @@ int MACD::dialog (int)
 
   settings.getData(MACDColor, d);
   dialog->addColorItem(MACDColor, page, QObject::tr("Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(MACDPlot, d);
   dialog->addComboItem(MACDPlot, page, QObject::tr("Plot"), plotList, d);

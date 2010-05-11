@@ -30,7 +30,7 @@ class Buy : public COPlugin
 {
   public:
     Buy ();
-    void draw (PlotData &);
+    void draw (PlotData &, DateBar &, Scaler &);
     void getInfo (Setting *);
     void dialog ();
     void load (QSqlQuery &);
@@ -40,7 +40,7 @@ class Buy : public COPlugin
     void moving (QDateTime &, double, int);
     void getIcon (QIcon &);
     int getHighLow (double &, double &);
-    int inDateRange (PlotData &, QDateTime &, QDateTime &);
+    int inDateRange (QDateTime &, QDateTime &, DateBar &);
     
   protected:
     QDateTime date;

@@ -28,16 +28,18 @@
 #include "PlotData.h"
 #include "COPlugin.h"
 #include "Indicator.h"
+#include "DateBar.h"
+#include "Scaler.h"
 
 class PlotInfo
 {
   public:
     PlotInfo ();
-    Setting * getInfo (QPoint &, PlotData &, Indicator &);
+    Setting * getInfo (QPoint &, PlotData &, Indicator &, DateBar &);
     Setting * getCOInfo (COPlugin *);
-    void drawInfo (PlotData &, Indicator &);
-    void getPointInfo (PlotData &, QList<Setting> &, Indicator &);
-    Setting * getCursorInfo (int i, int y, PlotData &);
+    void drawInfo (PlotData &, Indicator &, DateBar &);
+    void getPointInfo (PlotData &, QList<Setting> &, Indicator &, DateBar &);
+    Setting * getCursorInfo (int i, int y, DateBar &, Scaler &);
 };
 
 #endif

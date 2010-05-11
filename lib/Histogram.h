@@ -28,7 +28,7 @@ class Histogram : public PlotPlugin
 {
   public:
     Histogram ();
-    void draw (PlotLine *, PlotData &);
+    void draw (PlotLine *, PlotData &, Scaler &);
 };
 
 #endif

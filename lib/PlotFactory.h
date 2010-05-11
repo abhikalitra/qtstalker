@@ -43,8 +43,11 @@ class PlotFactory
     };
 
     PlotFactory ();
-    PlotPlugin * getPlot (QString &plot);
-    void getList (QStringList &);
+    PlotPlugin * plot (QString &plot);
+    void list (QStringList &, int);
+
+  private:
+    QStringList _plotList;
 };
 
 #endif

@@ -28,7 +28,7 @@ class Dash : public PlotPlugin
 {
   public:
     Dash ();
-    void draw (PlotLine *, PlotData &);
+    void draw (PlotLine *, PlotData &, Scaler &);
 };
 
 #endif

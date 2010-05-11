@@ -28,7 +28,7 @@ class Candle : public PlotPlugin
 {
   public:
     Candle ();
-    void draw (PlotLine *, PlotData &);
+    void draw (PlotLine *, PlotData &, Scaler &);
 };
 
 #endif

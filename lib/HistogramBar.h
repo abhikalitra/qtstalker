@@ -28,7 +28,7 @@ class HistogramBar : public PlotPlugin
 {
   public:
     HistogramBar ();
-    void draw (PlotLine *, PlotData &);
+    void draw (PlotLine *, PlotData &, Scaler &);
 };
 
 #endif

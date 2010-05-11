@@ -28,7 +28,7 @@ class Retracement : public COPlugin
 {
   public:
     Retracement ();
-    void draw (PlotData &);
+    void draw (PlotData &, DateBar &, Scaler &);
     void getInfo (Setting *);
     void dialog ();
     void load (QSqlQuery &q);
@@ -38,7 +38,7 @@ class Retracement : public COPlugin
     int create3 (QDateTime &, double);
     void moving (QDateTime &, double, int);
     void getIcon (QIcon &);
-    int inDateRange (PlotData &, QDateTime &, QDateTime &);
+    int inDateRange (QDateTime &, QDateTime &, DateBar &);
     int getHighLow (double &, double &);
     
   protected:

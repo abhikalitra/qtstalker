@@ -28,7 +28,7 @@ class Horizontal : public PlotPlugin
 {
   public:
     Horizontal ();
-    void draw (PlotLine *, PlotData &);
+    void draw (PlotLine *, PlotData &, Scaler &);
 };
 
 #endif

@@ -39,7 +39,7 @@ COPlugin::~COPlugin ()
 }
 
 // virtual
-void COPlugin::draw (PlotData &)
+void COPlugin::draw (PlotData &, DateBar &, Scaler &)
 {
 }
 
@@ -97,7 +97,7 @@ void COPlugin::getIcon (QIcon &)
 }
 
 // virtual
-int COPlugin::inDateRange (PlotData &, QDateTime &, QDateTime &)
+int COPlugin::inDateRange (QDateTime &, QDateTime &, DateBar &)
 {
   return 0;
 }

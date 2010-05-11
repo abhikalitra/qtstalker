@@ -22,6 +22,7 @@
 #include "STOCHS.h"
 #include "MAUtils.h"
 #include "STOCHUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -229,6 +230,10 @@ int STOCHS::dialog (int)
 
   settings.getData(SlowKColor, d);
   dialog->addColorItem(SlowKColor, page, QObject::tr("Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(SlowKPlot, d);
   dialog->addComboItem(SlowKPlot, page, QObject::tr("Plot"), plotList, d);

@@ -30,7 +30,7 @@ class TLine : public COPlugin
 {
   public:
     TLine ();
-    void draw (PlotData &);
+    void draw (PlotData &, DateBar &, Scaler &);
     void getInfo (Setting *);
     void dialog ();
     void load (QSqlQuery &q);
@@ -41,7 +41,7 @@ class TLine : public COPlugin
     void moving (QDateTime &, double, int);
     void getIcon (QIcon &);
     int getHighLow (double &, double &);
-    int inDateRange (PlotData &, QDateTime &, QDateTime &);
+    int inDateRange (QDateTime &, QDateTime &, DateBar &);
 
   protected:
     QStringList fieldList;

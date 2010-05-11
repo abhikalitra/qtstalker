@@ -30,7 +30,7 @@ PlotPlugin::~PlotPlugin ()
 }
 
 // virtual function
-void PlotPlugin::draw (PlotLine *, PlotData &)
+void PlotPlugin::draw (PlotLine *, PlotData &, Scaler &)
 {
 }
 

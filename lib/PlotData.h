@@ -28,16 +28,11 @@
 #include <QDateTime>
 #include <QPixmap>
 
-#include "Scaler.h"
-#include "DateBar.h"
-
 struct PlotData
 {
-  Scaler scaler;
-  DateBar dateBars;
   QPixmap buffer;
-  int pixelspace;
-  int startX;
+  int barSpacing;
+//  int startX;
   int startIndex;
   int scaleToScreen;
   int infoIndex; // calculated position for info 
@@ -48,6 +43,7 @@ struct PlotData
   int interval;
   int dateHeight;
   int scaleWidth;
+  int barWidth;
   double y1; // scaler y position
   QFont plotFont;
   QColor backgroundColor;

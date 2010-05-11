@@ -26,6 +26,7 @@
 #include <QList>
 
 #include "PlotData.h"
+#include "Scaler.h"
 
 class PlotGrid
 {
@@ -35,7 +36,7 @@ class PlotGrid
     void setXGrid (QList<int> &);
     void setGridColor (QColor &);
     void drawXGrid (PlotData &);
-    void drawYGrid (PlotData &);
+    void drawYGrid (PlotData &, Scaler &);
 
   private:
     QColor _gridColor;

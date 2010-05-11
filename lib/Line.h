@@ -28,7 +28,7 @@ class Line : public PlotPlugin
 {
   public:
     Line ();
-    void draw (PlotLine *, PlotData &);
+    void draw (PlotLine *, PlotData &, Scaler &);
 };
 
 #endif

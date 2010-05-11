@@ -31,6 +31,7 @@
 
 #include "THERM.h"
 #include "MAUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -70,7 +71,7 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
-  s = "HistogramBar";
+  s = "Histogram Bar";
   line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
@@ -257,6 +258,10 @@ int THERM::dialog (int)
 
   settings.getData(MAColor, d);
   dialog->addColorItem(MAColor, page, QObject::tr("Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(MAPlot, d);
   dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);

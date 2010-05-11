@@ -36,16 +36,16 @@ VLine::VLine ()
   color.setNamedColor("red");
 }
 
-void VLine::draw (PlotData &pd)
+void VLine::draw (PlotData &pd, DateBar &dateBars, Scaler &)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int x2 = pd.dateBars.getX(date);
+  int x2 = dateBars.getX(date);
   if (x2 == -1)
     return;
 
-  int x = pd.startX + (x2 * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
+  int x = (x2 * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
   if (x == -1)
     return;
 
@@ -199,7 +199,7 @@ int VLine::getHighLow (double &, double &)
   return 1;
 }
 
-int VLine::inDateRange (PlotData &, QDateTime &startDate, QDateTime &endDate)
+int VLine::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar &)
 {
   int rc = FALSE;
   if (date >= startDate && date <= endDate)

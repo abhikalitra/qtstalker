@@ -25,6 +25,7 @@
 #include "STDDEV.h"
 #include "ADD.h"
 #include "SUB.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 #include <QColor>
@@ -408,6 +409,10 @@ int BBANDS::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
+  BarData bd;
+  QStringList inputList;
+  bd.getInputFields(inputList);
+  
   settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
@@ -423,6 +428,10 @@ int BBANDS::dialog (int)
   
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   page++;
   k = QObject::tr("Upper");

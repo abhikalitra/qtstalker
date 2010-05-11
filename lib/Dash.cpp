@@ -25,13 +25,13 @@ Dash::Dash ()
 {
 }
 
-void Dash::draw (PlotLine *line, PlotData &pd)
+void Dash::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
   int x = -1;
-  int x2 = pd.startX;
+  int x2 = 0;
   int y = -1;
   int y2 = -1;
   int loop = pd.pos;
@@ -39,12 +39,12 @@ void Dash::draw (PlotLine *line, PlotData &pd)
   Scaler scale;
   if (line->getScaleFlag())
   {
-    scale.set(pd.scaler.height(),
+    scale.set(scaler.height(),
   	      line->getHigh(),
 	      line->getLow(),
-	      pd.scaler.logScaleHigh(),
-	      pd.scaler.logRange(),
-	      pd.scaler.logFlag());
+	      scaler.logScaleHigh(),
+	      scaler.logRange(),
+	      scaler.logFlag());
   }
 
   while ((x2 < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
@@ -57,7 +57,7 @@ void Dash::draw (PlotLine *line, PlotData &pd)
       if (line->getScaleFlag())
         y2 = scale.convertToY(d);
       else
-        y2 = pd.scaler.convertToY(d);
+        y2 = scaler.convertToY(d);
 
       if (y != -1)
       {
@@ -73,7 +73,7 @@ void Dash::draw (PlotLine *line, PlotData &pd)
       y = y2;
     }
 
-    x2 = x2 + pd.pixelspace;
+    x2 += pd.barSpacing;
     loop++;
   }
 

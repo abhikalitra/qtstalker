@@ -20,7 +20,7 @@
  */
 
 #include "AROON.h"
-//#include "ta_libc.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -61,7 +61,6 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
     case 1:
     {
       PlotLine *line = getOSC(data, period);
-//      PlotLine *line = getAROON(data, period, 2);
       if (! line)
         return 1;
 
@@ -78,7 +77,6 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
     {
       // get arron up line
       PlotLine *up = getUP(data, period);
-//      PlotLine *up = getAROON(data, period, 0);
       if (! up)
         return 1;
 
@@ -91,7 +89,6 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
 
       // get aroon down line
       PlotLine *down = getDOWN(data, period);
-//      PlotLine *down = getAROON(data, period, 1);
       if (! down)
       {
         delete up;
@@ -354,55 +351,6 @@ PlotLine * AROON::getOSC (BarData *data, int period)
   return line;
 }
 
-/*
-PlotLine * AROON::getAROON (BarData *data, int period, int method)
-{
-  int size = data->count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-  }
-
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_RetCode rc = TA_SUCCESS;
-  switch (method)
-  {
-    case 0:
-      rc = TA_AROON(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0], &out2[0]);
-      break;
-    case 1:
-      // we switch out with out2 only here
-      rc = TA_AROON(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out2[0], &out[0]);
-      break;
-    case 2:
-      rc = TA_AROONOSC(0, size - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
-
-  return line;
-}
-*/
-
 int AROON::dialog (int)
 {
   int page = 0;
@@ -427,6 +375,10 @@ int AROON::dialog (int)
 
   settings.getData(DownColor, d);
   dialog->addColorItem(DownColor, page, QObject::tr("Down Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(UpPlot, d);
   dialog->addComboItem(UpPlot, page, QObject::tr("Up Plot"), plotList, d);

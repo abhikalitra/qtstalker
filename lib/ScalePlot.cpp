@@ -32,15 +32,22 @@ ScalePlot::ScalePlot ()
 {
 }
 
-void ScalePlot::draw (PlotData &pd)
+void ScalePlot::draw (PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
   painter.setFont(pd.plotFont);
   painter.setPen(QPen(pd.borderColor, 1, Qt::SolidLine));
 
+  painter.fillRect(pd.buffer.width() - pd.scaleWidth,
+                   0,
+                   pd.scaleWidth,
+                   pd.buffer.height(),
+                   pd.backgroundColor);
+  
+
   QList<double> scaleArray;
-  pd.scaler.scaleArray(scaleArray);
+  scaler.scaleArray(scaleArray);
   
   QFontMetrics fm(pd.plotFont);
 
@@ -49,7 +56,7 @@ void ScalePlot::draw (PlotData &pd)
   Utils util;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = pd.scaler.convertToY(scaleArray.at(loop));
+    int y = scaler.convertToY(scaleArray.at(loop));
     painter.drawLine (x, y, x + 4, y);
 
     // draw the text
@@ -91,7 +98,7 @@ void ScalePlot::draw (PlotData &pd)
   painter.end();
 }
 
-void ScalePlot::drawPoints (PlotData &pd, QList<Setting> &points)
+void ScalePlot::drawPoints (PlotData &pd, QList<Setting> &points, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
@@ -112,7 +119,7 @@ void ScalePlot::drawPoints (PlotData &pd, QList<Setting> &points)
     color.setNamedColor(d);
     set.getData(1, d);
     double v = set.getDouble(1);
-    int y = pd.scaler.convertToY(v);
+    int y = scaler.convertToY(v);
 
     QRect rc = painter.boundingRect(x + offset,
                                     y - (fm.height() / 2),

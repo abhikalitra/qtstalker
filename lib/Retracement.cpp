@@ -46,31 +46,31 @@ Retracement::Retracement ()
   line6 = 0;
 }
 
-void Retracement::draw (PlotData &pd)
+void Retracement::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
   painter.setFont(pd.plotFont);
 
-  int x = pd.dateBars.getX(date);
+  int x = dateBars.getX(date);
   if (x == -1)
     return;
 
-  x = pd.startX + (x * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
+  x = (x * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
   if (x == -1)
     return;
 
   QDateTime dt = date2;
 
   if (extend)
-    pd.dateBars.getDate(pd.dateBars.count() - 1, dt);
+    dateBars.getDate(dateBars.count() - 1, dt);
 
-  int x2 = pd.dateBars.getX(dt);
+  int x2 = dateBars.getX(dt);
   if (x2 == -1)
     return;
 
-  x2 = pd.startX + (x2 * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
+  x2 = (x2 * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
   if (x2 == -1)
     return;
 
@@ -109,7 +109,7 @@ void Retracement::draw (PlotData &pd)
             r = low;
         }
       }
-      int y = pd.scaler.convertToY(r);
+      int y = scaler.convertToY(r);
       painter.drawLine (x, y, x2, y);
       painter.drawText(x, y - 1, QString::number(td * 100) + "% - " + QString::number(r));
 
@@ -119,7 +119,7 @@ void Retracement::draw (PlotData &pd)
   }
   
   // draw the low line
-  int y = pd.scaler.convertToY(low);
+  int y = scaler.convertToY(low);
   painter.drawLine (x, y, x2, y);
   painter.drawText(x, y - 1, "0% - " + QString::number(low));
 
@@ -128,7 +128,7 @@ void Retracement::draw (PlotData &pd)
   setSelectionArea(new QRegion(array));
 
   // draw the high line
-  int y2 = pd.scaler.convertToY(high);
+  int y2 = scaler.convertToY(high);
   painter.drawLine (x, y2, x2, y2);
   painter.drawText(x, y2 - 1, "100% - " + QString::number(high));
 
@@ -141,7 +141,7 @@ void Retracement::draw (PlotData &pd)
     clearGrabHandles();
 
     //top left corner
-    y = pd.scaler.convertToY(high);
+    y = scaler.convertToY(high);
     setGrabHandle(new QRegion(x, y - (handleWidth / 2),
 		  handleWidth,
 		  handleWidth,
@@ -154,8 +154,8 @@ void Retracement::draw (PlotData &pd)
 		     color);
 
     //bottom right corner
-    x2 = pd.startX + (pd.dateBars.getX(date2) * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
-    y2 = pd.scaler.convertToY(low);
+    x2 = (dateBars.getX(date2) * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
+    y2 = scaler.convertToY(low);
     setGrabHandle(new QRegion(x2, y2 - (handleWidth / 2),
 		  handleWidth,
 		  handleWidth,
@@ -420,13 +420,13 @@ void Retracement::getIcon (QIcon &d)
   d = QIcon(fib_xpm);
 }
 
-int Retracement::inDateRange (PlotData &pd, QDateTime &startDate, QDateTime &endDate)
+int Retracement::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar &dateBars)
 {
   int rc = FALSE;
   
   QDateTime dt = date2;
   if (extend)
-    pd.dateBars.getDate(pd.dateBars.count() - 1, dt);
+    dateBars.getDate(dateBars.count() - 1, dt);
   
   // is start past our end?
   if (startDate > dt)

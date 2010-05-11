@@ -25,13 +25,13 @@ Candle::Candle ()
 {
 }
 
-void Candle::draw (PlotLine *line, PlotData &pd)
+void Candle::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
   int loop = pd.pos;
-  int x = pd.startX;
+  int x = 0;
   QColor c;
   bool ff = FALSE;
 
@@ -49,33 +49,27 @@ void Candle::draw (PlotLine *line, PlotData &pd)
       bar.getColor(c);
       painter.setPen(c);
 
-      int xh = pd.scaler.convertToY(bar.getData(1));
-      int xl = pd.scaler.convertToY(bar.getData(2));
-      int xc = pd.scaler.convertToY(bar.getData(3));
-      int xo = pd.scaler.convertToY(bar.getData(0));
+      int xh = scaler.convertToY(bar.getData(1));
+      int xl = scaler.convertToY(bar.getData(2));
+      int xc = scaler.convertToY(bar.getData(3));
+      int xo = scaler.convertToY(bar.getData(0));
 
       if (! ff)
       {
-        painter.drawLine (x, xh, x, xc);
-        painter.drawLine (x, xo, x, xl);
-
-        if (xc == xo)
-          painter.drawLine (x - 2, xo, x + 2, xo);
-        else
-          painter.drawRect(x - 2, xc, 5, xo - xc);
+        // empty candle
+        painter.drawLine (x + 3, xh, x + 3, xc);
+        painter.drawLine (x + 3, xo, x + 3, xl);
+        painter.drawRect(x, xc, 6, xo - xc);
       }
       else
       {
-        painter.drawLine (x, xh, x, xl);
-
-        if (xc == xo)
-          painter.drawLine (x - 2, xo, x + 2, xo);
-        else
-          painter.fillRect(x - 2, xo, 5, xc - xo, c);
+        // filled candle
+        painter.drawLine (x + 2, xh, x + 2, xl);
+        painter.fillRect(x, xo, 5, xc - xo, c);
       }
     }
 
-    x = x + pd.pixelspace;
+    x += pd.barSpacing;
     loop++;
   }
 

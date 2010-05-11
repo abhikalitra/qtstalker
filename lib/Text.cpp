@@ -38,16 +38,16 @@ Text::Text ()
   price = 0;
 }
 
-void Text::draw (PlotData &pd)
+void Text::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int x2 = pd.dateBars.getX(date);
+  int x2 = dateBars.getX(date);
   if (x2 == -1)
     return;
 
-  int x = pd.startX + (x2 * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
+  int x = (x2 * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
   if (x == -1)
     return;
 
@@ -55,7 +55,7 @@ void Text::draw (PlotData &pd)
 
   painter.setPen(color);
 
-  int y = pd.scaler.convertToY(price);
+  int y = scaler.convertToY(price);
 
   painter.drawText(x, y, label);
 
@@ -238,7 +238,7 @@ int Text::getHighLow (double &h, double &l)
   return 0;
 }
 
-int Text::inDateRange (PlotData &, QDateTime &startDate, QDateTime &endDate)
+int Text::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar &)
 {
   int rc = FALSE;
   if (date >= startDate && date <= endDate)

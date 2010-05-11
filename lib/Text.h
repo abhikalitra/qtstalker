@@ -28,7 +28,7 @@ class Text : public COPlugin
 {
   public:
     Text ();
-    void draw (PlotData &);
+    void draw (PlotData &, DateBar &, Scaler &);
     void getInfo (Setting *);
     void dialog ();
     void load (QSqlQuery &q);
@@ -38,7 +38,7 @@ class Text : public COPlugin
     void moving (QDateTime &, double, int);
     void getIcon (QIcon &);
     int getHighLow (double &, double &);
-    int inDateRange (PlotData &, QDateTime &, QDateTime &);
+    int inDateRange (QDateTime &, QDateTime &, DateBar &);
     
   protected:
     QFont font;

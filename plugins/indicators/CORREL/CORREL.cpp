@@ -22,6 +22,7 @@
 #include "CORREL.h"
 #include "DBPlugin.h"
 #include "ta_libc.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -232,11 +233,19 @@ int CORREL::dialog (int)
   settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
+
   settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
   settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+
+  BarData bd;
+  QStringList inputList;
+  bd.getInputFields(inputList);
 
   settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);

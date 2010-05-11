@@ -28,13 +28,14 @@
 
 #include "PlotLine.h"
 #include "PlotData.h"
+#include "Scaler.h"
 
 class PlotPlugin
 {
   public:
     PlotPlugin ();
     virtual ~PlotPlugin ();
-    virtual void draw (PlotLine *, PlotData &);
+    virtual void draw (PlotLine *, PlotData &, Scaler &);
 };
 
 #endif

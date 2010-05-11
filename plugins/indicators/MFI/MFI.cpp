@@ -21,6 +21,7 @@
 
 #include "MFI.h"
 #include "MAUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -191,6 +192,10 @@ int MFI::dialog (int)
 
   settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);

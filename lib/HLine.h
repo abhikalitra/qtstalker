@@ -28,7 +28,7 @@ class HLine : public COPlugin
 {
   public:
     HLine ();
-    void draw (PlotData &);
+    void draw (PlotData &, DateBar &, Scaler &);
     void getInfo (Setting *);
     void dialog ();
     void load (QSqlQuery &);
@@ -38,7 +38,7 @@ class HLine : public COPlugin
     void moving (QDateTime &, double, int);
     void getIcon (QIcon &);
     int getHighLow (double &, double &);
-    int inDateRange (PlotData &, QDateTime &, QDateTime &);
+    int inDateRange (QDateTime &, QDateTime &, DateBar &);
     
   protected:
     QColor _color;

@@ -25,26 +25,26 @@ HistogramBar::HistogramBar ()
 {
 }
 
-void HistogramBar::draw (PlotLine *line, PlotData &pd)
+void HistogramBar::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int x = pd.startX;
+  int x = 0;
   int zero = 0;
   Scaler scale;
   if (line->getScaleFlag())
   {
-    scale.set(pd.scaler.height(),
+    scale.set(scaler.height(),
   	      line->getHigh(),
 	      line->getLow(),
-	      pd.scaler.logScaleHigh(),
-	      pd.scaler.logRange(),
-	      pd.scaler.logFlag());
+	      scaler.logScaleHigh(),
+	      scaler.logRange(),
+	      scaler.logFlag());
     zero = scale.convertToY(0);
   }
   else
-    zero = pd.scaler.convertToY(0);
+    zero = scaler.convertToY(0);
 
   int loop = pd.pos;
   while ((x < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
@@ -58,12 +58,12 @@ void HistogramBar::draw (PlotLine *line, PlotData &pd)
       if (line->getScaleFlag())
         y = scale.convertToY(d);
       else
-        y = pd.scaler.convertToY(d);
+        y = scaler.convertToY(d);
 
-      painter.fillRect(x, y, pd.pixelspace - 1, zero - y, color);
+      painter.fillRect(x, y, pd.barSpacing - 1, zero - y, color);
     }
 
-    x = x + pd.pixelspace;
+    x += pd.barSpacing;
     loop++;
   }
 

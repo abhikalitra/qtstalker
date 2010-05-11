@@ -25,13 +25,13 @@ OHLC::OHLC ()
 {
 }
 
-void OHLC::draw (PlotLine *line, PlotData &pd)
+void OHLC::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
   int loop = pd.pos;
-  int x = pd.startX;
+  int x = 0;
   QColor c;
 
   while ((x < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
@@ -44,18 +44,21 @@ void OHLC::draw (PlotLine *line, PlotData &pd)
       bar.getColor(c);
       painter.setPen(c);
 
-      int y = pd.scaler.convertToY(bar.getData(0));
-      painter.drawLine (x - 2, y, x, y);
+      // draw the open tick
+      int y = scaler.convertToY(bar.getData(0));
+      painter.drawLine (x, y, x + 2, y);
 
-      y = pd.scaler.convertToY(bar.getData(3));
-      painter.drawLine (x + 2, y, x, y);
+      // draw the close tick
+      y = scaler.convertToY(bar.getData(3));
+      painter.drawLine (x + 2, y, x + 4, y);
 
-      y = pd.scaler.convertToY(bar.getData(1));
-      int y2 = pd.scaler.convertToY(bar.getData(2));
-      painter.drawLine (x, y, x, y2);
+      // draw the high/low tick
+      y = scaler.convertToY(bar.getData(1));
+      int y2 = scaler.convertToY(bar.getData(2));
+      painter.drawLine (x + 2, y, x + 2, y2);
     }
 
-    x = x + pd.pixelspace;
+    x += pd.barSpacing;
     loop++;
   }
 

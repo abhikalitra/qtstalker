@@ -39,10 +39,10 @@ HLine::HLine ()
   _label = plugin;
 }
 
-void HLine::draw (PlotData &pd)
+void HLine::draw (PlotData &pd, DateBar &, Scaler &scaler)
 {
   // if value is off chart then don't draw it
-  if (_price < pd.scaler.low())
+  if (_price < scaler.low())
     return;
 
   QPainter painter;
@@ -52,12 +52,12 @@ void HLine::draw (PlotData &pd)
 
   painter.setPen(_color);
 
-  int y = pd.scaler.convertToY(_price);
+  int y = scaler.convertToY(_price);
   
   // test start
   QString s = QString::number(_price);
   QFontMetrics fm = painter.fontMetrics();
-  QRect rc = painter.boundingRect(pd.startX, y - (fm.height() / 2), 1, 1, 0, s);
+  QRect rc = painter.boundingRect(0, y - (fm.height() / 2), 1, 1, 0, s);
   painter.fillRect(rc, pd.backgroundColor); // fill in behind text first
   painter.drawText(rc, s); // draw text
   painter.drawRect(rc); // draw a nice little box around text
@@ -216,7 +216,7 @@ int HLine::getHighLow (double &h, double &l)
   return 0;
 }
 
-int HLine::inDateRange (PlotData &, QDateTime &, QDateTime &)
+int HLine::inDateRange (QDateTime &, QDateTime &, DateBar &)
 {
   int rc = TRUE;
   return rc;

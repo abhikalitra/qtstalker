@@ -185,9 +185,6 @@ int SAR::dialog (int)
   settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
   settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 

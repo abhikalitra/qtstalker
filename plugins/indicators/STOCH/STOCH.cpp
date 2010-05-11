@@ -22,6 +22,7 @@
 #include "STOCH.h"
 #include "MAUtils.h"
 #include "STOCHUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -185,6 +186,10 @@ int STOCH::dialog (int)
 
   settings.getData(FastKColor, d);
   dialog->addColorItem(FastKColor, page, QObject::tr("Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(FastKPlot, d);
   dialog->addComboItem(FastKPlot, page, QObject::tr("Plot"), plotList, d);

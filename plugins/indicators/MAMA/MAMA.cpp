@@ -22,6 +22,7 @@
 #include "MAMA.h"
 #include "ta_libc.h"
 #include "BARSUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -234,6 +235,10 @@ int MAMA::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
+  BarData bd;
+  QStringList inputList;
+  bd.getInputFields(inputList);
+
   settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
@@ -249,6 +254,10 @@ int MAMA::dialog (int)
 
   settings.getData(MAMAColor, d);
   dialog->addColorItem(MAMAColor, page, QObject::tr("Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(MAMAPlot, d);
   dialog->addComboItem(MAMAPlot, page, QObject::tr("Plot"), plotList, d);

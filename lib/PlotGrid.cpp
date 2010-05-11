@@ -59,7 +59,7 @@ void PlotGrid::drawXGrid (PlotData &pd)
   {
     if (_xGrid.at(loop) >= pd.startIndex)
     {
-      int x = pd.startX + (_xGrid.at(loop) * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
+      int x = (_xGrid.at(loop) * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
       painter.drawLine (x, 0, x, pd.buffer.height() - pd.dateHeight);
     }
   }
@@ -67,7 +67,7 @@ void PlotGrid::drawXGrid (PlotData &pd)
   painter.end();
 }
 
-void PlotGrid::drawYGrid (PlotData &pd)
+void PlotGrid::drawYGrid (PlotData &pd, Scaler &scaler)
 {
   if (_gridFlag == FALSE)
     return;
@@ -77,13 +77,13 @@ void PlotGrid::drawYGrid (PlotData &pd)
   painter.setPen(QPen(_gridColor, 1, Qt::DotLine));
 
   QList<double> scaleArray;
-  pd.scaler.scaleArray(scaleArray);
+  scaler.scaleArray(scaleArray);
 
   int loop;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
-    int y = pd.scaler.convertToY(scaleArray.at(loop));
-    painter.drawLine (pd.startX, y, pd.buffer.width() - pd.scaleWidth, y);
+    int y = scaler.convertToY(scaleArray.at(loop));
+    painter.drawLine (0, y, pd.buffer.width() - pd.scaleWidth, y);
   }
 
   painter.end();

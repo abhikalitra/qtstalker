@@ -23,6 +23,7 @@
 #include "PrefDialog.h"
 #include "MAUtils.h"
 #include "BARSUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 #include <QObject>
@@ -206,6 +207,10 @@ int BARS::dialog (int)
   MAUtils mau;
   mau.getMAList(maList);
   
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
+
   page++;
   k = QObject::tr("MA 1");
   dialog->addPage(page, k);

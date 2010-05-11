@@ -34,6 +34,8 @@
 
 #include "Setting.h"
 #include "PlotData.h"
+#include "DateBar.h"
+#include "Scaler.h"
 
 class COPlugin : public QObject
 {
@@ -45,7 +47,7 @@ class COPlugin : public QObject
   public:
     COPlugin ();
     virtual ~COPlugin ();
-    virtual void draw (PlotData &);
+    virtual void draw (PlotData &, DateBar &, Scaler &);
     virtual int getHighLow (double &, double &);
     virtual void getInfo (Setting *);
     virtual void dialog ();
@@ -56,7 +58,7 @@ class COPlugin : public QObject
     virtual int create3 (QDateTime &, double);
     virtual void moving (QDateTime &, double, int moveFlag);
     virtual void getIcon (QIcon &);
-    virtual int inDateRange (PlotData &, QDateTime &, QDateTime &);
+    virtual int inDateRange (QDateTime &, QDateTime &, DateBar &);
 
     void setSelected (int);
     void clearGrabHandles ();

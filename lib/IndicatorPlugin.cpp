@@ -20,20 +20,12 @@
  */
 
 #include "IndicatorPlugin.h"
-#include "PlotFactory.h"
 
 #include <QList>
 
 IndicatorPlugin::IndicatorPlugin ()
 {
-  PlotFactory fac;
-  fac.getList(plotList);
-
-  BarData bd;
-  bd.getInputFields(inputList);
-
   opList << "=" << "<" << "<=" << ">" << ">=";
-  
   deleteFlag = 0;
 }
 
@@ -98,15 +90,5 @@ void IndicatorPlugin::getDialogSettings (PrefDialog *dialog)
 int IndicatorPlugin::getDeleteFlag ()
 {
   return deleteFlag;
-}
-
-void IndicatorPlugin::getPlotList (QStringList &l, int flag)
-{
-  l = plotList;
-  if (flag)
-  {
-    plotList.removeAll("Candle");
-    plotList.removeAll("OHLC");
-  }
 }
 

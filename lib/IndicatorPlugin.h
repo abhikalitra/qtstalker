@@ -47,15 +47,12 @@ class IndicatorPlugin
     void getIndicator (QString &);
     void getDialogSettings (PrefDialog *);
     int getDeleteFlag ();
-    void getPlotList (QStringList &, int);
 
   protected:
     Setting settings;
     QString name;
     QString indicator;
     QStringList opList;
-    QStringList inputList;
-    QStringList plotList;
     int deleteFlag;
 };
 

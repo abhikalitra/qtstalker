@@ -21,6 +21,7 @@
 
 #include "AD.h"
 #include "MAUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -251,6 +252,10 @@ int AD::dialog (int)
   settings.getData(ADColor, d);
   dialog->addColorItem((int) ADColor, page, QObject::tr("Color"), d);
 
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
+  
   settings.getData(ADPlot, d);
   dialog->addComboItem((int) ADPlot, page, QObject::tr("Plot"), plotList, d);
 

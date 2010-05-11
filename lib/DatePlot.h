@@ -23,16 +23,17 @@
 #define DATE_PLOT_HPP
 
 #include "PlotData.h"
+#include "DateBar.h"
 
 class DatePlot
 {
   public:
     DatePlot ();
-    void draw (PlotData &);
-    void drawDailyDate (PlotData &, QPainter &);
-    void drawWeeklyDate (PlotData &, QPainter &);
-    void drawMonthlyDate (PlotData &, QPainter &);
-    void drawMinuteDate (PlotData &, QPainter &);
+    void draw (PlotData &, DateBar &);
+    void drawDailyDate (PlotData &, QPainter &, DateBar &);
+    void drawWeeklyDate (PlotData &, QPainter &, DateBar &);
+    void drawMonthlyDate (PlotData &, QPainter &, DateBar &);
+    void drawMinuteDate (PlotData &, QPainter &, DateBar &);
 };
 
 #endif

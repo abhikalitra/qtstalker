@@ -21,6 +21,7 @@
 
 #include "LMS.h"
 #include "MAUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -405,6 +406,10 @@ int LMS::dialog (int)
 
   settings.getData(SlowkColor, d);
   dialog->addColorItem(SlowkColor, page, QObject::tr("Color"), d);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   settings.getData(SlowkPlot, d);
   dialog->addComboItem(SlowkPlot, page, QObject::tr("Plot"), plotList, d);

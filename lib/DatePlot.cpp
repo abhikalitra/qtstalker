@@ -20,6 +20,7 @@
  */
 
 #include "DatePlot.h"
+#include "Bar.h"
 
 #include <QString>
 #include <QDebug>
@@ -29,7 +30,7 @@ DatePlot::DatePlot ()
 {
 }
 
-void DatePlot::draw (PlotData &pd)
+void DatePlot::draw (PlotData &pd, DateBar &dateBars)
 {
   QPainter painter(&pd.buffer);
   painter.setPen(pd.borderColor);
@@ -48,30 +49,30 @@ void DatePlot::draw (PlotData &pd)
     case Bar::Minute15:
     case Bar::Minute30:
     case Bar::Minute60:
-      drawMinuteDate(pd, painter);      
+      drawMinuteDate(pd, painter, dateBars);      
       break;
     case Bar::WeeklyBar:
-      drawWeeklyDate(pd, painter);      
+      drawWeeklyDate(pd, painter, dateBars);      
       break;
     case Bar::MonthlyBar:
-      drawMonthlyDate(pd, painter);      
+      drawMonthlyDate(pd, painter, dateBars);      
       break;
     default: // daily
-      drawDailyDate(pd, painter);      
+      drawDailyDate(pd, painter, dateBars);      
       break;
   }
 
   painter.end();
 }
 
-void DatePlot::drawMinuteDate (PlotData &pd, QPainter &painter)
+void DatePlot::drawMinuteDate (PlotData &pd, QPainter &painter, DateBar &dateBars)
 {
   int loop = pd.startIndex;
   QFontMetrics fm(pd.plotFont);
-  int x = pd.startX;
+  int x = 0;
 
   QDateTime nextHour;
-  pd.dateBars.getDate(loop, nextHour);
+  dateBars.getDate(loop, nextHour);
   
   QDateTime oldDay = nextHour;
   nextHour.setTime(QTime(nextHour.time().hour(), 0, 0, 0));
@@ -81,10 +82,10 @@ void DatePlot::drawMinuteDate (PlotData &pd, QPainter &painter)
   else
     nextHour = nextHour.addSecs(3600);
 
-  while((x < pd.buffer.width() - pd.scaleWidth) && (loop < pd.dateBars.count()))
+  while((x < pd.buffer.width() - pd.scaleWidth) && (loop < dateBars.count()))
   {
     QDateTime date;
-    pd.dateBars.getDate(loop, date);
+    dateBars.getDate(loop, date);
     
     if (date.date().day() != oldDay.date().day())
     {
@@ -130,26 +131,26 @@ void DatePlot::drawMinuteDate (PlotData &pd, QPainter &painter)
     }
     
     loop++;
-    x += pd.pixelspace;
+    x += pd.barSpacing;
   }
 }
 
-void DatePlot::drawDailyDate (PlotData &pd, QPainter &painter)
+void DatePlot::drawDailyDate (PlotData &pd, QPainter &painter, DateBar &dateBars)
 {
   int loop = pd.startIndex;
   QFontMetrics fm(pd.plotFont);
-  int x = pd.startX;
+  int x = 0;
 
   QDateTime dt;
-  pd.dateBars.getDate(loop, dt);
+  dateBars.getDate(loop, dt);
   
   QDate oldDate = dt.date();
   QDate oldWeek = oldDate;
   oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
 
-  while((x < pd.buffer.width() - pd.scaleWidth) && (loop < pd.dateBars.count()))
+  while((x < pd.buffer.width() - pd.scaleWidth) && (loop < dateBars.count()))
   {
-    pd.dateBars.getDate(loop, dt);
+    dateBars.getDate(loop, dt);
     QDate date = dt.date();
 
     if (date.month() != oldDate.month())
@@ -189,24 +190,24 @@ void DatePlot::drawDailyDate (PlotData &pd, QPainter &painter)
     }
     
     loop++;
-    x += pd.pixelspace;
+    x += pd.barSpacing;
   }
 }
 
-void DatePlot::drawWeeklyDate (PlotData &pd, QPainter &painter)
+void DatePlot::drawWeeklyDate (PlotData &pd, QPainter &painter, DateBar &dateBars)
 {
   int loop = pd.startIndex;
   QFontMetrics fm(pd.plotFont);
-  int x = pd.startX;
+  int x = 0;
 
   QDateTime dt;
-  pd.dateBars.getDate(loop, dt);
+  dateBars.getDate(loop, dt);
   
   QDate oldMonth = dt.date();
 
-  while((x < pd.buffer.width() - pd.scaleWidth) && (loop < pd.dateBars.count()))
+  while((x < pd.buffer.width() - pd.scaleWidth) && (loop < dateBars.count()))
   {
-    pd.dateBars.getDate(loop, dt);
+    dateBars.getDate(loop, dt);
     QDate date = dt.date();
 
     if (date.month() != oldMonth.month())
@@ -241,24 +242,24 @@ void DatePlot::drawWeeklyDate (PlotData &pd, QPainter &painter)
     }
     
     loop++;
-    x += pd.pixelspace;
+    x += pd.barSpacing;
   }
 }
 
-void DatePlot::drawMonthlyDate (PlotData &pd, QPainter &painter)
+void DatePlot::drawMonthlyDate (PlotData &pd, QPainter &painter, DateBar &dateBars)
 {
   int loop = pd.startIndex;
   QFontMetrics fm(pd.plotFont);
-  int x = pd.startX;
+  int x = 0;
 
   QDateTime dt;
-  pd.dateBars.getDate(loop, dt);
+  dateBars.getDate(loop, dt);
   
   QDate oldYear = dt.date();
 
-  while((x < pd.buffer.width() - pd.scaleWidth) && (loop < pd.dateBars.count()))
+  while((x < pd.buffer.width() - pd.scaleWidth) && (loop < dateBars.count()))
   {
-    pd.dateBars.getDate(loop, dt);
+    dateBars.getDate(loop, dt);
     QDate date = dt.date();
 
     if (date.year() != oldYear.year())
@@ -277,7 +278,7 @@ void DatePlot::drawMonthlyDate (PlotData &pd, QPainter &painter)
     }
     
     loop++;
-    x += pd.pixelspace;
+    x += pd.barSpacing;
   }
 }
 

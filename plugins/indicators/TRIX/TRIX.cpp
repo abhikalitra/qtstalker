@@ -21,9 +21,9 @@
 
 #include "TRIX.h"
 #include "MAUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
-
 
 TRIX::TRIX ()
 {
@@ -197,6 +197,10 @@ int TRIX::dialog (int)
   settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
+
   settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
@@ -204,6 +208,10 @@ int TRIX::dialog (int)
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
   dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
+
+  BarData bd;
+  QStringList inputList;
+  bd.getInputFields(inputList);
 
   settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);

@@ -41,29 +41,29 @@ TLine::TLine ()
   fieldList << QObject::tr("Open") << QObject::tr("High") << QObject::tr("Low") << QObject::tr("Close");
 }
 
-void TLine::draw (PlotData &pd)
+void TLine::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int x2 = pd.dateBars.getX(date);
+  int x2 = dateBars.getX(date);
   if (x2 == -1)
     return;
 
-  int x = pd.startX + (x2 * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
+  int x = (x2 * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
   if (x == -1)
     return;
 
-  x2 = pd.dateBars.getX(date2);
+  x2 = dateBars.getX(date2);
   if (x2 == -1)
     return;
 
-  x2 = pd.startX + (x2 * pd.pixelspace) - (pd.startIndex * pd.pixelspace);
+  x2 = (x2 * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
   if (x2 == -1)
     return;
 
-  int y = pd.scaler.convertToY(price);
-  int y2 = pd.scaler.convertToY(price2);
+  int y = scaler.convertToY(price);
+  int y2 = scaler.convertToY(price2);
 
   painter.setPen(color);
 
@@ -341,13 +341,13 @@ int TLine::getHighLow (double &h, double &l)
   return 0;
 }
 
-int TLine::inDateRange (PlotData &pd, QDateTime &startDate, QDateTime &endDate)
+int TLine::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar &dateBars)
 {
   int rc = FALSE;
 
   QDateTime dt = date2;
   if (extend)
-    pd.dateBars.getDate(pd.dateBars.count() - 1, dt);
+    dateBars.getDate(dateBars.count() - 1, dt);
   
   // is start past our end?
   if (startDate > dt)

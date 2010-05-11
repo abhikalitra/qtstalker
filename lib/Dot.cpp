@@ -25,23 +25,23 @@ Dot::Dot ()
 {
 }
 
-void Dot::draw (PlotLine *line, PlotData &pd)
+void Dot::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int x = pd.startX;
+  int x = 0;
   int loop = pd.pos;
 
   Scaler scale;
   if (line->getScaleFlag())
   {
-    scale.set(pd.scaler.height(),
+    scale.set(scaler.height(),
   	      line->getHigh(),
 	      line->getLow(),
-	      pd.scaler.logScaleHigh(),
-	      pd.scaler.logRange(),
-	      pd.scaler.logFlag());
+	      scaler.logScaleHigh(),
+	      scaler.logRange(),
+	      scaler.logFlag());
   }
 
   while ((x < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
@@ -55,13 +55,13 @@ void Dot::draw (PlotLine *line, PlotData &pd)
       if (line->getScaleFlag())
         y = scale.convertToY(d);
       else
-        y = pd.scaler.convertToY(d);
+        y = scaler.convertToY(d);
 
       painter.setPen(color);
       painter.drawPoint(x, y);
     }
 
-    x = x + pd.pixelspace;
+    x += pd.barSpacing;
     loop++;
   }
 

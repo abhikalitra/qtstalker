@@ -22,6 +22,7 @@
 #include "CANDLES.h"
 #include "ta_libc.h"
 #include "MAUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -329,6 +330,10 @@ int CANDLES::dialog (int)
   dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
   dialog->addDoubleItem(Penetration, page, QObject::tr("Penetration"), settings.getDouble(Penetration), 0, 100);
+
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
 
   page++;
   k = QObject::tr("MA 1");

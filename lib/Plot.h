@@ -44,6 +44,8 @@
 #include "Indicator.h"
 #include "DatePlot.h"
 #include "ScalePlot.h"
+#include "Scaler.h"
+#include "DateBar.h"
 
 class Plot : public QWidget
 {
@@ -151,6 +153,8 @@ class Plot : public QWidget
     MouseStatus _saveMouseFlag;
     DatePlot _datePlot;
     ScalePlot _scalePlot;
+    Scaler _scaler;
+    DateBar _dateBars;
 };
 
 #endif

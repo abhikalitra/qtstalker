@@ -29,7 +29,7 @@ Horizontal::Horizontal ()
 {
 }
 
-void Horizontal::draw (PlotLine *line, PlotData &pd)
+void Horizontal::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
@@ -38,7 +38,7 @@ void Horizontal::draw (PlotLine *line, PlotData &pd)
   double d = line->getData(line->count() - 1, color);
   painter.setPen(color);
   
-  int y = pd.scaler.convertToY(d);
+  int y = scaler.convertToY(d);
 
   Utils util;
   QString s, s2;
@@ -49,7 +49,7 @@ void Horizontal::draw (PlotLine *line, PlotData &pd)
   painter.setFont(pd.plotFont);
 
   QFontMetrics fm = painter.fontMetrics();
-  QRect rc = painter.boundingRect(pd.startX, y - (fm.height() / 2), 1, 1, 0, s);
+  QRect rc = painter.boundingRect(0, y - (fm.height() / 2), 1, 1, 0, s);
   painter.fillRect(rc, pd.backgroundColor); // fill in behind text first
   painter.drawText(rc, s);
   painter.drawRect(rc);

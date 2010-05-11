@@ -21,6 +21,7 @@
 
 #include "MOM.h"
 #include "MAUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -178,6 +179,10 @@ int MOM::dialog (int)
   settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
+  PlotFactory fac;
+  QStringList plotList;
+  fac.list(plotList, TRUE);
+
   settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
@@ -194,6 +199,10 @@ int MOM::dialog (int)
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);
+
+  BarData bd;
+  QStringList inputList;
+  bd.getInputFields(inputList);
 
   settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);

@@ -28,7 +28,7 @@ class Dot : public PlotPlugin
 {
   public:
     Dot ();
-    void draw (PlotLine *, PlotData &);
+    void draw (PlotLine *, PlotData &, Scaler &);
 };
 
 #endif
