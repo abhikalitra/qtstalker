@@ -46,6 +46,18 @@ if [ "$qmakeOk" != "true" ] || [ "$qtVersionOk" != "true" ] || [ "$talibOk" != "
   exit 1
 fi
 
+if [ -e "docs/api/index.html" ] ; then
+  if [ -e "Makefile" ] ; then
+    if [ "Makefile" -nt "docs/api/index.html" ] ; then
+      printf "\nNOTE: Source code API documentation might be out-of-date.\n"
+      printf "See instructions at docs/api/api.html\n"
+  fi
+fi
+else
+  printf "\nNOTE: Source code API documentation is not yet built.\n"
+  printf "See instructions at docs/api/api.html\n"
+fi
+
 printf "\nBuilding Makefile ...\n"
 qmake "DEFINES += QT_NO_COMPAT" "CONFIG += qt" -o Makefile qtstalker.pro
 if [ "$?" -ne "0" ]; then
@@ -53,17 +65,6 @@ if [ "$?" -ne "0" ]; then
   exit 1
 else
   printf "Done\n"
-fi
-
-printf "\nGenerating source code API documentation ...\n"
-dxCmd=`command -v doxygen`
-if [ -z "$dxCmd" ] ; then
-  printf "WARNING: Cannot find 'doxygen'.\n"
-else
-  cd docs
-  $dxCmd ../misc/doxygen/config.txt
-  printf "Done\n"
-  cd ..
 fi
 
 printf "\nIndexing and creating the documentation collection ...\n"

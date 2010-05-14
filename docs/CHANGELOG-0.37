@@ -417,22 +417,6 @@
            the scripting and non-scripted interfaces. Instead of one big massive change to everything, I have
            opted to make the changes incrementally so that bugs can be found and fixed faster.
 
-           
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+20100514:  Split the generation of source code API documentation into a separate shell script.
+           To generate or update the documentation, see docs/api/api.html
+           (i.e. install Doxygen, do 'build-api-docs.sh' before doing 'configure'). Thanks to xley.
