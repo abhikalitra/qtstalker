@@ -51,8 +51,8 @@ if [ -e "docs/api/index.html" ] ; then
     if [ "Makefile" -nt "docs/api/index.html" ] ; then
       printf "\nNOTE: Source code API documentation might be out-of-date.\n"
       printf "See instructions at docs/api/api.html\n"
+    fi
   fi
-fi
 else
   printf "\nNOTE: Source code API documentation is not yet built.\n"
   printf "See instructions at docs/api/api.html\n"
