@@ -28,8 +28,6 @@
 
 <h1><u>Installation</u></h1>
 
-<p></p>
-
 <h3>Requirements</h3>
 <ul>
   <li>A Linux or FreeBSD compatible or Mac OS X operating system.</li>
@@ -53,7 +51,7 @@ href="#upgrade">notes</a> below. </p>
 </ul>
 <a name="source"></a> 
 
-<h3>Installing from source</h3>
+<h3 id="source">Installing from source</h3>
 
 <p><strong>Note:</strong> Package users can ignore the following advice as this
 will be done automatically by the package installer. </p>
@@ -93,7 +91,7 @@ ta-lib-config</code>' to ensure that this is properly installed. </p>
   <li><code>sudo make install</code> (i.e. as superuser)</li>
 </ul>
 
-<h3>Where does stuff get installed</h3>
+<h2>Where does stuff get installed</h2>
 <ul>
   <li>The executable 'qtstalker' will be copied to the
     <code>/usr/local/bin</code> directory</li>
@@ -106,13 +104,15 @@ ta-lib-config</code>' to ensure that this is properly installed. </p>
     <code>/usr/local/share/doc/qtstalker/html</code> directory (see toc.html
     for the table of contents)</li>
 </ul>
+<p>
+Alternative installation locations can be configured in the
+<code>qtstalker.config</code> file.
+</p>
 
-<p>The user workspace is in your home at <code>~/.qtstalker/</code> directory.
-If using the '<code>CSV</code>' application then the data is stored at
-<code>~/.CSV/</code> directory. </p>
+<p>The user workspace is in your home at <code>~/.qtstalker/</code> directory.  </p>
 <a name="upgrade"></a> 
 
-<h3>Updating from a previous version</h3>
+<h2>Updating from a previous version</h2>
 
 <p>If you are updating from a previous source version already installed on your
 system, it is best that you first uninstall the previous version before you
@@ -122,13 +122,10 @@ around complicating things. You can uninstall the old version by doing
 <code>'sudo make uninstall'</code> from the top directory of the <b>old</b>
 source install.</p>
 
-<p></p>
-
-<h3>Using the current development source</h3>
+<h2>Using the current development source</h2>
 
 <p>See instructions for <a href="dev.html">using CVS</a>. </p>
 
-<p></p>
 </div>
 </body>
 </html>

@@ -49,6 +49,10 @@ border: 1px solid #000000;
 font-size: 1em;
 }
 
+#content h3 { 
+font-size: 0.9em;
+}
+
 #rightPanel {
 float: right;
 margin: 0 0 0 1em;
