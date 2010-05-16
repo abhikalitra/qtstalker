@@ -420,3 +420,6 @@
 20100514:  Split the generation of source code documentation into a separate shell script.
            To generate or update the documentation, see docs/api/api.html
            (i.e. install Doxygen, do 'build-api-docs.sh' before doing 'configure'). Thanks to xley.
+
+20100516:  Add docs/install-macx.html for Mac OS X. Thanks to xley.
+
