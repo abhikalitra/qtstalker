@@ -107,3 +107,6 @@ height: 0;
 clear: both; 
 visibility: hidden;
 }
+
+/* For Doxygen */
+.contents { padding: 0 .5em .5em .5em; }
