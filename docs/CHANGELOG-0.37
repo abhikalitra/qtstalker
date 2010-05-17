@@ -421,5 +421,31 @@
            To generate or update the documentation, see docs/api/api.html
            (i.e. install Doxygen, do 'build-api-docs.sh' before doing 'configure'). Thanks to xley.
 
+20100516:  The plots are now positioned and calculated as vectors. What this means is that plots are mapped to
+           screen coordinates. They can be shifted left or right past the edge of the chart into the future
+           or past as desired. This however is a big change in the way scripts manipulate the data. Scripts
+           will now have to handle individual bars rather than entire lists of bars. We have much greater
+           flexibilty now on how the data is managed.
+
+           ************************************************************************************************
+           WARNING: This means any indicator scripts need to be revised. I would wait until I mention that
+           tweaking is completed, otherwise you will need additional revising at a later time. Save yourself
+           the hassle and wait until it is completed.
+           ************************************************************************************************           
+
+           Made changes to all the script formats for indicators. Each indicator now has a PLOT TYPE and COLOR
+           parameters. This is due to the PLOT command changes. See docs for details.
+
+           New INDICATOR command script functions. See docs. Reduced command set to manipulate individual index
+           positions rather than sending or receiving long strings of indicator values.
+
 20100516:  Add docs/install-macx.html for Mac OS X. Thanks to xley.
+
+20100517:  Updated docs on latest changes. Removed COLOR, REF, COMPARE, ADD, DIV, MULT, SUB classes. These functions
+           have been replaced or can be done from within scripts with native script commands.
+
+           Removed the LMS indicator. As I cannot locate any documentation to how this works, so it cannot be
+           ported as yet.
+
+           NOTE: still working on updating the included scripts to the new formats.
 
