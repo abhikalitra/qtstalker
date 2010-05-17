@@ -103,17 +103,6 @@
     </message>
 </context>
 <context>
-    <name>CursorSelect</name>
-    <message>
-        <source>&amp;Edit Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>DataWindow</name>
     <message>
         <source>Date</source>
@@ -409,21 +398,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Are you sure you want to delete all chart objects?</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PlotButtonBox</name>
-    <message>
-        <source>Toggle Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle Log Scaling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
