@@ -32,8 +32,8 @@ struct PlotData
 {
   QPixmap buffer;
   int barSpacing;
-//  int startX;
   int startIndex;
+  int endIndex;
   int scaleToScreen;
   int infoIndex; // calculated position for info 
   int x; // raw mouse x position from event->x()
