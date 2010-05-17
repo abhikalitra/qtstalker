@@ -20,12 +20,16 @@
  */
 
 #include "HistogramBar.h"
+#include "Utils.h"
+
+#include <QPainter>
 
 HistogramBar::HistogramBar ()
 {
+  _type = "Histogram Bar";
 }
 
-void HistogramBar::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
+void HistogramBar::draw (PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
@@ -33,11 +37,11 @@ void HistogramBar::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
   int x = 0;
   int zero = 0;
   Scaler scale;
-  if (line->getScaleFlag())
+  if (scaleFlag())
   {
     scale.set(scaler.height(),
-  	      line->getHigh(),
-	      line->getLow(),
+  	      high(),
+	      low(),
 	      scaler.logScaleHigh(),
 	      scaler.logRange(),
 	      scaler.logFlag());
@@ -46,27 +50,35 @@ void HistogramBar::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
   else
     zero = scaler.convertToY(0);
 
-  int loop = pd.pos;
-  while ((x < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
+  int loop = pd.startIndex;
+
+  for (; loop <= pd.endIndex; loop++, x += pd.barSpacing)
   {
-    if (loop > -1)
-    {
-      int y;
-      QColor color;
-      double d = line->getData(loop, color);
-      
-      if (line->getScaleFlag())
-        y = scale.convertToY(d);
-      else
-        y = scaler.convertToY(d);
+    PlotLineBar *bar = data(loop);
+    if (! bar)
+      continue;
 
-      painter.fillRect(x, y, pd.barSpacing - 1, zero - y, color);
-    }
+    int y;
+    if (scaleFlag())
+      y = scale.convertToY(bar->data());
+    else
+      y = scaler.convertToY(bar->data());
 
-    x += pd.barSpacing;
-    loop++;
+    painter.fillRect(x, y, pd.barSpacing - 1, zero - y, bar->color());
   }
 
   painter.end();
+}
+
+void HistogramBar::info (int i, Setting *set)
+{
+  PlotLineBar *bar = data(i);
+  if (! bar)
+    return;
+
+  QString d;
+  Utils util;
+  util.strip(bar->data(), 4, d);
+  set->setData(_label, d);
 }
 

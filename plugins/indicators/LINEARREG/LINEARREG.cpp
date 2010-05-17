@@ -26,7 +26,6 @@
 
 #include <QtDebug>
 
-
 LINEARREG::LINEARREG ()
 {
   TA_RetCode rc = TA_Initialize();
@@ -56,7 +55,7 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
@@ -65,7 +64,14 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
   settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
-  PlotLine *line = getLINEARREG(in, period, method);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getLINEARREG(in, period, method, lineType, color);
   if (! line)
   {
     delete in;
@@ -90,10 +96,6 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
       break;
   }
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -105,25 +107,26 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
 
 int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,LINEARREG,METHOD,<NAME>,<INPUT>,<PERIOD>
+  // INDICATOR,PLUGIN,LINEARREG,<METHOD>,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
+  //     0       1        2        3       4       5        6         7         8
 
-  if (set.count() != 7)
+  if (set.count() != 9)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   int method = methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[3];
+    qDebug() << indicator << "::getCUS: invalid method" << set[3];
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
     return 1;
   }
 
@@ -133,7 +136,7 @@ int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
     in = data->getInput(data->getInputType(set[5]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[5];
+      qDebug() << indicator << "::getCUS: input not found" << set[5];
       return 1;
     }
 
@@ -144,30 +147,54 @@ int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
   int period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid period" << set[6];
     return 1;
   }
 
-  PlotLine *line = getLINEARREG(in, period, method);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[7]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    return 1;
+  }
+
+  QColor color(set[8]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    return 1;
+  }
+
+  PlotLine *line = getLINEARREG(in, period, method, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[4]);
 
   tlines.insert(set[4], line);
 
   return 0;
 }
 
-PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period, int method)
+PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period, int method, int lineType, QColor &color)
 {
   int size = in->count();
   TA_Real input[size];
   TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
   TA_Integer outBeg;
   TA_Integer outNb;
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
   TA_RetCode rc = TA_SUCCESS;
   switch (method)
   {
@@ -196,9 +223,19 @@ PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period, int method)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
 
   return line;
 }

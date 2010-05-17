@@ -20,6 +20,8 @@
  */
 
 #include "RSIUtils.h"
+#include "PlotLineBar.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -27,23 +29,31 @@ RSIUtils::RSIUtils ()
 {
 }
 
-PlotLine * RSIUtils::getRSI (PlotLine *in, int period)
+PlotLine * RSIUtils::rsi (PlotLine *in, int period, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
 
-  int size = in->count();
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+
   int loop = period;
-  for (; loop < size; loop++)
+  for (; loop < keys.count(); loop++)
   {
     double ag = 0;
     double al = 0;
     int count = 0;
     for (; count < period; count++)
     {
-      double tp = in->getData(loop - count);
-      double yp = in->getData(loop - count - 1);
+      PlotLineBar *bar = in->data(keys.at(loop - count));
+      PlotLineBar *pbar = in->data(keys.at(loop - count - 1));
+      double tp = bar->data();
+      double yp = pbar->data();
       if (tp > yp)
 	ag += tp - yp;
       else
@@ -56,7 +66,7 @@ PlotLine * RSIUtils::getRSI (PlotLine *in, int period)
     ag = ag / (double) period;
     al = al / (double) period;
     double rs = ag / al;
-    line->append(100 - (100 / (1 + rs)));
+    line->setData(keys.at(loop), new PlotLineBar(color, 100 - (100 / (1 + rs))));
   }
 
   return line;

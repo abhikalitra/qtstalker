@@ -22,13 +22,14 @@
 #ifndef OHLC_HPP
 #define OHLC_HPP
 
-#include "PlotPlugin.h"
+#include "PlotLine.h"
 
-class OHLC : public PlotPlugin
+class OHLC : public PlotLine
 {
   public:
     OHLC ();
-    void draw (PlotLine *, PlotData &, Scaler &);
+    void draw (PlotData &, Scaler &);
+    void info (int, Setting *);
 };
 
 #endif

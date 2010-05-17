@@ -20,14 +20,13 @@
  */
 
 #include "STOCHRSI.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "RSIUtils.h"
 #include "MAX.h"
 #include "MIN.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
-
 
 STOCHRSI::STOCHRSI ()
 {
@@ -46,21 +45,30 @@ STOCHRSI::STOCHRSI ()
 
 int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
 {
-  PlotLine *ref1 = new PlotLine;
+  // create first ref line
   QString s = "Horizontal";
-  ref1->setPlugin(s);
-  settings.getData(Ref1Color, s);
-  ref1->setColor(s);
-  ref1->append(settings.getDouble(Ref1));
-  ind.addLine(ref1);
+  PlotFactory fac;
+  PlotLine *line = fac.plot(s);
+  if (! line)
+    return 1;
 
-  PlotLine *ref2 = new PlotLine;
+  settings.getData(Ref1Color, s);
+  QColor color(s);
+
+  line->setData(0, new PlotLineBar(color, (double) settings.getInt(Ref1)));
+  ind.addLine(line);
+
+  // create second ref line
   s = "Horizontal";
-  ref2->setPlugin(s);
+  line = fac.plot(s);
+  if (! line)
+    return 1;
+
   settings.getData(Ref2Color, s);
-  ref2->setColor(s);
-  ref2->append(settings.getDouble(Ref2));
-  ind.addLine(ref2);
+  color.setNamedColor(s);
+
+  line->setData(0, new PlotLineBar(color, (double) settings.getInt(Ref2)));
+  ind.addLine(line);
 
   settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
@@ -71,17 +79,20 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
   }
 
   int period = settings.getInt(Period);
-  PlotLine *line = getSTOCHRSI(in, period);
+
+  settings.getData(Color, s);
+  color.setNamedColor(s);
+
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  line = getSTOCHRSI(in, period, lineType, color);
   if (! line)
   {
     delete in;
     return 1;
   }
   
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -93,10 +104,10 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
 
 int STOCHRSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,STOCHRSI,<NAME>,<INPUT>,<PERIOD>
-  //    0        1       2       3       4       5
+  // INDICATOR,PLUGIN,STOCHRSI,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
+  //    0        1       2       3       4       5          6         7
 
-  if (set.count() != 6)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
@@ -130,27 +141,44 @@ int STOCHRSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
     return 1;
   }
 
-  PlotLine *line = getSTOCHRSI(in, period);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getSTOCHRSI(in, period, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * STOCHRSI::getSTOCHRSI (PlotLine *in, int period)
+PlotLine * STOCHRSI::getSTOCHRSI (PlotLine *in, int period, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
 
   RSIUtils rsiu;
-  PlotLine *rsi = rsiu.getRSI(in, period);
+  PlotLine *rsi = rsiu.rsi(in, period, lineType, color);
   if (! rsi)
     return 0;
 
   MAX max;
-  PlotLine *hh = max.getMAX(rsi, period);
+  PlotLine *hh = max.max(rsi, period, lineType, color);
   if (! hh)
   {
     delete rsi;
@@ -158,7 +186,7 @@ PlotLine * STOCHRSI::getSTOCHRSI (PlotLine *in, int period)
   }
 
   MIN min;
-  PlotLine *ll = min.getMIN(rsi, period);
+  PlotLine *ll = min.min(rsi, period, lineType, color);
   if (! ll)
   {
     delete rsi;
@@ -166,19 +194,38 @@ PlotLine * STOCHRSI::getSTOCHRSI (PlotLine *in, int period)
     return 0;
   }
 
-  int loop = rsi->count() - 1;
-  int minLoop = ll->count() - 1;
-  int maxLoop = hh->count() - 1;
-  PlotLine *line = new PlotLine;
-  while (loop > -1 && minLoop > -1 && maxLoop > -1)
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
   {
-    double t = rsi->getData(loop) - ll->getData(minLoop);
-    double t2 = hh->getData(maxLoop) - ll->getData(minLoop);
-    line->prepend(t / t2);
+    delete rsi;
+    delete hh;
+    delete ll;
+    return 0;
+  }
 
-    loop--;
-    minLoop--;
-    maxLoop--;
+  QList<int> keys;
+  hh->keys(keys);
+  
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *rbar = rsi->data(keys.at(loop));
+    if (! rbar)
+      continue;
+    
+    PlotLineBar *lbar = ll->data(keys.at(loop));
+    if (! lbar)
+      continue;
+
+    PlotLineBar *hbar = hh->data(keys.at(loop));
+    if (! hbar)
+      continue;
+
+    double t = rbar->data() - lbar->data();
+    double t2 = hbar->data() - lbar->data();
+    
+    line->setData(keys.at(loop), new PlotLineBar(color, t / t2));
   }
 
   delete rsi;

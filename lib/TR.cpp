@@ -20,18 +20,23 @@
  */
 
 #include "TR.h"
+#include "PlotLineBar.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 #include <cmath>
-
 
 TR::TR ()
 {
 }
 
-PlotLine * TR::getTR (BarData *data)
+PlotLine * TR::tr (BarData *data, int lineType, QColor &color)
 {
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
   int size = data->count();
   int loop = 1;
   for (; loop < size; loop++)
@@ -45,15 +50,19 @@ PlotLine * TR::getTR (BarData *data)
     t = fabs(bar->getLow() - pbar->getClose());
     if (t > tr)
       tr = t;
-    line->append(tr);
+    line->setData(loop, new PlotLineBar(color, tr));
   }
 
   return line;
 }
 
-PlotLine * TR::getNTR (BarData *data)
+PlotLine * TR::ntr (BarData *data, int lineType, QColor &color)
 {
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
   int size = data->count();
   int loop = 1;
   for (; loop < size; loop++)
@@ -68,7 +77,7 @@ PlotLine * TR::getNTR (BarData *data)
     if (t > tr)
       tr = t;
     
-    line->append((tr / bar->getClose()) * 100);
+    line->setData(loop, new PlotLineBar(color, (tr / bar->getClose()) * 100));
   }
 
   return line;

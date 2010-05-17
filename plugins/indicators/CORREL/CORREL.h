@@ -43,7 +43,7 @@ class CORREL : public IndicatorPlugin
     CORREL ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getCORREL (PlotLine *in, PlotLine *in2, int period);
+    PlotLine * getCORREL (PlotLine *in, PlotLine *in2, int period, int, QColor &);
     int dialog (int);
 
   private:

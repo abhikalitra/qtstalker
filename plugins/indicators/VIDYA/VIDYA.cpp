@@ -21,6 +21,8 @@
 
 #include "VIDYA.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
+#include "BARSUtils.h"
 
 #include <cmath>
 #include <QVector>
@@ -28,9 +30,12 @@
 
 #define PI 3.14159265
 
-
 VIDYA::VIDYA ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("VIDYA::error on TA_Initialize");
+
   indicator = "VIDYA";
 
   settings.setData(Color, "red");
@@ -43,29 +48,40 @@ VIDYA::VIDYA ()
 
 int VIDYA::getIndicator (Indicator &ind, BarData *data)
 {
+  QColor up("green");
+  QColor down("red");
+  QColor neutral("blue");
+  BARSUtils b;
+  PlotLine *bars = b.getBARS(data, up, down, neutral);
+  if (bars)
+    ind.addLine(bars);
+  
   QString s;
   settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
   int period = settings.getInt(Period);
   int volPeriod = settings.getInt(VPeriod);
 
-  PlotLine *line = getVIDYA(in, period, volPeriod);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getVIDYA(in, period, volPeriod, lineType, color);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -77,18 +93,19 @@ int VIDYA::getIndicator (Indicator &ind, BarData *data)
 
 int VIDYA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,VIDYA,<NAME>,<INPUT>,<PERIOD>,<VOLUME_PERIOD>
+  // INDICATOR,PLUGIN,VIDYA,<NAME>,<INPUT>,<PERIOD>,<VOLUME_PERIOD>,<PLOT TYPE>,<COLOR>
+  //     0       1      2     3       4       5            6             7         8
 
-  if (set.count() != 7)
+  if (set.count() != 9)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -98,7 +115,7 @@ int VIDYA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     inSignal = data->getInput(data->getInputType(set[4]));
     if (! inSignal)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
+      qDebug() << indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
@@ -109,146 +126,144 @@ int VIDYA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fast period settings" << set[5];
+    qDebug() << indicator << "::getCUS: invalid fast period settings" << set[5];
     return 1;
   }
 
   int volPeriod = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fast period settings" << set[6];
+    qDebug() << indicator << "::getCUS: invalid fast period settings" << set[6];
     return 1;
   }
 
-  PlotLine *line = getVIDYA(inSignal, period, volPeriod);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[7]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    return 1;
+  }
+
+  QColor color(set[8]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    return 1;
+  }
+
+  PlotLine *line = getVIDYA(inSignal, period, volPeriod, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-void VIDYA::calcCMO (PlotLine *outSignal, PlotLine *inSignal, int iPeriod)
+PlotLine * VIDYA::calcCMO (PlotLine *in, int period)
 {
-  //!  Chande Momentum Oscillator
-  //!  Raw VIDYA
+  if (in->count() < period)
+    return 0;
 
-  int loop = (int)inSignal->count();
+  TA_Real input[in->count()];
+  TA_Real out[in->count()];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
-  QVector<double> *inSeries = new QVector<double>(loop);
-  inSeries->fill(0.0);
-  QVector<double> *offset = new QVector<double>(loop);
-  offset->fill(0.0);
-  QVector<double> *mom = new QVector<double>(loop);
-  mom->fill(0.0);
-  QVector<double> *posSeries = new QVector<double>(loop);
-  posSeries->fill(0.0);
-  QVector<double> *negSeries = new QVector<double>(loop);
-  negSeries->fill(0.0);
-  QVector<double> *sumPos = new QVector<double>(loop);
-  sumPos->fill(0.0);
-  QVector<double> *sumNeg = new QVector<double>(loop);
-  sumNeg->fill(0.0);
-  QVector<double> *cmoUp = new QVector<double>(loop);
-  cmoUp->fill(0.0);
-  QVector<double> *cmoDown = new QVector<double>(loop);
-  cmoDown->fill(0.0);
-  QVector<double> *rawCmo = new QVector<double>(loop);
-  rawCmo->fill(0.0);
+  QList<int> keys;
+  in->keys(keys);
 
-  int i = 0;
-
-  for (i = 0; i < loop; i++)
-    (*inSeries)[i] = inSignal->getData(i);
-
-  for (i = iPeriod - 1; i < loop; i++)
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    (*offset)[i] = inSeries->at(i-1);
-
-    (*mom)[i] = inSeries->at(i) - offset->at(i);
-
-    if (mom->at(i) > 0)
-      (*posSeries)[i] = mom->at(i);
-    else
-      (*posSeries)[i] = 0;
-
-    if (mom->at(i) < 0)
-      (*negSeries)[i] = fabs(mom->at(i));
-    else
-      (*negSeries)[i] = 0;
-
-    int j = 0;
-    double sumUp = 0;
-    double sumDown = 0;
-
-    for (j = 0; j < iPeriod; j++)
-    {
-      sumUp += posSeries->at(i-j);
-      sumDown += negSeries->at(i-j);
-    }
-
-    (*sumPos)[i] = sumUp;
-    (*sumNeg)[i] = sumDown;
-
-    (*cmoUp)[i] = 100 * ((sumPos->at(i) - sumNeg->at(i)));
-
-    (*cmoDown)[i] = sumPos->at(i) + sumNeg->at(i);
-
-    (*rawCmo)[i] = cmoUp->at(i) / cmoDown->at(i);
-
-    if (i > iPeriod -1)
-      outSignal->append(rawCmo->at(i));
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
   }
 
-  delete inSeries;
-  delete offset;
-  delete mom;
-  delete posSeries;
-  delete negSeries;
-  delete sumPos;
-  delete sumNeg;
-  delete cmoUp;
-  delete cmoDown;
-  delete rawCmo;
+  TA_RetCode rc = TA_CMO(0,
+                         keys.count() - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getCMO: TA-Lib error" << rc;
+    return 0;
+  }
+
+  PlotLine *line = new PlotLine;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setData(keys.at(keyLoop), new PlotLineBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  return line;
 }
 
-PlotLine * VIDYA::getVIDYA (PlotLine *inSignal, int period, int volPeriod)
+PlotLine * VIDYA::getVIDYA (PlotLine *inSignal, int period, int volPeriod, int lineType, QColor &color)
 {
-  PlotLine *out = new PlotLine;
-  PlotLine *cmo = new PlotLine;
+  PlotLine *cmo = calcCMO(inSignal, volPeriod);
+  if (! cmo)
+    return 0;
 
-  calcCMO(cmo, inSignal, volPeriod);
+  PlotFactory fac;
+  PlotLine *out = fac.plot(lineType);
+  if (! out)
+  {
+    delete cmo;
+    return 0;
+  }
 
-  int i = 0;
-  int loop = (int)inSignal->count();
-
-  QVector<double> *inSeries = new QVector<double>(loop);
+  int size = inSignal->count();
+  QVector<double> *inSeries = new QVector<double>(size);
   inSeries->fill(0.0);
-  QVector<double> *offset = new QVector<double>(loop);
+  QVector<double> *offset = new QVector<double>(size);
   offset->fill(0.0);
-  QVector<double> *absCmo = new QVector<double>(loop);
+  QVector<double> *absCmo = new QVector<double>(size);
   absCmo->fill(0.0);
-  QVector<double> *vidya = new QVector<double>(loop);
+  QVector<double> *vidya = new QVector<double>(size);
   vidya->fill(0.0);
 
   double c = 2 / (double) period + 1;
 
-  for ( i = 0; i < loop; i++)
-    (*inSeries)[i] = inSignal->getData(i);
+  QList<int> keys;
+  inSignal->keys(keys);
+  
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = inSignal->data(keys.at(loop));
+    (*inSeries)[loop] = bar->data();
+  }
+
+  keys.clear();
+  cmo->keys(keys);
 
   int index = inSeries->size() -1;
-  for (i = cmo->count() -1; i >= 0; i--)
+  loop = keys.count() - 1;
+  for (; loop > -1; loop--)
   {
-    (*absCmo)[index] = fabs(cmo->getData(i) / 100);
+    PlotLineBar *bar = cmo->data(keys.at(loop));
+    (*absCmo)[index] = fabs(bar->data() / 100);
     index--;
   }
 
-  for (i = volPeriod + period; i < (int)inSeries->size(); i++)		// period safty
+  loop = volPeriod + period;
+  for (; loop < (int) inSeries->size(); loop++)		// period safty
   {
-    (*vidya)[i] = ( inSeries->at(i) * c * absCmo->at(i) ) + ( (1 - absCmo->at(i) * c) * vidya->at(i-1) );
+    (*vidya)[loop] = (inSeries->at(loop) * c * absCmo->at(loop)) + ((1 - absCmo->at(loop) * c) * vidya->at(loop - 1));
     //!  (Price*Const*AbsCMO) + ((1-AbsCMO*Const)*VIDYA[1]),Price);
-    out->append(vidya->at(i));
+    out->setData(loop, new PlotLineBar(color, vidya->at(loop)));
   }
 
   delete inSeries;

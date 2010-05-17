@@ -23,21 +23,26 @@
 #define PLOT_LINE_BAR_HPP
 
 #include <QColor>
-#include <QList>
+#include <QHash>
 
 class PlotLineBar
 {
   public:
     PlotLineBar ();
-    void append (double);
-    double getData (int);
+    PlotLineBar (double);
+    PlotLineBar (QColor &, double);
+    double data (int);
+    double data ();
+    void setData (int, double);
+    void setData (double);
     void setColor (QColor &);
-    void getColor (QColor &);
+    QColor & color ();
     int count ();
+    void highLow (double &, double &);
 
   protected:
-    QList<double> data;
-    QColor color;
+    QHash<int, double> _data;
+    QColor _color;
 };
 
 #endif

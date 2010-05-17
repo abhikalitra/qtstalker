@@ -24,7 +24,6 @@
 
 #include <QtDebug>
 
-
 VAR::VAR ()
 {
   indicator = "VAR";
@@ -43,23 +42,26 @@ int VAR::getIndicator (Indicator &ind, BarData *data)
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
   int period = settings.getInt(Period);
 
-  PlotLine *line = getVAR(in, period);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getVAR(in, period, lineType, color);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -71,18 +73,19 @@ int VAR::getIndicator (Indicator &ind, BarData *data)
 
 int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,VAR,<NAME>,<INPUT>,<PERIOD>
+  // INDICATOR,PLUGIN,VAR,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
+  //     0       1    2     3       4        5         6         7
 
-  if (set.count() != 5)
+  if (set.count() != 7)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -92,7 +95,7 @@ int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
+      qDebug() << indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
@@ -103,44 +106,70 @@ int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period settings" << set[5];
+    qDebug() << indicator << "::getCUS: invalid period settings" << set[5];
     return 1;
   }
 
-  PlotLine *line = getVAR(in, period);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getVAR(in, period, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * VAR::getVAR (PlotLine *in, int period)
+PlotLine * VAR::getVAR (PlotLine *in, int period, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
 
-  PlotLine *line = new PlotLine;
-  int size = in->count();
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
 
+  QList<int> keys;
+  in->keys(keys);
+  
   int loop = period;
-  for (; loop < size; loop++)
+  for (; loop < keys.count(); loop++)
   {
     double mean = 0;
     int count = 0;
     for (; count < period; count++)
-      mean += in->getData(loop - count);
+    {
+      PlotLineBar *bar = in->data(keys.at(loop - count));
+      mean += bar->data();
+    }
     mean = mean / period;
 
     double total = 0;
     for (count = 0; count < period; count++)
     {
-      double t = in->getData(loop - count) - mean;
+      PlotLineBar *bar = in->data(keys.at(loop - count));
+      double t = bar->data() - mean;
       total += t * t;
     }
 
-    line->append(total / (double) period);
+    line->setData(keys.at(loop), new PlotLineBar(color, total / (double) period));
   }
 
   return line;

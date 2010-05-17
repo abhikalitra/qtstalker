@@ -22,13 +22,14 @@
 #ifndef DOT_HPP
 #define DOT_HPP
 
-#include "PlotPlugin.h"
+#include "PlotLine.h"
 
-class Dot : public PlotPlugin
+class Dot : public PlotLine
 {
   public:
     Dot ();
-    void draw (PlotLine *, PlotData &, Scaler &);
+    void draw (PlotData &, Scaler &);
+    void info (int, Setting *);
 };
 
 #endif

@@ -20,7 +20,6 @@
  */
 
 #include "SCPlot.h"
-#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -32,12 +31,12 @@ SCPlot::SCPlot ()
 int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, PlotLine *> &tlines,
 		       QByteArray &ba)
 {
-  // format 'PLOT,NAME,LABEL,LINE_TYPE'
+  // format 'PLOT,NAME'
   
   ba.clear();
   ba.append("ERROR\n");
 
-  if (l.count() != 4)
+  if (l.count() != 2)
   {
     qDebug() << "SCPlot::calculate: invalid parm count" << l.count();
     return 1;
@@ -50,17 +49,6 @@ int SCPlot::calculate (QStringList &l, QStringList &plotOrder, QHash<QString, Pl
     return 1;
   }
   
-  PlotFactory fac;
-  QStringList pl;
-  fac.list(pl, 0);
-  if (pl.indexOf(l[3]) == -1)
-  {
-    qDebug() << "SCPlot::calculate: invalid line type" << l[3];
-    return 1;
-  }
-
-  line->setLabel(l[2]);
-  line->setPlugin(l[3]);
   line->setPlotFlag(TRUE);
 
   plotOrder.append(l[1]);

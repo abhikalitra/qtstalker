@@ -22,13 +22,15 @@
 #ifndef RSIUtils_HPP
 #define RSIUtils_HPP
 
-#include "IndicatorPlugin.h"
+#include <QColor>
 
-class RSIUtils : public IndicatorPlugin
+#include "PlotLine.h"
+
+class RSIUtils
 {
   public:
     RSIUtils ();
-    PlotLine * getRSI (PlotLine *, int);
+    PlotLine * rsi (PlotLine *, int, int, QColor &);
 };
 
 #endif

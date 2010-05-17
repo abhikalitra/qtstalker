@@ -20,11 +20,10 @@
  */
 
 #include "MOM.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
-
 
 MOM::MOM ()
 {
@@ -46,31 +45,31 @@ int MOM::getIndicator (Indicator &ind, BarData *data)
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
   int period = settings.getInt(Period);
   int smoothing = settings.getInt(Smoothing);
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  
+  MAFactory mau;
   settings.getData(SmoothingType, s);
-  int type = maList.indexOf(s);
+  int type = mau.typeFromString(s);
 
-  PlotLine *line = getMOM(in, period, smoothing, type);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getMOM(in, period, smoothing, type, lineType, color);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -82,18 +81,19 @@ int MOM::getIndicator (Indicator &ind, BarData *data)
 
 int MOM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,MOM,<NAME>,<INPUT>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
+  // INDICATOR,PLUGIN,MOM,<NAME>,<INPUT>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
+  //     0       1     2     3      4       5             6                  7             8         9
 
-  if (set.count() != 8)
+  if (set.count() != 10)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -103,7 +103,7 @@ int MOM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
+      qDebug() << indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
@@ -114,51 +114,76 @@ int MOM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period parm" << set[5];
+    qDebug() << indicator << "::getCUS: invalid period parm" << set[5];
     return 1;
   }
 
   int smoothing = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing" << set[6];
+    qDebug() << indicator << "::getCUS: invalid smoothing" << set[6];
     return 1;
   }
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int type = maList.indexOf(set[7]);
+  MAFactory mau;
+  int type = mau.typeFromString(set[7]);
   if (type == -1)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing type" << set[7];
+    qDebug() << indicator << "::getCUS: invalid smoothing type" << set[7];
     return 1;
   }
 
-  PlotLine *line = getMOM(in, period, smoothing, type);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[8]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[8];
+    return 1;
+  }
+
+  QColor color(set[9]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[9];
+    return 1;
+  }
+
+  PlotLine *line = getMOM(in, period, smoothing, type, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * MOM::getMOM (PlotLine *in, int period, int smoothing, int type)
+PlotLine * MOM::getMOM (PlotLine *in, int period, int smoothing, int type, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
   
-  PlotLine *line = new PlotLine;
-  int size = in->count();
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+  
   int loop = period;
-  for (; loop < size; loop++)
-    line->append(in->getData(loop) - in->getData(loop - period));
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    PlotLineBar *bar2 = in->data(keys.at(loop - period));
+    line->setData(keys.at(loop), new PlotLineBar(color, bar->data() - bar2->data()));
+  }
 
   if (smoothing > 1)
   {
-    MAUtils mau;
-    PlotLine *ma = mau.getMA(line, smoothing, type);
+    MAFactory mau;
+    PlotLine *ma = mau.ma(line, smoothing, type, lineType, color);
     delete line;
     line = ma;
   }
@@ -194,8 +219,8 @@ int MOM::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);

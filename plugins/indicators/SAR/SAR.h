@@ -39,7 +39,7 @@ class SAR : public IndicatorPlugin
     SAR ();
     int getIndicator (Indicator &, BarData *);
     int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
-    PlotLine * getSAR (BarData *, double, double);
+    PlotLine * getSAR (BarData *, double, double, int, QColor &);
     int dialog (int);
 
   protected:

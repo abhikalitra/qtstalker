@@ -70,14 +70,10 @@ Setting * PlotInfo::getInfo (QPoint &p, PlotData &pd, Indicator &indicator, Date
   for (loop = 0; loop < plotList.count(); loop++)
   {
     PlotLine *line = plotList.at(loop);
-    line->getPlugin(s);
-
-    if (s == "Horizontal")
+    if (line->type() == "Horizontal")
       continue;
       
-    int li = line->count() - dateBars.count() + pd.infoIndex;
-    if (li > -1 && li < line->count())
-      line->getInfo(li, r);
+    line->info(pd.infoIndex, r);
   }
 
   if (! r->count())
@@ -135,26 +131,20 @@ void PlotInfo::drawInfo (PlotData &pd, Indicator &indicator, DateBar &dateBars)
     if (! line->count())
       continue;
       
-    QString ts;
-    line->getPlugin(ts);
-    if (ts == "Horizontal")
+    if (line->type() == "Horizontal")
       continue;
       
-    QColor c;
-    int index = line->count() - dateBars.count() + pd.infoIndex;
-    if (index < 0 || index >= line->count())
+    PlotLineBar *bar = line->data(pd.infoIndex);
+    if (! bar)
       continue;
-    
-    double d = line->getData(index, c);
 	
-    line->getLabel(s);
-    s.append("=");
+    s = line->label() + "=";
     QString str;
-    util.strip(d, 4, str);
+    util.strip(bar->data(), 4, str);
     s.append(str);
     s.append(" ");
 
-    painter.setPen(c);
+    painter.setPen(bar->color());
     painter.drawText(pos, 10, s);
     pos = pos + fm.width(s);
   }
@@ -162,7 +152,7 @@ void PlotInfo::drawInfo (PlotData &pd, Indicator &indicator, DateBar &dateBars)
   painter.end();
 }
 
-void PlotInfo::getPointInfo (PlotData &pd, QList<Setting> &l, Indicator &indicator, DateBar &dateBars)
+void PlotInfo::getPointInfo (PlotData &pd, QList<Setting> &l, Indicator &indicator)
 {
   l.clear();
   
@@ -174,27 +164,22 @@ void PlotInfo::getPointInfo (PlotData &pd, QList<Setting> &l, Indicator &indicat
   for (loop = 0; loop < plotList.count(); loop++)
   {
     PlotLine *line = plotList.at(loop);
-    QString s;
-    line->getPlugin(s);
-
-    if (s == "Horizontal")
+    if (line->type() == "Horizontal")
       continue;
       
-    int li = line->count() - dateBars.count() + pd.infoIndex;
-    if (li > -1 && li < line->count())
-    {
-      Setting set;
-      QColor color;
-      double v = line->getData(li, color);
+    PlotLineBar *bar = line->data(pd.infoIndex);
+    if (! bar)
+      continue;
+    
+    QColor color = bar->color();
+    Setting set;
+    QString s = color.name();
+    set.setData(0, s);
 
-      s = color.name();
-      set.setData(0, s);
-
-      util.strip(v, 4, s);
-      set.setData(1, s);
+    util.strip(bar->data(), 4, s);
+    set.setData(1, s);
       
-      l.append(set);
-    }
+    l.append(set);
   }
 }
 

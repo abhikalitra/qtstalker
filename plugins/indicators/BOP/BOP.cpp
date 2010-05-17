@@ -20,7 +20,7 @@
  */
 
 #include "BOP.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
@@ -42,21 +42,21 @@ int BOP::getIndicator (Indicator &ind, BarData *data)
   QString s;
   int smoothing = settings.getInt(Smoothing);
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  
+  MAFactory mau;
   settings.getData(SmoothingType, s);
-  int type = maList.indexOf(s);
+  int type = mau.typeFromString(s);
 
-  PlotLine *line = getBOP(data, smoothing, type);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  settings.getData(Plot, s);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getBOP(data, smoothing, type, lineType, color);
   if (! line)
     return 1;
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -66,18 +66,19 @@ int BOP::getIndicator (Indicator &ind, BarData *data)
 
 int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,BOP,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
+  // INDICATOR,PLUGIN,BOP,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
+  //     0       1     2    3             4                 5             6         7
 
-  if (set.count() != 6)
+  if (set.count() != 8)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -85,47 +86,67 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int smoothing = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing period" << set[4];
+    qDebug() << indicator << "::getCUS: invalid smoothing period" << set[4];
     return 1;
   }
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int ma = maList.indexOf(set[5]);
+  MAFactory mau;
+  int ma = mau.typeFromString(set[5]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing type" << set[5];
+    qDebug() << indicator << "::getCUS: invalid smoothing type" << set[5];
     return 1;
   }
 
-  PlotLine *line = getBOP(data, smoothing, ma);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getBOP(data, smoothing, ma, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * BOP::getBOP (BarData *data, int smoothing, int type)
+PlotLine * BOP::getBOP (BarData *data, int smoothing, int type, int lineType, QColor &color)
 {
   if (! data->count())
     return 0;
   
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
   int size = data->count();
   int loop = 0;
   for (; loop < size; loop++)
   {
     Bar *bar = data->getBar(loop);
-    line->append((bar->getClose() - bar->getOpen()) / (bar->getHigh() - bar->getLow()));
+    double v = (bar->getClose() - bar->getOpen()) / (bar->getHigh() - bar->getLow());
+    line->setData(loop, new PlotLineBar(color, v));
   }
 
   if (smoothing > 1)
   {
-    MAUtils mau;
-    PlotLine *ma = mau.getMA(line, smoothing, type);
+    MAFactory mau;
+    PlotLine *ma = mau.ma(line, smoothing, type, lineType, color);
     delete line;
     line = ma;
   }
@@ -159,8 +180,8 @@ int BOP::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);

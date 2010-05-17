@@ -39,7 +39,7 @@ class CMO : public IndicatorPlugin
     CMO ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getCMO (PlotLine *in, int period);
+    PlotLine * getCMO (PlotLine *in, int period, int, QColor &);
     int dialog (int);
 };
 

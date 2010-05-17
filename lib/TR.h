@@ -22,14 +22,17 @@
 #ifndef TR_HPP
 #define TR_HPP
 
+#include <QColor>
+
 #include "BarData.h"
+#include "PlotLine.h"
 
 class TR
 {
   public:
     TR ();
-    PlotLine * getTR (BarData *data);
-    PlotLine * getNTR (BarData *data);
+    PlotLine * tr (BarData *data, int, QColor &);
+    PlotLine * ntr (BarData *data, int, QColor &);
 };
 
 #endif

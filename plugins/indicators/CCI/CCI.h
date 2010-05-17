@@ -44,7 +44,7 @@ class CCI : public IndicatorPlugin
     CCI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getCCI (BarData *data, int period, int smoothing, int type);
+    PlotLine * getCCI (BarData *data, int period, int smoothing, int type, int, QColor &);
     int dialog (int);
 
   protected:

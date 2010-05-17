@@ -28,14 +28,12 @@
 3) explosive move expected when therm stays below MA for 5-7 days
 */
 
-
 #include "THERM.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
 #include <cmath>
-
 
 THERM::THERM ()
 {
@@ -60,19 +58,21 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   QString s;
   int smoothing = settings.getInt(Smoothing);
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  
+  MAFactory mau;
   settings.getData(SmoothingType, s);
-  int type = maList.indexOf(s);
+  int type = mau.typeFromString(s);
 
-  PlotLine *line = getTHERM(data, smoothing, type);
+  settings.getData(MAColor, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  s = "Histogram Bar";
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getTHERM(data, smoothing, type, lineType, color);
   if (! line)
     return 1;
 
-  s = "Histogram Bar";
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
 
@@ -80,25 +80,25 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   int maPeriod = settings.getInt(MAPeriod);
 
   settings.getData(MAType, s);
-  int maType = maList.indexOf(s);
+  int maType = mau.typeFromString(s);
 
-  PlotLine *ma = mau.getMA(line, maPeriod, maType);
+  settings.getData(MAColor, s);
+  color.setNamedColor(s);
+
+  settings.getData(MAPlot, s);
+  lineType = fac.typeFromString(s);
+
+  PlotLine *ma = mau.ma(line, maPeriod, maType, lineType, color);
   if (! ma)
   {
     delete line;
     return 1;
   }
 
-  settings.getData(MAColor, s);
-  ma->setColor(s);
-  settings.getData(MAPlot, s);
-  ma->setPlugin(s);
   settings.getData(MALabel, s);
   ma->setLabel(s);
 
   // assign therm colors
-  int thermLoop = line->count() - 1;
-  int maLoop = ma->count() - 1;
   double threshold = settings.getDouble(Threshold);
 
   settings.getData(ThreshColor, s);
@@ -108,28 +108,31 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   settings.getData(DownColor, s);
   QColor downColor(s);
 
-  while (thermLoop > -1)
+  QList<int> keys;
+  line->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    if (maLoop > -1)
+    PlotLineBar *lbar = line->data(keys.at(loop));
+    PlotLineBar *mbar = ma->data(keys.at(loop));
+    if (! mbar)
+      lbar->setColor(downColor);
+    else
     {
-      double thrm = line->getData(thermLoop);
-      double thrmma = ma->getData(maLoop);
+      double thrm = lbar->data();
+      double thrmma = mbar->data();
 
       if (thrm > (thrmma * threshold))
-        line->setColorBar(thermLoop, threshColor);
+        lbar->setColor(threshColor);
       else
       {
         if (thrm > thrmma)
-          line->setColorBar(thermLoop, upColor);
+          lbar->setColor(upColor);
         else
-          line->setColorBar(thermLoop, downColor);
+          lbar->setColor(downColor);
       }
     }
-    else
-      line->setColorBar(thermLoop, downColor);
-
-    thermLoop--;
-    maLoop--;
   }
 
   ind.addLine(line);
@@ -140,18 +143,18 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
 
 int THERM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,THERM,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
+  // INDICATOR,PLUGIN,THERM,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
 
-  if (set.count() != 6)
+  if (set.count() != 8)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -159,35 +162,54 @@ int THERM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   int smoothing = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing" << set[4];
+    qDebug() << indicator << "::getCUS: invalid smoothing" << set[4];
     return 1;
   }
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int type = maList.indexOf(set[5]);
+  MAFactory mau;
+  int type = mau.typeFromString(set[5]);
   if (type == -1)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing type" << set[5];
+    qDebug() << indicator << "::getCUS: invalid smoothing type" << set[5];
     return 1;
   }
 
-  PlotLine *line = getTHERM(data, smoothing, type);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getTHERM(data, smoothing, type, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * THERM::getTHERM (BarData *data, int smoothing, int type)
+PlotLine * THERM::getTHERM (BarData *data, int smoothing, int type, int lineType, QColor &color)
 {
-  PlotLine *line = new PlotLine();
-  int loop;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  int loop = 1;
   double thermometer = 0;
-  for (loop = 1; loop < (int) data->count(); loop++)
+  for (; loop < (int) data->count(); loop++)
   {
     Bar *bar = data->getBar(loop);
     Bar *pbar = data->getBar(loop - 1);
@@ -199,13 +221,13 @@ PlotLine * THERM::getTHERM (BarData *data, int smoothing, int type)
     else
       thermometer = lo;
 
-    line->append(thermometer);
+    line->setData(loop, new PlotLineBar(color, thermometer));
   }
 
   if (smoothing > 1)
   {
-    MAUtils mau;
-    PlotLine *ma = mau.getMA(line, smoothing, type);
+    MAFactory mau;
+    PlotLine *ma = mau.ma(line, smoothing, type, lineType, color);
     if (! ma)
     {
       delete line;
@@ -246,8 +268,8 @@ int THERM::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
   
   settings.getData(SmoothingType, d);
   dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);

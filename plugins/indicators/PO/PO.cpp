@@ -20,11 +20,10 @@
  */
 
 #include "PO.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
-
 
 PO::PO ()
 {
@@ -49,34 +48,34 @@ int PO::getIndicator (Indicator &ind, BarData *data)
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
   int fast = settings.getInt(FastPeriod);
   int slow = settings.getInt(SlowPeriod);
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  
+  MAFactory mau;
   settings.getData(MAType, s);
-  int ma = maList.indexOf(s);
+  int ma = mau.typeFromString(s);
 
   settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
-  PlotLine *line = getPO(in, fast, slow, ma, method);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getPO(in, fast, slow, ma, method, lineType, color);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -88,25 +87,26 @@ int PO::getIndicator (Indicator &ind, BarData *data)
 
 int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,PO,METHOD,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>
+  // INDICATOR,PLUGIN,PO,<METHOD>,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>,<PLOT TYPE>,<COLOR>
+  //     0       1     2    3       4      5         6             7           8           9         10
 
-  if (set.count() != 9)
+  if (set.count() != 11)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   int method = methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[3];
+    qDebug() << indicator << "::getCUS: invalid method" << set[3];
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
     return 1;
   }
 
@@ -116,7 +116,7 @@ int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     in = data->getInput(data->getInputType(set[5]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[5];
+      qDebug() << indicator << "::getCUS: input not found" << set[5];
       return 1;
     }
 
@@ -127,37 +127,52 @@ int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int fast = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fast period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid fast period" << set[6];
     return 1;
   }
 
   int slow = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid slow period" << set[7];
+    qDebug() << indicator << "::getCUS: invalid slow period" << set[7];
     return 1;
   }
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int ma = maList.indexOf(set[8]);
+  MAFactory mau;
+  int ma = mau.typeFromString(set[8]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid ma" << set[8];
+    qDebug() << indicator << "::getCUS: invalid ma" << set[8];
     return 1;
   }
 
-  PlotLine *line = getPO(in, fast, slow, ma, method);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[9]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[9];
+    return 1;
+  }
+
+  QColor color(set[10]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[10];
+    return 1;
+  }
+
+  PlotLine *line = getPO(in, fast, slow, ma, method, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[4]);
 
   tlines.insert(set[4], line);
 
   return 0;
 }
 
-PlotLine * PO::getPO (PlotLine *in, int fast, int slow, int ma, int method)
+PlotLine * PO::getPO (PlotLine *in, int fast, int slow, int ma, int method, int lineType, QColor &color)
 {
   if (in->count() < fast || in->count() < slow)
     return 0;
@@ -167,44 +182,54 @@ PlotLine * PO::getPO (PlotLine *in, int fast, int slow, int ma, int method)
   switch ((_Method) method)
   {
     case APO:
-      line = getAPO(in, fast, slow, ma);
+      line = getAPO(in, fast, slow, ma, lineType, color);
       break;
     case PPO:
-      line = getPPO(in, fast, slow, ma);
+      line = getPPO(in, fast, slow, ma, lineType, color);
       break;
     default:
       break;
   }
       
-  if (! line)
-    return 0;
-
   return line;
 }
 
-PlotLine * PO::getAPO (PlotLine *in, int fast, int slow, int ma)
+PlotLine * PO::getAPO (PlotLine *in, int fast, int slow, int ma, int lineType, QColor &color)
 {
-  MAUtils mau;
-  PlotLine *fma = mau.getMA(in, fast, ma);
+  MAFactory mau;
+  PlotLine *fma = mau.ma(in, fast, ma, lineType, color);
   if (! fma)
     return 0;
 
-  PlotLine *sma = mau.getMA(in, slow, ma);
+  PlotLine *sma = mau.ma(in, slow, ma, lineType, color);
   if (! sma)
   {
     delete fma;
     return 0;
   }
 
-  int slowLoop = sma->count() - 1;
-  int fastLoop = fma->count() - 1;
-  PlotLine *line = new PlotLine;
+  QList<int> keys;
+  sma->keys(keys);
   
-  while (fastLoop > -1 && slowLoop > -1)
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
   {
-    line->prepend(fma->getData(fastLoop) - sma->getData(slowLoop));
-    fastLoop--;
-    slowLoop--;
+    delete fma;
+    delete sma;
+    return 0;
+  }
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *fbar = fma->data(keys.at(loop));
+    if (! fbar)
+      continue;
+    
+    PlotLineBar *sbar = sma->data(keys.at(loop));
+    
+    line->setData(keys.at(loop), new PlotLineBar(color, fbar->data() - sbar->data()));
   }
 
   delete fma;
@@ -213,29 +238,42 @@ PlotLine * PO::getAPO (PlotLine *in, int fast, int slow, int ma)
   return line;
 }
 
-PlotLine * PO::getPPO (PlotLine *in, int fast, int slow, int ma)
+PlotLine * PO::getPPO (PlotLine *in, int fast, int slow, int ma, int lineType, QColor &color)
 {
-  MAUtils mau;
-  PlotLine *fma = mau.getMA(in, fast, ma);
+  MAFactory mau;
+  PlotLine *fma = mau.ma(in, fast, ma, lineType, color);
   if (! fma)
     return 0;
 
-  PlotLine *sma = mau.getMA(in, slow, ma);
+  PlotLine *sma = mau.ma(in, slow, ma, lineType, color);
   if (! sma)
   {
     delete fma;
     return 0;
   }
 
-  int slowLoop = sma->count() - 1;
-  int fastLoop = fma->count() - 1;
-  PlotLine *line = new PlotLine;
+  QList<int> keys;
+  sma->keys(keys);
 
-  while (fastLoop > -1 && slowLoop > -1)
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
   {
-    line->prepend(((fma->getData(fastLoop) - sma->getData(slowLoop)) / sma->getData(slowLoop)) * 100);
-    fastLoop--;
-    slowLoop--;
+    delete fma;
+    delete sma;
+    return 0;
+  }
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *fbar = fma->data(keys.at(loop));
+    if (! fbar)
+      continue;
+
+    PlotLineBar *sbar = sma->data(keys.at(loop));
+
+    line->setData(keys.at(loop), new PlotLineBar(((fbar->data() - sbar->data()) / sbar->data()) * 100));
   }
 
   delete fma;
@@ -279,8 +317,8 @@ int PO::dialog (int)
   dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 2, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
 
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

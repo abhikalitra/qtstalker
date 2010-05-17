@@ -22,13 +22,14 @@
 #ifndef DASH_HPP
 #define DASH_HPP
 
-#include "PlotPlugin.h"
+#include "PlotLine.h"
 
-class Dash : public PlotPlugin
+class Dash : public PlotLine
 {
   public:
     Dash ();
-    void draw (PlotLine *, PlotData &, Scaler &);
+    void draw (PlotData &, Scaler &);
+    void info (int, Setting *);
 };
 
 #endif

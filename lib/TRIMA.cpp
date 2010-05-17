@@ -19,19 +19,52 @@
  *  USA.
  */
 
-#include "PlotPlugin.h"
+#include "TRIMA.h"
+#include "SMA.h"
+#include "PlotFactory.h"
+#include "PlotLineBar.h"
 
-PlotPlugin::PlotPlugin ()
+#include <QList>
+#include <QtDebug>
+
+TRIMA::TRIMA ()
 {
 }
 
-PlotPlugin::~PlotPlugin ()
+PlotLine * TRIMA::trima (PlotLine *in, int period, int lineType, QColor &color)
 {
-}
+  if (in->count() < period)
+    return 0;
 
-// virtual function
-void PlotPlugin::draw (PlotLine *, PlotData &, Scaler &)
-{
-}
+  int period1 = 0;
+  int period2 = 0;
+  if (period % 2 == 0)
+  {
+    // even period
+    period1 = period / 2;
+    period2 = period1;
+    period2++;
+  }
+  else
+  {
+    // ood
+    period1 = (period / 2) + 1;
+    period2 = period1;
+  }
 
+  SMA sma;
+  PlotLine *sma1 = sma.sma(in, period1, lineType, color);
+  if (! sma1)
+    return 0;
+
+  PlotLine *sma2 = sma.sma(sma1, period2, lineType, color);
+  if (! sma2)
+  {
+    delete sma1;
+    return 0;
+  }
+
+  delete sma1;
+  return sma2;
+}
 

@@ -19,21 +19,18 @@
  *  USA.
  */
 
-#ifndef COLOR_HPP
-#define COLOR_HPP
+#ifndef SMA_HPP
+#define SMA_HPP
 
-#include "IndicatorPlugin.h"
+#include <QColor>
 
-class COLOR : public IndicatorPlugin
+#include "PlotLine.h"
+
+class SMA
 {
   public:
-    COLOR ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getCompare (QStringList &set, QHash<QString, PlotLine *> &tlines);
-    int getAll (QStringList &set, QHash<QString, PlotLine *> &tlines);
-    
-  protected:
-    QStringList methodList;
+    SMA ();
+    PlotLine * sma(PlotLine *, int, int, QColor &);
 };
 
 #endif

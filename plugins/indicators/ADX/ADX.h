@@ -64,11 +64,11 @@ class ADX : public IndicatorPlugin
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int dialog (int);
 
-    PlotLine * getLine (BarData *data, int period, int method);
-    PlotLine * getADX (BarData *, int);
-    PlotLine * getADXR (BarData *, int);
-    PlotLine * getDX (BarData *, int);
-    PlotLine * getDI (BarData *, int, int);  // flag=1 gets +DI, flag=0 gets -DI
+    PlotLine * getLine (BarData *data, int period, int method, int lineType, QColor &color);
+    PlotLine * getADX (BarData *, int, int, QColor &);
+    PlotLine * getADXR (BarData *, int, int, QColor &);
+    PlotLine * getDX (BarData *, int, int, QColor &);
+    PlotLine * getDI (BarData *, int, int, int, QColor &);  // flag=1 gets +DI, flag=0 gets -DI
     PlotLine * getDM (BarData *, int); // flag=1 gets +DM, flag=0 gets -DM
 
   protected:

@@ -20,12 +20,13 @@
  */
 
 #include "STDDEV.h"
-#include "MAUtils.h"
+#include "SMA.h"
+#include "PlotLineBar.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 #include <QObject>
 #include <cmath>
-
 
 STDDEV::STDDEV ()
 {
@@ -35,89 +36,115 @@ STDDEV::STDDEV ()
 
 int STDDEV::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,STDDEV,METHOD,<NAME>,<INPUT>,<PERIOD>,<DEVIATION>
-  //     0      1       2     3       4     5        6          7
+  // INDICATOR,PLUGIN,STDDEV,<NAME>,<INPUT>,<PERIOD>,<DEVIATION>,<LINE TYPE>,<COLOR>
+  //     0      1       2      3       4       5         6            7         8
 
-  if (set.count() != 8)
+  if (set.count() != 9)
   {
     qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
+  PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[5]);
+  PlotLine *in = tlines.value(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[5]));
+    in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::getCUS: input not found" << set[5];
+      qDebug() << indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[5], in);
+    tlines.insert(set[4], in);
   }
 
   bool ok;
-  int period = set[6].toInt(&ok);
+  int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid period" << set[5];
     return 1;
   }
 
-  double dev= set[7].toDouble(&ok);
+  double dev= set[6].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid deviation" << set[7];
+    qDebug() << indicator << "::getCUS: invalid deviation" << set[6];
     return 1;
   }
 
-  PlotLine *line = getSTDDEV(in, period, dev);
+  PlotFactory fac;
+  QStringList pl;
+  fac.list(pl, 1);
+  int lineType = pl.indexOf(set[7]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    return 1;
+  }
+
+  QColor color(set[8]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    return 1;
+  }
+
+  PlotLine *line = stddev(in, period, dev, lineType, color);
   if (! line)
     return 1;
 
-  tlines.insert(set[4], line);
+  tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * STDDEV::getSTDDEV (PlotLine *in, int period, double dev)
+PlotLine * STDDEV::stddev (PlotLine *in, int period, double dev, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
 
-  MAUtils mau;
-  PlotLine *sma = mau.getMA(in, period, MAUtils::SMA);
+  SMA ma;
+  PlotLine *sma = ma.sma(in, period, lineType, color);
   if (! sma)
     return 0;
   
-  PlotLine *line = new PlotLine;
-  int inLoop = in->count() - 1;
-  int smaLoop = sma->count() - 1;
-  int start = period - 1;
-
-  while (inLoop >= start && smaLoop > -1)
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
   {
+    delete sma;
+    return 0;
+  }
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = period - 1;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *smabar = sma->data(keys.at(loop));
+    if (! smabar)
+      continue;
+    
     double total = 0;
     int count = 0;
     for (count = 0; count < period; count++)
     {
-      double t = in->getData(inLoop - count) - sma->getData(smaLoop);
+      PlotLineBar *bar = in->data(keys.at(loop - count));
+      double t = bar->data() - smabar->data();
       total += t * t;
     }
 
     double var = total / (double) period;
-    line->prepend(sqrt(var) * dev);
-
-    inLoop--;
-    smaLoop--;
+    line->setData(keys.at(loop), new PlotLineBar(color, sqrt(var) * dev));
   }
 
   delete sma;

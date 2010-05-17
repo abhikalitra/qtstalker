@@ -29,7 +29,7 @@ class MAX : public IndicatorPlugin
   public:
     MAX ();
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getMAX (PlotLine *, int);
+    PlotLine * max (PlotLine *, int, int, QColor &);
 };
 
 #endif

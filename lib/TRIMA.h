@@ -19,17 +19,18 @@
  *  USA.
  */
 
-#ifndef SUB_HPP
-#define SUB_HPP
+#ifndef TRIMA_HPP
+#define TRIMA_HPP
 
-#include "IndicatorPlugin.h"
+#include <QColor>
 
-class SUB : public IndicatorPlugin
+#include "PlotLine.h"
+
+class TRIMA
 {
   public:
-    SUB ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getSUB (PlotLine *, PlotLine *);
+    TRIMA ();
+    PlotLine * trima(PlotLine *, int, int, QColor &);
 };
 
 #endif

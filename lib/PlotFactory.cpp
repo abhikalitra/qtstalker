@@ -36,41 +36,47 @@ PlotFactory::PlotFactory ()
   _plotList << "Candle" << "Dash" << "Dot" << "Histogram" << "Histogram Bar" << "Horizontal" << "Line" << "OHLC";
 }
 
-PlotPlugin * PlotFactory::plot (QString &plot)
+PlotLine * PlotFactory::plot (int type)
 {
-  PlotPlugin *plug = 0;
+  QString s = _plotList.at(type);
+  return plot(s);
+}
+
+PlotLine * PlotFactory::plot (QString &plot)
+{
+  PlotLine *line = 0;
   
   switch ((PlotType) _plotList.indexOf(plot))
   {
     case PlotTypeCandle:
-      plug = new Candle;
+      line = new Candle;
       break;
     case PlotTypeDash:
-      plug = new Dash;
+      line = new Dash;
       break;
     case PlotTypeDot:
-      plug = new Dot;
+      line = new Dot;
       break;
     case PlotTypeHistogram:
-      plug = new Histogram;
+      line = new Histogram;
       break;
     case PlotTypeHistogramBar:
-      plug = new HistogramBar;
+      line = new HistogramBar;
       break;
     case PlotTypeHorizontal:
-      plug = new Horizontal;
+      line = new Horizontal;
       break;
     case PlotTypeLine:
-      plug = new Line;
+      line = new Line;
       break;
     case PlotTypeOHLC:
-      plug = new OHLC;
+      line = new OHLC;
       break;
     default:
       break;
   }
   
-  return plug;
+  return line;
 }
 
 void PlotFactory::list (QStringList &l, int flag)
@@ -81,5 +87,10 @@ void PlotFactory::list (QStringList &l, int flag)
     l.removeAll("Candle");
     l.removeAll("OHLC");
   }
+}
+
+int PlotFactory::typeFromString (QString &d)
+{
+  return _plotList.indexOf(d);
 }
 

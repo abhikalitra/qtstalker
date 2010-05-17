@@ -22,52 +22,37 @@
 #ifndef SCINDICATOR_HPP
 #define SCINDICATOR_HPP
 
-
 #include <QStringList>
 #include <QByteArray>
 #include <QHash>
 
 #include "PlotLine.h"
 #include "BarData.h"
-#include "IndicatorPlugin.h"
 
 class SCIndicator
 {
   public:
     enum Method
     {
-      GET, // pass indicator data to the calling script
+      NEW, // create a new plotline to be filled later by the script
       GET_INDEX, // pass a single indicator value to the calling script
       GET_SIZE, // returns the size of the indicator.
       PLUGIN, // get a plugin indicator
-      SET // pass indicator data from script to qtstalker
+      SET_INDEX, // pass a single indicator value from script to qtstalker
+      SET_COLOR // set the color of the bar at index pos
     };
     
-    enum Local
-    {
-      _COLOR,
-      _COMPARE,
-      _REF,
-      _NORMALIZE,
-      _STDDEV,
-      _ADD,
-      _DIV,
-      _MULT,
-      _SUB
-    };
-
     SCIndicator ();
     int calculate (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
-    int getIndicator (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
     int getIndex (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
-    int setIndicator (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
+    int setIndex (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
     int getSize (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
+    int setColor (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
     int getPlugin (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
-    IndicatorPlugin * getLocalPlugin (int);
+    int getNew (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *);
 
   protected:
     QStringList methodList;
-    QStringList localList;
 };
 
 #endif

@@ -22,15 +22,15 @@
 #include "SAR.h"
 #include "ta_libc.h"
 #include "BARSUtils.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
-
 
 SAR::SAR ()
 {
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
-    qDebug("TALIB::setDefaults:error on TA_Initialize");
+    qDebug("SAR::error on TA_Initialize");
 
   indicator = "SAR";
 
@@ -54,15 +54,18 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
   if (bars)
     ind.addLine(bars);
 
-  PlotLine *line = getSAR(data, tinit, tmax);
+  QString s;
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getSAR(data, tinit, tmax, lineType, color);
   if (! line)
     return 1;
 
-  QString s;
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -72,18 +75,19 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
 
 int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>
+  // INDICATOR,PLUGIN,SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>,<PLOT TYPE>,<COLOR>
+  //      0       1    2     3         4            5           6         7
 
-  if (set.count() != 6)
+  if (set.count() != 8)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -91,58 +95,44 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   double init = set[4].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid init" << set[4];
+    qDebug() << indicator << "::getCUS: invalid init" << set[4];
     return 1;
   }
 
   double max = set[5].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid max" << set[5];
+    qDebug() << indicator << "::getCUS: invalid max" << set[5];
     return 1;
   }
 
-  PlotLine *line = getSAR(data, init, max);
+   PlotFactory fac;
+  int lineType = fac.typeFromString(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getSAR(data, init, max, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-/*
-PlotLine * SAR::getSAR (BarData *data, double _init, double _max)
-{
-  if (data->count() < 2)
-    return 0;
-
-  double af = _init;
-  double max = _max;
-
-  Bar *pbar = data->getBar(0);
-  Bar *bar = data->getBar(1);
-  int direction = 0; // 0 == long, 1 == short
-  if (bar->getClose() < pbar->getClose())
-    direction = 1; // we are short
-
-
-
-
-  int size = data->count();
-  int loop = 0;
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < size; loop++)
-  {
-    Bar *bar = data->getBar(loop);
-  }
-
-
-  return line;
-}
-*/
-
-PlotLine * SAR::getSAR (BarData *data, double _init, double _max)
+PlotLine * SAR::getSAR (BarData *data, double _init, double _max, int lineType, QColor &color)
 {
   int size = data->count();
   TA_Real high[size];
@@ -161,13 +151,17 @@ PlotLine * SAR::getSAR (BarData *data, double _init, double _max)
   TA_RetCode rc = TA_SAR(0, size - 1, &high[0], &low[0], _init, _max, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    qDebug() << indicator << "::getSAR: TA-Lib error" << rc;
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
   for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+    line->setData(loop + 1, new PlotLineBar(color, out[loop]));
 
   return line;
 }

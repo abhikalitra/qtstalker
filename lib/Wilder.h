@@ -19,17 +19,18 @@
  *  USA.
  */
 
-#ifndef DIV_HPP
-#define DIV_HPP
+#ifndef WILDER_HPP
+#define WILDER_HPP
 
-#include "IndicatorPlugin.h"
+#include <QColor>
 
-class DIV : public IndicatorPlugin
+#include "PlotLine.h"
+
+class Wilder
 {
   public:
-    DIV ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getDIV (PlotLine *, PlotLine *);
+    Wilder ();
+    PlotLine * wilder(PlotLine *, int, int, QColor &);
 };
 
 #endif

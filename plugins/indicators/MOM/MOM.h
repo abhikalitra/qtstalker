@@ -41,7 +41,7 @@ class MOM : public IndicatorPlugin
     MOM ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getMOM (PlotLine *in, int period, int smoothing, int type);
+    PlotLine * getMOM (PlotLine *in, int period, int smoothing, int type, int, QColor &);
     int dialog (int);
 
   protected:

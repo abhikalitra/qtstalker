@@ -21,6 +21,7 @@
 
 #include "BARSUtils.h"
 #include "PlotLineBar.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -30,42 +31,44 @@ BARSUtils::BARSUtils ()
 
 PlotLine * BARSUtils::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral)
 {
-  int size = data->count();
-  PlotLine *line = new PlotLine;
-  
+  PlotFactory fac;
   QString s = "OHLC";
-  line->setPlugin(s);
+  PlotLine *line = fac.plot(s);
+  if (! line)
+    return 0;
   
+  int size = data->count();
+
   s = QObject::tr("C");
   line->setLabel(s);
   
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    PlotLineBar bar;
+    PlotLineBar *bar = new PlotLineBar;
     Bar *tbar = data->getBar(loop);
-    bar.append(tbar->getOpen());
-    bar.append(tbar->getHigh());
-    bar.append(tbar->getLow());
-    bar.append(tbar->getClose());
+    bar->setData(0, tbar->getOpen());
+    bar->setData(1, tbar->getHigh());
+    bar->setData(2, tbar->getLow());
+    bar->setData(3, tbar->getClose());
     
     if (loop > 0)
     {
       Bar *pbar = data->getBar(loop - 1);
       if (tbar->getClose() > pbar->getClose())
-        bar.setColor(_up);
+        bar->setColor(_up);
       else
       {
         if (tbar->getClose() < pbar->getClose())
-          bar.setColor(_down);
+          bar->setColor(_down);
         else
-          bar.setColor(_neutral);
+          bar->setColor(_neutral);
       }
     }
     else
-      bar.setColor(_neutral);
+      bar->setColor(_neutral);
     
-    line->append(bar);
+    line->setData(loop, bar);
   }
 
   return line;

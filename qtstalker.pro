@@ -102,7 +102,6 @@ SUBDIRS += plugins/indicators/CUS
 SUBDIRS += plugins/indicators/FI
 SUBDIRS += plugins/indicators/HT
 SUBDIRS += plugins/indicators/LINEARREG
-SUBDIRS += plugins/indicators/LMS
 SUBDIRS += plugins/indicators/MA
 SUBDIRS += plugins/indicators/MACD
 SUBDIRS += plugins/indicators/MAMA

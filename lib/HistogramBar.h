@@ -22,13 +22,14 @@
 #ifndef HISTOGRAM_BAR_HPP
 #define HISTOGRAM_BAR_HPP
 
-#include "PlotPlugin.h"
+#include "PlotLine.h"
 
-class HistogramBar : public PlotPlugin
+class HistogramBar : public PlotLine
 {
   public:
     HistogramBar ();
-    void draw (PlotLine *, PlotData &, Scaler &);
+    void draw (PlotData &, Scaler &);
+    void info (int, Setting *);
 };
 
 #endif

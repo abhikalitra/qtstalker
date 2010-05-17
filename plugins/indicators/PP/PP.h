@@ -52,7 +52,7 @@ class PP : public IndicatorPlugin
     PP ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getPP (BarData *data, int point);
+    PlotLine * getPP (BarData *data, int point, QColor &);
     int dialog (int);
 
   protected:

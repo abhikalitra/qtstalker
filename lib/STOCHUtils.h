@@ -22,6 +22,8 @@
 #ifndef STOCH_UTILS_HPP
 #define STOCH_UTILS_HPP
 
+#include <QColor>
+
 #include "BarData.h"
 #include "PlotLine.h"
 
@@ -29,9 +31,9 @@ class STOCHUtils
 {
   public:
     STOCHUtils ();
-    PlotLine * getFastK (BarData *data, int);
-    PlotLine * getFastK (PlotLine *, int);
-    PlotLine * getFastK (PlotLine *in, PlotLine *high, PlotLine *low, int period);
+    PlotLine * fastK (BarData *data, int, int, QColor &);
+    PlotLine * fastK (PlotLine *, int, int, QColor &);
+    PlotLine * fastK (PlotLine *in, PlotLine *high, PlotLine *low, int period, int, QColor &);
 };
 
 #endif

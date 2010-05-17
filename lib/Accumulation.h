@@ -19,24 +19,18 @@
  *  USA.
  */
 
-#ifndef PLOT_PLUGIN_HPP
-#define PLOT_PLUGIN_HPP
+#ifndef ACCUMULATION_HPP
+#define ACCUMULATION_HPP
 
-#include <QPixmap>
-#include <QPainter>
-#include <QString>
+#include <QColor>
 
 #include "PlotLine.h"
-#include "PlotData.h"
-#include "Scaler.h"
 
-class PlotPlugin
+class Accumulation
 {
   public:
-    PlotPlugin ();
-    virtual ~PlotPlugin ();
-    virtual void draw (PlotLine *, PlotData &, Scaler &);
+    Accumulation ();
+    PlotLine * accumulation (PlotLine *, int, int, QColor &);
 };
 
 #endif
-

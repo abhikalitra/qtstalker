@@ -21,7 +21,7 @@
 
 #include "MAVP.h"
 #include "ta_libc.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "BARSUtils.h"
 #include "PlotFactory.h"
 
@@ -53,7 +53,7 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
@@ -62,27 +62,34 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   if (! in2)
   {
     delete in;
-    qDebug() << indicator << "::calculate: input 2 not found" << s;
+    qDebug() << indicator << "::getIndicator: input 2 not found" << s;
     return 1;
   }
 
   int min = settings.getInt(Min);
   int max = settings.getInt(Max);
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  
+  MAFactory mau;
   settings.getData(MAType, s);
-  int ma = maList.indexOf(s);
+  int ma = mau.typeFromString(s);
 
-  PlotLine *line = getMAVP(in, in2, min, max, ma);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getMAVP(in, in2, min, max, ma, lineType, color);
   if (! line)
   {
     delete in;
     delete in2;
     return 1;
   }
+
+  settings.getData(Label, s);
+  line->setLabel(s);
 
   QColor up("green");
   QColor down("red");
@@ -92,12 +99,6 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   if (bars)
     ind.addLine(bars);
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
-  settings.getData(Label, s);
-  line->setLabel(s);
   ind.addLine(line);
 
   delete in;
@@ -108,18 +109,19 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
 
 int MAVP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,MAVP,<NAME>,<INPUT_1>,<INPUT_2>,<MIN_PERIOD>,<MAX_PERIOD>,<MA_TYPE>
+  // INDICATOR,PLUGIN,MAVP,<NAME>,<INPUT_1>,<INPUT_2>,<MIN_PERIOD>,<MAX_PERIOD>,<MA_TYPE>,<PLOT TYPE>,<COLOR>
+  //     0       1     2     3        4        5           6            7          8           9         10
 
-  if (set.count() != 9)
+  if (set.count() != 11)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -129,7 +131,7 @@ int MAVP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
+      qDebug() << indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
@@ -142,7 +144,7 @@ int MAVP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     in2 = data->getInput(data->getInputType(set[5]));
     if (! in2)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[5];
+      qDebug() << indicator << "::getCUS: input not found" << set[5];
       return 1;
     }
 
@@ -153,41 +155,65 @@ int MAVP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   int min = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid min period settings" << set[6];
+    qDebug() << indicator << "::getCUS: invalid min period settings" << set[6];
     return 1;
   }
 
   int max = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid max period settings" << set[7];
+    qDebug() << indicator << "::getCUS: invalid max period settings" << set[7];
     return 1;
   }
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int ma = maList.indexOf(set[8]);
+  MAFactory mau;
+  int ma = mau.typeFromString(set[8]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid ma settings" << set[8];
+    qDebug() << indicator << "::getCUS: invalid ma settings" << set[8];
     return 1;
   }
 
-  PlotLine *line = getMAVP(in, in2, min, max, ma);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[9]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[9];
+    return 1;
+  }
+
+  QColor color(set[10]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[10];
+    return 1;
+  }
+
+  PlotLine *line = getMAVP(in, in2, min, max, ma, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * MAVP::getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma)
+PlotLine * MAVP::getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma, int lineType, QColor &color)
 {
+  int flag = 0;
   int size = in->count();
   if (in2->count() < size)
+  {
     size = in2->count();
+    flag = 1;
+  }
+
+  QList<int> keys;
+  in->keys(keys);
+  QList<int> keys2;
+  in2->keys(keys2);
 
   TA_Real input[size];
   TA_Real input2[size];
@@ -195,25 +221,53 @@ PlotLine * MAVP::getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = in->count() - 1;
-  int loop2 = in2->count() - 1;
-  int count = size - 1;
-  for (; count > -1; loop--, loop2--, count--)
+  int loop = keys.count() - 1;
+  int loop2 = keys2.count() - 1;
+  while (loop > -1 && loop2 > -1)
   {
-    input[loop] = (TA_Real) in->getData(loop);
-    input2[loop2] = (TA_Real) in2->getData(loop2);
+    PlotLineBar *bar = in->data(keys.at(loop));
+    PlotLineBar *bar2 = in2->data(keys2.at(loop2));
+    input[loop] = (TA_Real) bar->data();
+    input2[loop2] = (TA_Real) bar2->data();
+
+    loop--;
+    loop2--;
   }
 
   TA_RetCode rc = TA_MAVP(0, size - 1, &input[0], &input2[0], min, max, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    qDebug() << indicator << "::getMAVP: TA-Lib error" << rc;
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  if (! flag)
+  {
+    int keyLoop = keys.count() - 1;
+    int outLoop = outNb - 1;
+    while (keyLoop > -1 && outLoop > -1)
+    {
+      line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+      keyLoop--;
+      outLoop--;
+    }
+  }
+  else
+  {
+    int keyLoop = keys2.count() - 1;
+    int outLoop = outNb - 1;
+    while (keyLoop > -1 && outLoop > -1)
+    {
+      line->setData(keys2.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+      keyLoop--;
+      outLoop--;
+    }
+  }
 
   return line;
 }
@@ -256,8 +310,8 @@ int MAVP::dialog (int)
   dialog->addIntItem(Max, page, QObject::tr("Max"), settings.getInt(Max), 2, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
 
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

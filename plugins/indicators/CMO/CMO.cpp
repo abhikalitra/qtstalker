@@ -21,12 +21,16 @@
 
 #include "CMO.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
-
 CMO::CMO ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("CMO::error on TA_Initialize");
+
   indicator = "CMO";
 
   settings.setData(Color, "red");
@@ -49,19 +53,23 @@ int CMO::getIndicator (Indicator &ind, BarData *data)
 
   int period = settings.getInt(Period);
 
-  PlotLine *line = getCMO(in, period);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getCMO(in, period, lineType, color);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
+  
   ind.addLine(line);
 
   delete in;
@@ -71,10 +79,10 @@ int CMO::getIndicator (Indicator &ind, BarData *data)
 
 int CMO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,CMO,<NAME>,<INPUT>,<PERIOD>
-  //     0       1     2    3       4       5
+  // INDICATOR,PLUGIN,CMO,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
+  //     0       1     2    3       4       5         6          7
 
-  if (set.count() != 6)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
@@ -108,37 +116,77 @@ int CMO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getCMO(in, period);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getCMO(in, period, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * CMO::getCMO (PlotLine *in, int period)
+PlotLine * CMO::getCMO (PlotLine *in, int period, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
 
-  PlotLine *line = new PlotLine;
-  int loop = period;
-  for (; loop < in->count(); loop++)
-  {
-    int count = 0;
-    double wt = 0;
-    double lt = 0;
-    for (; count < period; count++)
-    {
-      double t = in->getData(loop - count) - in->getData(loop - count - 1);
-      if (t >= 0)
-	wt += t;
-      else
-	lt += in->getData(loop - count - 1) - in->getData(loop - count);
-    }
+  TA_Real input[in->count()];
+  TA_Real out[in->count()];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
-    line->append(((wt - lt) / (wt + lt)) * 100);
+  QList<int> keys;
+  in->keys(keys);
+  
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_CMO(0,
+                         keys.count() - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getCMO: TA-Lib error" << rc;
+    return 0;
+  }
+
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
 
   return line;

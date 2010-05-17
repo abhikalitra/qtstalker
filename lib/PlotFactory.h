@@ -22,7 +22,7 @@
 #ifndef PLOT_FACTORY_HPP
 #define PLOT_FACTORY_HPP
 
-#include "PlotPlugin.h"
+#include "PlotLine.h"
 
 #include <QString>
 #include <QStringList>
@@ -43,8 +43,10 @@ class PlotFactory
     };
 
     PlotFactory ();
-    PlotPlugin * plot (QString &plot);
+    PlotLine * plot (int);
+    PlotLine * plot (QString &plot);
     void list (QStringList &, int);
+    int typeFromString (QString &);
 
   private:
     QStringList _plotList;

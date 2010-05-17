@@ -20,11 +20,9 @@
  */
 
 #include "BBANDS.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "BARSUtils.h"
-#include "STDDEV.h"
-#include "ADD.h"
-#include "SUB.h"
+#include "ta_libc.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
@@ -32,6 +30,10 @@
 
 BBANDS::BBANDS ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("BBANDS::error on TA_Initialize");
+
   indicator = "BBANDS";
 
   settings.setData(UpColor, "red");
@@ -40,16 +42,14 @@ BBANDS::BBANDS ()
   settings.setData(UpPlot, "Line");
   settings.setData(MidPlot, "Line");
   settings.setData(DownPlot, "Line");
-  settings.setData(UpLabel, "BBANDSU");
-  settings.setData(MidLabel, "BBANDSM");
-  settings.setData(DownLabel, "BBANDSL");
+  settings.setData(UpLabel, "BBU");
+  settings.setData(MidLabel, "BBM");
+  settings.setData(DownLabel, "BBL");
   settings.setData(UpDeviation, 2);
   settings.setData(DownDeviation, 2);
   settings.setData(Input, "Close");
   settings.setData(Period, 20);
   settings.setData(MAType, "SMA");
-
-  methodList << "Upper" << "Middle" << "Lower";
 }
 
 int BBANDS::getIndicator (Indicator &ind, BarData *data)
@@ -77,60 +77,53 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
   double udev = settings.getDouble(UpDeviation);
   double ldev = settings.getDouble(DownDeviation);
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  
+  MAFactory mau;
   settings.getData(MAType, s);
-  int ma = maList.indexOf(s);
-
-  PlotLine *middle = getMiddle(in, period, ma);
-  if (! middle)
-  {
-    delete in;
-    return 1;
-  }
-
-  // middle line
-  settings.getData(MidColor, s);
-  middle->setColor(s);
-  settings.getData(MidPlot, s);
-  middle->setPlugin(s);
-  settings.getData(MidLabel, s);
-  middle->setLabel(s);
-  ind.addLine(middle);
-
-  PlotLine *upper = getUpper(in, middle, period, udev);
-  if (! upper)
-  {
-    delete in;
-    return 1;
-  }
+  int maType = mau.typeFromString(s);
 
   // upper line
   settings.getData(UpColor, s);
-  upper->setColor(s);
-  settings.getData(UpPlot, s);
-  upper->setPlugin(s);
-  settings.getData(UpLabel, s);
-  upper->setLabel(s);
-  ind.addLine(upper);
+  QColor ucolor(s);
 
-  PlotLine *lower = getLower(in, middle, period, ldev);
-  if (! lower)
+  PlotFactory fac;
+  settings.getData(UpPlot, s);
+  int ulineType = fac.typeFromString(s);
+
+  // middle line
+  settings.getData(MidColor, s);
+  QColor mcolor(s);
+
+  settings.getData(MidPlot, s);
+  int mlineType = fac.typeFromString(s);
+
+  // lower line
+  settings.getData(DownColor, s);
+  QColor lcolor(s);
+
+  settings.getData(DownPlot, s);
+  int llineType = fac.typeFromString(s);
+
+  QList<PlotLine *> pl;
+  if (getBBANDS(in, period, udev, ldev, maType, ulineType, mlineType, llineType, ucolor, mcolor, lcolor, pl))
   {
     delete in;
     return 1;
   }
 
-  // lower line
-  settings.getData(DownColor, s);
-  lower->setColor(s);
-  settings.getData(DownPlot, s);
-  lower->setPlugin(s);
+  PlotLine *line = pl.at(0);
+  settings.getData(UpLabel, s);
+  line->setLabel(s);
+  ind.addLine(line);
+
+  line = pl.at(1);
+  settings.getData(MidLabel, s);
+  line->setLabel(s);
+  ind.addLine(line);
+
+  line = pl.at(2);
   settings.getData(DownLabel, s);
-  lower->setLabel(s);
-  ind.addLine(lower);
+  line->setLabel(s);
+  ind.addLine(line);
 
   delete in;
 
@@ -139,264 +132,214 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
 
 int BBANDS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,BBANDS,METHOD,*
-  //     0       1      2      3
+  // INDICATOR,PLUGIN,BBANDS,<INPUT>,<NAME UPPER>,<NAME MIDDLE>,<NAME LOWER>,<PERIOD>,<MA_TYPE>,<UP DEV>,<LOW DEV>,<UPPER PLOT TYPE>,<MIDDLE PLOT TYPE>,<LOWER PLOT TYPE>,<UPPER COLOR>,<MIDDLE COLOR>,<LOWER COLOR>
+  //     0       1      2       3         4             5            6          7         8        9        10            11                12                   13             14             15             16
 
-  int method = methodList.indexOf(set[3]);
-  int rc = 1;
-  switch ((Method) method)
+  if (set.count() != 17)
   {
-    case Upper:
-      rc = getCUSUpper(set, tlines, data);
-      break;
-    case Middle:
-      rc = getCUSMiddle(set, tlines, data);
-      break;
-    case Lower:
-      rc = getCUSUpper(set, tlines, data);
-      break;
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    return 1;
   }
 
-  return rc;
-}
-
-int BBANDS::getCUSMiddle (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
-{
-  // INDICATOR,PLUGIN,BBANDS,Middle,<NAME>,<INPUT>,<PERIOD>,<MA_TYPE>
-  //     0       1      2      3      4       5       6        7
-
-  if (set.count() != 8)
+  PlotLine *in = tlines.value(set[3]);
+  if (! in)
   {
-    qDebug() << indicator << "::getCUSMiddle: invalid settings count" << set.count();
-    return 1;
+    in = data->getInput(data->getInputType(set[3]));
+    if (! in)
+    {
+      qDebug() << indicator << "::getCUS: input not found" << set[3];
+      return 1;
+    }
+
+    tlines.insert(set[3], in);
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUSMiddle: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS: duplicate upper name" << set[4];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[5]);
-  if (! in)
+  tl = tlines.value(set[5]);
+  if (tl)
   {
-    in = data->getInput(data->getInputType(set[5]));
-    if (! in)
-    {
-      qDebug() << indicator << "::getCUSMiddle: input not found" << set[5];
-      return 1;
-    }
+    qDebug() << indicator << "::getCUS: duplicate middle name" << set[5];
+    return 1;
+  }
 
-    tlines.insert(set[5], in);
+  tl = tlines.value(set[6]);
+  if (tl)
+  {
+    qDebug() << indicator << "::getCUS: duplicate lower name" << set[6];
+    return 1;
   }
 
   bool ok;
-  int period = set[6].toInt(&ok);
+  int period = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUSMiddle: invalid period settings" << set[6];
+    qDebug() << indicator << "::getCUS: invalid period" << set[7];
     return 1;
   }
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int ma = maList.indexOf(set[7]);
+  MAFactory mau;
+  int ma = mau.typeFromString(set[8]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::getCUSMiddle: invalid ma settings" << set[7];
+    qDebug() << indicator << "::getCUS: invalid ma type" << set[8];
     return 1;
   }
 
-  PlotLine *line = getMiddle(in, period, ma);
-  if (! line)
+  double udev = set[9].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::getCUS: invalid upper deviation" << set[9];
+    return 1;
+  }
+
+  double ldev = set[10].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::getCUS: invalid lower deviation" << set[10];
+    return 1;
+  }
+
+  PlotFactory fac;
+  int ulineType = fac.typeFromString(set[11]);
+  if (ulineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid upper plot type" << set[11];
+    return 1;
+  }
+
+  int mlineType = fac.typeFromString(set[12]);
+  if (mlineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid middle plot type" << set[12];
+    return 1;
+  }
+
+  int llineType = fac.typeFromString(set[13]);
+  if (llineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid lower plot type" << set[13];
+    return 1;
+  }
+
+  QColor ucolor(set[14]);
+  if (! ucolor.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid upper color" << set[14];
+    return 1;
+  }
+
+  QColor mcolor(set[15]);
+  if (! mcolor.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid middle color" << set[15];
+    return 1;
+  }
+
+  QColor lcolor(set[16]);
+  if (! lcolor.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid lower color" << set[16];
+    return 1;
+  }
+
+  QList<PlotLine *> pl;
+  if (getBBANDS(in, period, udev, ldev, ma, ulineType, mlineType, llineType, ucolor, mcolor, lcolor, pl))
     return 1;
   
-  tlines.insert(set[4], line);
+  pl.at(0)->setLabel(set[4]);
+  pl.at(1)->setLabel(set[5]);
+  pl.at(2)->setLabel(set[6]);
+
+  tlines.insert(set[4], pl.at(0));
+  tlines.insert(set[5], pl.at(1));
+  tlines.insert(set[6], pl.at(2));
 
   return 0;
 }
 
-int BBANDS::getCUSUpper (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int BBANDS::getBBANDS (PlotLine *in, int period, double udev, double ddev, int maType, int ulineType,
+                        int mlineType, int llineType, QColor &ucolor, QColor &mcolor, QColor &lcolor,
+                        QList<PlotLine *> &rl)
 {
-  // INDICATOR,PLUGIN,BBANDS,Upper,<NAME>,<INPUT>,<PERIOD>,<MA_TYPE>,<DEVIATION>
-  //     0       1      2      3     4       5        6        7         8
+  int size = in->count();  
+  TA_Real input[size];
+  TA_Real uout[size];
+  TA_Real mout[size];
+  TA_Real lout[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
-  if (set.count() != 9)
+  QList<int> keys;
+  in->keys(keys);
+  
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    qDebug() << indicator << "::getCUSUpper: invalid settings count" << set.count();
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_BBANDS(0,
+                            keys.count() - 1,
+                            &input[0],
+                            period,
+                            udev,
+                            ddev,
+                            (TA_MAType) maType,
+                            &outBeg,
+                            &outNb,
+                            &uout[0],
+                            &mout[0],
+                            &lout[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getBBANDS: TA-Lib error" << rc;
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
-  if (tl)
-  {
-    qDebug() << indicator << "::getCUSUpper: duplicate name" << set[4];
+  PlotFactory fac;
+  PlotLine *upper = fac.plot(ulineType);
+  if (! upper)
     return 1;
-  }
 
-  PlotLine *in = tlines.value(set[5]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(set[5]));
-    if (! in)
-    {
-      qDebug() << indicator << "::getCUSUpper: input not found" << set[5];
-      return 1;
-    }
-
-    tlines.insert(set[5], in);
-  }
-
-  bool ok;
-  int period = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::getCUSUpper: invalid period settings" << set[6];
-    return 1;
-  }
-
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int ma = maList.indexOf(set[7]);
-  if (ma == -1)
-  {
-    qDebug() << indicator << "::getCUSUpper: invalid ma settings" << set[7];
-    return 1;
-  }
-
-  double dev = set[8].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::getCUSUpper: invalid deviation setting" << set[8];
-    return 1;
-  }
-
-  PlotLine *middle = getMiddle(in, period, ma);
+  PlotLine *middle = fac.plot(mlineType);
   if (! middle)
-    return 1;
-
-  PlotLine *line = getUpper(in, middle, period, dev);
-  if (! line)
   {
+    delete upper;
+    return 1;
+  }
+
+  PlotLine *lower = fac.plot(llineType);
+  if (! lower)
+  {
+    delete upper;
     delete middle;
     return 1;
   }
 
-  tlines.insert(set[4], line);
-
-  return 0;
-}
-
-int BBANDS::getCUSLower (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
-{
-  // INDICATOR,PLUGIN,BBANDS,Lower,<NAME>,<INPUT>,<PERIOD>,<MA_TYPE>,<DEVIATION>
-  //     0       1      2      3     4       5        6        7         8
-
-  if (set.count() != 9)
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    qDebug() << indicator << "::getCUSLower: invalid settings count" << set.count();
-    return 1;
+    upper->setData(keys.at(keyLoop), new PlotLineBar(ucolor, uout[outLoop]));
+    middle->setData(keys.at(keyLoop), new PlotLineBar(mcolor, mout[outLoop]));
+    lower->setData(keys.at(keyLoop), new PlotLineBar(lcolor, lout[outLoop]));
+
+    keyLoop--;
+    outLoop--;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
-  if (tl)
-  {
-    qDebug() << indicator << "::getCUSLower: duplicate name" << set[4];
-    return 1;
-  }
-
-  PlotLine *in = tlines.value(set[5]);
-  if (! in)
-  {
-    in = data->getInput(data->getInputType(set[5]));
-    if (! in)
-    {
-      qDebug() << indicator << "::getCUSLower: input not found" << set[5];
-      return 1;
-    }
-
-    tlines.insert(set[5], in);
-  }
-
-  bool ok;
-  int period = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::getCUSLower: invalid period settings" << set[6];
-    return 1;
-  }
-
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int ma = maList.indexOf(set[7]);
-  if (ma == -1)
-  {
-    qDebug() << indicator << "::getCUSLower: invalid ma settings" << set[7];
-    return 1;
-  }
-
-  double dev = set[8].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << indicator << "::getCUSLower: invalid deviation setting" << set[8];
-    return 1;
-  }
-
-  PlotLine *middle = getMiddle(in, period, ma);
-  if (! middle)
-    return 1;
-
-  PlotLine *line = getLower(in, middle, period, dev);
-  if (! line)
-  {
-    delete middle;
-    return 1;
-  }
-
-  tlines.insert(set[4], line);
-
-  return 0;
-}
-
-PlotLine * BBANDS::getUpper (PlotLine *in, PlotLine *middle, int period, double dev)
-{
-  STDDEV s;
-  PlotLine *std = s.getSTDDEV(in, period, dev);
-  if (! std)
-    return 0;
-
-  ADD add;
-  PlotLine *upper = add.getADD(middle, std);
-
-  delete std;
+  rl.append(upper);
+  rl.append(middle);
+  rl.append(lower);
   
-  return upper;
-}
-
-PlotLine * BBANDS::getLower (PlotLine *in, PlotLine *middle, int period, double dev)
-{
-  STDDEV s;
-  PlotLine *std = s.getSTDDEV(in, period, dev);
-  if (! std)
-    return 0;
-
-  SUB sub;
-  PlotLine *lower = sub.getSUB(middle, std);
-
-  delete std;
-
-  return lower;
-}
-
-PlotLine * BBANDS::getMiddle (PlotLine *in, int period, int maType)
-{
-  MAUtils mau;
-  PlotLine *line = mau.getMA(in, period, maType);
-  return line;
+  return 0;
 }
 
 int BBANDS::dialog (int)
@@ -423,8 +366,8 @@ int BBANDS::dialog (int)
   dialog->addDoubleItem(DownDeviation, page, QObject::tr("Lower Deviation"), settings.getDouble(DownDeviation), -100000, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
   
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

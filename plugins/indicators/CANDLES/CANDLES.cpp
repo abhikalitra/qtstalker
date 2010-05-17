@@ -21,7 +21,7 @@
 
 #include "CANDLES.h"
 #include "ta_libc.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
@@ -129,7 +129,6 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
-  line->setColor(color);
   settings.getData(Label, s);
   line->setLabel(s);
 
@@ -145,11 +144,15 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
       settings.getData(MethodColor, s);
       QColor c(s);
 
-      int loop;
-      for (loop = 0; loop < line2->count(); loop++)
+      int loop = 0;
+      for (; loop < line2->count(); loop++)
       {
-        if (line2->getData(loop) > 0)
-          line->setColorBar(loop, c);
+        PlotLineBar *bar2 = line2->data(loop);
+        if (bar2->data() > 0)
+        {
+          PlotLineBar *bar = line->data(loop);
+          bar->setColor(c);
+        }
       }
       
       delete line2;
@@ -158,22 +161,23 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
 
   ind.addLine(line);
   
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-
   int period = settings.getInt(MAPeriod);
   if (period > 1)
   {
+    MAFactory mau;
     settings.getData(MAType, s);
-    int type = maList.indexOf(s);
-    PlotLine *ma = mau.getMA(line, period, type);
+    int type = mau.typeFromString(s);
+
+    settings.getData(MAColor, s);
+    QColor color(s);
+
+    settings.getData(MAPlot, s);
+    PlotFactory fac;
+    int lineType = fac.typeFromString(s);
+
+    PlotLine *ma = mau.ma(line, period, type, lineType, color);
     if (ma)
     {
-      settings.getData(MAColor, s);
-      ma->setColor(s);
-      settings.getData(MAPlot, s);
-      ma->setPlugin(s);
       settings.getData(MALabel, s);
       ma->setLabel(s);
       ind.addLine(ma);
@@ -183,15 +187,20 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
   period = settings.getInt(MA2Period);
   if (period > 1)
   {
+    MAFactory mau;
     settings.getData(MA2Type, s);
-    int type = maList.indexOf(s);
-    PlotLine *ma = mau.getMA(line, period, type);
+    int type = mau.typeFromString(s);
+
+    settings.getData(MA2Color, s);
+    QColor color(s);
+
+    settings.getData(MA2Plot, s);
+    PlotFactory fac;
+    int lineType = fac.typeFromString(s);
+
+    PlotLine *ma = mau.ma(line, period, type, lineType, color);
     if (ma)
     {
-      settings.getData(MA2Color, s);
-      ma->setColor(s);
-      settings.getData(MA2Plot, s);
-      ma->setPlugin(s);
       settings.getData(MA2Label, s);
       ma->setLabel(s);
       ind.addLine(ma);
@@ -201,15 +210,20 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
   period = settings.getInt(MA3Period);
   if (period > 1)
   {
+    MAFactory mau;
     settings.getData(MA3Type, s);
-    int type = maList.indexOf(s);
-    PlotLine *ma = mau.getMA(line, period, type);
+    int type = mau.typeFromString(s);
+
+    settings.getData(MA3Color, s);
+    QColor color(s);
+
+    settings.getData(MA3Plot, s);
+    PlotFactory fac;
+    int lineType = fac.typeFromString(s);
+
+    PlotLine *ma = mau.ma(line, period, type, lineType, color);
     if (ma)
     {
-      settings.getData(MA3Color, s);
-      ma->setColor(s);
-      settings.getData(MA3Plot, s);
-      ma->setPlugin(s);
       settings.getData(MA3Label, s);
       ma->setLabel(s);
       ind.addLine(ma);
@@ -221,63 +235,104 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
 
 int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<COLOR>
-  // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<PENETRATION>
-  //    0        1       2       3       4        5
-  
-  if (set.count() != 6)
+  // INDICATOR,PLUGIN,CANDLES,<METHOD>,*
+  //     0       1      2        3
+
+  if (set.count() < 4)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
+  int rc = 1;
   int method = methodList.indexOf(set[3]);
-  if (method == -1)
+  switch (method)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[3];
+    case _NONE:
+      rc = getCUSNone(set, tlines, data);
+      break;
+    default:
+      rc = getCUSMethod(set, tlines, data);
+      break;
+  }
+
+  return rc;
+}
+
+int CANDLES::getCUSNone (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<COLOR>
+  //    0        1       2       3       4       5
+  
+  if (set.count() != 6)
+  {
+    qDebug() << indicator << "::getCUSNone: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUSNone: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *line = 0;
-
-  switch (method)
+  QColor color(set[5]);
+  if (! color.isValid())
   {
-    case 0:
-    {
-      QColor color(set[5]);
-      if (! color.isValid())
-      {
-        qDebug() << indicator << "::calculate: invalid color" << set[5];
-        return 1;
-      }
-
-      line = getCANDLES(data, color);
-      break;
-    }
-    default:
-    {
-      bool ok;
-      double pen = set[5].toDouble(&ok);
-      if (! ok)
-      {
-        qDebug() << indicator << "::calculate: invalid penetration" << set[5];
-        return 1;
-      }
-
-      line = getMethod(data, method, pen);
-      break;
-    }
+    qDebug() << indicator << "::getCUSNone: invalid color" << set[5];
+    return 1;
   }
-
+  
+  PlotLine *line = getCANDLES(data, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[4]);
+
+  tlines.insert(set[4], line);
+
+  return 0;
+}
+
+int CANDLES::getCUSMethod (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+{
+  // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<PENETRATION>
+  //    0        1       2       3       4         5
+
+  if (set.count() != 6)
+  {
+    qDebug() << indicator << "::getCUSMethod: invalid parm count" << set.count();
+    return 1;
+  }
+
+  int method = methodList.indexOf(set[3]);
+  if (method == -1)
+  {
+    qDebug() << indicator << "::getCUSMethod: invalid method" << set[3];
+    return 1;
+  }
+
+  PlotLine *tl = tlines.value(set[4]);
+  if (tl)
+  {
+    qDebug() << indicator << "::getCUSMethod: duplicate name" << set[4];
+    return 1;
+  }
+
+  bool ok;
+  double pen = set[5].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << indicator << "::getCUSMethod: invalid penetration" << set[5];
+    return 1;
+  }
+
+  PlotLine *line = getMethod(data, method, pen);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[4]);
 
   tlines.insert(set[4], line);
 
@@ -286,22 +341,24 @@ int CANDLES::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDa
 
 PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
 {
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
   QString s = "Candle";
-  line->setPlugin(s);
+  PlotLine *line = fac.plot(s);
+  if (! line)
+    return 0;
 
   int loop;
   int size = data->count();
   for (loop = 0; loop < size; loop++)
   {
-    PlotLineBar bar;
+    PlotLineBar *bar = new PlotLineBar;
     Bar *tbar = data->getBar(loop);
-    bar.append(tbar->getOpen());
-    bar.append(tbar->getHigh());
-    bar.append(tbar->getLow());
-    bar.append(tbar->getClose());
-    bar.setColor(color);
-    line->append(bar);
+    bar->setData(0, tbar->getOpen());
+    bar->setData(1, tbar->getHigh());
+    bar->setData(2, tbar->getLow());
+    bar->setData(3, tbar->getClose());
+    bar->setColor(color);
+    line->setData(loop, bar);
   }
 
   return line;
@@ -351,8 +408,8 @@ int CANDLES::dialog (int)
   dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), settings.getInt(MAPeriod), 1, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
 
   settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("Type"), maList, d);
@@ -620,7 +677,7 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen)
 
   PlotLine *line = new PlotLine;
   for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+    line->setData(loop, new PlotLineBar(out[loop]));
 
   return line;
 }

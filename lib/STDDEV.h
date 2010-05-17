@@ -29,7 +29,7 @@ class STDDEV : public IndicatorPlugin
   public:
     STDDEV ();
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getSTDDEV (PlotLine *, int, double);
+    PlotLine * stddev (PlotLine *, int, double, int, QColor &);
 };
 
 #endif

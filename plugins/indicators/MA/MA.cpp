@@ -20,7 +20,7 @@
  */
 
 #include "MA.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "BARSUtils.h"
 #include "PlotFactory.h"
 
@@ -41,30 +41,6 @@ MA::MA ()
 
 int MA::getIndicator (Indicator &ind, BarData *data)
 {
-  QString s;
-  settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
-  if (! in)
-  {
-    qDebug() << indicator << "::calculate: input not found" << s;
-    return 1;
-  }
-
-  int period = settings.getInt(Period);
-
-  settings.getData(Method, s);
-  QStringList methodList;
-  MAUtils mau;
-  mau.getMAList(methodList);
-  int method = methodList.indexOf(s);
-
-  PlotLine *line = mau.getMA(in, period, method);
-  if (! line)
-  {
-    delete in;
-    return 1;
-  }
-
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
@@ -73,10 +49,35 @@ int MA::getIndicator (Indicator &ind, BarData *data)
   if (bars)
     ind.addLine(bars);
 
+  QString s;
+  settings.getData(Input, s);
+  PlotLine *in = data->getInput(data->getInputType(s));
+  if (! in)
+  {
+    qDebug() << indicator << "::getIndicator: input not found" << s;
+    return 1;
+  }
+
+  int period = settings.getInt(Period);
+
+  settings.getData(Method, s);
+  MAFactory mau;
+  int method = mau.typeFromString(s);
+
   settings.getData(Color, s);
-  line->setColor(s);
+  QColor color(s);
+
+  PlotFactory fac;
   settings.getData(Plot, s);
-  line->setPlugin(s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = mau.ma(in, period, method, lineType, color);
+  if (! line)
+  {
+    delete in;
+    return 1;
+  }
+
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -88,28 +89,27 @@ int MA::getIndicator (Indicator &ind, BarData *data)
 
 int MA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,MA,METHOD,<NAME>,<INPUT>,<PERIOD>
+  // INDICATOR,PLUGIN,MA,<METHOD>,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
+  //     0       1    2     3       4       5       6          7         8
 
-  if (set.count() != 7)
+  if (set.count() != 9)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
-  MAUtils mau;
-  QStringList methodList;
-  mau.getMAList(methodList);
-  int method = methodList.indexOf(set[3]);
+  MAFactory mau;
+  int method = mau.typeFromString(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[3];
+    qDebug() << indicator << "::getCUS: invalid method" << set[3];
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
     return 1;
   }
 
@@ -119,7 +119,7 @@ int MA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     in = data->getInput(data->getInputType(set[5]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[5];
+      qDebug() << indicator << "::getCUS: input not found" << set[5];
       return 1;
     }
 
@@ -130,47 +130,34 @@ int MA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid period" << set[6];
     return 1;
   }
 
-  PlotLine *line = mau.getMA(in, period, method);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[7]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    return 1;
+  }
+
+  QColor color(set[8]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    return 1;
+  }
+
+  PlotLine *line = mau.ma(in, period, method, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[4]);
 
   tlines.insert(set[4], line);
 
   return 0;
-}
-
-PlotLine * MA::getMA (PlotLine *in, int period, int method)
-{
-  PlotLine *line = 0;
-  MAUtils mau;
-  
-  switch ((MAUtils::Method) method)
-  {
-    case MAUtils::EMA:
-      line = mau.getEMA(in, period);
-    case MAUtils::DEMA:
-      line = mau.getDEMA(in, period);
-    case MAUtils::KAMA:
-      line = mau.getKAMA(in, period);
-    case MAUtils::SMA:
-      line = mau.getSMA(in, period);
-    case MAUtils::TEMA:
-      line = mau.getTEMA(in, period);
-    case MAUtils::TRIMA:
-      line = mau.getTRIMA(in, period);
-    case MAUtils::Wilder:
-      line = mau.getWilder(in, period);
-    case MAUtils::WMA:
-      line = mau.getWMA(in, period);
-    default:
-      break;
-  }
-
-  return line;
 }
 
 int MA::dialog (int)
@@ -206,8 +193,9 @@ int MA::dialog (int)
   dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
 
   QStringList methodList;
-  MAUtils mau;
-  mau.getMAList(methodList);
+  MAFactory mau;
+  mau.list(methodList);
+  
   settings.getData(Method, d);
   dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 

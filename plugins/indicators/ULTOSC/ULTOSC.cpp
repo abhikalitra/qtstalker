@@ -42,43 +42,58 @@ ULTOSC::ULTOSC ()
 
 int ULTOSC::getIndicator (Indicator &ind, BarData *data)
 {
+  // 30 ref line
+  QString s = "Horizontal";
+  PlotFactory fac;
+  PlotLine *line = fac.plot(s);
+  if (! line)
+    return 0;
+
+  settings.getData(Ref1Color, s);
+  QColor color(s);
+
+  line->setData(0, new PlotLineBar(color, (double) 30));
+  ind.addLine(line);
+
+  // 50 ref line
+  s = "Horizontal";
+  line = fac.plot(s);
+  if (! line)
+    return 0;
+
+  settings.getData(Ref2Color, s);
+  color.setNamedColor(s);
+
+  line->setData(0, new PlotLineBar(color, (double) 50));
+  ind.addLine(line);
+
+  // 70 ref line
+  s = "Horizontal";
+  line = fac.plot(s);
+  if (! line)
+    return 0;
+
+  settings.getData(Ref3Color, s);
+  color.setNamedColor(s);
+
+  line->setData(0, new PlotLineBar(color, (double) 70));
+  ind.addLine(line);
+
+  // ultosc line
   int sp = settings.getInt(ShortPeriod);
   int mp = settings.getInt(MidPeriod);
   int lp = settings.getInt(LongPeriod);
 
-  PlotLine *line = getULTOSC(data, sp, mp, lp);
+  settings.getData(Color, s);
+  color.setNamedColor(s);
+
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  line = getULTOSC(data, sp, mp, lp, lineType, color);
   if (! line)
     return 1;
 
-  QString s;
-  PlotLine *ref30 = new PlotLine;
-  s = "Horizontal";
-  ref30->setPlugin(s);
-  ref30->append(30);
-  settings.getData(Ref1Color, s);
-  ref30->setColor(s);
-  ind.addLine(ref30);
-
-  PlotLine *ref50 = new PlotLine;
-  s = "Horizontal";
-  ref50->setPlugin(s);
-  ref50->append(50);
-  settings.getData(Ref2Color, s);
-  ref50->setColor(s);
-  ind.addLine(ref50);
-
-  PlotLine *ref70 = new PlotLine;
-  s = "Horizontal";
-  ref70->setPlugin(s);
-  ref70->append(70);
-  settings.getData(Ref3Color, s);
-  ref70->setColor(s);
-  ind.addLine(ref70);
-
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -88,18 +103,18 @@ int ULTOSC::getIndicator (Indicator &ind, BarData *data)
 
 int ULTOSC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>
+  // INDICATOR,PLUGIN,ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>,<PLOT TYPE>,<COLOR>
 
-  if (set.count() != 5)
+  if (set.count() != 7)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -107,34 +122,51 @@ int ULTOSC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   int sp = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid short period" << set[4];
+    qDebug() << indicator << "::getCUS: invalid short period" << set[4];
     return 1;
   }
 
   int mp = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid med period" << set[5];
+    qDebug() << indicator << "::getCUS: invalid med period" << set[5];
     return 1;
   }
 
   int lp = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid long period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid long period" << set[6];
     return 1;
   }
 
-  PlotLine *line = getULTOSC(data, sp, mp, lp);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[7]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    return 1;
+  }
+
+  QColor color(set[8]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    return 1;
+  }
+
+  PlotLine *line = getULTOSC(data, sp, mp, lp, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp)
+PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp, int lineType, QColor &color)
 {
   if (data->count() <= sp || data->count() <= mp || data->count() <= lp)
     return 0;
@@ -142,40 +174,57 @@ PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp)
   PlotLine *bp = getBP(data);
 
   TR ttr;
-  PlotLine *tr = ttr.getTR(data);
-  
-  PlotLine *line = new PlotLine;
-  int size = bp->count();
+  PlotLine *tr = ttr.tr(data, lineType, color);
+
+  QList<int> keys;
+  bp->keys(keys);
+
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+  {
+    delete bp;
+    delete tr;
+    return 0;
+  }
+
   int loop = lp - 1;
-  for (; loop < size; loop++)
+  for (; loop < keys.count(); loop++)
   {
     double bpsum1 = 0;
     double trsum1 = 0;
     int count = 0;
     for (; count < sp; count++)
     {
-      bpsum1 += bp->getData(loop - count);
-      trsum1 += tr->getData(loop - count);
+      PlotLineBar *bbar = bp->data(keys.at(loop - count));
+      PlotLineBar *tbar = tr->data(keys.at(loop - count));
+      bpsum1 += bbar->data();
+      trsum1 += tbar->data();
     }
 
     double bpsum2 = 0;
     double trsum2 = 0;
     for (count = 0; count < mp; count++)
     {
-      bpsum2 += bp->getData(loop - count);
-      trsum2 += tr->getData(loop - count);
+      PlotLineBar *bbar = bp->data(keys.at(loop - count));
+      PlotLineBar *tbar = tr->data(keys.at(loop - count));
+      bpsum2 += bbar->data();
+      trsum2 += tbar->data();
     }
 
     double bpsum3 = 0;
     double trsum3 = 0;
     for (count = 0; count < lp; count++)
     {
-      bpsum3 += bp->getData(loop - count);
-      trsum3 += tr->getData(loop - count);
+      PlotLineBar *bbar = bp->data(keys.at(loop - count));
+      PlotLineBar *tbar = tr->data(keys.at(loop - count));
+      bpsum3 += bbar->data();
+      trsum3 += tbar->data();
     }
 
     double raw = (4 * (bpsum1 / trsum1)) + (2 * (bpsum2 / trsum2)) + (bpsum3 / trsum3);
-    line->append((raw / 7) * 100);
+    
+    line->setData(keys.at(loop), new PlotLineBar(color, (raw / 7) * 100));
   }
 
   delete bp;
@@ -195,7 +244,8 @@ PlotLine * ULTOSC::getBP (BarData *data)
     double tl = bar->getLow();
     if (pbar->getLow() < tl)
       tl = pbar->getLow();
-    line->append(bar->getClose() - tl);
+    
+    line->setData(loop, new PlotLineBar(bar->getClose() - tl));
   }
 
   return line;

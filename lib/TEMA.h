@@ -19,17 +19,18 @@
  *  USA.
  */
 
-#ifndef MULT_HPP
-#define MULT_HPP
+#ifndef TEMA_HPP
+#define TEMA_HPP
 
-#include "IndicatorPlugin.h"
+#include <QColor>
 
-class MULT : public IndicatorPlugin
+#include "PlotLine.h"
+
+class TEMA
 {
   public:
-    MULT ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getMULT (PlotLine *, PlotLine *);
+    TEMA ();
+    PlotLine * tema(PlotLine *, int, int, QColor &);
 };
 
 #endif

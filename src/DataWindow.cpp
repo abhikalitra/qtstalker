@@ -83,11 +83,10 @@ void DataWindow::setPlot (Plot *d)
   {
     PlotLine *line = lines.at(loop);
     
-    line->getPlugin(s);
-    if (s == "Horizontal")
+    if (line->type() == "Horizontal")
       continue;
 
-    if (s == "OHLC" || s == "Candle")
+    if (line->type() == "OHLC" || line->type() == "Candle")
     {
       if (ohlcFlag)
 	continue;
@@ -124,20 +123,21 @@ void DataWindow::setDates (DateBar &dates)
 void DataWindow::setLine (PlotLine *line)
 {
   Utils util;
-  QString s;
-  line->getLabel(s);
+  QString s = line->label();
 
   table->setColumnCount(table->columnCount() + 1);
   QTableWidgetItem *item = new QTableWidgetItem(s);
   table->setHorizontalHeaderItem(table->columnCount() - 1, item);
 
-  int dataLoop = table->rowCount() - line->count();
-  int loop;
-  for (loop = 0; loop < line->count(); loop++, dataLoop++)
+  QList<int> keys;
+  line->keys(keys);
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    util.strip(line->getData(loop), 4, s);
+    PlotLineBar *bar = line->data(keys.at(loop));
+    util.strip(bar->data(), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
-    table->setItem(dataLoop, table->columnCount() - 1, item);
+    table->setItem(keys.at(loop), table->columnCount() - 1, item);
   }
 }
 
@@ -157,23 +157,22 @@ void DataWindow::setOHLC (PlotLine *line)
 
   for (loop = 0; loop < line->count(); loop++)
   {
-    PlotLineBar bar;
-    line->getData(loop, bar);
+    PlotLineBar *bar = line->data(loop);
     
     QString s;
-    util.strip(bar.getData(0), 4, s);
+    util.strip(bar->data(0), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 4, item);
 
-    util.strip(bar.getData(1), 4, s);
+    util.strip(bar->data(1), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 3, item);
 
-    util.strip(bar.getData(2), 4, s);
+    util.strip(bar->data(2), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 2, item);
 
-    util.strip(bar.getData(3), 4, s);
+    util.strip(bar->data(3), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 1, item);
   }

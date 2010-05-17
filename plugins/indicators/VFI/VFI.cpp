@@ -25,7 +25,6 @@
 #include <QtDebug>
 #include <cmath>
 
-
 VFI::VFI ()
 {
   indicator = "VFI";
@@ -40,15 +39,18 @@ int VFI::getIndicator (Indicator &ind, BarData *data)
 {
   int period = settings.getInt(Period);
 
-  PlotLine *line = getVFI(data, period);
+  QString s;
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getVFI(data, period, lineType, color);
   if (! line)
     return 1;
 
-  QString s;
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -58,18 +60,19 @@ int VFI::getIndicator (Indicator &ind, BarData *data)
 
 int VFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,VFI,<NAME>,<PERIOD>
+  // INDICATOR,PLUGIN,VFI,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
+  //     0       1     2    3        4         5         6
 
-  if (set.count() != 5)
+  if (set.count() != 7)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -77,24 +80,45 @@ int VFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[4];
+    qDebug() << indicator << "::getCUS: invalid period" << set[4];
     return 1;
   }
 
-  PlotLine *line = getVFI(data, period);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[5]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[5];
+    return 1;
+  }
+
+  QColor color(set[6]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[6];
+    return 1;
+  }
+
+  PlotLine *line = getVFI(data, period, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * VFI::getVFI (BarData *data, int period)
+PlotLine * VFI::getVFI (BarData *data, int period, int lineType, QColor &color)
 {
-  PlotLine *vfi = new PlotLine();
-  int loop;
-  for (loop = period; loop < (int) data->count(); loop++)
+  PlotFactory fac;
+  PlotLine *vfi = fac.plot(lineType);
+  if (! vfi)
+    return 0;
+
+  int loop = period;
+  for (; loop < (int) data->count(); loop++)
   {
     double inter = 0.0;
     double sma_vol = 0.0;
@@ -144,7 +168,7 @@ PlotLine * VFI::getVFI (BarData *data, int period)
       }
     }
 
-    vfi->append(t);
+    vfi->setData(loop, new PlotLineBar(color, t));
   }
 
   return vfi;

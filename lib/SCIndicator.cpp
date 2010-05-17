@@ -21,23 +21,14 @@
 
 #include "SCIndicator.h"
 #include "PluginFactory.h"
-#include "COLOR.h"
-#include "COMPARE.h"
-#include "REF.h"
-#include "NORMALIZE.h"
-#include "STDDEV.h"
-#include "ADD.h"
-#include "DIV.h"
-#include "MULT.h"
-#include "SUB.h"
+#include "PlotLineBar.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
-
 SCIndicator::SCIndicator ()
 {
-  methodList << "GET" << "GET_INDEX" << "GET_SIZE" << "PLUGIN" << "SET";
-  localList << "COLOR" << "COMPARE" << "REF" << "NORMALIZE" << "STDDEV" << "ADD" << "DIV" << "MULT" << "SUB";
+  methodList << "NEW" << "GET_INDEX" << "GET_SIZE" << "PLUGIN" << "SET_INDEX" << "SET_COLOR";
 }
 
 int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
@@ -56,8 +47,8 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
   
   switch ((Method) methodList.indexOf(l[1]))
   {
-    case GET:
-      rc = getIndicator(l, ba, tlines);
+    case NEW:
+      rc = getNew(l, ba, tlines, data);
       break;
     case GET_INDEX:
       rc = getIndex(l, ba, tlines);
@@ -68,8 +59,11 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
     case PLUGIN:
       rc = getPlugin(l, ba, tlines, data, path);
       break;
-    case SET:
-      rc = setIndicator(l, ba, tlines);
+    case SET_INDEX:
+      rc = setIndex(l, ba, tlines);
+      break;
+    case SET_COLOR:
+      rc = setColor(l, ba, tlines);
       break;
     default:
       qDebug() << "SCIndicator::calculate: invalid method" << l[1];
@@ -79,49 +73,75 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
   return rc;
 }
 
-int SCIndicator::getIndicator (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
+int SCIndicator::getNew (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // format 'INDICATOR,GET,VARIABLE,BARS' returns the requested data in a CSV string
+  // INDICATOR,NEW,<METHOD>,<NAME>,<LINE TYPE>
+  //     0      1     2        3        4
 
-  if (l.count() != 4)
+  if (l.count() != 5)
   {
-    qDebug() << "SCIndicator::getIndicator: invalid parm count" << l.count();
+    qDebug() << "SCIndicator::getNew: invalid parm count" << l.count();
     return 1;
   }
 
-  PlotLine *in = tlines.value(l[2]);
-  if (! in)
+  BarData bd;
+  QStringList fl;
+  bd.getInputFields(fl);
+  fl.append("EMPTY");
+  int method = fl.indexOf(l[2]);
+  PlotLine *out = 0;
+  switch (method)
   {
-    qDebug() << "SCIndicator::getIndicator: input parm error" << l[2];
-    return 1;
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5: // bars request
+      out = data->getInput(data->getInputType(l[2]));
+      if (! out)
+      {
+        qDebug() << "SCIndicator::getNEW: input not found" << l[2];
+        return 1;
+      }
+      break;
+    case 6: // EMPTY method
+    {
+      // check if name already exists
+      out = tlines.value(l[3]);
+      if (out)
+      {
+        qDebug() << "SCIndicator::getNew: name already exists" << l[3];
+        return 1;
+      }
+
+      PlotFactory fac;
+      out = fac.plot(l[4]);
+      if (! out)
+      {
+        qDebug() << "SCIndicator::getNew: invalid plot type" << l[4];
+        return 1;
+      }
+      break;
+    }
+    default: // input error
+      qDebug() << "SCIndicator::getNew: invalid method" << l[2];
+      return 1;
+      break;
   }
 
-  bool ok;
-  int bars = l[3].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "SCIndicator::getIndicator: bars parm error" << l[3];
-    return 1;
-  }
-
-  int loop;
-  QStringList l2;
-  if (bars == 0)
-    loop = 0;
-  else
-    loop = in->count() - bars;
-  for (; loop < in->count(); loop++)
-    l2.append(QString::number(in->getData(loop)));
+  tlines.insert(l[3], out);
 
   ba.clear();
-  ba.append(l2.join(",") + "\n");
+  ba.append("0\n");
 
   return 0;
 }
 
 int SCIndicator::getIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
-  // format = INDICATOR,GET_INDEX,INPUT_ARRAY,OFFSET
+  // INDICATOR,GET_INDEX,<INPUT>,<INDEX>
+  //     0         1        2       3
 
   if (l.count() != 4)
   {
@@ -140,48 +160,65 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
   int index = l[3].toInt(&ok);
   if (! ok)
   {
-    qDebug() << "SCIndicator::getIndex: invalid index" << l[3];
+    qDebug() << "SCIndicator::getIndex: invalid index value" << l[3];
     return 1;
   }
 
-  int offset = line->count() - 1 - index;
-  if (offset < 0)
+  PlotLineBar *bar = line->data(index);
+  if (! bar)
   {
-    qDebug() << "SCIndicator::getIndex: offset greater than" << l[2] << "size";
+    qDebug() << "SCIndicator::getIndex: invalid index value" << l[3];
     return 1;
   }
-
+  
   ba.clear();
-  ba.append(QString::number(line->getData(offset)) + "\n");
+
+  ba.append(QString::number(bar->data()) + "\n");
 
   return 0;
 }
 
-int SCIndicator::setIndicator (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
+int SCIndicator::setIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
-  // format 'INDICATOR,SET,VARIABLE,*' - will create a new line using the provided data
+  // INDICATOR,SET_INDEX,<NAME>,<INDEX>,<VALUE>,<COLOR>
+  //     0         1        2       3       4      5
 
-  if (l.count() < 3)
+  if (l.count() != 6)
   {
-    qDebug() << "SCIndicator::setIndicator: invalid parm count " << l.count();
+    qDebug() << "SCIndicator::setIndex: invalid parm count " << l.count();
     return 1;
   }
 
   PlotLine *line = tlines.value(l[2]);
-  if (line)
+  if (! line)
   {
-    // variable already used, abort
-    qDebug() << "SCIndicator::setIndicator: duplicate variable name" << l[2];
+    qDebug() << "SCIndicator::setIndex: name not found" << l[2];
     return 1;
   }
 
-  line = new PlotLine;
-  int loop;
-  QColor color("red");
-  for (loop = 3; loop < l.count(); loop++)
-    line->append(color, l[loop].toDouble());
+  bool ok;
+  int index = l[3].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "SCIndicator::setIndex: invalid index value" << l[3];
+    return 1;
+  }
 
-  tlines.insert(l[2], line);
+  double value = l[4].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << "SCIndicator::setIndex: invalid value" << l[4];
+    return 1;
+  }
+
+  QColor color(l[5]);
+  if (! color.isValid())
+  {
+    qDebug() << "SCIndicator::setIndex: invalid color" << l[5];
+    return 1;
+  }
+  
+  line->setData(index, new PlotLineBar(color, value));
 
   ba.clear();
   ba.append("0\n");
@@ -191,7 +228,8 @@ int SCIndicator::setIndicator (QStringList &l, QByteArray &ba, QHash<QString, Pl
 
 int SCIndicator::getSize (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
-  // format = INDICATOR,GET_SIZE,INPUT_ARRAY
+  // INDICATOR,GET_SIZE,<INPUT>
+  //      0       1        2
 
   if (l.count() != 3)
   {
@@ -206,10 +244,56 @@ int SCIndicator::getSize (QStringList &l, QByteArray &ba, QHash<QString, PlotLin
     return 1;
   }
 
-  int size = line->count();
+  ba.clear();
+  ba.append(QString::number(line->count()) + "\n");
+
+  return 0;
+}
+
+int SCIndicator::setColor (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
+{
+  // INDICATOR,SET_COLOR,<NAME>,<INDEX>,<COLOR>
+  //     0         1        2      3       4
+
+  if (l.count() != 5)
+  {
+    qDebug() << "SCIndicator::setColor: invalid parm count " << l.count();
+    return 1;
+  }
+
+  PlotLine *line = tlines.value(l[2]);
+  if (! line)
+  {
+    qDebug() << "SCIndicator::setColor: name not found" << l[2];
+    return 1;
+  }
+
+  bool ok;
+  int index = l[3].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "SCIndicator::setColor: invalid index value" << l[3];
+    return 1;
+  }
+
+  QColor color(l[4]);
+  if (! color.isValid())
+  {
+    qDebug() << "SCIndicator::setColor: invalid color" << l[4];
+    return 1;
+  }
+
+  PlotLineBar *bar = line->data(index);
+  if (! bar)
+  {
+    qDebug() << "SCIndicator::setColor: bar not found" << l[3];
+    return 1;
+  }
+  
+  bar->setColor(color);
 
   ba.clear();
-  ba.append(QString::number(size) + "\n");
+  ba.append("0\n");
 
   return 0;
 }
@@ -217,7 +301,8 @@ int SCIndicator::getSize (QStringList &l, QByteArray &ba, QHash<QString, PlotLin
 int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
 			    BarData *data, QString &path)
 {
-  // format 'INDICATOR,PLUGIN,<PLUGIN>,*
+  // INDICATOR,PLUGIN,<PLUGIN>,*
+  //     0       1       2
 
   if (l.count() < 3)
   {
@@ -225,21 +310,10 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotL
     return 1;
   }
 
-  IndicatorPlugin *ip = 0;
-  int i = localList.indexOf(l[2]);
-  if (i != -1)
-  {
-    ip = getLocalPlugin(i);
-    if (! ip)
-      return 1;
-  }
-  else
-  {
-    PluginFactory fac;
-    ip = fac.getIndicator(path, l[2]);
-    if (! ip)
-      return 1;
-  }
+  PluginFactory fac;
+  IndicatorPlugin *ip = fac.getIndicator(path, l[2]);
+  if (! ip)
+    return 1;
   
   int rc = ip->getCUS(l, tlines, data);
   if (ip->getDeleteFlag())
@@ -249,44 +323,5 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotL
   ba.append(QString::number(rc) + '\n');
 
   return 0;
-}
-
-IndicatorPlugin * SCIndicator::getLocalPlugin (int i)
-{
-  IndicatorPlugin *plug = 0;
-  switch ((Local) i)
-  {
-    case _COLOR:
-      plug = new COLOR;
-      break;
-    case _COMPARE:
-      plug = new COMPARE;
-      break;
-    case _REF:
-      plug = new REF;
-      break;
-    case _NORMALIZE:
-      plug = new NORMALIZE;
-      break;
-    case _STDDEV:
-      plug = new STDDEV;
-      break;
-    case _ADD:
-      plug = new ADD;
-      break;
-    case _DIV:
-      plug = new DIV;
-      break;
-    case _MULT:
-      plug = new MULT;
-      break;
-    case _SUB:
-      plug = new SUB;
-      break;
-    default:
-      break;
-  }
-
-  return plug;
 }
 

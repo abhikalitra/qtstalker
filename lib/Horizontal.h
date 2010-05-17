@@ -22,13 +22,13 @@
 #ifndef HORIZONTAL_HPP
 #define HORIZONTAL_HPP
 
-#include "PlotPlugin.h"
+#include "PlotLine.h"
 
-class Horizontal : public PlotPlugin
+class Horizontal : public PlotLine
 {
   public:
     Horizontal ();
-    void draw (PlotLine *, PlotData &, Scaler &);
+    void draw (PlotData &, Scaler &);
 };
 
 #endif

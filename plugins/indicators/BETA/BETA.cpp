@@ -26,7 +26,6 @@
 
 #include <QtDebug>
 
-
 BETA::BETA ()
 {
   TA_RetCode rc = TA_Initialize();
@@ -73,7 +72,14 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
 
   int period = settings.getInt(Period);
 
-  PlotLine *line = getBETA(in, in2, period);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  settings.getData(Plot, s);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getBETA(in, in2, period, lineType, color);
   if (! line)
   {
     delete in;
@@ -81,10 +87,6 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -97,18 +99,19 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
 
 int BETA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,BETA,<NAME>,<INPUT_1>,<INPUT_2>,<PERIOD>
+  // INDICATOR,PLUGIN,BETA,<NAME>,<INPUT_1>,<INPUT_2>,<PERIOD>,<PLOT TYPE>,<COLOR>
+  //     0       1      2     3       4         5        6          7         8
 
-  if (set.count() != 7)
+  if (set.count() != 9)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -118,7 +121,7 @@ int BETA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
+      qDebug() << indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
@@ -131,7 +134,7 @@ int BETA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     in2 = data->getInput(data->getInputType(set[5]));
     if (! in2)
     {
-      qDebug() << indicator << "::calculate: input2 not found" << set[5];
+      qDebug() << indicator << "::getCUS: input2 not found" << set[5];
       return 1;
     }
 
@@ -142,24 +145,47 @@ int BETA::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   int period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period settings" << set[6];
+    qDebug() << indicator << "::getCUS: invalid period settings" << set[6];
     return 1;
   }
 
-  PlotLine *line = getBETA(in, in2, period);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[7]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    return 1;
+  }
+
+  QColor color(set[8]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    return 1;
+  }
+
+  PlotLine *line = getBETA(in, in2, period, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * BETA::getBETA (PlotLine *in, PlotLine *in2, int period)
+PlotLine * BETA::getBETA (PlotLine *in, PlotLine *in2, int period, int lineType, QColor &color)
 {
+  QList<int> keys;
   int size = in->count();
   if (in2->count() < size)
+  {
     size = in2->count();
+    in2->keys(keys);
+  }
+  else
+    in->keys(keys);
 
   TA_Real input[size];
   TA_Real input2[size];
@@ -167,13 +193,19 @@ PlotLine * BETA::getBETA (PlotLine *in, PlotLine *in2, int period)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = in->count() - 1;
-  int loop2 = in2->count() - 1;
-  int count = size - 1;
-  for (; count > -1; loop--, loop2--, count--)
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    input[loop] = (TA_Real) in->getData(loop);
-    input2[loop2] = (TA_Real) in2->getData(loop2);
+    PlotLineBar *bar = in->data(keys.at(loop));
+    if (! bar)
+      continue;
+
+    PlotLineBar *bar2 = in2->data(keys.at(loop));
+    if (! bar2)
+      continue;
+
+    input[loop] = (TA_Real) bar->data();
+    input2[loop] = (TA_Real) bar2->data();
   }
 
   TA_RetCode rc = TA_BETA(0, size - 1, &input[0], &input2[0], period, &outBeg, &outNb, &out[0]);
@@ -183,9 +215,19 @@ PlotLine * BETA::getBETA (PlotLine *in, PlotLine *in2, int period)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
 
   return line;
 }

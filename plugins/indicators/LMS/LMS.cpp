@@ -20,12 +20,11 @@
  */
 
 #include "LMS.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
 #include <cmath>
-
 
 LMS::LMS ()
 {
@@ -55,41 +54,44 @@ int LMS::getIndicator (Indicator &ind, BarData *data)
   fkPeriod = settings.getInt(FastPeriod);
   skPeriod = settings.getInt(SlowPeriod);
 
+  QString s;
+  settings.getData(SlowkColor, s);
+  QColor kcolor(s);
+
+  PlotFactory fac;
+  settings.getData(SlowkPlot, s);
+  int klineType = fac.typeFromString(s);
+
+  settings.getData(Day2Color, s);
+  QColor d2color(s);
+
+  settings.getData(Day2Plot, s);
+  int d2lineType = fac.typeFromString(s);
+
+  settings.getData(Day5Color, s);
+  QColor d5color(s);
+
+  settings.getData(Day5Plot, s);
+  int d5lineType = fac.typeFromString(s);
+
   QList<PlotLine *> l;
-  getLMS(l, data);
-  if (l.count() != 3)
-  {
-    qDeleteAll(l);
+  if (getLMS(l, data, klineType, d2lineType, d5lineType, kcolor, d2color, d5color))
     return 1;
-  }
 
   // slowK line
-  QString s;
   PlotLine *line = l.at(0);
-  settings.getData(SlowkColor, s);
-  line->setColor(s);
-  settings.getData(SlowkPlot, s);
-  line->setPlugin(s);
   settings.getData(SlowkLabel, s);
   line->setLabel(s);
   ind.addLine(line);
 
   // 2Day line
   line = l.at(1);
-  settings.getData(Day2Color, s);
-  line->setColor(s);
-  settings.getData(Day2Plot, s);
-  line->setPlugin(s);
   settings.getData(Day2Label, s);
   line->setLabel(s);
   ind.addLine(line);
 
   // 5Day line
   line = l.at(2);
-  settings.getData(Day5Color, s);
-  line->setColor(s);
-  settings.getData(Day5Plot, s);
-  line->setPlugin(s);
   settings.getData(Day5Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -99,18 +101,19 @@ int LMS::getIndicator (Indicator &ind, BarData *data)
 
 int LMS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,LMS,<SLOWK_NAME>,<2DAY_NAME>,<5DAY_NAME>,<FK_PERIOD>,<SK_PERIOD>,<CMB_INDEX>
+  // INDICATOR,PLUGIN,LMS,<SLOWK_NAME>,<2DAY_NAME>,<5DAY_NAME>,<FK_PERIOD>,<SK_PERIOD>,<CMB_INDEX>,<K PLOT TYPE>,<2DAY PLOT TYPE>,<5DAY PLOT TYPE>,<K COLOR>,<2DAY COLOR>,<5DAY COLOR>
+  //     0        1    2        3           4           5           6           7          8             9            10                  11           12         13          14
 
-  if (set.count() != 9)
+  if (set.count() != 15)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate slowk name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate slowk name" << set[3];
     return 1;
   }
   else
@@ -119,7 +122,7 @@ int LMS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate 2day name" << set[4];
+    qDebug() << indicator << "::getCUS: duplicate 2day name" << set[4];
     return 1;
   }
   else
@@ -128,7 +131,7 @@ int LMS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   tl = tlines.value(set[5]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate 5day name" << set[5];
+    qDebug() << indicator << "::getCUS: duplicate 5day name" << set[5];
     return 1;
   }
   else
@@ -138,39 +141,78 @@ int LMS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   fkPeriod = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fk period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid fk period" << set[6];
     return 1;
   }
 
   skPeriod = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid sk period" << set[7];
+    qDebug() << indicator << "::getCUS: invalid sk period" << set[7];
     return 1;
   }
 
   cmbIndex = set[8].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid cmb index" << set[8];
+    qDebug() << indicator << "::getCUS: invalid cmb index" << set[8];
     return 1;
   }
   else
   {
     if (cmbIndex < 0 || cmbIndex > 1)
     {
-      qDebug() << indicator << "::calculate: invalid cmb index" << set[8];
+      qDebug() << indicator << "::getCUS: invalid cmb index" << set[8];
       return 1;
     }
   }
 
-  QList<PlotLine *> l;
-  getLMS(l, data);
-  if (l.count() != 3)
+  PlotFactory fac;
+  int klineType = fac.typeFromString(set[9]);
+  if (klineType == -1)
   {
-    qDeleteAll(l);
+    qDebug() << indicator << "::getCUS: invalid k plot type" << set[9];
     return 1;
   }
+
+  int d2lineType = fac.typeFromString(set[10]);
+  if (d2lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid d2 plot type" << set[10];
+    return 1;
+  }
+
+  int d5lineType = fac.typeFromString(set[11]);
+  if (d5lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid d5 plot type" << set[11];
+    return 1;
+  }
+
+  QColor kcolor(set[12]);
+  if (! kcolor.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid k color" << set[12];
+    return 1;
+  }
+
+  QColor d2color(set[13]);
+  if (! d2color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid d2 color" << set[13];
+    return 1;
+  }
+
+  QColor d5color(set[14]);
+  if (! d5color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid d5 color" << set[14];
+    return 1;
+  }
+
+  QList<PlotLine *> pl;
+  if (getLMS(pl, data, klineType, d2lineType, d5lineType, kcolor, d2color, d5color))
+    return 1;
 
   tlines.insert(set[3], l.at(0));
   tlines.insert(set[4], l.at(1));
@@ -179,7 +221,8 @@ int LMS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-void LMS::getLMS (QList<PlotLine *> &l, BarData *data)
+void LMS::getLMS (QList<PlotLine *> &l, BarData *data, int klineType, int d2lineType, int d5lineType,
+                  QColor &kcolor, QColor &d2color, QColor &d5color)
 {
   int i = 0;
   double sigPower = 0;
@@ -192,7 +235,7 @@ void LMS::getLMS (QList<PlotLine *> &l, BarData *data)
   for (i = 0; i < (int) data->count(); i++)
   {
     Bar *bar = data->getBar(i);
-    price->append((bar->getHigh() + bar->getLow()) / 2);
+    price->setData(i, new PlotLineBar((bar->getHigh() + bar->getLow()) / 2));
   }
 
   PlotLine *price_offset_4 = new PlotLine;
@@ -219,7 +262,10 @@ void LMS::getLMS (QList<PlotLine *> &l, BarData *data)
     for (i = 0; i < price->count(); i++)
     {
       if (i > offset - 1)
-	price_offset_4->append(price->getData(i - offset));
+      {
+        PlotLineBar *bar = price->data(i - offset);
+	price_offset_4->setData(i, new PlotLineBar(bar->data()));
+      }
     }
 
     //0.5(price - price[4]
@@ -318,9 +364,33 @@ void LMS::getLMS (QList<PlotLine *> &l, BarData *data)
 
   //remove the first 1.5 * length values-- initial ramp up messes with scaling
   // ***n.b need a delete(index) function for PlotLine ***
-  PlotLine *temp1a = new PlotLine;
-  PlotLine *temp2 = new PlotLine;
-  PlotLine *temp3 = new PlotLine;
+  PlotFactory fac;
+  PlotLine *temp1a = fac.plot(klineType);
+  if (! temp1a)
+  {
+    delete value1;
+    delete value2;
+    delete value3;
+  }
+
+  PlotLine *temp2 = fac.plot(d2lineType);
+  if (! temp2)
+  {
+    delete value1;
+    delete value2;
+    delete value3;
+    delete temp1a;
+  }
+
+  PlotLine *temp3 = fac.plot(d5lineType);
+  if (! temp3)
+  {
+    delete value1;
+    delete value2;
+    delete value3;
+    delete temp1a;
+    delete temp2;
+  }
 
   int index1 = value1->count() -1;
   int index2 = value2->count() - 1;

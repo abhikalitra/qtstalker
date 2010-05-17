@@ -20,27 +20,31 @@
  */
 
 #include "Histogram.h"
+#include "Utils.h"
+
+#include <QPainter>
 
 Histogram::Histogram ()
 {
+  _type = "Histogram";
 }
 
-void Histogram::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
+void Histogram::draw (PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int loop = pd.pos;
+  int loop = pd.startIndex;
 
   QPolygon pa(4);
 
   int zero = 0;
   Scaler scale;
-  if (line->getScaleFlag())
+  if (scaleFlag())
   {
     scale.set(scaler.height(),
-  	      line->getHigh(),
-	      line->getLow(),
+  	      high(),
+	      low(),
 	      scaler.logScaleHigh(),
 	      scaler.logRange(),
 	      scaler.logFlag());
@@ -54,25 +58,23 @@ void Histogram::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
   int y = -1;
   int y2 = -1;
 
-  while ((x < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
+  for (; loop <= pd.endIndex; loop++, x2 += pd.barSpacing)
   {
-    if (loop > -1)
+    PlotLineBar *bar = data(loop);
+    if (bar)
     {
-      QColor color;
-      double d = line->getData(loop, color);
-      
-      if (line->getScaleFlag())
-        y2 = scale.convertToY(d);
+      if (scaleFlag())
+        y2 = scale.convertToY(bar->data());
       else
-        y2 = scaler.convertToY(d);
+        y2 = scaler.convertToY(bar->data());
 
       pa.setPoint(0, x, zero);
       pa.setPoint(1, x, y);
       pa.setPoint(2, x2, y2);
       pa.setPoint(3, x2, zero);
 
-      painter.setPen(color);
-      painter.setBrush(color);
+      painter.setPen(bar->color());
+      painter.setBrush(bar->color());
       
       if (y != -1)
         painter.drawPolygon(pa, Qt::OddEvenFill);
@@ -80,11 +82,20 @@ void Histogram::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
       x = x2;
       y = y2;
     }
-
-    x2 += pd.barSpacing;
-    loop++;
   }
 
   painter.end();
+}
+
+void Histogram::info (int i, Setting *set)
+{
+  PlotLineBar *bar = data(i);
+  if (! bar)
+    return;
+
+  QString d;
+  Utils util;
+  util.strip(bar->data(), 4, d);
+  set->setData(_label, d);
 }
 

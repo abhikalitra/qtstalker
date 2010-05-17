@@ -21,7 +21,7 @@
 
 #include "ATR.h"
 #include "TR.h"
-#include "MAUtils.h"
+#include "Wilder.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
@@ -47,14 +47,17 @@ int ATR::getIndicator (Indicator &ind, BarData *data)
   settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
-  PlotLine *line = getLine(data, period, method);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  settings.getData(Plot, s);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getLine(data, period, method, lineType, color);
   if (! line)
     return 1;
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -64,25 +67,26 @@ int ATR::getIndicator (Indicator &ind, BarData *data)
 
 int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,ATR,<METHOD>,<NAME>,<PERIOD>
+  // INDICATOR,PLUGIN,ATR,<METHOD>,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
+  //     0       1     2     3       4        5        6          7
 
-  if (set.count() != 5)
+  if (set.count() != 8)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   int method = methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[3];
+    qDebug() << indicator << "::getCUS: invalid method" << set[3];
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
     return 1;
   }
 
@@ -90,71 +94,63 @@ int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[5];
+    qDebug() << indicator << "::getCUS: invalid period" << set[5];
     return 1;
   }
 
-  PlotLine *line = getLine(data, period, method);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getLine(data, period, method, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[4]);
 
   tlines.insert(set[4], line);
 
   return 0;
 }
 
-PlotLine * ATR::getLine (BarData *data, int period, int method)
+PlotLine * ATR::getLine (BarData *data, int period, int method, int lineType, QColor &color)
 {
-  PlotLine *line = 0;
-  
+  if (data->count() < period)
+    return 0;
+
+  TR ttr;
+  PlotLine *tr = 0;
   switch ((_Method) method)
   {
     case _ATR:
-      line = getATR(data, period);
+      tr = ttr.tr(data, lineType, color);
       break;
     case NATR:
-      line = getNATR(data, period);
+      tr = ttr.ntr(data, lineType, color);
       break;
     default:
       break;
   }
 
-  return line;
-}
-
-PlotLine * ATR::getATR (BarData *data, int period)
-{
-  if (data->count() < period)
-    return 0;
-
-  TR ttr;
-  PlotLine *tr = ttr.getTR(data);
   if (! tr)
     return 0;
 
-  MAUtils mau;
-  PlotLine *atr = mau.getMA(tr, period, MAUtils::Wilder);
+  Wilder ma;
+  PlotLine *line = ma.wilder(tr, period, lineType, color);
 
   delete tr;
-  return atr;
-}
-
-PlotLine * ATR::getNATR (BarData *data, int period)
-{
-  if (data->count() < period)
-    return 0;
-
-  TR ttr;
-  PlotLine *ntr = ttr.getNTR(data);
-  if (! ntr)
-    return 0;
-
-  MAUtils mau;
-  PlotLine *natr = mau.getMA(ntr, period, MAUtils::Wilder);
-
-  delete ntr;
-  
-  return natr;
+  return line;
 }
 
 int ATR::dialog (int)

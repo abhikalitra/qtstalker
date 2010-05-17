@@ -23,34 +23,79 @@
 
 PlotLineBar::PlotLineBar ()
 {
-  color.setNamedColor("red");
+  _color.setNamedColor("red");
 }
 
-void PlotLineBar::append (double d)
+PlotLineBar::PlotLineBar (double d)
 {
-  data.append(d);
+  _color.setNamedColor("red");
+  setData(0, d);
 }
 
-double PlotLineBar::getData (int i)
+PlotLineBar::PlotLineBar (QColor &c, double d)
 {
-  if (i >= data.count())
-    return 0;
+  _color = c;
+  setData(0, d);
+}
+
+double PlotLineBar::data (int i)
+{
+  return _data.value(i);
+}
+
+double PlotLineBar::data ()
+{
+  if (count() == 4)
+    return _data.value(3);
   else
-    return data.at(i);
+    return _data.value(0);
+}
+
+void PlotLineBar::setData (int i, double d)
+{
+  _data.insert(i, d);
+}
+
+void PlotLineBar::setData (double d)
+{
+  if (count() == 4)
+    setData(3, d);
+  else
+    setData(0, d);
 }
 
 void PlotLineBar::setColor (QColor &d)
 {
-  color = d;
+  _color = d;
 }
 
-void PlotLineBar::getColor (QColor &d)
+QColor & PlotLineBar::color ()
 {
-  d = color;
+  return _color;
 }
 
 int PlotLineBar::count ()
 {
-  return data.count();
+  return (int) _data.count();
 }
+
+void PlotLineBar::highLow (double &h, double &l)
+{
+  h = -99999999;
+  l = 99999999;
+  QHashIterator<int, double> it(_data);
+
+  while (it.hasNext())
+  {
+    it.next();
+
+    if (it.value() > h)
+      h = it.value();
+
+    if (it.value() < l)
+      l = it.value();
+  }
+}
+
+
 

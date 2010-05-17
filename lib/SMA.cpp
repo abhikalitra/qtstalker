@@ -19,39 +19,38 @@
  *  USA.
  */
 
-#ifndef MA_UTILS_HPP
-#define MA_UTILS_HPP
+#include "SMA.h"
+#include "PlotFactory.h"
+#include "PlotLineBar.h"
+#include "Accumulation.h"
 
-#include <QStringList>
+#include <QList>
+#include <QtDebug>
 
-#include "PlotLine.h"
-
-class MAUtils
+SMA::SMA ()
 {
-  public:
-    enum Method
-    {
-      EMA,
-      DEMA,
-      KAMA,
-      SMA,
-      TEMA,
-      TRIMA,
-      Wilder,
-      WMA
-    };
+}
 
-    MAUtils ();
-    void getMAList (QStringList &);
-    PlotLine * getMA (PlotLine *, int, int);
-    PlotLine * getDEMA(PlotLine *, int);
-    PlotLine * getEMA(PlotLine *, int);
-    PlotLine * getKAMA(PlotLine *, int);
-    PlotLine * getSMA(PlotLine *, int);
-    PlotLine * getTEMA(PlotLine *, int);
-    PlotLine * getTRIMA(PlotLine *, int);
-    PlotLine * getWilder(PlotLine *, int);
-    PlotLine * getWMA(PlotLine *, int);
-};
+PlotLine * SMA::sma (PlotLine *in, int period, int lineType, QColor &color)
+{
+  if (in->count() < period)
+    return 0;
 
-#endif
+  Accumulation accum;
+  PlotLine *line = accum.accumulation(in, period, lineType, color);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  line->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = line->data(keys.at(loop));
+    bar->setData(bar->data() / period);
+  }
+
+  return line;
+}
+

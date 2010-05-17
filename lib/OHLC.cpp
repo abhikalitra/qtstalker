@@ -20,48 +20,70 @@
  */
 
 #include "OHLC.h"
+#include "Utils.h"
+
+#include <QPainter>
 
 OHLC::OHLC ()
 {
+  _type = "OHLC";
 }
 
-void OHLC::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
+void OHLC::draw (PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int loop = pd.pos;
+  int loop = pd.startIndex;
   int x = 0;
-  QColor c;
-
-  while ((x < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
+  for (; loop <= pd.endIndex; loop++, x += pd.barSpacing)
   {
-    if (loop > -1)
-    {
-      PlotLineBar bar;
-      line->getData(loop, bar);
+    PlotLineBar *bar = data(loop);
+    if (! bar)
+      continue;
 
-      bar.getColor(c);
-      painter.setPen(c);
+    painter.setPen(bar->color());
 
-      // draw the open tick
-      int y = scaler.convertToY(bar.getData(0));
-      painter.drawLine (x, y, x + 2, y);
+    // draw the open tick
+    int y = scaler.convertToY(bar->data(0));
+    painter.drawLine (x, y, x + 2, y);
 
-      // draw the close tick
-      y = scaler.convertToY(bar.getData(3));
-      painter.drawLine (x + 2, y, x + 4, y);
+    // draw the close tick
+    y = scaler.convertToY(bar->data(3));
+    painter.drawLine (x + 2, y, x + 4, y);
 
-      // draw the high/low tick
-      y = scaler.convertToY(bar.getData(1));
-      int y2 = scaler.convertToY(bar.getData(2));
-      painter.drawLine (x + 2, y, x + 2, y2);
-    }
-
-    x += pd.barSpacing;
-    loop++;
+    // draw the high/low tick
+    y = scaler.convertToY(bar->data(1));
+    int y2 = scaler.convertToY(bar->data(2));
+    painter.drawLine (x + 2, y, x + 2, y2);
   }
 
   painter.end();
+}
+
+void OHLC::info (int i, Setting *set)
+{
+  PlotLineBar *bar = data(i);
+  if (! bar)
+    return;
+
+  QString k = "O";
+  QString d;
+
+  Utils util;
+  util.strip(bar->data(0), 4, d);
+  set->setData(k, d);
+
+  k = "H";
+  util.strip(bar->data(1), 4, d);
+  set->setData(k, d);
+
+  k = "L";
+  util.strip(bar->data(2), 4, d);
+  set->setData(k, d);
+
+  k = "C";
+  util.strip(bar->data(3), 4, d);
+  set->setData(k, d);
 }
 

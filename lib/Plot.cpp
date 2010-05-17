@@ -46,6 +46,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
 {
   _plotData.barSpacing = 0;
   _plotData.startIndex = 0;
+  _plotData.endIndex = 0;
   _plotData.backgroundColor.setNamedColor("black");
   _plotData.borderColor.setNamedColor("white");
   _plotData.scaleToScreen = FALSE;
@@ -105,6 +106,11 @@ void Plot::draw ()
 
   if (_dateBars.count())
   {
+    // calculate the range of bars to draw
+    _plotData.endIndex = _plotData.startIndex + ((_plotData.buffer.width() - _plotData.scaleWidth) / _plotData.barSpacing);
+    if (_plotData.endIndex >= _dateBars.count())
+      _plotData.endIndex = _dateBars.count() - 1;
+    
     // set the current scale
     setScale();
 
@@ -133,7 +139,7 @@ void Plot::draw ()
 
     // draw the scale markers
     QList<Setting> points;
-    info.getPointInfo(_plotData, points, _indicator, _dateBars);
+    info.getPointInfo(_plotData, points, _indicator);
     _scalePlot.drawPoints(_plotData, points, _scaler);
   }
 
@@ -161,18 +167,7 @@ void Plot::drawLines ()
     if (! line->count())
       continue;
 
-    QString s;
-    line->getPlugin(s);
-    PlotPlugin *plug = fac.plot(s);
-    if (! plug)
-    {
-      qDebug() << "Plot::drawLines: error loading plugin" << s;
-      continue;
-    }
-
-    _plotData.pos = line->count() - _dateBars.count() + _plotData.startIndex;
-    plug->draw(line, _plotData, _scaler);
-    delete plug;
+    line->draw(_plotData, _scaler);
   }
 }
 
@@ -243,7 +238,6 @@ void Plot::setScale ()
 {
   double tscaleHigh = -99999999;
   double tscaleLow = 99999999;
-  int width = _plotData.buffer.width() / _plotData.barSpacing;
 
   QList<PlotLine *> plotList;
   _indicator.getLines(plotList);
@@ -253,28 +247,21 @@ void Plot::setScale ()
   {
     PlotLine *line = plotList.at(loop);
 
-    if (line->getScaleFlag())
+    if (line->scaleFlag())
       continue;
 
     if (! _plotData.scaleToScreen)
     {
-      if (line->getHigh() > tscaleHigh)
-        tscaleHigh = line->getHigh();
+      if (line->high() > tscaleHigh)
+        tscaleHigh = line->high();
 
-      if (line->getLow() < tscaleLow)
-        tscaleLow = line->getLow();
+      if (line->low() < tscaleLow)
+        tscaleLow = line->low();
     }
     else
     {
-      int start = line->count() - _dateBars.count() + _plotData.startIndex;
-      int end = width + start;
-      if (start < 0)
-        start = 0;
-      if (end > line->count())
-        end = line->count();
-
       double h, l;
-      line->getHighLowRange(start, end - 1, h, l);
+      line->highLowRange(_plotData.startIndex, _plotData.endIndex, h, l);
       if (h > tscaleHigh)
         tscaleHigh = h;
       if (l < tscaleLow)
@@ -282,17 +269,10 @@ void Plot::setScale ()
     }
   }
 
-  // do this anyway for scaleToScreen even if we dont use it
-  int start = _plotData.startIndex;
-  int end = width + _plotData.startIndex;
-  if (start < 0)
-    start = 0;
-  if (end > _dateBars.count())
-    end = _dateBars.count();
   QDateTime sd;
-  _dateBars.getDate(start, sd);
+  _dateBars.getDate(_plotData.startIndex, sd);
   QDateTime ed;
-  _dateBars.getDate(end - 1, ed);
+  _dateBars.getDate(_plotData.endIndex, ed);
 
   QHash<QString, COPlugin *> coList;
   _indicator.getChartObjects(coList);
@@ -320,8 +300,9 @@ void Plot::setScale ()
 
   // create a little more room between chart edges and plots
   double t = (tscaleHigh - tscaleLow) * 0.02; // get 2% of the range
-  tscaleHigh = tscaleHigh + t;
-  tscaleLow = tscaleLow - t;
+  tscaleHigh += t;
+  if (tscaleLow != 0)
+    tscaleLow -= t;
 
   // handle log scaling if toggled
   double tlogScaleHigh = 1;
@@ -334,11 +315,11 @@ void Plot::setScale ()
   }
 
   _scaler.set(_plotData.buffer.height() - _plotData.dateHeight,
-                       tscaleHigh,
-                       tscaleLow,
-                       tlogScaleHigh,
-                       tlogRange,
-                       _indicator.getLog());
+              tscaleHigh,
+              tscaleLow,
+              tlogScaleHigh,
+              tlogRange,
+              _indicator.getLog());
 }
 
 //*********************************************************************
@@ -498,28 +479,6 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       Setting *mess = info.getCursorInfo(i, event->y(), _dateBars, _scaler);
       if (mess)
         emit signalInfoMessage(mess);
-/*      
-      draw();
-
-      getXY(event->x(), event->y());
-
-      int y = _scaler.convertToY(_plotData.y1);
-      int x = _plotData.startX + (_dateBars.getX(_plotData.x1) * _plotData.barSpacing) - (_plotData.startIndex * _plotData.barSpacing);
-
-      QPainter painter;
-      painter.begin(&_plotData.buffer);
-      painter.setPen(QPen(_plotData.borderColor, 1, Qt::DotLine));
-      painter.drawLine (0, y, _plotData.buffer.width(), y);
-      painter.drawLine (x, 0, x, _plotData.buffer.height());
-      painter.end();
-      
-      int i = convertXToDataIndex(event->x());
-      PlotInfo info;
-      Setting *mess = info.getCursorInfo(i, event->y(), _plotData);
-      if (mess)
-        emit infoMessage(mess);
-*/
-      
       break;
     }
     case CursorZoom:
@@ -599,7 +558,7 @@ void Plot::mouseDoubleClickEvent (QMouseEvent *event)
   {
     case None: // center chart on double click mouse position
     {
-      int center = (_plotData.buffer.width() / _plotData.barSpacing) / 2;
+      int center = ((_plotData.buffer.width() - _plotData.scaleWidth) / _plotData.barSpacing) / 2;
       int i = event->x() / _plotData.barSpacing;
       if (i < center)
         emit signalIndexChanged(_plotData.startIndex - (center - i));

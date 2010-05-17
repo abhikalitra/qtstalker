@@ -44,7 +44,7 @@ class VOL : public IndicatorPlugin
     VOL ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getVOL (BarData *data);
+    PlotLine * getVOL (BarData *data, int, QColor &, QColor &, QColor &);
     int dialog (int);
 };
 

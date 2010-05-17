@@ -21,13 +21,12 @@
 
 #include "BARS.h"
 #include "PrefDialog.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "BARSUtils.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
 #include <QObject>
-
 
 BARS::BARS ()
 {
@@ -76,22 +75,23 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
 
   ind.addLine(line);
 
-  MAUtils mau;
-  QStringList maList;
-  mau.getMAList(maList);
-  
   int period = settings.getInt(MAPeriod);
   if (period > 1)
   {
     settings.getData(MAType, s);
-    int type = maList.indexOf(s);
-    PlotLine *ma = mau.getMA(line, period, type);
+    MAFactory mafac;
+    int type = mafac.typeFromString(s);
+
+    settings.getData(MAColor, s);
+    QColor color(s);
+
+    settings.getData(MAPlot, s);
+    PlotFactory plfac;
+    int lineType = plfac.typeFromString(s);
+    
+    PlotLine *ma = mafac.ma(line, period, type, lineType, color);
     if (ma)
     {
-      settings.getData(MAColor, s);
-      ma->setColor(s);
-      settings.getData(MAPlot, s);
-      ma->setPlugin(s);
       settings.getData(MALabel, s);
       ma->setLabel(s);
       ind.addLine(ma);
@@ -102,14 +102,19 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
   if (period > 1)
   {
     settings.getData(MA2Type, s);
-    int type = maList.indexOf(s);
-    PlotLine *ma = mau.getMA(line, period, type);
+    MAFactory mafac;
+    int type = mafac.typeFromString(s);
+
+    settings.getData(MA2Color, s);
+    QColor color(s);
+
+    settings.getData(MA2Plot, s);
+    PlotFactory plfac;
+    int lineType = plfac.typeFromString(s);
+
+    PlotLine *ma = mafac.ma(line, period, type, lineType, color);
     if (ma)
     {
-      settings.getData(MA2Color, s);
-      ma->setColor(s);
-      settings.getData(MA2Plot, s);
-      ma->setPlugin(s);
       settings.getData(MA2Label, s);
       ma->setLabel(s);
       ind.addLine(ma);
@@ -120,14 +125,19 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
   if (period > 1)
   {
     settings.getData(MA3Type, s);
-    int type = maList.indexOf(s);
-    PlotLine *ma = mau.getMA(line, period, type);
+    MAFactory mafac;
+    int type = mafac.typeFromString(s);
+
+    settings.getData(MA3Color, s);
+    QColor color(s);
+
+    settings.getData(MA3Plot, s);
+    PlotFactory plfac;
+    int lineType = plfac.typeFromString(s);
+
+    PlotLine *ma = mafac.ma(line, period, type, lineType, color);
     if (ma)
     {
-      settings.getData(MA3Color, s);
-      ma->setColor(s);
-      settings.getData(MA3Plot, s);
-      ma->setPlugin(s);
       settings.getData(MA3Label, s);
       ma->setLabel(s);
       ind.addLine(ma);
@@ -140,43 +150,45 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
 int BARS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
   // INDICATOR,PLUGIN,BARS,<NAME>,<BAR_UP_COLOR>,<BAR_DOWN_COLOR>,<BAR_NEUTRAL_COLOR>
+  //     0       1     2     3          4              5                  6
 
   if (set.count() != 7)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
   QColor barUpColor(set[4]);
   if (! barUpColor.isValid())
   {
-    qDebug() << indicator << "::calculate: invalid bar up color" << set[4];
+    qDebug() << indicator << "::getCUS: invalid bar up color" << set[4];
     return 1;
   }
 
   QColor barDownColor(set[5]);
   if (! barDownColor.isValid())
   {
-    qDebug() << indicator << "::calculate: invalid bar down color" << set[5];
+    qDebug() << indicator << "::getCUS: invalid bar down color" << set[5];
     return 1;
   }
 
   QColor barNeutralColor(set[6]);
   if (! barNeutralColor.isValid())
   {
-    qDebug() << indicator << "::calculate: invalid bar neutral color" << set[6];
+    qDebug() << indicator << "::getCUS: invalid bar neutral color" << set[6];
     return 1;
   }
 
   BARSUtils b;
   PlotLine *line = b.getBARS(data, barUpColor, barDownColor, barNeutralColor);
+  line->setLabel(set[3]);
   tlines.insert(set[3], line);
   return 0;
 }
@@ -204,8 +216,8 @@ int BARS::dialog (int)
   dialog->addTextItem(BarsLabel, page, QObject::tr("Label"), d);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
   
   PlotFactory fac;
   QStringList plotList;

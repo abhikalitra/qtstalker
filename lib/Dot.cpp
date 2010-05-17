@@ -20,51 +20,62 @@
  */
 
 #include "Dot.h"
+#include "Utils.h"
+
+#include <QPainter>
 
 Dot::Dot ()
 {
+  _type = "Dot";
 }
 
-void Dot::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
+void Dot::draw (PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
   int x = 0;
-  int loop = pd.pos;
+  int loop = pd.startIndex;
 
   Scaler scale;
-  if (line->getScaleFlag())
+  if (scaleFlag())
   {
     scale.set(scaler.height(),
-  	      line->getHigh(),
-	      line->getLow(),
+  	      high(),
+	      low(),
 	      scaler.logScaleHigh(),
 	      scaler.logRange(),
 	      scaler.logFlag());
   }
 
-  while ((x < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
+  for (; loop <= pd.endIndex; loop++, x += pd.barSpacing)
   {
-    if (loop > -1)
-    {
-      int y;
-      QColor color;
-      double d = line->getData(loop, color);
+    PlotLineBar *bar = data(loop);
+    if (! bar)
+      continue;
       
-      if (line->getScaleFlag())
-        y = scale.convertToY(d);
-      else
-        y = scaler.convertToY(d);
+    int y;
+    if (scaleFlag())
+      y = scale.convertToY(bar->data());
+    else
+      y = scaler.convertToY(bar->data());
 
-      painter.setPen(color);
-      painter.drawPoint(x, y);
-    }
-
-    x += pd.barSpacing;
-    loop++;
+    painter.setPen(bar->color());
+    painter.drawPoint(x, y);
   }
 
   painter.end();
+}
+
+void Dot::info (int i, Setting *set)
+{
+  PlotLineBar *bar = data(i);
+  if (! bar)
+    return;
+
+  QString d;
+  Utils util;
+  util.strip(bar->data(), 4, d);
+  set->setData(_label, d);
 }
 

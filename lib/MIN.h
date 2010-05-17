@@ -29,7 +29,7 @@ class MIN : public IndicatorPlugin
   public:
     MIN ();
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getMIN (PlotLine *, int);
+    PlotLine * min (PlotLine *, int, int, QColor &);
 };
 
 #endif

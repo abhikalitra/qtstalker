@@ -20,237 +20,135 @@
  */
 
 #include "PlotLine.h"
-#include "Utils.h"
 
 PlotLine::PlotLine ()
 {
-  high = -99999999;
-  low = 99999999;
-  scaleFlag = FALSE;
-  plotFlag = FALSE;
+  _high = -99999999;
+  _low = 99999999;
+  _plotFlag = FALSE;
+  _scaleFlag = FALSE;
 }
 
-void PlotLine::setPlugin (QString &d)
+PlotLine::~PlotLine ()
 {
-  plugin = d;
+  if (count())
+    qDeleteAll(_data);
 }
 
-void PlotLine::getPlugin (QString &d)
+// virtual
+void PlotLine::draw (PlotData &, Scaler &)
 {
-  d = plugin;
+}
+
+// virtual
+void PlotLine::info (int, Setting *)
+{
+}
+
+QString & PlotLine::type ()
+{
+  return _type;
 }
 
 void PlotLine::setLabel (QString &d)
 {
-  label = d;
+  _label = d;
 }
 
-void PlotLine::getLabel (QString &d)
+QString & PlotLine::label ()
 {
-  d = label;
+  return _label;
 }
 
-void PlotLine::append (double d)
+void PlotLine::setData (int i, PlotLineBar *d)
 {
-  QColor color("red");
-  append(color, d);
+  PlotLineBar *bar = _data.value(i);
+  if (bar)
+    delete bar;
+
+  _data.insert(i, d);
+
+  double h, l;
+  d->highLow(h, l);
+
+  checkHighLow(h);
+  checkHighLow(l);
 }
 
-void PlotLine::append (QColor &c, double d)
+PlotLineBar * PlotLine::data (int i)
 {
-  PlotLineBar bar;
-  bar.append(d);
-  bar.setColor(c);
-  data.append(bar);
-  checkHighLow(d);
-}
-
-void PlotLine::append (PlotLineBar &d)
-{
-  data.append(d);
-  
-  int loop;
-  for (loop = 0; loop < d.count(); loop++)
-    checkHighLow(d.getData(loop));
-}
-
-void PlotLine::prepend (double d)
-{
-  QColor color("red");
-  prepend(color, d);
-}
-
-void PlotLine::prepend (QColor &c, double d)
-{
-  PlotLineBar bar;
-  bar.append(d);
-  bar.setColor(c);
-  data.prepend(bar);
-  checkHighLow(d);
-}
-
-void PlotLine::setData (int i, double d)
-{
-  PlotLineBar bar = data.at(i);
-  bar.append(d);
-  data.replace(i, bar);
-}
-
-double PlotLine::getData (int i, QColor &c)
-{
-  PlotLineBar bar = data.at(i);
-  bar.getColor(c);
-  if (bar.count() == 4) // is it a Bar or Candle?
-    return bar.getData(3); // return the close
-  else
-    return bar.getData(0);
-}
-
-double PlotLine::getData (int i)
-{
-  PlotLineBar bar = data.at(i);
-  return bar.getData(0);
-}
-
-void PlotLine::getData (int i, PlotLineBar &d)
-{
-  d = data.at(i);
+  return _data.value(i);
 }
 
 int PlotLine::count ()
 {
-  return (int) data.count();
+  return (int) _data.count();
 }
 
-double PlotLine::getHigh ()
+double PlotLine::high ()
 {
-  return high;
+  return _high;
 }
 
-void PlotLine::setHigh (double d)
+double PlotLine::low ()
 {
-  high = d;
-}
-
-double PlotLine::getLow ()
-{
-  return low;
-}
-
-void PlotLine::setLow (double d)
-{
-  low = d;
+  return _low;
 }
 
 void PlotLine::checkHighLow (double d)
 {
-  if (d > high)
-    high = d;
-  if (d < low)
-    low = d;
+  if (d > _high)
+    _high = d;
+
+  if (d < _low)
+    _low = d;
 }
 
-void PlotLine::setScaleFlag (bool d)
-{
-  scaleFlag = d;
-}
-
-bool PlotLine::getScaleFlag ()
-{
-  return scaleFlag;
-}
-
-void PlotLine::getHighLowRange (int start, int end, double &h, double &l)
+void PlotLine::highLowRange (int start, int end, double &h, double &l)
 {
   int loop;
   h = -99999999;
   l = 99999999;
+
   for (loop = start; loop <= end; loop++)
   {
-    PlotLineBar r = data.at(loop);
-    int loop2;
-    for (loop2 = 0; loop2 < r.count(); loop2++)
-    {
-      double t = r.getData(loop2);
-      if (t > h)
-        h = t;
-      if (t < l)
-        l = t;
-    }
+    PlotLineBar *r = _data.value(loop);
+    if (! r)
+      continue;
+
+    double th, tl;
+    r->highLow(th, tl);
+
+    if (th > h)
+      h = th;
+
+    if (tl < l)
+      l = tl;
   }
 }
 
 void PlotLine::setPlotFlag (bool d)
 {
-  plotFlag = d;
+  _plotFlag = d;
 }
 
-bool PlotLine::getPlotFlag ()
+bool PlotLine::plotFlag ()
 {
-  return plotFlag;
+  return _plotFlag;
 }
 
-void PlotLine::setOffset (int d)
+void PlotLine::setScaleFlag (bool d)
 {
-  offset = d;
+  _scaleFlag = d;
 }
 
-int PlotLine::getOffset ()
+bool PlotLine::scaleFlag ()
 {
-  return offset;
+  return _scaleFlag;
 }
 
-void PlotLine::getInfo (int i, Setting *set)
+void PlotLine::keys (QList<int> &l)
 {
-  Utils util;
-  
-  if (plugin == "OHLC" || plugin == "Candle")
-  {
-    PlotLineBar bar;
-    getData(i, bar);
-    
-    QString k = "O";
-    QString d;
-    util.strip(bar.getData(0), 4, d);
-    set->setData(k, d);
-	
-    k = "H";
-    util.strip(bar.getData(1), 4, d);
-    set->setData(k, d);
-	
-    k = "L";
-    util.strip(bar.getData(2), 4, d);
-    set->setData(k, d);
-	
-    k = "C";
-    util.strip(bar.getData(3), 4, d);
-    set->setData(k, d);
-  }
-  else
-  {
-    QString d;
-    util.strip(getData(i), 4, d);
-    set->setData(label, d);
-  }
-}
-
-void PlotLine::setColor (QColor &color)
-{
-  int loop;
-  for (loop = 0; loop < count(); loop++)
-    setColorBar(loop, color);
-}
-
-void PlotLine::setColor (QString &d)
-{
-  QColor color(d);
-  setColor(color);
-}
-
-void PlotLine::setColorBar (int i, QColor &color)
-{
-  PlotLineBar bar = data.at(i);
-  bar.setColor(color);
-  data.replace(i, bar);
+  l = _data.keys();
 }
 

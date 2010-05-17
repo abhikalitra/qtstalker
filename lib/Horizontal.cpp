@@ -25,25 +25,28 @@
 #include <QFontMetrics>
 #include <QDebug>
 
+#include <QPainter>
+
 Horizontal::Horizontal ()
 {
+  _type = "Horizontal";
 }
 
-void Horizontal::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
+void Horizontal::draw (PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  QColor color;
-  double d = line->getData(line->count() - 1, color);
-  painter.setPen(color);
+  PlotLineBar *bar = data(count() - 1);
+
+  painter.setPen(bar->color());
   
-  int y = scaler.convertToY(d);
+  int y = scaler.convertToY(bar->data());
 
   Utils util;
   QString s, s2;
-  util.strip(d, 4, s);
-  line->getLabel(s2);
+  util.strip(bar->data(), 4, s);
+  s2 = label();
   s = s2 + s;
 
   painter.setFont(pd.plotFont);

@@ -19,23 +19,47 @@
  *  USA.
  */
 
-#ifndef COMPARE_HPP
-#define COMPARE_HPP
+#include "WMA.h"
+#include "PlotFactory.h"
+#include "PlotLineBar.h"
 
-#include "IndicatorPlugin.h"
+#include <QList>
+#include <QtDebug>
 
-class COMPARE : public IndicatorPlugin
+WMA::WMA ()
 {
-  public:
-    COMPARE ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getInput (QString &name, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * compareAA (PlotLine *in, PlotLine *in2, int op);
-    PlotLine * compareAV (PlotLine *in, PlotLine *in2, int op);
-    PlotLine * compareVV (PlotLine *in, PlotLine *in2, int op);
-    PlotLine * compareVA (PlotLine *in, PlotLine *in2, int op);
+}
 
-  protected:
-};
+PlotLine * WMA::wma (PlotLine *in, int period, int lineType, QColor &color)
+{
+  if (in->count() < period)
+    return 0;
 
-#endif
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = period - 1;
+  for (; loop < keys.count(); loop++)
+  {
+    int loop2 = loop;
+    double t = 0;
+    double divider = 0;
+    int weight = period;
+    for (; weight > 0; weight--, loop2--)
+    {
+      PlotLineBar *bar = in->data(keys.at(loop2));
+      t += bar->data() * (double) weight;
+      divider += weight;
+    }
+
+    line->setData(keys.at(loop), new PlotLineBar(color, t / divider));
+  }
+
+  return line;
+}
+

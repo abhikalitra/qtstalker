@@ -20,7 +20,7 @@
  */
 
 #include "STOCH.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "STOCHUtils.h"
 #include "PlotFactory.h"
 
@@ -48,57 +48,65 @@ STOCH::STOCH ()
 int STOCH::getIndicator (Indicator &ind, BarData *data)
 {
   // create first ref line
-  PlotLine *ref1 = new PlotLine;
   QString s = "Horizontal";
-  ref1->setPlugin(s);
-  ref1->append(settings.getInt(Ref1));
+  PlotFactory fac;
+  PlotLine *line = fac.plot(s);
+  if (! line)
+    return 1;
+
   settings.getData(Ref1Color, s);
-  ref1->setColor(s);
-  ind.addLine(ref1);
+  QColor color(s);
+
+  line->setData(0, new PlotLineBar(color, (double) settings.getInt(Ref1)));
+  ind.addLine(line);
 
   // create second ref line
-  PlotLine *ref2 = new PlotLine;
   s = "Horizontal";
-  ref2->setPlugin(s);
-  ref2->append(settings.getInt(Ref2));
+  line = fac.plot(s);
+  if (! line)
+    return 1;
+
   settings.getData(Ref2Color, s);
-  ref2->setColor(s);
-  ind.addLine(ref2);
+  color.setNamedColor(s);
+
+  line->setData(0, new PlotLineBar(color, (double) settings.getInt(Ref2)));
+  ind.addLine(line);
 
   // create the fastk line
   int period = settings.getInt(FastKPeriod);
+
+  settings.getData(FastKColor, s);
+  color.setNamedColor(s);
+
+  settings.getData(FastKPlot, s);
+  int lineType = fac.typeFromString(s);
+
   STOCHUtils fastk;
-  PlotLine *fk = fastk.getFastK(data, period);
+  PlotLine *fk = fastk.fastK(data, period, lineType, color);
   if (! fk)
     return 1;
 
-  settings.getData(FastKColor, s);
-  fk->setColor(s);
-  settings.getData(FastKPlot, s);
-  fk->setPlugin(s);
   settings.getData(FastKLabel, s);
   fk->setLabel(s);
   ind.addLine(fk);
   
-  // get the MA list
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-
   // create the fastd line
   period = settings.getInt(FastDPeriod);
     
+  MAFactory mau;
   settings.getData(FastDMA, s);
-  int maType = maList.indexOf(s);
+  int maType = mau.typeFromString(s);
     
-  PlotLine *fd = mau.getMA(fk, period, maType);
+  settings.getData(FastDColor, s);
+  color.setNamedColor(s);
+
+  settings.getData(FastDPlot, s);
+  lineType = fac.typeFromString(s);
+
+  PlotLine *fd = mau.ma(fk, period, maType, lineType, color);
   if (! fd)
     return 1;
   
-  settings.getData(FastDColor, s);
-  fd->setColor(s);
-  settings.getData(FastDPlot, s);
-  fd->setPlugin(s);
   settings.getData(FastDLabel, s);
   fd->setLabel(s);
   ind.addLine(fd);
@@ -108,26 +116,26 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
 
 int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,STOCH,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>
-  //     0        1    2         3            4              5             6              7
+  // INDICATOR,PLUGIN,STOCH,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>,<FASTK PLOT TYPE>,<FASTD PLOT TYPE>,<FASTK COLOR>,<FASTD COLOR>
+  //     0        1    2         3            4              5             6              7                 8                9                10            11
 
-  if (set.count() != 8)
+  if (set.count() != 12)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate fastk name" << set[3];
     return 1;
   }
 
   tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS: duplicate fastd name" << set[4];
     return 1;
   }
 
@@ -135,38 +143,68 @@ int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   int fkp = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fastk period" << set[5];
+    qDebug() << indicator << "::getCUS: invalid fastk period" << set[5];
     return 1;
   }
 
   int fdp = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fastd period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid fastd period" << set[6];
     return 1;
   }
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int ma = maList.indexOf(set[7]);
+  MAFactory mau;
+  int ma = mau.typeFromString(set[7]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid fastd ma" << set[7];
+    qDebug() << indicator << "::getCUS: invalid fastd ma" << set[7];
+    return 1;
+  }
+
+  PlotFactory fac;
+  int klineType = fac.typeFromString(set[8]);
+  if (klineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid fastk plot type" << set[8];
+    return 1;
+  }
+
+  int dlineType = fac.typeFromString(set[9]);
+  if (dlineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid fastd plot type" << set[9];
+    return 1;
+  }
+
+  QColor kcolor(set[10]);
+  if (! kcolor.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid fastk color" << set[10];
+    return 1;
+  }
+
+  QColor dcolor(set[11]);
+  if (! dcolor.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid fastd color" << set[11];
     return 1;
   }
 
   STOCHUtils fastk;
-  PlotLine *fk = fastk.getFastK(data, fkp);
+  PlotLine *fk = fastk.fastK(data, fkp, klineType, kcolor);
   if (! fk)
     return 1;
 
-  PlotLine *fd = mau.getMA(fk, fdp, ma);
+  PlotLine *fd = mau.ma(fk, fdp, ma, dlineType, dcolor);
   if (! fd)
   {
     delete fk;
     return 1;
   }
+
+  fk->setLabel(set[3]);
+  fd->setLabel(set[4]);
 
   tlines.insert(set[3], fk);
   tlines.insert(set[4], fd);
@@ -215,8 +253,8 @@ int STOCH::dialog (int)
   dialog->addIntItem(FastDPeriod, page, QObject::tr("Period"), settings.getInt(FastDPeriod), 1, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
 
   settings.getData(FastDMA, d);
   dialog->addComboItem(FastDMA, page, QObject::tr("MA Type"), maList, d);

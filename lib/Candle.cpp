@@ -20,59 +20,81 @@
  */
 
 #include "Candle.h"
+#include "Utils.h"
+
+#include <QPainter>
 
 Candle::Candle ()
 {
+  _type = "Candle";
 }
 
-void Candle::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
+void Candle::draw (PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int loop = pd.pos;
+  int loop = pd.startIndex;
   int x = 0;
-  QColor c;
   bool ff = FALSE;
-
-  while ((x < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
+  for (; loop <= pd.endIndex; loop++, x += pd.barSpacing)
   {
-    if (loop > -1)
+    PlotLineBar *bar = data(loop);
+    if (! bar)
+      continue;
+    
+    ff = FALSE;
+    if (bar->data(3) < bar->data(0))
+      ff = TRUE;
+
+    painter.setPen(bar->color());
+
+    int xh = scaler.convertToY(bar->data(1));
+    int xl = scaler.convertToY(bar->data(2));
+    int xc = scaler.convertToY(bar->data(3));
+    int xo = scaler.convertToY(bar->data(0));
+
+    if (! ff)
     {
-      ff = FALSE;
-      PlotLineBar bar;
-      line->getData(loop, bar);
-      
-      if (bar.getData(3) < bar.getData(0))
-        ff = TRUE;
-
-      bar.getColor(c);
-      painter.setPen(c);
-
-      int xh = scaler.convertToY(bar.getData(1));
-      int xl = scaler.convertToY(bar.getData(2));
-      int xc = scaler.convertToY(bar.getData(3));
-      int xo = scaler.convertToY(bar.getData(0));
-
-      if (! ff)
-      {
-        // empty candle
-        painter.drawLine (x + 3, xh, x + 3, xc);
-        painter.drawLine (x + 3, xo, x + 3, xl);
-        painter.drawRect(x, xc, 6, xo - xc);
-      }
-      else
-      {
-        // filled candle
-        painter.drawLine (x + 2, xh, x + 2, xl);
-        painter.fillRect(x, xo, 5, xc - xo, c);
-      }
+      // empty candle
+      painter.drawLine (x + 3, xh, x + 3, xc);
+      painter.drawLine (x + 3, xo, x + 3, xl);
+      painter.drawRect(x, xc, 6, xo - xc);
     }
-
-    x += pd.barSpacing;
-    loop++;
+    else
+    {
+      // filled candle
+      painter.drawLine (x + 2, xh, x + 2, xl);
+      painter.fillRect(x, xo, 5, xc - xo, bar->color());
+    }
   }
 
   painter.end();
+}
+
+void Candle::info (int i, Setting *set)
+{
+  PlotLineBar *bar = data(i);
+  if (! bar)
+    return;
+
+  QString k = "O";
+  QString d;
+
+  Utils util;
+  util.strip(bar->data(0), 4, d);
+  set->setData(k, d);
+
+  k = "H";
+  util.strip(bar->data(1), 4, d);
+  set->setData(k, d);
+
+  k = "L";
+  util.strip(bar->data(2), 4, d);
+  set->setData(k, d);
+
+  k = "C";
+  util.strip(bar->data(3), 4, d);
+  set->setData(k, d);
 }
 

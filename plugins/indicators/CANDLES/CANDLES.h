@@ -122,6 +122,8 @@ class CANDLES : public IndicatorPlugin
     CANDLES ();
     int getIndicator (Indicator &, BarData *);
     int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
+    int getCUSNone (QStringList &, QHash<QString, PlotLine *> &, BarData *);
+    int getCUSMethod (QStringList &, QHash<QString, PlotLine *> &, BarData *);
     int dialog (int);
     PlotLine * getMethod (BarData *, int, double);
     PlotLine * getCANDLES (BarData *, QColor &);

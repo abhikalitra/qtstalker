@@ -20,11 +20,10 @@
  */
 
 #include "AD.h"
-#include "MAUtils.h"
+#include "EMA.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
-
 
 AD::AD ()
 {
@@ -37,7 +36,7 @@ AD::AD ()
   settings.setData(FastPeriod, 3);
   settings.setData(SlowPeriod, 10);
   settings.setData(OSCColor, QString("red"));
-  settings.setData(OSCPlot, QString("HistogramBar"));
+  settings.setData(OSCPlot, QString("Histogram Bar"));
   settings.setData(OSCLabel, QString("ADOSC"));
 
   methodList << "AD";
@@ -56,14 +55,18 @@ int AD::getIndicator (Indicator &ind, BarData *data)
     {
       int fp = settings.getInt(FastPeriod);
       int sp = settings.getInt(SlowPeriod);
-      PlotLine *line = getADOSC(data, fp, sp);
+      
+      settings.getData(OSCColor, s);
+      QColor color(s);
+
+      settings.getData(OSCPlot, s);
+      PlotFactory fac;
+      int lineType = fac.typeFromString(s);
+      
+      PlotLine *line = getADOSC(data, fp, sp, lineType, color);
       if (! line)
 	return 1;
       
-      settings.getData(OSCColor, s);
-      line->setColor(s);
-      settings.getData(OSCPlot, s);
-      line->setPlugin(s);
       settings.getData(OSCLabel, s);
       line->setLabel(s);
       ind.addLine(line);
@@ -71,14 +74,17 @@ int AD::getIndicator (Indicator &ind, BarData *data)
     }
     default:
     {
-      PlotLine *line = getAD(data);
+      settings.getData(ADColor, s);
+      QColor color(s);
+
+      settings.getData(ADPlot, s);
+      PlotFactory fac;
+      int lineType = fac.typeFromString(s);
+
+      PlotLine *line = getAD(data, lineType, color);
       if (! line)
 	return 1;
       
-      settings.getData(ADColor, s);
-      line->setColor(s);
-      settings.getData(ADPlot, s);
-      line->setPlugin(s);
       settings.getData(ADLabel, s);
       line->setLabel(s);
       ind.addLine(line);
@@ -110,25 +116,43 @@ int AD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
 int AD::getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,AD,AD,<NAME>
+  // INDICATOR,PLUGIN,AD,AD,<NAME>,<LINE TYPE>,<COLOR>
+  //      0      1     2  3    4       5          6
 
-  if (set.count() != 5)
+  if (set.count() != 7)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS_AD: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS_AD: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *line = getAD(data);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[5]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS_AD: invalid plot type" << set[5];
+    return 1;
+  }
+
+  QColor color(set[6]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS_AD: invalid color" << set[6];
+    return 1;
+  }
+
+  PlotLine *line = getAD(data, lineType, color);
   if (! line)
     return 1;
 
+  line->setLabel(set[4]);
+  
   tlines.insert(set[4], line);
 
   return 0;
@@ -136,18 +160,19 @@ int AD::getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
 
 int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,AD,ADOSC,<NAME>,<FAST_PERIOD>,<SLOW_PERIOD>
+  // INDICATOR,PLUGIN,AD,ADOSC,<NAME>,<FAST_PERIOD>,<SLOW_PERIOD>,<PLOT TYPE>,<COLOR>
+  //      0       1    2    3    4         5             6             7         8
 
-  if (set.count() != 7)
+  if (set.count() != 9)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS_ADOSC: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS_ADOSC: duplicate name" << set[4];
     return 1;
   }
 
@@ -155,29 +180,50 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   int fast = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid fast period" << set[5];
+    qDebug() << indicator << "::getCUS_ADOSC: invalid fast period" << set[5];
     return 1;
   }
 
   int slow = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid slow period" << set[6];
+    qDebug() << indicator << "::getCUS_ADOSC: invalid slow period" << set[6];
     return 1;
   }
 
-  PlotLine *line = getADOSC(data, fast, slow);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[7]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS_ADOSC: invalid plot type" << set[7];
+    return 1;
+  }
+
+  QColor color(set[8]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS_ADOSC: invalid color" << set[8];
+    return 1;
+  }
+
+  PlotLine *line = getADOSC(data, fast, slow, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[4]);
 
   tlines.insert(set[4], line);
 
   return 0;
 }
 
-PlotLine * AD::getAD (BarData *data)
+PlotLine * AD::getAD (BarData *data, int lineType, QColor &color)
 {
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+  
   int size = data->count();
   int loop = 0;
   double ad = 0;
@@ -185,27 +231,27 @@ PlotLine * AD::getAD (BarData *data)
   {
     Bar *bar = data->getBar(loop);
     ad += (((bar->getClose() - bar->getLow()) - (bar->getHigh() - bar->getClose())) / (bar->getHigh() - bar->getLow())) * (bar->getVolume());
-    line->append(ad);
+    line->setData(loop, new PlotLineBar(color, ad));
   }
 
   return line;
 }
 
-PlotLine * AD::getADOSC (BarData *data, int fast, int slow)
+PlotLine * AD::getADOSC (BarData *data, int fast, int slow, int lineType, QColor &color)
 {
-  PlotLine *ad = getAD(data);
+  PlotLine *ad = getAD(data, lineType, color);
   if (! ad)
     return 0;
 
-  MAUtils mau;
-  PlotLine *fma = mau.getMA(ad, fast, MAUtils::EMA);
+  EMA ema;
+  PlotLine *fma = ema.ema(ad, fast, lineType, color);
   if (! fma)
   {
     delete ad;
     return 0;
   }
 
-  PlotLine *sma = mau.getMA(ad, slow, MAUtils::EMA);
+  PlotLine *sma = ema.ema(ad, slow, lineType, color);
   if (! sma)
   {
     delete ad;
@@ -213,16 +259,29 @@ PlotLine * AD::getADOSC (BarData *data, int fast, int slow)
     return 0;
   }
 
-  int fmaLoop = fma->count() - 1;
-  int smaLoop = sma->count() - 1;
-
-  PlotLine *line = new PlotLine;
-
-  while (fmaLoop > -1 && smaLoop > -1)
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
   {
-    line->prepend(fma->getData(fmaLoop) - sma->getData(smaLoop));
-    fmaLoop--;
-    smaLoop--;
+    delete ad;
+    delete fma;
+    delete sma;
+    return 0;
+  }
+
+  QList<int> keys;
+  sma->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *fbar = fma->data(keys.at(loop));
+    if (! fbar)
+      continue;
+    
+    PlotLineBar *sbar = sma->data(keys.at(loop));
+
+    line->setData(keys.at(loop), new PlotLineBar(color, fbar->data() - sbar->data()));
   }
 
   delete ad;

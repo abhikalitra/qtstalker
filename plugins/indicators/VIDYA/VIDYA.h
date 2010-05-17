@@ -40,8 +40,8 @@ class VIDYA : public IndicatorPlugin
     VIDYA ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    void calcCMO (PlotLine *outSignal, PlotLine *inSignal, int iPeriod);
-    PlotLine * getVIDYA (PlotLine *inSignal, int period, int volPeriod);
+    PlotLine * calcCMO (PlotLine *inSignal, int period);
+    PlotLine * getVIDYA (PlotLine *inSignal, int period, int volPeriod, int, QColor &);
     int dialog (int);
 
   protected:

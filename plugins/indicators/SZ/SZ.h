@@ -41,7 +41,7 @@ class SZ : public IndicatorPlugin
     SZ ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getSZ (BarData *data, QString &method, int period, int no_decline_period, double coefficient);
+    PlotLine * getSZ (BarData *data, QString &method, int period, int no_decline_period, double coefficient, int, QColor &);
     int dialog (int);
 
   protected:

@@ -9,12 +9,11 @@
 <h3 style="text-decoration: underline;">HT - Hilbert Transform<br>
 </h3>
 <br>
-There are 7 different HT methods:<br>
+There are 6 different HT methods:<br>
 <br>
 <a href="http://www.tadoc.org/indicator/HT_DCPERIOD.htm">HT DCPERIOD</a><br>
 <a href="http://www.tadoc.org/indicator/HT_DCPHASE.htm">HT DCPHASE</a><br>
 <a href="http://www.tadoc.org/indicator/HT_PHASOR.htm">HT PHASOR</a><br>
-<a href="http://www.tadoc.org/indicator/HT_QUADRA.htm">HT QUAD</a><br>
 <a href="http://www.tadoc.org/indicator/HT_SINE.htm">HT SINE</a><br>
 <a href="http://www.tadoc.org/indicator/HT_TRENDLINE.htm">HT TRENDLINE</a><br>
 <a href="http://www.tadoc.org/indicator/HT_TRENDMODE.htm">HT TRENDMODE</a><br>
@@ -23,33 +22,90 @@ There are 7 different HT methods:<br>
 <br>
 <span style="font-weight: bold; text-decoration: underline;">Script API</span><br>
 <br>
-There are 8 different methods. They all have the same format.<br>
+There are 6 different methods.<br>
 <span style="text-decoration: underline;"><br>
 </span><br>
 Format:<br>
 <br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,HT,DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;</span><br>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,HT,DCPHASE,&lt;NAME&gt;,&lt;INPUT&gt;</span><br>
-</p>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,HT,TRENDLINE,&lt;NAME&gt;,&lt;INPUT&gt;</span><br>
-</p>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,HT,TRENDMODE,&lt;NAME&gt;,&lt;INPUT&gt;</span><br>
-</p>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,HT,PHASE,&lt;NAME&gt;,&lt;INPUT&gt;</span><br>
-</p>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,HT,QUAD,&lt;NAME&gt;,&lt;INPUT&gt;</span><br>
-</p>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,HT,SINE,&lt;NAME&gt;,&lt;INPUT&gt;</span><br>
-</p>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,HT,LEAD,&lt;NAME&gt;,&lt;INPUT&gt;</span><br>
-</p>
-<p>
+<span style="font-weight: bold;">INDICATOR,PLUGIN,HT,DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;</span><span
+ style="font-weight: bold;">,&lt;PLOT TYPE&gt;,&lt;COLOR&gt;</span><br>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
+array</li>
+  <li>&lt;PLOT TYPE&gt; is the <a href="PlotTypes.html">plot type</a></li>
+  <li>&lt;COLOR&gt; is the color of the plot</li>
+</ul>
+<p><span style="font-weight: bold;"><br>
+INDICATOR,PLUGIN,HT,DCPHASE,&lt;NAME&gt;,&lt;INPUT&gt;</span><span
+ style="font-weight: bold;">,&lt;PLOT TYPE&gt;,&lt;COLOR&gt;</span><br>
 </p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the plot</li>
   <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
-array<br>
-  </li>
+array</li>
+  <li>&lt;PLOT TYPE&gt; is the <a href="PlotTypes.html">plot type</a></li>
+  <li>&lt;COLOR&gt; is the color of the plot</li>
+</ul>
+<span style="font-weight: bold;"><br>
+INDICATOR,PLUGIN,HT,TRENDLINE,&lt;NAME&gt;,&lt;INPUT&gt;</span><span
+ style="font-weight: bold;">,&lt;PLOT TYPE&gt;,&lt;COLOR&gt;</span><br>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
+array</li>
+  <li>&lt;PLOT TYPE&gt; is the <a href="PlotTypes.html">plot type</a></li>
+  <li>&lt;COLOR&gt; is the color of the plot</li>
+</ul>
+<span style="font-weight: bold;"><br>
+INDICATOR,PLUGIN,HT,TRENDMODE,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PLOT
+TYPE&gt;,&lt;COLOR&gt;<br>
+</span>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
+array</li>
+  <li>&lt;PLOT TYPE&gt; is the <a href="PlotTypes.html">plot type</a></li>
+  <li>&lt;COLOR&gt; is the color of the plot</li>
+</ul>
+<br>
+<span style="font-weight: bold;"><br>
+INDICATOR,PLUGIN,HT,PHASE,&lt;INPUT&gt;,&lt;PHASE NAME&gt;,&lt;QUAD
+NAME&gt;,&lt;PHASE PLOT TYPE&gt;,</span><span style="font-weight: bold;">&lt;QUAD
+PLOT TYPE&gt;</span><span style="font-weight: bold;">,&lt;PHASE
+COLOR&gt;</span><span style="font-weight: bold;">,&lt;QUAD COLOR&gt;</span><span
+ style="font-weight: bold;"><br>
+</span>
+<ul>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
+array</li>
+  <li>&lt;PHASE NAME&gt; is the variable name given to the phase plot</li>
+  <li>&lt;QUAD NAME&gt; is the variable name given to the quad plot</li>
+  <li>&lt;PHASE PLOT TYPE&gt; is the phase <a href="PlotTypes.html">plot
+type</a></li>
+  <li>&lt;QUAD PLOT TYPE&gt; is the quad <a href="PlotTypes.html">plot
+type</a></li>
+  <li>&lt;PHASE COLOR&gt; is the color of the phase plot</li>
+  <li>&lt;QUAD COLOR&gt; is the color of the quad plot</li>
+</ul>
+<br>
+<span style="font-weight: bold;"><br>
+INDICATOR,PLUGIN,HT,SINE,&lt;INPUT&gt;,&lt;SINE NAME&gt;,&lt;LEAD
+NAME&gt;,&lt;SINE PLOT TYPE&gt;,</span><span style="font-weight: bold;">&lt;LEAD
+PLOT TYPE&gt;</span><span style="font-weight: bold;">&lt;SINE COLOR&gt;</span><span
+ style="font-weight: bold;">,&lt;LEAD COLOR&gt;</span>
+<p></p>
+<ul>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
+array</li>
+  <li>&lt;SINE NAME&gt; is the variable name given to the sine plot</li>
+  <li>&lt;LEAD NAME&gt; is the variable name given to the lead plot</li>
+  <li>&lt;SINE PLOT TYPE&gt; is the sine <a href="PlotTypes.html">plot
+type</a></li>
+  <li>&lt;LEAD PLOT TYPE&gt; is the lead <a href="PlotTypes.html">plot
+type</a></li>
+  <li>&lt;SINE COLOR&gt; is the color of the sine plot</li>
+  <li>&lt;LEAD COLOR&gt; is the color of the lead plot</li>
 </ul>
 <br>
 <h3><br>

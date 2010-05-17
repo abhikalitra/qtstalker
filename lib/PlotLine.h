@@ -23,9 +23,11 @@
 #define PLOTLINE_HPP
 
 #include <QString>
+#include <QMap>
 #include <QList>
-#include <QColor>
 
+#include "PlotData.h"
+#include "Scaler.h"
 #include "PlotLineBar.h"
 #include "Setting.h"
 
@@ -33,46 +35,34 @@ class PlotLine
 {
   public:
     PlotLine ();
-    void setPlugin (QString &);
-    void getPlugin (QString &);
-    void setLabel (QString &);
-    void getLabel (QString &);
-    void append (double);
-    void append (QColor &, double);
-    void append (PlotLineBar &);
-    void prepend (double);
-    void prepend (QColor &, double);
-    double getData (int, QColor &);
-    double getData (int);
-    void getData (int, PlotLineBar &);
-    void setData (int, double);
-    int count ();
-    double getHigh ();
-    void setHigh (double);
-    double getLow ();
-    void setLow (double);
-    void checkHighLow (double);
-    void setScaleFlag (bool);
-    bool getScaleFlag ();
-    void setPlotFlag (bool);
-    bool getPlotFlag ();
-    void getHighLowRange (int, int, double &, double &);
-    void setOffset (int);
-    int getOffset ();
-    void getInfo (int, Setting *);
-    void setColor (QColor &);
-    void setColor (QString &);
-    void setColorBar (int, QColor &);
+    ~PlotLine ();
+    virtual void draw (PlotData &, Scaler &);
+    virtual void info (int, Setting *);
 
-  private:
-    QList<PlotLineBar> data;
-    QString label;
-    QString plugin;
-    double high;
-    double low;
-    bool scaleFlag;
-    bool plotFlag;
-    int offset;
+    QString & type ();
+    void setLabel (QString &);
+    QString & label ();
+    PlotLineBar * data (int);
+    void setData (int, PlotLineBar *);
+    int count ();
+    double high ();
+    double low ();
+    void checkHighLow (double);
+    void setPlotFlag (bool);
+    bool plotFlag ();
+    void setScaleFlag (bool);
+    bool scaleFlag ();
+    void highLowRange (int, int, double &, double &);
+    void keys (QList<int> &);
+
+  protected:
+    QMap<int, PlotLineBar *> _data;
+    QString _label;
+    QString _type;
+    double _high;
+    double _low;
+    bool _plotFlag;
+    bool _scaleFlag;
 };
 
 #endif

@@ -22,13 +22,14 @@
 #ifndef LINE_HPP
 #define LINE_HPP
 
-#include "PlotPlugin.h"
+#include "PlotLine.h"
 
-class Line : public PlotPlugin
+class Line : public PlotLine
 {
   public:
     Line ();
-    void draw (PlotLine *, PlotData &, Scaler &);
+    void draw (PlotData &, Scaler &);
+    void info (int, Setting *);
 };
 
 #endif

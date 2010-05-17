@@ -20,11 +20,10 @@
  */
 
 #include "ROC.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
-
 
 ROC::ROC ()
 {
@@ -49,33 +48,34 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
   int period = settings.getInt(Period);
   int smoothing = settings.getInt(Smoothing);
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
   settings.getData(SmoothingType, s);
-  int type = maList.indexOf(s);
+  int type = mau.typeFromString(s);
 
   settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
-  PlotLine *line = getROC(in, period, method, smoothing, type);
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getROC(in, period, method, smoothing, type, lineType, color);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -87,25 +87,26 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
 
 int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,ROC,METHOD,<NAME>,<INPUT>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
+  // INDICATOR,PLUGIN,ROC,METHOD,<NAME>,<INPUT>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
+  //     0       1     2    3      4       5       6             7                 8              9         10
 
-  if (set.count() != 9)
+  if (set.count() != 11)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   int method = methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[3];
+    qDebug() << indicator << "::getCUS: invalid method" << set[3];
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[4];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
     return 1;
   }
 
@@ -115,7 +116,7 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     in = data->getInput(data->getInputType(set[5]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[5];
+      qDebug() << indicator << "::getCUS: input not found" << set[5];
       return 1;
     }
 
@@ -126,37 +127,52 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid period" << set[6];
     return 1;
   }
 
   int smoothing = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing" << set[7];
+    qDebug() << indicator << "::getCUS: invalid smoothing" << set[7];
     return 1;
   }
 
-  QStringList maList;
-  MAUtils mau;  
-  mau.getMAList(maList);
-  int type = maList.indexOf(set[8]);
+  MAFactory mau;
+  int type = mau.typeFromString(set[8]);
   if (type == -1)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing type" << set[8];
+    qDebug() << indicator << "::getCUS: invalid smoothing type" << set[8];
     return 1;
   }
 
-  PlotLine *line = getROC(in, period, method, smoothing, type);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[9]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[9];
+    return 1;
+  }
+
+  QColor color(set[10]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[10];
+    return 1;
+  }
+
+  PlotLine *line = getROC(in, period, method, smoothing, type, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[4]);
 
   tlines.insert(set[4], line);
 
   return 0;
 }
 
-PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int type)
+PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int type, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
@@ -165,16 +181,16 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int
   switch ((_Method) method)
   {
     case ROCN:
-      line = getROCN(in, period);
+      line = getROCN(in, period, lineType, color);
       break;
     case ROCP:
-      line = getROCP(in, period);
+      line = getROCP(in, period, lineType, color);
       break;
     case ROCR:
-      line = getROCR(in, period);
+      line = getROCR(in, period, lineType, color);
       break;
     case ROCR100:
-      line = getROCR100(in, period);
+      line = getROCR100(in, period, lineType, color);
       break;
     default:
       break;
@@ -185,8 +201,8 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int
   
   if (smoothing > 1)
   {
-    MAUtils mau;
-    PlotLine *ma = mau.getMA(line, smoothing, type);
+    MAFactory mau;
+    PlotLine *ma = mau.ma(line, smoothing, type, lineType, color);
     delete line;
     line = ma;
   }
@@ -194,43 +210,87 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int
   return line;
 }
 
-PlotLine * ROC::getROCN (PlotLine *in, int period)
+PlotLine * ROC::getROCN (PlotLine *in, int period, int lineType, QColor &color)
 {
-  PlotLine *line = new PlotLine;
-  int size = in->count();
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+
   int loop = period;
-  for (; loop < size; loop++)
-    line->append(((in->getData(loop) / in->getData(loop - period)) -1) * 100);
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    PlotLineBar *pbar = in->data(keys.at(loop - period));
+    line->setData(keys.at(loop), new PlotLineBar(color, ((bar->data() / pbar->data()) -1) * 100));
+  }
+  
   return line;
 }
 
-PlotLine * ROC::getROCP (PlotLine *in, int period)
+PlotLine * ROC::getROCP (PlotLine *in, int period, int lineType, QColor &color)
 {
-  PlotLine *line = new PlotLine;
-  int size = in->count();
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+
   int loop = period;
-  for (; loop < size; loop++)
-    line->append((in->getData(loop) - in->getData(loop - period)) / in->getData(loop - period));
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    PlotLineBar *pbar = in->data(keys.at(loop - period));
+    line->setData(keys.at(loop), new PlotLineBar(color, (bar->data() - pbar->data()) / pbar->data()));
+  }
+  
   return line;
 }
 
-PlotLine * ROC::getROCR (PlotLine *in, int period)
+PlotLine * ROC::getROCR (PlotLine *in, int period, int lineType, QColor &color)
 {
-  PlotLine *line = new PlotLine;
-  int size = in->count();
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+
   int loop = period;
-  for (; loop < size; loop++)
-    line->append(in->getData(loop) / in->getData(loop - period));
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    PlotLineBar *pbar = in->data(keys.at(loop - period));
+    line->setData(keys.at(loop), new PlotLineBar(color, bar->data() / pbar->data()));
+  }
+  
   return line;
 }
 
-PlotLine * ROC::getROCR100 (PlotLine *in, int period)
+PlotLine * ROC::getROCR100 (PlotLine *in, int period, int lineType, QColor &color)
 {
-  PlotLine *line = new PlotLine;
-  int size = in->count();
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+
   int loop = period;
-  for (; loop < size; loop++)
-    line->append((in->getData(loop) / in->getData(loop - period)) * 100);
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    PlotLineBar *pbar = in->data(keys.at(loop - period));
+    line->setData(keys.at(loop), new PlotLineBar(color, (bar->data() / pbar->data()) * 100));
+  }
+  
   return line;
 }
 
@@ -262,8 +322,8 @@ int ROC::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);

@@ -262,7 +262,7 @@ void ExScript::getLines (QList<PlotLine *> &lines)
   while (it.hasNext())
   {
     it.next();
-    if (! it.value()->getPlotFlag())
+    if (! it.value()->plotFlag())
       delete it.value();
   }
 

@@ -20,15 +20,19 @@
  */
 
 #include "CCI.h"
-#include "MAUtils.h"
+#include "MAFactory.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 #include <cmath>
 
-
 CCI::CCI ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("CCI::error on TA_Initialize");
+
   indicator = "CCI";
 
   settings.setData(Color, "red");
@@ -45,47 +49,56 @@ CCI::CCI ()
 
 int CCI::getIndicator (Indicator &ind, BarData *data)
 {
-  QString s;
-  int period = settings.getInt(Period);
-  int smoothing = settings.getInt(Smoothing);
-
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  
-  settings.getData(SmoothingType, s);
-  int type = maList.indexOf(s);
-
-  PlotLine *line = getCCI(data, period, smoothing, type);
-  if (! line)
-    return 1;
-
   // create the ref1 line
-  int ref = settings.getInt(Ref1);
-  PlotLine *rline = new PlotLine;
-  s = "Horizontal";
-  rline->setPlugin(s);
-  rline->append(ref);
+  PlotFactory fac;
+  QString s = "Horizontal";
+  PlotLine *rline = fac.plot(s);
+  if (! rline)
+    return 0;
+
   settings.getData(Ref1Color, s);
-  rline->setColor(s);
+  QColor color(s);
+
+  int ref = settings.getInt(Ref1);
+  rline->setData(0, new PlotLineBar(color, ref));
+  
   ind.addLine(rline);
 
   // create the ref2 line
-  ref = settings.getInt(Ref2);
-  rline = new PlotLine;
   s = "Horizontal";
-  rline->setPlugin(s);
-  rline->append(ref);
+  rline = fac.plot(s);
+  if (! rline)
+    return 0;
+
   settings.getData(Ref2Color, s);
-  rline->setColor(s);
+  color.setNamedColor(s);
+
+  ref = settings.getInt(Ref2);
+  rline->setData(0, new PlotLineBar(color, ref));
+
   ind.addLine(rline);
 
+  // get the CCI plot
+  int period = settings.getInt(Period);
+  int smoothing = settings.getInt(Smoothing);
+
+  MAFactory mau;
+  settings.getData(SmoothingType, s);
+  int type = mau.typeFromString(s);
+
+  settings.getData(Color, s);
+  color.setNamedColor(s);
+
   settings.getData(Plot, s);
-  line->setPlugin(s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getCCI(data, period, smoothing, type, lineType, color);
+  if (! line)
+    return 1;
+
   settings.getData(Label, s);
   line->setLabel(s);
-  settings.getData(Color, s);
-  line->setColor(s);
+
   ind.addLine(line);
 
   return 0;
@@ -93,18 +106,19 @@ int CCI::getIndicator (Indicator &ind, BarData *data)
 
 int CCI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,CCI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
+  // INDICATOR,PLUGIN,CCI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
+  //     0       1     2    3       4             5                  6              7        8
 
-  if (set.count() != 7)
+  if (set.count() != 9)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -112,88 +126,110 @@ int CCI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period parm" << set[4];
+    qDebug() << indicator << "::getCUS: invalid period parm" << set[4];
     return 1;
   }
 
   int smoothing = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing period" << set[5];
+    qDebug() << indicator << "::getCUS: invalid smoothing period" << set[5];
     return 1;
   }
 
-  QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
-  int ma = maList.indexOf(set[6]);
+  MAFactory mau;
+  int ma = mau.typeFromString(set[6]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::calculate: invalid smoothing type" << set[6];
+    qDebug() << indicator << "::getCUS: invalid smoothing type" << set[6];
     return 1;
   }
 
-  PlotLine *line = getCCI(data, period, smoothing, ma);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[7]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    return 1;
+  }
+
+  QColor color(set[8]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    return 1;
+  }
+
+  PlotLine *line = getCCI(data, period, smoothing, ma, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * CCI::getCCI (BarData *data, int period, int smoothing, int type)
+PlotLine * CCI::getCCI (BarData *data, int period, int smoothing, int type, int lineType, QColor &color)
 {
-  if (data->count() < period)
-    return 0;
-  
   int size = data->count();
+  if (size < period)
+    return 0;
+
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
   int loop = 0;
-  PlotLine *tp = new PlotLine;
   for (; loop < size; loop++)
   {
     Bar *bar = data->getBar(loop);
-    tp->append((bar->getHigh() + bar->getLow() + bar->getClose()) / 3);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
   }
 
-  MAUtils mau;
-  PlotLine *smatp = mau.getMA(tp, period, MAUtils::SMA);
-  if (! smatp)
+  TA_RetCode rc = TA_CCI(0,
+                         size - 1,
+                         &high[0],
+                         &low[0],
+                         &close[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
   {
-    delete tp;
+    qDebug() << indicator << "::getCCI: TA-Lib error" << rc;
     return 0;
   }
 
-  int tpLoop = tp->count() - 1;
-  int smatpLoop = smatp->count() - 1;
-  PlotLine *cci = new PlotLine;
-  while (tpLoop >= period && smatpLoop >= period)
+  PlotFactory fac;
+  PlotLine *cci = fac.plot(lineType);
+  if (! cci)
+    return 0;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (dataLoop > -1 && outLoop > -1)
   {
-    double t = 0;
-    int count = 0;
-    for (; count < period; count++)
-      t += fabs(tp->getData(tpLoop - count) - smatp->getData(smatpLoop - count));
-    double b = (t / (double) period) * 0.015;
-
-    double a = tp->getData(tpLoop) - smatp->getData(smatpLoop);
-    cci->prepend(a / b);
-
-    tpLoop--;
-    smatpLoop--;
+    cci->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
   }
-  
+
   if (smoothing > 1)
   {
-    QStringList maList;
-    mau.getMAList(maList);
-    PlotLine *ma = mau.getMA(cci, smoothing, type);
+    MAFactory maf;
+    PlotLine *ma = maf.ma(cci, smoothing, type, lineType, color);
     delete cci;
     cci = ma;
   }
 
-  delete tp;
-  delete smatp;
-  
   return cci;
 }
 
@@ -225,8 +261,8 @@ int CCI::dialog (int)
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
-  MAUtils mau;
-  mau.getMAList(maList);
+  MAFactory mau;
+  mau.list(maList);
 
   settings.getData(SmoothingType, d);
   dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);

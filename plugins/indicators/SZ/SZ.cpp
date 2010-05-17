@@ -29,7 +29,6 @@
 #include <QtDebug>
 #include <cmath>
 
-
 SZ::SZ ()
 {
   indicator = "SZ";
@@ -63,15 +62,18 @@ int SZ::getIndicator (Indicator &ind, BarData *data)
   if (bars)
     ind.addLine(bars);
 
-  PlotLine *line = getSZ(data, method, period, ndperiod, coeff);
+  QString s;
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getSZ(data, method, period, ndperiod, coeff, lineType, color);
   if (! line)
     return 1;
 
-  QString s;
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -81,24 +83,25 @@ int SZ::getIndicator (Indicator &ind, BarData *data)
 
 int SZ::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,SZ,<NAME>,<METHOD>,<PERIOD>,<NO_DECLINE_PERIOD>,<COEFFICIENT>
+  // INDICATOR,PLUGIN,SZ,<NAME>,<METHOD>,<PERIOD>,<NO_DECLINE_PERIOD>,<COEFFICIENT>,<PLOT TYPE>,<COLOR>
+  //     0       1    2    3       4        5              6               7             8         9
 
-  if (set.count() != 8)
+  if (set.count() != 10)
   {
-    qDebug() << indicator << "::calculate: invalid parm count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: invalid name" << set[3];
+    qDebug() << indicator << "::getCUS: invalid name" << set[3];
     return 1;
   }
 
   if (set[4] != "Long" && set[4] != "Short")
   {
-    qDebug() << indicator << "::calculate: invalid method" << set[4];
+    qDebug() << indicator << "::getCUS: invalid method" << set[4];
     return 1;
   }
 
@@ -106,7 +109,7 @@ int SZ::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period" << set[5];
+    qDebug() << indicator << "::getCUS: invalid period" << set[5];
     return 1;
   }
   if (period < 1)
@@ -115,27 +118,45 @@ int SZ::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int no_decline_period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid no_decline_period" << set[6];
+    qDebug() << indicator << "::getCUS: invalid no_decline_period" << set[6];
     return 1;
   }
 
   double coefficient = set[7].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid coefficient" << set[7];
+    qDebug() << indicator << "::getCUS: invalid coefficient" << set[7];
     return 1;
   }
 
-  PlotLine *line = getSZ(data, set[4], period, no_decline_period, coefficient);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[8]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[8];
+    return 1;
+  }
+
+  QColor color(set[9]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[9];
+    return 1;
+  }
+
+  PlotLine *line = getSZ(data, set[4], period, no_decline_period, coefficient, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline_period, double coefficient)
+PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline_period, double coefficient,
+                      int lineType, QColor &color)
 {
   int display_uptrend = 0;
   int display_dntrend = 0;
@@ -149,8 +170,14 @@ PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline
   if (position & 2) // short
     display_dntrend = 1;
 
-  PlotLine *sz_uptrend = new PlotLine();
-  PlotLine *sz_dntrend = new PlotLine();
+  PlotFactory fac;
+  PlotLine *sz_uptrend = fac.plot(lineType);
+  if (! sz_uptrend)
+    return 0;
+  
+  PlotLine *sz_dntrend = fac.plot(lineType);
+  if (! sz_dntrend)
+    return 0;
 
   double uptrend_stop = 0;
   double dntrend_stop = 0;
@@ -236,16 +263,22 @@ PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline
     old_uptrend_stops[0] = uptrend_stop;
     old_dntrend_stops[0] = dntrend_stop;
 
-    sz_uptrend->append(adjusted_uptrend_stop);
-    sz_dntrend->append(adjusted_dntrend_stop);
+    sz_uptrend->setData(loop, new PlotLineBar(color, adjusted_uptrend_stop));
+    sz_dntrend->setData(loop, new PlotLineBar(color, adjusted_dntrend_stop));
   }
 
   PlotLine *pl = 0;
   if (display_uptrend)
+  {
     pl = sz_uptrend;
+    delete sz_dntrend;
+  }
 
   if (display_dntrend)
+  {
     pl = sz_dntrend;
+    delete sz_uptrend;
+  }
 
   return pl;
 }

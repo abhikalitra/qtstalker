@@ -45,7 +45,7 @@ class RSI : public IndicatorPlugin
     RSI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getRSI (PlotLine *in, int period, int smoothing, int type);
+    PlotLine * getRSI (PlotLine *in, int period, int smoothing, int type, int, QColor &);
     int dialog (int);
 
   protected:

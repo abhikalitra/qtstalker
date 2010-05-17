@@ -8,46 +8,58 @@
 <body>
 <h3 style="text-decoration: underline;">Script API - Indicators</h3>
 <br>
-For the indicator API formats, see the indicator section for details.<br>
+These CUS commands allow creation and manipulation of indicator values.
 <br>
-<p style="font-weight: bold;">INDICATOR,GET,&lt;NAME&gt;,&lt;BARS&gt;<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<p style="font-weight: bold;">INDICATOR,NEW,&lt;METHOD&gt;,&lt;NAME&gt;,&lt;PLOT
+TYPE&gt;<br>
 </p>
-<p>Request indicator values.</p>
+<p>Create a new indicator. The &lt;METHOD&gt; value determines if the
+new indicator is empty or filled with values.<br>
+</p>
 <ul>
-  <li>&lt;NAME&gt; is the variable name of the indicator previously
-created in
-the script.</li>
-  <li>&lt;BARS&gt; is the number of bars desired. 0 will return all
-bars. ie.
-20 would return the last 20 bars.<br>
+  <li>&lt;METHOD&gt; is one of the following values:</li>
+  <ul>
+    <li>EMPTY - no default values</li>
+    <li>Open - filled with open bar values from the currently loaded
+chart</li>
+    <li>High - filled with high bar values from the currently loaded
+chart</li>
+    <li>Low - filled with low bar values from the currently loaded chart</li>
+    <li>Close - filled with close bar values from the currently loaded
+chart</li>
+    <li>Volume - filled with volume bar values from the currently
+loaded chart</li>
+    <li>OI - filled with open interest bar values from the currently
+loaded chart</li>
+  </ul>
+  <li>&lt;NAME&gt; is the variable name to create</li>
+  <li>&lt;PLOT TYPE&gt; is a <a href="PlotTypes.html">plot type</a><br>
   </li>
 </ul>
-<p>On success, a CSV (comma separated values) string is returned of the
-indicator values. Failure returns the string "ERROR". <br>
+On success, a '0' is returned. Failure returns 'ERROR'.<br>
 <br>
-</p>
-<hr style="width: 100%; height: 2px;">
-<span style="font-weight: bold;"><br>
 <br>
-INDICATOR,GET_INDEX,&lt;NAME&gt;,&lt;OFFSET</span>&gt;<br>
+<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><br>
 <br>
-Return a single value in an indicator.<br>
+INDICATOR,GET_INDEX,&lt;NAME&gt;,&lt;INDEX</span>&gt;<br>
+<br>
+Return a single value of an indicator at index position.<br>
 <br>
 <ul>
   <li>&lt;NAME&gt; is the variable name of the indicator previously
 created in
-the script.</li>
-  <li>&lt;OFFSET&gt; is the index position starting from the last value
-moving
-towards the start. ie. 0 would return the last value. 1 would return
-the 2nd last value etc.</li>
+the script</li>
+  <li>&lt;INDEX&gt; is the index position</li>
 </ul>
 On success, a single value is returned. Failure returns the string
 "ERROR".<br>
 <br>
+<br>
 <hr style="width: 100%; height: 2px;">
 <p><span style="font-weight: bold;"><br>
-<br>
 INDICATOR,GET_SIZE,&lt;NAME&gt;</span><br>
 <br>
 Returns the size of a data array.<br>
@@ -57,22 +69,46 @@ Returns the size of a data array.<br>
 created in
 the script.</li>
 </ul>
-On success, a single value is returned. Failure returns the string
+On success, the number of values is returned. Failure returns the
+string
 "ERROR".<br>
 <p><br>
 </p>
 <hr style="width: 100%; height: 2px;">
 <p style="font-weight: bold;"><br>
-<br>
 </p>
-<p style="font-weight: bold;">INDICATOR,SET,&lt;NAME&gt;,&lt;STRING&gt;<br>
+<p style="font-weight: bold;">INDICATOR,SET_INDEX,&lt;NAME&gt;,&lt;INDEX&gt;,&lt;VALUE&gt;,&lt;COLOR&gt;<br>
 </p>
-<p>Send data from the script to create a new indicator</p>
+<p>Set the bar value and color at index position. If the index position
+is empty, the values will be inserted. Otherwise, the values will be
+replaced.<br>
+</p>
 <ul>
   <li>&lt;NAME&gt; is the variable name of the dataset.</li>
-  <li>&lt;STRING&gt; is a CSV string of all values.</li>
+  <li>&lt;INDEX&gt; is the index position</li>
+  <li>&lt;VALUE&gt; is the value</li>
+  <li>&lt;COLOR&gt; is the color of the bar<br>
+  </li>
 </ul>
-On success returns "0", failure returns "ERROR"<br>
+On success returns '0', failure returns "ERROR"<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<p style="font-weight: bold;">INDICATOR,SET_COLOR,&lt;NAME&gt;,&lt;INDEX&gt;,&lt;COLOR&gt;<br>
+</p>
+<p>Set the bar color at index position. If the index position
+is empty, the command will fail. Otherwise, the color value will be
+replaced.<br>
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name of the dataset.</li>
+  <li>&lt;INDEX&gt; is the index position</li>
+  <li>&lt;COLOR&gt; is the color of the bar<br>
+  </li>
+</ul>
+On success returns '0', failure returns "ERROR"<br>
+<br>
+<br>
 <br>
 <br>
 </body>

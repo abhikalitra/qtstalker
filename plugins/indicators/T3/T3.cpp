@@ -20,12 +20,11 @@
  */
 
 #include "T3.h"
-#include "MAUtils.h"
+#include "EMA.h"
 #include "BARSUtils.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
-
 
 T3::T3 ()
 {
@@ -41,25 +40,6 @@ T3::T3 ()
 
 int T3::getIndicator (Indicator &ind, BarData *data)
 {
-  QString s;
-  settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
-  if (! in)
-  {
-    qDebug() << indicator << "::calculate: input not found" << s;
-    return 1;
-  }
-
-  int period = settings.getInt(Period);
-  double vfactor = settings.getDouble(VFactor);
-
-  PlotLine *line = getT3(in, period, vfactor);
-  if (! line)
-  {
-    delete in;
-    return 1;
-  }
-
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
@@ -68,10 +48,32 @@ int T3::getIndicator (Indicator &ind, BarData *data)
   if (bars)
     ind.addLine(bars);
 
+  QString s;
+  settings.getData(Input, s);
+  PlotLine *in = data->getInput(data->getInputType(s));
+  if (! in)
+  {
+    qDebug() << indicator << "::getIndicator: input not found" << s;
+    return 1;
+  }
+
+  int period = settings.getInt(Period);
+  double vfactor = settings.getDouble(VFactor);
+
   settings.getData(Color, s);
-  line->setColor(s);
+  QColor color(s);
+
+  PlotFactory fac;
   settings.getData(Plot, s);
-  line->setPlugin(s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getT3(in, period, vfactor, lineType, color);
+  if (! line)
+  {
+    delete in;
+    return 1;
+  }
+
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -83,18 +85,19 @@ int T3::getIndicator (Indicator &ind, BarData *data)
 
 int T3::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,T3,<NAME>,<INPUT>,<PERIOD>,<VFACTOR>
+  // INDICATOR,PLUGIN,T3,<NAME>,<INPUT>,<PERIOD>,<VFACTOR>,<PLOT TYPE>,<COLOR>
+  //     0       1    2    3       4       5         6          7         8
 
-  if (set.count() != 6)
+  if (set.count() != 9)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -104,7 +107,7 @@ int T3::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::calculate: input not found" << set[4];
+      qDebug() << indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
@@ -115,43 +118,60 @@ int T3::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period settings" << set[5];
+    qDebug() << indicator << "::getCUS: invalid period settings" << set[5];
     return 1;
   }
 
   double vfactor = set[6].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid vfactor" << set[6];
+    qDebug() << indicator << "::getCUS: invalid vfactor" << set[6];
     return 1;
   }
 
-  PlotLine *line = getT3(in, period, vfactor);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[7]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    return 1;
+  }
+
+  QColor color(set[8]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    return 1;
+  }
+
+  PlotLine *line = getT3(in, period, vfactor, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor)
+PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
 
-  PlotLine *gd1 = getGD(in, period, vfactor);
+  PlotLine *gd1 = getGD(in, period, vfactor, lineType, color);
   if (! gd1)
     return 0;
 
-  PlotLine *gd2 = getGD(gd1, period, vfactor);
+  PlotLine *gd2 = getGD(gd1, period, vfactor, lineType, color);
   if (! gd2)
   {
     delete gd1;
     return 0;
   }
 
-  PlotLine *gd3 = getGD(gd2, period, vfactor);
+  PlotLine *gd3 = getGD(gd2, period, vfactor, lineType, color);
   if (! gd3)
   {
     delete gd1;
@@ -165,64 +185,51 @@ PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor)
   return gd3;  
 }
 
-PlotLine * T3::getGD (PlotLine *in, int period, double vfactor)
+PlotLine * T3::getGD (PlotLine *in, int period, double vfactor, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
 
-  MAUtils mau;
-  PlotLine *ema = mau.getMA(in, period, MAUtils::EMA);
+  EMA ma;
+  PlotLine *ema = ma.ema(in, period, lineType, color);
   if (! ema)
     return 0;
 
-  PlotLine *ema2 = mau.getMA(ema, period, MAUtils::EMA);
+  PlotLine *ema2 = ma.ema(ema, period, lineType, color);
   if (! ema2)
   {
     delete ema;
     return 0;
   }
 
-  int emaLoop = ema->count() - 1;
-  int ema2Loop = ema2->count() - 1;
+  QList<int> keys;
+  ema2->keys(keys);
 
-  PlotLine *line = new PlotLine;
-
-  while (emaLoop > -1 && ema2Loop > -1)
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
   {
-    double gd = (ema->getData(emaLoop) * (1 + vfactor)) - (ema2->getData(ema2Loop) * vfactor);
-    line->prepend(gd);
-    emaLoop--;
-    ema2Loop--;
-  }
-
-  return line;
-}
-
-/*
-PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor)
-{
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
-  int loop;
-  for (loop = 0; loop < in->count(); loop++)
-    input[loop] = (TA_Real) in->getData(loop);
-
-  TA_RetCode rc = TA_T3(0, in->count() - 1, &input[0], period, vfactor, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    delete ema;
+    delete ema2;
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
-  for (loop = 0; loop < outNb; loop++)
-    line->append(out[loop]);
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = ema->data(keys.at(loop));
+    if (! bar)
+      continue;
+    
+    PlotLineBar *bar2 = ema2->data(keys.at(loop));
+    
+    double gd = (bar->data() * (1 + vfactor)) - (bar2->data() * vfactor);
+    
+    line->setData(keys.at(loop), new PlotLineBar(color, gd));
+  }
 
   return line;
 }
-*/
 
 int T3::dialog (int)
 {

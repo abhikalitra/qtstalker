@@ -20,6 +20,8 @@
  */
 
 #include "MAX.h"
+#include "PlotLineBar.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -31,10 +33,10 @@ MAX::MAX ()
 
 int MAX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,MAX,<NAME>,<INPUT>,<PERIOD>
-  //     0       1     2    3      4        5
+  // INDICATOR,PLUGIN,MAX,<NAME>,<INPUT>,<PERIOD>,<LINE TYPE>,<COLOR>
+  //     0       1     2    3      4        5          6         7
 
-  if (set.count() != 6)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
@@ -68,7 +70,24 @@ int MAX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getMAX(in, period);
+  PlotFactory fac;
+  QStringList pl;
+  fac.list(pl, 1);
+  int lineType = pl.indexOf(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = max(in, period, lineType, color);
   if (! line)
     return 1;
 
@@ -77,24 +96,32 @@ int MAX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * MAX::getMAX (PlotLine *in, int period)
+PlotLine * MAX::max (PlotLine *in, int period, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
   
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+
   int loop = period - 1;
-  for (; loop < in->count(); loop++)
+  for (; loop < keys.count(); loop++)
   {
     int count = 0;
     double max = -99999999;
     for (; count < period; count++)
     {
-      if (in->getData(loop - count) > max)
-	max = in->getData(loop - count);
+      PlotLineBar *bar = in->data(keys.at(loop - count));
+      if (bar->data() > max)
+	max = bar->data();
     }
 
-    line->append(max);
+    line->setData(keys.at(loop), new PlotLineBar(color, max));
   }
   
   return line;

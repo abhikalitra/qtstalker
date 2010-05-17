@@ -51,12 +51,16 @@ class HT : public IndicatorPlugin
     HT ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getHT (PlotLine *in, int method);
+    int getCUSPHASE (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUSSINE (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUSHT (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    PlotLine * getHT (PlotLine *in, int method, int, QColor &);
+    int getPHASE (PlotLine *in, int, int, QColor &, QColor &, QList<PlotLine *> &pl);
+    int getSINE (PlotLine *in, int, int, QColor &, QColor &, QList<PlotLine *> &pl);
     int dialog (int);
 
   protected:
     QStringList methodList;
-    QStringList guiMethodList;
 };
 
 extern "C"

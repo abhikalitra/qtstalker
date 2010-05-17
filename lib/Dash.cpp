@@ -20,12 +20,16 @@
  */
 
 #include "Dash.h"
+#include "Utils.h"
+
+#include <QPainter>
 
 Dash::Dash ()
 {
+  _type = "Dash";
 }
 
-void Dash::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
+void Dash::draw (PlotData &pd, Scaler &scaler)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
@@ -34,49 +38,56 @@ void Dash::draw (PlotLine *line, PlotData &pd, Scaler &scaler)
   int x2 = 0;
   int y = -1;
   int y2 = -1;
-  int loop = pd.pos;
+  int loop = pd.startIndex;
 
   Scaler scale;
-  if (line->getScaleFlag())
+  if (scaleFlag())
   {
     scale.set(scaler.height(),
-  	      line->getHigh(),
-	      line->getLow(),
+  	      high(),
+	      low(),
 	      scaler.logScaleHigh(),
 	      scaler.logRange(),
 	      scaler.logFlag());
   }
 
-  while ((x2 < pd.buffer.width() - pd.scaleWidth) && (loop < (int) line->count()))
+  for (; loop <= pd.endIndex; loop++, x2 += pd.barSpacing)
   {
-    if (loop > -1)
+    PlotLineBar *bar = data(loop);
+    if (bar)
     {
-      QColor color;
-      double d = line->getData(loop, color);
-      
-      if (line->getScaleFlag())
-        y2 = scale.convertToY(d);
+      if (scaleFlag())
+        y2 = scale.convertToY(bar->data());
       else
-        y2 = scaler.convertToY(d);
+        y2 = scaler.convertToY(bar->data());
 
       if (y != -1)
       {
         QPen pen;
         pen.setStyle(Qt::DashLine);
-	pen.setWidth(1);
-	pen.setColor(color);
+        pen.setWidth(1);
+        pen.setColor(bar->color());
         painter.setPen(pen);
         painter.drawLine (x, y, x2, y2);
       }
-      
+
       x = x2;
       y = y2;
     }
-
-    x2 += pd.barSpacing;
-    loop++;
   }
 
   painter.end();
+}
+
+void Dash::info (int i, Setting *set)
+{
+  PlotLineBar *bar = data(i);
+  if (! bar)
+    return;
+
+  QString d;
+  Utils util;
+  util.strip(bar->data(), 4, d);
+  set->setData(_label, d);
 }
 

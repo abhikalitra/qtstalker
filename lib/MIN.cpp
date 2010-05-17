@@ -20,6 +20,8 @@
  */
 
 #include "MIN.h"
+#include "PlotLineBar.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -31,10 +33,10 @@ MIN::MIN ()
 
 int MIN::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,MIN,<NAME>,<INPUT>,<PERIOD>
-  //     0       1     2    3      4        5
+  // INDICATOR,PLUGIN,MIN,<NAME>,<INPUT>,<PERIOD>,<LINE TYPE>,<COLOR>
+  //     0       1     2    3      4        5          6         7
 
-  if (set.count() != 6)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
@@ -68,7 +70,24 @@ int MIN::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
     return 1;
   }
 
-  PlotLine *line = getMIN(in, period);
+  PlotFactory fac;
+  QStringList pl;
+  fac.list(pl, 1);
+  int lineType = pl.indexOf(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = min(in, period, lineType, color);
   if (! line)
     return 1;
 
@@ -77,24 +96,32 @@ int MIN::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   return 0;
 }
 
-PlotLine * MIN::getMIN (PlotLine *in, int period)
+PlotLine * MIN::min (PlotLine *in, int period, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
   
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+
   int loop = period - 1;
-  for (; loop < in->count(); loop++)
+  for (; loop < keys.count(); loop++)
   {
     int count = 0;
     double min = 99999999;
     for (; count < period; count++)
     {
-      if (in->getData(loop - count) < min)
-	min = in->getData(loop - count);
+      PlotLineBar *bar = in->data(keys.at(loop - count));
+      if (bar->data() < min)
+	min = bar->data();
     }
 
-    line->append(min);
+    line->setData(keys.at(loop), new PlotLineBar(color, min));
   }
   
   return line;

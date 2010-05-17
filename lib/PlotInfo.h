@@ -38,7 +38,7 @@ class PlotInfo
     Setting * getInfo (QPoint &, PlotData &, Indicator &, DateBar &);
     Setting * getCOInfo (COPlugin *);
     void drawInfo (PlotData &, Indicator &, DateBar &);
-    void getPointInfo (PlotData &, QList<Setting> &, Indicator &, DateBar &);
+    void getPointInfo (PlotData &, QList<Setting> &, Indicator &);
     Setting * getCursorInfo (int i, int y, DateBar &, Scaler &);
 };
 

@@ -39,7 +39,7 @@ class BOP : public IndicatorPlugin
     BOP ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getBOP (BarData *data, int smoothing, int type);
+    PlotLine * getBOP (BarData *data, int smoothing, int type, int, QColor &);
     int dialog (int);
 
   protected:

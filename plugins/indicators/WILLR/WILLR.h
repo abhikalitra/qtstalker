@@ -38,7 +38,7 @@ class WILLR : public IndicatorPlugin
     WILLR ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getWILLR (BarData *data, int period);
+    PlotLine * getWILLR (BarData *data, int period, int, QColor &);
     int dialog (int);
 };
 

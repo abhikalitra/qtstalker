@@ -43,7 +43,7 @@ class STOCHRSI : public IndicatorPlugin
     STOCHRSI ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getSTOCHRSI (PlotLine *in, int period);
+    PlotLine * getSTOCHRSI (PlotLine *in, int period, int, QColor &);
     int dialog (int);
 
   protected:

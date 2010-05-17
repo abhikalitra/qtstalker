@@ -64,59 +64,40 @@ PlotLine * BarData::getInput (BarData::InputType field)
     switch (field)
     {
       case Open:
-      {
-        in->append(color, bar->getOpen());
+        in->setData(loop, new PlotLineBar(color, bar->getOpen()));
         break;
-      }
       case High:
-      {
-        in->append(color, bar->getHigh());
+        in->setData(loop, new PlotLineBar(color, bar->getHigh()));
         break;
-      }
       case Low:
-      {
-        in->append(color, bar->getLow());
+        in->setData(loop, new PlotLineBar(color, bar->getLow()));
         break;
-      }
+      case Close:
+        in->setData(loop, new PlotLineBar(color, bar->getClose()));
+        break;
       case Volume:
-      {
-        in->append(color, bar->getVolume());
+        in->setData(loop, new PlotLineBar(color, bar->getVolume()));
         break;
-      }
       case OI:
-      {
-        in->append(color, bar->getOI());
+        in->setData(loop, new PlotLineBar(color, bar->getOI()));
         break;
-      }
       case AveragePrice:
-      {
-        double t = getAvgPrice(loop);
-        in->append(color, t);
+        in->setData(loop, new PlotLineBar(color, getAvgPrice(loop)));
         break;
-      }
       case MedianPrice:
-      {
-        double t = getMedianPrice(loop);
-        in->append(color, t);
+        in->setData(loop, new PlotLineBar(color, getMedianPrice(loop)));
         break;
-      }
       case TypicalPrice:
-      {
-        double t = getTypicalPrice(loop);
-        in->append(color, t);
+        in->setData(loop, new PlotLineBar(color, getTypicalPrice(loop)));
         break;
-      }
       case WeightedClosePrice:
       {
         double t = (bar->getHigh() + bar->getLow() + (bar->getClose() * 2)) / 4.0;
-        in->append(color, t);
+        in->setData(loop, new PlotLineBar(color, t));
         break;
       }
       default:
-      {
-        in->append(color, bar->getClose());
         break;
-      }
     }
   }
 

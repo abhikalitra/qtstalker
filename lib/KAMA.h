@@ -19,16 +19,18 @@
  *  USA.
  */
 
-#ifndef REF_HPP
-#define REF_HPP
+#ifndef KAMA_HPP
+#define KAMA_HPP
 
-#include "IndicatorPlugin.h"
+#include <QColor>
 
-class REF : public IndicatorPlugin
+#include "PlotLine.h"
+
+class KAMA
 {
   public:
-    REF ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    KAMA ();
+    PlotLine * kama(PlotLine *, int, int, QColor &);
 };
 
 #endif

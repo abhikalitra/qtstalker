@@ -45,9 +45,7 @@ class ATR : public IndicatorPlugin
     ATR ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getLine (BarData *, int, int);
-    PlotLine * getATR (BarData *, int);
-    PlotLine * getNATR (BarData *, int);
+    PlotLine * getLine (BarData *, int, int, int, QColor &);
     int dialog (int);
 
   protected:

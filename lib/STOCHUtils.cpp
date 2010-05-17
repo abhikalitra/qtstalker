@@ -22,6 +22,8 @@
 #include "STOCHUtils.h"
 #include "MIN.h"
 #include "MAX.h"
+#include "PlotLineBar.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -29,7 +31,7 @@ STOCHUtils::STOCHUtils ()
 {
 }
 
-PlotLine * STOCHUtils::getFastK (BarData *data, int period)
+PlotLine * STOCHUtils::fastK (BarData *data, int period, int lineType, QColor &color)
 {
   if (data->count() < period)
     return 0;
@@ -58,7 +60,7 @@ PlotLine * STOCHUtils::getFastK (BarData *data, int period)
     return 0;
   }
 
-  PlotLine *k = getFastK(close, high, low, period);
+  PlotLine *k = fastK(close, high, low, period, lineType, color);
   
   delete close;
   delete high;
@@ -67,45 +69,55 @@ PlotLine * STOCHUtils::getFastK (BarData *data, int period)
   return k;
 }
 
-PlotLine * STOCHUtils::getFastK (PlotLine *in, int period)
+PlotLine * STOCHUtils::fastK (PlotLine *in, int period, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
 
-  return getFastK(in, in, in, period);
+  return fastK(in, in, in, period, lineType, color);
 }
 
-PlotLine * STOCHUtils::getFastK (PlotLine *in, PlotLine *high, PlotLine *low, int period)
+PlotLine * STOCHUtils::fastK (PlotLine *in, PlotLine *high, PlotLine *low, int period, int lineType, QColor &color)
 {
   if (in->count() < period)
     return 0;
 
   MAX max;
-  PlotLine *hh = max.getMAX(high, period);
+  PlotLine *hh = max.max(high, period, lineType, color);
   if (! hh)
     return 0;
 
   MIN min;
-  PlotLine *ll = min.getMIN(low, period);
+  PlotLine *ll = min.min(low, period, lineType, color);
   if (! ll)
   {
     delete hh;
     return 0;
   }
 
-  int loop = in->count() - 1;
-  int minLoop = ll->count() - 1;
-  int maxLoop = hh->count() - 1;
-  PlotLine *k = new PlotLine;
-  while (loop > -1 && minLoop > -1 && maxLoop > -1)
-  {
-    double t = in->getData(loop) - ll->getData(minLoop);
-    double t2 = hh->getData(maxLoop) - ll->getData(minLoop);
-    k->prepend(100 * (t / t2));
+  PlotFactory fac;
+  PlotLine *k = fac.plot(lineType);
+  if (! k)
+    return 0;
 
-    loop--;
-    minLoop--;
-    maxLoop--;
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    PlotLineBar *llbar = ll->data(keys.at(loop));
+    if (! llbar)
+      continue;
+    
+    PlotLineBar *hhbar = hh->data(keys.at(loop));
+    if (! hhbar)
+      continue;
+
+    double t = bar->data() - llbar->data();
+    double t2 = hhbar->data() - llbar->data();
+    k->setData(keys.at(loop), new PlotLineBar(color, 100 * (t / t2)));
   }
 
   delete hh;

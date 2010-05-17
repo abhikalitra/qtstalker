@@ -24,7 +24,6 @@
 
 #include <QtDebug>
 
-
 WILLR::WILLR ()
 {
   indicator = "WILLR";
@@ -39,15 +38,18 @@ int WILLR::getIndicator (Indicator &ind, BarData *data)
 {
   int period = settings.getInt(Period);
 
-  PlotLine *line = getWILLR(data, period);
+  QString s;
+  settings.getData(Color, s);
+  QColor color(s);
+
+  PlotFactory fac;
+  settings.getData(Plot, s);
+  int lineType = fac.typeFromString(s);
+
+  PlotLine *line = getWILLR(data, period, lineType, color);
   if (! line)
     return 1;
 
-  QString s;
-  settings.getData(Color, s);
-  line->setColor(s);
-  settings.getData(Plot, s);
-  line->setPlugin(s);
   settings.getData(Label, s);
   line->setLabel(s);
   ind.addLine(line);
@@ -57,18 +59,19 @@ int WILLR::getIndicator (Indicator &ind, BarData *data)
 
 int WILLR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,WILLR,<NAME>,<PERIOD>
+  // INDICATOR,PLUGIN,WILLR,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
+  //     0       1      2     3       4          5         6
 
-  if (set.count() != 5)
+  if (set.count() != 7)
   {
-    qDebug() << indicator << "::calculate: invalid settings count" << set.count();
+    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   PlotLine *tl = tlines.value(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::calculate: duplicate name" << set[3];
+    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -76,25 +79,46 @@ int WILLR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::calculate: invalid period settings" << set[4];
+    qDebug() << indicator << "::getCUS: invalid period settings" << set[4];
     return 1;
   }
 
-  PlotLine *line = getWILLR(data, period);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[5]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUS: invalid plot type" << set[5];
+    return 1;
+  }
+
+  QColor color(set[6]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUS: invalid color" << set[6];
+    return 1;
+  }
+
+  PlotLine *line = getWILLR(data, period, lineType, color);
   if (! line)
     return 1;
+
+  line->setLabel(set[3]);
 
   tlines.insert(set[3], line);
 
   return 0;
 }
 
-PlotLine * WILLR::getWILLR (BarData *data, int period)
+PlotLine * WILLR::getWILLR (BarData *data, int period, int lineType, QColor &color)
 {
   if (data->count() < period)
     return 0;
   
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
   int size = data->count();
   int loop = period - 1;
   for (; loop < size; loop++)
@@ -113,7 +137,8 @@ PlotLine * WILLR::getWILLR (BarData *data, int period)
     
     Bar *bar = data->getBar(loop);
     double r = ((high - bar->getClose()) / (high - low)) * -100;
-    line->append(r);
+
+    line->setData(loop, new PlotLineBar(color, r));
   }
   
   return line;

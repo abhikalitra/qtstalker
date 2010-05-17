@@ -19,17 +19,18 @@
  *  USA.
  */
 
-#ifndef ADD_HPP
-#define ADD_HPP
+#ifndef EMA_HPP
+#define EMA_HPP
 
-#include "IndicatorPlugin.h"
+#include <QColor>
 
-class ADD : public IndicatorPlugin
+#include "PlotLine.h"
+
+class EMA
 {
   public:
-    ADD ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    PlotLine * getADD (PlotLine *, PlotLine *);
+    EMA ();
+    PlotLine * ema(PlotLine *, int, int, QColor &);
 };
 
 #endif

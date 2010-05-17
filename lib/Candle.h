@@ -22,13 +22,14 @@
 #ifndef CANDLE_HPP
 #define CANDLE_HPP
 
-#include "PlotPlugin.h"
+#include "PlotLine.h"
 
-class Candle : public PlotPlugin
+class Candle : public PlotLine
 {
   public:
     Candle ();
-    void draw (PlotLine *, PlotData &, Scaler &);
+    void draw (PlotData &, Scaler &);
+    void info (int, Setting *);
 };
 
 #endif
