@@ -65,8 +65,6 @@
 #include "../pics/datawindow.xpm"
 #include "../pics/indicator.xpm"
 #include "../pics/configure.xpm"
-#include "../pics/scaletoscreen.xpm"
-#include "../pics/nav.xpm"
 #include "../pics/qtstalker.xpm"
 #include "../pics/help.xpm"
 #include "../pics/script.xpm"
@@ -113,40 +111,40 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   CODataBase codb;
   codb.init();
 
-  assistant = new Assistant;
+  _assistant = new Assistant;
 
   createActions();
   createMenuBar();
   createToolBars();
 
-  statusbar = statusBar();
+  _statusBar = statusBar();
 
-  baseWidget = new QWidget;
-  setCentralWidget (baseWidget);
+  _baseWidget = new QWidget;
+  setCentralWidget (_baseWidget);
 
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setMargin(0);
   hbox->setSpacing(0);
-  baseWidget->setLayout(hbox);
+  _baseWidget->setLayout(hbox);
 
   // add the side toolBar first
-  hbox->addWidget(toolBar2);
+  hbox->addWidget(_toolBar2);
 
-  navSplitter = new QSplitter;
-  navSplitter->setOrientation(Qt::Horizontal);
-  hbox->addWidget(navSplitter);
+  _navSplitter = new QSplitter;
+  _navSplitter->setOrientation(Qt::Horizontal);
+  hbox->addWidget(_navSplitter);
 
   // construct the chart areas
   QWidget *chartBase = new QWidget;
-  navSplitter->addWidget(chartBase);
+  _navSplitter->addWidget(chartBase);
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
   vbox->setSpacing(0);
   chartBase->setLayout(vbox);
 
-  split = new QSplitter;
-  split->setOrientation(Qt::Vertical);
-  vbox->addWidget(split);
+  _split = new QSplitter;
+  _split->setOrientation(Qt::Vertical);
+  vbox->addWidget(_split);
 
   // build the tab rows
   int tabRows = config.getInt(Config::IndicatorTabRows);
@@ -154,35 +152,36 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   for (loop = 0; loop < tabRows; loop++)
   {
     QTabWidget *it = new QTabWidget;
-    split->addWidget(it);
+    _split->addWidget(it);
     it->setContentsMargins(0, 0, 0, 0);
-    connect(it, SIGNAL(currentChanged(QWidget *)), this, SLOT(slotDrawPlots()));
-    tabList.append(it);
+    connect(it, SIGNAL(currentChanged(QWidget *)), this, SLOT(drawPlots()));
+    _tabList.append(it);
   }
 
-  navBase = new QWidget;
-  navSplitter->addWidget(navBase);
+  _navBase = new QWidget;
+  _navSplitter->addWidget(_navBase);
   vbox = new QVBoxLayout;
   vbox->setMargin(0);
   vbox->setSpacing(0);
-  navBase->setLayout(vbox);
+  _navBase->setLayout(vbox);
 
   // setup the data panel splitter
-  dpSplitter = new QSplitter;
-  dpSplitter->setOrientation(Qt::Vertical);
-  vbox->addWidget(dpSplitter);
+  _dpSplitter = new QSplitter;
+  _dpSplitter->setOrientation(Qt::Vertical);
+  vbox->addWidget(_dpSplitter);
 
   // setup the side panels
-  navTab = new QTabWidget;
-  dpSplitter->addWidget(navTab);
+  _navTab = new QTabWidget;
+  _dpSplitter->addWidget(_navTab);
   
   // setup the plot slider box
-  plotSlider = new PlotSlider;
-  dpSplitter->addWidget(plotSlider);
+  _plotSlider = new PlotSlider;
+  _dpSplitter->addWidget(_plotSlider);
+  connect (_plotSlider, SIGNAL(signalValueChanged(int)), this, SLOT(sliderChanged(int)));
 
   // setup the info panel area
-  infoPanel = new InfoPanel;
-  dpSplitter->addWidget(infoPanel);
+  _infoPanel = new InfoPanel;
+  _dpSplitter->addWidget(_infoPanel);
 
   // create the side panels
   initChartNav();
@@ -198,7 +197,7 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
     i.setName(l[loop]);
     idb.getIndicator(i);
 
-    if (i.getTabRow() > tabList.count())
+    if (i.getTabRow() > _tabList.count())
       continue;
 
     addIndicatorButton(l[loop]);
@@ -207,12 +206,12 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   // set the app font
   QFont font;
   config.getData((int) Config::AppFont, font);
-  slotAppFont(font);
+  appFont(font);
 
   // restore the splitter sizes
-  config.getData((int) Config::PlotSizes, split);
-  config.getData((int) Config::NavAreaSize, navSplitter);
-  config.getData((int) Config::DataPanelSize, dpSplitter);
+  config.getData((int) Config::PlotSizes, _split);
+  config.getData((int) Config::NavAreaSize, _navSplitter);
+  config.getData((int) Config::DataPanelSize, _dpSplitter);
 
   // restore the size of the app
   QSize sz;
@@ -229,16 +228,16 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   config.setData(Config::CurrentChart, s);
 
   // catch any kill signals and try to save config
-  connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(slotQuit()));
+  connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(quit()));
 
-  statusbar->showMessage(tr("Ready"), 2000);
+  _statusBar->showMessage(tr("Ready"), 2000);
 
   setUnifiedTitleAndToolBarOnMac(TRUE);
   
   // check if we are going to display a chart from the command line
   if (asset.length())
   {
-    clAsset = asset;
+    _clAsset = asset;
     QTimer::singleShot(500, this, SLOT(commandLineAsset()));
   }
 }
@@ -252,19 +251,19 @@ void QtstalkerApp::createActions ()
   action->setStatusTip(tr("Quit Qtstalker"));
   action->setToolTip(tr("Quit Qtstalker"));
   connect(action, SIGNAL(activated()), qApp, SLOT(quit()));
-  actionList.insert(Exit, action);
+  _actionList.insert(Exit, action);
 
   action = new QAction(QIcon(indicator), tr("New &Indicator"), this);
   action->setStatusTip(tr("Add a new indicator to chart"));
   action->setToolTip(tr("Add a new indicator to chart"));
   connect(action, SIGNAL(activated()), this, SIGNAL(signalNewIndicator()));
-  actionList.insert(NewIndicator, action);
+  _actionList.insert(NewIndicator, action);
 
   action = new QAction(QIcon(configure), tr("Edit &Preferences"), this);
   action->setStatusTip(tr("Modify user preferences"));
   action->setToolTip(tr("Modify user preferences"));
-  connect(action, SIGNAL(activated()), this, SLOT(slotOptions()));
-  actionList.insert(Options, action);
+  connect(action, SIGNAL(activated()), this, SLOT(options()));
+  _actionList.insert(Options, action);
 
   Config config;
   action = new QAction(QIcon(gridicon), tr("Chart &Grid"), this);
@@ -272,43 +271,27 @@ void QtstalkerApp::createActions ()
   action->setToolTip(tr("Toggle the chart grid"));
   action->setCheckable(TRUE);
   action->setChecked(config.getBool(Config::Grid));
-  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalGrid(bool)));
-  actionList.insert(Grid, action);
+  connect(action, SIGNAL(toggled(bool)), this, SLOT(gridChanged(bool)));
+  _actionList.insert(Grid, action);
 
   action = new QAction(QIcon(datawindow), tr("&Data Window"), this);
   action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_1));
   action->setStatusTip(tr("Show the data window"));
   action->setToolTip(tr("Show the data window"));
-  connect(action, SIGNAL(activated()), this, SLOT(slotDataWindow()));
-  actionList.insert(DataWindow1, action);
+  connect(action, SIGNAL(activated()), this, SLOT(dataWindow()));
+  _actionList.insert(DataWindow1, action);
 
   action = new QAction(QIcon(qtstalker), tr("&About"), this);
   action->setStatusTip(tr("About Qtstalker."));
   action->setToolTip(tr("About Qtstalker."));
-  connect(action, SIGNAL(activated()), this, SLOT(slotAbout()));
-  actionList.insert(About, action);
+  connect(action, SIGNAL(activated()), this, SLOT(about()));
+  _actionList.insert(About, action);
 
   action = new QAction(QIcon(help), tr("&Help"), this);
   action->setStatusTip(tr("Show documentation."));
   action->setToolTip(tr("Show documentation."));
-  connect(action, SIGNAL(triggered()), this, SLOT(slotStartDocumentation()));
-  actionList.insert(Help, action);
-
-  action = new QAction(QIcon(scaletoscreen), tr("&Scale To Screen"), this);
-  action->setStatusTip(tr("Scale chart to current screen data"));
-  action->setToolTip(tr("Scale chart to current screen data"));
-  action->setCheckable(TRUE);
-  action->setChecked(config.getBool(Config::ScaleToScreen));
-  connect(action, SIGNAL(toggled(bool)), this, SIGNAL(signalScale(bool)));
-  actionList.insert(ScaleToScreen, action);
-
-  action = new QAction(QIcon(nav), tr("Side Pa&nel"), this);
-  action->setStatusTip(tr("Toggle the side panel area from view"));
-  action->setToolTip(tr("Toggle the side panel area from view"));
-  action->setCheckable(TRUE);
-  action->setChecked(config.getBool(Config::ShowSidePanel));
-  connect(action, SIGNAL(toggled(bool)), this, SLOT(slotHideNav(bool)));
-  actionList.insert(SidePanel, action);
+  connect(action, SIGNAL(triggered()), this, SLOT(startDocumentation()));
+  _actionList.insert(Help, action);
 }
 
 void QtstalkerApp::createMenuBar()
@@ -318,93 +301,89 @@ void QtstalkerApp::createMenuBar()
 
   QMenu *menu = new QMenu;
   menu->setTitle(tr("&File"));
-  menu->addAction(actionList.value(Exit));
+  menu->addAction(_actionList.value(Exit));
   menubar->addMenu(menu);
 
   menu = new QMenu;
   menu->setTitle(tr("&Edit"));
-  menu->addAction(actionList.value(NewIndicator));
-  menu->addAction(actionList.value(Options));
+  menu->addAction(_actionList.value(NewIndicator));
+  menu->addAction(_actionList.value(Options));
   menubar->addMenu(menu);
 
   menu = new QMenu;
   menu->setTitle(tr("&View"));
-  menu->addAction(actionList.value(Grid));
-  menu->addAction(actionList.value(ScaleToScreen));
-  menu->addAction(actionList.value(SidePanel));
+  menu->addAction(_actionList.value(Grid));
   menubar->addMenu(menu);
 
   menu = new QMenu;
   menu->setTitle(tr("&Tools"));
-  menu->addAction(actionList.value(DataWindow1));
+  menu->addAction(_actionList.value(DataWindow1));
   menubar->addMenu(menu);
 
   menubar->addSeparator();
 
   menu = new QMenu;
   menu->setTitle(tr("&Help"));
-  menu->addAction(actionList.value(About));
-  menu->addAction(actionList.value(Help));
+  menu->addAction(_actionList.value(About));
+  menu->addAction(_actionList.value(Help));
   menubar->addMenu(menu);
 }
 
 void QtstalkerApp::createToolBars ()
 {
   // construct the left side toolbar
-  toolBar2 = new COToolBar;
-  connect(toolBar2, SIGNAL(signalCursorButtonClicked(int)), this, SIGNAL(signalCursorChanged(int)));
-  connect(toolBar2, SIGNAL(signalCOButtonClicked(QString)), this, SIGNAL(signalNewExternalChartObject(QString)));
-  addToolBar(toolBar2);
-  toolBar2->setOrientation(Qt::Vertical);
-  toolBar2->setIconSize(QSize(18, 18));
+  _toolBar2 = new COToolBar;
+  connect(_toolBar2, SIGNAL(signalCursorButtonClicked(int)), this, SIGNAL(signalCursorChanged(int)));
+  connect(_toolBar2, SIGNAL(signalCOButtonClicked(QString)), this, SIGNAL(signalNewExternalChartObject(QString)));
+  addToolBar(_toolBar2);
+  _toolBar2->setOrientation(Qt::Vertical);
+  _toolBar2->setIconSize(QSize(18, 18));
   
   //construct main toolbar
   QToolBar *toolbar = addToolBar("buttonToolBar");
   toolbar->setIconSize(QSize(18, 18));
 
   // add the toolbar actions
-  toolbar->addAction(actionList.value(Exit));
-  toolbar->addAction(actionList.value(Options));
-  toolbar->addAction(actionList.value(SidePanel));
-  toolbar->addAction(actionList.value(Grid));
-  toolbar->addAction(actionList.value(ScaleToScreen));
+  toolbar->addAction(_actionList.value(Exit));
+  toolbar->addAction(_actionList.value(Options));
+  toolbar->addAction(_actionList.value(Grid));
   
   RefreshAction *ra = new RefreshAction(toolbar);
   connect(ra, SIGNAL(signalRefresh()), this, SLOT(refreshChart()));
   connect(this, SIGNAL(signalRefreshUpdated(int)), ra, SLOT(refreshUpdated(int)));
   
-  toolbar->addAction(actionList.value(NewIndicator));
-  toolbar->addAction(actionList.value(DataWindow1));
-  toolbar->addAction(actionList.value(Help));
+  toolbar->addAction(_actionList.value(NewIndicator));
+  toolbar->addAction(_actionList.value(DataWindow1));
+  toolbar->addAction(_actionList.value(Help));
   toolbar->addSeparator();
 
   // create the bar length button group
-  barLengthButtons = new BarLengthButtons(toolbar);
-  connect(barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(barLengthChanged(int)));
+  _barLengthButtons = new BarLengthButtons(toolbar);
+  connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(barLengthChanged(int)));
   toolbar->addSeparator();
 
   // create the zoom button box on the main toolbar
-  zoomButtons = new ZoomButtons(toolbar);
-  connect(zoomButtons, SIGNAL(signalZoom(int, int)), this, SLOT(zoomChanged(int, int)));
-  connect(zoomButtons, SIGNAL(signalPixelSpace(int)), this, SLOT(psButtonClicked(int)));
+  _zoomButtons = new ZoomButtons(toolbar);
+  connect(_zoomButtons, SIGNAL(signalZoom(int, int)), this, SLOT(zoomChanged(int, int)));
+  connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), this, SLOT(psButtonClicked(int)));
   toolbar->addSeparator();
   
   //bars to load
   Config config;
-  barCount = new QSpinBox;
-  barCount->setRange(1, 99999);
-  barCount->setValue(config.getInt(Config::BarsToLoad));
-  barCount->setToolTip(tr("Total bars to load"));
-  connect(barCount, SIGNAL(editingFinished()), this, SLOT(slotChartUpdated()));
-  toolbar->addWidget(barCount);
+  _barCount = new QSpinBox;
+  _barCount->setRange(1, 99999);
+  _barCount->setValue(config.getInt(Config::BarsToLoad));
+  _barCount->setToolTip(tr("Total bars to load"));
+  connect(_barCount, SIGNAL(editingFinished()), this, SLOT(chartUpdated()));
+  toolbar->addWidget(_barCount);
   toolbar->addSeparator();
 
   // create recent charts combobox
-  recentCharts = new RecentCharts(toolbar);
-  connect(recentCharts, SIGNAL(signalChartSelected(BarData *)), this, SLOT(loadChart(BarData *)));
+  _recentCharts = new RecentCharts(toolbar);
+  connect(_recentCharts, SIGNAL(signalChartSelected(BarData *)), this, SLOT(loadChart(BarData *)));
 }
 
-void QtstalkerApp::slotQuit()
+void QtstalkerApp::quit()
 {
   Config config;
 
@@ -416,18 +395,18 @@ void QtstalkerApp::slotQuit()
   // save last indicators used
   int loop;
   QStringList l;
-  for (loop = 0; loop < (int) tabList.count(); loop++)
+  for (loop = 0; loop < (int) _tabList.count(); loop++)
   {
-    QTabWidget *tw = tabList.at(loop);
+    QTabWidget *tw = _tabList.at(loop);
     QString s = tw->tabText(tw->currentIndex());
     l.append(s);
   }
   config.setData((int) Config::LastIndicatorUsed, l);
 
   // save window sizes
-  config.setData((int) Config::PlotSizes, split);
-  config.setData((int) Config::DataPanelSize, dpSplitter);
-  config.setData((int) Config::NavAreaSize, navSplitter);
+  config.setData((int) Config::PlotSizes, _split);
+  config.setData((int) Config::DataPanelSize, _dpSplitter);
+  config.setData((int) Config::NavAreaSize, _navSplitter);
 
   // save app size and position
   QSize sz = size();
@@ -436,23 +415,21 @@ void QtstalkerApp::slotQuit()
   config.setData((int) Config::MainWindowPos, pt);
 
   // save toolbar settings
-  config.setData((int) Config::ScaleToScreen, actionList.value(ScaleToScreen)->isChecked());
-  config.setData((int) Config::Grid, actionList.value(Grid)->isChecked());
-  config.setData((int) Config::ShowSidePanel, actionList.value(SidePanel)->isChecked());
-  config.setData((int) Config::BarsToLoad, barCount->value());
+  config.setData((int) Config::Grid, _actionList.value(Grid)->isChecked());
+  config.setData((int) Config::BarsToLoad, _barCount->value());
 
   // save recent charts combo
-  recentCharts->save();
+  _recentCharts->save();
 
   // save running scripts
-  scriptPage->saveRunningScripts();
+  _scriptPage->saveRunningScripts();
   
-  delete assistant;
+  delete _assistant;
   
   config.commit();
 }
 
-void QtstalkerApp::slotAbout()
+void QtstalkerApp::about()
 {
   // display the about dialog
   QString versionString = "Qtstalker version 0.37-dev (working title)\nBuilt using Qt ";
@@ -463,7 +440,7 @@ void QtstalkerApp::slotAbout()
   QMessageBox::about(this, tr("About Qtstalker"), versionString);
 }
 
-void QtstalkerApp::slotStartDocumentation()
+void QtstalkerApp::startDocumentation()
 {
 /*
 FIXME: Due to the Qt issue 262508 (see docs/docs.html) we need to show them
@@ -477,26 +454,26 @@ raise the minimum Qt version.
   location.insert(location.count() - QCoreApplication::applicationName().count(),
     QCoreApplication::organizationName() + "/");
 #endif
-  qDebug("QtstalkerApp::slotStartDocumentation: Documentation cache: %s/", qPrintable(location));
+  qDebug("QtstalkerApp::startDocumentation: Documentation cache: %s/", qPrintable(location));
 
-  // start assistant
-  assistant->showDocumentation("index.html");
+  // start _assistant
+  _assistant->showDocumentation("index.html");
 }
 
-void QtstalkerApp::slotShowDocumentation(QString doc)
+void QtstalkerApp::showDocumentation(QString doc)
 {
-  assistant->showDocumentation(doc);
+  _assistant->showDocumentation(doc);
 }
 
-void QtstalkerApp::slotOptions ()
+void QtstalkerApp::options ()
 {
   Preferences *dialog = new Preferences(this);
   connect(dialog, SIGNAL(signalBackgroundColor(QColor)), this, SIGNAL(signalBackgroundColor(QColor)));
   connect(dialog, SIGNAL(signalBorderColor(QColor)), this, SIGNAL(signalBorderColor(QColor)));
   connect(dialog, SIGNAL(signalGridColor(QColor)), this, SIGNAL(signalGridColor(QColor)));
   connect(dialog, SIGNAL(signalPlotFont(QFont)), this, SIGNAL(signalPlotFont(QFont)));
-  connect(dialog, SIGNAL(signalAppFont(QFont)), this, SLOT(slotAppFont(QFont)));
-  connect(dialog, SIGNAL(signalLoadChart()), this, SLOT(slotChartUpdated()));
+  connect(dialog, SIGNAL(signalAppFont(QFont)), this, SLOT(appFont(QFont)));
+  connect(dialog, SIGNAL(signalLoadChart()), this, SLOT(chartUpdated()));
   connect(dialog, SIGNAL(signalRefreshChanged(int)), this, SIGNAL(signalRefreshUpdated(int)));
   dialog->show();
 }
@@ -507,8 +484,8 @@ void QtstalkerApp::loadChart (BarData *symbol)
   if (symbol->getSymbol().length() == 0)
     return;
 
-  currentChart.setSymbol(symbol->getSymbol());
-  currentChart.setExchange(symbol->getExchange());
+  _currentChart.setSymbol(symbol->getSymbol());
+  _currentChart.setExchange(symbol->getExchange());
 
   // set plots to empty
   emit signalClearIndicator();
@@ -516,16 +493,16 @@ void QtstalkerApp::loadChart (BarData *symbol)
   // save the new chart
   Config config;
   QStringList l;
-  l.append(currentChart.getExchange());
-  l.append(currentChart.getSymbol());
+  l.append(_currentChart.getExchange());
+  l.append(_currentChart.getSymbol());
   config.setData(Config::CurrentChart, l);
 
   // create and populate the quote data
   BarData recordList;
-  recordList.setSymbol(currentChart.getSymbol());
-  recordList.setExchange(currentChart.getExchange());
-  recordList.setBarLength((Bar::BarLength) barLengthButtons->getCurrentButton());
-  recordList.setBarsRequested(barCount->value());
+  recordList.setSymbol(_currentChart.getSymbol());
+  recordList.setExchange(_currentChart.getExchange());
+  recordList.setBarLength((Bar::BarLength) _barLengthButtons->getCurrentButton());
+  recordList.setBarsRequested(_barCount->value());
 
   DBPlugin qdb;
   qdb.getIndexData(&recordList);
@@ -542,8 +519,8 @@ void QtstalkerApp::loadChart (BarData *symbol)
   
   qdb2->getBars(recordList);
   
-  currentChart.setName(recordList.getName());
-  currentChart.setBarsRequested(recordList.count());
+  _currentChart.setName(recordList.getName());
+  _currentChart.setBarsRequested(recordList.count());
 
   IndicatorDataBase db;
   QStringList indicatorList;
@@ -553,14 +530,14 @@ void QtstalkerApp::loadChart (BarData *symbol)
   for (loop = 0; loop < indicatorList.count(); loop++)
     loadIndicator(&recordList, indicatorList[loop]);
 
-  setSliderStart(currentChart.getBarsRequested());
-  emit signalIndex(plotSlider->getValue()); 
+  setSliderStart(_currentChart.getBarsRequested());
+  emit signalIndex(_plotSlider->getValue());
 
-  slotDrawPlots();
+  drawPlots();
   
   setWindowTitle(getWindowCaption());
   
-  slotStatusMessage(QString());
+  statusMessage(QString());
 }
 
 void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
@@ -585,7 +562,7 @@ void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
   if (ip->getIndicator(i, recordList))
     return;
 
-  Plot *plot = plotList[d];
+  Plot *plot = _plotList[d];
   if (! plot)
     return;
 
@@ -599,24 +576,24 @@ QString QtstalkerApp::getWindowCaption ()
   // update the main window text
 
   QString caption = tr("Qtstalker");
-  caption.append(": " + currentChart.getSymbol());
-  if (! currentChart.getName().isEmpty())
-    caption.append(" (" + currentChart.getName() + ")");
+  caption.append(": " + _currentChart.getSymbol());
+  if (! _currentChart.getName().isEmpty())
+    caption.append(" (" + _currentChart.getName() + ")");
 
   Bar bar;
   QStringList l;
   bar.getBarLengthList(l);
-  caption.append(" " + l[barLengthButtons->getCurrentButton()]);
+  caption.append(" " + l[_barLengthButtons->getCurrentButton()]);
 
   return caption;
 }
 
-void QtstalkerApp::slotDataWindow ()
+void QtstalkerApp::dataWindow ()
 {
   // show the datawindow dialog
   DataWindow *dw = new DataWindow(this);
   dw->setWindowTitle(getWindowCaption());
-  dw->setData(plotList);
+  dw->setData(_plotList);
   dw->show();
   dw->scrollToBottom();
 }
@@ -625,16 +602,16 @@ void QtstalkerApp::slotDataWindow ()
 void QtstalkerApp::barLengthChanged(int barLength)
 {
   emit signalInterval((Bar::BarLength) barLength);
-  loadChart(&currentChart);
+  loadChart(&_currentChart);
 }
 
-void QtstalkerApp::slotDeleteIndicator (QString text)
+void QtstalkerApp::deleteIndicator (QString text)
 {
   // delete indicator
   int loop;
-  for (loop = 0; loop < tabList.count(); loop++)
+  for (loop = 0; loop < _tabList.count(); loop++)
   {
-    QTabWidget *it = tabList.at(loop);
+    QTabWidget *it = _tabList.at(loop);
     int loop2;
     for (loop2 = 0; loop2 < it->count(); loop2++)
     {
@@ -646,16 +623,16 @@ void QtstalkerApp::slotDeleteIndicator (QString text)
     }
   }
 
-  Plot *plot = plotList.value(text);
+  Plot *plot = _plotList.value(text);
   if (plot)
     delete plot;
-  plotList.remove(text);
+  _plotList.remove(text);
 }
 
 void QtstalkerApp::addIndicator (QString name)
 {
   addIndicatorButton(name);
-  loadChart(&currentChart);
+  loadChart(&_currentChart);
 }
 
 void QtstalkerApp::addIndicatorButton (QString d)
@@ -668,13 +645,13 @@ void QtstalkerApp::addIndicatorButton (QString d)
   if (! i.getEnable())
     return;
 
-  if (i.getTabRow() > tabList.count())
+  if (i.getTabRow() > _tabList.count())
     return;
 
-  QTabWidget *it = tabList.at(i.getTabRow() - 1);
+  QTabWidget *it = _tabList.at(i.getTabRow() - 1);
 
-  Plot *plot = new Plot(baseWidget);
-  plotList.insert(d, plot);
+  Plot *plot = new Plot(_baseWidget);
+  _plotList.insert(d, plot);
   plot->setDateFlag(i.getDate());
   plot->setLogScale(i.getLog());
 
@@ -700,118 +677,108 @@ void QtstalkerApp::addIndicatorButton (QString d)
   config.getData((int) Config::PlotFont, font);
   plot->setPlotFont(font);
 
-  plot->setGridFlag(actionList.value(Grid)->isChecked());
-  plot->setScaleToScreen(actionList.value(ScaleToScreen)->isChecked());
+  plot->setGridFlag(_actionList.value(Grid)->isChecked());
 
-  plot->setPixelspace(zoomButtons->getPixelSpace());
+  plot->setPixelspace(_zoomButtons->getPixelSpace());
 
-  plot->setIndex(plotSlider->getValue());
-  plot->setInterval((Bar::BarLength) barLengthButtons->getCurrentButton());
+  plot->setIndex(_plotSlider->getValue());
+  plot->setInterval((Bar::BarLength) _barLengthButtons->getCurrentButton());
 
-  connect(plot, SIGNAL(signalPixelspaceChanged(int, int)), zoomButtons, SLOT(addZoom(int, int)));
-  connect(plot, SIGNAL(signalInfoMessage(Setting *)), infoPanel, SLOT(showInfo(Setting *)));
-  connect(plot, SIGNAL(signalStatusMessage(QString)), this, SLOT(slotStatusMessage(QString)));
+  connect(plot, SIGNAL(signalPixelspaceChanged(int, int)), _zoomButtons, SLOT(addZoom(int, int)));
+  connect(plot, SIGNAL(signalInfoMessage(Setting *)), _infoPanel, SLOT(showInfo(Setting *)));
+  connect(plot, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(Bar::BarLength)), plot, SLOT(setInterval(Bar::BarLength)));
   connect(this, SIGNAL(signalClearIndicator()), plot, SLOT(clear()));
-  connect (plotSlider, SIGNAL(signalValueChanged(int)), plot, SLOT(sliderChanged(int)));
+//  connect (_plotSlider, SIGNAL(signalValueChanged(int)), plot, SLOT(sliderChanged(int)));
   connect(this, SIGNAL(signalGrid(bool)), plot, SLOT(gridChanged(bool)));
-  connect(this, SIGNAL(signalScale(bool)), plot, SLOT(scaleToScreenChanged(bool)));
   connect(this, SIGNAL(signalNewExternalChartObject(QString)), plot, SLOT(newExternalChartObject(QString)));
   connect(plot, SIGNAL(signalNewExternalChartObjectDone()), this, SIGNAL(signalSetExternalChartObject()));
   connect(this, SIGNAL(signalSetExternalChartObject()), plot, SLOT(setExternalChartObjectFlag()));
   connect(this, SIGNAL(signalCursorChanged(int)), plot, SLOT(cursorChanged(int)));
-  connect(plot, SIGNAL(signalIndexChanged(int)), plotSlider, SLOT(setValue(int)));
+  connect(plot, SIGNAL(signalIndexChanged(int)), _plotSlider, SLOT(setValue(int)));
+  connect(plot, SIGNAL(signalDraw()), this, SLOT(drawPlots()));
 }
 
-void QtstalkerApp::slotChartUpdated ()
+void QtstalkerApp::chartUpdated ()
 {
-  chartNav->updateList();
+  _chartNav->updateList();
 
-  if (currentChart.getSymbol().isEmpty())
+  if (_currentChart.getSymbol().isEmpty())
     return;
 
   Config config;
-  config.setData((int) Config::BarsToLoad, barCount->value());
+  config.setData((int) Config::BarsToLoad, _barCount->value());
 
-  loadChart(&currentChart);
+  loadChart(&_currentChart);
 }
 
-void QtstalkerApp::slotStatusMessage (QString d)
+void QtstalkerApp::statusMessage (QString d)
 {
-  statusbar->showMessage(d);
+  _statusBar->showMessage(d);
   wakeup();
 }
 
 // create the chart panel
 void QtstalkerApp::initChartNav ()
 {
-  chartNav = new ChartPage(baseWidget);
-  connect(chartNav, SIGNAL(fileSelected(BarData *)), this, SLOT(loadChart(BarData *)));
-  connect(chartNav, SIGNAL(addRecentChart(BarData *)), recentCharts, SLOT(addRecentChart(BarData *)));
-  connect(chartNav, SIGNAL(signalReloadChart()), this, SLOT(slotChartUpdated()));
-  connect(chartNav, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  navTab->addTab(chartNav, QIcon(plainitem), QString());
-  navTab->setTabToolTip(0, tr("Charts"));
+  _chartNav = new ChartPage(_baseWidget);
+  connect(_chartNav, SIGNAL(fileSelected(BarData *)), this, SLOT(loadChart(BarData *)));
+  connect(_chartNav, SIGNAL(addRecentChart(BarData *)), _recentCharts, SLOT(addRecentChart(BarData *)));
+  connect(_chartNav, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
+  connect(_chartNav, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
+  _navTab->addTab(_chartNav, QIcon(plainitem), QString());
+  _navTab->setTabToolTip(0, tr("Charts"));
 }
 
 // create the group panel
 void QtstalkerApp::initGroupNav ()
 {
-  GroupPage *gp = new GroupPage(baseWidget);
+  GroupPage *gp = new GroupPage(_baseWidget);
   connect(gp, SIGNAL(fileSelected(BarData *)), this, SLOT(loadChart(BarData *)));
-  connect(chartNav, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
-  connect(gp, SIGNAL(addRecentChart(BarData *)), recentCharts, SLOT(addRecentChart(BarData *)));
-  connect(gp, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  navTab->addTab(gp, QIcon(dirclosed), QString());
-  navTab->setTabToolTip(1, tr("Groups"));
+  connect(_chartNav, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
+  connect(gp, SIGNAL(addRecentChart(BarData *)), _recentCharts, SLOT(addRecentChart(BarData *)));
+  connect(gp, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
+  _navTab->addTab(gp, QIcon(dirclosed), QString());
+  _navTab->setTabToolTip(1, tr("Groups"));
 }
 
 // create the indicator panel
 void QtstalkerApp::initIndicatorNav ()
 {
-  IndicatorPage *ip = new IndicatorPage(baseWidget);
+  IndicatorPage *ip = new IndicatorPage(_baseWidget);
   connect(ip, SIGNAL(signalEnableIndicator(QString)), this, SLOT(addIndicator(QString)));
   connect(ip, SIGNAL(signalNewIndicator(QString)), this, SLOT(addIndicator(QString)));
-  connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(slotDeleteIndicator(QString)));
+  connect(ip, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator(QString)));
   connect(this, SIGNAL(signalNewIndicator()), ip, SLOT(newIndicator()));
   connect(ip, SIGNAL(signalRefreshIndicator(QString)), this, SLOT(refreshChart()));
-  connect(ip, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  navTab->addTab(ip, QIcon(indicator), QString());
-  navTab->setTabToolTip(2, tr("Indicators"));
+  connect(ip, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
+  _navTab->addTab(ip, QIcon(indicator), QString());
+  _navTab->setTabToolTip(2, tr("Indicators"));
 }
 
 // create the script panel
 void QtstalkerApp::initScriptNav ()
 {
-  scriptPage = new ScriptPage(baseWidget);
-  connect(scriptPage, SIGNAL(signalMessage(QString)), this, SLOT(slotStatusMessage(QString)));
-  navTab->addTab(scriptPage, QIcon(script_xpm), QString());
-  navTab->setTabToolTip(3, tr("Scripts"));
-}
-
-// enable / disable the side panels
-void QtstalkerApp::slotHideNav (bool d)
-{
-  if (d)
-    navBase->show();
-  else
-    navBase->hide();
+  _scriptPage = new ScriptPage(_baseWidget);
+  connect(_scriptPage, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
+  _navTab->addTab(_scriptPage, QIcon(script_xpm), QString());
+  _navTab->setTabToolTip(3, tr("Scripts"));
 }
 
 // draw the charts, but only the visible ones to save time
-void QtstalkerApp::slotDrawPlots ()
+void QtstalkerApp::drawPlots ()
 {
   int loop;
-  for(loop = 0; loop < (int) tabList.count(); loop++)
+  for(loop = 0; loop < (int) _tabList.count(); loop++)
   {
-    QTabWidget *it = tabList.at(loop);
+    QTabWidget *it = _tabList.at(loop);
     if (it->isHidden())
       continue;
     
     QString s = it->tabText(it->currentIndex());
-    Plot *p = plotList[s];
+    Plot *p = _plotList[s];
     if (p)
       p->draw();
   }
@@ -822,10 +789,22 @@ void QtstalkerApp::wakeup ()
   qApp->processEvents();
 }
 
-void QtstalkerApp::slotAppFont (QFont d)
+void QtstalkerApp::appFont (QFont d)
 {
   qApp->setFont(d, 0);
   wakeup();
+}
+
+void QtstalkerApp::sliderChanged (int d)
+{
+  emit signalIndex(d);
+  drawPlots();
+}
+
+void QtstalkerApp::gridChanged (bool d)
+{
+  emit signalGrid(d);
+  drawPlots();
 }
 
 /**********************************************************************/
@@ -834,12 +813,12 @@ void QtstalkerApp::slotAppFont (QFont d)
 
 void QtstalkerApp::setSliderStart (int count)
 {
-  QTabWidget *tw = tabList.at(0);
-  Plot *plot = plotList[tw->tabText(tw->currentIndex())];
+  QTabWidget *tw = _tabList.at(0);
+  Plot *plot = _plotList[tw->tabText(tw->currentIndex())];
   if (! plot)
     return;
 
-  plotSlider->setStart(count, plot->width(), zoomButtons->getPixelSpace());
+  _plotSlider->setStart(count, plot->width(), _zoomButtons->getPixelSpace());
 }
 
 /**********************************************************************/
@@ -849,15 +828,15 @@ void QtstalkerApp::setSliderStart (int count)
 void QtstalkerApp::psButtonClicked (int pixelSpace)
 {
   emit signalPixelspace(pixelSpace);
-  emit signalIndex(plotSlider->getValue());
-  slotDrawPlots();
+  emit signalIndex(_plotSlider->getValue());
+  drawPlots();
 }
 
 void QtstalkerApp::zoomChanged (int pixelSpace, int index)
 {
   emit signalPixelspace(pixelSpace);
-  plotSlider->setValue(index);
-  slotDrawPlots();
+  _plotSlider->setValue(index);
+  drawPlots();
 }
 
 // ******************************************************************************
@@ -866,10 +845,10 @@ void QtstalkerApp::zoomChanged (int pixelSpace, int index)
 
 void QtstalkerApp::refreshChart ()
 {
-  if (currentChart.getSymbol().isEmpty())
+  if (_currentChart.getSymbol().isEmpty())
     return;
 
-  loadChart(&currentChart);
+  loadChart(&_currentChart);
 }
 
 // ******************************************************************************
@@ -880,10 +859,10 @@ void QtstalkerApp::refreshChart ()
 
 void QtstalkerApp::commandLineAsset ()
 {
-  QStringList l = clAsset.split(":");
+  QStringList l = _clAsset.split(":");
   if (l.count() != 2)
   {
-    qDebug() << "QtstalkerApp::commandLineAsset: invalid command line asset string" << clAsset;
+    qDebug() << "QtstalkerApp::commandLineAsset: invalid command line asset string" << _clAsset;
     return;
   }
   

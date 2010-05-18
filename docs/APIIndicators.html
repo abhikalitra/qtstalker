@@ -60,18 +60,22 @@ On success, a single value is returned. Failure returns the string
 <br>
 <hr style="width: 100%; height: 2px;">
 <p><span style="font-weight: bold;"><br>
-INDICATOR,GET_SIZE,&lt;NAME&gt;</span><br>
+INDICATOR,GET_RANGE,&lt;NAME&gt;</span><br>
 <br>
-Returns the size of a data array.<br>
+Returns the start and end index values of an indicator.<br>
 </p>
 <ul>
   <li>&lt;NAME&gt; is the variable name of the indicator previously
 created in
 the script.</li>
 </ul>
-On success, the number of values is returned. Failure returns the
+On success, the start and end index values is returned. Failure returns
+the
 string
-"ERROR".<br>
+"ERROR". The values are separated by a comma.<br>
+<br>
+e.g. "0,100" would be returned indicating the first index position is 0
+and the last is 100.<br>
 <p><br>
 </p>
 <hr style="width: 100%; height: 2px;">

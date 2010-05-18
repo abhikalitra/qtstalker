@@ -40,17 +40,6 @@ void Line::draw (PlotData &pd, Scaler &scaler)
   int y2 = -1;
   int loop = pd.startIndex;
 
-  Scaler scale;
-  if (scaleFlag())
-  {
-    scale.set(scaler.height(),
-  	      high(),
-	      low(),
-	      scaler.logScaleHigh(),
-	      scaler.logRange(),
-	      scaler.logFlag());
-  }
-
   QPen pen;
   pen.setStyle(Qt::SolidLine);
   painter.setPen(pen);
@@ -60,10 +49,7 @@ void Line::draw (PlotData &pd, Scaler &scaler)
     PlotLineBar *bar = data(loop);
     if (bar)
     {
-      if (scaleFlag())
-        y2 = scale.convertToY(bar->data());
-      else
-        y2 = scaler.convertToY(bar->data());
+      y2 = scaler.convertToY(bar->data());
 
       if (y != -1)
       {

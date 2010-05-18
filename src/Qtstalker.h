@@ -62,7 +62,6 @@ class QtstalkerApp : public QMainWindow
     void signalInterval(Bar::BarLength);
     void signalClearIndicator ();
     void signalGrid (bool);
-    void signalScale (bool);
     void signalNewIndicator ();
     void signalNewExternalChartObject (QString);
     void signalSetExternalChartObject ();
@@ -78,8 +77,6 @@ class QtstalkerApp : public QMainWindow
       Grid,
       DataWindow1,
       About,
-      ScaleToScreen,
-      SidePanel,
       Help
     };
 
@@ -96,51 +93,52 @@ class QtstalkerApp : public QMainWindow
 
   public slots:
     void loadChart (BarData *);
-    void slotAbout ();
-    void slotStartDocumentation ();
-    void slotShowDocumentation (QString);
-    void slotQuit();
-    void slotOptions ();
-    void slotDataWindow ();
-    void slotDeleteIndicator (QString);
+    void about ();
+    void startDocumentation ();
+    void showDocumentation (QString);
+    void quit();
+    void options ();
+    void dataWindow ();
+    void deleteIndicator (QString);
     void barLengthChanged (int);
-    void slotChartUpdated ();
-    void slotStatusMessage (QString);
+    void chartUpdated ();
+    void statusMessage (QString);
     void addIndicator (QString);
-    void slotDrawPlots ();
+    void drawPlots ();
     void addIndicatorButton (QString);
     void wakeup ();
-    void slotAppFont (QFont);
-    void slotHideNav (bool d);
+    void appFont (QFont);
     void loadIndicator (BarData *, QString &);
     void psButtonClicked (int);
     void zoomChanged(int, int);
     void refreshChart ();
     void commandLineAsset ();
+    void sliderChanged (int);
+    void gridChanged (bool);
 
   protected:
-    QSplitter *split;
-    QSplitter *navSplitter;
-    QSplitter *dpSplitter;
-    QTabWidget *navTab;
-    QWidget *baseWidget;
-    QWidget *navBase;
-    ChartPage *chartNav;
-    QHash<QString, Plot *> plotList;
-    InfoPanel *infoPanel;
-    QStatusBar *statusbar;
-    QList<QTabWidget*> tabList;
-    QHash<MenuAction, QAction*> actionList;
-    QSpinBox *barCount;
-    RecentCharts *recentCharts;
-    Assistant *assistant;
-    BarLengthButtons *barLengthButtons;
-    BarData currentChart;
-    ScriptPage *scriptPage;
-    PlotSlider *plotSlider;
-    COToolBar *toolBar2;
-    ZoomButtons *zoomButtons;
-    QString clAsset;
+    QSplitter *_split;
+    QSplitter *_navSplitter;
+    QSplitter *_dpSplitter;
+    QTabWidget *_navTab;
+    QWidget *_baseWidget;
+    QWidget *_navBase;
+    ChartPage *_chartNav;
+    QHash<QString, Plot *> _plotList;
+    InfoPanel *_infoPanel;
+    QStatusBar *_statusBar;
+    QList<QTabWidget*> _tabList;
+    QHash<MenuAction, QAction*> _actionList;
+    QSpinBox *_barCount;
+    RecentCharts *_recentCharts;
+    Assistant *_assistant;
+    BarLengthButtons *_barLengthButtons;
+    BarData _currentChart;
+    ScriptPage *_scriptPage;
+    PlotSlider *_plotSlider;
+    COToolBar *_toolBar2;
+    ZoomButtons *_zoomButtons;
+    QString _clAsset;
 };
 
 #endif

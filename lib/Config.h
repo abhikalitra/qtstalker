@@ -46,7 +46,7 @@ class Config : public BaseConfig
       Crosshairs, // char crosshairs on/off
       DrawMode, // chart draw mode on/off
       DataPanelSize, // size of the data panel
-      ScaleToScreen, // scale to screen on/off
+      UNUSED99, // ******** UNUSED *************
       PlotFont, // chart plot font
       AppFont, // app font
       NavAreaSize, // navigator panel size
@@ -68,7 +68,7 @@ class Config : public BaseConfig
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
-      ShowSidePanel, // side panel flag
+      UNUSED999, // ******* UNUSED *****************
       SavedRunningScripts, // saved scripts that were running when app terminated
       ExchangeFileSize,  // the file size of /docs/exchanges.csv
       LastScriptPath, // the dir of the last script run from a dialog

@@ -120,13 +120,6 @@ void Config::init (QString session)
     setData(DataPanelSize, d);
   }
 
-  getData(ScaleToScreen, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    setData(ScaleToScreen, d);
-  }
-
   getData(PlotFont, d);
   if (d.isEmpty())
   {
@@ -188,13 +181,6 @@ void Config::init (QString session)
   {
     d = "8";
     setData(PSButton2, d);
-  }
-
-  getData(ShowSidePanel, d);
-  if (d.isEmpty())
-  {
-    d = "1";
-    setData(ShowSidePanel, d);
   }
 
   getData(ShowRecentCharts, d);

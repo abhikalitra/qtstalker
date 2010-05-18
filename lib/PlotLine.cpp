@@ -23,10 +23,7 @@
 
 PlotLine::PlotLine ()
 {
-  _high = -99999999;
-  _low = 99999999;
   _plotFlag = FALSE;
-  _scaleFlag = FALSE;
 }
 
 PlotLine::~PlotLine ()
@@ -67,12 +64,6 @@ void PlotLine::setData (int i, PlotLineBar *d)
     delete bar;
 
   _data.insert(i, d);
-
-  double h, l;
-  d->highLow(h, l);
-
-  checkHighLow(h);
-  checkHighLow(l);
 }
 
 PlotLineBar * PlotLine::data (int i)
@@ -85,27 +76,9 @@ int PlotLine::count ()
   return (int) _data.count();
 }
 
-double PlotLine::high ()
+int PlotLine::highLowRange (int start, int end, double &h, double &l)
 {
-  return _high;
-}
-
-double PlotLine::low ()
-{
-  return _low;
-}
-
-void PlotLine::checkHighLow (double d)
-{
-  if (d > _high)
-    _high = d;
-
-  if (d < _low)
-    _low = d;
-}
-
-void PlotLine::highLowRange (int start, int end, double &h, double &l)
-{
+  int rc = 1;
   int loop;
   h = -99999999;
   l = 99999999;
@@ -117,14 +90,19 @@ void PlotLine::highLowRange (int start, int end, double &h, double &l)
       continue;
 
     double th, tl;
-    r->highLow(th, tl);
+    if (r->highLow(th, tl))
+      continue;
 
+    rc = 0;
+    
     if (th > h)
       h = th;
 
     if (tl < l)
       l = tl;
   }
+
+  return rc;
 }
 
 void PlotLine::setPlotFlag (bool d)
@@ -137,18 +115,29 @@ bool PlotLine::plotFlag ()
   return _plotFlag;
 }
 
-void PlotLine::setScaleFlag (bool d)
-{
-  _scaleFlag = d;
-}
-
-bool PlotLine::scaleFlag ()
-{
-  return _scaleFlag;
-}
-
 void PlotLine::keys (QList<int> &l)
 {
   l = _data.keys();
 }
+
+void PlotLine::keyRange (int &start, int &end)
+{
+  QMapIterator<int, PlotLineBar *> it(_data);
+  it.toFront();
+  it.next();
+  PlotLineBar *bar = it.value();
+  if (! bar)
+  {
+    start = 0;
+    end = 0;
+    return;
+  }
+
+  start = it.key();
+
+  it.toBack();
+  it.previous();
+  end = it.key();
+}
+
 

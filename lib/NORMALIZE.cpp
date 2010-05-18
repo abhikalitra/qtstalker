@@ -99,14 +99,14 @@ PlotLine * NORMALIZE::normalize (PlotLine *in, int lineType, QColor &color)
   if (! line)
     return 0;
 
-  double max = in->high();
-  double min = in->low();
+  double max = 0;
+  double min = 0;
+  QList<int> keys;
+  in->keys(keys);
+  in->highLowRange(keys.at(0), keys.count() - 1, max, min);
 
   double range = fabs(max) + fabs(min);
 
-  QList<int> keys;
-  in->keys(keys);
-  
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {

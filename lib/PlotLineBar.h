@@ -38,7 +38,7 @@ class PlotLineBar
     void setColor (QColor &);
     QColor & color ();
     int count ();
-    void highLow (double &, double &);
+    int highLow (double &, double &);
 
   protected:
     QHash<int, double> _data;

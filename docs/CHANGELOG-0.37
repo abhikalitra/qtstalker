@@ -449,3 +449,7 @@
 
            NOTE: still working on updating the included scripts to the new formats.
 
+20100518:  Removed the scale to screen toolbar button. It is now the default.
+
+           Removed the panel hide toolbar button. Useless bloat.
+

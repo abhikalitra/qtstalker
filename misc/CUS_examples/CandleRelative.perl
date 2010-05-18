@@ -7,34 +7,53 @@ $|++;
 print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-# get today's Close
-print STDOUT "INDICATOR,PLUGIN,REF,close_0,Close,0";
+# get Close
+print STDOUT "INDICATOR,NEW,Close,cl,Line";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-# get yesterday's Close
-print STDOUT "INDICATOR,PLUGIN,REF,close_1,Close,1";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+# get the index range of the close bars
+print STDOUT "INDICATOR,GET_RANGE,cl";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-# close is relatively up
-print STDOUT "INDICATOR,PLUGIN,COMPARE,relUp,close_0,close_1,>";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+# split the start and end values
+my @range = split(',', $rc);
 
-# close is relatively down
-print STDOUT "INDICATOR,PLUGIN,COMPARE,relDown,close_0,close_1,<";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+$count = $range[0];
+$pcount = $range[0];
+$pcount--;
 
-# close is equal
-print STDOUT "INDICATOR,PLUGIN,COMPARE,relEqual,close_0,close_1,=";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+for (; $count <= $range[1]; $count++, $pcount++)
+{
+  # get the current close value
+  print STDOUT "INDICATOR,GET_INDEX,cl,$count";
+  $close = <STDIN>; chomp($close); if ($close eq "ERROR") { next; } # empty index position, continue
 
-print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,relUp,candles,1,green";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+  # get the yesterdays close value
+  print STDOUT "INDICATOR,GET_INDEX,cl,$pcount";
+  $yclose = <STDIN>; chomp($yclose); if ($yclose eq "ERROR") { next; } # empty index position, continue
 
-print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,relDown,candles,1,red";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+  if ($close > $yclose)
+  {
+    # set the current bar color to green
+    print STDOUT "INDICATOR,SET_COLOR,candles,$count,green";
+    $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+  }
+  else
+  {
+    if ($close < $yclose)
+    {
+      # set the current bar color to red
+      print STDOUT "INDICATOR,SET_COLOR,candles,$count,red";
+      $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+    }
+    else
+    {
+      # set the current bar color to blue
+      print STDOUT "INDICATOR,SET_COLOR,candles,$count,blue";
+      $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+    }
+  }
+}
 
-print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,relEqual,candles,1,blue";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-print STDOUT "PLOT,candles,Candle,Candle";
+print STDOUT "PLOT,candles";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }

@@ -28,7 +28,7 @@
 
 SCIndicator::SCIndicator ()
 {
-  methodList << "NEW" << "GET_INDEX" << "GET_SIZE" << "PLUGIN" << "SET_INDEX" << "SET_COLOR";
+  methodList << "NEW" << "GET_INDEX" << "GET_RANGE" << "PLUGIN" << "SET_INDEX" << "SET_COLOR";
 }
 
 int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
@@ -53,8 +53,8 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
     case GET_INDEX:
       rc = getIndex(l, ba, tlines);
       break;
-    case GET_SIZE:
-      rc = getSize(l, ba, tlines);
+    case GET_RANGE:
+      rc = getRange(l, ba, tlines);
       break;
     case PLUGIN:
       rc = getPlugin(l, ba, tlines, data, path);
@@ -226,26 +226,30 @@ int SCIndicator::setIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
   return 0;
 }
 
-int SCIndicator::getSize (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
+int SCIndicator::getRange (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
 {
-  // INDICATOR,GET_SIZE,<INPUT>
-  //      0       1        2
+  // INDICATOR,GET_RANGE,<INPUT>
+  //      0       1         2
 
   if (l.count() != 3)
   {
-    qDebug() << "SCIndicator::getSize: invalid parm count" << l.count();
+    qDebug() << "SCIndicator::getRange: invalid parm count" << l.count();
     return 1;
   }
 
   PlotLine *line = tlines.value(l[2]);
   if (! line)
   {
-    qDebug() << "SCIndicator::getSize: invalid input" << l[2];
+    qDebug() << "SCIndicator::getRange: invalid input" << l[2];
     return 1;
   }
 
+  int start = 0;
+  int end = 0;
+  line->keyRange(start, end);
+
   ba.clear();
-  ba.append(QString::number(line->count()) + "\n");
+  ba.append(QString::number(start) + "," + QString::number(end) + "\n");
 
   return 0;
 }

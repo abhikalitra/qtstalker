@@ -34,8 +34,7 @@ struct PlotData
   int barSpacing;
   int startIndex;
   int endIndex;
-  int scaleToScreen;
-  int infoIndex; // calculated position for info 
+  int infoIndex; // calculated position for info
   int x; // raw mouse x position from event->x()
   int y; // raw mouse y position from event-y()
   int infoFlag;

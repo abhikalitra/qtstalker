@@ -79,8 +79,9 @@ int PlotLineBar::count ()
   return (int) _data.count();
 }
 
-void PlotLineBar::highLow (double &h, double &l)
+int PlotLineBar::highLow (double &h, double &l)
 {
+  int rc = 1;
   h = -99999999;
   l = 99999999;
   QHashIterator<int, double> it(_data);
@@ -88,6 +89,7 @@ void PlotLineBar::highLow (double &h, double &l)
   while (it.hasNext())
   {
     it.next();
+    rc = 0;
 
     if (it.value() > h)
       h = it.value();
@@ -95,6 +97,8 @@ void PlotLineBar::highLow (double &h, double &l)
     if (it.value() < l)
       l = it.value();
   }
+
+  return rc;
 }
 
 

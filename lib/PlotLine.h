@@ -45,24 +45,17 @@ class PlotLine
     PlotLineBar * data (int);
     void setData (int, PlotLineBar *);
     int count ();
-    double high ();
-    double low ();
-    void checkHighLow (double);
     void setPlotFlag (bool);
     bool plotFlag ();
-    void setScaleFlag (bool);
-    bool scaleFlag ();
-    void highLowRange (int, int, double &, double &);
+    int highLowRange (int, int, double &, double &);
     void keys (QList<int> &);
+    void keyRange (int &, int &);
 
   protected:
     QMap<int, PlotLineBar *> _data;
     QString _label;
     QString _type;
-    double _high;
-    double _low;
     bool _plotFlag;
-    bool _scaleFlag;
 };
 
 #endif

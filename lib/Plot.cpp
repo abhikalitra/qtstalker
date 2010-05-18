@@ -49,7 +49,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _plotData.endIndex = 0;
   _plotData.backgroundColor.setNamedColor("black");
   _plotData.borderColor.setNamedColor("white");
-  _plotData.scaleToScreen = FALSE;
   _plotData.infoIndex = 0;
   _plotData.x = 0;
   _plotData.y = 0;
@@ -144,8 +143,6 @@ void Plot::draw ()
   }
 
   update();
-
-//  emit signalDraw();
 }
 
 void Plot::drawRefresh ()
@@ -193,7 +190,8 @@ void Plot::paintEvent (QPaintEvent *event)
 void Plot::resizeEvent (QResizeEvent *event)
 {
   _plotData.buffer = QPixmap(event->size());
-  draw();
+//  draw();
+  emit signalDraw();
 }
 
 void Plot::cursorChanged (int d)
@@ -214,7 +212,8 @@ void Plot::cursorChanged (int d)
   }
   
   updateCursor();
-  draw();
+//  draw();
+  emit signalDraw();
 }
 
 void Plot::updateCursor ()
@@ -236,6 +235,7 @@ void Plot::updateCursor ()
 
 void Plot::setScale ()
 {
+  int flag = 1;
   double tscaleHigh = -99999999;
   double tscaleLow = 99999999;
 
@@ -247,26 +247,16 @@ void Plot::setScale ()
   {
     PlotLine *line = plotList.at(loop);
 
-    if (line->scaleFlag())
+    double h, l;
+    if (line->highLowRange(_plotData.startIndex, _plotData.endIndex, h, l))
       continue;
 
-    if (! _plotData.scaleToScreen)
-    {
-      if (line->high() > tscaleHigh)
-        tscaleHigh = line->high();
-
-      if (line->low() < tscaleLow)
-        tscaleLow = line->low();
-    }
-    else
-    {
-      double h, l;
-      line->highLowRange(_plotData.startIndex, _plotData.endIndex, h, l);
-      if (h > tscaleHigh)
-        tscaleHigh = h;
-      if (l < tscaleLow)
-        tscaleLow = l;
-    }
+    flag = 0;
+    
+    if (h > tscaleHigh)
+      tscaleHigh = h;
+    if (l < tscaleLow)
+      tscaleLow = l;
   }
 
   QDateTime sd;
@@ -281,11 +271,9 @@ void Plot::setScale ()
   {
     it.next();
     COPlugin *co = it.value();
-    if (_plotData.scaleToScreen)
-    {
-      if (! co->inDateRange(sd, ed, _dateBars))
-        continue;
-    }
+    
+    if (! co->inDateRange(sd, ed, _dateBars))
+      continue;
       
     double h, l;
     if (co->getHighLow(h, l))
@@ -350,7 +338,8 @@ void Plot::mousePressEvent (QMouseEvent *event)
         {
           _mouseFlag = None;
 	  _coSelected->setSelected(FALSE);
-          draw();
+//          draw();
+          emit signalDraw();
         }
       }
       break;
@@ -368,7 +357,8 @@ void Plot::mousePressEvent (QMouseEvent *event)
       {
 	_mouseFlag = _saveMouseFlag;
 	updateCursor();
-        draw();
+//        draw();
+        emit signalDraw();
 	
         int i = convertXToDataIndex(event->x());
         PlotInfo info;
@@ -386,7 +376,8 @@ void Plot::mousePressEvent (QMouseEvent *event)
       {
 	_mouseFlag = _saveMouseFlag;
 	updateCursor();
-        draw();
+//        draw();
+        emit signalDraw();
 	
         int i = convertXToDataIndex(event->x());
         PlotInfo info;
@@ -445,7 +436,8 @@ void Plot::mousePressEvent (QMouseEvent *event)
           Setting *mess = info.getCOInfo(_coSelected);
           if (mess)
             emit signalInfoMessage(mess);
-	  draw();
+//	  draw();
+          emit signalDraw();
           return;
         }
       }
@@ -497,14 +489,16 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     {
       getXY(event->x(), event->y());
       _coSelected->moving(_plotData.x1, _plotData.y1, _moveFlag);
-      draw();
+//      draw();
+      emit signalDraw();
       break;
     }
     case ClickWait2:
     {
       getXY(event->x(), event->y());
       _coSelected->moving(_plotData.x1, _plotData.y1, 0);
-      draw();
+//      draw();
+      emit signalDraw();
       break;
     }
     case None:
@@ -653,25 +647,17 @@ void Plot::toggleLog ()
 void Plot::sliderChanged (int v)
 {
   setIndex(v);
-  draw();
 }
 
 void Plot::gridChanged (bool d)
 {
   _grid.setGridFlag(d);
-  draw();
-}
-
-void Plot::scaleToScreenChanged (bool d)
-{
-  setScaleToScreen(d);
-  draw();
 }
 
 void Plot::logScaleChanged (bool d)
 {
   setLogScale(d);
-  draw();
+  emit signalDraw();
 }
 
 void Plot::setData (BarData *l)
@@ -683,11 +669,6 @@ void Plot::setData (BarData *l)
   
   _exchange = l->getExchange();
   _symbol = l->getSymbol();
-}
-
-void Plot::setScaleToScreen (bool d)
-{
-  _plotData.scaleToScreen = d;
 }
 
 void Plot::setInfoFlag (bool d)
@@ -816,7 +797,8 @@ void Plot::setExternalChartObjectFlag ()
   _coSelected = 0;
 
   updateCursor();
-  draw();
+//  draw();
+  emit signalDraw();
 }
 
 void Plot::newExternalChartObject (QString d)
@@ -902,7 +884,8 @@ void Plot::deleteAllChartObjects ()
 
   _mouseFlag = None;
 
-  draw();
+//  draw();
+  emit signalDraw();
 }
 
 void Plot::chartObjectDeleted ()
@@ -919,7 +902,8 @@ void Plot::chartObjectDeleted ()
 
   _mouseFlag = None;
 
-  draw();
+//  draw();
+  emit signalDraw();
 }
 
 void Plot::saveChartObjects ()
@@ -956,6 +940,7 @@ void Plot::loadChartObjects ()
 void Plot::objectDialog ()
 {
   _coSelected->dialog();
-  draw();
+//  draw();
+  emit signalDraw();
 }
 

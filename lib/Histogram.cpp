@@ -38,20 +38,7 @@ void Histogram::draw (PlotData &pd, Scaler &scaler)
 
   QPolygon pa(4);
 
-  int zero = 0;
-  Scaler scale;
-  if (scaleFlag())
-  {
-    scale.set(scaler.height(),
-  	      high(),
-	      low(),
-	      scaler.logScaleHigh(),
-	      scaler.logRange(),
-	      scaler.logFlag());
-    zero = scale.convertToY(0);
-  }
-  else
-    zero = scaler.convertToY(0);
+  int zero = scaler.convertToY(0);
 
   int x = -1;
   int x2 = 0;
@@ -63,10 +50,7 @@ void Histogram::draw (PlotData &pd, Scaler &scaler)
     PlotLineBar *bar = data(loop);
     if (bar)
     {
-      if (scaleFlag())
-        y2 = scale.convertToY(bar->data());
-      else
-        y2 = scaler.convertToY(bar->data());
+      y2 = scaler.convertToY(bar->data());
 
       pa.setPoint(0, x, zero);
       pa.setPoint(1, x, y);

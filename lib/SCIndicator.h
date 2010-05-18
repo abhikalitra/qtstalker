@@ -36,7 +36,7 @@ class SCIndicator
     {
       NEW, // create a new plotline to be filled later by the script
       GET_INDEX, // pass a single indicator value to the calling script
-      GET_SIZE, // returns the size of the indicator.
+      GET_RANGE, // returns the start and end index values
       PLUGIN, // get a plugin indicator
       SET_INDEX, // pass a single indicator value from script to qtstalker
       SET_COLOR // set the color of the bar at index pos
@@ -46,7 +46,7 @@ class SCIndicator
     int calculate (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
     int getIndex (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
     int setIndex (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
-    int getSize (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
+    int getRange (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
     int setColor (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
     int getPlugin (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
     int getNew (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *);

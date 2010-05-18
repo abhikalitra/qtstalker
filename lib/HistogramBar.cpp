@@ -35,21 +35,7 @@ void HistogramBar::draw (PlotData &pd, Scaler &scaler)
   painter.begin(&pd.buffer);
 
   int x = 0;
-  int zero = 0;
-  Scaler scale;
-  if (scaleFlag())
-  {
-    scale.set(scaler.height(),
-  	      high(),
-	      low(),
-	      scaler.logScaleHigh(),
-	      scaler.logRange(),
-	      scaler.logFlag());
-    zero = scale.convertToY(0);
-  }
-  else
-    zero = scaler.convertToY(0);
-
+  int zero = scaler.convertToY(0);
   int loop = pd.startIndex;
 
   for (; loop <= pd.endIndex; loop++, x += pd.barSpacing)
@@ -58,11 +44,7 @@ void HistogramBar::draw (PlotData &pd, Scaler &scaler)
     if (! bar)
       continue;
 
-    int y;
-    if (scaleFlag())
-      y = scale.convertToY(bar->data());
-    else
-      y = scaler.convertToY(bar->data());
+    int y = scaler.convertToY(bar->data());
 
     painter.fillRect(x, y, pd.barSpacing - 1, zero - y, bar->color());
   }

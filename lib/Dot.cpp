@@ -37,28 +37,13 @@ void Dot::draw (PlotData &pd, Scaler &scaler)
   int x = 0;
   int loop = pd.startIndex;
 
-  Scaler scale;
-  if (scaleFlag())
-  {
-    scale.set(scaler.height(),
-  	      high(),
-	      low(),
-	      scaler.logScaleHigh(),
-	      scaler.logRange(),
-	      scaler.logFlag());
-  }
-
   for (; loop <= pd.endIndex; loop++, x += pd.barSpacing)
   {
     PlotLineBar *bar = data(loop);
     if (! bar)
       continue;
       
-    int y;
-    if (scaleFlag())
-      y = scale.convertToY(bar->data());
-    else
-      y = scaler.convertToY(bar->data());
+    int y = scaler.convertToY(bar->data());
 
     painter.setPen(bar->color());
     painter.drawPoint(x, y);

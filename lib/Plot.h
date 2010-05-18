@@ -55,7 +55,7 @@ class Plot : public QWidget
     void signalStatusMessage (QString);
     void signalInfoMessage (Setting *);
     void signalPixelspaceChanged (int, int);
-//    void signalDraw ();
+    void signalDraw ();
     void signalDateFlag (bool);
     void signalLogFlag (bool);
     void signalNewExternalChartObjectDone();
@@ -82,7 +82,6 @@ class Plot : public QWidget
     void setInfoFlag (bool);
     int convertXToDataIndex (int);
     void setGridFlag (bool);
-    void setScaleToScreen (bool);
     void setDateFlag (bool);
     void setXGrid (QList<int> &);
     void setMenuFlag (bool);
@@ -105,7 +104,6 @@ class Plot : public QWidget
     void showPopupMenu ();
     void sliderChanged (int);
     void gridChanged (bool);
-    void scaleToScreenChanged (bool);
     void logScaleChanged (bool);
     void setInterval(Bar::BarLength);
     void newExternalChartObject (QString);
