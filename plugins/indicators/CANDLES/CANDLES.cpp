@@ -138,7 +138,7 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
   {
     double pen = settings.getDouble(Penetration);
 
-    PlotLine *line2 = getMethod(data, method, pen);
+    PlotLine *line2 = getMethod(data, method, pen, (int) PlotFactory::PlotTypeLine, color);
     if (line2)
     {
       settings.getData(MethodColor, s);
@@ -297,10 +297,10 @@ int CANDLES::getCUSNone (QStringList &set, QHash<QString, PlotLine *> &tlines, B
 
 int CANDLES::getCUSMethod (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<PENETRATION>
-  //    0        1       2       3       4         5
+  // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<PENETRATION>,<PLOT TYPE>,<COLOR>
+  //    0        1       2       3       4         5             6         7
 
-  if (set.count() != 6)
+  if (set.count() != 8)
   {
     qDebug() << indicator << "::getCUSMethod: invalid parm count" << set.count();
     return 1;
@@ -328,7 +328,22 @@ int CANDLES::getCUSMethod (QStringList &set, QHash<QString, PlotLine *> &tlines,
     return 1;
   }
 
-  PlotLine *line = getMethod(data, method, pen);
+  PlotFactory fac;
+  int lineType = fac.typeFromString(set[6]);
+  if (lineType == -1)
+  {
+    qDebug() << indicator << "::getCUSMethod: invalid plot type" << set[6];
+    return 1;
+  }
+
+  QColor color(set[7]);
+  if (! color.isValid())
+  {
+    qDebug() << indicator << "::getCUSMethod: invalid color" << set[7];
+    return 1;
+  }
+
+  PlotLine *line = getMethod(data, method, pen, lineType, color);
   if (! line)
     return 1;
 
@@ -463,7 +478,7 @@ int CANDLES::dialog (int)
   return rc;
 }
 
-PlotLine * CANDLES::getMethod (BarData *data, int method, double pen)
+PlotLine * CANDLES::getMethod (BarData *data, int method, double pen, int lineType, QColor &color)
 {
   int size = data->count();
   TA_Real high[size];
@@ -675,9 +690,13 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
   for (loop = 0; loop < outNb; loop++)
-    line->setData(loop, new PlotLineBar(out[loop]));
+    line->setData(loop, new PlotLineBar(color, out[loop]));
 
   return line;
 }

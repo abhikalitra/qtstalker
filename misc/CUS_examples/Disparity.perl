@@ -4,75 +4,41 @@
 $|++;
 
 # Get today's close
-print STDOUT "INDICATOR,PLUGIN,REF,cl,Close,0";
+print STDOUT "INDICATOR,NEW,Close,cl,Line,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-print STDOUT "INDICATOR,GET,cl,0";
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-@close_0 = split(",", $rc);
 
 # Get the 13-bar SMA
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,sma_13,Close,13";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,sma_13,Close,13,Line,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR,GET,sma_13,0";
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-@sma_13 = split(",", $rc);
-
-# Get the 200-bar SMA
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,sma_200,Close,200";
+# create the disparity indicator
+print STDOUT "INDICATOR,NEW,EMPTY,Disparity,Histogram Bar,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR,GET,sma_200,0";
+# get the index range of the close
+print STDOUT "INDICATOR,GET_RANGE,cl";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-@sma_200 = split(",", $rc);
 
-# Calculate the index values
-# Calculate the 13-bar index
-my @values = ();
-my $value = 0;
-my $periodUnstable = 13;
-for (my $i = ($periodUnstable - 1); $i <= $#close_0; $i++)
+# split the start and end values
+my @range = split(',', $rc);
+
+for ($count = 12; $count <= $range[1]; $count++)
 {
-  my $a = @sma_13[$i - ($periodUnstable - 1)];
-  if ($a != 0)
-  {
-    $value = sprintf("%.2f", (@close_0[$i] - $a) / $a * 100);
-  }
-  push(@values, $value);
+  # get the current close value
+  print STDOUT "INDICATOR,GET_INDEX,cl,$count";
+  $close = <STDIN>; chomp($close); if ($close eq "ERROR") { next; } # empty index position, continue
+
+  # get sma_13 value
+  print STDOUT "INDICATOR,GET_INDEX,sma_13,$count";
+  $ma = <STDIN>; chomp($ma); if ($ma eq "ERROR") { next; } # empty index position, continue
+
+  $disparity = sprintf("%.2f", ($close - $ma) / $ma * 100);
+
+  # set the disparity indicator with value
+  print STDOUT "INDICATOR,SET_INDEX,Disparity,$count,$disparity,red";
+  $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 }
 
-printf STDOUT "INDICATOR,SET,disparity_13," . join(",", @values);
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-# color the disparity_13 line
-print STDOUT "INDICATOR,PLUGIN,COLOR,All,disparity_13,red";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-print STDOUT "PLOT,disparity_13,Disparity-13,Line";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-# Calculate the 200-bar index
-@values = ();
-$value = 0;
-$periodUnstable = 200;
-for (my $i = ($periodUnstable - 1); $i <= $#close_0; $i++)
-{
-  my $a = @sma_200[$i - ($periodUnstable - 1)];
-  if ($a != 0)
-  {
-    $value = sprintf("%.2f", (@close_0[$i] - $a) / $a * 100);
-  }
-  push(@values, $value);
-}
-
-printf STDOUT "INDICATOR,SET,disparity_200," . join(",", @values);
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-# color the disparity_200 line
-print STDOUT "INDICATOR,PLUGIN,COLOR,All,disparity_200,orange";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-print STDOUT "PLOT,disparity_200,Disparity-200,Line";
+print STDOUT "PLOT,Disparity";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 

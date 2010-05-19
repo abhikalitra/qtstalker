@@ -7,7 +7,7 @@ print STDOUT "INDICATOR,PLUGIN,BARS,Bars,green,red,blue";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # get some close bars
-print STDOUT "INDICATOR,NEW,Close,cl,Line";
+print STDOUT "INDICATOR,NEW,Close,cl,Line,red";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # create the 10 EMA indicator

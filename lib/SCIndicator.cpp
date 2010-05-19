@@ -75,37 +75,45 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
 
 int SCIndicator::getNew (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines, BarData *data)
 {
-  // INDICATOR,NEW,<METHOD>,<NAME>,<LINE TYPE>
-  //     0      1     2        3        4
+  // INDICATOR,NEW,<METHOD>,<NAME>,<LINE TYPE>,<COLOR>
+  //     0      1     2        3        4         5
 
-  if (l.count() != 5)
+  if (l.count() != 6)
   {
     qDebug() << "SCIndicator::getNew: invalid parm count" << l.count();
     return 1;
   }
 
+  PlotFactory fac;
+  int lineType = fac.typeFromString(l[4]);
+  if (lineType == -1)
+  {
+    qDebug() << "SCIndicator::getNEW: invalid plot type" << l[4];
+    return 1;
+  }
+  
+  QColor color(l[5]);
+  if (! color.isValid())
+  {
+    qDebug() << "SCIndicator::getNEW: invalid color" << l[5];
+    return 1;
+  }
+  
   BarData bd;
   QStringList fl;
   bd.getInputFields(fl);
-  fl.append("EMPTY");
+  fl.prepend("EMPTY");
   int method = fl.indexOf(l[2]);
+  if (method == -1)
+  {
+    qDebug() << "SCIndicator::getNew: invalid method" << method << l[2];
+    return 1;
+  }
+  
   PlotLine *out = 0;
   switch (method)
   {
     case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5: // bars request
-      out = data->getInput(data->getInputType(l[2]));
-      if (! out)
-      {
-        qDebug() << "SCIndicator::getNEW: input not found" << l[2];
-        return 1;
-      }
-      break;
-    case 6: // EMPTY method
     {
       // check if name already exists
       out = tlines.value(l[3]);
@@ -115,21 +123,21 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, QHash<QString, PlotLine
         return 1;
       }
 
-      PlotFactory fac;
-      out = fac.plot(l[4]);
+      out = fac.plot(lineType);
+      break;
+    }
+    default:
+      out = data->getInput(data->getInputType(l[2]), lineType, color);
       if (! out)
       {
-        qDebug() << "SCIndicator::getNew: invalid plot type" << l[4];
+        qDebug() << "SCIndicator::getNEW: input not found" << l[2];
         return 1;
       }
       break;
-    }
-    default: // input error
-      qDebug() << "SCIndicator::getNew: invalid method" << l[2];
-      return 1;
-      break;
   }
 
+  out->setLabel(l[3]);
+  
   tlines.insert(l[3], out);
 
   ba.clear();

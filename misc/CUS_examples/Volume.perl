@@ -3,41 +3,57 @@
 $|++;
 
 # get the volume data
-print STDOUT "INDICATOR,PLUGIN,REF,vol,Volume,0";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-# color the vol line
-print STDOUT "INDICATOR,PLUGIN,COLOR,All,vol,red";
+print STDOUT "INDICATOR,NEW,Volume,Volume,Histogram Bar,red";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # get close data
-print STDOUT "INDICATOR,PLUGIN,REF,cl,Close,0";
+print STDOUT "INDICATOR,NEW,Close,cl,Line,red";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-# get close data offset -1 (returns previous days close)
-print STDOUT "INDICATOR,PLUGIN,REF,pcl,Close,1";
+# get the index range of the close bars
+print STDOUT "INDICATOR,GET_RANGE,cl";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+
+# split the start and end values
+my @range = split(',', $rc);
+
+$count = $range[0];
+$pcount = $range[0];
+$pcount--;
+
+for (; $count <= $range[1]; $count++, $pcount++)
+{
+  # get the current close value
+  print STDOUT "INDICATOR,GET_INDEX,cl,$count";
+  $close = <STDIN>; chomp($close); if ($close eq "ERROR") { next; } # empty index position, continue
+
+  # get the yesterdays close value
+  print STDOUT "INDICATOR,GET_INDEX,cl,$pcount";
+  $yclose = <STDIN>; chomp($yclose); if ($yclose eq "ERROR") { next; } # empty index position, continue
+
+  if ($close > $yclose)
+  {
+    # set the current volume bar color to green
+    print STDOUT "INDICATOR,SET_COLOR,Volume,$count,green";
+    $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+  }
+  else
+  {
+    if ($close < $yclose)
+    {
+      # set the current bar color to red
+      print STDOUT "INDICATOR,SET_COLOR,Volume,$count,red";
+      $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+    }
+    else
+    {
+      # set the current bar color to blue
+      print STDOUT "INDICATOR,SET_COLOR,Volume,$count,blue";
+      $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+    }
+  }
+}
+
+# plot the volume bars
+print STDOUT "PLOT,Volume";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-# return true if Close > PClose
-print STDOUT "INDICATOR,PLUGIN,COMPARE,comp1,cl,pcl,>";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-# color the Volume data green if comp1 == true
-# we want to color up days green
-print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,comp1,vol,1,green";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-# return true if Close == PClose
-print STDOUT "INDICATOR,PLUGIN,COMPARE,comp2,cl,pcl,=";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-# color the Volume data blue if comp2 == true
-# we want to color neutral days blue
-print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,comp2,vol,1,blue";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-print STDOUT "PLOT,vol,V,Histogram Bar";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-
-

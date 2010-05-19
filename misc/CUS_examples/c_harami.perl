@@ -12,36 +12,63 @@ print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Harami
-print STDOUT "INDICATOR,PLUGIN,CANDLES,HARAMI,ch1,0";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,HARAMI,ch1,0,Line,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-print STDOUT "INDICATOR,PLUGIN,COMPARE,c1,ch1,1,>=";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,c1,candles,1,green";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-#print STDOUT "INDICATOR,PLUGIN,COMPARE,c2,ch1,-1,<=";
-#$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-#print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,c2,candles,1,red";
-#$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Harami Cross
-print STDOUT "INDICATOR,PLUGIN,CANDLES,HARAMICROSS,ch2,0";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,HARAMICROSS,ch2,0,Line,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR,PLUGIN,COMPARE,c3,ch2,1,>=";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+# get the index range of the harami bars
+print STDOUT "INDICATOR,GET_RANGE,ch1";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,c3,candles,1,cyan";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+# split the start and end values
+my @range = split(',', $rc);
 
-#print STDOUT "INDICATOR,PLUGIN,COMPARE,c4,ch2,-1,<=";
-#$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+for ($count = $range[0]; $count <= $range[1]; $count++)
+{
+  # get the harami value
+  print STDOUT "INDICATOR,GET_INDEX,ch1,$count";
+  $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { next; } # empty index position, continue
 
-#print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,c4,candles,1,magenta";
-#$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+  if ($rc >= 1)
+  {
+    # set the current bar color to green
+    print STDOUT "INDICATOR,SET_COLOR,candles,$count,green";
+    $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+  }
+  else
+  {
+    if ($rc <= -1)
+    {
+      # set the current bar color to red
+      print STDOUT "INDICATOR,SET_COLOR,candles,$count,red";
+      $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+    }
+  }
 
-print STDOUT "PLOT,candles,Candle,Candle";
+  # get the harami cross value
+  print STDOUT "INDICATOR,GET_INDEX,ch2,$count";
+  $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { next; } # empty index position, continue
+
+  if ($rc >= 1)
+  {
+    # set the current bar color to green
+    print STDOUT "INDICATOR,SET_COLOR,candles,$count,cyan";
+    $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+  }
+  else
+  {
+    if ($rc <= -1)
+    {
+      # set the current bar color to red
+      print STDOUT "INDICATOR,SET_COLOR,candles,$count,magenta";
+      $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+    }
+  }
+}
+
+# plot the candles 
+print STDOUT "PLOT,candles";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }

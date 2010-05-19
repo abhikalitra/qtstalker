@@ -20,6 +20,7 @@
  */
 
 #include "BarData.h"
+#include "PlotFactory.h"
 
 #include <QObject>
 #include <QtDebug>
@@ -54,9 +55,18 @@ void BarData::getInputFields (QStringList &l)
 
 PlotLine * BarData::getInput (BarData::InputType field)
 {
-  PlotLine *in = new PlotLine;
-  int loop;
   QColor color("red");
+  return getInput(field, (int) PlotFactory::PlotTypeLine, color);
+}
+
+PlotLine * BarData::getInput (BarData::InputType field, int lineType, QColor &color)
+{
+  PlotFactory fac;
+  PlotLine *in = fac.plot(lineType);
+  if (! in)
+    return 0;
+
+  int loop;
   for (loop = 0; loop < count(); loop++)
   {
     Bar *bar = getBar(loop);

@@ -7,50 +7,36 @@ $|++;
 
 
 # create the day indicator
-print STDOUT "INDICATOR,PLUGIN,REF,Day,Close,0";
+print STDOUT "INDICATOR,NEW,Close,Day,Line,red";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # create the 20 SMA indicator
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,20MA,Close,20";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,20MA,Close,20,Dash,#09ff00";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # create the 50 SMA indicator
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,50MA,Close,50";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,50MA,Close,50,Dash,#9041ff";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # create the 200 SMA indicator
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,200MA,Close,200";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,200MA,Close,200,Dot,#f3ff88";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-# color the 200 SMA, color light yellow
-print STDOUT "INDICATOR,PLUGIN,COLOR,All,200MA,#f3ff88";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+# plot 200SMA - 50SMA - 20SMA - Day, day is on the foreground
 
-# print 200SMA - 50SMA - 20SMA - Day, day is on the foreground
-print STDOUT "PLOT,200MA,200MA,Dot";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-# color the 50 SMA, color purple
-print STDOUT "INDICATOR,PLUGIN,COLOR,All,50MA,#9041ff";
+# plot 200 MA
+print STDOUT "PLOT,200MA";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 #plot 50 SMA
-print STDOUT "PLOT,50MA,50MA,Dash";
+print STDOUT "PLOT,50MA";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-# color the 20 SMA, color green
-print STDOUT "INDICATOR,PLUGIN,COLOR,All,20MA,#09ff00";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-# plot 20 SMA
-print STDOUT "PLOT,20MA,20MA,Dash";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-# color Day, color red
-print STDOUT "INDICATOR,PLUGIN,COLOR,All,Day,red";
+#plot 20 SMA
+print STDOUT "PLOT,20MA";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot day
-print STDOUT "PLOT,Day,Day,Line";
+print STDOUT "PLOT,Day";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 

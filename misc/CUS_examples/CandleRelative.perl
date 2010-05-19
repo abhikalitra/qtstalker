@@ -8,7 +8,7 @@ print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Close
-print STDOUT "INDICATOR,NEW,Close,cl,Line";
+print STDOUT "INDICATOR,NEW,Close,cl,Line,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get the index range of the close bars

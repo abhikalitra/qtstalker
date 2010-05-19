@@ -10,24 +10,46 @@ print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Kirikomi
-print STDOUT "INDICATOR,PLUGIN,CANDLES,PIERCING,ckk1,0";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-print STDOUT "INDICATOR,PLUGIN,COMPARE,c1,ckk1,1,>=";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,c1,candles,1,green";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,PIERCING,ckk1,0,Line,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Kabuse
-print STDOUT "INDICATOR,PLUGIN,CANDLES,DARKCLOUDCOVER,ckk2,0";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,DARKCLOUDCOVER,ckk2,0,Line,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR,PLUGIN,COMPARE,c2,ckk2,-1,<=";
+# get the index range of the piercing bars
+print STDOUT "INDICATOR,GET_RANGE,ckk1";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+
+# split the start and end values
+my @range = split(',', $rc);
+
+for ($count = $range[0]; $count <= $range[1]; $count++)
+{
+  # get the kirikomi value
+  print STDOUT "INDICATOR,GET_INDEX,ckk1,$count";
+  $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { next; } # empty index position, continue
+
+  if ($rc >= 1)
+  {
+    # set the current bar color to green
+    print STDOUT "INDICATOR,SET_COLOR,candles,$count,green";
+    $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+  }
+
+  # get the kabuse value
+  print STDOUT "INDICATOR,GET_INDEX,ckk2,$count";
+  $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { next; } # empty index position, continue
+
+  if ($rc <= -1)
+  {
+    # set the current bar color to red
+    print STDOUT "INDICATOR,SET_COLOR,candles,$count,red";
+    $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
+  }
+}
+
+# plot the candles
+print STDOUT "PLOT,candles";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
-print STDOUT "INDICATOR,PLUGIN,COLOR,Compare,c2,candles,1,red";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
-print STDOUT "PLOT,candles,Candle,Candle";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
