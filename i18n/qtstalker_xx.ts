@@ -1390,14 +1390,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Scale To Screen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Side Pa&amp;nel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1459,14 +1451,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Show the data window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scale chart to current screen data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle the side panel area from view</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

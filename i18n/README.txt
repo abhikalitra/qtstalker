@@ -1,6 +1,6 @@
-To create a new translation, copy "qtstalker_template.ts" to an appropriate
+To create a new translation, copy "qtstalker_xx.ts" to an appropriate
 filename for your language, e.g.
- cp qtstalker_template.ts qtstalker_pl.ts
+ cp qtstalker_xx.ts qtstalker_fr.ts
 
 See further instructions, and the two-letter language codes in
 ../TRANSLATOR.HOWTO

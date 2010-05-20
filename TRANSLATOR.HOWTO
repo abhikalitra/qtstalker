@@ -34,10 +34,10 @@ cd qtstalker/i18n
 b) create your language file :
 
 exemple for french language file creation
-cp -p qtstalker_template.ts qtstalker_fr.ts
+cp -p qtstalker_xx.ts qtstalker_fr.ts
 
 exemple for german language file creation
-cp -p qtstalker_template.ts qtstalker_de.ts
+cp -p qtstalker_xx.ts qtstalker_de.ts
 
 Here, you find fr in the file name for french language.
 You can find the 2 letters that identify your language here :
