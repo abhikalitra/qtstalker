@@ -22,11 +22,16 @@
 #include "MOM.h"
 #include "MAFactory.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 MOM::MOM ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MOM::error on TA_Initialize");
+
   indicator = "MOM";
 
   settings.setData(Color, "red");
@@ -161,23 +166,47 @@ int MOM::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * MOM::getMOM (PlotLine *in, int period, int smoothing, int type, int lineType, QColor &color)
 {
-  if (in->count() < period)
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_MOM(0,
+                         size - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getMOM: TA-Lib error" << rc;
     return 0;
-  
+  }
+
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
 
-  QList<int> keys;
-  in->keys(keys);
-  
-  int loop = period;
-  for (; loop < keys.count(); loop++)
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    PlotLineBar *bar2 = in->data(keys.at(loop - period));
-    line->setData(keys.at(loop), new PlotLineBar(color, bar->data() - bar2->data()));
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
 
   if (smoothing > 1)

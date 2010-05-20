@@ -22,12 +22,16 @@
 #include "BOP.h"
 #include "MAFactory.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
-
 BOP::BOP ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("BOP::error on TA_Initialize");
+
   indicator = "BOP";
 
   settings.setData(Color, "red");
@@ -126,22 +130,47 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * BOP::getBOP (BarData *data, int smoothing, int type, int lineType, QColor &color)
 {
-  if (! data->count())
+  int size = data->count();
+  TA_Real open[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+    open[loop] = (TA_Real) bar->getOpen();
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+  }
+
+  TA_RetCode rc = TA_BOP(0,
+                         size - 1,
+                         &open[0],
+                         &high[0],
+                         &low[0],
+                         &close[0],
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getBOP: TA-Lib error" << rc;
     return 0;
-  
+  }
+
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
 
-  int size = data->count();
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar *bar = data->getBar(loop);
-    double v = (bar->getClose() - bar->getOpen()) / (bar->getHigh() - bar->getLow());
-    line->setData(loop, new PlotLineBar(color, v));
-  }
+  for (loop = 0; loop < size; loop++)
+    line->setData(loop, new PlotLineBar(color, out[loop]));
 
   if (smoothing > 1)
   {

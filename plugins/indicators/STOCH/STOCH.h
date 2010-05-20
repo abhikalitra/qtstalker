@@ -48,6 +48,8 @@ class STOCH : public IndicatorPlugin
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int dialog (int);
+    int getSTOCH (BarData *data, int kperiod, int dperiod, int ma, int klineType, QColor &kcolor,
+                  int dlineType, QColor &dcolor, QList<PlotLine *> &pl);
 };
 
 extern "C"

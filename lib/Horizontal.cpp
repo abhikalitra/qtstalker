@@ -20,7 +20,7 @@
  */
 
 #include "Horizontal.h"
-#include "Utils.h"
+#include "Strip.h"
 
 #include <QFontMetrics>
 #include <QDebug>
@@ -43,9 +43,9 @@ void Horizontal::draw (PlotData &pd, Scaler &scaler)
   
   int y = scaler.convertToY(bar->data());
 
-  Utils util;
+  Strip strip;
   QString s, s2;
-  util.strip(bar->data(), 4, s);
+  strip.strip(bar->data(), 4, s);
   s2 = label();
   s = s2 + s;
 

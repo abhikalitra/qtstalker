@@ -3,8 +3,7 @@ To Do:
 
 - documentation
 - create some howto docs for indicators
-- allow negative displacement for line plots (vector plots)
-- add more crosshairs behaviours to IndicatorPlot
+- add more cursor behaviours to IndicatorPlot
 - save last chart viewed between sessions.
 - median lines chart objects
 - fibo time chart objects
@@ -16,8 +15,7 @@ To Do:
 - interactive scripting
 - decide what to fill the lower right plot corner with...
 - add user defined script launch buttons to the script panel
-- convert indicator plugins to a conditional compile template and remove TA_Lib library from the main app
-  to the plugins.
+- backtesting module
 
 
 Priority

@@ -21,13 +21,17 @@
 
 #include "STOCH.h"
 #include "MAFactory.h"
-#include "STOCHUtils.h"
+#include "ta_libc.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
 
 STOCH::STOCH ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("STOCH::error on TA_Initialize");
+
   indicator = "STOCH";
 
   settings.setData(FastKColor, "red");
@@ -73,43 +77,47 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
   ind.addLine(line);
 
   // create the fastk line
-  int period = settings.getInt(FastKPeriod);
+  int kperiod = settings.getInt(FastKPeriod);
 
   settings.getData(FastKColor, s);
-  color.setNamedColor(s);
+  QColor kcolor(s);
 
   settings.getData(FastKPlot, s);
-  int lineType = fac.typeFromString(s);
+  int klineType = fac.typeFromString(s);
 
-  STOCHUtils fastk;
-  PlotLine *fk = fastk.fastK(data, period, lineType, color);
-  if (! fk)
-    return 1;
+  int dperiod = settings.getInt(FastDPeriod);
 
-  settings.getData(FastKLabel, s);
-  fk->setLabel(s);
-  ind.addLine(fk);
-  
-  // create the fastd line
-  period = settings.getInt(FastDPeriod);
-    
   MAFactory mau;
   settings.getData(FastDMA, s);
   int maType = mau.typeFromString(s);
-    
+
   settings.getData(FastDColor, s);
-  color.setNamedColor(s);
+  QColor dcolor(s);
 
   settings.getData(FastDPlot, s);
-  lineType = fac.typeFromString(s);
+  int dlineType = fac.typeFromString(s);
 
-  PlotLine *fd = mau.ma(fk, period, maType, lineType, color);
-  if (! fd)
+  QList<PlotLine *> pl;
+  if (getSTOCH(data,
+               kperiod,
+               dperiod,
+               maType,
+               klineType,
+               kcolor,
+               dlineType,
+               dcolor,
+               pl))
     return 1;
+
+  line = pl.at(0);
+  settings.getData(FastKLabel, s);
+  line->setLabel(s);
+  ind.addLine(line);
   
+  line = pl.at(1);
   settings.getData(FastDLabel, s);
-  fd->setLabel(s);
-  ind.addLine(fd);
+  line->setLabel(s);
+  ind.addLine(line);
 
   return 0;
 }
@@ -191,23 +199,92 @@ int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
     return 1;
   }
 
-  STOCHUtils fastk;
-  PlotLine *fk = fastk.fastK(data, fkp, klineType, kcolor);
-  if (! fk)
+  QList<PlotLine *> pl;
+  if (getSTOCH(data,
+               fkp,
+               fdp,
+               ma,
+               klineType,
+               kcolor,
+               dlineType,
+               dcolor,
+               pl))
     return 1;
 
-  PlotLine *fd = mau.ma(fk, fdp, ma, dlineType, dcolor);
-  if (! fd)
+  PlotLine *line = pl.at(0);
+  line->setLabel(set[3]);
+  tlines.insert(set[3], line);
+
+  line = pl.at(1);
+  line->setLabel(set[4]);
+  tlines.insert(set[4], line);
+
+  return 0;
+}
+
+int STOCH::getSTOCH (BarData *data, int kperiod, int dperiod, int ma, int klineType, QColor &kcolor,
+                     int dlineType, QColor &dcolor, QList<PlotLine *> &pl)
+{
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
   {
-    delete fk;
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+  }
+
+  TA_RetCode rc = TA_STOCHF(0,
+                            size - 1,
+                            &high[0],
+                            &low[0],
+                            &close[0],
+                            kperiod,
+                            dperiod,
+                            (TA_MAType) ma,
+                            &outBeg,
+                            &outNb,
+                            &out[0],
+                            &out2[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getSTOCH: TA-Lib error" << rc;
     return 1;
   }
 
-  fk->setLabel(set[3]);
-  fd->setLabel(set[4]);
+  PlotFactory fac;
+  PlotLine *kline = fac.plot(klineType);
+  if (! kline)
+    return 1;
 
-  tlines.insert(set[3], fk);
-  tlines.insert(set[4], fd);
+  PlotLine *dline = fac.plot(dlineType);
+  if (! dline)
+  {
+    delete kline;
+    return 1;
+  }
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    kline->setData(dataLoop, new PlotLineBar(kcolor, out[outLoop]));
+    dline->setData(dataLoop, new PlotLineBar(dcolor, out2[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  pl.append(kline);
+  pl.append(dline);
 
   return 0;
 }

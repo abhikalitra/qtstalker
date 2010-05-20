@@ -20,13 +20,17 @@
  */
 
 #include "ULTOSC.h"
-#include "TR.h"
+#include "ta_libc.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
 
 ULTOSC::ULTOSC ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("ULTOSC::error on TA_Initialize");
+
   indicator = "ULTOSC";
 
   settings.setData(Color, "red");
@@ -168,89 +172,57 @@ int ULTOSC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
 
 PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp, int lineType, QColor &color)
 {
-  if (data->count() <= sp || data->count() <= mp || data->count() <= lp)
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+  }
+
+  TA_RetCode rc = TA_ULTOSC(0,
+                            size - 1,
+                            &high[0],
+                            &low[0],
+                            &close[0],
+                            sp,
+                            mp,
+                            lp,
+                            &outBeg,
+                            &outNb,
+                            &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getULTOSC: TA-Lib error" << rc;
     return 0;
-
-  PlotLine *bp = getBP(data);
-
-  TR ttr;
-  PlotLine *tr = ttr.tr(data, lineType, color);
-
-  QList<int> keys;
-  bp->keys(keys);
+  }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
-  {
-    delete bp;
-    delete tr;
     return 0;
-  }
 
-  int loop = lp - 1;
-  for (; loop < keys.count(); loop++)
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
   {
-    double bpsum1 = 0;
-    double trsum1 = 0;
-    int count = 0;
-    for (; count < sp; count++)
-    {
-      PlotLineBar *bbar = bp->data(keys.at(loop - count));
-      PlotLineBar *tbar = tr->data(keys.at(loop - count));
-      bpsum1 += bbar->data();
-      trsum1 += tbar->data();
-    }
-
-    double bpsum2 = 0;
-    double trsum2 = 0;
-    for (count = 0; count < mp; count++)
-    {
-      PlotLineBar *bbar = bp->data(keys.at(loop - count));
-      PlotLineBar *tbar = tr->data(keys.at(loop - count));
-      bpsum2 += bbar->data();
-      trsum2 += tbar->data();
-    }
-
-    double bpsum3 = 0;
-    double trsum3 = 0;
-    for (count = 0; count < lp; count++)
-    {
-      PlotLineBar *bbar = bp->data(keys.at(loop - count));
-      PlotLineBar *tbar = tr->data(keys.at(loop - count));
-      bpsum3 += bbar->data();
-      trsum3 += tbar->data();
-    }
-
-    double raw = (4 * (bpsum1 / trsum1)) + (2 * (bpsum2 / trsum2)) + (bpsum3 / trsum3);
-    
-    line->setData(keys.at(loop), new PlotLineBar(color, (raw / 7) * 100));
-  }
-
-  delete bp;
-  delete tr;
-  return line;
-}
-
-PlotLine * ULTOSC::getBP (BarData *data)
-{
-  PlotLine *line = new PlotLine;
-  int size = data->count();
-  int loop = 1;
-  for (; loop < size; loop++)
-  {
-    Bar *bar = data->getBar(loop);
-    Bar *pbar = data->getBar(loop - 1);
-    double tl = bar->getLow();
-    if (pbar->getLow() < tl)
-      tl = pbar->getLow();
-    
-    line->setData(loop, new PlotLineBar(bar->getClose() - tl));
+    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
   }
 
   return line;
 }
-  
+
 int ULTOSC::dialog (int)
 {
   int page = 0;

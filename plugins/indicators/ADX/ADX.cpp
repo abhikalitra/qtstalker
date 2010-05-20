@@ -20,15 +20,17 @@
  */
 
 #include "ADX.h"
-#include "Wilder.h"
-#include "TR.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
-
 ADX::ADX ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("ADX::error on TA_Initialize");
+
   indicator = "ADX";
 
   settings.setData(ADXColor, "blue");
@@ -196,207 +198,64 @@ int ADX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * ADX::getLine (BarData *data, int period, int method, int lineType, QColor &color)
 {
-  PlotLine *line = 0;
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+  }
+
+  TA_RetCode rc = TA_SUCCESS;
+  
   switch ((Method) method)
   {
     case MDI:
-      line = getDI(data, period, 0, lineType, color);
+      rc = TA_MINUS_DI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
       break;
     case PDI:
-      line = getDI(data, period, 1, lineType, color);
+      rc = TA_PLUS_DI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
       break;
     case _ADX:
-      line = getADX(data, period, lineType, color);
+      rc = TA_ADX(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
       break;
     case ADXR:
-      line = getADXR(data, period, lineType, color);
+      rc = TA_ADXR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
       break;
     case DX:
-      line = getDX(data, period, lineType, color);
-      break;
-    case MDM:
-      line = getDM(data, 0);
-      break;
-    case PDM:
-      line = getDM(data, 1);
+      rc = TA_DX(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
       break;
     default:
       break;
   }
 
-  return line;
-}
-
-PlotLine * ADX::getADXR (BarData *data, int period, int lineType, QColor &color)
-{
-  PlotLine *adx = getADX(data, period, lineType, color);
-  if (! adx)
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getLine: TA-Lib error" << rc;
     return 0;
+  }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
-  {
-    delete adx;
-    return 0;
-  }
-
-  QList<int> keys;
-  adx->keys(keys);
-  
-  int loop = period;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *bar = adx->data(keys.at(loop));
-    PlotLineBar *pbar = adx->data(keys.at(loop - period));
-    line->setData(keys.at(loop), new PlotLineBar(color, (bar->data() + pbar->data()) / 2));
-  }
-
-  delete adx;
-  return line;
-}
-
-PlotLine * ADX::getADX (BarData *data, int period, int lineType, QColor &color)
-{
-  PlotLine *dx = getDX(data, period, lineType, color);
-  if (! dx)
     return 0;
 
-  Wilder ma;
-  PlotLine *adx = ma.wilder(dx, period, lineType, color);
-  
-  delete dx;
-  return adx;
-}
-
-PlotLine * ADX::getDX (BarData *data, int period, int lineType, QColor &color)
-{
-  PlotLine *pdi = getDI(data, period, 1, lineType, color);
-  if (! pdi)
-    return 0;
-
-  PlotLine *mdi = getDI(data, period, 0, lineType, color);
-  if (! mdi)
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
   {
-    delete pdi;
-    return 0;
-  }
-
-  PlotFactory fac;
-  PlotLine *dx = fac.plot(lineType);
-  if (! dx)
-  {
-    delete pdi;
-    delete mdi;
-    return 0;
-  }
-
-  QList<int> keys;
-  pdi->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *pbar = pdi->data(keys.at(loop));
-    PlotLineBar *mbar = mdi->data(keys.at(loop));
-    
-    double t = fabs(pbar->data() - mbar->data());
-    double t2 = pbar->data() + mbar->data();
-    dx->setData(keys.at(loop), new PlotLineBar(color, (t / t2) * 100));
-  }
-
-  delete pdi;
-  delete mdi;
-  
-  return dx;  
-}
-
-PlotLine * ADX::getDI (BarData *data, int period, int flag, int lineType, QColor &color)
-{
-  PlotLine *dm = getDM(data, flag);
-  if (! dm)
-    return 0;
-  
-  Wilder ma;
-  PlotLine *dmma = ma.wilder(dm, period, lineType, color);
-  if (! dmma)
-  {
-    delete dm;
-    return 0;
-  }
-
-  TR ttr;
-  PlotLine *tr = ttr.tr(data, lineType, color);
-  PlotLine *trma = ma.wilder(tr, period, lineType, color);
-  if (! trma)
-  {
-    delete dm;
-    delete dmma;
-    delete tr;
-    return 0;
-  }
-
-  PlotFactory fac;
-  PlotLine *di = fac.plot(lineType);
-  if (! di)
-  {
-    delete dm;
-    delete dmma;
-    delete tr;
-    delete trma;
-    return 0;
-  }
-
-  QList<int> keys;
-  trma->keys(keys);
-  
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *dmbar = dmma->data(keys.at(loop));
-    if (! dmbar)
-      continue;
-    
-    PlotLineBar *trbar = trma->data(keys.at(loop));
-    
-    double t = dmbar->data() / trbar->data();
-    di->setData(keys.at(loop), new PlotLineBar(color, t * 100));
-  }
-
-  delete dm;
-  delete dmma;
-  delete tr;
-  delete trma;
-  
-  return di;
-}
-
-PlotLine * ADX::getDM (BarData *data, int flag)
-{
-  PlotLine *line = new PlotLine;
-  int loop = 1;
-  QColor color("red");
-  for (; loop < data->count(); loop++)
-  {
-    double pdm = 0;
-    double mdm = 0;
-    
-    Bar *pbar = data->getBar(loop - 1);
-    Bar *bar = data->getBar(loop);
-
-    double pd = bar->getHigh() - pbar->getHigh();
-    double md = pbar->getLow() - bar->getLow();
-
-    if ((pd > 0) && (pd > md))
-      pdm = pd;
-    else if ((md > 0) && (md > pd))
-        mdm = md;
-
-    if (flag)
-      line->setData(loop, new PlotLineBar(color, pdm));
-    else
-      line->setData(loop, new PlotLineBar(color, mdm));
+    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
   }
 
   return line;

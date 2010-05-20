@@ -41,7 +41,6 @@ class T3 : public IndicatorPlugin
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getT3 (PlotLine *in, int period, double vfactor, int, QColor &);
-    PlotLine * getGD (PlotLine *in, int period, double vfactor, int, QColor &);
     int dialog (int);
 
   protected:

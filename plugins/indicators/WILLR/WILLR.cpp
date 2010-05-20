@@ -21,11 +21,16 @@
 
 #include "WILLR.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 WILLR::WILLR ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("WILLR::error on TA_Initialize");
+
   indicator = "WILLR";
 
   settings.setData(Color, "red");
@@ -111,36 +116,52 @@ int WILLR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
 
 PlotLine * WILLR::getWILLR (BarData *data, int period, int lineType, QColor &color)
 {
-  if (data->count() < period)
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+  }
+
+  TA_RetCode rc = TA_WILLR(0,
+                           size - 1,
+                           &high[0],
+                           &low[0],
+                           &close[0],
+                           period,
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getWILLR: TA-Lib error" << rc;
     return 0;
-  
+  }
+
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
 
-  int size = data->count();
-  int loop = period - 1;
-  for (; loop < size; loop++)
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
   {
-    int count = 0;
-    double high = -99999999;
-    double low = 99999999;
-    for (; count < period; count++)
-    {
-      Bar *bar = data->getBar(loop - count);
-      if (bar->getHigh() > high)
-	high = bar->getHigh();
-      if (bar->getLow() < low)
-	low = bar->getLow();
-    }
-    
-    Bar *bar = data->getBar(loop);
-    double r = ((high - bar->getClose()) / (high - low)) * -100;
-
-    line->setData(loop, new PlotLineBar(color, r));
+    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
   }
-  
+
   return line;
 }
 

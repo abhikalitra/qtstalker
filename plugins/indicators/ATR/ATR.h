@@ -49,7 +49,6 @@ class ATR : public IndicatorPlugin
     int dialog (int);
 
   protected:
-    QString methodKey;
     QStringList methodList;
 };
 

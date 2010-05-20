@@ -20,7 +20,7 @@
  */
 
 #include "T3.h"
-#include "EMA.h"
+#include "ta_libc.h"
 #include "BARSUtils.h"
 #include "PlotFactory.h"
 
@@ -28,6 +28,10 @@
 
 T3::T3 ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("T3::error on TA_Initialize");
+
   indicator = "T3";
 
   settings.setData(Color, "red");
@@ -157,75 +161,48 @@ int T3::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
 PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor, int lineType, QColor &color)
 {
-  if (in->count() < period)
-    return 0;
-
-  PlotLine *gd1 = getGD(in, period, vfactor, lineType, color);
-  if (! gd1)
-    return 0;
-
-  PlotLine *gd2 = getGD(gd1, period, vfactor, lineType, color);
-  if (! gd2)
-  {
-    delete gd1;
-    return 0;
-  }
-
-  PlotLine *gd3 = getGD(gd2, period, vfactor, lineType, color);
-  if (! gd3)
-  {
-    delete gd1;
-    delete gd2;
-    return 0;
-  }
-
-  delete gd1;
-  delete gd2;
-  
-  return gd3;  
-}
-
-PlotLine * T3::getGD (PlotLine *in, int period, double vfactor, int lineType, QColor &color)
-{
-  if (in->count() < period)
-    return 0;
-
-  EMA ma;
-  PlotLine *ema = ma.ema(in, period, lineType, color);
-  if (! ema)
-    return 0;
-
-  PlotLine *ema2 = ma.ema(ema, period, lineType, color);
-  if (! ema2)
-  {
-    delete ema;
-    return 0;
-  }
-
   QList<int> keys;
-  ema2->keys(keys);
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_T3(0,
+                        size - 1,
+                        &input[0],
+                        period,
+                        vfactor,
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getT3: TA-Lib error" << rc;
+    return 0;
+  }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
-  {
-    delete ema;
-    delete ema2;
     return 0;
-  }
 
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    PlotLineBar *bar = ema->data(keys.at(loop));
-    if (! bar)
-      continue;
-    
-    PlotLineBar *bar2 = ema2->data(keys.at(loop));
-    
-    double gd = (bar->data() * (1 + vfactor)) - (bar2->data() * vfactor);
-    
-    line->setData(keys.at(loop), new PlotLineBar(color, gd));
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
 
   return line;

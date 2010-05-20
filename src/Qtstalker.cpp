@@ -691,7 +691,6 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(Bar::BarLength)), plot, SLOT(setInterval(Bar::BarLength)));
   connect(this, SIGNAL(signalClearIndicator()), plot, SLOT(clear()));
-//  connect (_plotSlider, SIGNAL(signalValueChanged(int)), plot, SLOT(sliderChanged(int)));
   connect(this, SIGNAL(signalGrid(bool)), plot, SLOT(gridChanged(bool)));
   connect(this, SIGNAL(signalNewExternalChartObject(QString)), plot, SLOT(newExternalChartObject(QString)));
   connect(plot, SIGNAL(signalNewExternalChartObjectDone()), this, SIGNAL(signalSetExternalChartObject()));
@@ -828,7 +827,7 @@ void QtstalkerApp::setSliderStart (int count)
 void QtstalkerApp::psButtonClicked (int pixelSpace)
 {
   emit signalPixelspace(pixelSpace);
-  emit signalIndex(_plotSlider->getValue());
+//  emit signalIndex(_plotSlider->getValue());
   drawPlots();
 }
 

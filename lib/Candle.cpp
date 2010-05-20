@@ -20,7 +20,7 @@
  */
 
 #include "Candle.h"
-#include "Utils.h"
+#include "Strip.h"
 
 #include <QPainter>
 
@@ -81,20 +81,20 @@ void Candle::info (int i, Setting *set)
   QString k = "O";
   QString d;
 
-  Utils util;
-  util.strip(bar->data(0), 4, d);
+  Strip strip;
+  strip.strip(bar->data(0), 4, d);
   set->setData(k, d);
 
   k = "H";
-  util.strip(bar->data(1), 4, d);
+  strip.strip(bar->data(1), 4, d);
   set->setData(k, d);
 
   k = "L";
-  util.strip(bar->data(2), 4, d);
+  strip.strip(bar->data(2), 4, d);
   set->setData(k, d);
 
   k = "C";
-  util.strip(bar->data(3), 4, d);
+  strip.strip(bar->data(3), 4, d);
   set->setData(k, d);
 }
 

@@ -20,7 +20,7 @@
  */
 
 #include "HistogramBar.h"
-#include "Utils.h"
+#include "Strip.h"
 
 #include <QPainter>
 
@@ -59,8 +59,8 @@ void HistogramBar::info (int i, Setting *set)
     return;
 
   QString d;
-  Utils util;
-  util.strip(bar->data(), 4, d);
+  Strip strip;
+  strip.strip(bar->data(), 4, d);
   set->setData(_label, d);
 }
 

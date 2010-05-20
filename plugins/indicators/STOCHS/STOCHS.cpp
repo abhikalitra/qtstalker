@@ -21,13 +21,17 @@
 
 #include "STOCHS.h"
 #include "MAFactory.h"
-#include "STOCHUtils.h"
+#include "ta_libc.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
 
 STOCHS::STOCHS ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("STOCHS::error on TA_Initialize");
+
   indicator = "STOCHS";
 
   settings.setData(SlowKColor, "red");
@@ -74,68 +78,54 @@ int STOCHS::getIndicator (Indicator &ind, BarData *data)
   line->setData(0, new PlotLineBar(color, (double) settings.getInt(Ref2)));
   ind.addLine(line);
 
-  // create the fastk line
-  int period = settings.getInt(FastKPeriod);
+  int fkperiod = settings.getInt(FastKPeriod);
 
   settings.getData(SlowKColor, s);
-  color.setNamedColor(s);
+  QColor kcolor(s);
 
   settings.getData(SlowKPlot, s);
-  int lineType = fac.typeFromString(s);
+  int klineType = fac.typeFromString(s);
 
-  STOCHUtils fastk;
-  PlotLine *fk = fastk.fastK(data, period, lineType, color);
-  if (! fk)
-    return 1;
-
-  // create the slowk line
-  period = settings.getInt(SlowKPeriod);
+  int skperiod = settings.getInt(SlowKPeriod);
 
   MAFactory mau;
   settings.getData(SlowKMA, s);
-  int maType = mau.typeFromString(s);
+  int kmaType = mau.typeFromString(s);
 
-  settings.getData(SlowKColor, s);
-  color.setNamedColor(s);
-
-  settings.getData(SlowKPlot, s);
-  lineType = fac.typeFromString(s);
-
-  PlotLine *sk = mau.ma(fk, period, maType, lineType, color);
-  if (!sk)
-  {
-    delete fk;
-    return 1;
-  }
-  
-  settings.getData(SlowKLabel, s);
-  sk->setLabel(s);
-  ind.addLine(sk);
-
-  // create the slowd line
-  period = settings.getInt(SlowDPeriod);
+  int dperiod = settings.getInt(SlowDPeriod);
 
   settings.getData(SlowDMA, s);
-  maType = mau.typeFromString(s);
+  int dmaType = mau.typeFromString(s);
 
   settings.getData(SlowDColor, s);
-  color.setNamedColor(s);
+  QColor dcolor(s);
 
   settings.getData(SlowDPlot, s);
-  lineType = fac.typeFromString(s);
+  int dlineType = fac.typeFromString(s);
 
-  PlotLine *sd = mau.ma(sk, period, maType, lineType, color);
-  if (!sd)
-  {
-    delete fk;
+  QList<PlotLine *> pl;
+  if (getSTOCHS(data,
+                fkperiod,
+                skperiod,
+                dperiod,
+                kmaType,
+                dmaType,
+                klineType,
+                kcolor,
+                dlineType,
+                dcolor,
+                pl))
     return 1;
-  }
 
+  line = pl.at(0);
+  settings.getData(SlowKLabel, s);
+  line->setLabel(s);
+  ind.addLine(line);
+
+  line = pl.at(1);
   settings.getData(SlowDLabel, s);
-  sd->setLabel(s);
-  ind.addLine(sd);
-
-  delete fk;
+  line->setLabel(s);
+  ind.addLine(line);
 
   return 0;
 }
@@ -231,33 +221,96 @@ int STOCHS::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
     return 1;
   }
 
-  STOCHUtils fastk;
-  PlotLine *fk = fastk.fastK(data, fkp, klineType, kcolor);
-  if (! fk)
+  QList<PlotLine *> pl;
+  if (getSTOCHS(data,
+                fkp,
+                skp,
+                sdp,
+                kma,
+                dma,
+                klineType,
+                kcolor,
+                dlineType,
+                dcolor,
+                pl))
     return 1;
 
-  PlotLine *sk = mau.ma(fk, skp, kma, klineType, kcolor);
-  if (! sk)
+  PlotLine *line = pl.at(0);
+  line->setLabel(set[3]);
+  tlines.insert(set[3], line);
+
+  line = pl.at(1);
+  line->setLabel(set[4]);
+  tlines.insert(set[4], line);
+
+  return 0;
+}
+
+int STOCHS::getSTOCHS (BarData *data, int fkperiod, int skperiod, int sdperiod, int kma, int dma,
+                       int klineType, QColor &kcolor, int dlineType, QColor &dcolor, QList<PlotLine *> &pl)
+{
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
   {
-    delete fk;
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+  }
+
+  TA_RetCode rc = TA_STOCH(0,
+                           size - 1,
+                           &high[0],
+                           &low[0],
+                           &close[0],
+                           fkperiod,
+                           skperiod,
+                           (TA_MAType) kma,
+                           sdperiod,
+                           (TA_MAType) dma,
+                           &outBeg,
+                           &outNb,
+                           &out[0],
+                           &out2[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getSTOCHS: TA-Lib error" << rc;
     return 1;
   }
 
-  PlotLine *sd = mau.ma(sk, sdp, dma, dlineType, dcolor);
-  if (! sd)
+  PlotFactory fac;
+  PlotLine *kline = fac.plot(klineType);
+  if (! kline)
+    return 1;
+
+  PlotLine *dline = fac.plot(dlineType);
+  if (! dline)
   {
-    delete fk;
-    delete sk;
+    delete kline;
     return 1;
   }
 
-  sk->setLabel(set[3]);
-  sd->setLabel(set[4]);
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    kline->setData(dataLoop, new PlotLineBar(kcolor, out[outLoop]));
+    dline->setData(dataLoop, new PlotLineBar(dcolor, out2[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
 
-  tlines.insert(set[3], sk);
-  tlines.insert(set[4], sd);
-
-  delete fk;
+  pl.append(kline);
+  pl.append(dline);
 
   return 0;
 }

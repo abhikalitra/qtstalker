@@ -20,51 +20,65 @@
  */
 
 #include "TRIMA.h"
-#include "SMA.h"
 #include "PlotFactory.h"
 #include "PlotLineBar.h"
+#include "ta_libc.h"
 
 #include <QList>
 #include <QtDebug>
 
 TRIMA::TRIMA ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TRIMA::error on TA_Initialize");
 }
 
 PlotLine * TRIMA::trima (PlotLine *in, int period, int lineType, QColor &color)
 {
-  if (in->count() < period)
-    return 0;
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
 
-  int period1 = 0;
-  int period2 = 0;
-  if (period % 2 == 0)
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
   {
-    // even period
-    period1 = period / 2;
-    period2 = period1;
-    period2++;
-  }
-  else
-  {
-    // ood
-    period1 = (period / 2) + 1;
-    period2 = period1;
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
   }
 
-  SMA sma;
-  PlotLine *sma1 = sma.sma(in, period1, lineType, color);
-  if (! sma1)
-    return 0;
-
-  PlotLine *sma2 = sma.sma(sma1, period2, lineType, color);
-  if (! sma2)
+  TA_RetCode rc = TA_TRIMA(0,
+                           size - 1,
+                           &input[0],
+                           period,
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
+  if (rc != TA_SUCCESS)
   {
-    delete sma1;
+    qDebug() << "TRIMA::trima: TA-Lib error" << rc;
     return 0;
   }
 
-  delete sma1;
-  return sma2;
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  return line;
 }
 

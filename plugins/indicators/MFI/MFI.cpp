@@ -22,11 +22,16 @@
 #include "MFI.h"
 #include "MAFactory.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 MFI::MFI ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MFI::error on TA_Initialize");
+
   indicator = "MFI";
 
   settings.setData(Color, "red");
@@ -162,38 +167,53 @@ int MFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * MFI::getMFI (BarData *data, int period, int smoothing, int type, int lineType, QColor &color)
 {
-  if (data->count() < period)
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real volume[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+    volume[loop] = (TA_Real) bar->getVolume();
+  }
+
+  TA_RetCode rc = TA_MFI(0,
+                         size - 1,
+                         &high[0],
+                         &low[0],
+                         &close[0],
+                         &volume[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getMFI: TA-Lib error" << rc;
     return 0;
+  }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
 
-  int size = data->count();
-  int loop = period;
-  for (; loop < size; loop++)
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
   {
-    double up = 0;
-    double down = 0;
-    int count = 0;
-    for (; count < period; count++)
-    {
-      Bar *bar = data->getBar(loop - count);
-      Bar *pbar = data->getBar(loop - count - 1);
-      double tp = (bar->getHigh() + bar->getLow() + bar->getClose()) / 3;
-      double ptp = (pbar->getHigh() + pbar->getLow() + pbar->getClose()) / 3;
-      if (tp > ptp)
-	up += tp * bar->getVolume();
-      else
-      {
-        if (tp < ptp)
-	  down += tp * bar->getVolume();
-      }
-    }
-
-    double mr = up / down;
-    line->setData(loop, new PlotLineBar(color, 100 - (100 / (1 + mr))));
+    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
   }
 
   if (smoothing > 1)

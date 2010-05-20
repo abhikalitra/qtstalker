@@ -20,71 +20,64 @@
  */
 
 #include "TEMA.h"
-#include "EMA.h"
 #include "PlotFactory.h"
 #include "PlotLineBar.h"
+#include "ta_libc.h"
 
 #include <QList>
 #include <QtDebug>
 
 TEMA::TEMA ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TEMA::error on TA_Initialize");
 }
 
 PlotLine * TEMA::tema (PlotLine *in, int period, int lineType, QColor &color)
 {
-  EMA ema;
-  PlotLine *ema1 = ema.ema(in, period, lineType, color);
-  if (! ema1)
-    return 0;
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
 
-  PlotLine *ema2 = ema.ema(ema1, period, lineType, color);
-  if (! ema2)
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
   {
-    delete ema1;
-    return 0;
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
   }
 
-  PlotLine *ema3 = ema.ema(ema2, period, lineType, color);
-  if (! ema3)
+  TA_RetCode rc = TA_TEMA(0,
+                          size - 1,
+                          &input[0],
+                          period,
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
+  if (rc != TA_SUCCESS)
   {
-    delete ema1;
-    delete ema2;
+    qDebug() << "TEMA::tema: TA-Lib error" << rc;
     return 0;
   }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
-  {
-    delete ema1;
-    delete ema2;
-    delete ema3;
     return 0;
-  }
 
-  QList<int> keys;
-  ema3->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    PlotLineBar *bar = ema1->data(keys.at(loop));
-    if (! bar)
-      continue;
-
-    PlotLineBar *bar2 = ema2->data(keys.at(loop));
-    if (! bar2)
-      continue;
-
-    PlotLineBar *bar3 = ema3->data(keys.at(loop));
-
-    line->setData(keys.at(loop), new PlotLineBar(color, (bar->data() * 3) - (bar2->data() * 3) + bar3->data()));
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
-
-  delete ema1;
-  delete ema2;
-  delete ema3;
 
   return line;
 }

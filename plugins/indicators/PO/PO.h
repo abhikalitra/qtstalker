@@ -50,8 +50,6 @@ class PO : public IndicatorPlugin
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int dialog (int);
     PlotLine * getPO (PlotLine *in, int fast, int slow, int ma, int method, int, QColor &);
-    PlotLine * getAPO (PlotLine *in, int fast, int slow, int ma, int, QColor &);
-    PlotLine * getPPO (PlotLine *in, int fast, int slow, int ma, int, QColor &);
 
   private:
     QStringList methodList;

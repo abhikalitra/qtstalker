@@ -22,33 +22,61 @@
 #include "SMA.h"
 #include "PlotFactory.h"
 #include "PlotLineBar.h"
-#include "Accumulation.h"
+#include "ta_libc.h"
 
 #include <QList>
 #include <QtDebug>
 
 SMA::SMA ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("SMA::error on TA_Initialize");
 }
 
 PlotLine * SMA::sma (PlotLine *in, int period, int lineType, QColor &color)
 {
-  if (in->count() < period)
-    return 0;
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
 
-  Accumulation accum;
-  PlotLine *line = accum.accumulation(in, period, lineType, color);
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_SMA(0,
+                         size - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "SMA::sma: TA-Lib error" << rc;
+    return 0;
+  }
+
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
 
-  QList<int> keys;
-  line->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    PlotLineBar *bar = line->data(keys.at(loop));
-    bar->setData(bar->data() / period);
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
 
   return line;

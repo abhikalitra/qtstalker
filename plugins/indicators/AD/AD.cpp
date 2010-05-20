@@ -20,13 +20,17 @@
  */
 
 #include "AD.h"
-#include "EMA.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 AD::AD ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("AD::error on TA_Initialize");
+
   indicator = "AD";
 
   settings.setData(Method, QString("AD"));
@@ -219,19 +223,52 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
 
 PlotLine * AD::getAD (BarData *data, int lineType, QColor &color)
 {
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real volume[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+    volume[loop] = (TA_Real) bar->getVolume();
+  }
+
+  TA_RetCode rc = TA_AD(0,
+                        size - 1,
+                        &high[0],
+                        &low[0],
+                        &close[0],
+                        &volume[0],
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getAD: TA-Lib error" << rc;
+    return 0;
+  }
+
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
-  
-  int size = data->count();
-  int loop = 0;
-  double ad = 0;
-  for (; loop < size; loop++)
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
   {
-    Bar *bar = data->getBar(loop);
-    ad += (((bar->getClose() - bar->getLow()) - (bar->getHigh() - bar->getClose())) / (bar->getHigh() - bar->getLow())) * (bar->getVolume());
-    line->setData(loop, new PlotLineBar(color, ad));
+    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
   }
 
   return line;
@@ -239,55 +276,56 @@ PlotLine * AD::getAD (BarData *data, int lineType, QColor &color)
 
 PlotLine * AD::getADOSC (BarData *data, int fast, int slow, int lineType, QColor &color)
 {
-  PlotLine *ad = getAD(data, lineType, color);
-  if (! ad)
-    return 0;
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real volume[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
-  EMA ema;
-  PlotLine *fma = ema.ema(ad, fast, lineType, color);
-  if (! fma)
+  int loop = 0;
+  for (; loop < size; loop++)
   {
-    delete ad;
-    return 0;
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+    volume[loop] = (TA_Real) bar->getVolume();
   }
 
-  PlotLine *sma = ema.ema(ad, slow, lineType, color);
-  if (! sma)
+  TA_RetCode rc = TA_ADOSC(0,
+                           size - 1,
+                           &high[0],
+                           &low[0],
+                           &close[0],
+                           &volume[0],
+                           fast,
+                           slow,
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
+  if (rc != TA_SUCCESS)
   {
-    delete ad;
-    delete fma;
+    qDebug() << indicator << "::getADOSC: TA-Lib error" << rc;
     return 0;
   }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
-  {
-    delete ad;
-    delete fma;
-    delete sma;
     return 0;
-  }
 
-  QList<int> keys;
-  sma->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
   {
-    PlotLineBar *fbar = fma->data(keys.at(loop));
-    if (! fbar)
-      continue;
-    
-    PlotLineBar *sbar = sma->data(keys.at(loop));
-
-    line->setData(keys.at(loop), new PlotLineBar(color, fbar->data() - sbar->data()));
+    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
   }
 
-  delete ad;
-  delete fma;
-  delete sma;
-  
   return line;
 }
 

@@ -35,7 +35,6 @@ HEADERS += SymbolDialog.h
 HEADERS += DateBar.h
 HEADERS += PlotGrid.h
 HEADERS += PlotInfo.h
-HEADERS += Utils.h
 HEADERS += DBPlugin.h
 HEADERS += SCQuote.h
 HEADERS += GroupDataBase.h
@@ -69,13 +68,6 @@ HEADERS += SCSymbol.h
 HEADERS += MAFactory.h
 HEADERS += BARSUtils.h
 HEADERS += NORMALIZE.h
-HEADERS += STDDEV.h
-HEADERS += TR.h
-HEADERS += MIN.h
-HEADERS += MAX.h
-HEADERS += RSIUtils.h
-HEADERS += STOCHUtils.h
-HEADERS += Accumulation.h
 HEADERS += EMA.h
 HEADERS += DEMA.h
 HEADERS += KAMA.h
@@ -84,6 +76,7 @@ HEADERS += TEMA.h
 HEADERS += TRIMA.h
 HEADERS += Wilder.h
 HEADERS += WMA.h
+HEADERS += Strip.h
 
 
 SOURCES += Setting.cpp
@@ -116,7 +109,6 @@ SOURCES += SymbolDialog.cpp
 SOURCES += DateBar.cpp
 SOURCES += PlotGrid.cpp
 SOURCES += PlotInfo.cpp
-SOURCES += Utils.cpp
 SOURCES += DBPlugin.cpp
 SOURCES += SCQuote.cpp
 SOURCES += GroupDataBase.cpp
@@ -149,13 +141,6 @@ SOURCES += SCSymbol.cpp
 SOURCES += MAFactory.cpp
 SOURCES += BARSUtils.cpp
 SOURCES += NORMALIZE.cpp
-SOURCES += STDDEV.cpp
-SOURCES += TR.cpp
-SOURCES += MIN.cpp
-SOURCES += MAX.cpp
-SOURCES += RSIUtils.cpp
-SOURCES += STOCHUtils.cpp
-SOURCES += Accumulation.cpp
 SOURCES += EMA.cpp
 SOURCES += DEMA.cpp
 SOURCES += KAMA.cpp
@@ -164,6 +149,7 @@ SOURCES += TEMA.cpp
 SOURCES += TRIMA.cpp
 SOURCES += Wilder.cpp
 SOURCES += WMA.cpp
+SOURCES += Strip.cpp
 
 
 
@@ -179,14 +165,14 @@ unix {
   }
 }
 
-#TA_LIB_VERSION = $$system(ta-lib-config --version)
-#contains(TA_LIB_VERSION, 0.3.0) {
-#    LIBS += -lta_abstract
-#    LIBS += -lta_common
-#    LIBS += -lta_func
-#  } else {
-#    LIBS += -lta_lib
-#  }
+TA_LIB_VERSION = $$system(ta-lib-config --version)
+contains(TA_LIB_VERSION, 0.3.0) {
+    LIBS += -lta_abstract
+    LIBS += -lta_common
+    LIBS += -lta_func
+  } else {
+    LIBS += -lta_lib
+  }
 
 #unix:linux-g++:LIBS += -ldl
 

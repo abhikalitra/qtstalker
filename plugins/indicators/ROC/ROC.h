@@ -52,10 +52,6 @@ class ROC : public IndicatorPlugin
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int dialog (int);
     PlotLine * getROC (PlotLine *in, int period, int method, int smoothing, int type, int, QColor &);
-    PlotLine * getROCN (PlotLine *in, int period, int, QColor &);
-    PlotLine * getROCP (PlotLine *in, int period, int, QColor &);
-    PlotLine * getROCR (PlotLine *in, int period, int, QColor &);
-    PlotLine * getROCR100 (PlotLine *in, int period, int, QColor &);
 
   protected:
     QStringList methodList;

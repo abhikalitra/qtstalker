@@ -22,11 +22,16 @@
 #include "ROC.h"
 #include "MAFactory.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 ROC::ROC ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("ROC::error on TA_Initialize");
+
   indicator = "ROC";
 
   settings.setData(Color, "red");
@@ -174,31 +179,62 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int type, int lineType, QColor &color)
 {
-  if (in->count() < period)
-    return 0;
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
 
-  PlotLine *line = 0;
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_SUCCESS;
+
   switch ((_Method) method)
   {
     case ROCN:
-      line = getROCN(in, period, lineType, color);
+      rc = TA_ROC(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     case ROCP:
-      line = getROCP(in, period, lineType, color);
+      rc = TA_ROCP(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     case ROCR:
-      line = getROCR(in, period, lineType, color);
+      rc = TA_ROCR(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     case ROCR100:
-      line = getROCR100(in, period, lineType, color);
+      rc = TA_ROCR100(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
     default:
       break;
   }
 
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getROC: TA-Lib error" << rc;
+    return 0;
+  }
+
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
-  
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
   if (smoothing > 1)
   {
     MAFactory mau;
@@ -207,90 +243,6 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int
     line = ma;
   }
 
-  return line;
-}
-
-PlotLine * ROC::getROCN (PlotLine *in, int period, int lineType, QColor &color)
-{
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = period;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    PlotLineBar *pbar = in->data(keys.at(loop - period));
-    line->setData(keys.at(loop), new PlotLineBar(color, ((bar->data() / pbar->data()) -1) * 100));
-  }
-  
-  return line;
-}
-
-PlotLine * ROC::getROCP (PlotLine *in, int period, int lineType, QColor &color)
-{
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = period;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    PlotLineBar *pbar = in->data(keys.at(loop - period));
-    line->setData(keys.at(loop), new PlotLineBar(color, (bar->data() - pbar->data()) / pbar->data()));
-  }
-  
-  return line;
-}
-
-PlotLine * ROC::getROCR (PlotLine *in, int period, int lineType, QColor &color)
-{
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = period;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    PlotLineBar *pbar = in->data(keys.at(loop - period));
-    line->setData(keys.at(loop), new PlotLineBar(color, bar->data() / pbar->data()));
-  }
-  
-  return line;
-}
-
-PlotLine * ROC::getROCR100 (PlotLine *in, int period, int lineType, QColor &color)
-{
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = period;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    PlotLineBar *pbar = in->data(keys.at(loop - period));
-    line->setData(keys.at(loop), new PlotLineBar(color, (bar->data() / pbar->data()) * 100));
-  }
-  
   return line;
 }
 

@@ -21,11 +21,16 @@
 
 #include "VAR.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 VAR::VAR ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("VAR::error on TA_Initialize");
+
   indicator = "VAR";
 
   settings.setData(Color, "red");
@@ -138,38 +143,48 @@ int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * VAR::getVAR (PlotLine *in, int period, int lineType, QColor &color)
 {
-  if (in->count() < period)
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_VAR(0,
+                         size - 1,
+                         &input[0],
+                         period,
+                         0,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getVAR: TA-Lib error" << rc;
     return 0;
+  }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
 
-  QList<int> keys;
-  in->keys(keys);
-  
-  int loop = period;
-  for (; loop < keys.count(); loop++)
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    double mean = 0;
-    int count = 0;
-    for (; count < period; count++)
-    {
-      PlotLineBar *bar = in->data(keys.at(loop - count));
-      mean += bar->data();
-    }
-    mean = mean / period;
-
-    double total = 0;
-    for (count = 0; count < period; count++)
-    {
-      PlotLineBar *bar = in->data(keys.at(loop - count));
-      double t = bar->data() - mean;
-      total += t * t;
-    }
-
-    line->setData(keys.at(loop), new PlotLineBar(color, total / (double) period));
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
 
   return line;

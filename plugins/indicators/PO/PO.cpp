@@ -22,11 +22,16 @@
 #include "PO.h"
 #include "MAFactory.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 PO::PO ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("PO::error on TA_Initialize");
+
   indicator = "PO";
 
   methodList << "APO" << "PPO";
@@ -174,110 +179,55 @@ int PO::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
 PlotLine * PO::getPO (PlotLine *in, int fast, int slow, int ma, int method, int lineType, QColor &color)
 {
-  if (in->count() < fast || in->count() < slow)
-    return 0;
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
 
-  PlotLine *line = 0;
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_SUCCESS;
 
   switch ((_Method) method)
   {
     case APO:
-      line = getAPO(in, fast, slow, ma, lineType, color);
+      rc = TA_APO(0, size - 1, &input[0], fast, slow, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
       break;
     case PPO:
-      line = getPPO(in, fast, slow, ma, lineType, color);
+      rc = TA_PPO(0, size - 1, &input[0], fast, slow, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
       break;
     default:
       break;
   }
-      
-  return line;
-}
 
-PlotLine * PO::getAPO (PlotLine *in, int fast, int slow, int ma, int lineType, QColor &color)
-{
-  MAFactory mau;
-  PlotLine *fma = mau.ma(in, fast, ma, lineType, color);
-  if (! fma)
-    return 0;
-
-  PlotLine *sma = mau.ma(in, slow, ma, lineType, color);
-  if (! sma)
+  if (rc != TA_SUCCESS)
   {
-    delete fma;
+    qDebug() << indicator << "::getPO: TA-Lib error" << rc;
     return 0;
   }
-
-  QList<int> keys;
-  sma->keys(keys);
-  
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-  {
-    delete fma;
-    delete sma;
-    return 0;
-  }
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *fbar = fma->data(keys.at(loop));
-    if (! fbar)
-      continue;
-    
-    PlotLineBar *sbar = sma->data(keys.at(loop));
-    
-    line->setData(keys.at(loop), new PlotLineBar(color, fbar->data() - sbar->data()));
-  }
-
-  delete fma;
-  delete sma;
-
-  return line;
-}
-
-PlotLine * PO::getPPO (PlotLine *in, int fast, int slow, int ma, int lineType, QColor &color)
-{
-  MAFactory mau;
-  PlotLine *fma = mau.ma(in, fast, ma, lineType, color);
-  if (! fma)
-    return 0;
-
-  PlotLine *sma = mau.ma(in, slow, ma, lineType, color);
-  if (! sma)
-  {
-    delete fma;
-    return 0;
-  }
-
-  QList<int> keys;
-  sma->keys(keys);
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
-  {
-    delete fma;
-    delete sma;
     return 0;
-  }
 
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    PlotLineBar *fbar = fma->data(keys.at(loop));
-    if (! fbar)
-      continue;
-
-    PlotLineBar *sbar = sma->data(keys.at(loop));
-
-    line->setData(keys.at(loop), new PlotLineBar(((fbar->data() - sbar->data()) / sbar->data()) * 100));
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
-
-  delete fma;
-  delete sma;
 
   return line;
 }

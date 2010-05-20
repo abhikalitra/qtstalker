@@ -44,7 +44,6 @@ class ULTOSC : public IndicatorPlugin
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     PlotLine * getULTOSC (BarData *data, int sp, int mp, int lp, int, QColor &);
-    PlotLine * getBP (BarData *data);
     int dialog (int);
 
   protected:

@@ -19,18 +19,16 @@
  *  USA.
  */
 
-#ifndef ACCUMULATION_HPP
-#define ACCUMULATION_HPP
+#ifndef STRIP_HPP
+#define STRIP_HPP
 
-#include <QColor>
+#include <QString>
 
-#include "PlotLine.h"
-
-class Accumulation
+class Strip
 {
   public:
-    Accumulation ();
-    PlotLine * accumulation (PlotLine *, int, int, QColor &);
+    Strip ();
+    void strip (double, int, QString &);
 };
 
 #endif

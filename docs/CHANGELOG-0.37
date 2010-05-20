@@ -455,3 +455,5 @@
 
            Completed CUS_examples script conversions.
 
+20100519:  Fixed bug #3001407 (data value display below 0.01 are zero).
+

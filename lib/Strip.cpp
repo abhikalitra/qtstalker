@@ -19,20 +19,42 @@
  *  USA.
  */
 
-#ifndef TR_HPP
-#define TR_HPP
+#include "Strip.h"
 
-#include <QColor>
+#include <QtDebug>
 
-#include "BarData.h"
-#include "PlotLine.h"
-
-class TR
+Strip::Strip ()
 {
-  public:
-    TR ();
-    PlotLine * tr (BarData *data, int, QColor &);
-    PlotLine * ntr (BarData *data, int, QColor &);
-};
+}
 
-#endif
+void Strip::strip (double d, int p, QString &s)
+{
+  QString ts = QString::number(d, 'f', 4);
+  while (ts.endsWith("0"))
+    ts.chop(1);
+  while (ts.endsWith("."))
+    ts.chop(1);
+  s = ts;
+  
+/*
+  int y = d;
+  int z = (d - y) * 100;
+  if (z == 0)
+  {
+    // no decimal
+    s = QString::number(d, 'f', 0);
+    return;
+  }
+
+  if (fabs(d) < 1)
+    s = QString::number(d, 'f', p);
+  else
+  {
+    if (fabs(d) > 1000)
+      s = QString::number(d, 'f', 0);
+    else
+      s = QString::number(d, 'f', 2);
+  }
+*/
+}
+

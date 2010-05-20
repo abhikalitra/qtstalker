@@ -22,11 +22,16 @@
 #include "MACD.h"
 #include "MAFactory.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 MACD::MACD ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MACD::error on TA_Initialize");
+
   indicator = "MACD";
 
   settings.setData(MACDColor, "red");
@@ -74,59 +79,61 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
 
   // macd line
   settings.getData(MACDColor, s);
-  QColor color(s);
+  QColor macdColor(s);
 
   PlotFactory fac;
   settings.getData(MACDPlot, s);
-  int lineType = fac.typeFromString(s);
+  int macdPlot = fac.typeFromString(s);
 
-  PlotLine *macd = getMACD(in, fast, fastma, slow, slowma, lineType, color);
-  if (! macd)
-  {
-    delete in;
-    return 1;
-  }
-
-  settings.getData(MACDLabel, s);
-  macd->setLabel(s);
-
-  // signal line
   settings.getData(SignalColor, s);
-  color.setNamedColor(s);
+  QColor signalColor(s);
 
   settings.getData(SignalPlot, s);
-  lineType = fac.typeFromString(s);
+  int signalPlot = fac.typeFromString(s);
 
-  PlotLine *sigma = getSignal(macd, signal, signalma, lineType, color);
-  if (! sigma)
-  {
-    delete in;
-    return 1;
-  }
-
-  settings.getData(SignalLabel, s);
-  sigma->setLabel(s);
-
-  // hist line
   settings.getData(HistColor, s);
-  color.setNamedColor(s);
+  QColor histColor(s);
 
   settings.getData(HistPlot, s);
-  lineType = fac.typeFromString(s);
+  int histPlot = fac.typeFromString(s);
 
-  PlotLine *hist = getHistogram(macd, sigma, lineType, color);
-  if (! hist)
+  QList<PlotLine *> pl;
+  if (getMACD(in,
+              fast,
+              fastma,
+              slow,
+              slowma,
+              signal,
+              signalma,
+              macdPlot,
+              macdColor,
+              signalPlot,
+              signalColor,
+              histPlot,
+              histColor,
+              pl))
   {
     delete in;
     return 1;
   }
 
+  // plot hist 
+  PlotLine *line = pl.at(2);
   settings.getData(HistLabel, s);
-  hist->setLabel(s);
+  line->setLabel(s);
+  ind.addLine(line);
 
-  ind.addLine(hist);
-  ind.addLine(macd);
-  ind.addLine(sigma);
+  // plot macd
+  line = pl.at(0);
+  settings.getData(MACDLabel, s);
+  line->setLabel(s);
+  ind.addLine(line);
+
+  // plot signal
+  line = pl.at(1);
+  settings.getData(SignalLabel, s);
+  line->setLabel(s);
+  ind.addLine(line);
 
   delete in;
 
@@ -265,114 +272,116 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
     return 1;
   }
 
-  PlotLine *macd = getMACD(in, fast, fastma, slow, slowma, mlineType, mcolor);
-  if (! macd)
+  QList<PlotLine *> pl;
+  if (getMACD(in,
+              fast,
+              fastma,
+              slow,
+              slowma,
+              signal,
+              signalma,
+              mlineType,
+              mcolor,
+              slineType,
+              scolor,
+              hlineType,
+              hcolor,
+              pl))
     return 1;
+
+  PlotLine *line = pl.at(0);
+  line->setLabel(set[4]);
+  tlines.insert(set[4], line);
   
-  macd->setLabel(set[4]);
+  line = pl.at(1);
+  line->setLabel(set[5]);
+  tlines.insert(set[5], line);
 
-  tlines.insert(set[4], macd);
-
-  PlotLine *sigma = getSignal(macd, signal, signalma, slineType, scolor);
-  if (! sigma)
-    return 1;
-
-  sigma->setLabel(set[5]);
-
-  tlines.insert(set[5], sigma);
-
-  PlotLine *hist = getHistogram(macd, sigma, hlineType, hcolor);
-  if (! hist)
-    return 1;
-  
-  hist->setLabel(set[6]);
-
-  tlines.insert(set[6], hist);
+  line = pl.at(2);
+  line->setLabel(set[6]);
+  tlines.insert(set[6], line);
 
   return 0;
 }
 
-PlotLine * MACD::getMACD (PlotLine *in, int fast, int fmaType, int slow, int smaType, int lineType, QColor &color)
+int MACD::getMACD (PlotLine *in, int fastPeriod, int fastMA, int slowPeriod, int slowMA, int signalPeriod,
+                   int signalMA, int macdPlot, QColor &macdColor, int signalPlot, QColor &signalColor,
+                   int histPlot, QColor &histColor, QList<PlotLine *> &pl)
 {
-  if (in->count() < fast || in->count() < slow)
-    return 0;
-  
-  MAFactory mau;
-  PlotLine *fma = mau.ma(in, fast, fmaType, lineType, color);
-  if (! fma)
-    return 0;
-
-  PlotLine *sma = mau.ma(in, slow, smaType, lineType, color);
-  if (! sma)
-  {
-    delete fma;
-    return 0;
-  }
+  int size = in->count();
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Real out3[size];
 
   QList<int> keys;
-  sma->keys(keys);
-  
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_MACDEXT(0,
+                             size - 1,
+                             &input[0],
+                             fastPeriod,
+                             (TA_MAType) fastMA,
+                             slowPeriod,
+                             (TA_MAType) slowMA,
+                             signalPeriod,
+                             (TA_MAType) signalMA,
+                             &outBeg,
+                             &outNb,
+                             &out[0],
+                             &out2[0],
+                             &out3[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getMACD: TA-Lib error" << rc;
+    return 1;
+  }
+
   PlotFactory fac;
-  PlotLine *macd = fac.plot(lineType);
+  PlotLine *macd = fac.plot(macdPlot);
   if (! macd)
+    return 1;
+
+  PlotLine *signal = fac.plot(signalPlot);
+  if (! signal)
   {
-    delete fma;
-    delete sma;
-    return 0;
+    delete macd;
+    return 1;
   }
 
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *fbar = fma->data(keys.at(loop));
-    if (! fbar)
-      continue;
-    
-    PlotLineBar *sbar = sma->data(keys.at(loop));
-    
-    macd->setData(keys.at(loop), new PlotLineBar(color, fbar->data() - sbar->data()));
-  }
-
-  delete fma;
-  delete sma;
-
-  return macd;
-}
-
-PlotLine * MACD::getSignal (PlotLine *macd, int period, int maType, int lineType, QColor &color)
-{
-  if (macd->count() < period)
-    return 0;
-
-  MAFactory mau;
-  PlotLine *sig = mau.ma(macd, period, maType, lineType, color);
-
-  return sig;
-}
-
-PlotLine * MACD::getHistogram (PlotLine *macd, PlotLine *sig, int lineType, QColor &color)
-{
-  PlotFactory fac;
-  PlotLine *hist = fac.plot(lineType);
+  PlotLine *hist = fac.plot(histPlot);
   if (! hist)
-    return 0;
-
-  QList<int> keys;
-  sig->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *mbar = macd->data(keys.at(loop));
-    if (! mbar)
-      continue;
-
-    PlotLineBar *sbar = sig->data(keys.at(loop));
-    
-    hist->setData(keys.at(loop), new PlotLineBar(color, mbar->data() - sbar->data()));
+    delete macd;
+    delete signal;
+    return 1;
   }
 
-  return hist;
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    macd->setData(keys.at(keyLoop), new PlotLineBar(macdColor, out[outLoop]));
+    signal->setData(keys.at(keyLoop), new PlotLineBar(signalColor, out2[outLoop]));
+    hist->setData(keys.at(keyLoop), new PlotLineBar(histColor, out3[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  pl.append(macd);
+  pl.append(signal);
+  pl.append(hist);
+
+  return 0;
 }
 
 int MACD::dialog (int)

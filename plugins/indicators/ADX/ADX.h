@@ -54,22 +54,14 @@ class ADX : public IndicatorPlugin
       ADXR,
       PDI,
       MDI,
-      DX,
-      MDM,
-      PDM
+      DX
     };
 
     ADX ();
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int dialog (int);
-
     PlotLine * getLine (BarData *data, int period, int method, int lineType, QColor &color);
-    PlotLine * getADX (BarData *, int, int, QColor &);
-    PlotLine * getADXR (BarData *, int, int, QColor &);
-    PlotLine * getDX (BarData *, int, int, QColor &);
-    PlotLine * getDI (BarData *, int, int, int, QColor &);  // flag=1 gets +DI, flag=0 gets -DI
-    PlotLine * getDM (BarData *, int); // flag=1 gets +DM, flag=0 gets -DM
 
   protected:
     QStringList methodList;

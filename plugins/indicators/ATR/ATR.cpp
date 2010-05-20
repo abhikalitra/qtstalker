@@ -20,14 +20,17 @@
  */
 
 #include "ATR.h"
-#include "TR.h"
-#include "Wilder.h"
 #include "PlotFactory.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 ATR::ATR ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("ATR::error on TA_Initialize");
+
   indicator = "ATR";
 
   settings.setData(Method, "ATR");
@@ -126,30 +129,57 @@ int ATR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
 PlotLine * ATR::getLine (BarData *data, int period, int method, int lineType, QColor &color)
 {
-  if (data->count() < period)
-    return 0;
+  int size = data->count();
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
-  TR ttr;
-  PlotLine *tr = 0;
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    Bar *bar = data->getBar(loop);
+    high[loop] = (TA_Real) bar->getHigh();
+    low[loop] = (TA_Real) bar->getLow();
+    close[loop] = (TA_Real) bar->getClose();
+  }
+
+  TA_RetCode rc = TA_SUCCESS;
+
   switch ((_Method) method)
   {
     case _ATR:
-      tr = ttr.tr(data, lineType, color);
+      rc = TA_ATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
       break;
     case NATR:
-      tr = ttr.ntr(data, lineType, color);
+      rc = TA_NATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
       break;
     default:
       break;
   }
 
-  if (! tr)
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << indicator << "::getLine: TA-Lib error" << rc;
+    return 0;
+  }
+
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
     return 0;
 
-  Wilder ma;
-  PlotLine *line = ma.wilder(tr, period, lineType, color);
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
 
-  delete tr;
   return line;
 }
 

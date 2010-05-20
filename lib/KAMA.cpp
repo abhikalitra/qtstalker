@@ -22,61 +22,61 @@
 #include "KAMA.h"
 #include "PlotFactory.h"
 #include "PlotLineBar.h"
+#include "ta_libc.h"
 
 #include <QList>
 #include <QtDebug>
-#include <cmath>
 
 KAMA::KAMA ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("KAMA::error on TA_Initialize");
 }
 
 PlotLine * KAMA::kama (PlotLine *in, int period, int lineType, QColor &color)
 {
-  if (in->count() < period)
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_KAMA(0,
+                          size - 1,
+                          &input[0],
+                          period,
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "KAMA::kama: TA-Lib error" << rc;
     return 0;
+  }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
 
-  QList<int> keys;
-  in->keys(keys);
-
-  double fast = 0.6667;
-  double slow = 0.0645;
-  int loop = period;
-
-  PlotLineBar *bar = in->data(keys.at(loop));
-  double prevAMA = bar->data();
-
-  for (; loop < keys.count(); loop++)
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    // get direction
-    bar = in->data(keys.at(loop));
-    PlotLineBar *pbar = in->data(keys.at(loop - period));
-
-    double direction = bar->data() - pbar->data();
-
-    // get the er
-    int count = 0;
-    int loop2 = loop;
-    double t = 0;
-    for (; count < period; count++, loop2--)
-    {
-      PlotLineBar *bar = in->data(keys.at(loop2));
-      PlotLineBar *pbar = in->data(keys.at(loop2 - 1));
-      t = t + fabs(bar->data() - pbar->data());
-    }
-    double er = fabs(direction / t);
-
-    double ssc = er * (fast - slow) + slow;
-    double c = ssc * ssc;
-
-    double ama = c * (bar->data() - prevAMA) + prevAMA;
-    prevAMA = ama;
-    line->setData(keys.at(loop), new PlotLineBar(color, ama));
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
 
   return line;

@@ -22,51 +22,63 @@
 #include "EMA.h"
 #include "PlotFactory.h"
 #include "PlotLineBar.h"
+#include "ta_libc.h"
 
 #include <QList>
 #include <QtDebug>
 
 EMA::EMA ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("EMA::error on TA_Initialize");
 }
 
 PlotLine * EMA::ema (PlotLine *in, int period, int lineType, QColor &color)
 {
-  if (in->count() < period)
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+  
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_EMA(0,
+                         size - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "EMA::ema: TA-Lib error" << rc;
     return 0;
+  }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
     return 0;
 
-  // first calculate the expo seed
-  // we just calculate an SMA
-
-  QList<int> keys;
-  in->keys(keys);
-  
-  int loop = period - 1;
-  double total = 0;
-  int count = loop;
-  for (; count > -1; count--)
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    PlotLineBar *bar = in->data(keys.at(loop - count));
-    total += bar->data();
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
-  double prevMA = total / (double) period;
-  line->setData(keys.at(loop++), new PlotLineBar(color, prevMA));
 
-  // now calculate the EMA proper
-  double multiplier = 2.0 / (double) (period + 1);
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    double t = ((bar->data() - prevMA) * multiplier) + prevMA;
-    prevMA = t;
-    line->setData(keys.at(loop), new PlotLineBar(color, t));
-  }
-  
   return line;
 }
 

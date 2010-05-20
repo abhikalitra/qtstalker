@@ -51,9 +51,9 @@ class MACD : public IndicatorPlugin
     int getIndicator (Indicator &ind, BarData *data);
     int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
     int dialog (int);
-    PlotLine * getMACD (PlotLine *, int, int, int, int, int, QColor &);
-    PlotLine * getSignal (PlotLine *, int, int, int, QColor &);
-    PlotLine * getHistogram (PlotLine *macd, PlotLine *signal, int, QColor &);
+    int getMACD (PlotLine *, int fastPeriod, int fastMA, int slowPeriod, int slowMA, int signalPeriod,
+                 int signalMA, int macdPlot, QColor &macdColor, int signalPlot, QColor &signalColor,
+                 int histPlot, QColor &histColor, QList<PlotLine *> &pl);
 };
 
 extern "C"

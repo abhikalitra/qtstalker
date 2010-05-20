@@ -25,7 +25,6 @@
 #include "COFactory.h"
 #include "PlotFactory.h"
 #include "PlotInfo.h"
-#include "Utils.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -190,7 +189,7 @@ void Plot::paintEvent (QPaintEvent *event)
 void Plot::resizeEvent (QResizeEvent *event)
 {
   _plotData.buffer = QPixmap(event->size());
-//  draw();
+
   emit signalDraw();
 }
 
@@ -212,7 +211,7 @@ void Plot::cursorChanged (int d)
   }
   
   updateCursor();
-//  draw();
+
   emit signalDraw();
 }
 
@@ -338,7 +337,6 @@ void Plot::mousePressEvent (QMouseEvent *event)
         {
           _mouseFlag = None;
 	  _coSelected->setSelected(FALSE);
-//          draw();
           emit signalDraw();
         }
       }
@@ -357,7 +355,6 @@ void Plot::mousePressEvent (QMouseEvent *event)
       {
 	_mouseFlag = _saveMouseFlag;
 	updateCursor();
-//        draw();
         emit signalDraw();
 	
         int i = convertXToDataIndex(event->x());
@@ -376,7 +373,6 @@ void Plot::mousePressEvent (QMouseEvent *event)
       {
 	_mouseFlag = _saveMouseFlag;
 	updateCursor();
-//        draw();
         emit signalDraw();
 	
         int i = convertXToDataIndex(event->x());
@@ -436,7 +432,6 @@ void Plot::mousePressEvent (QMouseEvent *event)
           Setting *mess = info.getCOInfo(_coSelected);
           if (mess)
             emit signalInfoMessage(mess);
-//	  draw();
           emit signalDraw();
           return;
         }
@@ -489,7 +484,6 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     {
       getXY(event->x(), event->y());
       _coSelected->moving(_plotData.x1, _plotData.y1, _moveFlag);
-//      draw();
       emit signalDraw();
       break;
     }
@@ -497,7 +491,6 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     {
       getXY(event->x(), event->y());
       _coSelected->moving(_plotData.x1, _plotData.y1, 0);
-//      draw();
       emit signalDraw();
       break;
     }
@@ -630,6 +623,7 @@ void Plot::toggleDate ()
   _indicator.setDate(flag);
 
   emit signalDateFlag(flag);
+  emit signalDraw();
 }
 
 void Plot::toggleLog ()
@@ -641,7 +635,7 @@ void Plot::toggleLog ()
     flag = FALSE;
   _indicator.setLog(flag);
 
-  emit signalLogFlag(flag);
+  emit signalDraw();
 }
 
 void Plot::sliderChanged (int v)
@@ -797,7 +791,6 @@ void Plot::setExternalChartObjectFlag ()
   _coSelected = 0;
 
   updateCursor();
-//  draw();
   emit signalDraw();
 }
 
@@ -884,7 +877,6 @@ void Plot::deleteAllChartObjects ()
 
   _mouseFlag = None;
 
-//  draw();
   emit signalDraw();
 }
 
@@ -902,7 +894,6 @@ void Plot::chartObjectDeleted ()
 
   _mouseFlag = None;
 
-//  draw();
   emit signalDraw();
 }
 
@@ -940,7 +931,6 @@ void Plot::loadChartObjects ()
 void Plot::objectDialog ()
 {
   _coSelected->dialog();
-//  draw();
   emit signalDraw();
 }
 

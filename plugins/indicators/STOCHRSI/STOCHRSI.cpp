@@ -21,15 +21,17 @@
 
 #include "STOCHRSI.h"
 #include "MAFactory.h"
-#include "RSIUtils.h"
-#include "MAX.h"
-#include "MIN.h"
+#include "ta_libc.h"
 #include "PlotFactory.h"
 
 #include <QtDebug>
 
 STOCHRSI::STOCHRSI ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("STOCHRSI::error on TA_Initialize");
+
   indicator = "STOCHRSI";
 
   settings.setData(Color, "red");
@@ -169,68 +171,53 @@ int STOCHRSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
 
 PlotLine * STOCHRSI::getSTOCHRSI (PlotLine *in, int period, int lineType, QColor &color)
 {
-  if (in->count() < period)
-    return 0;
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
 
-  RSIUtils rsiu;
-  PlotLine *rsi = rsiu.rsi(in, period, lineType, color);
-  if (! rsi)
-    return 0;
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
-  MAX max;
-  PlotLine *hh = max.max(rsi, period, lineType, color);
-  if (! hh)
+  int loop = 0;
+  for (; loop < size; loop++)
   {
-    delete rsi;
-    return 0;
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
   }
 
-  MIN min;
-  PlotLine *ll = min.min(rsi, period, lineType, color);
-  if (! ll)
+  TA_RetCode rc = TA_STOCHRSI(0,
+                              size - 1,
+                              &input[0],
+                              period,
+                              period,
+                              0,
+                              (TA_MAType) 0,
+                              &outBeg,
+                              &outNb,
+                              &out[0],
+                              &out2[0]);
+  if (rc != TA_SUCCESS)
   {
-    delete rsi;
-    delete hh;
+    qDebug() << indicator << "::getSTOCHRSI: TA-Lib error" << rc;
     return 0;
   }
 
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)
-  {
-    delete rsi;
-    delete hh;
-    delete ll;
     return 0;
-  }
 
-  QList<int> keys;
-  hh->keys(keys);
-  
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
   {
-    PlotLineBar *rbar = rsi->data(keys.at(loop));
-    if (! rbar)
-      continue;
-    
-    PlotLineBar *lbar = ll->data(keys.at(loop));
-    if (! lbar)
-      continue;
-
-    PlotLineBar *hbar = hh->data(keys.at(loop));
-    if (! hbar)
-      continue;
-
-    double t = rbar->data() - lbar->data();
-    double t2 = hbar->data() - lbar->data();
-    
-    line->setData(keys.at(loop), new PlotLineBar(color, t / t2));
+    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
   }
-
-  delete rsi;
-  delete hh;
-  delete ll;
 
   return line;
 }

@@ -21,7 +21,7 @@
 
 #include "DataWindow.h"
 #include "Plot.h"
-#include "Utils.h"
+#include "Strip.h"
 #include "IndicatorDataBase.h"
 
 #include <QLayout>
@@ -122,7 +122,7 @@ void DataWindow::setDates (DateBar &dates)
 
 void DataWindow::setLine (PlotLine *line)
 {
-  Utils util;
+  Strip strip;
   QString s = line->label();
 
   table->setColumnCount(table->columnCount() + 1);
@@ -135,7 +135,7 @@ void DataWindow::setLine (PlotLine *line)
   for (; loop < keys.count(); loop++)
   {
     PlotLineBar *bar = line->data(keys.at(loop));
-    util.strip(bar->data(), 4, s);
+    strip.strip(bar->data(), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
     table->setItem(keys.at(loop), table->columnCount() - 1, item);
   }
@@ -143,7 +143,7 @@ void DataWindow::setLine (PlotLine *line)
 
 void DataWindow::setOHLC (PlotLine *line)
 {
-  Utils util;
+  Strip strip;
   QStringList l;
   l << tr("Open") << tr("High") << tr("Low") << tr("Close");
   
@@ -160,19 +160,19 @@ void DataWindow::setOHLC (PlotLine *line)
     PlotLineBar *bar = line->data(loop);
     
     QString s;
-    util.strip(bar->data(0), 4, s);
+    strip.strip(bar->data(0), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 4, item);
 
-    util.strip(bar->data(1), 4, s);
+    strip.strip(bar->data(1), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 3, item);
 
-    util.strip(bar->data(2), 4, s);
+    strip.strip(bar->data(2), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 2, item);
 
-    util.strip(bar->data(3), 4, s);
+    strip.strip(bar->data(3), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 1, item);
   }

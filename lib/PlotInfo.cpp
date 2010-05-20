@@ -22,7 +22,7 @@
 #include "PlotInfo.h"
 #include "Setting.h"
 #include "PlotLine.h"
-#include "Utils.h"
+#include "Strip.h"
 
 #include <QPainter>
 #include <QtDebug>
@@ -123,7 +123,7 @@ void PlotInfo::drawInfo (PlotData &pd, Indicator &indicator, DateBar &dateBars)
   indicator.getLines(plotList);
   
   int loop;
-  Utils util;
+  Strip strip;
   for (loop = 0; loop < plotList.count(); loop++)
   {
     PlotLine *line = plotList.at(loop);
@@ -140,7 +140,7 @@ void PlotInfo::drawInfo (PlotData &pd, Indicator &indicator, DateBar &dateBars)
 	
     s = line->label() + "=";
     QString str;
-    util.strip(bar->data(), 4, str);
+    strip.strip(bar->data(), 4, str);
     s.append(str);
     s.append(" ");
 
@@ -159,7 +159,7 @@ void PlotInfo::getPointInfo (PlotData &pd, QList<Setting> &l, Indicator &indicat
   QList<PlotLine *> plotList;
   indicator.getLines(plotList);
 
-  Utils util;
+  Strip strip;
   int loop;
   for (loop = 0; loop < plotList.count(); loop++)
   {
@@ -176,7 +176,7 @@ void PlotInfo::getPointInfo (PlotData &pd, QList<Setting> &l, Indicator &indicat
     QString s = color.name();
     set.setData(0, s);
 
-    util.strip(bar->data(), 4, s);
+    strip.strip(bar->data(), 4, s);
     set.setData(1, s);
       
     l.append(set);
@@ -191,8 +191,8 @@ Setting * PlotInfo::getCursorInfo (int i, int y, DateBar &dateBars, Scaler &scal
   dateBars.getDateTimeString(i, d);
   set->setData(k, d);
   
-  Utils util;
-  util.strip(scaler.convertToVal(y), 4, d);
+  Strip strip;
+  strip.strip(scaler.convertToVal(y), 4, d);
   k = "Y";
   set->setData(k, d);
   

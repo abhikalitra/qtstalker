@@ -20,7 +20,7 @@
  */
 
 #include "ScalePlot.h"
-#include "Utils.h"
+#include "Strip.h"
 
 #include <QPainter>
 #include <QPen>
@@ -53,42 +53,42 @@ void ScalePlot::draw (PlotData &pd, Scaler &scaler)
 
   int x = pd.buffer.width() - pd.scaleWidth;
   int loop;
-  Utils util;
+  Strip strip;
   for (loop = 0; loop < (int) scaleArray.size(); loop++)
   {
     int y = scaler.convertToY(scaleArray.at(loop));
     painter.drawLine (x, y, x + 4, y);
 
-    // draw the text
     QString s;
-    util.strip(scaleArray.at(loop), 4, s);
+    double v = scaleArray.at(loop);
     
-    // abbreviate too many (>=3) trailing zeroes in large numbers on y-axes
-    bool flag = FALSE;
-      
-    if (s.toDouble() < 0)
-    {
-      flag = TRUE;
-      s.remove(0, 1);
-    }
-      
-    if (s.toDouble() >= 1000000000)
-    {
-      util.strip(s.toDouble() / 1000000000, 4, s);
-      s.append("B");
-    }
+    if (v < 1000000)
+      strip.strip(v, 4, s);
     else
     {
-      if (s.toDouble() >= 1000000)
+      bool flag = FALSE;
+      if (v < 0)
       {
-        util.strip(s.toDouble() / 1000000, 4, s);
-	s.append("M");
+        flag = TRUE;
+        v = v * 1;
+      }
+      
+      if (v >= 1000000 && v < 1000000000)
+      {
+        s = QString::number(v / 1000000, 'f', 0);
+        s.append("M");
+        if (flag)
+          s.prepend("-");
+      }
+      else if (v >= 1000000000)
+      {
+        s = QString::number(v / 1000000000, 'f', 0);
+        s.append("B");
+        if (flag)
+          s.prepend("-");
       }
     }
-      
-    if (flag)
-      s.prepend("-");
-    
+
     painter.drawText(x + 7, y + (fm.height() / 2), s);
   }
 
