@@ -68,7 +68,7 @@ void PrefDialog::addPage (int page, QString &title)
   w->setLayout(vbox);
 
   QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(5);
+  grid->setSpacing(2);
   grid->setColumnStretch(1, 1);
   vbox->addLayout(grid);
 

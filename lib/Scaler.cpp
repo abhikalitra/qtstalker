@@ -22,7 +22,6 @@
 #include "Scaler.h"
 
 #include <cmath>
-#include <QList>
 #include <QString>
 
 Scaler::Scaler ()

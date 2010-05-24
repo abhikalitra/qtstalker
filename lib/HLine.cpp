@@ -41,10 +41,6 @@ HLine::HLine ()
 
 void HLine::draw (PlotData &pd, DateBar &, Scaler &scaler)
 {
-  // if value is off chart then don't draw it
-  if (_price < scaler.low())
-    return;
-
   QPainter painter;
   painter.begin(&pd.buffer);
 
@@ -62,17 +58,29 @@ void HLine::draw (PlotData &pd, DateBar &, Scaler &scaler)
   painter.drawText(rc, s); // draw text
   painter.drawRect(rc); // draw a nice little box around text
   
-  painter.drawLine (rc.x() + rc.width(), y, pd.buffer.width(), y);
+  painter.drawLine (rc.x() + rc.width(),
+                    y,
+                    pd.buffer.width() - pd.scaleWidth,
+                    y);
 
   clearSelectionArea();
   QPolygon array;
-  array.putPoints(0, 4, 0, y - 4, 0, y + 4, pd.buffer.width(), y + 4, pd.buffer.width(), y - 4);
+  array.putPoints(0,
+                  4,
+                  0,
+                  y - 4,
+                  0,
+                  y + 4,
+                  pd.buffer.width() - pd.scaleWidth,
+                  y + 4,
+                  pd.buffer.width() - pd.scaleWidth,
+                  y - 4);
   setSelectionArea(new QRegion(array));
 
   if (selected)
   {
     clearGrabHandles();
-    int t = (int) pd.buffer.width() / 4;
+    int t = (int) (pd.buffer.width() - pd.scaleWidth) / 4;
     int loop;
     for (loop = 0; loop < 5; loop++)
     {

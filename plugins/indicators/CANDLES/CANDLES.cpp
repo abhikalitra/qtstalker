@@ -695,8 +695,14 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen, int lineTy
   if (! line)
     return 0;
 
-  for (loop = 0; loop < outNb; loop++)
-    line->setData(loop, new PlotLineBar(color, out[loop]));
+  int dataLoop = data->count() - 1;
+  int outLoop = outNb - 1;
+  while (dataLoop > -1 && outLoop > -1)
+  {
+    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
 
   return line;
 }

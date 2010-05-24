@@ -38,10 +38,10 @@ value</li>
 For example. If we wanted to save a stock quote, the text would
 be:<br>
 <br>
-"QUOTE,Stock,SET_QUOTE,XNAS,MSFT,yyyy-MM-dd HH:MM:SS,2010-03-09
+"QUOTE,Stock,SET_QUOTE,XNAS,MSFT,yyyy-MM-dd HH:mm:ss,2010-03-09
 13:24:00,25.50,27.25,23.75,26.25,123456789"<br>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <span style="font-weight: bold;"><br>
 <br>
@@ -63,7 +63,7 @@ saved to the database once the script has completed.<br>
 command should be used once after all quotes within a running script
 have been added. You will get a 1000% speed increase.<br>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -87,7 +87,7 @@ For example. Setting the company name for MSFT would be:<br>
 <br>
 "QUOTE,Stock,SET_NAME,XNAS,MSFT,Microsoft Corporation"<br>
 <br>
-&nbsp;On success a '0' is returned. On failure, a 'ERROR' is
+&nbsp;On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -110,7 +110,7 @@ For example. Deleting MSFT from the database would be:<br>
 <br>
 "QUOTE,Stock,DELETE,XNAS,MSFT"<br>
 <br>
-&nbsp;On success a '0' is returned. On failure, a 'ERROR' is
+&nbsp;On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -161,7 +161,7 @@ the MSFT symbol, we would issue the command:<br>
 <br>
 "QUOTE,Stock,GET_QUOTES,close_array,XNAS,MSFT,Close,Daily,275"<br>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -185,7 +185,7 @@ symbol to be renamed<br>
   <li>&lt;NEW SYMBOL&gt; is the new symbol</li>
 </ul>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>

@@ -41,10 +41,10 @@ For example. If we wanted to save a futures quote, the text would
 be:<br>
 <br>
 "QUOTE,Futures,SET_QUOTE,FCBT,C_2010_Z,yyyy-MM-dd
-HH:MM:SS,2010-03-09
+HH:mm:ss,2010-03-09
 13:24:00,25.50,27.25,23.75,26.25,123456789,123456"<br>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <span style="font-weight: bold;"></span><span style="font-weight: bold;"><br>
@@ -66,7 +66,7 @@ saved to the database when the script completes.<br>
 command should be used once after all quotes within a running script
 have been added. You will get a 1000% speed increase.<br>
 <span style="font-weight: bold;"></span><br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -91,7 +91,7 @@ For example. Setting the name for C_2010_Z would be:<br>
 December"<br>
 <br>
 <br>
-&nbsp;On success a '0' is returned. On failure, a 'ERROR' is
+&nbsp;On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -118,7 +118,7 @@ For example. Setting the code for SP_2010_Z would be:<br>
 <br>
 "QUOTE,Futures,SET_CODE,FCME,SP_2010_Z,SP"<br>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -154,7 +154,7 @@ For example. Setting the expiry month code for SP_2010_Z would be:<br>
 <br>
 "QUOTE,Futures,SET_MONTH,FCME,SP_2010_Z,Z"<br>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -180,7 +180,7 @@ would be:<br>
 <br>
 "QUOTE,Futures,SET_YEAR,FCME,SP_2010_Z,2010"<br>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -204,7 +204,7 @@ would be:<br>
 <br>
 "QUOTE,Futures,DELETE,FCME,SP_2010_Z"<br>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
@@ -258,7 +258,7 @@ the SP_2010_Z symbol, we would issue the command:<br>
 <br>
 "QUOTE,Futures,GET_QUOTES,close_array,FCME,SP_2010_Z,Close,Daily,275"<br>
 <br>
-On success a "0" is returned. On failure, a "ERROR" is
+On success a "0" is returned. On failure, "ERROR" is
 returned.<br>
 <br>
 <br>
@@ -283,7 +283,7 @@ symbol to be renamed e.g.
   <li>&lt;NEW SYMBOL&gt; is the new symbol</li>
 </ul>
 <br>
-On success a '0' is returned. On failure, a 'ERROR' is
+On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>

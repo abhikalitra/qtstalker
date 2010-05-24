@@ -29,32 +29,11 @@ Strip::Strip ()
 
 void Strip::strip (double d, int p, QString &s)
 {
-  QString ts = QString::number(d, 'f', 4);
+  QString ts = QString::number(d, 'f', p);
   while (ts.endsWith("0"))
     ts.chop(1);
   while (ts.endsWith("."))
     ts.chop(1);
   s = ts;
-  
-/*
-  int y = d;
-  int z = (d - y) * 100;
-  if (z == 0)
-  {
-    // no decimal
-    s = QString::number(d, 'f', 0);
-    return;
-  }
-
-  if (fabs(d) < 1)
-    s = QString::number(d, 'f', p);
-  else
-  {
-    if (fabs(d) > 1000)
-      s = QString::number(d, 'f', 0);
-    else
-      s = QString::number(d, 'f', 2);
-  }
-*/
 }
 

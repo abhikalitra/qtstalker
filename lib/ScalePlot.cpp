@@ -75,14 +75,22 @@ void ScalePlot::draw (PlotData &pd, Scaler &scaler)
       
       if (v >= 1000000 && v < 1000000000)
       {
-        s = QString::number(v / 1000000, 'f', 0);
+        s = QString::number(v / 1000000, 'f', 2);
+        while (s.endsWith("0"))
+          s.chop(1);
+        while (s.endsWith("."))
+          s.chop(1);
         s.append("M");
         if (flag)
           s.prepend("-");
       }
       else if (v >= 1000000000)
       {
-        s = QString::number(v / 1000000000, 'f', 0);
+        s = QString::number(v / 1000000000, 'f', 2);
+        while (s.endsWith("0"))
+          s.chop(1);
+        while (s.endsWith("."))
+          s.chop(1);
         s.append("B");
         if (flag)
           s.prepend("-");
