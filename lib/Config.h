@@ -46,7 +46,7 @@ class Config : public BaseConfig
       Crosshairs, // char crosshairs on/off
       DrawMode, // chart draw mode on/off
       DataPanelSize, // size of the data panel
-      UNUSED99, // ******** UNUSED *************
+      ScriptLaunchButton1, // script panel launch button 1
       PlotFont, // chart plot font
       AppFont, // app font
       NavAreaSize, // navigator panel size
@@ -68,7 +68,7 @@ class Config : public BaseConfig
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
-      UNUSED999, // ******* UNUSED *****************
+      ScriptLaunchButton2, // script panel launch button 2
       SavedRunningScripts, // saved scripts that were running when app terminated
       ExchangeFileSize,  // the file size of /docs/exchanges.csv
       LastScriptPath, // the dir of the last script run from a dialog
@@ -77,16 +77,16 @@ class Config : public BaseConfig
       DBPluginList, // csv list of current db plugins from startup inventory
       DbSearchSymbols, // the sql command to get a symbol search
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel
-      ShowNewIndicatorButton, // ********* UNUSED *************
-      ShowDataWindowButton, // ********* UNUSED *************
-      ShowHelpButton, // ********* UNUSED *************
-      ShowRefreshButton, // ********* UNUSED *************
-      IndicatorScriptCommand,  // ********* UNUSED *************
-      IndicatorScriptPath, // ********* UNUSED *************
-      ShowCmps5Button, // ********* UNUSED *************
-      ShowCmps15Button, // ********* UNUSED *************
-      ShowCmps60Button, // ********* UNUSED *************
-      ShowCmpsDayButton, // ********* UNUSED *************
+      ScriptLaunchButton3, // script panel launch button 3
+      ScriptLaunchButton4, // script panel launch button 4
+      ScriptLaunchButton5, // script panel launch button 5
+      ScriptLaunchButton6, // script panel launch button 6
+      ScriptLaunchButton7, // script panel launch button 7
+      ScriptLaunchButton8, // script panel launch button 8
+      ScriptLaunchButton9, // script panel launch button 9
+      ScriptLaunchButton10, // script panel launch button 10
+      ScriptLaunchButton11, // script panel launch button 11
+      ScriptLaunchButton12, // script panel launch button 12
       ShowCmpsWkyButton, // ********* UNUSED *************
       ShowCmpsMtyButton, // ********* UNUSED *************
       Unused11, // ********* UNUSED *************

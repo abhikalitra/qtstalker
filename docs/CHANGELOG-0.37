@@ -457,3 +457,10 @@
 
 20100519:  Fixed bug #3001407 (data value display below 0.01 are zero).
 
+20100525:  Added quick lauch script buttons to the script panel. This allows the user to assign scripts to the button
+           to run with just one button click. NOTE: only scripts that have been imported into the database
+           (the new function) can be assigned to a button. To assign a script to a button, right click on the button
+           to display the context menu.
+
+
+

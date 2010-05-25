@@ -259,7 +259,7 @@ void QtstalkerApp::createActions ()
   connect(action, SIGNAL(activated()), this, SIGNAL(signalNewIndicator()));
   _actionList.insert(NewIndicator, action);
 
-  action = new QAction(QIcon(configure), tr("Edit &Preferences"), this);
+  action = new QAction(QIcon(configure_xpm), tr("Edit &Preferences"), this);
   action->setStatusTip(tr("Modify user preferences"));
   action->setToolTip(tr("Modify user preferences"));
   connect(action, SIGNAL(activated()), this, SLOT(options()));

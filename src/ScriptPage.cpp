@@ -23,6 +23,7 @@
 #include "ScriptDataBase.h"
 #include "PrefDialog.h"
 #include "Config.h"
+#include "ScriptLaunchButton.h"
 
 #include "../pics/asterisk.xpm"
 #include "../pics/search.xpm"
@@ -68,11 +69,70 @@ ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
   connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(listDoubleClick(QListWidgetItem *)));
   connect(list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(listRightClick(const QPoint &)));
   vbox->addWidget(list);
+
+
+  // create button grid
+  QGridLayout *grid = new QGridLayout;
+  grid->setMargin(0);
+  grid->setSpacing(0);
+  grid->setColumnStretch(7, 1);
+  vbox->addLayout(grid);
+
+
+  int row = 0;
+  int col = 0;
+  ScriptLaunchButton *b = new ScriptLaunchButton(Config::ScriptLaunchButton1, 1);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
   
-  // create first row of launch buttons
-//  tb = new QToolBar;
-//  vbox->addWidget(tb);
-//  createLaunchButtons(tb);
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton2, 2);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton3, 3);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton4, 4);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton5, 5);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton6, 6);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+
+  row++;
+  col = 0;
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton7, 7);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton8, 8);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton9, 9);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton10, 10);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton11, 11);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+  
+  b = new ScriptLaunchButton(Config::ScriptLaunchButton12, 12);
+  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+  grid->addWidget(b, row, col++);
+
+
   
   vbox->addSpacing(5);
   
@@ -82,6 +142,7 @@ ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
   queList = new QListWidget;
   queList->setContextMenuPolicy(Qt::CustomContextMenu);
   queList->setSortingEnabled(TRUE);
+  queList->setMaximumHeight(100);
   connect(queList, SIGNAL(itemSelectionChanged()), this, SLOT(queStatus()));
   connect(queList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(queRightClick(const QPoint &)));
   vbox->addWidget(queList);
@@ -167,17 +228,6 @@ void ScriptPage::createButtonMenu (QToolBar *tb)
   queMenu->addAction(actions.value(CancelScript));
 }
 
-void ScriptPage::createLaunchButtons (QToolBar *tb)
-{
-  int loop;
-  for (loop = 0; loop < 5; loop++)
-  {
-    QToolButton *b = new QToolButton;
-    b->setText(QString::number(loop + 1));
-    tb->addWidget(b);
-  }
-}
-
 void ScriptPage::newScript ()
 {
   bool ok;
@@ -208,6 +258,8 @@ void ScriptPage::newScript ()
   }
 
   editScript(s);
+
+  showAllScripts();
 }
 
 void ScriptPage::editScript ()

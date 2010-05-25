@@ -60,7 +60,6 @@ class ScriptPage : public QWidget
     void saveRunningScripts ();
     void loadSavedScripts ();
     void createButtonMenu (QToolBar *);
-    void createLaunchButtons (QToolBar *);
 
   public slots:
     void newScript ();

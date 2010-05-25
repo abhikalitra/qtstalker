@@ -14,13 +14,13 @@ HEADERS += GroupPage.h
 HEADERS += IndicatorPage.h
 HEADERS += ScriptPage.h
 HEADERS += InfoPanel.h
-#HEADERS += PlotButtonBox.h
 HEADERS += PlotSlider.h
 HEADERS += COToolBar.h
 HEADERS += ZoomButtons.h
 HEADERS += BarLengthButtons.h
 HEADERS += RefreshAction.h
 HEADERS += RecentCharts.h
+HEADERS += ScriptLaunchButton.h
 
 
 SOURCES += Qtstalker.cpp
@@ -33,13 +33,13 @@ SOURCES += GroupPage.cpp
 SOURCES += IndicatorPage.cpp
 SOURCES += ScriptPage.cpp
 SOURCES += InfoPanel.cpp
-#SOURCES += PlotButtonBox.cpp
 SOURCES += PlotSlider.cpp
 SOURCES += COToolBar.cpp
 SOURCES += ZoomButtons.cpp
 SOURCES += BarLengthButtons.cpp
 SOURCES += RefreshAction.cpp
 SOURCES += RecentCharts.cpp
+SOURCES += ScriptLaunchButton.cpp
 
 
 TARGET = qtstalker

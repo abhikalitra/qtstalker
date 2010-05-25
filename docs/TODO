@@ -3,7 +3,7 @@ To Do:
 
 - documentation
 - create some howto docs for indicators
-- add more cursor behaviours to IndicatorPlot
+- add more cursor behaviours to Plot
 - save last chart viewed between sessions.
 - median lines chart objects
 - fibo time chart objects
@@ -13,9 +13,7 @@ To Do:
 - create an integrated indicator editor.
 - add tooltips
 - interactive scripting
-- decide what to fill the lower right plot corner with...
-- add user defined script launch buttons to the script panel
-- backtesting module
+- complete backtesting module
 - create some example quote scripts
 
 
