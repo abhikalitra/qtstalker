@@ -5,7 +5,7 @@
  media="screen">
   <script type="text/javascript" src="qtstalker.js">
  </script>
-  <title>Qtstalker: Custom - CUS</title>
+  <title>Qtstalker: Script API overview</title>
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
 </head>
@@ -20,29 +20,29 @@
   <li><a href="toc.html">Table of Contents</a></li>
 </ul>
 </div>
-<div id="warnDoc">
 </div>
-</div>
-<h1><span style="text-decoration: underline;">Script API - Indicators</span><br>
+<h1><span style="text-decoration: underline;">Script API overview</span>
 </h1>
-<p></p>
-<p>Custom (CUS) indicators can be constructed using scripts. These
+<p>Custom (CUS) indicators can be constructed using scripts. Also used for
+data-loading and management, and for launching external facilities.
+</p>
+
+<p> These
 scripts can
 be written in any popular scripting language that can read / write to
 STDIN and
 STDOUT. Languages like Perl, Python, PHP etc. The pre-installed scripts
 provided are written in Perl. See the contributed "<a href="#examples">CUS
 Examples
-Repository</a>" for examples. For a description of available
-indicators for scripts see the <a href="indicatorreference.html">Indicator
-Reference.</a> </p>
-<p><br>
+Repository</a>" for examples.</p>
+<p> For a description of available indicators for scripts see the
+<a href="indicatorreference.html">Indicator Reference</a> and the
+<a href="toc.html#api">API documentation</a>.
 </p>
 <h3>Basic Script Example</h3>
 <p></p>
-<p>Here is an example of a basic script using perl. There are 3 basic
-steps to
-each script. </p>
+<p>Here is an example of a basic script using perl. There are 3 fundamental
+steps to each script. </p>
 <ol>
   <li>Turn on autoflush. Most scripting languages have this function.
 This is required by qtstalker in order to make sure all data being
@@ -105,7 +105,7 @@ our BARS
 indicator. Consult the Indicator API for the plot command format for
 details.</p>
 <p></p>
-<p>print STDOUT "PLOT,Bars"; </p>
+<p>print STDOUT "PLOT,OHLC"; </p>
 <p></p>
 <p>Once again we have to check to see if our plot command was
 successful. The
@@ -134,8 +134,7 @@ Review the console log as there may be some error message.
 </p>
 <p> To assist with debugging, printing to Standard Error will send the
 message to the console. So while developing, sprinkle <code>print
-STDERR "XXXX"; sleep 1;</code> type statements in your code. The small
-sleep allows the messages to log in sequential order.
+STDERR "XXXX";</code> type statements in your code.
 </p>
 <h4><a name="examples" id="examples">CUS Examples Repository</a></h4>
 <p></p>
