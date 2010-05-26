@@ -103,6 +103,10 @@ position: absolute;
 left: -999em;
 }
 
+#bottom-spacer {
+padding-bottom: 50em;
+}
+
 /* http://www.positioniseverything.net/easyclearing.html */
 .clearfix:after {
 content: "."; 
