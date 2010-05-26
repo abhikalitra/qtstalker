@@ -106,8 +106,11 @@ void ScalePlot::draw (PlotData &pd, Scaler &scaler)
   painter.end();
 }
 
-void ScalePlot::drawPoints (PlotData &pd, QList<Setting> &points, Scaler &scaler)
+void ScalePlot::drawPoints (PlotData &pd, Scaler &scaler, Indicator &indicator)
 {
+  QList<Setting> pl;
+  points(pd, pl, indicator);
+  
   QPainter painter;
   painter.begin(&pd.buffer);
   painter.setFont(pd.plotFont);
@@ -118,9 +121,9 @@ void ScalePlot::drawPoints (PlotData &pd, QList<Setting> &points, Scaler &scaler
   int x = pd.buffer.width() - pd.scaleWidth + 1;
 
   int loop;
-  for (loop = 0; loop < points.count(); loop++)
+  for (loop = 0; loop < pl.count(); loop++)
   {
-    Setting set = points.at(loop);
+    Setting set = pl.at(loop);
     QColor color;
     QString d;
     set.getData(0, d);
@@ -152,6 +155,35 @@ void ScalePlot::drawPoints (PlotData &pd, QList<Setting> &points, Scaler &scaler
     color.setBlue(color.blue() || pd.borderColor.blue());
     painter.setPen(color);
     painter.drawText(rc, d);
+  }
+}
+
+void ScalePlot::points (PlotData &pd, QList<Setting> &l, Indicator &indicator)
+{
+  QList<PlotLine *> plotList;
+  indicator.getLines(plotList);
+
+  Strip strip;
+  int loop;
+  for (loop = 0; loop < plotList.count(); loop++)
+  {
+    PlotLine *line = plotList.at(loop);
+    if (line->type() == "Horizontal")
+      continue;
+
+    PlotLineBar *bar = line->data(pd.infoIndex);
+    if (! bar)
+      continue;
+
+    QColor color = bar->color();
+    Setting set;
+    QString s = color.name();
+    set.setData(0, s);
+
+    strip.strip(bar->data(), 4, s);
+    set.setData(1, s);
+
+    l.append(set);
   }
 }
 

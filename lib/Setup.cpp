@@ -29,6 +29,7 @@
 #include "DBPlugin.h"
 #include "ExchangeDataBase.h"
 #include "FuturesDataBase.h"
+#include "PlotLine.h"
 
 #include <QtDebug>
 #include <QtSql>
@@ -37,6 +38,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
+#include <QHash>
 
 Setup::Setup ()
 {
@@ -123,5 +125,60 @@ void Setup::setupFutures ()
 {
   FuturesDataBase db;
   db.createFutures();  
+}
+
+void Setup::setupDefaultSymbol ()
+{
+  Config config;
+  QString s;
+  config.getData(Config::DefaultSymbol, s);
+  if (s.toInt())
+    return;
+
+  PluginFactory fac;
+  QString path;
+  s = "Stock";
+  config.getData(Config::DBPluginPath, path);
+  DBPlugin *plug = fac.getDB(path, s);
+  if (! plug)
+  {
+    qDebug() << "Setup::setupDefaultSymbol: plugin error";
+    return;
+  }
+
+  QFile file("/usr/local/share/qtstalker/db/example_quotes.csv");
+  if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    qDebug() << "Setup::setupDefaultSymbol: quotes file error";
+    return;
+  }
+
+  QTextStream in(&file);
+
+  QString command = "QUOTE,Stock,SET_QUOTE,XNYS,SAMPLE,yyyyMMdd,";
+  QHash<QString, PlotLine *> lines;
+  
+  while (! in.atEnd())
+  {
+    s = in.readLine();
+    QString s2 = command + s;
+    QStringList l = s2.split(",");
+
+   int rc = plug->scriptCommand(l, lines);
+   if (rc)
+     qDebug() << "Setup::setupDefaultSymbol: quote not imported" << s2;
+  }
+
+  s = "QUOTE,Stock,SAVE_QUOTES";
+  QStringList l = s.split(",");
+  int rc = plug->scriptCommand(l, lines);
+  if (rc)
+    qDebug() << "Setup::setupDefaultSymbol: quotes not saved" << s;
+
+  file.close();
+
+  config.setData((int) Config::DefaultSymbol, 1);
+  
+  return;
 }
 

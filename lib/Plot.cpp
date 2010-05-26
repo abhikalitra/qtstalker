@@ -24,7 +24,8 @@
 #include "CODataBase.h"
 #include "COFactory.h"
 #include "PlotFactory.h"
-#include "PlotInfo.h"
+#include "PlotCursorInfo.h"
+#include "PlotDrawInfo.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -129,16 +130,12 @@ void Plot::draw ()
     drawObjects();
 
     // draw the top left indicator stats of the right most bar on screen
-    PlotInfo info;
-    info.drawInfo(_plotData, _indicator, _dateBars);
+    PlotDrawInfo di;
+    di.draw(_plotData, _indicator, _dateBars);
 
     // draw the scale
     _scalePlot.draw(_plotData, _scaler);
-
-    // draw the scale markers
-    QList<Setting> points;
-    info.getPointInfo(_plotData, points, _indicator);
-    _scalePlot.drawPoints(_plotData, points, _scaler);
+    _scalePlot.drawPoints(_plotData, _scaler, _indicator);
   }
 
   update();
@@ -358,8 +355,8 @@ void Plot::mousePressEvent (QMouseEvent *event)
         emit signalDraw();
 	
         int i = convertXToDataIndex(event->x());
-        PlotInfo info;
-        Setting *mess = info.getCursorInfo(i, event->y(), _dateBars, _scaler);
+        PlotCursorInfo info;
+        Setting *mess = info.infoXY(i, event->y(), _dateBars, _scaler);
         if (mess)
           emit signalInfoMessage(mess);
       }
@@ -376,8 +373,8 @@ void Plot::mousePressEvent (QMouseEvent *event)
         emit signalDraw();
 	
         int i = convertXToDataIndex(event->x());
-        PlotInfo info;
-        Setting *mess = info.getCursorInfo(i, event->y(), _dateBars, _scaler);
+        PlotCursorInfo info;
+        Setting *mess = info.infoXY(i, event->y(), _dateBars, _scaler);
         if (mess)
           emit signalInfoMessage(mess);
       }
@@ -428,10 +425,9 @@ void Plot::mousePressEvent (QMouseEvent *event)
         {
           _mouseFlag = COSelected;
           _coSelected->setSelected(TRUE);
-          PlotInfo info;
-          Setting *mess = info.getCOInfo(_coSelected);
-          if (mess)
-            emit signalInfoMessage(mess);
+          Setting *mess = new Setting;
+          _coSelected->getInfo(mess);
+          emit signalInfoMessage(mess);
           emit signalDraw();
           return;
         }
@@ -462,8 +458,8 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       update();
       
       int i = convertXToDataIndex(event->x());
-      PlotInfo info;
-      Setting *mess = info.getCursorInfo(i, event->y(), _dateBars, _scaler);
+      PlotCursorInfo info;
+      Setting *mess = info.infoXY(i, event->y(), _dateBars, _scaler);
       if (mess)
         emit signalInfoMessage(mess);
       break;
@@ -471,8 +467,8 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     case CursorZoom:
     {
       int i = convertXToDataIndex(event->x());
-      PlotInfo info;
-      Setting *mess = info.getCursorInfo(i, event->y(), _dateBars, _scaler);
+      PlotCursorInfo info;
+      Setting *mess = info.infoXY(i, event->y(), _dateBars, _scaler);
       if (mess)
         emit signalInfoMessage(mess);
       
@@ -520,9 +516,9 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       if (! flag)
         setCursor(QCursor(Qt::ArrowCursor));
 
-      PlotInfo info;
+      PlotCursorInfo info;
       _plotData.infoIndex = convertXToDataIndex(event->x());
-      Setting *mess = info.getInfo(p, _plotData, _indicator, _dateBars);
+      Setting *mess = info.info(p, _plotData, _indicator, _dateBars);
       if (mess)
         emit signalInfoMessage(mess);
       break;

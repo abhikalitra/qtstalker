@@ -27,13 +27,15 @@
 #include "PlotData.h"
 #include "Setting.h"
 #include "Scaler.h"
+#include "Indicator.h"
 
 class ScalePlot
 {
   public:
     ScalePlot ();
     void draw (PlotData &, Scaler &);
-    void drawPoints (PlotData &, QList<Setting> &, Scaler &);
+    void drawPoints (PlotData &, Scaler &, Indicator &);
+    void points (PlotData &, QList<Setting> &, Indicator &);
 };
 
 #endif

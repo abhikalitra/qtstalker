@@ -1488,6 +1488,21 @@ a partial match like %SI or %RSI%</source>
     </message>
 </context>
 <context>
+    <name>ScriptLaunchButton</name>
+    <message>
+        <source>&amp;Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure Script Launcher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ScriptPage</name>
     <message>
         <source>Search</source>

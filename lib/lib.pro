@@ -34,7 +34,7 @@ HEADERS += SymbolButton.h
 HEADERS += SymbolDialog.h
 HEADERS += DateBar.h
 HEADERS += PlotGrid.h
-HEADERS += PlotInfo.h
+HEADERS += PlotCursorInfo.h
 HEADERS += DBPlugin.h
 HEADERS += SCQuote.h
 HEADERS += GroupDataBase.h
@@ -77,6 +77,7 @@ HEADERS += TRIMA.h
 HEADERS += Wilder.h
 HEADERS += WMA.h
 HEADERS += Strip.h
+HEADERS += PlotDrawInfo.h
 
 
 SOURCES += Setting.cpp
@@ -108,7 +109,7 @@ SOURCES += SymbolButton.cpp
 SOURCES += SymbolDialog.cpp
 SOURCES += DateBar.cpp
 SOURCES += PlotGrid.cpp
-SOURCES += PlotInfo.cpp
+SOURCES += PlotCursorInfo.cpp
 SOURCES += DBPlugin.cpp
 SOURCES += SCQuote.cpp
 SOURCES += GroupDataBase.cpp
@@ -150,6 +151,7 @@ SOURCES += TRIMA.cpp
 SOURCES += Wilder.cpp
 SOURCES += WMA.cpp
 SOURCES += Strip.cpp
+SOURCES += PlotDrawInfo.cpp
 
 
 

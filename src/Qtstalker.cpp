@@ -97,6 +97,9 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   config.getData(Config::IndicatorPluginPath, path);
   pfac.getPluginList(path, l);
   config.setData(Config::IndicatorPluginList, l);
+  config.getData(Config::DBPluginPath, path);
+  pfac.getPluginList(path, l);
+  config.setData(Config::DBPluginList, l);
   
   GroupDataBase gdb;
   gdb.init();
@@ -111,6 +114,8 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   CODataBase codb;
   codb.init();
 
+  setup.setupDefaultSymbol();
+  
   _assistant = new Assistant;
 
   createActions();

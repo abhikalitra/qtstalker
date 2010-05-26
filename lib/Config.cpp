@@ -407,6 +407,13 @@ void Config::init (QString session)
     setData(ExchangeFileSize, d);
   }
 
+  getData(DefaultSymbol, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setData(DefaultSymbol, d);
+  }
+
   commit();
 }
 

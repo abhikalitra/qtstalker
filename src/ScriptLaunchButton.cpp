@@ -22,12 +22,12 @@
 #include "ScriptLaunchButton.h"
 #include "Config.h"
 #include "ScriptDataBase.h"
-#include "PrefDialog.h"
 
 #include "../pics/configure.xpm"
 
 #include <QPixmap>
 #include <QCursor>
+#include <QInputDialog>
 
 ScriptLaunchButton::ScriptLaunchButton (int pos, int label)
 {
@@ -75,35 +75,28 @@ void ScriptLaunchButton::configure ()
   ScriptDataBase db;
   QStringList l;
   db.getScripts(l);
+
+  int index = l.indexOf(_scriptName);
+
+  bool ok = FALSE;
+  QString s = QInputDialog::getItem(this,
+                                    tr("Configure Script Launcher"),
+                                    tr("Script"),
+                                    l,
+                                    index,
+                                    FALSE,
+                                    &ok,
+                                    0);
   
-  PrefDialog *dialog = new PrefDialog;
-  QString s = tr("Configure Script Launcher");
-  dialog->setWindowTitle(s);
-  s = tr("Settings");
-  int page = 0;
-  dialog->addPage(page, s);
-
-  int pos = 0;
-
-  s = tr("Script");
-  dialog->addComboItem(pos++, page, s, l, _scriptName);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
+  if (! ok)
     return;
-  }
 
-  pos = 0;
-  dialog->getItem(pos++, _scriptName);
+  _scriptName = s;
 
   Config config;
   config.setData((Config::Parm) _position, _scriptName);
 
   setToolTip(_scriptName);
-  
-  delete dialog;
 }
 
 void ScriptLaunchButton::contextMenu()

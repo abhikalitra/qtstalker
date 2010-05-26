@@ -19,22 +19,20 @@
  *  USA.
  */
 
+#ifndef PLOT_DRAW_INFO_HPP
+#define PLOT_DRAW_INFO_HPP
 
-#ifndef SETUP_HPP
-#define SETUP_HPP
+#include "PlotData.h"
+#include "Indicator.h"
+#include "DateBar.h"
 
-#include <QString>
-
-class Setup
+class PlotDrawInfo
 {
   public:
-    Setup ();
-    void setupDirectories ();
-    void setupDefaultIndicators ();
-    void setupExchanges ();
-    void setupFutures ();
-    void setupDefaultSymbol ();
+    PlotDrawInfo ();
+    void draw (PlotData &, Indicator &, DateBar &);
 };
 
 #endif
+
 

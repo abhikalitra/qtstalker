@@ -87,7 +87,7 @@ class Config : public BaseConfig
       ScriptLaunchButton10, // script panel launch button 10
       ScriptLaunchButton11, // script panel launch button 11
       ScriptLaunchButton12, // script panel launch button 12
-      ShowCmpsWkyButton, // ********* UNUSED *************
+      DefaultSymbol, // default symbol flag used in Setup::
       ShowCmpsMtyButton, // ********* UNUSED *************
       Unused11, // ********* UNUSED *************
       DbFirstDate, // the sql command to get the first date for a symbol
