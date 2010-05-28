@@ -22,7 +22,6 @@
 #ifndef AD_HPP
 #define AD_HPP
 
-
 #include "IndicatorPlugin.h"
 
 class AD : public IndicatorPlugin
@@ -43,15 +42,15 @@ class AD : public IndicatorPlugin
 
     AD ();
     int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
-    int getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
+    int getCUS_AD (QStringList &, Indicator &, BarData *);
+    int getCUS_ADOSC (QStringList &, Indicator &, BarData *);
     PlotLine * getAD (BarData *data, int, QColor &);
     PlotLine * getADOSC (BarData *data, int fast, int slow, int lineType, QColor &color);
     int dialog (int);
 
   private:
-    QStringList methodList;
+    QStringList _methodList;
 };
 
 extern "C"

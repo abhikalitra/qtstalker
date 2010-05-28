@@ -42,13 +42,13 @@ class CORREL : public IndicatorPlugin
 
     CORREL ();
     int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
     PlotLine * getCORREL (PlotLine *in, PlotLine *in2, int period, int, QColor &);
     int dialog (int);
 
-  private:
-    QString input2Key;
-    QString hlineColorKey;
+//  private:
+//    QString _input2Key;
+//    QString _hlineColorKey;
 };
 
 extern "C"

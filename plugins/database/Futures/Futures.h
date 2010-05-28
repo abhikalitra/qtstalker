@@ -45,7 +45,7 @@ class Futures : public DBPlugin
     void getBars (BarData &);
     void setBars ();
     int createTable (BarData *);
-    int scriptCommand (QStringList &, QHash<QString, PlotLine *> &);
+    int scriptCommand (QStringList &, Indicator &);
     int addParms (BarData *);
     
     int scriptSetQuote (QStringList &);
@@ -55,7 +55,7 @@ class Futures : public DBPlugin
     int scriptSetYear (QStringList &);
     int scriptSaveQuotes (QStringList &l);
     int scriptDelete (QStringList &l);
-    int scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &tlines);
+    int scriptGetQuotes (QStringList &, Indicator &);
     int scriptRename (QStringList &l);
 
   protected:

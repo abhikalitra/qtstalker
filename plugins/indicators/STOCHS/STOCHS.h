@@ -48,7 +48,7 @@ class STOCHS : public IndicatorPlugin
 
     STOCHS ();
     int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
     int dialog (int);
     int getSTOCHS (BarData *data, int fkperiod, int skperiod, int sdperiod, int kma, int dma,
                    int klineType, QColor &kcolor, int dlineType, QColor &dcolor, QList<PlotLine *> &pl);

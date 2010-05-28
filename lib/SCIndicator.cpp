@@ -23,6 +23,7 @@
 #include "PluginFactory.h"
 #include "PlotLineBar.h"
 #include "PlotFactory.h"
+#include "PlotLine.h"
 
 #include <QtDebug>
 
@@ -31,8 +32,7 @@ SCIndicator::SCIndicator ()
   methodList << "NEW" << "GET_INDEX" << "GET_RANGE" << "PLUGIN" << "SET_INDEX" << "SET_COLOR";
 }
 
-int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
-			    BarData *data, QString &path)
+int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data, QString &path)
 {
   // format = INDICATOR,PLUGIN,*
   int rc = 1;
@@ -48,22 +48,22 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
   switch ((Method) methodList.indexOf(l[1]))
   {
     case NEW:
-      rc = getNew(l, ba, tlines, data);
+      rc = getNew(l, ba, ind, data);
       break;
     case GET_INDEX:
-      rc = getIndex(l, ba, tlines);
+      rc = getIndex(l, ba, ind);
       break;
     case GET_RANGE:
-      rc = getRange(l, ba, tlines);
+      rc = getRange(l, ba, ind);
       break;
     case PLUGIN:
-      rc = getPlugin(l, ba, tlines, data, path);
+      rc = getPlugin(l, ba, ind, data, path);
       break;
     case SET_INDEX:
-      rc = setIndex(l, ba, tlines);
+      rc = setIndex(l, ba, ind);
       break;
     case SET_COLOR:
-      rc = setColor(l, ba, tlines);
+      rc = setColor(l, ba, ind);
       break;
     default:
       qDebug() << "SCIndicator::calculate: invalid method" << l[1];
@@ -73,7 +73,7 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, QHash<QString, PlotL
   return rc;
 }
 
-int SCIndicator::getNew (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines, BarData *data)
+int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data)
 {
   // INDICATOR,NEW,<METHOD>,<NAME>,<LINE TYPE>,<COLOR>
   //     0      1     2        3        4         5
@@ -116,7 +116,7 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, QHash<QString, PlotLine
     case 0:
     {
       // check if name already exists
-      out = tlines.value(l[3]);
+      out = ind.line(l[3]);
       if (out)
       {
         qDebug() << "SCIndicator::getNew: name already exists" << l[3];
@@ -138,7 +138,7 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, QHash<QString, PlotLine
 
   out->setLabel(l[3]);
   
-  tlines.insert(l[3], out);
+  ind.setLine(l[3], out);
 
   ba.clear();
   ba.append("0\n");
@@ -146,7 +146,7 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, QHash<QString, PlotLine
   return 0;
 }
 
-int SCIndicator::getIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
+int SCIndicator::getIndex (QStringList &l, QByteArray &ba, Indicator &ind)
 {
   // INDICATOR,GET_INDEX,<INPUT>,<INDEX>
   //     0         1        2       3
@@ -157,7 +157,7 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
     return 1;
   }
 
-  PlotLine *line = tlines.value(l[2]);
+  PlotLine *line = ind.line(l[2]);
   if (! line)
   {
     qDebug() << "SCIndicator::getIndex: invalid input" << l[2];
@@ -186,7 +186,7 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
   return 0;
 }
 
-int SCIndicator::setIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
+int SCIndicator::setIndex (QStringList &l, QByteArray &ba, Indicator &ind)
 {
   // INDICATOR,SET_INDEX,<NAME>,<INDEX>,<VALUE>,<COLOR>
   //     0         1        2       3       4      5
@@ -197,7 +197,7 @@ int SCIndicator::setIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
     return 1;
   }
 
-  PlotLine *line = tlines.value(l[2]);
+  PlotLine *line = ind.line(l[2]);
   if (! line)
   {
     qDebug() << "SCIndicator::setIndex: name not found" << l[2];
@@ -234,7 +234,7 @@ int SCIndicator::setIndex (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
   return 0;
 }
 
-int SCIndicator::getRange (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
+int SCIndicator::getRange (QStringList &l, QByteArray &ba, Indicator &ind)
 {
   // INDICATOR,GET_RANGE,<INPUT>
   //      0       1         2
@@ -245,7 +245,7 @@ int SCIndicator::getRange (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
     return 1;
   }
 
-  PlotLine *line = tlines.value(l[2]);
+  PlotLine *line = ind.line(l[2]);
   if (! line)
   {
     qDebug() << "SCIndicator::getRange: invalid input" << l[2];
@@ -262,7 +262,7 @@ int SCIndicator::getRange (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
   return 0;
 }
 
-int SCIndicator::setColor (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines)
+int SCIndicator::setColor (QStringList &l, QByteArray &ba, Indicator &ind)
 {
   // INDICATOR,SET_COLOR,<NAME>,<INDEX>,<COLOR>
   //     0         1        2      3       4
@@ -273,7 +273,7 @@ int SCIndicator::setColor (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
     return 1;
   }
 
-  PlotLine *line = tlines.value(l[2]);
+  PlotLine *line = ind.line(l[2]);
   if (! line)
   {
     qDebug() << "SCIndicator::setColor: name not found" << l[2];
@@ -310,8 +310,7 @@ int SCIndicator::setColor (QStringList &l, QByteArray &ba, QHash<QString, PlotLi
   return 0;
 }
 
-int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotLine *> &tlines,
-			    BarData *data, QString &path)
+int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data, QString &path)
 {
   // INDICATOR,PLUGIN,<PLUGIN>,*
   //     0       1       2
@@ -327,8 +326,8 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, QHash<QString, PlotL
   if (! ip)
     return 1;
   
-  int rc = ip->getCUS(l, tlines, data);
-  if (ip->getDeleteFlag())
+  int rc = ip->getCUS(l, ind, data);
+  if (ip->deleteFlag())
     delete ip;
 
   ba.clear();

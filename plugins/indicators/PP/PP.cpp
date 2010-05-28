@@ -27,26 +27,26 @@
 
 PP::PP ()
 {
-  indicator = "PP";
+  _indicator = "PP";
 
-  settings.setData(R1Color, "red");
-  settings.setData(R2Color, "red");
-  settings.setData(R3Color, "red");
-  settings.setData(S1Color, "red");
-  settings.setData(S2Color, "red");
-  settings.setData(S3Color, "red");
-  settings.setData(R1Label, "1R");
-  settings.setData(R2Label, "2R");
-  settings.setData(R3Label, "3R");
-  settings.setData(S1Label, "1S");
-  settings.setData(S2Label, "2S");
-  settings.setData(S3Label, "3S");
-  settings.setData(R1Show, 1);
-  settings.setData(R2Show, 1);
-  settings.setData(R3Show, 1);
-  settings.setData(S1Show, 1);
-  settings.setData(S2Show, 1);
-  settings.setData(S3Show, 1);
+  _settings.setData(R1Color, "red");
+  _settings.setData(R2Color, "red");
+  _settings.setData(R3Color, "red");
+  _settings.setData(S1Color, "red");
+  _settings.setData(S2Color, "red");
+  _settings.setData(S3Color, "red");
+  _settings.setData(R1Label, "1R");
+  _settings.setData(R2Label, "2R");
+  _settings.setData(R3Label, "3R");
+  _settings.setData(S1Label, "1S");
+  _settings.setData(S2Label, "2S");
+  _settings.setData(S3Label, "3S");
+  _settings.setData(R1Show, 1);
+  _settings.setData(R2Show, 1);
+  _settings.setData(R3Show, 1);
+  _settings.setData(S1Show, 1);
+  _settings.setData(S2Show, 1);
+  _settings.setData(S3Show, 1);
 }
 
 int PP::getIndicator (Indicator &ind, BarData *data)
@@ -57,117 +57,139 @@ int PP::getIndicator (Indicator &ind, BarData *data)
   BARSUtils b;
   PlotLine *bars = b.getBARS(data, up, down, neutral);
   if (bars)
-    ind.addLine(bars);
+  {
+    QString s = "0";
+    ind.setLine(s, bars);
+    ind.addPlotOrder(s);
+  }
   
   QString s;
   // 1R line
-  if (settings.getInt(R1Show))
+  if (_settings.getInt(R1Show))
   {
-    settings.getData(R1Color, s);
+    _settings.getData(R1Color, s);
     QColor color(s);
 
     PlotLine *line = getPP(data, 0, color);
     if (line)
     {
-      settings.getData(R1Label, s);
+      _settings.getData(R1Label, s);
       line->setLabel(s);
-      ind.addLine(line);
+      
+      s = "1";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
     }
   }
 
   // 2R line
-  if (settings.getInt(R2Show))
+  if (_settings.getInt(R2Show))
   {
-    settings.getData(R2Color, s);
+    _settings.getData(R2Color, s);
     QColor color(s);
 
     PlotLine *line = getPP(data, 1, color);
     if (line)
     {
-      settings.getData(R2Label, s);
+      _settings.getData(R2Label, s);
       line->setLabel(s);
-      ind.addLine(line);
+      
+      s = "2";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
     }
   }
 
   // 3R line
-  if (settings.getInt(R3Show))
+  if (_settings.getInt(R3Show))
   {
-    settings.getData(R3Color, s);
+    _settings.getData(R3Color, s);
     QColor color(s);
 
     PlotLine *line = getPP(data, 2, color);
     if (line)
     {
-      settings.getData(R3Label, s);
+      _settings.getData(R3Label, s);
       line->setLabel(s);
-      ind.addLine(line);
+      
+      s = "3";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
     }
   }
 
   // 1S line
-  if (settings.getInt(S1Show))
+  if (_settings.getInt(S1Show))
   {
-    settings.getData(S1Color, s);
+    _settings.getData(S1Color, s);
     QColor color(s);
 
     PlotLine *line = getPP(data, 3, color);
     if (line)
     {
-      settings.getData(S1Label, s);
+      _settings.getData(S1Label, s);
       line->setLabel(s);
-      ind.addLine(line);
+      
+      s = "4";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
     }
   }
 
   // 2S line
-  if (settings.getInt(S2Show))
+  if (_settings.getInt(S2Show))
   {
-    settings.getData(S2Color, s);
+    _settings.getData(S2Color, s);
     QColor color(s);
 
     PlotLine *line = getPP(data, 4, color);
     if (line)
     {
-      settings.getData(S2Label, s);
+      _settings.getData(S2Label, s);
       line->setLabel(s);
-      ind.addLine(line);
+      
+      s = "5";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
     }
   }
 
   // 3S line
-  if (settings.getInt(S3Show))
+  if (_settings.getInt(S3Show))
   {
-    settings.getData(S3Color, s);
+    _settings.getData(S3Color, s);
     QColor color(s);
 
     PlotLine *line = getPP(data, 5, color);
     if (line)
     {
-      settings.getData(S3Label, s);
+      _settings.getData(S3Label, s);
       line->setLabel(s);
-      ind.addLine(line);
+      
+      s = "6";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
     }
   }
 
   return 0;
 }
 
-int PP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int PP::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,PP,<NAME>,<POINT>,<COLOR>
   //     0       1     2    3      4       5
 
   if (set.count() != 6)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -175,14 +197,14 @@ int PP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int point = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid point" << set[4];
+    qDebug() << _indicator << "::getCUS: invalid point" << set[4];
     return 1;
   }
   else
   {
     if (point < 0 || point > 5)
     {
-      qDebug() << indicator << "::getCUS: invalid point" << set[4];
+      qDebug() << _indicator << "::getCUS: invalid point" << set[4];
       return 1;
     }
   }
@@ -190,7 +212,7 @@ int PP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   QColor color(set[5]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[5];
     return 1;
   }
 
@@ -200,7 +222,7 @@ int PP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -269,73 +291,73 @@ int PP::dialog (int)
   k = "R1";
   dialog->addPage(page, k);
 
-  settings.getData(R1Color, d);
+  _settings.getData(R1Color, d);
   dialog->addColorItem(R1Color, page, QObject::tr("Color"), d);
 
-  settings.getData(R1Label, d);
+  _settings.getData(R1Label, d);
   dialog->addTextItem(R1Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(R1Show, page, QObject::tr("Show"), settings.getInt(R1Show));
+  dialog->addCheckItem(R1Show, page, QObject::tr("Show"), _settings.getInt(R1Show));
 
   page++;
   k = "R2";
   dialog->addPage(page, k);
 
-  settings.getData(R2Color, d);
+  _settings.getData(R2Color, d);
   dialog->addColorItem(R2Color, page, QObject::tr("Color"), d);
 
-  settings.getData(R2Label, d);
+  _settings.getData(R2Label, d);
   dialog->addTextItem(R2Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(R2Show, page, QObject::tr("Show"), settings.getInt(R2Show));
+  dialog->addCheckItem(R2Show, page, QObject::tr("Show"), _settings.getInt(R2Show));
 
   page++;
   k = "R3";
   dialog->addPage(page, k);
 
-  settings.getData(R3Color, d);
+  _settings.getData(R3Color, d);
   dialog->addColorItem(R3Color, page, QObject::tr("Color"), d);
 
-  settings.getData(R3Label, d);
+  _settings.getData(R3Label, d);
   dialog->addTextItem(R3Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(R3Show, page, QObject::tr("Show"), settings.getInt(R3Show));
+  dialog->addCheckItem(R3Show, page, QObject::tr("Show"), _settings.getInt(R3Show));
 
   page++;
   k = "S1";
   dialog->addPage(page, k);
 
-  settings.getData(S1Color, d);
+  _settings.getData(S1Color, d);
   dialog->addColorItem(S1Color, page, QObject::tr("Color"), d);
 
-  settings.getData(S1Label, d);
+  _settings.getData(S1Label, d);
   dialog->addTextItem(S1Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(S1Show, page, QObject::tr("Show"), settings.getInt(S1Show));
+  dialog->addCheckItem(S1Show, page, QObject::tr("Show"), _settings.getInt(S1Show));
 
   page++;
   k = "S2";
   dialog->addPage(page, k);
 
-  settings.getData(S2Color, d);
+  _settings.getData(S2Color, d);
   dialog->addColorItem(S2Color, page, QObject::tr("Color"), d);
 
-  settings.getData(S2Label, d);
+  _settings.getData(S2Label, d);
   dialog->addTextItem(S2Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(S2Show, page, QObject::tr("Show"), settings.getInt(S2Show));
+  dialog->addCheckItem(S2Show, page, QObject::tr("Show"), _settings.getInt(S2Show));
 
   page++;
   k = "S3";
   dialog->addPage(page, k);
 
-  settings.getData(S3Color, d);
+  _settings.getData(S3Color, d);
   dialog->addColorItem(S3Color, page, QObject::tr("Color"), d);
 
-  settings.getData(S3Label, d);
+  _settings.getData(S3Label, d);
   dialog->addTextItem(S3Label, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(S3Show, page, QObject::tr("Show"), settings.getInt(S3Show));
+  dialog->addCheckItem(S3Show, page, QObject::tr("Show"), _settings.getInt(S3Show));
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

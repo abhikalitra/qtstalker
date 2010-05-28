@@ -31,28 +31,23 @@
 
 ExScript::ExScript (QString &ipp, QString &dbpp)
 {
-  indicatorPluginPath = ipp;
-  dbPluginPath = dbpp;
-  data = 0;
-  deleteFlag = 0;
-  killFlag = 0;
-  enterLong = 0;
-  exitLong = 0;
-  enterShort = 0;
-  exitShort = 0;
+  _indicatorPluginPath = ipp;
+  _dbPluginPath = dbpp;
+  _data = 0;
+  _killFlag = 0;
 
-  functionList << "CLEAR";
-  functionList << "INDICATOR";
-  functionList << "GROUP";
-  functionList << "PLOT";
-  functionList << "QUOTE";
-  functionList << "SYMBOL";
-  functionList << "TEST_ENTER_LONG" << "TEST_EXIT_LONG" << "TEST_ENTER_SHORT" << "TEST_EXIT_SHORT";
+  _functionList << "DELETE";
+  _functionList << "INDICATOR";
+  _functionList << "GROUP";
+  _functionList << "PLOT";
+  _functionList << "QUOTE";
+  _functionList << "SYMBOL";
+  _functionList << "TEST";
   
-  proc = new QProcess(this);
-  connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-  connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
-  connect(proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
+  _proc = new QProcess(this);
+  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+  connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 }
 
 ExScript::~ExScript ()
@@ -62,24 +57,16 @@ ExScript::~ExScript ()
 
 void ExScript::clear ()
 {
-  if (proc)
-    proc->kill();
+  if (_proc)
+    _proc->kill();
 
-  plotOrder.clear();
-
-  if (deleteFlag)
-    qDeleteAll(tlines);
-  tlines.clear();
-
-  enterLong = 0;
-  exitLong = 0;
-  enterShort = 0;
-  exitShort = 0;
+  _indicator.weedPlots();
+  _indicator.cleanClear();
 }
 
 void ExScript::setBarData (BarData *d)
 {
-  data = d;
+  _data = d;
 }
 
 int ExScript::calculate (QString &command)
@@ -88,10 +75,10 @@ int ExScript::calculate (QString &command)
   clear();
 
   // start the process
-  proc->start(command, QIODevice::ReadWrite);
+  _proc->start(command, QIODevice::ReadWrite);
 
   // make sure process starts error free
-  if (! proc->waitForStarted(10000))
+  if (! _proc->waitForStarted(10000))
   {
     qDebug() << "ExScript::calculate: error starting script...timed out";
     clear();
@@ -99,7 +86,7 @@ int ExScript::calculate (QString &command)
   }
 
   // wait until script is finished, this will block gui until done.
-  if (! proc->waitForFinished(10000))
+  if (! _proc->waitForFinished(10000))
   {
     qDebug() << "ExScript::calculate: script error, timed out";
     clear();
@@ -115,10 +102,10 @@ int ExScript::calculate2 (QString &command)
   clear();
 
   // start the process
-  proc->start(command, QIODevice::ReadWrite);
+  _proc->start(command, QIODevice::ReadWrite);
 
   // make sure process starts error free
-  if (! proc->waitForStarted(10000))
+  if (! _proc->waitForStarted(10000))
   {
     qDebug() << "ExScript::calculate: error starting script...timed out";
     return 1;
@@ -134,7 +121,7 @@ void ExScript::done (int, QProcess::ExitStatus)
 
 void ExScript::readFromStdout ()
 {
-  QByteArray ba = proc->readAllStandardOutput();
+  QByteArray ba = _proc->readAllStandardOutput();
   QString s(ba);
   QStringList l =  s.split(",");
   if (! l.count())
@@ -144,94 +131,64 @@ void ExScript::readFromStdout ()
   }
 
   ba.clear();
-  if (killFlag)
+  if (_killFlag)
   {
     qDebug() << "ExScript::readFromStdout: script terminated";
     clear();
     return;
   }
 
-  int i = functionList.indexOf(l[0]);
+  int i = _functionList.indexOf(l[0]);
   switch ((Function) i)
   {
-    case CLEAR:
+    case DELETE:
     {
       // we actually have to delete the lines if we call this function in scripts
       // not from qtstalker or we will delete actual plots
-      qDeleteAll(tlines);
-      tlines.clear();
-      plotOrder.clear();
-      proc->write("0\n");
+//      SCDelete sc;
+//      sc.calculate(l, ba, _indicator);
+//      proc->write(ba);
       break;
     }
     case INDICATOR:
     {
       SCIndicator sc;
-      sc.calculate(l, ba, tlines, data, indicatorPluginPath);
-      proc->write(ba);
+      sc.calculate(l, ba, _indicator, _data, _indicatorPluginPath);
+      _proc->write(ba);
       break;
     }
     case GROUP:
     {
       SCGroup sc;
       sc.calculate(l, ba);
-      proc->write(ba);
+      _proc->write(ba);
       break;
     }
     case PLOT:
     {
       SCPlot sc;
-      sc.calculate(l, plotOrder, tlines, ba);
-      proc->write(ba);
+      sc.calculate(l, _indicator, ba);
+      _proc->write(ba);
       break;
     }
     case QUOTE:
     {
-      quotes.calculate(l, ba, dbPluginPath, tlines);
-      proc->write(ba);
+      _quotes.calculate(l, ba, _dbPluginPath, _indicator);
+      _proc->write(ba);
       break;
     }
     case _SYMBOL:
     {
       SCSymbol sc;
       sc.calculate(l, ba);
-      proc->write(ba);
+      _proc->write(ba);
       break;
     }
-    case TEST_ENTER_LONG:
+    case TEST:
     {
-      SCTest sc;
-      enterLong = sc.getSig(l, tlines, ba);
-      if (! enterLong)
-	qDebug() << "ExScript::readFromStddout: no enterLong input";
-      proc->write(ba);
-      break;
-    }
-    case TEST_EXIT_LONG:
-    {
-      SCTest sc;
-      exitLong = sc.getSig(l, tlines, ba);
-      if (! exitLong)
-	qDebug() << "ExScript::readFromStddout: no exitLong input";
-      proc->write(ba);
-      break;
-    }
-    case TEST_ENTER_SHORT:
-    {
-      SCTest sc;
-      enterShort = sc.getSig(l, tlines, ba);
-      if (! enterShort)
-	qDebug() << "ExScript::readFromStddout: no enterShort input";
-      proc->write(ba);
-      break;
-    }
-    case TEST_EXIT_SHORT:
-    {
-      SCTest sc;
-      exitShort = sc.getSig(l, tlines, ba);
-      if (! exitShort)
-	qDebug() << "ExScript::readFromStddout: no exitShort input";
-      proc->write(ba);
+//      SCTest sc;
+//      sc.calculate(l, ba, _tlines);
+//      _proc->write(ba);
       break;
     }
     default:
@@ -246,26 +203,13 @@ void ExScript::readFromStdout ()
 
 void ExScript::readFromStderr ()
 {
-//  QByteArray ba = proc->readAllStandardError();
-//  QString s(ba);
-//  qDebug() << "ExScript::readFromStderr:" << s;
-  qDebug() << "ExScript::readFromStderr:" << proc->readAllStandardError();
+  qDebug() << "ExScript::readFromStderr:" << _proc->readAllStandardError();
 }
 
-void ExScript::getLines (QList<PlotLine *> &lines)
+Indicator & ExScript::indicator ()
 {
-  int loop;
-  for (loop = 0; loop < plotOrder.count(); loop++)
-    lines.append(tlines.value(plotOrder[loop]));
-
-  QHashIterator<QString, PlotLine *> it(tlines);
-  while (it.hasNext())
-  {
-    it.next();
-    if (! it.value()->plotFlag())
-      delete it.value();
-  }
-
+  _indicator.weedPlots();
+  return _indicator;
   clear();
 }
 
@@ -273,10 +217,10 @@ int ExScript::getState ()
 {
   int rc = 0;
 
-  if (! proc)
+  if (! _proc)
     return rc;
 
-  if (proc->state() != QProcess::NotRunning)
+  if (_proc->state() != QProcess::NotRunning)
     rc = 1;
 
   return rc;
@@ -284,37 +228,12 @@ int ExScript::getState ()
 
 void ExScript::stop ()
 {
-  if (! proc)
+  if (! _proc)
     return;
 
-  if (proc->state() == QProcess::NotRunning)
+  if (_proc->state() == QProcess::NotRunning)
     return;
 
-  killFlag = TRUE;
-}
-
-void ExScript::setDeleteFlag (int d)
-{
-  deleteFlag = d;
-}
-
-PlotLine * ExScript::getEnterLong ()
-{
-  return enterLong;
-}
-
-PlotLine * ExScript::getExitLong ()
-{
-  return exitLong;
-}
-
-PlotLine * ExScript::getEnterShort ()
-{
-  return enterShort;
-}
-
-PlotLine * ExScript::getExitShort ()
-{
-  return exitShort;
+  _killFlag = TRUE;
 }
 

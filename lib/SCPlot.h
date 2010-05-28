@@ -22,20 +22,16 @@
 #ifndef SCPLOT_HPP
 #define SCPLOT_HPP
 
-
 #include <QStringList>
-#include <QHash>
+#include <QByteArray>
 
-#include "PlotLine.h"
-
+#include "Indicator.h"
 
 class SCPlot
 {
   public:
     SCPlot ();
-    int calculate (QStringList &l, QStringList &plotOrder, QHash<QString, PlotLine *> &tlines, QByteArray &ba);
-
-  private:
+    int calculate (QStringList &, Indicator &, QByteArray &);
 };
 
 #endif

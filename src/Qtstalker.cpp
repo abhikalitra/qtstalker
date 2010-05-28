@@ -202,7 +202,7 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
     i.setName(l[loop]);
     idb.getIndicator(i);
 
-    if (i.getTabRow() > _tabList.count())
+    if (i.tabRow() > _tabList.count())
       continue;
 
     addIndicatorButton(l[loop]);
@@ -558,7 +558,7 @@ void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
   
   PluginFactory fac;
   QString s;
-  i.getIndicator(s);
+  s = i.indicator();
   IndicatorPlugin *ip = fac.getIndicator(path, s);
   if (! ip)
     return;
@@ -647,18 +647,18 @@ void QtstalkerApp::addIndicatorButton (QString d)
   i.setName(d);
   db.getIndicator(i);
 
-  if (! i.getEnable())
+  if (! i.enable())
     return;
 
-  if (i.getTabRow() > _tabList.count())
+  if (i.tabRow() > _tabList.count())
     return;
 
-  QTabWidget *it = _tabList.at(i.getTabRow() - 1);
+  QTabWidget *it = _tabList.at(i.tabRow() - 1);
 
   Plot *plot = new Plot(_baseWidget);
   _plotList.insert(d, plot);
-  plot->setDateFlag(i.getDate());
-  plot->setLogScale(i.getLog());
+  plot->setDateFlag(i.date());
+  plot->setLogScale(i.log());
 
   it->addTab(plot, d);
 

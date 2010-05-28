@@ -28,39 +28,39 @@
 
 NORMALIZE::NORMALIZE ()
 {
-  indicator = "NORMALIZE";
-  deleteFlag = TRUE;
+  _indicator = "NORMALIZE";
+  _deleteFlag = TRUE;
 }
 
-int NORMALIZE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int NORMALIZE::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,NORMALIZE,<NAME>,<INPUT>,<LINE_TYPE>,<COLOR>
   //     0        1       2       3       4         5         6
 
   if (set.count() != 7)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[4]);
+  PlotLine *in = ind.line(set[4]);
   if (! in)
   {
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::getCUS: input not found" << set[4];
+      qDebug() << _indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[4], in);
+    ind.setLine(set[4], in);
   }
 
   PlotFactory fac;
@@ -69,14 +69,14 @@ int NORMALIZE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
   int lineType = pl.indexOf(set[5]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[5];
     return 1;
   }
 
   QColor color(set[6]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[6];
     return 1;
   }
   
@@ -84,7 +84,7 @@ int NORMALIZE::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
   if (! line)
     return 1;
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }

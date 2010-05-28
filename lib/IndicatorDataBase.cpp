@@ -68,8 +68,7 @@ void IndicatorDataBase::init ()
 
 void IndicatorDataBase::getIndicator (Indicator &i)
 {
-  QString name;
-  i.getName(name);
+  QString name = i.name();
 
   QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "SELECT enable,tabRow,date,log,cus,indicator,settings FROM indicatorIndex WHERE name='" + name + "'";
@@ -100,17 +99,16 @@ void IndicatorDataBase::getIndicator (Indicator &i)
 
 void IndicatorDataBase::setIndicator (Indicator &i)
 {
-  QString name, enable, tabRow, date, log, cus, indicator, settings;
-  i.getName(name);
-  enable = QString::number(i.getEnable());
-  tabRow = QString::number(i.getTabRow());
-  date = QString::number(i.getDate());
-  log = QString::number(i.getLog());
-  cus = QString::number(i.getCUS());
-  i.getIndicator(indicator);
+  QString name = i.name();
+  QString enable = QString::number(i.enable());
+  QString tabRow = QString::number(i.tabRow());
+  QString date = QString::number(i.date());
+  QString log = QString::number(i.log());
+  QString cus = QString::number(i.CUS());
+  QString indicator = i.indicator();
 
-  Setting set;
-  i.getSettings(set);
+  Setting set = i.settings();
+  QString settings;
   set.getString(settings);
 
   transaction();
@@ -204,9 +202,8 @@ void IndicatorDataBase::getSearchIndicatorList (QString &pattern, QStringList &l
 
 void IndicatorDataBase::setIndicatorEnable (Indicator &i)
 {
-  QString name, enable;
-  i.getName(name);
-  enable = QString::number(i.getEnable());
+  QString name = i.name();
+  QString enable = QString::number(i.enable());
 
   QSqlQuery q(QSqlDatabase::database(dbName));
   QString s = "UPDATE indicatorIndex SET enable=" + enable + " WHERE name='" + name + "'";

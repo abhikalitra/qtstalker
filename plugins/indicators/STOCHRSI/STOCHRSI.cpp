@@ -32,17 +32,17 @@ STOCHRSI::STOCHRSI ()
   if (rc != TA_SUCCESS)
     qDebug("STOCHRSI::error on TA_Initialize");
 
-  indicator = "STOCHRSI";
+  _indicator = "STOCHRSI";
 
-  settings.setData(Color, "red");
-  settings.setData(Ref1Color, "white");
-  settings.setData(Ref2Color, "white");
-  settings.setData(Plot, "Line");
-  settings.setData(Label, "STOCHRSI");
-  settings.setData(Ref1, 0.2);
-  settings.setData(Ref2, 0.8);
-  settings.setData(Input, "Close");
-  settings.setData(Period, 14);
+  _settings.setData(Color, "red");
+  _settings.setData(Ref1Color, "white");
+  _settings.setData(Ref2Color, "white");
+  _settings.setData(Plot, "Line");
+  _settings.setData(Label, "STOCHRSI");
+  _settings.setData(Ref1, 0.2);
+  _settings.setData(Ref2, 0.8);
+  _settings.setData(Input, "Close");
+  _settings.setData(Period, 14);
 }
 
 int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
@@ -54,11 +54,14 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
-  settings.getData(Ref1Color, s);
+  _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, new PlotLineBar(color, (double) settings.getInt(Ref1)));
-  ind.addLine(line);
+  line->setData(0, new PlotLineBar(color, (double) _settings.getInt(Ref1)));
+  
+  s = "0";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   // create second ref line
   s = "Horizontal";
@@ -66,26 +69,29 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
-  settings.getData(Ref2Color, s);
+  _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, new PlotLineBar(color, (double) settings.getInt(Ref2)));
-  ind.addLine(line);
+  line->setData(0, new PlotLineBar(color, (double) _settings.getInt(Ref2)));
+  
+  s = "1";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
-  settings.getData(Input, s);
+  _settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << _indicator << "::calculate: input not found" << s;
     return 1;
   }
 
-  int period = settings.getInt(Period);
+  int period = _settings.getInt(Period);
 
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   color.setNamedColor(s);
 
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   line = getSTOCHRSI(in, period, lineType, color);
@@ -95,51 +101,54 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
   
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "2";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   delete in;
 
   return 0;
 }
 
-int STOCHRSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int STOCHRSI::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,STOCHRSI,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //    0        1       2       3       4       5          6         7
 
   if (set.count() != 8)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[4]);
+  PlotLine *in = ind.line(set[4]);
   if (! in)
   {
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::getCUS: input not found" << set[4];
+      qDebug() << _indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[4], in);
+    ind.setLine(set[4], in);
   }
 
   bool ok;
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid period" << set[5];
     return 1;
   }
 
@@ -147,14 +156,14 @@ int STOCHRSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   int lineType = fac.typeFromString(set[6]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[6];
     return 1;
   }
 
   QColor color(set[7]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[7];
     return 1;
   }
 
@@ -164,7 +173,7 @@ int STOCHRSI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -201,7 +210,7 @@ PlotLine * STOCHRSI::getSTOCHRSI (PlotLine *in, int period, int lineType, QColor
                               &out2[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getSTOCHRSI: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getSTOCHRSI: TA-Lib error" << rc;
     return 0;
   }
 
@@ -232,41 +241,41 @@ int STOCHRSI::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
 
   BarData bd;
   QStringList inputList;
   bd.getInputFields(inputList);
 
-  settings.getData(Input, d);
+  _settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
   page++;
   k = QObject::tr("Ref");
   dialog->addPage(page, k);
 
-  settings.getData(Ref1Color, d);
+  _settings.getData(Ref1Color, d);
   dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
 
-  settings.getData(Ref2Color, d);
+  _settings.getData(Ref2Color, d);
   dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
 
-  dialog->addDoubleItem(Ref1, page, QObject::tr("Ref. 1"), settings.getDouble(Ref1), 0.0, 1.0);
+  dialog->addDoubleItem(Ref1, page, QObject::tr("Ref. 1"), _settings.getDouble(Ref1), 0.0, 1.0);
 
-  dialog->addDoubleItem(Ref2, page, QObject::tr("Ref. 2"), settings.getDouble(Ref2), 0.0, 1.0);
+  dialog->addDoubleItem(Ref2, page, QObject::tr("Ref. 2"), _settings.getDouble(Ref2), 0.0, 1.0);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

@@ -34,43 +34,49 @@ class Indicator
 {
   public:
     Indicator ();
-    void setName(QString &);
-    void getName(QString &);
-    void setEnable(int);
-    int getEnable();
-    void setTabRow(int);
-    int getTabRow();
-    void setDate(int);
-    int getDate();
-    void setLog(int);
-    int getLog();
-    void setCUS(int);
-    int getCUS();
-    void setIndicator(QString &);
-    void getIndicator(QString &);
-    void setLines(QList<PlotLine *> &);
-    void getLines(QList<PlotLine *> &);
-    void setSettings(Setting &);
-    void getSettings(Setting &);
-    void addLine (PlotLine *);
+    void setName (QString &);
+    QString & name ();
+    void setEnable (int);
+    int enable ();
+    void setTabRow (int);
+    int tabRow ();
+    void setDate (int);
+    int date ();
+    void setLog (int);
+    int log ();
+    void setCUS (int);
+    int CUS ();
+    void setIndicator (QString &);
+    QString & indicator ();
+    void setLine (QString &, PlotLine *);
+    PlotLine * line (QString &);
+    void setSettings (Setting &);
+    Setting & settings ();
     void clear ();
-    void setChartObjects(QHash<QString, COPlugin *> &);
-    void getChartObjects(QHash<QString, COPlugin *> &);
+    void setChartObjects (QHash<QString, COPlugin *> &);
+    void getChartObjects (QHash<QString, COPlugin *> &);
     void addChartObject (COPlugin *);
     void clearChartObjects ();
     void deleteChartObject (QString &);
 
+    void addPlotOrder (QString &);
+    QStringList & plotOrder ();
+    void weedPlots ();
+    void cleanClear ();
+    void init ();
+
   protected:
-    QList<PlotLine *> lines;
-    QHash<QString, COPlugin *> chartObjects;
-    Setting settings;
-    QString name;
-    QString indicator;
-    int enable;
-    int tabRow;
-    int date;
-    int log;
-    int cus;
+    QHash<QString, PlotLine *> _lines;
+    QHash<QString, COPlugin *> _chartObjects;
+    Setting _settings;
+    QString _name;
+    QString _indicator;
+    QStringList _plotOrder;
+    int _enable;
+    int _tabRow;
+    int _date;
+    int _log;
+    int _cus;
 };
 
 #endif

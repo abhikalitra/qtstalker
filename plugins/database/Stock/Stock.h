@@ -42,12 +42,12 @@ class Stock : public DBPlugin
     void getBars (BarData &);
     void setBars ();
     int createTable (BarData *);
-    int scriptCommand (QStringList &, QHash<QString, PlotLine *> &);
+    int scriptCommand (QStringList &, Indicator &);
     int scriptSetQuote (QStringList &);
     int scriptSetName (QStringList &);
     int scriptSaveQuotes (QStringList &l);
     int scriptDelete (QStringList &l);
-    int scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &);
+    int scriptGetQuotes (QStringList &l, Indicator &);
     int scriptRename (QStringList &l);
     
   protected:

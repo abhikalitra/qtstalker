@@ -14,7 +14,10 @@ To Do:
 - add tooltips
 - interactive scripting
 - complete backtesting module
-- create some example quote scripts
+- chart object api
+- replace CLEAR script command with a specific DELETE command
+- BUG: running an indicator script from the script run menu segfaults.
+- add delete symbol option to the chart panel
 
 
 Priority

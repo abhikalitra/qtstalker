@@ -49,12 +49,12 @@ class ROC : public IndicatorPlugin
 
     ROC ();
     int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
     int dialog (int);
     PlotLine * getROC (PlotLine *in, int period, int method, int smoothing, int type, int, QColor &);
 
   protected:
-    QStringList methodList;
+    QStringList _methodList;
 };
 
 extern "C"

@@ -31,39 +31,39 @@ AROON::AROON ()
   if (rc != TA_SUCCESS)
     qDebug("AROON::error on TA_Initialize");
 
-  indicator = "AROON";
-  settings.setData(Method, "AROON");
-  settings.setData(DownColor, "red");
-  settings.setData(UpColor, "green");
-  settings.setData(DownPlot, "Line");
-  settings.setData(UpPlot, "Line");
-  settings.setData(DownLabel, "AROOND");
-  settings.setData(UpLabel, "AROONU");
-  settings.setData(OSCColor, "red");
-  settings.setData(OSCPlot, "Histogram Bar");
-  settings.setData(OSCLabel, "AROONOSC");
-  settings.setData(Period, 14);
+  _indicator = "AROON";
+  _settings.setData(Method, "AROON");
+  _settings.setData(DownColor, "red");
+  _settings.setData(UpColor, "green");
+  _settings.setData(DownPlot, "Line");
+  _settings.setData(UpPlot, "Line");
+  _settings.setData(DownLabel, "AROOND");
+  _settings.setData(UpLabel, "AROONU");
+  _settings.setData(OSCColor, "red");
+  _settings.setData(OSCPlot, "Histogram Bar");
+  _settings.setData(OSCLabel, "AROONOSC");
+  _settings.setData(Period, 14);
 
-  methodList << "AROON";
-  methodList << "OSC";
+  _methodList << "AROON";
+  _methodList << "OSC";
 }
 
 int AROON::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(Method, s);
-  int method = methodList.indexOf(s);
+  _settings.getData(Method, s);
+  int method = _methodList.indexOf(s);
 
-  int period = settings.getInt(Period);
+  int period = _settings.getInt(Period);
 
   switch (method)
   {
     case 1:
     {
-      settings.getData(OSCColor, s);
+      _settings.getData(OSCColor, s);
       QColor color(s);
 
-      settings.getData(OSCPlot, s);
+      _settings.getData(OSCPlot, s);
       PlotFactory fac;
       int lineType = fac.typeFromString(s);
 
@@ -71,25 +71,28 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
       if (! line)
         return 1;
 
-      settings.getData(OSCLabel, s);
+      _settings.getData(OSCLabel, s);
       line->setLabel(s);
-      ind.addLine(line);
+
+      s = "0";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
       break;
     }
     default:
     {
       // get arron up line
-      settings.getData(UpColor, s);
+      _settings.getData(UpColor, s);
       QColor ucolor(s);
 
-      settings.getData(DownColor, s);
+      _settings.getData(DownColor, s);
       QColor dcolor(s);
 
       PlotFactory fac;
-      settings.getData(UpPlot, s);
+      _settings.getData(UpPlot, s);
       int ulineType = fac.typeFromString(s);
 
-      settings.getData(DownPlot, s);
+      _settings.getData(DownPlot, s);
       int dlineType = fac.typeFromString(s);
 
       QList<PlotLine *> pl;
@@ -97,14 +100,20 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
         return 1;
 
       PlotLine *line = pl.at(0);
-      settings.getData(UpLabel, s);
+      _settings.getData(UpLabel, s);
       line->setLabel(s);
-      ind.addLine(line);
+      
+      s = "1";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
 
       line = pl.at(1);
-      settings.getData(DownLabel, s);
+      _settings.getData(DownLabel, s);
       line->setLabel(s);
-      ind.addLine(line);
+      
+      s = "2";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
       break;
     }
   }
@@ -112,26 +121,26 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int AROON::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int AROON::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,AROON,<METHOD>,*
   //     0       1      2      3
 
   if (set.count() < 4)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
   int rc = 1;
-  int method = methodList.indexOf(set[3]);
+  int method = _methodList.indexOf(set[3]);
   switch (method)
   {
     case 0:
-      rc = getCUSAROON(set, tlines, data);
+      rc = getCUSAROON(set, ind, data);
       break;
     case 1:
-      rc = getCUSOSC(set, tlines, data);
+      rc = getCUSOSC(set, ind, data);
       break;
     default:
       break;
@@ -140,28 +149,28 @@ int AROON::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   return rc;
 }
 
-int AROON::getCUSAROON (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int AROON::getCUSAROON (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,AROON,<METHOD>,<UPPER NAME>,<LOWER NAME>,<PERIOD>,<UPPER PLOT TYPE>,<LOWER PLOT TYPE>,<UPPER COLOR>,<LOWER COLOR>
   //     0       1      2      3           4            5          6            7                 8               9              10       
 
   if (set.count() != 11)
   {
-    qDebug() << indicator << "::getCUSAROON: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUSAROON: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
+  PlotLine *tl = ind.line(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUSAROON: duplicate upper name" << set[4];
+    qDebug() << _indicator << "::getCUSAROON: duplicate upper name" << set[4];
     return 1;
   }
 
-  tl = tlines.value(set[5]);
+  tl = ind.line(set[5]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUSAROON: duplicate lower name" << set[5];
+    qDebug() << _indicator << "::getCUSAROON: duplicate lower name" << set[5];
     return 1;
   }
 
@@ -169,7 +178,7 @@ int AROON::getCUSAROON (QStringList &set, QHash<QString, PlotLine *> &tlines, Ba
   int period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUSAROON: invalid period" << set[6];
+    qDebug() << _indicator << "::getCUSAROON: invalid period" << set[6];
     return 1;
   }
 
@@ -177,28 +186,28 @@ int AROON::getCUSAROON (QStringList &set, QHash<QString, PlotLine *> &tlines, Ba
   int ulineType = fac.typeFromString(set[7]);
   if (ulineType == -1)
   {
-    qDebug() << indicator << "::getCUSAROON: invalid upper plot type" << set[7];
+    qDebug() << _indicator << "::getCUSAROON: invalid upper plot type" << set[7];
     return 1;
   }
 
   int dlineType = fac.typeFromString(set[8]);
   if (dlineType == -1)
   {
-    qDebug() << indicator << "::getCUSAROON: invalid lower plot type" << set[8];
+    qDebug() << _indicator << "::getCUSAROON: invalid lower plot type" << set[8];
     return 1;
   }
 
   QColor ucolor(set[9]);
   if (! ucolor.isValid())
   {
-    qDebug() << indicator << "::getCUSAROON: invalid upper color" << set[9];
+    qDebug() << _indicator << "::getCUSAROON: invalid upper color" << set[9];
     return 1;
   }
 
   QColor lcolor(set[10]);
   if (! lcolor.isValid())
   {
-    qDebug() << indicator << "::getCUSAROON: invalid lower color" << set[10];
+    qDebug() << _indicator << "::getCUSAROON: invalid lower color" << set[10];
     return 1;
   }
 
@@ -209,27 +218,27 @@ int AROON::getCUSAROON (QStringList &set, QHash<QString, PlotLine *> &tlines, Ba
   pl.at(0)->setLabel(set[4]);
   pl.at(1)->setLabel(set[5]);
   
-  tlines.insert(set[4], pl.at(0));
-  tlines.insert(set[5], pl.at(1));
+  ind.setLine(set[4], pl.at(0));
+  ind.setLine(set[5], pl.at(1));
 
   return 0;
 }
 
-int AROON::getCUSOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int AROON::getCUSOSC (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,AROON,<METHOD>,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1      2      3       4       5          6         7
 
   if (set.count() != 8)
   {
-    qDebug() << indicator << "::getCUSOSC: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUSOSC: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
+  PlotLine *tl = ind.line(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUSOSC: duplicate name" << set[4];
+    qDebug() << _indicator << "::getCUSOSC: duplicate name" << set[4];
     return 1;
   }
 
@@ -237,7 +246,7 @@ int AROON::getCUSOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUSOSC: invalid period" << set[5];
+    qDebug() << _indicator << "::getCUSOSC: invalid period" << set[5];
     return 1;
   }
 
@@ -245,14 +254,14 @@ int AROON::getCUSOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   int lineType = fac.typeFromString(set[6]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUSOSC: invalid plot type" << set[6];
+    qDebug() << _indicator << "::getCUSOSC: invalid plot type" << set[6];
     return 1;
   }
 
   QColor color(set[7]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUSOSC: invalid color" << set[7];
+    qDebug() << _indicator << "::getCUSOSC: invalid color" << set[7];
     return 1;
   }
 
@@ -262,7 +271,7 @@ int AROON::getCUSOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
 
   line->setLabel(set[4]);
 
-  tlines.insert(set[4], line);
+  ind.setLine(set[4], line);
 
   return 0;
 }
@@ -300,7 +309,7 @@ int AROON::getAROON (BarData *data, int period, int ulineType, int llineType, QC
                            &uout[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getAROON: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getAROON: TA-Lib error" << rc;
     return 1;
   }
 
@@ -364,7 +373,7 @@ PlotLine * AROON::getOSC (BarData *data, int period, int lineType, QColor &color
                               &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getAROONOSC: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getAROONOSC: TA-Lib error" << rc;
     return 0;
   }
 
@@ -395,48 +404,48 @@ int AROON::dialog (int)
   k = QObject::tr("General");
   dialog->addPage(page, k);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
 
-  settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
+  _settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), _methodList, d);
 
   page++;
   k = QObject::tr("Aroon");
   dialog->addPage(page, k);
 
-  settings.getData(UpColor, d);
+  _settings.getData(UpColor, d);
   dialog->addColorItem(UpColor, page, QObject::tr("Up Color"), d);
 
-  settings.getData(DownColor, d);
+  _settings.getData(DownColor, d);
   dialog->addColorItem(DownColor, page, QObject::tr("Down Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(UpPlot, d);
+  _settings.getData(UpPlot, d);
   dialog->addComboItem(UpPlot, page, QObject::tr("Up Plot"), plotList, d);
 
-  settings.getData(DownPlot, d);
+  _settings.getData(DownPlot, d);
   dialog->addComboItem(DownPlot, page, QObject::tr("Down Plot"), plotList, d);
 
-  settings.getData(UpLabel, d);
+  _settings.getData(UpLabel, d);
   dialog->addTextItem(UpLabel, page, QObject::tr("Up Label"), d);
 
-  settings.getData(DownLabel, d);
+  _settings.getData(DownLabel, d);
   dialog->addTextItem(DownLabel, page, QObject::tr("Down Label"), d);
 
   page++;
   k = QObject::tr("OSC");
   dialog->addPage(page, k);
 
-  settings.getData(OSCColor, d);
+  _settings.getData(OSCColor, d);
   dialog->addColorItem(OSCColor, page, QObject::tr("Color"), d);
 
-  settings.getData(OSCPlot, d);
+  _settings.getData(OSCPlot, d);
   dialog->addComboItem(OSCPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(OSCLabel, d);
+  _settings.getData(OSCLabel, d);
   dialog->addTextItem(OSCLabel, page, QObject::tr("Label"), d);
 
   int rc = dialog->exec();

@@ -52,14 +52,13 @@ void PlotDrawInfo::draw (PlotData &pd, Indicator &indicator, DateBar &dateBars)
   painter.drawText(pos, 10, s);
   pos = pos + fm.width(s);
   
-  QList<PlotLine *> plotList;
-  indicator.getLines(plotList);
-  
-  int loop;
+  QStringList plotList = indicator.plotOrder();
+  int loop = 0;
   Strip strip;
-  for (loop = 0; loop < plotList.count(); loop++)
+  for (; loop < plotList.count(); loop++)
   {
-    PlotLine *line = plotList.at(loop);
+    QString ts = plotList.at(loop);
+    PlotLine *line = indicator.line(ts);
       
     if (! line->count())
       continue;

@@ -149,13 +149,12 @@ void Plot::drawRefresh ()
 void Plot::drawLines ()
 {
   PlotFactory fac;
-  int loop;
-  QList<PlotLine *> plotList;
-  _indicator.getLines(plotList);
-  
-  for (loop = 0; loop < plotList.count(); loop++)
+  int loop = 0;
+  QStringList plotList = _indicator.plotOrder();
+  for (; loop < plotList.count(); loop++)
   {
-    PlotLine *line = plotList.at(loop);
+    QString s = plotList.at(loop);
+    PlotLine *line = _indicator.line(s);
 
     if (! line->count())
       continue;
@@ -235,13 +234,12 @@ void Plot::setScale ()
   double tscaleHigh = -99999999;
   double tscaleLow = 99999999;
 
-  QList<PlotLine *> plotList;
-  _indicator.getLines(plotList);
-  
-  int loop;
-  for (loop = 0; loop < plotList.count(); loop++)
+  int loop = 0;
+  QStringList plotList = _indicator.plotOrder();
+  for (; loop < plotList.count(); loop++)
   {
-    PlotLine *line = plotList.at(loop);
+    QString s = plotList.at(loop);
+    PlotLine *line = _indicator.line(s);
 
     double h, l;
     if (line->highLowRange(_plotData.startIndex, _plotData.endIndex, h, l))
@@ -291,7 +289,7 @@ void Plot::setScale ()
   // handle log scaling if toggled
   double tlogScaleHigh = 1;
   double tlogRange = 0;
-  if (_indicator.getLog())
+  if (_indicator.log())
   {
     tlogScaleHigh = tscaleHigh > 0.0 ? log(tscaleHigh) : 1;
     double tlogScaleLow = tscaleLow > 0.0 ? log(tscaleLow) : 0;
@@ -303,7 +301,7 @@ void Plot::setScale ()
               tscaleLow,
               tlogScaleHigh,
               tlogRange,
-              _indicator.getLog());
+              _indicator.log());
 }
 
 //*********************************************************************
@@ -611,7 +609,7 @@ void Plot::clear ()
 
 void Plot::toggleDate ()
 {
-  int flag = _indicator.getDate();
+  int flag = _indicator.date();
   if (flag == FALSE)
     flag = TRUE;
   else
@@ -624,7 +622,7 @@ void Plot::toggleDate ()
 
 void Plot::toggleLog ()
 {
-  int flag = _indicator.getLog();
+  int flag = _indicator.log();
   if (flag == FALSE)
     flag = TRUE;
   else
@@ -678,7 +676,7 @@ void Plot::setLogScale (bool d)
 
 bool Plot::logScale ()
 {
-  return _indicator.getLog();
+  return _indicator.log();
 }
 
 void Plot::setInterval (Bar::BarLength d)
@@ -821,9 +819,7 @@ void Plot::newChartObject (QString selection)
   _coSelected->setSymbol(_symbol);
   _coSelected->setExchange(_exchange);
   
-  QString s;
-  _indicator.getName(s);
-  _coSelected->setIndicator(s);
+  _coSelected->setIndicator(_indicator.name());
   
   _coSelected->create();
   
@@ -915,13 +911,11 @@ void Plot::loadChartObjects ()
 
   _indicator.clearChartObjects();
 
-  QString s;
-  _indicator.getName(s);
   CODataBase db;
   BarData bd;
   bd.setExchange(_exchange);
   bd.setSymbol(_symbol);
-  db.getChartObjects(&bd, s, _indicator);
+  db.getChartObjects(&bd, _indicator.name(), _indicator);
 }
 
 void Plot::objectDialog ()

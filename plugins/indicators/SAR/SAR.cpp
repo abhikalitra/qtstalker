@@ -32,19 +32,19 @@ SAR::SAR ()
   if (rc != TA_SUCCESS)
     qDebug("SAR::error on TA_Initialize");
 
-  indicator = "SAR";
+  _indicator = "SAR";
 
-  settings.setData(Color, "yellow");
-  settings.setData(Plot, "Dot");
-  settings.setData(Label, indicator);
-  settings.setData(Init, 0.02);
-  settings.setData(Max, 0.2);
+  _settings.setData(Color, "yellow");
+  _settings.setData(Plot, "Dot");
+  _settings.setData(Label, _indicator);
+  _settings.setData(Init, 0.02);
+  _settings.setData(Max, 0.2);
 }
 
 int SAR::getIndicator (Indicator &ind, BarData *data)
 {
-  double tinit = settings.getDouble(Init);
-  double tmax = settings.getDouble(Max);
+  double tinit = _settings.getDouble(Init);
+  double tmax = _settings.getDouble(Max);
 
   QColor up("green");
   QColor down("red");
@@ -52,42 +52,49 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
   BARSUtils b;
   PlotLine *bars = b.getBARS(data, up, down, neutral);
   if (bars)
-    ind.addLine(bars);
+  {
+    QString s = "0";
+    ind.setLine(s, bars);
+    ind.addPlotOrder(s);
+  }
 
   QString s;
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   QColor color(s);
 
   PlotFactory fac;
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   PlotLine *line = getSAR(data, tinit, tmax, lineType, color);
   if (! line)
     return 1;
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "1";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   return 0;
 }
 
-int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int SAR::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>,<PLOT TYPE>,<COLOR>
   //      0       1    2     3         4            5           6         7
 
   if (set.count() != 8)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -95,14 +102,14 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   double init = set[4].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid init" << set[4];
+    qDebug() << _indicator << "::getCUS: invalid init" << set[4];
     return 1;
   }
 
   double max = set[5].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid max" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid max" << set[5];
     return 1;
   }
 
@@ -110,14 +117,14 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int lineType = fac.typeFromString(set[6]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[6];
     return 1;
   }
 
   QColor color(set[7]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[7];
     return 1;
   }
 
@@ -127,7 +134,7 @@ int SAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -151,7 +158,7 @@ PlotLine * SAR::getSAR (BarData *data, double _init, double _max, int lineType, 
   TA_RetCode rc = TA_SAR(0, size - 1, &high[0], &low[0], _init, _max, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getSAR: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getSAR: TA-Lib error" << rc;
     return 0;
   }
 
@@ -176,15 +183,15 @@ int SAR::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addDoubleItem(Init, page, QObject::tr("Initial"), settings.getDouble(Init), 0.0, 100000.0);
+  dialog->addDoubleItem(Init, page, QObject::tr("Initial"), _settings.getDouble(Init), 0.0, 100000.0);
 
-  dialog->addDoubleItem(Max, page, QObject::tr("Max"), settings.getDouble(Max), 0.0, 100000.0);
+  dialog->addDoubleItem(Max, page, QObject::tr("Max"), _settings.getDouble(Max), 0.0, 100000.0);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

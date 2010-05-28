@@ -59,12 +59,12 @@ class ADX : public IndicatorPlugin
 
     ADX ();
     int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
     int dialog (int);
     PlotLine * getLine (BarData *data, int period, int method, int lineType, QColor &color);
 
   protected:
-    QStringList methodList;
+    QStringList _methodList;
 };
 
 extern "C"

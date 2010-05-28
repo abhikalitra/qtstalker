@@ -467,3 +467,9 @@
 
 20100526:  Added some example data loading and external scripts. Thanks to xley.
 
+20100527:  Internal changes to the indicator plugins to use Indicator:: when passing data.
+
+           Added patch #3007713 (Populate quotes db from Yahoo). This is a nice python script to download and
+           install quotes from yahoo. Added to the misc/CUS_examples section. I changed the name to
+           getYahooHistQuotes.py. Thanks to wolfch for the patch.
+

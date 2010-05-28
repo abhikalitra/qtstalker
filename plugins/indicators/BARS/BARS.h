@@ -52,10 +52,8 @@ class BARS : public IndicatorPlugin
 
     BARS ();
     int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
     int dialog (int);
-
-  private:
 };
 
 extern "C"

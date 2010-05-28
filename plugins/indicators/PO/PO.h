@@ -47,12 +47,12 @@ class PO : public IndicatorPlugin
 
     PO ();
     int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
     int dialog (int);
     PlotLine * getPO (PlotLine *in, int fast, int slow, int ma, int method, int, QColor &);
 
   private:
-    QStringList methodList;
+    QStringList _methodList;
 };
 
 extern "C"

@@ -27,52 +27,55 @@
 
 VFI::VFI ()
 {
-  indicator = "VFI";
+  _indicator = "VFI";
 
-  settings.setData(Color, "red");
-  settings.setData(Plot, "Line");
-  settings.setData(Label, indicator);
-  settings.setData(Period, 100);
+  _settings.setData(Color, "red");
+  _settings.setData(Plot, "Line");
+  _settings.setData(Label, _indicator);
+  _settings.setData(Period, 100);
 }
 
 int VFI::getIndicator (Indicator &ind, BarData *data)
 {
-  int period = settings.getInt(Period);
+  int period = _settings.getInt(Period);
 
   QString s;
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   QColor color(s);
 
   PlotFactory fac;
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   PlotLine *line = getVFI(data, period, lineType, color);
   if (! line)
     return 1;
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "0";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   return 0;
 }
 
-int VFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int VFI::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,VFI,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3        4         5         6
 
   if (set.count() != 7)
   {
-    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -80,7 +83,7 @@ int VFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period" << set[4];
+    qDebug() << _indicator << "::getCUS: invalid period" << set[4];
     return 1;
   }
 
@@ -88,14 +91,14 @@ int VFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int lineType = fac.typeFromString(set[5]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[5];
     return 1;
   }
 
   QColor color(set[6]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[6];
     return 1;
   }
 
@@ -105,7 +108,7 @@ int VFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -184,20 +187,20 @@ int VFI::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

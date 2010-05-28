@@ -28,147 +28,185 @@ Indicator::Indicator ()
 
 void Indicator::setName (QString &d)
 {
-  name = d;
+  _name = d;
 }
 
-void Indicator::getName (QString &d)
+QString & Indicator::name ()
 {
-  d = name;
+  return _name;
 }
 
 void Indicator::setEnable (int d)
 {
-  enable = d;
+  _enable = d;
 }
 
-int Indicator::getEnable ()
+int Indicator::enable ()
 {
-  return enable;
+  return _enable;
 }
 
 void Indicator::setTabRow (int d)
 {
-  tabRow = d;
+  _tabRow = d;
 }
 
-int Indicator::getTabRow ()
+int Indicator::tabRow ()
 {
-  return tabRow;
+  return _tabRow;
 }
 
 void Indicator::setDate (int d)
 {
-  date = d;
+  _date = d;
 }
 
-int Indicator::getDate ()
+int Indicator::date ()
 {
-  return date;
+  return _date;
 }
 
 void Indicator::setCUS (int d)
 {
-  cus = d;
+  _cus = d;
 }
 
-int Indicator::getCUS ()
+int Indicator::CUS ()
 {
-  return cus;
+  return _cus;
 }
 
 void Indicator::setLog (int d)
 {
-  log = d;
+  _log = d;
 }
 
-int Indicator::getLog ()
+int Indicator::log ()
 {
-  return log;
+  return _log;
 }
 
 void Indicator::setIndicator (QString &d)
 {
-  indicator = d;
+  _indicator = d;
   if (d == "CUS")
-    cus = 1;
+    _cus = 1;
 }
 
-void Indicator::getIndicator (QString &d)
+QString & Indicator::indicator ()
 {
-  d = indicator;
+  return _indicator;
 }
 
-void Indicator::setLines (QList<PlotLine *> &d)
+void Indicator::setLine (QString &k, PlotLine *d)
 {
-  lines = d;
+  PlotLine *l = line(k);
+  if (l)
+  {
+    delete l;
+    _lines.remove(k);
+  }
+  
+  _lines.insert(k, d);
 }
 
-void Indicator::getLines (QList<PlotLine *> &d)
+PlotLine * Indicator::line (QString &k)
 {
-  d = lines;
+  return _lines.value(k);
 }
 
 void Indicator::setSettings (Setting &d)
 {
-  settings = d;
+  _settings = d;
 }
 
-void Indicator::getSettings (Setting &d)
+Setting & Indicator::settings ()
 {
-  d = settings;
+  return _settings;
 }
 
-void Indicator::addLine (PlotLine *d)
+void Indicator::addPlotOrder (QString &d)
 {
-  lines.append(d);
+  _plotOrder.append(d);
 }
 
 void Indicator::clear ()
 {
-  enable = 0;
-  tabRow = 1;
-  date = 1;
-  log = 0;
-  cus = 0;
-  name.clear();
-  indicator.clear();
+  init();
 
-  settings.clear();
-  
-  qDeleteAll(lines);
-  lines.clear();
+  qDeleteAll(_lines);
+  _lines.clear();
 
   clearChartObjects();
 }
 
 void Indicator::setChartObjects (QHash<QString, COPlugin *> &d)
 {
-  chartObjects = d;
+  _chartObjects = d;
 }
 
 void Indicator::getChartObjects (QHash<QString, COPlugin *> &d)
 {
-  d = chartObjects;
+  d = _chartObjects;
 }
 
 void Indicator::addChartObject (COPlugin *d)
 {
-  chartObjects.insert(QString::number(d->getID()), d);
+  _chartObjects.insert(QString::number(d->getID()), d);
 }
 
 void Indicator::clearChartObjects ()
 {
-  qDeleteAll(chartObjects);
-  chartObjects.clear();
+  qDeleteAll(_chartObjects);
+  _chartObjects.clear();
 }
 
 void Indicator::deleteChartObject (QString &d)
 {
-  COPlugin *co = chartObjects.value(d);
+  COPlugin *co = _chartObjects.value(d);
   if (! co)
     return;
   
   delete co;
-  chartObjects.remove(d);
+  _chartObjects.remove(d);
+}
+
+QStringList & Indicator::plotOrder ()
+{
+  return _plotOrder;
+}
+
+void Indicator::weedPlots ()
+{
+  QHashIterator<QString, PlotLine *> it(_lines);
+  while (it.hasNext())
+  {
+    it.next();
+    if (_plotOrder.indexOf(it.key()) == -1)
+    {
+      delete it.value();
+      _lines.remove(it.key());
+    }
+  }
+}
+
+void Indicator::cleanClear ()
+{
+  _lines.clear();
+  _chartObjects.clear();
+  init();
+}
+
+void Indicator::init ()
+{
+  _enable = 0;
+  _tabRow = 1;
+  _date = 1;
+  _log = 0;
+  _cus = 0;
+  _name.clear();
+  _indicator.clear();
+  _settings.clear();
+  _plotOrder.clear();
 }
 

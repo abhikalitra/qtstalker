@@ -26,38 +26,37 @@
 
 #include <QtDebug>
 
-
 CORREL::CORREL ()
 {
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CORREL::error on TA_Initialize");
 
-  indicator = "CORREL";
+  _indicator = "CORREL";
 
-  settings.setData(Color, "red");
-  settings.setData(Plot, "Line");
-  settings.setData(Label, indicator);
-  settings.setData(Input, "Close");
-  settings.setData(Input2, "SP500");
-  settings.setData(Period, 30);
-  settings.setData(Ref1Color, "white");
-  settings.setData(Ref2Color, "white");
-  settings.setData(Ref3Color, "white");
+  _settings.setData(Color, "red");
+  _settings.setData(Plot, "Line");
+  _settings.setData(Label, _indicator);
+  _settings.setData(Input, "Close");
+  _settings.setData(Input2, "SP500");
+  _settings.setData(Period, 30);
+  _settings.setData(Ref1Color, "white");
+  _settings.setData(Ref2Color, "white");
+  _settings.setData(Ref3Color, "white");
 }
 
 int CORREL::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(Input, s);
+  _settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::getIndicator: input not found" << s;
+    qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  settings.getData(Input2, s);
+  _settings.getData(Input2, s);
   BarData bd;
   bd.setSymbol(s);
   bd.setBarLength(data->getBarLength());
@@ -69,18 +68,18 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
   PlotLine *in2 = bd.getInput(BarData::Close);
   if (! in2)
   {
-    qDebug() << indicator << "::getIndicator: input 2 not found";
+    qDebug() << _indicator << "::getIndicator: input 2 not found";
     delete in;
     return 1;
   }
 
-  int period = settings.getInt(Period);
+  int period = _settings.getInt(Period);
 
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   QColor color(s);
 
   PlotFactory fac;
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   PlotLine *line = getCORREL(in, in2, period, lineType, color);
@@ -91,7 +90,7 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
 
   // 1 reference line
@@ -105,12 +104,14 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(Ref3Color, s);
+  _settings.getData(Ref3Color, s);
   color.setNamedColor(s);
 
   hline->setData(0, new PlotLineBar(color, 1.0));
 
-  ind.addLine(hline);
+  s = "0";
+  ind.setLine(s, hline);
+  ind.addPlotOrder(s);
 
   // 0 reference line
   s = "Horizontal";
@@ -123,12 +124,14 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(Ref2Color, s);
+  _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
   hline->setData(0, new PlotLineBar(color, 0.0));
 
-  ind.addLine(hline);
+  s = "1";
+  ind.setLine(s, hline);
+  ind.addPlotOrder(s);
 
   // -1 reference line
   s = "Horizontal";
@@ -141,14 +144,18 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(Ref1Color, s);
+  _settings.getData(Ref1Color, s);
   color.setNamedColor(s);
 
   hline->setData(0, new PlotLineBar(color, -1.0));
 
-  ind.addLine(hline);
+  s = "2";
+  ind.setLine(s, hline);
+  ind.addPlotOrder(s);
 
-  ind.addLine(line);
+  s = "3";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   delete in;
   delete in2;
@@ -156,55 +163,55 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int CORREL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int CORREL::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,CORREL,<NAME>,<INPUT_1>,<INPUT_2>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //      0      1       2     3        4        5          6         7         8
 
   if (set.count() != 9)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[4]);
+  PlotLine *in = ind.line(set[4]);
   if (! in)
   {
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::getCUS: input not found" << set[4];
+      qDebug() << _indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[4], in);
+    ind.setLine(set[4], in);
   }
 
-  PlotLine *in2 = tlines.value(set[5]);
+  PlotLine *in2 = ind.line(set[5]);
   if (! in2)
   {
     in2 = data->getInput(data->getInputType(set[5]));
     if (! in2)
     {
-      qDebug() << indicator << "::getCUS: input not found" << set[5];
+      qDebug() << _indicator << "::getCUS: input not found" << set[5];
       return 1;
     }
 
-    tlines.insert(set[5], in2);
+    ind.setLine(set[5], in2);
   }
 
   bool ok;
   int period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period settings" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid period settings" << set[6];
     return 1;
   }
 
@@ -212,14 +219,14 @@ int CORREL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
   int lineType = fac.typeFromString(set[7]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[7];
     return 1;
   }
 
   QColor color(set[8]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[8];
     return 1;
   }
 
@@ -229,7 +236,7 @@ int CORREL::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarDat
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -270,7 +277,7 @@ PlotLine * CORREL::getCORREL (PlotLine *in, PlotLine *in2, int period, int lineT
   TA_RetCode rc = TA_CORREL(0, size - 1, &input[0], &input2[0], period, &outBeg, &outNb, &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getCORREL: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getCORREL: TA-Lib error" << rc;
     return 0;
   }
 
@@ -301,42 +308,42 @@ int CORREL::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
   BarData bd;
   QStringList inputList;
   bd.getInputFields(inputList);
 
-  settings.getData(Input, d);
+  _settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  settings.getData(Input2, d);
+  _settings.getData(Input2, d);
   dialog->addTextItem(Input2, page, QObject::tr("Input 2"), d);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 
   page++;
   k = QObject::tr("Ref.");
   dialog->addPage(page, k);
 
-  settings.getData(Ref1Color, d);
+  _settings.getData(Ref1Color, d);
   dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
 
-  settings.getData(Ref2Color, d);
+  _settings.getData(Ref2Color, d);
   dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
 
-  settings.getData(Ref3Color, d);
+  _settings.getData(Ref3Color, d);
   dialog->addColorItem(Ref3Color, page, QObject::tr("Ref. 3 Color"), d);
 
   int rc = dialog->exec();

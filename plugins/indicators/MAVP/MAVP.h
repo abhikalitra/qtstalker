@@ -41,7 +41,7 @@ class MAVP : public IndicatorPlugin
 
     MAVP ();
     int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
     PlotLine * getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma, int, QColor &);
     int dialog (int);
 };

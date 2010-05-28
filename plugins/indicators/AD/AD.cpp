@@ -31,39 +31,39 @@ AD::AD ()
   if (rc != TA_SUCCESS)
     qDebug("AD::error on TA_Initialize");
 
-  indicator = "AD";
+  _indicator = "AD";
 
-  settings.setData(Method, QString("AD"));
-  settings.setData(ADColor, QString("red"));
-  settings.setData(ADPlot, QString("Line"));
-  settings.setData(ADLabel, QString("AD"));
-  settings.setData(FastPeriod, 3);
-  settings.setData(SlowPeriod, 10);
-  settings.setData(OSCColor, QString("red"));
-  settings.setData(OSCPlot, QString("Histogram Bar"));
-  settings.setData(OSCLabel, QString("ADOSC"));
+  _settings.setData(Method, QString("AD"));
+  _settings.setData(ADColor, QString("red"));
+  _settings.setData(ADPlot, QString("Line"));
+  _settings.setData(ADLabel, QString("AD"));
+  _settings.setData(FastPeriod, 3);
+  _settings.setData(SlowPeriod, 10);
+  _settings.setData(OSCColor, QString("red"));
+  _settings.setData(OSCPlot, QString("Histogram Bar"));
+  _settings.setData(OSCLabel, QString("ADOSC"));
 
-  methodList << "AD";
-  methodList << "ADOSC";
+  _methodList << "AD";
+  _methodList << "ADOSC";
 }
 
 int AD::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(Method, s);
-  int method = methodList.indexOf(s);
+  _settings.getData(Method, s);
+  int method = _methodList.indexOf(s);
 
   switch (method)
   {
     case 1:
     {
-      int fp = settings.getInt(FastPeriod);
-      int sp = settings.getInt(SlowPeriod);
+      int fp = _settings.getInt(FastPeriod);
+      int sp = _settings.getInt(SlowPeriod);
       
-      settings.getData(OSCColor, s);
+      _settings.getData(OSCColor, s);
       QColor color(s);
 
-      settings.getData(OSCPlot, s);
+      _settings.getData(OSCPlot, s);
       PlotFactory fac;
       int lineType = fac.typeFromString(s);
       
@@ -71,17 +71,20 @@ int AD::getIndicator (Indicator &ind, BarData *data)
       if (! line)
 	return 1;
       
-      settings.getData(OSCLabel, s);
+      _settings.getData(OSCLabel, s);
       line->setLabel(s);
-      ind.addLine(line);
+
+      s = "0";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
       break;
     }
     default:
     {
-      settings.getData(ADColor, s);
+      _settings.getData(ADColor, s);
       QColor color(s);
 
-      settings.getData(ADPlot, s);
+      _settings.getData(ADPlot, s);
       PlotFactory fac;
       int lineType = fac.typeFromString(s);
 
@@ -89,9 +92,12 @@ int AD::getIndicator (Indicator &ind, BarData *data)
       if (! line)
 	return 1;
       
-      settings.getData(ADLabel, s);
+      _settings.getData(ADLabel, s);
       line->setLabel(s);
-      ind.addLine(line);
+
+      s = "0";
+      ind.setLine(s, line);
+      ind.addPlotOrder(s);
       break;
     }
   }
@@ -99,40 +105,40 @@ int AD::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int AD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int AD::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   QString s;
-  int method = methodList.indexOf(set[2]);
+  int method = _methodList.indexOf(set[2]);
 
   int rc = 1;
   switch (method)
   {
     case 0:
-      rc = getCUS_AD(set, tlines, data);
+      rc = getCUS_AD(set, ind, data);
       break;
     case 1:
-      rc = getCUS_ADOSC(set, tlines, data);
+      rc = getCUS_ADOSC(set, ind, data);
       break;
   }
 
   return rc;
 }
 
-int AD::getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int AD::getCUS_AD (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,AD,AD,<NAME>,<LINE TYPE>,<COLOR>
   //      0      1     2  3    4       5          6
 
   if (set.count() != 7)
   {
-    qDebug() << indicator << "::getCUS_AD: invalid parm count" << set.count();
+    qDebug() << _indicator << "::getCUS_AD: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
+  PlotLine *tl = ind.line(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS_AD: duplicate name" << set[4];
+    qDebug() << _indicator << "::getCUS_AD: duplicate name" << set[4];
     return 1;
   }
 
@@ -140,14 +146,14 @@ int AD::getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   int lineType = fac.typeFromString(set[5]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS_AD: invalid plot type" << set[5];
+    qDebug() << _indicator << "::getCUS_AD: invalid plot type" << set[5];
     return 1;
   }
 
   QColor color(set[6]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS_AD: invalid color" << set[6];
+    qDebug() << _indicator << "::getCUS_AD: invalid color" << set[6];
     return 1;
   }
 
@@ -157,26 +163,26 @@ int AD::getCUS_AD (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
 
   line->setLabel(set[4]);
   
-  tlines.insert(set[4], line);
+  ind.setLine(set[4], line);
 
   return 0;
 }
 
-int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int AD::getCUS_ADOSC (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,AD,ADOSC,<NAME>,<FAST_PERIOD>,<SLOW_PERIOD>,<PLOT TYPE>,<COLOR>
   //      0       1    2    3    4         5             6             7         8
 
   if (set.count() != 9)
   {
-    qDebug() << indicator << "::getCUS_ADOSC: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS_ADOSC: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
+  PlotLine *tl = ind.line(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS_ADOSC: duplicate name" << set[4];
+    qDebug() << _indicator << "::getCUS_ADOSC: duplicate name" << set[4];
     return 1;
   }
 
@@ -184,14 +190,14 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   int fast = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS_ADOSC: invalid fast period" << set[5];
+    qDebug() << _indicator << "::getCUS_ADOSC: invalid fast period" << set[5];
     return 1;
   }
 
   int slow = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS_ADOSC: invalid slow period" << set[6];
+    qDebug() << _indicator << "::getCUS_ADOSC: invalid slow period" << set[6];
     return 1;
   }
 
@@ -199,14 +205,14 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
   int lineType = fac.typeFromString(set[7]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS_ADOSC: invalid plot type" << set[7];
+    qDebug() << _indicator << "::getCUS_ADOSC: invalid plot type" << set[7];
     return 1;
   }
 
   QColor color(set[8]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS_ADOSC: invalid color" << set[8];
+    qDebug() << _indicator << "::getCUS_ADOSC: invalid color" << set[8];
     return 1;
   }
 
@@ -216,7 +222,7 @@ int AD::getCUS_ADOSC (QStringList &set, QHash<QString, PlotLine *> &tlines, BarD
 
   line->setLabel(set[4]);
 
-  tlines.insert(set[4], line);
+  ind.setLine(set[4], line);
 
   return 0;
 }
@@ -253,7 +259,7 @@ PlotLine * AD::getAD (BarData *data, int lineType, QColor &color)
                         &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getAD: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getAD: TA-Lib error" << rc;
     return 0;
   }
 
@@ -308,7 +314,7 @@ PlotLine * AD::getADOSC (BarData *data, int fast, int slow, int lineType, QColor
                            &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getADOSC: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getADOSC: TA-Lib error" << rc;
     return 0;
   }
 
@@ -339,42 +345,42 @@ int AD::dialog (int)
   k = QObject::tr("General");
   dialog->addPage(page, k);
 
-  settings.getData(Method, d);
-  dialog->addComboItem((int) Method, page, QObject::tr("Method"), methodList, d);
+  _settings.getData(Method, d);
+  dialog->addComboItem((int) Method, page, QObject::tr("Method"), _methodList, d);
 
   page++;
   k = QObject::tr("AD");
   dialog->addPage(page, k);
 
-  settings.getData(ADColor, d);
+  _settings.getData(ADColor, d);
   dialog->addColorItem((int) ADColor, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
   
-  settings.getData(ADPlot, d);
+  _settings.getData(ADPlot, d);
   dialog->addComboItem((int) ADPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(ADLabel, d);
+  _settings.getData(ADLabel, d);
   dialog->addTextItem((int) ADLabel, page, QObject::tr("Label"), d);
 
   page++;
   k = QObject::tr("OSC");
   dialog->addPage(page, k);
 
-  settings.getData(OSCColor, d);
+  _settings.getData(OSCColor, d);
   dialog->addColorItem(OSCColor, page, QObject::tr("Color"), d);
 
-  settings.getData(OSCPlot, d);
+  _settings.getData(OSCPlot, d);
   dialog->addComboItem(OSCPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(OSCLabel, d);
+  _settings.getData(OSCLabel, d);
   dialog->addTextItem(OSCLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), settings.getInt(FastPeriod), 1, 100000);
+  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), _settings.getInt(FastPeriod), 1, 100000);
 
-  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 1, 100000);
+  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), _settings.getInt(SlowPeriod), 1, 100000);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

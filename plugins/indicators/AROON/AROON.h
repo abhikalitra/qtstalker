@@ -46,15 +46,15 @@ class AROON : public IndicatorPlugin
 
     AROON ();
     int getIndicator (Indicator &, BarData *);
-    int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
-    int getCUSAROON (QStringList &, QHash<QString, PlotLine *> &, BarData *);
-    int getCUSOSC (QStringList &, QHash<QString, PlotLine *> &, BarData *);
+    int getCUS (QStringList &, Indicator &, BarData *);
+    int getCUSAROON (QStringList &, Indicator &, BarData *);
+    int getCUSOSC (QStringList &, Indicator &, BarData *);
     PlotLine * getOSC (BarData *, int, int, QColor &);
     int dialog (int);
     int getAROON (BarData *data, int period, int, int, QColor &, QColor &, QList<PlotLine *> &);
 
   private:
-    QStringList methodList;
+    QStringList _methodList;
 };
 
 extern "C"

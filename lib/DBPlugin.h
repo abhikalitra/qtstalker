@@ -31,6 +31,7 @@
 #include "BarData.h"
 #include "Group.h"
 #include "DataBase.h"
+#include "Indicator.h"
 
 class DBPlugin : public DataBase
 {
@@ -39,7 +40,7 @@ class DBPlugin : public DataBase
     virtual ~DBPlugin ();
     virtual void getBars (BarData &);
     virtual void dialog ();
-    virtual int scriptCommand (QStringList &, QHash<QString, PlotLine *> &);
+    virtual int scriptCommand (QStringList &, Indicator &);
     
     void init (QString &);
     void getSearchList (QString &ex, QString &pat, Group &);

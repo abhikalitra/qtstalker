@@ -32,28 +32,28 @@ BOP::BOP ()
   if (rc != TA_SUCCESS)
     qDebug("BOP::error on TA_Initialize");
 
-  indicator = "BOP";
+  _indicator = "BOP";
 
-  settings.setData(Color, "red");
-  settings.setData(Plot, "Histogram Bar");
-  settings.setData(Label, indicator);
-  settings.setData(Smoothing, 10);
-  settings.setData(SmoothingType, "SMA");
+  _settings.setData(Color, "red");
+  _settings.setData(Plot, "Histogram Bar");
+  _settings.setData(Label, _indicator);
+  _settings.setData(Smoothing, 10);
+  _settings.setData(SmoothingType, "SMA");
 }
 
 int BOP::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  int smoothing = settings.getInt(Smoothing);
+  int smoothing = _settings.getInt(Smoothing);
 
   MAFactory mau;
-  settings.getData(SmoothingType, s);
+  _settings.getData(SmoothingType, s);
   int type = mau.typeFromString(s);
 
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   QColor color(s);
 
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   PlotFactory fac;
   int lineType = fac.typeFromString(s);
 
@@ -61,28 +61,31 @@ int BOP::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "0";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   return 0;
 }
 
-int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int BOP::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,BOP,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3             4                 5             6         7
 
   if (set.count() != 8)
   {
-    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -90,7 +93,7 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int smoothing = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid smoothing period" << set[4];
+    qDebug() << _indicator << "::getCUS: invalid smoothing period" << set[4];
     return 1;
   }
 
@@ -98,7 +101,7 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int ma = mau.typeFromString(set[5]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid smoothing type" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid smoothing type" << set[5];
     return 1;
   }
 
@@ -106,14 +109,14 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int lineType = fac.typeFromString(set[6]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[6];
     return 1;
   }
 
   QColor color(set[7]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[7];
     return 1;
   }
 
@@ -123,7 +126,7 @@ int BOP::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -160,7 +163,7 @@ PlotLine * BOP::getBOP (BarData *data, int smoothing, int type, int lineType, QC
                          &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getBOP: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getBOP: TA-Lib error" << rc;
     return 0;
   }
 
@@ -193,26 +196,26 @@ int BOP::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
+  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), _settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
   MAFactory mau;
   mau.list(maList);
 
-  settings.getData(SmoothingType, d);
+  _settings.getData(SmoothingType, d);
   dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);
 
   int rc = dialog->exec();

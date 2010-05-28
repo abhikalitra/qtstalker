@@ -187,7 +187,7 @@ int Stock::createTable (BarData *bars)
 //************** SCRIPT FUNCTIONS *****************************
 //*************************************************************
 
-int Stock::scriptCommand (QStringList &l, QHash<QString, PlotLine *> &tlines)
+int Stock::scriptCommand (QStringList &l, Indicator &ind)
 {
   // format = QUOTE,PLUGIN,METHOD,*
   
@@ -207,7 +207,7 @@ int Stock::scriptCommand (QStringList &l, QHash<QString, PlotLine *> &tlines)
       rc = scriptDelete(l);
       break;
     case GET_QUOTES:
-      rc = scriptGetQuotes(l, tlines);
+      rc = scriptGetQuotes(l, ind);
       break;
     case RENAME:
       rc = scriptRename(l);
@@ -370,7 +370,7 @@ int Stock::scriptDelete (QStringList &l)
   return 0;
 }
 
-int Stock::scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &tlines)
+int Stock::scriptGetQuotes (QStringList &l, Indicator &ind)
 {
   // format = QUOTE,PLUGIN,GET_QUOTES,<NAME>,<EXCHANGE>,<SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
   //            0     1       2         3         4         5            6         7        8
@@ -381,7 +381,7 @@ int Stock::scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &tlines)
     return 1;
   }
 
-  PlotLine *tl = tlines.value(l[3]);
+  PlotLine *tl = ind.line(l[3]);
   if (tl)
   {
     qDebug() << "Stock::scriptGetQuotes: duplicate name" << l[3];
@@ -408,7 +408,7 @@ int Stock::scriptGetQuotes (QStringList &l, QHash<QString, PlotLine *> &tlines)
   if (! line)
     return 1;
   
-  tlines.insert(l[3], line);
+  ind.setLine(l[3], line);
 
   return 0;
 }

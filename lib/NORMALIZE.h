@@ -28,7 +28,7 @@ class NORMALIZE : public IndicatorPlugin
 {
   public:
     NORMALIZE ();
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
     PlotLine * normalize (PlotLine *, int, QColor &);
 };
 

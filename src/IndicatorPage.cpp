@@ -217,7 +217,7 @@ void IndicatorPage::newIndicator ()
   if (rc == QDialog::Rejected)
     return;
 
-  ip->getSettings(i);
+  ip->settings(i);
 
   db.setIndicator(i);
 
@@ -250,7 +250,7 @@ void IndicatorPage::editIndicator (QString &name)
   IndicatorDataBase db;
   db.getIndicator(i);
   QString indicator;
-  i.getIndicator(indicator);
+  indicator = i.indicator();
 
   Config config;
   QString path;
@@ -267,7 +267,7 @@ void IndicatorPage::editIndicator (QString &name)
   if (rc == QDialog::Rejected)
     return;
 
-  ip->getSettings(i);
+  ip->settings(i);
 
   db.setIndicator(i);
 
@@ -316,7 +316,7 @@ void IndicatorPage::doubleClick (QListWidgetItem *item)
 
   db.getIndicator(i);
 
-  if (i.getEnable())
+  if (i.enable())
   {
     i.setEnable(0);
     db.setIndicatorEnable(i);

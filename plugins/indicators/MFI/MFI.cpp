@@ -32,18 +32,18 @@ MFI::MFI ()
   if (rc != TA_SUCCESS)
     qDebug("MFI::error on TA_Initialize");
 
-  indicator = "MFI";
+  _indicator = "MFI";
 
-  settings.setData(Color, "red");
-  settings.setData(Plot, "Line");
-  settings.setData(Label, indicator);
-  settings.setData(Period, 14);
-  settings.setData(Smoothing, 10);
-  settings.setData(SmoothingType, "SMA");
-  settings.setData(Ref1Color, "white");
-  settings.setData(Ref2Color, "white");
-  settings.setData(Ref1, 20);
-  settings.setData(Ref2, 80);
+  _settings.setData(Color, "red");
+  _settings.setData(Plot, "Line");
+  _settings.setData(Label, _indicator);
+  _settings.setData(Period, 14);
+  _settings.setData(Smoothing, 10);
+  _settings.setData(SmoothingType, "SMA");
+  _settings.setData(Ref1Color, "white");
+  _settings.setData(Ref2Color, "white");
+  _settings.setData(Ref1, 20);
+  _settings.setData(Ref2, 80);
 }
 
 int MFI::getIndicator (Indicator &ind, BarData *data)
@@ -55,11 +55,14 @@ int MFI::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 0;
 
-  settings.getData(Ref1Color, s);
+  _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, new PlotLineBar(color, settings.getInt(Ref1)));
-  ind.addLine(line);
+  line->setData(0, new PlotLineBar(color, _settings.getInt(Ref1)));
+  
+  s = "0";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   // Ref2 line
   s = "Horizontal";
@@ -67,52 +70,58 @@ int MFI::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 0;
 
-  settings.getData(Ref2Color, s);
+  _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, new PlotLineBar(color, settings.getInt(Ref2)));
-  ind.addLine(line);
+  line->setData(0, new PlotLineBar(color, _settings.getInt(Ref2)));
+  
+  s = "1";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   // mfi plot
-  int period = settings.getInt(Period);
-  int smoothing = settings.getInt(Smoothing);
+  int period = _settings.getInt(Period);
+  int smoothing = _settings.getInt(Smoothing);
 
   MAFactory mau;
-  settings.getData(SmoothingType, s);
+  _settings.getData(SmoothingType, s);
   int type = mau.typeFromString(s);
 
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   color.setNamedColor(s);
 
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   line = getMFI(data, period, smoothing, type, lineType, color);
   if (! line)
     return 1;
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "2";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   return 0;
 }
 
-int MFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int MFI::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,MFI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3       4             5                 6              7         8
 
   if (set.count() != 9)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -120,14 +129,14 @@ int MFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period settings" << set[4];
+    qDebug() << _indicator << "::getCUS: invalid period settings" << set[4];
     return 1;
   }
 
   int smoothing = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid smoothing period" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid smoothing period" << set[5];
     return 1;
   }
 
@@ -135,7 +144,7 @@ int MFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int ma = mau.typeFromString(set[6]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid smoothing type" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid smoothing type" << set[6];
     return 1;
   }
 
@@ -143,14 +152,14 @@ int MFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int lineType = fac.typeFromString(set[7]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[7];
     return 1;
   }
 
   QColor color(set[8]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[8];
     return 1;
   }
 
@@ -160,7 +169,7 @@ int MFI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -198,7 +207,7 @@ PlotLine * MFI::getMFI (BarData *data, int period, int smoothing, int type, int 
                          &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getMFI: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getMFI: TA-Lib error" << rc;
     return 0;
   }
 
@@ -237,43 +246,43 @@ int MFI::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
 
-  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
+  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), _settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
   MAFactory mau;
   mau.list(maList);
   
-  settings.getData(SmoothingType, d);
+  _settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);
 
   page++;
   k = QObject::tr("Ref");
   dialog->addPage(page, k);
 
-  settings.getData(Ref1Color, d);
+  _settings.getData(Ref1Color, d);
   dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
 
-  settings.getData(Ref2Color, d);
+  _settings.getData(Ref2Color, d);
   dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
 
-  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), settings.getInt(Ref1), 0, 100);
+  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), _settings.getInt(Ref1), 0, 100);
 
-  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), settings.getInt(Ref2), 0, 100);
+  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), _settings.getInt(Ref2), 0, 100);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

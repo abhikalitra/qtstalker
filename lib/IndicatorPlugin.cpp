@@ -25,8 +25,8 @@
 
 IndicatorPlugin::IndicatorPlugin ()
 {
-  opList << "=" << "<" << "<=" << ">" << ">=";
-  deleteFlag = 0;
+  _opList << "=" << "<" << "<=" << ">" << ">=";
+  _deleteFlag = 0;
 }
 
 IndicatorPlugin::~IndicatorPlugin ()
@@ -40,7 +40,7 @@ int IndicatorPlugin::getIndicator (Indicator &, BarData *)
 }
 
 // virtual function
-int IndicatorPlugin::getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *)
+int IndicatorPlugin::getCUS (QStringList &, Indicator &, BarData *)
 {
   return 0;
 }
@@ -57,19 +57,19 @@ int IndicatorPlugin::dialog (int)
 
 void IndicatorPlugin::setSettings (Indicator &ind)
 {
-  ind.getSettings(settings);
-  ind.getIndicator(indicator);
+  _settings = ind.settings();
+  _indicator = ind.indicator();
 }
 
-void IndicatorPlugin::getSettings (Indicator &ind)
+void IndicatorPlugin::settings (Indicator &ind)
 {
-  ind.setIndicator(indicator);
-  ind.setSettings(settings);
+  ind.setIndicator(_indicator);
+  ind.setSettings(_settings);
 }
 
-void IndicatorPlugin::getIndicator (QString &d)
+QString & IndicatorPlugin::indicator ()
 {
-  d = indicator;
+  return _indicator;
 }
 
 void IndicatorPlugin::getDialogSettings (PrefDialog *dialog)
@@ -83,12 +83,12 @@ void IndicatorPlugin::getDialogSettings (PrefDialog *dialog)
     QString d;
     dialog->getItem(keys[loop], d);
     if (! d.isEmpty())
-      settings.setData(keys[loop], d);
+      _settings.setData(keys[loop], d);
   }
 }
 
-int IndicatorPlugin::getDeleteFlag ()
+int IndicatorPlugin::deleteFlag ()
 {
-  return deleteFlag;
+  return _deleteFlag;
 }
 

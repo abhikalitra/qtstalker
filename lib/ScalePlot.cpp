@@ -160,14 +160,15 @@ void ScalePlot::drawPoints (PlotData &pd, Scaler &scaler, Indicator &indicator)
 
 void ScalePlot::points (PlotData &pd, QList<Setting> &l, Indicator &indicator)
 {
-  QList<PlotLine *> plotList;
-  indicator.getLines(plotList);
+  QStringList plotList = indicator.plotOrder();
 
   Strip strip;
-  int loop;
-  for (loop = 0; loop < plotList.count(); loop++)
+  int loop = 0;
+  for (; loop < plotList.count(); loop++)
   {
-    PlotLine *line = plotList.at(loop);
+    QString s = plotList.at(loop);
+    PlotLine *line = indicator.line(s);
+    
     if (line->type() == "Horizontal")
       continue;
 
@@ -177,7 +178,7 @@ void ScalePlot::points (PlotData &pd, QList<Setting> &l, Indicator &indicator)
 
     QColor color = bar->color();
     Setting set;
-    QString s = color.name();
+    s = color.name();
     set.setData(0, s);
 
     strip.strip(bar->data(), 4, s);

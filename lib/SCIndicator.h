@@ -26,7 +26,7 @@
 #include <QByteArray>
 #include <QHash>
 
-#include "PlotLine.h"
+#include "Indicator.h"
 #include "BarData.h"
 
 class SCIndicator
@@ -43,13 +43,13 @@ class SCIndicator
     };
     
     SCIndicator ();
-    int calculate (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
-    int getIndex (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
-    int setIndex (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
-    int getRange (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
-    int setColor (QStringList &, QByteArray &, QHash<QString, PlotLine *> &);
-    int getPlugin (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *, QString &);
-    int getNew (QStringList &, QByteArray &, QHash<QString, PlotLine *> &, BarData *);
+    int calculate (QStringList &, QByteArray &, Indicator &, BarData *, QString &);
+    int getIndex (QStringList &, QByteArray &, Indicator &);
+    int setIndex (QStringList &, QByteArray &, Indicator &);
+    int getRange (QStringList &, QByteArray &, Indicator &);
+    int setColor (QStringList &, QByteArray &, Indicator &);
+    int getPlugin (QStringList &, QByteArray &, Indicator &, BarData *, QString &);
+    int getNew (QStringList &, QByteArray &, Indicator &, BarData *);
 
   protected:
     QStringList methodList;

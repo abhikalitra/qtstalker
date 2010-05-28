@@ -23,8 +23,8 @@
 #define EXSCRIPT_HPP
 
 #include "BarData.h"
-#include "PlotLine.h"
 #include "SCQuote.h"
+#include "Indicator.h"
 
 #include <QProcess>
 #include <QList>
@@ -42,16 +42,13 @@ class ExScript : public QObject
   public:
     enum Function
     {
-      CLEAR, // clears all data
+      DELETE, // deletes a single indicator
       INDICATOR, // get indicator functions
       GROUP, // group database functions
       PLOT, // plot the desired indicator
       QUOTE, // quote database functions
       _SYMBOL, // symbol functions
-      TEST_ENTER_LONG, // sets the enter long indicator for the tester
-      TEST_EXIT_LONG,  // sets the exit long indicator for the tester
-      TEST_ENTER_SHORT,  // sets the enter short indicator for the tester
-      TEST_EXIT_SHORT  // sets the exit short indicator for the tester
+      TEST // tester functions
     };
 
     ExScript (QString &, QString &);
@@ -60,14 +57,9 @@ class ExScript : public QObject
     void setBarData (BarData *d);
     int calculate (QString &command);
     int calculate2 (QString &command); // used for non indicator scripts
-    void getLines (QList<PlotLine *> &);
+    Indicator & indicator ();
     int getState ();
     void stop ();
-    void setDeleteFlag (int);
-    PlotLine * getEnterLong ();
-    PlotLine * getExitLong ();
-    PlotLine * getEnterShort ();
-    PlotLine * getExitShort ();
 
   public slots:
     void readFromStdout ();
@@ -75,21 +67,14 @@ class ExScript : public QObject
     void done (int, QProcess::ExitStatus);
 
   private:
-    QProcess *proc;
-    QStringList functionList;
-    QHash<QString, PlotLine *> tlines;
-    QStringList plotOrder;
-    BarData *data;
-    QStringList inputList;
-    int deleteFlag;
-    PlotLine * enterLong;
-    PlotLine * exitLong;
-    PlotLine * enterShort;
-    PlotLine * exitShort;
-    int killFlag;
-    QString indicatorPluginPath;
-    QString dbPluginPath;
-    SCQuote quotes;
+    QProcess *_proc;
+    QStringList _functionList;
+    BarData *_data;
+    int _killFlag;
+    QString _indicatorPluginPath;
+    QString _dbPluginPath;
+    SCQuote _quotes;
+    Indicator _indicator;
 };
 
 #endif

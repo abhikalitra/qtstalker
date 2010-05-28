@@ -32,43 +32,43 @@ LINEARREG::LINEARREG ()
   if (rc != TA_SUCCESS)
     qDebug("TALIB::setDefaults:error on TA_Initialize");
 
-  indicator = "LINEARREG";
+  _indicator = "LINEARREG";
 
-  settings.setData(Method, "LINEARREG");
-  settings.setData(Color, "red");
-  settings.setData(Plot, "Line");
-  settings.setData(Label, indicator);
-  settings.setData(Input, "Close");
-  settings.setData(Period, 14);
+  _settings.setData(Method, "LINEARREG");
+  _settings.setData(Color, "red");
+  _settings.setData(Plot, "Line");
+  _settings.setData(Label, _indicator);
+  _settings.setData(Input, "Close");
+  _settings.setData(Period, 14);
 
-  methodList << "LINEARREG";
-  methodList << "ANGLE";
-  methodList << "INTERCEPT";
-  methodList << "SLOPE";
-  methodList << "TSF";
+  _methodList << "LINEARREG";
+  _methodList << "ANGLE";
+  _methodList << "INTERCEPT";
+  _methodList << "SLOPE";
+  _methodList << "TSF";
 }
 
 int LINEARREG::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(Input, s);
+  _settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::getIndicator: input not found" << s;
+    qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  int period = settings.getInt(Period);
+  int period = _settings.getInt(Period);
 
-  settings.getData(Method, s);
-  int method = methodList.indexOf(s);
+  _settings.getData(Method, s);
+  int method = _methodList.indexOf(s);
 
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   QColor color(s);
 
   PlotFactory fac;
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   PlotLine *line = getLINEARREG(in, period, method, lineType, color);
@@ -89,65 +89,72 @@ int LINEARREG::getIndicator (Indicator &ind, BarData *data)
       BARSUtils b;
       PlotLine *bars = b.getBARS(data, up, down, neutral);
       if (bars)
-	ind.addLine(bars);
+      {
+        s = "0";
+	ind.setLine(s, bars);
+        ind.addPlotOrder(s);
+      }
       break;
     }
     default:
       break;
   }
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "1";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   delete in;
 
   return 0;
 }
 
-int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int LINEARREG::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,LINEARREG,<METHOD>,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1        2        3       4       5        6         7         8
 
   if (set.count() != 9)
   {
-    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
-  int method = methodList.indexOf(set[3]);
+  int method = _methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid method" << set[3];
+    qDebug() << _indicator << "::getCUS: invalid method" << set[3];
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
+  PlotLine *tl = ind.line(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[5]);
+  PlotLine *in = ind.line(set[5]);
   if (! in)
   {
     in = data->getInput(data->getInputType(set[5]));
     if (! in)
     {
-      qDebug() << indicator << "::getCUS: input not found" << set[5];
+      qDebug() << _indicator << "::getCUS: input not found" << set[5];
       return 1;
     }
 
-    tlines.insert(set[5], in);
+    ind.setLine(set[5], in);
   }
 
   bool ok;
   int period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid period" << set[6];
     return 1;
   }
 
@@ -155,14 +162,14 @@ int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
   int lineType = fac.typeFromString(set[7]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[7];
     return 1;
   }
 
   QColor color(set[8]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[8];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[8];
     return 1;
   }
 
@@ -172,7 +179,7 @@ int LINEARREG::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, Bar
 
   line->setLabel(set[4]);
 
-  tlines.insert(set[4], line);
+  ind.setLine(set[4], line);
 
   return 0;
 }
@@ -219,7 +226,7 @@ PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period, int method, int li
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::calculate: TA-Lib error" << rc;
+    qDebug() << _indicator << "::calculate: TA-Lib error" << rc;
     return 0;
   }
 
@@ -250,30 +257,30 @@ int LINEARREG::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
   BarData bd;
   QStringList inputList;
   bd.getInputFields(inputList);
 
-  settings.getData(Input, d);
+  _settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
 
-  settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
+  _settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), _methodList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

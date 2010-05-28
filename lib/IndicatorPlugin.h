@@ -24,11 +24,9 @@
 
 #include <QString>
 #include <QStringList>
-#include <QHash>
 #include <QColor>
 
 #include "BarData.h"
-#include "PlotLine.h"
 #include "Indicator.h"
 #include "Setting.h"
 #include "PrefDialog.h"
@@ -39,21 +37,21 @@ class IndicatorPlugin
     IndicatorPlugin ();
     virtual ~IndicatorPlugin ();
     virtual int getIndicator (Indicator &, BarData *);
-    virtual int getCUS (QStringList &, QHash<QString, PlotLine *> &, BarData *);
+    virtual int getCUS (QStringList &, Indicator &, BarData *);
     virtual int dialog (int);
 
     void setSettings (Indicator &);
-    void getSettings (Indicator &);
-    void getIndicator (QString &);
+    void settings (Indicator &);
+    QString & indicator ();
     void getDialogSettings (PrefDialog *);
-    int getDeleteFlag ();
+    int deleteFlag ();
 
   protected:
-    Setting settings;
-    QString name;
-    QString indicator;
-    QStringList opList;
-    int deleteFlag;
+    Setting _settings;
+    QString _name;
+    QString _indicator;
+    QStringList _opList;
+    int _deleteFlag;
 };
 
 #endif

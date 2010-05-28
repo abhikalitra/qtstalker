@@ -31,134 +31,146 @@ ADX::ADX ()
   if (rc != TA_SUCCESS)
     qDebug("ADX::error on TA_Initialize");
 
-  indicator = "ADX";
+  _indicator = "ADX";
 
-  settings.setData(ADXColor, "blue");
-  settings.setData(ADXRColor, "yellow");
-  settings.setData(PDIColor, "green");
-  settings.setData(MDIColor, "red");
-  settings.setData(ADXPlot, "Line");
-  settings.setData(ADXRPlot, "Line");
-  settings.setData(PDIPlot, "Line");
-  settings.setData(MDIPlot, "Line");
-  settings.setData(ADXLabel, "ADX");
-  settings.setData(ADXRLabel, "ADXR");
-  settings.setData(PDILabel, "+DI");
-  settings.setData(MDILabel, "-DI");
-  settings.setData(ADXCheck, 1);
-  settings.setData(ADXRCheck, 1);
-  settings.setData(PDICheck, 1);
-  settings.setData(MDICheck, 1);
-  settings.setData(Period, 14);
+  _settings.setData(ADXColor, "blue");
+  _settings.setData(ADXRColor, "yellow");
+  _settings.setData(PDIColor, "green");
+  _settings.setData(MDIColor, "red");
+  _settings.setData(ADXPlot, "Line");
+  _settings.setData(ADXRPlot, "Line");
+  _settings.setData(PDIPlot, "Line");
+  _settings.setData(MDIPlot, "Line");
+  _settings.setData(ADXLabel, "ADX");
+  _settings.setData(ADXRLabel, "ADXR");
+  _settings.setData(PDILabel, "+DI");
+  _settings.setData(MDILabel, "-DI");
+  _settings.setData(ADXCheck, 1);
+  _settings.setData(ADXRCheck, 1);
+  _settings.setData(PDICheck, 1);
+  _settings.setData(MDICheck, 1);
+  _settings.setData(Period, 14);
 
-  methodList << "ADX" << "ADXR" << "+DI" << "-DI" << "DX";
+  _methodList << "ADX" << "ADXR" << "+DI" << "-DI" << "DX";
 }
 
 int ADX::getIndicator (Indicator &ind, BarData *data)
 {
-  int period = settings.getInt(Period);
+  int period = _settings.getInt(Period);
 
-  if (settings.getInt(MDICheck))
+  if (_settings.getInt(MDICheck))
   {
     QString s;
-    settings.getData(MDIColor, s);
+    _settings.getData(MDIColor, s);
     QColor color(s);
 
     PlotFactory fac;
-    settings.getData(MDIPlot, s);
+    _settings.getData(MDIPlot, s);
     int lineType = fac.typeFromString(s);
     
     PlotLine *line = getLine(data, period, MDI, lineType, color);
     if (! line)
       return 1;
 
-    settings.getData(MDILabel, s);
+    _settings.getData(MDILabel, s);
     line->setLabel(s);
-    ind.addLine(line);
+
+    s = "0";
+    ind.setLine(s, line);
+    ind.addPlotOrder(s);
   }
 
-  if (settings.getInt(PDICheck))
+  if (_settings.getInt(PDICheck))
   {
     QString s;
-    settings.getData(PDIColor, s);
+    _settings.getData(PDIColor, s);
     QColor color(s);
 
     PlotFactory fac;
-    settings.getData(PDIPlot, s);
+    _settings.getData(PDIPlot, s);
     int lineType = fac.typeFromString(s);
 
     PlotLine *line = getLine(data, period, PDI, lineType, color);
     if (! line)
       return 1;
 
-    settings.getData(PDILabel, s);
+    _settings.getData(PDILabel, s);
     line->setLabel(s);
-    ind.addLine(line);
+    
+    s = "1";
+    ind.setLine(s, line);
+    ind.addPlotOrder(s);
   }
 
-  if (settings.getInt(ADXCheck))
+  if (_settings.getInt(ADXCheck))
   {
     QString s;
-    settings.getData(ADXColor, s);
+    _settings.getData(ADXColor, s);
     QColor color(s);
 
     PlotFactory fac;
-    settings.getData(ADXPlot, s);
+    _settings.getData(ADXPlot, s);
     int lineType = fac.typeFromString(s);
 
     PlotLine *line = getLine(data, period, _ADX, lineType, color);
     if (! line)
       return 1;
 
-    settings.getData(ADXLabel, s);
+    _settings.getData(ADXLabel, s);
     line->setLabel(s);
-    ind.addLine(line);
+    
+    s = "2";
+    ind.setLine(s, line);
+    ind.addPlotOrder(s);
   }
 
-  if (settings.getInt(ADXRCheck))
+  if (_settings.getInt(ADXRCheck))
   {
     QString s;
-    settings.getData(ADXRColor, s);
+    _settings.getData(ADXRColor, s);
     QColor color(s);
 
     PlotFactory fac;
-    settings.getData(ADXRPlot, s);
+    _settings.getData(ADXRPlot, s);
     int lineType = fac.typeFromString(s);
 
     PlotLine *line = getLine(data, period, ADXR, lineType, color);
     if (! line)
       return 1;
 
-    settings.getData(ADXRLabel, s);
+    _settings.getData(ADXRLabel, s);
     line->setLabel(s);
-    ind.addLine(line);
+    
+    s = "3";
+    ind.setLine(s, line);
+    ind.addPlotOrder(s);
   }
 
   return 0;
 }
 
-int ADX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int ADX::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,ADX,<METHOD>,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1     2     3        4      5          6         7
 
   if (set.count() != 8)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  int method = methodList.indexOf(set[3]);
+  int method = _methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid method" << set[3];
+    qDebug() << _indicator << "::getCUS: invalid method" << set[3];
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
+  PlotLine *tl = ind.line(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[4];
     return 1;
   }
 
@@ -166,7 +178,7 @@ int ADX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid period" << set[5];
     return 1;
   }
 
@@ -174,14 +186,14 @@ int ADX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int lineType = fac.typeFromString(set[6]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[6];
     return 1;
   }
 
   QColor color(set[7]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[7];
     return 1;
   }
 
@@ -191,7 +203,7 @@ int ADX::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
   line->setLabel(set[4]);
 
-  tlines.insert(set[4], line);
+  ind.setLine(set[4], line);
 
   return 0;
 }
@@ -240,7 +252,7 @@ PlotLine * ADX::getLine (BarData *data, int period, int method, int lineType, QC
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getLine: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getLine: TA-Lib error" << rc;
     return 0;
   }
 
@@ -271,71 +283,71 @@ int ADX::dialog (int)
   k = QObject::tr("General");
   dialog->addPage(page, k);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 2, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
 
   page++;
   k = QObject::tr("-DI");
   dialog->addPage(page, k);
 
-  settings.getData(MDIColor, d);
+  _settings.getData(MDIColor, d);
   dialog->addColorItem(MDIColor, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(MDIPlot, d);
+  _settings.getData(MDIPlot, d);
   dialog->addComboItem(MDIPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(MDILabel, d);
+  _settings.getData(MDILabel, d);
   dialog->addTextItem(MDILabel, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(MDICheck, page, QObject::tr("Show"), settings.getInt(MDICheck));
+  dialog->addCheckItem(MDICheck, page, QObject::tr("Show"), _settings.getInt(MDICheck));
 
   page++;
   k = QObject::tr("+DI");
   dialog->addPage(page, k);
 
-  settings.getData(PDIColor, d);
+  _settings.getData(PDIColor, d);
   dialog->addColorItem(PDIColor, page, QObject::tr("Color"), d);
 
-  settings.getData(PDIPlot, d);
+  _settings.getData(PDIPlot, d);
   dialog->addComboItem(PDIPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(PDILabel, d);
+  _settings.getData(PDILabel, d);
   dialog->addTextItem(PDILabel, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(PDICheck, page, QObject::tr("Show"), settings.getInt(MDICheck));
+  dialog->addCheckItem(PDICheck, page, QObject::tr("Show"), _settings.getInt(MDICheck));
 
   page++;
   k = QObject::tr("ADX");
   dialog->addPage(page, k);
 
-  settings.getData(ADXColor, d);
+  _settings.getData(ADXColor, d);
   dialog->addColorItem(ADXColor, page, QObject::tr("Color"), d);
 
-  settings.getData(ADXPlot, d);
+  _settings.getData(ADXPlot, d);
   dialog->addComboItem(ADXPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(ADXLabel, d);
+  _settings.getData(ADXLabel, d);
   dialog->addTextItem(ADXLabel, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(ADXCheck, page, QObject::tr("Show"), settings.getInt(MDICheck));
+  dialog->addCheckItem(ADXCheck, page, QObject::tr("Show"), _settings.getInt(MDICheck));
 
   page++;
   k = QObject::tr("ADXR");
   dialog->addPage(page, k);
 
-  settings.getData(ADXRColor, d);
+  _settings.getData(ADXRColor, d);
   dialog->addColorItem(ADXRColor, page, QObject::tr("Color"), d);
 
-  settings.getData(ADXRPlot, d);
+  _settings.getData(ADXRPlot, d);
   dialog->addComboItem(ADXRPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(ADXRLabel, d);
+  _settings.getData(ADXRLabel, d);
   dialog->addTextItem(ADXRLabel, page, QObject::tr("Label"), d);
 
-  dialog->addCheckItem(ADXRCheck, page, QObject::tr("Show"), settings.getInt(MDICheck));
+  dialog->addCheckItem(ADXRCheck, page, QObject::tr("Show"), _settings.getInt(MDICheck));
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

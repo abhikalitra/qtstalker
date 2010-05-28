@@ -28,13 +28,13 @@
 
 CUS::CUS ()
 {
-  indicator = "CUS";
+  _indicator = "CUS";
 
-  settings.setData(Command, "perl");
-  settings.setData(Script, "/usr/local/share/qtstalker/indicator/");
+  _settings.setData(Command, "perl");
+  _settings.setData(Script, "/usr/local/share/qtstalker/indicator/");
 }
 
-int CUS::getIndicator (Indicator &_ind, BarData *_data)
+int CUS::getIndicator (Indicator &ind, BarData *data)
 {
   Config config;
   QString ipp, dbpp;
@@ -42,19 +42,15 @@ int CUS::getIndicator (Indicator &_ind, BarData *_data)
   config.getData(Config::DBPluginPath, dbpp);
   
   QString s, s2;
-  settings.getData(Command, s);
-  settings.getData(Script, s2);
+  _settings.getData(Command, s);
+  _settings.getData(Script, s2);
   s.append(" " + s2);
 
   ExScript script(ipp, dbpp);
-  script.setBarData(_data);
+  script.setBarData(data);
   int rc = script.calculate(s);
   if (! rc)
-  {
-    QList<PlotLine *> lines;
-    script.getLines(lines);
-    _ind.setLines(lines);
-  }
+    ind = script.indicator();
 
   return rc;
 }
@@ -69,10 +65,10 @@ int CUS::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Command, d);
+  _settings.getData(Command, d);
   dialog->addTextItem(Command, page, QObject::tr("Command"), d);
 
-  settings.getData(Script, d);
+  _settings.getData(Script, d);
   dialog->addFileItem(Script, page, QObject::tr("Script"), d);
 
   int rc = dialog->exec();

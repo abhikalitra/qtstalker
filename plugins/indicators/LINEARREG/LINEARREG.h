@@ -39,12 +39,12 @@ class LINEARREG : public IndicatorPlugin
 
     LINEARREG ();
     int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data);
+    int getCUS (QStringList &, Indicator &, BarData *);
     PlotLine * getLINEARREG (PlotLine *in, int period, int method, int, QColor &);
     int dialog (int);
 
   protected:
-    QStringList methodList;
+    QStringList _methodList;
 };
 
 extern "C"

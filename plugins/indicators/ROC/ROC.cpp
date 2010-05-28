@@ -32,46 +32,46 @@ ROC::ROC ()
   if (rc != TA_SUCCESS)
     qDebug("ROC::error on TA_Initialize");
 
-  indicator = "ROC";
+  _indicator = "ROC";
 
-  settings.setData(Color, "red");
-  settings.setData(Plot, "Histogram Bar");
-  settings.setData(Label, indicator);
-  settings.setData(Period, 10);
-  settings.setData(Smoothing, 1);
-  settings.setData(SmoothingType, "SMA");
-  settings.setData(Input, "Close");
-  settings.setData(Method, "ROC");
+  _settings.setData(Color, "red");
+  _settings.setData(Plot, "Histogram Bar");
+  _settings.setData(Label, _indicator);
+  _settings.setData(Period, 10);
+  _settings.setData(Smoothing, 1);
+  _settings.setData(SmoothingType, "SMA");
+  _settings.setData(Input, "Close");
+  _settings.setData(Method, "ROC");
 
-  methodList << "ROC" << "ROCP" << "ROCR" << "ROCR100";
+  _methodList << "ROC" << "ROCP" << "ROCR" << "ROCR100";
 }
 
 int ROC::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(Input, s);
+  _settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::getIndicator: input not found" << s;
+    qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  int period = settings.getInt(Period);
-  int smoothing = settings.getInt(Smoothing);
+  int period = _settings.getInt(Period);
+  int smoothing = _settings.getInt(Smoothing);
 
   MAFactory mau;
-  settings.getData(SmoothingType, s);
+  _settings.getData(SmoothingType, s);
   int type = mau.typeFromString(s);
 
-  settings.getData(Method, s);
-  int method = methodList.indexOf(s);
+  _settings.getData(Method, s);
+  int method = _methodList.indexOf(s);
 
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   QColor color(s);
 
   PlotFactory fac;
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   PlotLine *line = getROC(in, period, method, smoothing, type, lineType, color);
@@ -81,65 +81,68 @@ int ROC::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "0";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   delete in;
 
   return 0;
 }
 
-int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int ROC::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,ROC,METHOD,<NAME>,<INPUT>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3      4       5       6             7                 8              9         10
 
   if (set.count() != 11)
   {
-    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
-  int method = methodList.indexOf(set[3]);
+  int method = _methodList.indexOf(set[3]);
   if (method == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid method" << set[3];
+    qDebug() << _indicator << "::getCUS: invalid method" << set[3];
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
+  PlotLine *tl = ind.line(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[5]);
+  PlotLine *in = ind.line(set[5]);
   if (! in)
   {
     in = data->getInput(data->getInputType(set[5]));
     if (! in)
     {
-      qDebug() << indicator << "::getCUS: input not found" << set[5];
+      qDebug() << _indicator << "::getCUS: input not found" << set[5];
       return 1;
     }
 
-    tlines.insert(set[5], in);
+    ind.setLine(set[5], in);
   }
 
   bool ok;
   int period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid period" << set[6];
     return 1;
   }
 
   int smoothing = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid smoothing" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid smoothing" << set[7];
     return 1;
   }
 
@@ -147,7 +150,7 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int type = mau.typeFromString(set[8]);
   if (type == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid smoothing type" << set[8];
+    qDebug() << _indicator << "::getCUS: invalid smoothing type" << set[8];
     return 1;
   }
 
@@ -155,14 +158,14 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int lineType = fac.typeFromString(set[9]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[9];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[9];
     return 1;
   }
 
   QColor color(set[10]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[10];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[10];
     return 1;
   }
 
@@ -172,7 +175,7 @@ int ROC::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
   line->setLabel(set[4]);
 
-  tlines.insert(set[4], line);
+  ind.setLine(set[4], line);
 
   return 0;
 }
@@ -217,7 +220,7 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getROC: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getROC: TA-Lib error" << rc;
     return 0;
   }
 
@@ -256,39 +259,39 @@ int ROC::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 
-  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), settings.getInt(Smoothing), 1, 100000);
+  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), _settings.getInt(Smoothing), 1, 100000);
 
   QStringList maList;
   MAFactory mau;
   mau.list(maList);
 
-  settings.getData(SmoothingType, d);
+  _settings.getData(SmoothingType, d);
   dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);
 
   BarData bd;
   QStringList inputList;
   bd.getInputFields(inputList);
 
-  settings.getData(Input, d);
+  _settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
+  _settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), _methodList, d);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

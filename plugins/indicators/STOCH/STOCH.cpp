@@ -32,21 +32,21 @@ STOCH::STOCH ()
   if (rc != TA_SUCCESS)
     qDebug("STOCH::error on TA_Initialize");
 
-  indicator = "STOCH";
+  _indicator = "STOCH";
 
-  settings.setData(FastKColor, "red");
-  settings.setData(FastDColor, "yellow");
-  settings.setData(Ref1Color, "white");
-  settings.setData(Ref2Color, "white");
-  settings.setData(FastKPlot, "Line");
-  settings.setData(FastDPlot, "Dash");
-  settings.setData(FastKLabel, "FASTK");
-  settings.setData(FastDLabel, "FASTD");
-  settings.setData(FastKPeriod, 5);
-  settings.setData(FastDPeriod, 3);
-  settings.setData(FastDMA, "SMA");
-  settings.setData(Ref1, 20);
-  settings.setData(Ref2, 80);
+  _settings.setData(FastKColor, "red");
+  _settings.setData(FastDColor, "yellow");
+  _settings.setData(Ref1Color, "white");
+  _settings.setData(Ref2Color, "white");
+  _settings.setData(FastKPlot, "Line");
+  _settings.setData(FastDPlot, "Dash");
+  _settings.setData(FastKLabel, "FASTK");
+  _settings.setData(FastDLabel, "FASTD");
+  _settings.setData(FastKPeriod, 5);
+  _settings.setData(FastDPeriod, 3);
+  _settings.setData(FastDMA, "SMA");
+  _settings.setData(Ref1, 20);
+  _settings.setData(Ref2, 80);
 }
 
 int STOCH::getIndicator (Indicator &ind, BarData *data)
@@ -58,11 +58,14 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
-  settings.getData(Ref1Color, s);
+  _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, new PlotLineBar(color, (double) settings.getInt(Ref1)));
-  ind.addLine(line);
+  line->setData(0, new PlotLineBar(color, (double) _settings.getInt(Ref1)));
+  
+  s = "0";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   // create second ref line
   s = "Horizontal";
@@ -70,31 +73,34 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
   if (! line)
     return 1;
 
-  settings.getData(Ref2Color, s);
+  _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, new PlotLineBar(color, (double) settings.getInt(Ref2)));
-  ind.addLine(line);
+  line->setData(0, new PlotLineBar(color, (double) _settings.getInt(Ref2)));
+  
+  s = "1";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   // create the fastk line
-  int kperiod = settings.getInt(FastKPeriod);
+  int kperiod = _settings.getInt(FastKPeriod);
 
-  settings.getData(FastKColor, s);
+  _settings.getData(FastKColor, s);
   QColor kcolor(s);
 
-  settings.getData(FastKPlot, s);
+  _settings.getData(FastKPlot, s);
   int klineType = fac.typeFromString(s);
 
-  int dperiod = settings.getInt(FastDPeriod);
+  int dperiod = _settings.getInt(FastDPeriod);
 
   MAFactory mau;
-  settings.getData(FastDMA, s);
+  _settings.getData(FastDMA, s);
   int maType = mau.typeFromString(s);
 
-  settings.getData(FastDColor, s);
+  _settings.getData(FastDColor, s);
   QColor dcolor(s);
 
-  settings.getData(FastDPlot, s);
+  _settings.getData(FastDPlot, s);
   int dlineType = fac.typeFromString(s);
 
   QList<PlotLine *> pl;
@@ -110,40 +116,46 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
     return 1;
 
   line = pl.at(0);
-  settings.getData(FastKLabel, s);
+  _settings.getData(FastKLabel, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "2";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
   
   line = pl.at(1);
-  settings.getData(FastDLabel, s);
+  _settings.getData(FastDLabel, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "3";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   return 0;
 }
 
-int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int STOCH::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,STOCH,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>,<FASTK PLOT TYPE>,<FASTD PLOT TYPE>,<FASTK COLOR>,<FASTD COLOR>
   //     0        1    2         3            4              5             6              7                 8                9                10            11
 
   if (set.count() != 12)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate fastk name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate fastk name" << set[3];
     return 1;
   }
 
-  tl = tlines.value(set[4]);
+  tl = ind.line(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate fastd name" << set[4];
+    qDebug() << _indicator << "::getCUS: duplicate fastd name" << set[4];
     return 1;
   }
 
@@ -151,14 +163,14 @@ int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   int fkp = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid fastk period" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid fastk period" << set[5];
     return 1;
   }
 
   int fdp = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid fastd period" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid fastd period" << set[6];
     return 1;
   }
 
@@ -166,7 +178,7 @@ int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   int ma = mau.typeFromString(set[7]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid fastd ma" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid fastd ma" << set[7];
     return 1;
   }
 
@@ -174,28 +186,28 @@ int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
   int klineType = fac.typeFromString(set[8]);
   if (klineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid fastk plot type" << set[8];
+    qDebug() << _indicator << "::getCUS: invalid fastk plot type" << set[8];
     return 1;
   }
 
   int dlineType = fac.typeFromString(set[9]);
   if (dlineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid fastd plot type" << set[9];
+    qDebug() << _indicator << "::getCUS: invalid fastd plot type" << set[9];
     return 1;
   }
 
   QColor kcolor(set[10]);
   if (! kcolor.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid fastk color" << set[10];
+    qDebug() << _indicator << "::getCUS: invalid fastk color" << set[10];
     return 1;
   }
 
   QColor dcolor(set[11]);
   if (! dcolor.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid fastd color" << set[11];
+    qDebug() << _indicator << "::getCUS: invalid fastd color" << set[11];
     return 1;
   }
 
@@ -213,11 +225,11 @@ int STOCH::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData
 
   PlotLine *line = pl.at(0);
   line->setLabel(set[3]);
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   line = pl.at(1);
   line->setLabel(set[4]);
-  tlines.insert(set[4], line);
+  ind.setLine(set[4], line);
 
   return 0;
 }
@@ -257,7 +269,7 @@ int STOCH::getSTOCH (BarData *data, int kperiod, int dperiod, int ma, int klineT
                             &out2[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getSTOCH: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getSTOCH: TA-Lib error" << rc;
     return 1;
   }
 
@@ -299,56 +311,56 @@ int STOCH::dialog (int)
   k = QObject::tr("FastK");
   dialog->addPage(page, k);
 
-  settings.getData(FastKColor, d);
+  _settings.getData(FastKColor, d);
   dialog->addColorItem(FastKColor, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(FastKPlot, d);
+  _settings.getData(FastKPlot, d);
   dialog->addComboItem(FastKPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(FastKLabel, d);
+  _settings.getData(FastKLabel, d);
   dialog->addTextItem(FastKLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(FastKPeriod, page, QObject::tr("Period"), settings.getInt(FastKPeriod), 1, 100000);
+  dialog->addIntItem(FastKPeriod, page, QObject::tr("Period"), _settings.getInt(FastKPeriod), 1, 100000);
 
   page++;
   k = QObject::tr("FastD");
   dialog->addPage(page, k);
 
-  settings.getData(FastDColor, d);
+  _settings.getData(FastDColor, d);
   dialog->addColorItem(FastDColor, page, QObject::tr("Color"), d);
 
-  settings.getData(FastDPlot, d);
+  _settings.getData(FastDPlot, d);
   dialog->addComboItem(FastDPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(FastDLabel, d);
+  _settings.getData(FastDLabel, d);
   dialog->addTextItem(FastDLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(FastDPeriod, page, QObject::tr("Period"), settings.getInt(FastDPeriod), 1, 100000);
+  dialog->addIntItem(FastDPeriod, page, QObject::tr("Period"), _settings.getInt(FastDPeriod), 1, 100000);
 
   QStringList maList;
   MAFactory mau;
   mau.list(maList);
 
-  settings.getData(FastDMA, d);
+  _settings.getData(FastDMA, d);
   dialog->addComboItem(FastDMA, page, QObject::tr("MA Type"), maList, d);
 
   page++;
   k = QObject::tr("Ref");
   dialog->addPage(page, k);
 
-  settings.getData(Ref1Color, d);
+  _settings.getData(Ref1Color, d);
   dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
 
-  settings.getData(Ref2Color, d);
+  _settings.getData(Ref2Color, d);
   dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
 
-  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), settings.getInt(Ref1), 0, 100);
+  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), _settings.getInt(Ref1), 0, 100);
 
-  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), settings.getInt(Ref2), 0, 100);
+  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), _settings.getInt(Ref2), 0, 100);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

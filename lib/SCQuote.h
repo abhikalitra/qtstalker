@@ -25,16 +25,15 @@
 #include <QStringList>
 #include <QString>
 #include <QByteArray>
-#include <QHash>
 
 #include "PluginFactory.h"
-#include "PlotLine.h"
+#include "Indicator.h"
 
 class SCQuote
 {
   public:
     SCQuote ();
-    int calculate (QStringList &, QByteArray &, QString &, QHash<QString, PlotLine *> &);
+    int calculate (QStringList &, QByteArray &, QString &, Indicator &);
     
   protected:
     PluginFactory fac;

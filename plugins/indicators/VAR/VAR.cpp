@@ -31,33 +31,33 @@ VAR::VAR ()
   if (rc != TA_SUCCESS)
     qDebug("VAR::error on TA_Initialize");
 
-  indicator = "VAR";
+  _indicator = "VAR";
 
-  settings.setData(Color, "red");
-  settings.setData(Plot, "Line");
-  settings.setData(Label, indicator);
-  settings.setData(Period, 5);
-  settings.setData(Input, "Close");
+  _settings.setData(Color, "red");
+  _settings.setData(Plot, "Line");
+  _settings.setData(Label, _indicator);
+  _settings.setData(Period, 5);
+  _settings.setData(Input, "Close");
 }
 
 int VAR::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(Input, s);
+  _settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::getIndicator: input not found" << s;
+    qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  int period = settings.getInt(Period);
+  int period = _settings.getInt(Period);
 
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   QColor color(s);
 
   PlotFactory fac;
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   PlotLine *line = getVAR(in, period, lineType, color);
@@ -67,51 +67,54 @@ int VAR::getIndicator (Indicator &ind, BarData *data)
     return 1;
   }
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "0";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   delete in;
 
   return 0;
 }
 
-int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int VAR::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,VAR,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1    2     3       4        5         6         7
 
   if (set.count() != 7)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[4]);
+  PlotLine *in = ind.line(set[4]);
   if (! in)
   {
     in = data->getInput(data->getInputType(set[4]));
     if (! in)
     {
-      qDebug() << indicator << "::getCUS: input not found" << set[4];
+      qDebug() << _indicator << "::getCUS: input not found" << set[4];
       return 1;
     }
 
-    tlines.insert(set[4], in);
+    ind.setLine(set[4], in);
   }
 
   bool ok;
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period settings" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid period settings" << set[5];
     return 1;
   }
 
@@ -119,14 +122,14 @@ int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
   int lineType = fac.typeFromString(set[6]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[6];
     return 1;
   }
 
   QColor color(set[7]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[7];
     return 1;
   }
 
@@ -136,7 +139,7 @@ int VAR::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -169,7 +172,7 @@ PlotLine * VAR::getVAR (PlotLine *in, int period, int lineType, QColor &color)
                          &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getVAR: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getVAR: TA-Lib error" << rc;
     return 0;
   }
 
@@ -200,26 +203,26 @@ int VAR::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 
   BarData bd;
   QStringList inputList;
   bd.getInputFields(inputList);
 
-  settings.getData(Input, d);
+  _settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
   int rc = dialog->exec();

@@ -27,58 +27,60 @@
 
 FI::FI ()
 {
-  indicator = "FI";
+  _indicator = "FI";
 
-  settings.setData(Color, "red");
-  settings.setData(Plot, "Histogram Bar");
-  settings.setData(Label, indicator);
-  settings.setData(MAType, "EMA");
-  settings.setData(Period, 2);
+  _settings.setData(Color, "red");
+  _settings.setData(Plot, "Histogram Bar");
+  _settings.setData(Label, _indicator);
+  _settings.setData(MAType, "EMA");
+  _settings.setData(Period, 2);
 }
 
 int FI::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  int period = settings.getInt(Period);
+  int period = _settings.getInt(Period);
 
   MAFactory mau;
-  settings.getData(MAType, s);
+  _settings.getData(MAType, s);
   int ma = mau.typeFromString(s);
 
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   QColor color(s);
 
   PlotFactory fac;
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   PlotLine *line = getFI(data, period, ma, lineType, color);
   if (! line)
     return 1;
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
 
-  ind.addLine(line);
+  s = "0";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   return 0;
 }
 
-int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int FI::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,FI,<NAME>,<PERIOD>,<MA_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1    2     3      4         5          6         7
 
   if (set.count() != 8)
   {
-    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
     return 1;
   }
 
@@ -86,7 +88,7 @@ int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int period = set[4].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period" << set[4];
+    qDebug() << _indicator << "::getCUS: invalid period" << set[4];
     return 1;
   }
 
@@ -94,7 +96,7 @@ int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int ma = mau.typeFromString(set[5]);
   if (ma == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid ma" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid ma" << set[5];
     return 1;
   }
 
@@ -102,14 +104,14 @@ int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int lineType = fac.typeFromString(set[6]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[6];
     return 1;
   }
 
   QColor color(set[7]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[7];
     return 1;
   }
 
@@ -119,7 +121,7 @@ int FI::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -173,26 +175,26 @@ int FI::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 
   QStringList maList;
   MAFactory mau;
   mau.list(maList);
   
-  settings.getData(MAType, d);
+  _settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
 
   int rc = dialog->exec();

@@ -62,13 +62,12 @@ Setting * PlotCursorInfo::info (QPoint &p, PlotData &pd, Indicator &indicator, D
   k = "T";
   r->setData(k, s);
   
-  QList<PlotLine *> plotList;
-  indicator.getLines(plotList);
-
-  int loop;
-  for (loop = 0; loop < plotList.count(); loop++)
+  QStringList plotList = indicator.plotOrder();
+  int loop = 0;
+  for (; loop < plotList.count(); loop++)
   {
-    PlotLine *line = plotList.at(loop);
+    QString ts = plotList.at(loop);
+    PlotLine *line = indicator.line(ts);
     if (line->type() == "Horizontal")
       continue;
       

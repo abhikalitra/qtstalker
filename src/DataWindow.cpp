@@ -66,8 +66,7 @@ void DataWindow::setData (QHash<QString, Plot *> &list)
 void DataWindow::setPlot (Plot *d)
 {
   Indicator indicator = d->indicator();
-  QList<PlotLine *> lines;
-  indicator.getLines(lines);
+  QStringList pl = indicator.plotOrder();
   
   if (! dateFlag)
   {
@@ -77,11 +76,11 @@ void DataWindow::setPlot (Plot *d)
   }
 
   // get the plot data
-  QString s;
-  int loop;
-  for (loop = 0; loop < lines.count(); loop++)
+  int loop = 0;
+  for (; loop < pl.count(); loop++)
   {
-    PlotLine *line = lines.at(loop);
+    QString s = pl.at(loop);
+    PlotLine *line = indicator.line(s);
     
     if (line->type() == "Horizontal")
       continue;

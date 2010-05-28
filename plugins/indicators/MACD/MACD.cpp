@@ -32,69 +32,69 @@ MACD::MACD ()
   if (rc != TA_SUCCESS)
     qDebug("MACD::error on TA_Initialize");
 
-  indicator = "MACD";
+  _indicator = "MACD";
 
-  settings.setData(MACDColor, "red");
-  settings.setData(SignalColor, "yellow");
-  settings.setData(HistColor, "blue");
-  settings.setData(MACDPlot, "Line");
-  settings.setData(SignalPlot, "Line");
-  settings.setData(HistPlot, "Histogram");
-  settings.setData(MACDLabel, "MACD");
-  settings.setData(SignalLabel, "SIG");
-  settings.setData(HistLabel, "HIST");
-  settings.setData(FastPeriod, 12);
-  settings.setData(SlowPeriod, 26);
-  settings.setData(SignalPeriod, 9);
-  settings.setData(FastMA, "SMA");
-  settings.setData(SlowMA, "SMA");
-  settings.setData(SignalMA, "EMA");
-  settings.setData(Input, "Close");
+  _settings.setData(MACDColor, "red");
+  _settings.setData(SignalColor, "yellow");
+  _settings.setData(HistColor, "blue");
+  _settings.setData(MACDPlot, "Line");
+  _settings.setData(SignalPlot, "Line");
+  _settings.setData(HistPlot, "Histogram");
+  _settings.setData(MACDLabel, "MACD");
+  _settings.setData(SignalLabel, "SIG");
+  _settings.setData(HistLabel, "HIST");
+  _settings.setData(FastPeriod, 12);
+  _settings.setData(SlowPeriod, 26);
+  _settings.setData(SignalPeriod, 9);
+  _settings.setData(FastMA, "SMA");
+  _settings.setData(SlowMA, "SMA");
+  _settings.setData(SignalMA, "EMA");
+  _settings.setData(Input, "Close");
 }
 
 int MACD::getIndicator (Indicator &ind, BarData *data)
 {
   QString s;
-  settings.getData(Input, s);
+  _settings.getData(Input, s);
   PlotLine *in = data->getInput(data->getInputType(s));
   if (! in)
   {
-    qDebug() << indicator << "::calculate: input not found" << s;
+    qDebug() << _indicator << "::calculate: input not found" << s;
     return 1;
   }
 
-  int fast = settings.getInt(FastPeriod);
-  int slow = settings.getInt(SlowPeriod);
-  int signal = settings.getInt(SignalPeriod);
+  int fast = _settings.getInt(FastPeriod);
+  int slow = _settings.getInt(SlowPeriod);
+  int signal = _settings.getInt(SignalPeriod);
 
   MAFactory mau;
-  settings.getData(FastMA, s);
+  _settings.getData(FastMA, s);
   int fastma = mau.typeFromString(s);
 
-  settings.getData(SlowMA, s);
+  _settings.getData(SlowMA, s);
   int slowma = mau.typeFromString(s);
 
-  settings.getData(SignalMA, s);
+  _settings.getData(SignalMA, s);
   int signalma = mau.typeFromString(s);
 
   // macd line
-  settings.getData(MACDColor, s);
+  _settings.getData(MACDColor, s);
   QColor macdColor(s);
 
   PlotFactory fac;
-  settings.getData(MACDPlot, s);
+  _settings.getData(MACDPlot, s);
   int macdPlot = fac.typeFromString(s);
 
-  settings.getData(SignalColor, s);
+  _settings.getData(SignalColor, s);
   QColor signalColor(s);
 
-  settings.getData(SignalPlot, s);
+  _settings.getData(SignalPlot, s);
   int signalPlot = fac.typeFromString(s);
 
-  settings.getData(HistColor, s);
+  _settings.getData(HistColor, s);
   QColor histColor(s);
 
-  settings.getData(HistPlot, s);
+  _settings.getData(HistPlot, s);
   int histPlot = fac.typeFromString(s);
 
   QList<PlotLine *> pl;
@@ -119,77 +119,86 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
 
   // plot hist 
   PlotLine *line = pl.at(2);
-  settings.getData(HistLabel, s);
+  _settings.getData(HistLabel, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "0";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   // plot macd
   line = pl.at(0);
-  settings.getData(MACDLabel, s);
+  _settings.getData(MACDLabel, s);
   line->setLabel(s);
-  ind.addLine(line);
+
+  s = "1";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   // plot signal
   line = pl.at(1);
-  settings.getData(SignalLabel, s);
+  _settings.getData(SignalLabel, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "2";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   delete in;
 
   return 0;
 }
 
-int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int MACD::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<FAST_MA_TYPE>,<SLOW_PERIOD>,<SLOW_MA_TYPE>,<SIGNAL_PERIOD>,<SIGNAL_MA_TYPE>,<MACD PLOT TYPE>,<SIGNAL PLOT TYPE>,<HIST PLOT TYPE>,<MACD COLOR>,<SIGNAL COLOR>,<HIST COLOR>
   //     0       1     2      3         4           5             6           7               8            9             10                11              12                13               14                 15           16             17           18
 
   if (set.count() != 19)
   {
-    qDebug() << indicator << "::getCUS: invalid settings count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[4]);
+  PlotLine *tl = ind.line(set[4]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[4];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[4];
     return 1;
   }
 
-  tl = tlines.value(set[5]);
+  tl = ind.line(set[5]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[5];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[5];
     return 1;
   }
 
-  tl = tlines.value(set[6]);
+  tl = ind.line(set[6]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: duplicate name" << set[6];
+    qDebug() << _indicator << "::getCUS: duplicate name" << set[6];
     return 1;
   }
 
-  PlotLine *in = tlines.value(set[3]);
+  PlotLine *in = ind.line(set[3]);
   if (! in)
   {
     in = data->getInput(data->getInputType(set[3]));
     if (! in)
     {
-      qDebug() << indicator << "::getCUS: input not found" << set[3];
+      qDebug() << _indicator << "::getCUS: input not found" << set[3];
       return 1;
     }
 
-    tlines.insert(set[3], in);
+    ind.setLine(set[3], in);
   }
 
   bool ok;
   int fast = set[7].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid fast period" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid fast period" << set[7];
     return 1;
   }
 
@@ -197,35 +206,35 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   int fastma = mau.typeFromString(set[8]);
   if (fastma == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid fast ma" << set[8];
+    qDebug() << _indicator << "::getCUS: invalid fast ma" << set[8];
     return 1;
   }
 
   int slow = set[9].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid slow period" << set[9];
+    qDebug() << _indicator << "::getCUS: invalid slow period" << set[9];
     return 1;
   }
 
   int slowma = mau.typeFromString(set[10]);
   if (slowma == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid slow ma" << set[10];
+    qDebug() << _indicator << "::getCUS: invalid slow ma" << set[10];
     return 1;
   }
 
   int signal = set[11].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid signal period" << set[11];
+    qDebug() << _indicator << "::getCUS: invalid signal period" << set[11];
     return 1;
   }
 
   int signalma = mau.typeFromString(set[12]);
   if (signalma == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid fast ma" << set[12];
+    qDebug() << _indicator << "::getCUS: invalid fast ma" << set[12];
     return 1;
   }
 
@@ -233,42 +242,42 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
   int mlineType = fac.typeFromString(set[13]);
   if (mlineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid macd plot type" << set[13];
+    qDebug() << _indicator << "::getCUS: invalid macd plot type" << set[13];
     return 1;
   }
 
   int slineType = fac.typeFromString(set[14]);
   if (slineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid signal plot type" << set[14];
+    qDebug() << _indicator << "::getCUS: invalid signal plot type" << set[14];
     return 1;
   }
 
   int hlineType = fac.typeFromString(set[15]);
   if (hlineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid macd plot type" << set[15];
+    qDebug() << _indicator << "::getCUS: invalid macd plot type" << set[15];
     return 1;
   }
 
   QColor mcolor(set[16]);
   if (! mcolor.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid macd color" << set[16];
+    qDebug() << _indicator << "::getCUS: invalid macd color" << set[16];
     return 1;
   }
 
   QColor scolor(set[17]);
   if (! scolor.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid signal color" << set[17];
+    qDebug() << _indicator << "::getCUS: invalid signal color" << set[17];
     return 1;
   }
 
   QColor hcolor(set[18]);
   if (! hcolor.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid hist color" << set[18];
+    qDebug() << _indicator << "::getCUS: invalid hist color" << set[18];
     return 1;
   }
 
@@ -291,15 +300,15 @@ int MACD::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData 
 
   PlotLine *line = pl.at(0);
   line->setLabel(set[4]);
-  tlines.insert(set[4], line);
+  ind.setLine(set[4], line);
   
   line = pl.at(1);
   line->setLabel(set[5]);
-  tlines.insert(set[5], line);
+  ind.setLine(set[5], line);
 
   line = pl.at(2);
   line->setLabel(set[6]);
-  tlines.insert(set[6], line);
+  ind.setLine(set[6], line);
 
   return 0;
 }
@@ -342,7 +351,7 @@ int MACD::getMACD (PlotLine *in, int fastPeriod, int fastMA, int slowPeriod, int
                              &out3[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << indicator << "::getMACD: TA-Lib error" << rc;
+    qDebug() << _indicator << "::getMACD: TA-Lib error" << rc;
     return 1;
   }
 
@@ -398,69 +407,69 @@ int MACD::dialog (int)
   QStringList inputList;
   bd.getInputFields(inputList);
 
-  settings.getData(Input, d);
+  _settings.getData(Input, d);
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
-  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), settings.getInt(FastPeriod), 2, 100000);
+  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), _settings.getInt(FastPeriod), 2, 100000);
 
-  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), settings.getInt(SlowPeriod), 2, 100000);
+  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), _settings.getInt(SlowPeriod), 2, 100000);
 
   QStringList maList;
   MAFactory mau;
   mau.list(maList);
   
-  settings.getData(FastMA, d);
+  _settings.getData(FastMA, d);
   dialog->addComboItem(FastMA, page, QObject::tr("Fast MA"), maList, d);
 
-  settings.getData(SlowMA, d);
+  _settings.getData(SlowMA, d);
   dialog->addComboItem(SlowMA, page, QObject::tr("Slow MA"), maList, d);
 
   page++;
   k = QObject::tr("MACD");
   dialog->addPage(page, k);
 
-  settings.getData(MACDColor, d);
+  _settings.getData(MACDColor, d);
   dialog->addColorItem(MACDColor, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(MACDPlot, d);
+  _settings.getData(MACDPlot, d);
   dialog->addComboItem(MACDPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(MACDLabel, d);
+  _settings.getData(MACDLabel, d);
   dialog->addTextItem(MACDLabel, page, QObject::tr("Label"), d);
 
   page++;
   k = QObject::tr("Signal");
   dialog->addPage(page, k);
 
-  settings.getData(SignalColor, d);
+  _settings.getData(SignalColor, d);
   dialog->addColorItem(SignalColor, page, QObject::tr("Color"), d);
 
-  settings.getData(SignalPlot, d);
+  _settings.getData(SignalPlot, d);
   dialog->addComboItem(SignalPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(SignalLabel, d);
+  _settings.getData(SignalLabel, d);
   dialog->addTextItem(SignalLabel, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(SignalPeriod, page, QObject::tr("Period"), settings.getInt(SignalPeriod), 1, 100000);
+  dialog->addIntItem(SignalPeriod, page, QObject::tr("Period"), _settings.getInt(SignalPeriod), 1, 100000);
 
-  settings.getData(SignalMA, d);
+  _settings.getData(SignalMA, d);
   dialog->addComboItem(SignalMA, page, QObject::tr("MA Type"), maList, d);
 
   page++;
   k = QObject::tr("Hist");
   dialog->addPage(page, k);
 
-  settings.getData(HistColor, d);
+  _settings.getData(HistColor, d);
   dialog->addColorItem(HistColor, page, QObject::tr("Color"), d);
 
-  settings.getData(HistPlot, d);
+  _settings.getData(HistPlot, d);
   dialog->addComboItem(HistPlot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(HistLabel, d);
+  _settings.getData(HistLabel, d);
   dialog->addTextItem(HistLabel, page, QObject::tr("Label"), d);
 
   int rc = dialog->exec();

@@ -128,7 +128,7 @@ void Script::start ()
     config.getData(Config::IndicatorPluginPath, ipp);
     config.getData(Config::DBPluginPath, dbpp);
     scriptServer = new ExScript(ipp, dbpp);
-    scriptServer->setDeleteFlag(TRUE);
+//    scriptServer->setDeleteFlag(TRUE);
     connect(scriptServer, SIGNAL(signalDone()), this, SLOT(scriptDone()));
   }
     

@@ -88,7 +88,7 @@ void Setup::setupDefaultIndicators ()
   else
   {
     Indicator i;
-    ip->getSettings(i);
+    ip->settings(i);
     i.setTabRow(1);
     i.setEnable(1);
     s = "Bars";
@@ -104,7 +104,7 @@ void Setup::setupDefaultIndicators ()
   else
   {
     Indicator i;
-    ip->getSettings(i);
+    ip->settings(i);
     i.setTabRow(2);
     i.setEnable(1);
     s = "Volume";
@@ -156,7 +156,6 @@ void Setup::setupDefaultSymbol ()
   QTextStream in(&file);
 
   QString command = "QUOTE,Stock,SET_QUOTE,XNYS,SAMPLE,yyyyMMdd,";
-  QHash<QString, PlotLine *> lines;
   
   while (! in.atEnd())
   {
@@ -164,14 +163,16 @@ void Setup::setupDefaultSymbol ()
     QString s2 = command + s;
     QStringList l = s2.split(",");
 
-   int rc = plug->scriptCommand(l, lines);
-   if (rc)
-     qDebug() << "Setup::setupDefaultSymbol: quote not imported" << s2;
+    Indicator ind;
+    int rc = plug->scriptCommand(l, ind);
+    if (rc)
+      qDebug() << "Setup::setupDefaultSymbol: quote not imported" << s2;
   }
 
+  Indicator ind;
   s = "QUOTE,Stock,SAVE_QUOTES";
   QStringList l = s.split(",");
-  int rc = plug->scriptCommand(l, lines);
+  int rc = plug->scriptCommand(l, ind);
   if (rc)
     qDebug() << "Setup::setupDefaultSymbol: quotes not saved" << s;
 

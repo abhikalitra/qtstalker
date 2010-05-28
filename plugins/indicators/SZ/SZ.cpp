@@ -19,7 +19,7 @@
  *  USA.
  */
 
-/* The "SafeZone Stop" indicator is described in
+/* The "SafeZone Stop" _indicator is described in
    Dr. Alexander Elder's book _Come Into My Trading Room_, p.173 */
 
 #include "SZ.h"
@@ -31,28 +31,28 @@
 
 SZ::SZ ()
 {
-  indicator = "SZ";
+  _indicator = "SZ";
 
-  settings.setData(Color, "red");
-  settings.setData(Plot, "Line");
-  settings.setData(Label, indicator);
-  settings.setData(Period, 10);
-  settings.setData(Method, "Long");
-  settings.setData(NoDeclinePeriod, 2);
-  settings.setData(Coefficient, 2);
+  _settings.setData(Color, "red");
+  _settings.setData(Plot, "Line");
+  _settings.setData(Label, _indicator);
+  _settings.setData(Period, 10);
+  _settings.setData(Method, "Long");
+  _settings.setData(NoDeclinePeriod, 2);
+  _settings.setData(Coefficient, 2);
 
-  methodList << QObject::tr("Long");
-  methodList << QObject::tr("Short");
+  _methodList << QObject::tr("Long");
+  _methodList << QObject::tr("Short");
 }
 
 int SZ::getIndicator (Indicator &ind, BarData *data)
 {
   QString method;
-  settings.getData(Method, method);
+  _settings.getData(Method, method);
 
-  int period = settings.getInt(Period);
-  int ndperiod = settings.getInt(NoDeclinePeriod);
-  double coeff = settings.getDouble(Coefficient);
+  int period = _settings.getInt(Period);
+  int ndperiod = _settings.getInt(NoDeclinePeriod);
+  double coeff = _settings.getDouble(Coefficient);
 
   QColor up("green");
   QColor down("red");
@@ -60,48 +60,55 @@ int SZ::getIndicator (Indicator &ind, BarData *data)
   BARSUtils b;
   PlotLine *bars = b.getBARS(data, up, down, neutral);
   if (bars)
-    ind.addLine(bars);
+  {
+    QString s = "0";
+    ind.setLine(s, bars);
+    ind.addPlotOrder(s);
+  }
 
   QString s;
-  settings.getData(Color, s);
+  _settings.getData(Color, s);
   QColor color(s);
 
   PlotFactory fac;
-  settings.getData(Plot, s);
+  _settings.getData(Plot, s);
   int lineType = fac.typeFromString(s);
 
   PlotLine *line = getSZ(data, method, period, ndperiod, coeff, lineType, color);
   if (! line)
     return 1;
 
-  settings.getData(Label, s);
+  _settings.getData(Label, s);
   line->setLabel(s);
-  ind.addLine(line);
+  
+  s = "1";
+  ind.setLine(s, line);
+  ind.addPlotOrder(s);
 
   return 0;
 }
 
-int SZ::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *data)
+int SZ::getCUS (QStringList &set, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,SZ,<NAME>,<METHOD>,<PERIOD>,<NO_DECLINE_PERIOD>,<COEFFICIENT>,<PLOT TYPE>,<COLOR>
   //     0       1    2    3       4        5              6               7             8         9
 
   if (set.count() != 10)
   {
-    qDebug() << indicator << "::getCUS: invalid parm count" << set.count();
+    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
     return 1;
   }
 
-  PlotLine *tl = tlines.value(set[3]);
+  PlotLine *tl = ind.line(set[3]);
   if (tl)
   {
-    qDebug() << indicator << "::getCUS: invalid name" << set[3];
+    qDebug() << _indicator << "::getCUS: invalid name" << set[3];
     return 1;
   }
 
   if (set[4] != "Long" && set[4] != "Short")
   {
-    qDebug() << indicator << "::getCUS: invalid method" << set[4];
+    qDebug() << _indicator << "::getCUS: invalid method" << set[4];
     return 1;
   }
 
@@ -109,7 +116,7 @@ int SZ::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int period = set[5].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid period" << set[5];
+    qDebug() << _indicator << "::getCUS: invalid period" << set[5];
     return 1;
   }
   if (period < 1)
@@ -118,14 +125,14 @@ int SZ::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int no_decline_period = set[6].toInt(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid no_decline_period" << set[6];
+    qDebug() << _indicator << "::getCUS: invalid no_decline_period" << set[6];
     return 1;
   }
 
   double coefficient = set[7].toDouble(&ok);
   if (! ok)
   {
-    qDebug() << indicator << "::getCUS: invalid coefficient" << set[7];
+    qDebug() << _indicator << "::getCUS: invalid coefficient" << set[7];
     return 1;
   }
 
@@ -133,14 +140,14 @@ int SZ::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
   int lineType = fac.typeFromString(set[8]);
   if (lineType == -1)
   {
-    qDebug() << indicator << "::getCUS: invalid plot type" << set[8];
+    qDebug() << _indicator << "::getCUS: invalid plot type" << set[8];
     return 1;
   }
 
   QColor color(set[9]);
   if (! color.isValid())
   {
-    qDebug() << indicator << "::getCUS: invalid color" << set[9];
+    qDebug() << _indicator << "::getCUS: invalid color" << set[9];
     return 1;
   }
 
@@ -150,7 +157,7 @@ int SZ::getCUS (QStringList &set, QHash<QString, PlotLine *> &tlines, BarData *d
 
   line->setLabel(set[3]);
 
-  tlines.insert(set[3], line);
+  ind.setLine(set[3], line);
 
   return 0;
 }
@@ -293,27 +300,27 @@ int SZ::dialog (int)
   k = QObject::tr("Settings");
   dialog->addPage(page, k);
 
-  settings.getData(Color, d);
+  _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   PlotFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
-  settings.getData(Plot, d);
+  _settings.getData(Plot, d);
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
-  settings.getData(Label, d);
+  _settings.getData(Label, d);
   dialog->addTextItem(Label, page, QObject::tr("Label"), d);
 
-  dialog->addIntItem(Period, page, QObject::tr("Period"), settings.getInt(Period), 1, 100000);
+  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 
-  settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
+  _settings.getData(Method, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), _methodList, d);
 
-  dialog->addIntItem(NoDeclinePeriod, page, QObject::tr("No Decline Period"), settings.getInt(NoDeclinePeriod), 1, 100000);
+  dialog->addIntItem(NoDeclinePeriod, page, QObject::tr("No Decline Period"), _settings.getInt(NoDeclinePeriod), 1, 100000);
 
-  dialog->addDoubleItem(Coefficient, page, QObject::tr("Coefficient"), settings.getDouble(Coefficient), 0, 100000);
+  dialog->addDoubleItem(Coefficient, page, QObject::tr("Coefficient"), _settings.getDouble(Coefficient), 0, 100000);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
