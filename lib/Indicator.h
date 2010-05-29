@@ -53,21 +53,21 @@ class Indicator
     void setSettings (Setting &);
     Setting & settings ();
     void clear ();
-    void setChartObjects (QHash<QString, COPlugin *> &);
-    void getChartObjects (QHash<QString, COPlugin *> &);
+    COPlugin * chartObject (int);
     void addChartObject (COPlugin *);
     void clearChartObjects ();
-    void deleteChartObject (QString &);
+    void deleteChartObject (int);
 
     void addPlotOrder (QString &);
     QStringList & plotOrder ();
     void weedPlots ();
     void cleanClear ();
     void init ();
+    void coKeys (QList<int> &);
 
   protected:
     QHash<QString, PlotLine *> _lines;
-    QHash<QString, COPlugin *> _chartObjects;
+    QHash<int, COPlugin *> _chartObjects;
     Setting _settings;
     QString _name;
     QString _indicator;

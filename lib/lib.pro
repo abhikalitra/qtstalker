@@ -78,6 +78,7 @@ HEADERS += Wilder.h
 HEADERS += WMA.h
 HEADERS += Strip.h
 HEADERS += PlotDrawInfo.h
+HEADERS += SCChartObject.h
 
 
 SOURCES += Setting.cpp
@@ -152,6 +153,7 @@ SOURCES += Wilder.cpp
 SOURCES += WMA.cpp
 SOURCES += Strip.cpp
 SOURCES += PlotDrawInfo.cpp
+SOURCES += SCChartObject.cpp
 
 
 

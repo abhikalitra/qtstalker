@@ -29,7 +29,7 @@
 
 SCIndicator::SCIndicator ()
 {
-  methodList << "NEW" << "GET_INDEX" << "GET_RANGE" << "PLUGIN" << "SET_INDEX" << "SET_COLOR";
+  methodList << "NEW" << "GET_INDEX" << "GET_INDEX_DATE" << "GET_RANGE" << "PLUGIN" << "SET_INDEX" << "SET_COLOR";
 }
 
 int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data, QString &path)
@@ -52,6 +52,9 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarD
       break;
     case GET_INDEX:
       rc = getIndex(l, ba, ind);
+      break;
+    case GET_INDEX_DATE:
+      rc = getIndexDate(l, ba, data);
       break;
     case GET_RANGE:
       rc = getRange(l, ba, ind);
@@ -182,6 +185,39 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, Indicator &ind)
   ba.clear();
 
   ba.append(QString::number(bar->data()) + "\n");
+
+  return 0;
+}
+
+int SCIndicator::getIndexDate (QStringList &l, QByteArray &ba, BarData *data)
+{
+  // INDICATOR,GET_INDEX_DATE,<INDEX>
+  //     0           1           2
+
+  if (l.count() != 3)
+  {
+    qDebug() << "SCIndicator::getIndexDate: invalid parm count" << l.count();
+    return 1;
+  }
+
+  bool ok;
+  int index = l[2].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "SCIndicator::getIndexDate: invalid index value" << l[2];
+    return 1;
+  }
+
+  Bar *bar = data->getBar(index);
+  if (! bar)
+  {
+    qDebug() << "SCIndicator::getIndexDate: invalid index value" << l[2];
+    return 1;
+  }
+
+  ba.clear();
+
+  ba.append(bar->getDate().toString(Qt::ISODate) + "\n");
 
   return 0;
 }

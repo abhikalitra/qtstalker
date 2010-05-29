@@ -59,6 +59,7 @@ class COPlugin : public QObject
     virtual void moving (QDateTime &, double, int moveFlag);
     virtual void getIcon (QIcon &);
     virtual int inDateRange (QDateTime &, QDateTime &, DateBar &);
+    virtual int CUS (QStringList &);
 
     void setSelected (int);
     void clearGrabHandles ();
@@ -74,16 +75,16 @@ class COPlugin : public QObject
     void setExchange (QString &);
 
   protected:
-    int handleWidth;
-    int selected;
-    int saveFlag;
-    int id;
-    QString symbol;
-    QString indicator;
-    QString plugin;
-    QString exchange;
-    QList<QRegion *> grabHandles;
-    QList<QRegion *> selectionArea;
+    int _handleWidth;
+    int _selected;
+    int _saveFlag;
+    int _id;
+    QString _symbol;
+    QString _indicator;
+    QString _plugin;
+    QString _exchange;
+    QList<QRegion *> _grabHandles;
+    QList<QRegion *> _selectionArea;
 };
 
 #endif

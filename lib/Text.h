@@ -39,13 +39,14 @@ class Text : public COPlugin
     void getIcon (QIcon &);
     int getHighLow (double &, double &);
     int inDateRange (QDateTime &, QDateTime &, DateBar &);
+    int CUS (QStringList &);
     
   protected:
-    QFont font;
-    QDateTime date;
-    double price;
-    QColor color;
-    QString label;
+    QFont _font;
+    QDateTime _date;
+    double _price;
+    QColor _color;
+    QString _label;
 };
 
 #endif

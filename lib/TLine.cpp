@@ -32,13 +32,13 @@
 
 TLine::TLine ()
 {
-  plugin = "TLine";
-  color.setNamedColor("red");
-  price = 0;
-  price2 = 0;
-  extend = 0;
+  _plugin = "TLine";
+  _color.setNamedColor("red");
+  _price = 0;
+  _price2 = 0;
+  _extend = 0;
   
-  fieldList << QObject::tr("Open") << QObject::tr("High") << QObject::tr("Low") << QObject::tr("Close");
+  _fieldList << QObject::tr("Open") << QObject::tr("High") << QObject::tr("Low") << QObject::tr("Close");
 }
 
 void TLine::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
@@ -46,7 +46,7 @@ void TLine::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int x2 = dateBars.getX(date);
+  int x2 = dateBars.getX(_date);
   if (x2 == -1)
     return;
 
@@ -54,7 +54,7 @@ void TLine::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   if (x == -1)
     return;
 
-  x2 = dateBars.getX(date2);
+  x2 = dateBars.getX(_date2);
   if (x2 == -1)
     return;
 
@@ -62,10 +62,10 @@ void TLine::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   if (x2 == -1)
     return;
 
-  int y = scaler.convertToY(price);
-  int y2 = scaler.convertToY(price2);
+  int y = scaler.convertToY(_price);
+  int y2 = scaler.convertToY(_price2);
 
-  painter.setPen(color);
+  painter.setPen(_color);
 
   painter.drawLine (x, y, x2, y2);
 
@@ -75,7 +75,7 @@ void TLine::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   int tx = x;
   int ty = y;
 
-  if (extend)
+  if (_extend)
   {
     int ydiff = y - y2;
     int xdiff = x2 - x;
@@ -98,33 +98,33 @@ void TLine::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   array.putPoints(0, 4, tx, ty - 4, tx, ty + 4, x2, y2 + 4, x2, y2 - 4);
   setSelectionArea(new QRegion(array));
 
-  if (selected)
+  if (_selected)
   {
     clearGrabHandles();
 
     setGrabHandle(new QRegion(tx,
-		  ty - (handleWidth / 2),
-		  handleWidth,
-		  handleWidth,
+		  ty - (_handleWidth / 2),
+		  _handleWidth,
+		  _handleWidth,
 		  QRegion::Rectangle));
 
     painter.fillRect(tx,
-		     ty - (handleWidth / 2),
-		     handleWidth,
-		     handleWidth,
-		     color);
+		     ty - (_handleWidth / 2),
+		     _handleWidth,
+		     _handleWidth,
+		     _color);
 
     setGrabHandle(new QRegion(tx2,
-		  ty2 - (handleWidth / 2),
-		  handleWidth,
-		  handleWidth,
+		  ty2 - (_handleWidth / 2),
+		  _handleWidth,
+		  _handleWidth,
 		  QRegion::Rectangle));
 
     painter.fillRect(tx2,
-		     ty2 - (handleWidth / 2),
-		     handleWidth,
-		     handleWidth,
-		     color);
+		     ty2 - (_handleWidth / 2),
+		     _handleWidth,
+		     _handleWidth,
+		     _color);
   }
 
   painter.end();
@@ -137,19 +137,19 @@ void TLine::getInfo (Setting *info)
   info->setData(k, d);
 
   k = QObject::tr("Start Date");
-  d = date.toString(Qt::ISODate);
+  d = _date.toString(Qt::ISODate);
   info->setData(k, d);
 
   k = QObject::tr("Start Price");
-  d = QString::number(price);
+  d = QString::number(_price);
   info->setData(k, d);
 
   k = QObject::tr("End Date");
-  d = date2.toString(Qt::ISODate);
+  d = _date2.toString(Qt::ISODate);
   info->setData(k, d);
 
   k = QObject::tr("End Price");
-  d = QString::number(price2);
+  d = QString::number(_price2);
   info->setData(k, d);
 }
 
@@ -164,16 +164,16 @@ void TLine::dialog ()
   dialog->addPage(page, s);
 
   s = QObject::tr("Color");
-  dialog->addColorItem(pid++, page, s, color);
+  dialog->addColorItem(pid++, page, s, _color);
 
   s = QObject::tr("Start Price");
-  dialog->addDoubleItem(pid++, page, s, price);
+  dialog->addDoubleItem(pid++, page, s, _price);
 
   s = QObject::tr("End Price");
-  dialog->addDoubleItem(pid++, page, s, price2);
+  dialog->addDoubleItem(pid++, page, s, _price2);
 
   s = QObject::tr("Extend");
-  dialog->addCheckItem(pid++, page, s, extend);
+  dialog->addCheckItem(pid++, page, s, _extend);
 
   int def = FALSE;
   s = QObject::tr("Default");
@@ -187,61 +187,61 @@ void TLine::dialog ()
   }
 
   pid = 0;
-  dialog->getColor(pid++, color);
-  price = dialog->getDouble(pid++);
-  price2 = dialog->getDouble(pid++);
-  extend = dialog->getCheck(pid++);
+  dialog->getColor(pid++, _color);
+  _price = dialog->getDouble(pid++);
+  _price2 = dialog->getDouble(pid++);
+  _extend = dialog->getCheck(pid++);
   def = dialog->getCheck(pid++);
 
   if (def)
   {
     Config config;
-    config.setData((int) Config::DefaultTLineColor, color);
-    config.setData((int) Config::DefaultTLineExtend, extend);
+    config.setData((int) Config::DefaultTLineColor, _color);
+    config.setData((int) Config::DefaultTLineExtend, _extend);
   }
 
-  saveFlag = TRUE;
+  _saveFlag = TRUE;
   
   delete dialog;
 }
 
 void TLine::load (QSqlQuery &q)
 {
-  id = q.value(0).toInt();
-  exchange = q.value(1).toString();
-  symbol = q.value(2).toString();
-  indicator = q.value(3).toString();
-  color.setNamedColor(q.value(5).toString()); // t1 field
-  date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t2 field
-  date2 = QDateTime::fromString(q.value(7).toString(), Qt::ISODate); // t3 field
-  extend = q.value(15).toInt(); // i1 field
-  price = q.value(25).toDouble(); // d1 field
-  price2 = q.value(26).toDouble(); // d2 field
+  _id = q.value(0).toInt();
+  _exchange = q.value(1).toString();
+  _symbol = q.value(2).toString();
+  _indicator = q.value(3).toString();
+  _color.setNamedColor(q.value(5).toString()); // t1 field
+  _date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t2 field
+  _date2 = QDateTime::fromString(q.value(7).toString(), Qt::ISODate); // t3 field
+  _extend = q.value(15).toInt(); // i1 field
+  _price = q.value(25).toDouble(); // d1 field
+  _price2 = q.value(26).toDouble(); // d2 field
 }
 
 void TLine::save ()
 {
-  if (! saveFlag)
+  if (! _saveFlag)
     return;
   
   QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,t2,t3,d1,d2,i1) VALUES (";
-  s.append(QString::number(id));
-  s.append(",'" + exchange + "'");
-  s.append(",'" + symbol + "'");
-  s.append(",'" + indicator + "'");
-  s.append(",'" + plugin + "'");
-  s.append(",'" + color.name() + "'");
-  s.append(",'" + date.toString(Qt::ISODate) + "'");
-  s.append(",'" + date2.toString(Qt::ISODate) + "'");
-  s.append("," + QString::number(price));
-  s.append("," + QString::number(price2));
-  s.append("," + QString::number(extend));
+  s.append(QString::number(_id));
+  s.append(",'" + _exchange + "'");
+  s.append(",'" + _symbol + "'");
+  s.append(",'" + _indicator + "'");
+  s.append(",'" + _plugin + "'");
+  s.append(",'" + _color.name() + "'");
+  s.append(",'" + _date.toString(Qt::ISODate) + "'");
+  s.append(",'" + _date2.toString(Qt::ISODate) + "'");
+  s.append("," + QString::number(_price));
+  s.append("," + QString::number(_price2));
+  s.append("," + QString::number(_extend));
   s.append(")");
 
   CODataBase db;
   db.setChartObject(s);
   
-  saveFlag = FALSE;
+  _saveFlag = FALSE;
 }
 
 void TLine::create ()
@@ -251,10 +251,10 @@ void TLine::create ()
 
 int TLine::create2 (QDateTime &x, double y)
 {
-  date = x;
-  date2 = x;
-  price = y;
-  price2 = y;
+  _date = x;
+  _date2 = x;
+  _price = y;
+  _price2 = y;
 
   emit signalMessage(QString(QObject::tr("Select TLine ending point...")));
 
@@ -263,12 +263,12 @@ int TLine::create2 (QDateTime &x, double y)
 
 int TLine::create3 (QDateTime &x, double y)
 {
-  if (x < date)
+  if (x < _date)
     return 1;
 
-  date2 = x;
-  price2 = y;
-  saveFlag = TRUE;
+  _date2 = x;
+  _price2 = y;
+  _saveFlag = TRUE;
   
   emit signalMessage(QString());
 
@@ -281,36 +281,36 @@ void TLine::moving (QDateTime &x, double y, int moveFlag)
   {
     case 1: // first point move
     {
-      if (x > date2)
+      if (x > _date2)
         return;
       
-      date = x;
-      price = y;
-      saveFlag = TRUE;
+      _date = x;
+      _price = y;
+      _saveFlag = TRUE;
       
       emit signalMessage(QString(x.toString(Qt::ISODate) + " " + QString::number(y)));
       break;
     }
     case 2: // second point move
     {
-      if (x < date)
+      if (x < _date)
         return;
       
-      date2 = x;
-      price2 = y;
-      saveFlag = TRUE;
+      _date2 = x;
+      _price2 = y;
+      _saveFlag = TRUE;
       
       emit signalMessage(QString(x.toString(Qt::ISODate) + " " + QString::number(y)));
       break;
     }
     default: // new object moving
     {
-      if (x < date)
+      if (x < _date)
 	return;
       
-      date2 = x;
-      price2 = y;
-      saveFlag = TRUE;
+      _date2 = x;
+      _price2 = y;
+      _saveFlag = TRUE;
       
       emit signalMessage(QString(x.toString(Qt::ISODate) + " " + QString::number(y)));
       break;
@@ -328,15 +328,15 @@ int TLine::getHighLow (double &h, double &l)
   h = -99999999.0;
   l = 99999999.0;
   
-  if (price > h)
-    h = price;
-  if (price < l)
-    l = price;
+  if (_price > h)
+    h = _price;
+  if (_price < l)
+    l = _price;
 
-  if (price2 > h)
-    h = price2;
-  if (price2 < l)
-    l = price2;
+  if (_price2 > h)
+    h = _price2;
+  if (_price2 < l)
+    l = _price2;
   
   return 0;
 }
@@ -345,8 +345,8 @@ int TLine::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar &dateB
 {
   int rc = FALSE;
 
-  QDateTime dt = date2;
-  if (extend)
+  QDateTime dt = _date2;
+  if (_extend)
     dateBars.getDate(dateBars.count() - 1, dt);
   
   // is start past our end?
@@ -354,15 +354,65 @@ int TLine::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar &dateB
     return rc;
   
   // is end before our start?
-  if (endDate < date)
+  if (endDate < _date)
     return rc;
   
-  if (startDate >= date && startDate <= dt)
+  if (startDate >= _date && startDate <= dt)
     return TRUE;
   
-  if (endDate >= date && endDate <= dt)
+  if (endDate >= _date && endDate <= dt)
     return TRUE;
   
   return rc;
+}
+
+int TLine::CUS (QStringList &l)
+{
+  // CO,<TYPE>,<DATE>,<PRICE>,<DATE2>,<PRICE2>,<COLOR>
+  //  0    1      2      3       4       5        6
+
+  if (l.count() != 7)
+  {
+    qDebug() << _plugin << "::CUS: invalid parm count" << l.count();
+    return 1;
+  }
+
+  _date = QDateTime::fromString(l[2], Qt::ISODate);
+  if (! _date.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid start date" << l[2];
+    return 1;
+  }
+
+  bool ok;
+  _price = l[3].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << _plugin << "::CUS: invalid start price" << l[3];
+    return 1;
+  }
+
+  _date2 = QDateTime::fromString(l[4], Qt::ISODate);
+  if (! _date2.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid end date" << l[4];
+    return 1;
+  }
+
+  _price2 = l[5].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << _plugin << "::CUS: invalid end price" << l[5];
+    return 1;
+  }
+
+  _color.setNamedColor(l[6]);
+  if (! _color.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid color" << l[6];
+    return 1;
+  }
+
+  return 0;
 }
 

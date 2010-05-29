@@ -89,8 +89,6 @@ int Indicator::log ()
 void Indicator::setIndicator (QString &d)
 {
   _indicator = d;
-  if (d == "CUS")
-    _cus = 1;
 }
 
 QString & Indicator::indicator ()
@@ -140,28 +138,26 @@ void Indicator::clear ()
   clearChartObjects();
 }
 
-void Indicator::setChartObjects (QHash<QString, COPlugin *> &d)
+COPlugin * Indicator::chartObject (int k)
 {
-  _chartObjects = d;
-}
-
-void Indicator::getChartObjects (QHash<QString, COPlugin *> &d)
-{
-  d = _chartObjects;
+  return _chartObjects.value(k);
 }
 
 void Indicator::addChartObject (COPlugin *d)
 {
-  _chartObjects.insert(QString::number(d->getID()), d);
+  _chartObjects.insert(d->getID(), d);
 }
 
 void Indicator::clearChartObjects ()
 {
-  qDeleteAll(_chartObjects);
-  _chartObjects.clear();
+  if (! _cus)
+  {
+    qDeleteAll(_chartObjects);
+    _chartObjects.clear();
+  }
 }
 
-void Indicator::deleteChartObject (QString &d)
+void Indicator::deleteChartObject (int d)
 {
   COPlugin *co = _chartObjects.value(d);
   if (! co)
@@ -208,5 +204,17 @@ void Indicator::init ()
   _indicator.clear();
   _settings.clear();
   _plotOrder.clear();
+}
+
+void Indicator::coKeys (QList<int> &l)
+{
+  l.clear();
+  
+  QHashIterator<int, COPlugin *> it(_chartObjects);
+  while (it.hasNext())
+  {
+    it.next();
+    l.append(it.key());
+  }
 }
 

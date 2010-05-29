@@ -258,13 +258,11 @@ void Plot::setScale ()
   QDateTime ed;
   _dateBars.getDate(_plotData.endIndex, ed);
 
-  QHash<QString, COPlugin *> coList;
-  _indicator.getChartObjects(coList);
-  QHashIterator<QString, COPlugin *> it(coList);
-  while (it.hasNext())
+  QList<int> keyList;
+  _indicator.coKeys(keyList);
+  for (loop = 0; loop < keyList.count(); loop++)
   {
-    it.next();
-    COPlugin *co = it.value();
+    COPlugin *co = _indicator.chartObject(keyList.at(loop));
     
     if (! co->inDateRange(sd, ed, _dateBars))
       continue;
@@ -411,13 +409,12 @@ void Plot::mousePressEvent (QMouseEvent *event)
     }
     case None:
     {
-      QHash<QString, COPlugin *> coList;
-      _indicator.getChartObjects(coList);
-      QHashIterator<QString, COPlugin *> it(coList);
-      while (it.hasNext())
+      QList<int> keyList;
+      _indicator.coKeys(keyList);
+      int loop = 0;
+      for (; loop < keyList.at(loop); loop++)
       {
-        it.next();
-        _coSelected = it.value();
+        _coSelected = _indicator.chartObject(keyList.at(loop));
         QPoint p(event->x(), event->y());
         if (_coSelected->isSelected(p))
         {
@@ -496,14 +493,13 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       
       // determine if we are over a chart object, if so update cursor
       QPoint p(event->x(), event->y());
-      QHash<QString, COPlugin *> coList;
-      _indicator.getChartObjects(coList);
-      QHashIterator<QString, COPlugin *> it(coList);
+      QList<int> keyList;
+      _indicator.coKeys(keyList);
+      int loop = 0;
       int flag = 0;
-      while (it.hasNext())
+      for (; loop < keyList.count(); loop++)
       {
-        it.next();
-        COPlugin *co = it.value();
+        COPlugin *co = _indicator.chartObject(keyList.at(loop));
         if (co->isSelected(p))
         {
           setCursor(QCursor(Qt::PointingHandCursor));
@@ -780,8 +776,7 @@ void Plot::setExternalChartObjectFlag ()
   _mouseFlag = _saveMouseFlag;
   _newObjectFlag = FALSE;
 
-  QString s = QString::number(_coSelected->getID());
-  _indicator.deleteChartObject(s);
+  _indicator.deleteChartObject(_coSelected->getID());
   _coSelected = 0;
 
   updateCursor();
@@ -833,13 +828,12 @@ void Plot::newChartObject (QString selection)
 
 void Plot::drawObjects ()
 {
-  QHash<QString, COPlugin *> coList;
-  _indicator.getChartObjects(coList);
-  QHashIterator<QString, COPlugin *> it(coList);
-  while (it.hasNext())
+  QList<int> keyList;
+  _indicator.coKeys(keyList);
+  int loop = 0;
+  for (; loop < keyList.count(); loop++)
   {
-    it.next();
-    COPlugin *co = it.value();
+    COPlugin *co = _indicator.chartObject(keyList.at(loop));
     co->draw(_plotData, _dateBars, _scaler);
   }
 }
@@ -877,12 +871,11 @@ void Plot::chartObjectDeleted ()
   if (! _symbol.length() || ! _coSelected)
     return;
 
-  QString s = QString::number(_coSelected->getID());
-  _indicator.deleteChartObject(s);
+  _indicator.deleteChartObject(_coSelected->getID());
   _coSelected = 0;
 
   CODataBase db;
-  db.deleteChartObject(s);
+  db.deleteChartObject(_coSelected->getID());
 
   _mouseFlag = None;
 
@@ -894,13 +887,12 @@ void Plot::saveChartObjects ()
   if (! _symbol.length())
     return;
 
-  QHash<QString, COPlugin *> coList;
-  _indicator.getChartObjects(coList);
-  QHashIterator<QString, COPlugin *> it(coList);
-  while (it.hasNext())
+  QList<int> keyList;
+  _indicator.coKeys(keyList);
+  int loop = 0;
+  for (; loop < keyList.count(); loop++)
   {
-    it.next();
-    COPlugin *co = it.value();
+    COPlugin *co = _indicator.chartObject(keyList.at(loop));
     co->save();
   }
 }

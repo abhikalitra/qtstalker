@@ -33,10 +33,10 @@
 
 HLine::HLine ()
 {
-  plugin = "HLine";
+  _plugin = "HLine";
   _color.setNamedColor("red");
   _price = 0;
-  _label = plugin;
+  _label = _plugin;
 }
 
 void HLine::draw (PlotData &pd, DateBar &, Scaler &scaler)
@@ -77,7 +77,7 @@ void HLine::draw (PlotData &pd, DateBar &, Scaler &scaler)
                   y - 4);
   setSelectionArea(new QRegion(array));
 
-  if (selected)
+  if (_selected)
   {
     clearGrabHandles();
     int t = (int) (pd.buffer.width() - pd.scaleWidth) / 4;
@@ -85,15 +85,15 @@ void HLine::draw (PlotData &pd, DateBar &, Scaler &scaler)
     for (loop = 0; loop < 5; loop++)
     {
       setGrabHandle(new QRegion(t * loop,
-		    y - (handleWidth / 2),
-		    handleWidth,
-		    handleWidth,
+		    y - (_handleWidth / 2),
+		    _handleWidth,
+		    _handleWidth,
 		    QRegion::Rectangle));
 
       painter.fillRect(t * loop,
-		       y - (handleWidth / 2),
-		       handleWidth,
-		       handleWidth,
+		       y - (_handleWidth / 2),
+		       _handleWidth,
+		       _handleWidth,
 		       _color);
     }
   }
@@ -154,17 +154,17 @@ void HLine::dialog ()
     config.setData((int) Config::DefaultHLineColor, _color);
   }
 
-  saveFlag = TRUE;
+  _saveFlag = TRUE;
   
   delete dialog;
 }
 
 void HLine::load (QSqlQuery &q)
 {
-  id = q.value(0).toInt();
-  exchange = q.value(1).toString();
-  symbol = q.value(2).toString();
-  indicator = q.value(3).toString();
+  _id = q.value(0).toInt();
+  _exchange = q.value(1).toString();
+  _symbol = q.value(2).toString();
+  _indicator = q.value(3).toString();
   _color.setNamedColor(q.value(5).toString()); // t1 field
   _label = q.value(6).toString(); // t2 field
   _price = q.value(25).toDouble(); // d1 field
@@ -172,15 +172,15 @@ void HLine::load (QSqlQuery &q)
 
 void HLine::save ()
 {
-  if (! saveFlag)
+  if (! _saveFlag)
     return;
   
   QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,d1,t2) VALUES (";
-  s.append(QString::number(id));
-  s.append(",'" + exchange + "'");
-  s.append(",'" + symbol + "'");
-  s.append(",'" + indicator + "'");
-  s.append(",'" + plugin + "'");
+  s.append(QString::number(_id));
+  s.append(",'" + _exchange + "'");
+  s.append(",'" + _symbol + "'");
+  s.append(",'" + _indicator + "'");
+  s.append(",'" + _plugin + "'");
   s.append(",'" + _color.name() + "'");
   s.append("," + QString::number(_price));
   s.append(",'" + _label + "'");
@@ -189,7 +189,7 @@ void HLine::save ()
   CODataBase db;
   db.setChartObject(s);
   
-  saveFlag = FALSE;
+  _saveFlag = FALSE;
 }
 
 void HLine::create ()
@@ -199,7 +199,7 @@ void HLine::create ()
 
 int HLine::create2 (QDateTime &, double y)
 {
-  saveFlag = TRUE;
+  _saveFlag = TRUE;
   _price = y;
   emit signalMessage(QString());
   return 0;
@@ -207,7 +207,7 @@ int HLine::create2 (QDateTime &, double y)
 
 void HLine::moving (QDateTime &, double y, int)
 {
-  saveFlag = TRUE;
+  _saveFlag = TRUE;
   _price = y;
   emit signalMessage(QString::number(y));
 }
@@ -228,5 +228,34 @@ int HLine::inDateRange (QDateTime &, QDateTime &, DateBar &)
 {
   int rc = TRUE;
   return rc;
+}
+
+int HLine::CUS (QStringList &l)
+{
+  // CO,HLine,<PRICE>,<COLOR>
+  //  0   1      2       3
+
+  if (l.count() != 4)
+  {
+    qDebug() << _plugin << "::CUS: invalid parm count" << l.count();
+    return 1;
+  }
+
+  bool ok;
+  _price = l[2].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << _plugin << "::CUS: invalid price" << l[2];
+    return 1;
+  }
+
+  _color.setNamedColor(l[3]);
+  if (! _color.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid color" << l[3];
+    return 1;
+  }
+
+  return 0;
 }
 

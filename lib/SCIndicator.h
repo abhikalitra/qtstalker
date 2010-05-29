@@ -36,6 +36,7 @@ class SCIndicator
     {
       NEW, // create a new plotline to be filled later by the script
       GET_INDEX, // pass a single indicator value to the calling script
+      GET_INDEX_DATE, // pass a single date value to the calling script
       GET_RANGE, // returns the start and end index values
       PLUGIN, // get a plugin indicator
       SET_INDEX, // pass a single indicator value from script to qtstalker
@@ -45,6 +46,7 @@ class SCIndicator
     SCIndicator ();
     int calculate (QStringList &, QByteArray &, Indicator &, BarData *, QString &);
     int getIndex (QStringList &, QByteArray &, Indicator &);
+    int getIndexDate (QStringList &, QByteArray &, BarData *);
     int setIndex (QStringList &, QByteArray &, Indicator &);
     int getRange (QStringList &, QByteArray &, Indicator &);
     int setColor (QStringList &, QByteArray &, Indicator &);

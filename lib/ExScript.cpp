@@ -25,6 +25,7 @@
 #include "SCGroup.h"
 #include "SCTest.h"
 #include "SCSymbol.h"
+#include "SCChartObject.h"
 
 #include <QByteArray>
 #include <QtDebug>
@@ -36,6 +37,7 @@ ExScript::ExScript (QString &ipp, QString &dbpp)
   _data = 0;
   _killFlag = 0;
 
+  _functionList << "CO";
   _functionList << "DELETE";
   _functionList << "INDICATOR";
   _functionList << "GROUP";
@@ -141,6 +143,13 @@ void ExScript::readFromStdout ()
   int i = _functionList.indexOf(l[0]);
   switch ((Function) i)
   {
+    case CO:
+    {
+      SCChartObject sc;
+      sc.calculate(l, ba, _indicator, _data);
+      _proc->write(ba);
+      break;
+    }
     case DELETE:
     {
       // we actually have to delete the lines if we call this function in scripts

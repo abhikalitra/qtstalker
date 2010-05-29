@@ -33,17 +33,17 @@
 
 Retracement::Retracement ()
 {
-  plugin = "Retracement";
-  color.setNamedColor("red");
-  high = 0;
-  low = 0;
-  extend = 0;
-  line1 = 0.236;
-  line2 = 0.382;
-  line3 = 0.5;
-  line4 = 0.618;
-  line5 = 0;
-  line6 = 0;
+  _plugin = "Retracement";
+  _color.setNamedColor("red");
+  _high = 0;
+  _low = 0;
+  _extend = 0;
+  _line1 = 0.236;
+  _line2 = 0.382;
+  _line3 = 0.5;
+  _line4 = 0.618;
+  _line5 = 0;
+  _line6 = 0;
 }
 
 void Retracement::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
@@ -53,7 +53,7 @@ void Retracement::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
 
   painter.setFont(pd.plotFont);
 
-  int x = dateBars.getX(date);
+  int x = dateBars.getX(_date);
   if (x == -1)
     return;
 
@@ -61,9 +61,9 @@ void Retracement::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   if (x == -1)
     return;
 
-  QDateTime dt = date2;
+  QDateTime dt = _date2;
 
-  if (extend)
+  if (_extend)
     dateBars.getDate(dateBars.count() - 1, dt);
 
   int x2 = dateBars.getX(dt);
@@ -74,18 +74,18 @@ void Retracement::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   if (x2 == -1)
     return;
 
-  painter.setPen(color);
+  painter.setPen(_color);
 
   QPolygon array;
   clearSelectionArea();
 
   QList<double> lineList;
-  lineList.append(line1);
-  lineList.append(line2);
-  lineList.append(line3);
-  lineList.append(line4);
-  lineList.append(line5);
-  lineList.append(line6);
+  lineList.append(_line1);
+  lineList.append(_line2);
+  lineList.append(_line3);
+  lineList.append(_line4);
+  lineList.append(_line5);
+  lineList.append(_line6);
 
   int loop;
   for (loop = 0; loop < lineList.count(); loop++)
@@ -93,20 +93,20 @@ void Retracement::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
     double td = lineList[loop];
     if (td != 0)
     {
-      double range = high - low;
+      double range = _high - _low;
       double r = 0;
       if (td < 0)
-        r = low + (range * td);
+        r = _low + (range * td);
       else
       {
         if (td > 0)
-          r = low + (range * td);
+          r = _low + (range * td);
         else
         {
           if (td < 0)
-            r = high;
+            r = _high;
           else
-            r = low;
+            r = _low;
         }
       }
       int y = scaler.convertToY(r);
@@ -119,53 +119,53 @@ void Retracement::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   }
   
   // draw the low line
-  int y = scaler.convertToY(low);
+  int y = scaler.convertToY(_low);
   painter.drawLine (x, y, x2, y);
-  painter.drawText(x, y - 1, "0% - " + QString::number(low));
+  painter.drawText(x, y - 1, "0% - " + QString::number(_low));
 
   // store the selectable area the low line occupies
   array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y + 4, x2, y - 4);
   setSelectionArea(new QRegion(array));
 
   // draw the high line
-  int y2 = scaler.convertToY(high);
+  int y2 = scaler.convertToY(_high);
   painter.drawLine (x, y2, x2, y2);
-  painter.drawText(x, y2 - 1, "100% - " + QString::number(high));
+  painter.drawText(x, y2 - 1, "100% - " + QString::number(_high));
 
   // store the selectable area the high line occupies
   array.putPoints(0, 4, x, y2 - 4, x, y2 + 4, x2, y2 + 4, x2, y2 - 4);
   setSelectionArea(new QRegion(array));
   
-  if (selected)
+  if (_selected)
   {
     clearGrabHandles();
 
     //top left corner
-    y = scaler.convertToY(high);
-    setGrabHandle(new QRegion(x, y - (handleWidth / 2),
-		  handleWidth,
-		  handleWidth,
+    y = scaler.convertToY(_high);
+    setGrabHandle(new QRegion(x, y - (_handleWidth / 2),
+		  _handleWidth,
+		  _handleWidth,
 		  QRegion::Rectangle));
 
     painter.fillRect(x,
-		     y - (handleWidth / 2),
-		     handleWidth,
-		     handleWidth,
-		     color);
+		     y - (_handleWidth / 2),
+		     _handleWidth,
+		     _handleWidth,
+		     _color);
 
     //bottom right corner
-    x2 = (dateBars.getX(date2) * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
-    y2 = scaler.convertToY(low);
-    setGrabHandle(new QRegion(x2, y2 - (handleWidth / 2),
-		  handleWidth,
-		  handleWidth,
+    x2 = (dateBars.getX(_date2) * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
+    y2 = scaler.convertToY(_low);
+    setGrabHandle(new QRegion(x2, y2 - (_handleWidth / 2),
+		  _handleWidth,
+		  _handleWidth,
 		  QRegion::Rectangle));
 
     painter.fillRect(x2,
-		     y2 - (handleWidth / 2),
-		     handleWidth,
-		     handleWidth,
-		     color);
+		     y2 - (_handleWidth / 2),
+		     _handleWidth,
+		     _handleWidth,
+		     _color);
   }
 
   painter.end();
@@ -178,35 +178,35 @@ void Retracement::getInfo (Setting *info)
   info->setData(k, d);
 
   k = QObject::tr("High Point");
-  d = QString::number(high);
+  d = QString::number(_high);
   info->setData(k, d);
 
   k = QObject::tr("Low Point");
-  d = QString::number(low);
+  d = QString::number(_low);
   info->setData(k, d);
 
   k = QObject::tr("Line 1");
-  d = QString::number(line1);
+  d = QString::number(_line1);
   info->setData(k, d);
 
   k = QObject::tr("Line 2");
-  d = QString::number(line2);
+  d = QString::number(_line2);
   info->setData(k, d);
 
   k = QObject::tr("Line 3");
-  d = QString::number(line3);
+  d = QString::number(_line3);
   info->setData(k, d);
 
   k = QObject::tr("Line 4");
-  d = QString::number(line4);
+  d = QString::number(_line4);
   info->setData(k, d);
 
   k = QObject::tr("Line 5");
-  d = QString::number(line5);
+  d = QString::number(_line5);
   info->setData(k, d);
 
   k = QObject::tr("Line 6");
-  d = QString::number(line6);
+  d = QString::number(_line6);
   info->setData(k, d);
 }
 
@@ -221,16 +221,16 @@ void Retracement::dialog ()
   dialog->addPage(page, s);
 
   s = QObject::tr("Color");
-  dialog->addColorItem(pid++, page, s, color);
+  dialog->addColorItem(pid++, page, s, _color);
 
   s = QObject::tr("High Point");
-  dialog->addDoubleItem(pid++, page, s, high);
+  dialog->addDoubleItem(pid++, page, s, _high);
 
   s = QObject::tr("Low Point");
-  dialog->addDoubleItem(pid++, page, s, low);
+  dialog->addDoubleItem(pid++, page, s, _low);
 
   s = QObject::tr("Extend");
-  dialog->addCheckItem(pid++, page, s, extend);
+  dialog->addCheckItem(pid++, page, s, _extend);
 
   int def = FALSE;
   s = QObject::tr("Default");
@@ -241,22 +241,22 @@ void Retracement::dialog ()
   dialog->addPage(page, s);
 
   s = QObject::tr("Line 1");
-  dialog->addDoubleItem(pid++, page, s, line1);
+  dialog->addDoubleItem(pid++, page, s, _line1);
 
   s = QObject::tr("Line 2");
-  dialog->addDoubleItem(pid++, page, s, line2);
+  dialog->addDoubleItem(pid++, page, s, _line2);
 
   s = QObject::tr("Line 3");
-  dialog->addDoubleItem(pid++, page, s, line3);
+  dialog->addDoubleItem(pid++, page, s, _line3);
 
   s = QObject::tr("Line 4");
-  dialog->addDoubleItem(pid++, page, s, line4);
+  dialog->addDoubleItem(pid++, page, s, _line4);
 
   s = QObject::tr("Line 5");
-  dialog->addDoubleItem(pid++, page, s, line5);
+  dialog->addDoubleItem(pid++, page, s, _line5);
 
   s = QObject::tr("Line 6");
-  dialog->addDoubleItem(pid++, page, s, line6);
+  dialog->addDoubleItem(pid++, page, s, _line6);
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
@@ -266,96 +266,96 @@ void Retracement::dialog ()
   }
 
   pid = 0;
-  dialog->getColor(pid++, color);
-  high = dialog->getDouble(pid++);
-  low = dialog->getDouble(pid++);
-  extend = dialog->getCheck(pid++);
+  dialog->getColor(pid++, _color);
+  _high = dialog->getDouble(pid++);
+  _low = dialog->getDouble(pid++);
+  _extend = dialog->getCheck(pid++);
   def = dialog->getCheck(pid++);
-  line1 = dialog->getDouble(pid++);
-  line2 = dialog->getDouble(pid++);
-  line3 = dialog->getDouble(pid++);
-  line4 = dialog->getDouble(pid++);
-  line5 = dialog->getDouble(pid++);
-  line6 = dialog->getDouble(pid++);
+  _line1 = dialog->getDouble(pid++);
+  _line2 = dialog->getDouble(pid++);
+  _line3 = dialog->getDouble(pid++);
+  _line4 = dialog->getDouble(pid++);
+  _line5 = dialog->getDouble(pid++);
+  _line6 = dialog->getDouble(pid++);
 
   if (def)
   {
     Config config;
-    config.setData((int) Config::DefaultRetracementColor, color);
-    config.setData((int) Config::DefaultRetracementLine1, line1);
-    config.setData((int) Config::DefaultRetracementLine2, line2);
-    config.setData((int) Config::DefaultRetracementLine3, line3);
-    config.setData((int) Config::DefaultRetracementLine4, line4);
-    config.setData((int) Config::DefaultRetracementLine5, line5);
-    config.setData((int) Config::DefaultRetracementLine6, line6);
+    config.setData((int) Config::DefaultRetracementColor, _color);
+    config.setData((int) Config::DefaultRetracementLine1, _line1);
+    config.setData((int) Config::DefaultRetracementLine2, _line2);
+    config.setData((int) Config::DefaultRetracementLine3, _line3);
+    config.setData((int) Config::DefaultRetracementLine4, _line4);
+    config.setData((int) Config::DefaultRetracementLine5, _line5);
+    config.setData((int) Config::DefaultRetracementLine6, _line6);
   }
 
-  saveFlag = TRUE;
+  _saveFlag = TRUE;
   
   delete dialog;
 }
 
 void Retracement::load (QSqlQuery &q)
 {
-  id = q.value(0).toInt();
-  exchange = q.value(1).toString();
-  symbol = q.value(2).toString();
-  indicator = q.value(3).toString();
-  color.setNamedColor(q.value(5).toString()); // t1 field
-  date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t2 field
-  date2 = QDateTime::fromString(q.value(7).toString(), Qt::ISODate); // t3 field
-  high = q.value(25).toDouble(); // d1 field
-  low = q.value(26).toDouble(); // d2 field
-  line1 = q.value(27).toDouble(); // d3 field
-  line2 = q.value(28).toDouble(); // d4 field
-  line3 = q.value(29).toDouble(); // d5 field
-  line4 = q.value(30).toDouble(); // d6 field
-  line5 = q.value(31).toDouble(); // d7 field
-  line6 = q.value(32).toDouble(); // d8 field
-  extend = q.value(15).toInt(); // i1 field
+  _id = q.value(0).toInt();
+  _exchange = q.value(1).toString();
+  _symbol = q.value(2).toString();
+  _indicator = q.value(3).toString();
+  _color.setNamedColor(q.value(5).toString()); // t1 field
+  _date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t2 field
+  _date2 = QDateTime::fromString(q.value(7).toString(), Qt::ISODate); // t3 field
+  _high = q.value(25).toDouble(); // d1 field
+  _low = q.value(26).toDouble(); // d2 field
+  _line1 = q.value(27).toDouble(); // d3 field
+  _line2 = q.value(28).toDouble(); // d4 field
+  _line3 = q.value(29).toDouble(); // d5 field
+  _line4 = q.value(30).toDouble(); // d6 field
+  _line5 = q.value(31).toDouble(); // d7 field
+  _line6 = q.value(32).toDouble(); // d8 field
+  _extend = q.value(15).toInt(); // i1 field
 }
 
 void Retracement::save ()
 {
-  if (! saveFlag)
+  if (! _saveFlag)
     return;
   
   QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,d1,d2,d3,d4,d5,d6,d7,d8,i1,t2,t3) VALUES (";
-  s.append(QString::number(id));
-  s.append(",'" + exchange + "'");
-  s.append(",'" + symbol + "'");
-  s.append(",'" + indicator + "'");
-  s.append(",'" + plugin + "'");
-  s.append(",'" + color.name() + "'");
-  s.append("," + QString::number(high));
-  s.append("," + QString::number(low));
-  s.append("," + QString::number(line1));
-  s.append("," + QString::number(line2));
-  s.append("," + QString::number(line3));
-  s.append("," + QString::number(line4));
-  s.append("," + QString::number(line5));
-  s.append("," + QString::number(line6));
-  s.append("," + QString::number(extend));
-  s.append(",'" + date.toString(Qt::ISODate) + "'");
-  s.append(",'" + date2.toString(Qt::ISODate) + "'");
+  s.append(QString::number(_id));
+  s.append(",'" + _exchange + "'");
+  s.append(",'" + _symbol + "'");
+  s.append(",'" + _indicator + "'");
+  s.append(",'" + _plugin + "'");
+  s.append(",'" + _color.name() + "'");
+  s.append("," + QString::number(_high));
+  s.append("," + QString::number(_low));
+  s.append("," + QString::number(_line1));
+  s.append("," + QString::number(_line2));
+  s.append("," + QString::number(_line3));
+  s.append("," + QString::number(_line4));
+  s.append("," + QString::number(_line5));
+  s.append("," + QString::number(_line6));
+  s.append("," + QString::number(_extend));
+  s.append(",'" + _date.toString(Qt::ISODate) + "'");
+  s.append(",'" + _date2.toString(Qt::ISODate) + "'");
   s.append(")");
 
   CODataBase db;
   db.setChartObject(s);
   
-  saveFlag = FALSE;
+  _saveFlag = FALSE;
 }
 
 void Retracement::create ()
 {
-  saveFlag = TRUE;
+  _saveFlag = TRUE;
   emit signalMessage(QString(QObject::tr("Select Retracement high point...")));
 }
 
 int Retracement::create2 (QDateTime &x, double y)
 {
-  date = x;
-  high = y;
+  _date = x;
+  _high = y;
   emit signalMessage(QString(QObject::tr("Select Retracement low point...")));
   
   return 1;
@@ -363,14 +363,14 @@ int Retracement::create2 (QDateTime &x, double y)
 
 int Retracement::create3 (QDateTime &x, double y)
 {
-  if (x < date)
+  if (x < _date)
     return 1;
 
-  if (y > high)
+  if (y > _high)
     return 1;
 
-  date2 = x;
-  low = y;
+  _date2 = x;
+  _low = y;
 
   emit signalMessage(QString());
 
@@ -383,15 +383,15 @@ void Retracement::moving (QDateTime &x, double y, int moveFlag)
   {
     case 1: // top left corner
     {
-      if (x > date2)
+      if (x > _date2)
         return;
       
-      if (y < low)
+      if (y < _low)
         return;
       
-      date = x;
-      high = y;
-      saveFlag = TRUE;
+      _date = x;
+      _high = y;
+      _saveFlag = TRUE;
       
       emit signalMessage(QString(x.toString(Qt::ISODate) + " " + QString::number(y)));
       break;
@@ -399,15 +399,15 @@ void Retracement::moving (QDateTime &x, double y, int moveFlag)
     case 2:
     default: // bottom right corner
     {
-      if (x < date)
+      if (x < _date)
         return;
       
-      if (y > high)
+      if (y > _high)
         return;
       
-      date2 = x;
-      low = y;
-      saveFlag = TRUE;
+      _date2 = x;
+      _low = y;
+      _saveFlag = TRUE;
 
       emit signalMessage(QString(x.toString(Qt::ISODate) + " " + QString::number(y)));
       break;
@@ -424,8 +424,8 @@ int Retracement::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar 
 {
   int rc = FALSE;
   
-  QDateTime dt = date2;
-  if (extend)
+  QDateTime dt = _date2;
+  if (_extend)
     dateBars.getDate(dateBars.count() - 1, dt);
   
   // is start past our end?
@@ -433,13 +433,13 @@ int Retracement::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar 
     return rc;
   
   // is end before our start?
-  if (endDate < date)
+  if (endDate < _date)
     return rc;
   
-  if (startDate >= date && startDate <= dt)
+  if (startDate >= _date && startDate <= dt)
     return TRUE;
   
-  if (endDate >= date && endDate <= dt)
+  if (endDate >= _date && endDate <= dt)
     return TRUE;
   
   return rc;
@@ -447,8 +447,71 @@ int Retracement::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar 
 
 int Retracement::getHighLow (double &h, double &l)
 {
-  h = high;
-  l = low;
+  h = _high;
+  l = _low;
+  return 0;
+}
+
+int Retracement::CUS (QStringList &l)
+{
+  // CO,<TYPE>,<DATE>,<DATE2>,<HIGH>,<LOW>,<PERCENTAGE>,<COLOR>
+  //  0    1      2      3      4      5      6       7
+
+  if (l.count() != 8)
+  {
+    qDebug() << _plugin << "::CUS: invalid parm count" << l.count();
+    return 1;
+  }
+
+  _date = QDateTime::fromString(l[2], Qt::ISODate);
+  if (! _date.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid start date" << l[2];
+    return 1;
+  }
+
+  _date2 = QDateTime::fromString(l[3], Qt::ISODate);
+  if (! _date2.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid end date" << l[3];
+    return 1;
+  }
+
+  bool ok;
+  _high = l[4].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << _plugin << "::CUS: invalid high" << l[4];
+    return 1;
+  }
+
+  _low = l[5].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << _plugin << "::CUS: invalid low" << l[5];
+    return 1;
+  }
+
+  _line1 = l[6].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << _plugin << "::CUS: invalid retracement" << l[6];
+    return 1;
+  }
+
+  _color.setNamedColor(l[7]);
+  if (! _color.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid color" << l[7];
+    return 1;
+  }
+
+  _line2 = 0;
+  _line3 = 0;
+  _line4 = 0;
+  _line5 = 0;
+  _line6 = 0;
+
   return 0;
 }
 

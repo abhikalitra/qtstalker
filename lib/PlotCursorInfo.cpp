@@ -39,13 +39,12 @@ Setting * PlotCursorInfo::info (QPoint &p, PlotData &pd, Indicator &indicator, D
   Setting *r = new Setting;
 
   // determine if we are over a chart object, if so we display parms in the data panel
-  QHash<QString, COPlugin *> coList;
-  indicator.getChartObjects(coList);
-  QHashIterator<QString, COPlugin *> it(coList);
-  while (it.hasNext())
+  QList<int> keyList;
+  indicator.coKeys(keyList);
+  int loop = 0;
+  for (; loop < keyList.count(); loop++)
   {
-    it.next();
-    COPlugin *co = it.value();
+    COPlugin *co = indicator.chartObject(keyList.at(loop));
     if (co->isSelected(p))
     {
       co->getInfo(r);
@@ -63,8 +62,7 @@ Setting * PlotCursorInfo::info (QPoint &p, PlotData &pd, Indicator &indicator, D
   r->setData(k, s);
   
   QStringList plotList = indicator.plotOrder();
-  int loop = 0;
-  for (; loop < plotList.count(); loop++)
+  for (loop = 0; loop < plotList.count(); loop++)
   {
     QString ts = plotList.at(loop);
     PlotLine *line = indicator.line(ts);

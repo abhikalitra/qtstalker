@@ -473,3 +473,12 @@
            install quotes from yahoo. Added to the misc/CUS_examples section. I changed the name to
            getYahooHistQuotes.py. Thanks to wolfch for the patch.
 
+20100529:  Added new INDICATOR command GET_INDEX_DATE. This returns the string date at index position.
+
+           Added script API for all the chart objects. Allows the creation of chart objects to scripted indicators.
+           The chart objects are dynamic and are not saved permanantly to the database. This allows for fast, dynamic
+           changes to the charts ie. viewing minute bars with rapidly changing patterns. Arrows, support lines and
+           retracements to appear only under specific circumstances and price levels.
+
+
+

@@ -39,10 +39,11 @@ class VLine : public COPlugin
     void getIcon (QIcon &);
     int getHighLow (double &, double &);
     int inDateRange (QDateTime &, QDateTime &, DateBar &);
+    int CUS (QStringList &);
     
   protected:
-    QDateTime date;
-    QColor color;
+    QDateTime _date;
+    QColor _color;
 };
 
 #endif

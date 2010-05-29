@@ -41,11 +41,12 @@ class Buy : public COPlugin
     void getIcon (QIcon &);
     int getHighLow (double &, double &);
     int inDateRange (QDateTime &, QDateTime &, DateBar &);
+    int CUS (QStringList &);
     
   protected:
-    QDateTime date;
-    double price;
-    QColor color;
+    QDateTime _date;
+    double _price;
+    QColor _color;
 };
 
 #endif

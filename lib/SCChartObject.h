@@ -19,39 +19,29 @@
  *  USA.
  */
 
-#ifndef TLINE_HPP
-#define TLINE_HPP
+#ifndef SC_CHART_OBJECT_HPP
+#define SC_CHART_OBJECT_HPP
 
 #include <QStringList>
+#include <QByteArray>
+#include <QHash>
 
-#include "COPlugin.h"
+#include "Indicator.h"
+#include "BarData.h"
 
-class TLine : public COPlugin
+class SCChartObject
 {
   public:
-    TLine ();
-    void draw (PlotData &, DateBar &, Scaler &);
-    void getInfo (Setting *);
-    void dialog ();
-    void load (QSqlQuery &q);
-    void save ();
-    void create ();
-    int create2 (QDateTime &, double);
-    int create3 (QDateTime &, double);
-    void moving (QDateTime &, double, int);
-    void getIcon (QIcon &);
-    int getHighLow (double &, double &);
-    int inDateRange (QDateTime &, QDateTime &, DateBar &);
-    int CUS (QStringList &);
+    enum Method
+    {
+      NEW, // 
+    };
+    
+    SCChartObject ();
+    int calculate (QStringList &, QByteArray &, Indicator &, BarData *);
 
   protected:
-    QStringList _fieldList;
-    QColor _color;
-    double _price;
-    double _price2;
-    QDateTime _date;
-    QDateTime _date2;
-    int _extend;
+//    QStringList _methodList;
 };
 
 #endif

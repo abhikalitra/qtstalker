@@ -42,6 +42,7 @@ class ExScript : public QObject
   public:
     enum Function
     {
+      CO, // chart object functions
       DELETE, // deletes a single indicator
       INDICATOR, // get indicator functions
       GROUP, // group database functions

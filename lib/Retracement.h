@@ -40,20 +40,21 @@ class Retracement : public COPlugin
     void getIcon (QIcon &);
     int inDateRange (QDateTime &, QDateTime &, DateBar &);
     int getHighLow (double &, double &);
+    int CUS (QStringList &);
     
   protected:
-    QDateTime date;
-    QDateTime date2;
-    QColor color;
-    double high;
-    double low;
-    int extend;
-    double line1;
-    double line2;
-    double line3;
-    double line4;
-    double line5;
-    double line6;
+    QDateTime _date;
+    QDateTime _date2;
+    QColor _color;
+    double _high;
+    double _low;
+    int _extend;
+    double _line1;
+    double _line2;
+    double _line3;
+    double _line4;
+    double _line5;
+    double _line6;
 };
 
 #endif

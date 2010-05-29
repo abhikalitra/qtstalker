@@ -25,17 +25,17 @@
 
 COPlugin::COPlugin ()
 {
-  handleWidth = 6;
-  selected = 0;
-  saveFlag = 0;
-  id = 0;
+  _handleWidth = 6;
+  _selected = 0;
+  _saveFlag = 0;
+  _id = 0;
 }
 
 // virtual
 COPlugin::~COPlugin ()
 {
-  qDeleteAll(grabHandles);
-  qDeleteAll(selectionArea);
+  qDeleteAll(_grabHandles);
+  qDeleteAll(_selectionArea);
 }
 
 // virtual
@@ -102,43 +102,49 @@ int COPlugin::inDateRange (QDateTime &, QDateTime &, DateBar &)
   return 0;
 }
 
+// virtual
+int COPlugin::CUS (QStringList &)
+{
+  return 0;
+}
+
 //************************************************
 //************ NON VIRTUAL ***********************
 //************************************************
 
 void COPlugin::setSelected (int d)
 {
-  selected = d;
+  _selected = d;
 }
 
 void COPlugin::clearGrabHandles ()
 {
-  qDeleteAll(grabHandles);
-  grabHandles.clear();
+  qDeleteAll(_grabHandles);
+  _grabHandles.clear();
 }
 
 void COPlugin::setGrabHandle (QRegion *d)
 {
-  grabHandles.append(d);
+  _grabHandles.append(d);
 }
 
 void COPlugin::clearSelectionArea ()
 {
-  qDeleteAll(selectionArea);
-  selectionArea.clear();
+  qDeleteAll(_selectionArea);
+  _selectionArea.clear();
 }
 
 void COPlugin::setSelectionArea (QRegion *d)
 {
-  selectionArea.append(d);
+  _selectionArea.append(d);
 }
 
 int COPlugin::isSelected (QPoint &point)
 {
   int loop;
-  for (loop = 0; loop < (int) selectionArea.count(); loop++)
+  for (loop = 0; loop < (int) _selectionArea.count(); loop++)
   {
-    QRegion *r = selectionArea.at(loop);
+    QRegion *r = _selectionArea.at(loop);
     if (r->contains(point))
       return 1;
   }
@@ -149,9 +155,9 @@ int COPlugin::isSelected (QPoint &point)
 int COPlugin::isGrabSelected (QPoint &point)
 {
   int loop;
-  for (loop = 0; loop < (int) grabHandles.count(); loop++)
+  for (loop = 0; loop < (int) _grabHandles.count(); loop++)
   {
-    QRegion *r = grabHandles.at(loop);
+    QRegion *r = _grabHandles.at(loop);
     if (r->contains(point))
       return loop + 1;
   }
@@ -161,26 +167,26 @@ int COPlugin::isGrabSelected (QPoint &point)
 
 int COPlugin::getID ()
 {
-  return id;
+  return _id;
 }
 
 void COPlugin::setID (int d)
 {
-  id = d;
+  _id = d;
 }
 
 void COPlugin::setSymbol (QString &d)
 {
-  symbol = d;
+  _symbol = d;
 }
 
 void COPlugin::setIndicator (QString &d)
 {
-  indicator = d;
+  _indicator = d;
 }
 
 void COPlugin::setExchange (QString &d)
 {
-  exchange = d;
+  _exchange = d;
 }
 

@@ -40,7 +40,7 @@ int CUS::getIndicator (Indicator &ind, BarData *data)
   QString ipp, dbpp;
   config.getData(Config::IndicatorPluginPath, ipp);
   config.getData(Config::DBPluginPath, dbpp);
-  
+
   QString s, s2;
   _settings.getData(Command, s);
   _settings.getData(Script, s2);
@@ -50,7 +50,17 @@ int CUS::getIndicator (Indicator &ind, BarData *data)
   script.setBarData(data);
   int rc = script.calculate(s);
   if (! rc)
+  {
+    int cus = ind.CUS();
+    int log = ind.log();
+    int tabRow = ind.tabRow();
+    
     ind = script.indicator();
+    
+    ind.setCUS(cus);
+    ind.setLog(log);
+    ind.setTabRow(tabRow);
+  }
 
   return rc;
 }

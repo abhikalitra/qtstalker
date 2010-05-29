@@ -35,7 +35,7 @@ class CODataBase : public DataBase
     void init (); // called only at qtstalker startup, initializes database tables
     void deleteChartObjects (BarData *);
     void deleteChartObjectsIndicator (QString &indicator);
-    void deleteChartObject (QString &id);
+    void deleteChartObject (int);
     void getChartObjects (BarData *, QString &indicator, Indicator &);
     void setChartObject (QString &);
     int renameSymbol (BarData *, BarData *);

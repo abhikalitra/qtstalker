@@ -32,8 +32,8 @@
 
 VLine::VLine ()
 {
-  plugin = "VLine";
-  color.setNamedColor("red");
+  _plugin = "VLine";
+  _color.setNamedColor("red");
 }
 
 void VLine::draw (PlotData &pd, DateBar &dateBars, Scaler &)
@@ -41,7 +41,7 @@ void VLine::draw (PlotData &pd, DateBar &dateBars, Scaler &)
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int x2 = dateBars.getX(date);
+  int x2 = dateBars.getX(_date);
   if (x2 == -1)
     return;
 
@@ -49,7 +49,7 @@ void VLine::draw (PlotData &pd, DateBar &dateBars, Scaler &)
   if (x == -1)
     return;
 
-  painter.setPen(color);
+  painter.setPen(_color);
 
   painter.drawLine (x, 0, x, pd.buffer.height());
 
@@ -57,30 +57,30 @@ void VLine::draw (PlotData &pd, DateBar &dateBars, Scaler &)
   QPolygon array;
   array.putPoints(0,
   	          4,
-		  x - (handleWidth / 2), 0,
-		  x + (handleWidth / 2), 0,
-		  x + (handleWidth / 2), pd.buffer.height(),
-		  x - (handleWidth / 2), pd.buffer.height());
+		  x - (_handleWidth / 2), 0,
+		  x + (_handleWidth / 2), 0,
+		  x + (_handleWidth / 2), pd.buffer.height(),
+		  x - (_handleWidth / 2), pd.buffer.height());
   setSelectionArea(new QRegion(array));
 
-  if (selected)
+  if (_selected)
   {
     clearGrabHandles();
     int t = (int) pd.buffer.height() / 4;
     int loop;
     for (loop = 0; loop < 5; loop++)
     {
-      setGrabHandle(new QRegion(x - (handleWidth / 2),
+      setGrabHandle(new QRegion(x - (_handleWidth / 2),
 		    t * loop,
-		    handleWidth,
-		    handleWidth,
+		    _handleWidth,
+		    _handleWidth,
 		    QRegion::Rectangle));
 
-      painter.fillRect(x - (handleWidth / 2),
+      painter.fillRect(x - (_handleWidth / 2),
 		       t * loop,
-		       handleWidth,
-		       handleWidth,
-		       color);
+		       _handleWidth,
+		       _handleWidth,
+		       _color);
     }
   }
 
@@ -94,7 +94,7 @@ void VLine::getInfo (Setting *info)
   info->setData(k, d);
 
   k = QObject::tr("Date");
-  d = date.toString(Qt::ISODate);
+  d = _date.toString(Qt::ISODate);
   info->setData(k, d);
 }
 
@@ -109,7 +109,7 @@ void VLine::dialog ()
   dialog->addPage(page, s);
 
   s = QObject::tr("Color");
-  dialog->addColorItem(pid++, page, s, color);
+  dialog->addColorItem(pid++, page, s, _color);
 
   int def = FALSE;
   s = QObject::tr("Default");
@@ -123,49 +123,49 @@ void VLine::dialog ()
   }
 
   pid = 0;
-  dialog->getColor(pid++, color);
+  dialog->getColor(pid++, _color);
   def = dialog->getCheck(pid++);
 
   if (def)
   {
     Config config;
-    config.setData((int) Config::DefaultVLineColor, color);
+    config.setData((int) Config::DefaultVLineColor, _color);
   }
 
-  saveFlag = TRUE;
+  _saveFlag = TRUE;
   
   delete dialog;
 }
 
 void VLine::load (QSqlQuery &q)
 {
-  id = q.value(0).toInt();
-  exchange = q.value(1).toString();
-  symbol = q.value(2).toString();
-  indicator = q.value(3).toString();
-  color.setNamedColor(q.value(5).toString()); // t1 field
-  date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t2 field
+  _id = q.value(0).toInt();
+  _exchange = q.value(1).toString();
+  _symbol = q.value(2).toString();
+  _indicator = q.value(3).toString();
+  _color.setNamedColor(q.value(5).toString()); // t1 field
+  _date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate); // t2 field
 }
 
 void VLine::save ()
 {
-  if (! saveFlag)
+  if (! _saveFlag)
     return;
   
   QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,t2) VALUES (";
-  s.append(QString::number(id));
-  s.append(",'" + exchange + "'");
-  s.append(",'" + symbol + "'");
-  s.append(",'" + indicator + "'");
-  s.append(",'" + plugin + "'");
-  s.append(",'" + color.name() + "'");
-  s.append(",'" + date.toString(Qt::ISODate) + "'");
+  s.append(QString::number(_id));
+  s.append(",'" + _exchange + "'");
+  s.append(",'" + _symbol + "'");
+  s.append(",'" + _indicator + "'");
+  s.append(",'" + _plugin + "'");
+  s.append(",'" + _color.name() + "'");
+  s.append(",'" + _date.toString(Qt::ISODate) + "'");
   s.append(")");
 
   CODataBase db;
   db.setChartObject(s);
   
-  saveFlag = FALSE;
+  _saveFlag = FALSE;
 }
 
 void VLine::create ()
@@ -175,16 +175,16 @@ void VLine::create ()
 
 int VLine::create2 (QDateTime &x, double)
 {
-  saveFlag = TRUE;
-  date = x;
+  _saveFlag = TRUE;
+  _date = x;
   emit signalMessage(QString());
   return 0;
 }
 
 void VLine::moving (QDateTime &x, double, int)
 {
-  saveFlag = TRUE;
-  date = x;
+  _saveFlag = TRUE;
+  _date = x;
   
   emit signalMessage(QString(x.toString(Qt::ISODate)));
 }
@@ -202,9 +202,37 @@ int VLine::getHighLow (double &, double &)
 int VLine::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar &)
 {
   int rc = FALSE;
-  if (date >= startDate && date <= endDate)
+  if (_date >= startDate && _date <= endDate)
     rc = TRUE;
   
   return rc;
+}
+
+int VLine::CUS (QStringList &l)
+{
+  // CO,<TYPE>,<DATE>,<COLOR>
+  //  0    1      2      3
+
+  if (l.count() != 4)
+  {
+    qDebug() << _plugin << "::CUS: invalid parm count" << l.count();
+    return 1;
+  }
+
+  _date = QDateTime::fromString(l[2], Qt::ISODate);
+  if (! _date.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid date" << l[2];
+    return 1;
+  }
+
+  _color.setNamedColor(l[3]);
+  if (! _color.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid color" << l[3];
+    return 1;
+  }
+
+  return 0;
 }
 

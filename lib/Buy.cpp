@@ -32,9 +32,9 @@
 
 Buy::Buy ()
 {
-  plugin = "Buy";
-  color.setNamedColor("green");
-  price = 0;
+  _plugin = "Buy";
+  _color.setNamedColor("green");
+  _price = 0;
 }
 
 void Buy::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
@@ -42,7 +42,7 @@ void Buy::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  int x2 = dateBars.getX(date);
+  int x2 = dateBars.getX(_date);
   if (x2 == -1)
     return;
 
@@ -50,7 +50,7 @@ void Buy::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
   if (x == -1)
     return;
 
-  int y = scaler.convertToY(price);
+  int y = scaler.convertToY(_price);
 
   QPolygon arrow;
   arrow.putPoints(0, 7, x, y,
@@ -60,28 +60,28 @@ void Buy::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)
                   x - 2, y + 11,
 	          x - 2, y + 5,
                   x - 5, y + 5);
-  painter.setBrush(color);
+  painter.setBrush(_color);
   
   painter.drawPolygon(arrow, Qt::OddEvenFill);
   
   clearSelectionArea();
   setSelectionArea(new QRegion(arrow));
 
-  if (selected)
+  if (_selected)
   {
     clearGrabHandles();
 
-    setGrabHandle(new QRegion(x - (handleWidth / 2),
-		  y - handleWidth,
-		  handleWidth,
-		  handleWidth,
+    setGrabHandle(new QRegion(x - (_handleWidth / 2),
+		  y - _handleWidth,
+		  _handleWidth,
+		  _handleWidth,
 		  QRegion::Rectangle));
 
-    painter.fillRect(x - (handleWidth / 2),
-		     y - handleWidth,
-		     handleWidth,
-		     handleWidth,
-		     color);
+    painter.fillRect(x - (_handleWidth / 2),
+		     y - _handleWidth,
+		     _handleWidth,
+		     _handleWidth,
+		     _color);
   }
 
   painter.end();
@@ -94,11 +94,11 @@ void Buy::getInfo (Setting *info)
   info->setData(k, d);
 
   k = QObject::tr("Date");
-  d = date.toString(Qt::ISODate);
+  d = _date.toString(Qt::ISODate);
   info->setData(k, d);
 
   k = QObject::tr("Price");
-  d = QString::number(price);
+  d = QString::number(_price);
   info->setData(k, d);
 }
 
@@ -113,10 +113,10 @@ void Buy::dialog ()
   dialog->addPage(page, s);
 
   s = QObject::tr("Color");
-  dialog->addColorItem(pid++, page, s, color);
+  dialog->addColorItem(pid++, page, s, _color);
 
   s = QObject::tr("Price");
-  dialog->addDoubleItem(pid++, page, s, price);
+  dialog->addDoubleItem(pid++, page, s, _price);
 
   int def = FALSE;
   s = QObject::tr("Default");
@@ -130,53 +130,53 @@ void Buy::dialog ()
   }
 
   pid = 0;
-  dialog->getColor(pid++, color);
-  price = dialog->getDouble(pid++);
+  dialog->getColor(pid++, _color);
+  _price = dialog->getDouble(pid++);
   def = dialog->getCheck(pid++);
 
   if (def)
   {
     Config config;
-    config.setData((int) Config::DefaultBuyColor, color);
+    config.setData((int) Config::DefaultBuyColor, _color);
   }
 
-  saveFlag = TRUE;
+  _saveFlag = TRUE;
   
   delete dialog;
 }
 
 void Buy::load (QSqlQuery &q)
 {
-  id = q.value(0).toInt();
-  exchange = q.value(1).toString();
-  symbol = q.value(2).toString();
-  indicator = q.value(3).toString();
-  plugin = q.value(4).toString();
-  color.setNamedColor(q.value(5).toString());
-  date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate);
-  price = q.value(25).toDouble();
+  _id = q.value(0).toInt();
+  _exchange = q.value(1).toString();
+  _symbol = q.value(2).toString();
+  _indicator = q.value(3).toString();
+  _plugin = q.value(4).toString();
+  _color.setNamedColor(q.value(5).toString());
+  _date = QDateTime::fromString(q.value(6).toString(), Qt::ISODate);
+  _price = q.value(25).toDouble();
 }
 
 void Buy::save ()
 {
-  if (! saveFlag)
+  if (! _saveFlag)
     return;
   
   QString s = "INSERT OR REPLACE INTO chartObjects (id,exchange,symbol,indicator,plugin,t1,t2,d1) VALUES (";
-  s.append(QString::number(id));
-  s.append(",'" + exchange + "'");
-  s.append(",'" + symbol + "'");
-  s.append(",'" + indicator + "'");
-  s.append(",'" + plugin + "'");
-  s.append(",'" + color.name() + "'");
-  s.append(",'" + date.toString(Qt::ISODate) + "'");
-  s.append("," + QString::number(price));
+  s.append(QString::number(_id));
+  s.append(",'" + _exchange + "'");
+  s.append(",'" + _symbol + "'");
+  s.append(",'" + _indicator + "'");
+  s.append(",'" + _plugin + "'");
+  s.append(",'" + _color.name() + "'");
+  s.append(",'" + _date.toString(Qt::ISODate) + "'");
+  s.append("," + QString::number(_price));
   s.append(")");
   
   CODataBase db;
   db.setChartObject(s);
   
-  saveFlag = FALSE;
+  _saveFlag = FALSE;
 }
 
 void Buy::create ()
@@ -186,18 +186,18 @@ void Buy::create ()
 
 int Buy::create2 (QDateTime &x, double y)
 {
-  saveFlag = TRUE;
-  date = x;
-  price = y;
+  _saveFlag = TRUE;
+  _date = x;
+  _price = y;
   emit signalMessage(QString());
   return 0;
 }
 
 void Buy::moving (QDateTime &x, double y, int)
 {
-  saveFlag = TRUE;
-  date = x;
-  price = y;
+  _saveFlag = TRUE;
+  _date = x;
+  _price = y;
   
   emit signalMessage(QString(x.toString(Qt::ISODate) + " " + QString::number(y)));
 }
@@ -209,17 +209,53 @@ void Buy::getIcon (QIcon &d)
 
 int Buy::getHighLow (double &h, double &l)
 {
-  h = price;
-  l = price;
+  h = _price;
+  l = _price;
   return 0;
 }
 
 int Buy::inDateRange (QDateTime &startDate, QDateTime &endDate, DateBar &)
 {
   int rc = FALSE;
-  if (date >= startDate && date <= endDate)
+  if (_date >= startDate && _date <= endDate)
     rc = TRUE;
   
   return rc;
+}
+
+int Buy::CUS (QStringList &l)
+{
+  // CO,<TYPE>,<DATE>,<PRICE>,<COLOR>
+  //  0    1      2      3       4
+
+  if (l.count() != 5)
+  {
+    qDebug() << _plugin << "::CUS: invalid parm count" << l.count();
+    return 1;
+  }
+
+  _date = QDateTime::fromString(l[2], Qt::ISODate);
+  if (! _date.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid date" << l[2];
+    return 1;
+  }
+
+  bool ok;
+  _price = l[3].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << _plugin << "::CUS: invalid price" << l[3];
+    return 1;
+  }
+
+  _color.setNamedColor(l[4]);
+  if (! _color.isValid())
+  {
+    qDebug() << _plugin << "::CUS: invalid color" << l[4];
+    return 1;
+  }
+
+  return 0;
 }
 

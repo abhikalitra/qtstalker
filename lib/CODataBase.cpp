@@ -103,11 +103,11 @@ void CODataBase::deleteChartObjectsIndicator (QString &indicator)
   commit();
 }
 
-void CODataBase::deleteChartObject (QString &id)
+void CODataBase::deleteChartObject (int id)
 {
   transaction();
   
-  QString s = "DELETE FROM chartObjects WHERE id=" + id;
+  QString s = "DELETE FROM chartObjects WHERE id=" + QString::number(id);
   if (command(s, QString("CODataBase::deleteChartObject:")))
     return;
   
