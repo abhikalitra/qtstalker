@@ -295,7 +295,7 @@ int PP::dialog (int)
   dialog->addColorItem(R1Color, page, QObject::tr("Color"), d);
 
   _settings.getData(R1Label, d);
-  dialog->addTextItem(R1Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(R1Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(R1Show, page, QObject::tr("Show"), _settings.getInt(R1Show));
 
@@ -307,7 +307,7 @@ int PP::dialog (int)
   dialog->addColorItem(R2Color, page, QObject::tr("Color"), d);
 
   _settings.getData(R2Label, d);
-  dialog->addTextItem(R2Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(R2Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(R2Show, page, QObject::tr("Show"), _settings.getInt(R2Show));
 
@@ -319,7 +319,7 @@ int PP::dialog (int)
   dialog->addColorItem(R3Color, page, QObject::tr("Color"), d);
 
   _settings.getData(R3Label, d);
-  dialog->addTextItem(R3Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(R3Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(R3Show, page, QObject::tr("Show"), _settings.getInt(R3Show));
 
@@ -331,7 +331,7 @@ int PP::dialog (int)
   dialog->addColorItem(S1Color, page, QObject::tr("Color"), d);
 
   _settings.getData(S1Label, d);
-  dialog->addTextItem(S1Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(S1Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(S1Show, page, QObject::tr("Show"), _settings.getInt(S1Show));
 
@@ -343,7 +343,7 @@ int PP::dialog (int)
   dialog->addColorItem(S2Color, page, QObject::tr("Color"), d);
 
   _settings.getData(S2Label, d);
-  dialog->addTextItem(S2Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(S2Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(S2Show, page, QObject::tr("Show"), _settings.getInt(S2Show));
 
@@ -355,7 +355,7 @@ int PP::dialog (int)
   dialog->addColorItem(S3Color, page, QObject::tr("Color"), d);
 
   _settings.getData(S3Label, d);
-  dialog->addTextItem(S3Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(S3Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(S3Show, page, QObject::tr("Show"), _settings.getInt(S3Show));
 

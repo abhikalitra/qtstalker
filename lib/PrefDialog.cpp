@@ -260,7 +260,7 @@ void PrefDialog::getFont (int key, QFont &font)
     button->getFont(font);
 }
 
-void PrefDialog::addTextItem (int key, int page, QString name, QString &t)
+void PrefDialog::addTextItem (int key, int page, QString name, QString &t, QString tip)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -271,6 +271,7 @@ void PrefDialog::addTextItem (int key, int page, QString name, QString &t)
 
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
+  label->setToolTip(tip);
 
   QLineEdit *edit = new QLineEdit(t);
   grid->addWidget(edit, grid->rowCount() - 1, 1);
@@ -285,6 +286,11 @@ void PrefDialog::getText (int key, QString &s)
   QLineEdit *edit = textList.value(key);
   if (edit)
     s = edit->text();
+}
+
+QLineEdit * PrefDialog::getTextWidget (int key)
+{
+  return textList.value(key);
 }
 
 void PrefDialog::addComboItem (int key, int page, QString name, QStringList &l, QString &s)
@@ -512,7 +518,7 @@ void PrefDialog::getTextEdit (int key, QString &s)
     s = edit->toPlainText();
 }
 
-void PrefDialog::addFileItem (int key, int page, QString name, QString &t)
+void PrefDialog::addFileItem (int key, int page, QString name, QString &t, QString tip)
 {
   QGridLayout *grid = gridList.value(page);
   if (! grid)
@@ -523,6 +529,7 @@ void PrefDialog::addFileItem (int key, int page, QString name, QString &t)
 
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
+  label->setToolTip(tip);
 
   FileButton *fileButton = new FileButton(this, t);
   grid->addWidget(fileButton, grid->rowCount() - 1, 1);

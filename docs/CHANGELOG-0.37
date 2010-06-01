@@ -480,5 +480,10 @@
            changes to the charts ie. viewing minute bars with rapidly changing patterns. Arrows, support lines and
            retracements to appear only under specific circumstances and price levels.
 
+20100530:  Applied patch #3009102 (Update for patch 3007713). thanks to wolfch for the patch.
+
+           Fixed bug that did not update the toolbar bar spacing buttons when the preferences was changed.
+
+
 
 

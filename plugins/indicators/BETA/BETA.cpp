@@ -256,7 +256,7 @@ int BETA::dialog (int)
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   BarData bd;
   QStringList inputList;
@@ -268,7 +268,8 @@ int BETA::dialog (int)
   dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 
   _settings.getData(Index, d);
-  dialog->addTextItem(Index, page, QObject::tr("Index"), d);
+  dialog->addTextItem(Index, page, QObject::tr("Index"), d,
+                      QObject::tr("Index symbol used for comparison eg. SP500"));
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

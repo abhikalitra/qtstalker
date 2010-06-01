@@ -348,7 +348,7 @@ int STOCHS::dialog (int)
   dialog->addComboItem(SlowKPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(SlowKLabel, d);
-  dialog->addTextItem(SlowKLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(SlowKLabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(FastKPeriod, page, QObject::tr("FastK Period"), _settings.getInt(FastKPeriod), 1, 100000);
 
@@ -372,7 +372,7 @@ int STOCHS::dialog (int)
   dialog->addComboItem(SlowDPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(SlowDLabel, d);
-  dialog->addTextItem(SlowDLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(SlowDLabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(SlowDPeriod, page, QObject::tr("Period"), _settings.getInt(SlowDPeriod), 1, 100000);
 

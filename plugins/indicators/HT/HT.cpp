@@ -667,7 +667,7 @@ int HT::dialog (int)
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   BarData bd;
   QStringList inputList;
@@ -696,10 +696,10 @@ int HT::dialog (int)
   dialog->addComboItem(QuadPlot, page, QObject::tr("Quad Plot"), plotList, d);
 
   _settings.getData(PhaseLabel, d);
-  dialog->addTextItem(PhaseLabel, page, QObject::tr("Phase Label"), d);
+  dialog->addTextItem(PhaseLabel, page, QObject::tr("Phase Label"), d, QString());
 
   _settings.getData(QuadLabel, d);
-  dialog->addTextItem(QuadLabel, page, QObject::tr("Quad Label"), d);
+  dialog->addTextItem(QuadLabel, page, QObject::tr("Quad Label"), d, QString());
 
   page++;
   k = QObject::tr("Sine Wave");
@@ -718,10 +718,10 @@ int HT::dialog (int)
   dialog->addComboItem(LeadPlot, page, QObject::tr("Lead Plot"), plotList, d);
 
   _settings.getData(SineLabel, d);
-  dialog->addTextItem(SineLabel, page, QObject::tr("Sine Label"), d);
+  dialog->addTextItem(SineLabel, page, QObject::tr("Sine Label"), d, QString());
 
   _settings.getData(LeadLabel, d);
-  dialog->addTextItem(LeadLabel, page, QObject::tr("Lead Label"), d);
+  dialog->addTextItem(LeadLabel, page, QObject::tr("Lead Label"), d, QString());
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

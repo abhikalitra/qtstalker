@@ -292,11 +292,11 @@ void ScriptPage::editScript (QString &d)
   QString command = script->getCommand();
   if (command.isEmpty())
     command = "perl";
-  dialog->addTextItem(pos++, page, s, command);
+  dialog->addTextItem(pos++, page, s, command, tr("Interpreter command and switches eg. perl -l -T"));
 
   s = tr("Script File");
   QString file = script->getFile();
-  dialog->addFileItem(pos++, page, s, file);
+  dialog->addFileItem(pos++, page, s, file, tr("The script location"));
 
   s = tr("Run every X seconds");
   int refresh = script->getRefresh();
@@ -610,7 +610,7 @@ void ScriptPage::runScriptDialog ()
   
   s = tr("Command");
   QString command = "perl";
-  dialog->addTextItem(pos++, page, s, command);
+  dialog->addTextItem(pos++, page, s, command, tr("Interpreter command and switches eg. perl -l -T"));
 
   Config config;
   QString file;
@@ -619,7 +619,7 @@ void ScriptPage::runScriptDialog ()
     file = QDir::homePath();
   
   s = tr("Script File");
-  dialog->addFileItem(pos++, page, s, file);
+  dialog->addFileItem(pos++, page, s, file, tr("The script location"));
 
   s = tr("Run every X seconds");
   int refresh = 0;

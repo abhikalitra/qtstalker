@@ -158,7 +158,7 @@ void IndicatorPage::newIndicator ()
   while (nl.indexOf(name) > -1);
 
   s = tr("Name");
-  dialog->addTextItem(0, 0, s, name);
+  dialog->addTextItem(0, 0, s, name, tr("Indicator name"));
 
   s = tr("Indicator");
   QString indicator;

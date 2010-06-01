@@ -114,7 +114,7 @@ void Text::dialog ()
   dialog->addDoubleItem(pid++, page, s, _price);
 
   s = QObject::tr("Label");
-  dialog->addTextItem(pid++, page, s, _label);
+  dialog->addTextItem(pid++, page, s, _label, QString());
 
   s = QObject::tr("Font");
   dialog->addFontItem(pid++, page, s, _font);

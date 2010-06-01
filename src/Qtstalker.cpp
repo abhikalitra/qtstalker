@@ -480,6 +480,8 @@ void QtstalkerApp::options ()
   connect(dialog, SIGNAL(signalAppFont(QFont)), this, SLOT(appFont(QFont)));
   connect(dialog, SIGNAL(signalLoadChart()), this, SLOT(chartUpdated()));
   connect(dialog, SIGNAL(signalRefreshChanged(int)), this, SIGNAL(signalRefreshUpdated(int)));
+  connect(dialog, SIGNAL(signalPS1Changed(int)), _zoomButtons, SLOT(ps1ValueChanged(int)));
+  connect(dialog, SIGNAL(signalPS2Changed(int)), _zoomButtons, SLOT(ps2ValueChanged(int)));
   dialog->show();
 }
 

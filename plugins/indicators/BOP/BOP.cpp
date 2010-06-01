@@ -207,7 +207,7 @@ int BOP::dialog (int)
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), _settings.getInt(Smoothing), 1, 100000);
 

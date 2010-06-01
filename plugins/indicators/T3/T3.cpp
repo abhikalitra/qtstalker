@@ -236,7 +236,7 @@ int T3::dialog (int)
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 

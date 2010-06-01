@@ -322,7 +322,7 @@ int STOCH::dialog (int)
   dialog->addComboItem(FastKPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(FastKLabel, d);
-  dialog->addTextItem(FastKLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(FastKLabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(FastKPeriod, page, QObject::tr("Period"), _settings.getInt(FastKPeriod), 1, 100000);
 
@@ -337,7 +337,7 @@ int STOCH::dialog (int)
   dialog->addComboItem(FastDPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(FastDLabel, d);
-  dialog->addTextItem(FastDLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(FastDLabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(FastDPeriod, page, QObject::tr("Period"), _settings.getInt(FastDPeriod), 1, 100000);
 

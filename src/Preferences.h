@@ -48,6 +48,8 @@ class Preferences : public QDialog
     void signalAppFont (QFont);
     void signalLoadChart ();
     void signalRefreshChanged (int);
+    void signalPS1Changed (int);
+    void signalPS2Changed (int);
 
   public:
     Preferences (QWidget *);

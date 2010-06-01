@@ -300,7 +300,7 @@ int ADX::dialog (int)
   dialog->addComboItem(MDIPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(MDILabel, d);
-  dialog->addTextItem(MDILabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(MDILabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(MDICheck, page, QObject::tr("Show"), _settings.getInt(MDICheck));
 
@@ -315,7 +315,7 @@ int ADX::dialog (int)
   dialog->addComboItem(PDIPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(PDILabel, d);
-  dialog->addTextItem(PDILabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(PDILabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(PDICheck, page, QObject::tr("Show"), _settings.getInt(MDICheck));
 
@@ -330,7 +330,7 @@ int ADX::dialog (int)
   dialog->addComboItem(ADXPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(ADXLabel, d);
-  dialog->addTextItem(ADXLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(ADXLabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(ADXCheck, page, QObject::tr("Show"), _settings.getInt(MDICheck));
 
@@ -345,7 +345,7 @@ int ADX::dialog (int)
   dialog->addComboItem(ADXRPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(ADXRLabel, d);
-  dialog->addTextItem(ADXRLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(ADXRLabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addCheckItem(ADXRCheck, page, QObject::tr("Show"), _settings.getInt(MDICheck));
 

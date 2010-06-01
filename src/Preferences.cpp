@@ -73,7 +73,7 @@ void Preferences::createGeneralPage ()
 
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
-  grid->setSpacing(5);
+  grid->setSpacing(2);
   grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
 
@@ -321,7 +321,7 @@ void Preferences::createColorPage ()
 
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
-  grid->setSpacing(5);
+  grid->setSpacing(2);
   grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
 
@@ -382,7 +382,7 @@ void Preferences::createFontPage ()
 
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(5);
-  grid->setSpacing(5);
+  grid->setSpacing(2);
   grid->setColumnStretch(1, 2);
   vbox->addLayout(grid);
 
@@ -433,7 +433,11 @@ void Preferences::slotSave ()
   config.transaction();
 
   config.setData((int) Config::PSButton1, bs1Spinner->value());
+  emit signalPS1Changed(bs1Spinner->value());
+  
   config.setData((int) Config::PSButton2, bs2Spinner->value());
+  emit signalPS2Changed(bs2Spinner->value());
+
   config.setData((int) Config::IndicatorTabRows, tabRows->value());
 
   config.setData((int) Config::Refresh, refreshSpinner->value());

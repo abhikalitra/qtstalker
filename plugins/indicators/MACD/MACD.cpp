@@ -439,7 +439,7 @@ int MACD::dialog (int)
   dialog->addComboItem(MACDPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(MACDLabel, d);
-  dialog->addTextItem(MACDLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(MACDLabel, page, QObject::tr("Label"), d, QString());
 
   page++;
   k = QObject::tr("Signal");
@@ -452,7 +452,7 @@ int MACD::dialog (int)
   dialog->addComboItem(SignalPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(SignalLabel, d);
-  dialog->addTextItem(SignalLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(SignalLabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(SignalPeriod, page, QObject::tr("Period"), _settings.getInt(SignalPeriod), 1, 100000);
 
@@ -470,7 +470,7 @@ int MACD::dialog (int)
   dialog->addComboItem(HistPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(HistLabel, d);
-  dialog->addTextItem(HistLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(HistLabel, page, QObject::tr("Label"), d, QString());
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

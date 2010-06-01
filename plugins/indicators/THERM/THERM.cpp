@@ -266,7 +266,7 @@ int THERM::dialog (int)
   dialog->addColorItem(ThreshColor, page, QObject::tr("Threshold Color"), d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addDoubleItem(Threshold, page, QObject::tr("Threshold"), _settings.getDouble(Threshold), 0, 100000);
 
@@ -294,7 +294,7 @@ int THERM::dialog (int)
   dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(MALabel, d);
-  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), _settings.getInt(MAPeriod), 1, 100000);
 

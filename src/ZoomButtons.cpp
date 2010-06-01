@@ -58,8 +58,8 @@ void ZoomButtons::createButtons (QToolBar *tb)
   tb->addWidget(zoomOutButton);
 
   // PS1 button
-  QString s;
-  config.getData(Config::PSButton1, s);
+  ps1 = config.getInt(Config::PSButton1);
+  QString s = QString::number(ps1);
 
   ps1Button = new QToolButton;
   ps1Button->setCheckable(FALSE);
@@ -69,7 +69,8 @@ void ZoomButtons::createButtons (QToolBar *tb)
   tb->addWidget(ps1Button);
 
   // PS2 button
-  config.getData(Config::PSButton2, s);
+  ps2 = config.getInt(Config::PSButton2);
+  s = QString::number(ps2);
 
   ps2Button = new QToolButton;
   ps2Button->setCheckable(FALSE);
@@ -101,16 +102,12 @@ void ZoomButtons::addZoom (int index, int ps)
 
 void ZoomButtons::ps1ButtonClicked ()
 {
-  Config config;
-  int pixelSpace = config.getInt(Config::PSButton1);
-  psButtonClicked(pixelSpace);
+  psButtonClicked(ps1);
 }
 
 void ZoomButtons::ps2ButtonClicked ()
 {
-  Config config;
-  int pixelSpace = config.getInt(Config::PSButton2);
-  psButtonClicked(pixelSpace);
+  psButtonClicked(ps2);
 }
 
 void ZoomButtons::psButtonClicked (int ps)
@@ -124,5 +121,21 @@ void ZoomButtons::psButtonClicked (int ps)
 int ZoomButtons::getPixelSpace ()
 {
   return pixelSpace;
+}
+
+void ZoomButtons::ps1ValueChanged (int d)
+{
+  ps1 = d;
+  QString s = QString::number(d);
+  ps1Button->setToolTip(tr("Set Bar Spacing to ") + s);
+  ps1Button->setText(s);
+}
+
+void ZoomButtons::ps2ValueChanged (int d)
+{
+  ps2 = d;
+  QString s = QString::number(d);
+  ps2Button->setToolTip(tr("Set Bar Spacing to ") + s);
+  ps2Button->setText(s);
 }
 

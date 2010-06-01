@@ -348,7 +348,7 @@ int MAMA::dialog (int)
   dialog->addComboItem(MAMAPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(MAMALabel, d);
-  dialog->addTextItem(MAMALabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(MAMALabel, page, QObject::tr("Label"), d, QString());
 
   page++;
   k = QObject::tr("FAMA");
@@ -361,7 +361,7 @@ int MAMA::dialog (int)
   dialog->addComboItem(FAMAPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(FAMALabel, d);
-  dialog->addTextItem(FAMALabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(FAMALabel, page, QObject::tr("Label"), d, QString());
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

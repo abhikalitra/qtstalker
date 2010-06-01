@@ -187,7 +187,7 @@ int SAR::dialog (int)
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addDoubleItem(Init, page, QObject::tr("Initial"), _settings.getDouble(Init), 0.0, 100000.0);
 

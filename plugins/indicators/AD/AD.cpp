@@ -363,7 +363,7 @@ int AD::dialog (int)
   dialog->addComboItem((int) ADPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(ADLabel, d);
-  dialog->addTextItem((int) ADLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem((int) ADLabel, page, QObject::tr("Label"), d, QString());
 
   page++;
   k = QObject::tr("OSC");
@@ -376,7 +376,7 @@ int AD::dialog (int)
   dialog->addComboItem(OSCPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(OSCLabel, d);
-  dialog->addTextItem(OSCLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(OSCLabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), _settings.getInt(FastPeriod), 1, 100000);
 

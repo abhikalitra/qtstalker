@@ -20,6 +20,9 @@
 
     When the data is loaded, a new group is created called "DemoGroup"
     (currenly hard-coded) to which the symbols will be associated.
+
+    Fully tested on MacOs-10.5.8 on Python 2.4
+    Partially tested on WindowsXP on ActiveState Python 2.5
     
     Author: Chris Wolf
 """
@@ -33,6 +36,8 @@ proxies = {}
 # global definitions
 qtSriptIO = None
 log = None
+isWin = False
+homeDir = None
 
 class AutoFlushWriter:
     """ Currently only used for debug logger """
@@ -119,7 +124,7 @@ def load_data():
     then fetch the EOD price history for the period.  Add the ticker symbol to a hardcoded
     group named "DemoGroup".
     """
-    stock_sym_file = os.environ['HOME'] + '/qts_stocks.csv'
+    stock_sym_file = homeDir + 'qts_stocks.csv'
     reader = csv.reader(open(stock_sym_file))
     start_date_row = reader.next()
 
@@ -142,6 +147,14 @@ def load_data():
     print >> qtScriptIO, ("QUOTE,Stock,SAVE_QUOTES"),
 
 if __name__ == "__main__":
+    try:
+        import msvcrt
+        isWin = True
+        homeDir = os.environ['USERPROFILE'] + "\\"
+    except ImportError:
+        homeDir = os.environ['HOME'] + "/"
+        isWin = False
+
     #log = AutoFlushWriter(open("/tmp/script.log", "w"))
     qtScriptIO = QtScriptIO(sys.stdout)
     load_data()

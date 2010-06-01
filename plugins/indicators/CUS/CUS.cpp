@@ -76,10 +76,12 @@ int CUS::dialog (int)
   dialog->addPage(page, k);
 
   _settings.getData(Command, d);
-  dialog->addTextItem(Command, page, QObject::tr("Command"), d);
+  dialog->addTextItem(Command, page, QObject::tr("Command"), d,
+                      QObject::tr("The interpreter command line and any switches required.\neg. perl -l -T"));
 
   _settings.getData(Script, d);
-  dialog->addFileItem(Script, page, QObject::tr("Script"), d);
+  dialog->addFileItem(Script, page, QObject::tr("Script"), d,
+                      QObject::tr("The script location."));
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

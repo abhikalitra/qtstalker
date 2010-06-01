@@ -299,7 +299,7 @@ int MAVP::dialog (int)
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   BarData bd;
   QStringList inputList;

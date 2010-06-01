@@ -129,7 +129,7 @@ void HLine::dialog ()
   dialog->addDoubleItem(pid++, page, s, _price);
 
   s = QObject::tr("Label");
-  dialog->addTextItem(pid++, page, s, _label);
+  dialog->addTextItem(pid++, page, s, _label, QString());
 
   int def = FALSE;
   s = QObject::tr("Default");

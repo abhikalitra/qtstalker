@@ -224,7 +224,7 @@ int BARS::dialog (int)
   dialog->addColorItem(NeutralColor, page, QObject::tr("Neutral"), d);
 
   _settings.getData(BarsLabel, d);
-  dialog->addTextItem(BarsLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(BarsLabel, page, QObject::tr("Label"), d, QString());
 
   QStringList maList;
   MAFactory mau;
@@ -245,7 +245,7 @@ int BARS::dialog (int)
   dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(MALabel, d);
-  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), _settings.getInt(MAPeriod), 1, 100000);
 
@@ -263,7 +263,7 @@ int BARS::dialog (int)
   dialog->addComboItem(MA2Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(MA2Label, d);
-  dialog->addTextItem(MA2Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(MA2Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(MA2Period, page, QObject::tr("Period"), _settings.getInt(MA2Period), 1, 100000);
 
@@ -281,7 +281,7 @@ int BARS::dialog (int)
   dialog->addComboItem(MA3Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(MA3Label, d);
-  dialog->addTextItem(MA3Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(MA3Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(MA3Period, page, QObject::tr("Period"), _settings.getInt(MA3Period), 1, 100000);
 

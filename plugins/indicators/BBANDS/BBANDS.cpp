@@ -397,7 +397,7 @@ int BBANDS::dialog (int)
   dialog->addComboItem(UpPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(UpLabel, d);
-  dialog->addTextItem(UpLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(UpLabel, page, QObject::tr("Label"), d, QString());
 
   page++;
   k = QObject::tr("Mid");
@@ -410,7 +410,7 @@ int BBANDS::dialog (int)
   dialog->addComboItem(MidPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(MidLabel, d);
-  dialog->addTextItem(MidLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(MidLabel, page, QObject::tr("Label"), d, QString());
 
   page++;
   k = QObject::tr("Lower");
@@ -423,7 +423,7 @@ int BBANDS::dialog (int)
   dialog->addComboItem(DownPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(DownLabel, d);
-  dialog->addTextItem(DownLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(DownLabel, page, QObject::tr("Label"), d, QString());
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

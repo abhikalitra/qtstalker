@@ -256,7 +256,7 @@ int ULTOSC::dialog (int)
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(ShortPeriod, page, QObject::tr("Short Period"), _settings.getInt(ShortPeriod), 1, 100000);
 

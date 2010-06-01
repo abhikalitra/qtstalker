@@ -47,11 +47,15 @@ class ZoomButtons : public QObject
     void zoomOut ();
     void ps1ButtonClicked ();
     void ps2ButtonClicked ();
+    void ps1ValueChanged (int);
+    void ps2ValueChanged (int);
     
   protected:
     QToolButton *zoomInButton;
     QToolButton *zoomOutButton;
     int pixelSpace;
+    int ps1;
+    int ps2;
     QToolButton *ps1Button;
     QToolButton *ps2Button;
 };

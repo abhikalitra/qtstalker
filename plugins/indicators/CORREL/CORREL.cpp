@@ -319,7 +319,7 @@ int CORREL::dialog (int)
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   BarData bd;
   QStringList inputList;
@@ -329,7 +329,8 @@ int CORREL::dialog (int)
   dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
 
   _settings.getData(Input2, d);
-  dialog->addTextItem(Input2, page, QObject::tr("Input 2"), d);
+  dialog->addTextItem(Input2, page, QObject::tr("Input 2"), d,
+                      QObject::tr("Index symbol used for comparison eg. SP500"));
 
   dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 

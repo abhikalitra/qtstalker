@@ -198,7 +198,7 @@ int VOL::dialog (int)
   dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d);
+  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
 
   page++;
   k = QObject::tr("MA");
@@ -211,7 +211,7 @@ int VOL::dialog (int)
   dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(MALabel, d);
-  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d, QString());
 
   dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), _settings.getInt(MAPeriod), 1, 100000);
 

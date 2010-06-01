@@ -62,37 +62,47 @@ class PrefDialog : public QDialog
     void addColorItem (int key, int page, QString name, QString &color);
     void addColorItem (int key, int page, QString, QColor &);
     void getColor (int key, QColor &);
+
     void addDoubleItem (int key, int page, QString, double, double, double);
     void addDoubleItem (int key, int page, QString, double);
     double getDouble (int key);
+
     void addIntItem (int key, int page, QString, int);
     void addIntItem (int key, int page, QString, int, int, int);
     int getInt (int key);
+
     void addCheckItem (int key, int page, QString, int);
     void addCheckItem (int key, int page, QString, QString &);
     int getCheck (int key);
     void getCheckString (int key, QString &);
+
     void addFontItem (int key, int page, QString, QFont &);
     void getFont (int key, QFont &);
-    void addTextItem (int key, int page, QString, QString &);
+
+    void addTextItem (int key, int page, QString, QString &, QString);
     void getText (int key, QString &);
+    QLineEdit * getTextWidget (int key);
+
     void addComboItem (int key, int page, QString, QStringList &, QString &);
     void addComboItem (int key, int page, QString, QStringList &, int);
     void getCombo (int key, QString &);
     int getComboIndex (int key);
     QComboBox * getComboWidget (int key);
+
     void addDateItem (int key, int page, QString, QDateTime &);
     void getDate (int key, QDateTime &);
+
     void addTimeItem (int key, int page, QString, QDateTime &);
     void getTime (int key, QDateTime &);
-    void getItem (int key, QString &);
-    void getKeyList (QList<int> &);
+
     void addTextEditItem (int key, int page, QString, QString &);
     void getTextEdit (int key, QString &);
-    void addFileItem (int key, int page, QString, QString &);
+
+    void addFileItem (int key, int page, QString, QString &, QString);
     void getFile (int key, QString &);
 
-//  public slots:
+    void getItem (int key, QString &);
+    void getKeyList (QList<int> &);
 
   private:
     QHash<int, ColorButton *> colorButtonList;

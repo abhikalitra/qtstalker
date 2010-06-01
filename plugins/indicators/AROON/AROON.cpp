@@ -430,10 +430,10 @@ int AROON::dialog (int)
   dialog->addComboItem(DownPlot, page, QObject::tr("Down Plot"), plotList, d);
 
   _settings.getData(UpLabel, d);
-  dialog->addTextItem(UpLabel, page, QObject::tr("Up Label"), d);
+  dialog->addTextItem(UpLabel, page, QObject::tr("Up Label"), d, QString());
 
   _settings.getData(DownLabel, d);
-  dialog->addTextItem(DownLabel, page, QObject::tr("Down Label"), d);
+  dialog->addTextItem(DownLabel, page, QObject::tr("Down Label"), d, QString());
 
   page++;
   k = QObject::tr("OSC");
@@ -446,7 +446,7 @@ int AROON::dialog (int)
   dialog->addComboItem(OSCPlot, page, QObject::tr("Plot"), plotList, d);
 
   _settings.getData(OSCLabel, d);
-  dialog->addTextItem(OSCLabel, page, QObject::tr("Label"), d);
+  dialog->addTextItem(OSCLabel, page, QObject::tr("Label"), d, QString());
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
