@@ -19,35 +19,26 @@
  *  USA.
  */
 
-#include "PluginFactory.h"
+#include "ListWidget.h"
 
-#include <QDir>
 #include <QDebug>
-#include <QFileInfo>
 
-PluginFactory::PluginFactory ()
+ListWidget::ListWidget ()
 {
+  setFocusPolicy(Qt::StrongFocus);
 }
 
-PluginFactory::~PluginFactory ()
+void ListWidget::keyPressEvent (QKeyEvent *e)
 {
-  qDeleteAll(_libs);
-}
-
-void PluginFactory::getPluginList (QString &path, QStringList &list)
-{
-  list.clear();
-  
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
+  switch (e->key())
   {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+      emit signalEnterKeyPressed(currentItem());
+      break;
+    default:
+      QListWidget::keyPressEvent(e);
+      break;
   }
-
-  list.sort();
 }
 

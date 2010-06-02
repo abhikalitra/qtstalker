@@ -15,12 +15,7 @@ To Do:
 - interactive scripting
 - complete backtesting module
 - replace CLEAR script command with a specific DELETE command
-- BUG: running an indicator script from the script run menu segfaults.
 - add delete symbol option to the chart panel
-- add refresh signals for the chart/group panels after a script finishes
-- chart and group panel should have enter key selection and single click selection.
-- BUG: date toggle not working on indicators
-
 
 
 Priority

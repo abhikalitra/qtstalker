@@ -131,6 +131,9 @@ SUBDIRS += plugins/indicators/WILLR
 SUBDIRS += plugins/database/Stock
 SUBDIRS += plugins/database/Futures
 
+# compile misc plugins
+SUBDIRS += plugins/misc/CSV
+
 # compile app
 SUBDIRS += src
 

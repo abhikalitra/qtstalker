@@ -504,6 +504,8 @@ void ScriptPage::scriptDone (QString name)
   delete script;
 
   updateQueList();
+
+  emit signalScriptDone();
 }
 
 void ScriptPage::removeScriptQueue ()

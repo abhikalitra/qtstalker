@@ -56,6 +56,53 @@
     </message>
 </context>
 <context>
+    <name>CSVDialog</name>
+    <message>
+        <source>Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Run</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New CSV Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete rule?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChartPage</name>
     <message>
         <source>Symbol Search</source>
@@ -369,6 +416,10 @@ a partial match like %SI or %RSI%</source>
         <source>Delete indicator</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indicator name</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Plot</name>
@@ -429,6 +480,17 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Scroll Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginPage</name>
+    <message>
+        <source>&amp;Configure Plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure plugin</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1227,6 +1289,19 @@ a partial match like %SI or %RSI%</source>
         <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Index symbol used for comparison eg. SP500</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The interpreter command line and any switches required.
+eg. perl -l -T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The script location.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtStalkerTester</name>
@@ -1453,6 +1528,10 @@ a partial match like %SI or %RSI%</source>
         <source>Show the data window</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Plugins</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RecentCharts</name>
@@ -1660,6 +1739,14 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Interpreter command and switches eg. perl -l -T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The script location</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

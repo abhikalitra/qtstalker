@@ -19,35 +19,24 @@
  *  USA.
  */
 
-#include "PluginFactory.h"
+#ifndef CSV_DATA_BASE_HPP
+#define CSV_DATA_BASE_HPP
 
-#include <QDir>
-#include <QDebug>
-#include <QFileInfo>
+#include <QString>
+#include <QStringList>
 
-PluginFactory::PluginFactory ()
+#include "Setting.h"
+#include "DataBase.h"
+
+class CSVDataBase : public DataBase
 {
-}
+  public:
+    CSVDataBase ();
+    void init (); // called only at qtstalker startup, initializes database tables
+    void getRules (QStringList &);
+    void getRule (Setting &);
+    void setRule (Setting &);
+    void deleteRule (QString &);
+};
 
-PluginFactory::~PluginFactory ()
-{
-  qDeleteAll(_libs);
-}
-
-void PluginFactory::getPluginList (QString &path, QStringList &list)
-{
-  list.clear();
-  
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
-  }
-
-  list.sort();
-}
-
+#endif

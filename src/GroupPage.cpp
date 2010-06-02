@@ -63,13 +63,14 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   
   createButtonMenu(tb);
   
-  nav = new QListWidget;
+  nav = new ListWidget;
   nav->setContextMenuPolicy(Qt::CustomContextMenu);
   nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
   nav->setSortingEnabled(FALSE);
   connect(nav, SIGNAL(itemSelectionChanged()), this, SLOT(listStatus()));
   connect(nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
-  connect(nav, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
+  connect(nav, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
+  connect(nav, SIGNAL(signalEnterKeyPressed(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
   vbox->addWidget(nav);
 
   loadGroups();

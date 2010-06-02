@@ -40,6 +40,7 @@ class ScriptPage : public QWidget
 
   signals:
     void signalMessage (QString);
+    void signalScriptDone ();
 
   public:
     enum Action

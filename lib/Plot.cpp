@@ -117,7 +117,8 @@ void Plot::draw ()
     _plotData.infoIndex = convertXToDataIndex((_plotData.buffer.width() - _plotData.scaleWidth));
 
     // draw the date section
-    _datePlot.draw(_plotData, _dateBars);
+    if (_indicator.date())
+      _datePlot.draw(_plotData, _dateBars);
 
     // draw the grid
     _grid.drawXGrid(_plotData);
@@ -134,7 +135,7 @@ void Plot::draw ()
     di.draw(_plotData, _indicator, _dateBars);
 
     // draw the scale
-    _scalePlot.draw(_plotData, _scaler);
+    _scalePlot.draw(_plotData, _scaler, _indicator);
     _scalePlot.drawPoints(_plotData, _scaler, _indicator);
   }
 
@@ -294,7 +295,11 @@ void Plot::setScale ()
     tlogRange = tlogScaleHigh - tlogScaleLow;
   }
 
-  _scaler.set(_plotData.buffer.height() - _plotData.dateHeight,
+  int height = _plotData.buffer.height();
+  if (_indicator.date())
+    height -= _plotData.dateHeight;
+  
+  _scaler.set(height,
               tscaleHigh,
               tscaleLow,
               tlogScaleHigh,

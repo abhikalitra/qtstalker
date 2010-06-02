@@ -19,67 +19,52 @@
  *  USA.
  */
 
-#ifndef GROUP_PAGE_HPP
-#define GROUP_PAGE_HPP
+#ifndef PLUGIN_PAGE_HPP
+#define PLUGIN_PAGE_HPP
 
 #include <QString>
 #include <QWidget>
 #include <QMenu>
-#include <QLineEdit>
-#include <QKeyEvent>
+#include <QListWidget>
 #include <QList>
 #include <QAction>
-#include <QComboBox>
+#include <QToolButton>
 #include <QHash>
-#include <QAction>
 #include <QToolBar>
 
-#include "Group.h"
-#include "ListWidget.h"
+#include "MiscPluginFactory.h"
 
-class GroupPage : public QWidget
+class PluginPage : public QWidget
 {
   Q_OBJECT
 
   signals:
-    void fileSelected (BarData *);
-    void addRecentChart (BarData *);
     void signalMessage (QString);
 
   public:
     enum Action
     {
-      NewGroup,
-      AddGroup,
-      DeleteGroupItems,
-      DeleteGroup,
-      Refresh
+      Configure
     };
 
-    GroupPage (QWidget *);
+    PluginPage (QWidget *);
     void createActions ();
     void createButtonMenu (QToolBar *);
 
   public slots:
-    void updateList ();
-    void newGroup ();
-    void deleteGroupItem ();
-    void deleteGroup ();
-    void groupSelected (int);
+    void doubleClick (QListWidgetItem *);
     void rightClick (const QPoint &);
-    void doKeyPress (QKeyEvent *);
-    void chartOpened (QListWidgetItem *);
-    void updateGroups ();
-    void addToGroup ();
-    void loadGroups ();
+    void configure ();
+    void configure (QString &);
+    void updateList ();
     void listStatus ();
 
   protected:
-    ListWidget *nav;
-    QMenu *menu;
-    QComboBox *groups;
-    QHash<int, QAction *> actions;
-    Group group;
+    QListWidget *_list;
+    QMenu *_menu;
+    QHash<int, QAction *> _actions;
+    MiscPluginFactory _fac;
+    QString _pluginPath;
 };
 
 #endif

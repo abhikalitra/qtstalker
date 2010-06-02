@@ -42,7 +42,7 @@ int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path, Indicator
     return 1;
   }
   
-  DBPlugin *plug = fac.getDB(path, l[1]);
+  DBPlugin *plug = fac.plugin(path, l[1]);
   if (! plug)
   {
     qDebug() << "SCQuote::calculate: plugin error" << l[1];

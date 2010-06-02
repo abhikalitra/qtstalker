@@ -19,35 +19,40 @@
  *  USA.
  */
 
-#include "PluginFactory.h"
+#include "DBPluginFactory.h"
 
-#include <QDir>
 #include <QDebug>
-#include <QFileInfo>
 
-PluginFactory::PluginFactory ()
+DBPluginFactory::DBPluginFactory ()
 {
 }
 
-PluginFactory::~PluginFactory ()
+DBPluginFactory::~DBPluginFactory ()
 {
-  qDeleteAll(_libs);
+  qDeleteAll(_plugins);
 }
 
-void PluginFactory::getPluginList (QString &path, QStringList &list)
+DBPlugin * DBPluginFactory::plugin (QString &path, QString &plugin)
 {
-  list.clear();
-  
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
+  DBPlugin *plug = _plugins.value(plugin);
+  if (plug)
+    return plug;
+
+  QString file = path;
+  file.append("/lib" + plugin);
+
+  QLibrary *lib = new QLibrary(file);
+  DBPlugin *(*so)() = 0;
+  so = (DBPlugin *(*)()) lib->resolve("createDBPlugin");
+  if (so)
   {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
+    plug = (*so)();
+    _libs.insert(plugin, lib);
+    _plugins.insert(plugin, plug);
   }
+  else
+    delete lib;
 
-  list.sort();
+  return plug;
 }
 

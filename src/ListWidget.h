@@ -19,35 +19,27 @@
  *  USA.
  */
 
-#include "PluginFactory.h"
+#ifndef LIST_WIDGET_HPP
+#define LIST_WIDGET_HPP
 
-#include <QDir>
-#include <QDebug>
-#include <QFileInfo>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QKeyEvent>
 
-PluginFactory::PluginFactory ()
+class ListWidget : public QListWidget
 {
-}
+  Q_OBJECT
 
-PluginFactory::~PluginFactory ()
-{
-  qDeleteAll(_libs);
-}
+  signals:
+    void signalEnterKeyPressed(QListWidgetItem *);
 
-void PluginFactory::getPluginList (QString &path, QStringList &list)
-{
-  list.clear();
-  
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
-  }
+  public:
+    ListWidget ();
 
-  list.sort();
-}
+  protected:
+    void keyPressEvent (QKeyEvent *);
+};
+
+#endif
+
 

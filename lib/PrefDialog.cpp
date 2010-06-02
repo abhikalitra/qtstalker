@@ -271,7 +271,9 @@ void PrefDialog::addTextItem (int key, int page, QString name, QString &t, QStri
 
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
-  label->setToolTip(tip);
+
+  if (! tip.isEmpty())
+    label->setToolTip(tip);
 
   QLineEdit *edit = new QLineEdit(t);
   grid->addWidget(edit, grid->rowCount() - 1, 1);

@@ -19,35 +19,40 @@
  *  USA.
  */
 
-#include "PluginFactory.h"
+#include "MiscPluginFactory.h"
 
-#include <QDir>
 #include <QDebug>
-#include <QFileInfo>
 
-PluginFactory::PluginFactory ()
+MiscPluginFactory::MiscPluginFactory ()
 {
 }
 
-PluginFactory::~PluginFactory ()
+MiscPluginFactory::~MiscPluginFactory ()
 {
-  qDeleteAll(_libs);
+  qDeleteAll(_plugins);
 }
 
-void PluginFactory::getPluginList (QString &path, QStringList &list)
+MiscPlugin * MiscPluginFactory::plugin (QString &path, QString &plugin)
 {
-  list.clear();
-  
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
+  MiscPlugin *plug = _plugins.value(plugin);
+  if (plug)
+    return plug;
+
+  QString file = path;
+  file.append("/lib" + plugin);
+
+  QLibrary *lib = new QLibrary(file);
+  MiscPlugin *(*so)() = 0;
+  so = (MiscPlugin *(*)()) lib->resolve("createMiscPlugin");
+  if (so)
   {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
+    plug = (*so)();
+    _libs.insert(plugin, lib);
+    _plugins.insert(plugin, plug);
   }
-
-  list.sort();
+  else
+    delete lib;
+  
+  return plug;
 }
 

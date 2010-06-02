@@ -24,7 +24,7 @@
 #include "Indicator.h"
 #include "Config.h"
 #include "IndicatorPlugin.h"
-#include "PluginFactory.h"
+#include "IndicatorPluginFactory.h"
 #include "PrefDialog.h"
 
 #include "../pics/ok.xpm"
@@ -208,8 +208,8 @@ void IndicatorPage::newIndicator ()
   QString path;
   config.getData(Config::IndicatorPluginPath, path);
   
-  PluginFactory fac;
-  IndicatorPlugin *ip = fac.getIndicator(path, indicator);
+  IndicatorPluginFactory fac;
+  IndicatorPlugin *ip = fac.plugin(path, indicator);
   if (! ip)
     return;
 
@@ -256,8 +256,8 @@ void IndicatorPage::editIndicator (QString &name)
   QString path;
   config.getData(Config::IndicatorPluginPath, path);
   
-  PluginFactory fac;
-  IndicatorPlugin *ip = fac.getIndicator(path, indicator);
+  IndicatorPluginFactory fac;
+  IndicatorPlugin *ip = fac.plugin(path, indicator);
   if (! ip)
     return;
 

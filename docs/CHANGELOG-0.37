@@ -484,6 +484,22 @@
 
            Fixed bug that did not update the toolbar bar spacing buttons when the preferences was changed.
 
+20100601:  Fixed bug that did not toggle the date plot on indicators.
+
+           Chart and group panel lists now enter key selection and single click selection.
+
+           Added refresh list signals for the chart/group panels after a script finishes.
+
+           Fixed bug running an indicator script from the script panel run menu segfaults.
+
+20100602:  Added new plugin panel to the main app. This will be used for user created plugins that do
+           whatever they want. The initial plugin will be the return of the CSV plugin to import CSV
+           files. Works much like the old app.
+
+           *********************** NOTE ********************************
+           The CSV plugin is not working yet. No bug reports yet please.
+           *************************************************************
+
 
 
 

@@ -30,6 +30,9 @@ class FileButton : public QPushButton
 {
   Q_OBJECT
 
+  signals:
+    void signalFileChanged ();
+
   public:
     FileButton (QWidget *, QString &);
     QString & getFile ();

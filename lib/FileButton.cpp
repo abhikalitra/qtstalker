@@ -57,6 +57,8 @@ void FileButton::fileDialog ()
   file = f;
   
   updateButtonText();
+
+  emit signalFileChanged();
 }
 
 void FileButton::updateButtonText ()

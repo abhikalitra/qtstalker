@@ -32,7 +32,7 @@ ScalePlot::ScalePlot ()
 {
 }
 
-void ScalePlot::draw (PlotData &pd, Scaler &scaler)
+void ScalePlot::draw (PlotData &pd, Scaler &scaler, Indicator &ind)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
@@ -101,7 +101,11 @@ void ScalePlot::draw (PlotData &pd, Scaler &scaler)
   }
 
   // draw the vertical separator line
-  painter.drawLine (x, 0, x, pd.buffer.height() - pd.dateHeight);
+  int height = pd.buffer.height();
+  if (ind.date())
+    height -= pd.dateHeight;
+  
+  painter.drawLine (x, 0, x, height);
 
   painter.end();
 }

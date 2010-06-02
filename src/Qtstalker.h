@@ -47,6 +47,8 @@
 #include "ZoomButtons.h"
 #include "BarLengthButtons.h"
 #include "RecentCharts.h"
+#include "GroupPage.h"
+#include "PluginPage.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -88,6 +90,7 @@ class QtstalkerApp : public QMainWindow
     void initChartNav ();
     void initIndicatorNav ();
     void initScriptNav ();
+    void initPluginNav ();
     QString getWindowCaption ();
     void setSliderStart (int);
 
@@ -139,6 +142,8 @@ class QtstalkerApp : public QMainWindow
     COToolBar *_toolBar2;
     ZoomButtons *_zoomButtons;
     QString _clAsset;
+    GroupPage *_groupNav;
+    PluginPage *_pluginNav;
 };
 
 #endif

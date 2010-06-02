@@ -20,7 +20,7 @@
  */
 
 #include "SCIndicator.h"
-#include "PluginFactory.h"
+#include "IndicatorPluginFactory.h"
 #include "PlotLineBar.h"
 #include "PlotFactory.h"
 #include "PlotLine.h"
@@ -112,7 +112,13 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData
     qDebug() << "SCIndicator::getNew: invalid method" << method << l[2];
     return 1;
   }
-  
+
+  if (! data)
+  {
+    qDebug() << "SCIndicator::getNew: no bars available";
+    return 1;
+  }
+
   PlotLine *out = 0;
   switch (method)
   {
@@ -205,6 +211,12 @@ int SCIndicator::getIndexDate (QStringList &l, QByteArray &ba, BarData *data)
   if (! ok)
   {
     qDebug() << "SCIndicator::getIndexDate: invalid index value" << l[2];
+    return 1;
+  }
+
+  if (! data)
+  {
+    qDebug() << "SCIndicator::getIndexDate: no bars available";
     return 1;
   }
 
@@ -357,8 +369,14 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, Indicator &ind, BarD
     return 1;
   }
 
-  PluginFactory fac;
-  IndicatorPlugin *ip = fac.getIndicator(path, l[2]);
+  if (! data)
+  {
+    qDebug() << "SCIndicator::getPlugin: no bars available";
+    return 1;
+  }
+
+  IndicatorPluginFactory fac;
+  IndicatorPlugin *ip = fac.plugin(path, l[2]);
   if (! ip)
     return 1;
   

@@ -19,35 +19,21 @@
  *  USA.
  */
 
+#ifndef DB_PLUGIN_FACTORY_HPP
+#define DB_PLUGIN_FACTORY_HPP
+
+#include "DBPlugin.h"
 #include "PluginFactory.h"
 
-#include <QDir>
-#include <QDebug>
-#include <QFileInfo>
-
-PluginFactory::PluginFactory ()
+class DBPluginFactory : public PluginFactory
 {
-}
+  public:
+    DBPluginFactory ();
+    ~DBPluginFactory ();
+    DBPlugin * plugin (QString &path, QString &plugin);
+    
+  protected:
+    QHash<QString, DBPlugin *> _plugins;
+};
 
-PluginFactory::~PluginFactory ()
-{
-  qDeleteAll(_libs);
-}
-
-void PluginFactory::getPluginList (QString &path, QStringList &list)
-{
-  list.clear();
-  
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
-  }
-
-  list.sort();
-}
-
+#endif

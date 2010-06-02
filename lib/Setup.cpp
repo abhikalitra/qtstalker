@@ -24,7 +24,8 @@
 #include "Config.h"
 #include "IndicatorDataBase.h"
 #include "Indicator.h"
-#include "PluginFactory.h"
+#include "IndicatorPluginFactory.h"
+#include "DBPluginFactory.h"
 #include "IndicatorPlugin.h"
 #include "DBPlugin.h"
 #include "ExchangeDataBase.h"
@@ -79,10 +80,10 @@ void Setup::setupDefaultIndicators ()
   config.getData(Config::IndicatorPluginPath, path);
 
   // create the Bars indicator
-  PluginFactory fac;
+  IndicatorPluginFactory fac;
   IndicatorDataBase db;
   QString s = "BARS";
-  IndicatorPlugin *ip = fac.getIndicator(path, s);
+  IndicatorPlugin *ip = fac.plugin(path, s);
   if (! ip)
     qDebug() << "Setup::setupDefaultIndicators: BARS error";
   else
@@ -98,7 +99,7 @@ void Setup::setupDefaultIndicators ()
 
   // lets add the Volume indicator
   s = "VOL";
-  ip = fac.getIndicator(path, s);
+  ip = fac.plugin(path, s);
   if (! ip)
     qDebug() << "Setup::setupDefaultIndicators: VOL error";
   else
@@ -135,11 +136,11 @@ void Setup::setupDefaultSymbol ()
   if (s.toInt())
     return;
 
-  PluginFactory fac;
+  DBPluginFactory fac;
   QString path;
   s = "Stock";
   config.getData(Config::DBPluginPath, path);
-  DBPlugin *plug = fac.getDB(path, s);
+  DBPlugin *plug = fac.plugin(path, s);
   if (! plug)
   {
     qDebug() << "Setup::setupDefaultSymbol: plugin error";

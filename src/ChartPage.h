@@ -26,7 +26,6 @@
 #include <QWidget>
 #include <QMenu>
 #include <QLineEdit>
-#include <QListWidget>
 #include <QKeyEvent>
 #include <QPoint>
 #include <QComboBox>
@@ -36,6 +35,7 @@
 
 #include "BarData.h"
 #include "Group.h"
+#include "ListWidget.h"
 
 class ChartPage : public QWidget
 {
@@ -73,7 +73,7 @@ class ChartPage : public QWidget
   protected:
     QString searchString;
     QString searchExchange;
-    QListWidget *nav;
+    ListWidget *nav;
     QMenu *menu;
     Group symbols;
     QHash<int, QAction *> actions;

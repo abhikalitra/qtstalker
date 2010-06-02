@@ -59,6 +59,12 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, Ba
     return rc;
   }
 
+  if (! data)
+  {
+    qDebug() << "SCChartObject::calculate: no bars available";
+    return rc;
+  }
+
   co->setSymbol(data->getSymbol());
   co->setExchange(data->getExchange());
   co->setIndicator(ind.name());

@@ -400,6 +400,13 @@ void Config::init (QString session)
     setData(DBPluginPath, d);
   }
 
+  getData(MiscPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/misc";
+    setData(MiscPluginPath, d);
+  }
+
   getData(ExchangeFileSize, d);
   if (d.isEmpty())
   {

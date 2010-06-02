@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,35 +19,34 @@
  *  USA.
  */
 
-#include "PluginFactory.h"
+#include "CSV.h"
 
-#include <QDir>
-#include <QDebug>
-#include <QFileInfo>
+CSV::CSV ()
+{
+  _name = "CSV";
+  cancelFlag = FALSE;
 
-PluginFactory::PluginFactory ()
+  dialog = new CSVDialog;
+}
+
+CSV::~CSV ()
 {
 }
 
-PluginFactory::~PluginFactory ()
+int CSV::configureDialog ()
 {
-  qDeleteAll(_libs);
+  dialog->show();
+  return 0;
 }
 
-void PluginFactory::getPluginList (QString &path, QStringList &list)
-{
-  list.clear();
-  
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
-  }
+//**********************************************************
+//**********************************************************
+//**********************************************************
 
-  list.sort();
+MiscPlugin * createMiscPlugin ()
+{
+  CSV *o = new CSV;
+  return ((MiscPlugin *) o);
 }
+
 

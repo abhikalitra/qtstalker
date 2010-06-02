@@ -255,5 +255,3 @@ void BaseConfig::setData (int name, QStringList &l)
   QString s = l.join(",");
   setData(name, s);
 }
-
-

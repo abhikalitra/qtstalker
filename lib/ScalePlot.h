@@ -33,7 +33,7 @@ class ScalePlot
 {
   public:
     ScalePlot ();
-    void draw (PlotData &, Scaler &);
+    void draw (PlotData &, Scaler &, Indicator &);
     void drawPoints (PlotData &, Scaler &, Indicator &);
     void points (PlotData &, QList<Setting> &, Indicator &);
 };

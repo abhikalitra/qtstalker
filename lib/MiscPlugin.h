@@ -19,35 +19,30 @@
  *  USA.
  */
 
-#include "PluginFactory.h"
+#ifndef MISC_PLUGIN_HPP
+#define MISC_PLUGIN_HPP
 
-#include <QDir>
-#include <QDebug>
-#include <QFileInfo>
+#include <QObject>
+#include <QString>
 
-PluginFactory::PluginFactory ()
+class MiscPlugin : public QObject
 {
-}
-
-PluginFactory::~PluginFactory ()
-{
-  qDeleteAll(_libs);
-}
-
-void PluginFactory::getPluginList (QString &path, QStringList &list)
-{
-  list.clear();
+  Q_OBJECT
   
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
-  }
+  signals:
+    void signalMessage (QString);
 
-  list.sort();
-}
+  public:
+    MiscPlugin ();
+    virtual ~MiscPlugin ();
+    virtual int configureDialog ();
 
+    QString & name ();
+    QString & description ();
+
+  protected:
+    QString _name;
+    QString _description;
+};
+
+#endif

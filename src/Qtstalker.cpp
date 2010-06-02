@@ -47,9 +47,10 @@
 #include "Setup.h"
 #include "Config.h"
 #include "IndicatorPage.h"
-#include "GroupPage.h"
 #include "PluginFactory.h"
+#include "DBPluginFactory.h"
 #include "IndicatorPlugin.h"
+#include "IndicatorPluginFactory.h"
 #include "DBPlugin.h"
 #include "GroupDataBase.h"
 #include "IndicatorDataBase.h"
@@ -68,6 +69,7 @@
 #include "../pics/qtstalker.xpm"
 #include "../pics/help.xpm"
 #include "../pics/script.xpm"
+#include "../pics/plugin.xpm"
 
 QtstalkerApp::QtstalkerApp(QString session, QString asset)
 {
@@ -97,10 +99,15 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   config.getData(Config::IndicatorPluginPath, path);
   pfac.getPluginList(path, l);
   config.setData(Config::IndicatorPluginList, l);
+  
   config.getData(Config::DBPluginPath, path);
   pfac.getPluginList(path, l);
   config.setData(Config::DBPluginList, l);
   
+  config.getData(Config::MiscPluginPath, path);
+  pfac.getPluginList(path, l);
+  config.setData(Config::MiscPluginList, l);
+
   GroupDataBase gdb;
   gdb.init();
 
@@ -193,6 +200,7 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   initGroupNav();
   initIndicatorNav();
   initScriptNav();
+  initPluginNav();
 
   // setup the initial indicators
   idb.getActiveIndicatorList(l);
@@ -514,10 +522,10 @@ void QtstalkerApp::loadChart (BarData *symbol)
   DBPlugin qdb;
   qdb.getIndexData(&recordList);
 
-  PluginFactory fac;
+  DBPluginFactory fac;
   QString path;
   config.getData(Config::DBPluginPath, path);
-  DBPlugin *qdb2 = fac.getDB(path, recordList.getPlugin());
+  DBPlugin *qdb2 = fac.plugin(path, recordList.getPlugin());
   if (! qdb2)
   {
     qDebug() << "QtStalkerApp::loadChart: no DB plugin";
@@ -558,10 +566,10 @@ void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
   QString path;
   config.getData(Config::IndicatorPluginPath, path);
   
-  PluginFactory fac;
+  IndicatorPluginFactory fac;
   QString s;
   s = i.indicator();
-  IndicatorPlugin *ip = fac.getIndicator(path, s);
+  IndicatorPlugin *ip = fac.plugin(path, s);
   if (! ip)
     return;
 
@@ -741,12 +749,12 @@ void QtstalkerApp::initChartNav ()
 // create the group panel
 void QtstalkerApp::initGroupNav ()
 {
-  GroupPage *gp = new GroupPage(_baseWidget);
-  connect(gp, SIGNAL(fileSelected(BarData *)), this, SLOT(loadChart(BarData *)));
-  connect(_chartNav, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
-  connect(gp, SIGNAL(addRecentChart(BarData *)), _recentCharts, SLOT(addRecentChart(BarData *)));
-  connect(gp, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
-  _navTab->addTab(gp, QIcon(dirclosed), QString());
+  _groupNav = new GroupPage(_baseWidget);
+  connect(_groupNav, SIGNAL(fileSelected(BarData *)), this, SLOT(loadChart(BarData *)));
+  connect(_chartNav, SIGNAL(signalAddToGroup()), _groupNav, SLOT(updateGroups()));
+  connect(_groupNav, SIGNAL(addRecentChart(BarData *)), _recentCharts, SLOT(addRecentChart(BarData *)));
+  connect(_groupNav, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
+  _navTab->addTab(_groupNav, QIcon(dirclosed), QString());
   _navTab->setTabToolTip(1, tr("Groups"));
 }
 
@@ -769,8 +777,19 @@ void QtstalkerApp::initScriptNav ()
 {
   _scriptPage = new ScriptPage(_baseWidget);
   connect(_scriptPage, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
+  connect(_scriptPage, SIGNAL(signalScriptDone()), _chartNav, SLOT(updateList()));
+  connect(_scriptPage, SIGNAL(signalScriptDone()), _groupNav, SLOT(updateList()));
   _navTab->addTab(_scriptPage, QIcon(script_xpm), QString());
   _navTab->setTabToolTip(3, tr("Scripts"));
+}
+
+// create the plugin panel
+void QtstalkerApp::initPluginNav ()
+{
+  _pluginNav = new PluginPage(_baseWidget);
+  connect(_pluginNav, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
+  _navTab->addTab(_pluginNav, QIcon(plugin_xpm), QString());
+  _navTab->setTabToolTip(4, tr("Plugins"));
 }
 
 // draw the charts, but only the visible ones to save time

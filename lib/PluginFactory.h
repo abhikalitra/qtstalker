@@ -22,9 +22,6 @@
 #ifndef PLUGIN_FACTORY_HPP
 #define PLUGIN_FACTORY_HPP
 
-#include "IndicatorPlugin.h"
-#include "DBPlugin.h"
-
 #include <QString>
 #include <QStringList>
 #include <QHash>
@@ -36,15 +33,9 @@ class PluginFactory
     PluginFactory ();
     ~PluginFactory ();
     void getPluginList (QString &path, QStringList &list);
-    IndicatorPlugin * getIndicator (QString &path, QString &indicator);
-    IndicatorPlugin * getNotIndicatorPlugin (QString &indicator);
-    DBPlugin * getDB (QString &path, QString &db);
     
   protected:
-    QStringList notPluginList;
-    QHash<QString, QLibrary *> libs;
-    QHash<QString, IndicatorPlugin *> indicatorPlugins;
-    QHash<QString, DBPlugin *> dbPlugins;
+    QHash<QString, QLibrary *> _libs;
 };
 
 #endif

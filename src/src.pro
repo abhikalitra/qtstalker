@@ -21,6 +21,8 @@ HEADERS += BarLengthButtons.h
 HEADERS += RefreshAction.h
 HEADERS += RecentCharts.h
 HEADERS += ScriptLaunchButton.h
+HEADERS += ListWidget.h
+HEADERS += PluginPage.h
 
 
 SOURCES += Qtstalker.cpp
@@ -40,6 +42,8 @@ SOURCES += BarLengthButtons.cpp
 SOURCES += RefreshAction.cpp
 SOURCES += RecentCharts.cpp
 SOURCES += ScriptLaunchButton.cpp
+SOURCES += ListWidget.cpp
+SOURCES += PluginPage.cpp
 
 
 TARGET = qtstalker

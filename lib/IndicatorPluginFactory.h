@@ -19,35 +19,25 @@
  *  USA.
  */
 
+#ifndef INDICATOR_PLUGIN_FACTORY_HPP
+#define INDICATOR_PLUGIN_FACTORY_HPP
+
+#include "IndicatorPlugin.h"
 #include "PluginFactory.h"
 
-#include <QDir>
-#include <QDebug>
-#include <QFileInfo>
+#include <QStringList>
 
-PluginFactory::PluginFactory ()
+class IndicatorPluginFactory : public PluginFactory
 {
-}
+  public:
+    IndicatorPluginFactory ();
+    ~IndicatorPluginFactory ();
+    IndicatorPlugin * plugin (QString &path, QString &plugin);
+    IndicatorPlugin * notIndicatorPlugin (QString &plugin);
+    
+  protected:
+    QStringList _notPluginList;
+    QHash<QString, IndicatorPlugin *> _plugins;
+};
 
-PluginFactory::~PluginFactory ()
-{
-  qDeleteAll(_libs);
-}
-
-void PluginFactory::getPluginList (QString &path, QStringList &list)
-{
-  list.clear();
-  
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
-  }
-
-  list.sort();
-}
-
+#endif

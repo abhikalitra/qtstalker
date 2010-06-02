@@ -79,6 +79,10 @@ HEADERS += WMA.h
 HEADERS += Strip.h
 HEADERS += PlotDrawInfo.h
 HEADERS += SCChartObject.h
+HEADERS += DBPluginFactory.h
+HEADERS += IndicatorPluginFactory.h
+HEADERS += MiscPluginFactory.h
+HEADERS += MiscPlugin.h
 
 
 SOURCES += Setting.cpp
@@ -154,6 +158,10 @@ SOURCES += WMA.cpp
 SOURCES += Strip.cpp
 SOURCES += PlotDrawInfo.cpp
 SOURCES += SCChartObject.cpp
+SOURCES += DBPluginFactory.cpp
+SOURCES += IndicatorPluginFactory.cpp
+SOURCES += MiscPluginFactory.cpp
+SOURCES += MiscPlugin.cpp
 
 
 

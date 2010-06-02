@@ -26,7 +26,7 @@
 #include <QString>
 #include <QByteArray>
 
-#include "PluginFactory.h"
+#include "DBPluginFactory.h"
 #include "Indicator.h"
 
 class SCQuote
@@ -36,7 +36,7 @@ class SCQuote
     int calculate (QStringList &, QByteArray &, QString &, Indicator &);
     
   protected:
-    PluginFactory fac;
+    DBPluginFactory fac;
 };
 
 #endif

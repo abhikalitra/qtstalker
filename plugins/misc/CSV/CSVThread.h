@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,35 +19,40 @@
  *  USA.
  */
 
-#include "PluginFactory.h"
+#ifndef CSV_THREAD_HPP
+#define CSV_THREAD_HPP
 
-#include <QDir>
-#include <QDebug>
-#include <QFileInfo>
+#include <QThread>
 
-PluginFactory::PluginFactory ()
+#include "Setting.h"
+
+class CSVThread : public QThread
 {
-}
+  Q_OBJECT
 
-PluginFactory::~PluginFactory ()
-{
-  qDeleteAll(_libs);
-}
+  signals:
+    void signalMessage (QString);
+    
+  public:
+    enum Field
+    {
+      Exchange,
+      Symbol,
+      Open,
+      High,
+      Low,
+      Close,
+      Volume,
+      OI,
+      Ignore,
+      Name
+    };
 
-void PluginFactory::getPluginList (QString &path, QStringList &list)
-{
-  list.clear();
-  
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
-  }
+    CSVThread (Setting *rule);
+    void run ();
 
-  list.sort();
-}
+  private:
+    Setting *_rule;
+};
 
+#endif
