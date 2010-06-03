@@ -89,7 +89,7 @@ void PluginPage::configure ()
 
 void PluginPage::configure (QString &name)
 {
-  MiscPlugin *plug = _fac.plugin(_pluginPath, name);
+  MiscPlugin *plug = _fac.plugin(name);
   if (! plug)
     return;
 
@@ -118,12 +118,10 @@ void PluginPage::updateList ()
   QStringList l;
   config.getData(Config::MiscPluginList, l);
 
-  config.getData(Config::MiscPluginPath, _pluginPath);
-
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    MiscPlugin *plug = _fac.plugin(_pluginPath, l[loop]);
+    MiscPlugin *plug = _fac.plugin(l[loop]);
     if (! plug)
       return;
 

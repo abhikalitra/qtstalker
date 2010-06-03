@@ -22,7 +22,8 @@
 #include "CSVDialog.h"
 #include "CSVDataBase.h"
 #include "CSVRuleDialog.h"
-//#include "CSVProcess.h"
+#include "CSVThread.h"
+#include "CSVRule.h"
 
 #include <QMessageBox>
 #include <QLayout>
@@ -154,5 +155,14 @@ void CSVDialog::cancelButton ()
 
 void CSVDialog::run ()
 {
+  CSVRule rule;
+  rule.setName(_rules->currentText());
+  
+  CSVDataBase db;
+  db.getRule(rule);
+
+  CSVThread thread(&rule);
+  connect(&thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
+  thread.run();
 }
 

@@ -20,11 +20,14 @@
  */
 
 #include "MiscPluginFactory.h"
+#include "Config.h"
 
 #include <QDebug>
 
 MiscPluginFactory::MiscPluginFactory ()
 {
+  Config config;
+  config.getData(Config::MiscPluginPath, _path);
 }
 
 MiscPluginFactory::~MiscPluginFactory ()
@@ -32,13 +35,13 @@ MiscPluginFactory::~MiscPluginFactory ()
   qDeleteAll(_plugins);
 }
 
-MiscPlugin * MiscPluginFactory::plugin (QString &path, QString &plugin)
+MiscPlugin * MiscPluginFactory::plugin (QString &plugin)
 {
   MiscPlugin *plug = _plugins.value(plugin);
   if (plug)
     return plug;
 
-  QString file = path;
+  QString file = _path;
   file.append("/lib" + plugin);
 
   QLibrary *lib = new QLibrary(file);
@@ -54,5 +57,14 @@ MiscPlugin * MiscPluginFactory::plugin (QString &path, QString &plugin)
     delete lib;
   
   return plug;
+}
+
+void MiscPluginFactory::setPluginList ()
+{
+  QStringList l;
+  getPluginList(_path, l);
+
+  Config config;
+  config.setData(Config::MiscPluginList, l);
 }
 

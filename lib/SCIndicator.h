@@ -44,13 +44,13 @@ class SCIndicator
     };
     
     SCIndicator ();
-    int calculate (QStringList &, QByteArray &, Indicator &, BarData *, QString &);
+    int calculate (QStringList &, QByteArray &, Indicator &, BarData *);
     int getIndex (QStringList &, QByteArray &, Indicator &);
     int getIndexDate (QStringList &, QByteArray &, BarData *);
     int setIndex (QStringList &, QByteArray &, Indicator &);
     int getRange (QStringList &, QByteArray &, Indicator &);
     int setColor (QStringList &, QByteArray &, Indicator &);
-    int getPlugin (QStringList &, QByteArray &, Indicator &, BarData *, QString &);
+    int getPlugin (QStringList &, QByteArray &, Indicator &, BarData *);
     int getNew (QStringList &, QByteArray &, Indicator &, BarData *);
 
   protected:

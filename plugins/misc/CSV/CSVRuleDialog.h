@@ -38,10 +38,10 @@ class CSVRuleDialog : public QDialog
   
   public:
     CSVRuleDialog (QString &);
-    ~CSVRuleDialog ();
     void createGUI ();
     void loadRule ();
     void saveRule ();
+    void clear ();
     
   public slots:
     void deleteRuleField (QListWidgetItem *);
@@ -67,6 +67,7 @@ class CSVRuleDialog : public QDialog
     QComboBox *_delimeter;
     FileButton *_file;
     QCheckBox *_fileSymbol;
+    QComboBox *_exchange;
     bool _saveFlag;
     QString _name;
 };

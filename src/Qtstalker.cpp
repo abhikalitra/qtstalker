@@ -49,9 +49,10 @@
 #include "IndicatorPage.h"
 #include "PluginFactory.h"
 #include "DBPluginFactory.h"
+#include "DBPlugin.h"
 #include "IndicatorPlugin.h"
 #include "IndicatorPluginFactory.h"
-#include "DBPlugin.h"
+#include "MiscPluginFactory.h"
 #include "GroupDataBase.h"
 #include "IndicatorDataBase.h"
 #include "CODataBase.h"
@@ -93,20 +94,14 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   setup.setupFutures();
 
   // get complete plugin inventory
-  PluginFactory pfac;
-  QStringList l;
-  QString path;
-  config.getData(Config::IndicatorPluginPath, path);
-  pfac.getPluginList(path, l);
-  config.setData(Config::IndicatorPluginList, l);
+  IndicatorPluginFactory ifac;
+  ifac.setPluginList();
   
-  config.getData(Config::DBPluginPath, path);
-  pfac.getPluginList(path, l);
-  config.setData(Config::DBPluginList, l);
-  
-  config.getData(Config::MiscPluginPath, path);
-  pfac.getPluginList(path, l);
-  config.setData(Config::MiscPluginList, l);
+  DBPluginFactory dbfac;
+  dbfac.setPluginList();
+
+  MiscPluginFactory mfac;
+  mfac.setPluginList();
 
   GroupDataBase gdb;
   gdb.init();
@@ -203,6 +198,7 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   initPluginNav();
 
   // setup the initial indicators
+  QStringList l;
   idb.getActiveIndicatorList(l);
   for (loop = 0; loop < l.count(); loop++)
   {
@@ -523,9 +519,7 @@ void QtstalkerApp::loadChart (BarData *symbol)
   qdb.getIndexData(&recordList);
 
   DBPluginFactory fac;
-  QString path;
-  config.getData(Config::DBPluginPath, path);
-  DBPlugin *qdb2 = fac.plugin(path, recordList.getPlugin());
+  DBPlugin *qdb2 = fac.plugin(recordList.getPlugin());
   if (! qdb2)
   {
     qDebug() << "QtStalkerApp::loadChart: no DB plugin";
@@ -562,14 +556,10 @@ void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
   i.setName(d);
   db.getIndicator(i);
 
-  Config config;
-  QString path;
-  config.getData(Config::IndicatorPluginPath, path);
-  
   IndicatorPluginFactory fac;
   QString s;
   s = i.indicator();
-  IndicatorPlugin *ip = fac.plugin(path, s);
+  IndicatorPlugin *ip = fac.plugin(s);
   if (! ip)
     return;
 

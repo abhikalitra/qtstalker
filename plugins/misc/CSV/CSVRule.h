@@ -19,52 +19,45 @@
  *  USA.
  */
 
-#ifndef PLUGIN_PAGE_HPP
-#define PLUGIN_PAGE_HPP
+#ifndef CSV_RULE_HPP
+#define CSV_RULE_HPP
 
 #include <QString>
-#include <QWidget>
-#include <QMenu>
-#include <QListWidget>
-#include <QList>
-#include <QAction>
-#include <QToolButton>
-#include <QHash>
-#include <QToolBar>
 
-#include "MiscPluginFactory.h"
-
-class PluginPage : public QWidget
+class CSVRule
 {
-  Q_OBJECT
-
-  signals:
-    void signalMessage (QString);
-
   public:
-    enum Action
-    {
-      Configure
-    };
+    CSVRule ();
 
-    PluginPage (QWidget *);
-    void createActions ();
-    void createButtonMenu (QToolBar *);
+    void setName (QString);
+    QString & name ();
+    
+    void setExchange (QString);
+    QString & exchange ();
 
-  public slots:
-    void doubleClick (QListWidgetItem *);
-    void rightClick (const QPoint &);
-    void configure ();
-    void configure (QString &);
-    void updateList ();
-    void listStatus ();
+    void setType (QString);
+    QString & type ();
+
+    void setDelimeter (QString);
+    QString & delimeter ();
+
+    void setFile (QString);
+    QString & file ();
+
+    void setRule (QString);
+    QString & rule ();
+
+    void setFileSymbol (int);
+    int fileSymbol ();
 
   protected:
-    QListWidget *_list;
-    QMenu *_menu;
-    QHash<int, QAction *> _actions;
-    MiscPluginFactory _fac;
+    QString _name;
+    QString _exchange;
+    QString _type;
+    QString _delimeter;
+    QString _file;
+    QString _rule;
+    int _fileSymbol;
 };
 
 #endif
-

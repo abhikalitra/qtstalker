@@ -33,7 +33,7 @@ class SCQuote
 {
   public:
     SCQuote ();
-    int calculate (QStringList &, QByteArray &, QString &, Indicator &);
+    int calculate (QStringList &, QByteArray &, Indicator &);
     
   protected:
     DBPluginFactory fac;

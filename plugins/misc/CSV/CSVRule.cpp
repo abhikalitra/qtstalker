@@ -19,21 +19,80 @@
  *  USA.
  */
 
-#ifndef EXCHANGE_DATA_BASE_HPP
-#define EXCHANGE_DATA_BASE_HPP
+#include "CSVRule.h"
 
-#include <QString>
-#include <QStringList>
-
-#include "DataBase.h"
-
-class ExchangeDataBase : public DataBase
+CSVRule::CSVRule ()
 {
-  public:
-    ExchangeDataBase ();
-    int verifyExchangeName (QString &);
-    int createExchanges ();
-    void getExchanges (QStringList &);
-};
+  _fileSymbol = 0;
+}
 
-#endif
+void CSVRule::setName (QString d)
+{
+  _name = d;
+}
+
+QString & CSVRule::name ()
+{
+  return _name;
+}
+
+void CSVRule::setExchange (QString d)
+{
+  _exchange = d;
+}
+
+QString & CSVRule::exchange ()
+{
+  return _exchange;
+}
+
+void CSVRule::setType (QString d)
+{
+  _type = d;
+}
+
+QString & CSVRule::type ()
+{
+  return _type;
+}
+
+void CSVRule::setDelimeter (QString d)
+{
+  _delimeter = d;
+}
+
+QString & CSVRule::delimeter ()
+{
+  return _delimeter;
+}
+
+void CSVRule::setFile (QString d)
+{
+  _file = d;
+}
+
+QString & CSVRule::file ()
+{
+  return _file;
+}
+
+void CSVRule::setRule (QString d)
+{
+  _rule = d;
+}
+
+QString & CSVRule::rule ()
+{
+  return _rule;
+}
+
+void CSVRule::setFileSymbol (int d)
+{
+  _fileSymbol = d;
+}
+
+int CSVRule::fileSymbol ()
+{
+  return _fileSymbol;
+}
+

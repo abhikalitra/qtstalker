@@ -32,10 +32,11 @@ class IndicatorPluginFactory : public PluginFactory
   public:
     IndicatorPluginFactory ();
     ~IndicatorPluginFactory ();
-    IndicatorPlugin * plugin (QString &path, QString &plugin);
-    IndicatorPlugin * notIndicatorPlugin (QString &plugin);
+    IndicatorPlugin * plugin (QString &plugin);
+    void setPluginList ();
     
   protected:
+    QString _path;
     QStringList _notPluginList;
     QHash<QString, IndicatorPlugin *> _plugins;
 };

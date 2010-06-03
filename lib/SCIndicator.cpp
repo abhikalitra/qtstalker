@@ -32,7 +32,7 @@ SCIndicator::SCIndicator ()
   methodList << "NEW" << "GET_INDEX" << "GET_INDEX_DATE" << "GET_RANGE" << "PLUGIN" << "SET_INDEX" << "SET_COLOR";
 }
 
-int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data, QString &path)
+int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data)
 {
   // format = INDICATOR,PLUGIN,*
   int rc = 1;
@@ -60,7 +60,7 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarD
       rc = getRange(l, ba, ind);
       break;
     case PLUGIN:
-      rc = getPlugin(l, ba, ind, data, path);
+      rc = getPlugin(l, ba, ind, data);
       break;
     case SET_INDEX:
       rc = setIndex(l, ba, ind);
@@ -358,7 +358,7 @@ int SCIndicator::setColor (QStringList &l, QByteArray &ba, Indicator &ind)
   return 0;
 }
 
-int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data, QString &path)
+int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data)
 {
   // INDICATOR,PLUGIN,<PLUGIN>,*
   //     0       1       2
@@ -376,7 +376,7 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, Indicator &ind, BarD
   }
 
   IndicatorPluginFactory fac;
-  IndicatorPlugin *ip = fac.plugin(path, l[2]);
+  IndicatorPlugin *ip = fac.plugin(l[2]);
   if (! ip)
     return 1;
   

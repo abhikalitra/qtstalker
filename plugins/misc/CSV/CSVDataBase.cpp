@@ -39,6 +39,7 @@ void CSVDataBase::init ()
   s.append(", delimeter TEXT");
   s.append(", rule TEXT");
   s.append(", file TEXT");
+  s.append(", exchange TEXT");
   s.append(", fileSymbol INT");
   s.append(")");
   q.exec(s);
@@ -63,87 +64,57 @@ void CSVDataBase::getRules (QStringList &l)
     l.append(q.value(0).toString());
 }
 
-void CSVDataBase::getRule (Setting &rule)
+int CSVDataBase::getRule (CSVRule &rule)
 {
-  QString k = "Name";
-  QString d;
-  rule.getData(k, d);
-  if (d.isEmpty())
-    return;
+  QString name = rule.name();
+  if (name.isEmpty())
+    return 1;
   
   QSqlQuery q(QSqlDatabase::database(dbName));
-  k = "SELECT plugin,delimeter,rule,file,fileSymbol FROM CSVPlugin";
+  QString k = "SELECT plugin,delimeter,rule,file,exchange,fileSymbol FROM CSVPlugin";
+  k.append(" WHERE name='" + name + "'");
   q.exec(k);
   if (q.lastError().isValid())
   {
     qDebug() << "CSVDataBase::getRule" << q.lastError().text();
-    return;
+    return 1;
   }
 
   if (! q.next())
-    return;
+    return 1;
   
   int pos = 0;
 
-  k = "Plugin";
-  d = q.value(pos++).toString();
-  rule.setData(k, d);
-    
-  k = "Delimeter";
-  d = q.value(pos++).toString();
-  rule.setData(k, d);
+  rule.setType(q.value(pos++).toString());
+  rule.setDelimeter(q.value(pos++).toString());
+  rule.setRule(q.value(pos++).toString());
+  rule.setFile(q.value(pos++).toString());
+  rule.setExchange(q.value(pos++).toString());
+  rule.setFileSymbol(q.value(pos++).toInt());
 
-  k = "Rule";
-  d = q.value(pos++).toString();
-  rule.setData(k, d);
-
-  k = "File";
-  d = q.value(pos++).toString();
-  rule.setData(k, d);
-
-  k = "FileSymbol";
-  d = q.value(pos++).toString();
-  rule.setData(k, d);
+  return 0;
 }
 
-void CSVDataBase::setRule (Setting &rule)
+void CSVDataBase::setRule (CSVRule &rule)
 {
-  QString k = "Name";
-  QString d;
-  rule.getData(k, d);
-  if (d.isEmpty())
+  QString name = rule.name();
+  if (name.isEmpty())
   {
-    qDebug() << "CSVDataBase::setRuke: no name";
+    qDebug() << "CSVDataBase::setRule: no name";
     return;
   }
   
   transaction();
   
   QSqlQuery q(QSqlDatabase::database(dbName));
-  QString s = "INSERT OR REPLACE INTO CSVPlugin (name,plugin,delimeter,rule,file,fileSymbol) VALUES (";
-
-  s.append("'" + d + "'"); // name
-
-  k = "Plugin";
-  rule.getData(k, d);
-  s.append(",'" + d + "'");
-  
-  k = "Delimeter";
-  rule.getData(k, d);
-  s.append(",'" + d + "'");
-
-  k = "Rule";
-  rule.getData(k, d);
-  s.append(",'" + d + "'");
-
-  k = "File";
-  rule.getData(k, d);
-  s.append(",'" + d + "'");
-
-  k = "FileSymbol";
-  rule.getData(k, d);
-  s.append("," + d);
-
+  QString s = "INSERT OR REPLACE INTO CSVPlugin (name,plugin,delimeter,rule,file,exchange,fileSymbol) VALUES (";
+  s.append("'" + name + "'"); // name
+  s.append(",'" + rule.type() + "'");
+  s.append(",'" + rule.delimeter() + "'");
+  s.append(",'" + rule.rule() + "'");
+  s.append(",'" + rule.file() + "'");
+  s.append(",'" + rule.exchange() + "'");
+  s.append("," + QString::number(rule.fileSymbol()));
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

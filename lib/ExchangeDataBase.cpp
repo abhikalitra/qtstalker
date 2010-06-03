@@ -114,4 +114,18 @@ int ExchangeDataBase::createExchanges ()
   return 0;
 }
 
+void ExchangeDataBase::getExchanges (QStringList &l)
+{
+  l.clear();
+  
+  QSqlQuery q(QSqlDatabase::database(dbName));
+  QString s = "SELECT code FROM exchangeIndex ORDER BY code ASC";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "ExchangeDataBase::getExchanges: " << q.lastError().text();
+
+  while (q.next())
+    l.append(q.value(0).toString());
+}
+
 

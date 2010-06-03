@@ -28,9 +28,9 @@ SCQuote::SCQuote ()
 {
 }
 
-int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path, Indicator &ind)
+int SCQuote::calculate (QStringList &l, QByteArray &ba, Indicator &ind)
 {
-  // format = QUOTE,PLUGIN,*
+  // QUOTE,PLUGIN,*
   // we are only concerned with the first 2 parms, the plugin will check the rest
   
   ba.clear();
@@ -42,7 +42,7 @@ int SCQuote::calculate (QStringList &l, QByteArray &ba, QString &path, Indicator
     return 1;
   }
   
-  DBPlugin *plug = fac.plugin(path, l[1]);
+  DBPlugin *plug = fac.plugin(l[1]);
   if (! plug)
   {
     qDebug() << "SCQuote::calculate: plugin error" << l[1];

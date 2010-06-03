@@ -20,11 +20,14 @@
  */
 
 #include "IndicatorPluginFactory.h"
+#include "Config.h"
 
 #include <QDebug>
 
 IndicatorPluginFactory::IndicatorPluginFactory ()
 {
+  Config config;
+  config.getData(Config::IndicatorPluginPath, _path);
 }
 
 IndicatorPluginFactory::~IndicatorPluginFactory ()
@@ -32,13 +35,13 @@ IndicatorPluginFactory::~IndicatorPluginFactory ()
   qDeleteAll(_plugins);
 }
 
-IndicatorPlugin * IndicatorPluginFactory::plugin (QString &path, QString &plugin)
+IndicatorPlugin * IndicatorPluginFactory::plugin (QString &plugin)
 {
   IndicatorPlugin *plug = _plugins.value(plugin);
   if (plug)
     return plug;
 
-  QString file = path;
+  QString file = _path;
   file.append("/lib" + plugin);
 
   QLibrary *lib = new QLibrary(file);
@@ -54,5 +57,14 @@ IndicatorPlugin * IndicatorPluginFactory::plugin (QString &path, QString &plugin
     delete lib;
   
   return plug;
+}
+
+void IndicatorPluginFactory::setPluginList ()
+{
+  QStringList l;
+  getPluginList(_path, l);
+
+  Config config;
+  config.setData(Config::IndicatorPluginList, l);
 }
 

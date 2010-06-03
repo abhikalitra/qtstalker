@@ -22,82 +22,30 @@
 #include "CSVThread.h"
 #include "DBPluginFactory.h"
 #include "DBPlugin.h"
-#include "Config.h"
 #include "Indicator.h"
 
-#include <QString>
-#include <QStringList>
 #include <QFile>
 #include <QTextStream>
 #include <QFileInfo>
-#include <QDateTime>
 
-CSVThread::CSVThread (Setting *rule)
+CSVThread::CSVThread (CSVRule *rule)
 {
   _rule = rule;
+  _fileSymbol = 0;
+  _lineCount = 0;
+
+  _fields << "Exchange" << "Symbol" << "Open" << "High" << "Low" << "Close";
+  _fields << "Volume" << "OI" << "Ignore" << "Name";
 }
 
 void CSVThread::run ()
 {
-  if (! _rule)
-  {
-    emit signalMessage(QString("Rule missing"));
+  // verify rule parms
+  if (verifyRule())
     return;
-  }
 
-  QString k = "Plugin";
-  QString type;
-  _rule->getData(k, type);
-  if (type.isEmpty())
-  {
-    emit signalMessage(QString("Type missing"));
-    return;
-  }
-
-  k = "Delimeter";
-  QString delimeter;
-  _rule->getData(k, delimeter);
-  if (delimeter.isEmpty())
-  {
-    emit signalMessage(QString("Delimeter missing"));
-    return;
-  }
-
-  k = "File";
-  QString file;
-  _rule->getData(k, file);
-  if (file.isEmpty())
-  {
-    emit signalMessage(QString("File missing"));
-    return;
-  }
-
-  k = "FileSymbol";
-  QString d;
-  _rule->getData(k, d);
-  if (d.isEmpty())
-  {
-    emit signalMessage(QString("Use filename as symbol missing"));
-    return;
-  }
-  int fileSymbol = d.toInt();
-
-  k = "Rule";
-  _rule->getData(k, d);
-  if (d.isEmpty())
-  {
-    emit signalMessage(QString("Rule missing"));
-    return;
-  }
-
-  QStringList fieldList = d.split(",");
-  if (! fieldList.count())
-  {
-    emit signalMessage(QString("Rule empty"));
-    return;
-  }
-
-  QFile f(file);
+  // open csv file
+  QFile f(_file);
   if (! f.open(QIODevice::ReadOnly))
   {
     emit signalMessage(QString("Error opening CSV file"));
@@ -106,238 +54,313 @@ void CSVThread::run ()
   
   QTextStream stream(&f);
 
-  QStringList fields;
-  fields << "Exchange" << "Symbol" << "Open" << "High" << "Low" << "Close";
-  fields << "Volume" << "OI" << "Ignore" << "Name";
-
-  int lineCount = 0;
+  _lineCount = 0;
+  int records = 0;
+  
   QFileInfo fi(f);
-  QString fName = fi.fileName();
+  _fileName = fi.fileName();
 
   DBPluginFactory fac;
 
-  Config config;
-  QString pluginPath;
-  config.getData(Config::DBPluginPath, pluginPath);
-  
   while (stream.atEnd() == 0)
   {
-    QString ts = stream.readLine();
-    ts = ts.trimmed();
+    QString ts = stream.readLine().trimmed();
 
-    QStringList pl = ts.split(delimeter);
-    lineCount++;
-    
-    if (pl.count() != fieldList.count())
+    QStringList pl = ts.split(_delimeter);
+
+    _lineCount++;
+
+    // verify and populate the bar fields
+    CSVBar bar;
+    if (verifyCSVBar(pl, bar))
+      continue;
+
+    // verify date
+    if (! bar.date.isValid())
     {
-      QString s = fName + tr(": Line# ") + QString::number(lineCount);
-      s.append(tr("Number of fields in file != rule format"));
+      QString s = _fileName + tr(": Line ") + QString::number(_lineCount) + tr(": bad date");
       emit signalMessage(s);
       continue;
     }
 
-    QDateTime date;
-    QString exchange, symbol, name, open, high, low, close, volume, oi;
-    int fieldLoop;
-    bool flag = FALSE;
-    for (fieldLoop = 0; fieldLoop < (int) fieldList.count(); fieldLoop++)
+    // verify we have a valid symbol
+    if (bar.symbol.isEmpty())
     {
-      switch ((Field) fields.indexOf(fieldList[fieldLoop]))
+      if (_fileSymbol)
+        bar.symbol = _fileName;
+      else
       {
-        case Exchange:
-        {
-          exchange = pl[fieldLoop];
-          break;
-        }
-        case Symbol:
-        {
-          symbol = pl[fieldLoop];
-	  break;
-	}
-        case Name:
-	{
-          name = pl[fieldLoop];
-	  break;
-	}
-        case Open:
-        {
-          bool ok;
-          pl[fieldLoop].toDouble(&ok);
-          if (! ok)
-          {
-            QString s = fName + tr(": Line# ") + QString::number(lineCount);
-            s.append(tr("Bad open:") + pl[fieldLoop]);
-            emit signalMessage(s);
-            flag = TRUE;
-            break;
-          }
-            
-          open = pl[fieldLoop];
-          break;
-        }
-        case High:
-        {
-          bool ok;
-          pl[fieldLoop].toDouble(&ok);
-          if (! ok)
-          {
-            QString s = fName + tr(": Line# ") + QString::number(lineCount);
-            s.append(tr("Bad high:") + pl[fieldLoop]);
-            emit signalMessage(s);
-            flag = TRUE;
-            break;
-          }
-
-          high = pl[fieldLoop];
-          break;
-        }
-        case Low:
-        {
-          bool ok;
-          pl[fieldLoop].toDouble(&ok);
-          if (! ok)
-          {
-            QString s = fName + tr(": Line# ") + QString::number(lineCount);
-            s.append(tr("Bad low:") + pl[fieldLoop]);
-            emit signalMessage(s);
-            flag = TRUE;
-            break;
-          }
-
-          low = pl[fieldLoop];
-          break;
-        }
-        case Close:
-        {
-          bool ok;
-          pl[fieldLoop].toDouble(&ok);
-          if (! ok)
-          {
-            QString s = fName + tr(": Line# ") + QString::number(lineCount);
-            s.append(tr("Bad close:") + pl[fieldLoop]);
-            emit signalMessage(s);
-            flag = TRUE;
-            break;
-          }
-
-          close = pl[fieldLoop];
-          break;
-        }
-        case Volume:
-        {
-          bool ok;
-          pl[fieldLoop].toDouble(&ok);
-          if (! ok)
-          {
-            QString s = fName + tr(": Line# ") + QString::number(lineCount);
-            s.append(tr("Bad volume:") + pl[fieldLoop]);
-            emit signalMessage(s);
-            flag = TRUE;
-            break;
-          }
-
-          volume = pl[fieldLoop];
-          break;
-        }
-        case OI:
-        {
-          bool ok;
-          pl[fieldLoop].toDouble(&ok);
-          if (! ok)
-          {
-            QString s = fName + tr(": Line# ") + QString::number(lineCount);
-            s.append(tr("Bad oi:") + pl[fieldLoop]);
-            emit signalMessage(s);
-            flag = TRUE;
-            break;
-          }
-
-          oi = pl[fieldLoop];
-          break;
-        }
-        default:
-        {
-          if (fieldList[fieldLoop].contains("Date"))
-          {
-            QStringList l = fieldList[fieldLoop].split(":");
-            date = QDateTime::fromString(pl[fieldLoop], l[1]);
-            if (! date.isValid())
-            {
-              QString s = fName + tr(": Line# ") + QString::number(lineCount);
-              s.append(tr("Bad date:") + pl[fieldLoop]);
-              emit signalMessage(s);
-              flag = TRUE;
-              break;
-            }
-
-            break;
-          }
-
-          if (fieldList[fieldLoop].contains("Time"))
-          {
-            QStringList l = fieldList[fieldLoop].split(":");
-            QTime time = QTime::fromString(pl[fieldLoop], l[1]);
-            if (! time.isValid())
-            {
-              QString s = fName + tr(": Line# ") + QString::number(lineCount);
-              s.append(tr("Bad time:") + pl[fieldLoop]);
-              emit signalMessage(s);
-              flag = TRUE;
-              break;
-            }
-
-            date.setTime(time);
-            break;
-          }
-
-          break;
-        }
+        QString s = _fileName + tr(": Line ") + QString::number(_lineCount) + tr(": symbol missing");
+        emit signalMessage(s);
+        continue;
       }
     }
-      
-    if (flag)
-      continue;
 
-    if (! date.isValid())
-      continue;
-
-    if (symbol.isEmpty())
+    // verify we have an exchange
+    if (bar.exchange.isEmpty())
     {
-      if (fileSymbol)
-        symbol = fName;
-      else
+      bar.exchange = _rule->exchange();
+      if (bar.exchange.isEmpty())
+      {
+        QString s = _fileName + tr(": Line ") + QString::number(_lineCount) + tr(": exchange missing");
+        emit signalMessage(s);
         continue;
+      }
+    }
+    
+    DBPlugin *plug = fac.plugin(_type);
+    if (! plug)
+    {
+      QString s = _fileName + tr(": Line ") + QString::number(_lineCount) + tr(": missing type");
+      emit signalMessage(s);
+      continue;
     }
 
-    if (exchange.isEmpty())
-      continue;
-    
-    DBPlugin *plug = fac.plugin(pluginPath, type);
-    if (! plug)
-      continue;
-
+    // construct a script API command for the appropriate plugin
     QStringList l;
-    l << "QUOTE" << type << "SET_QUOTE" << exchange << symbol << "yyyy-MM-ddTHH:mm:ss";
-    l << date.toString(Qt::ISODate) << open << high << low << close << volume;
-    if (type == "Futures")
-      l << oi;
+    l << "QUOTE" << _type << "SET_QUOTE" << bar.exchange << bar.symbol << "yyyy-MM-ddTHH:mm:ss";
+    l << bar.date.toString(Qt::ISODate) << bar.open << bar.high << bar.low << bar.close << bar.volume;
+    if (_type == "Futures")
+      l << bar.oi;
 
+    // send the script API command
     Indicator ind;
-    plug->scriptCommand(l, ind);
+    if (! plug->scriptCommand(l, ind))
+      records++;
   }
 
   f.close();
 
-  // format = QUOTE,PLUGIN,SAVE_QUOTES
-  DBPlugin *plug = fac.plugin(pluginPath, type);
+  // construct the script API save quotes command and send it
+  DBPlugin *plug = fac.plugin(_type);
   if (plug)
   {
     Indicator ind;
     QStringList l;
-    l << "QUOTE" << type << "SAVE_QUOTES";
-    plug->scriptCommand(l, ind);
+    l << "QUOTE" << _type << "SAVE_QUOTES";
+    if (plug->scriptCommand(l, ind))
+    {
+      QString s = _fileName + tr(": db error, quotes not saved...import aborted");
+      emit signalMessage(s);
+      return;
+    }
   }
-  
-  emit signalMessage(tr("Done"));
+
+  // send the done message along with some stats
+  emit signalMessage(tr("Done.") + tr("Quotes imported: ") + QString::number(records));
 }
+
+int CSVThread::verifyRule ()
+{
+  if (! _rule)
+  {
+    emit signalMessage(QString("Rule missing"));
+    return 1;
+  }
+
+  _type = _rule->type();
+  if (_type.isEmpty())
+  {
+    emit signalMessage(QString("Type missing"));
+    return 1;
+  }
+
+  _delimeter = _rule->delimeter();
+  if (_delimeter.isEmpty())
+  {
+    emit signalMessage(QString("Delimeter missing"));
+    return 1;
+  }
+
+  _file = _rule->file();
+  if (_file.isEmpty())
+  {
+    emit signalMessage(QString("File missing"));
+    return 1;
+  }
+
+  _fileSymbol = _rule->fileSymbol();
+
+  QString d = _rule->rule();
+  if (d.isEmpty())
+  {
+    emit signalMessage(QString("Rule missing"));
+    return 1;
+  }
+
+  _fieldList = d.split(",");
+  if (! _fieldList.count())
+  {
+    emit signalMessage(QString("Rule empty"));
+    return 1;
+  }
+
+  return 0;
+}
+
+int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
+{
+  if (pl.count() != _fieldList.count())
+  {
+    QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
+    s.append(tr(": number of fields in file != rule format"));
+    emit signalMessage(s);
+    return 1;
+  }
+
+  int fieldLoop = 0;
+  for (; fieldLoop < (int) _fieldList.count(); fieldLoop++)
+  {
+    switch ((Field) _fields.indexOf(_fieldList[fieldLoop]))
+    {
+      case Ignore:
+        break;
+      case Exchange:
+        bar.exchange = pl[fieldLoop];
+        break;
+      case Symbol:
+        bar.symbol = pl[fieldLoop];
+        break;
+      case Name:
+        bar.name = pl[fieldLoop];
+        break;
+      case Open:
+      {
+        bool ok;
+        pl[fieldLoop].toDouble(&ok);
+        if (! ok)
+        {
+          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
+          s.append(tr(": bad open: ") + pl[fieldLoop]);
+          emit signalMessage(s);
+          return 1;
+          break;
+        }
+        
+        bar.open = pl[fieldLoop];
+        break;
+      }
+      case High:
+      {
+        bool ok;
+        pl[fieldLoop].toDouble(&ok);
+        if (! ok)
+        {
+          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
+          s.append(tr(": bad high: ") + pl[fieldLoop]);
+          emit signalMessage(s);
+          return 1;
+          break;
+        }
+
+        bar.high = pl[fieldLoop];
+        break;
+      }
+      case Low:
+      {
+        bool ok;
+        pl[fieldLoop].toDouble(&ok);
+        if (! ok)
+        {
+          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
+          s.append(tr(": bad low: ") + pl[fieldLoop]);
+          emit signalMessage(s);
+          return 1;
+          break;
+        }
+
+        bar.low = pl[fieldLoop];
+        break;
+      }
+      case Close:
+      {
+        bool ok;
+        pl[fieldLoop].toDouble(&ok);
+        if (! ok)
+        {
+          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
+          s.append(tr(": bad close: ") + pl[fieldLoop]);
+          emit signalMessage(s);
+          return 1;
+          break;
+        }
+
+        bar.close = pl[fieldLoop];
+        break;
+      }
+      case Volume:
+      {
+        bool ok;
+        pl[fieldLoop].toDouble(&ok);
+        if (! ok)
+        {
+          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
+          s.append(tr(": bad volume: ") + pl[fieldLoop]);
+          emit signalMessage(s);
+          return 1;
+          break;
+        }
+
+        bar.volume = pl[fieldLoop];
+        break;
+      }
+      case OI:
+      {
+        bool ok;
+        pl[fieldLoop].toDouble(&ok);
+        if (! ok)
+        {
+          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
+          s.append(tr(": bad oi: ") + pl[fieldLoop]);
+          emit signalMessage(s);
+          return 1;
+          break;
+        }
+
+        bar.oi = pl[fieldLoop];
+        break;
+      }
+      default:
+      {
+        if (_fieldList[fieldLoop].contains("Date"))
+        {
+          QStringList l = _fieldList[fieldLoop].split(":");
+          bar.date = QDateTime::fromString(pl[fieldLoop], l[1]);
+          if (! bar.date.isValid())
+          {
+            QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
+            s.append(tr(": bad date: ") + pl[fieldLoop]);
+            emit signalMessage(s);
+            return 1;
+            break;
+          }
+
+          break;
+        }
+
+        if (_fieldList[fieldLoop].contains("Time"))
+        {
+          QStringList l = _fieldList[fieldLoop].split(":");
+          QTime time = QTime::fromString(pl[fieldLoop], l[1]);
+          if (! time.isValid())
+          {
+            QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
+            s.append(tr(": bad time: ") + pl[fieldLoop]);
+            emit signalMessage(s);
+            return 1;
+            break;
+          }
+
+          bar.date.setTime(time);
+          break;
+        }
+
+        break;
+      }
+    }
+  }
+
+  return 0;
+}
+
 

@@ -20,7 +20,6 @@
  */
 
 #include "Script.h"
-#include "Config.h"
 
 #include <QDebug>
 
@@ -123,11 +122,7 @@ void Script::start ()
   if (! scriptServer)
   {
     // setup the script server
-    Config config;
-    QString ipp, dbpp;
-    config.getData(Config::IndicatorPluginPath, ipp);
-    config.getData(Config::DBPluginPath, dbpp);
-    scriptServer = new ExScript(ipp, dbpp);
+    scriptServer = new ExScript();
 //    scriptServer->setDeleteFlag(TRUE);
     connect(scriptServer, SIGNAL(signalDone()), this, SLOT(scriptDone()));
   }

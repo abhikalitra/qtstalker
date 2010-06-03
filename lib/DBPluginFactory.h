@@ -30,9 +30,11 @@ class DBPluginFactory : public PluginFactory
   public:
     DBPluginFactory ();
     ~DBPluginFactory ();
-    DBPlugin * plugin (QString &path, QString &plugin);
+    DBPlugin * plugin (QString &plugin);
+    void setPluginList ();
     
   protected:
+    QString _path;
     QHash<QString, DBPlugin *> _plugins;
 };
 

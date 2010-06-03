@@ -52,7 +52,7 @@ class ExScript : public QObject
       TEST // tester functions
     };
 
-    ExScript (QString &, QString &);
+    ExScript ();
     ~ExScript ();
     void clear ();
     void setBarData (BarData *d);
@@ -72,8 +72,6 @@ class ExScript : public QObject
     QStringList _functionList;
     BarData *_data;
     int _killFlag;
-    QString _indicatorPluginPath;
-    QString _dbPluginPath;
     SCQuote _quotes;
     Indicator _indicator;
 };

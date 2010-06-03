@@ -30,10 +30,8 @@
 #include <QByteArray>
 #include <QtDebug>
 
-ExScript::ExScript (QString &ipp, QString &dbpp)
+ExScript::ExScript ()
 {
-  _indicatorPluginPath = ipp;
-  _dbPluginPath = dbpp;
   _data = 0;
   _killFlag = 0;
 
@@ -162,7 +160,7 @@ void ExScript::readFromStdout ()
     case INDICATOR:
     {
       SCIndicator sc;
-      sc.calculate(l, ba, _indicator, _data, _indicatorPluginPath);
+      sc.calculate(l, ba, _indicator, _data);
       _proc->write(ba);
       break;
     }
@@ -182,7 +180,7 @@ void ExScript::readFromStdout ()
     }
     case QUOTE:
     {
-      _quotes.calculate(l, ba, _dbPluginPath, _indicator);
+      _quotes.calculate(l, ba, _indicator);
       _proc->write(ba);
       break;
     }

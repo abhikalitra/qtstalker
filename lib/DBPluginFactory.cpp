@@ -20,11 +20,14 @@
  */
 
 #include "DBPluginFactory.h"
+#include "Config.h"
 
 #include <QDebug>
 
 DBPluginFactory::DBPluginFactory ()
 {
+  Config config;
+  config.getData(Config::DBPluginPath, _path);
 }
 
 DBPluginFactory::~DBPluginFactory ()
@@ -32,13 +35,13 @@ DBPluginFactory::~DBPluginFactory ()
   qDeleteAll(_plugins);
 }
 
-DBPlugin * DBPluginFactory::plugin (QString &path, QString &plugin)
+DBPlugin * DBPluginFactory::plugin (QString &plugin)
 {
   DBPlugin *plug = _plugins.value(plugin);
   if (plug)
     return plug;
 
-  QString file = path;
+  QString file = _path;
   file.append("/lib" + plugin);
 
   QLibrary *lib = new QLibrary(file);
@@ -54,5 +57,14 @@ DBPlugin * DBPluginFactory::plugin (QString &path, QString &plugin)
     delete lib;
 
   return plug;
+}
+
+void DBPluginFactory::setPluginList ()
+{
+  QStringList l;
+  getPluginList(_path, l);
+
+  Config config;
+  config.setData(Config::DBPluginList, l);
 }
 

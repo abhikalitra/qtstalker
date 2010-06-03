@@ -76,14 +76,11 @@ void Setup::setupDefaultIndicators ()
   if (d.toInt())
     return;
 
-  QString path;
-  config.getData(Config::IndicatorPluginPath, path);
-
   // create the Bars indicator
   IndicatorPluginFactory fac;
   IndicatorDataBase db;
   QString s = "BARS";
-  IndicatorPlugin *ip = fac.plugin(path, s);
+  IndicatorPlugin *ip = fac.plugin(s);
   if (! ip)
     qDebug() << "Setup::setupDefaultIndicators: BARS error";
   else
@@ -99,7 +96,7 @@ void Setup::setupDefaultIndicators ()
 
   // lets add the Volume indicator
   s = "VOL";
-  ip = fac.plugin(path, s);
+  ip = fac.plugin(s);
   if (! ip)
     qDebug() << "Setup::setupDefaultIndicators: VOL error";
   else
@@ -137,10 +134,8 @@ void Setup::setupDefaultSymbol ()
     return;
 
   DBPluginFactory fac;
-  QString path;
   s = "Stock";
-  config.getData(Config::DBPluginPath, path);
-  DBPlugin *plug = fac.plugin(path, s);
+  DBPlugin *plug = fac.plugin(s);
   if (! plug)
   {
     qDebug() << "Setup::setupDefaultSymbol: plugin error";

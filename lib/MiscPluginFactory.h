@@ -30,9 +30,11 @@ class MiscPluginFactory : public PluginFactory
   public:
     MiscPluginFactory ();
     ~MiscPluginFactory ();
-    MiscPlugin * plugin (QString &path, QString &plugin);
+    MiscPlugin * plugin (QString &plugin);
+    void setPluginList ();
     
   protected:
+    QString _path;
     QHash<QString, MiscPlugin *> _plugins;
 };
 

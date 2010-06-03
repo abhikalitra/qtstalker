@@ -25,7 +25,7 @@
 #include <QString>
 #include <QStringList>
 
-#include "Setting.h"
+#include "CSVRule.h"
 #include "DataBase.h"
 
 class CSVDataBase : public DataBase
@@ -34,8 +34,8 @@ class CSVDataBase : public DataBase
     CSVDataBase ();
     void init (); // called only at qtstalker startup, initializes database tables
     void getRules (QStringList &);
-    void getRule (Setting &);
-    void setRule (Setting &);
+    int getRule (CSVRule &);
+    void setRule (CSVRule &);
     void deleteRule (QString &);
 };
 

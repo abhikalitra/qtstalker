@@ -23,8 +23,11 @@
 #define CSV_THREAD_HPP
 
 #include <QThread>
+#include <QString>
+#include <QStringList>
+#include <QDateTime>
 
-#include "Setting.h"
+#include "CSVRule.h"
 
 class CSVThread : public QThread
 {
@@ -48,11 +51,36 @@ class CSVThread : public QThread
       Name
     };
 
-    CSVThread (Setting *rule);
+    struct CSVBar
+    {
+      QDateTime date;
+      QString exchange;
+      QString symbol;
+      QString name;
+      QString open;
+      QString high;
+      QString low;
+      QString close;
+      QString volume;
+      QString oi;
+    };
+
+    CSVThread (CSVRule *rule);
     void run ();
+    int verifyRule ();
+    int verifyCSVBar (QStringList &pl, CSVBar &bar);
 
   private:
-    Setting *_rule;
+    CSVRule *_rule;
+    int _fileSymbol;
+    int _lineCount;
+    QString _type;
+    QString _delimeter;
+    QString _file;
+    QString _fileName;
+    QStringList _fieldList;
+    QStringList _fields;
+    
 };
 
 #endif

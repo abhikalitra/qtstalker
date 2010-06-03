@@ -21,6 +21,9 @@
 
 #include "CSVRuleDialog.h"
 #include "CSVDataBase.h"
+#include "ExchangeDataBase.h"
+#include "Config.h"
+#include "CSVRule.h"
 
 #include <QMessageBox>
 #include <QLayout>
@@ -45,10 +48,6 @@ CSVRuleDialog::CSVRuleDialog (QString &name) : QDialog (0, 0)
   setWindowTitle(s);
 }
 
-CSVRuleDialog::~CSVRuleDialog ()
-{
-}
-
 void CSVRuleDialog::createGUI ()
 {
   QVBoxLayout *vbox = new QVBoxLayout;
@@ -66,10 +65,13 @@ void CSVRuleDialog::createGUI ()
   
   QLabel *label = new QLabel(tr("Type"));
   grid->addWidget(label, row, col++);
+
+  Config config;
+  QStringList l;
+  config.getData(Config::DBPluginList, l);
   
   _type = new QComboBox;
-  _type->addItem(QString("Futures"));
-  _type->addItem(QString("Stocks"));
+  _type->addItems(l);
   connect(_type, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   grid->addWidget(_type, row++, col--);
   
@@ -90,9 +92,25 @@ void CSVRuleDialog::createGUI ()
   connect(_file, SIGNAL(signalFileChanged()), this, SLOT(ruleChanged()));
   grid->addWidget(_file, row++, col--);
 
-  _fileSymbol = new QCheckBox(tr("Use filename as symbol name"));
+  label = new QLabel(tr("Exchange"));
+  grid->addWidget(label, row, col++);
+
+  ExchangeDataBase edb;
+  l.clear();
+  edb.getExchanges(l);
+  
+  _exchange = new QComboBox;
+  _exchange->addItems(l);
+  connect(_exchange, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  grid->addWidget(_exchange, row++, col--);
+
+//  label = new QLabel(tr("Use filename as symbol"));
+//  grid->addWidget(label, row, col++);
+
+  col = 1;
+  _fileSymbol = new QCheckBox(tr("Use filename as symbol"));
   connect(_fileSymbol, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
-  grid->addWidget(_fileSymbol, row++, col);
+  grid->addWidget(_fileSymbol, row++, col--);
 
   QGroupBox *gbox = new QGroupBox;
   gbox->setTitle(tr("CSV Rule Format"));
@@ -189,92 +207,49 @@ void CSVRuleDialog::saveRule ()
   if (! _saveFlag)
     return;
 
-  Setting set;
-  QString k = "Name";
-  QString d = _name;
-  set.setData(k, d);
-
-  k = "Plugin";
-  d = _type->currentText();
-  set.setData(k, d);
-
-  k = "Delimeter";
-  d = _delimeter->currentText();
-  set.setData(k, d);
-
-  k = "File";
-  d = _file->getFile();
-  set.setData(k, d);
+  CSVRule rule;
+  rule.setName(_name);
+  rule.setType(_type->currentText());
+  rule.setDelimeter(_delimeter->currentText());
+  rule.setFile(_file->getFile());
 
   QStringList l;
   int loop = 0;
   for (; loop < _ruleList->count(); loop++)
     l.append(_ruleList->item(loop)->text());
+  rule.setRule(l.join(","));
 
-  k = "Rule";
-  d = l.join(",");
-  set.setData(k, d);
-
-  k = "FileSymbol";
-  d = QString::number(_fileSymbol->isChecked());
-  set.setData(k, d);
+  rule.setFileSymbol(_fileSymbol->isChecked());
+  rule.setExchange(_exchange->currentText());
 
   CSVDataBase db;
-  db.setRule(set);
+  db.setRule(rule);
   
   ruleChanged();
 }
 
 void CSVRuleDialog::loadRule ()
 {
-  _ruleList->clear();
+  clear();
   
-  Setting set;
-  QString k = "Name";
-  QString d = _name;
-  set.setData(k, d);
+  CSVRule rule;
+  rule.setName(_name);
   
   CSVDataBase db;
-  db.getRule(set);
-
-  k = "Plugin";
-  d.clear();
-  set.getData(k, d);
-  if (d.isEmpty())
-    return;
-  _type->setCurrentIndex(_type->findText(d, Qt::MatchExactly));
-
-  k = "Delimeter";
-  d.clear();
-  set.getData(k, d);
-  if (d.isEmpty())
-    return;
-  _delimeter->setCurrentIndex(_delimeter->findText(d, Qt::MatchExactly));
-
-  k = "File";
-  d.clear();
-  set.getData(k, d);
-  if (d.isEmpty())
-    return;
-  _file->setFile(d);
-
-  k = "Rule";
-  d.clear();
-  set.getData(k, d);
-  if (d.isEmpty())
+  if (db.getRule(rule))
     return;
 
-  QStringList l = d.split(",");
+  _type->setCurrentIndex(_type->findText(rule.type(), Qt::MatchExactly));
+  _delimeter->setCurrentIndex(_delimeter->findText(rule.delimeter(), Qt::MatchExactly));
+  _file->setFile(rule.file());
+
+  QStringList l = rule.rule().split(",");
   int loop = 0;
   for (; loop < l.count(); loop++)
     new QListWidgetItem(l[loop], _ruleList, 0);
 
-  k = "FileSymbol";
-  d.clear();
-  set.getData(k, d);
-  if (d.isEmpty())
-    return;
-  _fileSymbol->setChecked(d.toInt());
+  _fileSymbol->setChecked(rule.fileSymbol());
+  _exchange->setCurrentIndex(_exchange->findText(rule.exchange(), Qt::MatchExactly));
 }
 
 void CSVRuleDialog::deleteRuleField (QListWidgetItem *)
@@ -298,6 +273,7 @@ void CSVRuleDialog::ruleChanged ()
 void CSVRuleDialog::symbolClicked ()
 {
   new QListWidgetItem(QString("Symbol"), _ruleList, 0);
+
   ruleChanged();
 }
 
@@ -315,6 +291,7 @@ void CSVRuleDialog::dateClicked ()
     return;
   
   new QListWidgetItem(QString("Date:" + date), _ruleList, 0);
+
   ruleChanged();
 }
 
@@ -332,67 +309,83 @@ void CSVRuleDialog::timeClicked ()
     return;
 
   new QListWidgetItem(QString("Time:" + time), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::openClicked ()
 {
   new QListWidgetItem(QString("Open"), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::highClicked ()
 {
   new QListWidgetItem(QString("High"), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::lowClicked ()
 {
   new QListWidgetItem(QString("Low"), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::closeClicked ()
 {
   new QListWidgetItem(QString("Close"), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::volumeClicked ()
 {
   new QListWidgetItem(QString("Volume"), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::oiClicked ()
 {
   new QListWidgetItem(QString("OI"), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::ignoreClicked ()
 {
   new QListWidgetItem(QString("Ignore"), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::nameClicked ()
 {
   new QListWidgetItem(QString("Name"), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::exchangeClicked ()
 {
   new QListWidgetItem(QString("Exchange"), _ruleList, 0);
+
   ruleChanged();
 }
 
 void CSVRuleDialog::done ()
 {
   saveRule();
+
   accept();
+}
+
+void CSVRuleDialog::clear ()
+{
+  _ruleList->clear();
 }
 
 

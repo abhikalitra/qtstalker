@@ -21,7 +21,6 @@
 
 #include "CUS.h"
 #include "ExScript.h"
-#include "Config.h"
 
 #include <QtDebug>
 #include <QList>
@@ -36,17 +35,12 @@ CUS::CUS ()
 
 int CUS::getIndicator (Indicator &ind, BarData *data)
 {
-  Config config;
-  QString ipp, dbpp;
-  config.getData(Config::IndicatorPluginPath, ipp);
-  config.getData(Config::DBPluginPath, dbpp);
-
   QString s, s2;
   _settings.getData(Command, s);
   _settings.getData(Script, s2);
   s.append(" " + s2);
 
-  ExScript script(ipp, dbpp);
+  ExScript script;
   script.setBarData(data);
   int rc = script.calculate(s);
   if (! rc)

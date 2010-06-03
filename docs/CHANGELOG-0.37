@@ -496,10 +496,6 @@
            whatever they want. The initial plugin will be the return of the CSV plugin to import CSV
            files. Works much like the old app.
 
-           *********************** NOTE ********************************
-           The CSV plugin is not working yet. No bug reports yet please.
-           *************************************************************
-
-
-
+20100603:  CSV plugin is ready for testing. i would appreciate user feedback on improvements and
+           bugs. thank you.
 
