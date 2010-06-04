@@ -22,12 +22,14 @@
 #include "ChartPage.h"
 #include "GroupDataBase.h"
 #include "DBPlugin.h"
+#include "DBPluginFactory.h"
 #include "Config.h"
 #include "SymbolDialog.h"
 
 #include "../pics/addgroup.xpm"
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
+#include "../pics/delete.xpm"
 
 #include <QMessageBox>
 #include <QCursor>
@@ -94,6 +96,12 @@ void ChartPage::createActions ()
   action->setToolTip(tr("Add symbol to group"));
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
   actions.insert(AddGroup, action);
+
+  action  = new QAction(QIcon(delete_xpm), tr("&Delete Symbol"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
+  action->setToolTip(tr("Delete symbol from the database permanently"));
+  connect(action, SIGNAL(activated()), this, SLOT(deleteSymbol()));
+  actions.insert(Delete, action);
 }
 
 void ChartPage::createButtonMenu (QToolBar *tb)
@@ -101,12 +109,15 @@ void ChartPage::createButtonMenu (QToolBar *tb)
   tb->addAction(actions.value(ShowAll));
   tb->addAction(actions.value(Search));
   tb->addAction(actions.value(AddGroup));
+  tb->addAction(actions.value(Delete));
 
   menu = new QMenu(this);
   menu->addAction(actions.value(AddGroup));
   menu->addSeparator();
   menu->addAction(actions.value(ShowAll));
   menu->addAction(actions.value(Search));
+  menu->addSeparator();
+  menu->addAction(actions.value(Delete));
 }
 
 void ChartPage::chartOpened (QListWidgetItem *item)
@@ -245,5 +256,52 @@ void ChartPage::listStatus ()
     status = TRUE;
   
   actions.value(AddGroup)->setEnabled(status); 
+}
+
+void ChartPage::deleteSymbol ()
+{
+  QList<QListWidgetItem *> l = nav->selectedItems();
+  if (! l.count())
+    return;
+
+  int rc = QMessageBox::warning(this,
+                                tr("Qtstalker: Warning"),
+                                tr("Are you sure you want to permanently delete symbol(s)?"),
+                                QMessageBox::Yes,
+                                QMessageBox::No,
+                                QMessageBox::NoButton);
+
+  if (rc == QMessageBox::No)
+    return;
+
+  DBPluginFactory fac;
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QListWidgetItem *item = l.at(loop);
+    int row = nav->row(item);
+    BarData *bd = symbols.getItem(row);
+    if (! bd)
+    {
+      qDebug() << "ChartPage::deleteSymbol: BarData not found" << row;
+      continue;
+    }
+
+    DBPlugin *plug = fac.plugin(bd->getPlugin());
+    if (! plug)
+    {
+      qDebug() << "ChartPage::deleteSymbol: plugin not found" << bd->getPlugin();
+      continue;
+    }
+
+    if (plug->deleteSymbol(bd))
+    {
+      qDebug() << "ChartPage::deleteSymbol: plugin deleteSymbol error";
+      continue;
+    }
+  }
+
+  updateList();
 }
 

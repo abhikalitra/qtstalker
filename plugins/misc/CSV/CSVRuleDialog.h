@@ -27,8 +27,10 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QString>
+#include <QStringList>
 #include <QDialogButtonBox>
 #include <QCheckBox>
+#include <QPushButton>
 
 #include "FileButton.h"
 
@@ -42,22 +44,14 @@ class CSVRuleDialog : public QDialog
     void loadRule ();
     void saveRule ();
     void clear ();
+    void dateDialog (QString &);
+    void timeDialog (QString &);
     
   public slots:
-    void deleteRuleField (QListWidgetItem *);
     void ruleChanged ();
-    void symbolClicked ();
-    void dateClicked ();
-    void timeClicked ();
-    void openClicked ();
-    void highClicked ();
-    void lowClicked ();
-    void closeClicked ();
-    void volumeClicked ();
-    void oiClicked ();
-    void ignoreClicked ();
-    void nameClicked ();
-    void exchangeClicked ();
+    void addClicked ();
+    void insertClicked ();
+    void deleteClicked ();
     void done ();
           
   private:
@@ -70,6 +64,10 @@ class CSVRuleDialog : public QDialog
     QComboBox *_exchange;
     bool _saveFlag;
     QString _name;
+    QPushButton *_addButton;
+    QPushButton *_insertButton;
+    QPushButton *_deleteButton;
+    QStringList _fieldList;
 };
 
 #endif

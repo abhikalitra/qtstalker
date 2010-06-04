@@ -29,7 +29,6 @@
 #include <QLayout>
 #include <QLabel>
 #include <QInputDialog>
-#include <QPushButton>
 #include <QDir>
 #include <QGroupBox>
 #include <QList>
@@ -39,6 +38,9 @@ CSVRuleDialog::CSVRuleDialog (QString &name) : QDialog (0, 0)
 {
   _saveFlag = FALSE;
   _name = name;
+
+  _fieldList << "Exchange" << "Symbol" << "Date" << "Time" << "Open" << "High" << "Low" << "Close";
+  _fieldList << "Volume" << "OI" << "Name" << "Ignore";
   
   createGUI();
 
@@ -121,79 +123,34 @@ void CSVRuleDialog::createGUI ()
   gbox->setLayout(hbox);
   
   _ruleList = new QListWidget;
-  connect(_ruleList, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(deleteRuleField(QListWidgetItem *)));
+//  connect(_ruleList, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(deleteRuleField(QListWidgetItem *)));
   hbox->addWidget(_ruleList);
 
   QVBoxLayout *tvbox = new QVBoxLayout;
   tvbox->setSpacing(2);
   hbox->addLayout(tvbox);
 
-  QPushButton *b = new QPushButton;
-  b->setText(tr("Exchange"));
-  connect(b, SIGNAL(clicked()), this, SLOT(exchangeClicked()));
-  tvbox->addWidget(b);
+  _addButton = new QPushButton;
+  _addButton->setText(tr("Add"));
+  connect(_addButton, SIGNAL(clicked()), this, SLOT(addClicked()));
+  tvbox->addWidget(_addButton);
 
-  b = new QPushButton;
-  b->setText(tr("Symbol"));
-  connect(b, SIGNAL(clicked()), this, SLOT(symbolClicked()));
-  tvbox->addWidget(b);
+  _insertButton = new QPushButton;
+  _insertButton->setText(tr("Insert"));
+  connect(_insertButton, SIGNAL(clicked()), this, SLOT(insertClicked()));
+  tvbox->addWidget(_insertButton);
 
-  b = new QPushButton;
-  b->setText(tr("Date"));
-  connect(b, SIGNAL(clicked()), this, SLOT(dateClicked()));
-  tvbox->addWidget(b);
-
-  b = new QPushButton;
-  b->setText(tr("Time"));
-  connect(b, SIGNAL(clicked()), this, SLOT(timeClicked()));
-  tvbox->addWidget(b);
-
-  b = new QPushButton;
-  b->setText(tr("Open"));
-  connect(b, SIGNAL(clicked()), this, SLOT(openClicked()));
-  tvbox->addWidget(b);
-
-  b = new QPushButton;
-  b->setText(tr("High"));
-  connect(b, SIGNAL(clicked()), this, SLOT(highClicked()));
-  tvbox->addWidget(b);
-
-  b = new QPushButton;
-  b->setText(tr("Low"));
-  connect(b, SIGNAL(clicked()), this, SLOT(lowClicked()));
-  tvbox->addWidget(b);
-
-  b = new QPushButton;
-  b->setText(tr("Close"));
-  connect(b, SIGNAL(clicked()), this, SLOT(closeClicked()));
-  tvbox->addWidget(b);
-
-  b = new QPushButton;
-  b->setText(tr("Volume"));
-  connect(b, SIGNAL(clicked()), this, SLOT(volumeClicked()));
-  tvbox->addWidget(b);
-
-  b = new QPushButton;
-  b->setText(tr("OI"));
-  connect(b, SIGNAL(clicked()), this, SLOT(oiClicked()));
-  tvbox->addWidget(b);
-
-  b = new QPushButton;
-  b->setText(tr("Ignore"));
-  connect(b, SIGNAL(clicked()), this, SLOT(ignoreClicked()));
-  tvbox->addWidget(b);
-
-  b = new QPushButton;
-  b->setText(tr("Name"));
-  connect(b, SIGNAL(clicked()), this, SLOT(nameClicked()));
-  tvbox->addWidget(b);
+  _deleteButton = new QPushButton;
+  _deleteButton->setText(tr("Delete"));
+  connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteClicked()));
+  tvbox->addWidget(_deleteButton);
 
   tvbox->addStretch(1);
 
   _buttonBox = new QDialogButtonBox;
   vbox->addWidget(_buttonBox);
 
-  b = new QPushButton(tr("&OK"));
+  QPushButton *b = new QPushButton(tr("&OK"));
   _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
   connect(b, SIGNAL(clicked()), this, SLOT(done()));
 
@@ -252,7 +209,7 @@ void CSVRuleDialog::loadRule ()
   _exchange->setCurrentIndex(_exchange->findText(rule.exchange(), Qt::MatchExactly));
 }
 
-void CSVRuleDialog::deleteRuleField (QListWidgetItem *)
+void CSVRuleDialog::deleteClicked ()
 {
   QList<QListWidgetItem *> l = _ruleList->selectedItems();
   if (! l.count())
@@ -270,110 +227,100 @@ void CSVRuleDialog::ruleChanged ()
   _saveFlag = TRUE;
 }
 
-void CSVRuleDialog::symbolClicked ()
-{
-  new QListWidgetItem(QString("Symbol"), _ruleList, 0);
-
-  ruleChanged();
-}
-
-void CSVRuleDialog::dateClicked ()
+void CSVRuleDialog::addClicked ()
 {
   bool ok;
-  QString date = QInputDialog::getText(this,
-                                       tr("Add CSV Date Field"),
-                                       tr("Enter date mask format"),
-                                       QLineEdit::Normal,
-                                       QString("yyyy-MM-dd"),
+  QString item = QInputDialog::getItem(this,
+                                       tr("Add Field"),
+                                       tr("Select CSV field to add"),
+                                       _fieldList,
+                                       0,
+                                       FALSE,
                                        &ok,
                                        0);
-  if (! ok || date.isEmpty())
+
+  if (! ok || item.isEmpty())
     return;
-  
-  new QListWidgetItem(QString("Date:" + date), _ruleList, 0);
+
+  if (item == "Date")
+  {
+    item.clear();
+    dateDialog(item);
+    if (item.isEmpty())
+      return;
+  }
+                                       
+  if (item == "Time")
+  {
+    item.clear();
+    timeDialog(item);
+    if (item.isEmpty())
+      return;
+  }
+
+  new QListWidgetItem(item, _ruleList, 0);
 
   ruleChanged();
 }
 
-void CSVRuleDialog::timeClicked ()
+void CSVRuleDialog::insertClicked ()
 {
   bool ok;
-  QString time = QInputDialog::getText(this,
-                                       tr("Add CSV Time Field"),
-                                       tr("Enter time mask format"),
-                                       QLineEdit::Normal,
-                                       QString("HH:mm:ss"),
+  QString item = QInputDialog::getItem(this,
+                                       tr("Add Field"),
+                                       tr("Select CSV field to add"),
+                                       _fieldList,
+                                       0,
+                                       FALSE,
                                        &ok,
                                        0);
-  if (! ok || time.isEmpty())
+
+  if (! ok || item.isEmpty())
     return;
 
-  new QListWidgetItem(QString("Time:" + time), _ruleList, 0);
+  if (item == "Date")
+  {
+    item.clear();
+    dateDialog(item);
+    if (item.isEmpty())
+      return;
+  }
+
+  if (item == "Time")
+  {
+    item.clear();
+    timeDialog(item);
+    if (item.isEmpty())
+      return;
+  }
+
+  _ruleList->insertItem(_ruleList->currentRow(), item);
 
   ruleChanged();
 }
 
-void CSVRuleDialog::openClicked ()
+void CSVRuleDialog::dateDialog (QString &item)
 {
-  new QListWidgetItem(QString("Open"), _ruleList, 0);
-
-  ruleChanged();
+  bool ok;
+  item = QInputDialog::getText(this,
+                               tr("Add CSV Date Field"),
+                               tr("Enter date mask format"),
+                               QLineEdit::Normal,
+                               QString("yyyy-MM-dd"),
+                               &ok,
+                               0);
 }
 
-void CSVRuleDialog::highClicked ()
+void CSVRuleDialog::timeDialog (QString &item)
 {
-  new QListWidgetItem(QString("High"), _ruleList, 0);
-
-  ruleChanged();
-}
-
-void CSVRuleDialog::lowClicked ()
-{
-  new QListWidgetItem(QString("Low"), _ruleList, 0);
-
-  ruleChanged();
-}
-
-void CSVRuleDialog::closeClicked ()
-{
-  new QListWidgetItem(QString("Close"), _ruleList, 0);
-
-  ruleChanged();
-}
-
-void CSVRuleDialog::volumeClicked ()
-{
-  new QListWidgetItem(QString("Volume"), _ruleList, 0);
-
-  ruleChanged();
-}
-
-void CSVRuleDialog::oiClicked ()
-{
-  new QListWidgetItem(QString("OI"), _ruleList, 0);
-
-  ruleChanged();
-}
-
-void CSVRuleDialog::ignoreClicked ()
-{
-  new QListWidgetItem(QString("Ignore"), _ruleList, 0);
-
-  ruleChanged();
-}
-
-void CSVRuleDialog::nameClicked ()
-{
-  new QListWidgetItem(QString("Name"), _ruleList, 0);
-
-  ruleChanged();
-}
-
-void CSVRuleDialog::exchangeClicked ()
-{
-  new QListWidgetItem(QString("Exchange"), _ruleList, 0);
-
-  ruleChanged();
+  bool ok;
+  item = QInputDialog::getText(this,
+                               tr("Add CSV Time Field"),
+                               tr("Enter time mask format"),
+                               QLineEdit::Normal,
+                               QString("HH:mm:ss"),
+                               &ok,
+                               0);
 }
 
 void CSVRuleDialog::done ()

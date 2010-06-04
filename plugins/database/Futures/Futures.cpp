@@ -216,6 +216,41 @@ int Futures::addParms (BarData *bars)
   return rc;
 }
 
+int Futures::deleteSymbol (BarData *symbol)
+{
+  transaction();
+
+  if (getIndexData(symbol))
+    return 1;
+
+  // delete any chart objects
+  CODataBase db;
+  db.deleteChartObjects(symbol);
+
+  // drop quote table
+  QString s = "DROP TABLE " + symbol->getTableName();
+  if (command(s, QString("Futures::deleteSymbol: drop quotes table")))
+    return 1;
+
+  // remove parms record
+  s = "DELETE FROM futuresParms";
+  s.append(" WHERE symbol='" + symbol->getSymbol() + "'");
+  s.append(" AND exchange='" + symbol->getExchange() + "'");
+  if (command(s, QString("Futures::deleteSymbol: remove futuresParms record")))
+    return 1;
+
+  // remove index record
+  s = "DELETE FROM symbolIndex";
+  s.append(" WHERE symbol='" + symbol->getSymbol() + "'");
+  s.append(" AND exchange='" + symbol->getExchange() + "'");
+  if (command(s, QString("Futures::deleteSymbol: remove symbolIndex record")))
+    return 1;
+
+  commit();
+
+  return 0;
+}
+
 //*************************************************************
 //************** SCRIPT FUNCTIONS *****************************
 //*************************************************************
@@ -488,8 +523,8 @@ int Futures::scriptSaveQuotes (QStringList &l)
 
 int Futures::scriptDelete (QStringList &l)
 {
-  // format = QUOTE,PLUGIN,DELETE,EXCHANGE,SYMBOL
-  //            0     1      2      3        4
+  // QUOTE,PLUGIN,DELETE,EXCHANGE,SYMBOL
+  //   0     1      2      3        4
 
   if (l.count() != 5)
   {
@@ -501,37 +536,7 @@ int Futures::scriptDelete (QStringList &l)
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
 
-  transaction();
-  
-  if (getIndexData(&bd))
-    return 1;
-
-  // delete any chart objects
-  CODataBase db;
-  db.deleteChartObjects(&bd);
-  
-  // drop quote table
-  QString s = "DROP TABLE " + bd.getTableName();
-  if (command(s, QString("Futures::scriptDelete: drop quotes table")))
-    return 1;
-  
-  // remove parms record
-  s = "DELETE FROM futuresParms";
-  s.append(" WHERE symbol='" + bd.getSymbol() + "'");
-  s.append(" AND exchange='" + bd.getExchange() + "'");
-  if (command(s, QString("Futures::scriptDelete: remove futuresParms record")))
-    return 1;
-  
-  // remove index record
-  s = "DELETE FROM symbolIndex";
-  s.append(" WHERE symbol='" + bd.getSymbol() + "'");
-  s.append(" AND exchange='" + bd.getExchange() + "'");
-  if (command(s, QString("Futures::scriptDelete: remove symbolIndex record")))
-    return 1;
-  
-  commit();
-
-  return 0;
+  return deleteSymbol(&bd);
 }
 
 int Futures::scriptGetQuotes (QStringList &l, Indicator &ind)

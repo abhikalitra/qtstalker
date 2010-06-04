@@ -50,6 +50,7 @@ class Indicator
     QString & indicator ();
     void setLine (QString &, PlotLine *);
     PlotLine * line (QString &);
+    int deleteLine (QString &);
     void setSettings (Setting &);
     Setting & settings ();
     void clear ();

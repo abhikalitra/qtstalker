@@ -38,13 +38,14 @@ RecentCharts::RecentCharts (QToolBar *tb)
   QStringList l;
   Config config;
   config.getData(Config::RecentChartsList, l);
+  
   int loop;
   for (loop = 0; loop < l.count(); loop = loop + 2)
   {
-    BarData bd;
-    bd.setExchange(l[loop]);
-    bd.setSymbol(l[loop + 1]);
-    group.append(&bd);
+    BarData *bd = new BarData;
+    bd->setExchange(l[loop]);
+    bd->setSymbol(l[loop + 1]);
+    group.append(bd);
     addItem(l[loop + 1]);
   }
 }
@@ -56,7 +57,12 @@ void RecentCharts::addRecentChart (BarData *bd)
 
   if (count() == maxCount())
     group.deleteItem(maxCount() - 1);
-  group.prepend(bd);
+
+  BarData *bd2 = new BarData;
+  bd2->setExchange(bd->getExchange());
+  bd2->setSymbol(bd->getSymbol());
+  
+  group.prepend(bd2);
 
   insertItem(0, bd->getSymbol());
 }

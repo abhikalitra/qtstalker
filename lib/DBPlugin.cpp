@@ -54,6 +54,12 @@ int DBPlugin::scriptCommand (QStringList &, Indicator &)
   return 0;
 }
 
+// virtual
+int DBPlugin::deleteSymbol (BarData *)
+{
+  return 0;
+}
+
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
@@ -87,20 +93,20 @@ void DBPlugin::getSearchList (QString &ex, QString &pat, Group &l)
   // if exchange and pat is empty then get all symbols from all exchanges will be returned
   QString s;
   if (ex.isEmpty() && pat.isEmpty())
-    s = "SELECT symbol,name,exchange FROM symbolIndex ORDER BY symbol,exchange ASC";
+    s = "SELECT symbol,name,exchange,plugin FROM symbolIndex ORDER BY symbol,exchange ASC";
 
   // if exchange is empty then get all symbols from all exchanges that match pat
   if (ex.isEmpty() && ! pat.isEmpty())
-    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE symbol LIKE '" + pat + "'" + "  ORDER BY symbol,exchange ASC";
+    s = "SELECT symbol,name,exchange,plugin FROM symbolIndex WHERE symbol LIKE '" + pat + "'" + "  ORDER BY symbol,exchange ASC";
 
   // exchange = yes and pat = no, get the entire exchange list
   if (! ex.isEmpty() && pat.isEmpty())
-    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE exchange='" + ex + "'" + " ORDER BY symbol,exchange ASC";
+    s = "SELECT symbol,name,exchange,plugin FROM symbolIndex WHERE exchange='" + ex + "'" + " ORDER BY symbol,exchange ASC";
     
   // exchange = yes and pat = yes, get pat from the exchange
   if (! ex.isEmpty() && ! pat.isEmpty())
   {
-    s = "SELECT symbol,name,exchange FROM symbolIndex WHERE symbol LIKE";
+    s = "SELECT symbol,name,exchange,plugin FROM symbolIndex WHERE symbol LIKE";
     s.append(" '" + pat + "'");
     s.append(" AND exchange='" + ex + "'");
     s.append(" ORDER BY symbol,exchange ASC");
@@ -131,6 +137,9 @@ void DBPlugin::getSearchList (QString &ex, QString &pat, Group &l)
     s = q.value(pos++).toString();
     bd->setExchange(s);
     
+    s = q.value(pos++).toString();
+    bd->setPlugin(s);
+
     l.append(bd);
   }
 }

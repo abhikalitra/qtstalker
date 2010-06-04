@@ -499,3 +499,9 @@
 20100603:  CSV plugin is ready for testing. i would appreciate user feedback on improvements and
            bugs. thank you.
 
+20100604:  Added a delete symbol menu option to the chart panel.
+
+           Added a DELETE command to the INDICATOR script API command set. See docs.
+
+
+

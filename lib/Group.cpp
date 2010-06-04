@@ -72,20 +72,12 @@ int Group::count ()
 
 void Group::append (BarData *d)
 {
-  BarData *bd = new BarData;
-  bd->setExchange(d->getExchange());
-  bd->setSymbol(d->getSymbol());
-  bd->setName(d->getName());
-  symbols.append(bd);
+  symbols.append(d);
 }
 
 void Group::prepend (BarData *d)
 {
-  BarData *bd = new BarData;
-  bd->setExchange(d->getExchange());
-  bd->setSymbol(d->getSymbol());
-  bd->setName(d->getName());
-  symbols.prepend(bd);
+  symbols.prepend(d);
 }
 
 void Group::getStringList (QStringList &l)

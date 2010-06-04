@@ -47,6 +47,7 @@ class Futures : public DBPlugin
     int createTable (BarData *);
     int scriptCommand (QStringList &, Indicator &);
     int addParms (BarData *);
+    int deleteSymbol (BarData *);
     
     int scriptSetQuote (QStringList &);
     int scriptSetName (QStringList &);

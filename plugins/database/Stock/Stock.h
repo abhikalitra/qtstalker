@@ -42,6 +42,8 @@ class Stock : public DBPlugin
     void getBars (BarData &);
     void setBars ();
     int createTable (BarData *);
+    int deleteSymbol (BarData *);
+
     int scriptCommand (QStringList &, Indicator &);
     int scriptSetQuote (QStringList &);
     int scriptSetName (QStringList &);

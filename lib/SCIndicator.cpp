@@ -29,7 +29,8 @@
 
 SCIndicator::SCIndicator ()
 {
-  methodList << "NEW" << "GET_INDEX" << "GET_INDEX_DATE" << "GET_RANGE" << "PLUGIN" << "SET_INDEX" << "SET_COLOR";
+  methodList << "NEW" << "GET_INDEX" << "GET_INDEX_DATE" << "GET_RANGE" << "PLUGIN" << "SET_INDEX";
+  methodList << "SET_COLOR" << "DELETE";
 }
 
 int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data)
@@ -67,6 +68,9 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarD
       break;
     case SET_COLOR:
       rc = setColor(l, ba, ind);
+      break;
+    case DELETE:
+      rc = setDelete(l, ba, ind);
       break;
     default:
       qDebug() << "SCIndicator::calculate: invalid method" << l[1];
@@ -386,6 +390,29 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, Indicator &ind, BarD
 
   ba.clear();
   ba.append(QString::number(rc) + '\n');
+
+  return 0;
+}
+
+int SCIndicator::setDelete (QStringList &l, QByteArray &ba, Indicator &ind)
+{
+  // INDICATOR,DELETE,<NAME>
+  //     0       1      2
+
+  if (l.count() != 3)
+  {
+    qDebug() << "SCIndicator::getDelete: invalid parm count " << l.count();
+    return 1;
+  }
+
+  if (ind.deleteLine(l[2]))
+  {
+    qDebug() << "SCIndicator::getDelete: name not found" << l[2];
+    return 1;
+  }
+
+  ba.clear();
+  ba.append("0\n");
 
   return 0;
 }

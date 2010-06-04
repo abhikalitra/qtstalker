@@ -41,6 +41,7 @@ class DBPlugin : public DataBase
     virtual void getBars (BarData &);
     virtual void dialog ();
     virtual int scriptCommand (QStringList &, Indicator &);
+    virtual int deleteSymbol (BarData *);
     
     void init (QString &);
     void getSearchList (QString &ex, QString &pat, Group &);

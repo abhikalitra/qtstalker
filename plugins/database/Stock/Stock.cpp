@@ -183,6 +183,34 @@ int Stock::createTable (BarData *bars)
   return rc;
 }
 
+int Stock::deleteSymbol (BarData *symbol)
+{
+  transaction();
+
+  if (getIndexData(symbol))
+    return 1;
+
+  // delete any chart objects
+  CODataBase db;
+  db.deleteChartObjects(symbol);
+
+  // drop quote table
+  QString s = "DROP TABLE " + symbol->getTableName();
+  if (command(s, QString("Stock::deleteSymbol: drop quotes table")))
+    return 1;
+
+  // remove index record
+  s = "DELETE FROM symbolIndex";
+  s.append(" WHERE symbol='" + symbol->getSymbol() + "'");
+  s.append(" AND exchange='" + symbol->getExchange() + "'");
+  if (command(s, QString("Stock::deleteSymbol: remove symbolIndex record")))
+    return 1;
+
+  commit();
+
+  return 0;
+}
+
 //*************************************************************
 //************** SCRIPT FUNCTIONS *****************************
 //*************************************************************

@@ -113,6 +113,18 @@ PlotLine * Indicator::line (QString &k)
   return _lines.value(k);
 }
 
+int Indicator::deleteLine (QString &k)
+{
+  PlotLine *line = _lines.value(k);
+  if (! line)
+    return 1;
+
+  delete line;
+  _lines.remove(k);
+
+  return 0;
+}
+
 void Indicator::setSettings (Setting &d)
 {
   _settings = d;

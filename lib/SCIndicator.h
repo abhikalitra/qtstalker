@@ -40,7 +40,8 @@ class SCIndicator
       GET_RANGE, // returns the start and end index values
       PLUGIN, // get a plugin indicator
       SET_INDEX, // pass a single indicator value from script to qtstalker
-      SET_COLOR // set the color of the bar at index pos
+      SET_COLOR, // set the color of the bar at index pos
+      DELETE  // delete an indicator
     };
     
     SCIndicator ();
@@ -52,6 +53,7 @@ class SCIndicator
     int setColor (QStringList &, QByteArray &, Indicator &);
     int getPlugin (QStringList &, QByteArray &, Indicator &, BarData *);
     int getNew (QStringList &, QByteArray &, Indicator &, BarData *);
+    int setDelete (QStringList &, QByteArray &, Indicator &);
 
   protected:
     QStringList methodList;

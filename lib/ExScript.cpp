@@ -36,7 +36,6 @@ ExScript::ExScript ()
   _killFlag = 0;
 
   _functionList << "CO";
-  _functionList << "DELETE";
   _functionList << "INDICATOR";
   _functionList << "GROUP";
   _functionList << "PLOT";
@@ -146,15 +145,6 @@ void ExScript::readFromStdout ()
       SCChartObject sc;
       sc.calculate(l, ba, _indicator, _data);
       _proc->write(ba);
-      break;
-    }
-    case DELETE:
-    {
-      // we actually have to delete the lines if we call this function in scripts
-      // not from qtstalker or we will delete actual plots
-//      SCDelete sc;
-//      sc.calculate(l, ba, _indicator);
-//      proc->write(ba);
       break;
     }
     case INDICATOR:
