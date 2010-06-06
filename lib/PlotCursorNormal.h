@@ -19,38 +19,21 @@
  *  USA.
  */
 
-#ifndef PLOT_DATA_HPP
-#define PLOT_DATA_HPP
+#ifndef PLOT_CURSOR_NORMAL_HPP
+#define PLOT_CURSOR_NORMAL_HPP
 
-#include <QString>
-#include <QFont>
-#include <QColor>
-#include <QDateTime>
-#include <QPixmap>
-#include <QWidget>
+#include "PlotCursor.h"
 
-struct PlotData
+class PlotCursorNormal : public PlotCursor
 {
-  QPixmap buffer;
-  int barSpacing;
-  int startIndex;
-  int endIndex;
-  int infoIndex; // calculated position for info
-  int infoFlag;
-  int pos;
-  int interval;
-  int dateHeight;
-  int scaleWidth;
-  int barWidth;
-  int mouseFlag;
-  int x;
-  int y;
-  double y1; // scaler y position
-  QFont plotFont;
-  QColor backgroundColor;
-  QColor borderColor;
-  QDateTime x1; // dateBars bar position
-  QWidget *plot;
+  public:
+    PlotCursorNormal ();
+    int getCursor ();
+    void mousePress (PlotData &, DateBar &, Scaler &, Indicator &);
+    void mouseDoubleClick (PlotData &, DateBar &, Scaler &);
+    void mouseMove (PlotData &, DateBar &, Scaler &, Indicator &);
 };
 
 #endif
+
+

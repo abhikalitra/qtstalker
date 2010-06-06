@@ -503,5 +503,7 @@
 
            Added a DELETE command to the INDICATOR script API command set. See docs.
 
+20100606:  Split the Plot:: cursor functions into separate classes.
+
 
 

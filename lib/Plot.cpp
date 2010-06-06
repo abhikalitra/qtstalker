@@ -26,6 +26,7 @@
 #include "PlotFactory.h"
 #include "PlotCursorInfo.h"
 #include "PlotDrawInfo.h"
+#include "PlotCursorFactory.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -50,8 +51,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _plotData.backgroundColor.setNamedColor("black");
   _plotData.borderColor.setNamedColor("white");
   _plotData.infoIndex = 0;
-  _plotData.x = 0;
-  _plotData.y = 0;
   _plotData.y1 = 0;
   _plotData.infoFlag = 1;
   _plotData.pos = 0;
@@ -59,14 +58,17 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _plotData.dateHeight = 30;
   _plotData.scaleWidth = 70;
   _plotData.barWidth = 5;
+  _plotData.mouseFlag = None;
+  _plotData.x = 0;
+  _plotData.y = 0;
+  _plotData.plot = this;
   
-  _mouseFlag = None;
   _saveMouseFlag = None;
   _chartMenu = 0;
   _coSelected = 0;
   _menuFlag = TRUE;
-  _rubberBand = 0;
   _newObjectFlag = 0;
+  _cursor = 0;
 
   _plotData.plotFont.setFamily("Helvetica");
   _plotData.plotFont.setPointSize(12);
@@ -85,11 +87,14 @@ Plot::Plot (QWidget *w) : QWidget(w)
   setMouseTracking(TRUE);
 
   setFocusPolicy(Qt::ClickFocus);
+
+  cursorChanged(0); // set the default cursor
 }
 
 Plot::~Plot ()
 {
   _indicator.clear();
+  delete _cursor;
 }
 
 //*********************************************************************
@@ -164,23 +169,15 @@ void Plot::drawLines ()
   }
 }
 
-void Plot::paintEvent (QPaintEvent *event)
+void Plot::paintEvent (QPaintEvent *)
 {
   QPainter painter(this);
   
-  if (_mouseFlag == CursorZoom)
-    painter.drawPixmap(0, 0, _plotData.buffer);
-  else
-    painter.drawPixmap(event->rect(), _plotData.buffer);
-  
-  if (_mouseFlag == CursorCrosshair)
-  {
-    int y = _scaler.convertToY(_plotData.y1);
-    painter.setPen(QPen(_plotData.borderColor, 1, Qt::DotLine));
-    painter.drawLine (0, y, _plotData.buffer.width(), y);
-    painter.drawLine (_plotData.x, 0, _plotData.x, _plotData.buffer.height());
-    painter.end();
-  }
+//  painter.drawPixmap(0, 0, _plotData.buffer);
+//  painter.drawPixmap(event->rect(), _plotData.buffer);
+
+  painter.drawPixmap(0, 0, _plotData.buffer);
+  _cursor->draw(painter, _plotData, _dateBars, _scaler);
 }
 
 void Plot::resizeEvent (QResizeEvent *event)
@@ -192,37 +189,19 @@ void Plot::resizeEvent (QResizeEvent *event)
 
 void Plot::cursorChanged (int d)
 {
-  switch (d)
-  {
-    case 0: // normal cursor
-      _mouseFlag = None;
-      break;
-    case 1:
-      _mouseFlag = CursorZoom;
-      break;
-    case 2:
-      _mouseFlag = CursorCrosshair;
-      break;
-    default:
-      break;
-  }
+  if (_cursor)
+    delete _cursor;
   
-  updateCursor();
+  PlotCursorFactory fac;
+  _cursor = fac.cursor(d);
+  
+  connect(_cursor, SIGNAL(signalInfoMessage(Setting *)), this, SIGNAL(signalInfoMessage(Setting *)));
+  connect(_cursor, SIGNAL(signalPixelSpaceChanged(int, int)), this, SIGNAL(signalPixelSpaceChanged(int, int)));
+  connect(_cursor, SIGNAL(signalCOSelected(int)), this, SLOT(coSelected(int)));
+  connect(_cursor, SIGNAL(signalIndexChanged(int)), this, SIGNAL(signalIndexChanged(int)));
+  setCursor(QCursor((Qt::CursorShape) _cursor->getCursor()));
 
   emit signalDraw();
-}
-
-void Plot::updateCursor ()
-{
-  switch (_mouseFlag)
-  {
-    case CursorCrosshair:
-      setCursor(QCursor(Qt::CrossCursor));
-      break;
-    default:
-      setCursor(QCursor(Qt::ArrowCursor));
-      break;
-  }
 }
 
 //*********************************************************************
@@ -231,7 +210,6 @@ void Plot::updateCursor ()
 
 void Plot::setScale ()
 {
-  int flag = 1;
   double tscaleHigh = -99999999;
   double tscaleLow = 99999999;
 
@@ -246,8 +224,6 @@ void Plot::setScale ()
     if (line->highLowRange(_plotData.startIndex, _plotData.endIndex, h, l))
       continue;
 
-    flag = 0;
-    
     if (h > tscaleHigh)
       tscaleHigh = h;
     if (l < tscaleLow)
@@ -319,21 +295,20 @@ void Plot::mousePressEvent (QMouseEvent *event)
     return;
   }
 
-  switch (_mouseFlag)
+  switch (_plotData.mouseFlag)
   {
     case COSelected:
     {
-      QPoint p;
-      p.setX(event->x());
-      p.setY(event->y());
+      getXY(event->x(), event->y());
+      QPoint p(event->x(), event->y());
       _moveFlag = _coSelected->isGrabSelected(p);
       if (_moveFlag)
-        _mouseFlag = Moving;
+        _plotData.mouseFlag = Moving;
       else
       {
         if (! _coSelected->isSelected(p))
         {
-          _mouseFlag = None;
+          _plotData.mouseFlag = None;
 	  _coSelected->setSelected(FALSE);
           emit signalDraw();
         }
@@ -341,18 +316,18 @@ void Plot::mousePressEvent (QMouseEvent *event)
       break;
     }
     case Moving:
-      _mouseFlag = COSelected;
+      _plotData.mouseFlag = COSelected;
       break;
     case ClickWait:
     {
       getXY(event->x(), event->y());
       int rc = _coSelected->create2(_plotData.x1, _plotData.y1);
       if (rc)
-	_mouseFlag = ClickWait2;
+	_plotData.mouseFlag = ClickWait2;
       else
       {
-	_mouseFlag = _saveMouseFlag;
-	updateCursor();
+	_plotData.mouseFlag = _saveMouseFlag;
+        setCursor(QCursor(Qt::ArrowCursor));
         emit signalDraw();
 	
         int i = convertXToDataIndex(event->x());
@@ -369,8 +344,8 @@ void Plot::mousePressEvent (QMouseEvent *event)
       int rc = _coSelected->create3(_plotData.x1, _plotData.y1);
       if (! rc)
       {
-	_mouseFlag = _saveMouseFlag;
-	updateCursor();
+	_plotData.mouseFlag = _saveMouseFlag;
+        setCursor(QCursor(Qt::ArrowCursor));
         emit signalDraw();
 	
         int i = convertXToDataIndex(event->x());
@@ -382,58 +357,14 @@ void Plot::mousePressEvent (QMouseEvent *event)
       break;
     }
     case NewObjectWait:
-    {
-      _mouseFlag = ClickWait;
+      _plotData.mouseFlag = ClickWait;
       emit signalNewExternalChartObjectDone();
       mousePressEvent(event); // recursive call to capture first mouse click again
       break;
-    }
-    case CursorZoom:
-    {
-      if (! _rubberBand)
-	return;
-      
-      if (_rubberBand->width() < _plotData.barSpacing)
-        return;
-      
-      // calculate new pixel spacing and position here
-      int x = convertXToDataIndex(_mouseOrigin.x());
-      int ti = _rubberBand->width() / _plotData.barSpacing;
-      ti = this->width() / ti;
-      
-      delete _rubberBand;
-      _rubberBand = 0;
-      
-      unsetCursor();
-      
-      if (ti < _plotData.barSpacing)
-        return;
-      
-      emit signalPixelspaceChanged(x, ti);
-      break;
-    }
     case None:
-    {
-      QList<int> keyList;
-      _indicator.coKeys(keyList);
-      int loop = 0;
-      for (; loop < keyList.at(loop); loop++)
-      {
-        _coSelected = _indicator.chartObject(keyList.at(loop));
-        QPoint p(event->x(), event->y());
-        if (_coSelected->isSelected(p))
-        {
-          _mouseFlag = COSelected;
-          _coSelected->setSelected(TRUE);
-          Setting *mess = new Setting;
-          _coSelected->getInfo(mess);
-          emit signalInfoMessage(mess);
-          emit signalDraw();
-          return;
-        }
-      }
+      getXY(event->x(), event->y());
+      _cursor->mousePress(_plotData, _dateBars, _scaler, _indicator);
       break;
-    }
     default:
       QWidget::mousePressEvent(event);
       break;
@@ -449,79 +380,22 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     return;
   }
 
-  switch (_mouseFlag)
+  switch (_plotData.mouseFlag)
   {
-    case CursorCrosshair:
-    {
-      getXY(event->x(), event->y());
-
-      update();
-      
-      int i = convertXToDataIndex(event->x());
-      PlotCursorInfo info;
-      Setting *mess = info.infoXY(i, event->y(), _dateBars, _scaler);
-      if (mess)
-        emit signalInfoMessage(mess);
-      break;
-    }
-    case CursorZoom:
-    {
-      int i = convertXToDataIndex(event->x());
-      PlotCursorInfo info;
-      Setting *mess = info.infoXY(i, event->y(), _dateBars, _scaler);
-      if (mess)
-        emit signalInfoMessage(mess);
-      
-      if (_rubberBand)
-        _rubberBand->setGeometry(QRect(_mouseOrigin, event->pos()).normalized());
-      break;
-    }
     case Moving:
-    {
       getXY(event->x(), event->y());
       _coSelected->moving(_plotData.x1, _plotData.y1, _moveFlag);
       emit signalDraw();
       break;
-    }
     case ClickWait2:
-    {
       getXY(event->x(), event->y());
       _coSelected->moving(_plotData.x1, _plotData.y1, 0);
       emit signalDraw();
       break;
-    }
     case None:
-    {
-      // update the data panel with new data
-      if (! _plotData.infoFlag)
-	return;
-      
-      // determine if we are over a chart object, if so update cursor
-      QPoint p(event->x(), event->y());
-      QList<int> keyList;
-      _indicator.coKeys(keyList);
-      int loop = 0;
-      int flag = 0;
-      for (; loop < keyList.count(); loop++)
-      {
-        COPlugin *co = _indicator.chartObject(keyList.at(loop));
-        if (co->isSelected(p))
-        {
-          setCursor(QCursor(Qt::PointingHandCursor));
-	  flag = 1;
-	  break;
-        }
-      }
-      if (! flag)
-        setCursor(QCursor(Qt::ArrowCursor));
-
-      PlotCursorInfo info;
-      _plotData.infoIndex = convertXToDataIndex(event->x());
-      Setting *mess = info.info(p, _plotData, _indicator, _dateBars);
-      if (mess)
-        emit signalInfoMessage(mess);
+      getXY(event->x(), event->y());
+      _cursor->mouseMove(_plotData, _dateBars, _scaler, _indicator);
       break;
-    }
     default:
       QWidget::mouseMoveEvent(event);
       break;
@@ -536,37 +410,16 @@ void Plot::mouseDoubleClickEvent (QMouseEvent *event)
     return;
   }
 
-  switch (_mouseFlag)
+  switch (_plotData.mouseFlag)
   {
-    case None: // center chart on double click mouse position
-    {
-      int center = ((_plotData.buffer.width() - _plotData.scaleWidth) / _plotData.barSpacing) / 2;
-      int i = event->x() / _plotData.barSpacing;
-      if (i < center)
-        emit signalIndexChanged(_plotData.startIndex - (center - i));
-      else
-      {
-	if (i > center)
-          emit signalIndexChanged(_plotData.startIndex + (i - center));
-      }
+    case None:
+      getXY(event->x(), event->y());
+      _cursor->mouseDoubleClick(_plotData, _dateBars, _scaler);
       break;
-    }
     case COSelected:
       if (_coSelected)
         objectDialog();
       break;
-    case CursorZoom:
-    {
-      if (_rubberBand)
-	return;
-      
-      _rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
-      _mouseOrigin = event->pos();
-      _rubberBand->setGeometry(QRect(_mouseOrigin, QSize()));
-      _rubberBand->show();
-      setCursor(QCursor(Qt::SizeFDiagCursor));
-      break;
-    }
     default:
       QWidget::mouseDoubleClickEvent(event);
       break;
@@ -579,7 +432,7 @@ void Plot::mouseDoubleClickEvent (QMouseEvent *event)
 
 void Plot::contextMenuEvent (QContextMenuEvent *)
 {
-  switch (_mouseFlag)
+  switch (_plotData.mouseFlag)
   {
     case COSelected:
       if (_coSelected)
@@ -756,6 +609,7 @@ void Plot::getXY (int x, int y)
   int i = convertXToDataIndex(x);
   _dateBars.getDate(i, _plotData.x1);
   _plotData.y1 = _scaler.convertToVal(y);
+  _plotData.infoIndex = i;
 }
 
 int Plot::convertXToDataIndex (int x)
@@ -775,24 +629,24 @@ int Plot::convertXToDataIndex (int x)
 
 void Plot::setExternalChartObjectFlag ()
 {
-  if (_mouseFlag != NewObjectWait)
+  if (_plotData.mouseFlag != NewObjectWait)
     return;
   
-  _mouseFlag = _saveMouseFlag;
+  _plotData.mouseFlag = _saveMouseFlag;
   _newObjectFlag = FALSE;
 
   _indicator.deleteChartObject(_coSelected->getID());
   _coSelected = 0;
 
-  updateCursor();
+//  updateCursor();
   emit signalDraw();
 }
 
 void Plot::newExternalChartObject (QString d)
 {
   _newObjectFlag = TRUE;
-  _saveMouseFlag = _mouseFlag;
-  _mouseFlag = NewObjectWait;
+  _saveMouseFlag = (MouseStatus) _plotData.mouseFlag;
+  _plotData.mouseFlag = NewObjectWait;
   newChartObject(d);
 }
 
@@ -826,7 +680,7 @@ void Plot::newChartObject (QString selection)
   _indicator.addChartObject(_coSelected);
 
   if (! _newObjectFlag)
-    _mouseFlag = ClickWait;
+    _plotData.mouseFlag = ClickWait;
 
   setCursor(QCursor(Qt::PointingHandCursor));
 }
@@ -866,7 +720,7 @@ void Plot::deleteAllChartObjects ()
   bd.setSymbol(_symbol);
   db.deleteChartObjects(&bd);
 
-  _mouseFlag = None;
+  _plotData.mouseFlag = None;
 
   emit signalDraw();
 }
@@ -882,7 +736,7 @@ void Plot::chartObjectDeleted ()
   CODataBase db;
   db.deleteChartObject(_coSelected->getID());
 
-  _mouseFlag = None;
+  _plotData.mouseFlag = None;
 
   emit signalDraw();
 }
@@ -918,6 +772,19 @@ void Plot::loadChartObjects ()
 void Plot::objectDialog ()
 {
   _coSelected->dialog();
+  emit signalDraw();
+}
+
+void Plot::coSelected (int d)
+{
+  _coSelected = _indicator.chartObject(d);
+  _plotData.mouseFlag = COSelected;
+  _coSelected->setSelected(TRUE);
+  
+  Setting *mess = new Setting;
+  _coSelected->getInfo(mess);
+  emit signalInfoMessage(mess);
+  
   emit signalDraw();
 }
 

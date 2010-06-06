@@ -32,7 +32,6 @@
 #include <QDateTime>
 #include <QPixmap>
 #include <QMenu>
-#include <QRubberBand>
 #include <QPoint>
 #include <QList>
 
@@ -46,6 +45,7 @@
 #include "ScalePlot.h"
 #include "Scaler.h"
 #include "DateBar.h"
+#include "PlotCursor.h"
 
 class Plot : public QWidget
 {
@@ -54,7 +54,7 @@ class Plot : public QWidget
   signals:
     void signalStatusMessage (QString);
     void signalInfoMessage (Setting *);
-    void signalPixelspaceChanged (int, int);
+    void signalPixelSpaceChanged (int, int);
     void signalDraw ();
     void signalDateFlag (bool);
     void signalLogFlag (bool);
@@ -69,9 +69,7 @@ class Plot : public QWidget
       COSelected,
       Moving,
       ClickWait2,
-      NewObjectWait,
-      CursorZoom,
-      CursorCrosshair
+      NewObjectWait
     };
 
     Plot (QWidget *);
@@ -109,7 +107,6 @@ class Plot : public QWidget
     void newExternalChartObject (QString);
     void setExternalChartObjectFlag ();
     void cursorChanged (int);
-    void updateCursor ();
     void clear ();
 
   protected:
@@ -131,21 +128,19 @@ class Plot : public QWidget
     void toggleLog ();
     void saveChartObjects ();
     void objectDialog ();
+    void coSelected (int);
 
   private:
     Indicator _indicator;
     PlotData _plotData;
     PlotGrid _grid;
     bool _menuFlag;
-    MouseStatus _mouseFlag;
     COPlugin *_coSelected;
     QMenu *_chartMenu;
     QMenu *_coMenu;
     QString _symbol;
     QString _exchange;
     int _moveFlag;
-    QRubberBand *_rubberBand;
-    QPoint _mouseOrigin;
     int _newObjectFlag;
     int _dragPos;
     MouseStatus _saveMouseFlag;
@@ -153,6 +148,7 @@ class Plot : public QWidget
     ScalePlot _scalePlot;
     Scaler _scaler;
     DateBar _dateBars;
+    PlotCursor *_cursor;
 };
 
 #endif

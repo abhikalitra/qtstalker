@@ -30,6 +30,9 @@
 #include "Setting.h"
 #include "COPlugin.h"
 
+//#include "Scaler.h"
+//#include "PlotData.h"
+
 class Indicator
 {
   public:

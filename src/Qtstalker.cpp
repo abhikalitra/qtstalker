@@ -689,7 +689,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   plot->setIndex(_plotSlider->getValue());
   plot->setInterval((Bar::BarLength) _barLengthButtons->getCurrentButton());
 
-  connect(plot, SIGNAL(signalPixelspaceChanged(int, int)), _zoomButtons, SLOT(addZoom(int, int)));
+  connect(plot, SIGNAL(signalPixelSpaceChanged(int, int)), _zoomButtons, SLOT(addZoom(int, int)));
   connect(plot, SIGNAL(signalInfoMessage(Setting *)), _infoPanel, SLOT(showInfo(Setting *)));
   connect(plot, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalPixelspace(int)), plot, SLOT(setPixelspace(int)));

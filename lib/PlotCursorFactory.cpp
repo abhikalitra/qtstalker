@@ -19,38 +19,47 @@
  *  USA.
  */
 
-#ifndef PLOT_DATA_HPP
-#define PLOT_DATA_HPP
+#include "PlotCursorFactory.h"
+#include "PlotCursorNormal.h"
+#include "PlotCursorZoom.h"
+#include "PlotCursorCrossHair.h"
 
-#include <QString>
-#include <QFont>
-#include <QColor>
-#include <QDateTime>
-#include <QPixmap>
-#include <QWidget>
+#include <QDebug>
 
-struct PlotData
+PlotCursorFactory::PlotCursorFactory ()
 {
-  QPixmap buffer;
-  int barSpacing;
-  int startIndex;
-  int endIndex;
-  int infoIndex; // calculated position for info
-  int infoFlag;
-  int pos;
-  int interval;
-  int dateHeight;
-  int scaleWidth;
-  int barWidth;
-  int mouseFlag;
-  int x;
-  int y;
-  double y1; // scaler y position
-  QFont plotFont;
-  QColor backgroundColor;
-  QColor borderColor;
-  QDateTime x1; // dateBars bar position
-  QWidget *plot;
-};
+  _cursorList << "Normal" << "Zoom" << "CrossHair";
+}
 
-#endif
+PlotCursor * PlotCursorFactory::cursor (int type)
+{
+  PlotCursor *cursor = 0;
+  
+  switch ((CursorType) type)
+  {
+    case CursorTypeNormal:
+      cursor = new PlotCursorNormal;
+      break;
+    case CursorTypeZoom:
+      cursor = new PlotCursorZoom;
+      break;
+    case CursorTypeCrossHair:
+      cursor = new PlotCursorCrossHair;
+      break;
+    default:
+      break;
+  }
+  
+  return cursor;
+}
+
+QStringList & PlotCursorFactory::list ()
+{
+  return _cursorList;
+}
+
+int PlotCursorFactory::typeFromString (QString &d)
+{
+  return _cursorList.indexOf(d);
+}
+

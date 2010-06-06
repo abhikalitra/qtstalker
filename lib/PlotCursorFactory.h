@@ -19,38 +19,31 @@
  *  USA.
  */
 
-#ifndef PLOT_DATA_HPP
-#define PLOT_DATA_HPP
+#ifndef PLOT_CURSOR_FACTORY_HPP
+#define PLOT_CURSOR_FACTORY_HPP
+
+#include "PlotCursor.h"
 
 #include <QString>
-#include <QFont>
-#include <QColor>
-#include <QDateTime>
-#include <QPixmap>
-#include <QWidget>
+#include <QStringList>
 
-struct PlotData
+class PlotCursorFactory
 {
-  QPixmap buffer;
-  int barSpacing;
-  int startIndex;
-  int endIndex;
-  int infoIndex; // calculated position for info
-  int infoFlag;
-  int pos;
-  int interval;
-  int dateHeight;
-  int scaleWidth;
-  int barWidth;
-  int mouseFlag;
-  int x;
-  int y;
-  double y1; // scaler y position
-  QFont plotFont;
-  QColor backgroundColor;
-  QColor borderColor;
-  QDateTime x1; // dateBars bar position
-  QWidget *plot;
+  public:
+    enum CursorType
+    {
+      CursorTypeNormal,
+      CursorTypeZoom,
+      CursorTypeCrossHair
+    };
+
+    PlotCursorFactory ();
+    PlotCursor * cursor (int);
+    QStringList & list ();
+    int typeFromString (QString &);
+
+  private:
+    QStringList _cursorList;
 };
 
 #endif

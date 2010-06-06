@@ -19,38 +19,22 @@
  *  USA.
  */
 
-#ifndef PLOT_DATA_HPP
-#define PLOT_DATA_HPP
+#ifndef PLOT_CURSOR_CROSS_HAIR_HPP
+#define PLOT_CURSOR_CROSS_HAIR_HPP
 
-#include <QString>
-#include <QFont>
-#include <QColor>
-#include <QDateTime>
-#include <QPixmap>
-#include <QWidget>
+#include "PlotCursor.h"
 
-struct PlotData
+#include <QPoint>
+
+class PlotCursorCrossHair : public PlotCursor
 {
-  QPixmap buffer;
-  int barSpacing;
-  int startIndex;
-  int endIndex;
-  int infoIndex; // calculated position for info
-  int infoFlag;
-  int pos;
-  int interval;
-  int dateHeight;
-  int scaleWidth;
-  int barWidth;
-  int mouseFlag;
-  int x;
-  int y;
-  double y1; // scaler y position
-  QFont plotFont;
-  QColor backgroundColor;
-  QColor borderColor;
-  QDateTime x1; // dateBars bar position
-  QWidget *plot;
+  public:
+    PlotCursorCrossHair ();
+    int getCursor ();
+    void draw (QPainter &, PlotData &, DateBar &, Scaler &);
+    void mouseMove (PlotData &, DateBar &, Scaler &, Indicator &);
 };
 
 #endif
+
+

@@ -84,6 +84,12 @@ HEADERS += IndicatorPluginFactory.h
 HEADERS += MiscPluginFactory.h
 HEADERS += MiscPlugin.h
 
+HEADERS += PlotCursorFactory.h
+HEADERS += PlotCursor.h
+HEADERS += PlotCursorZoom.h
+HEADERS += PlotCursorCrossHair.h
+HEADERS += PlotCursorNormal.h
+
 
 SOURCES += Setting.cpp
 SOURCES += PlotLine.cpp
@@ -163,6 +169,11 @@ SOURCES += IndicatorPluginFactory.cpp
 SOURCES += MiscPluginFactory.cpp
 SOURCES += MiscPlugin.cpp
 
+SOURCES += PlotCursorFactory.cpp
+SOURCES += PlotCursor.cpp
+SOURCES += PlotCursorZoom.cpp
+SOURCES += PlotCursorCrossHair.cpp
+SOURCES += PlotCursorNormal.cpp
 
 
 TARGET = qtstalker
