@@ -248,6 +248,8 @@ void CSVRuleDialog::addClicked ()
     dateDialog(item);
     if (item.isEmpty())
       return;
+
+    item = "Date=" + item;
   }
                                        
   if (item == "Time")
@@ -256,6 +258,8 @@ void CSVRuleDialog::addClicked ()
     timeDialog(item);
     if (item.isEmpty())
       return;
+
+    item = "Time=" + item;
   }
 
   new QListWidgetItem(item, _ruleList, 0);
@@ -284,6 +288,8 @@ void CSVRuleDialog::insertClicked ()
     dateDialog(item);
     if (item.isEmpty())
       return;
+    
+    item = "Date=" + item;
   }
 
   if (item == "Time")
@@ -292,6 +298,8 @@ void CSVRuleDialog::insertClicked ()
     timeDialog(item);
     if (item.isEmpty())
       return;
+    
+    item = "Time=" + item;
   }
 
   _ruleList->insertItem(_ruleList->currentRow(), item);

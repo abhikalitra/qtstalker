@@ -505,5 +505,7 @@
 
 20100606:  Split the Plot:: cursor functions into separate classes.
 
+           Changed the CSV plugin Date/Time delimiter field from ":" to "=". There was a conflict with the Time
+           mask. Be sure to edit your CSV rules to reflect that before testing.
 
 

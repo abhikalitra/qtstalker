@@ -324,7 +324,7 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
       {
         if (_fieldList[fieldLoop].contains("Date"))
         {
-          QStringList l = _fieldList[fieldLoop].split(":");
+          QStringList l = _fieldList[fieldLoop].split("=");
           bar.date = QDateTime::fromString(pl[fieldLoop], l[1]);
           if (! bar.date.isValid())
           {
@@ -340,7 +340,7 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
 
         if (_fieldList[fieldLoop].contains("Time"))
         {
-          QStringList l = _fieldList[fieldLoop].split(":");
+          QStringList l = _fieldList[fieldLoop].split("=");
           QTime time = QTime::fromString(pl[fieldLoop], l[1]);
           if (! time.isValid())
           {
