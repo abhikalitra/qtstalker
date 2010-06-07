@@ -269,9 +269,8 @@ int PO::dialog (int)
 
   dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), _settings.getInt(SlowPeriod), 2, 100000);
 
-  QStringList maList;
   MAFactory mau;
-  mau.list(maList);
+  QStringList maList = mau.list();
 
   _settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

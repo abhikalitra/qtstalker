@@ -20,86 +20,102 @@
  */
 
 #include "MAFactory.h"
-#include "EMA.h"
-#include "DEMA.h"
-#include "KAMA.h"
-#include "SMA.h"
-#include "TEMA.h"
-#include "TRIMA.h"
+#include "ta_libc.h"
 #include "Wilder.h"
-#include "WMA.h"
+#include "PlotFactory.h"
 
 #include <QtDebug>
 
 MAFactory::MAFactory ()
 {
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MAFactory::error on TA_Initialize");
+  
   _maList << "EMA" << "DEMA" << "KAMA" << "SMA" << "TEMA" << "TRIMA" << "Wilder" << "WMA";
 }
 
 PlotLine * MAFactory::ma (PlotLine *in, int period, int method, int lineType, QColor &color)
 {
-  PlotLine *line = 0;
-  
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    PlotLineBar *bar = in->data(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_SUCCESS;
+
   switch ((Method) method)
   {
-    case _EMA:
-    {
-      EMA ma;
-      line = ma.ema(in, period, lineType, color);
+    case EMA:
+      rc = TA_EMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
-    }      
-    case _DEMA:
-    {
-      DEMA ma;
-      line = ma.dema(in, period, lineType, color);
+    case DEMA:
+      rc = TA_DEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
-    }
-    case _KAMA:
-    {
-      KAMA ma;
-      line = ma.kama(in, period, lineType, color);
+    case KAMA:
+      rc = TA_KAMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
-    }
-    case _SMA:
-    {
-      SMA ma;
-      line = ma.sma(in, period, lineType, color);
+    case SMA:
+      rc = TA_SMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
-    }
-    case _TEMA:
-    {
-      TEMA ma;
-      line = ma.tema(in, period, lineType, color);
+    case TEMA:
+      rc = TA_TEMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
-    }
-    case _TRIMA:
-    {
-      TRIMA ma;
-      line = ma.trima(in, period, lineType, color);
+    case TRIMA:
+      rc = TA_TRIMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
-    }
     case _Wilder:
     {
-      Wilder ma;
-      line = ma.wilder(in, period, lineType, color);
+      Wilder wilder;
+      return wilder.wilder(in, period, lineType, color);
       break;
     }
-    case _WMA:
-    {
-      WMA ma;
-      line = ma.wma(in, period, lineType, color);
+    case WMA:
+      rc = TA_WMA(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
       break;
-    }
     default:
+      qDebug() << "MAFactory::ma: invalid method";
+      return 0;
       break;
+  }
+      
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "MAFactory::ma: TA-Lib error" << rc;
+    return 0;
+  }
+
+  PlotFactory fac;
+  PlotLine *line = fac.plot(lineType);
+  if (! line)
+    return 0;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
 
   return line;
 }
 
-void MAFactory::list (QStringList &l)
+QStringList & MAFactory::list ()
 {
-  l = _maList;
+  return _maList;
 }
 
 int MAFactory::typeFromString (QString &d)

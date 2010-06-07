@@ -658,7 +658,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   Plot *plot = new Plot(_baseWidget);
   _plotList.insert(d, plot);
   plot->setDateFlag(i.date());
-  plot->setLogScale(i.log());
+  plot->setLogScale(i.getLog());
 
   it->addTab(plot, d);
 

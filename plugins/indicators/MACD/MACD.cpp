@@ -414,9 +414,8 @@ int MACD::dialog (int)
 
   dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), _settings.getInt(SlowPeriod), 2, 100000);
 
-  QStringList maList;
   MAFactory mau;
-  mau.list(maList);
+  QStringList maList = mau.list();
   
   _settings.getData(FastMA, d);
   dialog->addComboItem(FastMA, page, QObject::tr("Fast MA"), maList, d);

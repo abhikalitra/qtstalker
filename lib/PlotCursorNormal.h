@@ -29,9 +29,9 @@ class PlotCursorNormal : public PlotCursor
   public:
     PlotCursorNormal ();
     int getCursor ();
-    void mousePress (PlotData &, DateBar &, Scaler &, Indicator &);
-    void mouseDoubleClick (PlotData &, DateBar &, Scaler &);
-    void mouseMove (PlotData &, DateBar &, Scaler &, Indicator &);
+    void mousePress (PlotData &, DateBar &, Indicator &);
+    void mouseDoubleClick (PlotData &, DateBar &, Indicator &);
+    void mouseMove (PlotData &, DateBar &, Indicator &);
 };
 
 #endif

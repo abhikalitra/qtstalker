@@ -41,7 +41,6 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <iostream>
-#include <cmath>
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
@@ -116,7 +115,7 @@ void Plot::draw ()
       _plotData.endIndex = _dateBars.count() - 1;
     
     // set the current scale
-    setScale();
+    _indicator.setScale(_plotData, _dateBars);
 
     // calculate the right most bar on screen
     _plotData.infoIndex = convertXToDataIndex((_plotData.buffer.width() - _plotData.scaleWidth));
@@ -127,7 +126,7 @@ void Plot::draw ()
 
     // draw the grid
     _grid.drawXGrid(_plotData);
-    _grid.drawYGrid(_plotData, _scaler);
+    _grid.drawYGrid(_plotData, _indicator.scaler());
 
     // draw plots
     drawLines();
@@ -140,8 +139,8 @@ void Plot::draw ()
     di.draw(_plotData, _indicator, _dateBars);
 
     // draw the scale
-    _scalePlot.draw(_plotData, _scaler, _indicator);
-    _scalePlot.drawPoints(_plotData, _scaler, _indicator);
+    _scalePlot.draw(_plotData, _indicator);
+    _scalePlot.drawPoints(_plotData, _indicator);
   }
 
   update();
@@ -165,7 +164,7 @@ void Plot::drawLines ()
     if (! line->count())
       continue;
 
-    line->draw(_plotData, _scaler);
+    line->draw(_plotData, _indicator.scaler());
   }
 }
 
@@ -177,7 +176,7 @@ void Plot::paintEvent (QPaintEvent *)
 //  painter.drawPixmap(event->rect(), _plotData.buffer);
 
   painter.drawPixmap(0, 0, _plotData.buffer);
-  _cursor->draw(painter, _plotData, _dateBars, _scaler);
+  _cursor->draw(painter, _plotData, _dateBars, _indicator);
 }
 
 void Plot::resizeEvent (QResizeEvent *event)
@@ -202,85 +201,6 @@ void Plot::cursorChanged (int d)
   setCursor(QCursor((Qt::CursorShape) _cursor->getCursor()));
 
   emit signalDraw();
-}
-
-//*********************************************************************
-//*************** SCALE FUNCTIONS *************************************
-//********************************************************************
-
-void Plot::setScale ()
-{
-  double tscaleHigh = -99999999;
-  double tscaleLow = 99999999;
-
-  int loop = 0;
-  QStringList plotList = _indicator.plotOrder();
-  for (; loop < plotList.count(); loop++)
-  {
-    QString s = plotList.at(loop);
-    PlotLine *line = _indicator.line(s);
-
-    double h, l;
-    if (line->highLowRange(_plotData.startIndex, _plotData.endIndex, h, l))
-      continue;
-
-    if (h > tscaleHigh)
-      tscaleHigh = h;
-    if (l < tscaleLow)
-      tscaleLow = l;
-  }
-
-  QDateTime sd;
-  _dateBars.getDate(_plotData.startIndex, sd);
-  QDateTime ed;
-  _dateBars.getDate(_plotData.endIndex, ed);
-
-  QList<int> keyList;
-  _indicator.coKeys(keyList);
-  for (loop = 0; loop < keyList.count(); loop++)
-  {
-    COPlugin *co = _indicator.chartObject(keyList.at(loop));
-    
-    if (! co->inDateRange(sd, ed, _dateBars))
-      continue;
-      
-    double h, l;
-    if (co->getHighLow(h, l))
-      continue;
-    
-    if (h > tscaleHigh)
-      tscaleHigh = h;
-
-    if (l < tscaleLow)
-      tscaleLow = l;
-  }
-
-  // create a little more room between chart edges and plots
-  double t = (tscaleHigh - tscaleLow) * 0.02; // get 2% of the range
-  tscaleHigh += t;
-  if (tscaleLow != 0)
-    tscaleLow -= t;
-
-  // handle log scaling if toggled
-  double tlogScaleHigh = 1;
-  double tlogRange = 0;
-  if (_indicator.log())
-  {
-    tlogScaleHigh = tscaleHigh > 0.0 ? log(tscaleHigh) : 1;
-    double tlogScaleLow = tscaleLow > 0.0 ? log(tscaleLow) : 0;
-    tlogRange = tlogScaleHigh - tlogScaleLow;
-  }
-
-  int height = _plotData.buffer.height();
-  if (_indicator.date())
-    height -= _plotData.dateHeight;
-  
-  _scaler.set(height,
-              tscaleHigh,
-              tscaleLow,
-              tlogScaleHigh,
-              tlogRange,
-              _indicator.log());
 }
 
 //*********************************************************************
@@ -332,7 +252,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	
         int i = convertXToDataIndex(event->x());
         PlotCursorInfo info;
-        Setting *mess = info.infoXY(i, event->y(), _dateBars, _scaler);
+        Setting *mess = info.infoXY(i, event->y(), _dateBars, _indicator.scaler());
         if (mess)
           emit signalInfoMessage(mess);
       }
@@ -350,7 +270,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
 	
         int i = convertXToDataIndex(event->x());
         PlotCursorInfo info;
-        Setting *mess = info.infoXY(i, event->y(), _dateBars, _scaler);
+        Setting *mess = info.infoXY(i, event->y(), _dateBars, _indicator.scaler());
         if (mess)
           emit signalInfoMessage(mess);
       }
@@ -363,7 +283,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
       break;
     case None:
       getXY(event->x(), event->y());
-      _cursor->mousePress(_plotData, _dateBars, _scaler, _indicator);
+      _cursor->mousePress(_plotData, _dateBars, _indicator);
       break;
     default:
       QWidget::mousePressEvent(event);
@@ -394,7 +314,7 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
       break;
     case None:
       getXY(event->x(), event->y());
-      _cursor->mouseMove(_plotData, _dateBars, _scaler, _indicator);
+      _cursor->mouseMove(_plotData, _dateBars, _indicator);
       break;
     default:
       QWidget::mouseMoveEvent(event);
@@ -414,7 +334,7 @@ void Plot::mouseDoubleClickEvent (QMouseEvent *event)
   {
     case None:
       getXY(event->x(), event->y());
-      _cursor->mouseDoubleClick(_plotData, _dateBars, _scaler);
+      _cursor->mouseDoubleClick(_plotData, _dateBars, _indicator);
       break;
     case COSelected:
       if (_coSelected)
@@ -476,7 +396,7 @@ void Plot::toggleDate ()
 
 void Plot::toggleLog ()
 {
-  int flag = _indicator.log();
+  int flag = _indicator.getLog();
   if (flag == FALSE)
     flag = TRUE;
   else
@@ -530,7 +450,7 @@ void Plot::setLogScale (bool d)
 
 bool Plot::logScale ()
 {
-  return _indicator.log();
+  return _indicator.getLog();
 }
 
 void Plot::setInterval (Bar::BarLength d)
@@ -608,7 +528,9 @@ void Plot::getXY (int x, int y)
   _plotData.y = y;
   int i = convertXToDataIndex(x);
   _dateBars.getDate(i, _plotData.x1);
-  _plotData.y1 = _scaler.convertToVal(y);
+
+  Scaler scaler = _indicator.scaler();
+  _plotData.y1 = scaler.convertToVal(y);
   _plotData.infoIndex = i;
 }
 
@@ -693,7 +615,7 @@ void Plot::drawObjects ()
   for (; loop < keyList.count(); loop++)
   {
     COPlugin *co = _indicator.chartObject(keyList.at(loop));
-    co->draw(_plotData, _dateBars, _scaler);
+    co->draw(_plotData, _dateBars, _indicator.scaler());
   }
 }
 

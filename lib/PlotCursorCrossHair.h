@@ -31,8 +31,8 @@ class PlotCursorCrossHair : public PlotCursor
   public:
     PlotCursorCrossHair ();
     int getCursor ();
-    void draw (QPainter &, PlotData &, DateBar &, Scaler &);
-    void mouseMove (PlotData &, DateBar &, Scaler &, Indicator &);
+    void draw (QPainter &, PlotData &, DateBar &, Indicator &);
+    void mouseMove (PlotData &, DateBar &, Indicator &);
 };
 
 #endif

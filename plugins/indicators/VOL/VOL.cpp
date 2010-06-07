@@ -215,9 +215,8 @@ int VOL::dialog (int)
 
   dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), _settings.getInt(MAPeriod), 1, 100000);
 
-  QStringList maList;
   MAFactory mau;
-  mau.list(maList);
+  QStringList maList = mau.list();
   
   _settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("Type"), maList, d);

@@ -86,7 +86,6 @@ class Plot : public QWidget
     void setIndicator (Indicator &);
     Indicator & indicator ();
     void loadChartObjects ();
-    void setScale ();
     DateBar & dateBars ();
     int width ();
 
@@ -146,7 +145,7 @@ class Plot : public QWidget
     MouseStatus _saveMouseFlag;
     DatePlot _datePlot;
     ScalePlot _scalePlot;
-    Scaler _scaler;
+//    Scaler _scaler;
     DateBar _dateBars;
     PlotCursor *_cursor;
 };

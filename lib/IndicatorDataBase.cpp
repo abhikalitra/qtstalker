@@ -103,7 +103,7 @@ void IndicatorDataBase::setIndicator (Indicator &i)
   QString enable = QString::number(i.enable());
   QString tabRow = QString::number(i.tabRow());
   QString date = QString::number(i.date());
-  QString log = QString::number(i.log());
+  QString log = QString::number(i.getLog());
   QString cus = QString::number(i.CUS());
   QString indicator = i.indicator();
 

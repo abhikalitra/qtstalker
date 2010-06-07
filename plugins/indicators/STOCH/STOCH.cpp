@@ -341,9 +341,8 @@ int STOCH::dialog (int)
 
   dialog->addIntItem(FastDPeriod, page, QObject::tr("Period"), _settings.getInt(FastDPeriod), 1, 100000);
 
-  QStringList maList;
   MAFactory mau;
-  mau.list(maList);
+  QStringList maList = mau.list();
 
   _settings.getData(FastDMA, d);
   dialog->addComboItem(FastDMA, page, QObject::tr("MA Type"), maList, d);

@@ -37,7 +37,7 @@ int PlotCursorNormal::getCursor ()
   return (int) Qt::ArrowCursor;
 }
 
-void PlotCursorNormal::mousePress (PlotData &pd, DateBar &, Scaler &, Indicator &ind)
+void PlotCursorNormal::mousePress (PlotData &pd, DateBar &, Indicator &ind)
 {
   QList<int> keyList;
   ind.coKeys(keyList);
@@ -58,7 +58,7 @@ void PlotCursorNormal::mousePress (PlotData &pd, DateBar &, Scaler &, Indicator 
 }
 
 // center chart on double click mouse position
-void PlotCursorNormal::mouseDoubleClick (PlotData &pd, DateBar &, Scaler &)
+void PlotCursorNormal::mouseDoubleClick (PlotData &pd, DateBar &, Indicator &)
 {
   int center = ((pd.buffer.width() - pd.scaleWidth) / pd.barSpacing) / 2;
   int i = pd.x / pd.barSpacing;
@@ -71,7 +71,7 @@ void PlotCursorNormal::mouseDoubleClick (PlotData &pd, DateBar &, Scaler &)
   }
 }
 
-void PlotCursorNormal::mouseMove (PlotData &pd, DateBar &dateBars, Scaler &, Indicator &ind)
+void PlotCursorNormal::mouseMove (PlotData &pd, DateBar &dateBars, Indicator &ind)
 {
   // update the data panel with new data
   if (! pd.infoFlag)

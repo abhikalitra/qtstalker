@@ -32,7 +32,7 @@ ScalePlot::ScalePlot ()
 {
 }
 
-void ScalePlot::draw (PlotData &pd, Scaler &scaler, Indicator &ind)
+void ScalePlot::draw (PlotData &pd, Indicator &ind)
 {
   QPainter painter;
   painter.begin(&pd.buffer);
@@ -47,6 +47,7 @@ void ScalePlot::draw (PlotData &pd, Scaler &scaler, Indicator &ind)
   
 
   QList<double> scaleArray;
+  Scaler scaler = ind.scaler();
   scaler.scaleArray(scaleArray);
   
   QFontMetrics fm(pd.plotFont);
@@ -110,7 +111,7 @@ void ScalePlot::draw (PlotData &pd, Scaler &scaler, Indicator &ind)
   painter.end();
 }
 
-void ScalePlot::drawPoints (PlotData &pd, Scaler &scaler, Indicator &indicator)
+void ScalePlot::drawPoints (PlotData &pd, Indicator &indicator)
 {
   QList<Setting> pl;
   points(pd, pl, indicator);
@@ -123,6 +124,8 @@ void ScalePlot::drawPoints (PlotData &pd, Scaler &scaler, Indicator &indicator)
 
   int offset = 8;
   int x = pd.buffer.width() - pd.scaleWidth + 1;
+
+  Scaler scaler = indicator.scaler();
 
   int loop;
   for (loop = 0; loop < pl.count(); loop++)

@@ -30,8 +30,9 @@
 #include "Setting.h"
 #include "COPlugin.h"
 
-//#include "Scaler.h"
-//#include "PlotData.h"
+#include "Scaler.h"
+#include "PlotData.h"
+#include "DateBar.h"
 
 class Indicator
 {
@@ -46,7 +47,7 @@ class Indicator
     void setDate (int);
     int date ();
     void setLog (int);
-    int log ();
+    int getLog ();
     void setCUS (int);
     int CUS ();
     void setIndicator (QString &);
@@ -68,6 +69,8 @@ class Indicator
     void cleanClear ();
     void init ();
     void coKeys (QList<int> &);
+    Scaler & scaler ();
+    void setScale (PlotData &, DateBar &);
 
   protected:
     QHash<QString, PlotLine *> _lines;
@@ -81,6 +84,7 @@ class Indicator
     int _date;
     int _log;
     int _cus;
+    Scaler _scaler;
 };
 
 #endif

@@ -315,9 +315,8 @@ int MAVP::dialog (int)
 
   dialog->addIntItem(Max, page, QObject::tr("Max"), _settings.getInt(Max), 2, 100000);
 
-  QStringList maList;
   MAFactory mau;
-  mau.list(maList);
+  QStringList maList = mau.list();
 
   _settings.getData(MAType, d);
   dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);

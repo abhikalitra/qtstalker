@@ -33,19 +33,19 @@ class MAFactory
   public:
     enum Method
     {
-      _EMA,
-      _DEMA,
-      _KAMA,
-      _SMA,
-      _TEMA,
-      _TRIMA,
+      EMA,
+      DEMA,
+      KAMA,
+      SMA,
+      TEMA,
+      TRIMA,
       _Wilder,
-      _WMA
+      WMA
     };
 
     MAFactory ();
-    PlotLine * ma (PlotLine *, int, int, int, QColor &);
-    void list (QStringList &);
+    PlotLine * ma (PlotLine *, int period, int method, int lineType, QColor &);
+    QStringList & list ();
     int typeFromString (QString &);
     
   private:

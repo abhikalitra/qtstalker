@@ -21,6 +21,9 @@
 
 #include "Indicator.h"
 
+#include <QDateTime>
+#include <cmath>
+
 Indicator::Indicator ()
 {
   clear();
@@ -81,7 +84,7 @@ void Indicator::setLog (int d)
   _log = d;
 }
 
-int Indicator::log ()
+int Indicator::getLog ()
 {
   return _log;
 }
@@ -228,5 +231,83 @@ void Indicator::coKeys (QList<int> &l)
     it.next();
     l.append(it.key());
   }
+}
+
+Scaler & Indicator::scaler ()
+{
+  return _scaler;
+}
+
+void Indicator::setScale (PlotData &pd, DateBar &dateBars)
+{
+  double tscaleHigh = -99999999;
+  double tscaleLow = 99999999;
+
+  int loop = 0;
+  for (; loop < _plotOrder.count(); loop++)
+  {
+    PlotLine *tline = line(_plotOrder[loop]);
+
+    double h, l;
+    if (tline->highLowRange(pd.startIndex, pd.endIndex, h, l))
+      continue;
+
+    if (h > tscaleHigh)
+      tscaleHigh = h;
+    if (l < tscaleLow)
+      tscaleLow = l;
+  }
+
+  QDateTime sd, ed;
+  dateBars.getDate(pd.startIndex, sd);
+  dateBars.getDate(pd.endIndex, ed);
+
+  QList<int> keyList;
+  coKeys(keyList);
+  
+  for (loop = 0; loop < keyList.count(); loop++)
+  {
+    COPlugin *co = chartObject(keyList.at(loop));
+
+    if (! co->inDateRange(sd, ed, dateBars))
+      continue;
+
+    double h, l;
+    if (co->getHighLow(h, l))
+      continue;
+
+    if (h > tscaleHigh)
+      tscaleHigh = h;
+
+    if (l < tscaleLow)
+      tscaleLow = l;
+  }
+
+  // create a little more room between chart edges and plots
+  double t = (tscaleHigh - tscaleLow) * 0.02; // get 2% of the range
+  tscaleHigh += t;
+  if (tscaleLow != 0)
+    tscaleLow -= t;
+
+  // handle log scaling if toggled
+  double tlogScaleHigh = 1;
+  double tlogRange = 0;
+  if (getLog())
+  {
+    tlogScaleHigh = tscaleHigh > 0.0 ? log(tscaleHigh) : 1;
+    double tlogScaleLow = tscaleLow > 0.0 ? log(tscaleLow) : 0;
+    tlogRange = tlogScaleHigh - tlogScaleLow;
+  }
+
+  int height = pd.buffer.height();
+  if (date())
+    height -= pd.dateHeight;
+
+  _scaler.set(height,
+              tscaleHigh,
+              tscaleLow,
+              tlogScaleHigh,
+              tlogRange,
+              getLog());
 }
 

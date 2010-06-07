@@ -39,7 +39,7 @@ int PlotCursorZoom::getCursor ()
   return (int) Qt::ArrowCursor;
 }
 
-void PlotCursorZoom::mousePress (PlotData &pd, DateBar &dateBars, Scaler &, Indicator &)
+void PlotCursorZoom::mousePress (PlotData &pd, DateBar &dateBars, Indicator &)
 {
   if (! _rubberBand)
     return;
@@ -63,7 +63,7 @@ void PlotCursorZoom::mousePress (PlotData &pd, DateBar &dateBars, Scaler &, Indi
   emit signalPixelSpaceChanged(x, ti);
 }
 
-void PlotCursorZoom::mouseDoubleClick (PlotData &pd, DateBar &, Scaler &)
+void PlotCursorZoom::mouseDoubleClick (PlotData &pd, DateBar &, Indicator &)
 {
   if (_rubberBand)
     return;
@@ -75,12 +75,12 @@ void PlotCursorZoom::mouseDoubleClick (PlotData &pd, DateBar &, Scaler &)
   pd.plot->setCursor(QCursor(Qt::SizeFDiagCursor));
 }
 
-void PlotCursorZoom::mouseMove (PlotData &pd, DateBar &dateBars, Scaler &scaler, Indicator &)
+void PlotCursorZoom::mouseMove (PlotData &pd, DateBar &dateBars, Indicator &ind)
 {
   int i = convertXToDataIndex(pd.x, pd, dateBars);
   
   PlotCursorInfo info;
-  Setting *mess = info.infoXY(i, pd.y, dateBars, scaler);
+  Setting *mess = info.infoXY(i, pd.y, dateBars, ind.scaler());
   if (mess)
     emit signalInfoMessage(mess);
 

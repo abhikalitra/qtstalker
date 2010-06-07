@@ -354,9 +354,8 @@ int STOCHS::dialog (int)
 
   dialog->addIntItem(SlowKPeriod, page, QObject::tr("Period"), _settings.getInt(SlowKPeriod), 1, 100000);
 
-  QStringList maList;
   MAFactory mau;
-  mau.list(maList);
+  QStringList maList = mau.list();
 
   _settings.getData(SlowKMA, d);
   dialog->addComboItem(SlowKMA, page, QObject::tr("MA Type"), maList, d);

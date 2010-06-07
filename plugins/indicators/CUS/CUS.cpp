@@ -46,7 +46,7 @@ int CUS::getIndicator (Indicator &ind, BarData *data)
   if (! rc)
   {
     int cus = ind.CUS();
-    int log = ind.log();
+    int log = ind.getLog();
     int tabRow = ind.tabRow();
     
     ind = script.indicator();

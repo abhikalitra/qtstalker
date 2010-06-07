@@ -48,10 +48,10 @@ class PlotCursor : public QObject
     PlotCursor ();
     ~PlotCursor ();
     virtual int getCursor ();
-    virtual void draw (QPainter &, PlotData &, DateBar &, Scaler &);
-    virtual void mousePress (PlotData &, DateBar &, Scaler &, Indicator &);
-    virtual void mouseDoubleClick (PlotData &, DateBar &, Scaler &);
-    virtual void mouseMove (PlotData &, DateBar &, Scaler &, Indicator &);
+    virtual void draw (QPainter &, PlotData &, DateBar &, Indicator &);
+    virtual void mousePress (PlotData &, DateBar &, Indicator &);
+    virtual void mouseDoubleClick (PlotData &, DateBar &, Indicator &);
+    virtual void mouseMove (PlotData &, DateBar &, Indicator &);
     
     QString & type ();
     int convertXToDataIndex (int x, PlotData &, DateBar &);

@@ -36,22 +36,22 @@ int PlotCursor::getCursor ()
 }
 
 // virtual
-void PlotCursor::draw (QPainter &, PlotData &, DateBar &, Scaler &)
+void PlotCursor::draw (QPainter &, PlotData &, DateBar &, Indicator &)
 {
 }
 
 // virtual
-void PlotCursor::mousePress (PlotData &, DateBar &, Scaler &, Indicator &)
+void PlotCursor::mousePress (PlotData &, DateBar &, Indicator &)
 {
 }
 
 // virtual
-void PlotCursor::mouseDoubleClick (PlotData &, DateBar &, Scaler &)
+void PlotCursor::mouseDoubleClick (PlotData &, DateBar &, Indicator &)
 {
 }
 
 // virtual
-void PlotCursor::mouseMove (PlotData &, DateBar &, Scaler &, Indicator &)
+void PlotCursor::mouseMove (PlotData &, DateBar &, Indicator &)
 {
 }
 

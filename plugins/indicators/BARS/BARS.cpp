@@ -226,9 +226,8 @@ int BARS::dialog (int)
   _settings.getData(BarsLabel, d);
   dialog->addTextItem(BarsLabel, page, QObject::tr("Label"), d, QString());
 
-  QStringList maList;
   MAFactory mau;
-  mau.list(maList);
+  QStringList maList = mau.list();
   
   PlotFactory fac;
   QStringList plotList;

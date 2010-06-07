@@ -32,22 +32,23 @@ int PlotCursorCrossHair::getCursor ()
   return (int) Qt::CrossCursor;
 }
 
-void PlotCursorCrossHair::draw (QPainter &painter, PlotData &pd, DateBar &, Scaler &scaler)
+void PlotCursorCrossHair::draw (QPainter &painter, PlotData &pd, DateBar &, Indicator &ind)
 {
+  Scaler scaler = ind.scaler();
   int y = scaler.convertToY(pd.y1);
   painter.setPen(QPen(pd.borderColor, 1, Qt::DotLine));
   painter.drawLine (0, y, pd.buffer.width(), y);
   painter.drawLine (pd.x, 0, pd.x, pd.buffer.height());
 }
 
-void PlotCursorCrossHair::mouseMove (PlotData &pd, DateBar &dateBars, Scaler &scaler, Indicator &)
+void PlotCursorCrossHair::mouseMove (PlotData &pd, DateBar &dateBars, Indicator &ind)
 {
   // force an update so we can draw overtop the widget and not the buffer
 //  emit signalUpdate();  
   pd.plot->update();
 
   PlotCursorInfo info;
-  Setting *mess = info.infoXY(pd.infoIndex, pd.y, dateBars, scaler);
+  Setting *mess = info.infoXY(pd.infoIndex, pd.y, dateBars, ind.scaler());
   if (mess)
     emit signalInfoMessage(mess);
 }

@@ -199,9 +199,8 @@ int MA::dialog (int)
 
   dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
 
-  QStringList methodList;
   MAFactory mau;
-  mau.list(methodList);
+  QStringList methodList = mau.list();
   
   _settings.getData(Method, d);
   dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
