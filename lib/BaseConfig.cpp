@@ -255,3 +255,20 @@ void BaseConfig::setData (int name, QStringList &l)
   QString s = l.join(",");
   setData(name, s);
 }
+
+void BaseConfig::getData (int name, QDateTime &dt)
+{
+  QString s;
+  getData(name, s);
+  dt = QDateTime::fromString(s, Qt::ISODate);
+}
+
+void BaseConfig::setData (int name, QDateTime &dt)
+{
+  if (! dt.isValid())
+    return;
+
+  QString s = dt.toString(Qt::ISODate);
+  setData(name, s);
+}
+

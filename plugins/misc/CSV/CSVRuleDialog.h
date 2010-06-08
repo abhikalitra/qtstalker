@@ -53,6 +53,7 @@ class CSVRuleDialog : public QDialog
     void insertClicked ();
     void deleteClicked ();
     void done ();
+    void searchExchange ();
           
   private:
     QDialogButtonBox *_buttonBox;

@@ -25,7 +25,6 @@
 #include "Config.h"
 #include "CSVRule.h"
 
-#include <QMessageBox>
 #include <QLayout>
 #include <QLabel>
 #include <QInputDialog>
@@ -33,6 +32,7 @@
 #include <QGroupBox>
 #include <QList>
 #include <QDebug>
+#include <QToolButton>
 
 CSVRuleDialog::CSVRuleDialog (QString &name) : QDialog (0, 0)
 {
@@ -64,7 +64,8 @@ void CSVRuleDialog::createGUI ()
 
   int row = 0;
   int col = 0;
-  
+
+  // type parm
   QLabel *label = new QLabel(tr("Type"));
   grid->addWidget(label, row, col++);
 
@@ -76,7 +77,8 @@ void CSVRuleDialog::createGUI ()
   _type->addItems(l);
   connect(_type, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   grid->addWidget(_type, row++, col--);
-  
+
+  // delimiter parm
   label = new QLabel(tr("Delimiter"));
   grid->addWidget(label, row, col++);
   
@@ -85,7 +87,8 @@ void CSVRuleDialog::createGUI ()
   _delimeter->addItem(QString(";"));
   connect(_delimeter, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   grid->addWidget(_delimeter, row++, col--);
-  
+
+  // CSV file parm
   label = new QLabel(tr("CSV File"));
   grid->addWidget(label, row, col++);
 
@@ -94,6 +97,7 @@ void CSVRuleDialog::createGUI ()
   connect(_file, SIGNAL(signalFileChanged()), this, SLOT(ruleChanged()));
   grid->addWidget(_file, row++, col--);
 
+  // exchange parm
   label = new QLabel(tr("Exchange"));
   grid->addWidget(label, row, col++);
 
@@ -104,16 +108,23 @@ void CSVRuleDialog::createGUI ()
   _exchange = new QComboBox;
   _exchange->addItems(l);
   connect(_exchange, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
-  grid->addWidget(_exchange, row++, col--);
+  grid->addWidget(_exchange, row, col++);
 
-//  label = new QLabel(tr("Use filename as symbol"));
-//  grid->addWidget(label, row, col++);
+  QToolButton *tb = new QToolButton;
+  tb->setText(QString("..."));
+  connect(tb, SIGNAL(clicked()), this, SLOT(searchExchange()));
+  grid->addWidget(tb, row++, col);
 
-  col = 1;
-  _fileSymbol = new QCheckBox(tr("Use filename as symbol"));
+  // filename parm
+  col -= 2;
+  _fileSymbol = new QCheckBox;
   connect(_fileSymbol, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
-  grid->addWidget(_fileSymbol, row++, col--);
+  grid->addWidget(_fileSymbol, row, col++);
 
+  label = new QLabel(tr("Use filename as symbol"));
+  grid->addWidget(label, row++, col--);
+
+  // rule box
   QGroupBox *gbox = new QGroupBox;
   gbox->setTitle(tr("CSV Rule Format"));
   vbox->addWidget(gbox);
@@ -123,7 +134,6 @@ void CSVRuleDialog::createGUI ()
   gbox->setLayout(hbox);
   
   _ruleList = new QListWidget;
-//  connect(_ruleList, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(deleteRuleField(QListWidgetItem *)));
   hbox->addWidget(_ruleList);
 
   QVBoxLayout *tvbox = new QVBoxLayout;
@@ -341,6 +351,17 @@ void CSVRuleDialog::done ()
 void CSVRuleDialog::clear ()
 {
   _ruleList->clear();
+}
+
+void CSVRuleDialog::searchExchange ()
+{
+  ExchangeDataBase db;
+  QString code;
+  db.searchExchangeDialog(code);
+  if (code.isEmpty())
+    return;
+
+  _exchange->setCurrentIndex(_exchange->findText(code, Qt::MatchExactly));
 }
 
 

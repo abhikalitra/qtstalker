@@ -26,6 +26,8 @@
 #include <QtSql>
 #include <QFile>
 #include <QTextStream>
+#include <QDateTime>
+#include <QFileInfo>
 
 FuturesDataBase::FuturesDataBase ()
 {
@@ -38,19 +40,23 @@ int FuturesDataBase::createFutures ()
   if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
     return 1;
 
-  // check if last file size and current file size match
+  // check if last modification date matches current one
   // if they match then no changes, no need to re-create the table
   // if not, new data is in file so re-create the table
+  QDateTime dt;
   Config config;
-  qint64 oldSize = (qint64) config.getInt(Config::FuturesFileSize);
-  qint64 size = file.size();
-  if (size == oldSize)
+  config.getData(Config::FuturesFileDate, dt);
+
+  QFileInfo fi(file);
+  QDateTime dt2 = fi.lastModified();
+
+  if (dt == dt2)
   {
     file.close();
     return 0;
   }
   
-  config.setData(Config::FuturesFileSize, size);
+  config.setData(Config::FuturesFileDate, dt2);
   qDebug() << "FuturesDataBase::createFutures: creating new futures db";
 
   QTextStream in(&file);

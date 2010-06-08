@@ -29,6 +29,7 @@
 #include <QLayout>
 #include <QLabel>
 #include <QInputDialog>
+#include <QGroupBox>
 
 CSVDialog::CSVDialog () : QDialog (0, 0)
 {
@@ -63,9 +64,18 @@ void CSVDialog::createMainPage ()
   _rules = new QComboBox;
   grid->addWidget(_rules, row++, col--);
 
+  // message log
+  QGroupBox *gbox = new QGroupBox;
+  gbox->setTitle(tr("Message Log"));
+  vbox->addWidget(gbox);
+
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setSpacing(2);
+  gbox->setLayout(hbox);
+
   _log = new QTextEdit;
   _log->setReadOnly(TRUE);
-  vbox->addWidget(_log);
+  hbox->addWidget(_log);
 
   _buttonBox = new QDialogButtonBox;
   vbox->addWidget(_buttonBox);
@@ -113,6 +123,19 @@ void CSVDialog::newRule ()
                                        0);
   if (! ok || name.isEmpty())
     return;
+
+  if (_rules->findText(name) != -1)
+  {
+    int rc = QMessageBox::warning(this,
+                                  tr("Warning"),
+                                  tr("Duplicate rule. Overwrite?"),
+                                  QMessageBox::Yes,
+                                  QMessageBox::No,
+                                  QMessageBox::NoButton);
+
+    if (rc == QMessageBox::No)
+      return;
+  }
 
   editRule(name);
 }

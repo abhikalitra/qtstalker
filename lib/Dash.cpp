@@ -40,6 +40,12 @@ void Dash::draw (PlotData &pd, Scaler &scaler)
   int y2 = -1;
   int loop = pd.startIndex;
 
+  QPen pen;
+  pen.setStyle(Qt::DashLine);
+  pen.setJoinStyle(Qt::RoundJoin);
+  pen.setCapStyle(Qt::RoundCap);
+  pen.setWidth(1);
+
   for (; loop <= pd.endIndex; loop++, x2 += pd.barSpacing)
   {
     PlotLineBar *bar = data(loop);
@@ -49,9 +55,6 @@ void Dash::draw (PlotData &pd, Scaler &scaler)
 
       if (y != -1)
       {
-        QPen pen;
-        pen.setStyle(Qt::DashLine);
-        pen.setWidth(1);
         pen.setColor(bar->color());
         painter.setPen(pen);
         painter.drawLine (x, y, x2, y2);

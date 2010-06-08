@@ -512,6 +512,7 @@
 
            Merged all the separate MA classes into MAFactory.
 
+20100607:  Fixed csv errors in docs/exchanges.csv file.
 
-
+           Added a exchange search dialog to the CSV plugin. Use to search for the exchange code.
 

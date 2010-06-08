@@ -23,6 +23,8 @@
 #include "Strip.h"
 
 #include <QPainter>
+#include <QDebug>
+#include <QTime>
 
 Line::Line ()
 {
@@ -42,7 +44,9 @@ void Line::draw (PlotData &pd, Scaler &scaler)
 
   QPen pen;
   pen.setStyle(Qt::SolidLine);
-  painter.setPen(pen);
+  pen.setJoinStyle(Qt::RoundJoin);
+  pen.setCapStyle(Qt::RoundCap);
+  pen.setWidth(1);
 
   for (; loop <= pd.endIndex; loop++, x2 += pd.barSpacing)
   {
@@ -53,7 +57,8 @@ void Line::draw (PlotData &pd, Scaler &scaler)
 
       if (y != -1)
       {
-        painter.setPen(bar->color());
+        pen.setColor(bar->color());
+        painter.setPen(pen);
         painter.drawLine (x, y, x2, y2);
       }
       

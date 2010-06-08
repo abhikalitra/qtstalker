@@ -30,6 +30,7 @@
 #include <QFont>
 #include <QPoint>
 #include <QSize>
+#include <QDateTime>
 
 #include "DataBase.h"
 
@@ -59,6 +60,8 @@ class BaseConfig : public DataBase
     void setData (int, QSize &);
     void setData (int, QStringList &);
     void getData (int, QStringList &);
+    void setData (int, QDateTime &);
+    void getData (int, QDateTime &);
 };
 
 #endif

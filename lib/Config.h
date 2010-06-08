@@ -70,9 +70,9 @@ class Config : public BaseConfig
       Refresh, // refreshes chart every x minutes
       ScriptLaunchButton2, // script panel launch button 2
       SavedRunningScripts, // saved scripts that were running when app terminated
-      ExchangeFileSize,  // the file size of /docs/exchanges.csv
+      ExchangeFileDate,  // the last modification date of /docs/exchanges.csv
       LastScriptPath, // the dir of the last script run from a dialog
-      FuturesFileSize,   // the file size of /docs/futures.csv
+      FuturesFileDate,   // the file size of /docs/futures.csv
       DBPluginPath, // path where db plugins are stored
       DBPluginList, // csv list of current db plugins from startup inventory
       DbSearchSymbols, // the sql command to get a symbol search

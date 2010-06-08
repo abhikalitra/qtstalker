@@ -407,11 +407,18 @@ void Config::init (QString session)
     setData(MiscPluginPath, d);
   }
 
-  getData(ExchangeFileSize, d);
+  getData(ExchangeFileDate, d);
   if (d.isEmpty())
   {
     d = "0";
-    setData(ExchangeFileSize, d);
+    setData(ExchangeFileDate, d);
+  }
+
+  getData(FuturesFileDate, d);
+  if (d.isEmpty())
+  {
+    d = "0";
+    setData(FuturesFileDate, d);
   }
 
   getData(DefaultSymbol, d);

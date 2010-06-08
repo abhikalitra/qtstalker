@@ -34,6 +34,10 @@ class ExchangeDataBase : public DataBase
     int verifyExchangeName (QString &);
     int createExchanges ();
     void getExchanges (QStringList &);
+    void getFieldList (QString &, QStringList &);
+    int search (QString &, QString &, QString &, QStringList &);
+    void codeFromName (QString &, QString &);
+    void searchExchangeDialog (QString &);
 };
 
 #endif
