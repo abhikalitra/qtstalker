@@ -32,7 +32,7 @@ CODataBase::CODataBase ()
 
 void CODataBase::init ()
 {
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS chartObjects (";
   s.append("id INT PRIMARY KEY"); // 0
   s.append(", exchange TEXT"); // 1
@@ -116,7 +116,7 @@ void CODataBase::deleteChartObject (int id)
 
 void CODataBase::getChartObjects (BarData *bd, QString &indicator, Indicator &i)
 {
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT * FROM chartObjects";
   s.append(" WHERE exchange='" + bd->getExchange() + "'");
   s.append(" AND symbol='" + bd->getSymbol() + "'");

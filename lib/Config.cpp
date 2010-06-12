@@ -33,7 +33,7 @@ Config::Config ()
 void Config::init (QString session)
 {
   QString s = QDir::homePath() + "/.qtstalker/config.sqlite" + session;
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", dbName);
+  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", _dbName);
   db.setHostName("me");
   db.setDatabaseName(s);
   db.setUserName("qtstalker");

@@ -23,7 +23,8 @@
 #include "Bar.h"
 #include "ExchangeDataBase.h"
 #include "FuturesDataBase.h"
-#include "CODataBase.h"
+#include "FuturesParmsDataBase.h"
+#include "QuoteIndexDataBase.h"
 
 #include <QtSql>
 #include <QtDebug>
@@ -36,6 +37,7 @@
 Futures::Futures ()
 {
   plugin = "Futures";
+  
   scriptMethods << "SET_QUOTE" << "SET_NAME" << "SET_CODE" << "SET_MONTH" << "SET_YEAR" << "SAVE_QUOTES";
   scriptMethods << "DELETE" << "GET_QUOTES" << "RENAME";
 }
@@ -125,13 +127,15 @@ void Futures::setBars ()
 
   QSqlQuery q(QSqlDatabase::database("quotes"));
 
+  QuoteIndexDataBase idb;
+
   QHashIterator<QString, BarData *> it(quotes);
   while (it.hasNext())
   {
     it.next();
     BarData *bd = it.value();
 
-    if (getIndexData(bd))
+    if (idb.getIndexData(bd))
       return;
 
     QString table = bd->getTableName();
@@ -172,7 +176,8 @@ void Futures::setBars ()
 
 int Futures::createTable (BarData *bars)
 {
-  if (addSymbolIndex(bars))
+  QuoteIndexDataBase idb;
+  if (idb.addSymbolIndex(bars))
     return 1;
   
   // new symbol, create new table for it
@@ -186,67 +191,23 @@ int Futures::createTable (BarData *bars)
   s.append(", oi INT");
   s.append(")");
   int rc = command(s, QString("Futures::createTable: create new symbol table"));
-  
-  if (addParms(bars))
-    return 1;
-  
-  return rc;
-}
 
-int Futures::addParms (BarData *bars)
-{
-  // create a parm table if needed
-  QString s = "CREATE TABLE IF NOT EXISTS futuresParms (";
-  s.append(" record INTEGER PRIMARY KEY AUTOINCREMENT");
-  s.append(", symbol TEXT");
-  s.append(", exchange TEXT");
-  s.append(", code TEXT");
-  s.append(", month TEXT");
-  s.append(", year INT");
-  s.append(")");
-  int rc = command(s, QString("Futures::addParms: create new parm table"));
-  
-  // add new record
-  s = "INSERT OR REPLACE INTO futuresParms (symbol,exchange) VALUES(";
-  s.append("'" + bars->getSymbol() + "'");
-  s.append(",'" + bars->getExchange() + "'");
-  s.append(")");
-  rc = command(s, QString("Futures::addParms: add new record: "));
+  FuturesParmsDataBase fpdb;
+  if (fpdb.add(bars))
+    return 1;
   
   return rc;
 }
 
 int Futures::deleteSymbol (BarData *symbol)
 {
-  transaction();
-
-  if (getIndexData(symbol))
+  QuoteIndexDataBase idb;
+  if (idb.deleteSymbol(symbol))
     return 1;
-
-  // delete any chart objects
-  CODataBase db;
-  db.deleteChartObjects(symbol);
-
-  // drop quote table
-  QString s = "DROP TABLE " + symbol->getTableName();
-  if (command(s, QString("Futures::deleteSymbol: drop quotes table")))
+  
+  FuturesParmsDataBase fpdb;
+  if (fpdb.remove(symbol))
     return 1;
-
-  // remove parms record
-  s = "DELETE FROM futuresParms";
-  s.append(" WHERE symbol='" + symbol->getSymbol() + "'");
-  s.append(" AND exchange='" + symbol->getExchange() + "'");
-  if (command(s, QString("Futures::deleteSymbol: remove futuresParms record")))
-    return 1;
-
-  // remove index record
-  s = "DELETE FROM symbolIndex";
-  s.append(" WHERE symbol='" + symbol->getSymbol() + "'");
-  s.append(" AND exchange='" + symbol->getExchange() + "'");
-  if (command(s, QString("Futures::deleteSymbol: remove symbolIndex record")))
-    return 1;
-
-  commit();
 
   return 0;
 }
@@ -370,18 +331,21 @@ int Futures::scriptSetName (QStringList &l)
     qDebug() << "Futures::scriptSetName: invalid parm count" << l.count();
     return 1;
   }
-  
+
+  QuoteIndexDataBase idb;
+
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(&bd))
+  if (idb.getIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetName: symbol not found in database" << l[3] << l[4];
     return 1;
   }
   
   bd.setName(l[5]);
-  if (setIndexData(&bd))
+
+  if (idb.setIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetName: error setting index";
     return 1;
@@ -400,10 +364,12 @@ int Futures::scriptSetCode (QStringList &l)
     return 1;
   }
   
+  QuoteIndexDataBase idb;
+
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(&bd))
+  if (idb.getIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetCode: symbol not found in database" << l[3] << l[4];
     return 1;
@@ -418,11 +384,9 @@ int Futures::scriptSetCode (QStringList &l)
     return 1;
   }
   
-  QString s = "UPDATE futuresParms SET code='" + l[5] + "'";
-  s.append(" WHERE symbol='" + bd.getSymbol() + "'");
-  s.append(" AND exchange='" + bd.getExchange() + "'");
-  int rc = command(s, QString("Futures::scriptSetCode: "));
-  
+  FuturesParmsDataBase fpdb;
+  int rc = fpdb.setCode(&bd, l[5]);
+
   return rc;
 }
 
@@ -436,10 +400,12 @@ int Futures::scriptSetMonth (QStringList &l)
     return 1;
   }
   
+  QuoteIndexDataBase idb;
+
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(&bd))
+  if (idb.getIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetMonth: symbol not found in database" << l[3] << l[4];
     return 1;
@@ -453,11 +419,9 @@ int Futures::scriptSetMonth (QStringList &l)
     return 1;
   }
   
-  QString s = "UPDATE futuresParms SET month='" + l[5] + "'";
-  s.append(" WHERE symbol='" + bd.getSymbol() + "'");
-  s.append(" AND exchange='" + bd.getExchange() + "'");
-  int rc = command(s, QString("Futures::scriptSetMonth: "));
-  
+  FuturesParmsDataBase fpdb;
+  int rc = fpdb.setMonth(&bd, l[5]);
+
   return rc;
 }
 
@@ -470,20 +434,23 @@ int Futures::scriptSetYear (QStringList &l)
     qDebug() << "Futures::scriptSetYear: invalid parm count" << l.count();
     return 1;
   }
+
+  QuoteIndexDataBase idb;
   
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(&bd))
+  if (idb.getIndexData(&bd))
   {
     qDebug() << "Futures::scriptSetYear: symbol not found in database" << l[3] << l[4];
     return 1;
   }
-  
+
+  int year = 0;
   if (l[5].length() == 4)
   {
     bool ok;
-    l[5].toInt(&ok);
+    year = l[5].toInt(&ok);
     if (! ok)
     {
       qDebug() << "Futures::scriptSetYear: invalid year" << l[5];
@@ -495,11 +462,9 @@ int Futures::scriptSetYear (QStringList &l)
     qDebug() << "Futures::scriptSetYear: year must be 4 digits" << l[5];
     return 1;
   }
-      
-  QString s = "UPDATE futuresParms SET year=" + l[5];
-  s.append(" WHERE symbol='" + bd.getSymbol() + "'");
-  s.append(" AND exchange='" + bd.getExchange() + "'");
-  int rc = command(s, QString("Futures::scriptSetYear: "));
+
+  FuturesParmsDataBase fpdb;
+  int rc = fpdb.setYear(&bd, year);
   
   return rc;
 }
@@ -593,8 +558,6 @@ int Futures::scriptRename (QStringList &l)
     return 1;
   }
   
-  transaction();
-  
   BarData obd;
   obd.setExchange(l[3]);
   obd.setSymbol(l[4]);
@@ -602,21 +565,14 @@ int Futures::scriptRename (QStringList &l)
   BarData nbd;
   nbd.setExchange(l[5]);
   nbd.setSymbol(l[6]);
-  
-  if (rename(&obd, &nbd))
+
+  QuoteIndexDataBase idb;
+  if (idb.rename(&obd, &nbd))
     return 1;
 
-  // update futures parms with new symbol name
-  QString s = "UPDATE futuresParms";
-  s.append(" SET symbol='" + nbd.getSymbol() + "'");
-  s.append(", exchange='" + nbd.getExchange() + "'");
-  s.append(" WHERE symbol='" + obd.getSymbol() + "'");
-  s.append(" AND exchange='" + obd.getExchange() + "'");
-  CODataBase codb;
-  if (command(s, QString("DBPlugin::rename: futuresParms")))
+  FuturesParmsDataBase fpdb;
+  if (fpdb.rename(&obd, &nbd))
     return 1;
-
-  commit();
 
   return 0;
 }

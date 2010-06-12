@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,42 +19,31 @@
  *  USA.
  */
 
-#ifndef CSV_DIALOG_HPP
-#define CSV_DIALOG_HPP
+#ifndef YAHOO_HPP
+#define YAHOO_HPP
 
-#include <QDialog>
-#include <QTextEdit>
-#include <QComboBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
+#include "MiscPlugin.h"
+#include "YahooDialog.h"
 
-class CSVDialog : public QDialog
+class Yahoo : public MiscPlugin
 {
   Q_OBJECT
-  
+
   public:
-    CSVDialog ();
-    void createMainPage ();
-    void loadSettings ();
-    void saveSettings ();
-    
+    Yahoo ();
+    ~Yahoo ();
+    int configureDialog ();
+
   public slots:
-    void run ();
-    void newRule ();
-    void editRule ();
-    void editRule (QString);
-    void deleteRule ();
-    void cancelButton ();
-          
+    void done ();
+
   private:
-    QComboBox *_rules;
-    QTextEdit *_log;
-    QDialogButtonBox *_buttonBox;
-    QPushButton *_newButton;
-    QPushButton *_runButton;
-    QPushButton *_editButton;
-    QPushButton *_deleteButton;
-    QPushButton *_cancelButton;
+    YahooDialog *dialog;
 };
+
+extern "C"
+{
+  MiscPlugin * createMiscPlugin ();
+}
 
 #endif

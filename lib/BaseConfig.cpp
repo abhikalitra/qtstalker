@@ -27,14 +27,15 @@
 
 BaseConfig::BaseConfig ()
 {
-  dbName = "config";
+  _dbName = "config";
+  _tableName = "config";
 }
 
 void BaseConfig::createTable ()
 {
-  QSqlDatabase db = QSqlDatabase::database(dbName);
+  QSqlDatabase db = QSqlDatabase::database(_dbName);
   QSqlQuery q(db);
-  QString s = "CREATE TABLE IF NOT EXISTS config (";
+  QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
   s.append("key INT PRIMARY KEY UNIQUE");
   s.append(", setting TEXT");
   s.append(")");
@@ -46,8 +47,8 @@ void BaseConfig::createTable ()
 void BaseConfig::getData (int p, QString &d)
 {
   d.clear();
-  QSqlQuery q(QSqlDatabase::database(dbName));
-  QString s = "SELECT setting FROM config WHERE key=" + QString::number(p);
+  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QString s = "SELECT setting FROM " + _tableName + " WHERE key=" + QString::number(p);
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -61,8 +62,8 @@ void BaseConfig::getData (int p, QString &d)
 
 void BaseConfig::setData (int p, QString &d)
 {
-  QSqlQuery q(QSqlDatabase::database(dbName));
-  QString s = "INSERT OR REPLACE INTO config (key,setting) VALUES (";
+  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QString s = "INSERT OR REPLACE INTO " + _tableName + " (key,setting) VALUES (";
   s.append(QString::number(p)); // key
   s.append(",'" + d + "'"); // setting
   s.append(")");

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,42 +19,28 @@
  *  USA.
  */
 
-#ifndef CSV_DIALOG_HPP
-#define CSV_DIALOG_HPP
+#ifndef QUOTE_INDEX_DATA_BASE_HPP
+#define QUOTE_INDEX_DATA_BASE_HPP
 
-#include <QDialog>
-#include <QTextEdit>
-#include <QComboBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
+#include <QString>
+#include <QStringList>
 
-class CSVDialog : public QDialog
+#include "DataBase.h"
+#include "BarData.h"
+#include "Group.h"
+
+class QuoteIndexDataBase : public DataBase
 {
-  Q_OBJECT
-  
   public:
-    CSVDialog ();
-    void createMainPage ();
-    void loadSettings ();
-    void saveSettings ();
-    
-  public slots:
-    void run ();
-    void newRule ();
-    void editRule ();
-    void editRule (QString);
-    void deleteRule ();
-    void cancelButton ();
-          
-  private:
-    QComboBox *_rules;
-    QTextEdit *_log;
-    QDialogButtonBox *_buttonBox;
-    QPushButton *_newButton;
-    QPushButton *_runButton;
-    QPushButton *_editButton;
-    QPushButton *_deleteButton;
-    QPushButton *_cancelButton;
+    QuoteIndexDataBase ();
+    int deleteSymbol (BarData *);
+    void init (QString &);
+    void getSearchList (QString &ex, QString &pat, Group &);
+    int getIndexData (BarData *);
+    int setIndexData (BarData *);
+    int addSymbolIndex (BarData *);
+    void getExchangeList (QStringList &);
+    int rename (BarData *, BarData *);
 };
 
 #endif

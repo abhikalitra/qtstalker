@@ -20,7 +20,7 @@
  */
 
 #include "SCSymbol.h"
-#include "DBPlugin.h"
+#include "QuoteIndexDataBase.h"
 #include "Group.h"
 #include "Config.h"
 
@@ -71,9 +71,9 @@ int SCSymbol::getSearch (QStringList &l, QByteArray &ba)
     return 1;
   }
 
-  DBPlugin db;
+  QuoteIndexDataBase idb;
   Group bdl;
-  db.getSearchList(l[2], l[3], bdl);
+  idb.getSearchList(l[2], l[3], bdl);
   
   int loop;
   QStringList sl;

@@ -31,7 +31,6 @@
 
 FuturesDataBase::FuturesDataBase ()
 {
-  dbName = "quotes";
 }
 
 int FuturesDataBase::createFutures ()
@@ -65,7 +64,7 @@ int FuturesDataBase::createFutures ()
   transaction();
   
   // delete the old table
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DROP TABLE futuresIndex";
   q.exec(s);
 
@@ -133,7 +132,7 @@ void FuturesDataBase::getCodeList (QStringList &l)
 {
   l.clear();
   
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT DISTINCT code FROM futuresIndex";
   q.exec(s);
   if (q.lastError().isValid())

@@ -38,10 +38,6 @@ CSVDialog::CSVDialog () : QDialog (0, 0)
   loadSettings();
 }
 
-CSVDialog::~CSVDialog ()
-{
-}
-
 void CSVDialog::createMainPage ()
 {
   QVBoxLayout *vbox = new QVBoxLayout;
@@ -111,6 +107,10 @@ void CSVDialog::loadSettings ()
   _rules->addItems(l);
 }
 
+void CSVDialog::saveSettings ()
+{
+}
+
 void CSVDialog::newRule ()
 {
   bool ok;
@@ -173,7 +173,7 @@ void CSVDialog::deleteRule ()
 
 void CSVDialog::cancelButton ()
 {
-  hide();
+  accept();
 }
 
 void CSVDialog::run ()

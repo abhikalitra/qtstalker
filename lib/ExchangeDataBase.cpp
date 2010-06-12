@@ -36,12 +36,11 @@
 
 ExchangeDataBase::ExchangeDataBase ()
 {
-  dbName = "quotes";
 }
 
 int ExchangeDataBase::verifyExchangeName (QString &exchange)
 {
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT code FROM exchangeIndex WHERE code='" + exchange + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -85,7 +84,7 @@ int ExchangeDataBase::createExchanges ()
   transaction();
   
   // delete the old table
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DROP TABLE exchangeIndex";
   q.exec(s);
 
@@ -128,7 +127,7 @@ void ExchangeDataBase::getExchanges (QStringList &l)
 {
   l.clear();
   
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT code FROM exchangeIndex ORDER BY code ASC";
   q.exec(s);
   if (q.lastError().isValid())
@@ -142,7 +141,7 @@ void ExchangeDataBase::getFieldList (QString &field, QStringList &rl)
 {
   rl.clear();
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT DISTINCT " + field + " FROM exchangeIndex ORDER BY " + field + " ASC";
   q.exec(s);
   if (q.lastError().isValid())
@@ -191,7 +190,7 @@ int ExchangeDataBase::search (QString &country, QString &city, QString &pat, QSt
 
   s.append(" ORDER BY name ASC");
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -210,7 +209,7 @@ void ExchangeDataBase::codeFromName (QString &name, QString &code)
 {
   code.clear();
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT code FROM exchangeIndex WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())

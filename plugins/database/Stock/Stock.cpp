@@ -22,7 +22,7 @@
 #include "Stock.h"
 #include "Bar.h"
 #include "ExchangeDataBase.h"
-#include "CODataBase.h"
+#include "QuoteIndexDataBase.h"
 
 #include <QtSql>
 #include <QtDebug>
@@ -35,6 +35,7 @@
 Stock::Stock ()
 {
   plugin = "Stock";
+  
   scriptMethods << "SET_QUOTE" << "SET_NAME" << "SAVE_QUOTES" << "DELETE" << "GET_QUOTES" << "RENAME";
 }
 
@@ -120,13 +121,15 @@ void Stock::setBars ()
 
   QSqlQuery q(QSqlDatabase::database("quotes"));
   
+  QuoteIndexDataBase idb;
+
   QHashIterator<QString, BarData *> it(quotes);
   while (it.hasNext())
   {
     it.next();
     BarData *bd = it.value();
 
-    if (getIndexData(bd))
+    if (idb.getIndexData(bd))
      continue;
 
     QString table = bd->getTableName();
@@ -166,7 +169,8 @@ void Stock::setBars ()
 
 int Stock::createTable (BarData *bars)
 {
-  if (addSymbolIndex(bars))
+  QuoteIndexDataBase idb;
+  if (idb.addSymbolIndex(bars))
     return 1;
   
   // new symbol, create new table for it
@@ -185,28 +189,12 @@ int Stock::createTable (BarData *bars)
 
 int Stock::deleteSymbol (BarData *symbol)
 {
-  transaction();
-
-  if (getIndexData(symbol))
+  QuoteIndexDataBase idb;
+  if (idb.getIndexData(symbol))
     return 1;
 
-  // delete any chart objects
-  CODataBase db;
-  db.deleteChartObjects(symbol);
-
-  // drop quote table
-  QString s = "DROP TABLE " + symbol->getTableName();
-  if (command(s, QString("Stock::deleteSymbol: drop quotes table")))
+  if (idb.deleteSymbol(symbol))
     return 1;
-
-  // remove index record
-  s = "DELETE FROM symbolIndex";
-  s.append(" WHERE symbol='" + symbol->getSymbol() + "'");
-  s.append(" AND exchange='" + symbol->getExchange() + "'");
-  if (command(s, QString("Stock::deleteSymbol: remove symbolIndex record")))
-    return 1;
-
-  commit();
 
   return 0;
 }
@@ -320,18 +308,20 @@ int Stock::scriptSetName (QStringList &l)
     qDebug() << "Stock::scriptSetName: invalid parm count" << l.count();
     return 1;
   }
+
+  QuoteIndexDataBase idb;
   
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  if (getIndexData(&bd))
+  if (idb.getIndexData(&bd))
   {
     qDebug() << "Stock::scriptSetName: symbol not found in database" << l[3] << l[4];
     return 1;
   }
   
   bd.setName(l[5]);
-  if (setIndexData(&bd))
+  if (idb.setIndexData(&bd))
   {
     qDebug() << "Stock::scriptSetName: error setting index";
     return 1;
@@ -372,28 +362,12 @@ int Stock::scriptDelete (QStringList &l)
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
 
-  transaction();
-  
-  if (getIndexData(&bd))
+  QuoteIndexDataBase idb;
+  if (idb.getIndexData(&bd))
     return 1;
 
-  // delete any chart objects
-  CODataBase db;
-  db.deleteChartObjects(&bd);
-  
-  // drop quote table
-  QString s = "DROP TABLE " + bd.getTableName();
-  if (command(s, QString("Stock::scriptDelete: drop quotes table")))
+  if (idb.deleteSymbol(&bd))
     return 1;
-  
-  // remove index record
-  s = "DELETE FROM symbolIndex";
-  s.append(" WHERE symbol='" + bd.getSymbol() + "'");
-  s.append(" AND exchange='" + bd.getExchange() + "'");
-  if (command(s, QString("Stock::scriptDelete: remove symbolIndex record")))
-    return 1;
-  
-  commit();
 
   return 0;
 }
@@ -452,8 +426,6 @@ int Stock::scriptRename (QStringList &l)
     return 1;
   }
   
-  transaction();
-  
   BarData obd;
   obd.setExchange(l[3]);
   obd.setSymbol(l[4]);
@@ -461,11 +433,10 @@ int Stock::scriptRename (QStringList &l)
   BarData nbd;
   nbd.setExchange(l[5]);
   nbd.setSymbol(l[6]);
-  
-  if (rename(&obd, &nbd))
-    return 1;
 
-  commit();
+  QuoteIndexDataBase idb;
+  if (idb.rename(&obd, &nbd))
+    return 1;
 
   return 0;
 }

@@ -32,7 +32,7 @@ CSVDataBase::CSVDataBase ()
 void CSVDataBase::init ()
 {
   // create the CSV table
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS CSVPlugin (";
   s.append("name TEXT PRIMARY KEY UNIQUE");
   s.append(", plugin TEXT");
@@ -51,7 +51,7 @@ void CSVDataBase::getRules (QStringList &l)
 {
   l.clear();
   
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT name FROM CSVPlugin ORDER BY name ASC";
   q.exec(s);
   if (q.lastError().isValid())
@@ -70,7 +70,7 @@ int CSVDataBase::getRule (CSVRule &rule)
   if (name.isEmpty())
     return 1;
   
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString k = "SELECT plugin,delimeter,rule,file,exchange,fileSymbol FROM CSVPlugin";
   k.append(" WHERE name='" + name + "'");
   q.exec(k);
@@ -106,7 +106,7 @@ void CSVDataBase::setRule (CSVRule &rule)
   
   transaction();
   
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO CSVPlugin (name,plugin,delimeter,rule,file,exchange,fileSymbol) VALUES (";
   s.append("'" + name + "'"); // name
   s.append(",'" + rule.type() + "'");
@@ -125,7 +125,7 @@ void CSVDataBase::setRule (CSVRule &rule)
 
 void CSVDataBase::deleteRule (QString &name)
 {
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM CSVPlugin WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())

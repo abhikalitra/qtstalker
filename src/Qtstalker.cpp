@@ -50,6 +50,7 @@
 #include "PluginFactory.h"
 #include "DBPluginFactory.h"
 #include "DBPlugin.h"
+#include "QuoteIndexDataBase.h"
 #include "IndicatorPlugin.h"
 #include "IndicatorPluginFactory.h"
 #include "MiscPluginFactory.h"
@@ -85,10 +86,10 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   Config config;
   config.init(session);
 
-  DBPlugin qdb;
+  QuoteIndexDataBase qidb;
   QString dbFile;
   config.getData(Config::DbName, dbFile);
-  qdb.init(dbFile);
+  qidb.init(dbFile);
 
   setup.setupExchanges();
   setup.setupFutures();
@@ -515,8 +516,8 @@ void QtstalkerApp::loadChart (BarData *symbol)
   recordList.setBarLength((Bar::BarLength) _barLengthButtons->getCurrentButton());
   recordList.setBarsRequested(_barCount->value());
 
-  DBPlugin qdb;
-  qdb.getIndexData(&recordList);
+  QuoteIndexDataBase idb;
+  idb.getIndexData(&recordList);
 
   DBPluginFactory fac;
   DBPlugin *qdb2 = fac.plugin(recordList.getPlugin());

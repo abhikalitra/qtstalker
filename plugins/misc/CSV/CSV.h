@@ -34,6 +34,9 @@ class CSV : public MiscPlugin
     ~CSV ();
     int configureDialog ();
 
+  public slots:
+    void done ();
+
   private:
     CSVDialog *dialog;
     bool cancelFlag;

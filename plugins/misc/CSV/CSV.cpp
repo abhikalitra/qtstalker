@@ -25,19 +25,39 @@ CSV::CSV ()
 {
   _name = "CSV";
   cancelFlag = FALSE;
-
-  dialog = new CSVDialog;
+  dialog = 0;
 }
 
 CSV::~CSV ()
 {
+  if (dialog)
+  {
+    dialog->saveSettings();
+    delete dialog;
+  }
 }
 
 int CSV::configureDialog ()
 {
-  dialog->show();
+  if (! dialog)
+  {
+    dialog = new CSVDialog;
+    connect(dialog, SIGNAL(accepted()), this, SLOT(done()));
+    dialog->show();
+  }
+  else
+    dialog->raise();
+  
   return 0;
 }
+
+void CSV::done ()
+{
+  dialog->saveSettings();
+  delete dialog;
+  dialog = 0;
+}
+
 
 //**********************************************************
 //**********************************************************

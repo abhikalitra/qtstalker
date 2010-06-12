@@ -20,7 +20,7 @@
  */
 
 #include "SymbolDialog.h"
-#include "DBPlugin.h"
+#include "QuoteIndexDataBase.h"
 #include "BarData.h"
 
 #include "../pics/search.xpm"
@@ -65,9 +65,9 @@ SymbolDialog::SymbolDialog (int flag) : QDialog (0, 0)
   tvbox->addLayout(thbox);
   
   exchanges = new QComboBox;
-  DBPlugin db;
+  QuoteIndexDataBase idb;
   QStringList l;
-  db.getExchangeList(l);
+  idb.getExchangeList(l);
   exchanges->addItems(l);
   exchanges->setCurrentIndex(0);
   exchanges->setToolTip(QString(tr("Exchange")));
@@ -224,13 +224,13 @@ void SymbolDialog::addButtonPressed ()
 
 void SymbolDialog::searchButtonPressed ()
 {
-  DBPlugin db;
+  QuoteIndexDataBase idb;
   Group l;
   QString s = search->text();
   QString ex = exchanges->currentText();
   if (ex.contains("<NONE>"))
     ex.clear();
-  db.getSearchList(ex, s, l);
+  idb.getSearchList(ex, s, l);
 
   leftSymbols->clear();
   

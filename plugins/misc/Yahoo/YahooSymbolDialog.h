@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,42 +19,36 @@
  *  USA.
  */
 
-#ifndef CSV_DIALOG_HPP
-#define CSV_DIALOG_HPP
+#ifndef YAHOO_SYMBOL_DIALOG_HPP
+#define YAHOO_SYMBOL_DIALOG_HPP
 
 #include <QDialog>
-#include <QTextEdit>
-#include <QComboBox>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QListWidget>
+#include <QStringList>
 
-class CSVDialog : public QDialog
+class YahooSymbolDialog : public QDialog
 {
   Q_OBJECT
-  
+
   public:
-    CSVDialog ();
+    YahooSymbolDialog ();
+    ~YahooSymbolDialog ();
     void createMainPage ();
     void loadSettings ();
-    void saveSettings ();
-    
+    int getSymbolExchange (QString &ysymbol, QString &symbol, QString &exchange);
+      
   public slots:
-    void run ();
-    void newRule ();
-    void editRule ();
-    void editRule (QString);
-    void deleteRule ();
-    void cancelButton ();
-          
+    void addSymbol ();
+    void deleteSymbol ();
+
   private:
-    QComboBox *_rules;
-    QTextEdit *_log;
+    QStringList _yexchange;
+    QListWidget *_list;
     QDialogButtonBox *_buttonBox;
-    QPushButton *_newButton;
-    QPushButton *_runButton;
-    QPushButton *_editButton;
+    QPushButton *_addButton;
     QPushButton *_deleteButton;
-    QPushButton *_cancelButton;
 };
 
 #endif

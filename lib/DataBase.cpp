@@ -26,24 +26,24 @@
 
 DataBase::DataBase ()
 {
-  dbName = "data";
+  _dbName = "data";
 }
 
 void DataBase::transaction ()
 {
-  QSqlDatabase db = QSqlDatabase::database(dbName);
+  QSqlDatabase db = QSqlDatabase::database(_dbName);
   db.transaction();
 }
 
 void DataBase::commit ()
 {
-  QSqlDatabase db = QSqlDatabase::database(dbName);
+  QSqlDatabase db = QSqlDatabase::database(_dbName);
   db.commit();
 }
 
 int DataBase::command (QString &sql, QString errMess)
 {
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   q.exec(sql);
   if (q.lastError().isValid())
   {

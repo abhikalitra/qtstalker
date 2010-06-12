@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,42 +19,58 @@
  *  USA.
  */
 
-#ifndef CSV_DIALOG_HPP
-#define CSV_DIALOG_HPP
+#ifndef YAHOO_DIALOG_HPP
+#define YAHOO_DIALOG_HPP
 
 #include <QDialog>
 #include <QTextEdit>
-#include <QComboBox>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QDateTimeEdit>
+#include <QCheckBox>
 
-class CSVDialog : public QDialog
+#include "YahooThread.h"
+
+class YahooDialog : public QDialog
 {
   Q_OBJECT
-  
+
   public:
-    CSVDialog ();
+    enum Type
+    {
+      History,
+      Info
+    };
+
+    YahooDialog ();
+    ~YahooDialog ();
     void createMainPage ();
     void loadSettings ();
     void saveSettings ();
-    
+    void loadSymbols ();
+      
   public slots:
-    void run ();
-    void newRule ();
-    void editRule ();
-    void editRule (QString);
-    void deleteRule ();
+    void editSymbols ();
     void cancelButton ();
-          
+    void downloadDone ();
+    void startHistory ();
+    void startInfo ();
+
   private:
-    QComboBox *_rules;
     QTextEdit *_log;
     QDialogButtonBox *_buttonBox;
-    QPushButton *_newButton;
-    QPushButton *_runButton;
-    QPushButton *_editButton;
-    QPushButton *_deleteButton;
+    QPushButton *_symbolsButton;
+    QPushButton *_histButton;
+    QPushButton *_infoButton;
     QPushButton *_cancelButton;
+    QDateTimeEdit *_sdate;
+    QDateTimeEdit *_edate;
+    QCheckBox *_adjustment;
+    YahooThread *_thread;
+    QStringList _symbolList;
+    int _symbolPos;
+    Type _type;
+    int _cancelFlag;
 };
 
 #endif

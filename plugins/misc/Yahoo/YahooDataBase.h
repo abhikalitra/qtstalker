@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,42 +19,23 @@
  *  USA.
  */
 
-#ifndef CSV_DIALOG_HPP
-#define CSV_DIALOG_HPP
+#ifndef YAHOO_DATA_BASE_HPP
+#define YAHOO_DATA_BASE_HPP
 
-#include <QDialog>
-#include <QTextEdit>
-#include <QComboBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
+#include <QString>
+#include <QStringList>
 
-class CSVDialog : public QDialog
+#include "DataBase.h"
+
+class YahooDataBase : public DataBase
 {
-  Q_OBJECT
-  
   public:
-    CSVDialog ();
-    void createMainPage ();
-    void loadSettings ();
-    void saveSettings ();
-    
-  public slots:
-    void run ();
-    void newRule ();
-    void editRule ();
-    void editRule (QString);
-    void deleteRule ();
-    void cancelButton ();
-          
-  private:
-    QComboBox *_rules;
-    QTextEdit *_log;
-    QDialogButtonBox *_buttonBox;
-    QPushButton *_newButton;
-    QPushButton *_runButton;
-    QPushButton *_editButton;
-    QPushButton *_deleteButton;
-    QPushButton *_cancelButton;
+    YahooDataBase ();
+    void init ();
+    void getSymbols (QStringList &);
+    void setSymbol (QString &ysymbol, QString &symbol, QString &exchange);
+    void getSymbol (QString &ysymbol, QString &symbol, QString &exchange);
+    void deleteSymbol (QString &ysymbol);
 };
 
 #endif

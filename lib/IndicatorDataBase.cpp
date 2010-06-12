@@ -31,7 +31,7 @@ IndicatorDataBase::IndicatorDataBase ()
 
 void IndicatorDataBase::init ()
 {
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS indicatorIndex (";
   s.append("name TEXT PRIMARY KEY"); // 0
   s.append(", enable INT"); // 1
@@ -70,7 +70,7 @@ void IndicatorDataBase::getIndicator (Indicator &i)
 {
   QString name = i.name();
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT enable,tabRow,date,log,cus,indicator,settings FROM indicatorIndex WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -113,7 +113,7 @@ void IndicatorDataBase::setIndicator (Indicator &i)
 
   transaction();
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO indicatorIndex (name,enable,tabRow,date,log,cus,indicator,settings) VALUES (";
   s.append("'" + name + "'");
   s.append("," + enable);
@@ -137,7 +137,7 @@ void IndicatorDataBase::deleteIndicator (QString &name)
   CODataBase codb;
   codb.deleteChartObjectsIndicator(name);
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM indicatorIndex WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -147,7 +147,7 @@ void IndicatorDataBase::deleteIndicator (QString &name)
 void IndicatorDataBase::getIndicatorList (QStringList &l)
 {
   l.clear();
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT name FROM indicatorIndex";
   q.exec(s);
   if (q.lastError().isValid())
@@ -166,7 +166,7 @@ void IndicatorDataBase::getActiveIndicatorList (QStringList &l)
 {
   l.clear();
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT name FROM indicatorIndex WHERE enable=1";
   q.exec(s);
   if (q.lastError().isValid())
@@ -185,7 +185,7 @@ void IndicatorDataBase::getSearchIndicatorList (QString &pattern, QStringList &l
 {
   list.clear();
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT name FROM indicatorIndex WHERE name LIKE '" + pattern + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -205,7 +205,7 @@ void IndicatorDataBase::setIndicatorEnable (Indicator &i)
   QString name = i.name();
   QString enable = QString::number(i.enable());
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "UPDATE indicatorIndex SET enable=" + enable + " WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())

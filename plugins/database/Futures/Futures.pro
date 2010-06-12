@@ -3,6 +3,8 @@
 } 
 
 HEADERS += Futures.h
+HEADERS += FuturesParmsDataBase.h
 
 SOURCES += Futures.cpp
+SOURCES += FuturesParmsDataBase.cpp
 

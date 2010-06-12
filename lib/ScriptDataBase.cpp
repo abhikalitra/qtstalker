@@ -30,7 +30,7 @@ ScriptDataBase::ScriptDataBase ()
 
 void ScriptDataBase::init ()
 {
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS script (";
   s.append("name TEXT PRIMARY KEY UNIQUE"); // 0
   s.append(", command TEXT"); // 1
@@ -66,7 +66,7 @@ void ScriptDataBase::init ()
 void ScriptDataBase::getScripts (QStringList &l)
 {
   l.clear();
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT name FROM script";
   q.exec(s);
   if (q.lastError().isValid())
@@ -86,7 +86,7 @@ int ScriptDataBase::getScript (Script *script)
   int rc = 1;
   QString name = script->getName();
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT command,comment,lastRun,file,refresh FROM script WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -122,7 +122,7 @@ void ScriptDataBase::setScript (Script *script)
 {
   QDateTime dt = script->getLastRun();
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO script (name,command,comment,lastRun,file,refresh) VALUES (";
   s.append("'" + script->getName() + "'");
   s.append(",'" + script->getCommand() + "'");
@@ -138,7 +138,7 @@ void ScriptDataBase::setScript (Script *script)
 
 void ScriptDataBase::deleteScript (Script *script)
 {
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM script WHERE name='" + script->getName() + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -149,7 +149,7 @@ void ScriptDataBase::getScriptSearch (QString &pattern, QStringList &list)
 {
   list.clear();
 
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT name FROM script WHERE name LIKE '" + pattern + "'";
   q.exec(s);
   if (q.lastError().isValid())

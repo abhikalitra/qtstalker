@@ -516,3 +516,11 @@
 
            Added a exchange search dialog to the CSV plugin. Use to search for the exchange code.
 
+20100610:  Split off parts of DBPlugin into QuoteIndexDataBase and FuturesParmsDataBase classes.
+
+           Moved the futuresParms and exchangeIndex tables from the quotes.sqlite db into the data.sqlite db.
+
+20100611:  Added new Yahoo plugin. This will download historical quotes from yahoo. Not all exchanges have been
+           implemented. Exchanges will be added on a request basis. There is lots of room for improvements so
+           suggestions and patches are welcomed.
+

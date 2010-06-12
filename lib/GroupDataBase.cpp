@@ -31,7 +31,7 @@ GroupDataBase::GroupDataBase ()
 void GroupDataBase::init ()
 {
   // create the group index table
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS groupIndex (";
   s.append("name TEXT PRIMARY KEY UNIQUE");
   s.append(", tableName TEXT");
@@ -44,7 +44,7 @@ void GroupDataBase::init ()
 void GroupDataBase::getAllGroupsList (QStringList &l)
 {
   l.clear();
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT name FROM groupIndex ORDER BY name ASC";
   q.exec(s);
   if (q.lastError().isValid())
@@ -63,7 +63,7 @@ void GroupDataBase::getGroup (Group &group)
     return;
   
   // get the table from the group index
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT tableName FROM groupIndex WHERE name='" + group.getName() + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -119,7 +119,7 @@ void GroupDataBase::setGroup (Group &group)
   transaction();
   
   // get the table from the group index
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT tableName FROM groupIndex WHERE name='" + group.getName() + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -187,7 +187,7 @@ void GroupDataBase::setGroup (Group &group)
 void GroupDataBase::deleteGroup (QString &n)
 {
   // get the table name for the group
-  QSqlQuery q(QSqlDatabase::database(dbName));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT tableName FROM groupIndex WHERE name='" + n + "'";
   q.exec(s);
   if (q.lastError().isValid())

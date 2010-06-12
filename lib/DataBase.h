@@ -33,7 +33,7 @@ class DataBase
     int command (QString &, QString);
     
   protected:
-    QString dbName;
+    QString _dbName;
 };
 
 #endif

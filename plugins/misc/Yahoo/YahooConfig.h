@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,42 +19,26 @@
  *  USA.
  */
 
-#ifndef CSV_DIALOG_HPP
-#define CSV_DIALOG_HPP
 
-#include <QDialog>
-#include <QTextEdit>
-#include <QComboBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
+#ifndef YAHOO_CONFIG_HPP
+#define YAHOO_CONFIG_HPP
 
-class CSVDialog : public QDialog
+#include <QString>
+
+#include "BaseConfig.h"
+
+class YahooConfig : public BaseConfig
 {
-  Q_OBJECT
-  
   public:
-    CSVDialog ();
-    void createMainPage ();
-    void loadSettings ();
-    void saveSettings ();
-    
-  public slots:
-    void run ();
-    void newRule ();
-    void editRule ();
-    void editRule (QString);
-    void deleteRule ();
-    void cancelButton ();
-          
-  private:
-    QComboBox *_rules;
-    QTextEdit *_log;
-    QDialogButtonBox *_buttonBox;
-    QPushButton *_newButton;
-    QPushButton *_runButton;
-    QPushButton *_editButton;
-    QPushButton *_deleteButton;
-    QPushButton *_cancelButton;
+    enum Parm
+    {
+      Adjustment, // adjustment flag
+      Size, // app window size
+      Pos // app position
+    };
+
+    YahooConfig ();
 };
 
 #endif
+

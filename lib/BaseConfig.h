@@ -62,6 +62,9 @@ class BaseConfig : public DataBase
     void getData (int, QStringList &);
     void setData (int, QDateTime &);
     void getData (int, QDateTime &);
+
+  protected:
+    QString _tableName;
 };
 
 #endif

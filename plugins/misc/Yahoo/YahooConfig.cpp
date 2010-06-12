@@ -19,35 +19,15 @@
  *  USA.
  */
 
-#ifndef DB_PLUGIN_HPP
-#define DB_PLUGIN_HPP
+#include "YahooConfig.h"
 
-#include <QString>
-#include <QStringList>
-#include <QDateTime>
-#include <QHash>
+#include <QtDebug>
 
-#include "BarData.h"
-#include "DataBase.h"
-#include "Indicator.h"
-
-class DBPlugin : public DataBase
+YahooConfig::YahooConfig ()
 {
-  public:
-    DBPlugin ();
-    virtual ~DBPlugin ();
-    virtual void getBars (BarData &);
-    virtual void dialog ();
-    virtual int scriptCommand (QStringList &, Indicator &);
-    virtual int deleteSymbol (BarData *);
-    
-    void getFirstDate (QString &table, QDateTime &date);
-    void getLastDate (QString &table, QDateTime &date);
-    void barErrorMessage (int);
-    
-  protected:
-    QString plugin;
-    QHash<QString, BarData *> quotes;
-};
+  _dbName = "data";
+  _tableName = "YahooPluginConfig";
 
-#endif
+  createTable();
+}
+

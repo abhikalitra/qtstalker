@@ -19,35 +19,53 @@
  *  USA.
  */
 
-#ifndef DB_PLUGIN_HPP
-#define DB_PLUGIN_HPP
+#include "Yahoo.h"
 
-#include <QString>
-#include <QStringList>
-#include <QDateTime>
-#include <QHash>
-
-#include "BarData.h"
-#include "DataBase.h"
-#include "Indicator.h"
-
-class DBPlugin : public DataBase
+Yahoo::Yahoo ()
 {
-  public:
-    DBPlugin ();
-    virtual ~DBPlugin ();
-    virtual void getBars (BarData &);
-    virtual void dialog ();
-    virtual int scriptCommand (QStringList &, Indicator &);
-    virtual int deleteSymbol (BarData *);
-    
-    void getFirstDate (QString &table, QDateTime &date);
-    void getLastDate (QString &table, QDateTime &date);
-    void barErrorMessage (int);
-    
-  protected:
-    QString plugin;
-    QHash<QString, BarData *> quotes;
-};
+  _name = "Yahoo";
+  dialog = 0;
+}
 
-#endif
+Yahoo::~Yahoo ()
+{
+  if (dialog)
+  {
+    dialog->saveSettings();
+    delete dialog;
+  }
+}
+
+int Yahoo::configureDialog ()
+{
+  if (! dialog)
+  {
+    dialog = new YahooDialog;
+    connect(dialog, SIGNAL(accepted()), this, SLOT(done()));
+    dialog->show();
+  }
+  else
+    dialog->raise();
+  
+  return 0;
+}
+
+void Yahoo::done ()
+{
+  dialog->saveSettings();
+  delete dialog;
+  dialog = 0;
+}
+
+//**********************************************************
+//**********************************************************
+//**********************************************************
+
+MiscPlugin * createMiscPlugin ()
+{
+  Yahoo *o = new Yahoo;
+  return ((MiscPlugin *) o);
+}
+
+
+

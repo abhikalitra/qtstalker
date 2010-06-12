@@ -25,6 +25,7 @@
 #include "DBPluginFactory.h"
 #include "Config.h"
 #include "SymbolDialog.h"
+#include "QuoteIndexDataBase.h"
 
 #include "../pics/addgroup.xpm"
 #include "../pics/search.xpm"
@@ -209,8 +210,8 @@ void ChartPage::updateList ()
   nav->clear();
   symbols.clear();
 
-  DBPlugin db;
-  db.getSearchList(searchExchange, searchString, symbols);
+  QuoteIndexDataBase idb;
+  idb.getSearchList(searchExchange, searchString, symbols);
 
   int loop;
   for (loop = 0; loop < symbols.count(); loop++)

@@ -133,6 +133,7 @@ SUBDIRS += plugins/database/Futures
 
 # compile misc plugins
 SUBDIRS += plugins/misc/CSV
+SUBDIRS += plugins/misc/Yahoo
 
 # compile app
 SUBDIRS += src
