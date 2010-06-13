@@ -165,6 +165,8 @@ void YahooDialog::saveSettings ()
 {
   YahooConfig config;
 
+  config.transaction();
+
   // save app size and position
   QSize sz = size();
   config.setData(YahooConfig::Size, sz);
@@ -173,6 +175,8 @@ void YahooDialog::saveSettings ()
   config.setData(YahooConfig::Pos, pt);
 
   config.setData(YahooConfig::Adjustment, _adjustment->isChecked());
+
+  config.commit();
 }
 
 void YahooDialog::downloadDone ()

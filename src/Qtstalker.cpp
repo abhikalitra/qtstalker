@@ -33,7 +33,6 @@
 #include <QtDebug>
 #include <QToolButton>
 #include <QApplication>
-#include <QDesktopServices>
 #include <QHBoxLayout>
 #include <QTimer>
 
@@ -59,17 +58,14 @@
 #include "CODataBase.h"
 #include "ScriptDataBase.h"
 #include "COFactory.h"
-#include "RefreshAction.h"
 
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
 #include "../pics/done.xpm"
-#include "../pics/grid.xpm"
 #include "../pics/datawindow.xpm"
 #include "../pics/indicator.xpm"
 #include "../pics/configure.xpm"
 #include "../pics/qtstalker.xpm"
-#include "../pics/help.xpm"
 #include "../pics/script.xpm"
 #include "../pics/plugin.xpm"
 
@@ -119,8 +115,6 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
 
   setup.setupDefaultSymbol();
   
-  _assistant = new Assistant;
-
   createActions();
   createMenuBar();
   createToolBars();
@@ -263,12 +257,6 @@ void QtstalkerApp::createActions ()
   connect(action, SIGNAL(activated()), qApp, SLOT(quit()));
   _actionList.insert(Exit, action);
 
-  action = new QAction(QIcon(indicator), tr("New &Indicator"), this);
-  action->setStatusTip(tr("Add a new indicator to chart"));
-  action->setToolTip(tr("Add a new indicator to chart"));
-  connect(action, SIGNAL(activated()), this, SIGNAL(signalNewIndicator()));
-  _actionList.insert(NewIndicator, action);
-
   action = new QAction(QIcon(configure_xpm), tr("Edit &Preferences"), this);
   action->setStatusTip(tr("Modify user preferences"));
   action->setToolTip(tr("Modify user preferences"));
@@ -276,13 +264,12 @@ void QtstalkerApp::createActions ()
   _actionList.insert(Options, action);
 
   Config config;
-  action = new QAction(QIcon(gridicon), tr("Chart &Grid"), this);
-  action->setStatusTip(tr("Toggle the chart grid"));
-  action->setToolTip(tr("Toggle the chart grid"));
-  action->setCheckable(TRUE);
-  action->setChecked(config.getBool(Config::Grid));
-  connect(action, SIGNAL(toggled(bool)), this, SLOT(gridChanged(bool)));
-  _actionList.insert(Grid, action);
+
+  _gridAction = new GridAction(this);
+  connect(_gridAction, SIGNAL(signalChanged(bool)), this, SLOT(gridChanged(bool)));
+
+  _refreshAction = new RefreshAction(this);
+  connect(_refreshAction, SIGNAL(signalRefresh()), this, SLOT(refreshChart()));
 
   action = new QAction(QIcon(datawindow), tr("&Data Window"), this);
   action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_1));
@@ -297,11 +284,7 @@ void QtstalkerApp::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(about()));
   _actionList.insert(About, action);
 
-  action = new QAction(QIcon(help), tr("&Help"), this);
-  action->setStatusTip(tr("Show documentation."));
-  action->setToolTip(tr("Show documentation."));
-  connect(action, SIGNAL(triggered()), this, SLOT(startDocumentation()));
-  _actionList.insert(Help, action);
+  _docsAction = new DocsAction(this);
 }
 
 void QtstalkerApp::createMenuBar()
@@ -316,13 +299,13 @@ void QtstalkerApp::createMenuBar()
 
   menu = new QMenu;
   menu->setTitle(tr("&Edit"));
-  menu->addAction(_actionList.value(NewIndicator));
   menu->addAction(_actionList.value(Options));
   menubar->addMenu(menu);
 
   menu = new QMenu;
   menu->setTitle(tr("&View"));
-  menu->addAction(_actionList.value(Grid));
+  menu->addAction(_gridAction);
+  menu->addAction(_refreshAction);
   menubar->addMenu(menu);
 
   menu = new QMenu;
@@ -335,7 +318,7 @@ void QtstalkerApp::createMenuBar()
   menu = new QMenu;
   menu->setTitle(tr("&Help"));
   menu->addAction(_actionList.value(About));
-  menu->addAction(_actionList.value(Help));
+  menu->addAction(_docsAction);
   menubar->addMenu(menu);
 }
 
@@ -356,15 +339,10 @@ void QtstalkerApp::createToolBars ()
   // add the toolbar actions
   toolbar->addAction(_actionList.value(Exit));
   toolbar->addAction(_actionList.value(Options));
-  toolbar->addAction(_actionList.value(Grid));
-  
-  RefreshAction *ra = new RefreshAction(toolbar);
-  connect(ra, SIGNAL(signalRefresh()), this, SLOT(refreshChart()));
-  connect(this, SIGNAL(signalRefreshUpdated(int)), ra, SLOT(refreshUpdated(int)));
-  
-  toolbar->addAction(_actionList.value(NewIndicator));
+  toolbar->addAction(_gridAction);
+  toolbar->addAction(_refreshAction);
   toolbar->addAction(_actionList.value(DataWindow1));
-  toolbar->addAction(_actionList.value(Help));
+  toolbar->addAction(_docsAction);
   toolbar->addSeparator();
 
   // create the bar length button group
@@ -379,12 +357,8 @@ void QtstalkerApp::createToolBars ()
   toolbar->addSeparator();
   
   //bars to load
-  Config config;
-  _barCount = new QSpinBox;
-  _barCount->setRange(1, 99999);
-  _barCount->setValue(config.getInt(Config::BarsToLoad));
-  _barCount->setToolTip(tr("Total bars to load"));
-  connect(_barCount, SIGNAL(editingFinished()), this, SLOT(chartUpdated()));
+  _barCount = new BarsSpinner;
+  connect(_barCount, SIGNAL(signalChanged()), this, SLOT(chartUpdated()));
   toolbar->addWidget(_barCount);
   toolbar->addSeparator();
 
@@ -424,19 +398,13 @@ void QtstalkerApp::quit()
   QPoint pt = pos();
   config.setData((int) Config::MainWindowPos, pt);
 
-  // save toolbar settings
-  config.setData((int) Config::Grid, _actionList.value(Grid)->isChecked());
-  config.setData((int) Config::BarsToLoad, _barCount->value());
+  config.commit();
 
   // save recent charts combo
   _recentCharts->save();
 
   // save running scripts
   _scriptPage->saveRunningScripts();
-  
-  delete _assistant;
-  
-  config.commit();
 }
 
 void QtstalkerApp::about()
@@ -450,31 +418,6 @@ void QtstalkerApp::about()
   QMessageBox::about(this, tr("About Qtstalker"), versionString);
 }
 
-void QtstalkerApp::startDocumentation()
-{
-/*
-FIXME: Due to the Qt issue 262508 (see docs/docs.html) we need to show them
-how to remove the stale cache file. This is complicated to report the location
-on different OSs (but perhaps i do not understand).
-This workaround should all go away when the Qt bug is fixed, but only if we
-raise the minimum Qt version.
-*/
-  QString location = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-#ifdef Q_WS_MAC
-  location.insert(location.count() - QCoreApplication::applicationName().count(),
-    QCoreApplication::organizationName() + "/");
-#endif
-  qDebug("QtstalkerApp::startDocumentation: Documentation cache: %s/", qPrintable(location));
-
-  // start _assistant
-  _assistant->showDocumentation("index.html");
-}
-
-void QtstalkerApp::showDocumentation(QString doc)
-{
-  _assistant->showDocumentation(doc);
-}
-
 void QtstalkerApp::options ()
 {
   Preferences *dialog = new Preferences(this);
@@ -484,9 +427,6 @@ void QtstalkerApp::options ()
   connect(dialog, SIGNAL(signalPlotFont(QFont)), this, SIGNAL(signalPlotFont(QFont)));
   connect(dialog, SIGNAL(signalAppFont(QFont)), this, SLOT(appFont(QFont)));
   connect(dialog, SIGNAL(signalLoadChart()), this, SLOT(chartUpdated()));
-  connect(dialog, SIGNAL(signalRefreshChanged(int)), this, SIGNAL(signalRefreshUpdated(int)));
-  connect(dialog, SIGNAL(signalPS1Changed(int)), _zoomButtons, SLOT(ps1ValueChanged(int)));
-  connect(dialog, SIGNAL(signalPS2Changed(int)), _zoomButtons, SLOT(ps2ValueChanged(int)));
   dialog->show();
 }
 
@@ -568,7 +508,7 @@ void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
   if (ip->getIndicator(i, recordList))
     return;
 
-  Plot *plot = _plotList[d];
+  Plot *plot = _plotList.value(d);
   if (! plot)
     return;
 
@@ -683,7 +623,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   config.getData((int) Config::PlotFont, font);
   plot->setPlotFont(font);
 
-  plot->setGridFlag(_actionList.value(Grid)->isChecked());
+  plot->setGridFlag(_gridAction->isChecked());
 
   plot->setPixelspace(_zoomButtons->getPixelSpace());
 
@@ -794,7 +734,7 @@ void QtstalkerApp::drawPlots ()
       continue;
     
     QString s = it->tabText(it->currentIndex());
-    Plot *p = _plotList[s];
+    Plot *p = _plotList.value(s);
     if (p)
       p->draw();
   }
@@ -830,7 +770,7 @@ void QtstalkerApp::gridChanged (bool d)
 void QtstalkerApp::setSliderStart (int count)
 {
   QTabWidget *tw = _tabList.at(0);
-  Plot *plot = _plotList[tw->tabText(tw->currentIndex())];
+  Plot *plot = _plotList.value(tw->tabText(tw->currentIndex()));
   if (! plot)
     return;
 
@@ -844,7 +784,6 @@ void QtstalkerApp::setSliderStart (int count)
 void QtstalkerApp::psButtonClicked (int pixelSpace)
 {
   emit signalPixelspace(pixelSpace);
-//  emit signalIndex(_plotSlider->getValue());
   drawPlots();
 }
 
@@ -856,7 +795,7 @@ void QtstalkerApp::zoomChanged (int pixelSpace, int index)
 }
 
 // ******************************************************************************
-// ******************* Refresh Chart Functions **********************************
+// ******************* Refresh Chart ********************************************
 // ******************************************************************************
 
 void QtstalkerApp::refreshChart ()

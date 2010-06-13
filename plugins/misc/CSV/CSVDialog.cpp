@@ -24,6 +24,7 @@
 #include "CSVRuleDialog.h"
 #include "CSVThread.h"
 #include "CSVRule.h"
+#include "CSVConfig.h"
 
 #include <QMessageBox>
 #include <QLayout>
@@ -105,10 +106,44 @@ void CSVDialog::loadSettings ()
   QStringList l;
   db.getRules(l);
   _rules->addItems(l);
+
+  CSVConfig config;
+
+  // restore the size of the window
+  QSize sz;
+  config.getData(CSVConfig::Size, sz);
+  if (! sz.isNull())
+    resize(sz);
+
+  // restore the position of the window
+  QPoint p;
+  config.getData(CSVConfig::Pos, p);
+  if (! p.isNull())
+    move(p);
+
+  QString s;
+  config.getData(CSVConfig::LastRule, s);
+  if (! s.isEmpty())
+    _rules->setCurrentIndex(_rules->findText(s, Qt::MatchExactly));
 }
 
 void CSVDialog::saveSettings ()
 {
+  CSVConfig config;
+
+  config.transaction();
+  
+  // save app size and position
+  QSize sz = size();
+  config.setData(CSVConfig::Size, sz);
+
+  QPoint pt = pos();
+  config.setData(CSVConfig::Pos, pt);
+
+  QString s = _rules->currentText();
+  config.setData(CSVConfig::LastRule, s);
+
+  config.commit();
 }
 
 void CSVDialog::newRule ()

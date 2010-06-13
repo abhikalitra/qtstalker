@@ -524,3 +524,11 @@
            implemented. Exchanges will be added on a request basis. There is lots of room for improvements so
            suggestions and patches are welcomed.
 
+20100612:  Moved the preferences options for the bar spacing buttons to each button. Right click on the
+           toolbar button to bring up the configure menu.
+
+           Same as above for the chart refresh toolbar button.
+
+
+
+           

@@ -19,40 +19,28 @@
  *  USA.
  */
 
-#ifndef ZOOM_BUTTONS_HPP
-#define ZOOM_BUTTONS_HPP
+#include "GridAction.h"
+#include "Config.h"
 
-#include <QObject>
-#include <QToolButton>
-#include <QToolBar>
+#include "../pics/grid.xpm"
 
-#include "PixelSpaceButton.h"
-
-class ZoomButtons : public QObject
+GridAction::GridAction (QObject *p) : QAction (p)
 {
-  Q_OBJECT
+  Config config;
   
-  signals:
-    void signalZoom (int, int); // pixelSpace, index
-    void signalPixelSpace (int); // pixelSpace
+  setIcon(QIcon(gridicon));
+  setText(tr("Chart &Grid"));
+  setStatusTip(tr("Toggle the chart grid"));
+  setToolTip(tr("Toggle the chart grid"));
+  setCheckable(TRUE);
+  setChecked(config.getBool(Config::Grid));
+  connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
+}
 
-  public:
-    ZoomButtons (QToolBar *);
-    void createButtons (QToolBar *);
-    int getPixelSpace ();
-    
-  public slots:
-    void addZoom (int index, int pixelSpace);
-    void zoomIn ();
-    void zoomOut ();
-    void psButtonClicked (int);
-    
-  protected:
-    QToolButton *zoomInButton;
-    QToolButton *zoomOutButton;
-    int pixelSpace;
-    PixelSpaceButton *ps1Button;
-    PixelSpaceButton *ps2Button;
-};
+void GridAction::changed (bool status)
+{
+  Config config;
+  config.setData(Config::Grid, status);
+  emit signalChanged(status);
+}
 
-#endif

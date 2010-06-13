@@ -59,7 +59,6 @@ Preferences::Preferences (QWidget *w) : QDialog (w, 0)
   resize(sz);
 
   modified = 0;
-  refreshModified = 0;
 }
 
 void Preferences::createGeneralPage ()
@@ -84,30 +83,8 @@ void Preferences::createGeneralPage ()
   QString s;
   Config config;
 
-  // bar spacing 1
-  QLabel *label = new QLabel(tr("Bar Spacing 1"));
-  grid->addWidget(label, row, col++);
-
-  bs1Spinner = new QSpinBox;
-  bs1Spinner->setToolTip(tr("Number of screen pixels between bars.\n6 is good for bar charts."));
-  bs1Spinner->setRange(2, 99);
-  bs1Spinner->setValue(config.getInt(Config::PSButton1));
-  connect(bs1Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs1Spinner, row++, col--);
-
-  // bar spacing 2
-  label = new QLabel(tr("Bar Spacing 2"));
-  grid->addWidget(label, row, col++);
-
-  bs2Spinner = new QSpinBox;
-  bs2Spinner->setToolTip(tr("Number of screen pixels between bars.\n8 is good for candle charts"));
-  bs2Spinner->setRange(2, 99);
-  bs2Spinner->setValue(config.getInt(Config::PSButton2));
-  connect(bs2Spinner, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
-  grid->addWidget(bs2Spinner, row++, col--);
-
   // indicator tab rows
-  label = new QLabel(tr("Indicator Tab Rows"));
+  QLabel *label = new QLabel(tr("Indicator Tab Rows"));
   grid->addWidget(label, row, col++);
 
   tabRows = new QSpinBox;
@@ -117,17 +94,6 @@ void Preferences::createGeneralPage ()
   tabRows->setValue(config.getInt(Config::IndicatorTabRows));
   connect(tabRows, SIGNAL(valueChanged(int)), this, SLOT(slotModified()));
   grid->addWidget(tabRows, row++, col--);
-
-  // refresh chart
-  label = new QLabel(tr("Refresh Chart"));
-  grid->addWidget(label, row, col++);
-
-  refreshSpinner = new QSpinBox;
-  refreshSpinner->setToolTip(tr("Refresh chart every x minutes"));
-  refreshSpinner->setRange(0, 99);
-  refreshSpinner->setValue(config.getInt(Config::Refresh));
-  connect(refreshSpinner, SIGNAL(valueChanged(int)), this, SLOT(slotRefreshModified()));
-  grid->addWidget(refreshSpinner, row++, col--);
 
   tabs->addTab(w, tr("General"));
 }
@@ -432,17 +398,7 @@ void Preferences::slotSave ()
 
   config.transaction();
 
-  config.setData((int) Config::PSButton1, bs1Spinner->value());
-  emit signalPS1Changed(bs1Spinner->value());
-  
-  config.setData((int) Config::PSButton2, bs2Spinner->value());
-  emit signalPS2Changed(bs2Spinner->value());
-
   config.setData((int) Config::IndicatorTabRows, tabRows->value());
-
-  config.setData((int) Config::Refresh, refreshSpinner->value());
-  if (refreshModified)
-    emit signalRefreshChanged(refreshSpinner->value());
 
   QColor c, c2;
   backgroundColorButton->getColor(c);
@@ -534,11 +490,6 @@ void Preferences::slotSave ()
 void Preferences::slotModified()
 {
   modified = TRUE;
-}
-
-void Preferences::slotRefreshModified()
-{
-  refreshModified = TRUE;
 }
 
 void Preferences::cancelPressed()

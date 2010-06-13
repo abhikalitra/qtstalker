@@ -14,7 +14,8 @@ To Do:
 - add tooltips
 - interactive scripting
 - complete backtesting module
-
+- add exchange checker to yahoo plugin symbols dialog
+- create toolbar element classes to handle config settings in real time
 
 
 Priority

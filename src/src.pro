@@ -23,6 +23,10 @@ HEADERS += RecentCharts.h
 HEADERS += ScriptLaunchButton.h
 HEADERS += ListWidget.h
 HEADERS += PluginPage.h
+HEADERS += PixelSpaceButton.h
+HEADERS += BarsSpinner.h
+HEADERS += GridAction.h
+HEADERS += DocsAction.h
 
 
 SOURCES += Qtstalker.cpp
@@ -44,6 +48,10 @@ SOURCES += RecentCharts.cpp
 SOURCES += ScriptLaunchButton.cpp
 SOURCES += ListWidget.cpp
 SOURCES += PluginPage.cpp
+SOURCES += PixelSpaceButton.cpp
+SOURCES += BarsSpinner.cpp
+SOURCES += GridAction.cpp
+SOURCES += DocsAction.cpp
 
 
 TARGET = qtstalker

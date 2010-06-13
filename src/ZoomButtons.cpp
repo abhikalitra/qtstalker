@@ -27,12 +27,12 @@
 
 #include <QDebug>
 #include <QString>
-#include <QLayout>
 #include <QIcon>
 
 ZoomButtons::ZoomButtons (QToolBar *tb) : QObject (tb)
 {
   pixelSpace = 6;
+
   createButtons(tb);
 }
 
@@ -58,25 +58,13 @@ void ZoomButtons::createButtons (QToolBar *tb)
   tb->addWidget(zoomOutButton);
 
   // PS1 button
-  ps1 = config.getInt(Config::PSButton1);
-  QString s = QString::number(ps1);
-
-  ps1Button = new QToolButton;
-  ps1Button->setCheckable(FALSE);
-  ps1Button->setToolTip(tr("Set Bar Spacing to ") + s);
-  ps1Button->setText(s);
-  connect(ps1Button, SIGNAL(clicked()), this, SLOT(ps1ButtonClicked()));
+  ps1Button = new PixelSpaceButton((int) Config::PSButton1);
+  connect(ps1Button, SIGNAL(signalPixelSpaceChanged(int)), this, SLOT(psButtonClicked(int)));
   tb->addWidget(ps1Button);
 
   // PS2 button
-  ps2 = config.getInt(Config::PSButton2);
-  s = QString::number(ps2);
-
-  ps2Button = new QToolButton;
-  ps2Button->setCheckable(FALSE);
-  ps2Button->setToolTip(tr("Set Bar Spacing to ") + s);
-  ps2Button->setText(s);
-  connect(ps2Button, SIGNAL(clicked()), this, SLOT(ps2ButtonClicked()));
+  ps2Button = new PixelSpaceButton((int) Config::PSButton2);
+  connect(ps2Button, SIGNAL(signalPixelSpaceChanged(int)), this, SLOT(psButtonClicked(int)));
   tb->addWidget(ps2Button);
 }
 
@@ -100,42 +88,14 @@ void ZoomButtons::addZoom (int index, int ps)
   emit signalZoom(pixelSpace, index); 
 }
 
-void ZoomButtons::ps1ButtonClicked ()
-{
-  psButtonClicked(ps1);
-}
-
-void ZoomButtons::ps2ButtonClicked ()
-{
-  psButtonClicked(ps2);
-}
-
 void ZoomButtons::psButtonClicked (int ps)
 {
   pixelSpace = ps;
-  Config config;
-  config.setData((int) Config::Pixelspace, pixelSpace);
   emit signalPixelSpace(pixelSpace);
 }
 
 int ZoomButtons::getPixelSpace ()
 {
   return pixelSpace;
-}
-
-void ZoomButtons::ps1ValueChanged (int d)
-{
-  ps1 = d;
-  QString s = QString::number(d);
-  ps1Button->setToolTip(tr("Set Bar Spacing to ") + s);
-  ps1Button->setText(s);
-}
-
-void ZoomButtons::ps2ValueChanged (int d)
-{
-  ps2 = d;
-  QString s = QString::number(d);
-  ps2Button->setToolTip(tr("Set Bar Spacing to ") + s);
-  ps2Button->setText(s);
 }
 

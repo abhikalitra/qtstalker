@@ -19,40 +19,15 @@
  *  USA.
  */
 
-#ifndef ZOOM_BUTTONS_HPP
-#define ZOOM_BUTTONS_HPP
+#include "CSVConfig.h"
 
-#include <QObject>
-#include <QToolButton>
-#include <QToolBar>
+#include <QtDebug>
 
-#include "PixelSpaceButton.h"
-
-class ZoomButtons : public QObject
+CSVConfig::CSVConfig ()
 {
-  Q_OBJECT
-  
-  signals:
-    void signalZoom (int, int); // pixelSpace, index
-    void signalPixelSpace (int); // pixelSpace
+  _dbName = "data";
+  _tableName = "CSVPluginConfig";
 
-  public:
-    ZoomButtons (QToolBar *);
-    void createButtons (QToolBar *);
-    int getPixelSpace ();
-    
-  public slots:
-    void addZoom (int index, int pixelSpace);
-    void zoomIn ();
-    void zoomOut ();
-    void psButtonClicked (int);
-    
-  protected:
-    QToolButton *zoomInButton;
-    QToolButton *zoomOutButton;
-    int pixelSpace;
-    PixelSpaceButton *ps1Button;
-    PixelSpaceButton *ps2Button;
-};
+  createTable();
+}
 
-#endif

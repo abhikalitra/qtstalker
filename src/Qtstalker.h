@@ -38,7 +38,6 @@
 
 #include "Plot.h"
 #include "ChartPage.h"
-#include "assistant.h"
 #include "BarData.h"
 #include "InfoPanel.h"
 #include "ScriptPage.h"
@@ -49,6 +48,10 @@
 #include "RecentCharts.h"
 #include "GroupPage.h"
 #include "PluginPage.h"
+#include "BarsSpinner.h"
+#include "GridAction.h"
+#include "RefreshAction.h"
+#include "DocsAction.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -74,12 +77,9 @@ class QtstalkerApp : public QMainWindow
     enum MenuAction
     {
       Exit,
-      NewIndicator,
       Options,
-      Grid,
       DataWindow1,
-      About,
-      Help
+      About
     };
 
     QtstalkerApp (QString session, QString asset);
@@ -97,8 +97,6 @@ class QtstalkerApp : public QMainWindow
   public slots:
     void loadChart (BarData *);
     void about ();
-    void startDocumentation ();
-    void showDocumentation (QString);
     void quit();
     void options ();
     void dataWindow ();
@@ -132,9 +130,8 @@ class QtstalkerApp : public QMainWindow
     QStatusBar *_statusBar;
     QList<QTabWidget*> _tabList;
     QHash<MenuAction, QAction*> _actionList;
-    QSpinBox *_barCount;
+    BarsSpinner *_barCount;
     RecentCharts *_recentCharts;
-    Assistant *_assistant;
     BarLengthButtons *_barLengthButtons;
     BarData _currentChart;
     ScriptPage *_scriptPage;
@@ -144,6 +141,10 @@ class QtstalkerApp : public QMainWindow
     QString _clAsset;
     GroupPage *_groupNav;
     PluginPage *_pluginNav;
+
+    GridAction *_gridAction;
+    RefreshAction *_refreshAction;
+    DocsAction *_docsAction;
 };
 
 #endif

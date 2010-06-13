@@ -19,40 +19,25 @@
  *  USA.
  */
 
-#ifndef ZOOM_BUTTONS_HPP
-#define ZOOM_BUTTONS_HPP
+#include "BarsSpinner.h"
+#include "Config.h"
 
-#include <QObject>
-#include <QToolButton>
-#include <QToolBar>
-
-#include "PixelSpaceButton.h"
-
-class ZoomButtons : public QObject
+BarsSpinner::BarsSpinner ()
 {
-  Q_OBJECT
+  Config config;
   
-  signals:
-    void signalZoom (int, int); // pixelSpace, index
-    void signalPixelSpace (int); // pixelSpace
+  setRange(1, 99999);
+  setValue(config.getInt(Config::BarsToLoad));
+  setToolTip(tr("Total bars to load"));
+  connect(this, SIGNAL(editingFinished()), this, SLOT(changed()));
+}
 
-  public:
-    ZoomButtons (QToolBar *);
-    void createButtons (QToolBar *);
-    int getPixelSpace ();
-    
-  public slots:
-    void addZoom (int index, int pixelSpace);
-    void zoomIn ();
-    void zoomOut ();
-    void psButtonClicked (int);
-    
-  protected:
-    QToolButton *zoomInButton;
-    QToolButton *zoomOutButton;
-    int pixelSpace;
-    PixelSpaceButton *ps1Button;
-    PixelSpaceButton *ps2Button;
-};
+void BarsSpinner::changed ()
+{
+  Config config;
+  config.setData(Config::BarsToLoad, value());
+  
+  emit signalChanged();
+}
 
-#endif
+

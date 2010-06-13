@@ -1,8 +1,8 @@
 /*
  *  Qtstalker stock charter
- *
+ * 
  *  Copyright (C) 2001-2010 Stefan S. Stratigakos
- *
+ * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,44 +15,29 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
 
-#ifndef ZOOM_BUTTONS_HPP
-#define ZOOM_BUTTONS_HPP
+#ifndef GRID_ACTION_HPP
+#define GRID_ACTION_HPP
 
-#include <QObject>
-#include <QToolButton>
-#include <QToolBar>
+#include <QAction>
 
-#include "PixelSpaceButton.h"
-
-class ZoomButtons : public QObject
+class GridAction : public QAction
 {
   Q_OBJECT
   
   signals:
-    void signalZoom (int, int); // pixelSpace, index
-    void signalPixelSpace (int); // pixelSpace
+    void signalChanged (bool);
 
   public:
-    ZoomButtons (QToolBar *);
-    void createButtons (QToolBar *);
-    int getPixelSpace ();
+    GridAction (QObject *);
     
   public slots:
-    void addZoom (int index, int pixelSpace);
-    void zoomIn ();
-    void zoomOut ();
-    void psButtonClicked (int);
-    
-  protected:
-    QToolButton *zoomInButton;
-    QToolButton *zoomOutButton;
-    int pixelSpace;
-    PixelSpaceButton *ps1Button;
-    PixelSpaceButton *ps2Button;
+    void changed (bool);
 };
 
 #endif
+
+
