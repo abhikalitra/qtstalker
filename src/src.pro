@@ -8,7 +8,6 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math
 HEADERS += Qtstalker.h
 HEADERS += assistant.h
 HEADERS += DataWindow.h
-HEADERS += Preferences.h
 HEADERS += ChartPage.h
 HEADERS += GroupPage.h
 HEADERS += IndicatorPage.h
@@ -27,13 +26,13 @@ HEADERS += PixelSpaceButton.h
 HEADERS += BarsSpinner.h
 HEADERS += GridAction.h
 HEADERS += DocsAction.h
+HEADERS += TabWidget.h
 
 
 SOURCES += Qtstalker.cpp
 SOURCES += main.cpp
 SOURCES += assistant.cpp
 SOURCES += DataWindow.cpp
-SOURCES += Preferences.cpp
 SOURCES += ChartPage.cpp
 SOURCES += GroupPage.cpp
 SOURCES += IndicatorPage.cpp
@@ -52,6 +51,7 @@ SOURCES += PixelSpaceButton.cpp
 SOURCES += BarsSpinner.cpp
 SOURCES += GridAction.cpp
 SOURCES += DocsAction.cpp
+SOURCES += TabWidget.cpp
 
 
 TARGET = qtstalker

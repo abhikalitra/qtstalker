@@ -40,6 +40,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
   
   QToolButton *b = new QToolButton;
   b->setToolTip(QString(tr("Monthly Bars")));
+  b->setStatusTip(QString(tr("Monthly Bars")));
   b->setText(QString("M"));
   b->setCheckable(TRUE);
   tb->addWidget(b);
@@ -47,6 +48,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   b = new QToolButton;
   b->setToolTip(QString(tr("Weekly Bars")));
+  b->setStatusTip(QString(tr("Weekly Bars")));
   b->setText(QString("W"));
   b->setCheckable(TRUE);
   tb->addWidget(b);
@@ -54,6 +56,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   b = new QToolButton;
   b->setToolTip(QString(tr("Daily Bars")));
+  b->setStatusTip(QString(tr("Daily Bars")));
   b->setText(QString("D"));
   b->setCheckable(TRUE);
   tb->addWidget(b);
@@ -61,6 +64,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   b = new QToolButton;
   b->setToolTip(QString(tr("60 Minute Bars")));
+  b->setStatusTip(QString(tr("60 Minute Bars")));
   b->setText(QString("60"));
   b->setCheckable(TRUE);
   tb->addWidget(b);
@@ -68,6 +72,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   b = new QToolButton;
   b->setToolTip(QString(tr("30 Minute Bars")));
+  b->setStatusTip(QString(tr("30 Minute Bars")));
   b->setText(QString("30"));
   b->setCheckable(TRUE);
   tb->addWidget(b);
@@ -75,6 +80,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   b = new QToolButton;
   b->setToolTip(QString(tr("15 Minute Bars")));
+  b->setStatusTip(QString(tr("15 Minute Bars")));
   b->setText(QString("15"));
   b->setCheckable(TRUE);
   tb->addWidget(b);
@@ -82,6 +88,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   b = new QToolButton;
   b->setToolTip(QString(tr("10 Minute Bars")));
+  b->setStatusTip(QString(tr("10 Minute Bars")));
   b->setText(QString("10"));
   b->setCheckable(TRUE);
   tb->addWidget(b);
@@ -89,6 +96,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   b = new QToolButton;
   b->setToolTip(QString(tr("5 Minute Bars")));
+  b->setStatusTip(QString(tr("5 Minute Bars")));
   b->setText(QString("5"));
   b->setCheckable(TRUE);
   tb->addWidget(b);
@@ -96,6 +104,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   b = new QToolButton;
   b->setToolTip(QString(tr("1 Minute Bars")));
+  b->setStatusTip(QString(tr("1 Minute Bars")));
   b->setText(QString("1"));
   b->setCheckable(TRUE);
   tb->addWidget(b);

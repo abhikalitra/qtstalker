@@ -21,16 +21,17 @@
 
 #include "GridAction.h"
 #include "Config.h"
-
 #include "../pics/grid.xpm"
 
-GridAction::GridAction (QObject *p) : QAction (p)
+#include <QColorDialog>
+
+GridAction::GridAction ()
 {
   Config config;
   
   setIcon(QIcon(gridicon));
   setText(tr("Chart &Grid"));
-  setStatusTip(tr("Toggle the chart grid"));
+  setStatusTip(tr("Toggle the chart grid. Right click mouse for options."));
   setToolTip(tr("Toggle the chart grid"));
   setCheckable(TRUE);
   setChecked(config.getBool(Config::Grid));
@@ -43,4 +44,27 @@ void GridAction::changed (bool status)
   config.setData(Config::Grid, status);
   emit signalChanged(status);
 }
+
+void GridAction::colorDialog ()
+{
+  Config config;
+  QColor oldColor;
+  config.getData(Config::GridColor, oldColor);
+
+  QColor newColor = QColorDialog::getColor(oldColor, this, tr("Select Grid Color"), 0);
+  if (! newColor.isValid())
+    return;
+
+  if (oldColor != newColor)
+  {
+    config.setData(Config::GridColor, newColor);
+    emit signalColorChanged(newColor);
+  }
+}
+
+void GridAction::contextMenuEvent (QContextMenuEvent *)
+{
+  colorDialog();
+}
+
 

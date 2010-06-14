@@ -22,11 +22,10 @@
 #ifndef REFRESH_ACTION_HPP
 #define REFRESH_ACTION_HPP
 
-#include <QAction>
 #include <QTimer>
-#include <QContextMenuEvent>
+#include <QToolButton>
 
-class RefreshAction : public QAction
+class RefreshAction : public QToolButton
 {
   Q_OBJECT
   
@@ -34,7 +33,7 @@ class RefreshAction : public QAction
     void signalRefresh ();
 
   public:
-    RefreshAction (QObject *);
+    RefreshAction ();
     
   public slots:
     void refreshChart (bool status);
@@ -45,7 +44,7 @@ class RefreshAction : public QAction
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);
     
-  protected:
+  private:
     QTimer *_timer;
     int _minutes;
 };

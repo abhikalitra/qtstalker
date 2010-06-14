@@ -60,6 +60,9 @@ class Plot : public QWidget
     void signalLogFlag (bool);
     void signalNewExternalChartObjectDone();
     void signalIndexChanged (int);
+    void signalBackgroundColorChanged (QColor);
+    void signalBorderColorChanged (QColor);
+    void signalPlotFontChanged (QFont);
 
   public:
     enum MouseStatus
@@ -107,6 +110,9 @@ class Plot : public QWidget
     void setExternalChartObjectFlag ();
     void cursorChanged (int);
     void clear ();
+    void editBackgroundColor ();
+    void editBorderColor ();
+    void editFont ();
 
   protected:
     virtual void paintEvent (QPaintEvent *);

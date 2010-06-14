@@ -529,6 +529,22 @@
 
            Same as above for the chart refresh toolbar button.
 
+20100613:  Decentralizing the preferences editing to each gui element. So we can just right click on the gui
+           element itself in order to change the settings. The reamining app wide settings will be moved into
+           the preferences toolbar button with a small popup context menu for fast changes.
+
+           Removed the menubar. Not needed if we have a toolbar. More room for charts now.
+
+           Added a context menu to the indicator tabs to change the tab position and modify the number of
+           tab rows. Right click on any tab to show the menu. We can extend more space for charts if
+           the tabs are arranged on the right side.
+
+20100614:  Last viewed indicators are saved and restored properly now.
+
+           Preferences dialog and toolbar button removed. Now all preferences can be edited directly from the
+           gui object by either right clicking the mouse on it for a context menu or if only one option is available,
+           a dialog will launch.
+
 
 
            

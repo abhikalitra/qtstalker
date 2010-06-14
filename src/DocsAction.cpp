@@ -21,21 +21,28 @@
 
 #include "DocsAction.h"
 #include "../pics/help.xpm"
+#include "../pics/qtstalker.xpm"
 
 #include <QApplication>
 #include <QDesktopServices>
 #include <QString>
 #include <QDebug>
+#include <QCursor>
+#include <QMessageBox>
 
-DocsAction::DocsAction (QObject *p) : QAction (p)
+DocsAction::DocsAction ()
 {
+  _menu = new QMenu(this);
+  _menu->addAction(QPixmap(help), tr("&Documentation"), this, SLOT(startDocumentation()), Qt::ALT+Qt::Key_D);
+  _menu->addAction(QPixmap(qtstalker), tr("&About QtStalker"), this, SLOT(about()), Qt::ALT+Qt::Key_A);
+  
   _assistant = new Assistant;
 
   setIcon(QIcon(help));
   setText(tr("&Help"));
-  setStatusTip(tr("Show documentation."));
+  setStatusTip(tr("Show documentation. Right click mouse for options."));
   setToolTip(tr("Show documentation."));
-  connect(this, SIGNAL(triggered()), this, SLOT(startDocumentation()));
+  connect(this, SIGNAL(clicked()), this, SLOT(startDocumentation()));
 }
 
 DocsAction::~DocsAction ()
@@ -61,5 +68,20 @@ raise the minimum Qt version.
 
   // start _assistant
   _assistant->showDocumentation("index.html");
+}
+
+void DocsAction::about ()
+{
+  QString versionString = "Qtstalker version 0.37-dev (working title)\nBuilt using Qt ";
+  versionString += QT_VERSION_STR;
+  versionString += "\n(C) 2001-2010 by Stefan Stratigakos\nqtstalker.sourceforge.net";
+  versionString += "\nQtstalker is licensed with GNU General Public License (GPL) version 2.";
+  versionString += "\nQt Assistant is licensed with GNU General Public License (GPL) version 3.";
+  QMessageBox::about(this, tr("About Qtstalker"), versionString);
+}
+
+void DocsAction::contextMenuEvent (QContextMenuEvent *)
+{
+  _menu->exec(QCursor::pos());
 }
 

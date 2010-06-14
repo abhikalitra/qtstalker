@@ -52,7 +52,7 @@ ScriptLaunchButton::ScriptLaunchButton (int pos, int label)
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
   
   _menu = new QMenu(this);
-  _menu->addAction(QPixmap(configure_xpm), tr("&Configure"), this, SLOT(configure()), Qt::CTRL+Qt::Key_C);
+  _menu->addAction(QPixmap(configure_xpm), tr("&Configure"), this, SLOT(configure()), Qt::ALT+Qt::Key_C);
 }
 
 void ScriptLaunchButton::buttonClicked ()

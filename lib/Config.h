@@ -95,12 +95,12 @@ class Config : public BaseConfig
       DbGetSymbol, // the sql command to get symbol quotes
       RefreshStatus, // status of the refresh chart toggle button
       LastGroupUsed, // last group displayed in groups area
-      LastIndicatorUsed, // csv list of the last indicators used
-      UNUSED2, // ************ UNUSED ************************
-      UNUSED3, // ************* UNUSED *********************
+      UNUSED0, // ************* UNUSED *****************
+      IndicatorRow1Position, // tab position of the 1st row
+      IndicatorRow2Position, // tab position of the 2nd row
       MainToolBarPos, // last position of the main toolbar
       ChartToolBarPos, // last position of the chart toolbar
-      UNUSED4, // ************** UNUSED ***************************
+      IndicatorRow3Position, // tab position of the 3rd row
       RecentChartsList, // csv list of the contents of the recent charts combobox
       LastChartObjectID, // used to assign a new co object id number
       DefaultTextLabel,
@@ -122,8 +122,9 @@ class Config : public BaseConfig
       DefaultTLineUseBar,
       DefaultVLineColor, // default vertical line color
       IndicatorTabRows, // # of indicator tab rows
-      UNUSED5, // ************ UNUSED ****************************
-      UNUSED6 // ************ UNUSED ***********************
+      LastIndicatorRow1, // last visible tab on row 1
+      LastIndicatorRow2, // last visible tab on row 2
+      LastIndicatorRow3 // last visible tab on row 3
     };
 
     Config ();

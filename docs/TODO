@@ -15,7 +15,8 @@ To Do:
 - interactive scripting
 - complete backtesting module
 - add exchange checker to yahoo plugin symbols dialog
-- create toolbar element classes to handle config settings in real time
+- add date/log toggle buttons to the lower right chart area
+
 
 
 Priority

@@ -36,6 +36,7 @@
 #include <QTimer>
 #include <QButtonGroup>
 
+#include "Config.h"
 #include "Plot.h"
 #include "ChartPage.h"
 #include "BarData.h"
@@ -52,6 +53,7 @@
 #include "GridAction.h"
 #include "RefreshAction.h"
 #include "DocsAction.h"
+#include "TabWidget.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -72,19 +74,16 @@ class QtstalkerApp : public QMainWindow
     void signalSetExternalChartObject ();
     void signalCursorChanged (int);
     void signalRefreshUpdated (int);
+    
+    void signalDeleteIndicatorTab (QString);
+    void signalSaveVisibleIndicatorTab ();
+    void signalSetLastIndicatorTab ();
 
   public:
-    enum MenuAction
-    {
-      Exit,
-      Options,
-      DataWindow1,
-      About
-    };
-
     QtstalkerApp (QString session, QString asset);
-    void createActions ();
-    void createMenuBar ();
+    void setup (Config &, QString session);
+    void createGUI (Config &);
+    void loadSettings (Config &);
     void createToolBars ();
     void initGroupNav ();
     void initChartNav ();
@@ -96,9 +95,7 @@ class QtstalkerApp : public QMainWindow
 
   public slots:
     void loadChart (BarData *);
-    void about ();
     void quit();
-    void options ();
     void dataWindow ();
     void deleteIndicator (QString);
     void barLengthChanged (int);
@@ -116,6 +113,9 @@ class QtstalkerApp : public QMainWindow
     void commandLineAsset ();
     void sliderChanged (int);
     void gridChanged (bool);
+    void backgroundColorChanged (QColor);
+    void borderColorChanged (QColor);
+    void plotFontChanged (QFont);
 
   protected:
     QSplitter *_split;
@@ -128,8 +128,7 @@ class QtstalkerApp : public QMainWindow
     QHash<QString, Plot *> _plotList;
     InfoPanel *_infoPanel;
     QStatusBar *_statusBar;
-    QList<QTabWidget*> _tabList;
-    QHash<MenuAction, QAction*> _actionList;
+    QList<TabWidget*> _tabList;
     BarsSpinner *_barCount;
     RecentCharts *_recentCharts;
     BarLengthButtons *_barLengthButtons;
@@ -141,10 +140,8 @@ class QtstalkerApp : public QMainWindow
     QString _clAsset;
     GroupPage *_groupNav;
     PluginPage *_pluginNav;
-
     GridAction *_gridAction;
     RefreshAction *_refreshAction;
-    DocsAction *_docsAction;
 };
 
 #endif

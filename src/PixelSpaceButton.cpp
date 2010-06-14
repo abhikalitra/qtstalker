@@ -35,8 +35,8 @@ PixelSpaceButton::PixelSpaceButton (int d)
   QString s = QString::number(_pixelSpace);
 
   setCheckable(FALSE);
-  setToolTip(tr("Set Bar Spacing to ") + s);
-  setText(s);
+
+  changeText();
 
   connect(this, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 }
@@ -54,10 +54,8 @@ void PixelSpaceButton::buttonClicked ()
 void PixelSpaceButton::setPixelSpace (int d)
 {
   _pixelSpace = d;
-  
-  QString s = QString::number(_pixelSpace);
-  setToolTip(tr("Set Bar Spacing to ") + s);
-  setText(s);
+
+  changeText();
 
   Config config;
   config.setData((Config::Parm) _key, _pixelSpace);
@@ -80,5 +78,14 @@ void PixelSpaceButton::dialog ()
     return;
 
   setPixelSpace(t);
+}
+
+void PixelSpaceButton::changeText ()
+{
+  QString s = tr("Set Bar Spacing to ");
+  QString s2 = QString::number(_pixelSpace);
+  setToolTip(s + s2);
+  setStatusTip(s + s2 + tr(" Right click mouse for options."));
+  setText(s2);
 }
 

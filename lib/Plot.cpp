@@ -41,6 +41,8 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <iostream>
+#include <QColorDialog>
+#include <QFontDialog>
 
 Plot::Plot (QWidget *w) : QWidget(w)
 {
@@ -74,14 +76,18 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _plotData.plotFont.setWeight(50);
 
   _coMenu = new QMenu(this);
-  _coMenu->addAction(QPixmap(edit), tr("&Edit Chart Object"), this, SLOT(objectDialog()), Qt::CTRL+Qt::Key_E);
-  _coMenu->addAction(QPixmap(delete_xpm), tr("&Delete Chart Object"), this, SLOT(chartObjectDeleted()), Qt::CTRL+Qt::Key_D);
+  _coMenu->addAction(QPixmap(edit), tr("&Edit Chart Object"), this, SLOT(objectDialog()), Qt::ALT+Qt::Key_E);
+  _coMenu->addAction(QPixmap(delete_xpm), tr("&Delete Chart Object"), this, SLOT(chartObjectDeleted()), Qt::ALT+Qt::Key_D);
   
   _chartMenu = new QMenu(this);
-  _chartMenu->addAction(QPixmap(delete_xpm), tr("Delete &All Chart Objects"), this, SLOT(deleteAllChartObjects()), Qt::CTRL+Qt::Key_A);
+  _chartMenu->addAction(QPixmap(delete_xpm), tr("Delete &All Chart Objects"), this, SLOT(deleteAllChartObjects()), Qt::ALT+Qt::Key_A);
   _chartMenu->addSeparator ();
-  _chartMenu->addAction(QPixmap(date), tr("Date"), this, SLOT(toggleDate()), Qt::CTRL+Qt::Key_D);
-  _chartMenu->addAction(QPixmap(loggridicon), tr("Log Scaling"), this, SLOT(toggleLog()), Qt::CTRL+Qt::Key_L);
+  _chartMenu->addAction(QPixmap(date), tr("&Date"), this, SLOT(toggleDate()), Qt::ALT+Qt::Key_D);
+  _chartMenu->addAction(QPixmap(loggridicon), tr("&Log Scaling"), this, SLOT(toggleLog()), Qt::ALT+Qt::Key_L);
+  _chartMenu->addSeparator ();
+  _chartMenu->addAction(tr("&Background Color"), this, SLOT(editBackgroundColor()), Qt::ALT+Qt::Key_B);
+  _chartMenu->addAction(tr("Bo&rder Color"), this, SLOT(editBorderColor()), Qt::ALT+Qt::Key_R);
+  _chartMenu->addAction(tr("&Font"), this, SLOT(editFont()), Qt::ALT+Qt::Key_F);
 
   setMouseTracking(TRUE);
 
@@ -461,21 +467,25 @@ void Plot::setInterval (Bar::BarLength d)
 void Plot::setBackgroundColor (QColor d)
 {
   _plotData.backgroundColor = d;
+  emit signalDraw();
 }
 
 void Plot::setBorderColor (QColor d)
 {
   _plotData.borderColor = d;
+  emit signalDraw();
 }
 
 void Plot::setGridColor (QColor d)
 {
   _grid.setGridColor(d);
+  emit signalDraw();
 }
 
 void Plot::setPlotFont (QFont d)
 {
   _plotData.plotFont = d;
+  emit signalDraw();
 }
 
 void Plot::setGridFlag (bool d)
@@ -516,6 +526,49 @@ DateBar & Plot::dateBars ()
 int Plot::width ()
 {
   return _plotData.buffer.width() - _plotData.scaleWidth;
+}
+
+void Plot::editBackgroundColor ()
+{
+  QColor newColor = QColorDialog::getColor(_plotData.backgroundColor, this, tr("Chart Background Color"), 0);
+  if (! newColor.isValid())
+    return;
+
+  if (_plotData.backgroundColor != newColor)
+  {
+    Config config;
+    config.setData(Config::BackgroundColor, newColor);
+    emit signalBackgroundColorChanged(newColor);
+  }
+}
+
+void Plot::editBorderColor ()
+{
+  QColor newColor = QColorDialog::getColor(_plotData.borderColor, this, tr("Chart Border Color"), 0);
+  if (! newColor.isValid())
+    return;
+
+  if (_plotData.borderColor != newColor)
+  {
+    Config config;
+    config.setData(Config::BorderColor, newColor);
+    emit signalBorderColorChanged(newColor);
+  }
+}
+
+void Plot::editFont ()
+{
+  bool ok;
+  QFont newFont = QFontDialog::getFont(&ok, _plotData.plotFont, this, tr("Chart Font"), 0);
+  if (! ok)
+    return;
+
+  if (_plotData.plotFont != newFont)
+  {
+    Config config;
+    config.setData(Config::PlotFont, newFont);
+    emit signalPlotFontChanged(newFont);
+  }
 }
 
 //*********************************************************************

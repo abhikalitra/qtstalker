@@ -45,6 +45,7 @@ void ZoomButtons::createButtons (QToolBar *tb)
   zoomInButton = new QToolButton;
   zoomInButton->setIcon(QIcon(zoomin_xpm));
   zoomInButton->setToolTip(QString(tr("Zoom In")));
+  zoomInButton->setStatusTip(QString(tr("Zoom In")));
   zoomInButton->setCheckable(FALSE);
   connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
   tb->addWidget(zoomInButton);
@@ -53,6 +54,7 @@ void ZoomButtons::createButtons (QToolBar *tb)
   zoomOutButton = new QToolButton;
   zoomOutButton->setIcon(QIcon(zoomout_xpm));
   zoomOutButton->setToolTip(QString(tr("Zoom Out")));
+  zoomOutButton->setStatusTip(QString(tr("Zoom Out")));
   zoomOutButton->setCheckable(FALSE);
   connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
   tb->addWidget(zoomOutButton);

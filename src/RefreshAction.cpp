@@ -20,17 +20,15 @@
  */
 
 #include "RefreshAction.h"
+#include "Config.h"
+#include "../pics/refresh.xpm"
 
 #include <QString>
 #include <QDebug>
 #include <QIcon>
 #include <QInputDialog>
 
-#include "Config.h"
-
-#include "../pics/refresh.xpm"
-
-RefreshAction::RefreshAction (QObject *p) : QAction (p)
+RefreshAction::RefreshAction ()
 {
   _timer = 0;
   Config config;
@@ -93,17 +91,17 @@ void RefreshAction::dialog ()
   refreshUpdated(t);
 }
 
-void RefreshAction::contextMenuEvent (QContextMenuEvent *)
-{
-  dialog();
-}
-
 void RefreshAction::changeText ()
 {
   QString s = tr("Refresh chart every ") + QString::number(_minutes) + tr(" minutes");
   
   setText(s);
-  setStatusTip(s);
+  setStatusTip(s + tr(" Right click mouse for options."));
   setToolTip(s);
+}
+
+void RefreshAction::contextMenuEvent (QContextMenuEvent *)
+{
+  dialog();
 }
 

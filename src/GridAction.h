@@ -22,20 +22,26 @@
 #ifndef GRID_ACTION_HPP
 #define GRID_ACTION_HPP
 
-#include <QAction>
+#include <QColor>
+#include <QToolButton>
 
-class GridAction : public QAction
+class GridAction : public QToolButton
 {
   Q_OBJECT
   
   signals:
     void signalChanged (bool);
+    void signalColorChanged(QColor);
 
   public:
-    GridAction (QObject *);
+    GridAction ();
     
   public slots:
     void changed (bool);
+    void colorDialog ();
+
+  protected:
+    virtual void contextMenuEvent (QContextMenuEvent *);
 };
 
 #endif

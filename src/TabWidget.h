@@ -19,35 +19,35 @@
  *  USA.
  */
 
-#ifndef DOCS_ACTION_HPP
-#define DOCS_ACTION_HPP
+#ifndef TAB_WIDGET_HPP
+#define TAB_WIDGET_HPP
 
-#include <QToolButton>
+#include <QTabWidget>
 #include <QMenu>
 
-#include "assistant.h"
+#include "Config.h"
 
-class DocsAction : public QToolButton
+class TabWidget : public QTabWidget
 {
   Q_OBJECT
   
-  signals:
-    void signalChanged ();
-
   public:
-    DocsAction ();
-    ~DocsAction ();
+    TabWidget (int);
 
   public slots:
-    void startDocumentation ();
-    void about ();
+    void tabRowsDialog ();
+    void tabPositionDialog ();
+    void saveCurrentTab ();
+    void loadCurrentTab ();
+    void deleteTab (QString);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);
     
   private:
-    Assistant *_assistant;
     QMenu *_menu;
+    Config::Parm _rowPositionParm;
+    Config::Parm _lastIndexParm;
 };
 
 #endif

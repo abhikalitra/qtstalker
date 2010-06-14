@@ -24,6 +24,7 @@
 #include <QtDebug>
 #include <QDir>
 #include <QtSql>
+#include <QTabWidget>
 
 Config::Config ()
 {
@@ -426,6 +427,27 @@ void Config::init (QString session)
   {
     d = "0";
     setData(DefaultSymbol, d);
+  }
+
+  getData(IndicatorRow1Position, d);
+  if (d.isEmpty())
+  {
+    d = QString::number(QTabWidget::North);
+    setData(IndicatorRow1Position, d);
+  }
+
+  getData(IndicatorRow2Position, d);
+  if (d.isEmpty())
+  {
+    d = QString::number(QTabWidget::North);
+    setData(IndicatorRow2Position, d);
+  }
+
+  getData(IndicatorRow3Position, d);
+  if (d.isEmpty())
+  {
+    d = QString::number(QTabWidget::North);
+    setData(IndicatorRow3Position, d);
   }
 
   commit();
