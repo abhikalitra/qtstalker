@@ -27,14 +27,31 @@
 
 GridAction::GridAction ()
 {
-  Config config;
-  
   setIcon(QIcon(gridicon));
   setText(tr("Chart &Grid"));
   setStatusTip(tr("Toggle the chart grid. Right click mouse for options."));
   setToolTip(tr("Toggle the chart grid"));
   setCheckable(TRUE);
-  setChecked(config.getBool(Config::Grid));
+
+  Config config;
+  QColor c;
+  config.getData(Config::GridColor, c);
+  if (! c.isValid())
+  {
+    c = QColor("#626262");
+    config.setData(Config::GridColor, c);
+  }
+
+  QString s;
+  config.getData(Config::Grid, s);
+  if (! s.isEmpty())
+    setChecked(s.toInt());
+  else
+  {
+    config.setData(Config::Grid, 1);
+    setChecked(TRUE);
+  }
+
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }
 
@@ -42,6 +59,7 @@ void GridAction::changed (bool status)
 {
   Config config;
   config.setData(Config::Grid, status);
+
   emit signalChanged(status);
 }
 

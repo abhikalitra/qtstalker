@@ -36,7 +36,6 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 {
   // button group for the bars group
   group = new QButtonGroup(this);
-  connect(group, SIGNAL(buttonClicked(int)), this, SLOT(barLengthChanged(int)));
   
   QToolButton *b = new QToolButton;
   b->setToolTip(QString(tr("Monthly Bars")));
@@ -112,16 +111,26 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   // set the button to last used position
   Config config;
-  b = (QToolButton *) group->button(config.getInt((int) Config::BarLength));
+  QString s;
+  config.getData(Config::BarLength, s);
+  if (! s.isEmpty())
+    b = (QToolButton *) group->button(s.toInt());
+  else
+  {
+    b = (QToolButton *) group->button(6);
+    config.setData(Config::BarLength, 6);
+  }
   b->setChecked(TRUE);
+
+  connect(group, SIGNAL(buttonClicked(int)), this, SLOT(barLengthChanged(int)));
 }
 
 void BarLengthButtons::barLengthChanged (int d)
 {
-  emit signalBarLengthChanged(d);
-
   Config config;
   config.setData(Config::BarLength, d);
+
+  emit signalBarLengthChanged(d);
 }
 
 int BarLengthButtons::getCurrentButton ()

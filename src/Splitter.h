@@ -1,8 +1,8 @@
 /*
  *  Qtstalker stock charter
- * 
+ *
  *  Copyright (C) 2001-2010 Stefan S. Stratigakos
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,41 +15,28 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
-#ifndef TAB_WIDGET_HPP
-#define TAB_WIDGET_HPP
+#ifndef SPLITTER_HPP
+#define SPLITTER_HPP
 
-#include <QTabWidget>
-#include <QMenu>
+#include <QSplitter>
 
-#include "Config.h"
-
-class TabWidget : public QTabWidget
+class Splitter : public QSplitter
 {
   Q_OBJECT
-  
+
   public:
-    TabWidget (int);
+    Splitter (int);
 
   public slots:
-    void tabRowsDialog ();
-    void tabPositionDialog ();
     void save ();
     void load ();
-    void deleteTab (QString);
 
-  protected:
-    virtual void contextMenuEvent (QContextMenuEvent *);
-    
   private:
-    QMenu *_menu;
-    Config::Parm _rowPositionParm;
-    Config::Parm _lastIndexParm;
+    int _parm;
 };
 
 #endif
-
-

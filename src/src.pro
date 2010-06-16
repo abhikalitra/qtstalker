@@ -27,6 +27,7 @@ HEADERS += BarsSpinner.h
 HEADERS += GridAction.h
 HEADERS += DocsAction.h
 HEADERS += TabWidget.h
+HEADERS += Splitter.h
 
 
 SOURCES += Qtstalker.cpp
@@ -52,6 +53,7 @@ SOURCES += BarsSpinner.cpp
 SOURCES += GridAction.cpp
 SOURCES += DocsAction.cpp
 SOURCES += TabWidget.cpp
+SOURCES += Splitter.cpp
 
 
 TARGET = qtstalker

@@ -33,12 +33,28 @@
 TLine::TLine ()
 {
   _plugin = "TLine";
-  _color.setNamedColor("red");
   _price = 0;
   _price2 = 0;
-  _extend = 0;
   
   _fieldList << QObject::tr("Open") << QObject::tr("High") << QObject::tr("Low") << QObject::tr("Close");
+
+  Config config;
+  config.getData(Config::DefaultTLineColor, _color);
+  if (! _color.isValid())
+  {
+    _color.setNamedColor("red");
+    config.setData(Config::DefaultTLineColor, _color);
+  }
+
+  QString s;
+  config.getData(Config::DefaultTLineExtend, s);
+  if (s.isEmpty())
+  {
+    _extend = 1;
+    config.setData(Config::DefaultTLineExtend, _extend);
+  }
+  else
+    _extend = s.toInt();
 }
 
 void TLine::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)

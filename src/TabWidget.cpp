@@ -124,17 +124,25 @@ void TabWidget::contextMenuEvent (QContextMenuEvent *)
   _menu->exec(QCursor::pos());
 }
 
-void TabWidget::saveCurrentTab ()
+void TabWidget::save ()
 {
   // save last indicators used
   Config config;
   config.setData(_lastIndexParm, currentIndex());
 }
 
-void TabWidget::loadCurrentTab ()
+void TabWidget::load ()
 {
   // set last indicators used
   Config config;
+  QString s;
+  config.getData((Config::Parm) _rowPositionParm, s);
+  if (s.isEmpty())
+  {
+    s = QString::number(QTabWidget::North);
+    config.setData((Config::Parm) _rowPositionParm, s);
+  }
+
   setCurrentIndex(config.getInt(_lastIndexParm));
 }
 

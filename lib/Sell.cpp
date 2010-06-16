@@ -33,8 +33,15 @@
 Sell::Sell ()
 {
   _plugin = "Sell";
-  _color.setNamedColor("red");
   _price = 0;
+
+  Config config;
+  config.getData(Config::DefaultSellColor, _color);
+  if (! _color.isValid())
+  {
+    _color.setNamedColor("red");
+    config.setData(Config::DefaultSellColor, _color);
+  }
 }
 
 void Sell::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)

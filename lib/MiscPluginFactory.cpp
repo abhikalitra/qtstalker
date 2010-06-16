@@ -28,6 +28,11 @@ MiscPluginFactory::MiscPluginFactory ()
 {
   Config config;
   config.getData(Config::MiscPluginPath, _path);
+  if (_path.isEmpty())
+  {
+    _path = "/usr/local/lib/qtstalker/plugins/misc";
+    config.setData(Config::MiscPluginPath, _path);
+  }
 }
 
 MiscPluginFactory::~MiscPluginFactory ()

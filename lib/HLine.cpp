@@ -34,9 +34,16 @@
 HLine::HLine ()
 {
   _plugin = "HLine";
-  _color.setNamedColor("red");
   _price = 0;
   _label = _plugin;
+
+  Config config;
+  config.getData(Config::DefaultHLineColor, _color);
+  if (! _color.isValid())
+  {
+    _color.setNamedColor("red");
+    config.setData(Config::DefaultHLineColor, _color);
+  }
 }
 
 void HLine::draw (PlotData &pd, DateBar &, Scaler &scaler)

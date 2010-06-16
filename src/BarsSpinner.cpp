@@ -24,11 +24,18 @@
 
 BarsSpinner::BarsSpinner ()
 {
-  Config config;
-  
   setRange(1, 99999);
-  setValue(config.getInt(Config::BarsToLoad));
   setToolTip(tr("Total bars to load"));
+  setStatusTip(tr("Total bars to load"));
+
+  Config config;
+  QString s;
+  config.getData(Config::BarsToLoad, s);
+  if (! s.isEmpty())
+    setValue(s.toInt());
+  else
+    setValue(275);
+
   connect(this, SIGNAL(editingFinished()), this, SLOT(changed()));
 }
 

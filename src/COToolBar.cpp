@@ -32,9 +32,12 @@
 #include <QStringList>
 #include <QButtonGroup>
 #include <QToolButton>
+#include <QSize>
 
 COToolBar::COToolBar ()
 {
+  setIconSize(QSize(18, 18));
+
   createCursorButtons();
   createCOButtons();
 }

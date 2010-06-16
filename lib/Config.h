@@ -42,29 +42,29 @@ class Config : public BaseConfig
       BorderColor, // color of chart borders
       GridColor, // color of chart grid
       DefaultBuyColor, // default buy arrow color
-      DbName, // sql db name
-      Crosshairs, // char crosshairs on/off
-      DrawMode, // chart draw mode on/off
+      UNUSED15, // ***** UNUSED *******
+      UNUSED13, // ******** UNUSED **********
+      UNUSED12, // ******** UNUSED ***********
       DataPanelSize, // size of the data panel
       ScriptLaunchButton1, // script panel launch button 1
       PlotFont, // chart plot font
-      AppFont, // app font
+      UNUSED11, // ****** UNUSED *******
       NavAreaSize, // navigator panel size
-      DbPlugin, // the qt name for the sql db plugin used for quotes
-      DbHostName, // the hostname used for sql quotes
+      UNUSED10, // ******* UNUSED ************
+      UNUSED9, // ******* UNUSED ***********
       MainWindowSize, // app window size
       MainWindowPos, // app position
-      PrefDlgWindowSize, // preferences dialog window size
-      DbUserName, // sql quotes db user name needed for login
+      UNUSED8, // ******** UNUSED ************
+      UNUSED7, // ***** UNUSED ************
       IndicatorPluginPath, // path to the indicator plugins
       IndicatorPluginList,  // csv list of current indicator plugins from startup inventory
       Version,  // current qtstalker version
       PlotSizes, // csv list of plot row sizes
-      DbPassword, // sql db user password
-      ShowRecentCharts, // csv list (exchange,symbol) of last used charts
+      UNUSED6, // ********* UNUSED ***********
+      UNUSED14, // ******** UNUSED ***********
       CurrentChart, // csv string (exchange,symbol) currently loaded chart 
       DefaultIndicators, // install flag for default indicators, == 0 if not installed, == 1 if installed
-      DbAllSymbols, // the sql command to get all symbols in db
+      UNUSED5, // ******* UNUSED ************
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
@@ -75,7 +75,7 @@ class Config : public BaseConfig
       FuturesFileDate,   // the file size of /docs/futures.csv
       DBPluginPath, // path where db plugins are stored
       DBPluginList, // csv list of current db plugins from startup inventory
-      DbSearchSymbols, // the sql command to get a symbol search
+      UNUSED4, // ******** UNUSED *************
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel
       ScriptLaunchButton3, // script panel launch button 3
       ScriptLaunchButton4, // script panel launch button 4
@@ -90,9 +90,9 @@ class Config : public BaseConfig
       DefaultSymbol, // default symbol flag used in Setup::
       MiscPluginPath, // path to the misc plugins
       MiscPluginList,  // csv list of current misc plugins from startup inventory
-      DbFirstDate, // the sql command to get the first date for a symbol
-      DbLastDate, // the sql command to get the last date for a symbol
-      DbGetSymbol, // the sql command to get symbol quotes
+      UNUSED3, // ******** UNUSED *************
+      UNUSED2, // ********* UNUSED *************
+      UNUSED1, // ******** UNUSED *************
       RefreshStatus, // status of the refresh chart toggle button
       LastGroupUsed, // last group displayed in groups area
       UNUSED0, // ************* UNUSED *****************

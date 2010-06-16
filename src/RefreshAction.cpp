@@ -31,13 +31,29 @@
 RefreshAction::RefreshAction ()
 {
   _timer = 0;
+  
   Config config;
   _minutes = config.getInt(Config::Refresh);
+  if (! _minutes)
+  {
+    _minutes = 1;
+    config.setData(Config::Refresh, _minutes);
+  }
 
   changeText();
   setIcon(QIcon(refresh_xpm));
   setCheckable(TRUE);
-  setChecked(config.getBool(Config::RefreshStatus));
+
+  QString s;
+  config.getData(Config::RefreshStatus, s);
+  if (s.isEmpty())
+  {
+    setChecked(0);
+    config.setData(Config::RefreshStatus, 0);
+  }
+  else
+    setChecked(s.toInt());
+  
   connect(this, SIGNAL(toggled(bool)), this, SLOT(refreshChart(bool)));
 
   _timer = new QTimer(this);

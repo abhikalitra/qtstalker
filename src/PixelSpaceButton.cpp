@@ -29,10 +29,25 @@
 PixelSpaceButton::PixelSpaceButton (int d)
 {
   _key = d;
-  
+
   Config config;
   _pixelSpace = config.getInt((Config::Parm) _key);
-  QString s = QString::number(_pixelSpace);
+  if (! _pixelSpace)
+  {
+    switch ((Config::Parm) _key)
+    {
+      case Config::PSButton1:
+        _pixelSpace = 6;
+        break;
+      case Config::PSButton2:
+        _pixelSpace = 8;
+        break;
+      default:
+        break;
+    }
+
+    config.setData((Config::Parm) _key, _pixelSpace);
+  }
 
   setCheckable(FALSE);
 

@@ -25,15 +25,19 @@
 
 #include <QString>
 
+#include "Config.h"
+
 class Setup
 {
   public:
     Setup ();
+    void setup (Config &, QString session);
     void setupDirectories ();
-    void setupDefaultIndicators ();
+    void setupDefaultIndicators (Config &);
     void setupExchanges ();
     void setupFutures ();
-    void setupDefaultSymbol ();
+    void setupDefaultSymbol (Config &);
+    void setupConfigDefaults (Config &);
 };
 
 #endif

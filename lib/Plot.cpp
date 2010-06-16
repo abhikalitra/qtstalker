@@ -63,6 +63,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _plotData.x = 0;
   _plotData.y = 0;
   _plotData.plot = this;
+  _plotData.plotFont = QFont("Helvetica",9,50,0);
   
   _saveMouseFlag = None;
   _chartMenu = 0;
@@ -70,10 +71,6 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _menuFlag = TRUE;
   _newObjectFlag = 0;
   _cursor = 0;
-
-  _plotData.plotFont.setFamily("Helvetica");
-  _plotData.plotFont.setPointSize(12);
-  _plotData.plotFont.setWeight(50);
 
   _coMenu = new QMenu(this);
   _coMenu->addAction(QPixmap(edit), tr("&Edit Chart Object"), this, SLOT(objectDialog()), Qt::ALT+Qt::Key_E);
@@ -119,7 +116,7 @@ void Plot::draw ()
     _plotData.endIndex = _plotData.startIndex + ((_plotData.buffer.width() - _plotData.scaleWidth) / _plotData.barSpacing);
     if (_plotData.endIndex >= _dateBars.count())
       _plotData.endIndex = _dateBars.count() - 1;
-    
+
     // set the current scale
     _indicator.setScale(_plotData, _dateBars);
 
@@ -569,6 +566,34 @@ void Plot::editFont ()
     config.setData(Config::PlotFont, newFont);
     emit signalPlotFontChanged(newFont);
   }
+}
+
+void Plot::loadSettings ()
+{
+  Config config;
+  QColor c;
+  config.getData(Config::BackgroundColor, c);
+  if (! c.isValid())
+    config.setData(Config::BackgroundColor, _plotData.backgroundColor);
+  else
+    _plotData.backgroundColor = c;
+  
+  config.getData(Config::BorderColor, c);
+  if (! c.isValid())
+    config.setData(Config::BorderColor, _plotData.borderColor);
+  else
+    _plotData.borderColor = c;
+
+  QString s;
+  config.getData(Config::PlotFont, s);
+  if (s.isEmpty())
+    config.setData(Config::PlotFont, _plotData.plotFont);
+  else
+    config.getData(Config::PlotFont, _plotData.plotFont);
+
+  _plotData.barSpacing = config.getInt(Config::Pixelspace);
+
+  _plotData.interval = config.getInt(Config::BarLength);
 }
 
 //*********************************************************************

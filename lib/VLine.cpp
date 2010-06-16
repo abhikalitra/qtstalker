@@ -33,7 +33,14 @@
 VLine::VLine ()
 {
   _plugin = "VLine";
-  _color.setNamedColor("red");
+
+  Config config;
+  config.getData(Config::DefaultVLineColor, _color);
+  if (! _color.isValid())
+  {
+    _color.setNamedColor("red");
+    config.setData(Config::DefaultVLineColor, _color);
+  }
 }
 
 void VLine::draw (PlotData &pd, DateBar &dateBars, Scaler &)

@@ -42,6 +42,7 @@ class RecentCharts : public QComboBox
     void addRecentChart (BarData *bd);
     void itemSelected (int row);
     void save ();
+    void load ();
 
   protected:
     Group group;

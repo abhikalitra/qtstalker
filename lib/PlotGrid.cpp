@@ -20,14 +20,23 @@
  */
 
 #include "PlotGrid.h"
+#include "Config.h"
 
 #include <QPainter>
 #include <QtDebug>
 
 PlotGrid::PlotGrid ()
 {
-  _gridColor.setNamedColor("#626262");
+  Config config;
+  config.getData(Config::GridColor, _gridColor);
+  if (! _gridColor.isValid())
+    _gridColor = QColor("#626262");
+
   _gridFlag = TRUE;
+  QString s;
+  config.getData(Config::Grid, s);
+  if (! s.isEmpty())
+    _gridFlag = s.toInt();
 }
 
 void PlotGrid::setGridColor (QColor &d)

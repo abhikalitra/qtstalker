@@ -113,6 +113,7 @@ class Plot : public QWidget
     void editBackgroundColor ();
     void editBorderColor ();
     void editFont ();
+    void loadSettings ();
 
   protected:
     virtual void paintEvent (QPaintEvent *);
@@ -151,7 +152,6 @@ class Plot : public QWidget
     MouseStatus _saveMouseFlag;
     DatePlot _datePlot;
     ScalePlot _scalePlot;
-//    Scaler _scaler;
     DateBar _dateBars;
     PlotCursor *_cursor;
 };

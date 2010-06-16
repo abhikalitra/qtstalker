@@ -545,6 +545,18 @@
            gui object by either right clicking the mouse on it for a context menu or if only one option is available,
            a dialog will launch.
 
+20100615:  Internal changes. Moved some functions between classes.
+
+           Default chart object preferences were not being set. Fixed.
+
+           Moved Config defaults into proper gui class initializers.
+
+           Connected all main app load/save signals to gui classes. Startup and shutdown of the app
+           is noticeably slower. The price to pay for better OO code.
+
+
+
+           
 
 
            

@@ -21,7 +21,6 @@
 
 #include "Setup.h"
 #include "qtstalker_defines.h"
-#include "Config.h"
 #include "IndicatorDataBase.h"
 #include "Indicator.h"
 #include "IndicatorPluginFactory.h"
@@ -31,6 +30,11 @@
 #include "ExchangeDataBase.h"
 #include "FuturesDataBase.h"
 #include "PlotLine.h"
+#include "QuoteIndexDataBase.h"
+#include "MiscPluginFactory.h"
+#include "GroupDataBase.h"
+#include "ScriptDataBase.h"
+#include "CODataBase.h"
 
 #include <QtDebug>
 #include <QtSql>
@@ -43,6 +47,56 @@
 
 Setup::Setup ()
 {
+}
+
+void Setup::setup (Config &config, QString session)
+{
+  // setup the disk environment and init databases
+  // order is critical here
+  setupDirectories(); // initialize directory structure
+
+  config.init(session); // initialize config db
+
+  setupConfigDefaults(config); // initialize config defaults
+
+  // initialize the quotes db
+  QuoteIndexDataBase qidb;
+  QString s = QDir::homePath() + "/.qtstalker/quotes.sqlite";
+  qidb.init(s);
+
+  // initialize data tables
+  setupExchanges();
+  setupFutures();
+
+  // get complete plugin inventory
+  IndicatorPluginFactory ifac;
+  ifac.setPluginList();
+
+  DBPluginFactory dbfac;
+  dbfac.setPluginList();
+
+  MiscPluginFactory mfac;
+  mfac.setPluginList();
+
+  // initialize the groups db
+  GroupDataBase gdb;
+  gdb.init();
+
+  // initialize the scripts db
+  ScriptDataBase sdb;
+  sdb.init();
+
+  // initialize the indicator db
+  IndicatorDataBase idb;
+  idb.init();
+  setupDefaultIndicators(config);
+
+  // initialize the chart object db
+  CODataBase codb;
+  codb.init();
+
+  // initialize an example symbol for first run
+  setupDefaultSymbol(config);
 }
 
 void Setup::setupDirectories ()
@@ -68,12 +122,10 @@ void Setup::setupDirectories ()
     qDebug() << "Setup::setupDirectories:" << db.lastError().text();
 }
 
-void Setup::setupDefaultIndicators ()
+void Setup::setupDefaultIndicators (Config &config)
 {
-  QString d;
-  Config config;
-  config.getData(Config::DefaultIndicators, d);
-  if (d.toInt())
+  int ti = config.getInt(Config::DefaultIndicators);
+  if (ti)
     return;
 
   // create the Bars indicator
@@ -110,7 +162,7 @@ void Setup::setupDefaultIndicators ()
     db.setIndicator(i);
   }
 
-  config.setData((int) Config::DefaultIndicators, 1);
+  config.setData(Config::DefaultIndicators, 1);
 }
 
 void Setup::setupExchanges ()
@@ -125,16 +177,14 @@ void Setup::setupFutures ()
   db.createFutures();  
 }
 
-void Setup::setupDefaultSymbol ()
+void Setup::setupDefaultSymbol (Config &config)
 {
-  Config config;
-  QString s;
-  config.getData(Config::DefaultSymbol, s);
-  if (s.toInt())
+  int ti = config.getInt(Config::DefaultSymbol);
+  if (ti)
     return;
 
   DBPluginFactory fac;
-  s = "Stock";
+  QString s = "Stock";
   DBPlugin *plug = fac.plugin(s);
   if (! plug)
   {
@@ -174,8 +224,59 @@ void Setup::setupDefaultSymbol ()
 
   file.close();
 
-  config.setData((int) Config::DefaultSymbol, 1);
+  config.setData(Config::DefaultSymbol, 1);
   
   return;
+}
+
+void Setup::setupConfigDefaults (Config &config)
+{
+  config.transaction();
+
+  // this has to be set before app starts so we know beforehand how many
+  // tab rows to construct
+  QString d;
+  config.getData(Config::IndicatorTabRows, d);
+  if (d.isEmpty())
+  {
+    d = "2";
+    config.setData(Config::IndicatorTabRows, d);
+  }
+
+/*
+  config.getData(Config::IndicatorPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/indicator";
+    config.setData(Config::IndicatorPluginPath, d);
+  }
+
+  config.getData(Config::DBPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/database";
+    config.setData(Config::DBPluginPath, d);
+  }
+
+  config.getData(Config::MiscPluginPath, d);
+  if (d.isEmpty())
+  {
+    d = "/usr/local/lib/qtstalker/plugins/misc";
+    config.setData(Config::MiscPluginPath, d);
+  }
+
+  config.getData(Config::DbName, d);
+  if (d.isEmpty())
+  {
+    d = QDir::homePath() + "/.qtstalker/quotes.sqlite";
+    config.setData(Config::DbName, d);
+  }
+*/
+
+  // clear current chart to empty
+  d = "";
+  config.setData(Config::CurrentChart, d);
+
+  config.commit();
 }
 

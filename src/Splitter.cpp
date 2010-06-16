@@ -19,57 +19,50 @@
  *  USA.
  */
 
-#include "DBPluginFactory.h"
+#include "Splitter.h"
 #include "Config.h"
 
 #include <QDebug>
 
-DBPluginFactory::DBPluginFactory ()
+Splitter::Splitter (int d)
+{
+  _parm = d;
+}
+
+void Splitter::load ()
 {
   Config config;
-  config.getData(Config::DBPluginPath, _path);
-  if (_path.isEmpty())
+  QString s;
+  config.getData((Config::Parm) _parm, s);
+  if (s.isEmpty())
   {
-    _path = "/usr/local/lib/qtstalker/plugins/database";
-    config.setData(Config::DBPluginPath, _path);
-  }
-}
-
-DBPluginFactory::~DBPluginFactory ()
-{
-  qDeleteAll(_plugins);
-}
-
-DBPlugin * DBPluginFactory::plugin (QString &plugin)
-{
-  DBPlugin *plug = _plugins.value(plugin);
-  if (plug)
-    return plug;
-
-  QString file = _path;
-  file.append("/lib" + plugin);
-
-  QLibrary *lib = new QLibrary(file);
-  DBPlugin *(*so)() = 0;
-  so = (DBPlugin *(*)()) lib->resolve("createDBPlugin");
-  if (so)
-  {
-    plug = (*so)();
-    _libs.insert(plugin, lib);
-    _plugins.insert(plugin, plug);
+    QList<int> l;
+    
+    switch ((Config::Parm) _parm)
+    {
+      case Config::PlotSizes:
+        l << 334 << 143;
+        break;
+      case Config::NavAreaSize:
+        l << 437 << 200;
+        break;
+      case Config::DataPanelSize:
+        l << 331 << 58 << 85;
+        break;
+      default:
+        break;
+    }
+    
+    setSizes(l);
+    config.setData(Config::PlotSizes, (QSplitter *) this);
   }
   else
-    delete lib;
-
-  return plug;
+    config.getData((Config::Parm) _parm, (QSplitter *) this);
 }
 
-void DBPluginFactory::setPluginList ()
+void Splitter::save ()
 {
-  QStringList l;
-  getPluginList(_path, l);
-
   Config config;
-  config.setData(Config::DBPluginList, l);
+  config.setData((Config::Parm) _parm, (QSplitter *) this);
 }
 

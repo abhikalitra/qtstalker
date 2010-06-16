@@ -33,8 +33,15 @@
 Buy::Buy ()
 {
   _plugin = "Buy";
-  _color.setNamedColor("green");
   _price = 0;
+
+  Config config;
+  config.getData(Config::DefaultBuyColor, _color);
+  if (! _color.isValid())
+  {
+    _color.setNamedColor("green");
+    config.setData(Config::DefaultBuyColor, _color);
+  }
 }
 
 void Buy::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)

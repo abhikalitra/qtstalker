@@ -38,12 +38,39 @@ Retracement::Retracement ()
   _high = 0;
   _low = 0;
   _extend = 0;
-  _line1 = 0.236;
-  _line2 = 0.382;
-  _line3 = 0.5;
-  _line4 = 0.618;
-  _line5 = 0;
-  _line6 = 0;
+
+  Config config;
+  config.getData(Config::DefaultRetracementColor, _color);
+  if (! _color.isValid())
+  {
+    _color.setNamedColor("red");
+    config.setData(Config::DefaultRetracementColor, _color);
+  }
+
+  _line1 = config.getDouble(Config::DefaultRetracementLine1);
+  if (! _line1)
+  {
+    _line1 = 0.382;
+    config.setData(Config::DefaultRetracementLine1, _line1);
+  }
+
+  _line2 = config.getDouble(Config::DefaultRetracementLine2);
+  if (! _line2)
+  {
+    _line2 = 0.5;
+    config.setData(Config::DefaultRetracementLine2, _line2);
+  }
+
+  _line3 = config.getDouble(Config::DefaultRetracementLine3);
+  if (! _line3)
+  {
+    _line3 = 0.618;
+    config.setData(Config::DefaultRetracementLine3, _line3);
+  }
+
+  _line4 = config.getDouble(Config::DefaultRetracementLine4);
+  _line5 = config.getDouble(Config::DefaultRetracementLine5);
+  _line6 = config.getDouble(Config::DefaultRetracementLine6);
 }
 
 void Retracement::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)

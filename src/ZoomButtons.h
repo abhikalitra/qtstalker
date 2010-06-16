@@ -40,6 +40,7 @@ class ZoomButtons : public QObject
     ZoomButtons (QToolBar *);
     void createButtons (QToolBar *);
     int getPixelSpace ();
+    void savePixelSpace ();
     
   public slots:
     void addZoom (int index, int pixelSpace);
@@ -48,11 +49,11 @@ class ZoomButtons : public QObject
     void psButtonClicked (int);
     
   protected:
-    QToolButton *zoomInButton;
-    QToolButton *zoomOutButton;
-    int pixelSpace;
-    PixelSpaceButton *ps1Button;
-    PixelSpaceButton *ps2Button;
+    QToolButton *_zoomInButton;
+    QToolButton *_zoomOutButton;
+    int _pixelSpace;
+    PixelSpaceButton *_ps1Button;
+    PixelSpaceButton *_ps2Button;
 };
 
 #endif

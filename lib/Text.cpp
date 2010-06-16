@@ -33,9 +33,32 @@
 Text::Text ()
 {
   _plugin = "Text";
-  _label = _plugin;
-  _color.setNamedColor("red");
   _price = 0;
+
+  Config config;
+  config.getData(Config::DefaultTextColor, _color);
+  if (! _color.isValid())
+  {
+    _color.setNamedColor("white");
+    config.setData(Config::DefaultTextColor, _color);
+  }
+
+  QString s;
+  config.getData(Config::DefaultTextFont, s);
+  if (s.isEmpty())
+  {
+    _font = QFont("Helvetica,9,50,0");
+    config.setData(Config::DefaultTextFont, _font);
+  }
+  else
+    config.getData(Config::DefaultTextFont, _font);
+
+  config.getData(Config::DefaultTextLabel, _label);
+  if (_label.isEmpty())
+  {
+    _label = _plugin;
+    config.setData(Config::DefaultTextLabel, _label);
+  }
 }
 
 void Text::draw (PlotData &pd, DateBar &dateBars, Scaler &scaler)

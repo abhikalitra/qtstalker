@@ -27,7 +27,6 @@
 #include <QToolBar>
 #include <QString>
 #include <QTabWidget>
-#include <QSplitter>
 #include <QTextEdit>
 #include <QHash>
 #include <QStatusBar>
@@ -54,6 +53,7 @@
 #include "RefreshAction.h"
 #include "DocsAction.h"
 #include "TabWidget.h"
+#include "Splitter.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -76,12 +76,12 @@ class QtstalkerApp : public QMainWindow
     void signalRefreshUpdated (int);
     
     void signalDeleteIndicatorTab (QString);
-    void signalSaveVisibleIndicatorTab ();
-    void signalSetLastIndicatorTab ();
+
+    void signalSaveSettings ();
+    void signalLoadSettings ();
 
   public:
     QtstalkerApp (QString session, QString asset);
-    void setup (Config &, QString session);
     void createGUI (Config &);
     void loadSettings (Config &);
     void createToolBars ();
@@ -109,7 +109,6 @@ class QtstalkerApp : public QMainWindow
     void loadIndicator (BarData *, QString &);
     void psButtonClicked (int);
     void zoomChanged(int, int);
-    void refreshChart ();
     void commandLineAsset ();
     void sliderChanged (int);
     void gridChanged (bool);
@@ -118,9 +117,9 @@ class QtstalkerApp : public QMainWindow
     void plotFontChanged (QFont);
 
   protected:
-    QSplitter *_split;
-    QSplitter *_navSplitter;
-    QSplitter *_dpSplitter;
+    Splitter *_split;
+    Splitter *_navSplitter;
+    Splitter *_dpSplitter;
     QTabWidget *_navTab;
     QWidget *_baseWidget;
     QWidget *_navBase;

@@ -21,7 +21,6 @@
 
 #include "ZoomButtons.h"
 #include "Config.h"
-
 #include "../pics/zoomin.xpm"
 #include "../pics/zoomout.xpm"
 
@@ -31,73 +30,86 @@
 
 ZoomButtons::ZoomButtons (QToolBar *tb) : QObject (tb)
 {
-  pixelSpace = 6;
-
+  Config config;
+  _pixelSpace = config.getInt(Config::Pixelspace);
+  if (! _pixelSpace)
+  {
+    _pixelSpace = 6;
+    config.setData(Config::Pixelspace, _pixelSpace);
+  }
+  
   createButtons(tb);
 }
 
 void ZoomButtons::createButtons (QToolBar *tb)
 {
-  Config config;
-  pixelSpace = config.getInt(Config::Pixelspace);
-
   // zoom in button
-  zoomInButton = new QToolButton;
-  zoomInButton->setIcon(QIcon(zoomin_xpm));
-  zoomInButton->setToolTip(QString(tr("Zoom In")));
-  zoomInButton->setStatusTip(QString(tr("Zoom In")));
-  zoomInButton->setCheckable(FALSE);
-  connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
-  tb->addWidget(zoomInButton);
+  _zoomInButton = new QToolButton;
+  _zoomInButton->setIcon(QIcon(zoomin_xpm));
+  _zoomInButton->setToolTip(QString(tr("Zoom In")));
+  _zoomInButton->setStatusTip(QString(tr("Zoom In")));
+  _zoomInButton->setCheckable(FALSE);
+  connect(_zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
+  tb->addWidget(_zoomInButton);
   
   // zoom out button
-  zoomOutButton = new QToolButton;
-  zoomOutButton->setIcon(QIcon(zoomout_xpm));
-  zoomOutButton->setToolTip(QString(tr("Zoom Out")));
-  zoomOutButton->setStatusTip(QString(tr("Zoom Out")));
-  zoomOutButton->setCheckable(FALSE);
-  connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
-  tb->addWidget(zoomOutButton);
+  _zoomOutButton = new QToolButton;
+  _zoomOutButton->setIcon(QIcon(zoomout_xpm));
+  _zoomOutButton->setToolTip(QString(tr("Zoom Out")));
+  _zoomOutButton->setStatusTip(QString(tr("Zoom Out")));
+  _zoomOutButton->setCheckable(FALSE);
+  connect(_zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
+  tb->addWidget(_zoomOutButton);
 
   // PS1 button
-  ps1Button = new PixelSpaceButton((int) Config::PSButton1);
-  connect(ps1Button, SIGNAL(signalPixelSpaceChanged(int)), this, SLOT(psButtonClicked(int)));
-  tb->addWidget(ps1Button);
+  _ps1Button = new PixelSpaceButton((int) Config::PSButton1);
+  connect(_ps1Button, SIGNAL(signalPixelSpaceChanged(int)), this, SLOT(psButtonClicked(int)));
+  tb->addWidget(_ps1Button);
 
   // PS2 button
-  ps2Button = new PixelSpaceButton((int) Config::PSButton2);
-  connect(ps2Button, SIGNAL(signalPixelSpaceChanged(int)), this, SLOT(psButtonClicked(int)));
-  tb->addWidget(ps2Button);
+  _ps2Button = new PixelSpaceButton((int) Config::PSButton2);
+  connect(_ps2Button, SIGNAL(signalPixelSpaceChanged(int)), this, SLOT(psButtonClicked(int)));
+  tb->addWidget(_ps2Button);
 }
 
 void ZoomButtons::zoomIn ()
 {
-  pixelSpace++;
-  emit signalPixelSpace(pixelSpace); 
+  _pixelSpace++;
+  savePixelSpace();
+  emit signalPixelSpace(_pixelSpace); 
 }
 
 void ZoomButtons::zoomOut ()
 {
-  pixelSpace--;
-  if (pixelSpace < 6)
-    pixelSpace = 6;
-  emit signalPixelSpace(pixelSpace); 
+  _pixelSpace--;
+  if (_pixelSpace < 6)
+    _pixelSpace = 6;
+  savePixelSpace();
+  emit signalPixelSpace(_pixelSpace); 
 }
 
 void ZoomButtons::addZoom (int index, int ps)
 {
-  pixelSpace = ps;
-  emit signalZoom(pixelSpace, index); 
+  _pixelSpace = ps;
+  savePixelSpace();
+  emit signalZoom(_pixelSpace, index); 
 }
 
 void ZoomButtons::psButtonClicked (int ps)
 {
-  pixelSpace = ps;
-  emit signalPixelSpace(pixelSpace);
+  _pixelSpace = ps;
+  savePixelSpace();
+  emit signalPixelSpace(_pixelSpace);
 }
 
 int ZoomButtons::getPixelSpace ()
 {
-  return pixelSpace;
+  return _pixelSpace;
+}
+
+void ZoomButtons::savePixelSpace ()
+{
+  Config config;
+  config.setData(Config::Pixelspace, _pixelSpace);
 }
 

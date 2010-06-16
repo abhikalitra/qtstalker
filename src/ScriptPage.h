@@ -58,8 +58,6 @@ class ScriptPage : public QWidget
     ~ScriptPage ();
     void createActions ();
     void startScript ();
-    void saveRunningScripts ();
-    void loadSavedScripts ();
     void createButtonMenu (QToolBar *);
 
   public slots:
@@ -79,6 +77,8 @@ class ScriptPage : public QWidget
     void runScriptDialog ();
     void listStatus ();
     void queStatus ();
+    void saveRunningScripts ();
+    void loadSavedScripts ();
 
   protected:
     QListWidget *list;

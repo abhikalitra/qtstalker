@@ -34,6 +34,7 @@ void DatePlot::draw (PlotData &pd, DateBar &dateBars)
 {
   QPainter painter(&pd.buffer);
   painter.setPen(pd.borderColor);
+  painter.setFont(pd.plotFont);
   
   // draw the seperator line
   painter.drawLine (0,
