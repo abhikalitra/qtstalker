@@ -177,6 +177,9 @@ void CSVDialog::newRule ()
 
 void CSVDialog::editRule ()
 {
+  if (! _rules->count())
+    return;
+  
   editRule(_rules->currentText());
 }
 
@@ -189,6 +192,9 @@ void CSVDialog::editRule (QString name)
 
 void CSVDialog::deleteRule ()
 {
+  if (! _rules->count())
+    return;
+
   int rc = QMessageBox::warning(this,
                                 tr("Warning"),
                                 tr("Are you sure you want to delete rule?"),

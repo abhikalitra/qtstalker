@@ -71,6 +71,7 @@ class YahooDialog : public QDialog
     int _symbolPos;
     Type _type;
     int _cancelFlag;
+    int _runningFlag;
 };
 
 #endif

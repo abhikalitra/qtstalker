@@ -44,6 +44,7 @@ YahooDialog::YahooDialog ()
   _type = History;
   _symbolPos = -1;
   _cancelFlag = 0;
+  _runningFlag = 0;
 }
 
 YahooDialog::~YahooDialog ()
@@ -70,7 +71,7 @@ void YahooDialog::createMainPage ()
   QLabel *label = new QLabel(tr("Start Date"));
   grid->addWidget(label, row, col++);
 
-  _sdate = new QDateTimeEdit(QDate::currentDate().addYears(-1));
+  _sdate = new QDateTimeEdit(QDate::currentDate().addDays(-1));
   _sdate->setCalendarPopup(TRUE);
   _sdate->setMaximumDate(QDate::currentDate());
   _sdate->setDisplayFormat("yyyy.MM.dd");
@@ -111,14 +112,17 @@ void YahooDialog::createMainPage ()
   vbox->addWidget(_buttonBox);
 
   _histButton = new QPushButton(tr("&History"));
+  _histButton->setToolTip(tr("Download historical quotes"));
   _buttonBox->addButton(_histButton, QDialogButtonBox::ActionRole);
   connect(_histButton, SIGNAL(clicked()), this, SLOT(startHistory()));
 
   _infoButton = new QPushButton(tr("&Details"));
+  _infoButton->setToolTip(tr("Download symbol details"));
   _buttonBox->addButton(_infoButton, QDialogButtonBox::ActionRole);
   connect(_infoButton, SIGNAL(clicked()), this, SLOT(startInfo()));
 
   _symbolsButton = new QPushButton(tr("&Symbols"));
+  _symbolsButton->setToolTip(tr("Edit symbols to download"));
   _buttonBox->addButton(_symbolsButton, QDialogButtonBox::ActionRole);
   connect(_symbolsButton, SIGNAL(clicked()), this, SLOT(editSymbols()));
 
@@ -136,7 +140,7 @@ void YahooDialog::editSymbols ()
 
 void YahooDialog::cancelButton ()
 {
-  if (_thread->isRunning())
+  if (_runningFlag)
     _cancelFlag = 1;
   else
     accept();
@@ -185,6 +189,7 @@ void YahooDialog::downloadDone ()
   {
     _log->append("************* " + tr("Download cancelled") + " ***************");
     _cancelFlag = 0;
+    _runningFlag = 0;
     
     _symbolsButton->setEnabled(TRUE);
     _histButton->setEnabled(TRUE);
@@ -195,6 +200,8 @@ void YahooDialog::downloadDone ()
   _symbolPos++;
   if (_symbolPos == _symbolList.count())
   {
+    _runningFlag = 0;
+
     _symbolsButton->setEnabled(TRUE);
     _histButton->setEnabled(TRUE);
     _infoButton->setEnabled(TRUE);
@@ -235,6 +242,7 @@ void YahooDialog::startHistory ()
   _infoButton->setEnabled(FALSE);
 
   _cancelFlag = 0;
+  _runningFlag = 1;
   
   _log->append("\n************** " + tr("Starting history download") + " ***************");
 
@@ -251,6 +259,7 @@ void YahooDialog::startInfo ()
   _infoButton->setEnabled(FALSE);
   
   _cancelFlag = 0;
+  _runningFlag = 1;
 
   _log->append("\n************* " + tr("Starting details download") + " ***************");
 

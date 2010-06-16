@@ -91,6 +91,8 @@ Plot::Plot (QWidget *w) : QWidget(w)
   setFocusPolicy(Qt::ClickFocus);
 
   cursorChanged(0); // set the default cursor
+
+  loadSettings();
 }
 
 Plot::~Plot ()

@@ -486,7 +486,6 @@ void QtstalkerApp::addIndicatorButton (QString d)
   connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
   connect(this, SIGNAL(signalInterval(Bar::BarLength)), plot, SLOT(setInterval(Bar::BarLength)));
   connect(this, SIGNAL(signalClearIndicator()), plot, SLOT(clear()));
-  connect(this, SIGNAL(signalLoadSettings()), plot, SLOT(loadSettings()));
   connect(this, SIGNAL(signalSaveSettings()), plot, SLOT(clear()));
   connect(this, SIGNAL(signalGrid(bool)), plot, SLOT(gridChanged(bool)));
   connect(this, SIGNAL(signalNewExternalChartObject(QString)), plot, SLOT(newExternalChartObject(QString)));

@@ -95,7 +95,7 @@ void YahooSymbolDialog::addSymbol ()
   bool ok;
   QString s = QInputDialog::getText(this,
                                     tr("Add Yahoo Symbol"),
-                                    tr("Enter Yahoo symbol"),
+                                    tr("Enter Yahoo symbols separated by a space"),
                                     QLineEdit::Normal,
                                     QString(),
                                     &ok,
@@ -104,6 +104,7 @@ void YahooSymbolDialog::addSymbol ()
   if (! ok || s.isEmpty())
     return;
 
+  s = s.toUpper();
   QStringList l = s.split(" ");
 
   YahooDataBase db;
