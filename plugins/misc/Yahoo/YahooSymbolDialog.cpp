@@ -104,20 +104,28 @@ void YahooSymbolDialog::addSymbol ()
   if (! ok || s.isEmpty())
     return;
 
+  s = s.trimmed();
   s = s.toUpper();
   QStringList l = s.split(" ");
 
   YahooDataBase db;
+  db.transaction();
+  
   QStringList errorList;
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
     QString symbol, exchange;
     if (getSymbolExchange(l[loop], symbol, exchange))
-      errorList.append(s);
+    {
+      qDebug() << l[loop] << symbol << exchange;
+//      errorList.append(l[loop]);
+    }
     else
       db.setSymbol(l[loop], symbol, exchange);
   }
+
+  db.commit();
 
   if (errorList.count())
   {

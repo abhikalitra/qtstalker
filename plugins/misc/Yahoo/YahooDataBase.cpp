@@ -62,8 +62,6 @@ void YahooDataBase::getSymbols (QStringList &l)
 
 void YahooDataBase::setSymbol (QString &ysymbol, QString &symbol, QString &exchange)
 {
-  transaction();
-  
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO YahooPlugin (ysymbol,symbol,exchange) VALUES (";
   s.append("'" + ysymbol + "'");
@@ -73,8 +71,6 @@ void YahooDataBase::setSymbol (QString &ysymbol, QString &symbol, QString &excha
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "YahooDataBase::setSymbol" << q.lastError().text();
-  
-  commit();
 }
 
 void YahooDataBase::getSymbol (QString &ysymbol, QString &symbol, QString &exchange)

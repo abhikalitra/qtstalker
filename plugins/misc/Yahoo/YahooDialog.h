@@ -43,11 +43,9 @@ class YahooDialog : public QDialog
     };
 
     YahooDialog ();
-    ~YahooDialog ();
     void createMainPage ();
     void loadSettings ();
     void saveSettings ();
-    void loadSymbols ();
       
   public slots:
     void editSymbols ();
@@ -67,10 +65,7 @@ class YahooDialog : public QDialog
     QDateTimeEdit *_edate;
     QCheckBox *_adjustment;
     YahooThread *_thread;
-    QStringList _symbolList;
-    int _symbolPos;
     Type _type;
-    int _cancelFlag;
     int _runningFlag;
 };
 

@@ -22,8 +22,6 @@
 #include "CSVDialog.h"
 #include "CSVDataBase.h"
 #include "CSVRuleDialog.h"
-#include "CSVThread.h"
-#include "CSVRule.h"
 #include "CSVConfig.h"
 
 #include <QMessageBox>
@@ -37,6 +35,10 @@ CSVDialog::CSVDialog () : QDialog (0, 0)
   setWindowTitle(tr("Configure CSV"));
   createMainPage();
   loadSettings();
+
+  _thread = new CSVThread(this);
+  connect(_thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
+  connect(_thread, SIGNAL(finished()), this, SLOT(done()));
 }
 
 void CSVDialog::createMainPage ()
@@ -214,19 +216,37 @@ void CSVDialog::deleteRule ()
 
 void CSVDialog::cancelButton ()
 {
-  accept();
+  if (_thread->isRunning())
+    _thread->stop();
+  else
+    accept();
 }
 
 void CSVDialog::run ()
 {
-  CSVRule rule;
-  rule.setName(_rules->currentText());
+  _rule.setName(_rules->currentText());
   
   CSVDataBase db;
-  db.getRule(rule);
+  db.getRule(_rule);
 
-  CSVThread thread(&rule);
-  connect(&thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
-  thread.run();
+  _log->append("*** " + tr("Import started") + " ***");
+  
+  _runButton->setEnabled(FALSE);
+  _newButton->setEnabled(FALSE);
+  _editButton->setEnabled(FALSE);
+  _deleteButton->setEnabled(FALSE);
+
+  _thread->setRule(&_rule);
+  _thread->start();
+}
+
+void CSVDialog::done ()
+{
+  _log->append("*** " + tr("Import finished") + " ***");
+  
+  _runButton->setEnabled(TRUE);
+  _newButton->setEnabled(TRUE);
+  _editButton->setEnabled(TRUE);
+  _deleteButton->setEnabled(TRUE);
 }
 

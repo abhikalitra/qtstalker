@@ -23,6 +23,8 @@
 #include "YahooSymbolDialog.h"
 #include "YahooDataBase.h"
 #include "YahooConfig.h"
+#include "YahooUrl.h"
+#include "YahooUrlData.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -37,19 +39,12 @@ YahooDialog::YahooDialog ()
   createMainPage();
   loadSettings();
 
-  _thread = new YahooThread;
+  _thread = new YahooThread(this);
   connect(_thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
-  connect(_thread, SIGNAL(signalDone()), this, SLOT(downloadDone()));
+  connect(_thread, SIGNAL(finished()), this, SLOT(downloadDone()));
 
   _type = History;
-  _symbolPos = -1;
-  _cancelFlag = 0;
   _runningFlag = 0;
-}
-
-YahooDialog::~YahooDialog ()
-{
-  delete _thread;
 }
 
 void YahooDialog::createMainPage ()
@@ -141,7 +136,9 @@ void YahooDialog::editSymbols ()
 void YahooDialog::cancelButton ()
 {
   if (_runningFlag)
-    _cancelFlag = 1;
+  {
+    _thread->stop();
+  }
   else
     accept();
 }
@@ -185,84 +182,50 @@ void YahooDialog::saveSettings ()
 
 void YahooDialog::downloadDone ()
 {
-  if (_cancelFlag)
-  {
-    _log->append("************* " + tr("Download cancelled") + " ***************");
-    _cancelFlag = 0;
-    _runningFlag = 0;
-    
-    _symbolsButton->setEnabled(TRUE);
-    _histButton->setEnabled(TRUE);
-    _infoButton->setEnabled(TRUE);
-    return;
-  }
-  
-  _symbolPos++;
-  if (_symbolPos == _symbolList.count())
-  {
-    _runningFlag = 0;
-
-    _symbolsButton->setEnabled(TRUE);
-    _histButton->setEnabled(TRUE);
-    _infoButton->setEnabled(TRUE);
-
-    _log->append("************* " + tr("Download complete") + " ***************");
-    return;
-  }
-
-  switch (_type)
-  {
-    case History:
-      _thread->downloadHistory(_sdate->dateTime(), _edate->dateTime(), _adjustment->isChecked(), _symbolList[_symbolPos]);
-      break;
-    case Info:
-      _thread->downloadInfo(_symbolList[_symbolPos]);
-      break;
-    default:
-      break;
-  }
-}
-
-void YahooDialog::loadSymbols ()
-{
-  _symbolList.clear();
-  _symbolPos = -1;
-  
-  YahooDataBase db;
-  db.getSymbols(_symbolList);
+  _log->append("*** " + tr("Download finished") + " ***");
+  _runningFlag = 0;
+  _symbolsButton->setEnabled(TRUE);
+  _histButton->setEnabled(TRUE);
+  _infoButton->setEnabled(TRUE);
 }
 
 void YahooDialog::startHistory ()
 {
   _type = History;
-  loadSymbols();
 
   _symbolsButton->setEnabled(FALSE);
   _histButton->setEnabled(FALSE);
   _infoButton->setEnabled(FALSE);
 
-  _cancelFlag = 0;
   _runningFlag = 1;
   
-  _log->append("\n************** " + tr("Starting history download") + " ***************");
+  _log->append("\n*** " + tr("Starting history download") + " ***");
 
-  downloadDone();
+  YahooUrl yu;
+  QList<YahooUrlData> urls;
+  yu.history(_sdate->dateTime(), _edate->dateTime(), _adjustment->isChecked(), urls);
+
+  _thread->setParms(urls);
+  _thread->start();
 }
 
 void YahooDialog::startInfo ()
 {
   _type = Info;
-  loadSymbols();
 
   _symbolsButton->setEnabled(FALSE);
   _histButton->setEnabled(FALSE);
   _infoButton->setEnabled(FALSE);
   
-  _cancelFlag = 0;
   _runningFlag = 1;
 
-  _log->append("\n************* " + tr("Starting details download") + " ***************");
+  _log->append("\n*** " + tr("Starting details download") + " ***");
 
-  downloadDone();
+  YahooUrl yu;
+  QList<YahooUrlData> urls;
+  yu.details(urls);
+
+  _thread->setParms(urls);
+  _thread->start();
 }
 

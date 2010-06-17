@@ -19,48 +19,26 @@
  *  USA.
  */
 
-#ifndef CSV_DIALOG_HPP
-#define CSV_DIALOG_HPP
+#ifndef YAHOO_PARSE_QUOTE_HPP
+#define YAHOO_PARSE_QUOTE_HPP
 
-#include <QDialog>
-#include <QTextEdit>
-#include <QComboBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
+#include <QString>
+#include <QByteArray>
+#include <QObject>
 
-#include "CSVThread.h"
-#include "CSVRule.h"
+#include "YahooUrlData.h"
 
-class CSVDialog : public QDialog
+class YahooParseQuote : public QObject
 {
   Q_OBJECT
-  
+
+  signals:
+    void signalMessage (QString);
+
   public:
-    CSVDialog ();
-    void createMainPage ();
-    void loadSettings ();
-    void saveSettings ();
-    
-  public slots:
-    void run ();
-    void newRule ();
-    void editRule ();
-    void editRule (QString);
-    void deleteRule ();
-    void cancelButton ();
-    void done ();
-          
-  private:
-    QComboBox *_rules;
-    QTextEdit *_log;
-    QDialogButtonBox *_buttonBox;
-    QPushButton *_newButton;
-    QPushButton *_runButton;
-    QPushButton *_editButton;
-    QPushButton *_deleteButton;
-    QPushButton *_cancelButton;
-    CSVThread *_thread;
-    CSVRule _rule;
+    YahooParseQuote ();
+    void history (QByteArray &, YahooUrlData &);
+    void details (QByteArray &, YahooUrlData &);
 };
 
 #endif

@@ -65,10 +65,14 @@ class CSVThread : public QThread
       QString oi;
     };
 
-    CSVThread (CSVRule *rule);
-    void run ();
+    CSVThread (QObject *);
+    void setRule (CSVRule *rule);
     int verifyRule ();
     int verifyCSVBar (QStringList &pl, CSVBar &bar);
+    void stop ();
+
+  protected:
+    void run();
 
   private:
     CSVRule *_rule;
@@ -80,7 +84,7 @@ class CSVThread : public QThread
     QString _fileName;
     QStringList _fieldList;
     QStringList _fields;
-    
+    int _stopFlag;
 };
 
 #endif

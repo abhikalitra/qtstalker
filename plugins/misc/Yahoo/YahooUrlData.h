@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,39 +19,25 @@
  *  USA.
  */
 
-#ifndef YAHOO_THREAD_HPP
-#define YAHOO_THREAD_HPP
+#ifndef YAHOO_URL_DATA_HPP
+#define YAHOO_URL_DATA_HPP
 
-#include <QThread>
 #include <QString>
-#include <QtNetwork>
-#include <QList>
 
-#include "YahooUrlData.h"
-
-class YahooThread : public QThread
+enum UrlType
 {
-  Q_OBJECT
+  UrlTypeHistory,
+  UrlTypeDetails
+};
 
-  signals:
-    void signalMessage (QString);
-
-  public:
-    YahooThread (QObject *);
-    void setParms (QList<YahooUrlData> &);
-    void stop ();
-
-  public slots:
-    void requestFinished (QNetworkReply *);
-
-  protected:
-    void run ();
-    
-  private:
-    QNetworkAccessManager *_manager;
-    QList<YahooUrlData> _urls;
-    int _urlPos;
-    int _stopFlag;
+struct YahooUrlData
+{
+  QString url;
+  QString ysymbol;
+  QString symbol;
+  QString exchange;
+  UrlType type;
+  int adjustment;
 };
 
 #endif

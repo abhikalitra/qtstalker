@@ -28,14 +28,20 @@
 #include <QTextStream>
 #include <QFileInfo>
 
-CSVThread::CSVThread (CSVRule *rule)
+CSVThread::CSVThread (QObject *p) : QThread (p)
 {
-  _rule = rule;
+  _rule = 0;
   _fileSymbol = 0;
   _lineCount = 0;
+  _stopFlag = 0;
 
   _fields << "Exchange" << "Symbol" << "Open" << "High" << "Low" << "Close";
   _fields << "Volume" << "OI" << "Ignore" << "Name";
+}
+
+void CSVThread::setRule (CSVRule *rule)
+{
+  _rule = rule;
 }
 
 void CSVThread::run ()
@@ -51,11 +57,12 @@ void CSVThread::run ()
     emit signalMessage(QString("Error opening CSV file"));
     return;
   }
-  
+
   QTextStream stream(&f);
 
   _lineCount = 0;
   int records = 0;
+  _stopFlag = 0;
   
   QFileInfo fi(f);
   _fileName = fi.fileName();
@@ -64,6 +71,13 @@ void CSVThread::run ()
 
   while (stream.atEnd() == 0)
   {
+    if (_stopFlag)
+    {
+      f.close();
+      emit signalMessage(QString("*** " + tr("Import cancelled") + " ***"));
+      quit();
+    }
+    
     QString ts = stream.readLine().trimmed();
 
     QStringList pl = ts.split(_delimeter);
@@ -148,6 +162,13 @@ void CSVThread::run ()
 
   // send the done message along with some stats
   emit signalMessage(tr("Done.") + tr("Quotes imported: ") + QString::number(records));
+
+  quit();
+}
+
+void CSVThread::stop ()
+{
+  _stopFlag = 1;
 }
 
 int CSVThread::verifyRule ()

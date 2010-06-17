@@ -554,9 +554,7 @@
            Connected all main app load/save signals to gui classes. Startup and shutdown of the app
            is noticeably slower. The price to pay for better OO code.
 
-
-
-           
+20100617:  Improved thread performance for CSV and Yahoo plugins.
 
 
            
