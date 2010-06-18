@@ -46,7 +46,7 @@ void YahooThread::run ()
   int loop = 0;
   for (; loop <_urls.count(); loop++)
   {
-    YahooUrlData data = _urls.at(loop++);
+    YahooUrlData data = _urls.at(loop);
     
     QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(data.url)));
     QEventLoop e;

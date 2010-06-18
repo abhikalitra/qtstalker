@@ -22,7 +22,6 @@
 #include "Stock.h"
 #include "Bar.h"
 #include "ExchangeDataBase.h"
-#include "QuoteIndexDataBase.h"
 
 #include <QtSql>
 #include <QtDebug>
@@ -223,7 +222,7 @@ void Stock::setBars ()
     QString table = bd->getTableName();
     if (table.isEmpty())
     {
-      if(createTable(bd))
+      if(createTable(bd, idb))
         continue;
     }
   
@@ -255,9 +254,8 @@ void Stock::setBars ()
   quotes.clear();
 }
 
-int Stock::createTable (BarData *bars)
+int Stock::createTable (BarData *bars, QuoteIndexDataBase &idb)
 {
-  QuoteIndexDataBase idb;
   if (idb.addSymbolIndex(bars))
     return 1;
   
@@ -404,8 +402,12 @@ int Stock::scriptSetName (QStringList &l)
   bd.setSymbol(l[4]);
   if (idb.getIndexData(&bd))
   {
-    qDebug() << "Stock::scriptSetName: symbol not found in database" << l[3] << l[4];
-    return 1;
+    QString table = bd.getTableName();
+    if (table.isEmpty())
+    {
+      if(createTable(&bd, idb))
+        return 1;
+    }
   }
   
   bd.setName(l[5]);

@@ -24,6 +24,7 @@
 
 #include "DBPlugin.h"
 #include "BarData.h"
+#include "QuoteIndexDataBase.h"
 
 class Futures : public DBPlugin
 {
@@ -44,7 +45,7 @@ class Futures : public DBPlugin
     Futures ();
     void getBars (BarData &);
     void setBars ();
-    int createTable (BarData *);
+    int createTable (BarData *, QuoteIndexDataBase &);
     int scriptCommand (QStringList &, Indicator &);
     int deleteSymbol (BarData *);
     
