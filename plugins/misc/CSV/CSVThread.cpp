@@ -48,13 +48,17 @@ void CSVThread::run ()
 {
   // verify rule parms
   if (verifyRule())
+  {
+    quit();
     return;
+  }
 
   // open csv file
   QFile f(_file);
   if (! f.open(QIODevice::ReadOnly))
   {
     emit signalMessage(QString("Error opening CSV file"));
+    quit();
     return;
   }
 
@@ -68,6 +72,12 @@ void CSVThread::run ()
   _fileName = fi.fileName();
 
   DBPluginFactory fac;
+  DBPlugin *plug = fac.plugin(_type);
+  if (! plug)
+  {
+    quit();
+    return;
+  }
 
   while (stream.atEnd() == 0)
   {
@@ -76,6 +86,7 @@ void CSVThread::run ()
       f.close();
       emit signalMessage(QString("*** " + tr("Import cancelled") + " ***"));
       quit();
+      return;
     }
     
     QString ts = stream.readLine().trimmed();
@@ -122,14 +133,6 @@ void CSVThread::run ()
       }
     }
     
-    DBPlugin *plug = fac.plugin(_type);
-    if (! plug)
-    {
-      QString s = _fileName + tr(": Line ") + QString::number(_lineCount) + tr(": missing type");
-      emit signalMessage(s);
-      continue;
-    }
-
     // construct a script API command for the appropriate plugin
     QStringList l;
     l << "QUOTE" << _type << "SET_QUOTE" << bar.exchange << bar.symbol << "yyyy-MM-ddTHH:mm:ss";
@@ -141,27 +144,33 @@ void CSVThread::run ()
     Indicator ind;
     if (! plug->scriptCommand(l, ind))
       records++;
+
+    // set name
+    if (! bar.name.isEmpty())
+    {
+      // QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,NAME
+      QStringList l;
+      l << "QUOTE" << _type << "SET_NAME" << bar.exchange << bar.symbol << bar.name;
+      plug->scriptCommand(l, ind);
+    }
   }
 
   f.close();
 
   // construct the script API save quotes command and send it
-  DBPlugin *plug = fac.plugin(_type);
-  if (plug)
+  Indicator ind;
+  QStringList l;
+  l << "QUOTE" << _type << "SAVE_QUOTES";
+  if (plug->scriptCommand(l, ind))
   {
-    Indicator ind;
-    QStringList l;
-    l << "QUOTE" << _type << "SAVE_QUOTES";
-    if (plug->scriptCommand(l, ind))
-    {
-      QString s = _fileName + tr(": db error, quotes not saved...import aborted");
-      emit signalMessage(s);
-      return;
-    }
+    QString s = _fileName + tr(": db error, quotes not saved...import aborted");
+    emit signalMessage(s);
+    quit();
+    return;
   }
 
   // send the done message along with some stats
-  emit signalMessage(tr("Done.") + tr("Quotes imported: ") + QString::number(records));
+  emit signalMessage(tr("Quotes imported: ") + QString::number(records));
 
   quit();
 }

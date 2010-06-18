@@ -135,10 +135,8 @@ void YahooDialog::editSymbols ()
 
 void YahooDialog::cancelButton ()
 {
-  if (_runningFlag)
-  {
+  if (_thread->isRunning())
     _thread->stop();
-  }
   else
     accept();
 }

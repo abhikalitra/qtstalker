@@ -24,6 +24,7 @@
 
 #include <QStringList>
 #include <QDateTime>
+#include <QDebug>
 
 YahooUrl::YahooUrl ()
 {

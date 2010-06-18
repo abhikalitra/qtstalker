@@ -213,3 +213,24 @@ int YahooSymbolDialog::getSymbolExchange (QString &ysymbol, QString &symbol, QSt
   return rc;
 }
 
+/*
+  // check if we need to correct the exchange
+  if (l[1] != "NYSE")
+  {
+    QString newExchange = "XNYS";
+    if (l[1] == "NasdaqNM")
+      newExchange = "XNAS";
+    else if (l[1] == "AMEX")
+      newExchange = "XASE";
+
+    // QUOTE,PLUGIN,RENAME,OLD_EXCHANGE,OLD_SYMBOL,NEW_EXCHANGE,NEW_SYMBOL
+    QStringList apil;
+    apil << "QUOTE" << type << "RENAME" << data.exchange << data.symbol << newExchange << data.symbol;
+
+    // send the script API command
+    plug->scriptCommand(apil, ind);
+
+    // update the
+  }
+*/
+

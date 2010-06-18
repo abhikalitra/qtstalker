@@ -70,7 +70,7 @@ void YahooParseQuote::history (QByteArray &ba, YahooUrlData &data)
 
     // construct a script API command for the appropriate plugin
     QStringList apil;
-    apil << "QUOTE" << type << "SET_QUOTE" << data.exchange << data.symbol << "yyyy-MM-dd";
+    apil << "QUOTE" << type << "SET_QUOTE" << data.exchange << data.symbol << "yyyy-MM-ddHHmmss";
 
     if (data.adjustment)
     {
@@ -95,7 +95,8 @@ void YahooParseQuote::history (QByteArray &ba, YahooUrlData &data)
         l[5] = QString::number(l[5].toDouble() * factor);
       }
     }
-    
+
+    l[0].append("160000"); // add the close time to the date
     apil << l[0] << l[1] << l[2] << l[3] << l[4] << l[5];
 
     // send the script API command

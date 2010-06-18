@@ -556,5 +556,13 @@
 
 20100617:  Improved thread performance for CSV and Yahoo plugins.
 
+20100618:  More thread performance improvements for CSV and Yahoo plugins.
+
+           Fixed CSV name field import bug.
+
+           Modified bar loading logic for better response time during large amounts of bars.
+
+           Fixed bug in refresh button startup that always started true.
+
 
            

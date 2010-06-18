@@ -58,7 +58,9 @@ RefreshAction::RefreshAction ()
 
   _timer = new QTimer(this);
   connect(_timer, SIGNAL(timeout()), this, SIGNAL(signalRefresh()));
-  _timer->start(60000 * _minutes);
+
+  if (isChecked())
+    _timer->start(60000 * _minutes);
 }
 
 void RefreshAction::refreshChart (bool status)

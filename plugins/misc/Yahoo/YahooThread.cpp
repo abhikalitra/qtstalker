@@ -23,14 +23,11 @@
 #include "YahooParseQuote.h"
 
 #include <QDebug>
+#include <QtNetwork>
 
 YahooThread::YahooThread (QObject *p) : QThread (p)
 {
-  _urlPos = 0;
   _stopFlag = 0;
-
-  _manager = new QNetworkAccessManager(this);
-  connect(_manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
 }
 
 void YahooThread::setParms (QList<YahooUrlData> &urls)
@@ -45,50 +42,40 @@ void YahooThread::stop ()
 
 void YahooThread::run ()
 {
-  _urlPos = 0;
-  _stopFlag = 0;
-  YahooUrlData data = _urls.at(_urlPos);
+  QNetworkAccessManager manager;
+  int loop = 0;
+  for (; loop <_urls.count(); loop++)
+  {
+    YahooUrlData data = _urls.at(loop++);
+    
+    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(data.url)));
+    QEventLoop e;
+    connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
+    e.exec();
 
-  _manager->get(QNetworkRequest(QUrl(data.url)));
-  
-  exec();
+    QByteArray ba = reply->readAll();
+
+    YahooParseQuote pq;
+    connect(&pq, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+
+    switch ((UrlType) data.type)
+    {
+      case UrlTypeHistory:
+        pq.history(ba, data);
+        break;
+      case UrlTypeDetails:
+        pq.details(ba, data);
+        break;
+      default:
+        break;
+    }
+
+    if (_stopFlag)
+    {
+      emit signalMessage(QString("\n*** " + tr("Download cancelled") + " ***"));
+      break;
+    }
+  }
+
+  quit();
 }
-
-void YahooThread::requestFinished (QNetworkReply *reply)
-{
-  QByteArray ba = reply->readAll();
-  reply->deleteLater();
-
-  YahooUrlData data = _urls.at(_urlPos);
-
-  YahooParseQuote pq;
-  connect(&pq, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  
-  switch ((UrlType) data.type)
-  {
-    case UrlTypeHistory:
-      pq.history(ba, data);
-      break;
-    case UrlTypeDetails:
-      pq.details(ba, data);
-      break;
-    default:
-      break;
-  }
-
-  if (_stopFlag)
-  {
-    emit signalMessage(QString("\n*** " + tr("Download cancelled") + " ***"));
-    quit();
-  }
-
-  _urlPos++;
-  if (_urlPos == _urls.count())
-    quit();
-  else
-  {
-    YahooUrlData data = _urls.at(_urlPos);
-    _manager->get(QNetworkRequest(QUrl(data.url)));
-  }
-}
-

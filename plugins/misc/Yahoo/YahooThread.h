@@ -24,7 +24,6 @@
 
 #include <QThread>
 #include <QString>
-#include <QtNetwork>
 #include <QList>
 
 #include "YahooUrlData.h"
@@ -41,16 +40,11 @@ class YahooThread : public QThread
     void setParms (QList<YahooUrlData> &);
     void stop ();
 
-  public slots:
-    void requestFinished (QNetworkReply *);
-
   protected:
     void run ();
     
   private:
-    QNetworkAccessManager *_manager;
     QList<YahooUrlData> _urls;
-    int _urlPos;
     int _stopFlag;
 };
 
