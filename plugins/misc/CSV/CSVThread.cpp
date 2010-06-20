@@ -142,16 +142,20 @@ void CSVThread::run ()
 
     // send the script API command
     Indicator ind;
-    if (! plug->scriptCommand(l, ind))
+    QByteArray ba;
+    if (! plug->scriptCommand(l, ind, ba))
       records++;
 
     // set name
     if (! bar.name.isEmpty())
     {
-      // QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,NAME
-      QStringList l;
-      l << "QUOTE" << _type << "SET_NAME" << bar.exchange << bar.symbol << bar.name;
-      plug->scriptCommand(l, ind);
+      QString s = "NAME";
+      
+      BarData bd;
+      bd.setSymbol(bar.symbol);
+      bd.setExchange(bar.exchange);
+      
+      plug->setDetail(s, &bd, bar.name);
     }
   }
 
@@ -160,8 +164,9 @@ void CSVThread::run ()
   // construct the script API save quotes command and send it
   Indicator ind;
   QStringList l;
+  QByteArray ba;
   l << "QUOTE" << _type << "SAVE_QUOTES";
-  if (plug->scriptCommand(l, ind))
+  if (plug->scriptCommand(l, ind, ba))
   {
     QString s = _fileName + tr(": db error, quotes not saved...import aborted");
     emit signalMessage(s);

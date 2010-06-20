@@ -25,6 +25,7 @@
 #include "DBPlugin.h"
 #include "BarData.h"
 #include "QuoteIndexDataBase.h"
+#include "StockDetailsDataBase.h"
 
 class Stock : public DBPlugin
 {
@@ -32,11 +33,12 @@ class Stock : public DBPlugin
     enum ScriptMethod
     {
       SET_QUOTE,
-      SET_NAME,
       SAVE_QUOTES,
       DELETE,
       GET_QUOTES,
-      RENAME
+      RENAME,
+      SET_DETAIL,
+      GET_DETAIL
     };
     
     Stock ();
@@ -44,17 +46,23 @@ class Stock : public DBPlugin
     void setBars ();
     int createTable (BarData *, QuoteIndexDataBase &);
     int deleteSymbol (BarData *);
+    int setDetail (QString &key, BarData *bd, QString &data);
+    int setDetail (int key, BarData *bd, QString &data);
+    int detail (QString &key, BarData *bd, QString &data);
+    int detail (int key, BarData *bd, QString &data);
 
-    int scriptCommand (QStringList &, Indicator &);
+    int scriptCommand (QStringList &, Indicator &, QByteArray &);
     int scriptSetQuote (QStringList &);
-    int scriptSetName (QStringList &);
     int scriptSaveQuotes (QStringList &l);
     int scriptDelete (QStringList &l);
     int scriptGetQuotes (QStringList &l, Indicator &);
     int scriptRename (QStringList &l);
+    int scriptSetDetail (QStringList &);
+    int scriptGetDetail (QStringList &, QByteArray &);
     
   protected:
     QStringList scriptMethods;
+    StockDetailsDataBase _ddb;
 };
 
 extern "C"

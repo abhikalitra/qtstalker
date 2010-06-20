@@ -35,7 +35,8 @@ Stock::Stock ()
 {
   plugin = "Stock";
   
-  scriptMethods << "SET_QUOTE" << "SET_NAME" << "SAVE_QUOTES" << "DELETE" << "GET_QUOTES" << "RENAME";
+  scriptMethods << "SET_QUOTE" << "SAVE_QUOTES" << "DELETE" << "GET_QUOTES" << "RENAME";
+  scriptMethods << "SET_DETAIL" << "GET_DETAIL";
 }
 
 void Stock::getBars (BarData &data)
@@ -126,79 +127,6 @@ void Stock::getBars (BarData &data)
   int loop;
   for (loop = 0; loop < dateList.count(); loop++)
     data.prepend(dateList.at(loop));
-/*
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-
-  QDateTime firstDate;
-  getFirstDate(data.getTableName(), firstDate);
-
-  QDateTime lastDate;
-  getLastDate(data.getTableName(), lastDate);
-
-  QHash<QString, Bar *> bars;
-  QList<Bar *> dateList;
-
-  QString s = "SELECT date,open,high,low,close,volume FROM " + data.getTableName();
-  s.append(" WHERE date >='" + firstDate.toString(Qt::ISODate) + "'");
-  s.append(" AND date <='" + lastDate.toString(Qt::ISODate) + "'");
-  s.append(" ORDER BY date DESC");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "Stock::getBars:" << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-  {
-    lastDate = q.value(0).toDateTime();
-      
-    Bar tbar;
-    tbar.setDateRange(lastDate, data.getBarLength());
-    tbar.getRangeKey(s);
-
-    Bar *bar = bars[s];
-    if (! bar)
-    {
-      if (bars.count() > data.getBarsRequested())
-        break;
-
-      bar = new Bar;
-      bar->setDateRange(lastDate, data.getBarLength());
-      bar->setOpen(q.value(1).toDouble());
-      bar->setHigh(q.value(2).toDouble());
-      bar->setLow(q.value(3).toDouble());
-      bar->setClose(q.value(4).toDouble());
-      bar->setVolume(q.value(5).toDouble());
-      bars.insert(s, bar);
-      dateList.append(bar);
-    }
-    else
-    {
-      bar->setOpen(q.value(1).toDouble());
-
-      double v = q.value(2).toDouble();
-      if (v > bar->getHigh())
-        bar->setHigh(v);
-
-      v = q.value(3).toDouble();
-      if (v < bar->getLow())
-        bar->setLow(v);
-
-      v = q.value(5).toDouble();
-      double v2 = bar->getVolume();
-      bar->setVolume(v + v2);
-    }
-
-    if (bars.count() > data.getBarsRequested())
-      break;
-  }
-
-  // prepend bars in order
-  int loop;
-  for (loop = 0; loop < dateList.count(); loop++)
-    data.prepend(dateList.at(loop));
-*/
 }
 
 void Stock::setBars ()
@@ -279,17 +207,36 @@ int Stock::deleteSymbol (BarData *symbol)
   if (idb.getIndexData(symbol))
     return 1;
 
-  if (idb.deleteSymbol(symbol))
-    return 1;
+  _ddb.remove(symbol);
 
   return 0;
+}
+
+int Stock::setDetail (QString &key, BarData *bd, QString &data)
+{
+  return _ddb.setDetail(key, bd, data);
+}
+
+int Stock::setDetail (int key, BarData *bd, QString &data)
+{
+  return _ddb.setDetail(key, bd, data);
+}
+
+int Stock::detail (QString &key, BarData *bd, QString &data)
+{
+  return _ddb.detail(key, bd, data);
+}
+
+int Stock::detail (int key, BarData *bd, QString &data)
+{
+  return _ddb.detail(key, bd, data);
 }
 
 //*************************************************************
 //************** SCRIPT FUNCTIONS *****************************
 //*************************************************************
 
-int Stock::scriptCommand (QStringList &l, Indicator &ind)
+int Stock::scriptCommand (QStringList &l, Indicator &ind, QByteArray &ba)
 {
   // format = QUOTE,PLUGIN,METHOD,*
   
@@ -298,21 +245,54 @@ int Stock::scriptCommand (QStringList &l, Indicator &ind)
   {
     case SET_QUOTE:
       rc = scriptSetQuote(l);
-      break;
-    case SET_NAME:
-      rc = scriptSetName(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
       break;
     case SAVE_QUOTES:
       rc = scriptSaveQuotes(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
       break;
     case DELETE:
       rc = scriptDelete(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
       break;
     case GET_QUOTES:
       rc = scriptGetQuotes(l, ind);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
       break;
     case RENAME:
       rc = scriptRename(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
+      break;
+    case SET_DETAIL:
+      rc = scriptSetDetail(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
+      break;
+    case GET_DETAIL:
+      rc = scriptGetDetail(l, ba);
       break;
     default:
       break;
@@ -382,41 +362,6 @@ int Stock::scriptSetQuote (QStringList &l)
   
   bd->append(bar);
   
-  return 0;
-}
-
-int Stock::scriptSetName (QStringList &l)
-{
-  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,NAME
-
-  if (l.count() != 6)
-  {
-    qDebug() << "Stock::scriptSetName: invalid parm count" << l.count();
-    return 1;
-  }
-
-  QuoteIndexDataBase idb;
-  
-  BarData bd;
-  bd.setExchange(l[3]);
-  bd.setSymbol(l[4]);
-  if (idb.getIndexData(&bd))
-  {
-    QString table = bd.getTableName();
-    if (table.isEmpty())
-    {
-      if(createTable(&bd, idb))
-        return 1;
-    }
-  }
-  
-  bd.setName(l[5]);
-  if (idb.setIndexData(&bd))
-  {
-    qDebug() << "Stock::scriptSetName: error setting index";
-    return 1;
-  }
-
   return 0;
 }
 
@@ -528,6 +473,50 @@ int Stock::scriptRename (QStringList &l)
   if (idb.rename(&obd, &nbd))
     return 1;
 
+  return 0;
+}
+
+int Stock::scriptSetDetail (QStringList &l)
+{
+  // QUOTE,PLUGIN,METHOD,DETAIL METHOD,EXCHANGE,SYMBOL,DATA
+  //   0     1      2          3          4       5      6
+
+  if (l.count() != 7)
+  {
+    qDebug() << "Stock::scriptSetDetail: invalid parm count" << l.count();
+    return 1;
+  }
+
+  BarData bd;
+  bd.setExchange(l[4]);
+  bd.setSymbol(l[5]);
+  if (_ddb.setDetail(l[3], &bd, l[6]))
+    return 1;
+
+  return 0;
+}
+
+int Stock::scriptGetDetail (QStringList &l, QByteArray &ba)
+{
+  // QUOTE,PLUGIN,METHOD,DETAIL METHOD,EXCHANGE,SYMBOL
+  //   0     1      2          3          4       5
+
+  if (l.count() != 6)
+  {
+    qDebug() << "Stock::scriptGetDetail: invalid parm count" << l.count();
+    return 1;
+  }
+
+  BarData bd;
+  bd.setExchange(l[4]);
+  bd.setSymbol(l[5]);
+  QString data;
+  if (_ddb.detail(l[3], &bd, data))
+    return 1;
+
+  ba.clear();
+  ba.append(data + "\n");
+  
   return 0;
 }
 

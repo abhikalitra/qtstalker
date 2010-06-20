@@ -213,14 +213,25 @@ void ChartPage::updateList ()
   QuoteIndexDataBase idb;
   idb.getSearchList(searchExchange, searchString, symbols);
 
+  DBPluginFactory fac;
+
   int loop;
   for (loop = 0; loop < symbols.count(); loop++)
   {
     BarData *bd = symbols.getItem(loop);
+
+    // get the name field
+    QString name;
+    DBPlugin *plug = fac.plugin(bd->getPlugin());
+    if (plug)
+    {
+      QString s = "NAME";
+      plug->detail(s, bd, name);
+    }
     
     QListWidgetItem *item = new QListWidgetItem;
     item->setText(bd->getSymbol());
-    item->setToolTip(QString(tr("Name: ") + bd->getName() + "\n" + tr("Exchange: ") + bd->getExchange()));
+    item->setToolTip(QString(tr("Name: ") + name + "\n" + tr("Exchange: ") + bd->getExchange()));
     nav->addItem(item);
   }
 }

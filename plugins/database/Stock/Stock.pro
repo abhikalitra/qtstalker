@@ -3,6 +3,8 @@
 } 
 
 HEADERS += Stock.h
+HEADERS += StockDetailsDataBase.h
 
 SOURCES += Stock.cpp
+SOURCES += StockDetailsDataBase.cpp
 

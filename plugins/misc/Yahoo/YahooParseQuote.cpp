@@ -100,15 +100,17 @@ void YahooParseQuote::history (QByteArray &ba, YahooUrlData &data)
     apil << l[0] << l[1] << l[2] << l[3] << l[4] << l[5];
 
     // send the script API command
-    if (! plug->scriptCommand(apil, ind))
+    QByteArray tba;
+    if (! plug->scriptCommand(apil, ind, tba))
       records++;
   }
 
   // construct the script API save quotes command and send it
   QStringList apil;
+  QByteArray tba;
   apil << "QUOTE" << type << "SAVE_QUOTES";
   QString s;
-  if (plug->scriptCommand(apil, ind))
+  if (plug->scriptCommand(apil, ind, tba))
     s = data.ysymbol + tr(": db error, quotes not saved...import aborted");
   else
     s = data.ysymbol + ":" + QString::number(records) + " records imported";
@@ -143,11 +145,10 @@ void YahooParseQuote::details (QByteArray &ba, YahooUrlData &data)
     return;
   }
 
-  // construct a script API command for the appropriate plugin
-  QStringList apil;
-  apil << "QUOTE" << type << "SET_NAME" << data.exchange << data.symbol << l[2];
-
-  // send the script API command
-  plug->scriptCommand(apil, ind);
+  BarData bd;
+  bd.setExchange(data.exchange);
+  bd.setSymbol(data.symbol);
+  ts = "NAME";
+  plug->setDetail(ts, &bd, l[2]);
 }
 

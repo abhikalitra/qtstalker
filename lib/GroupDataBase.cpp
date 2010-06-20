@@ -79,7 +79,7 @@ void GroupDataBase::getGroup (Group &group)
     return;
   
   // get the group contents
-  s = "SELECT exchange,symbol,name FROM " + table + " ORDER BY symbol,exchange ASC";
+  s = "SELECT exchange,symbol FROM " + table + " ORDER BY symbol,exchange ASC";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -100,9 +100,6 @@ void GroupDataBase::getGroup (Group &group)
     
     s = q.value(pos++).toString();
     bd->setSymbol(s);
-    
-    s = q.value(pos++).toString();
-    bd->setName(s);
     
     group.append(bd);
   }
@@ -159,7 +156,6 @@ void GroupDataBase::setGroup (Group &group)
   s.append("record INTEGER PRIMARY KEY AUTOINCREMENT");
   s.append(", exchange TEXT");
   s.append(", symbol TEXT");
-  s.append(", name TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -171,10 +167,9 @@ void GroupDataBase::setGroup (Group &group)
     BarData *bd = group.getItem(loop);
     
     // populate the table
-    s = "INSERT OR REPLACE INTO " + table + " (exchange,symbol,name) VALUES (";
+    s = "INSERT OR REPLACE INTO " + table + " (exchange,symbol) VALUES (";
     s.append("'" + bd->getExchange() + "'");
     s.append(",'" + bd->getSymbol() + "'");
-    s.append(",'" + bd->getName() + "'");
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())

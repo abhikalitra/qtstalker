@@ -22,8 +22,6 @@
 #include "Futures.h"
 #include "Bar.h"
 #include "ExchangeDataBase.h"
-#include "FuturesDataBase.h"
-#include "FuturesParmsDataBase.h"
 
 #include <QtSql>
 #include <QtDebug>
@@ -37,8 +35,8 @@ Futures::Futures ()
 {
   plugin = "Futures";
   
-  scriptMethods << "SET_QUOTE" << "SET_NAME" << "SET_CODE" << "SET_MONTH" << "SET_YEAR" << "SAVE_QUOTES";
-  scriptMethods << "DELETE" << "GET_QUOTES" << "RENAME";
+  scriptMethods << "SET_QUOTE" << "SAVE_QUOTES" << "DELETE" << "GET_QUOTES" << "RENAME";
+  scriptMethods << "SET_DETAIL" << "GET_DETAIL";
 }
 
 void Futures::getBars (BarData &data)
@@ -132,82 +130,6 @@ void Futures::getBars (BarData &data)
   int loop;
   for (loop = 0; loop < dateList.count(); loop++)
     data.prepend(dateList.at(loop));
-/*
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-
-  QDateTime firstDate;
-  getFirstDate(data.getTableName(), firstDate);
-
-  QDateTime lastDate;
-  getLastDate(data.getTableName(), lastDate);
-
-  QHash<QString, Bar *> bars;
-  QList<Bar *> dateList;
-
-  QString s = "SELECT date,open,high,low,close,volume,oi FROM " + data.getTableName();
-  s.append(" WHERE date >='" + firstDate.toString(Qt::ISODate) + "'");
-  s.append(" AND date <='" + lastDate.toString(Qt::ISODate) + "'");
-  s.append(" ORDER BY date DESC");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "Futures::getBars:" << q.lastError().text();
-    return;
-  }
-
-  while (q.next())
-  {
-    lastDate = q.value(0).toDateTime();
-
-    Bar tbar;
-    tbar.setDateRange(lastDate, data.getBarLength());
-    tbar.getRangeKey(s);
-
-    Bar *bar = bars[s];
-    if (! bar)
-    {
-      if (bars.count() > data.getBarsRequested())
-        break;
-
-      bar = new Bar;
-      bar->setDateRange(lastDate, data.getBarLength());
-      bar->setOpen(q.value(1).toDouble());
-      bar->setHigh(q.value(2).toDouble());
-      bar->setLow(q.value(3).toDouble());
-      bar->setClose(q.value(4).toDouble());
-      bar->setVolume(q.value(5).toDouble());
-      bar->setOI(q.value(6).toInt());
-      bars.insert(s, bar);
-      dateList.append(bar);
-    }
-    else
-    {
-      bar->setOpen(q.value(1).toDouble());
-      
-      double v = q.value(2).toDouble();
-      if (v > bar->getHigh())
-        bar->setHigh(v);
-
-      v = q.value(3).toDouble();
-      if (v < bar->getLow())
-        bar->setLow(v);
-      
-      v = q.value(5).toDouble();
-      double v2 = bar->getVolume();
-      bar->setVolume(v + v2);
-
-      bar->setOI(q.value(6).toInt());
-    }
-
-    if (bars.count() > data.getBarsRequested())
-      break;
-  }
-    
-  // order the bars from most recent to first
-  int loop;
-  for (loop = 0; loop < dateList.count(); loop++)
-    data.prepend(dateList.at(loop));
-*/
 }
 
 void Futures::setBars ()
@@ -281,10 +203,6 @@ int Futures::createTable (BarData *bars, QuoteIndexDataBase &idb)
   s.append(")");
   int rc = command(s, QString("Futures::createTable: create new symbol table"));
 
-  FuturesParmsDataBase fpdb;
-  if (fpdb.add(bars))
-    return 1;
-  
   return rc;
 }
 
@@ -294,50 +212,93 @@ int Futures::deleteSymbol (BarData *symbol)
   if (idb.deleteSymbol(symbol))
     return 1;
   
-  FuturesParmsDataBase fpdb;
-  if (fpdb.remove(symbol))
-    return 1;
+  _ddb.remove(symbol);
 
   return 0;
+}
+
+int Futures::setDetail (QString &key, BarData *bd, QString &data)
+{
+  return _ddb.setDetail(key, bd, data);
+}
+
+int Futures::setDetail (int key, BarData *bd, QString &data)
+{
+  return _ddb.setDetail(key, bd, data);
+}
+
+int Futures::detail (QString &key, BarData *bd, QString &data)
+{
+  return _ddb.detail(key, bd, data);
+}
+
+int Futures::detail (int key, BarData *bd, QString &data)
+{
+  return _ddb.detail(key, bd, data);
 }
 
 //*************************************************************
 //************** SCRIPT FUNCTIONS *****************************
 //*************************************************************
 
-int Futures::scriptCommand (QStringList &l, Indicator &ind)
+int Futures::scriptCommand (QStringList &l, Indicator &ind, QByteArray &ba)
 {
-  // format = QUOTE,PLUGIN,METHOD,*
+  // QUOTE,PLUGIN,METHOD,*
+  //   0      1     2
   
   int rc = -1;
   switch ((ScriptMethod) scriptMethods.indexOf(l[2]))
   {
     case SET_QUOTE:
       rc = scriptSetQuote(l);
-      break;
-    case SET_NAME:
-      rc = scriptSetName(l);
-      break;
-    case SET_CODE:
-      rc = scriptSetCode(l);
-      break;
-    case SET_MONTH:
-      rc = scriptSetMonth(l);
-      break;
-    case SET_YEAR:
-      rc = scriptSetYear(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
       break;
     case SAVE_QUOTES:
       rc = scriptSaveQuotes(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
       break;
     case DELETE:
       rc = scriptDelete(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
       break;
     case GET_QUOTES:
       rc = scriptGetQuotes(l, ind);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
       break;
     case RENAME:
       rc = scriptRename(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
+      break;
+    case SET_DETAIL:
+      rc = scriptSetDetail(l);
+      if (! rc)
+      {
+        ba.clear();
+        ba.append("0\n");
+      }
+      break;
+    case GET_DETAIL:
+      rc = scriptGetDetail(l, ba);
       break;
     default:
       break;
@@ -348,8 +309,8 @@ int Futures::scriptCommand (QStringList &l, Indicator &ind)
 
 int Futures::scriptSetQuote (QStringList &l)
 {
-  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,DATE_FORMAT,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME,OI
-  //            0     1     2       3        4        5        6    7    8    9    10    11    12
+  // QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,DATE_FORMAT,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME,OI
+  //   0     1      2       3       4        5        6    7    8    9    10    11   12
   
   if (l.count() != 13)
   {
@@ -411,160 +372,10 @@ int Futures::scriptSetQuote (QStringList &l)
   return 0;
 }
 
-int Futures::scriptSetName (QStringList &l)
-{
-  // format = QUOTE,PLUGIN,SET_NAME,EXCHANGE,SYMBOL,NAME
-
-  if (l.count() != 6)
-  {
-    qDebug() << "Futures::scriptSetName: invalid parm count" << l.count();
-    return 1;
-  }
-
-  QuoteIndexDataBase idb;
-
-  BarData bd;
-  bd.setExchange(l[3]);
-  bd.setSymbol(l[4]);
-  if (idb.getIndexData(&bd))
-  {
-    QString table = bd.getTableName();
-    if (table.isEmpty())
-    {
-      if(createTable(&bd, idb))
-        return 1;
-    }
-  }
-  
-  bd.setName(l[5]);
-
-  if (idb.setIndexData(&bd))
-  {
-    qDebug() << "Futures::scriptSetName: error setting index";
-    return 1;
-  }
-
-  return 0;
-}
-
-int Futures::scriptSetCode (QStringList &l)
-{
-  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,CODE
-
-  if (l.count() != 6)
-  {
-    qDebug() << "Futures::scriptSetCode: invalid parm count" << l.count();
-    return 1;
-  }
-  
-  QuoteIndexDataBase idb;
-
-  BarData bd;
-  bd.setExchange(l[3]);
-  bd.setSymbol(l[4]);
-  if (idb.getIndexData(&bd))
-  {
-    qDebug() << "Futures::scriptSetCode: symbol not found in database" << l[3] << l[4];
-    return 1;
-  }
-  
-  FuturesDataBase fdb;
-  QStringList cl;
-  fdb.getCodeList(cl);
-  if (cl.indexOf(l[5]) == -1)
-  {
-    qDebug() << "Futures::scriptSetCode: code not found in database" << l[5];
-    return 1;
-  }
-  
-  FuturesParmsDataBase fpdb;
-  int rc = fpdb.setCode(&bd, l[5]);
-
-  return rc;
-}
-
-int Futures::scriptSetMonth (QStringList &l)
-{
-  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,MONTH
-
-  if (l.count() != 6)
-  {
-    qDebug() << "Futures::scriptSetMonth: invalid parm count" << l.count();
-    return 1;
-  }
-  
-  QuoteIndexDataBase idb;
-
-  BarData bd;
-  bd.setExchange(l[3]);
-  bd.setSymbol(l[4]);
-  if (idb.getIndexData(&bd))
-  {
-    qDebug() << "Futures::scriptSetMonth: symbol not found in database" << l[3] << l[4];
-    return 1;
-  }
-  
-  QStringList ml;
-  ml << "F" << "G" << "H" << "J" << "K" << "M" << "N" << "Q" << "U" << "V" << "X" << "Z";
-  if (ml.indexOf(l[5]) == -1)
-  {
-    qDebug() << "Futures::scriptSetMonth: month not found in database" << l[5];
-    return 1;
-  }
-  
-  FuturesParmsDataBase fpdb;
-  int rc = fpdb.setMonth(&bd, l[5]);
-
-  return rc;
-}
-
-int Futures::scriptSetYear (QStringList &l)
-{
-  // format = QUOTE,PLUGIN,METHOD,EXCHANGE,SYMBOL,YEAR
-
-  if (l.count() != 6)
-  {
-    qDebug() << "Futures::scriptSetYear: invalid parm count" << l.count();
-    return 1;
-  }
-
-  QuoteIndexDataBase idb;
-  
-  BarData bd;
-  bd.setExchange(l[3]);
-  bd.setSymbol(l[4]);
-  if (idb.getIndexData(&bd))
-  {
-    qDebug() << "Futures::scriptSetYear: symbol not found in database" << l[3] << l[4];
-    return 1;
-  }
-
-  int year = 0;
-  if (l[5].length() == 4)
-  {
-    bool ok;
-    year = l[5].toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << "Futures::scriptSetYear: invalid year" << l[5];
-      return 1;
-    }
-  }
-  else
-  {
-    qDebug() << "Futures::scriptSetYear: year must be 4 digits" << l[5];
-    return 1;
-  }
-
-  FuturesParmsDataBase fpdb;
-  int rc = fpdb.setYear(&bd, year);
-  
-  return rc;
-}
-
 int Futures::scriptSaveQuotes (QStringList &l)
 {
-  // format = QUOTE,PLUGIN,SAVE_QUOTES
+  // QUOTE,PLUGIN,SAVE_QUOTES
+  //   0     1        2
 
   if (l.count() != 3)
   {
@@ -599,8 +410,8 @@ int Futures::scriptDelete (QStringList &l)
 
 int Futures::scriptGetQuotes (QStringList &l, Indicator &ind)
 {
-  // format = QUOTE,PLUGIN,GET_QUOTES,<NAME>,<EXCHANGE>,<SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
-  //            0     1       2         3         4         5            6         7        8
+  // QUOTE,PLUGIN,GET_QUOTES,<NAME>,<EXCHANGE>,<SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
+  //   0     1       2         3         4         5            6         7        8
 
   if (l.count() != 9)
   {
@@ -642,8 +453,8 @@ int Futures::scriptGetQuotes (QStringList &l, Indicator &ind)
 
 int Futures::scriptRename (QStringList &l)
 {
-  // format = QUOTE,PLUGIN,RENAME,OLD_EXCHANGE,OLD_SYMBOL,NEW_EXCHANGE,NEW_SYMBOL
-  //            0     1      2          3           4          5          6
+  // QUOTE,PLUGIN,RENAME,OLD_EXCHANGE,OLD_SYMBOL,NEW_EXCHANGE,NEW_SYMBOL
+  //   0     1      2          3           4          5          6
 
   if (l.count() != 7)
   {
@@ -663,9 +474,51 @@ int Futures::scriptRename (QStringList &l)
   if (idb.rename(&obd, &nbd))
     return 1;
 
-  FuturesParmsDataBase fpdb;
-  if (fpdb.rename(&obd, &nbd))
+  return 0;
+}
+
+int Futures::scriptSetDetail (QStringList &l)
+{
+  // QUOTE,PLUGIN,METHOD,DETAIL METHOD,EXCHANGE,SYMBOL,DATA
+  //   0     1      2          3          4       5      6
+
+  if (l.count() != 7)
+  {
+    qDebug() << "Futures::scriptSetDetail: invalid parm count" << l.count();
     return 1;
+  }
+
+  BarData bd;
+  bd.setExchange(l[4]);
+  bd.setSymbol(l[5]);
+  
+  if (_ddb.setDetail(l[3], &bd, l[6]))
+    return 1;
+
+  return 0;
+}
+
+int Futures::scriptGetDetail (QStringList &l, QByteArray &ba)
+{
+  // QUOTE,PLUGIN,METHOD,DETAIL METHOD,EXCHANGE,SYMBOL
+  //   0     1      2          3          4       5
+
+  if (l.count() != 6)
+  {
+    qDebug() << "Futures::scriptGetDetail: invalid parm count" << l.count();
+    return 1;
+  }
+
+  QString data;
+  BarData bd;
+  bd.setExchange(l[4]);
+  bd.setSymbol(l[5]);
+  
+  if (_ddb.detail(l[3], &bd, data))
+    return 1;
+
+  ba.clear();
+  ba.append(data + "\n");
 
   return 0;
 }

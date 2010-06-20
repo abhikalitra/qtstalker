@@ -564,5 +564,7 @@
 
            Fixed bug in refresh button startup that always started true.
 
+20100619:  Added script interface for details to each security. Will expand this in the future.
 
-           
+           The SET_NAME script option has been merged into the new SET_DETAILS and GET_DETAILS commands. see docs.
+

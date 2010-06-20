@@ -19,55 +19,33 @@
  *  USA.
  */
 
-#ifndef FUTURES_HPP
-#define FUTURES_HPP
+#ifndef STOCK_DETAILS_DATA_BASE_HPP
+#define STOCK_DETAILS_DATA_BASE_HPP
 
-#include "DBPlugin.h"
+#include <QString>
+#include <QStringList>
+
+#include "DataBase.h"
 #include "BarData.h"
-#include "QuoteIndexDataBase.h"
-#include "FuturesDetailsDataBase.h"
 
-class Futures : public DBPlugin
+class StockDetailsDataBase : public DataBase
 {
   public:
-    enum ScriptMethod
+    enum StockDetail
     {
-      SET_QUOTE,
-      SAVE_QUOTES,
-      DELETE,
-      GET_QUOTES,
-      RENAME,
-      SET_DETAIL,
-      GET_DETAIL
+      Name,
+      Sector
     };
-    
-    Futures ();
-    void getBars (BarData &);
-    void setBars ();
-    int createTable (BarData *, QuoteIndexDataBase &);
-    int scriptCommand (QStringList &, Indicator &, QByteArray &);
-    int deleteSymbol (BarData *);
+
+    StockDetailsDataBase ();
     int setDetail (QString &key, BarData *bd, QString &data);
     int setDetail (int key, BarData *bd, QString &data);
     int detail (QString &key, BarData *bd, QString &data);
     int detail (int key, BarData *bd, QString &data);
-    
-    int scriptSetQuote (QStringList &);
-    int scriptSaveQuotes (QStringList &l);
-    int scriptDelete (QStringList &l);
-    int scriptGetQuotes (QStringList &, Indicator &);
-    int scriptRename (QStringList &l);
-    int scriptSetDetail (QStringList &);
-    int scriptGetDetail (QStringList &, QByteArray &);
+    int remove (BarData *);
 
-  protected:
-    QStringList scriptMethods;
-    FuturesDetailsDataBase _ddb;
+  private:
+    QStringList _detailsList;
 };
-
-extern "C"
-{
-  DBPlugin * createDBPlugin ();
-}
 
 #endif

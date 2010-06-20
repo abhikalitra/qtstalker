@@ -210,15 +210,17 @@ void Setup::setupDefaultSymbol (Config &config)
     QStringList l = s2.split(",");
 
     Indicator ind;
-    int rc = plug->scriptCommand(l, ind);
+    QByteArray ba;
+    int rc = plug->scriptCommand(l, ind, ba);
     if (rc)
       qDebug() << "Setup::setupDefaultSymbol: quote not imported" << s2;
   }
 
   Indicator ind;
+  QByteArray ba;
   s = "QUOTE,Stock,SAVE_QUOTES";
   QStringList l = s.split(",");
-  int rc = plug->scriptCommand(l, ind);
+  int rc = plug->scriptCommand(l, ind, ba);
   if (rc)
     qDebug() << "Setup::setupDefaultSymbol: quotes not saved" << s;
 

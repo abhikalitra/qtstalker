@@ -38,8 +38,12 @@ class DBPlugin : public DataBase
     virtual ~DBPlugin ();
     virtual void getBars (BarData &);
     virtual void dialog ();
-    virtual int scriptCommand (QStringList &, Indicator &);
+    virtual int scriptCommand (QStringList &, Indicator &, QByteArray &);
     virtual int deleteSymbol (BarData *);
+    virtual int setDetail (QString &key, BarData *bd, QString &data);
+    virtual int setDetail (int key, BarData *bd, QString &data);
+    virtual int detail (QString &key, BarData *bd, QString &data);
+    virtual int detail (int key, BarData *bd, QString &data);
     
     void getFirstDate (QString &table, QDateTime &date);
     void getLastDate (QString &table, QDateTime &date);

@@ -48,13 +48,37 @@ void DBPlugin::dialog ()
 }
 
 // virtual
-int DBPlugin::scriptCommand (QStringList &, Indicator &)
+int DBPlugin::scriptCommand (QStringList &, Indicator &, QByteArray &)
 {
   return 0;
 }
 
 // virtual
 int DBPlugin::deleteSymbol (BarData *)
+{
+  return 0;
+}
+
+// virtual
+int DBPlugin::setDetail (QString &, BarData *, QString &)
+{
+  return 0;
+}
+
+// virtual
+int DBPlugin::setDetail (int, BarData *, QString &)
+{
+  return 0;
+}
+
+// virtual
+int DBPlugin::detail (QString &, BarData *, QString &)
+{
+  return 0;
+}
+
+// virtual
+int DBPlugin::detail (int, BarData *, QString &)
 {
   return 0;
 }

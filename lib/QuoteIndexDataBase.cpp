@@ -75,7 +75,7 @@ void QuoteIndexDataBase::init (QString &dbFile)
   s.append(", exchange TEXT");
   s.append(", tableName TEXT");
   s.append(", plugin TEXT");
-  s.append(", name TEXT");
+  s.append(", name TEXT"); //unused 
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -87,20 +87,20 @@ void QuoteIndexDataBase::getSearchList (QString &ex, QString &pat, Group &l)
   // if exchange and pat is empty then get all symbols from all exchanges will be returned
   QString s;
   if (ex.isEmpty() && pat.isEmpty())
-    s = "SELECT symbol,name,exchange,plugin FROM symbolIndex ORDER BY symbol,exchange ASC";
+    s = "SELECT symbol,exchange,plugin FROM symbolIndex ORDER BY symbol,exchange ASC";
 
   // if exchange is empty then get all symbols from all exchanges that match pat
   if (ex.isEmpty() && ! pat.isEmpty())
-    s = "SELECT symbol,name,exchange,plugin FROM symbolIndex WHERE symbol LIKE '" + pat + "'" + "  ORDER BY symbol,exchange ASC";
+    s = "SELECT symbol,exchange,plugin FROM symbolIndex WHERE symbol LIKE '" + pat + "'" + "  ORDER BY symbol,exchange ASC";
 
   // exchange = yes and pat = no, get the entire exchange list
   if (! ex.isEmpty() && pat.isEmpty())
-    s = "SELECT symbol,name,exchange,plugin FROM symbolIndex WHERE exchange='" + ex + "'" + " ORDER BY symbol,exchange ASC";
+    s = "SELECT symbol,exchange,plugin FROM symbolIndex WHERE exchange='" + ex + "'" + " ORDER BY symbol,exchange ASC";
     
   // exchange = yes and pat = yes, get pat from the exchange
   if (! ex.isEmpty() && ! pat.isEmpty())
   {
-    s = "SELECT symbol,name,exchange,plugin FROM symbolIndex WHERE symbol LIKE";
+    s = "SELECT symbol,exchange,plugin FROM symbolIndex WHERE symbol LIKE";
     s.append(" '" + pat + "'");
     s.append(" AND exchange='" + ex + "'");
     s.append(" ORDER BY symbol,exchange ASC");
@@ -126,9 +126,6 @@ void QuoteIndexDataBase::getSearchList (QString &ex, QString &pat, Group &l)
     bd->setSymbol(s);
     
     s = q.value(pos++).toString();
-    bd->setName(s);
-    
-    s = q.value(pos++).toString();
     bd->setExchange(s);
     
     s = q.value(pos++).toString();
@@ -141,7 +138,7 @@ void QuoteIndexDataBase::getSearchList (QString &ex, QString &pat, Group &l)
 int QuoteIndexDataBase::getIndexData (BarData *data)
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "SELECT name,tableName,plugin FROM symbolIndex";
+  QString s = "SELECT tableName,plugin FROM symbolIndex";
   s.append(" WHERE symbol='" + data->getSymbol() + "'");
   s.append(" AND exchange='" + data->getExchange() + "'");
   q.exec(s);
@@ -155,30 +152,10 @@ int QuoteIndexDataBase::getIndexData (BarData *data)
   {
     int pos = 0;
     s = q.value(pos++).toString();
-    data->setName(s);
-
-    s = q.value(pos++).toString();
     data->setTableName(s);
     
     s = q.value(pos++).toString();
     data->setPlugin(s);
-  }
-
-  return 0;
-}
-
-int QuoteIndexDataBase::setIndexData (BarData *data)
-{
-  QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "UPDATE symbolIndex SET ";
-  s.append("name='" + data->getName() + "'");
-  s.append(" WHERE exchange='" + data->getExchange() + "'");
-  s.append(" AND symbol='" + data->getSymbol() + "'");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "QuoteIndexDataBase::setIndexData:" << q.lastError().text();
-    return 1;
   }
 
   return 0;

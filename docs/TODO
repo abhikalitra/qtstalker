@@ -15,6 +15,7 @@ To Do:
 - interactive scripting
 - complete backtesting module
 - add exchange checker to yahoo plugin symbols dialog
+- fix name field in main app title bar and group list
 
 
 Priority

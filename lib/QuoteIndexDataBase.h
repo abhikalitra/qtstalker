@@ -37,7 +37,6 @@ class QuoteIndexDataBase : public DataBase
     void init (QString &);
     void getSearchList (QString &ex, QString &pat, Group &);
     int getIndexData (BarData *);
-    int setIndexData (BarData *);
     int addSymbolIndex (BarData *);
     void getExchangeList (QStringList &);
     int rename (BarData *, BarData *);

@@ -67,29 +67,6 @@ On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
 <br>
 <br>
-<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><br>
-<br>
-</span><span style="font-weight: bold;">QUOTE,Stock,SET_NAME,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;NAME&gt;</span><br>
-<br>
-This function will set the company name of the symbol.<br>
-<ul>
-  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
-symbol trades on. ie.
-'XNAS'<br>
-  </li>
-  <li>&lt;SYMBOL&gt; is the symbol. ie. 'MSFT'<br>
-  </li>
-  <li>&lt;NAME&gt; is the company name to use. ie. 'Microsoft
-Corporation'</li>
-</ul>
-<br>
-For example. Setting the company name for MSFT would be:<br>
-<br>
-"QUOTE,Stock,SET_NAME,XNAS,MSFT,Microsoft Corporation"<br>
-<br>
-&nbsp;On success a '0' is returned. On failure, 'ERROR' is
-returned.<br>
-<br>
 <br>
 <hr style="width: 100%; height: 2px;"><br>
 <br>
@@ -187,6 +164,59 @@ symbol to be renamed<br>
 <br>
 On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>
+<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<span style="font-weight: bold;"><br>
+QUOTE,Stock,SET_DETAIL,&lt;DETAIL&gt;,&lt;SYMBOL&gt;,&lt;EXCHANGE&gt;,&lt;VALUE&gt;</span><br>
+<br>
+This function will set individual details for a stock security.<br>
+<ul>
+  <li>&lt;DETAIL&gt; the available details are:</li>
+  <ul>
+    <li>&lt;NAME&gt; the name of the security eg. 'Google Inc'<br>
+    </li>
+    <li>&lt;SECTOR&gt; is the business sector eg. 'Technology'<br>
+    </li>
+  </ul>
+</ul>
+<ul>
+  <li>&lt;SYMBOL&gt; is the stock symbol e.g.
+'GOOG'</li>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> <br>
+  </li>
+  <li>&lt;VALUE&gt; is the value to set<br>
+  </li>
+</ul>
+<br>
+On success a '0' is returned. On failure, 'ERROR' is
+returned.<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<br>
+<span style="font-weight: bold;">QUOTE,Stock,GET_DETAIL,&lt;DETAIL&gt;,&lt;SYMBOL&gt;,&lt;EXCHANGE&gt;</span><br>
+<br>
+This function will return individual details for a stock security.<br>
+<ul>
+  <li>&lt;DETAIL&gt; the available details are:</li>
+  <ul>
+    <li>&lt;NAME&gt; the name of the security eg. 'Google Inc'</li>
+    <li>&lt;SECTOR&gt; is the business sector eg. 'Technology'</li>
+  </ul>
+</ul>
+<ul>
+  <li>&lt;SYMBOL&gt; is the stock symbol e.g.
+'GOOG'</li>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> <br>
+  </li>
+</ul>
+<br>
+On success the detail string requested is returned. On failure, 'ERROR'
+is
+returned.<br>
+<br>
 <br>
 <br>
 </body>

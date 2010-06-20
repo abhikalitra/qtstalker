@@ -22,6 +22,8 @@
 #include "SymbolDialog.h"
 #include "QuoteIndexDataBase.h"
 #include "BarData.h"
+#include "DBPluginFactory.h"
+#include "DBPlugin.h"
 
 #include "../pics/search.xpm"
 #include "../pics/add.xpm"
@@ -234,13 +236,26 @@ void SymbolDialog::searchButtonPressed ()
 
   leftSymbols->clear();
   
+  DBPluginFactory fac;
+
   int loop;
   for (loop = 0; loop < l.count(); loop++)
   {
     QTreeWidgetItem *item = new QTreeWidgetItem(leftSymbols);
+    
     BarData *bd = l.getItem(loop);
+
+    // get the name field
+    QString name;
+    DBPlugin *plug = fac.plugin(bd->getPlugin());
+    if (plug)
+    {
+      QString s = "NAME";
+      plug->detail(s, bd, name);
+    }
+    
     item->setText(0, bd->getSymbol());
-    item->setText(1, bd->getName());
+    item->setText(1, name);
     item->setText(2, bd->getExchange());
   }
   

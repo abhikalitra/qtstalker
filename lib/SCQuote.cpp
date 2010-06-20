@@ -49,13 +49,6 @@ int SCQuote::calculate (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
   
-  int rc = plug->scriptCommand(l, ind);
-  if (! rc)
-  {
-    ba.clear();
-    ba.append("0\n");
-  }
-  
-  return rc;
+  return plug->scriptCommand(l, ind, ba);
 }
 
