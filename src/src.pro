@@ -23,11 +23,12 @@ HEADERS += ScriptLaunchButton.h
 HEADERS += ListWidget.h
 HEADERS += PluginPage.h
 HEADERS += PixelSpaceButton.h
-HEADERS += BarsSpinner.h
 HEADERS += GridAction.h
 HEADERS += DocsAction.h
 HEADERS += TabWidget.h
 HEADERS += Splitter.h
+HEADERS += DateRangeControl.h
+HEADERS += DateRangeButton.h
 
 
 SOURCES += Qtstalker.cpp
@@ -49,11 +50,12 @@ SOURCES += ScriptLaunchButton.cpp
 SOURCES += ListWidget.cpp
 SOURCES += PluginPage.cpp
 SOURCES += PixelSpaceButton.cpp
-SOURCES += BarsSpinner.cpp
 SOURCES += GridAction.cpp
 SOURCES += DocsAction.cpp
 SOURCES += TabWidget.cpp
 SOURCES += Splitter.cpp
+SOURCES += DateRangeControl.cpp
+SOURCES += DateRangeButton.cpp
 
 
 TARGET = qtstalker

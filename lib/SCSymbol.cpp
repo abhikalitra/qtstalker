@@ -75,14 +75,8 @@ int SCSymbol::getSearch (QStringList &l, QByteArray &ba)
   Group bdl;
   idb.getSearchList(l[2], l[3], bdl);
   
-  int loop;
   QStringList sl;
-  for (loop = 0; loop < bdl.count(); loop++)
-  {
-     BarData *bd = bdl.getItem(loop); 
-     sl.append(bd->getExchange());
-     sl.append(bd->getSymbol());
-  }
+  bdl.getStringList(sl);
   
   ba.clear();
   ba.append(sl.join(","));

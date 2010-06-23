@@ -19,33 +19,34 @@
  *  USA.
  */
 
-#ifndef RECENT_CHARTS_HPP
-#define RECENT_CHARTS_HPP
+#ifndef DATE_RANGE_HPP
+#define DATE_RANGE_HPP
 
-#include <QComboBox>
-#include <QToolBar>
+#include <QDateTime>
+#include <QStringList>
 
-#include "BarData.h"
-#include "Group.h"
-
-class RecentCharts : public QComboBox
+class DateRange
 {
-  Q_OBJECT
-  
-  signals:
-    void signalChartSelected (BarData);
-
   public:
-    RecentCharts (QToolBar *);
+    enum Range
+    {
+      Day,
+      Week,
+      Month,
+      Month3,
+      Month6,
+      Year,
+      Year2,
+      Year5,
+      Year10,
+      Year25,
+      Year50,
+      All
+    };
     
-  public slots:
-    void addRecentChart (BarData);
-    void itemSelected (int row);
-    void save ();
-    void load ();
-
-  protected:
-    Group _group;
+    DateRange ();
+    int dateRange (DateRange::Range, QDateTime &input, QDateTime &output);
+    void list (QStringList &);
 };
 
 #endif

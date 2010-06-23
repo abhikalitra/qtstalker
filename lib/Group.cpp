@@ -25,59 +25,53 @@ Group::Group ()
 {
 }
 
-Group::~Group ()
-{
-  clear();
-}
-
 void Group::clear ()
 {
-  qDeleteAll(symbols);
-  symbols.clear();
+  _symbols.clear();
 }
 
 QString & Group::getName ()
 {
-  return name;
+  return _name;
 }
 
 void Group::setName (QString &d)
 {
-  name = d;
+  _name = d;
 }
 
 int Group::deleteItem (int row)
 {
-  int rc = 1;
-  BarData *bd = symbols.at(row);
-  if (bd)
-  {
-    delete bd;
-    symbols.removeAt(row);
-    rc = 0;
-  }
+  if (row < 0 || row >= _symbols.count())
+    return 1;
   
-  return rc;
+  _symbols.removeAt(row);
+  
+  return 0;
 }
 
-BarData * Group::getItem (int row)
+int Group::getItem (int row, BarData &d)
 {
-  return symbols.at(row);
+  if (row < 0 || row >= _symbols.count())
+    return 1;
+
+  d = _symbols.at(row);
+  return 0;
 }
 
 int Group::count ()
 {
-  return symbols.count();
+  return _symbols.count();
 }
 
-void Group::append (BarData *d)
+void Group::append (BarData &d)
 {
-  symbols.append(d);
+  _symbols.append(d);
 }
 
-void Group::prepend (BarData *d)
+void Group::prepend (BarData &d)
 {
-  symbols.prepend(d);
+  _symbols.prepend(d);
 }
 
 void Group::getStringList (QStringList &l)
@@ -85,32 +79,34 @@ void Group::getStringList (QStringList &l)
   l.clear();
   
   int loop;
-  for (loop = 0; loop < symbols.count(); loop++)
+  for (loop = 0; loop < _symbols.count(); loop++)
   {
-    BarData *bd = getItem(loop);
-    l.append(bd->getExchange());
-    l.append(bd->getSymbol());
+    BarData bd;
+    getItem(loop, bd);
+    l.append(bd.getExchange());
+    l.append(bd.getSymbol());
   }
 }
 
-int Group::contains (BarData *d)
+int Group::contains (BarData &d)
 {
   int loop;
   for (loop = 0; loop < count(); loop++)
   {
-    BarData *bd = getItem(loop);
-    if (d->getSymbol() == bd->getSymbol())
+    BarData bd;
+    getItem(loop, bd);
+    if (d.getSymbol() == bd.getSymbol())
     {
-      if (d->getExchange() == bd->getExchange())
-	return TRUE;
+      if (d.getExchange() == bd.getExchange())
+	return 1;
     }
   }
   
-  return FALSE;
+  return 0;
 }
 
 void Group::move (int from, int to)
 {
-  symbols.move(from, to);
+  _symbols.move(from, to);
 }
 

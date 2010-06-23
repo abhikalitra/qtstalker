@@ -31,22 +31,21 @@ class Group
 {
   public:
     Group ();
-    ~Group ();
     void clear ();
     QString & getName ();
     void setName (QString &);
     int deleteItem (int);
-    BarData * getItem (int);
+    int getItem (int, BarData &);
     int count ();
-    void append (BarData *);
-    void prepend (BarData *);
+    void append (BarData &);
+    void prepend (BarData &);
     void getStringList (QStringList &);
-    int contains (BarData *);
+    int contains (BarData &);
     void move (int, int);
 
   protected:
-    QString name;
-    QList<BarData *> symbols;
+    QString _name;
+    QList<BarData> _symbols;
 };
 
 #endif

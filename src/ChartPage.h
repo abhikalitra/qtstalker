@@ -42,10 +42,10 @@ class ChartPage : public QWidget
   Q_OBJECT
 
   signals:
-    void fileSelected (BarData *);
+    void fileSelected (BarData);
     void signalAddToGroup ();
     void signalReloadChart ();
-    void addRecentChart (BarData *);
+    void addRecentChart (BarData);
     void signalMessage (QString);
 
   public:
@@ -73,12 +73,12 @@ class ChartPage : public QWidget
     void deleteSymbol ();
 
   protected:
-    QString searchString;
-    QString searchExchange;
-    ListWidget *nav;
-    QMenu *menu;
-    Group symbols;
-    QHash<int, QAction *> actions;
+    QString _searchString;
+    QString _searchExchange;
+    ListWidget *_nav;
+    QMenu *_menu;
+    Group _symbols;
+    QHash<int, QAction *> _actions;
 };
 
 #endif

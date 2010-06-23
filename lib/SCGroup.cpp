@@ -78,9 +78,9 @@ int SCGroup::addGroup (QStringList &l, QByteArray &ba)
   g.setName(l[2]);
   db.getGroup(g);
   
-  BarData *bd = new BarData;
-  bd->setExchange(l[3]);
-  bd->setSymbol(l[4]);
+  BarData bd;
+  bd.setExchange(l[3]);
+  bd.setSymbol(l[4]);
   g.append(bd);
   
   db.setGroup(g);
@@ -125,14 +125,8 @@ int SCGroup::getGroup (QStringList &l, QByteArray &ba)
   g.setName(l[2]);
   db.getGroup(g);
   
-  int loop;
   QStringList rl;
-  for (loop = 0; loop < g.count(); loop++)
-  {
-    BarData *bd = g.getItem(loop);
-    rl.append(bd->getExchange());
-    rl.append(bd->getSymbol());
-  }
+  g.getStringList(rl);
 
   ba.clear();
   ba.append(rl.join(",") + "\n");

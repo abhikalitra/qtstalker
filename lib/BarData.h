@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef BARDATA_HPP
-#define BARDATA_HPP
+#ifndef BAR_DATA_HPP
+#define BAR_DATA_HPP
 
 #include <QList>
 #include <QHash>
@@ -67,8 +67,6 @@ class BarData
     void setSymbol (QString &);
     QString & getName ();
     void setName (QString &);
-    int getBarsRequested ();
-    void setBarsRequested (int);
     double getAvgPrice (int);
     double getMedianPrice (int);
     double getTypicalPrice (int);
@@ -78,21 +76,29 @@ class BarData
     void setPlugin (QString &);
     QString & getExchange ();
     void setExchange (QString &);
-    QString & getCurrency ();
-    void setCurrency (QString &);
+    void setDateRange (int);
+    int dateRange ();
+    void setDateRangeOverride (int);
+    int dateRangeOverride ();
+    void setStartDate (QDateTime &);
+    QDateTime & startDate ();
+    void setEndDate (QDateTime &);
+    QDateTime & endDate ();
 
   protected:
-    QList<Bar *> barList;
-    double high;
-    double low;
-    Bar::BarLength length;
-    QString symbol;
-    QString name;
-    int barsRequested;
-    QString tableName;
-    QString plugin;
-    QString exchange;
-    QString currency;
+    QList<Bar *> _barList;
+    double _high;
+    double _low;
+    Bar::BarLength _length;
+    QString _symbol;
+    QString _name;
+    QString _tableName;
+    QString _plugin;
+    QString _exchange;
+    int _dateRange;
+    int _dateRangeOverride;
+    QDateTime _startDate;
+    QDateTime _endDate;
 };
 
 #endif

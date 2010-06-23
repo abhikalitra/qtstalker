@@ -568,3 +568,11 @@
 
            The SET_NAME script option has been merged into the new SET_DETAILS and GET_DETAILS commands. see docs.
 
+20100622:  Removed the toolbar bars spinner and replaced it with a new Date Range Control area. This group of controls
+           creates a new way of loading bars using date ranges rather than a specific number of bars. Use the
+           Set Date Range button to lock a specific date range for all charts when turned on.
+
+           Internal changes to the Group class to use references instead of pointers.
+
+           Docs updated for QUOTES script command regarding the new date range format.
+

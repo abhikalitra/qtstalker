@@ -42,8 +42,8 @@ class GroupPage : public QWidget
   Q_OBJECT
 
   signals:
-    void fileSelected (BarData *);
-    void addRecentChart (BarData *);
+    void fileSelected (BarData);
+    void addRecentChart (BarData);
     void signalMessage (QString);
 
   public:
@@ -75,11 +75,11 @@ class GroupPage : public QWidget
     void listStatus ();
 
   protected:
-    ListWidget *nav;
-    QMenu *menu;
-    QComboBox *groups;
-    QHash<int, QAction *> actions;
-    Group group;
+    ListWidget *_nav;
+    QMenu *_menu;
+    QComboBox *_groups;
+    QHash<int, QAction *> _actions;
+    Group _group;
 };
 
 #endif

@@ -36,21 +36,17 @@ RecentCharts::RecentCharts (QToolBar *tb)
   tb->addWidget(this);
 }
 
-void RecentCharts::addRecentChart (BarData *bd)
+void RecentCharts::addRecentChart (BarData bd)
 {
-  if (group.contains(bd))
+  if (_group.contains(bd))
     return;
 
   if (count() == maxCount())
-    group.deleteItem(maxCount() - 1);
+    _group.deleteItem(maxCount() - 1);
 
-  BarData *bd2 = new BarData;
-  bd2->setExchange(bd->getExchange());
-  bd2->setSymbol(bd->getSymbol());
-  
-  group.prepend(bd2);
+  _group.prepend(bd);
 
-  insertItem(0, bd->getSymbol());
+  insertItem(0, bd.getSymbol());
 }
 
 void RecentCharts::itemSelected (int row)
@@ -59,12 +55,12 @@ void RecentCharts::itemSelected (int row)
   removeItem(row);
   insertItem(0, s);
 
-  group.move(row, 0);
+  _group.move(row, 0);
 
   setCurrentIndex(0);
 
-  BarData *bd = group.getItem(0);
-  if (! bd)
+  BarData bd;
+  if (_group.getItem(0, bd))
     return;
 
   emit signalChartSelected(bd);
@@ -73,7 +69,7 @@ void RecentCharts::itemSelected (int row)
 void RecentCharts::save ()
 {
   QStringList l;
-  group.getStringList(l);
+  _group.getStringList(l);
 
   Config config;
   config.setData(Config::RecentChartsList, l);
@@ -88,10 +84,10 @@ void RecentCharts::load ()
   int loop;
   for (loop = 0; loop < l.count(); loop = loop + 2)
   {
-    BarData *bd = new BarData;
-    bd->setExchange(l[loop]);
-    bd->setSymbol(l[loop + 1]);
-    group.append(bd);
+    BarData bd;
+    bd.setExchange(l[loop]);
+    bd.setSymbol(l[loop + 1]);
+    _group.append(bd);
     addItem(l[loop + 1]);
   }
 }

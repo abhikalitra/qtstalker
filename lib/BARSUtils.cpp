@@ -31,6 +31,9 @@ BARSUtils::BARSUtils ()
 
 PlotLine * BARSUtils::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral)
 {
+  if (! data->count())
+    return 0;
+  
   PlotFactory fac;
   QString s = "OHLC";
   PlotLine *line = fac.plot(s);

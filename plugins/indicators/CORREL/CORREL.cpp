@@ -60,7 +60,7 @@ int CORREL::getIndicator (Indicator &ind, BarData *data)
   BarData bd;
   bd.setSymbol(s);
   bd.setBarLength(data->getBarLength());
-  bd.setBarsRequested(data->getBarsRequested());
+  bd.setDateRange(data->dateRange());
 
   DBPlugin db;
   db.getBars(bd);

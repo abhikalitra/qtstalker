@@ -20,6 +20,8 @@
  */
 
 #include "GroupDataBase.h"
+#include "QuoteIndexDataBase.h"
+#include "DBPluginFactory.h"
 
 #include <QtDebug>
 #include <QtSql>
@@ -89,17 +91,33 @@ void GroupDataBase::getGroup (Group &group)
   }
 
   group.clear();
+
+  QuoteIndexDataBase qidb;
+  DBPluginFactory fac;
   
   while (q.next())
   {
     int pos = 0;
-    BarData *bd = new BarData;
+    BarData bd;
     
     s = q.value(pos++).toString();
-    bd->setExchange(s);
+    bd.setExchange(s);
     
     s = q.value(pos++).toString();
-    bd->setSymbol(s);
+    bd.setSymbol(s);
+
+    // get the security name
+    if (! qidb.getIndexData(&bd))
+    {
+      DBPlugin *plug = fac.plugin(bd.getPlugin());
+      if (plug)
+      {
+        QString name;
+        s = "NAME";
+        plug->detail(s, &bd, name);
+        bd.setName(name);
+      }
+    }
     
     group.append(bd);
   }
@@ -164,12 +182,13 @@ void GroupDataBase::setGroup (Group &group)
   int loop;
   for (loop = 0; loop < group.count(); loop++)
   {
-    BarData *bd = group.getItem(loop);
+    BarData bd;
+    group.getItem(loop, bd);
     
     // populate the table
     s = "INSERT OR REPLACE INTO " + table + " (exchange,symbol) VALUES (";
-    s.append("'" + bd->getExchange() + "'");
-    s.append(",'" + bd->getSymbol() + "'");
+    s.append("'" + bd.getExchange() + "'");
+    s.append(",'" + bd.getSymbol() + "'");
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())

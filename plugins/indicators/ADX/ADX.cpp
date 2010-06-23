@@ -210,6 +210,9 @@ int ADX::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * ADX::getLine (BarData *data, int period, int method, int lineType, QColor &color)
 {
+  if (data->count() < period)
+    return 0;
+  
   int size = data->count();
   TA_Real high[size];
   TA_Real low[size];

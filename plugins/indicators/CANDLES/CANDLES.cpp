@@ -367,6 +367,9 @@ int CANDLES::getCUSMethod (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
 {
+  if (! data->count())
+    return 0;
+  
   PlotFactory fac;
   QString s = "Candle";
   PlotLine *line = fac.plot(s);

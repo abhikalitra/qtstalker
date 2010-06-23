@@ -27,15 +27,19 @@
 
 BarData::BarData ()
 {
-  high = -99999999;
-  low = 99999999;
-  length = Bar::DailyBar;
-  barsRequested = 0;
+  _high = -99999999;
+  _low = 99999999;
+  _length = Bar::DailyBar;
+  _dateRange = 5;
+  _dateRangeOverride = 0;
+  _startDate = QDateTime::currentDateTime();
+  _endDate = _startDate;
 }
 
 BarData::~BarData ()
 {
-  qDeleteAll(barList);
+  if (_barList.count())
+    qDeleteAll(_barList);
 }
 
 void BarData::getInputFields (QStringList &l)
@@ -116,27 +120,27 @@ PlotLine * BarData::getInput (BarData::InputType field, int lineType, QColor &co
 
 int BarData::count ()
 {
-  return (int) barList.count();
+  return (int) _barList.count();
 }
 
 void BarData::prepend (Bar *bar)
 {
-  barList.prepend(bar);
+  _barList.prepend(bar);
 }
 
 void BarData::append (Bar *bar)
 {
-  barList.append(bar);
+  _barList.append(bar);
 }
 
 double BarData::getMax ()
 {
-  return high;
+  return _high;
 }
 
 double BarData::getMin ()
 {
-  return low;
+  return _low;
 }
 
 BarData::InputType BarData::getInputType (QString &d)
@@ -153,27 +157,27 @@ BarData::InputType BarData::getInputType (QString &d)
 
 Bar * BarData::getBar (int d)
 {
-  return barList.at(d);
+  return _barList.at(d);
 }
 
 void BarData::setMinMax ()
 {
   int loop;
-  for (loop = 0; loop < (int) barList.count(); loop++)
+  for (loop = 0; loop < (int) _barList.count(); loop++)
   {
-    Bar *bar = barList.at(loop);
+    Bar *bar = _barList.at(loop);
 
-    if (bar->getHigh() > high)
-      high = bar->getHigh();
+    if (bar->getHigh() > _high)
+      _high = bar->getHigh();
 
-    if (bar->getLow() < low)
-      low = bar->getLow();
+    if (bar->getLow() < _low)
+      _low = bar->getLow();
   }
 }
 
 void BarData::setBarLength (Bar::BarLength d)
 {
-  length = d;
+  _length = d;
 }
 
 void BarData::setBarLength (QString &d)
@@ -181,42 +185,32 @@ void BarData::setBarLength (QString &d)
   QStringList l;
   Bar tbar;
   tbar.getBarLengthList(l);
-  length = (Bar::BarLength) l.indexOf(d);
+  _length = (Bar::BarLength) l.indexOf(d);
 }
 
 Bar::BarLength BarData::getBarLength ()
 {
-  return length;
+  return _length;
 }
 
 QString & BarData::getSymbol ()
 {
-  return symbol;
+  return _symbol;
 }
 
 void BarData::setSymbol (QString &d)
 {
-  symbol = d;
+  _symbol = d;
 }
 
 QString & BarData::getName ()
 {
-  return name;
+  return _name;
 }
 
 void BarData::setName (QString &d)
 {
-  name = d;
-}
-
-int BarData::getBarsRequested ()
-{
-  return barsRequested;
-}
-
-void BarData::setBarsRequested (int d)
-{
-  barsRequested = d;
+  _name = d;
 }
 
 double BarData::getAvgPrice (int d)
@@ -242,41 +236,71 @@ double BarData::getTypicalPrice (int d)
 
 QString & BarData::getTableName ()
 {
-  return tableName;
+  return _tableName;
 }
 
 void BarData::setTableName (QString &d)
 {
-  tableName = d;
+  _tableName = d;
 }
 
 QString & BarData::getPlugin ()
 {
-  return plugin;
+  return _plugin;
 }
 
 void BarData::setPlugin (QString &d)
 {
-  plugin = d;
+  _plugin = d;
 }
 
 QString & BarData::getExchange ()
 {
-  return exchange;
+  return _exchange;
 }
 
 void BarData::setExchange (QString &d)
 {
-  exchange = d;
+  _exchange = d;
 }
 
-QString & BarData::getCurrency ()
+void BarData::setDateRange (int d)
 {
-  return currency;
+  _dateRange = d;
 }
 
-void BarData::setCurrency (QString &d)
+int BarData::dateRange ()
 {
-  currency = d;
+  return _dateRange;
+}
+
+void BarData::setDateRangeOverride (int d)
+{
+  _dateRangeOverride = d;
+}
+
+int BarData::dateRangeOverride ()
+{
+  return _dateRangeOverride;
+}
+
+void BarData::setStartDate (QDateTime &d)
+{
+  _startDate = d;
+}
+
+QDateTime & BarData::startDate ()
+{
+  return _startDate;
+}
+
+void BarData::setEndDate (QDateTime &d)
+{
+  _endDate = d;
+}
+
+QDateTime & BarData::endDate ()
+{
+  return _endDate;
 }
 

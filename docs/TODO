@@ -14,8 +14,11 @@ To Do:
 - add tooltips
 - interactive scripting
 - complete backtesting module
+- convert any long running functions that may slow response to use threads
 - add exchange checker to yahoo plugin symbols dialog
-- fix name field in main app title bar and group list
+- fix 0 bars bug in indicator plugins
+- change slider button behaviour to indicate status of buttons
+
 
 
 Priority

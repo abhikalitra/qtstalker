@@ -22,6 +22,7 @@
 #include "Stock.h"
 #include "Bar.h"
 #include "ExchangeDataBase.h"
+#include "DateRange.h"
 
 #include <QtSql>
 #include <QtDebug>
@@ -43,84 +44,79 @@ void Stock::getBars (BarData &data)
 {
   QSqlQuery q(QSqlDatabase::database("quotes"));
 
-  QDateTime firstDate;
-  getFirstDate(data.getTableName(), firstDate);
-
-  QDateTime lastDate;
-  getLastDate(data.getTableName(), lastDate);
-
   QHash<QString, Bar *> bars;
   QList<Bar *> dateList;
 
-  while (1)
+  // get symbol name
+  QString name;
+  _ddb.detail((int) StockDetailsDataBase::Name, &data, name);
+  data.setName(name);
+
+  QDateTime firstDate, lastDate;
+  if (! data.dateRangeOverride())
   {
-    QString s = "SELECT date,open,high,low,close,volume FROM " + data.getTableName();
-    s.append(" WHERE date >='" + firstDate.toString(Qt::ISODate) + "'");
-    s.append(" AND date <='" + lastDate.toString(Qt::ISODate) + "'");
-    s.append(" ORDER BY date DESC LIMIT " + QString::number(data.getBarsRequested()));
-    q.exec(s);
-    if (q.lastError().isValid())
+    getLastDate(data.getTableName(), lastDate);
+    if (! lastDate.isValid())
+      lastDate = QDateTime::currentDateTime();
+
+    DateRange dr;
+    if (dr.dateRange((DateRange::Range) data.dateRange(), lastDate, firstDate))
+      firstDate = lastDate;
+  }
+  else
+  {
+    lastDate = data.endDate();
+    firstDate = data.startDate();
+  }
+
+  QString s = "SELECT date,open,high,low,close,volume FROM " + data.getTableName();
+  s.append(" WHERE date >='" + firstDate.toString(Qt::ISODate) + "'");
+  s.append(" AND date <='" + lastDate.toString(Qt::ISODate) + "'");
+  s.append(" ORDER BY date DESC");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "Stock::getBars:" << q.lastError().text();
+    return;
+  }
+
+  while (q.next())
+  {
+    lastDate = q.value(0).toDateTime();
+
+    Bar tbar;
+    tbar.setDateRange(lastDate, data.getBarLength());
+    tbar.getRangeKey(s);
+
+    Bar *bar = bars[s];
+    if (! bar)
     {
-      qDebug() << "Stock::getBars:" << q.lastError().text();
-      return;
+      bar = new Bar;
+      bar->setDateRange(lastDate, data.getBarLength());
+      bar->setOpen(q.value(1).toDouble());
+      bar->setHigh(q.value(2).toDouble());
+      bar->setLow(q.value(3).toDouble());
+      bar->setClose(q.value(4).toDouble());
+      bar->setVolume(q.value(5).toDouble());
+      bars.insert(s, bar);
+      dateList.append(bar);
     }
-
-    while (q.next())
+    else
     {
-      lastDate = q.value(0).toDateTime();
+      bar->setOpen(q.value(1).toDouble());
 
-      Bar tbar;
-      tbar.setDateRange(lastDate, data.getBarLength());
-      tbar.getRangeKey(s);
+      double v = q.value(2).toDouble();
+      if (v > bar->getHigh())
+        bar->setHigh(v);
 
-      Bar *bar = bars[s];
-      if (! bar)
-      {
-        if (bars.count() > data.getBarsRequested())
-        {
-          // prepend bars in order
-          int loop;
-          for (loop = 0; loop < dateList.count(); loop++)
-            data.prepend(dateList.at(loop));
-          return;
-        }
+      v = q.value(3).toDouble();
+      if (v < bar->getLow())
+        bar->setLow(v);
 
-        bar = new Bar;
-        bar->setDateRange(lastDate, data.getBarLength());
-        bar->setOpen(q.value(1).toDouble());
-        bar->setHigh(q.value(2).toDouble());
-        bar->setLow(q.value(3).toDouble());
-        bar->setClose(q.value(4).toDouble());
-        bar->setVolume(q.value(5).toDouble());
-        bars.insert(s, bar);
-        dateList.append(bar);
-      }
-      else
-      {
-        bar->setOpen(q.value(1).toDouble());
-
-        double v = q.value(2).toDouble();
-        if (v > bar->getHigh())
-          bar->setHigh(v);
-
-        v = q.value(3).toDouble();
-        if (v < bar->getLow())
-          bar->setLow(v);
-
-        v = q.value(5).toDouble();
-        double v2 = bar->getVolume();
-        bar->setVolume(v + v2);
-      }
+      v = q.value(5).toDouble();
+      double v2 = bar->getVolume();
+      bar->setVolume(v + v2);
     }
-
-    if (lastDate == firstDate)
-    {
-      // prepend bars in order
-      int loop;
-      for (loop = 0; loop < dateList.count(); loop++)
-        data.prepend(dateList.at(loop));
-      return;
-    }    
   }
 
   // prepend bars in order
@@ -409,8 +405,8 @@ int Stock::scriptDelete (QStringList &l)
 
 int Stock::scriptGetQuotes (QStringList &l, Indicator &ind)
 {
-  // format = QUOTE,PLUGIN,GET_QUOTES,<NAME>,<EXCHANGE>,<SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<BARS>
-  //            0     1       2         3         4         5            6         7        8
+  // format = QUOTE,PLUGIN,GET_QUOTES,<NAME>,<EXCHANGE>,<SYMBOL>,<BAR_FIELD>,<BAR_LENGTH>,<DATE RANGE>
+  //            0     1       2         3         4         5            6         7           8
 
   if (l.count() != 9)
   {
@@ -425,11 +421,13 @@ int Stock::scriptGetQuotes (QStringList &l, Indicator &ind)
     return 1;
   }
 
-  bool ok;
-  int bars = l[8].toInt(&ok);
-  if (! ok)
+  QStringList rl;
+  DateRange dr;
+  dr.list(rl);
+  int range = rl.indexOf(l[8]);
+  if (range == -1)
   {
-    qDebug() << "Stock::scriptGetQuotes: invalid bars" << l[8];
+    qDebug() << "Stock::scriptGetQuotes: invalid date range" << l[8];
     return 1;
   }
   
@@ -437,7 +435,7 @@ int Stock::scriptGetQuotes (QStringList &l, Indicator &ind)
   bd.setExchange(l[4]);
   bd.setSymbol(l[5]);
   bd.setBarLength(l[7]);
-  bd.setBarsRequested(bars);
+  bd.setDateRange(range);
   getBars(bd);
   
   BarData::InputType it = bd.getInputType(l[6]);

@@ -42,13 +42,13 @@ class Config : public BaseConfig
       BorderColor, // color of chart borders
       GridColor, // color of chart grid
       DefaultBuyColor, // default buy arrow color
-      UNUSED15, // ***** UNUSED *******
-      UNUSED13, // ******** UNUSED **********
-      UNUSED12, // ******** UNUSED ***********
+      LastDateRange, // last date range setting (int)
+      DateRangeButtonStatus, // status of the date range button on/off (int)
+      DateRangeStart, // the start date range
       DataPanelSize, // size of the data panel
       ScriptLaunchButton1, // script panel launch button 1
       PlotFont, // chart plot font
-      UNUSED11, // ****** UNUSED *******
+      DateRangeEnd, // the end of the date range
       NavAreaSize, // navigator panel size
       UNUSED10, // ******* UNUSED ************
       UNUSED9, // ******* UNUSED ***********

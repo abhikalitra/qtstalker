@@ -92,9 +92,6 @@ class PrefDialog : public QDialog
     void addDateItem (int key, int page, QString, QDateTime &);
     void getDate (int key, QDateTime &);
 
-    void addTimeItem (int key, int page, QString, QDateTime &);
-    void getTime (int key, QDateTime &);
-
     void addTextEditItem (int key, int page, QString, QString &);
     void getTextEdit (int key, QString &);
 
@@ -112,9 +109,8 @@ class PrefDialog : public QDialog
     QHash<int, FontButton *> fontButtonList;
     QHash<int, QLineEdit *> textList;
     QHash<int, QComboBox *> comboList;
-    QHash<int, QDateEdit *> dateList;
+    QHash<int, QDateTimeEdit *> dateList;
     QHash<int, QLabel *> labelList;
-    QHash<int, QTimeEdit *> timeList;
     QHash<int, QTextEdit *> textEditList;
     QHash<int, QGridLayout *> gridList;
     QHash<int, FileButton *> fileButtonList;

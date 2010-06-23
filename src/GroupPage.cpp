@@ -51,11 +51,11 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   vbox->setSpacing(3);
   setLayout(vbox);
 
-  groups = new QComboBox;
-  connect(groups, SIGNAL(currentIndexChanged(int)), this, SLOT(groupSelected(int)));
-  groups->setToolTip(tr("Current Group"));
-  groups->setFocusPolicy(Qt::NoFocus);
-  vbox->addWidget(groups);
+  _groups = new QComboBox;
+  connect(_groups, SIGNAL(currentIndexChanged(int)), this, SLOT(groupSelected(int)));
+  _groups->setToolTip(tr("Current Group"));
+  _groups->setFocusPolicy(Qt::NoFocus);
+  vbox->addWidget(_groups);
 
   QToolBar *tb = new QToolBar;
   vbox->addWidget(tb);
@@ -63,22 +63,22 @@ GroupPage::GroupPage (QWidget *w) : QWidget (w)
   
   createButtonMenu(tb);
   
-  nav = new ListWidget;
-  nav->setContextMenuPolicy(Qt::CustomContextMenu);
-  nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  nav->setSortingEnabled(FALSE);
-  connect(nav, SIGNAL(itemSelectionChanged()), this, SLOT(listStatus()));
-  connect(nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
-  connect(nav, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
-  connect(nav, SIGNAL(signalEnterKeyPressed(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
-  vbox->addWidget(nav);
+  _nav = new ListWidget;
+  _nav->setContextMenuPolicy(Qt::CustomContextMenu);
+  _nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  _nav->setSortingEnabled(FALSE);
+  connect(_nav, SIGNAL(itemSelectionChanged()), this, SLOT(listStatus()));
+  connect(_nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
+  connect(_nav, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
+  connect(_nav, SIGNAL(signalEnterKeyPressed(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
+  vbox->addWidget(_nav);
 
   loadGroups();
 
   QString s;
   Config config;
   config.getData(Config::LastGroupUsed, s);
-  groups->setCurrentIndex(groups->findText(s, Qt::MatchExactly));
+  _groups->setCurrentIndex(_groups->findText(s, Qt::MatchExactly));
 
   listStatus();
 }
@@ -89,48 +89,48 @@ void GroupPage::createActions ()
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
   action->setToolTip(tr("Create a new group"));
   connect(action, SIGNAL(activated()), this, SLOT(newGroup()));
-  actions.insert(NewGroup, action);
+  _actions.insert(NewGroup, action);
 
   action  = new QAction(QIcon(addgroup), tr("&Add To Group"), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_A));
   action->setToolTip(tr("Add symbol to group"));
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
-  actions.insert(AddGroup, action);
+  _actions.insert(AddGroup, action);
 
   action  = new QAction(QIcon(delete_xpm), tr("&Delete Group Items"), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
   action->setToolTip(tr("Delete group items"));
   connect(action, SIGNAL(activated()), this, SLOT(deleteGroupItem()));
-  actions.insert(DeleteGroupItems, action);
+  _actions.insert(DeleteGroupItems, action);
 
   action  = new QAction(QIcon(delgroup), tr("De&lete Group"), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
   action->setToolTip(tr("Delete group"));
   connect(action, SIGNAL(activated()), this, SLOT(deleteGroup()));
-  actions.insert(DeleteGroup, action);
+  _actions.insert(DeleteGroup, action);
 
   action  = new QAction(QIcon(refresh_xpm), tr("&Refresh List"), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
   action->setToolTip(tr("Refresh List"));
   connect(action, SIGNAL(activated()), this, SLOT(updateGroups()));
-  actions.insert(Refresh, action);
+  _actions.insert(Refresh, action);
 }
 
 void GroupPage::createButtonMenu (QToolBar *tb)
 {
-  tb->addAction(actions.value(Refresh));
-  tb->addAction(actions.value(NewGroup));
-  tb->addAction(actions.value(AddGroup));
-  tb->addAction(actions.value(DeleteGroup));
-  tb->addAction(actions.value(DeleteGroupItems));
+  tb->addAction(_actions.value(Refresh));
+  tb->addAction(_actions.value(NewGroup));
+  tb->addAction(_actions.value(AddGroup));
+  tb->addAction(_actions.value(DeleteGroup));
+  tb->addAction(_actions.value(DeleteGroupItems));
 
-  menu = new QMenu(this);
-  menu->addAction(actions.value(Refresh));
-  menu->addSeparator();
-  menu->addAction(actions.value(NewGroup));
-  menu->addAction(actions.value(AddGroup));
-  menu->addAction(actions.value(DeleteGroup));
-  menu->addAction(actions.value(DeleteGroupItems));
+  _menu = new QMenu(this);
+  _menu->addAction(_actions.value(Refresh));
+  _menu->addSeparator();
+  _menu->addAction(_actions.value(NewGroup));
+  _menu->addAction(_actions.value(AddGroup));
+  _menu->addAction(_actions.value(DeleteGroup));
+  _menu->addAction(_actions.value(DeleteGroupItems));
 }
 
 void GroupPage::newGroup()
@@ -168,7 +168,7 @@ void GroupPage::newGroup()
 
 void GroupPage::deleteGroupItem ()
 {
-  QList<QListWidgetItem *> sl = nav->selectedItems();
+  QList<QListWidgetItem *> sl = _nav->selectedItems();
   if (! sl.count())
     return;
 
@@ -186,17 +186,17 @@ void GroupPage::deleteGroupItem ()
   for (loop = sl.count() - 1; loop > -1; loop--)
   {
     QListWidgetItem *item = sl.at(loop);
-    if (! group.deleteItem(nav->row(item)))
+    if (! _group.deleteItem(_nav->row(item)))
       delete item;
   }
 
   GroupDataBase db;
-  db.setGroup(group);
+  db.setGroup(_group);
 }
 
 void GroupPage::deleteGroup()
 {
-  QString g = groups->currentText();
+  QString g = _groups->currentText();
   if (! g.length())
     return;
 
@@ -214,10 +214,10 @@ void GroupPage::deleteGroup()
   GroupDataBase db;
   db.deleteGroup(g);
 
-  if (g == groups->currentText())
+  if (g == _groups->currentText())
   {
-    nav->clear();
-    group.clear();
+    _nav->clear();
+    _group.clear();
   }
 
   updateGroups();
@@ -227,15 +227,15 @@ void GroupPage::deleteGroup()
 
 void GroupPage::groupSelected (int i)
 {
-  QString s = groups->itemText(i);
+  QString s = _groups->itemText(i);
   if (! s.length())
     return;
 
-  group.clear();
-  group.setName(s);
+  _group.clear();
+  _group.setName(s);
   
   GroupDataBase db;
-  db.getGroup(group);
+  db.getGroup(_group);
   
   updateList();
   
@@ -248,8 +248,8 @@ void GroupPage::chartOpened (QListWidgetItem *item)
   if (! item)
     return;
   
-  BarData *bd = group.getItem(nav->currentRow());
-  if (! bd)
+  BarData bd;
+  if(_group.getItem(_nav->currentRow(), bd))
     return;
   
   emit fileSelected(bd);
@@ -258,7 +258,7 @@ void GroupPage::chartOpened (QListWidgetItem *item)
 
 void GroupPage::rightClick (const QPoint &)
 {
-  menu->exec(QCursor::pos());
+  _menu->exec(QCursor::pos());
 }
 
 void GroupPage::doKeyPress (QKeyEvent *key)
@@ -294,38 +294,38 @@ void GroupPage::doKeyPress (QKeyEvent *key)
 
 void GroupPage::loadGroups ()
 {
-  groups->clear();
+  _groups->clear();
   
   QStringList l;
   GroupDataBase db;
   db.getAllGroupsList(l);
   
-  groups->addItems(l);
+  _groups->addItems(l);
 }
 
 void GroupPage::updateGroups ()
 {
-  int cg = groups->currentIndex();
+  int cg = _groups->currentIndex();
   if (cg < 0)
     cg = 0;
-  int cr = nav->currentRow();
+  int cr = _nav->currentRow();
   if (cr < 0)
     cr = 0;
 
-  groups->blockSignals(TRUE);
+  _groups->blockSignals(TRUE);
   loadGroups();
-  groups->blockSignals(FALSE);
+  _groups->blockSignals(FALSE);
 
   groupSelected(cg);
 
-  nav->setCurrentRow(cr);
+  _nav->setCurrentRow(cr);
   
   listStatus();
 }
 
 void GroupPage::addToGroup ()
 {
-  QList<QListWidgetItem *> sl = nav->selectedItems();
+  QList<QListWidgetItem *> sl = _nav->selectedItems();
   if (! sl.count())
     return;
 
@@ -351,25 +351,19 @@ void GroupPage::addToGroup ()
   int loop;
   for (loop = 0; loop < sl.count(); loop++)
   {
-    int row = nav->row(sl.at(loop));
-    BarData *bd = group.getItem(row);
-    if (bd)
-    {
-      BarData *bd2 = new BarData;
-      bd2->setExchange(bd->getExchange());
-      bd2->setSymbol(bd->getSymbol());
-      bd2->setName(bd->getName());
-      tg.append(bd2);
-    }
+    int row = _nav->row(sl.at(loop));
+    BarData bd;
+    if (! _group.getItem(row, bd))
+      tg.append(bd);
   }
 
   db.setGroup(tg);
 
   updateGroups();
   
-  if (group.getName() == g)
+  if (_group.getName() == g)
   {
-    db.getGroup(group);
+    db.getGroup(_group);
     updateList();
   }
   
@@ -378,36 +372,36 @@ void GroupPage::addToGroup ()
 
 void GroupPage::updateList ()
 {
-  nav->clear();
+  _nav->clear();
   
   int loop;
-  for (loop = 0; loop < group.count(); loop++)
+  for (loop = 0; loop < _group.count(); loop++)
   {
-    BarData *bd = group.getItem(loop);
-    if (! bd)
+    BarData bd;
+    if (_group.getItem(loop, bd))
       continue;
     
     QListWidgetItem *item = new QListWidgetItem;
-    item->setText(bd->getSymbol());
-    item->setToolTip(QString(tr("Name: ") + bd->getName() + "\n" + tr("Exchange: ") + bd->getExchange()));
-    nav->addItem(item);
+    item->setText(bd.getSymbol());
+    item->setToolTip(QString(tr("Name: ") + bd.getName() + "\n" + tr("Exchange: ") + bd.getExchange()));
+    _nav->addItem(item);
   }
 }
 
 void GroupPage::listStatus ()
 {
   bool status = FALSE;
-  QList<QListWidgetItem *> l = nav->selectedItems();
+  QList<QListWidgetItem *> l = _nav->selectedItems();
   if (l.count())
     status = TRUE;
   
-  actions.value(AddGroup)->setEnabled(status); 
-  actions.value(DeleteGroupItems)->setEnabled(status);
+  _actions.value(AddGroup)->setEnabled(status); 
+  _actions.value(DeleteGroupItems)->setEnabled(status);
   
-  if (groups->count())
-    actions.value(DeleteGroup)->setEnabled(TRUE); 
+  if (_groups->count())
+    _actions.value(DeleteGroup)->setEnabled(TRUE); 
   else
-    actions.value(DeleteGroup)->setEnabled(FALSE); 
+    _actions.value(DeleteGroup)->setEnabled(FALSE);
 }
 
 

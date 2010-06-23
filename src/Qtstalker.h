@@ -48,12 +48,13 @@
 #include "RecentCharts.h"
 #include "GroupPage.h"
 #include "PluginPage.h"
-#include "BarsSpinner.h"
 #include "GridAction.h"
 #include "RefreshAction.h"
 #include "DocsAction.h"
 #include "TabWidget.h"
 #include "Splitter.h"
+#include "DateRangeControl.h"
+#include "DateRangeButton.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -94,7 +95,7 @@ class QtstalkerApp : public QMainWindow
     void setSliderStart (int);
 
   public slots:
-    void loadChart (BarData *);
+    void loadChart (BarData);
     void quit();
     void dataWindow ();
     void deleteIndicator (QString);
@@ -128,7 +129,6 @@ class QtstalkerApp : public QMainWindow
     InfoPanel *_infoPanel;
     QStatusBar *_statusBar;
     QList<TabWidget*> _tabList;
-    BarsSpinner *_barCount;
     RecentCharts *_recentCharts;
     BarLengthButtons *_barLengthButtons;
     BarData _currentChart;
@@ -141,6 +141,8 @@ class QtstalkerApp : public QMainWindow
     PluginPage *_pluginNav;
     GridAction *_gridAction;
     RefreshAction *_refreshAction;
+    DateRangeControl *_dateRange;
+    DateRangeButton *_dateRangeButton;
 };
 
 #endif

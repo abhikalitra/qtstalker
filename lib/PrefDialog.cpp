@@ -376,7 +376,9 @@ void PrefDialog::addDateItem (int key, int page, QString name, QDateTime &dt)
   QLabel *label = new QLabel(name);
   grid->addWidget(label, grid->rowCount(), 0);
 
-  QDateEdit *date = new QDateEdit(dt.date());
+  QDateTimeEdit *date = new QDateTimeEdit(dt);
+  date->setCalendarPopup(TRUE);
+  date->setDisplayFormat("yyyy-MM-dd HH:mm:ss");
   grid->addWidget(date, grid->rowCount() - 1, 1);
   dateList.insert(key, date);
 
@@ -385,35 +387,9 @@ void PrefDialog::addDateItem (int key, int page, QString name, QDateTime &dt)
 
 void PrefDialog::getDate (int key, QDateTime &dt)
 {
-  QDateEdit *date = dateList.value(key);
+  QDateTimeEdit *date = dateList.value(key);
   if (date)
-    dt.setDate(date->date());
-}
-
-void PrefDialog::addTimeItem (int key, int page, QString name, QDateTime &dt)
-{
-  QGridLayout *grid = gridList.value(page);
-  if (! grid)
-  {
-    qDebug() << "PrefDialog::addTimeItem: page number not found";
-    return;
-  }
-
-  QLabel *label = new QLabel(name);
-  grid->addWidget(label, grid->rowCount(), 0);
-
-  QTimeEdit *time = new QTimeEdit(dt.time());
-  grid->addWidget(time, grid->rowCount() - 1, 1);
-  timeList.insert(key, time);
-
-  keys.append(key);
-}
-
-void PrefDialog::getTime (int key, QDateTime &dt)
-{
-  QTimeEdit *time = timeList.value(key);
-  if (time)
-    dt.setTime(time->time());
+    dt = date->dateTime();
 }
 
 void PrefDialog::getItem (int key, QString &s)

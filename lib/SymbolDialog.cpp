@@ -152,13 +152,16 @@ void SymbolDialog::getSymbols (Group &l)
     if (! item)
       continue;
     
-    BarData *bd = new BarData;
+    BarData bd;
     QString s = item->text(0);
-    bd->setSymbol(s);
+    bd.setSymbol(s);
+    
     s = item->text(1);
-    bd->setName(s);
+    bd.setName(s);
+    
     s = item->text(2);
-    bd->setExchange(s);
+    bd.setExchange(s);
+    
     l.append(bd);
   }
 }
@@ -243,20 +246,21 @@ void SymbolDialog::searchButtonPressed ()
   {
     QTreeWidgetItem *item = new QTreeWidgetItem(leftSymbols);
     
-    BarData *bd = l.getItem(loop);
+    BarData bd;
+    l.getItem(loop, bd);
 
     // get the name field
     QString name;
-    DBPlugin *plug = fac.plugin(bd->getPlugin());
+    DBPlugin *plug = fac.plugin(bd.getPlugin());
     if (plug)
     {
       QString s = "NAME";
-      plug->detail(s, bd, name);
+      plug->detail(s, &bd, name);
     }
     
-    item->setText(0, bd->getSymbol());
+    item->setText(0, bd.getSymbol());
     item->setText(1, name);
-    item->setText(2, bd->getExchange());
+    item->setText(2, bd.getExchange());
   }
   
   for (loop = 0; loop < leftSymbols->columnCount(); loop++)

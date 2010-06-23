@@ -94,7 +94,8 @@ returned.<br>
 <hr style="width: 100%; height: 2px;"><br>
 <p style="font-weight: bold;">QUOTE,Stock,GET_QUOTES,&lt;NAME&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;BAR
 FIELD&gt;,&lt;BAR
-LENGTH&gt;,&lt;BARS&gt;<br>
+LENGTH&gt;,&lt;DATE
+RANGE&gt;<br>
 </p>
 <p>This function will create an array of values using the bar field of
 the symbol requested. These values can be manipulated by the various
@@ -129,14 +130,30 @@ INDICATOR group of script commands.<br>
     <li>Weekly</li>
     <li>Monthly</li>
   </ul>
-  <li>&lt;BARS&gt; is the number of bars to create<br>
-  </li>
+  <li>&lt;DATE RANGE&gt; is the date range of bars desired:</li>
+  <ul>
+    <li>1 Day</li>
+    <li>1 Week</li>
+    <li>1 Month</li>
+    <li>3 Months</li>
+    <li>6 Months</li>
+    <li>1 Year</li>
+    <li>2 Years</li>
+    <li>5 Years</li>
+    <li>10 Years</li>
+    <li>25 Years</li>
+    <li>50 Years</li>
+    <li>All<br>
+    </li>
+  </ul>
+</ul>
+<ul>
 </ul>
 <br>
 For example, if we wanted to create an array of daily close values from
 the MSFT symbol, we would issue the command:<br>
 <br>
-"QUOTE,Stock,GET_QUOTES,close_array,XNAS,MSFT,Close,Daily,275"<br>
+"QUOTE,Stock,GET_QUOTES,close_array,XNAS,MSFT,Close,Daily,1 Year"<br>
 <br>
 On success a '0' is returned. On failure, 'ERROR' is
 returned.<br>

@@ -120,16 +120,16 @@ void QuoteIndexDataBase::getSearchList (QString &ex, QString &pat, Group &l)
   while (q.next())
   {
     int pos = 0;
-    BarData *bd = new BarData;
+    BarData bd;
     
     s = q.value(pos++).toString();
-    bd->setSymbol(s);
+    bd.setSymbol(s);
     
     s = q.value(pos++).toString();
-    bd->setExchange(s);
+    bd.setExchange(s);
     
     s = q.value(pos++).toString();
-    bd->setPlugin(s);
+    bd.setPlugin(s);
 
     l.append(bd);
   }

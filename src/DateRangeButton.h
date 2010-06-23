@@ -1,8 +1,8 @@
 /*
  *  Qtstalker stock charter
- *
+ * 
  *  Copyright (C) 2001-2010 Stefan S. Stratigakos
- *
+ * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,36 +15,42 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
 
-#include "BarsSpinner.h"
-#include "Config.h"
+#ifndef DATE_RANGE_BUTTON_HPP
+#define DATE_RANGE_BUTTON_HPP
 
-BarsSpinner::BarsSpinner ()
+#include <QToolButton>
+#include <QMenu>
+#include <QDateTime>
+
+class DateRangeButton : public QToolButton
 {
-  setRange(1, 99999);
-  setToolTip(tr("Total bars to load"));
-  setStatusTip(tr("Total bars to load"));
-
-  Config config;
-  QString s;
-  config.getData(Config::BarsToLoad, s);
-  if (! s.isEmpty())
-    setValue(s.toInt());
-  else
-    setValue(275);
-
-  connect(this, SIGNAL(editingFinished()), this, SLOT(changed()));
-}
-
-void BarsSpinner::changed ()
-{
-  Config config;
-  config.setData(Config::BarsToLoad, value());
+  Q_OBJECT
   
-  emit signalChanged();
-}
+  signals:
+    void signalDateRangeChanged ();
+
+  public:
+    DateRangeButton ();
+    QDateTime & startDate ();
+    QDateTime & endDate ();
+
+  public slots:
+    void dialog ();
+    void buttonClicked (bool);
+
+  protected:
+    virtual void contextMenuEvent (QContextMenuEvent *);
+    
+  private:
+    QMenu *_menu;
+    QDateTime _startDate;
+    QDateTime _endDate;
+};
+
+#endif
 
 
