@@ -31,6 +31,7 @@ BaseConfig::BaseConfig ()
   _tableName = "config";
 }
 
+/*
 void BaseConfig::createTable ()
 {
   QSqlDatabase db = QSqlDatabase::database(_dbName);
@@ -43,6 +44,7 @@ void BaseConfig::createTable ()
   if (q.lastError().isValid())
     qDebug() << "BaseConfig::createTable: " << q.lastError().text();
 }
+*/
 
 void BaseConfig::getData (int p, QString &d)
 {

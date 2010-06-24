@@ -28,10 +28,6 @@
 
 CODataBase::CODataBase ()
 {
-}
-
-void CODataBase::init ()
-{
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS chartObjects (";
   s.append("id INT PRIMARY KEY"); // 0
@@ -39,7 +35,7 @@ void CODataBase::init ()
   s.append(", symbol TEXT"); // 2
   s.append(", indicator TEXT"); // 3
   s.append(", plugin TEXT"); // 4
-  
+
   s.append(", t1 TEXT"); // 5
   s.append(", t2 TEXT"); // 6
   s.append(", t3 TEXT"); // 7
@@ -50,7 +46,7 @@ void CODataBase::init ()
   s.append(", t8 TEXT"); // 12
   s.append(", t9 TEXT"); // 13
   s.append(", t10 TEXT"); // 14
-  
+
   s.append(", i1 INT"); // 15
   s.append(", i2 INT"); // 16
   s.append(", i3 INT"); // 17
@@ -61,7 +57,7 @@ void CODataBase::init ()
   s.append(", i8 INT"); // 22
   s.append(", i9 INT"); // 23
   s.append(", i10 INT"); // 24
-  
+
   s.append(", d1 REAL"); // 25
   s.append(", d2 REAL"); // 26
   s.append(", d3 REAL"); // 27
@@ -72,7 +68,7 @@ void CODataBase::init ()
   s.append(", d8 REAL"); // 32
   s.append(", d9 REAL"); // 33
   s.append(", d10 REAL"); // 34
-  
+
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

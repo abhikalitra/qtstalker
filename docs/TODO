@@ -16,8 +16,6 @@ To Do:
 - complete backtesting module
 - convert any long running functions that may slow response to use threads
 - add exchange checker to yahoo plugin symbols dialog
-- fix 0 bars bug in indicator plugins
-- change slider button behaviour to indicate status of buttons
 
 
 

@@ -258,6 +258,9 @@ int MAMA::getCUS (QStringList &set, Indicator &ind, BarData *data)
 int MAMA::getMAMA (PlotLine *in, double fast, double slow, QList<PlotLine *> &l, int mlineType, int flineType,
                    QColor &mcolor, QColor &fcolor)
 {
+  if (in->count() < fast || in->count() < slow)
+    return 1;
+
   int size = in->count();
   TA_Integer outBeg;
   TA_Integer outNb;

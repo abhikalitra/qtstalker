@@ -22,12 +22,22 @@
 #include "QuoteIndexDataBase.h"
 #include "CODataBase.h"
 
-#include <QDebug>
-#include <QtSql>
-
 QuoteIndexDataBase::QuoteIndexDataBase ()
 {
-  _dbName = "quotes";
+//  _dbName = "quotes";
+
+  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QString s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
+  s.append(" record INTEGER PRIMARY KEY AUTOINCREMENT");
+  s.append(", symbol TEXT");
+  s.append(", exchange TEXT");
+  s.append(", tableName TEXT");
+  s.append(", plugin TEXT");
+  s.append(", name TEXT"); //unused
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "QuoteIndexDataBase::QuoteIndexDataBase:" << q.lastError().text();
 }
 
 int QuoteIndexDataBase::deleteSymbol (BarData *symbol)
@@ -58,6 +68,7 @@ int QuoteIndexDataBase::deleteSymbol (BarData *symbol)
   return 0;
 }
 
+/*
 void QuoteIndexDataBase::init (QString &dbFile)
 {
   QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", _dbName);
@@ -81,6 +92,7 @@ void QuoteIndexDataBase::init (QString &dbFile)
   if (q.lastError().isValid())
     qDebug() << "QuoteIndexDataBase::init:" << q.lastError().text();
 }
+*/
 
 void QuoteIndexDataBase::getSearchList (QString &ex, QString &pat, Group &l)
 {

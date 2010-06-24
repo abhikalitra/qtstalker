@@ -23,14 +23,7 @@
 #include "QuoteIndexDataBase.h"
 #include "DBPluginFactory.h"
 
-#include <QtDebug>
-#include <QtSql>
-
 GroupDataBase::GroupDataBase ()
-{
-}
-
-void GroupDataBase::init ()
 {
   // create the group index table
   QSqlQuery q(QSqlDatabase::database(_dbName));
@@ -40,7 +33,7 @@ void GroupDataBase::init ()
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "GroupDataBase::init: " << q.lastError().text();
+    qDebug() << "GroupDataBase::GroupDataBase: " << q.lastError().text();
 }
 
 void GroupDataBase::getAllGroupsList (QStringList &l)

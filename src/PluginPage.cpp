@@ -93,6 +93,15 @@ void PluginPage::configure (QString &name)
   if (! plug)
     return;
 
+  // check if we have already connected the signals
+  // we do this because signals stack and dont replace 
+  // so we could end up generating tons of signals
+  if (! plug->connected())
+  {
+    connect(plug, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
+    plug->setConnected(1);
+  }
+
   plug->configureDialog();
 }
 

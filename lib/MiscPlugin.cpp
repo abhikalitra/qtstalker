@@ -23,6 +23,7 @@
 
 MiscPlugin::MiscPlugin ()
 {
+  _connected = 0;
 }
 
 MiscPlugin::~MiscPlugin ()
@@ -48,4 +49,15 @@ QString & MiscPlugin::description ()
 {
   return _description;
 }
+
+void MiscPlugin::setConnected (int d)
+{
+  _connected = d;
+}
+
+int MiscPlugin::connected ()
+{
+  return _connected;
+}
+
 

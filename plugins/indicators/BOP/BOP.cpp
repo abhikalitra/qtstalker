@@ -133,6 +133,9 @@ int BOP::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * BOP::getBOP (BarData *data, int smoothing, int type, int lineType, QColor &color)
 {
+  if (data->count() < 1 || data->count() < smoothing)
+    return 0;
+
   int size = data->count();
   TA_Real open[size];
   TA_Real high[size];

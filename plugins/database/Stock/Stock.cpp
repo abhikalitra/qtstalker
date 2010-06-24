@@ -42,7 +42,7 @@ Stock::Stock ()
 
 void Stock::getBars (BarData &data)
 {
-  QSqlQuery q(QSqlDatabase::database("quotes"));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
 
   QHash<QString, Bar *> bars;
   QList<Bar *> dateList;
@@ -130,7 +130,7 @@ void Stock::setBars ()
   if (! quotes.count())
     return;
 
-  QSqlQuery q(QSqlDatabase::database("quotes"));
+  QSqlQuery q(QSqlDatabase::database(_dbName));
   
   QuoteIndexDataBase idb;
 

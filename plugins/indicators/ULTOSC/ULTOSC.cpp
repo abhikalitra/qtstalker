@@ -184,6 +184,9 @@ int ULTOSC::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp, int lineType, QColor &color)
 {
+  if (data->count() < sp || data->count() < mp || data->count() < lp)
+    return 0;
+
   int size = data->count();
   TA_Real high[size];
   TA_Real low[size];

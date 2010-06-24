@@ -38,8 +38,7 @@ class CSV : public MiscPlugin
     void done ();
 
   private:
-    CSVDialog *dialog;
-    bool cancelFlag;
+    CSVDialog *_dialog;
 };
 
 extern "C"

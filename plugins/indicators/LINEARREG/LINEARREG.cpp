@@ -186,6 +186,9 @@ int LINEARREG::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * LINEARREG::getLINEARREG (PlotLine *in, int period, int method, int lineType, QColor &color)
 {
+  if (in->count() < period)
+    return 0;
+
   int size = in->count();
   TA_Real input[size];
   TA_Real out[size];

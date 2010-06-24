@@ -22,12 +22,12 @@
 #ifndef FUTURES_DETAILS_DATA_BASE_HPP
 #define FUTURES_DETAILS_DATA_BASE_HPP
 
-#include "DataBase.h"
+#include "QuotesDataBase.h"
 #include "BarData.h"
 
 #include <QStringList>
 
-class FuturesDetailsDataBase : public DataBase
+class FuturesDetailsDataBase : public QuotesDataBase
 {
   public:
     enum FuturesDetail

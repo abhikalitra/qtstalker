@@ -575,6 +575,7 @@ void QtstalkerApp::initPluginNav ()
 {
   _pluginNav = new PluginPage(_baseWidget);
   connect(_pluginNav, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
+  connect(_pluginNav, SIGNAL(signalChartRefresh()), this, SLOT(chartUpdated()));
   _navTab->addTab(_pluginNav, QIcon(plugin_xpm), QString());
   _navTab->setTabToolTip(4, tr("Plugins"));
 }

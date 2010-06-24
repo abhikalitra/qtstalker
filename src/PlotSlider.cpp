@@ -24,7 +24,6 @@
 
 #include <QDebug>
 #include <QLayout>
-#include <QToolButton>
 
 #include "../pics/start.xpm"
 #include "../pics/end.xpm"
@@ -45,82 +44,92 @@ PlotSlider::PlotSlider ()
   hbox->setMargin(0);
   vbox->addLayout(hbox);
 
-  QToolButton *b = new QToolButton;
-  b->setIcon(QIcon(start_xpm));
-  b->setToolTip(QString(tr("Start")));
-  connect(b, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
-  hbox->addWidget(b);
+  _startButton = new QToolButton;
+  _startButton->setIcon(QIcon(start_xpm));
+  _startButton->setToolTip(QString(tr("Start")));
+  connect(_startButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
+  hbox->addWidget(_startButton);
   
-  b = new QToolButton;
-  b->setIcon(QIcon(ppage_xpm));
-  b->setToolTip(QString(tr("Previous Page")));
-  connect(b, SIGNAL(clicked()), this, SLOT(pPageButtonClicked()));
-  hbox->addWidget(b);
+  _pPageButton = new QToolButton;
+  _pPageButton->setIcon(QIcon(ppage_xpm));
+  _pPageButton->setToolTip(QString(tr("Previous Page")));
+  connect(_pPageButton, SIGNAL(clicked()), this, SLOT(pPageButtonClicked()));
+  hbox->addWidget(_pPageButton);
   
-  b = new QToolButton;
-  b->setIcon(QIcon(prev_xpm));
-  b->setToolTip(QString(tr("Previous Bar")));
-  connect(b, SIGNAL(clicked()), this, SLOT(pBarButtonClicked()));
-  hbox->addWidget(b);
+  _pBarButton = new QToolButton;
+  _pBarButton->setIcon(QIcon(prev_xpm));
+  _pBarButton->setToolTip(QString(tr("Previous Bar")));
+  connect(_pBarButton, SIGNAL(clicked()), this, SLOT(pBarButtonClicked()));
+  hbox->addWidget(_pBarButton);
   
-  b = new QToolButton;
-  b->setIcon(QIcon(next_xpm));
-  b->setToolTip(QString(tr("Next Bar")));
-  connect(b, SIGNAL(clicked()), this, SLOT(nBarButtonClicked()));
-  hbox->addWidget(b);
+  _nBarButton = new QToolButton;
+  _nBarButton->setIcon(QIcon(next_xpm));
+  _nBarButton->setToolTip(QString(tr("Next Bar")));
+  connect(_nBarButton, SIGNAL(clicked()), this, SLOT(nBarButtonClicked()));
+  hbox->addWidget(_nBarButton);
   
-  b = new QToolButton;
-  b->setIcon(QIcon(npage_xpm));
-  b->setToolTip(QString(tr("Next Page")));
-  connect(b, SIGNAL(clicked()), this, SLOT(nPageButtonClicked()));
-  hbox->addWidget(b);
+  _nPageButton = new QToolButton;
+  _nPageButton->setIcon(QIcon(npage_xpm));
+  _nPageButton->setToolTip(QString(tr("Next Page")));
+  connect(_nPageButton, SIGNAL(clicked()), this, SLOT(nPageButtonClicked()));
+  hbox->addWidget(_nPageButton);
   
-  b = new QToolButton;
-  b->setIcon(QIcon(end_xpm));
-  b->setToolTip(QString(tr("End")));
-  connect(b, SIGNAL(clicked()), this, SLOT(endButtonClicked()));
-  hbox->addWidget(b);
+  _endButton = new QToolButton;
+  _endButton->setIcon(QIcon(end_xpm));
+  _endButton->setToolTip(QString(tr("End")));
+  connect(_endButton, SIGNAL(clicked()), this, SLOT(endButtonClicked()));
+  hbox->addWidget(_endButton);
   
   hbox->addStretch(1);
   
-  slider = new QSlider;
-  slider->setRange(0, 0);
-  slider->setValue(0);
-  slider->setOrientation(Qt::Horizontal);
-  slider->setToolTip(tr("Scroll Chart"));
-  slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-  connect(slider, SIGNAL(valueChanged(int)), this, SIGNAL(signalValueChanged(int)));
-  vbox->addWidget(slider);
+  _slider = new QSlider;
+  _slider->setRange(0, 0);
+  _slider->setValue(0);
+  _slider->setOrientation(Qt::Horizontal);
+  _slider->setToolTip(tr("Scroll Chart"));
+  _slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
+//  connect(_slider, SIGNAL(valueChanged(int)), this, SIGNAL(signalValueChanged(int)));
+  connect(_slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
+  connect(_slider, SIGNAL(sliderReleased()), this, SLOT(buttonStatus()));
+  vbox->addWidget(_slider);
+
+  buttonStatus();
 }
 
 void PlotSlider::startButtonClicked ()
 {
-  slider->setValue(slider->minimum());
+  _slider->setValue(_slider->minimum());
+  buttonStatus();
 }
 
 void PlotSlider::pPageButtonClicked ()
 {
-  slider->setValue(slider->value() - slider->pageStep());
+  _slider->setValue(_slider->value() - _slider->pageStep());
+  buttonStatus();
 }
 
 void PlotSlider::pBarButtonClicked ()
 {
-  slider->setValue(slider->value() - 1);
+  _slider->setValue(_slider->value() - 1);
+  buttonStatus();
 }
 
 void PlotSlider::nBarButtonClicked ()
 {
-  slider->setValue(slider->value() + 1);
+  _slider->setValue(_slider->value() + 1);
+  buttonStatus();
 }
 
 void PlotSlider::nPageButtonClicked ()
 {
-  slider->setValue(slider->value() + slider->pageStep());
+  _slider->setValue(_slider->value() + _slider->pageStep());
+  buttonStatus();
 }
 
 void PlotSlider::endButtonClicked ()
 {
-  slider->setValue(slider->maximum());
+  _slider->setValue(_slider->maximum());
+  buttonStatus();
 }
 
 void PlotSlider::setStart (int count, int width, int pixelSpace)
@@ -130,24 +139,56 @@ void PlotSlider::setStart (int count, int width, int pixelSpace)
   if (max < 0)
     max = 0;
   
-  slider->blockSignals(TRUE);
-  slider->setRange(0, count - 1);
+  _slider->blockSignals(TRUE);
+  _slider->setRange(0, count - 1);
 
   if (count < page)
-    slider->setValue(0);
+    _slider->setValue(0);
   else
-    slider->setValue(max + 1);
+    _slider->setValue(max + 1);
   
-  slider->blockSignals(FALSE);
+  _slider->blockSignals(FALSE);
+
+  buttonStatus();
 }
 
 int PlotSlider::getValue ()
 {
-  return slider->value();
+  return _slider->value();
 }
 
 void PlotSlider::setValue (int d)
 {
-  slider->setValue(d);
+  _slider->setValue(d);
+  buttonStatus();
+}
+
+void PlotSlider::sliderChanged (int d)
+{
+  emit signalValueChanged (d);
+  buttonStatus();
+}
+
+void PlotSlider::buttonStatus ()
+{
+  bool left = FALSE;
+  bool right = FALSE;
+  
+  if (_slider->value() > 0 && _slider->value() < _slider->maximum())
+  {
+    left = TRUE;
+    right = TRUE;
+  }
+  else if (_slider->value() == 0 && _slider->maximum() > 1)
+    right = TRUE;
+  else if (_slider->value() == _slider->maximum() && _slider->value() > 1)
+    left = TRUE;
+  
+  _startButton->setEnabled(left);
+  _pPageButton->setEnabled(left);
+  _pBarButton->setEnabled(left);
+  _endButton->setEnabled(right);
+  _nPageButton->setEnabled(right);
+  _nBarButton->setEnabled(right);
 }
 

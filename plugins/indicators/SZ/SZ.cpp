@@ -165,6 +165,9 @@ int SZ::getCUS (QStringList &set, Indicator &ind, BarData *data)
 PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline_period, double coefficient,
                       int lineType, QColor &color)
 {
+  if (data->count() < period || data->count() < no_decline_period)
+    return 0;
+
   int display_uptrend = 0;
   int display_dntrend = 0;
   int position = 1;

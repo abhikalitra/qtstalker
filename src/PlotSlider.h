@@ -26,6 +26,7 @@
 #include <QWidget>
 #include <QSlider>
 #include <QList>
+#include <QToolButton>
 
 class PlotSlider : public QWidget
 {
@@ -47,9 +48,17 @@ class PlotSlider : public QWidget
     void nBarButtonClicked ();
     void nPageButtonClicked ();
     void endButtonClicked ();
+    void buttonStatus ();
+    void sliderChanged (int);
     
   protected:
-    QSlider *slider;
+    QSlider *_slider;
+    QToolButton *_startButton;
+    QToolButton *_pPageButton;
+    QToolButton *_pBarButton;
+    QToolButton *_nBarButton;
+    QToolButton *_nPageButton;
+    QToolButton *_endButton;
 };
 
 #endif

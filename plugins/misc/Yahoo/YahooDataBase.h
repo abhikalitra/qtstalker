@@ -25,13 +25,12 @@
 #include <QString>
 #include <QStringList>
 
-#include "DataBase.h"
+#include "DataDataBase.h"
 
-class YahooDataBase : public DataBase
+class YahooDataBase : public DataDataBase
 {
   public:
     YahooDataBase ();
-    void init ();
     void getSymbols (QStringList &);
     void setSymbol (QString &ysymbol, QString &symbol, QString &exchange);
     void getSymbol (QString &ysymbol, QString &symbol, QString &exchange);

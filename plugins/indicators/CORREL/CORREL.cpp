@@ -243,6 +243,9 @@ int CORREL::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * CORREL::getCORREL (PlotLine *in, PlotLine *in2, int period, int lineType, QColor &color)
 {
+  if (in->count() < period || in2->count() < period)
+    return 0;
+
   QList<int> keys;
   int size = in->count();
   if (in2->count() < size)

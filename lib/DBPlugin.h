@@ -28,10 +28,10 @@
 #include <QHash>
 
 #include "BarData.h"
-#include "DataBase.h"
+#include "QuotesDataBase.h"
 #include "Indicator.h"
 
-class DBPlugin : public DataBase
+class DBPlugin : public QuotesDataBase
 {
   public:
     DBPlugin ();

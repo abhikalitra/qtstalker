@@ -207,6 +207,9 @@ int THERM::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * THERM::getTHERM (BarData *data, int smoothing, int type, int lineType, QColor &color)
 {
+  if (data->count() < smoothing || data->count() < 2)
+    return 0;
+
   PlotFactory fac;
   PlotLine *line = fac.plot(lineType);
   if (! line)

@@ -25,10 +25,10 @@
 #include <QString>
 #include <QStringList>
 
-#include "DataBase.h"
+#include "QuotesDataBase.h"
 #include "BarData.h"
 
-class StockDetailsDataBase : public DataBase
+class StockDetailsDataBase : public QuotesDataBase
 {
   public:
     enum StockDetail

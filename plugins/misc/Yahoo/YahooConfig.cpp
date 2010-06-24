@@ -22,12 +22,21 @@
 #include "YahooConfig.h"
 
 #include <QtDebug>
+#include <QtSql>
 
 YahooConfig::YahooConfig ()
 {
   _dbName = "data";
   _tableName = "YahooPluginConfig";
 
-  createTable();
+  QSqlDatabase db = QSqlDatabase::database(_dbName);
+  QSqlQuery q(db);
+  QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
+  s.append("key INT PRIMARY KEY UNIQUE");
+  s.append(", setting TEXT");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "YahooConfig::YahooConfig: " << q.lastError().text();
 }
 

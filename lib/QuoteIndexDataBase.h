@@ -25,16 +25,16 @@
 #include <QString>
 #include <QStringList>
 
-#include "DataBase.h"
+#include "QuotesDataBase.h"
 #include "BarData.h"
 #include "Group.h"
 
-class QuoteIndexDataBase : public DataBase
+class QuoteIndexDataBase : public QuotesDataBase
 {
   public:
     QuoteIndexDataBase ();
     int deleteSymbol (BarData *);
-    void init (QString &);
+//    void init (QString &);
     void getSearchList (QString &ex, QString &pat, Group &);
     int getIndexData (BarData *);
     int addSymbolIndex (BarData *);

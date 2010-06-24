@@ -19,37 +19,15 @@
  *  USA.
  */
 
-#include "Config.h"
+#ifndef QUOTES_DATA_BASE_HPP
+#define QUOTES_DATA_BASE_HPP
 
-#include <QDir>
-#include <QtSql>
+#include "DataBase.h"
 
-Config::Config ()
+class QuotesDataBase : public DataBase
 {
-//  version = "0.37";
-}
+  public:
+    QuotesDataBase ();
+};
 
-void Config::init (QString session)
-{
-  QString s = QDir::homePath() + "/.qtstalker/config.sqlite" + session;
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", _dbName);
-  db.setHostName("me");
-  db.setDatabaseName(s);
-  db.setUserName("QtStalker");
-  db.setPassword("QtStalker");
-  if (! db.open())
-  {
-    qDebug() << "Config::Config:" << db.lastError().text();
-    return;
-  }
-
-  QSqlQuery q(db);
-  s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
-  s.append("key INT PRIMARY KEY UNIQUE");
-  s.append(", setting TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "Config::Config: " << q.lastError().text();
-}
-
+#endif

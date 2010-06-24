@@ -35,6 +35,9 @@ class YahooDialog : public QDialog
 {
   Q_OBJECT
 
+  signals:
+    void signalChartRefresh ();
+
   public:
     enum Type
     {

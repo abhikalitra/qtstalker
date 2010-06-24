@@ -24,38 +24,38 @@
 CSV::CSV ()
 {
   _name = "CSV";
-  cancelFlag = FALSE;
-  dialog = 0;
+  _dialog = 0;
 }
 
 CSV::~CSV ()
 {
-  if (dialog)
+  if (_dialog)
   {
-    dialog->saveSettings();
-    delete dialog;
+    _dialog->saveSettings();
+    delete _dialog;
   }
 }
 
 int CSV::configureDialog ()
 {
-  if (! dialog)
+  if (! _dialog)
   {
-    dialog = new CSVDialog;
-    connect(dialog, SIGNAL(accepted()), this, SLOT(done()));
-    dialog->show();
+    _dialog = new CSVDialog;
+    connect(_dialog, SIGNAL(accepted()), this, SLOT(done()));
+    connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
+    _dialog->show();
   }
   else
-    dialog->raise();
+    _dialog->raise();
   
   return 0;
 }
 
 void CSV::done ()
 {
-  dialog->saveSettings();
-  delete dialog;
-  dialog = 0;
+  _dialog->saveSettings();
+  delete _dialog;
+  _dialog = 0;
 }
 
 

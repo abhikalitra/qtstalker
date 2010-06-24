@@ -22,12 +22,21 @@
 #include "CSVConfig.h"
 
 #include <QtDebug>
+#include <QtSql>
 
 CSVConfig::CSVConfig ()
 {
   _dbName = "data";
   _tableName = "CSVPluginConfig";
 
-  createTable();
+  QSqlDatabase db = QSqlDatabase::database(_dbName);
+  QSqlQuery q(db);
+  QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
+  s.append("key INT PRIMARY KEY UNIQUE");
+  s.append(", setting TEXT");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "CSVConfig::CSVConfig: " << q.lastError().text();
 }
 

@@ -27,7 +27,6 @@
 
 DBPlugin::DBPlugin ()
 {
-  _dbName = "quotes";
 }
 
 // virtual

@@ -38,6 +38,7 @@ class DateRangeControl : public QObject
     DateRangeControl (QToolBar *);
     void createButtons (QToolBar *);
     int dateRange ();
+    void buttonStatus ();
     
   public slots:
     void prevRange ();

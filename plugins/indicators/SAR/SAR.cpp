@@ -141,6 +141,9 @@ int SAR::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * SAR::getSAR (BarData *data, double _init, double _max, int lineType, QColor &color)
 {
+  if (data->count() < 1)
+    return 0;
+
   int size = data->count();
   TA_Real high[size];
   TA_Real low[size];

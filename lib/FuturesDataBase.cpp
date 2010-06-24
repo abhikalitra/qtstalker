@@ -22,12 +22,12 @@
 #include "FuturesDataBase.h"
 #include "Config.h"
 
-#include <QDebug>
-#include <QtSql>
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
 #include <QFileInfo>
+#include <QtSql>
+#include <QDebug>
 
 FuturesDataBase::FuturesDataBase ()
 {

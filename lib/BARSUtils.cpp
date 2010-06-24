@@ -31,7 +31,7 @@ BARSUtils::BARSUtils ()
 
 PlotLine * BARSUtils::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral)
 {
-  if (! data->count())
+  if (data->count() < 2)
     return 0;
   
   PlotFactory fac;

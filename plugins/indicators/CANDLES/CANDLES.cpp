@@ -493,6 +493,9 @@ int CANDLES::dialog (int)
 
 PlotLine * CANDLES::getMethod (BarData *data, int method, double pen, int lineType, QColor &color)
 {
+  if (data->count() < 1)
+    return 0;
+
   int size = data->count();
   TA_Real high[size];
   TA_Real low[size];

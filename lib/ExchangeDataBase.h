@@ -25,9 +25,9 @@
 #include <QString>
 #include <QStringList>
 
-#include "DataBase.h"
+#include "DataDataBase.h"
 
-class ExchangeDataBase : public DataBase
+class ExchangeDataBase : public DataDataBase
 {
   public:
     ExchangeDataBase ();

@@ -26,11 +26,6 @@
 
 CSVDataBase::CSVDataBase ()
 {
-  init();
-}
-
-void CSVDataBase::init ()
-{
   // create the CSV table
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS CSVPlugin (";
@@ -44,7 +39,7 @@ void CSVDataBase::init ()
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "CSVDataBase::init: " << q.lastError().text();
+    qDebug() << "CSVDataBase::CSVDataBase: " << q.lastError().text();
 }
 
 void CSVDataBase::getRules (QStringList &l)

@@ -40,6 +40,7 @@ class PluginPage : public QWidget
 
   signals:
     void signalMessage (QString);
+    void signalChartRefresh ();
 
   public:
     enum Action

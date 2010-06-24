@@ -34,6 +34,9 @@
 class CSVDialog : public QDialog
 {
   Q_OBJECT
+
+  signals:
+    void signalChartRefresh ();
   
   public:
     CSVDialog ();

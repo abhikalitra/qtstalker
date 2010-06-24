@@ -141,7 +141,7 @@ int VOL::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * VOL::getVOL (BarData *data, int lineType, QColor &up, QColor &down, QColor &neutral)
 {
-  if (! data->count())
+  if (data->count() < 2)
     return 0;
   
   PlotFactory fac;

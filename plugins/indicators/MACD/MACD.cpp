@@ -317,6 +317,9 @@ int MACD::getMACD (PlotLine *in, int fastPeriod, int fastMA, int slowPeriod, int
                    int signalMA, int macdPlot, QColor &macdColor, int signalPlot, QColor &signalColor,
                    int histPlot, QColor &histColor, QList<PlotLine *> &pl)
 {
+  if (in->count() < fastPeriod || in->count() < slowPeriod || in->count() < signalPeriod)
+    return 1;
+
   int size = in->count();
   TA_Integer outBeg;
   TA_Integer outNb;

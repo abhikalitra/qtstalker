@@ -208,6 +208,9 @@ int MAVP::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * MAVP::getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma, int lineType, QColor &color)
 {
+  if (in->count() < min || in->count() < max)
+    return 0;
+
   int flag = 0;
   int size = in->count();
   if (in2->count() < size)

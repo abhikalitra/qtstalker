@@ -84,6 +84,8 @@ void DateRangeControl::prevRange ()
     _prevButton->setEnabled(TRUE);
 
   _ranges->setCurrentIndex(t);
+
+  buttonStatus();
 }
 
 void DateRangeControl::nextRange ()
@@ -96,17 +98,35 @@ void DateRangeControl::nextRange ()
     _nextButton->setEnabled(TRUE);
 
   _ranges->setCurrentIndex(t);
+
+  buttonStatus();
 }
 
 void DateRangeControl::rangeChanged (int d)
 {
   Config config;
   config.setData(Config::LastDateRange, d);
+  buttonStatus();
+
   emit signalDateRangeChanged();
 }
 
 int DateRangeControl::dateRange ()
 {
   return _ranges->currentIndex();
+}
+
+void DateRangeControl::buttonStatus ()
+{
+  bool left = TRUE;
+  bool right = TRUE;
+
+  if (_ranges->currentIndex() == 0)
+    left = FALSE;
+  else if (_ranges->currentIndex() == _ranges->count() - 1)
+    right = FALSE;
+
+  _prevButton->setEnabled(left);
+  _nextButton->setEnabled(right);
 }
 

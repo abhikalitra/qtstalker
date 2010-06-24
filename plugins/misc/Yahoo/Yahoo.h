@@ -38,7 +38,7 @@ class Yahoo : public MiscPlugin
     void done ();
 
   private:
-    YahooDialog *dialog;
+    YahooDialog *_dialog;
 };
 
 extern "C"

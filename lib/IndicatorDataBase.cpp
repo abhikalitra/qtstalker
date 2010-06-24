@@ -22,14 +22,7 @@
 #include "IndicatorDataBase.h"
 #include "CODataBase.h"
 
-#include <QtDebug>
-#include <QtSql>
-
 IndicatorDataBase::IndicatorDataBase ()
-{
-}
-
-void IndicatorDataBase::init ()
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS indicatorIndex (";
@@ -63,7 +56,7 @@ void IndicatorDataBase::init ()
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "IndicatorDataBase::createIndicatorIndexTable: " << q.lastError().text();
+    qDebug() << "IndicatorDataBase::IndicatorDataBase: " << q.lastError().text();
 }
 
 void IndicatorDataBase::getIndicator (Indicator &i)

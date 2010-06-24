@@ -176,6 +176,9 @@ int MFI::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * MFI::getMFI (BarData *data, int period, int smoothing, int type, int lineType, QColor &color)
 {
+  if (data->count() < period || data->count() < smoothing)
+    return 0;
+
   int size = data->count();
   TA_Real high[size];
   TA_Real low[size];

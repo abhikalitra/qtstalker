@@ -27,8 +27,6 @@
 
 StockDetailsDataBase::StockDetailsDataBase ()
 {
-  _dbName = "quotes";
-
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS stockDetails (";
   s.append("tableName TEXT PRIMARY KEY UNIQUE");
@@ -67,7 +65,7 @@ StockDetailsDataBase::StockDetailsDataBase ()
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "StockDetailsDataBase::init:" << q.lastError().text();
+    qDebug() << "StockDetailsDataBase::StockDetailsDataBase:" << q.lastError().text();
 
   _detailsList << "NAME" << "SECTOR";
 }

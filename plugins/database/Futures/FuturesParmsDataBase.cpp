@@ -28,12 +28,6 @@
 
 FuturesParmsDataBase::FuturesParmsDataBase ()
 {
-}
-
-int FuturesParmsDataBase::add (BarData *symbol)
-{
-  transaction();
-  
   // create a parm table if needed
   QString s = "CREATE TABLE IF NOT EXISTS futuresParms (";
   s.append(" record INTEGER PRIMARY KEY AUTOINCREMENT");
@@ -44,6 +38,11 @@ int FuturesParmsDataBase::add (BarData *symbol)
   s.append(", year INT");
   s.append(")");
   int rc = command(s, QString("FuturesParmsDataBase::add: create new parm table"));
+}
+
+int FuturesParmsDataBase::add (BarData *symbol)
+{
+  transaction();
   
   // add new record
   s = "INSERT OR REPLACE INTO futuresParms (symbol,exchange) VALUES(";

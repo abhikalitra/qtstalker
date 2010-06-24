@@ -229,6 +229,9 @@ int AD::getCUS_ADOSC (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * AD::getAD (BarData *data, int lineType, QColor &color)
 {
+  if (data->count() < 1)
+    return 0;
+
   int size = data->count();
   TA_Real high[size];
   TA_Real low[size];
@@ -282,6 +285,9 @@ PlotLine * AD::getAD (BarData *data, int lineType, QColor &color)
 
 PlotLine * AD::getADOSC (BarData *data, int fast, int slow, int lineType, QColor &color)
 {
+  if (data->count() < 1)
+    return 0;
+  
   int size = data->count();
   TA_Real high[size];
   TA_Real low[size];

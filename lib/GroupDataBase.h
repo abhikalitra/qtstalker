@@ -28,13 +28,12 @@
 
 #include "BarData.h"
 #include "Group.h"
-#include "DataBase.h"
+#include "DataDataBase.h"
 
-class GroupDataBase : public DataBase
+class GroupDataBase : public DataDataBase
 {
   public:
     GroupDataBase ();
-    void init (); // called only at qtstalker startup, initializes database tables
     void getAllGroupsList (QStringList &);
     void getGroup (Group &);
     void deleteGroup (QString &);

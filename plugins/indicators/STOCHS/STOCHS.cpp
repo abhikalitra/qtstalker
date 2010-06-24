@@ -261,6 +261,9 @@ int STOCHS::getCUS (QStringList &set, Indicator &ind, BarData *data)
 int STOCHS::getSTOCHS (BarData *data, int fkperiod, int skperiod, int sdperiod, int kma, int dma,
                        int klineType, QColor &kcolor, int dlineType, QColor &dcolor, QList<PlotLine *> &pl)
 {
+  if (data->count() < fkperiod || data->count() < skperiod)
+    return 1;
+
   int size = data->count();
   TA_Real high[size];
   TA_Real low[size];

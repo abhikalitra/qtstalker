@@ -26,7 +26,7 @@
 
 DataBase::DataBase ()
 {
-  _dbName = "data";
+//  _dbName = "data";
 }
 
 void DataBase::transaction ()

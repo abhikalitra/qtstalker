@@ -182,6 +182,9 @@ int PO::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * PO::getPO (PlotLine *in, int fast, int slow, int ma, int method, int lineType, QColor &color)
 {
+  if (in->count() < fast || in->count() < slow)
+    return 0;
+
   QList<int> keys;
   in->keys(keys);
   int size = keys.count();

@@ -456,6 +456,9 @@ int HT::getCUSHT (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * HT::getHT (PlotLine *in, int method, int lineType, QColor &color)
 {
+  if (in->count() < 1)
+    return 0;
+
   int size = in->count();
   TA_Integer outBeg;
   TA_Integer outNb;
@@ -540,6 +543,9 @@ PlotLine * HT::getHT (PlotLine *in, int method, int lineType, QColor &color)
 
 int HT::getPHASE (PlotLine *in, int plineType, int qlineType, QColor &pcolor, QColor &qcolor, QList<PlotLine *> &pl)
 {
+  if (in->count() < 1)
+    return 1;
+
   int size = in->count();
   TA_Integer outBeg;
   TA_Integer outNb;
@@ -594,6 +600,9 @@ int HT::getPHASE (PlotLine *in, int plineType, int qlineType, QColor &pcolor, QC
 
 int HT::getSINE (PlotLine *in, int slineType, int llineType, QColor &scolor, QColor &lcolor, QList<PlotLine *> &pl)
 {
+  if (in->count() < 1)
+    return 1;
+
   int size = in->count();
   TA_Integer outBeg;
   TA_Integer outNb;

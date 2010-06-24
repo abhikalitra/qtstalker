@@ -23,8 +23,6 @@
 #include "Config.h"
 #include "PrefDialog.h"
 
-#include <QDebug>
-#include <QtSql>
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>

@@ -83,6 +83,8 @@ HEADERS += PlotCursorCrossHair.h
 HEADERS += PlotCursorNormal.h
 HEADERS += QuoteIndexDataBase.h
 HEADERS += DateRange.h
+HEADERS += DataDataBase.h
+HEADERS += QuotesDataBase.h
 
 
 SOURCES += Setting.cpp
@@ -162,6 +164,8 @@ SOURCES += PlotCursorCrossHair.cpp
 SOURCES += PlotCursorNormal.cpp
 SOURCES += QuoteIndexDataBase.cpp
 SOURCES += DateRange.cpp
+SOURCES += DataDataBase.cpp
+SOURCES += QuotesDataBase.cpp
 
 
 TARGET = qtstalker

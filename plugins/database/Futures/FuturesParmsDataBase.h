@@ -22,10 +22,10 @@
 #ifndef FUTURES_PARMS_DATA_BASE_HPP
 #define FUTURES_PARMS_DATA_BASE_HPP
 
-#include "DataBase.h"
+#include "DataDataBase.h"
 #include "BarData.h"
 
-class FuturesParmsDataBase : public DataBase
+class FuturesParmsDataBase : public DataDataBase
 {
   public:
     FuturesParmsDataBase ();

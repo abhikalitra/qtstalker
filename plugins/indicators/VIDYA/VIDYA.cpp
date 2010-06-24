@@ -219,6 +219,9 @@ PlotLine * VIDYA::calcCMO (PlotLine *in, int period)
 
 PlotLine * VIDYA::getVIDYA (PlotLine *inSignal, int period, int volPeriod, int lineType, QColor &color)
 {
+  if (inSignal->count() < period || inSignal->count() < volPeriod)
+    return 0;
+
   PlotLine *cmo = calcCMO(inSignal, volPeriod);
   if (! cmo)
     return 0;

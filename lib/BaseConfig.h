@@ -38,28 +38,38 @@ class BaseConfig : public DataBase
 {
   public:
     BaseConfig ();
-    void createTable ();
+//    void createTable ();
     void setData (int, QString &);
     void getData (int, QString &);
+    
     void getData (int, QSplitter *);
     void setData (int, QSplitter *);
+    
     bool getBool (int);
     void setData (int, bool);
+    
     int getInt (int);
     void setData (int, int);
     void setData (int, qint64);
+    
     double getDouble (int);
     void setData (int, double);
+    
     void getData (int, QColor &);
     void setData (int, QColor &);
+    
     void getData (int, QFont &);
     void setData (int, QFont &);
+    
     void getData (int, QPoint &);
     void setData (int, QPoint &);
+    
     void getData (int, QSize &);
     void setData (int, QSize &);
+    
     void setData (int, QStringList &);
     void getData (int, QStringList &);
+    
     void setData (int, QDateTime &);
     void getData (int, QDateTime &);
 

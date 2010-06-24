@@ -21,14 +21,7 @@
 
 #include "ScriptDataBase.h"
 
-#include <QtDebug>
-#include <QtSql>
-
 ScriptDataBase::ScriptDataBase ()
-{
-}
-
-void ScriptDataBase::init ()
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS script (";
@@ -60,7 +53,7 @@ void ScriptDataBase::init ()
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "ScriptDataBase::createScriptTable: " << q.lastError().text();
+    qDebug() << "ScriptDataBase::ScriptDataBase: " << q.lastError().text();
 }
 
 void ScriptDataBase::getScripts (QStringList &l)

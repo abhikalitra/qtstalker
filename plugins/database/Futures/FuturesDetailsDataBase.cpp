@@ -27,8 +27,6 @@
 
 FuturesDetailsDataBase::FuturesDetailsDataBase ()
 {
-  _dbName = "quotes";
-
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS futuresDetails (";
   s.append("tableName TEXT PRIMARY KEY UNIQUE");
@@ -59,7 +57,7 @@ FuturesDetailsDataBase::FuturesDetailsDataBase ()
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "FuturesDetailsDataBase::init:" << q.lastError().text();
+    qDebug() << "FuturesDetailsDataBase::FuturesDetailsDataBase:" << q.lastError().text();
 
   _detailsList << "NAME" << "CODE" << "MONTH" << "YEAR";
 }

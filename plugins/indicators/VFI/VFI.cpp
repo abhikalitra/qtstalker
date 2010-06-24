@@ -115,6 +115,9 @@ int VFI::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * VFI::getVFI (BarData *data, int period, int lineType, QColor &color)
 {
+  if (data->count() < period)
+    return 0;
+
   PlotFactory fac;
   PlotLine *vfi = fac.plot(lineType);
   if (! vfi)

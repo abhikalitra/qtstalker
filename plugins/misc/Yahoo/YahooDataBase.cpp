@@ -26,11 +26,6 @@
 
 YahooDataBase::YahooDataBase ()
 {
-  init();
-}
-
-void YahooDataBase::init ()
-{
   // create the table
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS YahooPlugin (";
@@ -40,7 +35,7 @@ void YahooDataBase::init ()
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "YahooDataBase::init: " << q.lastError().text();
+    qDebug() << "YahooDataBase::YahooDataBase: " << q.lastError().text();
 }
 
 void YahooDataBase::getSymbols (QStringList &l)

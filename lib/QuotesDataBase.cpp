@@ -19,37 +19,28 @@
  *  USA.
  */
 
-#include "Config.h"
+#include "QuotesDataBase.h"
 
 #include <QDir>
 #include <QtSql>
+#include <QDebug>
 
-Config::Config ()
+QuotesDataBase::QuotesDataBase ()
 {
-//  version = "0.37";
-}
+  _dbName = "quotes";
+  
+  QString dbFile = QDir::homePath() + "/.qtstalker/quotes.sqlite";
 
-void Config::init (QString session)
-{
-  QString s = QDir::homePath() + "/.qtstalker/config.sqlite" + session;
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", _dbName);
-  db.setHostName("me");
-  db.setDatabaseName(s);
-  db.setUserName("QtStalker");
-  db.setPassword("QtStalker");
-  if (! db.open())
+  QSqlDatabase db = QSqlDatabase::database(_dbName, FALSE);
+  if (! db.isOpen())
   {
-    qDebug() << "Config::Config:" << db.lastError().text();
-    return;
+    db = QSqlDatabase::addDatabase("QSQLITE", _dbName);
+    db.setHostName("localhost");
+    db.setDatabaseName(dbFile);
+    db.setUserName("QtStalker");
+    db.setPassword("QtStalker");
+    if (! db.open())
+      qDebug() << "QuotesDataBase:: quotes db open failed";
   }
-
-  QSqlQuery q(db);
-  s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
-  s.append("key INT PRIMARY KEY UNIQUE");
-  s.append(", setting TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "Config::Config: " << q.lastError().text();
 }
 

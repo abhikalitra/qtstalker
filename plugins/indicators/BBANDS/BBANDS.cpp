@@ -277,6 +277,9 @@ int BBANDS::getBBANDS (PlotLine *in, int period, double udev, double ddev, int m
                         int mlineType, int llineType, QColor &ucolor, QColor &mcolor, QColor &lcolor,
                         QList<PlotLine *> &rl)
 {
+  if (in->count() < period)
+    return 1;
+
   int size = in->count();  
   TA_Real input[size];
   TA_Real uout[size];

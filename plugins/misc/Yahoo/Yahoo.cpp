@@ -24,37 +24,38 @@
 Yahoo::Yahoo ()
 {
   _name = "Yahoo";
-  dialog = 0;
+  _dialog = 0;
 }
 
 Yahoo::~Yahoo ()
 {
-  if (dialog)
+  if (_dialog)
   {
-    dialog->saveSettings();
-    delete dialog;
+    _dialog->saveSettings();
+    delete _dialog;
   }
 }
 
 int Yahoo::configureDialog ()
 {
-  if (! dialog)
+  if (! _dialog)
   {
-    dialog = new YahooDialog;
-    connect(dialog, SIGNAL(accepted()), this, SLOT(done()));
-    dialog->show();
+    _dialog = new YahooDialog;
+    connect(_dialog, SIGNAL(accepted()), this, SLOT(done()));
+    connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
+    _dialog->show();
   }
   else
-    dialog->raise();
+    _dialog->raise();
   
   return 0;
 }
 
 void Yahoo::done ()
 {
-  dialog->saveSettings();
-  delete dialog;
-  dialog = 0;
+  _dialog->saveSettings();
+  delete _dialog;
+  _dialog = 0;
 }
 
 //**********************************************************

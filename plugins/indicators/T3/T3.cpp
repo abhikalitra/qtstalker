@@ -168,6 +168,9 @@ int T3::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor, int lineType, QColor &color)
 {
+  if (in->count() < period)
+    return 0;
+
   QList<int> keys;
   in->keys(keys);
   int size = keys.count();

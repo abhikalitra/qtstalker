@@ -202,6 +202,9 @@ int RSI::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * RSI::getRSI (PlotLine *in, int period, int smoothing, int type, int lineType, QColor &color)
 {
+  if (in->count() < period || in->count() < smoothing)
+    return 0;
+
   QList<int> keys;
   in->keys(keys);
   int size = keys.count();

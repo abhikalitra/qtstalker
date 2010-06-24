@@ -31,6 +31,7 @@ class MiscPlugin : public QObject
   
   signals:
     void signalMessage (QString);
+    void signalChartRefresh ();
 
   public:
     MiscPlugin ();
@@ -39,10 +40,13 @@ class MiscPlugin : public QObject
 
     QString & name ();
     QString & description ();
+    void setConnected (int);
+    int connected ();
 
   protected:
     QString _name;
     QString _description;
+    int _connected;
 };
 
 #endif

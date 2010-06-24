@@ -26,13 +26,12 @@
 #include <QStringList>
 
 #include "CSVRule.h"
-#include "DataBase.h"
+#include "DataDataBase.h"
 
-class CSVDataBase : public DataBase
+class CSVDataBase : public DataDataBase
 {
   public:
     CSVDataBase ();
-    void init (); // called only at qtstalker startup, initializes database tables
     void getRules (QStringList &);
     int getRule (CSVRule &);
     void setRule (CSVRule &);

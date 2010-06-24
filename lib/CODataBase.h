@@ -25,14 +25,13 @@
 #include <QString>
 
 #include "Indicator.h"
-#include "DataBase.h"
+#include "DataDataBase.h"
 #include "BarData.h"
 
-class CODataBase : public DataBase
+class CODataBase : public DataDataBase
 {
   public:
     CODataBase ();
-    void init (); // called only at qtstalker startup, initializes database tables
     void deleteChartObjects (BarData *);
     void deleteChartObjectsIndicator (QString &indicator);
     void deleteChartObject (int);

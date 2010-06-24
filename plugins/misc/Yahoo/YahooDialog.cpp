@@ -185,6 +185,8 @@ void YahooDialog::downloadDone ()
   _symbolsButton->setEnabled(TRUE);
   _histButton->setEnabled(TRUE);
   _infoButton->setEnabled(TRUE);
+
+  emit signalChartRefresh();
 }
 
 void YahooDialog::startHistory ()

@@ -25,9 +25,9 @@
 #include <QString>
 #include <QStringList>
 
-#include "DataBase.h"
+#include "DataDataBase.h"
 
-class FuturesDataBase : public DataBase
+class FuturesDataBase : public DataDataBase
 {
   public:
     FuturesDataBase ();

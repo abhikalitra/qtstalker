@@ -30,11 +30,11 @@
 #include "ExchangeDataBase.h"
 #include "FuturesDataBase.h"
 #include "PlotLine.h"
-#include "QuoteIndexDataBase.h"
+//#include "QuoteIndexDataBase.h"
 #include "MiscPluginFactory.h"
-#include "GroupDataBase.h"
-#include "ScriptDataBase.h"
-#include "CODataBase.h"
+//#include "GroupDataBase.h"
+//#include "ScriptDataBase.h"
+//#include "CODataBase.h"
 
 #include <QtDebug>
 #include <QtSql>
@@ -60,9 +60,9 @@ void Setup::setup (Config &config, QString session)
   setupConfigDefaults(config); // initialize config defaults
 
   // initialize the quotes db
-  QuoteIndexDataBase qidb;
-  QString s = QDir::homePath() + "/.qtstalker/quotes.sqlite";
-  qidb.init(s);
+//  QuoteIndexDataBase qidb;
+//  QString s = QDir::homePath() + "/.qtstalker/quotes.sqlite";
+//  qidb.init(s);
 
   // initialize data tables
   setupExchanges();
@@ -79,21 +79,21 @@ void Setup::setup (Config &config, QString session)
   mfac.setPluginList();
 
   // initialize the groups db
-  GroupDataBase gdb;
-  gdb.init();
+//  GroupDataBase gdb;
+//  gdb.init();
 
   // initialize the scripts db
-  ScriptDataBase sdb;
-  sdb.init();
+//  ScriptDataBase sdb;
+//  sdb.init();
 
   // initialize the indicator db
-  IndicatorDataBase idb;
-  idb.init();
+//  IndicatorDataBase idb;
+//  idb.init();
   setupDefaultIndicators(config);
 
   // initialize the chart object db
-  CODataBase codb;
-  codb.init();
+//  CODataBase codb;
+//  codb.init();
 
   // initialize an example symbol for first run
   setupDefaultSymbol(config);

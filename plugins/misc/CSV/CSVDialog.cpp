@@ -248,5 +248,7 @@ void CSVDialog::done ()
   _newButton->setEnabled(TRUE);
   _editButton->setEnabled(TRUE);
   _deleteButton->setEnabled(TRUE);
+
+  emit signalChartRefresh();
 }
 

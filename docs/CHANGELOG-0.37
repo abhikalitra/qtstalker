@@ -576,3 +576,15 @@
 
            Docs updated for QUOTES script command regarding the new date range format.
 
+20100623:  Plot slider buttons now indicate status when slider is moved.
+
+           Fixed 0 bars bug in indicator plugins.
+
+           Misc plugins now refresh the current chart if needed.
+
+           Date range prev/next buttons now indicate list position status.
+
+           Changed db code to be self initializing.
+
+
+

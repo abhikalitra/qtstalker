@@ -229,6 +229,9 @@ int PP::getCUS (QStringList &set, Indicator &ind, BarData *data)
 
 PlotLine * PP::getPP (BarData *data, int point, QColor &color)
 {
+  if (data->count() < 1)
+    return 0;
+
   QString s = "Horizontal";
   PlotFactory fac;
   PlotLine *output = fac.plot(s);

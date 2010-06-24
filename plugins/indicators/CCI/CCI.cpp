@@ -180,7 +180,7 @@ int CCI::getCUS (QStringList &set, Indicator &ind, BarData *data)
 PlotLine * CCI::getCCI (BarData *data, int period, int smoothing, int type, int lineType, QColor &color)
 {
   int size = data->count();
-  if (size < period)
+  if (size < period || size < smoothing)
     return 0;
 
   TA_Real high[size];
