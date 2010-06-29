@@ -33,7 +33,7 @@ SCIndicator::SCIndicator ()
   methodList << "SET_COLOR" << "DELETE";
 }
 
-int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data)
+int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData &data)
 {
   // format = INDICATOR,PLUGIN,*
   int rc = 1;
@@ -80,7 +80,7 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarD
   return rc;
 }
 
-int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data)
+int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData &data)
 {
   // INDICATOR,NEW,<METHOD>,<NAME>,<LINE TYPE>,<COLOR>
   //     0      1     2        3        4         5
@@ -117,7 +117,7 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData
     return 1;
   }
 
-  if (! data)
+  if (! data.count())
   {
     qDebug() << "SCIndicator::getNew: no bars available";
     return 1;
@@ -140,7 +140,7 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData
       break;
     }
     default:
-      out = data->getInput(data->getInputType(l[2]), lineType, color);
+      out = data.getInput(data.getInputType(l[2]), lineType, color);
       if (! out)
       {
         qDebug() << "SCIndicator::getNEW: input not found" << l[2];
@@ -199,7 +199,7 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, Indicator &ind)
   return 0;
 }
 
-int SCIndicator::getIndexDate (QStringList &l, QByteArray &ba, BarData *data)
+int SCIndicator::getIndexDate (QStringList &l, QByteArray &ba, BarData &data)
 {
   // INDICATOR,GET_INDEX_DATE,<INDEX>
   //     0           1           2
@@ -218,14 +218,14 @@ int SCIndicator::getIndexDate (QStringList &l, QByteArray &ba, BarData *data)
     return 1;
   }
 
-  if (! data)
+  if (! data.count())
   {
     qDebug() << "SCIndicator::getIndexDate: no bars available";
     return 1;
   }
 
-  Bar *bar = data->getBar(index);
-  if (! bar)
+  Bar bar = data.getBar(index);
+  if (! bar.count())
   {
     qDebug() << "SCIndicator::getIndexDate: invalid index value" << l[2];
     return 1;
@@ -233,7 +233,7 @@ int SCIndicator::getIndexDate (QStringList &l, QByteArray &ba, BarData *data)
 
   ba.clear();
 
-  ba.append(bar->getDate().toString(Qt::ISODate) + "\n");
+  ba.append(bar.getDate().toString(Qt::ISODate) + "\n");
 
   return 0;
 }
@@ -362,7 +362,7 @@ int SCIndicator::setColor (QStringList &l, QByteArray &ba, Indicator &ind)
   return 0;
 }
 
-int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data)
+int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,<PLUGIN>,*
   //     0       1       2
@@ -373,7 +373,7 @@ int SCIndicator::getPlugin (QStringList &l, QByteArray &ba, Indicator &ind, BarD
     return 1;
   }
 
-  if (! data)
+  if (! data.count())
   {
     qDebug() << "SCIndicator::getPlugin: no bars available";
     return 1;

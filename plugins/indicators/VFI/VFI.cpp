@@ -35,7 +35,7 @@ VFI::VFI ()
   _settings.setData(Period, 100);
 }
 
-int VFI::getIndicator (Indicator &ind, BarData *data)
+int VFI::getIndicator (Indicator &ind, BarData &data)
 {
   int period = _settings.getInt(Period);
 
@@ -61,7 +61,7 @@ int VFI::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int VFI::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int VFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,VFI,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3        4         5         6
@@ -113,9 +113,9 @@ int VFI::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * VFI::getVFI (BarData *data, int period, int lineType, QColor &color)
+PlotLine * VFI::getVFI (BarData &data, int period, int lineType, QColor &color)
 {
-  if (data->count() < period)
+  if (data.count() < period)
     return 0;
 
   PlotFactory fac;
@@ -124,45 +124,45 @@ PlotLine * VFI::getVFI (BarData *data, int period, int lineType, QColor &color)
     return 0;
 
   int loop = period;
-  for (; loop < (int) data->count(); loop++)
+  for (; loop < (int) data.count(); loop++)
   {
     double inter = 0.0;
     double sma_vol = 0.0;
     int i;
-    Bar *bar = data->getBar(loop - period);
-    double close = bar->getClose();
-    double high = bar->getHigh();
-    double low = bar->getLow();
-    double typical = (high+low+close) / 3.0;
+    Bar bar = data.getBar(loop - period);
+    double close = bar.getClose();
+    double high = bar.getHigh();
+    double low = bar.getLow();
+    double typical = (high + low + close) / 3.0;
     for (i = loop - period + 1; i <= loop; i++)
     {
-      bar = data->getBar(i);
+      bar = data.getBar(i);
       double ytypical = typical;
-      close = bar->getClose();
-      high = bar->getHigh();
-      low = bar->getLow();
+      close = bar.getClose();
+      high = bar.getHigh();
+      low = bar.getLow();
       typical = (high + low + close) / 3.0;
       double delta = (log(typical) - log(ytypical));
       inter += delta * delta;
-      sma_vol += bar->getVolume();
+      sma_vol += bar.getVolume();
     }
     inter = 0.2 * sqrt(inter / (double) period) * typical;
     sma_vol /= (double) period;
 
-    bar = data->getBar(loop - period);
-    close = bar->getClose();
-    high = bar->getHigh();
-    low = bar->getLow();
+    bar = data.getBar(loop - period);
+    close = bar.getClose();
+    high = bar.getHigh();
+    low = bar.getLow();
     typical = (high + low + close) / 3.0;
     double t = 0;
     for (i = loop - period + 1; i <= loop; i++)
     {
-      bar = data->getBar(i);
+      bar = data.getBar(i);
       double ytypical = typical;
-      double volume = bar->getVolume();
-      close = bar->getClose();
-      high = bar->getHigh();
-      low = bar->getLow();
+      double volume = bar.getVolume();
+      close = bar.getClose();
+      high = bar.getHigh();
+      low = bar.getLow();
       typical = (high + low + close) / 3.0;
 
       if (typical > ytypical + inter)

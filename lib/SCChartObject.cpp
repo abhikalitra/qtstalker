@@ -27,10 +27,9 @@
 
 SCChartObject::SCChartObject ()
 {
-//  _methodList << "NEW";
 }
 
-int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData *data)
+int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData &data)
 {
   // CO,<TYPE>,*
   // 0    1
@@ -59,14 +58,14 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, Ba
     return rc;
   }
 
-  if (! data)
+  if (! data.count())
   {
     qDebug() << "SCChartObject::calculate: no bars available";
     return rc;
   }
 
-  co->setSymbol(data->getSymbol());
-  co->setExchange(data->getExchange());
+  co->setSymbol(data.getSymbol());
+  co->setExchange(data.getExchange());
   co->setIndicator(ind.name());
 
   // we use < 0 id nums for script chart objects so there are no conflicts

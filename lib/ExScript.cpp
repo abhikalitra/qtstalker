@@ -32,7 +32,6 @@
 
 ExScript::ExScript ()
 {
-  _data = 0;
   _killFlag = 0;
 
   _functionList << "CO";
@@ -56,16 +55,19 @@ ExScript::~ExScript ()
 
 void ExScript::clear ()
 {
-  if (_proc)
-    _proc->kill();
-
+  _proc->kill();
   _indicator.weedPlots();
   _indicator.cleanClear();
 }
 
-void ExScript::setBarData (BarData *d)
+void ExScript::setBarData (BarData &d)
 {
   _data = d;
+}
+
+void ExScript::setIndicator (Indicator &d)
+{
+  _indicator = d;
 }
 
 int ExScript::calculate (QString &command)
@@ -95,6 +97,7 @@ int ExScript::calculate (QString &command)
   return 0;
 }
 
+/*
 int ExScript::calculate2 (QString &command)
 {
   // clean up if needed
@@ -112,6 +115,7 @@ int ExScript::calculate2 (QString &command)
 
   return 0;
 }
+*/
 
 void ExScript::done (int, QProcess::ExitStatus)
 {

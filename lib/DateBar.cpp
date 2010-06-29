@@ -40,24 +40,24 @@ int DateBar::count ()
   return (int) data.count();
 }
 
-void DateBar::createDateList (BarData *bd)
+void DateBar::createDateList (BarData &bd)
 {
   clear();
   
-  barLength = bd->getBarLength();
+  barLength = bd.getBarLength();
 
   int loop;
-  for (loop = 0; loop < (int) bd->count(); loop++)
+  for (loop = 0; loop < (int) bd.count(); loop++)
   {
-    Bar *bar = bd->getBar(loop);
-    if (! bar)
+    Bar bar = bd.getBar(loop);
+    if (! bar.count())
       continue;
 
     QString s;
-    bar->getRangeKey(s);
+    bar.getRangeKey(s);
     data.insert(s, loop);
 
-    dateList.append(bar->getDate());
+    dateList.append(bar.getDate());
   }
 }
 

@@ -21,6 +21,9 @@
 
 #include "ScriptDataBase.h"
 
+#include <QDebug>
+#include <QtSql>
+
 ScriptDataBase::ScriptDataBase ()
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));

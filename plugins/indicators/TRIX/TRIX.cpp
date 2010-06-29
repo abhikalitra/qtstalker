@@ -40,11 +40,11 @@ TRIX::TRIX ()
   _settings.setData(Input, "Close");
 }
 
-int TRIX::getIndicator (Indicator &ind, BarData *data)
+int TRIX::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -79,7 +79,7 @@ int TRIX::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int TRIX::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int TRIX::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,TRIX,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1     2     3       4       5          6         7
@@ -100,7 +100,7 @@ int TRIX::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[4];

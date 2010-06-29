@@ -46,11 +46,11 @@ PO::PO ()
   _settings.setData(Method, "APO");
 }
 
-int PO::getIndicator (Indicator &ind, BarData *data)
+int PO::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -93,7 +93,7 @@ int PO::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int PO::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int PO::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,PO,<METHOD>,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3       4      5         6             7           8           9         10
@@ -121,7 +121,7 @@ int PO::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[5]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[5]));
+    in = data.getInput(data.getInputType(set[5]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[5];

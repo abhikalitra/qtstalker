@@ -46,6 +46,7 @@
 #include "Scaler.h"
 #include "DateBar.h"
 #include "PlotCursor.h"
+#include "IndicatorThread.h"
 
 class Plot : public QWidget
 {
@@ -77,7 +78,7 @@ class Plot : public QWidget
 
     Plot (QWidget *);
     ~Plot ();
-    void setData (BarData *);
+    void setData (BarData &);
     void setLogScale (bool);
     bool logScale ();
     void setInfoFlag (bool);
@@ -91,6 +92,7 @@ class Plot : public QWidget
     void loadChartObjects ();
     DateBar & dateBars ();
     int width ();
+    void loadIndicator (BarData &, int);
 
   public slots:
     void draw();
@@ -135,6 +137,7 @@ class Plot : public QWidget
     void saveChartObjects ();
     void objectDialog ();
     void coSelected (int);
+    void indicatorThreadFinished ();
 
   private:
     Indicator _indicator;
@@ -154,6 +157,7 @@ class Plot : public QWidget
     ScalePlot _scalePlot;
     DateBar _dateBars;
     PlotCursor *_cursor;
+    IndicatorThread *_thread;
 };
 
 #endif

@@ -38,10 +38,7 @@ class SCChartObject
     };
     
     SCChartObject ();
-    int calculate (QStringList &, QByteArray &, Indicator &, BarData *);
-
-  protected:
-//    QStringList _methodList;
+    int calculate (QStringList &, QByteArray &, Indicator &, BarData &);
 };
 
 #endif

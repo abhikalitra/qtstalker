@@ -58,10 +58,10 @@ class ADX : public IndicatorPlugin
     };
 
     ADX ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
     int dialog (int);
-    PlotLine * getLine (BarData *data, int period, int method, int lineType, QColor &color);
+    PlotLine * getLine (BarData &data, int period, int method, int lineType, QColor &color);
 
   protected:
     QStringList _methodList;

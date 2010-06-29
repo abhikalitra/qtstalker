@@ -19,37 +19,30 @@
  *  USA.
  */
 
-#ifndef LINEARREG_HPP
-#define LINEARREG_HPP
+#ifndef INDICATOR_THREAD_HPP
+#define INDICATOR_THREAD_HPP
 
-#include "IndicatorPlugin.h"
+#include <QString>
+#include <QThread>
 
-class LINEARREG : public IndicatorPlugin
+#include "BarData.h"
+#include "Indicator.h"
+
+class IndicatorThread : public QThread
 {
-  public:
-    enum Parm
-    {
-      Method,
-      Color,
-      Plot,
-      Label,
-      Input,
-      Period
-    };
+  Q_OBJECT
 
-    LINEARREG ();
-    int getIndicator (Indicator &ind, BarData &data);
-    int getCUS (QStringList &, Indicator &, BarData &);
-    PlotLine * getLINEARREG (PlotLine *in, int period, int method, int, QColor &);
-    int dialog (int);
+  public:
+    IndicatorThread (QObject *, BarData &, Indicator &);
+    Indicator & indicator ();
 
   protected:
-    QStringList _methodList;
-};
+    void run ();
 
-extern "C"
-{
-  IndicatorPlugin * createIndicatorPlugin ();
-}
+  private:
+    BarData _data;
+    Indicator _indicator;
+    int _timeOut;
+};
 
 #endif

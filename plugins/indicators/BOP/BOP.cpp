@@ -41,7 +41,7 @@ BOP::BOP ()
   _settings.setData(SmoothingType, "SMA");
 }
 
-int BOP::getIndicator (Indicator &ind, BarData *data)
+int BOP::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   int smoothing = _settings.getInt(Smoothing);
@@ -71,7 +71,7 @@ int BOP::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int BOP::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int BOP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,BOP,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3             4                 5             6         7
@@ -131,12 +131,12 @@ int BOP::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * BOP::getBOP (BarData *data, int smoothing, int type, int lineType, QColor &color)
+PlotLine * BOP::getBOP (BarData &data, int smoothing, int type, int lineType, QColor &color)
 {
-  if (data->count() < 1 || data->count() < smoothing)
+  if (data.count() < 1 || data.count() < smoothing)
     return 0;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real open[size];
   TA_Real high[size];
   TA_Real low[size];
@@ -148,11 +148,11 @@ PlotLine * BOP::getBOP (BarData *data, int smoothing, int type, int lineType, QC
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    open[loop] = (TA_Real) bar->getOpen();
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    Bar bar = data.getBar(loop);
+    open[loop] = (TA_Real) bar.getOpen();
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
   }
 
   TA_RetCode rc = TA_BOP(0,

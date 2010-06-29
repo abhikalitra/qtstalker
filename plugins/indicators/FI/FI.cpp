@@ -36,7 +36,7 @@ FI::FI ()
   _settings.setData(Period, 2);
 }
 
-int FI::getIndicator (Indicator &ind, BarData *data)
+int FI::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   int period = _settings.getInt(Period);
@@ -66,7 +66,7 @@ int FI::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int FI::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int FI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,FI,<NAME>,<PERIOD>,<MA_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1    2     3      4         5          6         7
@@ -126,9 +126,9 @@ int FI::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * FI::getFI (BarData *data, int period, int type, int lineType, QColor &color)
+PlotLine * FI::getFI (BarData &data, int period, int type, int lineType, QColor &color)
 {
-  if (data->count() < period)
+  if (data.count() < period)
     return 0;
   
   PlotFactory fac;
@@ -138,12 +138,12 @@ PlotLine * FI::getFI (BarData *data, int period, int type, int lineType, QColor 
 
   int loop = 1;
   double force = 0;
-  for (; loop < (int) data->count(); loop++)
+  for (; loop < (int) data.count(); loop++)
   {
-    Bar *bar = data->getBar(loop);
-    Bar *pbar = data->getBar(loop - 1);
-    double cdiff = bar->getClose() - pbar->getClose();
-    force = bar->getVolume() * cdiff;
+    Bar bar = data.getBar(loop);
+    Bar pbar = data.getBar(loop - 1);
+    double cdiff = bar.getClose() - pbar.getClose();
+    force = bar.getVolume() * cdiff;
   
     line->setData(loop, new PlotLineBar(color, force));
   }

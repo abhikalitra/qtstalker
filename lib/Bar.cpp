@@ -393,3 +393,8 @@ void Bar::getBarLengthList (QStringList &l)
   l << QObject::tr("Monthly");
 }
 
+int Bar::count ()
+{
+  return data.count();
+}
+

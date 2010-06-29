@@ -42,7 +42,7 @@ T3::T3 ()
   _settings.setData(VFactor, 0.7);
 }
 
-int T3::getIndicator (Indicator &ind, BarData *data)
+int T3::getIndicator (Indicator &ind, BarData &data)
 {
   QColor up("green");
   QColor down("red");
@@ -58,7 +58,7 @@ int T3::getIndicator (Indicator &ind, BarData *data)
 
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -94,7 +94,7 @@ int T3::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int T3::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int T3::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,T3,<NAME>,<INPUT>,<PERIOD>,<VFACTOR>,<PLOT TYPE>,<COLOR>
   //     0       1    2    3       4       5         6          7         8
@@ -115,7 +115,7 @@ int T3::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[4];

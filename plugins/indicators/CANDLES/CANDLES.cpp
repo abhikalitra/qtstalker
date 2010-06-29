@@ -119,7 +119,7 @@ CANDLES::CANDLES ()
   _methodList << "XSIDEGAP3METHODS";
 }
 
-int CANDLES::getIndicator (Indicator &ind, BarData *data)
+int CANDLES::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Color, s);
@@ -244,7 +244,7 @@ int CANDLES::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int CANDLES::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int CANDLES::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,CANDLES,<METHOD>,*
   //     0       1      2        3
@@ -270,7 +270,7 @@ int CANDLES::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return rc;
 }
 
-int CANDLES::getCUSNone (QStringList &set, Indicator &ind, BarData *data)
+int CANDLES::getCUSNone (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<COLOR>
   //    0        1       2       3       4       5
@@ -306,7 +306,7 @@ int CANDLES::getCUSNone (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-int CANDLES::getCUSMethod (QStringList &set, Indicator &ind, BarData *data)
+int CANDLES::getCUSMethod (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<PENETRATION>,<PLOT TYPE>,<COLOR>
   //    0        1       2       3       4         5             6         7
@@ -365,9 +365,9 @@ int CANDLES::getCUSMethod (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
+PlotLine * CANDLES::getCANDLES (BarData &data, QColor &color)
 {
-  if (! data->count())
+  if (! data.count())
     return 0;
   
   PlotFactory fac;
@@ -377,15 +377,15 @@ PlotLine * CANDLES::getCANDLES (BarData *data, QColor &color)
     return 0;
 
   int loop;
-  int size = data->count();
+  int size = data.count();
   for (loop = 0; loop < size; loop++)
   {
     PlotLineBar *bar = new PlotLineBar;
-    Bar *tbar = data->getBar(loop);
-    bar->setData(0, tbar->getOpen());
-    bar->setData(1, tbar->getHigh());
-    bar->setData(2, tbar->getLow());
-    bar->setData(3, tbar->getClose());
+    Bar tbar = data.getBar(loop);
+    bar->setData(0, tbar.getOpen());
+    bar->setData(1, tbar.getHigh());
+    bar->setData(2, tbar.getLow());
+    bar->setData(3, tbar.getClose());
     bar->setColor(color);
     line->setData(loop, bar);
   }
@@ -491,12 +491,12 @@ int CANDLES::dialog (int)
   return rc;
 }
 
-PlotLine * CANDLES::getMethod (BarData *data, int method, double pen, int lineType, QColor &color)
+PlotLine * CANDLES::getMethod (BarData &data, int method, double pen, int lineType, QColor &color)
 {
-  if (data->count() < 1)
+  if (data.count() < 1)
     return 0;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -508,11 +508,11 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen, int lineTy
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    open[loop] = (TA_Real) bar->getOpen();
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    Bar bar = data.getBar(loop);
+    open[loop] = (TA_Real) bar.getOpen();
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
   }
 
   TA_RetCode rc = TA_SUCCESS;
@@ -711,7 +711,7 @@ PlotLine * CANDLES::getMethod (BarData *data, int method, double pen, int lineTy
   if (! line)
     return 0;
 
-  int dataLoop = data->count() - 1;
+  int dataLoop = data.count() - 1;
   int outLoop = outNb - 1;
   while (dataLoop > -1 && outLoop > -1)
   {

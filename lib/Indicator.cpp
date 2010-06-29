@@ -215,7 +215,7 @@ void Indicator::init ()
   _date = 1;
   _log = 0;
   _cus = 0;
-  _name.clear();
+//  _name.clear();
   _indicator.clear();
   _settings.clear();
   _plotOrder.clear();

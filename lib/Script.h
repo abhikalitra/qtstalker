@@ -24,12 +24,9 @@
 
 #include <QString>
 #include <QDateTime>
-#include <QTimer>
-#include <QObject>
+#include <QThread>
 
-#include "ExScript.h"
-
-class Script : public QObject
+class Script : public QThread
 {
   Q_OBJECT
   
@@ -39,7 +36,6 @@ class Script : public QObject
   
   public:
     Script ();
-    ~Script ();
     void setName (QString &);
     QString & getName ();
     void setCommand (QString &);
@@ -54,24 +50,20 @@ class Script : public QObject
     QDateTime & getLastRun ();
     void setRefresh (int);
     int getRefresh ();
-    void start ();
     void stop ();
-    void startScript ();
-    
-  public slots:
-    void timerDone ();
-    void scriptDone ();
     
   protected:
-    ExScript *scriptServer;
-    QTimer *timer;
-    QString name;
-    QString command;
-    QString file;
-    QString comment;
-    int status;
-    QDateTime lastRun;
-    int refresh;
+    void run ();
+
+  private:
+    QString _name;
+    QString _command;
+    QString _file;
+    QString _comment;
+    int _status;
+    QDateTime _lastRun;
+    int _refresh;
+    int _stopFlag;
 };
 
 #endif

@@ -42,7 +42,7 @@ ATR::ATR ()
   _methodList << "ATR" << "NATR";
 }
 
-int ATR::getIndicator (Indicator &ind, BarData *data)
+int ATR::getIndicator (Indicator &ind, BarData &data)
 {
   int period = _settings.getInt(Period);
 
@@ -71,7 +71,7 @@ int ATR::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int ATR::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int ATR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,ATR,<METHOD>,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1     2     3       4        5        6          7
@@ -130,12 +130,12 @@ int ATR::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * ATR::getLine (BarData *data, int period, int method, int lineType, QColor &color)
+PlotLine * ATR::getLine (BarData &data, int period, int method, int lineType, QColor &color)
 {
-  if (data->count() < period)
+  if (data.count() < period)
     return 0;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -146,10 +146,10 @@ PlotLine * ATR::getLine (BarData *data, int period, int method, int lineType, QC
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
   }
 
   TA_RetCode rc = TA_SUCCESS;

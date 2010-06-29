@@ -46,7 +46,7 @@ VIDYA::VIDYA ()
   _settings.setData(VPeriod, 10);
 }
 
-int VIDYA::getIndicator (Indicator &ind, BarData *data)
+int VIDYA::getIndicator (Indicator &ind, BarData &data)
 {
   QColor up("green");
   QColor down("red");
@@ -62,7 +62,7 @@ int VIDYA::getIndicator (Indicator &ind, BarData *data)
   
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -98,7 +98,7 @@ int VIDYA::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int VIDYA::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int VIDYA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,VIDYA,<NAME>,<INPUT>,<PERIOD>,<VOLUME_PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1      2     3       4       5            6             7         8
@@ -119,7 +119,7 @@ int VIDYA::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *inSignal = ind.line(set[4]);
   if (! inSignal)
   {
-    inSignal = data->getInput(data->getInputType(set[4]));
+    inSignal = data.getInput(data.getInputType(set[4]));
     if (! inSignal)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[4];

@@ -46,8 +46,8 @@ class MAMA : public IndicatorPlugin
     };
 
     MAMA ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
     int getMAMA (PlotLine *in, double fast, double slow, QList<PlotLine *> &l, int, int, QColor &, QColor &);
     int dialog (int);
 };

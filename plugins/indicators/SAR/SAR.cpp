@@ -41,7 +41,7 @@ SAR::SAR ()
   _settings.setData(Max, 0.2);
 }
 
-int SAR::getIndicator (Indicator &ind, BarData *data)
+int SAR::getIndicator (Indicator &ind, BarData &data)
 {
   double tinit = _settings.getDouble(Init);
   double tmax = _settings.getDouble(Max);
@@ -80,7 +80,7 @@ int SAR::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int SAR::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int SAR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>,<PLOT TYPE>,<COLOR>
   //      0       1    2     3         4            5           6         7
@@ -139,21 +139,21 @@ int SAR::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * SAR::getSAR (BarData *data, double _init, double _max, int lineType, QColor &color)
+PlotLine * SAR::getSAR (BarData &data, double _init, double _max, int lineType, QColor &color)
 {
-  if (data->count() < 1)
+  if (data.count() < 1)
     return 0;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real out[size];
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
   }
 
   TA_Integer outBeg;

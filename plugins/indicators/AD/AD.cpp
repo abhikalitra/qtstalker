@@ -47,7 +47,7 @@ AD::AD ()
   _methodList << "ADOSC";
 }
 
-int AD::getIndicator (Indicator &ind, BarData *data)
+int AD::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Method, s);
@@ -105,7 +105,7 @@ int AD::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int AD::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int AD::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   QString s;
   int method = _methodList.indexOf(set[2]);
@@ -124,7 +124,7 @@ int AD::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return rc;
 }
 
-int AD::getCUS_AD (QStringList &set, Indicator &ind, BarData *data)
+int AD::getCUS_AD (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AD,AD,<NAME>,<LINE TYPE>,<COLOR>
   //      0      1     2  3    4       5          6
@@ -168,7 +168,7 @@ int AD::getCUS_AD (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-int AD::getCUS_ADOSC (QStringList &set, Indicator &ind, BarData *data)
+int AD::getCUS_ADOSC (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AD,ADOSC,<NAME>,<FAST_PERIOD>,<SLOW_PERIOD>,<PLOT TYPE>,<COLOR>
   //      0       1    2    3    4         5             6             7         8
@@ -227,12 +227,12 @@ int AD::getCUS_ADOSC (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * AD::getAD (BarData *data, int lineType, QColor &color)
+PlotLine * AD::getAD (BarData &data, int lineType, QColor &color)
 {
-  if (data->count() < 1)
+  if (data.count() < 1)
     return 0;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -244,11 +244,11 @@ PlotLine * AD::getAD (BarData *data, int lineType, QColor &color)
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
-    volume[loop] = (TA_Real) bar->getVolume();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
+    volume[loop] = (TA_Real) bar.getVolume();
   }
 
   TA_RetCode rc = TA_AD(0,
@@ -283,12 +283,12 @@ PlotLine * AD::getAD (BarData *data, int lineType, QColor &color)
   return line;
 }
 
-PlotLine * AD::getADOSC (BarData *data, int fast, int slow, int lineType, QColor &color)
+PlotLine * AD::getADOSC (BarData &data, int fast, int slow, int lineType, QColor &color)
 {
-  if (data->count() < 1)
+  if (data.count() < 1)
     return 0;
   
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -300,11 +300,11 @@ PlotLine * AD::getADOSC (BarData *data, int fast, int slow, int lineType, QColor
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
-    volume[loop] = (TA_Real) bar->getVolume();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
+    volume[loop] = (TA_Real) bar.getVolume();
   }
 
   TA_RetCode rc = TA_ADOSC(0,

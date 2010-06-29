@@ -41,8 +41,8 @@ class STOCHRSI : public IndicatorPlugin
     };
 
     STOCHRSI ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
     PlotLine * getSTOCHRSI (PlotLine *in, int period, int, QColor &);
     int dialog (int);
 };

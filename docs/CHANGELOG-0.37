@@ -586,5 +586,13 @@
 
            Changed db code to be self initializing.
 
+20100628:  Converted indicator calculation to run in a thread to prevent any gui blocking. There might be a little
+           noticeable lag when displaying a script inidcator compared to built in ones. This is because each indicator
+           calculates and displays individually now rather than in one big batch.
+
+           Changed Scripts to run with a cleaner threading implementation.
+
+
+
 
 

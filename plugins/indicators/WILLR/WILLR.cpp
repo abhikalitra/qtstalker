@@ -39,7 +39,7 @@ WILLR::WILLR ()
   _settings.setData(Period, 14);
 }
 
-int WILLR::getIndicator (Indicator &ind, BarData *data)
+int WILLR::getIndicator (Indicator &ind, BarData &data)
 {
   int period = _settings.getInt(Period);
 
@@ -65,7 +65,7 @@ int WILLR::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int WILLR::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int WILLR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,WILLR,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1      2     3       4          5         6
@@ -117,12 +117,12 @@ int WILLR::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * WILLR::getWILLR (BarData *data, int period, int lineType, QColor &color)
+PlotLine * WILLR::getWILLR (BarData &data, int period, int lineType, QColor &color)
 {
-  if (data->count() < period)
+  if (data.count() < period)
     return 0;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -133,10 +133,10 @@ PlotLine * WILLR::getWILLR (BarData *data, int period, int lineType, QColor &col
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
   }
 
   TA_RetCode rc = TA_WILLR(0,

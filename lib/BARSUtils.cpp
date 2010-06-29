@@ -29,9 +29,9 @@ BARSUtils::BARSUtils ()
 {
 }
 
-PlotLine * BARSUtils::getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral)
+PlotLine * BARSUtils::getBARS (BarData &data, QColor &_up, QColor &_down, QColor &_neutral)
 {
-  if (data->count() < 2)
+  if (data.count() < 2)
     return 0;
   
   PlotFactory fac;
@@ -40,7 +40,7 @@ PlotLine * BARSUtils::getBARS (BarData *data, QColor &_up, QColor &_down, QColor
   if (! line)
     return 0;
   
-  int size = data->count();
+  int size = data.count();
 
   s = QObject::tr("C");
   line->setLabel(s);
@@ -49,20 +49,20 @@ PlotLine * BARSUtils::getBARS (BarData *data, QColor &_up, QColor &_down, QColor
   for (loop = 0; loop < size; loop++)
   {
     PlotLineBar *bar = new PlotLineBar;
-    Bar *tbar = data->getBar(loop);
-    bar->setData(0, tbar->getOpen());
-    bar->setData(1, tbar->getHigh());
-    bar->setData(2, tbar->getLow());
-    bar->setData(3, tbar->getClose());
+    Bar tbar = data.getBar(loop);
+    bar->setData(0, tbar.getOpen());
+    bar->setData(1, tbar.getHigh());
+    bar->setData(2, tbar.getLow());
+    bar->setData(3, tbar.getClose());
     
     if (loop > 0)
     {
-      Bar *pbar = data->getBar(loop - 1);
-      if (tbar->getClose() > pbar->getClose())
+      Bar pbar = data.getBar(loop - 1);
+      if (tbar.getClose() > pbar.getClose())
         bar->setColor(_up);
       else
       {
-        if (tbar->getClose() < pbar->getClose())
+        if (tbar.getClose() < pbar.getClose())
           bar->setColor(_down);
         else
           bar->setColor(_neutral);

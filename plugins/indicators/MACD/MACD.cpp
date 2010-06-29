@@ -52,11 +52,11 @@ MACD::MACD ()
   _settings.setData(Input, "Close");
 }
 
-int MACD::getIndicator (Indicator &ind, BarData *data)
+int MACD::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -149,7 +149,7 @@ int MACD::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int MACD::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int MACD::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<FAST_MA_TYPE>,<SLOW_PERIOD>,<SLOW_MA_TYPE>,<SIGNAL_PERIOD>,<SIGNAL_MA_TYPE>,<MACD PLOT TYPE>,<SIGNAL PLOT TYPE>,<HIST PLOT TYPE>,<MACD COLOR>,<SIGNAL COLOR>,<HIST COLOR>
   //     0       1     2      3         4           5             6           7               8            9             10                11              12                13               14                 15           16             17           18
@@ -184,7 +184,7 @@ int MACD::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[3]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data.getInput(data.getInputType(set[3]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[3];

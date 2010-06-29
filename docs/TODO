@@ -16,6 +16,7 @@ To Do:
 - complete backtesting module
 - convert any long running functions that may slow response to use threads
 - add exchange checker to yahoo plugin symbols dialog
+- convert PlotLine from pointers to refs
 
 
 

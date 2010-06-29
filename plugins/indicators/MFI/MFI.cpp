@@ -46,7 +46,7 @@ MFI::MFI ()
   _settings.setData(Ref2, 80);
 }
 
-int MFI::getIndicator (Indicator &ind, BarData *data)
+int MFI::getIndicator (Indicator &ind, BarData &data)
 {
   // Ref1 line
   QString s = "Horizontal";
@@ -107,7 +107,7 @@ int MFI::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int MFI::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int MFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,MFI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3       4             5                 6              7         8
@@ -174,12 +174,12 @@ int MFI::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * MFI::getMFI (BarData *data, int period, int smoothing, int type, int lineType, QColor &color)
+PlotLine * MFI::getMFI (BarData &data, int period, int smoothing, int type, int lineType, QColor &color)
 {
-  if (data->count() < period || data->count() < smoothing)
+  if (data.count() < period || data.count() < smoothing)
     return 0;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -191,11 +191,11 @@ PlotLine * MFI::getMFI (BarData *data, int period, int smoothing, int type, int 
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
-    volume[loop] = (TA_Real) bar->getVolume();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
+    volume[loop] = (TA_Real) bar.getVolume();
   }
 
   TA_RetCode rc = TA_MFI(0,

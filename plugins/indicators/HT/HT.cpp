@@ -60,11 +60,11 @@ HT::HT ()
   _methodList << "SINE";
 }
 
-int HT::getIndicator (Indicator &ind, BarData *data)
+int HT::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -196,7 +196,7 @@ int HT::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int HT::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int HT::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,HT,METHOD,*
   //     0       1     2    3
@@ -230,7 +230,7 @@ int HT::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return rc;
 }
 
-int HT::getCUSPHASE (QStringList &set, Indicator &ind, BarData *data)
+int HT::getCUSPHASE (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,HT,<METHOD>,<INPUT>,<PHASE NAME>,<QUAD NAME>,<PHASE PLOT TYPE>,<QUAD PLOT TYPE>,<PHASE COLOR>,<QUAD COLOR>
   //     0       1     2     3       4          5           6              7                 8              9            10
@@ -244,7 +244,7 @@ int HT::getCUSPHASE (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUSPHASE: input not found" << set[4];
@@ -310,7 +310,7 @@ int HT::getCUSPHASE (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-int HT::getCUSSINE (QStringList &set, Indicator &ind, BarData *data)
+int HT::getCUSSINE (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,HT,<METHOD>,<INPUT>,<SINE NAME>,<LEAD NAME>,<SINE PLOT TYPE>,<LEAD PLOT TYPE>,<SINE COLOR>,<LEAD COLOR>
   //     0       1     2     3       4          5           6              7                 8              9            10
@@ -324,7 +324,7 @@ int HT::getCUSSINE (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUSSINE: input not found" << set[4];
@@ -390,7 +390,7 @@ int HT::getCUSSINE (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-int HT::getCUSHT (QStringList &set, Indicator &ind, BarData *data)
+int HT::getCUSHT (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,HT,<METHOD>,<NAME>,<INPUT>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3       4       5        6          7
@@ -418,7 +418,7 @@ int HT::getCUSHT (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[5]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[5]));
+    in = data.getInput(data.getInputType(set[5]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUSHT: input not found" << set[5];

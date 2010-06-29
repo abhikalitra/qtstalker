@@ -5,6 +5,7 @@ CONFIG += thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 
+HEADERS += Globals.h
 HEADERS += Setting.h
 HEADERS += PlotLine.h
 HEADERS += BarData.h
@@ -85,8 +86,10 @@ HEADERS += QuoteIndexDataBase.h
 HEADERS += DateRange.h
 HEADERS += DataDataBase.h
 HEADERS += QuotesDataBase.h
+HEADERS += IndicatorThread.h
 
 
+SOURCES += Globals.cpp
 SOURCES += Setting.cpp
 SOURCES += PlotLine.cpp
 SOURCES += BarData.cpp
@@ -166,6 +169,7 @@ SOURCES += QuoteIndexDataBase.cpp
 SOURCES += DateRange.cpp
 SOURCES += DataDataBase.cpp
 SOURCES += QuotesDataBase.cpp
+SOURCES += IndicatorThread.cpp
 
 
 TARGET = qtstalker

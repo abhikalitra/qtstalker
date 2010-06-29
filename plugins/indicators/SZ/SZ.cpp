@@ -45,7 +45,7 @@ SZ::SZ ()
   _methodList << QObject::tr("Short");
 }
 
-int SZ::getIndicator (Indicator &ind, BarData *data)
+int SZ::getIndicator (Indicator &ind, BarData &data)
 {
   QString method;
   _settings.getData(Method, method);
@@ -88,7 +88,7 @@ int SZ::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int SZ::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int SZ::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,SZ,<NAME>,<METHOD>,<PERIOD>,<NO_DECLINE_PERIOD>,<COEFFICIENT>,<PLOT TYPE>,<COLOR>
   //     0       1    2    3       4        5              6               7             8         9
@@ -162,10 +162,10 @@ int SZ::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline_period, double coefficient,
+PlotLine * SZ::getSZ (BarData &data, QString &method, int period, int no_decline_period, double coefficient,
                       int lineType, QColor &color)
 {
-  if (data->count() < period || data->count() < no_decline_period)
+  if (data.count() < period || data.count() < no_decline_period)
     return 0;
 
   int display_uptrend = 0;
@@ -208,7 +208,7 @@ PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline
   }
 
   int start = period + 1;
-  for (loop = start; loop < (int) data->count(); loop++)
+  for (loop = start; loop < (int) data.count(); loop++)
   {
     // calculate downside/upside penetration for lookback period
     int lbloop;
@@ -221,12 +221,12 @@ PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline
     double dntrend_noise_cnt = 0;
     for (lbloop = lbstart; lbloop < loop; lbloop++)
     {
-      Bar *bar = data->getBar(lbloop);
-      Bar *pbar = data->getBar(lbloop - 1);
-      double lo_curr = bar->getLow();
-      double lo_last = pbar->getLow();
-      double hi_curr = bar->getHigh();
-      double hi_last = pbar->getHigh();
+      Bar bar = data.getBar(lbloop);
+      Bar pbar = data.getBar(lbloop - 1);
+      double lo_curr = bar.getLow();
+      double lo_last = pbar.getLow();
+      double hi_curr = bar.getHigh();
+      double hi_last = pbar.getHigh();
       if (lo_last > lo_curr)
       {
 	uptrend_noise_avg += lo_last - lo_curr;
@@ -244,9 +244,9 @@ PlotLine * SZ::getSZ (BarData *data, QString &method, int period, int no_decline
     if (dntrend_noise_cnt > 0)
       dntrend_noise_avg /= dntrend_noise_cnt;
 
-    Bar *pbar = data->getBar(loop - 1);
-    double lo_last = pbar->getLow();
-    double hi_last = pbar->getHigh();
+    Bar pbar = data.getBar(loop - 1);
+    double lo_last = pbar.getLow();
+    double hi_last = pbar.getHigh();
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
     dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
 

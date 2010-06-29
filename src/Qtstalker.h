@@ -107,7 +107,6 @@ class QtstalkerApp : public QMainWindow
     void addIndicatorButton (QString);
     void wakeup ();
     void appFont (QFont);
-    void loadIndicator (BarData *, QString &);
     void psButtonClicked (int);
     void zoomChanged(int, int);
     void commandLineAsset ();

@@ -36,12 +36,6 @@ BarData::BarData ()
   _endDate = _startDate;
 }
 
-BarData::~BarData ()
-{
-  if (_barList.count())
-    qDeleteAll(_barList);
-}
-
 void BarData::getInputFields (QStringList &l)
 {
   l.clear();
@@ -73,27 +67,27 @@ PlotLine * BarData::getInput (BarData::InputType field, int lineType, QColor &co
   int loop;
   for (loop = 0; loop < count(); loop++)
   {
-    Bar *bar = getBar(loop);
+    Bar bar = getBar(loop);
     
     switch (field)
     {
       case Open:
-        in->setData(loop, new PlotLineBar(color, bar->getOpen()));
+        in->setData(loop, new PlotLineBar(color, bar.getOpen()));
         break;
       case High:
-        in->setData(loop, new PlotLineBar(color, bar->getHigh()));
+        in->setData(loop, new PlotLineBar(color, bar.getHigh()));
         break;
       case Low:
-        in->setData(loop, new PlotLineBar(color, bar->getLow()));
+        in->setData(loop, new PlotLineBar(color, bar.getLow()));
         break;
       case Close:
-        in->setData(loop, new PlotLineBar(color, bar->getClose()));
+        in->setData(loop, new PlotLineBar(color, bar.getClose()));
         break;
       case Volume:
-        in->setData(loop, new PlotLineBar(color, bar->getVolume()));
+        in->setData(loop, new PlotLineBar(color, bar.getVolume()));
         break;
       case OI:
-        in->setData(loop, new PlotLineBar(color, bar->getOI()));
+        in->setData(loop, new PlotLineBar(color, bar.getOI()));
         break;
       case AveragePrice:
         in->setData(loop, new PlotLineBar(color, getAvgPrice(loop)));
@@ -106,7 +100,7 @@ PlotLine * BarData::getInput (BarData::InputType field, int lineType, QColor &co
         break;
       case WeightedClosePrice:
       {
-        double t = (bar->getHigh() + bar->getLow() + (bar->getClose() * 2)) / 4.0;
+        double t = (bar.getHigh() + bar.getLow() + (bar.getClose() * 2)) / 4.0;
         in->setData(loop, new PlotLineBar(color, t));
         break;
       }
@@ -123,12 +117,12 @@ int BarData::count ()
   return (int) _barList.count();
 }
 
-void BarData::prepend (Bar *bar)
+void BarData::prepend (Bar bar)
 {
   _barList.prepend(bar);
 }
 
-void BarData::append (Bar *bar)
+void BarData::append (Bar bar)
 {
   _barList.append(bar);
 }
@@ -155,9 +149,9 @@ BarData::InputType BarData::getInputType (QString &d)
   return rc;
 }
 
-Bar * BarData::getBar (int d)
+Bar & BarData::getBar (int d)
 {
-  return _barList.at(d);
+  return _barList[d];
 }
 
 void BarData::setMinMax ()
@@ -165,13 +159,13 @@ void BarData::setMinMax ()
   int loop;
   for (loop = 0; loop < (int) _barList.count(); loop++)
   {
-    Bar *bar = _barList.at(loop);
+    Bar bar = _barList.at(loop);
 
-    if (bar->getHigh() > _high)
-      _high = bar->getHigh();
+    if (bar.getHigh() > _high)
+      _high = bar.getHigh();
 
-    if (bar->getLow() < _low)
-      _low = bar->getLow();
+    if (bar.getLow() < _low)
+      _low = bar.getLow();
   }
 }
 
@@ -215,22 +209,22 @@ void BarData::setName (QString &d)
 
 double BarData::getAvgPrice (int d)
 {
-  Bar *bar = getBar(d);
-  double t = (bar->getOpen() + bar->getHigh() + bar->getLow() + bar->getClose()) / 4.0;
+  Bar bar = getBar(d);
+  double t = (bar.getOpen() + bar.getHigh() + bar.getLow() + bar.getClose()) / 4.0;
   return t;
 }
 
 double BarData::getMedianPrice (int d)
 {
-  Bar *bar = getBar(d);
-  double t = (bar->getHigh() + bar->getLow()) / 2.0;
+  Bar bar = getBar(d);
+  double t = (bar.getHigh() + bar.getLow()) / 2.0;
   return t;
 }
 
 double BarData::getTypicalPrice (int d)
 {
-  Bar *bar = getBar(d);
-  double t = (bar->getHigh() + bar->getLow() + bar->getClose()) / 3.0;
+  Bar bar = getBar(d);
+  double t = (bar.getHigh() + bar.getLow() + bar.getClose()) / 3.0;
   return t;
 }
 

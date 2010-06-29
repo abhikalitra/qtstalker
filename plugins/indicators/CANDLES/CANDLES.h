@@ -120,13 +120,13 @@ class CANDLES : public IndicatorPlugin
     };
 
     CANDLES ();
-    int getIndicator (Indicator &, BarData *);
-    int getCUS (QStringList &, Indicator &, BarData *);
-    int getCUSNone (QStringList &, Indicator &, BarData *);
-    int getCUSMethod (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
+    int getCUSNone (QStringList &, Indicator &, BarData &);
+    int getCUSMethod (QStringList &, Indicator &, BarData &);
     int dialog (int);
-    PlotLine * getMethod (BarData *, int, double, int, QColor &);
-    PlotLine * getCANDLES (BarData *, QColor &);
+    PlotLine * getMethod (BarData &, int, double, int, QColor &);
+    PlotLine * getCANDLES (BarData &, QColor &);
 
   protected:
     QStringList _methodList;

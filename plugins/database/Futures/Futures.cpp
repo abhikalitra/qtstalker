@@ -44,8 +44,8 @@ void Futures::getBars (BarData &data)
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
 
-  QHash<QString, Bar *> bars;
-  QList<Bar *> dateList;
+  QHash<QString, Bar> bars;
+  QStringList dateList;
 
   // get symbol name
   QString name;
@@ -88,44 +88,44 @@ void Futures::getBars (BarData &data)
     tbar.setDateRange(lastDate, data.getBarLength());
     tbar.getRangeKey(s);
 
-    Bar *bar = bars[s];
-    if (! bar)
+    Bar bar = bars.value(s);
+    if (! bar.count())
     {
-      bar = new Bar;
-      bar->setDateRange(lastDate, data.getBarLength());
-      bar->setOpen(q.value(1).toDouble());
-      bar->setHigh(q.value(2).toDouble());
-      bar->setLow(q.value(3).toDouble());
-      bar->setClose(q.value(4).toDouble());
-      bar->setVolume(q.value(5).toDouble());
-      bar->setOI(q.value(6).toInt());
+      bar.setDateRange(lastDate, data.getBarLength());
+      bar.setOpen(q.value(1).toDouble());
+      bar.setHigh(q.value(2).toDouble());
+      bar.setLow(q.value(3).toDouble());
+      bar.setClose(q.value(4).toDouble());
+      bar.setVolume(q.value(5).toDouble());
+      bar.setOI(q.value(6).toInt());
       bars.insert(s, bar);
-      dateList.append(bar);
+      dateList.append(s);
     }
     else
     {
-      bar->setOpen(q.value(1).toDouble());
+      bar.setOpen(q.value(1).toDouble());
 
       double v = q.value(2).toDouble();
-      if (v > bar->getHigh())
-        bar->setHigh(v);
+      if (v > bar.getHigh())
+        bar.setHigh(v);
 
       v = q.value(3).toDouble();
-      if (v < bar->getLow())
-        bar->setLow(v);
+      if (v < bar.getLow())
+        bar.setLow(v);
 
       v = q.value(5).toDouble();
-      double v2 = bar->getVolume();
-      bar->setVolume(v + v2);
+      double v2 = bar.getVolume();
+      bar.setVolume(v + v2);
 
-      bar->setOI(q.value(6).toInt());
+      bar.setOI(q.value(6).toInt());
+      bars.insert(s, bar);
     }
   }
     
   // order the bars from most recent to first
   int loop;
   for (loop = 0; loop < dateList.count(); loop++)
-    data.prepend(dateList.at(loop));
+    data.prepend(bars.value(dateList.at(loop)));
 }
 
 void Futures::setBars ()
@@ -156,18 +156,18 @@ void Futures::setBars ()
     int loop;
     for (loop = 0; loop < bd->count(); loop++)
     {
-      Bar *bar = bd->getBar(loop);
+      Bar bar = bd->getBar(loop);
       QString s;
-      bar->getDateTimeString(s);
+      bar.getDateTimeString(s);
 
       QString ts = "INSERT OR REPLACE INTO " + bd->getTableName() + " VALUES(";
       ts.append("'" + s + "'");
-      ts.append("," + QString::number(bar->getOpen()));
-      ts.append("," + QString::number(bar->getHigh()));
-      ts.append("," + QString::number(bar->getLow()));
-      ts.append("," + QString::number(bar->getClose()));
-      ts.append("," + QString::number(bar->getVolume()));
-      ts.append("," + QString::number(bar->getOI()));
+      ts.append("," + QString::number(bar.getOpen()));
+      ts.append("," + QString::number(bar.getHigh()));
+      ts.append("," + QString::number(bar.getLow()));
+      ts.append("," + QString::number(bar.getClose()));
+      ts.append("," + QString::number(bar.getVolume()));
+      ts.append("," + QString::number(bar.getOI()));
       ts.append(")");
       q.exec(ts);
       if (q.lastError().isValid())
@@ -329,26 +329,24 @@ int Futures::scriptSetQuote (QStringList &l)
     return 1;
   }
   
-  Bar *bar = new Bar;
-  bar->setDate(date);
-  bar->setOpen(l[7]);
-  bar->setHigh(l[8]);
-  bar->setLow(l[9]);
-  bar->setClose(l[10]);
-  bar->setVolume(l[11]);
-  bar->setOI(l[12]);
-  if (bar->getError())
+  Bar bar;
+  bar.setDate(date);
+  bar.setOpen(l[7]);
+  bar.setHigh(l[8]);
+  bar.setLow(l[9]);
+  bar.setClose(l[10]);
+  bar.setVolume(l[11]);
+  bar.setOI(l[12]);
+  if (bar.getError())
   {
-    barErrorMessage(bar->getError());
-    delete bar;
+    barErrorMessage(bar.getError());
     return 1;
   }
     
-  bar->verify();
-  if (bar->getError())
+  bar.verify();
+  if (bar.getError())
   {
-    barErrorMessage(bar->getError());
-    delete bar;
+    barErrorMessage(bar.getError());
     return 1;
   }
     

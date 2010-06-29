@@ -54,7 +54,7 @@ ADX::ADX ()
   _methodList << "ADX" << "ADXR" << "+DI" << "-DI" << "DX";
 }
 
-int ADX::getIndicator (Indicator &ind, BarData *data)
+int ADX::getIndicator (Indicator &ind, BarData &data)
 {
   int period = _settings.getInt(Period);
 
@@ -149,7 +149,7 @@ int ADX::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int ADX::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int ADX::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,ADX,<METHOD>,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1     2     3        4      5          6         7
@@ -208,12 +208,12 @@ int ADX::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * ADX::getLine (BarData *data, int period, int method, int lineType, QColor &color)
+PlotLine * ADX::getLine (BarData &data, int period, int method, int lineType, QColor &color)
 {
-  if (data->count() < period)
+  if (data.count() < period)
     return 0;
   
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -224,10 +224,10 @@ PlotLine * ADX::getLine (BarData *data, int period, int method, int lineType, QC
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
   }
 
   TA_RetCode rc = TA_SUCCESS;

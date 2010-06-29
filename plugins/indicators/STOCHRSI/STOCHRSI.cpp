@@ -45,7 +45,7 @@ STOCHRSI::STOCHRSI ()
   _settings.setData(Period, 14);
 }
 
-int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
+int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
 {
   // create first ref line
   QString s = "Horizontal";
@@ -79,7 +79,7 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
   ind.addPlotOrder(s);
 
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -113,7 +113,7 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int STOCHRSI::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int STOCHRSI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,STOCHRSI,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //    0        1       2       3       4       5          6         7
@@ -134,7 +134,7 @@ int STOCHRSI::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[4];

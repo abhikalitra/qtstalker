@@ -44,7 +44,7 @@ ULTOSC::ULTOSC ()
   _settings.setData(Ref3Color, "white");
 }
 
-int ULTOSC::getIndicator (Indicator &ind, BarData *data)
+int ULTOSC::getIndicator (Indicator &ind, BarData &data)
 {
   // 30 ref line
   QString s = "Horizontal";
@@ -117,7 +117,7 @@ int ULTOSC::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int ULTOSC::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int ULTOSC::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>,<PLOT TYPE>,<COLOR>
 
@@ -182,12 +182,12 @@ int ULTOSC::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp, int lineType, QColor &color)
+PlotLine * ULTOSC::getULTOSC (BarData &data, int sp, int mp, int lp, int lineType, QColor &color)
 {
-  if (data->count() < sp || data->count() < mp || data->count() < lp)
+  if (data.count() < sp || data.count() < mp || data.count() < lp)
     return 0;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -198,10 +198,10 @@ PlotLine * ULTOSC::getULTOSC (BarData *data, int sp, int mp, int lp, int lineTyp
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
   }
 
   TA_RetCode rc = TA_ULTOSC(0,

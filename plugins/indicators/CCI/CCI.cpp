@@ -47,7 +47,7 @@ CCI::CCI ()
   _settings.setData(Ref2Color, "white");
 }
 
-int CCI::getIndicator (Indicator &ind, BarData *data)
+int CCI::getIndicator (Indicator &ind, BarData &data)
 {
   // create the ref1 line
   PlotFactory fac;
@@ -110,7 +110,7 @@ int CCI::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int CCI::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int CCI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,CCI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3       4             5                  6              7        8
@@ -177,9 +177,9 @@ int CCI::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * CCI::getCCI (BarData *data, int period, int smoothing, int type, int lineType, QColor &color)
+PlotLine * CCI::getCCI (BarData &data, int period, int smoothing, int type, int lineType, QColor &color)
 {
-  int size = data->count();
+  int size = data.count();
   if (size < period || size < smoothing)
     return 0;
 
@@ -193,10 +193,10 @@ PlotLine * CCI::getCCI (BarData *data, int period, int smoothing, int type, int 
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
   }
 
   TA_RetCode rc = TA_CCI(0,

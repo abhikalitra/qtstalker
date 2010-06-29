@@ -48,8 +48,8 @@ class BBANDS : public IndicatorPlugin
     };
 
     BBANDS ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
     int dialog (int);
     int getBBANDS (PlotLine *in, int period, double udev, double ddev, int maType, int ulineType,
                    int mlineType, int llineType, QColor &ucolor, QColor &mcolor, QColor &lcolor,

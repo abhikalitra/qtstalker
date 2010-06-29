@@ -20,156 +20,124 @@
  */
 
 #include "Script.h"
+#include "ExScript.h"
 
 #include <QDebug>
 
 Script::Script ()
 {
-  status = 0;
-  refresh = 0;
-  scriptServer = 0;
-
-  timer = new QTimer(this);
-  connect(timer, SIGNAL(timeout()), this, SLOT(timerDone()));
+  _status = 0;
+  _refresh = 0;
+  _stopFlag = 0;
 }
 
-Script::~Script ()
+void Script::run ()
 {
-  timer->stop();
-  
-  if (scriptServer)
+  _stopFlag = 0;
+  QString command = _command + " " + _file;
+
+  while (! _stopFlag)
   {
-    scriptServer->stop();
-    delete scriptServer;
+    emit signalMessage(QString(tr("Script ")) + _name + tr(" started."));
+    
+    ExScript scriptServer;
+    scriptServer.calculate(command);
+    
+    emit signalMessage(QString(tr("Script ")) + _name + tr(" completed."));
+
+    if (! _refresh)
+      break;
+
+    if (_stopFlag)
+    {
+      emit signalMessage(QString(tr("Script ")) + _name + tr(" cancelled."));
+      break;
+    }
+    
+    sleep (_refresh);
+
+    if (_stopFlag)
+    {
+      emit signalMessage(QString(tr("Script ")) + _name + tr(" cancelled."));
+      break;
+    }
   }
+
+  emit signalDone(_name);
 }
 
 void Script::setName (QString &d)
 {
-  name = d;
+  _name = d;
 }
 
 QString & Script::getName ()
 {
-  return name;
+  return _name;
 }
 
 void Script::setCommand (QString &d)
 {
-  command = d;
+  _command = d;
 }
 
 QString & Script::getCommand ()
 {
-  return command;
+  return _command;
 }
 
 void Script::setFile (QString &d)
 {
-  file = d;
+  _file = d;
 }
 
 QString & Script::getFile ()
 {
-  return file;
+  return _file;
 }
 
 void Script::setComment (QString &d)
 {
-  comment = d;
+  _comment = d;
 }
 
 QString & Script::getComment ()
 {
-  return comment;
+  return _comment;
 }
 
 void Script::setStatus (int d)
 {
-  status = d;
+  _status = d;
 }
 
 int Script::getStatus ()
 {
-  return status;
+  return _status;
 }
 
 void Script::setLastRun (QDateTime &d)
 {
-  lastRun = d;
+  _lastRun = d;
 }
 
 QDateTime & Script::getLastRun ()
 {
-  return lastRun;
+  return _lastRun;
 }
 
 void Script::setRefresh (int d)
 {
-  refresh = d;
+  _refresh = d;
 }
 
 int Script::getRefresh ()
 {
-  return refresh;
-}
-
-void Script::start ()
-{
-  if (timer->isActive())
-    return;
-  
-  if (! scriptServer)
-  {
-    // setup the script server
-    scriptServer = new ExScript();
-//    scriptServer->setDeleteFlag(TRUE);
-    connect(scriptServer, SIGNAL(signalDone()), this, SLOT(scriptDone()));
-  }
-    
-  if (refresh > 0)
-    timer->start(1000 * refresh);	
-  else
-    startScript();
+  return _refresh;
 }
 
 void Script::stop ()
 {
-  timer->stop();	
-
-  if (scriptServer)
-    scriptServer->stop();
-
-  emit signalMessage(QString(tr("Script ")) + name + tr(" cancelled."));
+  _stopFlag = 1;
 }
-
-void Script::scriptDone ()
-{
-  if (! timer->isActive())
-  {
-    emit signalMessage(QString(tr("Script ")) + name + tr(" completed."));
-    emit signalDone(name);
-  }
-  else
-    emit signalMessage(QString(tr("Script ")) + name + tr(" completed."));
-}
-
-void Script::startScript ()
-{
-  if (! scriptServer)
-    return;
-  
-  if (scriptServer->getState())
-    return;
-  
-  QString s = command + " " + file;
-  emit signalMessage(QString(tr("Script ")) + name + tr(" started."));
-  scriptServer->calculate2(s);
-}
-
-void Script::timerDone ()
-{
-  startScript();
-}
-
 

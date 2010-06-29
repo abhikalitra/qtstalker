@@ -48,7 +48,7 @@ AROON::AROON ()
   _methodList << "OSC";
 }
 
-int AROON::getIndicator (Indicator &ind, BarData *data)
+int AROON::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Method, s);
@@ -121,7 +121,7 @@ int AROON::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int AROON::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int AROON::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AROON,<METHOD>,*
   //     0       1      2      3
@@ -149,7 +149,7 @@ int AROON::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return rc;
 }
 
-int AROON::getCUSAROON (QStringList &set, Indicator &ind, BarData *data)
+int AROON::getCUSAROON (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AROON,<METHOD>,<UPPER NAME>,<LOWER NAME>,<PERIOD>,<UPPER PLOT TYPE>,<LOWER PLOT TYPE>,<UPPER COLOR>,<LOWER COLOR>
   //     0       1      2      3           4            5          6            7                 8               9              10       
@@ -224,7 +224,7 @@ int AROON::getCUSAROON (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-int AROON::getCUSOSC (QStringList &set, Indicator &ind, BarData *data)
+int AROON::getCUSOSC (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AROON,<METHOD>,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1      2      3       4       5          6         7
@@ -276,10 +276,10 @@ int AROON::getCUSOSC (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-int AROON::getAROON (BarData *data, int period, int ulineType, int llineType, QColor &ucolor, QColor &lcolor,
+int AROON::getAROON (BarData &data, int period, int ulineType, int llineType, QColor &ucolor, QColor &lcolor,
                      QList<PlotLine *> &pl)
 {
-  int size = data->count();
+  int size = data.count();
   if (size < period)
     return 1;
   
@@ -293,9 +293,9 @@ int AROON::getAROON (BarData *data, int period, int ulineType, int llineType, QC
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
   }
 
   TA_RetCode rc = TA_AROON(0,
@@ -342,12 +342,12 @@ int AROON::getAROON (BarData *data, int period, int ulineType, int llineType, QC
   return 0;
 }
 
-PlotLine * AROON::getOSC (BarData *data, int period, int lineType, QColor &color)
+PlotLine * AROON::getOSC (BarData &data, int period, int lineType, QColor &color)
 {
-  if (data->count() < period)
+  if (data.count() < period)
     return 0;
 
-  int size = data->count();
+  int size = data.count();
 
   TA_Real high[size];
   TA_Real low[size];
@@ -358,9 +358,9 @@ PlotLine * AROON::getOSC (BarData *data, int period, int lineType, QColor &color
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
   }
 
   TA_RetCode rc = TA_AROONOSC(0,

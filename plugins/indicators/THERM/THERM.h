@@ -45,9 +45,9 @@ class THERM : public IndicatorPlugin
     };
 
     THERM ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
-    PlotLine * getTHERM (BarData *data, int smoothing, int type, int, QColor &);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
+    PlotLine * getTHERM (BarData &data, int smoothing, int type, int, QColor &);
     int dialog (int);
 };
 

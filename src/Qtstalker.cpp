@@ -323,38 +323,32 @@ void QtstalkerApp::loadChart (BarData symbol)
   // set plots to empty
   emit signalClearIndicator();
 
-  // save the new chart
-//  Config config;
-//  QStringList l;
-//  l.append(_currentChart.getExchange());
-//  l.append(_currentChart.getSymbol());
-//  config.setData(Config::CurrentChart, l);
-
   // create and populate the quote data
-  BarData recordList;
-  recordList.setSymbol(_currentChart.getSymbol());
-  recordList.setExchange(_currentChart.getExchange());
-  recordList.setBarLength((Bar::BarLength) _barLengthButtons->getCurrentButton());
-  recordList.setDateRange(_dateRange->dateRange());
-  recordList.setDateRangeOverride(_dateRangeButton->isChecked());
-  recordList.setStartDate(_dateRangeButton->startDate());
-  recordList.setEndDate(_dateRangeButton->endDate());
+  BarData bd = _currentChart;
+  bd.setBarLength((Bar::BarLength) _barLengthButtons->getCurrentButton());
+  bd.setDateRange(_dateRange->dateRange());
+  bd.setDateRangeOverride(_dateRangeButton->isChecked());
+  bd.setStartDate(_dateRangeButton->startDate());
+  bd.setEndDate(_dateRangeButton->endDate());
 
   QuoteIndexDataBase idb;
-  idb.getIndexData(&recordList);
+  idb.getIndexData(&bd);
 
   DBPluginFactory fac;
-  DBPlugin *qdb2 = fac.plugin(recordList.getPlugin());
-  if (! qdb2)
+  DBPlugin *qdb = fac.plugin(bd.getPlugin());
+  if (! qdb)
   {
     qDebug() << "QtStalkerApp::loadChart: no DB plugin";
     return;
   }
   
-  qdb2->getBars(recordList);
-  
-  _currentChart.setName(recordList.getName());
-  _currentChart.setDateRange(recordList.dateRange());
+  qdb->getBars(bd);
+
+  setSliderStart(bd.count());
+//  emit signalIndex(_plotSlider->getValue());
+
+  setWindowTitle(getWindowCaption());
+  statusMessage(QString());
 
   IndicatorDataBase db;
   QStringList indicatorList;
@@ -362,43 +356,13 @@ void QtstalkerApp::loadChart (BarData symbol)
 
   int loop;
   for (loop = 0; loop < indicatorList.count(); loop++)
-    loadIndicator(&recordList, indicatorList[loop]);
+  {
+    Plot *plot = _plotList.value(indicatorList[loop]);
+    if (! plot)
+      continue;
 
-  setSliderStart(recordList.count());
-  emit signalIndex(_plotSlider->getValue());
-
-  drawPlots();
-
-  setWindowTitle(getWindowCaption());
-  
-  statusMessage(QString());
-}
-
-void QtstalkerApp::loadIndicator (BarData *recordList, QString &d)
-{
-  Indicator i;
-  IndicatorDataBase db;
-  i.setName(d);
-  db.getIndicator(i);
-
-  IndicatorPluginFactory fac;
-  QString s;
-  s = i.indicator();
-  IndicatorPlugin *ip = fac.plugin(s);
-  if (! ip)
-    return;
-
-  ip->setSettings(i);
-  if (ip->getIndicator(i, recordList))
-    return;
-
-  Plot *plot = _plotList.value(d);
-  if (! plot)
-    return;
-
-  plot->setData(recordList);
-  plot->setIndicator(i);
-  plot->loadChartObjects();
+    plot->loadIndicator(bd, _plotSlider->getValue());
+  }
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -471,9 +435,7 @@ void QtstalkerApp::addIndicatorButton (QString d)
   _plotList.insert(d, plot);
   it->addTab(plot, d);
 
-  plot->setDateFlag(i.date());
-  plot->setLogScale(i.getLog());
-  plot->setIndex(_plotSlider->getValue());
+  plot->setIndicator(i);
 
   connect(plot, SIGNAL(signalBackgroundColorChanged(QColor)), this, SLOT(backgroundColorChanged(QColor)));
   connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
@@ -589,9 +551,8 @@ void QtstalkerApp::drawPlots ()
     QTabWidget *it = _tabList.at(loop);
     if (it->isHidden())
       continue;
-    
-    QString s = it->tabText(it->currentIndex());
-    Plot *p = _plotList.value(s);
+
+    Plot *p = (Plot *) it->currentWidget();
     if (p)
       p->draw();
   }

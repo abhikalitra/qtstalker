@@ -38,8 +38,8 @@ class MA : public IndicatorPlugin
     };
 
     MA ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
     int dialog (int);
 };
 

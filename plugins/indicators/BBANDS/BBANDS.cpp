@@ -52,7 +52,7 @@ BBANDS::BBANDS ()
   _settings.setData(MAType, "SMA");
 }
 
-int BBANDS::getIndicator (Indicator &ind, BarData *data)
+int BBANDS::getIndicator (Indicator &ind, BarData &data)
 {
   QColor up("green");
   QColor down("red");
@@ -67,7 +67,7 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
   ind.addPlotOrder(s);
 
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -140,7 +140,7 @@ int BBANDS::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int BBANDS::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int BBANDS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,BBANDS,<INPUT>,<NAME UPPER>,<NAME MIDDLE>,<NAME LOWER>,<PERIOD>,<MA_TYPE>,<UP DEV>,<LOW DEV>,<UPPER PLOT TYPE>,<MIDDLE PLOT TYPE>,<LOWER PLOT TYPE>,<UPPER COLOR>,<MIDDLE COLOR>,<LOWER COLOR>
   //     0       1      2       3         4             5            6          7         8        9        10            11                12                   13             14             15             16
@@ -154,7 +154,7 @@ int BBANDS::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[3]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data.getInput(data.getInputType(set[3]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[3];

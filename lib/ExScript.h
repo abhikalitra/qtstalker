@@ -54,9 +54,10 @@ class ExScript : public QObject
     ExScript ();
     ~ExScript ();
     void clear ();
-    void setBarData (BarData *d);
+    void setBarData (BarData &);
+    void setIndicator (Indicator &);
     int calculate (QString &command);
-    int calculate2 (QString &command); // used for non indicator scripts
+//    int calculate2 (QString &command); // used for non indicator scripts
     Indicator & indicator ();
     int getState ();
     void stop ();
@@ -69,7 +70,7 @@ class ExScript : public QObject
   private:
     QProcess *_proc;
     QStringList _functionList;
-    BarData *_data;
+    BarData _data;
     int _killFlag;
     SCQuote _quotes;
     Indicator _indicator;

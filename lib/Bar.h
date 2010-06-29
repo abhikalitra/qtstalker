@@ -101,6 +101,7 @@ class Bar
     int getError ();
     void getRangeKey (QString &);
     void getBarLengthList (QStringList &);
+    int count ();
 
   protected:
     QHash<int, double> data;

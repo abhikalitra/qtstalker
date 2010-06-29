@@ -49,7 +49,7 @@ PP::PP ()
   _settings.setData(S3Show, 1);
 }
 
-int PP::getIndicator (Indicator &ind, BarData *data)
+int PP::getIndicator (Indicator &ind, BarData &data)
 {
   QColor up("green");
   QColor down("red");
@@ -175,7 +175,7 @@ int PP::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int PP::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int PP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,PP,<NAME>,<POINT>,<COLOR>
   //     0       1     2    3      4       5
@@ -227,9 +227,9 @@ int PP::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * PP::getPP (BarData *data, int point, QColor &color)
+PlotLine * PP::getPP (BarData &data, int point, QColor &color)
 {
-  if (data->count() < 1)
+  if (data.count() < 1)
     return 0;
 
   QString s = "Horizontal";
@@ -238,10 +238,10 @@ PlotLine * PP::getPP (BarData *data, int point, QColor &color)
   if (! output)
     return 0;
 
-  Bar *bar = data->getBar(data->count() - 1);
-  double high = bar->getHigh();
-  double low = bar->getLow();
-  double close = bar->getClose();
+  Bar bar = data.getBar(data.count() - 1);
+  double high = bar.getHigh();
+  double low = bar.getLow();
+  double close = bar.getClose();
   double pp = 0;
   double t = 0;
 

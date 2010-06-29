@@ -42,11 +42,11 @@ BETA::BETA ()
   _settings.setData(Period, 5);
 }
 
-int BETA::getIndicator (Indicator &ind, BarData *data)
+int BETA::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -56,8 +56,8 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
   _settings.getData(Index, s);
   BarData bd;
   bd.setSymbol(s);
-  bd.setBarLength(data->getBarLength());
-  bd.setDateRange(data->dateRange());
+  bd.setBarLength(data.getBarLength());
+  bd.setDateRange(data.dateRange());
 
   DBPlugin db;
   db.getBars(bd);
@@ -100,7 +100,7 @@ int BETA::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int BETA::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int BETA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,BETA,<NAME>,<INPUT_1>,<INPUT_2>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1      2     3       4         5        6          7         8
@@ -121,7 +121,7 @@ int BETA::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[4];
@@ -134,7 +134,7 @@ int BETA::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in2 = ind.line(set[5]);
   if (! in2)
   {
-    in2 = data->getInput(data->getInputType(set[5]));
+    in2 = data.getInput(data.getInputType(set[5]));
     if (! in2)
     {
       qDebug() << _indicator << "::getCUS: input2 not found" << set[5];

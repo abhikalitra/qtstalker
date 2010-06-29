@@ -38,8 +38,8 @@ class T3 : public IndicatorPlugin
     };
 
     T3 ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
     PlotLine * getT3 (PlotLine *in, int period, double vfactor, int, QColor &);
     int dialog (int);
 };

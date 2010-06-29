@@ -37,8 +37,8 @@ class TRIX : public IndicatorPlugin
     };
 
     TRIX ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
     PlotLine * getTRIX (PlotLine *in, int period, int, QColor &);
     int dialog (int);
 };

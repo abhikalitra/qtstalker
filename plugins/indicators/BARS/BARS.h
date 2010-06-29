@@ -51,8 +51,8 @@ class BARS : public IndicatorPlugin
     };
 
     BARS ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     int dialog (int);
 };
 

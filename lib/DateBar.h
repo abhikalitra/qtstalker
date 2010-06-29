@@ -35,7 +35,7 @@ class DateBar
     int count ();
     void getDate (int, QDateTime &);
     int getX (QDateTime &);
-    void createDateList (BarData *);
+    void createDateList (BarData &);
     void getDateString (int, QString &);
     void getTimeString (int, QString &);
     void getDateTimeString (int, QString &);

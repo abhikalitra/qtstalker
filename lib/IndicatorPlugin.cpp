@@ -34,13 +34,13 @@ IndicatorPlugin::~IndicatorPlugin ()
 }
 
 // virtual function
-int IndicatorPlugin::getIndicator (Indicator &, BarData *)
+int IndicatorPlugin::getIndicator (Indicator &, BarData &)
 {
   return 0;
 }
 
 // virtual function
-int IndicatorPlugin::getCUS (QStringList &, Indicator &, BarData *)
+int IndicatorPlugin::getCUS (QStringList &, Indicator &, BarData &)
 {
   return 0;
 }

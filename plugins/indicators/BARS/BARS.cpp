@@ -53,7 +53,7 @@ BARS::BARS ()
   _settings.setData(MA3Type, "SMA");
 }
 
-int BARS::getIndicator (Indicator &ind, BarData *data)
+int BARS::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(UpColor, s);
@@ -158,7 +158,7 @@ int BARS::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int BARS::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int BARS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,BARS,<NAME>,<BAR_UP_COLOR>,<BAR_DOWN_COLOR>,<BAR_NEUTRAL_COLOR>
   //     0       1     2     3          4              5                  6

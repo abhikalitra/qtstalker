@@ -46,11 +46,11 @@ MAVP::MAVP ()
   _settings.setData(MAType, "SMA");
 }
 
-int MAVP::getIndicator (Indicator &ind, BarData *data)
+int MAVP::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -58,7 +58,7 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   }
 
   _settings.getData(Input2, s);
-  PlotLine *in2 = data->getInput(data->getInputType(s));
+  PlotLine *in2 = data.getInput(data.getInputType(s));
   if (! in2)
   {
     delete in;
@@ -113,7 +113,7 @@ int MAVP::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int MAVP::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int MAVP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,MAVP,<NAME>,<INPUT_1>,<INPUT_2>,<MIN_PERIOD>,<MAX_PERIOD>,<MA_TYPE>,<PLOT TYPE>,<COLOR>
   //     0       1     2     3        4        5           6            7          8           9         10
@@ -134,7 +134,7 @@ int MAVP::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[4]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[4];
@@ -147,7 +147,7 @@ int MAVP::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in2 = ind.line(set[5]);
   if (! in2)
   {
-    in2 = data->getInput(data->getInputType(set[5]));
+    in2 = data.getInput(data.getInputType(set[5]));
     if (! in2)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[5];

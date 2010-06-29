@@ -53,7 +53,7 @@ THERM::THERM ()
   _settings.setData(SmoothingType, "SMA");
 }
 
-int THERM::getIndicator (Indicator &ind, BarData *data)
+int THERM::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   int smoothing = _settings.getInt(Smoothing);
@@ -146,7 +146,7 @@ int THERM::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int THERM::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int THERM::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,THERM,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
 
@@ -205,9 +205,9 @@ int THERM::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * THERM::getTHERM (BarData *data, int smoothing, int type, int lineType, QColor &color)
+PlotLine * THERM::getTHERM (BarData &data, int smoothing, int type, int lineType, QColor &color)
 {
-  if (data->count() < smoothing || data->count() < 2)
+  if (data.count() < smoothing || data.count() < 2)
     return 0;
 
   PlotFactory fac;
@@ -217,12 +217,12 @@ PlotLine * THERM::getTHERM (BarData *data, int smoothing, int type, int lineType
 
   int loop = 1;
   double thermometer = 0;
-  for (; loop < (int) data->count(); loop++)
+  for (; loop < (int) data.count(); loop++)
   {
-    Bar *bar = data->getBar(loop);
-    Bar *pbar = data->getBar(loop - 1);
-    double high = fabs(bar->getHigh() - pbar->getHigh());
-    double lo = fabs(pbar->getLow() - bar->getLow());
+    Bar bar = data.getBar(loop);
+    Bar pbar = data.getBar(loop - 1);
+    double high = fabs(bar.getHigh() - pbar.getHigh());
+    double lo = fabs(pbar.getLow() - bar.getLow());
 
     if (high > lo)
       thermometer = high;

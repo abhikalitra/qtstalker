@@ -49,7 +49,7 @@ STOCH::STOCH ()
   _settings.setData(Ref2, 80);
 }
 
-int STOCH::getIndicator (Indicator &ind, BarData *data)
+int STOCH::getIndicator (Indicator &ind, BarData &data)
 {
   // create first ref line
   QString s = "Horizontal";
@@ -134,7 +134,7 @@ int STOCH::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int STOCH::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int STOCH::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,STOCH,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>,<FASTK PLOT TYPE>,<FASTD PLOT TYPE>,<FASTK COLOR>,<FASTD COLOR>
   //     0        1    2         3            4              5             6              7                 8                9                10            11
@@ -234,13 +234,13 @@ int STOCH::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-int STOCH::getSTOCH (BarData *data, int kperiod, int dperiod, int ma, int klineType, QColor &kcolor,
+int STOCH::getSTOCH (BarData &data, int kperiod, int dperiod, int ma, int klineType, QColor &kcolor,
                      int dlineType, QColor &dcolor, QList<PlotLine *> &pl)
 {
-  if (data->count() < kperiod || data->count() < dperiod)
+  if (data.count() < kperiod || data.count() < dperiod)
     return 1;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -252,10 +252,10 @@ int STOCH::getSTOCH (BarData *data, int kperiod, int dperiod, int ma, int klineT
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
   }
 
   TA_RetCode rc = TA_STOCHF(0,

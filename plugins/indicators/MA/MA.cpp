@@ -39,7 +39,7 @@ MA::MA ()
   _settings.setData(Method, "SMA");
 }
 
-int MA::getIndicator (Indicator &ind, BarData *data)
+int MA::getIndicator (Indicator &ind, BarData &data)
 {
   QColor up("green");
   QColor down("red");
@@ -55,7 +55,7 @@ int MA::getIndicator (Indicator &ind, BarData *data)
 
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -94,7 +94,7 @@ int MA::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int MA::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int MA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,MA,<METHOD>,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
   //     0       1    2     3       4       5       6          7         8
@@ -123,7 +123,7 @@ int MA::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[5]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[5]));
+    in = data.getInput(data.getInputType(set[5]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[5];

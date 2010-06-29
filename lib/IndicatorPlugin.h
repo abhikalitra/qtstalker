@@ -36,8 +36,8 @@ class IndicatorPlugin
   public:
     IndicatorPlugin ();
     virtual ~IndicatorPlugin ();
-    virtual int getIndicator (Indicator &, BarData *);
-    virtual int getCUS (QStringList &, Indicator &, BarData *);
+    virtual int getIndicator (Indicator &, BarData &);
+    virtual int getCUS (QStringList &, Indicator &, BarData &);
     virtual int dialog (int);
 
     void setSettings (Indicator &);

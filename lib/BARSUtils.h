@@ -31,7 +31,7 @@ class BARSUtils
 {
   public:
     BARSUtils ();
-    PlotLine * getBARS (BarData *data, QColor &_up, QColor &_down, QColor &_neutral);
+    PlotLine * getBARS (BarData &data, QColor &_up, QColor &_down, QColor &_neutral);
 };
 
 #endif

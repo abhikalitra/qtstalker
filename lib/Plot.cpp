@@ -27,6 +27,8 @@
 #include "PlotCursorInfo.h"
 #include "PlotDrawInfo.h"
 #include "PlotCursorFactory.h"
+#include "IndicatorDataBase.h"
+#include "Globals.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -71,6 +73,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _menuFlag = TRUE;
   _newObjectFlag = 0;
   _cursor = 0;
+  _thread = 0;
 
   _coMenu = new QMenu(this);
   _coMenu->addAction(QPixmap(edit), tr("&Edit Chart Object"), this, SLOT(objectDialog()), Qt::ALT+Qt::Key_E);
@@ -427,15 +430,38 @@ void Plot::logScaleChanged (bool d)
   emit signalDraw();
 }
 
-void Plot::setData (BarData *l)
+void Plot::loadIndicator (BarData &data, int index)
 {
-  if (! l->count())
+  setData(data);
+  setIndex(index);
+
+  IndicatorDataBase db;
+  db.getIndicator(_indicator);
+
+  _thread = new IndicatorThread(this, data, _indicator);
+  connect(_thread, SIGNAL(finished()), this, SLOT(indicatorThreadFinished()));
+  _thread->start();
+}
+
+void Plot::indicatorThreadFinished ()
+{
+  setIndicator(_thread->indicator());
+  loadChartObjects();
+  if (isVisible())
+    draw();
+
+  delete _thread;
+}
+
+void Plot::setData (BarData &data)
+{
+  if (! data.count())
     return;
 
-  _dateBars.createDateList(l);
+  _dateBars.createDateList(data);
   
-  _exchange = l->getExchange();
-  _symbol = l->getSymbol();
+  _exchange = data.getExchange();
+  _symbol = data.getSymbol();
 }
 
 void Plot::setInfoFlag (bool d)
@@ -750,12 +776,17 @@ void Plot::saveChartObjects ()
 
   QList<int> keyList;
   _indicator.coKeys(keyList);
+
+  // we have to lock the mutex here because objects are saved before
+  // we load a new indicator
+  g_mutex.lock();
   int loop = 0;
   for (; loop < keyList.count(); loop++)
   {
     COPlugin *co = _indicator.chartObject(keyList.at(loop));
     co->save();
   }
+  g_mutex.unlock();
 }
 
 void Plot::loadChartObjects ()

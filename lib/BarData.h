@@ -48,17 +48,16 @@ class BarData
     };
 
     BarData ();
-    ~BarData ();
     int count ();
-    void prepend (Bar *bar);
-    void append (Bar *bar);
+    void prepend (Bar bar);
+    void append (Bar bar);
     double getMax ();
     double getMin ();
     void getInputFields (QStringList &);
     PlotLine * getInput (BarData::InputType, int, QColor &);
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
-    Bar *getBar (int);
+    Bar & getBar (int);
     void setMinMax ();
     void setBarLength (Bar::BarLength);
     void setBarLength (QString &);
@@ -86,7 +85,7 @@ class BarData
     QDateTime & endDate ();
 
   protected:
-    QList<Bar *> _barList;
+    QList<Bar> _barList;
     double _high;
     double _low;
     Bar::BarLength _length;

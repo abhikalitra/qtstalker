@@ -38,8 +38,8 @@ class BETA : public IndicatorPlugin
     };
 
     BETA ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
     PlotLine * getBETA (PlotLine *in, PlotLine *in2, int period, int, QColor &);
     int dialog (int);
 };

@@ -51,7 +51,7 @@ STOCHS::STOCHS ()
   _settings.setData(Ref2, 80);
 }
 
-int STOCHS::getIndicator (Indicator &ind, BarData *data)
+int STOCHS::getIndicator (Indicator &ind, BarData &data)
 {
   // create first ref line
   QString s = "Horizontal";
@@ -142,7 +142,7 @@ int STOCHS::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int STOCHS::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int STOCHS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,STOCHS,<NAME SLOWK>,<NAME SLOWD>,<FASTK PERIOD>,<SLOWK PERIOD>,<SLOWK MA TYPE>,<SLOWD PERIOD>,<SLOWD MA TYPE>,<SLOWK PLOT TYPE>,<SLOWD PLOT TYPE>,<SLOWK COLOR>,<SLOWD COLOR>
   //     0       1      2         3            4             5              6               7              8              9                10                11               12            13
@@ -258,13 +258,13 @@ int STOCHS::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-int STOCHS::getSTOCHS (BarData *data, int fkperiod, int skperiod, int sdperiod, int kma, int dma,
+int STOCHS::getSTOCHS (BarData &data, int fkperiod, int skperiod, int sdperiod, int kma, int dma,
                        int klineType, QColor &kcolor, int dlineType, QColor &dcolor, QList<PlotLine *> &pl)
 {
-  if (data->count() < fkperiod || data->count() < skperiod)
+  if (data.count() < fkperiod || data.count() < skperiod)
     return 1;
 
-  int size = data->count();
+  int size = data.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -276,10 +276,10 @@ int STOCHS::getSTOCHS (BarData *data, int fkperiod, int skperiod, int sdperiod, 
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->getBar(loop);
-    high[loop] = (TA_Real) bar->getHigh();
-    low[loop] = (TA_Real) bar->getLow();
-    close[loop] = (TA_Real) bar->getClose();
+    Bar bar = data.getBar(loop);
+    high[loop] = (TA_Real) bar.getHigh();
+    low[loop] = (TA_Real) bar.getLow();
+    close[loop] = (TA_Real) bar.getClose();
   }
 
   TA_RetCode rc = TA_STOCH(0,

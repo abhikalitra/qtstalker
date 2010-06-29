@@ -42,9 +42,9 @@ class CCI : public IndicatorPlugin
     };
 
     CCI ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
-    PlotLine * getCCI (BarData *data, int period, int smoothing, int type, int, QColor &);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
+    PlotLine * getCCI (BarData &data, int period, int smoothing, int type, int, QColor &);
     int dialog (int);
 };
 

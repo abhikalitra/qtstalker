@@ -33,7 +33,7 @@ CUS::CUS ()
   _settings.setData(Script, "/usr/local/share/qtstalker/indicator/");
 }
 
-int CUS::getIndicator (Indicator &ind, BarData *data)
+int CUS::getIndicator (Indicator &ind, BarData &data)
 {
   QString s, s2;
   _settings.getData(Command, s);
@@ -42,19 +42,10 @@ int CUS::getIndicator (Indicator &ind, BarData *data)
 
   ExScript script;
   script.setBarData(data);
+  script.setIndicator(ind);
   int rc = script.calculate(s);
   if (! rc)
-  {
-    int cus = ind.CUS();
-    int log = ind.getLog();
-    int tabRow = ind.tabRow();
-    
     ind = script.indicator();
-    
-    ind.setCUS(cus);
-    ind.setLog(log);
-    ind.setTabRow(tabRow);
-  }
 
   return rc;
 }

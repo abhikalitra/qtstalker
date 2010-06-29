@@ -48,11 +48,11 @@ MAMA::MAMA ()
   _settings.setData(Input, "Close");
 }
 
-int MAMA::getIndicator (Indicator &ind, BarData *data)
+int MAMA::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Input, s);
-  PlotLine *in = data->getInput(data->getInputType(s));
+  PlotLine *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -160,7 +160,7 @@ int MAMA::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int MAMA::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int MAMA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,MAMA,<INPUT>,<NAME_MAMA>,<NAME_FAMA>,<FAST_LIMIT>,<SLOW_LIMIT>,<MAMA PLOT TYPE>,<FAMA PLOT TYPE>,<MAMA COLOR>,<FAMA COLOR>
   //      0       1     2     3         4           5           6            7              8                9              10          11
@@ -174,7 +174,7 @@ int MAMA::getCUS (QStringList &set, Indicator &ind, BarData *data)
   PlotLine *in = ind.line(set[3]);
   if (! in)
   {
-    in = data->getInput(data->getInputType(set[3]));
+    in = data.getInput(data.getInputType(set[3]));
     if (! in)
     {
       qDebug() << _indicator << "::getCUS: input not found" << set[3];

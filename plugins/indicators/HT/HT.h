@@ -49,11 +49,11 @@ class HT : public IndicatorPlugin
     };
 
     HT ();
-    int getIndicator (Indicator &ind, BarData *data);
-    int getCUS (QStringList &, Indicator &, BarData *);
-    int getCUSPHASE (QStringList &set, Indicator &, BarData *data);
-    int getCUSSINE (QStringList &set, Indicator &, BarData *data);
-    int getCUSHT (QStringList &set, Indicator &, BarData *data);
+    int getIndicator (Indicator &ind, BarData &data);
+    int getCUS (QStringList &, Indicator &, BarData &);
+    int getCUSPHASE (QStringList &set, Indicator &, BarData &data);
+    int getCUSSINE (QStringList &set, Indicator &, BarData &data);
+    int getCUSHT (QStringList &set, Indicator &, BarData &data);
     PlotLine * getHT (PlotLine *in, int method, int, QColor &);
     int getPHASE (PlotLine *in, int, int, QColor &, QColor &, QList<PlotLine *> &pl);
     int getSINE (PlotLine *in, int, int, QColor &, QColor &, QList<PlotLine *> &pl);

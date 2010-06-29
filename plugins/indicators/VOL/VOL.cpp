@@ -41,7 +41,7 @@ VOL::VOL ()
   _settings.setData(MAType, "SMA");
 }
 
-int VOL::getIndicator (Indicator &ind, BarData *data)
+int VOL::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
   _settings.getData(Plot, s);
@@ -95,7 +95,7 @@ int VOL::getIndicator (Indicator &ind, BarData *data)
   return 0;
 }
 
-int VOL::getCUS (QStringList &set, Indicator &ind, BarData *data)
+int VOL::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,VOL,<NAME>,<PLOT TYPE>,<COLOR>
   //     0       1     2    3         4         5
@@ -139,9 +139,9 @@ int VOL::getCUS (QStringList &set, Indicator &ind, BarData *data)
   return 0;
 }
 
-PlotLine * VOL::getVOL (BarData *data, int lineType, QColor &up, QColor &down, QColor &neutral)
+PlotLine * VOL::getVOL (BarData &data, int lineType, QColor &up, QColor &down, QColor &neutral)
 {
-  if (data->count() < 2)
+  if (data.count() < 2)
     return 0;
   
   PlotFactory fac;
@@ -151,23 +151,23 @@ PlotLine * VOL::getVOL (BarData *data, int lineType, QColor &up, QColor &down, Q
 
   // set the first bar to neutral
   int loop = 0;
-  Bar *bar = data->getBar(loop);
-  vol->setData(loop, new PlotLineBar(neutral, bar->getVolume()));
+  Bar bar = data.getBar(loop);
+  vol->setData(loop, new PlotLineBar(neutral, bar.getVolume()));
 
   loop++;
-  for (; loop < data->count(); loop++)
+  for (; loop < data.count(); loop++)
   {
-    Bar *bar = data->getBar(loop);
-    Bar *pbar = data->getBar(loop - 1);
+    Bar bar = data.getBar(loop);
+    Bar pbar = data.getBar(loop - 1);
     
-    if (bar->getClose() < pbar->getClose())
-      vol->setData(loop, new PlotLineBar(down, bar->getVolume()));
+    if (bar.getClose() < pbar.getClose())
+      vol->setData(loop, new PlotLineBar(down, bar.getVolume()));
     else
     {
-      if (bar->getClose() > pbar->getClose())
-        vol->setData(loop, new PlotLineBar(up, bar->getVolume()));
+      if (bar.getClose() > pbar.getClose())
+        vol->setData(loop, new PlotLineBar(up, bar.getVolume()));
       else
-        vol->setData(loop, new PlotLineBar(neutral, bar->getVolume()));
+        vol->setData(loop, new PlotLineBar(neutral, bar.getVolume()));
     }
   }
   
