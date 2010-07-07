@@ -147,11 +147,14 @@ int CANDLES::getIndicator (Indicator &ind, BarData &data)
       int loop = 0;
       for (; loop < line2->count(); loop++)
       {
-        PlotLineBar *bar2 = line2->data(loop);
-        if (bar2->data() > 0)
+        PlotLineBar bar2;
+        line2->data(loop, bar2);
+        if (bar2.data() > 0)
         {
-          PlotLineBar *bar = line->data(loop);
-          bar->setColor(c);
+          PlotLineBar bar;
+          line->data(loop, bar);
+          bar.setColor(c);
+          line->setData(loop, bar);
         }
       }
       
@@ -380,13 +383,13 @@ PlotLine * CANDLES::getCANDLES (BarData &data, QColor &color)
   int size = data.count();
   for (loop = 0; loop < size; loop++)
   {
-    PlotLineBar *bar = new PlotLineBar;
+    PlotLineBar bar;
     Bar tbar = data.getBar(loop);
-    bar->setData(0, tbar.getOpen());
-    bar->setData(1, tbar.getHigh());
-    bar->setData(2, tbar.getLow());
-    bar->setData(3, tbar.getClose());
-    bar->setColor(color);
+    bar.setData(0, tbar.getOpen());
+    bar.setData(1, tbar.getHigh());
+    bar.setData(2, tbar.getLow());
+    bar.setData(3, tbar.getClose());
+    bar.setColor(color);
     line->setData(loop, bar);
   }
 
@@ -715,7 +718,8 @@ PlotLine * CANDLES::getMethod (BarData &data, int method, double pen, int lineTy
   int outLoop = outNb - 1;
   while (dataLoop > -1 && outLoop > -1)
   {
-    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(dataLoop, bar);
     dataLoop--;
     outLoop--;
   }

@@ -110,15 +110,18 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
     int loop = 0;
     for (; loop < keys.count(); loop++)
     {
-      PlotLineBar *mbar = mama->data(keys.at(loop));
-      if (! mbar)
+      PlotLineBar mbar;
+      mama->data(keys.at(loop), mbar);
+      if (! mbar.count())
         continue;
 
-      PlotLineBar *fbar = fama->data(keys.at(loop));
-      if (! fbar)
+      PlotLineBar fbar;
+      fama->data(keys.at(loop), fbar);
+      if (! fbar.count())
         continue;
 
-      line->setData(keys.at(loop), new PlotLineBar(color, mbar->data() - fbar->data()));
+      PlotLineBar bar(color, mbar.data() - fbar.data());
+      line->setData(keys.at(loop), bar);
     }
 
     s = "0";
@@ -274,8 +277,9 @@ int MAMA::getMAMA (PlotLine *in, double fast, double slow, QList<PlotLine *> &l,
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_MAMA(0, size - 1, &input[0], fast, slow, &outBeg, &outNb, &out[0], &out2[0]);
@@ -301,8 +305,11 @@ int MAMA::getMAMA (PlotLine *in, double fast, double slow, QList<PlotLine *> &l,
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    mama->setData(keys.at(keyLoop), new PlotLineBar(mcolor, out[outLoop]));
-    fama->setData(keys.at(keyLoop), new PlotLineBar(fcolor, out2[outLoop]));
+    PlotLineBar bar(mcolor, out[outLoop]);
+    mama->setData(keys.at(keyLoop), bar);
+    
+    PlotLineBar bar2(fcolor, out2[outLoop]);
+    fama->setData(keys.at(keyLoop), bar2);
     keyLoop--;
     outLoop--;
   }

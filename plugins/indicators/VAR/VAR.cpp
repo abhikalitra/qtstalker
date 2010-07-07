@@ -161,8 +161,9 @@ PlotLine * VAR::getVAR (PlotLine *in, int period, int lineType, QColor &color)
   int loop = 0;
   for (; loop < size; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_VAR(0,
@@ -188,7 +189,8 @@ PlotLine * VAR::getVAR (PlotLine *in, int period, int lineType, QColor &color)
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(keys.at(keyLoop), bar);
     keyLoop--;
     outLoop--;
   }

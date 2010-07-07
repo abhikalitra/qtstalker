@@ -37,15 +37,16 @@ void Horizontal::draw (PlotData &pd, Scaler &scaler)
   QPainter painter;
   painter.begin(&pd.buffer);
 
-  PlotLineBar *bar = data(count() - 1);
+  PlotLineBar bar;
+  data(count() - 1, bar);
 
-  painter.setPen(bar->color());
+  painter.setPen(bar.color());
   
-  int y = scaler.convertToY(bar->data());
+  int y = scaler.convertToY(bar.data());
 
   Strip strip;
   QString s, s2;
-  strip.strip(bar->data(), 4, s);
+  strip.strip(bar.data(), 4, s);
   s2 = label();
   s = s2 + s;
 

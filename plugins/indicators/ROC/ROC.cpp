@@ -197,8 +197,9 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int
   int loop = 0;
   for (; loop < size; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_SUCCESS;
@@ -236,7 +237,8 @@ PlotLine * ROC::getROC (PlotLine *in, int period, int method, int smoothing, int
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(keys.at(keyLoop), bar);
     keyLoop--;
     outLoop--;
   }

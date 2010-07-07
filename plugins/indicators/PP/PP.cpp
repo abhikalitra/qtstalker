@@ -248,35 +248,53 @@ PlotLine * PP::getPP (BarData &data, int point, QColor &color)
   switch (point)
   {
     case 0: // first resistance
+    {
       pp = (high + low + close) / 3;
       t = (2 * pp) - low;
-      output->setData(0, new PlotLineBar(color, t));
+      PlotLineBar bar(color, t);
+      output->setData(0, bar);
       break;
+    }
     case 1: // second resistance
+    {
       pp = (high + low + close) / 3;
       t = pp + (high - low);
-      output->setData(0, new PlotLineBar(color, t));
+      PlotLineBar bar(color, t);
+      output->setData(0, bar);
       break;
+    }
     case 2: // third resistance
+    {
       pp = (high + low + close) / 3;
       t = (2 * pp) + (high - (2 * low));
-      output->setData(0, new PlotLineBar(color, t));
+      PlotLineBar bar(color, t);
+      output->setData(0, bar);
       break;
+    }
     case 3: // first support
+    {
       pp = (high + low + close) / 3;
       t = (2 * pp) - high;
-      output->setData(0, new PlotLineBar(color, t));
+      PlotLineBar bar(color, t);
+      output->setData(0, bar);
       break;
+    }
     case 4: // second support
+    {
       pp = (high + low + close) / 3;
       t = pp - (high - low);
-      output->setData(0, new PlotLineBar(color, t));
+      PlotLineBar bar(color, t);
+      output->setData(0, bar);
       break;
+    }
     case 5: // third support
+    {
       pp = (high + low + close) / 3;
       t = (2 * pp) - ((2 * high) - low);
-      output->setData(0, new PlotLineBar(color, t));
+      PlotLineBar bar(color, t);
+      output->setData(0, bar);
       break;
+    }
     default:
       break;
   }

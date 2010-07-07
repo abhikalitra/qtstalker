@@ -58,7 +58,8 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, new PlotLineBar(color, _settings.getInt(Ref1)));
+  PlotLineBar bar(color, _settings.getInt(Ref1));
+  line->setData(0, bar);
   
   s = "0";
   ind.setLine(s, line);
@@ -73,7 +74,8 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, new PlotLineBar(color, _settings.getInt(Ref2)));
+  PlotLineBar bar2(color, _settings.getInt(Ref2));
+  line->setData(0, bar2);
   
   s = "1";
   ind.setLine(s, line);
@@ -223,7 +225,8 @@ PlotLine * MFI::getMFI (BarData &data, int period, int smoothing, int type, int 
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(dataLoop, bar);
     dataLoop--;
     outLoop--;
   }

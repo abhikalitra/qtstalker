@@ -38,23 +38,24 @@ void OHLC::draw (PlotData &pd, Scaler &scaler)
   int x = 0;
   for (; loop <= pd.endIndex; loop++, x += pd.barSpacing)
   {
-    PlotLineBar *bar = data(loop);
-    if (! bar)
+    PlotLineBar bar;
+    data(loop, bar);
+    if (! bar.count())
       continue;
 
-    painter.setPen(bar->color());
+    painter.setPen(bar.color());
 
     // draw the open tick
-    int y = scaler.convertToY(bar->data(0));
+    int y = scaler.convertToY(bar.data(0));
     painter.drawLine (x, y, x + 2, y);
 
     // draw the close tick
-    y = scaler.convertToY(bar->data(3));
+    y = scaler.convertToY(bar.data(3));
     painter.drawLine (x + 2, y, x + 4, y);
 
     // draw the high/low tick
-    y = scaler.convertToY(bar->data(1));
-    int y2 = scaler.convertToY(bar->data(2));
+    y = scaler.convertToY(bar.data(1));
+    int y2 = scaler.convertToY(bar.data(2));
     painter.drawLine (x + 2, y, x + 2, y2);
   }
 
@@ -63,27 +64,28 @@ void OHLC::draw (PlotData &pd, Scaler &scaler)
 
 void OHLC::info (int i, Setting *set)
 {
-  PlotLineBar *bar = data(i);
-  if (! bar)
+  PlotLineBar bar;
+  data(i, bar);
+  if (! bar.count())
     return;
 
   QString k = "O";
   QString d;
 
   Strip strip;
-  strip.strip(bar->data(0), 4, d);
+  strip.strip(bar.data(0), 4, d);
   set->setData(k, d);
 
   k = "H";
-  strip.strip(bar->data(1), 4, d);
+  strip.strip(bar.data(1), 4, d);
   set->setData(k, d);
 
   k = "L";
-  strip.strip(bar->data(2), 4, d);
+  strip.strip(bar.data(2), 4, d);
   set->setData(k, d);
 
   k = "C";
-  strip.strip(bar->data(3), 4, d);
+  strip.strip(bar.data(3), 4, d);
   set->setData(k, d);
 }
 

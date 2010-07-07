@@ -66,17 +66,18 @@ void PlotDrawInfo::draw (PlotData &pd, Indicator &indicator, DateBar &dateBars)
     if (line->type() == "Horizontal")
       continue;
       
-    PlotLineBar *bar = line->data(pd.infoIndex);
-    if (! bar)
+    PlotLineBar bar;
+    line->data(pd.infoIndex, bar);
+    if (! bar.count())
       continue;
 	
     s = line->label() + "=";
     QString str;
-    strip.strip(bar->data(), 4, str);
+    strip.strip(bar.data(), 4, str);
     s.append(str);
     s.append(" ");
 
-    painter.setPen(bar->color());
+    painter.setPen(bar.color());
     painter.drawText(pos, 10, s);
     pos = pos + fm.width(s);
   }

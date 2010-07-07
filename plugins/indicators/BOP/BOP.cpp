@@ -176,7 +176,10 @@ PlotLine * BOP::getBOP (BarData &data, int smoothing, int type, int lineType, QC
     return 0;
 
   for (loop = 0; loop < size; loop++)
-    line->setData(loop, new PlotLineBar(color, out[loop]));
+  {
+    PlotLineBar bar(color, out[loop]);
+    line->setData(loop, bar);
+  }
 
   if (smoothing > 1)
   {

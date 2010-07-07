@@ -60,7 +60,8 @@ int CCI::getIndicator (Indicator &ind, BarData &data)
   QColor color(s);
 
   int ref = _settings.getInt(Ref1);
-  rline->setData(0, new PlotLineBar(color, ref));
+  PlotLineBar bar(color, ref);
+  rline->setData(0, bar);
   
   s = "0";
   ind.setLine(s, rline);
@@ -76,7 +77,8 @@ int CCI::getIndicator (Indicator &ind, BarData &data)
   color.setNamedColor(s);
 
   ref = _settings.getInt(Ref2);
-  rline->setData(0, new PlotLineBar(color, ref));
+  PlotLineBar bar2(color, ref);
+  rline->setData(0, bar2);
 
   s = "1";
   ind.setLine(s, rline);
@@ -223,7 +225,8 @@ PlotLine * CCI::getCCI (BarData &data, int period, int smoothing, int type, int 
   int outLoop = outNb - 1;
   while (dataLoop > -1 && outLoop > -1)
   {
-    cci->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    cci->setData(dataLoop, bar);
     dataLoop--;
     outLoop--;
   }

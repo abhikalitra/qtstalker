@@ -234,10 +234,14 @@ PlotLine * MAVP::getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma,
   int loop2 = keys2.count() - 1;
   while (loop > -1 && loop2 > -1)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    PlotLineBar *bar2 = in2->data(keys2.at(loop2));
-    input[loop] = (TA_Real) bar->data();
-    input2[loop2] = (TA_Real) bar2->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    
+    PlotLineBar bar2;
+    in2->data(keys2.at(loop2), bar2);
+    
+    input[loop] = (TA_Real) bar.data();
+    input2[loop2] = (TA_Real) bar2.data();
 
     loop--;
     loop2--;
@@ -261,7 +265,8 @@ PlotLine * MAVP::getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma,
     int outLoop = outNb - 1;
     while (keyLoop > -1 && outLoop > -1)
     {
-      line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+      PlotLineBar bar(color, out[outLoop]);
+      line->setData(keys.at(keyLoop), bar);
       keyLoop--;
       outLoop--;
     }
@@ -272,7 +277,8 @@ PlotLine * MAVP::getMAVP (PlotLine *in, PlotLine *in2, int min, int max, int ma,
     int outLoop = outNb - 1;
     while (keyLoop > -1 && outLoop > -1)
     {
-      line->setData(keys2.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+      PlotLineBar bar(color, out[outLoop]);
+      line->setData(keys2.at(keyLoop), bar);
       keyLoop--;
       outLoop--;
     }

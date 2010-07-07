@@ -107,7 +107,8 @@ int CORREL::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref3Color, s);
   color.setNamedColor(s);
 
-  hline->setData(0, new PlotLineBar(color, 1.0));
+  PlotLineBar bar(color, 1.0);
+  hline->setData(0, bar);
 
   s = "0";
   ind.setLine(s, hline);
@@ -127,7 +128,8 @@ int CORREL::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  hline->setData(0, new PlotLineBar(color, 0.0));
+  PlotLineBar bar2(color, 0.0);
+  hline->setData(0, bar2);
 
   s = "1";
   ind.setLine(s, hline);
@@ -147,7 +149,8 @@ int CORREL::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref1Color, s);
   color.setNamedColor(s);
 
-  hline->setData(0, new PlotLineBar(color, -1.0));
+  PlotLineBar bar3(color, -1.0);
+  hline->setData(0, bar3);
 
   s = "2";
   ind.setLine(s, hline);
@@ -265,16 +268,18 @@ PlotLine * CORREL::getCORREL (PlotLine *in, PlotLine *in2, int period, int lineT
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    if (! bar)
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    if (! bar.count())
       continue;
 
-    PlotLineBar *bar2 = in2->data(keys.at(loop));
-    if (! bar2)
+    PlotLineBar bar2;
+    in2->data(keys.at(loop), bar2);
+    if (! bar2.count())
       continue;
 
-    input[loop] = (TA_Real) bar->data();
-    input2[loop] = (TA_Real) bar2->data();
+    input[loop] = (TA_Real) bar.data();
+    input2[loop] = (TA_Real) bar2.data();
   }
 
   TA_RetCode rc = TA_CORREL(0, size - 1, &input[0], &input2[0], period, &outBeg, &outNb, &out[0]);
@@ -293,7 +298,8 @@ PlotLine * CORREL::getCORREL (PlotLine *in, PlotLine *in2, int period, int lineT
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(keys.at(keyLoop), bar);
     keyLoop--;
     outLoop--;
   }

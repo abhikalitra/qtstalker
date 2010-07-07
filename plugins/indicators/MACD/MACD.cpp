@@ -334,8 +334,9 @@ int MACD::getMACD (PlotLine *in, int fastPeriod, int fastMA, int slowPeriod, int
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_MACDEXT(0,
@@ -382,9 +383,14 @@ int MACD::getMACD (PlotLine *in, int fastPeriod, int fastMA, int slowPeriod, int
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    macd->setData(keys.at(keyLoop), new PlotLineBar(macdColor, out[outLoop]));
-    signal->setData(keys.at(keyLoop), new PlotLineBar(signalColor, out2[outLoop]));
-    hist->setData(keys.at(keyLoop), new PlotLineBar(histColor, out3[outLoop]));
+    PlotLineBar bar(macdColor, out[outLoop]);
+    macd->setData(keys.at(keyLoop), bar);
+    
+    PlotLineBar bar2(signalColor, out2[outLoop]);
+    signal->setData(keys.at(keyLoop), bar2);
+    
+    PlotLineBar bar3(histColor, out3[outLoop]);
+    hist->setData(keys.at(keyLoop), bar3);
     keyLoop--;
     outLoop--;
   }

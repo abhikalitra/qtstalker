@@ -186,8 +186,9 @@ PlotLine * VIDYA::calcCMO (PlotLine *in, int period)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_CMO(0,
@@ -209,7 +210,8 @@ PlotLine * VIDYA::calcCMO (PlotLine *in, int period)
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), new PlotLineBar(out[outLoop]));
+    PlotLineBar bar(out[outLoop]);
+    line->setData(keys.at(keyLoop), bar);
     keyLoop--;
     outLoop--;
   }
@@ -252,8 +254,9 @@ PlotLine * VIDYA::getVIDYA (PlotLine *inSignal, int period, int volPeriod, int l
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = inSignal->data(keys.at(loop));
-    (*inSeries)[loop] = bar->data();
+    PlotLineBar bar;
+    inSignal->data(keys.at(loop), bar);
+    (*inSeries)[loop] = bar.data();
   }
 
   keys.clear();
@@ -263,8 +266,9 @@ PlotLine * VIDYA::getVIDYA (PlotLine *inSignal, int period, int volPeriod, int l
   loop = keys.count() - 1;
   for (; loop > -1; loop--)
   {
-    PlotLineBar *bar = cmo->data(keys.at(loop));
-    (*absCmo)[index] = fabs(bar->data() / 100);
+    PlotLineBar bar;
+    cmo->data(keys.at(loop), bar);
+    (*absCmo)[index] = fabs(bar.data() / 100);
     index--;
   }
 
@@ -273,7 +277,9 @@ PlotLine * VIDYA::getVIDYA (PlotLine *inSignal, int period, int volPeriod, int l
   {
     (*vidya)[loop] = (inSeries->at(loop) * c * absCmo->at(loop)) + ((1 - absCmo->at(loop) * c) * vidya->at(loop - 1));
     //!  (Price*Const*AbsCMO) + ((1-AbsCMO*Const)*VIDYA[1]),Price);
-    out->setData(loop, new PlotLineBar(color, vidya->at(loop)));
+    
+    PlotLineBar bar(color, vidya->at(loop));
+    out->setData(loop, bar);
   }
 
   delete inSeries;

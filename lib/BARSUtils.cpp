@@ -48,28 +48,28 @@ PlotLine * BARSUtils::getBARS (BarData &data, QColor &_up, QColor &_down, QColor
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    PlotLineBar *bar = new PlotLineBar;
+    PlotLineBar bar;
     Bar tbar = data.getBar(loop);
-    bar->setData(0, tbar.getOpen());
-    bar->setData(1, tbar.getHigh());
-    bar->setData(2, tbar.getLow());
-    bar->setData(3, tbar.getClose());
+    bar.setData(0, tbar.getOpen());
+    bar.setData(1, tbar.getHigh());
+    bar.setData(2, tbar.getLow());
+    bar.setData(3, tbar.getClose());
     
     if (loop > 0)
     {
       Bar pbar = data.getBar(loop - 1);
       if (tbar.getClose() > pbar.getClose())
-        bar->setColor(_up);
+        bar.setColor(_up);
       else
       {
         if (tbar.getClose() < pbar.getClose())
-          bar->setColor(_down);
+          bar.setColor(_down);
         else
-          bar->setColor(_neutral);
+          bar.setColor(_neutral);
       }
     }
     else
-      bar->setColor(_neutral);
+      bar.setColor(_neutral);
     
     line->setData(loop, bar);
   }

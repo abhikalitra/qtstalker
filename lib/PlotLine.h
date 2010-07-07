@@ -35,15 +35,14 @@ class PlotLine
 {
   public:
     PlotLine ();
-    ~PlotLine ();
     virtual void draw (PlotData &, Scaler &);
     virtual void info (int, Setting *);
 
     QString & type ();
     void setLabel (QString &);
     QString & label ();
-    PlotLineBar * data (int);
-    void setData (int, PlotLineBar *);
+    void data (int, PlotLineBar &);
+    void setData (int, PlotLineBar &);
     int count ();
     void setPlotFlag (bool);
     bool plotFlag ();
@@ -52,7 +51,7 @@ class PlotLine
     void keyRange (int &, int &);
 
   protected:
-    QMap<int, PlotLineBar *> _data;
+    QMap<int, PlotLineBar> _data;
     QString _label;
     QString _type;
     bool _plotFlag;

@@ -47,18 +47,19 @@ void Histogram::draw (PlotData &pd, Scaler &scaler)
 
   for (; loop <= pd.endIndex; loop++, x2 += pd.barSpacing)
   {
-    PlotLineBar *bar = data(loop);
-    if (bar)
+    PlotLineBar bar;
+    data(loop, bar);
+    if (bar.count())
     {
-      y2 = scaler.convertToY(bar->data());
+      y2 = scaler.convertToY(bar.data());
 
       pa.setPoint(0, x, zero);
       pa.setPoint(1, x, y);
       pa.setPoint(2, x2, y2);
       pa.setPoint(3, x2, zero);
 
-      painter.setPen(bar->color());
-      painter.setBrush(bar->color());
+      painter.setPen(bar.color());
+      painter.setBrush(bar.color());
       
       if (y != -1)
         painter.drawPolygon(pa, Qt::OddEvenFill);
@@ -73,13 +74,14 @@ void Histogram::draw (PlotData &pd, Scaler &scaler)
 
 void Histogram::info (int i, Setting *set)
 {
-  PlotLineBar *bar = data(i);
-  if (! bar)
+  PlotLineBar bar;
+  data(i, bar);
+  if (! bar.count())
     return;
 
   QString d;
   Strip strip;
-  strip.strip(bar->data(), 4, d);
+  strip.strip(bar.data(), 4, d);
   set->setData(_label, d);
 }
 

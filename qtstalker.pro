@@ -138,6 +138,9 @@ SUBDIRS += plugins/misc/Yahoo
 # compile app
 SUBDIRS += src
 
+# compile QuoteServer
+SUBDIRS += QuoteServer
+
 # compile tester
 #SUBDIRS += tester
 

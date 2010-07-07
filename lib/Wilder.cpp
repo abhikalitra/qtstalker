@@ -47,18 +47,23 @@ PlotLine * Wilder::wilder (PlotLine *in, int period, int lineType, QColor &color
   int loop = 0;
   for (; loop < period; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    t += bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    t += bar.data();
   }
   double yesterday = t / (double) period;
-  line->setData(keys.at(loop), new PlotLineBar(color, yesterday));
+  PlotLineBar bar(color, yesterday);
+  line->setData(keys.at(loop), bar);
 
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    double t  = (yesterday * (period - 1) + bar->data()) / (double) period;
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    double t  = (yesterday * (period - 1) + bar.data()) / (double) period;
     yesterday = t;
-    line->setData(keys.at(loop), new PlotLineBar(color, t));
+
+    PlotLineBar lbar(color, t);
+    line->setData(keys.at(loop), lbar);
   }
 
   return line;

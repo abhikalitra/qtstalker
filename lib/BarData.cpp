@@ -72,36 +72,64 @@ PlotLine * BarData::getInput (BarData::InputType field, int lineType, QColor &co
     switch (field)
     {
       case Open:
-        in->setData(loop, new PlotLineBar(color, bar.getOpen()));
+      {
+        PlotLineBar b(color, bar.getOpen());
+        in->setData(loop, b);
         break;
+      }
       case High:
-        in->setData(loop, new PlotLineBar(color, bar.getHigh()));
+      {
+        PlotLineBar b(color, bar.getHigh());
+        in->setData(loop, b);
         break;
+      }
       case Low:
-        in->setData(loop, new PlotLineBar(color, bar.getLow()));
+      {
+        PlotLineBar b(color, bar.getLow());
+        in->setData(loop, b);
         break;
+      }
       case Close:
-        in->setData(loop, new PlotLineBar(color, bar.getClose()));
+      {
+        PlotLineBar b(color, bar.getClose());
+        in->setData(loop, b);
         break;
+      }
       case Volume:
-        in->setData(loop, new PlotLineBar(color, bar.getVolume()));
+      {
+        PlotLineBar b(color, bar.getVolume());
+        in->setData(loop, b);
         break;
+      }
       case OI:
-        in->setData(loop, new PlotLineBar(color, bar.getOI()));
+      {
+        PlotLineBar b(color, bar.getOI());
+        in->setData(loop, b);
         break;
+      }
       case AveragePrice:
-        in->setData(loop, new PlotLineBar(color, getAvgPrice(loop)));
+      {
+        PlotLineBar b(color, getAvgPrice(loop));
+        in->setData(loop, b);
         break;
+      }
       case MedianPrice:
-        in->setData(loop, new PlotLineBar(color, getMedianPrice(loop)));
+      {
+        PlotLineBar b(color, getMedianPrice(loop));
+        in->setData(loop, b);
         break;
+      }
       case TypicalPrice:
-        in->setData(loop, new PlotLineBar(color, getTypicalPrice(loop)));
+      {
+        PlotLineBar b(color, getTypicalPrice(loop));
+        in->setData(loop, b);
         break;
+      }
       case WeightedClosePrice:
       {
         double t = (bar.getHigh() + bar.getLow() + (bar.getClose() * 2)) / 4.0;
-        in->setData(loop, new PlotLineBar(color, t));
+        PlotLineBar b(color, t);
+        in->setData(loop, b);
         break;
       }
       default:

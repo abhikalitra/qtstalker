@@ -39,20 +39,21 @@ void Candle::draw (PlotData &pd, Scaler &scaler)
   bool ff = FALSE;
   for (; loop <= pd.endIndex; loop++, x += pd.barSpacing)
   {
-    PlotLineBar *bar = data(loop);
-    if (! bar)
+    PlotLineBar bar;
+    data(loop, bar);
+    if (! bar.count())
       continue;
     
     ff = FALSE;
-    if (bar->data(3) < bar->data(0))
+    if (bar.data(3) < bar.data(0))
       ff = TRUE;
 
-    painter.setPen(bar->color());
+    painter.setPen(bar.color());
 
-    int xh = scaler.convertToY(bar->data(1));
-    int xl = scaler.convertToY(bar->data(2));
-    int xc = scaler.convertToY(bar->data(3));
-    int xo = scaler.convertToY(bar->data(0));
+    int xh = scaler.convertToY(bar.data(1));
+    int xl = scaler.convertToY(bar.data(2));
+    int xc = scaler.convertToY(bar.data(3));
+    int xo = scaler.convertToY(bar.data(0));
 
     if (! ff)
     {
@@ -65,7 +66,7 @@ void Candle::draw (PlotData &pd, Scaler &scaler)
     {
       // filled candle
       painter.drawLine (x + 2, xh, x + 2, xl);
-      painter.fillRect(x, xo, 5, xc - xo, bar->color());
+      painter.fillRect(x, xo, 5, xc - xo, bar.color());
     }
   }
 
@@ -74,27 +75,28 @@ void Candle::draw (PlotData &pd, Scaler &scaler)
 
 void Candle::info (int i, Setting *set)
 {
-  PlotLineBar *bar = data(i);
-  if (! bar)
+  PlotLineBar bar;
+  data(i, bar);
+  if (! bar.count())
     return;
 
   QString k = "O";
   QString d;
 
   Strip strip;
-  strip.strip(bar->data(0), 4, d);
+  strip.strip(bar.data(0), 4, d);
   set->setData(k, d);
 
   k = "H";
-  strip.strip(bar->data(1), 4, d);
+  strip.strip(bar.data(1), 4, d);
   set->setData(k, d);
 
   k = "L";
-  strip.strip(bar->data(2), 4, d);
+  strip.strip(bar.data(2), 4, d);
   set->setData(k, d);
 
   k = "C";
-  strip.strip(bar->data(3), 4, d);
+  strip.strip(bar.data(3), 4, d);
   set->setData(k, d);
 }
 

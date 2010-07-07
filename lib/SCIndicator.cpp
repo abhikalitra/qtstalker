@@ -185,8 +185,9 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  PlotLineBar *bar = line->data(index);
-  if (! bar)
+  PlotLineBar bar;
+  line->data(index, bar);
+  if (! bar.count())
   {
     qDebug() << "SCIndicator::getIndex: invalid index value" << l[3];
     return 1;
@@ -194,7 +195,7 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, Indicator &ind)
   
   ba.clear();
 
-  ba.append(QString::number(bar->data()) + "\n");
+  ba.append(QString::number(bar.data()) + "\n");
 
   return 0;
 }
@@ -277,8 +278,9 @@ int SCIndicator::setIndex (QStringList &l, QByteArray &ba, Indicator &ind)
     qDebug() << "SCIndicator::setIndex: invalid color" << l[5];
     return 1;
   }
-  
-  line->setData(index, new PlotLineBar(color, value));
+
+  PlotLineBar bar(color, value);
+  line->setData(index, bar);
 
   ba.clear();
   ba.append("0\n");
@@ -347,14 +349,16 @@ int SCIndicator::setColor (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  PlotLineBar *bar = line->data(index);
-  if (! bar)
+  PlotLineBar bar;
+  line->data(index, bar);
+  if (! bar.count())
   {
     qDebug() << "SCIndicator::setColor: bar not found" << l[3];
     return 1;
   }
   
-  bar->setColor(color);
+  bar.setColor(color);
+  line->setData(index, bar);
 
   ba.clear();
   ba.append("0\n");

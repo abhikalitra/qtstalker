@@ -63,7 +63,8 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, new PlotLineBar(color, (double) _settings.getInt(Ref1)));
+  PlotLineBar bar(color, (double) _settings.getInt(Ref1));
+  line->setData(0, bar);
   
   s = "0";
   ind.setLine(s, line);
@@ -78,7 +79,8 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, new PlotLineBar(color, (double) _settings.getInt(Ref2)));
+  PlotLineBar bar2(color, (double) _settings.getInt(Ref2));
+  line->setData(0, bar2);
   
   s = "1";
   ind.setLine(s, line);
@@ -318,8 +320,11 @@ int STOCHS::getSTOCHS (BarData &data, int fkperiod, int skperiod, int sdperiod, 
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    kline->setData(dataLoop, new PlotLineBar(kcolor, out[outLoop]));
-    dline->setData(dataLoop, new PlotLineBar(dcolor, out2[outLoop]));
+    PlotLineBar bar(kcolor, out[outLoop]);
+    kline->setData(dataLoop, bar);
+    
+    PlotLineBar bar2(dcolor, out2[outLoop]);
+    dline->setData(dataLoop, bar2);
     dataLoop--;
     outLoop--;
   }

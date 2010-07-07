@@ -174,7 +174,8 @@ PlotLine * VFI::getVFI (BarData &data, int period, int lineType, QColor &color)
       }
     }
 
-    vfi->setData(loop, new PlotLineBar(color, t));
+    PlotLineBar lbar(color, t);
+    vfi->setData(loop, lbar);
   }
 
   return vfi;

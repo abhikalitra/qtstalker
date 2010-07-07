@@ -114,25 +114,30 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *lbar = line->data(keys.at(loop));
-    PlotLineBar *mbar = ma->data(keys.at(loop));
-    if (! mbar)
-      lbar->setColor(downColor);
+    PlotLineBar lbar;
+    line->data(keys.at(loop), lbar);
+    
+    PlotLineBar mbar;
+    ma->data(keys.at(loop), mbar);
+    if (! mbar.count())
+      lbar.setColor(downColor);
     else
     {
-      double thrm = lbar->data();
-      double thrmma = mbar->data();
+      double thrm = lbar.data();
+      double thrmma = mbar.data();
 
       if (thrm > (thrmma * threshold))
-        lbar->setColor(threshColor);
+        lbar.setColor(threshColor);
       else
       {
         if (thrm > thrmma)
-          lbar->setColor(upColor);
+          lbar.setColor(upColor);
         else
-          lbar->setColor(downColor);
+          lbar.setColor(downColor);
       }
     }
+
+    line->setData(keys.at(loop), lbar);
   }
 
   s = "0";
@@ -229,7 +234,8 @@ PlotLine * THERM::getTHERM (BarData &data, int smoothing, int type, int lineType
     else
       thermometer = lo;
 
-    line->setData(loop, new PlotLineBar(color, thermometer));
+    PlotLineBar lbar(color, thermometer);
+    line->setData(loop, lbar);
   }
 
   if (smoothing > 1)

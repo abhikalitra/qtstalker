@@ -26,12 +26,6 @@ PlotLine::PlotLine ()
   _plotFlag = FALSE;
 }
 
-PlotLine::~PlotLine ()
-{
-  if (count())
-    qDeleteAll(_data);
-}
-
 // virtual
 void PlotLine::draw (PlotData &, Scaler &)
 {
@@ -57,18 +51,17 @@ QString & PlotLine::label ()
   return _label;
 }
 
-void PlotLine::setData (int i, PlotLineBar *d)
+void PlotLine::setData (int i, PlotLineBar &d)
 {
-  PlotLineBar *bar = _data.value(i);
-  if (bar)
-    delete bar;
-
   _data.insert(i, d);
 }
 
-PlotLineBar * PlotLine::data (int i)
+void PlotLine::data (int i, PlotLineBar &d)
 {
-  return _data.value(i);
+  if (! _data.contains(i))
+    return;
+  
+  d = _data.value(i);
 }
 
 int PlotLine::count ()
@@ -85,12 +78,13 @@ int PlotLine::highLowRange (int start, int end, double &h, double &l)
 
   for (loop = start; loop <= end; loop++)
   {
-    PlotLineBar *r = _data.value(loop);
-    if (! r)
+    if (! _data.contains(loop))
       continue;
+    
+    PlotLineBar r = _data.value(loop);
 
     double th, tl;
-    if (r->highLow(th, tl))
+    if (r.highLow(th, tl))
       continue;
 
     rc = 0;
@@ -122,16 +116,18 @@ void PlotLine::keys (QList<int> &l)
 
 void PlotLine::keyRange (int &start, int &end)
 {
-  QMapIterator<int, PlotLineBar *> it(_data);
+  QMapIterator<int, PlotLineBar> it(_data);
   it.toFront();
-  it.next();
-  PlotLineBar *bar = it.value();
-  if (! bar)
+  if (! it.hasNext())
   {
     start = 0;
     end = 0;
     return;
   }
+  
+  it.next();
+
+  PlotLineBar bar = it.value();
 
   start = it.key();
 

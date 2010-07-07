@@ -48,14 +48,15 @@ void Dash::draw (PlotData &pd, Scaler &scaler)
 
   for (; loop <= pd.endIndex; loop++, x2 += pd.barSpacing)
   {
-    PlotLineBar *bar = data(loop);
-    if (bar)
+    PlotLineBar bar;
+    data(loop, bar);
+    if (bar.count())
     {
-      y2 = scaler.convertToY(bar->data());
+      y2 = scaler.convertToY(bar.data());
 
       if (y != -1)
       {
-        pen.setColor(bar->color());
+        pen.setColor(bar.color());
         painter.setPen(pen);
         painter.drawLine (x, y, x2, y2);
       }
@@ -70,13 +71,14 @@ void Dash::draw (PlotData &pd, Scaler &scaler)
 
 void Dash::info (int i, Setting *set)
 {
-  PlotLineBar *bar = data(i);
-  if (! bar)
+  PlotLineBar bar;
+  data(i, bar);
+  if (! bar.count())
     return;
 
   QString d;
   Strip strip;
-  strip.strip(bar->data(), 4, d);
+  strip.strip(bar.data(), 4, d);
   set->setData(_label, d);
 }
 

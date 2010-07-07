@@ -171,7 +171,10 @@ PlotLine * SAR::getSAR (BarData &data, double _init, double _max, int lineType, 
     return 0;
 
   for (loop = 0; loop < outNb; loop++)
-    line->setData(loop + 1, new PlotLineBar(color, out[loop]));
+  {
+    PlotLineBar bar(color, out[loop]);
+    line->setData(loop + 1, bar);
+  }
 
   return line;
 }

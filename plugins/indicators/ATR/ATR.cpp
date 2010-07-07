@@ -181,7 +181,8 @@ PlotLine * ATR::getLine (BarData &data, int period, int method, int lineType, QC
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(dataLoop, bar);
     dataLoop--;
     outLoop--;
   }

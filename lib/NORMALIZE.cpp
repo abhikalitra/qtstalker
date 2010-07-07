@@ -110,8 +110,11 @@ PlotLine * NORMALIZE::normalize (PlotLine *in, int lineType, QColor &color)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    line->setData(keys.at(loop), new PlotLineBar(color, ((bar->data() - min) / range) * 100));
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    
+    PlotLineBar lbar(color, ((bar.data() - min) / range) * 100);
+    line->setData(keys.at(loop), lbar);
   }
 
   return line;

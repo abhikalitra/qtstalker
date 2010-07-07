@@ -471,8 +471,9 @@ PlotLine * HT::getHT (PlotLine *in, int method, int lineType, QColor &color)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_SUCCESS;
@@ -506,7 +507,8 @@ PlotLine * HT::getHT (PlotLine *in, int method, int lineType, QColor &color)
       int outLoop = outNb - 1;
       while (keyLoop > -1 && outLoop > -1)
       {
-        line->setData(keys.at(keyLoop), new PlotLineBar(color, (double) iout[outLoop]));
+        PlotLineBar bar(color, (double) iout[outLoop]);
+        line->setData(keys.at(keyLoop), bar);
         keyLoop--;
         outLoop--;
       }
@@ -533,7 +535,8 @@ PlotLine * HT::getHT (PlotLine *in, int method, int lineType, QColor &color)
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(keys.at(keyLoop), bar);
     keyLoop--;
     outLoop--;
   }
@@ -559,8 +562,9 @@ int HT::getPHASE (PlotLine *in, int plineType, int qlineType, QColor &pcolor, QC
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_HT_PHASOR (0, size - 1, &input[0], &outBeg, &outNb, &out[0], &out2[0]);
@@ -586,8 +590,11 @@ int HT::getPHASE (PlotLine *in, int plineType, int qlineType, QColor &pcolor, QC
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    pline->setData(keys.at(keyLoop), new PlotLineBar(pcolor, out[outLoop]));
-    qline->setData(keys.at(keyLoop), new PlotLineBar(qcolor, out2[outLoop]));
+    PlotLineBar bar(pcolor, out[outLoop]);
+    pline->setData(keys.at(keyLoop), bar);
+    
+    PlotLineBar bar2(qcolor, out2[outLoop]);
+    qline->setData(keys.at(keyLoop), bar2);
     keyLoop--;
     outLoop--;
   }
@@ -616,8 +623,9 @@ int HT::getSINE (PlotLine *in, int slineType, int llineType, QColor &scolor, QCo
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_HT_SINE (0, size - 1, &input[0], &outBeg, &outNb, &out[0], &out2[0]);
@@ -643,8 +651,11 @@ int HT::getSINE (PlotLine *in, int slineType, int llineType, QColor &scolor, QCo
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    sline->setData(keys.at(keyLoop), new PlotLineBar(scolor, out[outLoop]));
-    lline->setData(keys.at(keyLoop), new PlotLineBar(lcolor, out2[outLoop]));
+    PlotLineBar bar(scolor, out[outLoop]);
+    sline->setData(keys.at(keyLoop), bar);
+    
+    PlotLineBar bar2(lcolor, out2[outLoop]);
+    lline->setData(keys.at(keyLoop), bar2);
     keyLoop--;
     outLoop--;
   }

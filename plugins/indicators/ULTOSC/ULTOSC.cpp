@@ -56,7 +56,8 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, new PlotLineBar(color, (double) 30));
+  PlotLineBar bar(color, (double) 30);
+  line->setData(0, bar);
   
   s = "0";
   ind.setLine(s, line);
@@ -71,7 +72,8 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, new PlotLineBar(color, (double) 50));
+  PlotLineBar bar2(color, (double) 50);
+  line->setData(0, bar2);
   
   s = "1";
   ind.setLine(s, line);
@@ -86,7 +88,8 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref3Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, new PlotLineBar(color, (double) 70));
+  PlotLineBar bar3(color, (double) 70);
+  line->setData(0, bar3);
   
   s = "2";
   ind.setLine(s, line);
@@ -230,7 +233,8 @@ PlotLine * ULTOSC::getULTOSC (BarData &data, int sp, int mp, int lp, int lineTyp
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(dataLoop, bar);
     dataLoop--;
     outLoop--;
   }

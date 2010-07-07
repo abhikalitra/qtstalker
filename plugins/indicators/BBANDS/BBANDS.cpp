@@ -294,8 +294,9 @@ int BBANDS::getBBANDS (PlotLine *in, int period, double udev, double ddev, int m
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_BBANDS(0,
@@ -340,9 +341,14 @@ int BBANDS::getBBANDS (PlotLine *in, int period, double udev, double ddev, int m
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    upper->setData(keys.at(keyLoop), new PlotLineBar(ucolor, uout[outLoop]));
-    middle->setData(keys.at(keyLoop), new PlotLineBar(mcolor, mout[outLoop]));
-    lower->setData(keys.at(keyLoop), new PlotLineBar(lcolor, lout[outLoop]));
+    PlotLineBar bar(ucolor, uout[outLoop]);
+    upper->setData(keys.at(keyLoop), bar);
+    
+    PlotLineBar bar2(mcolor, mout[outLoop]);
+    middle->setData(keys.at(keyLoop), bar);
+    
+    PlotLineBar bar3(lcolor, lout[outLoop]);
+    lower->setData(keys.at(keyLoop), bar3);
 
     keyLoop--;
     outLoop--;

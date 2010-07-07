@@ -329,8 +329,11 @@ int AROON::getAROON (BarData &data, int period, int ulineType, int llineType, QC
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    upper->setData(dataLoop, new PlotLineBar(ucolor, uout[outLoop]));
-    lower->setData(dataLoop, new PlotLineBar(lcolor, dout[outLoop]));
+    PlotLineBar bar(ucolor, uout[outLoop]);
+    upper->setData(dataLoop, bar);
+    
+    PlotLineBar bar2(lcolor, dout[outLoop]);
+    lower->setData(dataLoop, bar2);
 
     dataLoop--;
     outLoop--;
@@ -386,7 +389,8 @@ PlotLine * AROON::getOSC (BarData &data, int period, int lineType, QColor &color
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(dataLoop, bar);
     dataLoop--;
     outLoop--;
   }

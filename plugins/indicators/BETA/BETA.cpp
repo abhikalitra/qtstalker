@@ -202,16 +202,18 @@ PlotLine * BETA::getBETA (PlotLine *in, PlotLine *in2, int period, int lineType,
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    if (! bar)
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    if (! bar.count())
       continue;
 
-    PlotLineBar *bar2 = in2->data(keys.at(loop));
-    if (! bar2)
+    PlotLineBar bar2;
+    in2->data(keys.at(loop), bar2);
+    if (! bar2.count())
       continue;
 
-    input[loop] = (TA_Real) bar->data();
-    input2[loop] = (TA_Real) bar2->data();
+    input[loop] = (TA_Real) bar.data();
+    input2[loop] = (TA_Real) bar2.data();
   }
 
   TA_RetCode rc = TA_BETA(0, size - 1, &input[0], &input2[0], period, &outBeg, &outNb, &out[0]);
@@ -230,7 +232,8 @@ PlotLine * BETA::getBETA (PlotLine *in, PlotLine *in2, int period, int lineType,
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(keys.at(keyLoop), bar);
     keyLoop--;
     outLoop--;
   }

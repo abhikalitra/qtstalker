@@ -592,6 +592,9 @@
 
            Changed Scripts to run with a cleaner threading implementation.
 
+20100706:  Added QuoteServer source to the main trunk. Still testing and refining it. Feel free to play with it
+           using the sample scripts. I would appreciate comments from those of you that do test it out.
+
 
 
 

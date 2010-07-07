@@ -145,7 +145,8 @@ PlotLine * FI::getFI (BarData &data, int period, int type, int lineType, QColor 
     double cdiff = bar.getClose() - pbar.getClose();
     force = bar.getVolume() * cdiff;
   
-    line->setData(loop, new PlotLineBar(color, force));
+    PlotLineBar bar2(color, force);
+    line->setData(loop, bar2);
   }
 
   if (period > 1)

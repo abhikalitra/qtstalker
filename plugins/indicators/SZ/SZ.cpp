@@ -273,8 +273,11 @@ PlotLine * SZ::getSZ (BarData &data, QString &method, int period, int no_decline
     old_uptrend_stops[0] = uptrend_stop;
     old_dntrend_stops[0] = dntrend_stop;
 
-    sz_uptrend->setData(loop, new PlotLineBar(color, adjusted_uptrend_stop));
-    sz_dntrend->setData(loop, new PlotLineBar(color, adjusted_dntrend_stop));
+    PlotLineBar bar(color, adjusted_uptrend_stop);
+    sz_uptrend->setData(loop, bar);
+    
+    PlotLineBar bar2(color, adjusted_dntrend_stop);
+    sz_dntrend->setData(loop, bar2);
   }
 
   PlotLine *pl = 0;

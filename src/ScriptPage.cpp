@@ -390,13 +390,15 @@ void ScriptPage::deleteScript ()
     else
     {
       Script *tscript = scripts.value(name);
-      scripts.remove(name); // remove the refresh que hash list
-      delete tscript;
-      updateQueList();
+      tscript->stop();
+      emit signalMessage(QString(tr("Script waiting for shutdown")));
+//      scripts.remove(name); // remove the refresh que hash list
+//      delete tscript;
+//      updateQueList();
     }
   }
-
-  emit signalMessage(QString(tr("Script deleted.")));
+  else
+    emit signalMessage(QString(tr("Script deleted.")));
 }
 
 void ScriptPage::listDoubleClick (QListWidgetItem *item)

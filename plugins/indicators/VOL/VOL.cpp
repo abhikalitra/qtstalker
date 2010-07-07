@@ -152,7 +152,9 @@ PlotLine * VOL::getVOL (BarData &data, int lineType, QColor &up, QColor &down, Q
   // set the first bar to neutral
   int loop = 0;
   Bar bar = data.getBar(loop);
-  vol->setData(loop, new PlotLineBar(neutral, bar.getVolume()));
+  
+  PlotLineBar lbar(neutral, bar.getVolume());
+  vol->setData(loop, lbar);
 
   loop++;
   for (; loop < data.count(); loop++)
@@ -161,13 +163,22 @@ PlotLine * VOL::getVOL (BarData &data, int lineType, QColor &up, QColor &down, Q
     Bar pbar = data.getBar(loop - 1);
     
     if (bar.getClose() < pbar.getClose())
-      vol->setData(loop, new PlotLineBar(down, bar.getVolume()));
+    {
+      PlotLineBar lbar(down, bar.getVolume());
+      vol->setData(loop, lbar);
+    }
     else
     {
       if (bar.getClose() > pbar.getClose())
-        vol->setData(loop, new PlotLineBar(up, bar.getVolume()));
+      {
+        PlotLineBar lbar(up, bar.getVolume());
+        vol->setData(loop, lbar);
+      }
       else
-        vol->setData(loop, new PlotLineBar(neutral, bar.getVolume()));
+      {
+        PlotLineBar lbar(neutral, bar.getVolume());
+        vol->setData(loop, lbar);
+      }
     }
   }
   

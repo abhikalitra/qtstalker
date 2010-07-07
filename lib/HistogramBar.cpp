@@ -40,13 +40,14 @@ void HistogramBar::draw (PlotData &pd, Scaler &scaler)
 
   for (; loop <= pd.endIndex; loop++, x += pd.barSpacing)
   {
-    PlotLineBar *bar = data(loop);
-    if (! bar)
+    PlotLineBar bar;
+    data(loop, bar);
+    if (! bar.count())
       continue;
 
-    int y = scaler.convertToY(bar->data());
+    int y = scaler.convertToY(bar.data());
 
-    painter.fillRect(x, y, pd.barSpacing - 1, zero - y, bar->color());
+    painter.fillRect(x, y, pd.barSpacing - 1, zero - y, bar.color());
   }
 
   painter.end();
@@ -54,13 +55,14 @@ void HistogramBar::draw (PlotData &pd, Scaler &scaler)
 
 void HistogramBar::info (int i, Setting *set)
 {
-  PlotLineBar *bar = data(i);
-  if (! bar)
+  PlotLineBar bar;
+  data(i, bar);
+  if (! bar.count())
     return;
 
   QString d;
   Strip strip;
-  strip.strip(bar->data(), 4, d);
+  strip.strip(bar.data(), 4, d);
   set->setData(_label, d);
 }
 

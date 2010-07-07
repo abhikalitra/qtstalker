@@ -57,7 +57,8 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, new PlotLineBar(color, (double) _settings.getInt(Ref1)));
+  PlotLineBar bar(color, (double) _settings.getInt(Ref1));
+  line->setData(0, bar);
   
   s = "0";
   ind.setLine(s, line);
@@ -72,7 +73,8 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, new PlotLineBar(color, (double) _settings.getInt(Ref2)));
+  PlotLineBar bar2(color, (double) _settings.getInt(Ref2));
+  line->setData(0, bar2);
   
   s = "1";
   ind.setLine(s, line);
@@ -196,8 +198,9 @@ PlotLine * STOCHRSI::getSTOCHRSI (PlotLine *in, int period, int lineType, QColor
   int loop = 0;
   for (; loop < size; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    PlotLineBar bar;
+    in->data(keys.at(loop), bar);
+    input[loop] = (TA_Real) bar.data();
   }
 
   TA_RetCode rc = TA_STOCHRSI(0,
@@ -226,7 +229,8 @@ PlotLine * STOCHRSI::getSTOCHRSI (PlotLine *in, int period, int lineType, QColor
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, new PlotLineBar(color, out[outLoop]));
+    PlotLineBar bar(color, out[outLoop]);
+    line->setData(dataLoop, bar);
     dataLoop--;
     outLoop--;
   }

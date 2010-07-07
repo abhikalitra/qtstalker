@@ -51,6 +51,7 @@
 #include "IndicatorPluginFactory.h"
 #include "IndicatorDataBase.h"
 #include "COFactory.h"
+#include "DBPluginFactory.h"
 
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
@@ -354,7 +355,16 @@ void QtstalkerApp::loadChart (BarData symbol)
   QStringList indicatorList;
   db.getActiveIndicatorList(indicatorList);
 
-  int loop;
+  // find out the visible indicators and display them first so we can try to
+  // minimize any script lag
+  int loop = 0;
+  for(; loop < (int) _tabList.count(); loop++)
+  {
+    QTabWidget *it = _tabList.at(loop);
+    indicatorList.move(indicatorList.indexOf(it->tabText(it->currentIndex())), loop);
+  }
+
+  // now plot the indicators
   for (loop = 0; loop < indicatorList.count(); loop++)
   {
     Plot *plot = _plotList.value(indicatorList[loop]);
