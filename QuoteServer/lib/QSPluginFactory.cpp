@@ -19,26 +19,26 @@
  *  USA.
  */
 
-#include "PluginFactory.h"
+#include "QSPluginFactory.h"
 
 #include <QDir>
 #include <QDebug>
 #include <QFileInfo>
 
-PluginFactory::PluginFactory ()
+QSPluginFactory::QSPluginFactory ()
 {
   _path = "/usr/local/lib/QuoteServer/plugins";
 }
 
-PluginFactory::~PluginFactory ()
+QSPluginFactory::~QSPluginFactory ()
 {
   qDeleteAll(_plugins);
   qDeleteAll(_libs);
 }
 
-Plugin * PluginFactory::plugin (QString &plugin)
+QSPlugin * QSPluginFactory::plugin (QString &plugin)
 {
-  Plugin *plug = _plugins.value(plugin);
+  QSPlugin *plug = _plugins.value(plugin);
   if (plug)
     return plug;
 
@@ -46,8 +46,8 @@ Plugin * PluginFactory::plugin (QString &plugin)
   file.append("/lib" + plugin);
 
   QLibrary *lib = new QLibrary(file);
-  Plugin *(*so)() = 0;
-  so = (Plugin *(*)()) lib->resolve("createPlugin");
+  QSPlugin *(*so)() = 0;
+  so = (QSPlugin *(*)()) lib->resolve("createPlugin");
   if (so)
   {
     plug = (*so)();
@@ -60,7 +60,7 @@ Plugin * PluginFactory::plugin (QString &plugin)
   return plug;
 }
 
-void PluginFactory::pluginList (QStringList &list)
+void QSPluginFactory::pluginList (QStringList &list)
 {
   list.clear();
 

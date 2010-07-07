@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "QuoteDataBase.h"
+#include "QSQuoteDataBase.h"
 #include "QSLog.h"
 
 #include <QDebug>
@@ -27,7 +27,7 @@
 #include <QDir>
 #include <QStringList>
 
-QuoteDataBase::QuoteDataBase (QString &dbPath)
+QSQuoteDataBase::QSQuoteDataBase (QString &dbPath)
 {
   QSLog log;
   
@@ -40,7 +40,7 @@ QuoteDataBase::QuoteDataBase (QString &dbPath)
     db.setUserName("QuoteServer");
     db.setPassword("QuoteServer");
     if (! db.open())
-      log.message(QSLog::Error, QString(" QuoteDataBase: quotes db open failed"));
+      log.message(QSLog::Error, QString(" QSQuoteDataBase: quotes db open failed"));
       
     QSqlQuery q(db);
     QString s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
@@ -52,11 +52,11 @@ QuoteDataBase::QuoteDataBase (QString &dbPath)
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())
-      log.message(QSLog::Error, QString(" QuoteDataBase: " + q.lastError().text()));
+      log.message(QSLog::Error, QString(" QSQuoteDataBase: " + q.lastError().text()));
   }
 }
 
-int QuoteDataBase::deleteSymbol (Symbol &input)
+int QSQuoteDataBase::deleteSymbol (QSSymbol &input)
 {
 //  QTime time;
 //  time.start();
@@ -66,14 +66,14 @@ int QuoteDataBase::deleteSymbol (Symbol &input)
 
   // drop quote table
   QString s = "DROP TABLE " + input.table;
-  if (command(s, QString("QuoteDataBase::deleteSymbol: drop quotes table")))
+  if (command(s, QString("QSQuoteDataBase::deleteSymbol: drop quotes table")))
     return 1;
 
   // remove index record
   s = "DELETE FROM symbolIndex";
   s.append(" WHERE symbol='" + input.symbol + "'");
   s.append(" AND exchange='" + input.exchange + "'");
-  if (command(s, QString("QuoteDataBase::deleteSymbol: remove symbolIndex record")))
+  if (command(s, QString("QSQuoteDataBase::deleteSymbol: remove symbolIndex record")))
     return 1;
 
 //qDebug("Delete: elapsed: %d ms", time.elapsed());
@@ -81,7 +81,7 @@ int QuoteDataBase::deleteSymbol (Symbol &input)
   return 0;
 }
 
-int QuoteDataBase::search (QString &exchange, QString &symbol, QString &output)
+int QSQuoteDataBase::search (QString &exchange, QString &symbol, QString &output)
 {
 //  QTime time;
 //  time.start();
@@ -129,7 +129,7 @@ int QuoteDataBase::search (QString &exchange, QString &symbol, QString &output)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    log.message(QSLog::Error, QString(" QuoteDataBase: getSearchList " + q.lastError().text()));
+    log.message(QSLog::Error, QString(" QSQuoteDataBase: getSearchList " + q.lastError().text()));
     return 1;
   }
 
@@ -152,7 +152,7 @@ int QuoteDataBase::search (QString &exchange, QString &symbol, QString &output)
   return 0;
 }
 
-int QuoteDataBase::symbol (Symbol &input)
+int QSQuoteDataBase::symbol (QSSymbol &input)
 {
 //  QTime time;
 //  time.start();
@@ -165,7 +165,7 @@ int QuoteDataBase::symbol (Symbol &input)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    log.message(QSLog::Error, QString(" QuoteDataBase:symbol " + q.lastError().text()));
+    log.message(QSLog::Error, QString(" QSQuoteDataBase:symbol " + q.lastError().text()));
     return 1;
   }
 
@@ -181,7 +181,7 @@ int QuoteDataBase::symbol (Symbol &input)
   return 0;
 }
 
-int QuoteDataBase::addSymbol (Symbol &input)
+int QSQuoteDataBase::addSymbol (QSSymbol &input)
 {
 //  QTime time;
 //  time.start();
@@ -194,7 +194,7 @@ int QuoteDataBase::addSymbol (Symbol &input)
   q.exec(ts);
   if (q.lastError().isValid())
   {
-    log.message(QSLog::Error, QString(" QuoteDataBase:addSymbol get record max " + q.lastError().text()));
+    log.message(QSLog::Error, QString(" QSQuoteDataBase:addSymbol get record max " + q.lastError().text()));
     return 1;
   }
   
@@ -213,7 +213,7 @@ int QuoteDataBase::addSymbol (Symbol &input)
   q.exec(ts);
   if (q.lastError().isValid())
   {
-    log.message(QSLog::Error, QString(" QuoteDataBase:addSymbol " + q.lastError().text()));
+    log.message(QSLog::Error, QString(" QSQuoteDataBase:addSymbol " + q.lastError().text()));
     return 1;
   }
 
@@ -224,13 +224,13 @@ int QuoteDataBase::addSymbol (Symbol &input)
   ts.append(", low REAL");
   ts.append(", close REAL");
   ts.append(", volume INT");
-  if ((Bar::BarType) input.type == Bar::Futures)
+  if ((QSBar::QSBarType) input.type == QSBar::Futures)
     ts.append(", oi INT");
   ts.append(")");
   q.exec(ts);
   if (q.lastError().isValid())
   {
-    log.message(QSLog::Error, QString(" QuoteDataBase:addSymbol " + q.lastError().text()));
+    log.message(QSLog::Error, QString(" QSQuoteDataBase:addSymbol " + q.lastError().text()));
     return 1;
   }
 
@@ -239,7 +239,7 @@ int QuoteDataBase::addSymbol (Symbol &input)
   return 0;
 }
 
-void QuoteDataBase::exchanges (QString &output)
+void QSQuoteDataBase::exchanges (QString &output)
 {
 //  QTime time;
 //  time.start();
@@ -250,7 +250,7 @@ void QuoteDataBase::exchanges (QString &output)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    log.message(QSLog::Error, QString(" QuoteDataBase:exchanges " + q.lastError().text()));
+    log.message(QSLog::Error, QString(" QSQuoteDataBase:exchanges " + q.lastError().text()));
     return;
   }
 
@@ -263,7 +263,7 @@ void QuoteDataBase::exchanges (QString &output)
 //qDebug("Exchanges: elapsed: %d ms", time.elapsed());
 }
 
-int QuoteDataBase::rename (Symbol &oldSymbol, Symbol &newSymbol)
+int QSQuoteDataBase::rename (QSSymbol &oldSymbol, QSSymbol &newSymbol)
 {
 //  QTime time;
 //  time.start();
@@ -289,7 +289,7 @@ int QuoteDataBase::rename (Symbol &oldSymbol, Symbol &newSymbol)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    log.message(QSLog::Error, QString(" QuoteDataBase:rename " + q.lastError().text()));
+    log.message(QSLog::Error, QString(" QSQuoteDataBase:rename " + q.lastError().text()));
     return 1;
   }
 
@@ -298,7 +298,7 @@ int QuoteDataBase::rename (Symbol &oldSymbol, Symbol &newSymbol)
   return 0;
 }
 
-int QuoteDataBase::getBars (Symbol &output)
+int QSQuoteDataBase::getBars (QSSymbol &output)
 {
 //  QTime time;
 //  time.start();
@@ -306,11 +306,11 @@ int QuoteDataBase::getBars (Symbol &output)
   QSLog log;
   QSqlQuery q(QSqlDatabase::database(_dbName));
 
-  QHash<QString, Bar *> bars;
-  QList<Bar *> dateList;
+  QHash<QString, QSBar *> bars;
+  QList<QSBar *> dateList;
 
   QString s = "SELECT date,open,high,low,close,volume";
-  if ((Bar::BarType) output.type == Bar::Futures)
+  if ((QSBar::QSBarType) output.type == QSBar::Futures)
     s.append(",oi");
   s.append(" FROM " + output.table);
   s.append(" WHERE date >=" + output.startDate.toString("yyyyMMddHHmmss"));
@@ -319,7 +319,7 @@ int QuoteDataBase::getBars (Symbol &output)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    log.message(QSLog::Error, QString(" QuoteDataBase:getBars " + q.lastError().text()));
+    log.message(QSLog::Error, QString(" QSQuoteDataBase:getBars " + q.lastError().text()));
     return 1;
   }
 
@@ -327,21 +327,21 @@ int QuoteDataBase::getBars (Symbol &output)
   {
     QDateTime lastDate = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmss");
 
-    Bar tbar;
-    tbar.setDateRange(lastDate, (Bar::BarLength) output.length);
+    QSBar tbar;
+    tbar.setDateRange(lastDate, (QSBar::QSBarLength) output.length);
     tbar.rangeKey(s);
 
-    Bar *bar = bars.value(s);
+    QSBar *bar = bars.value(s);
     if (! bar)
     {
-      bar = new Bar;
-      bar->setDateRange(lastDate, (Bar::BarLength) output.length);
+      bar = new QSBar;
+      bar->setDateRange(lastDate, (QSBar::QSBarLength) output.length);
       bar->setOpen(q.value(1).toString());
       bar->setHigh(q.value(2).toString());
       bar->setLow(q.value(3).toString());
       bar->setClose(q.value(4).toString());
       bar->setVolume(q.value(5).toString());
-      if ((Bar::BarType) output.type == Bar::Futures)
+      if ((QSBar::QSBarType) output.type == QSBar::Futures)
         bar->setOI(q.value(6).toString());
 
       bars.insert(s, bar);
@@ -365,7 +365,7 @@ int QuoteDataBase::getBars (Symbol &output)
       v += bar->volume().toDouble();
       bar->setVolume(QString::number(v));
 
-      if ((Bar::BarType) output.type == Bar::Futures)
+      if ((QSBar::QSBarType) output.type == QSBar::Futures)
         bar->setOI(q.value(6).toString());
     }
   }
@@ -376,7 +376,7 @@ int QuoteDataBase::getBars (Symbol &output)
   for (loop = dateList.count() - 1; loop > -1; loop--)
   {
     QString s;
-    Bar *bar = dateList.at(loop);
+    QSBar *bar = dateList.at(loop);
     bar->string(s);
     l << s;
   }
@@ -394,7 +394,7 @@ int QuoteDataBase::getBars (Symbol &output)
   return 0;
 }
 
-int QuoteDataBase::setBars (Symbol &input, QList<Bar> &bars)
+int QSQuoteDataBase::setBars (QSSymbol &input, QList<QSBar> &bars)
 {
 //  QTime time;
 //  time.start();
@@ -402,7 +402,7 @@ int QuoteDataBase::setBars (Symbol &input, QList<Bar> &bars)
   QSLog log;
   if (symbol(input))
   {
-    log.message(QSLog::Error, QString(" QuoteDataBase:setBars symbol check error "));
+    log.message(QSLog::Error, QString(" QSQuoteDataBase:setBars symbol check error "));
     return 1;
   }
 
@@ -410,7 +410,7 @@ int QuoteDataBase::setBars (Symbol &input, QList<Bar> &bars)
   {
     if(addSymbol(input))
     {
-      log.message(QSLog::Error, QString(" QuoteDataBase:setBars add symbol error"));
+      log.message(QSLog::Error, QString(" QSQuoteDataBase:setBars add symbol error"));
       return 1;
     }
   }
@@ -420,7 +420,7 @@ int QuoteDataBase::setBars (Symbol &input, QList<Bar> &bars)
   int loop = 0;
   for (; loop < bars.count(); loop++)
   {
-    Bar bar = bars.at(loop);
+    QSBar bar = bars.at(loop);
 
     QDateTime dt = bar.startDate();
     QString date = dt.toString("yyyyMMddHHmmss");
@@ -430,7 +430,7 @@ int QuoteDataBase::setBars (Symbol &input, QList<Bar> &bars)
     q.exec(s);
     if (q.lastError().isValid())
     {
-      log.message(QSLog::Error, QString(" QuoteDataBase:setBars " + q.lastError().text()));
+      log.message(QSLog::Error, QString(" QSQuoteDataBase:setBars " + q.lastError().text()));
       continue;
     }
 
@@ -442,13 +442,13 @@ int QuoteDataBase::setBars (Symbol &input, QList<Bar> &bars)
       s.append(", low=" + bar.low());
       s.append(", close=" + bar.close());
       s.append(", volume=" + bar.volume());
-      if ((Bar::BarType) input.type == Bar::Futures)
+      if ((QSBar::QSBarType) input.type == QSBar::Futures)
         s.append(", oi=" + bar.oi());
       s.append(" WHERE date=" + date);
     }
     else // new record, use insert
     {
-      if ((Bar::BarType) input.type == Bar::Futures)
+      if ((QSBar::QSBarType) input.type == QSBar::Futures)
         s = "INSERT INTO " + input.table + " (date,open,high,low,close,volume,oi) VALUES(";
       else
         s = "INSERT INTO " + input.table + " (date,open,high,low,close,volume) VALUES(";
@@ -458,7 +458,7 @@ int QuoteDataBase::setBars (Symbol &input, QList<Bar> &bars)
       s.append("," + bar.low());
       s.append("," + bar.close());
       s.append("," + bar.volume());
-      if ((Bar::BarType) input.type == Bar::Futures)
+      if ((QSBar::QSBarType) input.type == QSBar::Futures)
         s.append("," + bar.oi());
       s.append(")");
     }
@@ -466,7 +466,7 @@ int QuoteDataBase::setBars (Symbol &input, QList<Bar> &bars)
     q.exec(s);
     if (q.lastError().isValid())
     {
-      log.message(QSLog::Error, QString(" QuoteDataBase:setBars " + q.lastError().text()));
+      log.message(QSLog::Error, QString(" QSQuoteDataBase:setBars " + q.lastError().text()));
       continue;
     }
   }

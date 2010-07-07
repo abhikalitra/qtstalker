@@ -20,10 +20,10 @@
  */
 
 #include "QuoteServer.h"
-#include "RequestThread.h"
-#include "QuoteDataBase.h"
+#include "QSRequestThread.h"
+#include "QSQuoteDataBase.h"
 #include "QSLog.h"
-#include "Globals.h"
+#include "QSGlobals.h"
 
 #include <QDebug>
 #include <QList>
@@ -79,12 +79,12 @@ QuoteServer::QuoteServer (QObject *p, QString &, QString &port, QString &path, Q
   qDebug() << mess;
 
   // initialize the db 
-  QuoteDataBase db(_dbPath);
+  QSQuoteDataBase db(_dbPath);
 }
 
 void QuoteServer::incomingConnection (int socketDescriptor)
 {
-  RequestThread *thread = new RequestThread(this, socketDescriptor, _dbPath);
+  QSRequestThread *thread = new QSRequestThread(this, socketDescriptor, _dbPath);
   connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
   thread->start();
 }

@@ -21,10 +21,10 @@
 
 #include "YahooHistorical.h"
 #include "YahooParseSymbol.h"
-#include "QuoteDataBase.h"
-#include "Symbol.h"
-#include "Bar.h"
-#include "Globals.h"
+#include "QSQuoteDataBase.h"
+#include "QSSymbol.h"
+#include "QSBar.h"
+#include "QSGlobals.h"
 #include "QSLog.h"
 
 #include <QtDebug>
@@ -122,12 +122,12 @@ void YahooHistorical::parse (QByteArray &ba, QString &dbPath, YahooUrlData &data
 
   int line = 0;
 
-  Symbol symbol;
+  QSSymbol symbol;
   symbol.exchange = data.exchange;
   symbol.symbol = data.symbol;
-  symbol.type = (int) Bar::Stock;
+  symbol.type = (int) QSBar::Stock;
 
-  QList<Bar> bars;
+  QList<QSBar> bars;
   int loop = 1; // skip past first line
   for (; loop < ll.count(); loop++)
   {
@@ -172,8 +172,8 @@ void YahooHistorical::parse (QByteArray &ba, QString &dbPath, YahooUrlData &data
     l[0].append("160000"); // add the close time to the date
 
     // save data to database
-    Bar bar;
-    bar.setBarType(Bar::Stock);
+    QSBar bar;
+    bar.setBarType(QSBar::Stock);
     
     QDateTime dt = QDateTime::fromString(l.at(0), QString("yyyy-MM-ddHHmmss"));
     if (! dt.isValid())
@@ -226,7 +226,7 @@ void YahooHistorical::parse (QByteArray &ba, QString &dbPath, YahooUrlData &data
   // lock the mutex so we stop other threads from writing to the database
   g_mutex.lock();
 
-  QuoteDataBase db(dbPath);
+  QSQuoteDataBase db(dbPath);
   db.transaction();
   db.setBars(symbol, bars);
   db.commit();
@@ -239,9 +239,9 @@ void YahooHistorical::parse (QByteArray &ba, QString &dbPath, YahooUrlData &data
 //**********************************************************
 //**********************************************************
 
-Plugin * createPlugin ()
+QSPlugin * createPlugin ()
 {
   YahooHistorical *o = new YahooHistorical;
-  return ((Plugin *) o);
+  return ((QSPlugin *) o);
 }
 

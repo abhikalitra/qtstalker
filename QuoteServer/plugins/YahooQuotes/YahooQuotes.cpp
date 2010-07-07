@@ -21,10 +21,10 @@
 
 #include "YahooQuotes.h"
 #include "YahooParseSymbol.h"
-#include "QuoteDataBase.h"
-#include "Symbol.h"
-#include "Bar.h"
-#include "Globals.h"
+#include "QSQuoteDataBase.h"
+#include "QSSymbol.h"
+#include "QSBar.h"
+#include "QSGlobals.h"
 #include "QSLog.h"
 
 #include <QtDebug>
@@ -170,8 +170,8 @@ void YahooQuotes::parse (QByteArray &ba, QString &dbPath)
   QString ts(ba);
   QStringList ll = ts.split('\n');
 
-  QList<Bar> bars;
-  QList<Symbol> symbols;
+  QList<QSBar> bars;
+  QList<QSSymbol> symbols;
   
   int loop = 0;
   for (; loop < ll.count(); loop++)
@@ -201,8 +201,8 @@ void YahooQuotes::parse (QByteArray &ba, QString &dbPath)
     }
 
     // save data to database
-    Bar bar;
-    bar.setBarType(Bar::Stock);
+    QSBar bar;
+    bar.setBarType(QSBar::Stock);
 
     QDateTime dt = QDateTime::fromString(l.at(1) + l.at(2), QString("M/d/yyyyh:mmap"));
     if (! dt.isValid())
@@ -243,11 +243,11 @@ void YahooQuotes::parse (QByteArray &ba, QString &dbPath)
       continue;
     }
 
-    Symbol symbol;
+    QSSymbol symbol;
     symbol.symbol = data.symbol;
     symbol.exchange = data.exchange;
     symbols.append(symbol);
-    symbol.type = (int) Bar::Stock;
+    symbol.type = (int) QSBar::Stock;
     
     bars.append(bar);
   }
@@ -255,12 +255,12 @@ void YahooQuotes::parse (QByteArray &ba, QString &dbPath)
   // lock the mutex so we stop other threads from writing to the database
   g_mutex.lock();
 
-  QuoteDataBase db(dbPath);
+  QSQuoteDataBase db(dbPath);
   db.transaction();
   loop = 0;
   for (; loop < bars.count(); loop++)
   {
-    QList<Bar> tbars;
+    QList<QSBar> tbars;
     tbars.append(bars.at(loop));
 
     db.setBars(symbols[loop], tbars);
@@ -275,9 +275,9 @@ void YahooQuotes::parse (QByteArray &ba, QString &dbPath)
 //**********************************************************
 //**********************************************************
 
-Plugin * createPlugin ()
+QSPlugin * createPlugin ()
 {
   YahooQuotes *o = new YahooQuotes;
-  return ((Plugin *) o);
+  return ((QSPlugin *) o);
 }
 

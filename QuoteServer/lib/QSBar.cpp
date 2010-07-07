@@ -19,11 +19,11 @@
  *  USA.
  */
 
-#include "Bar.h"
+#include "QSBar.h"
 
 #include <QtDebug>
 
-Bar::Bar ()
+QSBar::QSBar ()
 {
   _open = "0";
   _high = "0";
@@ -35,19 +35,19 @@ Bar::Bar ()
   _type = Stock;
 }
 
-void Bar::setDateRange (QDateTime &dt, Bar::BarLength l)
+void QSBar::setDateRange (QDateTime &dt, QSBar::QSBarLength l)
 {
   _length = l;
   _startDate = dt;
 
   switch (_length)
   {
-    case Bar::Minute1:
+    case QSBar::Minute1:
       _startDate.setTime(QTime(_startDate.time().hour(), _startDate.time().minute(), 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(60);
       break;
-    case Bar::Minute5:
+    case QSBar::Minute5:
     {
       int tint = _startDate.time().minute() / 5;
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 5, 0, 0));
@@ -55,7 +55,7 @@ void Bar::setDateRange (QDateTime &dt, Bar::BarLength l)
       _endDate = _endDate.addSecs(300);
       break;
     }
-    case Bar::Minute10:
+    case QSBar::Minute10:
     {
       int tint = _startDate.time().minute() / 10;
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 10, 0, 0));
@@ -63,7 +63,7 @@ void Bar::setDateRange (QDateTime &dt, Bar::BarLength l)
       _endDate = _endDate.addSecs(600);
       break;
     }
-    case Bar::Minute15:
+    case QSBar::Minute15:
     {
       int tint = _startDate.time().minute() / 15;
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 15, 0, 0));
@@ -71,7 +71,7 @@ void Bar::setDateRange (QDateTime &dt, Bar::BarLength l)
       _endDate = _endDate.addSecs(900);
       break;
     }
-    case Bar::Minute30:
+    case QSBar::Minute30:
     {
       int tint = _startDate.time().minute() / 30;
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 30, 0, 0));
@@ -79,25 +79,25 @@ void Bar::setDateRange (QDateTime &dt, Bar::BarLength l)
       _endDate = _endDate.addSecs(1800);
       break;
     }
-    case Bar::Minute60:
+    case QSBar::Minute60:
       _startDate.setTime(QTime(_startDate.time().hour(), 0, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(3600);
       break;
-    case Bar::DailyBar:
+    case QSBar::DailyBar:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addDays(1);
 //      _endDate = _endDate.addSecs(-1);
       break;
-    case Bar::WeeklyBar:
+    case QSBar::WeeklyBar:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _startDate = _startDate.addDays(- _startDate.date().dayOfWeek());
       _endDate = _startDate;
       _endDate = _endDate.addDays(7);
 //      _endDate = _endDate.addSecs(-1);
       break;
-    case Bar::MonthlyBar:
+    case QSBar::MonthlyBar:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _startDate = _startDate.addDays(- (_startDate.date().day() - 1));
       _endDate = _startDate;
@@ -109,22 +109,22 @@ void Bar::setDateRange (QDateTime &dt, Bar::BarLength l)
   }
 }
 
-QDateTime & Bar::startDate ()
+QDateTime & QSBar::startDate ()
 {
   return _startDate;
 }
 
-QDateTime & Bar::endDate ()
+QDateTime & QSBar::endDate ()
 {
   return _endDate;
 }
 
-void Bar::setDate (QDateTime &d)
+void QSBar::setDate (QDateTime &d)
 {
   _startDate = d;
 }
 
-int Bar::setDate (QString &s)
+int QSBar::setDate (QString &s)
 {
   _startDate = QDateTime::fromString(s, QString("yyyyMMddHHmmss"));
   if (! _startDate.isValid())
@@ -133,7 +133,7 @@ int Bar::setDate (QString &s)
   return 0;
 }
 
-int Bar::setOpen (QString s)
+int QSBar::setOpen (QString s)
 {
   bool ok;
   s.toDouble(&ok);
@@ -145,12 +145,12 @@ int Bar::setOpen (QString s)
   return 0;
 }
 
-QString & Bar::open ()
+QString & QSBar::open ()
 {
   return _open;
 }
 
-int Bar::setHigh (QString s)
+int QSBar::setHigh (QString s)
 {
   bool ok;
   s.toDouble(&ok);
@@ -162,12 +162,12 @@ int Bar::setHigh (QString s)
   return 0;
 }
 
-QString & Bar::high ()
+QString & QSBar::high ()
 {
   return _high;
 }
 
-int Bar::setLow (QString s)
+int QSBar::setLow (QString s)
 {
   bool ok;
   s.toDouble(&ok);
@@ -179,12 +179,12 @@ int Bar::setLow (QString s)
   return 0;
 }
 
-QString & Bar::low ()
+QString & QSBar::low ()
 {
   return _low;
 }
 
-int Bar::setClose (QString s)
+int QSBar::setClose (QString s)
 {
   bool ok;
   s.toDouble(&ok);
@@ -196,12 +196,12 @@ int Bar::setClose (QString s)
   return 0;
 }
 
-QString & Bar::close ()
+QString & QSBar::close ()
 {
   return _close;
 }
 
-int Bar::setVolume (QString s)
+int QSBar::setVolume (QString s)
 {
   bool ok;
   s.toDouble(&ok);
@@ -213,12 +213,12 @@ int Bar::setVolume (QString s)
   return 0;
 }
 
-QString & Bar::volume ()
+QString & QSBar::volume ()
 {
   return _volume;
 }
 
-int Bar::setOI (QString s)
+int QSBar::setOI (QString s)
 {
   bool ok;
   s.toDouble(&ok);
@@ -230,18 +230,18 @@ int Bar::setOI (QString s)
   return 0;
 }
 
-QString & Bar::oi ()
+QString & QSBar::oi ()
 {
   return _oi;
 }
 
-void Bar::rangeKey (QString &d)
+void QSBar::rangeKey (QString &d)
 {
   d.clear();
   d = _startDate.toString(QString("yyyyMMddHHmmss")) + _endDate.toString(QString("yyyyMMddHHmmss"));
 }
 
-void Bar::string (QString &d)
+void QSBar::string (QString &d)
 {
   d.clear();
 
@@ -249,17 +249,17 @@ void Bar::string (QString &d)
   
   switch (_length)
   {
-    case Bar::Minute1:
-    case Bar::Minute5:
-    case Bar::Minute10:
-    case Bar::Minute15:
-    case Bar::Minute30:
-    case Bar::Minute60:
+    case QSBar::Minute1:
+    case QSBar::Minute5:
+    case QSBar::Minute10:
+    case QSBar::Minute15:
+    case QSBar::Minute30:
+    case QSBar::Minute60:
       l << _endDate.toString(QString("yyyyMMddHHmmss"));
       break;
-    case Bar::DailyBar:
-    case Bar::WeeklyBar:
-    case Bar::MonthlyBar:
+    case QSBar::DailyBar:
+    case QSBar::WeeklyBar:
+    case QSBar::MonthlyBar:
     {
       QDateTime dt = _endDate.addSecs(-1);
       l << dt.toString(QString("yyyyMMddHHmmss"));
@@ -276,13 +276,13 @@ void Bar::string (QString &d)
   d = l.join(",");
 }
 
-void Bar::lengthList (QStringList &l)
+void QSBar::lengthList (QStringList &l)
 {
   l.clear();
   l << "1" << "5" << "10" << "15" << "30" << "60" << "D" << "W" << "M";
 }
 
-int Bar::verify ()
+int QSBar::verify ()
 {
   double o = _open.toDouble();
   double h = _high.toDouble();
@@ -313,17 +313,17 @@ int Bar::verify ()
   return 0;
 }
 
-void Bar::setBarType (Bar::BarType d)
+void QSBar::setBarType (QSBar::QSBarType d)
 {
   _type = d;
 }
 
-Bar::BarType Bar::barType ()
+QSBar::QSBarType QSBar::barType ()
 {
   return _type;
 }
 
-void Bar::typeList (QStringList &l)
+void QSBar::typeList (QStringList &l)
 {
   l.clear();
   l << "S" << "F";

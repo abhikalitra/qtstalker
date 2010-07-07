@@ -19,38 +19,14 @@
  *  USA.
  */
 
-#include "DataBase.h"
+#ifndef QSGLOBALS_HPP
+#define QSGLOBALS_HPP
 
-#include <QDebug>
-#include <QtSql>
+#include <QMutex>
+#include <QTextStream>
 
-DataBase::DataBase ()
-{
-  _dbName = "quotes";
-}
+extern QMutex g_mutex;
+extern int g_yahooQuotesStatus;
+extern QTextStream g_log;
 
-void DataBase::transaction ()
-{
-  QSqlDatabase db = QSqlDatabase::database(_dbName);
-  db.transaction();
-}
-
-void DataBase::commit ()
-{
-  QSqlDatabase db = QSqlDatabase::database(_dbName);
-  db.commit();
-}
-
-int DataBase::command (QString &sql, QString errMess)
-{
-  QSqlQuery q(QSqlDatabase::database(_dbName));
-  q.exec(sql);
-  if (q.lastError().isValid())
-  {
-    qDebug() << errMess << q.lastError().text();
-    return 1;
-  }
-
-  return 0;
-}
-
+#endif

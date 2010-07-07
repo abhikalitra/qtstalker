@@ -20,7 +20,7 @@
  */
 
 #include "QSLog.h"
-#include "Globals.h"
+#include "QSGlobals.h"
 
 #include <QDateTime>
 

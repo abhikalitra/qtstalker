@@ -24,9 +24,9 @@
 
 #include <QStringList>
 
-#include "Plugin.h"
+#include "QSPlugin.h"
 
-class SetQuotes : public Plugin
+class SetQuotes : public QSPlugin
 {
   public:
     SetQuotes ();
@@ -35,7 +35,7 @@ class SetQuotes : public Plugin
 
 extern "C"
 {
-  Plugin * createPlugin ();
+  QSPlugin * createPlugin ();
 }
 
 #endif

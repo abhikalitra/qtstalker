@@ -19,17 +19,17 @@
  *  USA.
  */
 
-#ifndef BAR_HPP
-#define BAR_HPP
+#ifndef QSBAR_HPP
+#define QSBAR_HPP
 
 #include <QString>
 #include <QStringList>
 #include <QDateTime>
 
-class Bar
+class QSBar
 {
   public:
-    enum BarLength
+    enum QSBarLength
     {
       Minute1,
       Minute5,
@@ -42,14 +42,14 @@ class Bar
       MonthlyBar
     };
 
-    enum BarType
+    enum QSBarType
     {
       Stock,
       Futures
     };
 
-    Bar ();
-    void setDateRange (QDateTime &, Bar::BarLength);
+    QSBar ();
+    void setDateRange (QDateTime &, QSBar::QSBarLength);
     void setDate (QDateTime &);
     int setDate (QString &);
     QDateTime & startDate ();
@@ -70,8 +70,8 @@ class Bar
     void string (QString &);
     void lengthList (QStringList &);
     int verify ();
-    void setBarType (Bar::BarType);
-    Bar::BarType barType ();
+    void setBarType (QSBar::QSBarType);
+    QSBar::QSBarType barType ();
     void typeList (QStringList &);
 
   private:
@@ -83,8 +83,8 @@ class Bar
     QString _oi;
     QDateTime _startDate;
     QDateTime _endDate;
-    BarLength _length;
-    BarType _type;
+    QSBarLength _length;
+    QSBarType _type;
 };
 
 #endif

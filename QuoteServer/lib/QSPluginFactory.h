@@ -19,21 +19,27 @@
  *  USA.
  */
 
-#ifndef DATABASE_HPP
-#define DATABASE_HPP
+#ifndef QSPLUGIN_FACTORY_HPP
+#define QSPLUGIN_FACTORY_HPP
 
-#include <QString>
+#include <QStringList>
+#include <QHash>
+#include <QLibrary>
 
-class DataBase
+#include "QSPlugin.h"
+
+class QSPluginFactory
 {
   public:
-    DataBase ();
-    void transaction ();
-    void commit ();
-    int command (QString &, QString);
+    QSPluginFactory ();
+    ~QSPluginFactory ();
+    QSPlugin * plugin (QString &plugin);
+    void pluginList (QStringList &list);
     
-  protected:
-    QString _dbName;
+  private:
+    QString _path;
+    QHash<QString, QLibrary *> _libs;
+    QHash<QString, QSPlugin *> _plugins;
 };
 
 #endif

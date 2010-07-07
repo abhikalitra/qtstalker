@@ -6,24 +6,24 @@ CONFIG += qt thread warn_on
 QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 
 
-HEADERS += Globals.h
-HEADERS += Symbol.h
-HEADERS += Bar.h
-HEADERS += DataBase.h
-HEADERS += QuoteDataBase.h
-HEADERS += RequestThread.h
-HEADERS += Plugin.h
-HEADERS += PluginFactory.h
+HEADERS += QSGlobals.h
+HEADERS += QSSymbol.h
+HEADERS += QSBar.h
+HEADERS += QSDataBase.h
+HEADERS += QSQuoteDataBase.h
+HEADERS += QSRequestThread.h
+HEADERS += QSPlugin.h
+HEADERS += QSPluginFactory.h
 HEADERS += QSLog.h
 
 
-SOURCES += Globals.cpp
-SOURCES += Bar.cpp
-SOURCES += DataBase.cpp
-SOURCES += QuoteDataBase.cpp
-SOURCES += RequestThread.cpp
-SOURCES += Plugin.cpp
-SOURCES += PluginFactory.cpp
+SOURCES += QSGlobals.cpp
+SOURCES += QSBar.cpp
+SOURCES += QSDataBase.cpp
+SOURCES += QSQuoteDataBase.cpp
+SOURCES += QSRequestThread.cpp
+SOURCES += QSPlugin.cpp
+SOURCES += QSPluginFactory.cpp
 SOURCES += QSLog.cpp
 
 

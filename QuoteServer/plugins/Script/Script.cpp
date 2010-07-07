@@ -97,9 +97,9 @@ int Script::command (QStringList &input, QString &, QString &output)
 //**********************************************************
 //**********************************************************
 
-Plugin * createPlugin ()
+QSPlugin * createPlugin ()
 {
   Script *o = new Script;
-  return ((Plugin *) o);
+  return ((QSPlugin *) o);
 }
 

@@ -86,10 +86,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -99,6 +95,168 @@
     </message>
     <message>
         <source>Configure CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message Log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter rule name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate rule. Overwrite?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Import started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Import finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CSVRuleDialog</name>
+    <message>
+        <source>Editing CSV Rule: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delimiter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CSV File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use filename as symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CSV Rule Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select CSV field to add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add CSV Date Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter date mask format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add CSV Time Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter time mask format</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CSVThread</name>
+    <message>
+        <source>Import cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: Line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: bad date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: symbol missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: exchange missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: db error, quotes not saved...import aborted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quotes imported: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: number of fields in file != rule format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: bad open: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: bad high: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: bad low: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: bad close: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: bad volume: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: bad oi: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: bad date: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: bad time: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -148,6 +306,22 @@
         <source>Add symbol to group</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Delete Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete symbol from the database permanently</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to permanently delete symbol(s)?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DataWindow</name>
@@ -173,6 +347,63 @@
     </message>
 </context>
 <context>
+    <name>DateRangeButton</name>
+    <message>
+        <source>&amp;Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Range Override</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DateRangeControl</name>
+    <message>
+        <source>Previous Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DocsAction</name>
+    <message>
+        <source>&amp;Documentation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;About QtStalker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show documentation. Right click mouse for options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show documentation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About Qtstalker</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FileButton</name>
     <message>
         <source>Select File</source>
@@ -183,6 +414,25 @@
     <name>FontButton</name>
     <message>
         <source>Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GridAction</name>
+    <message>
+        <source>Chart &amp;Grid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle the chart grid. Right click mouse for options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle the chart grid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Grid Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -422,6 +672,25 @@ a partial match like %SI or %RSI%</source>
     </message>
 </context>
 <context>
+    <name>PixelSpaceButton</name>
+    <message>
+        <source>Set pixel spacing button 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter pixel spacing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Bar Spacing to </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Right click mouse for options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Plot</name>
     <message>
         <source>&amp;Edit Chart Object</source>
@@ -436,19 +705,43 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Log Scaling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Qtstalker: Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Are you sure you want to delete all chart objects?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Log Scaling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bo&amp;rder Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Border Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Font</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -491,107 +784,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Configure plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Preferences</name>
-    <message>
-        <source>Bar Spacing 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bar Spacing 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Background</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Border</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Grid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Colors</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>App Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fonts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator Tab Rows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Items modified. Are you sure you want to discard changes?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Number of screen pixels between bars.
-6 is good for bar charts.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Number of screen pixels between bars.
-8 is good for candle charts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum number of tabbed chart rows.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Background color for charts.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Border line color for charts. Used for seperators, ticks etc.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Grid color for charts.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font used for text that appears on the chart.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font used for everything but charts.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh chart every x minutes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1302,6 +1494,58 @@ eg. perl -l -T</source>
         <source>The script location.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Search For Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search Fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Country</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>City</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CSV Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid search pattern.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CSV Exchange Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No items found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange Search Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select item to use as exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No item found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtStalkerTester</name>
@@ -1429,10 +1673,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>About Qtstalker</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Qtstalker</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1441,51 +1681,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New &amp;Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit &amp;Preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart &amp;Grid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Data Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;About</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About Qtstalker.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Tools</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Total bars to load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1501,27 +1697,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show documentation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Scripts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Quit Qtstalker</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add a new indicator to chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Modify user preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle the chart grid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1543,7 +1723,23 @@ eg. perl -l -T</source>
 <context>
     <name>RefreshAction</name>
     <message>
-        <source>Refresh chart every x minutes</source>
+        <source>Set chart refresh timer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter refresh rate in minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh chart every </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Right click mouse for options.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1749,6 +1945,10 @@ Are you sure you want to remove this script?</source>
         <source>The script location</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Script waiting for shutdown</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SymbolButton</name>
@@ -1805,6 +2005,49 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Remove selected symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TabWidget</name>
+    <message>
+        <source>Tab Rows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab &amp;Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Tab Rows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter number of chart tab rows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>North</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>South</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>West</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>East</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Tab Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select position</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2002,6 +2245,201 @@ Are you sure you want to remove this script?</source>
     </message>
 </context>
 <context>
+    <name>Yahoo</name>
+    <message>
+        <source>Yahoo Quotes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No symbols selected. Done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timeout: retry limit skipping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timeout: retry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open db</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Yahoo Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter symbols to add. Note: separate symbols with a space</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>YahooDialog</name>
+    <message>
+        <source>Configure Yahoo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust for splits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message Log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download historical quotes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download symbol details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit symbols to download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting history download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting details download</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>YahooParseQuote</name>
+    <message>
+        <source>Invalid plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>:line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>: db error, quotes not saved...import aborted</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>YahooSymbolDialog</name>
+    <message>
+        <source>Yahoo: Edit Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yahoo Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Yahoo Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Yahoo symbols separated by a space</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yahoo Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid symbols found. See console messages for details.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>YahooThread</name>
+    <message>
+        <source>Download cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ZoomButtons</name>
     <message>
         <source>Zoom In</source>
@@ -2009,10 +2447,6 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Zoom Out</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Bar Spacing to </source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -19,29 +19,23 @@
  *  USA.
  */
 
-#ifndef REQUEST_THREAD_H
-#define REQUEST_THREAD_H
+#ifndef QSPLUGIN_HPP
+#define QSPLUGIN_HPP
 
-#include <QThread>
-#include <QTcpSocket>
-#include <QString>
+#include <QObject>
+#include <QStringList>
 
-class RequestThread : public QThread
+class QSPlugin : public QObject
 {
   Q_OBJECT
-
+  
   signals:
-    void error(QTcpSocket::SocketError, QString);
+    void signalMessage (QString);
 
   public:
-    RequestThread(QObject *p, int sd, QString &dbPath);
-    void run();
-
-  private:
-    int _timeOut;
-    int _socketDescriptor;
-    QString _dbPath;
+    QSPlugin ();
+    virtual ~QSPlugin ();
+    virtual int command (QStringList &input, QString &dbPath, QString &output);
 };
 
 #endif
-

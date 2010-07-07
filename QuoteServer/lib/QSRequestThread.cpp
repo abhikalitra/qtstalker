@@ -19,26 +19,26 @@
  *  USA.
  */
 
-#include "RequestThread.h"
-#include "PluginFactory.h"
+#include "QSRequestThread.h"
+#include "QSPluginFactory.h"
 #include "QSLog.h"
 
 #include <QtNetwork>
 
-RequestThread::RequestThread (QObject *p, int sd, QString &dbPath) : QThread(p)
+QSRequestThread::QSRequestThread (QObject *p, int sd, QString &dbPath) : QThread(p)
 {
   _socketDescriptor = sd;
   _dbPath = dbPath;
   _timeOut = 5000;
 }
 
-void RequestThread::run()
+void QSRequestThread::run()
 {
   QSLog log;
   QTcpSocket socket;
   if (! socket.setSocketDescriptor(_socketDescriptor))
   {
-    log.message(QSLog::Error, QString("RequestThread: " + QString::number(socket.error()) + socket.errorString()));
+    log.message(QSLog::Error, QString("QSRequestThread: " + QString::number(socket.error()) + socket.errorString()));
     return;
   }
 
@@ -49,7 +49,7 @@ void RequestThread::run()
   {
     if (! socket.waitForReadyRead(_timeOut))
     {
-      log.message(QSLog::Error, QString("RequestThread: " + QString::number(socket.error()) + socket.errorString()));
+      log.message(QSLog::Error, QString("QSRequestThread: " + QString::number(socket.error()) + socket.errorString()));
       return;
     }
 
@@ -69,11 +69,11 @@ void RequestThread::run()
   QStringList l = data.split(",");
 
   // deal with request
-  PluginFactory fac;
-  Plugin *plug = fac.plugin(l[0]);
+  QSPluginFactory fac;
+  QSPlugin *plug = fac.plugin(l[0]);
   if (! plug)
   {
-    log.message(QSLog::Error, QString("RequestThread: invalid plugin" + l.at(0)));
+    log.message(QSLog::Error, QString("QSRequestThread: invalid plugin" + l.at(0)));
     return;
   }
   
@@ -98,7 +98,7 @@ void RequestThread::run()
   {
     if (! socket.waitForBytesWritten(_timeOut))
     {
-      log.message(QSLog::Error, QString("RequestThread: " + QString::number(socket.error()) + socket.errorString()));
+      log.message(QSLog::Error, QString("QSRequestThread: " + QString::number(socket.error()) + socket.errorString()));
       return;
     }
   }

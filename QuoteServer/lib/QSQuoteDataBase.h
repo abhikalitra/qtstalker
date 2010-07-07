@@ -19,28 +19,28 @@
  *  USA.
  */
 
-#ifndef PLUGIN_FACTORY_HPP
-#define PLUGIN_FACTORY_HPP
+#ifndef QSQUOTE_DATA_BASE_HPP
+#define QSQUOTE_DATA_BASE_HPP
 
-#include <QStringList>
-#include <QHash>
-#include <QLibrary>
+#include <QString>
+#include <QList>
 
-#include "Plugin.h"
-#include "PluginFactory.h"
+#include "QSDataBase.h"
+#include "QSSymbol.h"
+#include "QSBar.h"
 
-class PluginFactory
+class QSQuoteDataBase : public QSDataBase
 {
   public:
-    PluginFactory ();
-    ~PluginFactory ();
-    Plugin * plugin (QString &plugin);
-    void pluginList (QStringList &list);
-    
-  private:
-    QString _path;
-    QHash<QString, QLibrary *> _libs;
-    QHash<QString, Plugin *> _plugins;
+    QSQuoteDataBase (QString &dbPath);
+    int deleteSymbol (QSSymbol &);
+    int search (QString &ex, QString &pat, QString &);
+    int symbol (QSSymbol &);
+    int addSymbol (QSSymbol &);
+    void exchanges (QString &);
+    int rename (QSSymbol &oldSymbol, QSSymbol &newSymbol);
+    int getBars (QSSymbol &);
+    int setBars (QSSymbol &, QList<QSBar> &);
 };
 
 #endif

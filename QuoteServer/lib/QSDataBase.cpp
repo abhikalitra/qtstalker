@@ -19,28 +19,38 @@
  *  USA.
  */
 
-#ifndef QUOTE_DATA_BASE_HPP
-#define QUOTE_DATA_BASE_HPP
+#include "QSDataBase.h"
 
-#include <QString>
-#include <QList>
+#include <QDebug>
+#include <QtSql>
 
-#include "DataBase.h"
-#include "Symbol.h"
-#include "Bar.h"
-
-class QuoteDataBase : public DataBase
+QSDataBase::QSDataBase ()
 {
-  public:
-    QuoteDataBase (QString &dbPath);
-    int deleteSymbol (Symbol &);
-    int search (QString &ex, QString &pat, QString &);
-    int symbol (Symbol &);
-    int addSymbol (Symbol &);
-    void exchanges (QString &);
-    int rename (Symbol &oldSymbol, Symbol &newSymbol);
-    int getBars (Symbol &);
-    int setBars (Symbol &, QList<Bar> &);
-};
+  _dbName = "quotes";
+}
 
-#endif
+void QSDataBase::transaction ()
+{
+  QSqlDatabase db = QSqlDatabase::database(_dbName);
+  db.transaction();
+}
+
+void QSDataBase::commit ()
+{
+  QSqlDatabase db = QSqlDatabase::database(_dbName);
+  db.commit();
+}
+
+int QSDataBase::command (QString &sql, QString errMess)
+{
+  QSqlQuery q(QSqlDatabase::database(_dbName));
+  q.exec(sql);
+  if (q.lastError().isValid())
+  {
+    qDebug() << errMess << q.lastError().text();
+    return 1;
+  }
+
+  return 0;
+}
+

@@ -20,7 +20,7 @@
  */
 
 #include "Search.h"
-#include "QuoteDataBase.h"
+#include "QSQuoteDataBase.h"
 #include "QSLog.h"
 
 #include <QtDebug>
@@ -58,7 +58,7 @@ int Search::command (QStringList &input, QString &dbPath, QString &output)
     return 1;
   }
 
-  QuoteDataBase db(dbPath);
+  QSQuoteDataBase db(dbPath);
   if (db.search(input[1], input[2], output))
    return 1;
 
@@ -69,9 +69,9 @@ int Search::command (QStringList &input, QString &dbPath, QString &output)
 //**********************************************************
 //**********************************************************
 
-Plugin * createPlugin ()
+QSPlugin * createPlugin ()
 {
   Search *o = new Search;
-  return ((Plugin *) o);
+  return ((QSPlugin *) o);
 }
 

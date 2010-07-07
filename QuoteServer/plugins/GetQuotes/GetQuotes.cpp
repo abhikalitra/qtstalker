@@ -20,8 +20,8 @@
  */
 
 #include "GetQuotes.h"
-#include "QuoteDataBase.h"
-#include "Bar.h"
+#include "QSQuoteDataBase.h"
+#include "QSBar.h"
 #include "QSLog.h"
 
 #include <QtDebug>
@@ -52,11 +52,11 @@ int GetQuotes::command (QStringList &input, QString &dbPath, QString &output)
     return 1;
   }
 
-  Symbol symbol;
+  QSSymbol symbol;
   symbol.exchange = input.at(1);
   symbol.symbol = input.at(2);
 
-  Bar bar;
+  QSBar bar;
   QStringList l;
   bar.lengthList(l);
   symbol.length = l.indexOf(input.at(3));
@@ -80,7 +80,7 @@ int GetQuotes::command (QStringList &input, QString &dbPath, QString &output)
     return 1;
   }
 
-  QuoteDataBase db(dbPath);
+  QSQuoteDataBase db(dbPath);
   if (db.symbol(symbol))
    return 1;
 
@@ -96,9 +96,9 @@ int GetQuotes::command (QStringList &input, QString &dbPath, QString &output)
 //**********************************************************
 //**********************************************************
 
-Plugin * createPlugin ()
+QSPlugin * createPlugin ()
 {
   GetQuotes *o = new GetQuotes;
-  return ((Plugin *) o);
+  return ((QSPlugin *) o);
 }
 

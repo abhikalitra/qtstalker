@@ -20,9 +20,9 @@
  */
 
 #include "SetQuotes.h"
-#include "QuoteDataBase.h"
-#include "Bar.h"
-#include "Globals.h" // for mutex
+#include "QSQuoteDataBase.h"
+#include "QSBar.h"
+#include "QSGlobals.h" // for mutex
 #include "QSLog.h"
 
 #include <QtDebug>
@@ -46,7 +46,7 @@ int SetQuotes::command (QStringList &input, QString &dbPath, QString &output)
     return 1;
   }
 
-  Bar tbar;
+  QSBar tbar;
   QStringList typeList;
   tbar.typeList(typeList);
   int type = typeList.indexOf(input.at(1));
@@ -56,15 +56,15 @@ int SetQuotes::command (QStringList &input, QString &dbPath, QString &output)
     return 1;
   }
 
-  Symbol symbol;
+  QSSymbol symbol;
   symbol.type = type;
   symbol.exchange = input.at(2);
   symbol.symbol = input.at(3);
 
   int fields = 0;
-  switch ((Bar::BarType) type)
+  switch ((QSBar::QSBarType) type)
   {
-    case Bar::Futures:
+    case QSBar::Futures:
       fields = 7;
       break;
     default:
@@ -72,7 +72,7 @@ int SetQuotes::command (QStringList &input, QString &dbPath, QString &output)
       break;
   }
   
-  QList<Bar> bars;
+  QList<QSBar> bars;
   int loop = 5;
   for (; loop < input.count(); loop += fields)
   {
@@ -82,8 +82,8 @@ int SetQuotes::command (QStringList &input, QString &dbPath, QString &output)
       break;
     }
     
-    Bar bar;
-    bar.setBarType((Bar::BarType) type);
+    QSBar bar;
+    bar.setBarType((QSBar::QSBarType) type);
     
     QDateTime dt = QDateTime::fromString(input[loop], input.at(3));
     if (! dt.isValid())
@@ -124,7 +124,7 @@ int SetQuotes::command (QStringList &input, QString &dbPath, QString &output)
       continue;
     }
 
-    if ((Bar::BarType) type == Bar::Futures)
+    if ((QSBar::QSBarType) type == QSBar::Futures)
     {
       if (bar.setOI(input[loop + 6]))
       {
@@ -145,7 +145,7 @@ int SetQuotes::command (QStringList &input, QString &dbPath, QString &output)
   // lock the mutex so we stop other threads from writing to the database
   g_mutex.lock();
 
-  QuoteDataBase db(dbPath);
+  QSQuoteDataBase db(dbPath);
   db.transaction();
   db.setBars(symbol, bars);
   db.commit();
@@ -162,9 +162,9 @@ int SetQuotes::command (QStringList &input, QString &dbPath, QString &output)
 //**********************************************************
 //**********************************************************
 
-Plugin * createPlugin ()
+QSPlugin * createPlugin ()
 {
   SetQuotes *o = new SetQuotes;
-  return ((Plugin *) o);
+  return ((QSPlugin *) o);
 }
 

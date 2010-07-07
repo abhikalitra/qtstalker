@@ -1,4 +1,4 @@
-#include "Globals.h"
+#include "QSGlobals.h"
 
 QMutex g_mutex;
 int g_yahooQuotesStatus = 0;

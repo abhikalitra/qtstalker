@@ -19,24 +19,21 @@
  *  USA.
  */
 
-#ifndef SYMBOL_HPP
-#define SYMBOL_HPP
+#ifndef QSDATABASE_HPP
+#define QSDATABASE_HPP
 
 #include <QString>
-#include <QDateTime>
 
-struct Symbol
+class QSDataBase
 {
-  int bars;
-  int length;
-  int type;
-  QString table;
-  QString name;
-  QString symbol;
-  QString exchange;
-  QString data;
-  QDateTime startDate;
-  QDateTime endDate;
+  public:
+    QSDataBase ();
+    void transaction ();
+    void commit ();
+    int command (QString &, QString);
+    
+  protected:
+    QString _dbName;
 };
 
 #endif

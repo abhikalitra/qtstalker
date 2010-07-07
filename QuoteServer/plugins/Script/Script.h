@@ -24,9 +24,9 @@
 
 #include <QStringList>
 
-#include "Plugin.h"
+#include "QSPlugin.h"
 
-class Script : public Plugin
+class Script : public QSPlugin
 {
   public:
     Script ();
@@ -35,7 +35,7 @@ class Script : public Plugin
 
 extern "C"
 {
-  Plugin * createPlugin ();
+  QSPlugin * createPlugin ();
 }
 
 #endif

@@ -19,18 +19,18 @@
  *  USA.
  */
 
-#include "Plugin.h"
+#include "QSPlugin.h"
 
-Plugin::Plugin ()
+QSPlugin::QSPlugin ()
 {
 }
 
-Plugin::~Plugin ()
+QSPlugin::~QSPlugin ()
 {
 }
 
 // virtual function
-int Plugin::command (QStringList &, QString &, QString &)
+int QSPlugin::command (QStringList &, QString &, QString &)
 {
   return 0;
 }

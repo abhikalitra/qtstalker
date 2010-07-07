@@ -27,9 +27,9 @@
 #include <QDateTime>
 
 #include "YahooUrlData.h"
-#include "Plugin.h"
+#include "QSPlugin.h"
 
-class YahooHistorical : public Plugin
+class YahooHistorical : public QSPlugin
 {
   Q_OBJECT
 
@@ -42,7 +42,7 @@ class YahooHistorical : public Plugin
 
 extern "C"
 {
-  Plugin * createPlugin ();
+  QSPlugin * createPlugin ();
 }
 
 #endif

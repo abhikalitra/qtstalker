@@ -19,14 +19,24 @@
  *  USA.
  */
 
-#ifndef GLOBALS_HPP
-#define GLOBALS_HPP
+#ifndef QSSYMBOL_HPP
+#define QSSYMBOL_HPP
 
-#include <QMutex>
-#include <QTextStream>
+#include <QString>
+#include <QDateTime>
 
-extern QMutex g_mutex;
-extern int g_yahooQuotesStatus;
-extern QTextStream g_log;
+struct QSSymbol
+{
+  int bars;
+  int length;
+  int type;
+  QString table;
+  QString name;
+  QString symbol;
+  QString exchange;
+  QString data;
+  QDateTime startDate;
+  QDateTime endDate;
+};
 
 #endif
