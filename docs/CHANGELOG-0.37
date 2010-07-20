@@ -596,7 +596,7 @@
            using the sample scripts. I would appreciate comments from those of you that do test it out.
 
 
-20100718:  Changed the ~/.qtstalker/config* file db structure. You will have to delete your old one before starting
+20100720:  Changed the ~/.qtstalker/config* file db structure. You will have to delete your old one before starting
            this latest CVS version.
 
            Changed the indicatorIndex table structure in the ~/.qtstalker/data.sqlite file.  You will have to delete

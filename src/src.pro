@@ -34,7 +34,6 @@ HEADERS += ChartLayout.h
 HEADERS += IndicatorDialog.h
 HEADERS += UpdateChartPageThread.h
 HEADERS += UpdateGroupPageThread.h
-HEADERS += ChartHolder.h
 
 
 SOURCES += Qtstalker.cpp
@@ -67,7 +66,6 @@ SOURCES += ChartLayout.cpp
 SOURCES += IndicatorDialog.cpp
 SOURCES += UpdateChartPageThread.cpp
 SOURCES += UpdateGroupPageThread.cpp
-SOURCES += ChartHolder.cpp
 
 
 
