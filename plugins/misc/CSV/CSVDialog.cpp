@@ -224,7 +224,7 @@ void CSVDialog::cancelButton ()
 
 void CSVDialog::run ()
 {
-  _rule.setName(_rules->currentText());
+  _rule.name = _rules->currentText();
   
   CSVDataBase db;
   db.getRule(_rule);

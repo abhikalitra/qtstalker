@@ -21,7 +21,6 @@
 
 #include "QSDataBase.h"
 
-#include <QDebug>
 #include <QtSql>
 
 QSDataBase::QSDataBase ()
@@ -39,18 +38,5 @@ void QSDataBase::commit ()
 {
   QSqlDatabase db = QSqlDatabase::database(_dbName);
   db.commit();
-}
-
-int QSDataBase::command (QString &sql, QString errMess)
-{
-  QSqlQuery q(QSqlDatabase::database(_dbName));
-  q.exec(sql);
-  if (q.lastError().isValid())
-  {
-    qDebug() << errMess << q.lastError().text();
-    return 1;
-  }
-
-  return 0;
 }
 

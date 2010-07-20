@@ -19,25 +19,29 @@
  *  USA.
  */
 
-#ifndef YAHOO_URL_DATA_HPP
-#define YAHOO_URL_DATA_HPP
 
+#ifndef QUOTE_SERVER_REQUEST_THREAD_H
+#define QUOTE_SERVER_REQUEST_THREAD_H
+
+#include <QThread>
 #include <QString>
 
-enum UrlType
+class QuoteServerRequestThread : public QThread
 {
-  UrlTypeHistory,
-  UrlTypeDetails
-};
+  Q_OBJECT
 
-struct YahooUrlData
-{
-  QString url;
-  QString ysymbol;
-  QString symbol;
-  QString exchange;
-  UrlType type;
-  int adjustment;
+  signals:
+    void signalDone (QString);
+
+  public:
+    QuoteServerRequestThread (QObject *p, QString &request);
+
+  protected:
+    void run();
+
+  private:
+    QString _request;
 };
 
 #endif
+

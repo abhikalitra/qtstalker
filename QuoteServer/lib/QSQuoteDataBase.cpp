@@ -21,6 +21,7 @@
 
 #include "QSQuoteDataBase.h"
 #include "QSLog.h"
+#include "QSDateRange.h"
 
 #include <QDebug>
 #include <QtSql>
@@ -41,7 +42,8 @@ QSQuoteDataBase::QSQuoteDataBase (QString &dbPath)
     db.setPassword("QuoteServer");
     if (! db.open())
       log.message(QSLog::Error, QString(" QSQuoteDataBase: quotes db open failed"));
-      
+
+    // create the main quotes index table
     QSqlQuery q(db);
     QString s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
     s.append(" record INTEGER PRIMARY KEY AUTOINCREMENT");
@@ -49,6 +51,51 @@ QSQuoteDataBase::QSQuoteDataBase (QString &dbPath)
     s.append(", exchange TEXT");
     s.append(", tableName TEXT");
     s.append(", type INT");
+    s.append(")");
+    q.exec(s);
+    if (q.lastError().isValid())
+      log.message(QSLog::Error, QString(" QSQuoteDataBase: " + q.lastError().text()));
+
+    // create the details table, we just create it here for simplicity so we only have to check once
+    // when server is started instead of every time we open the db.
+    // QSDetailsDataBase handles all the actual data management
+    s = "CREATE TABLE IF NOT EXISTS detailsIndex (";
+    s.append(" tableName TEXT PRIMARY KEY UNIQUE");
+    s.append(", Name TEXT");
+    s.append(", Sector TEXT");
+    s.append(", FuturesCode TEXT");
+    s.append(", FuturesExpMonth TEXT");
+    s.append(", FuturesExpYear REAL");
+    s.append(", T1 TEXT");
+    s.append(", T2 TEXT");
+    s.append(", T3 TEXT");
+    s.append(", T4 TEXT");
+    s.append(", T5 TEXT");
+    s.append(", T6 TEXT");
+    s.append(", T7 TEXT");
+    s.append(", T8 TEXT");
+    s.append(", T9 TEXT");
+    s.append(", T10 TEXT");
+    s.append(", T11 TEXT");
+    s.append(", T12 TEXT");
+    s.append(", T13 TEXT");
+    s.append(", T14 TEXT");
+    s.append(", T15 TEXT");
+    s.append(", D1 REAL");
+    s.append(", D2 REAL");
+    s.append(", D3 REAL");
+    s.append(", D4 REAL");
+    s.append(", D5 REAL");
+    s.append(", D6 REAL");
+    s.append(", D7 REAL");
+    s.append(", D8 REAL");
+    s.append(", D9 REAL");
+    s.append(", D10 REAL");
+    s.append(", D11 REAL");
+    s.append(", D12 REAL");
+    s.append(", D13 REAL");
+    s.append(", D14 REAL");
+    s.append(", D15 REAL");
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())
@@ -65,16 +112,27 @@ int QSQuoteDataBase::deleteSymbol (QSSymbol &input)
     return 1;
 
   // drop quote table
-  QString s = "DROP TABLE " + input.table;
-  if (command(s, QString("QSQuoteDataBase::deleteSymbol: drop quotes table")))
-    return 1;
+  QSLog log;
+  QSqlQuery q(QSqlDatabase::database(_dbName));
 
+  QString s = "DROP TABLE " + input.table;
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    log.message(QSLog::Error, QString(" QSQuoteDataBase::deleteSymbol: drop quotes table" + q.lastError().text()));
+    return 1;
+  }
+  
   // remove index record
   s = "DELETE FROM symbolIndex";
   s.append(" WHERE symbol='" + input.symbol + "'");
   s.append(" AND exchange='" + input.exchange + "'");
-  if (command(s, QString("QSQuoteDataBase::deleteSymbol: remove symbolIndex record")))
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    log.message(QSLog::Error, QString(" QSQuoteDataBase::deleteSymbol: remove symbolIndex record" + q.lastError().text()));
     return 1;
+  }
 
 //qDebug("Delete: elapsed: %d ms", time.elapsed());
 
@@ -145,7 +203,7 @@ int QSQuoteDataBase::search (QString &exchange, QString &symbol, QString &output
   }
 
   // now delimit each pair with a semicolon
-  output = l.join(";");
+  output = l.join(":");
 
 //qDebug("Search: elapsed: %d ms", time.elapsed());
 
@@ -258,7 +316,7 @@ void QSQuoteDataBase::exchanges (QString &output)
   while (q.next())
     l.append(q.value(0).toString());
 
-  output = l.join(",");
+  output = l.join(":");
 
 //qDebug("Exchanges: elapsed: %d ms", time.elapsed());
 }
@@ -272,7 +330,7 @@ int QSQuoteDataBase::rename (QSSymbol &oldSymbol, QSSymbol &newSymbol)
   if (symbol(oldSymbol))
     return 1;
 
-  // make sure new symbol does not exists
+  // make sure new symbol does not exist
   if (symbol(newSymbol))
     return 1;
   
@@ -309,6 +367,31 @@ int QSQuoteDataBase::getBars (QSSymbol &output)
   QHash<QString, QSBar *> bars;
   QList<QSBar *> dateList;
 
+  // check if we want to return most recent bars
+  if (! output.startDate.isValid() && ! output.endDate.isValid())
+  {
+    QString s = "SELECT max(date) FROM " + output.table;
+    q.exec(s);
+    if (q.lastError().isValid())
+    {
+      log.message(QSLog::Error, QString(" QSQuoteDataBase::getBars: max date: " + q.lastError().text()));
+      return 1;
+    }
+    
+    if (q.next())
+    {
+      output.endDate = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmss");
+      QSDateRange dr;
+      if (dr.dateRange((QSDateRange::Range) output.dateRange, output.endDate, output.startDate))
+      {
+        log.message(QSLog::Error, QString(" QSQuoteDataBase::getBars: date range error"));
+        return 1;
+      }
+    }
+    else
+      return 1;
+  }
+
   QString s = "SELECT date,open,high,low,close,volume";
   if ((QSBar::QSBarType) output.type == QSBar::Futures)
     s.append(",oi");
@@ -335,6 +418,7 @@ int QSQuoteDataBase::getBars (QSSymbol &output)
     if (! bar)
     {
       bar = new QSBar;
+      bar->setBarType((QSBar::QSBarType) output.type);
       bar->setDateRange(lastDate, (QSBar::QSBarLength) output.length);
       bar->setOpen(q.value(1).toString());
       bar->setHigh(q.value(2).toString());
@@ -377,6 +461,9 @@ int QSQuoteDataBase::getBars (QSSymbol &output)
   {
     QString s;
     QSBar *bar = dateList.at(loop);
+    if (! bar)
+      continue;
+    
     bar->string(s);
     l << s;
   }
@@ -384,7 +471,7 @@ int QSQuoteDataBase::getBars (QSSymbol &output)
   // bar fields use comma delimiter
   // bars use semicolon delimiter
   output.bars = dateList.count(); // set # of bars
-  output.data = l.join(";");
+  output.data = l.join(":");
 
   if (bars.count())
     qDeleteAll(bars);

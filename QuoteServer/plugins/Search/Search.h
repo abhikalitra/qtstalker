@@ -25,12 +25,24 @@
 #include <QStringList>
 
 #include "QSPlugin.h"
+#include "QSLog.h"
 
 class Search : public QSPlugin
 {
   public:
+    enum Method
+    {
+      _Search,
+      _Exchange
+    };
+    
     Search ();
     int command (QStringList &input, QString &dbPath, QString &output);
+    int search (QStringList &input, QString &dbPath, QString &output, QSLog &);
+    int exchange (QString &dbPath, QString &output);
+
+  private:
+    QStringList _methodList;
 };
 
 extern "C"

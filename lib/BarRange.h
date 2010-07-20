@@ -19,15 +19,26 @@
  *  USA.
  */
 
-#ifndef QUOTES_DATA_BASE_HPP
-#define QUOTES_DATA_BASE_HPP
+#ifndef BAR_RANGE_HPP
+#define BAR_RANGE_HPP
 
-#include "DataBase.h"
+#include <QDateTime>
+#include <QString>
 
-class QuotesDataBase : public DataBase
+#include "BarData.h"
+
+class BarRange
 {
   public:
-    QuotesDataBase ();
+    BarRange ();
+    void setBarRange (QDateTime &, BarData::BarLength);
+    QDateTime & startDate ();
+    QDateTime & endDate ();
+    void key (QString &);
+
+  private:
+    QDateTime _startDate;
+    QDateTime _endDate;
 };
 
 #endif

@@ -38,7 +38,6 @@ ExScript::ExScript ()
   _functionList << "INDICATOR";
   _functionList << "GROUP";
   _functionList << "PLOT";
-  _functionList << "QUOTE";
   _functionList << "SYMBOL";
   _functionList << "TEST";
   
@@ -79,7 +78,7 @@ int ExScript::calculate (QString &command)
   _proc->start(command, QIODevice::ReadWrite);
 
   // make sure process starts error free
-  if (! _proc->waitForStarted(10000))
+  if (! _proc->waitForStarted())
   {
     qDebug() << "ExScript::calculate: error starting script...timed out";
     clear();
@@ -87,7 +86,7 @@ int ExScript::calculate (QString &command)
   }
 
   // wait until script is finished, this will block gui until done.
-  if (! _proc->waitForFinished(10000))
+  if (! _proc->waitForFinished())
   {
     qDebug() << "ExScript::calculate: script error, timed out";
     clear();
@@ -97,7 +96,6 @@ int ExScript::calculate (QString &command)
   return 0;
 }
 
-/*
 int ExScript::calculate2 (QString &command)
 {
   // clean up if needed
@@ -107,15 +105,15 @@ int ExScript::calculate2 (QString &command)
   _proc->start(command, QIODevice::ReadWrite);
 
   // make sure process starts error free
-  if (! _proc->waitForStarted(10000))
+  if (! _proc->waitForStarted())
   {
     qDebug() << "ExScript::calculate: error starting script...timed out";
+    clear();
     return 1;
   }
 
   return 0;
 }
-*/
 
 void ExScript::done (int, QProcess::ExitStatus)
 {
@@ -169,12 +167,6 @@ void ExScript::readFromStdout ()
     {
       SCPlot sc;
       sc.calculate(l, _indicator, ba);
-      _proc->write(ba);
-      break;
-    }
-    case QUOTE:
-    {
-      _quotes.calculate(l, ba, _indicator);
       _proc->write(ba);
       break;
     }

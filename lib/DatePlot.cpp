@@ -44,18 +44,18 @@ void DatePlot::draw (PlotData &pd, DateBar &dateBars)
 
   switch (pd.interval)
   {
-    case Bar::Minute1:
-    case Bar::Minute5:
-    case Bar::Minute10:
-    case Bar::Minute15:
-    case Bar::Minute30:
-    case Bar::Minute60:
+    case BarData::Minute1:
+    case BarData::Minute5:
+    case BarData::Minute10:
+    case BarData::Minute15:
+    case BarData::Minute30:
+    case BarData::Minute60:
       drawMinuteDate(pd, painter, dateBars);      
       break;
-    case Bar::WeeklyBar:
+    case BarData::WeeklyBar:
       drawWeeklyDate(pd, painter, dateBars);      
       break;
-    case Bar::MonthlyBar:
+    case BarData::MonthlyBar:
       drawMonthlyDate(pd, painter, dateBars);      
       break;
     default: // daily
@@ -78,7 +78,7 @@ void DatePlot::drawMinuteDate (PlotData &pd, QPainter &painter, DateBar &dateBar
   QDateTime oldDay = nextHour;
   nextHour.setTime(QTime(nextHour.time().hour(), 0, 0, 0));
   
-  if (pd.interval != Bar::Minute1)
+  if (pd.interval != BarData::Minute1)
     nextHour = nextHour.addSecs(7200);
   else
     nextHour = nextHour.addSecs(3600);
@@ -106,7 +106,7 @@ void DatePlot::drawMinuteDate (PlotData &pd, QPainter &painter, DateBar &dateBar
     {
       if (date >= nextHour)
       {
-        if (pd.interval < Bar::Minute30)
+        if (pd.interval < BarData::Minute30)
 	{
 	  // draw the short tick
 	  painter.drawLine (x,
@@ -125,7 +125,7 @@ void DatePlot::drawMinuteDate (PlotData &pd, QPainter &painter, DateBar &dateBar
     {
       nextHour = date;
       nextHour.setTime(QTime(date.time().hour(), 0, 0, 0));
-      if (pd.interval != Bar::Minute1)
+      if (pd.interval != BarData::Minute1)
         nextHour = nextHour.addSecs(7200);
       else
         nextHour = nextHour.addSecs(3600);

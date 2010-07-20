@@ -5,6 +5,9 @@ CONFIG += thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 
+
+HEADERS += QuoteServerRequestThread.h
+HEADERS += QuoteServerRequest.h
 HEADERS += Globals.h
 HEADERS += Setting.h
 HEADERS += PlotLine.h
@@ -36,8 +39,6 @@ HEADERS += SymbolDialog.h
 HEADERS += DateBar.h
 HEADERS += PlotGrid.h
 HEADERS += PlotCursorInfo.h
-HEADERS += DBPlugin.h
-HEADERS += SCQuote.h
 HEADERS += GroupDataBase.h
 HEADERS += Group.h
 HEADERS += ScriptDataBase.h
@@ -73,7 +74,6 @@ HEADERS += Wilder.h
 HEADERS += Strip.h
 HEADERS += PlotDrawInfo.h
 HEADERS += SCChartObject.h
-HEADERS += DBPluginFactory.h
 HEADERS += IndicatorPluginFactory.h
 HEADERS += MiscPluginFactory.h
 HEADERS += MiscPlugin.h
@@ -82,13 +82,14 @@ HEADERS += PlotCursor.h
 HEADERS += PlotCursorZoom.h
 HEADERS += PlotCursorCrossHair.h
 HEADERS += PlotCursorNormal.h
-HEADERS += QuoteIndexDataBase.h
 HEADERS += DateRange.h
 HEADERS += DataDataBase.h
-HEADERS += QuotesDataBase.h
 HEADERS += IndicatorThread.h
+HEADERS += BarRange.h
 
 
+SOURCES += QuoteServerRequestThread.cpp
+SOURCES += QuoteServerRequest.cpp
 SOURCES += Globals.cpp
 SOURCES += Setting.cpp
 SOURCES += PlotLine.cpp
@@ -120,8 +121,6 @@ SOURCES += SymbolDialog.cpp
 SOURCES += DateBar.cpp
 SOURCES += PlotGrid.cpp
 SOURCES += PlotCursorInfo.cpp
-SOURCES += DBPlugin.cpp
-SOURCES += SCQuote.cpp
 SOURCES += GroupDataBase.cpp
 SOURCES += Group.cpp
 SOURCES += ScriptDataBase.cpp
@@ -156,7 +155,6 @@ SOURCES += Wilder.cpp
 SOURCES += Strip.cpp
 SOURCES += PlotDrawInfo.cpp
 SOURCES += SCChartObject.cpp
-SOURCES += DBPluginFactory.cpp
 SOURCES += IndicatorPluginFactory.cpp
 SOURCES += MiscPluginFactory.cpp
 SOURCES += MiscPlugin.cpp
@@ -165,11 +163,10 @@ SOURCES += PlotCursor.cpp
 SOURCES += PlotCursorZoom.cpp
 SOURCES += PlotCursorCrossHair.cpp
 SOURCES += PlotCursorNormal.cpp
-SOURCES += QuoteIndexDataBase.cpp
 SOURCES += DateRange.cpp
 SOURCES += DataDataBase.cpp
-SOURCES += QuotesDataBase.cpp
 SOURCES += IndicatorThread.cpp
+SOURCES += BarRange.cpp
 
 
 TARGET = qtstalker
@@ -205,5 +202,8 @@ INSTALLS += target
 # so doing it here.
 QMAKE_DISTCLEAN += qtstalker_defines.h
 
+QT += core
+QT += gui
 QT += sql
+QT += network
 

@@ -20,12 +20,16 @@
  */
 
 #include "BarLengthButtons.h"
-
-#include <QString>
-#include <QDebug>
-#include <QToolButton>
-
 #include "Config.h"
+#include "BarData.h"
+
+#include "../pics/prev.xpm"
+#include "../pics/next.xpm"
+
+#include <QDebug>
+#include <QString>
+#include <QStringList>
+#include <QIcon>
 
 BarLengthButtons::BarLengthButtons (QToolBar *tb) : QObject (tb)
 {
@@ -34,107 +38,101 @@ BarLengthButtons::BarLengthButtons (QToolBar *tb) : QObject (tb)
 
 void BarLengthButtons::createButtons (QToolBar *tb)
 {
-  // button group for the bars group
-  group = new QButtonGroup(this);
-  
-  QToolButton *b = new QToolButton;
-  b->setToolTip(QString(tr("Monthly Bars")));
-  b->setStatusTip(QString(tr("Monthly Bars")));
-  b->setText(QString("M"));
-  b->setCheckable(TRUE);
-  tb->addWidget(b);
-  group->addButton(b, 8);
+  // previous button
+  _prevButton = new QToolButton;
+  _prevButton->setIcon(QIcon(prev_xpm));
+  _prevButton->setToolTip(QString(tr("Previous Bar Length")));
+  _prevButton->setStatusTip(QString(tr("Previous Bar Length")));
+  _prevButton->setCheckable(FALSE);
+  connect(_prevButton, SIGNAL(clicked()), this, SLOT(prevLength()));
+  tb->addWidget(_prevButton);
 
-  b = new QToolButton;
-  b->setToolTip(QString(tr("Weekly Bars")));
-  b->setStatusTip(QString(tr("Weekly Bars")));
-  b->setText(QString("W"));
-  b->setCheckable(TRUE);
-  tb->addWidget(b);
-  group->addButton(b, 7);
-
-  b = new QToolButton;
-  b->setToolTip(QString(tr("Daily Bars")));
-  b->setStatusTip(QString(tr("Daily Bars")));
-  b->setText(QString("D"));
-  b->setCheckable(TRUE);
-  tb->addWidget(b);
-  group->addButton(b, 6);
-
-  b = new QToolButton;
-  b->setToolTip(QString(tr("60 Minute Bars")));
-  b->setStatusTip(QString(tr("60 Minute Bars")));
-  b->setText(QString("60"));
-  b->setCheckable(TRUE);
-  tb->addWidget(b);
-  group->addButton(b, 5);
-
-  b = new QToolButton;
-  b->setToolTip(QString(tr("30 Minute Bars")));
-  b->setStatusTip(QString(tr("30 Minute Bars")));
-  b->setText(QString("30"));
-  b->setCheckable(TRUE);
-  tb->addWidget(b);
-  group->addButton(b, 4);
-
-  b = new QToolButton;
-  b->setToolTip(QString(tr("15 Minute Bars")));
-  b->setStatusTip(QString(tr("15 Minute Bars")));
-  b->setText(QString("15"));
-  b->setCheckable(TRUE);
-  tb->addWidget(b);
-  group->addButton(b, 3);
-
-  b = new QToolButton;
-  b->setToolTip(QString(tr("10 Minute Bars")));
-  b->setStatusTip(QString(tr("10 Minute Bars")));
-  b->setText(QString("10"));
-  b->setCheckable(TRUE);
-  tb->addWidget(b);
-  group->addButton(b, 2);
-
-  b = new QToolButton;
-  b->setToolTip(QString(tr("5 Minute Bars")));
-  b->setStatusTip(QString(tr("5 Minute Bars")));
-  b->setText(QString("5"));
-  b->setCheckable(TRUE);
-  tb->addWidget(b);
-  group->addButton(b, 1);
-
-  b = new QToolButton;
-  b->setToolTip(QString(tr("1 Minute Bars")));
-  b->setStatusTip(QString(tr("1 Minute Bars")));
-  b->setText(QString("1"));
-  b->setCheckable(TRUE);
-  tb->addWidget(b);
-  group->addButton(b, 0);
-
-  // set the button to last used position
-  Config config;
+  QStringList l;
+  BarData bd;
+  bd.getBarLengthList(l);
+  _lengths = new QComboBox;
+  _lengths->addItems(l);
+  _lengths->setCurrentIndex(6); // daily default
   QString s;
+  Config config;
   config.getData(Config::BarLength, s);
-  if (! s.isEmpty())
-    b = (QToolButton *) group->button(s.toInt());
+  if (s.isEmpty())
+    config.setData(Config::BarLength, _lengths->currentIndex());
   else
-  {
-    b = (QToolButton *) group->button(6);
-    config.setData(Config::BarLength, 6);
-  }
-  b->setChecked(TRUE);
-
-  connect(group, SIGNAL(buttonClicked(int)), this, SLOT(barLengthChanged(int)));
+    _lengths->setCurrentIndex(s.toInt());
+  _lengths->setMaxVisibleItems(l.count());
+  connect(_lengths, SIGNAL(currentIndexChanged(int)), this, SLOT(lengthChanged(int)));
+  tb->addWidget(_lengths);
+  
+  // next button
+  _nextButton = new QToolButton;
+  _nextButton->setIcon(QIcon(next_xpm));
+  _nextButton->setToolTip(QString(tr("Next Bar Length")));
+  _nextButton->setStatusTip(QString(tr("Next Bar Length")));
+  _nextButton->setCheckable(FALSE);
+  connect(_nextButton, SIGNAL(clicked()), this, SLOT(nextLength()));
+  tb->addWidget(_nextButton);
 }
 
-void BarLengthButtons::barLengthChanged (int d)
+void BarLengthButtons::prevLength ()
+{
+  int t = _lengths->currentIndex();
+  t--;
+  if (t == 0)
+    _prevButton->setEnabled(FALSE);
+  else
+    _prevButton->setEnabled(TRUE);
+
+  _lengths->setCurrentIndex(t);
+
+  buttonStatus();
+}
+
+void BarLengthButtons::nextLength ()
+{
+  int t = _lengths->currentIndex();
+  t++;
+  if (t == _lengths->count() - 1)
+    _nextButton->setEnabled(FALSE);
+  else
+    _nextButton->setEnabled(TRUE);
+
+  _lengths->setCurrentIndex(t);
+
+  buttonStatus();
+}
+
+void BarLengthButtons::lengthChanged (int d)
 {
   Config config;
   config.setData(Config::BarLength, d);
+  buttonStatus();
 
   emit signalBarLengthChanged(d);
 }
 
-int BarLengthButtons::getCurrentButton ()
+int BarLengthButtons::length ()
 {
-  return group->checkedId();
+  return _lengths->currentIndex();
+}
+
+void BarLengthButtons::buttonStatus ()
+{
+  bool left = TRUE;
+  bool right = TRUE;
+
+  if (_lengths->currentIndex() == 0)
+    left = FALSE;
+  else if (_lengths->currentIndex() == _lengths->count() - 1)
+    right = FALSE;
+
+  _prevButton->setEnabled(left);
+  _nextButton->setEnabled(right);
+}
+
+void BarLengthButtons::getCurrentText (QString &d)
+{
+  BarData bd;
+  bd.barLengthText((BarData::BarLength) _lengths->currentIndex(), d);
 }
 

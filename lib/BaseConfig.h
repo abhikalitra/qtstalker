@@ -38,7 +38,10 @@ class BaseConfig : public DataBase
 {
   public:
     BaseConfig ();
-//    void createTable ();
+    
+    void setData (QString &, QString &);
+    void getData (QString &, QString &);
+
     void setData (int, QString &);
     void getData (int, QString &);
     

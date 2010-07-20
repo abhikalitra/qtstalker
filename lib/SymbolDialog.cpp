@@ -20,10 +20,8 @@
  */
 
 #include "SymbolDialog.h"
-#include "QuoteIndexDataBase.h"
 #include "BarData.h"
-#include "DBPluginFactory.h"
-#include "DBPlugin.h"
+#include "QuoteServerRequestThread.h"
 
 #include "../pics/search.xpm"
 #include "../pics/add.xpm"
@@ -67,11 +65,6 @@ SymbolDialog::SymbolDialog (int flag) : QDialog (0, 0)
   tvbox->addLayout(thbox);
   
   exchanges = new QComboBox;
-  QuoteIndexDataBase idb;
-  QStringList l;
-  idb.getExchangeList(l);
-  exchanges->addItems(l);
-  exchanges->setCurrentIndex(0);
   exchanges->setToolTip(QString(tr("Exchange")));
   thbox->addWidget(exchanges);
   
@@ -84,8 +77,8 @@ SymbolDialog::SymbolDialog (int flag) : QDialog (0, 0)
   searchButton->setToolTip(QString(tr("Search")));
   connect(searchButton, SIGNAL(clicked()), this, SLOT(searchButtonPressed()));
   thbox->addWidget(searchButton);
-  
-  l.clear();
+
+  QStringList l;
   l << tr("Symbol") << tr("Name") << tr("Exchange");
 
   leftSymbols = new QTreeWidget;
@@ -134,13 +127,15 @@ SymbolDialog::SymbolDialog (int flag) : QDialog (0, 0)
   
   if (flag)
     gbox->hide();
+
+  loadExchanges();
 }
 
 void SymbolDialog::setSymbols (QString &ex, QString &ss)
 {
   exchanges->setCurrentIndex(exchanges->findText(ex, Qt::MatchExactly));
   search->setText(ss);
-  searchButtonPressed();
+//  searchButtonPressed();
 }
 
 void SymbolDialog::getSymbols (Group &l)
@@ -229,44 +224,69 @@ void SymbolDialog::addButtonPressed ()
 
 void SymbolDialog::searchButtonPressed ()
 {
-  QuoteIndexDataBase idb;
-  Group l;
-  QString s = search->text();
-  QString ex = exchanges->currentText();
-  if (ex.contains("<NONE>"))
-    ex.clear();
-  idb.getSearchList(ex, s, l);
+  QStringList l;
+  l << "Search" << "S";
+  
+  QString s = exchanges->currentText();
+  if (s.isEmpty())
+    s = "*";
+  l << s;
+  
+  s = search->text();
+  if (s.isEmpty())
+    s = "*";
+  l << s;
+    
+  QString command = l.join(",") + "\n";
 
+  QuoteServerRequestThread *r = new QuoteServerRequestThread(this, command);
+//  connect(r, SIGNAL(finished()), this, SLOT(searchRequestDone()));
+  connect(r, SIGNAL(signalDone(QString)), this, SLOT(searchRequestDone(QString)), Qt::QueuedConnection);
+  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+  r->start();
+}
+
+void SymbolDialog::searchRequestDone (QString data)
+{
   leftSymbols->clear();
   
-  DBPluginFactory fac;
+  QStringList l = data.split(":");
 
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
+  int loop = 0;
+  for (; loop < l.count(); loop++)
   {
+    QStringList l2 = l.at(loop).split(",");
+    if (l2.count() != 2)
+      continue;
+
     QTreeWidgetItem *item = new QTreeWidgetItem(leftSymbols);
     
-    BarData bd;
-    l.getItem(loop, bd);
-
-    // get the name field
     QString name;
-    DBPlugin *plug = fac.plugin(bd.getPlugin());
-    if (plug)
-    {
-      QString s = "NAME";
-      plug->detail(s, &bd, name);
-    }
-    
-    item->setText(0, bd.getSymbol());
+    item->setText(0, l2.at(1));
     item->setText(1, name);
-    item->setText(2, bd.getExchange());
+    item->setText(2, l2.at(0));
   }
   
   for (loop = 0; loop < leftSymbols->columnCount(); loop++)
     leftSymbols->resizeColumnToContents(loop);
 }
 
+void SymbolDialog::loadExchanges ()
+{
+  QString command = "Search,E\n";
 
+  QuoteServerRequestThread *r = new QuoteServerRequestThread(this, command);
+  connect(r, SIGNAL(signalDone(QString)), this, SLOT(exchangeRequestDone(QString)), Qt::QueuedConnection);
+  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+  r->start();
+}
 
+void SymbolDialog::exchangeRequestDone (QString data)
+{
+  QStringList l = data.split(",");
+  
+  exchanges->clear();
+  exchanges->addItems(l);
+  exchanges->setCurrentIndex(0);
+}
 

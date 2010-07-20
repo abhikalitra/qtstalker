@@ -23,10 +23,8 @@
 #define YAHOO_THREAD_HPP
 
 #include <QThread>
-#include <QString>
-#include <QList>
-
-#include "YahooUrlData.h"
+#include <QStringList>
+#include <QDateTime>
 
 class YahooThread : public QThread
 {
@@ -36,16 +34,16 @@ class YahooThread : public QThread
     void signalMessage (QString);
 
   public:
-    YahooThread (QObject *);
-    void setParms (QList<YahooUrlData> &);
-    void stop ();
+    YahooThread (QObject *, QString &type, QStringList &symbols, QDateTime sd, QDateTime ed);
 
   protected:
     void run ();
     
   private:
-    QList<YahooUrlData> _urls;
-    int _stopFlag;
+    QString _type;
+    QStringList _symbols;
+    QDateTime _startDate;
+    QDateTime _endDate;
 };
 
 #endif

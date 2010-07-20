@@ -4,12 +4,11 @@ TEMPLATE = subdirs
 SUBDIRS += lib
 
 # compile plugins
-SUBDIRS += plugins/GetQuotes
+SUBDIRS += plugins/Details
+SUBDIRS += plugins/Quotes
 SUBDIRS += plugins/Search
-SUBDIRS += plugins/SetQuotes
 SUBDIRS += plugins/YahooHistorical
 SUBDIRS += plugins/YahooQuotes
-SUBDIRS += plugins/Script
 
 # compile app
 SUBDIRS += src

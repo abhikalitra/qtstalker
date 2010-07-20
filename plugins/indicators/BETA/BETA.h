@@ -34,7 +34,8 @@ class BETA : public IndicatorPlugin
       Label,
       Period,
       Input,
-      Index
+      Index,
+      Exchange
     };
 
     BETA ();

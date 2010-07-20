@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,26 +19,24 @@
  *  USA.
  */
 
-#ifndef YAHOO_PARSE_QUOTE_HPP
-#define YAHOO_PARSE_QUOTE_HPP
+#ifndef INDICATOR_DIALOG_HPP
+#define INDICATOR_DIALOG_HPP
 
 #include <QString>
-#include <QByteArray>
-#include <QObject>
 
-#include "YahooUrlData.h"
+#include "Indicator.h"
 
-class YahooParseQuote : public QObject
+class IndicatorDialog
 {
-  Q_OBJECT
-
-  signals:
-    void signalMessage (QString);
-
   public:
-    YahooParseQuote ();
-    void history (QByteArray &, YahooUrlData &);
-    void details (QByteArray &, YahooUrlData &);
+    IndicatorDialog ();
+    int newDialog ();
+    int dialog (QString);
+    int moveDialog (Indicator &);
+    QString & name ();
+
+  private:
+    QString _name;
 };
 
 #endif

@@ -2,8 +2,8 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += Script.h
+HEADERS += Details.h
 
-SOURCES += Script.cpp
+SOURCES += Details.cpp
 
 

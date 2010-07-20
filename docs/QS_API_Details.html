@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>QuoteServer API - Details</title>
+</head>
+<body>
+<h3 style="text-decoration: underline;">QuoteServer API - Details<br>
+</h3>
+<br>
+These script commands create and modify specific details related to a
+symbol in the database. There are a few defined detail types and 15
+text fields and 15 decimal fields.
+The text fields are called T1...T15. The decimal fields are called
+D1..D15. It is up to the user to decide what data goes in them. This
+allows maximum flexibility and allows field based sql searches to be
+done. The use of details are optional.<br>
+<br>
+Here are the available &lt;DETAIL&gt; values:<br>
+<br>
+<ul>
+  <li>Name - used for company name / description text</li>
+  <li>Sector - used by stocks for business type eg. Industrial<br>
+  </li>
+  <li>FuturesCode - exchange code used by futures contracts to describe
+the futures type eg. 'C' for corn.</li>
+  <li>FuturesExpMonth - the futures contract expiry month eg. 'Z' for
+december</li>
+  <li>FuturesExpYear - the futures contract expiry year eg. '2012'</li>
+  <li>T1...T15 - user defined text fields</li>
+  <li>D1...D15 - user defined decimal fields</li>
+</ul>
+<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<p style="font-weight: bold;">Details,G,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;DETAILS&gt;\n<br>
+</p>
+<p>Get (return) 1 or more details for a specific database symbol.<br>
+</p>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the exchange the
+quote originates from. eg.
+'XNYS' </li>
+  <li>&lt;SYMBOL&gt; is the symbol eg. 'GOOG'<a href="PlotTypes.html"> </a></li>
+  <li>&lt;DETAILS&gt; is the detail type. this is a colon delimited
+string containing one or more detail types eg. 'T1:T2'<br>
+  </li>
+</ul>
+On success, the details are returned in a colon delimited string in the
+same order as requested.<br>
+<br>
+For example. Say we used T1 to store the company name and T2 to store
+the business type. We write the string 'T1:T2'. The returned text would
+be 'Google Corp:Internet'.<br>
+<br>
+If there are no details in the database, an empty string is returned.
+Failure returns 'ERROR\n'.<br>
+<br>
+A full example would be '<span style="font-weight: bold;">Details,G,XNYS,GOOG,T1:T2\n</span>'<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><br>
+<br>
+<span style="font-weight: bold;">Details,S,</span>&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;DETAILS&gt;,&lt;DETAILS
+TEXT&gt;\n</span>
+<p>Set (save) 1 or more details for a specific database symbol.
+</p>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the<span style="text-decoration: underline;"></span>
+exchange the
+quote originates from. eg.
+'XNYS' </li>
+  <li>&lt;SYMBOL&gt; is the symbol eg. 'GOOG'<a href="PlotTypes.html"> </a></li>
+  <li>&lt;DETAILS&gt; is the detail type. this is a colon delimited
+string containing one or more detail types eg. 'T1:T2'</li>
+  <li>&lt;DETAILS TEXT&gt; the actual data text to store. this is a
+colon delimited string that will be stored in the same order the
+&lt;DETAILS&gt; contains.<br>
+  </li>
+</ul>
+<br>
+For example. Say we used T1 to store the company name and T2 to store
+the business type. We write the string 'T1:T2' for the &lt;DETAILS&gt;
+portion. The &lt;DETAILS TEXT&gt; portion would be 'Google
+Corp:Internet'.<br>
+<br>
+On success, 'OK\n' is returned. Failure returns 'ERROR\n'.<br>
+<br>
+A Full example would be '<span style="font-weight: bold;">Details,S,XNYS,GOOG,T1:T2,Google
+Corp:Internet\n</span>'<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<br>
+<p style="font-weight: bold;">Details,R,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;\n<br>
+</p>
+<p>Removes all details related to the given symbol in the database.<br>
+</p>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the exchange the
+quote originates from. eg.
+'XNYS' </li>
+  <li>&lt;SYMBOL&gt; is the symbol eg. 'GOOG'<a href="PlotTypes.html"> </a></li>
+</ul>
+On success, 'OK\n' is returned. Failure returns 'ERROR\n'.<br>
+<p>A Full example would be '<span style="font-weight: bold;">Details,R,XNYS,GOOG\n</span>'<br>
+<br>
+</p>
+<p><span style="font-weight: bold;"></span></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;"></span></p>
+<br>
+<br>
+</body>
+</html>

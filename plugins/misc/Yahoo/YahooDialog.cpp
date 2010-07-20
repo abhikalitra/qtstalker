@@ -23,28 +23,19 @@
 #include "YahooSymbolDialog.h"
 #include "YahooDataBase.h"
 #include "YahooConfig.h"
-#include "YahooUrl.h"
-#include "YahooUrlData.h"
 
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
-
-#include <QInputDialog>
-#include <QMessageBox>
+#include <QDebug>
 
 YahooDialog::YahooDialog ()
 {
+  _thread = 0;
+  
   setWindowTitle(tr("Configure Yahoo"));
   createMainPage();
   loadSettings();
-
-  _thread = new YahooThread(this);
-  connect(_thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
-  connect(_thread, SIGNAL(finished()), this, SLOT(downloadDone()));
-
-  _type = History;
-  _runningFlag = 0;
 }
 
 void YahooDialog::createMainPage ()
@@ -72,6 +63,7 @@ void YahooDialog::createMainPage ()
   _sdate->setDisplayFormat("yyyy.MM.dd");
   grid->addWidget(_sdate, row++, col--);
 
+
   // end date parm
   label = new QLabel(tr("End Date"));
   grid->addWidget(label, row, col++);
@@ -81,6 +73,7 @@ void YahooDialog::createMainPage ()
   _edate->setMaximumDate(QDate::currentDate());
   _edate->setDisplayFormat("yyyy.MM.dd");
   grid->addWidget(_edate, row++, col--);
+
 
   // adjustment
   _adjustment = new QCheckBox;
@@ -111,10 +104,10 @@ void YahooDialog::createMainPage ()
   _buttonBox->addButton(_histButton, QDialogButtonBox::ActionRole);
   connect(_histButton, SIGNAL(clicked()), this, SLOT(startHistory()));
 
-  _infoButton = new QPushButton(tr("&Details"));
-  _infoButton->setToolTip(tr("Download symbol details"));
-  _buttonBox->addButton(_infoButton, QDialogButtonBox::ActionRole);
-  connect(_infoButton, SIGNAL(clicked()), this, SLOT(startInfo()));
+  _detailsButton = new QPushButton(tr("&Details"));
+  _detailsButton->setToolTip(tr("Download symbol details"));
+  _buttonBox->addButton(_detailsButton, QDialogButtonBox::ActionRole);
+  connect(_detailsButton, SIGNAL(clicked()), this, SLOT(startDetails()));
 
   _symbolsButton = new QPushButton(tr("&Symbols"));
   _symbolsButton->setToolTip(tr("Edit symbols to download"));
@@ -135,8 +128,8 @@ void YahooDialog::editSymbols ()
 
 void YahooDialog::cancelButton ()
 {
-  if (_thread->isRunning())
-    _thread->stop();
+  if (_thread)
+    _thread->terminate();
   else
     accept();
 }
@@ -181,51 +174,54 @@ void YahooDialog::saveSettings ()
 void YahooDialog::downloadDone ()
 {
   _log->append("*** " + tr("Download finished") + " ***");
-  _runningFlag = 0;
+
   _symbolsButton->setEnabled(TRUE);
   _histButton->setEnabled(TRUE);
-  _infoButton->setEnabled(TRUE);
+  _detailsButton->setEnabled(TRUE);
+
+  delete _thread;
+  _thread = 0;
 
   emit signalChartRefresh();
 }
 
 void YahooDialog::startHistory ()
 {
-  _type = History;
-
   _symbolsButton->setEnabled(FALSE);
   _histButton->setEnabled(FALSE);
-  _infoButton->setEnabled(FALSE);
+  _detailsButton->setEnabled(FALSE);
 
-  _runningFlag = 1;
-  
   _log->append("\n*** " + tr("Starting history download") + " ***");
 
-  YahooUrl yu;
-  QList<YahooUrlData> urls;
-  yu.history(_sdate->dateTime(), _edate->dateTime(), _adjustment->isChecked(), urls);
+  // get the symbols to download
+  YahooDataBase db;
+  QStringList sl;
+  db.getSymbols(sl);
 
-  _thread->setParms(urls);
+  QString type = "H";
+  _thread = new YahooThread(this, type, sl, _sdate->dateTime(), _edate->dateTime());
+  connect(_thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
+  connect(_thread, SIGNAL(finished()), this, SLOT(downloadDone()));
   _thread->start();
 }
 
-void YahooDialog::startInfo ()
+void YahooDialog::startDetails ()
 {
-  _type = Info;
-
   _symbolsButton->setEnabled(FALSE);
   _histButton->setEnabled(FALSE);
-  _infoButton->setEnabled(FALSE);
-  
-  _runningFlag = 1;
+  _detailsButton->setEnabled(FALSE);
 
   _log->append("\n*** " + tr("Starting details download") + " ***");
 
-  YahooUrl yu;
-  QList<YahooUrlData> urls;
-  yu.details(urls);
+  // get the symbols to download
+  YahooDataBase db;
+  QStringList sl;
+  db.getSymbols(sl);
 
-  _thread->setParms(urls);
+  QString type = "D";
+  _thread = new YahooThread(this, type, sl, _sdate->dateTime(), _edate->dateTime());
+  connect(_thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
+  connect(_thread, SIGNAL(finished()), this, SLOT(downloadDone()));
   _thread->start();
 }
 

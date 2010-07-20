@@ -28,16 +28,31 @@
 
 #include "YahooUrlData.h"
 #include "QSPlugin.h"
+#include "QSLog.h"
 
 class YahooHistorical : public QSPlugin
 {
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _History,
+      _Details
+    };
+
     YahooHistorical ();
     int command (QStringList &input, QString &dbPath, QString &output);
+    int history (QStringList &input, QString &dbPath, QString &output, QSLog &);
+    int details (QStringList &input, QString &dbPath, QString &output, QSLog &);
     void url (QDateTime &sd, QDateTime &ed, YahooUrlData &);
+    void urlDetails (YahooUrlData &);
     void parse (QByteArray &, QString &dbPath, YahooUrlData &);
+    void parseDetails (QByteArray &, QString &dbPath, YahooUrlData &, QSLog &);
+
+  private:
+    QStringList _methodList;
+    QStringList _yahooList;
 };
 
 extern "C"

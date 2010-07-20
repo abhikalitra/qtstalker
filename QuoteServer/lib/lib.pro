@@ -15,6 +15,9 @@ HEADERS += QSRequestThread.h
 HEADERS += QSPlugin.h
 HEADERS += QSPluginFactory.h
 HEADERS += QSLog.h
+HEADERS += QSDateRange.h
+HEADERS += QSDetailsDataBase.h
+HEADERS += QSDetail.h
 
 
 SOURCES += QSGlobals.cpp
@@ -25,6 +28,9 @@ SOURCES += QSRequestThread.cpp
 SOURCES += QSPlugin.cpp
 SOURCES += QSPluginFactory.cpp
 SOURCES += QSLog.cpp
+SOURCES += QSDateRange.cpp
+SOURCES += QSDetailsDataBase.cpp
+SOURCES += QSDetail.cpp
 
 
 VERSION = 0.1.0

@@ -4,39 +4,11 @@
 <context>
     <name>BarLengthButtons</name>
     <message>
-        <source>Monthly Bars</source>
+        <source>Previous Bar Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Weekly Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Daily Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>60 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>30 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>15 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>10 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>5 Minute Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>1 Minute Bars</source>
+        <source>Next Bar Length</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -216,14 +188,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>: db error, quotes not saved...import aborted</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quotes imported: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>: number of fields in file != rule format</source>
         <translation type="unfinished"></translation>
     </message>
@@ -257,6 +221,37 @@
     </message>
     <message>
         <source>: bad time: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ERROR </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> quotes ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quotes imported</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartLayout</name>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to permanently delete this indicator?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> deleted</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -307,19 +302,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Delete Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete symbol from the database permanently</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Qtstalker: Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Are you sure you want to permanently delete symbol(s)?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure Quote Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure Quote Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quote server hostname</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quote server hostname (default 127.0.0.1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quote server port #</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hostname missing.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -717,10 +736,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Log Scaling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Background Color</source>
         <translation type="unfinished"></translation>
     </message>
@@ -742,6 +757,26 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Chart Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit &amp;Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Move Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>De&amp;lete Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log &amp;Scaling</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1546,6 +1581,50 @@ eg. perl -l -T</source>
         <source>Set Date Range</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab Row</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab Column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This indicator already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtStalkerTester</name>
@@ -1685,22 +1764,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Charts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Quit Qtstalker</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1709,7 +1772,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plugins</source>
+        <source>New &amp;Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add a new indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1951,6 +2018,25 @@ Are you sure you want to remove this script?</source>
     </message>
 </context>
 <context>
+    <name>SidePanel</name>
+    <message>
+        <source>Charts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plugins</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SymbolButton</name>
     <message>
         <source>Symbols</source>
@@ -2011,19 +2097,7 @@ Are you sure you want to remove this script?</source>
 <context>
     <name>TabWidget</name>
     <message>
-        <source>Tab Rows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Tab &amp;Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Tab Rows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter number of chart tab rows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2245,73 +2319,6 @@ Are you sure you want to remove this script?</source>
     </message>
 </context>
 <context>
-    <name>Yahoo</name>
-    <message>
-        <source>Yahoo Quotes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjustment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No symbols selected. Done</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timeout: retry limit skipping</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>skipped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timeout: retry</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not open db</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bad date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Yahoo Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter symbols to add. Note: separate symbols with a space</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>YahooDialog</name>
     <message>
         <source>Configure Yahoo</source>
@@ -2342,14 +2349,6 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download symbol details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Symbols</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2367,25 +2366,6 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Starting history download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starting details download</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>YahooParseQuote</name>
-    <message>
-        <source>Invalid plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>:line </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: db error, quotes not saved...import aborted</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2429,13 +2409,6 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Invalid symbols found. See console messages for details.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>YahooThread</name>
-    <message>
-        <source>Download cancelled</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

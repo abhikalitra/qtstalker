@@ -61,6 +61,7 @@ void DateRangeControl::createButtons (QToolBar *tb)
     config.setData(Config::LastDateRange, _ranges->currentIndex());
   else
     _ranges->setCurrentIndex(s.toInt());
+  _ranges->setMaxVisibleItems(l.count());
   connect(_ranges, SIGNAL(currentIndexChanged(int)), this, SLOT(rangeChanged(int)));
   tb->addWidget(_ranges);
   

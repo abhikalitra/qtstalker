@@ -20,9 +20,9 @@
  */
 
 #include "CORREL.h"
-#include "DBPlugin.h"
 #include "ta_libc.h"
 #include "PlotFactory.h"
+#include "QuoteServerRequest.h"
 
 #include <QtDebug>
 
@@ -39,6 +39,7 @@ CORREL::CORREL ()
   _settings.setData(Label, _indicator);
   _settings.setData(Input, "Close");
   _settings.setData(Input2, "SP500");
+  _settings.setData(Exchange, "XNYS");
   _settings.setData(Period, 30);
   _settings.setData(Ref1Color, "white");
   _settings.setData(Ref2Color, "white");
@@ -47,6 +48,9 @@ CORREL::CORREL ()
 
 int CORREL::getIndicator (Indicator &ind, BarData &data)
 {
+  if (! data.count())
+    return 1;
+
   QString s;
   _settings.getData(Input, s);
   PlotLine *in = data.getInput(data.getInputType(s));
@@ -56,14 +60,29 @@ int CORREL::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  _settings.getData(Input2, s);
   BarData bd;
+  _settings.getData(Input2, s);
   bd.setSymbol(s);
+  _settings.getData(Exchange, s);
+  bd.setExchange(s);
   bd.setBarLength(data.getBarLength());
-  bd.setDateRange(data.dateRange());
 
-  DBPlugin db;
-  db.getBars(bd);
+  QStringList l;
+  l << "GetQuotes" << bd.getExchange() << bd.getSymbol();
+  bd.barLengthText(bd.getBarLength(), s);
+  l << s;
+  Bar tbar = data.getBar(0);
+  l << tbar.date().toString("yyyyMMddHHmmss");
+  tbar = data.getBar(data.count() - 1);
+  l << tbar.date().toString("yyyyMMddHHmmss");
+
+  QString command = l.join(",") + "\n";
+
+  QuoteServerRequest qsr;
+  if (qsr.run(command))
+    return 1;
+
+  bd.setBars(qsr.data());
 
   PlotLine *in2 = bd.getInput(BarData::Close);
   if (! in2)

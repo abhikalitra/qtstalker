@@ -19,20 +19,33 @@
  *  USA.
  */
 
-#ifndef YAHOO_URL_HPP
-#define YAHOO_URL_HPP
 
-#include "YahooUrlData.h"
+#ifndef UPDATE_CHART_PAGE_THREAD_H
+#define UPDATE_CHART_PAGE_THREAD_H
 
-#include <QList>
-#include <QDateTime>
+#include <QThread>
+#include <QString>
 
-class YahooUrl
+#include "BarData.h"
+
+class UpdateChartPageThread : public QThread
 {
+  Q_OBJECT
+
+  signals:
+    void signalSymbol (BarData);
+    void signalDone ();
+
   public:
-    YahooUrl ();
-    void history (QDateTime sd, QDateTime ed, int adjustment, QList<YahooUrlData> &);
-    void details (QList<YahooUrlData> &);
+    UpdateChartPageThread (QObject *p, QString &exchange, QString &symbol);
+
+  protected:
+    void run();
+
+  private:
+    QString _searchExchange;
+    QString _searchSymbol;
 };
 
 #endif
+

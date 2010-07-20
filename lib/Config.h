@@ -37,7 +37,7 @@ class Config : public BaseConfig
       Pixelspace, // number of pixels between data points
       BarLength, // bar length ie. 5 minute, daily, weekly
       Grid, // chart grid on/off
-      BarsToLoad, // number of bars to load
+      QuoteServerName, // the quote server hostname 
       BackgroundColor, // color of chart background
       BorderColor, // color of chart borders
       GridColor, // color of chart grid
@@ -50,21 +50,21 @@ class Config : public BaseConfig
       PlotFont, // chart plot font
       DateRangeEnd, // the end of the date range
       NavAreaSize, // navigator panel size
-      UNUSED10, // ******* UNUSED ************
-      UNUSED9, // ******* UNUSED ***********
+      QuoteServerPort, // the quote server port number
+      IndicatorRow1Height, // the height of row1 of indicators
       MainWindowSize, // app window size
       MainWindowPos, // app position
-      UNUSED8, // ******** UNUSED ************
-      UNUSED7, // ***** UNUSED ************
+      IndicatorRow2Height, // the height of row2 of indicators
+      IndicatorRow3Height, // the height of row3 of indicators
       IndicatorPluginPath, // path to the indicator plugins
       IndicatorPluginList,  // csv list of current indicator plugins from startup inventory
       Version,  // current qtstalker version
       PlotSizes, // csv list of plot row sizes
-      UNUSED6, // ********* UNUSED ***********
-      UNUSED14, // ******** UNUSED ***********
-      CurrentChart, // csv string (exchange,symbol) currently loaded chart 
+      SidePanelTabWidth, // width of the side panel tabs
+      ChartLayoutSizes, // splitter sizes for the ChartLayout rows
+      CurrentChart, // csv string (exchange,symbol) currently loaded chart
       DefaultIndicators, // install flag for default indicators, == 0 if not installed, == 1 if installed
-      UNUSED5, // ******* UNUSED ************
+      ChartLayoutRow1Sizes, //  ******** UNUSED *************
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
@@ -73,8 +73,8 @@ class Config : public BaseConfig
       ExchangeFileDate,  // the last modification date of /docs/exchanges.csv
       LastScriptPath, // the dir of the last script run from a dialog
       FuturesFileDate,   // the file size of /docs/futures.csv
-      DBPluginPath, // path where db plugins are stored
-      DBPluginList, // csv list of current db plugins from startup inventory
+      ChartLayoutRow2Sizes, //  ******** UNUSED *************
+      ChartLayoutRow3Sizes, //  ******** UNUSED *************
       UNUSED4, // ******** UNUSED *************
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel
       ScriptLaunchButton3, // script panel launch button 3
@@ -90,12 +90,12 @@ class Config : public BaseConfig
       DefaultSymbol, // default symbol flag used in Setup::
       MiscPluginPath, // path to the misc plugins
       MiscPluginList,  // csv list of current misc plugins from startup inventory
-      UNUSED3, // ******** UNUSED *************
-      UNUSED2, // ********* UNUSED *************
-      UNUSED1, // ******** UNUSED *************
+      UNUSED5, // ******** UNUSED *************
+      UNUSED6, // ********* UNUSED *************
+      UNUSED7, // ******** UNUSED *************
       RefreshStatus, // status of the refresh chart toggle button
       LastGroupUsed, // last group displayed in groups area
-      UNUSED0, // ************* UNUSED *****************
+      UNUSED8, // ************* UNUSED *****************
       IndicatorRow1Position, // tab position of the 1st row
       IndicatorRow2Position, // tab position of the 2nd row
       MainToolBarPos, // last position of the main toolbar

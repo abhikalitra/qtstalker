@@ -19,36 +19,23 @@
  *  USA.
  */
 
-#include "SCQuote.h"
-#include "DBPlugin.h"
 
-#include <QtDebug>
+#ifndef QUOTE_SERVER_REQUEST_H
+#define QUOTE_SERVER_REQUEST_H
 
-SCQuote::SCQuote ()
+#include <QString>
+
+class QuoteServerRequest
 {
-}
+  public:
+    QuoteServerRequest ();
+    int run (QString &request);
+    QString & data ();
 
-int SCQuote::calculate (QStringList &l, QByteArray &ba, Indicator &ind)
-{
-  // QUOTE,PLUGIN,*
-  // we are only concerned with the first 2 parms, the plugin will check the rest
-  
-  ba.clear();
-  ba.append("ERROR\n");
+  private:
+    int _timeOut;
+    QString _data;
+};
 
-  if (l.count() < 2)
-  {
-    qDebug() << "SCQuote::calculate: invalid parm count" << l.count();
-    return 1;
-  }
-  
-  DBPlugin *plug = fac.plugin(l[1]);
-  if (! plug)
-  {
-    qDebug() << "SCQuote::calculate: plugin error" << l[1];
-    return 1;
-  }
-  
-  return plug->scriptCommand(l, ind, ba);
-}
+#endif
 

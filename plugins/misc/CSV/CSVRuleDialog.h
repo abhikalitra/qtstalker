@@ -69,6 +69,7 @@ class CSVRuleDialog : public QDialog
     QPushButton *_insertButton;
     QPushButton *_deleteButton;
     QStringList _fieldList;
+    QCheckBox *_removeSuffix;
 };
 
 #endif

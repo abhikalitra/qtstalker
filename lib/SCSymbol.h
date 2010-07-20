@@ -30,14 +30,12 @@ class SCSymbol
   public:
     enum Method
     {
-      CURRENT,  // get the current symbol
-      SEARCH // get a list of symbols in the db
+      CURRENT  // get the current symbol
     };
     
     SCSymbol ();
     int calculate (QStringList &, QByteArray &);
     int getCurrent (QStringList &, QByteArray &);
-    int getSearch (QStringList &, QByteArray &);
 
   protected:
     QStringList methodList;

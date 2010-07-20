@@ -50,19 +50,19 @@ PlotLine * BARSUtils::getBARS (BarData &data, QColor &_up, QColor &_down, QColor
   {
     PlotLineBar bar;
     Bar tbar = data.getBar(loop);
-    bar.setData(0, tbar.getOpen());
-    bar.setData(1, tbar.getHigh());
-    bar.setData(2, tbar.getLow());
-    bar.setData(3, tbar.getClose());
+    bar.setData(0, tbar.getData(Bar::BarFieldOpen));
+    bar.setData(1, tbar.getData(Bar::BarFieldHigh));
+    bar.setData(2, tbar.getData(Bar::BarFieldLow));
+    bar.setData(3, tbar.getData(Bar::BarFieldClose));
     
     if (loop > 0)
     {
       Bar pbar = data.getBar(loop - 1);
-      if (tbar.getClose() > pbar.getClose())
+      if (tbar.getData(Bar::BarFieldClose) > pbar.getData(Bar::BarFieldClose))
         bar.setColor(_up);
       else
       {
-        if (tbar.getClose() < pbar.getClose())
+        if (tbar.getData(Bar::BarFieldClose) < pbar.getData(Bar::BarFieldClose))
           bar.setColor(_down);
         else
           bar.setColor(_neutral);

@@ -71,7 +71,7 @@ void CSVRuleDialog::createGUI ()
 
   Config config;
   QStringList l;
-  config.getData(Config::DBPluginList, l);
+  l << "S" << "F";
   
   _type = new QComboBox;
   _type->addItems(l);
@@ -124,6 +124,14 @@ void CSVRuleDialog::createGUI ()
   label = new QLabel(tr("Use filename as symbol"));
   grid->addWidget(label, row++, col--);
 
+  // remove suffix
+  _removeSuffix = new QCheckBox;
+  grid->addWidget(_removeSuffix, row, col++);
+
+  label = new QLabel(tr("Try to remove suffix from file name"));
+  grid->addWidget(label, row++, col--);
+
+
   // rule box
   QGroupBox *gbox = new QGroupBox;
   gbox->setTitle(tr("CSV Rule Format"));
@@ -175,19 +183,20 @@ void CSVRuleDialog::saveRule ()
     return;
 
   CSVRule rule;
-  rule.setName(_name);
-  rule.setType(_type->currentText());
-  rule.setDelimeter(_delimeter->currentText());
-  rule.setFile(_file->getFile());
+  rule.name = _name;
+  rule.type = _type->currentText();
+  rule.delimeter = _delimeter->currentText();
+  rule.file = _file->getFile();
 
   QStringList l;
   int loop = 0;
   for (; loop < _ruleList->count(); loop++)
     l.append(_ruleList->item(loop)->text());
-  rule.setRule(l.join(","));
+  rule.rule = l.join(",");
 
-  rule.setFileSymbol(_fileSymbol->isChecked());
-  rule.setExchange(_exchange->currentText());
+  rule.fileSymbol = _fileSymbol->isChecked();
+  rule.exchange = _exchange->currentText();
+  rule.removeSuffix = _removeSuffix->isChecked();
 
   CSVDataBase db;
   db.setRule(rule);
@@ -200,23 +209,24 @@ void CSVRuleDialog::loadRule ()
   clear();
   
   CSVRule rule;
-  rule.setName(_name);
+  rule.name = _name;
   
   CSVDataBase db;
   if (db.getRule(rule))
     return;
 
-  _type->setCurrentIndex(_type->findText(rule.type(), Qt::MatchExactly));
-  _delimeter->setCurrentIndex(_delimeter->findText(rule.delimeter(), Qt::MatchExactly));
-  _file->setFile(rule.file());
+  _type->setCurrentIndex(_type->findText(rule.type, Qt::MatchExactly));
+  _delimeter->setCurrentIndex(_delimeter->findText(rule.delimeter, Qt::MatchExactly));
+  _file->setFile(rule.file);
 
-  QStringList l = rule.rule().split(",");
+  QStringList l = rule.rule.split(",");
   int loop = 0;
   for (; loop < l.count(); loop++)
     new QListWidgetItem(l[loop], _ruleList, 0);
 
-  _fileSymbol->setChecked(rule.fileSymbol());
-  _exchange->setCurrentIndex(_exchange->findText(rule.exchange(), Qt::MatchExactly));
+  _fileSymbol->setChecked(rule.fileSymbol);
+  _exchange->setCurrentIndex(_exchange->findText(rule.exchange, Qt::MatchExactly));
+  _removeSuffix->setChecked(rule.removeSuffix);
 }
 
 void CSVRuleDialog::deleteClicked ()
@@ -363,5 +373,4 @@ void CSVRuleDialog::searchExchange ()
 
   _exchange->setCurrentIndex(_exchange->findText(code, Qt::MatchExactly));
 }
-
 

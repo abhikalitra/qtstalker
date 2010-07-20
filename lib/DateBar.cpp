@@ -20,13 +20,14 @@
  */
 
 #include "DateBar.h"
+#include "BarRange.h"
 
 #include <QObject>
 #include <QtDebug>
 
 DateBar::DateBar ()
 {
-  barLength = (int) Bar::DailyBar;
+  barLength = (int) BarData::DailyBar;
 }
 
 void DateBar::clear ()
@@ -57,7 +58,7 @@ void DateBar::createDateList (BarData &bd)
     bar.getRangeKey(s);
     data.insert(s, loop);
 
-    dateList.append(bar.getDate());
+    dateList.append(bar.date());
   }
 }
 
@@ -69,14 +70,14 @@ void DateBar::getDate (int i, QDateTime &dt)
 int DateBar::getX (QDateTime &d)
 {
   int x = -1;
-  Bar bar;
-  bar.setDateRange(d, (Bar::BarLength) barLength);
+  BarRange br;
+  br.setBarRange(d, (BarData::BarLength) barLength);
   
   QString s;
-  bar.getRangeKey(s);
+  br.key(s);
   if (data.contains(s))
     x = data.value(s);
-  
+
   return x;
 }
 

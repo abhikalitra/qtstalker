@@ -26,58 +26,33 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include <QString>
-#include <QTabWidget>
-#include <QTextEdit>
-#include <QHash>
 #include <QStatusBar>
-#include <QList>
-#include <QSpinBox>
-#include <QTimer>
-#include <QButtonGroup>
+#include <QSplitter>
+#include <QAction>
 
 #include "Config.h"
 #include "Plot.h"
-#include "ChartPage.h"
 #include "BarData.h"
 #include "InfoPanel.h"
-#include "ScriptPage.h"
 #include "PlotSlider.h"
 #include "COToolBar.h"
 #include "ZoomButtons.h"
 #include "BarLengthButtons.h"
 #include "RecentCharts.h"
-#include "GroupPage.h"
-#include "PluginPage.h"
 #include "GridAction.h"
 #include "RefreshAction.h"
 #include "DocsAction.h"
-#include "TabWidget.h"
 #include "Splitter.h"
 #include "DateRangeControl.h"
 #include "DateRangeButton.h"
+#include "SidePanel.h"
+#include "ChartLayout.h"
 
 class QtstalkerApp : public QMainWindow
 {
   Q_OBJECT
 
   signals:
-    void signalPixelspace (int);
-    void signalBackgroundColor (QColor);
-    void signalBorderColor (QColor);
-    void signalGridColor (QColor);
-    void signalPlotFont (QFont);
-    void signalIndex (int);
-    void signalInterval(Bar::BarLength);
-    void signalClearIndicator ();
-    void signalGrid (bool);
-    void signalNewIndicator ();
-    void signalNewExternalChartObject (QString);
-    void signalSetExternalChartObject ();
-    void signalCursorChanged (int);
-    void signalRefreshUpdated (int);
-    
-    void signalDeleteIndicatorTab (QString);
-
     void signalSaveSettings ();
     void signalLoadSettings ();
 
@@ -86,62 +61,40 @@ class QtstalkerApp : public QMainWindow
     void createGUI (Config &);
     void loadSettings (Config &);
     void createToolBars ();
-    void initGroupNav ();
-    void initChartNav ();
-    void initIndicatorNav ();
-    void initScriptNav ();
-    void initPluginNav ();
     QString getWindowCaption ();
     void setSliderStart (int);
 
   public slots:
     void loadChart (BarData);
+    void loadChart2 (QString);
     void quit();
     void dataWindow ();
-    void deleteIndicator (QString);
-    void barLengthChanged (int);
     void chartUpdated ();
     void statusMessage (QString);
-    void addIndicator (QString);
-    void drawPlots ();
-    void addIndicatorButton (QString);
     void wakeup ();
     void appFont (QFont);
-    void psButtonClicked (int);
-    void zoomChanged(int, int);
     void commandLineAsset ();
-    void sliderChanged (int);
-    void gridChanged (bool);
-    void backgroundColorChanged (QColor);
-    void borderColorChanged (QColor);
-    void plotFontChanged (QFont);
 
   protected:
-    Splitter *_split;
+    QSplitter *_split;
     Splitter *_navSplitter;
-    Splitter *_dpSplitter;
-    QTabWidget *_navTab;
     QWidget *_baseWidget;
-    QWidget *_navBase;
-    ChartPage *_chartNav;
-    QHash<QString, Plot *> _plotList;
     InfoPanel *_infoPanel;
     QStatusBar *_statusBar;
-    QList<TabWidget*> _tabList;
     RecentCharts *_recentCharts;
     BarLengthButtons *_barLengthButtons;
     BarData _currentChart;
-    ScriptPage *_scriptPage;
     PlotSlider *_plotSlider;
     COToolBar *_toolBar2;
     ZoomButtons *_zoomButtons;
     QString _clAsset;
-    GroupPage *_groupNav;
-    PluginPage *_pluginNav;
     GridAction *_gridAction;
     RefreshAction *_refreshAction;
     DateRangeControl *_dateRange;
     DateRangeButton *_dateRangeButton;
+    SidePanel *_sidePanel;
+    ChartLayout *_chartLayout;
+    QAction *_newIndicatorAction;
 };
 
 #endif

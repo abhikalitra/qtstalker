@@ -20,7 +20,7 @@ foreach (@list)
   die "Could not create socket: $!\n" unless $sock;
 
   # send the command to download as much data as possible
-  print $sock "YahooHistorical,19000102,20101231,$_\n";
+  print $sock "YahooHistorical,H,19000102,20101231,$_\n";
   
   # read the return code
   $rc = <$sock>;

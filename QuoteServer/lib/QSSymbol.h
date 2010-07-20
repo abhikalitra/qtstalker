@@ -30,8 +30,8 @@ struct QSSymbol
   int bars;
   int length;
   int type;
+  int dateRange;
   QString table;
-  QString name;
   QString symbol;
   QString exchange;
   QString data;

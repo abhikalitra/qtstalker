@@ -23,7 +23,6 @@
 #define EXSCRIPT_HPP
 
 #include "BarData.h"
-#include "SCQuote.h"
 #include "Indicator.h"
 
 #include <QProcess>
@@ -46,7 +45,6 @@ class ExScript : public QObject
       INDICATOR, // get indicator functions
       GROUP, // group database functions
       PLOT, // plot the desired indicator
-      QUOTE, // quote database functions
       _SYMBOL, // symbol functions
       TEST // tester functions
     };
@@ -56,8 +54,8 @@ class ExScript : public QObject
     void clear ();
     void setBarData (BarData &);
     void setIndicator (Indicator &);
-    int calculate (QString &command);
-//    int calculate2 (QString &command); // used for non indicator scripts
+    int calculate (QString &command); // blocking version
+    int calculate2 (QString &command); // no blocking version
     Indicator & indicator ();
     int getState ();
     void stop ();
@@ -72,7 +70,6 @@ class ExScript : public QObject
     QStringList _functionList;
     BarData _data;
     int _killFlag;
-    SCQuote _quotes;
     Indicator _indicator;
 };
 

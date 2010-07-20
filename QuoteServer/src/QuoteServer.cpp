@@ -78,7 +78,7 @@ QuoteServer::QuoteServer (QObject *p, QString &, QString &port, QString &path, Q
   
   qDebug() << mess;
 
-  // initialize the db 
+  // initialize the quotes db
   QSQuoteDataBase db(_dbPath);
 }
 

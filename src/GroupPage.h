@@ -56,7 +56,7 @@ class GroupPage : public QWidget
       Refresh
     };
 
-    GroupPage (QWidget *);
+    GroupPage ();
     void createActions ();
     void createButtonMenu (QToolBar *);
 
@@ -73,6 +73,8 @@ class GroupPage : public QWidget
     void addToGroup ();
     void loadGroups ();
     void listStatus ();
+    void addSymbol (BarData);
+    void requestDone ();
 
   protected:
     ListWidget *_nav;

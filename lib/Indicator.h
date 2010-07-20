@@ -44,6 +44,8 @@ class Indicator
     int enable ();
     void setTabRow (int);
     int tabRow ();
+    void setColumn (int);
+    int column ();
     void setDate (int);
     int date ();
     void setLog (int);
@@ -84,7 +86,11 @@ class Indicator
     int _date;
     int _log;
     int _cus;
+    int _column;
     Scaler _scaler;
 };
+
+// this is for passing Indicator data between threads
+Q_DECLARE_METATYPE(Indicator)
 
 #endif

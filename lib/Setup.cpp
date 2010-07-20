@@ -24,26 +24,20 @@
 #include "IndicatorDataBase.h"
 #include "Indicator.h"
 #include "IndicatorPluginFactory.h"
-#include "DBPluginFactory.h"
 #include "IndicatorPlugin.h"
-#include "DBPlugin.h"
 #include "ExchangeDataBase.h"
 #include "FuturesDataBase.h"
 #include "PlotLine.h"
-//#include "QuoteIndexDataBase.h"
 #include "MiscPluginFactory.h"
-//#include "GroupDataBase.h"
-//#include "ScriptDataBase.h"
-//#include "CODataBase.h"
+#include "QuoteServerRequest.h"
 
 #include <QtDebug>
 #include <QtSql>
 #include <QDir>
 #include <QObject>
-#include <QFile>
-#include <QTextStream>
 #include <QStringList>
 #include <QHash>
+#include <QProcess>
 
 Setup::Setup ()
 {
@@ -59,11 +53,6 @@ void Setup::setup (Config &config, QString session)
 
   setupConfigDefaults(config); // initialize config defaults
 
-  // initialize the quotes db
-//  QuoteIndexDataBase qidb;
-//  QString s = QDir::homePath() + "/.qtstalker/quotes.sqlite";
-//  qidb.init(s);
-
   // initialize data tables
   setupExchanges();
   setupFutures();
@@ -72,31 +61,12 @@ void Setup::setup (Config &config, QString session)
   IndicatorPluginFactory ifac;
   ifac.setPluginList();
 
-  DBPluginFactory dbfac;
-  dbfac.setPluginList();
-
   MiscPluginFactory mfac;
   mfac.setPluginList();
 
-  // initialize the groups db
-//  GroupDataBase gdb;
-//  gdb.init();
-
-  // initialize the scripts db
-//  ScriptDataBase sdb;
-//  sdb.init();
-
-  // initialize the indicator db
-//  IndicatorDataBase idb;
-//  idb.init();
   setupDefaultIndicators(config);
 
-  // initialize the chart object db
-//  CODataBase codb;
-//  codb.init();
-
-  // initialize an example symbol for first run
-  setupDefaultSymbol(config);
+//  setupQuoteServer();
 }
 
 void Setup::setupDirectories ()
@@ -140,6 +110,7 @@ void Setup::setupDefaultIndicators (Config &config)
     Indicator i;
     ip->settings(i);
     i.setTabRow(1);
+    i.setColumn(1);
     i.setEnable(1);
     s = "Bars";
     i.setName(s);
@@ -156,6 +127,7 @@ void Setup::setupDefaultIndicators (Config &config)
     Indicator i;
     ip->settings(i);
     i.setTabRow(2);
+    i.setColumn(1);
     i.setEnable(1);
     s = "Volume";
     i.setName(s);
@@ -177,60 +149,6 @@ void Setup::setupFutures ()
   db.createFutures();  
 }
 
-void Setup::setupDefaultSymbol (Config &config)
-{
-  int ti = config.getInt(Config::DefaultSymbol);
-  if (ti)
-    return;
-
-  DBPluginFactory fac;
-  QString s = "Stock";
-  DBPlugin *plug = fac.plugin(s);
-  if (! plug)
-  {
-    qDebug() << "Setup::setupDefaultSymbol: plugin error";
-    return;
-  }
-
-  QFile file("/usr/local/share/qtstalker/db/example_quotes.csv");
-  if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
-    qDebug() << "Setup::setupDefaultSymbol: quotes file error";
-    return;
-  }
-
-  QTextStream in(&file);
-
-  QString command = "QUOTE,Stock,SET_QUOTE,XNYS,SAMPLE,yyyyMMdd,";
-  
-  while (! in.atEnd())
-  {
-    s = in.readLine();
-    QString s2 = command + s;
-    QStringList l = s2.split(",");
-
-    Indicator ind;
-    QByteArray ba;
-    int rc = plug->scriptCommand(l, ind, ba);
-    if (rc)
-      qDebug() << "Setup::setupDefaultSymbol: quote not imported" << s2;
-  }
-
-  Indicator ind;
-  QByteArray ba;
-  s = "QUOTE,Stock,SAVE_QUOTES";
-  QStringList l = s.split(",");
-  int rc = plug->scriptCommand(l, ind, ba);
-  if (rc)
-    qDebug() << "Setup::setupDefaultSymbol: quotes not saved" << s;
-
-  file.close();
-
-  config.setData(Config::DefaultSymbol, 1);
-  
-  return;
-}
-
 void Setup::setupConfigDefaults (Config &config)
 {
   config.transaction();
@@ -245,40 +163,54 @@ void Setup::setupConfigDefaults (Config &config)
     config.setData(Config::IndicatorTabRows, d);
   }
 
-/*
-  config.getData(Config::IndicatorPluginPath, d);
+  // set the quote server hostname
+  config.getData(Config::QuoteServerName, d);
   if (d.isEmpty())
   {
-    d = "/usr/local/lib/qtstalker/plugins/indicator";
-    config.setData(Config::IndicatorPluginPath, d);
+    d = "127.0.0.1";
+    config.setData(Config::QuoteServerName, d);
   }
 
-  config.getData(Config::DBPluginPath, d);
+  // set the quote server port number
+  config.getData(Config::QuoteServerPort, d);
   if (d.isEmpty())
   {
-    d = "/usr/local/lib/qtstalker/plugins/database";
-    config.setData(Config::DBPluginPath, d);
+    d = "5000";
+    config.setData(Config::QuoteServerPort, d);
   }
-
-  config.getData(Config::MiscPluginPath, d);
-  if (d.isEmpty())
-  {
-    d = "/usr/local/lib/qtstalker/plugins/misc";
-    config.setData(Config::MiscPluginPath, d);
-  }
-
-  config.getData(Config::DbName, d);
-  if (d.isEmpty())
-  {
-    d = QDir::homePath() + "/.qtstalker/quotes.sqlite";
-    config.setData(Config::DbName, d);
-  }
-*/
 
   // clear current chart to empty
   d = "";
   config.setData(Config::CurrentChart, d);
 
   config.commit();
+}
+
+void Setup::setupQuoteServer (Config &config)
+{
+  // create malformed command to get ERROR response
+  QStringList tl;
+  tl << "Quotes" << "blah";
+  QString command = tl.join(",") + "\n";
+
+  QuoteServerRequest qsr;
+  qsr.run(command);
+  if (qsr.data() == "ERROR")
+    return;
+
+  // quoteserver is not running, start it
+  QString serverName;
+  config.getData(Config::QuoteServerName, serverName);
+  int serverPort = config.getInt(Config::QuoteServerPort);
+
+  command.clear();
+  command.append("QuoteServer");
+  command.append(" -p ");
+  command.append(QString::number(serverPort));
+  QProcess::startDetached(command);
+
+  // for testing, check if the quote server is running, kill it and let the main app start it again
+//  QString command("killall QuoteServer");
+//  QProcess::execute(command);
 }
 

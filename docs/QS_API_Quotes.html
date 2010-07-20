@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>QuoteServer API - Quotes</title>
+</head>
+<body>
+<h3 style="text-decoration: underline;">QuoteServer API - Quotes<br>
+</h3>
+<br>
+These script commands modify quote data.<br>
+<br>
+&lt;LENGTH&gt; is defined as one of the following:<br>
+<ul>
+  <li>1 - 1 minute bar<br>
+  </li>
+  <li>5 - 5 minute bar</li>
+  <li>10 - 10 minute bar<br>
+  </li>
+  <li>15 - 15 minute bar<br>
+  </li>
+  <li>30 - 30 minute bar<br>
+  </li>
+  <li>60 - 60 minute bar<br>
+  </li>
+  <li>D - daily bar<br>
+  </li>
+  <li>W - weekly bar<br>
+  </li>
+  <li>M - monthly bar<br>
+  </li>
+</ul>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<p style="font-weight: bold;">Quotes,Set,&lt;TYPE&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;DATE
+MASK&gt;,&lt;DATA&gt;\n<br>
+</p>
+<p>Saves quote data to the database for the provided symbol.<br>
+</p>
+<ul>
+  <li>&lt;TYPE&gt; - the symbol type is one of the following</li>
+  <ul>
+    <li>F - is a futures contract</li>
+    <li>S - is a stock<br>
+    </li>
+  </ul>
+  <li>&lt;EXCHANGE&gt; is the exchange the
+quote originates from. eg.
+'XNYS' </li>
+  <li>&lt;SYMBOL&gt; is the symbol eg. 'GOOG'</li>
+  <li>&lt;DATE MASK&gt; the date format of the quote. we use the <a
+ href="APIDateFormat.html">Qt date mask format</a></li>
+  <li>&lt;DATA&gt; the actual quote data in the following format
+depending on the &lt;TYPE&gt;. Each quote field is delimited by a
+comma. The formats are;<br>
+  </li>
+  <ul>
+    <li>F - Date,Open,High,Low,Close,Volume,OpenInterest<br>
+    </li>
+    <li>S - Date,Open,High,Low,Close,Volume<br>
+    </li>
+  </ul>
+</ul>
+<br>
+Success returns 'OK\n'. Failure returns 'ERROR\n'.<br>
+<br>
+A full example would be to save a stock quote '<span
+ style="font-weight: bold;">Quotes,Set,S,XNYS,GOOG,yyyy-MM-dd
+HH:mm:ss,2010-12-31 23:59:59,100,125,75,105,123456\n</span>'<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><span
+ style="font-weight: bold;"></span></span><br>
+<br>
+<p style="font-weight: bold;">Quotes,Date,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;LENGTH&gt;,&lt;START
+DATE&gt;,&lt;END
+DATE&gt;\n<br>
+</p>
+<p>Returns all quotes between and including the specified date ranges
+for a specific database symbol.<br>
+</p>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the exchange the
+quote originates from. eg.
+'XNYS' </li>
+  <li>&lt;SYMBOL&gt; is the symbol eg. 'GOOG'<a href="PlotTypes.html"> </a></li>
+  <li>&lt;LENGTH&gt; is the bar length eg. 'D'</li>
+  <li>&lt;START DATE&gt; is the start date and time of the first bar
+returned. the format is YYYYMMDDHHMMSS eg. '20100101000000'</li>
+  <li>&lt;END DATE&gt; is the end date up to and including the last
+barreturned. the format is YYYYMMDDHHMMSS eg. '20101231235959'</li>
+</ul>
+<br>
+On success, the quotes are returned in a string. Each bar record is
+delimited by a colon and each bar value is delimited by a comma. The
+returned format for each bar is the following:<br>
+<br>
+<ul>
+  <li>Start Date - the bar open datetime in the YYYYMMDDHHMMSS format</li>
+  <li>End Date - the bar close datetime in the YYYYMMDDHHMMSS format</li>
+  <li>Open - the open value</li>
+  <li>High - the high value</li>
+  <li>Low - the low value</li>
+  <li>Close - the close value</li>
+  <li>Volume - the volume value</li>
+  <li>Open Interest - the open interest value (only if symbol is of a
+futures type)</li>
+</ul>
+<br>
+If no bars fall into the date range provided, an empty string is
+returned.
+Failure returns 'ERROR\n'. Note that the bar data is returned is in
+ascending datetime order.<br>
+<br>
+A full example would be to request daily quotes for the year 2010 '<span
+ style="font-weight: bold;">Quotes,Date,XNYS,GOOG,D,20100101000000,20101231235959\n</span>'<br>
+The returned data (if any) would be
+'20100104093000,20100104160000,450,475.5,425.25,442.75,123456789:blah:blah:blah\n'<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><span
+ style="font-weight: bold;"></span></span><br>
+<p style="font-weight: bold;">Quotes,Recent,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;LENGTH&gt;,&lt;DATE
+RANGE&gt;\n<br>
+</p>
+<p>Returns the most recent quotes for the &lt;DATE RANGE&gt; provided
+for a specific database symbol.<br>
+</p>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the exchange the
+quote originates from. eg.
+'XNYS' </li>
+  <li>&lt;SYMBOL&gt; is the symbol eg. 'GOOG'<a href="PlotTypes.html"> </a></li>
+  <li>&lt;LENGTH&gt; is the bar length eg. 'D'</li>
+  <li>&lt;DATE RANGE&gt; the date range of bars is one of the following
+values</li>
+  <ul>
+    <li>D1 - 1 day</li>
+    <li>W1 - 1 week</li>
+    <li>M1 - 1 Month</li>
+    <li>M3 - 3 months</li>
+    <li>M6 - 6 months</li>
+    <li>Y1 - 1 year</li>
+    <li>Y2 - 2 years</li>
+    <li>Y5 - 5 years</li>
+    <li>Y10 - 10 years</li>
+    <li>Y25 - 25 years</li>
+    <li>Y50 - 50 years</li>
+    <li>* - everything<br>
+    </li>
+  </ul>
+</ul>
+<br>
+On success, the quotes are returned in a string. Each bar record is
+delimited by a colon and each bar value is delimited by a comma. The
+returned format for each bar is the following:<br>
+<br>
+<ul>
+  <li>Start Date - the bar open datetime in the YYYYMMDDHHMMSS format</li>
+  <li>End Date - the bar close datetime in the YYYYMMDDHHMMSS format</li>
+  <li>Open - the open value</li>
+  <li>High - the high value</li>
+  <li>Low - the low value</li>
+  <li>Close - the close value</li>
+  <li>Volume - the volume value</li>
+  <li>Open Interest - the open interest value (only if symbol is of a
+futures type)</li>
+</ul>
+<br>
+If no bars are available, an empty string is returned.
+Failure returns 'ERROR\n'. Note that the bar data is returned is in
+ascending datetime order.<br>
+<br>
+A full example would be to request the most recent daily quotes for the
+1 year '<span style="font-weight: bold;">Quotes,Recent,XNYS,GOOG,D,Y1\n</span>'<br>
+The returned data (if any) would be
+'20100104093000,20100104160000,450,475.5,425.25,442.75,123456789:blah:blah:blah\n'<br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<br>
+<p style="font-weight: bold;">Quotes,Delete,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;\n<br>
+</p>
+<p>Permanantly deletes the symbol and all its quotes from the database.<br>
+</p>
+<ul>
+  <li>&lt;EXCHANGE&gt; is the exchange the
+quote originates from. eg.
+'XNYS' </li>
+  <li>&lt;SYMBOL&gt; is the symbol eg. 'GOOG'<a href="PlotTypes.html"> </a></li>
+</ul>
+On success, 'OK\n' is returned. Failure returns 'ERROR\n'.<br>
+<p>A Full example would be '<span style="font-weight: bold;">Quotes,Delete,XNYS,GOOG\n</span>'<br>
+<br>
+</p>
+<p><span style="font-weight: bold;"></span></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;"></span></p>
+<br>
+<p style="font-weight: bold;">Quotes,Rename,&lt;OLD
+EXCHANGE&gt;,&lt;OLD SYMBOL&gt;,&lt;NEW EXCHANGE&gt;,&lt;NEW
+SYMBOL&gt;\n<br>
+</p>
+<p>Renames the old symbol to the new symbol.<br>
+</p>
+<ul>
+  <li>&lt;OLD EXCHANGE&gt; is the old exchange the
+quote originates from. eg.
+'FOO' </li>
+  <li>&lt;OLD SYMBOL&gt; is the old symbol eg. 'BAR'<a
+ href="PlotTypes.html"> </a></li>
+  <li>&lt;NEW EXCHANGE&gt; is the new exchange the
+quote originates from. eg.
+'XNYS' </li>
+  <li>&lt;NEW SYMBOL&gt; is the new symbol eg. 'GOOG'<a
+ href="PlotTypes.html"> </a></li>
+</ul>
+On success, 'OK\n' is returned. Failure returns 'ERROR\n'.<br>
+<p>A Full example would be '<span style="font-weight: bold;">Quotes,Rename,FOO,BAR,XNYS,GOOG\n</span>'<br>
+<br>
+</p>
+<p><span style="font-weight: bold;"></span></p>
+<hr style="width: 100%; height: 2px;">
+<p><span style="font-weight: bold;"></span></p>
+<br>
+<br>
+</body>
+</html>

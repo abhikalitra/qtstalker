@@ -22,6 +22,7 @@
 #include "GroupPage.h"
 #include "GroupDataBase.h"
 #include "Config.h"
+#include "UpdateGroupPageThread.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/delgroup.xpm"
@@ -42,7 +43,7 @@
 #include <QLayout>
 #include <QFileInfo>
 
-GroupPage::GroupPage (QWidget *w) : QWidget (w)
+GroupPage::GroupPage ()
 {
   createActions();
 
@@ -374,18 +375,34 @@ void GroupPage::updateList ()
 {
   _nav->clear();
   
-  int loop;
-  for (loop = 0; loop < _group.count(); loop++)
-  {
-    BarData bd;
-    if (_group.getItem(loop, bd))
-      continue;
-    
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setText(bd.getSymbol());
-    item->setToolTip(QString(tr("Name: ") + bd.getName() + "\n" + tr("Exchange: ") + bd.getExchange()));
-    _nav->addItem(item);
-  }
+  setEnabled(FALSE);
+
+  _nav->setSortingEnabled(FALSE);
+
+  qRegisterMetaType<BarData>("BarData");
+  UpdateGroupPageThread *r = new UpdateGroupPageThread(this, _group);
+  _group.clear();
+  connect(r, SIGNAL(signalSymbol(BarData)), this, SLOT(addSymbol(BarData)), Qt::QueuedConnection);
+  connect(r, SIGNAL(signalDone()), this, SLOT(requestDone()), Qt::QueuedConnection);
+  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+  r->start();
+}
+
+void GroupPage::addSymbol (BarData bd)
+{
+  _group.append(bd);
+
+  QListWidgetItem *item = new QListWidgetItem;
+  item->setText(bd.getSymbol());
+  item->setToolTip(QString(tr("Name: ") + bd.getName() + "\n" + tr("Exchange: ") + bd.getExchange()));
+  _nav->addItem(item);
+}
+
+void GroupPage::requestDone ()
+{
+  _nav->setSortingEnabled(TRUE);
+  setEnabled(TRUE);
+  listStatus();
 }
 
 void GroupPage::listStatus ()
@@ -394,14 +411,20 @@ void GroupPage::listStatus ()
   QList<QListWidgetItem *> l = _nav->selectedItems();
   if (l.count())
     status = TRUE;
-  
-  _actions.value(AddGroup)->setEnabled(status); 
+
   _actions.value(DeleteGroupItems)->setEnabled(status);
   
   if (_groups->count())
-    _actions.value(DeleteGroup)->setEnabled(TRUE); 
+  {
+    _actions.value(DeleteGroup)->setEnabled(TRUE);
+    _actions.value(AddGroup)->setEnabled(TRUE);
+  }
   else
+  {
     _actions.value(DeleteGroup)->setEnabled(FALSE);
+    _actions.value(AddGroup)->setEnabled(FALSE);
+  }
+    
 }
 
 

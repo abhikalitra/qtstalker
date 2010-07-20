@@ -39,12 +39,6 @@ class YahooDialog : public QDialog
     void signalChartRefresh ();
 
   public:
-    enum Type
-    {
-      History,
-      Info
-    };
-
     YahooDialog ();
     void createMainPage ();
     void loadSettings ();
@@ -55,21 +49,19 @@ class YahooDialog : public QDialog
     void cancelButton ();
     void downloadDone ();
     void startHistory ();
-    void startInfo ();
+    void startDetails ();
 
   private:
     QTextEdit *_log;
     QDialogButtonBox *_buttonBox;
     QPushButton *_symbolsButton;
     QPushButton *_histButton;
-    QPushButton *_infoButton;
     QPushButton *_cancelButton;
+    QPushButton *_detailsButton;
     QDateTimeEdit *_sdate;
     QDateTimeEdit *_edate;
     QCheckBox *_adjustment;
     YahooThread *_thread;
-    Type _type;
-    int _runningFlag;
 };
 
 #endif

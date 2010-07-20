@@ -36,6 +36,7 @@ CSVDataBase::CSVDataBase ()
   s.append(", file TEXT");
   s.append(", exchange TEXT");
   s.append(", fileSymbol INT");
+  s.append(", removeSuffix INT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -61,13 +62,12 @@ void CSVDataBase::getRules (QStringList &l)
 
 int CSVDataBase::getRule (CSVRule &rule)
 {
-  QString name = rule.name();
-  if (name.isEmpty())
+  if (rule.name.isEmpty())
     return 1;
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString k = "SELECT plugin,delimeter,rule,file,exchange,fileSymbol FROM CSVPlugin";
-  k.append(" WHERE name='" + name + "'");
+  QString k = "SELECT plugin,delimeter,rule,file,exchange,fileSymbol,removeSuffix FROM CSVPlugin";
+  k.append(" WHERE name='" + rule.name + "'");
   q.exec(k);
   if (q.lastError().isValid())
   {
@@ -79,21 +79,20 @@ int CSVDataBase::getRule (CSVRule &rule)
     return 1;
   
   int pos = 0;
-
-  rule.setType(q.value(pos++).toString());
-  rule.setDelimeter(q.value(pos++).toString());
-  rule.setRule(q.value(pos++).toString());
-  rule.setFile(q.value(pos++).toString());
-  rule.setExchange(q.value(pos++).toString());
-  rule.setFileSymbol(q.value(pos++).toInt());
+  rule.type = q.value(pos++).toString();
+  rule.delimeter = q.value(pos++).toString();
+  rule.rule = q.value(pos++).toString();
+  rule.file = q.value(pos++).toString();
+  rule.exchange = q.value(pos++).toString();
+  rule.fileSymbol = q.value(pos++).toInt();
+  rule.removeSuffix = q.value(pos++).toInt();
 
   return 0;
 }
 
 void CSVDataBase::setRule (CSVRule &rule)
 {
-  QString name = rule.name();
-  if (name.isEmpty())
+  if (rule.name.isEmpty())
   {
     qDebug() << "CSVDataBase::setRule: no name";
     return;
@@ -102,14 +101,15 @@ void CSVDataBase::setRule (CSVRule &rule)
   transaction();
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "INSERT OR REPLACE INTO CSVPlugin (name,plugin,delimeter,rule,file,exchange,fileSymbol) VALUES (";
-  s.append("'" + name + "'"); // name
-  s.append(",'" + rule.type() + "'");
-  s.append(",'" + rule.delimeter() + "'");
-  s.append(",'" + rule.rule() + "'");
-  s.append(",'" + rule.file() + "'");
-  s.append(",'" + rule.exchange() + "'");
-  s.append("," + QString::number(rule.fileSymbol()));
+  QString s = "INSERT OR REPLACE INTO CSVPlugin (name,plugin,delimeter,rule,file,exchange,fileSymbol,removeSuffix) VALUES (";
+  s.append("'" + rule.name + "'"); // name
+  s.append(",'" + rule.type + "'");
+  s.append(",'" + rule.delimeter + "'");
+  s.append(",'" + rule.rule + "'");
+  s.append(",'" + rule.file + "'");
+  s.append(",'" + rule.exchange + "'");
+  s.append("," + QString::number(rule.fileSymbol));
+  s.append("," + QString::number(rule.removeSuffix));
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

@@ -20,9 +20,9 @@
  */
 
 #include "BETA.h"
-#include "DBPlugin.h"
 #include "ta_libc.h"
 #include "PlotFactory.h"
+#include "QuoteServerRequest.h"
 
 #include <QtDebug>
 
@@ -35,6 +35,7 @@ BETA::BETA ()
   _indicator = "BETA";
 
   _settings.setData(Index, "SP500");
+  _settings.setData(Exchange, "XNYS");
   _settings.setData(Color, "red");
   _settings.setData(Plot, "Line");
   _settings.setData(Label, _indicator);
@@ -44,6 +45,9 @@ BETA::BETA ()
 
 int BETA::getIndicator (Indicator &ind, BarData &data)
 {
+  if (! data.count())
+    return 1;
+  
   QString s;
   _settings.getData(Input, s);
   PlotLine *in = data.getInput(data.getInputType(s));
@@ -53,14 +57,29 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  _settings.getData(Index, s);
   BarData bd;
+  _settings.getData(Index, s);
   bd.setSymbol(s);
+  _settings.getData(Exchange, s);
+  bd.setExchange(s);
   bd.setBarLength(data.getBarLength());
-  bd.setDateRange(data.dateRange());
 
-  DBPlugin db;
-  db.getBars(bd);
+  QStringList l;
+  l << "GetQuotes" << bd.getExchange() << bd.getSymbol();
+  bd.barLengthText(bd.getBarLength(), s);
+  l << s;
+  Bar bar = data.getBar(0);
+  l << bar.date().toString("yyyyMMddHHmmss");
+  bar = data.getBar(data.count() - 1);
+  l << bar.date().toString("yyyyMMddHHmmss");
+
+  QString command = l.join(",") + "\n";
+
+  QuoteServerRequest qsr;
+  if (qsr.run(command))
+    return 1;
+
+  bd.setBars(qsr.data());
 
   PlotLine *in2 = bd.getInput(BarData::Close);
   if (! in2)

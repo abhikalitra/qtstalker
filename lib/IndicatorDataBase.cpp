@@ -29,29 +29,30 @@ IndicatorDataBase::IndicatorDataBase ()
   s.append("name TEXT PRIMARY KEY"); // 0
   s.append(", enable INT"); // 1
   s.append(", tabRow INT"); // 2
-  s.append(", date INT"); // 3
-  s.append(", log INT"); // 4
-  s.append(", cus INT"); // 5
-  s.append(", indicator TEXT"); // 6
-  s.append(", settings TEXT"); // 7
+  s.append(", column INT"); // 3
+  s.append(", date INT"); // 4
+  s.append(", log INT"); // 5
+  s.append(", cus INT"); // 6
+  s.append(", indicator TEXT"); // 7
+  s.append(", settings TEXT"); // 8
 
-  s.append(", t1 TEXT"); // 8
-  s.append(", t2 TEXT"); // 9
-  s.append(", t3 TEXT"); // 10
-  s.append(", t4 TEXT"); // 11
-  s.append(", t5 TEXT"); // 12
+  s.append(", t1 TEXT"); // 9
+  s.append(", t2 TEXT"); // 10
+  s.append(", t3 TEXT"); // 11
+  s.append(", t4 TEXT"); // 12
+  s.append(", t5 TEXT"); // 13
 
-  s.append(", i1 INT"); // 13
-  s.append(", i2 INT"); // 14
-  s.append(", i3 INT"); // 15
-  s.append(", i4 INT"); // 16
-  s.append(", i5 INT"); // 17
+  s.append(", i1 INT"); // 14
+  s.append(", i2 INT"); // 15
+  s.append(", i3 INT"); // 16
+  s.append(", i4 INT"); // 17
+  s.append(", i5 INT"); // 18
 
-  s.append(", d1 REAL"); // 18
-  s.append(", d2 REAL"); // 19
-  s.append(", d3 REAL"); // 20
-  s.append(", d4 REAL"); // 21
-  s.append(", d5 REAL"); // 22
+  s.append(", d1 REAL"); // 19
+  s.append(", d2 REAL"); // 20
+  s.append(", d3 REAL"); // 21
+  s.append(", d4 REAL"); // 22
+  s.append(", d5 REAL"); // 23
 
   s.append(")");
   q.exec(s);
@@ -64,7 +65,7 @@ void IndicatorDataBase::getIndicator (Indicator &i)
   QString name = i.name();
 
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "SELECT enable,tabRow,date,log,cus,indicator,settings FROM indicatorIndex WHERE name='" + name + "'";
+  QString s = "SELECT enable,tabRow,column,date,log,cus,indicator,settings FROM indicatorIndex WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -78,6 +79,7 @@ void IndicatorDataBase::getIndicator (Indicator &i)
   int pos = 0;
   i.setEnable(q.value(pos++).toInt());
   i.setTabRow(q.value(pos++).toInt());
+  i.setColumn(q.value(pos++).toInt());
   i.setDate(q.value(pos++).toInt());
   i.setLog(q.value(pos++).toInt());
   i.setCUS(q.value(pos++).toInt());
@@ -95,6 +97,7 @@ void IndicatorDataBase::setIndicator (Indicator &i)
   QString name = i.name();
   QString enable = QString::number(i.enable());
   QString tabRow = QString::number(i.tabRow());
+  QString column = QString::number(i.column());
   QString date = QString::number(i.date());
   QString log = QString::number(i.getLog());
   QString cus = QString::number(i.CUS());
@@ -107,10 +110,11 @@ void IndicatorDataBase::setIndicator (Indicator &i)
   transaction();
 
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "INSERT OR REPLACE INTO indicatorIndex (name,enable,tabRow,date,log,cus,indicator,settings) VALUES (";
+  QString s = "INSERT OR REPLACE INTO indicatorIndex (name,enable,tabRow,column,date,log,cus,indicator,settings) VALUES (";
   s.append("'" + name + "'");
   s.append("," + enable);
   s.append("," + tabRow);
+  s.append("," + column);
   s.append("," + date);
   s.append("," + log);
   s.append("," + cus);

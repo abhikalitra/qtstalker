@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef INDICATORPAGE_HPP
-#define INDICATORPAGE_HPP
+#ifndef INDICATOR_PAGE_HPP
+#define INDICATOR_PAGE_HPP
 
 #include <QString>
 #include <QWidget>
@@ -58,7 +58,7 @@ class IndicatorPage : public QWidget
       DeleteIndicator
     };
 
-    IndicatorPage (QWidget *);
+    IndicatorPage ();
     void createActions ();
     void createButtonMenu (QToolBar *);
 

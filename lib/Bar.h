@@ -40,77 +40,27 @@ class Bar
       BarFieldOI
     };
 
-    enum RC
-    {
-      RC_None,
-      RC_InvalidOpen,
-      RC_InvalidHigh,
-      RC_InvalidLow,
-      RC_InvalidClose,
-      RC_InvalidVolume,
-      RC_InvalidOI,
-      RC_OGTH, // open > high
-      RC_OLTL, // open < low
-      RC_CGTH, // close > high
-      RC_CLTL, // close < low
-      RC_VLT0, // volume < 0
-      RC_LGTH, // low > high
-      RC_HLTL, // high < low
-      RC_OILT0 // oi < 0
-    };
-
-    enum BarLength
-    {
-      Minute1,
-      Minute5,
-      Minute10,
-      Minute15,
-      Minute30,
-      Minute60,
-      DailyBar,
-      WeeklyBar,
-      MonthlyBar
-    };
-
     Bar ();
-    int setDate (QDateTime &);
-    void setDateRange (QDateTime &, Bar::BarLength);
-    QDateTime & getDate ();
-    void setOpen (double);
-    void setOpen (QString &);
-    double getOpen ();
-    void setHigh (double);
-    void setHigh (QString &);
-    double getHigh ();
-    void setLow (double);
-    void setLow (QString &);
-    double getLow ();
-    void setClose (double);
-    void setClose (QString &);
-    double getClose ();
-    void setVolume (double);
-    void setVolume (QString &);
-    double getVolume ();
-    void setOI (double);
-    void setOI (QString &);
-    double getOI ();
+    int setDates (QString &start, QString &end);
+    int setData (BarField, QString &);
+    double getData (BarField);
     void getDateString (QString &);
     void getDateTimeString (QString &);
     void getTimeString (QString &);
-    void verify ();
-    int getError ();
-    void getRangeKey (QString &);
-    void getBarLengthList (QStringList &);
     int count ();
+    void getRangeKey (QString &);
+    QDateTime & date ();
+
+    double getOpen ();
+    double getHigh ();
+    double getLow ();
+    double getClose ();
+    double getVolume ();
 
   protected:
-    QHash<int, double> data;
-    QDateTime startDate;
-    QDateTime endDate;
-    QDateTime displayDate;
-    int error;
-    int rangeFlag;
-    BarLength length;
+    QHash<int, double> _data;
+    QDateTime _startDate;
+    QDateTime _endDate;
 };
 
 #endif

@@ -19,39 +19,33 @@
  *  USA.
  */
 
-#ifndef DB_PLUGIN_HPP
-#define DB_PLUGIN_HPP
 
-#include <QString>
+#ifndef UPDATE_GROUP_PAGE_THREAD_H
+#define UPDATE_GROUP_PAGE_THREAD_H
+
+#include <QThread>
 #include <QStringList>
-#include <QDateTime>
-#include <QHash>
 
 #include "BarData.h"
-#include "QuotesDataBase.h"
-#include "Indicator.h"
+#include "Group.h"
 
-class DBPlugin : public QuotesDataBase
+class UpdateGroupPageThread : public QThread
 {
+  Q_OBJECT
+
+  signals:
+    void signalSymbol (BarData);
+    void signalDone ();
+
   public:
-    DBPlugin ();
-    virtual ~DBPlugin ();
-    virtual void getBars (BarData &);
-    virtual void dialog ();
-    virtual int scriptCommand (QStringList &, Indicator &, QByteArray &);
-    virtual int deleteSymbol (BarData *);
-    virtual int setDetail (QString &key, BarData *bd, QString &data);
-    virtual int setDetail (int key, BarData *bd, QString &data);
-    virtual int detail (QString &key, BarData *bd, QString &data);
-    virtual int detail (int key, BarData *bd, QString &data);
-    
-    void getFirstDate (QString &table, QDateTime &date);
-    void getLastDate (QString &table, QDateTime &date);
-    void barErrorMessage (int);
-    
+    UpdateGroupPageThread (QObject *p, Group &group);
+
   protected:
-    QString plugin;
-    QHash<QString, BarData *> quotes;
+    void run();
+
+  private:
+    Group _group;
 };
 
 #endif
+

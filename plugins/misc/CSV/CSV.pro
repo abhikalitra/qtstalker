@@ -15,5 +15,4 @@ SOURCES += CSVDialog.cpp
 SOURCES += CSVDataBase.cpp
 SOURCES += CSVRuleDialog.cpp
 SOURCES += CSVThread.cpp
-SOURCES += CSVRule.cpp
 SOURCES += CSVConfig.cpp

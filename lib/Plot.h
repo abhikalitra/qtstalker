@@ -46,7 +46,6 @@
 #include "Scaler.h"
 #include "DateBar.h"
 #include "PlotCursor.h"
-#include "IndicatorThread.h"
 
 class Plot : public QWidget
 {
@@ -56,7 +55,7 @@ class Plot : public QWidget
     void signalStatusMessage (QString);
     void signalInfoMessage (Setting *);
     void signalPixelSpaceChanged (int, int);
-    void signalDraw ();
+    void signalDraw (QString);
     void signalDateFlag (bool);
     void signalLogFlag (bool);
     void signalNewExternalChartObjectDone();
@@ -64,6 +63,10 @@ class Plot : public QWidget
     void signalBackgroundColorChanged (QColor);
     void signalBorderColorChanged (QColor);
     void signalPlotFontChanged (QFont);
+    void signalNewIndicator ();
+    void signalEditIndicator (QString);
+    void signalDeleteIndicator (QString);
+    void signalMoveIndicator (QString);
 
   public:
     enum MouseStatus
@@ -76,7 +79,7 @@ class Plot : public QWidget
       NewObjectWait
     };
 
-    Plot (QWidget *);
+    Plot ();
     ~Plot ();
     void setData (BarData &);
     void setLogScale (bool);
@@ -93,6 +96,10 @@ class Plot : public QWidget
     DateBar & dateBars ();
     int width ();
     void loadIndicator (BarData &, int);
+    void setRow (int);
+    int row ();
+    void setColumn (int);
+    int column ();
 
   public slots:
     void draw();
@@ -107,7 +114,7 @@ class Plot : public QWidget
     void sliderChanged (int);
     void gridChanged (bool);
     void logScaleChanged (bool);
-    void setInterval(Bar::BarLength);
+    void setInterval(BarData::BarLength);
     void newExternalChartObject (QString);
     void setExternalChartObjectFlag ();
     void cursorChanged (int);
@@ -137,7 +144,10 @@ class Plot : public QWidget
     void saveChartObjects ();
     void objectDialog ();
     void coSelected (int);
-    void indicatorThreadFinished ();
+    void indicatorThreadFinished (Indicator);
+    void editIndicator ();
+    void deleteIndicator ();
+    void moveIndicator ();
 
   private:
     Indicator _indicator;
@@ -157,7 +167,8 @@ class Plot : public QWidget
     ScalePlot _scalePlot;
     DateBar _dateBars;
     PlotCursor *_cursor;
-    IndicatorThread *_thread;
+    int _row;
+    int _column;
 };
 
 #endif

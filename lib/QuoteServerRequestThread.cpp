@@ -1,7 +1,7 @@
 /*
- *  QuoteServer
+ *  Qtstalker stock charter
  *
- *  Copyright (C) 2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,23 +19,23 @@
  *  USA.
  */
 
-#ifndef GET_QUOTES_HPP
-#define GET_QUOTES_HPP
 
-#include <QStringList>
+#include "QuoteServerRequestThread.h"
+#include "QuoteServerRequest.h"
 
-#include "QSPlugin.h"
+#include <QDebug>
 
-class GetQuotes : public QSPlugin
+QuoteServerRequestThread::QuoteServerRequestThread (QObject *p, QString &request) : QThread(p)
 {
-  public:
-    GetQuotes ();
-    int command (QStringList &input, QString &dbPath, QString &output);
-};
-
-extern "C"
-{
-  QSPlugin * createPlugin ();
+  _request = request;
 }
 
-#endif
+void QuoteServerRequestThread::run()
+{
+  QuoteServerRequest qsr;
+  if (qsr.run(_request))
+    return;
+
+  emit signalDone(qsr.data());
+}
+

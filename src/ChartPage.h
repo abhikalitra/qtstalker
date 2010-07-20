@@ -54,10 +54,11 @@ class ChartPage : public QWidget
       ShowAll,
       Search,
       AddGroup,
-      Delete
+      Delete,
+      Server
     };
 
-    ChartPage (QWidget *);
+    ChartPage ();
     void createActions ();
     void createButtonMenu (QToolBar *);
 
@@ -71,6 +72,9 @@ class ChartPage : public QWidget
     void allButtonPressed ();
     void listStatus ();
     void deleteSymbol ();
+    void addSymbol (BarData);
+    void requestDone ();
+    void serverDialog ();
 
   protected:
     QString _searchString;

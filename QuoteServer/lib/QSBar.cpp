@@ -88,21 +88,18 @@ void QSBar::setDateRange (QDateTime &dt, QSBar::QSBarLength l)
       _startDate.setTime(QTime(0, 0, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addDays(1);
-//      _endDate = _endDate.addSecs(-1);
       break;
     case QSBar::WeeklyBar:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _startDate = _startDate.addDays(- _startDate.date().dayOfWeek());
       _endDate = _startDate;
       _endDate = _endDate.addDays(7);
-//      _endDate = _endDate.addSecs(-1);
       break;
     case QSBar::MonthlyBar:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _startDate = _startDate.addDays(- (_startDate.date().day() - 1));
       _endDate = _startDate;
       _endDate = _endDate.addDays(_endDate.date().daysInMonth());
-//      _endDate = _endDate.addSecs(-1);
       break;
     default:
       break;
@@ -247,6 +244,8 @@ void QSBar::string (QString &d)
 
   QStringList l;
   
+  l << _startDate.toString(QString("yyyyMMddHHmmss"));
+
   switch (_length)
   {
     case QSBar::Minute1:

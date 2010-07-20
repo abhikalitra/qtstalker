@@ -1,7 +1,7 @@
 /*
- *  Qtstalker stock charter
+ *  QuoteServer
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,28 +19,37 @@
  *  USA.
  */
 
-#include "QuotesDataBase.h"
+#ifndef DETAILS_HPP
+#define DETAILS_HPP
 
-#include <QDir>
-#include <QtSql>
-#include <QDebug>
+#include <QStringList>
 
-QuotesDataBase::QuotesDataBase ()
+#include "QSPlugin.h"
+#include "QSLog.h"
+
+class Details : public QSPlugin
 {
-  _dbName = "quotes";
-  
-  QString dbFile = QDir::homePath() + "/.qtstalker/quotes.sqlite";
+  public:
+    enum Method
+    {
+      _Get,
+      _Set,
+      _Remove
+    };
 
-  QSqlDatabase db = QSqlDatabase::database(_dbName, FALSE);
-  if (! db.isOpen())
-  {
-    db = QSqlDatabase::addDatabase("QSQLITE", _dbName);
-    db.setHostName("localhost");
-    db.setDatabaseName(dbFile);
-    db.setUserName("QtStalker");
-    db.setPassword("QtStalker");
-    if (! db.open())
-      qDebug() << "QuotesDataBase:: quotes db open failed";
-  }
+    Details ();
+    int command (QStringList &input, QString &dbPath, QString &output);
+    int set (QStringList &input, QString &dbPath, QString &output, QSLog &);
+    int get (QStringList &input, QString &dbPath, QString &output, QSLog &);
+    int remove (QStringList &input, QString &dbPath, QString &output, QSLog &);
+
+  private:
+    QStringList _methodList;
+};
+
+extern "C"
+{
+  QSPlugin * createPlugin ();
 }
 
+#endif

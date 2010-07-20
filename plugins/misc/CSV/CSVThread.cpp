@@ -20,9 +20,8 @@
  */
 
 #include "CSVThread.h"
-#include "DBPluginFactory.h"
-#include "DBPlugin.h"
 #include "Indicator.h"
+#include "QuoteServerRequest.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -34,6 +33,7 @@ CSVThread::CSVThread (QObject *p) : QThread (p)
   _fileSymbol = 0;
   _lineCount = 0;
   _stopFlag = 0;
+  _removeSuffix = 0;
 
   _fields << "Exchange" << "Symbol" << "Open" << "High" << "Low" << "Close";
   _fields << "Volume" << "OI" << "Ignore" << "Name";
@@ -65,19 +65,25 @@ void CSVThread::run ()
   QTextStream stream(&f);
 
   _lineCount = 0;
-  int records = 0;
+//  int records = 0;
   _stopFlag = 0;
   
   QFileInfo fi(f);
   _fileName = fi.fileName();
 
-  DBPluginFactory fac;
-  DBPlugin *plug = fac.plugin(_type);
-  if (! plug)
+  // try to remove the file suffix
+  if (_removeSuffix)
   {
-    quit();
-    return;
+    QString s = fi.completeSuffix();
+    if (! s.isEmpty())
+    {
+      s.prepend("."); // add the dot because Qt does not include it
+      _fileName = _fileName.remove(s, Qt::CaseSensitive);
+    }
   }
+
+  QHash<QString, QString> commands;
+  QStringList nameCommands;
 
   while (stream.atEnd() == 0)
   {
@@ -124,7 +130,7 @@ void CSVThread::run ()
     // verify we have an exchange
     if (bar.exchange.isEmpty())
     {
-      bar.exchange = _rule->exchange();
+      bar.exchange = _rule->exchange;
       if (bar.exchange.isEmpty())
       {
         QString s = _fileName + tr(": Line ") + QString::number(_lineCount) + tr(": exchange missing");
@@ -132,50 +138,64 @@ void CSVThread::run ()
         continue;
       }
     }
-    
-    // construct a script API command for the appropriate plugin
-    QStringList l;
-    l << "QUOTE" << _type << "SET_QUOTE" << bar.exchange << bar.symbol << "yyyy-MM-ddTHH:mm:ss";
-    l << bar.date.toString(Qt::ISODate) << bar.open << bar.high << bar.low << bar.close << bar.volume;
-    if (_type == "Futures")
-      l << bar.oi;
 
-    // send the script API command
-    Indicator ind;
-    QByteArray ba;
-    if (! plug->scriptCommand(l, ind, ba))
-      records++;
-
-    // set name
-    if (! bar.name.isEmpty())
+    QString key = bar.exchange + ":" + bar.symbol;
+    QString command = commands.value(key);
+    if (command.isEmpty())
     {
-      QString s = "NAME";
-      
-      BarData bd;
-      bd.setSymbol(bar.symbol);
-      bd.setExchange(bar.exchange);
-      
-      plug->setDetail(s, &bd, bar.name);
+      // create new command entry
+      command = "Quotes,Set";
+      command.append("," + _type);
+      command.append("," + bar.exchange);
+      command.append("," + bar.symbol);
+      command.append(",yyyyMMddHHmmss");
+
+      if (! bar.name.isEmpty())
+      {
+        QStringList tl;
+        tl << "Details" << "S" << bar.exchange << bar.symbol << "Name" << bar.name;
+        nameCommands.append(tl.join(",") + "\n");
+      }
     }
+
+    command.append("," + bar.date.toString("yyyyMMddHHmmss"));
+    command.append("," + bar.open);
+    command.append("," + bar.high);
+    command.append("," + bar.low);
+    command.append("," + bar.close);
+    command.append("," + bar.volume);
+    if (_type == "F")
+      command.append("," + bar.oi);
+
+    commands.insert(key, command);
   }
 
   f.close();
 
-  // construct the script API save quotes command and send it
-  Indicator ind;
-  QStringList l;
-  QByteArray ba;
-  l << "QUOTE" << _type << "SAVE_QUOTES";
-  if (plug->scriptCommand(l, ind, ba))
+  // save the quotes
+  QHashIterator<QString, QString> it(commands);
+  while (it.hasNext())
   {
-    QString s = _fileName + tr(": db error, quotes not saved...import aborted");
-    emit signalMessage(s);
-    quit();
-    return;
+    it.next();
+
+    QuoteServerRequest qsr;
+    QString s = it.value() + "\n";
+    if (qsr.run(s))
+      emit signalMessage(tr("ERROR ") + it.key() + tr(" quotes ignored"));
+  }
+
+  // save any names
+  int loop = 0;
+  for (; loop < nameCommands.count(); loop++)
+  {
+    QuoteServerRequest qsr;
+    if (qsr.run(nameCommands[loop]))
+      emit signalMessage(tr("ERROR saving name, ignored"));
   }
 
   // send the done message along with some stats
-  emit signalMessage(tr("Quotes imported: ") + QString::number(records));
+//  emit signalMessage(tr("Quotes imported: ") + QString::number(records));
+  emit signalMessage(tr("Quotes imported"));
 
   quit();
 }
@@ -193,30 +213,32 @@ int CSVThread::verifyRule ()
     return 1;
   }
 
-  _type = _rule->type();
+  _type = _rule->type;
   if (_type.isEmpty())
   {
     emit signalMessage(QString("Type missing"));
     return 1;
   }
 
-  _delimeter = _rule->delimeter();
+  _delimeter = _rule->delimeter;
   if (_delimeter.isEmpty())
   {
     emit signalMessage(QString("Delimeter missing"));
     return 1;
   }
 
-  _file = _rule->file();
+  _file = _rule->file;
   if (_file.isEmpty())
   {
     emit signalMessage(QString("File missing"));
     return 1;
   }
 
-  _fileSymbol = _rule->fileSymbol();
+  _fileSymbol = _rule->fileSymbol;
 
-  QString d = _rule->rule();
+  _removeSuffix = _rule->removeSuffix;
+
+  QString d = _rule->rule;
   if (d.isEmpty())
   {
     emit signalMessage(QString("Rule missing"));
@@ -397,5 +419,4 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
 
   return 0;
 }
-
 

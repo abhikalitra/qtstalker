@@ -8,7 +8,7 @@ my $sock = new IO::Socket::INET (
                                 );
 die "Could not create socket: $!\n" unless $sock;
 
-print $sock "GetQuotes,XNYS,MMM,D,19000101000000,20101231000000\n";
+print $sock "Quotes,D,XTSE,RIM,D,19000101000000,20101231000000\n";
 $rc = <$sock>;
 close($sock);
 print $rc;

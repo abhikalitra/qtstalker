@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>QuoteServer API - YahooHistorical</title>
+</head>
+<body>
+<h3 style="text-decoration: underline;">QuoteServer<br>
+</h3>
+<br>
+Qtstalker uses a seperate app for quote services called QuoteServer. It
+runs in its own process space to minimize OS threading loads from the
+main app. Qtstalker uses the QuoteServer API to communicate over
+sockets using a text based API. Normally, QuoteServer will be started
+and stopped by Qtstalker. For normal operation the user should just use
+the default settings. However, users with the appropriate skills may
+run QuoteServer on a network to serve Qtstalker clients if one were so
+inclined. These docs do not explain those functions.<br>
+<br>
+Some of QuoteServer features are:<br>
+<br>
+<ul>
+  <li>server is completely multi-threaded</li>
+  <li>uses only the Qt core library for dependancies</li>
+  <li>uses sockets for IPC</li>
+  <li>uses a text based API for simplicity and compatibility</li>
+  <li>uses the sqlite sql engine for data storage</li>
+  <li>plugin system for extendability</li>
+</ul>
+<br>
+QuoteServer has a few command line switches. Run 'QuoteServer -h' to
+see them. Qtstalker uses them when it starts up.<br>
+<br>
+The defaults for QuoteServer are in localhost mode listening on port
+5000. If you need to change the port number, there is a dialog in
+Qtstalker on the Charts panel. Press the configure button to display
+the dialog.<br>
+<br>
+<br>
+<br>
+</body>
+</html>

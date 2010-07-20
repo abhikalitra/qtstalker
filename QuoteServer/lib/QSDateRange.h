@@ -1,7 +1,7 @@
 /*
- *  Qtstalker stock charter
+ *  QuoteServer
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,23 +19,34 @@
  *  USA.
  */
 
-#ifndef DB_PLUGIN_FACTORY_HPP
-#define DB_PLUGIN_FACTORY_HPP
+#ifndef QS_DATE_RANGE_HPP
+#define QS_DATE_RANGE_HPP
 
-#include "DBPlugin.h"
-#include "PluginFactory.h"
+#include <QDateTime>
+#include <QStringList>
 
-class DBPluginFactory : public PluginFactory
+class QSDateRange
 {
   public:
-    DBPluginFactory ();
-    ~DBPluginFactory ();
-    DBPlugin * plugin (QString &plugin);
-    void setPluginList ();
+    enum Range
+    {
+      D1,
+      W1,
+      M1,
+      M3,
+      M6,
+      Y1,
+      Y2,
+      Y5,
+      Y10,
+      Y25,
+      Y50,
+      All
+    };
     
-  protected:
-    QString _path;
-    QHash<QString, DBPlugin *> _plugins;
+    QSDateRange ();
+    int dateRange (QSDateRange::Range, QDateTime &input, QDateTime &output);
+    void list (QStringList &);
 };
 
 #endif

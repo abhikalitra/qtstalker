@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCRIPTPAGE_HPP
-#define SCRIPTPAGE_HPP
+#ifndef SCRIPT_PAGE_HPP
+#define SCRIPT_PAGE_HPP
 
 #include <QString>
 #include <QWidget>
@@ -54,7 +54,7 @@ class ScriptPage : public QWidget
       CancelScript
     };
 
-    ScriptPage (QWidget *);
+    ScriptPage ();
     ~ScriptPage ();
     void createActions ();
     void startScript ();

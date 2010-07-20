@@ -47,7 +47,7 @@
 #include <QToolButton>
 #include <QSize>
 
-ScriptPage::ScriptPage (QWidget *w) : QWidget (w)
+ScriptPage::ScriptPage ()
 {
   createActions();
   

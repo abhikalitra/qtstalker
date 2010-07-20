@@ -37,24 +37,10 @@ void Splitter::load ()
   if (s.isEmpty())
   {
     QList<int> l;
-    
-    switch ((Config::Parm) _parm)
-    {
-      case Config::PlotSizes:
-        l << 334 << 143;
-        break;
-      case Config::NavAreaSize:
-        l << 437 << 200;
-        break;
-      case Config::DataPanelSize:
-        l << 331 << 58 << 85;
-        break;
-      default:
-        break;
-    }
+    l << 437 << 200;
     
     setSizes(l);
-    config.setData(Config::PlotSizes, (QSplitter *) this);
+    config.setData((Config::Parm) _parm, (QSplitter *) this);
   }
   else
     config.getData((Config::Parm) _parm, (QSplitter *) this);

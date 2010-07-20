@@ -33,26 +33,37 @@
 
 YahooQuotes::YahooQuotes ()
 {
+  _methodList << "Start" << "Stop";
 }
 
 int YahooQuotes::command (QStringList &input, QString &dbPath, QString &output)
 {
-  QSLog log;
   output = "ERROR";
+
+  QSLog log;
 
   if (input.count() < 2)
   {
-    log.message(QSLog::Error, QString("YahooQuotes: invalid parm count " + QString::number(input.count())));
+    log.message(QSLog::Error, QString(" YahooQuotes::command invalid parm count " + QString::number(input.count())));
     return 1;
   }
 
-  if (input.at(1) == "Start")
-    return startUpdate(input, dbPath, output);
-  else if (input.at(1) == "Stop")
-    return stopUpdate(output);
+  int rc = 1;
 
-  log.message(QSLog::Error, QString("YahooQuotes: invalid command " + input.at(1)));
-  return 1;
+  switch ((Method) _methodList.indexOf(input.at(1)))
+  {
+    case _Start:
+      rc = startUpdate(input, dbPath, output);
+      break;
+    case _Stop:
+      rc = stopUpdate(output);
+      break;
+    default:
+      log.message(QSLog::Error, QString(" YahooQuotes: invalid command " + input.at(1)));
+      break;
+  }
+
+  return rc;
 }
 
 int YahooQuotes::startUpdate (QStringList &input, QString &dbPath, QString &output)
@@ -66,21 +77,11 @@ int YahooQuotes::startUpdate (QStringList &input, QString &dbPath, QString &outp
 
   // output format = 0 for ok, ERROR for error condition
 
-
-  // check if an instance is already running
-/*  
-  if (yahooQuotesStatus == 1)
-  {
-    qDebug() << "YahooQuotes::startUpdate: an instance is currently running. Command ignored.";
-    return 1;
-  }
-*/
-
   QSLog log;
   
   if (input.count() < 3)
   {
-    log.message(QSLog::Error, QString("YahooQuotes: invalid parm count " + QString::number(input.count())));
+    log.message(QSLog::Error, QString(" YahooQuotes: invalid parm count " + QString::number(input.count())));
     return 1;
   }
 
@@ -92,7 +93,7 @@ int YahooQuotes::startUpdate (QStringList &input, QString &dbPath, QString &outp
   // check if we are over the yahoo 200 symbol limit
   if (symbols.count() > 200)
   {
-    log.message(QSLog::Error, QString("YahooQuotes: over the yahoo 200 symbol limit (" + QString::number(symbols.count()) + "). Command ignored"));
+    log.message(QSLog::Error, QString(" YahooQuotes: over the yahoo 200 symbol limit (" + QString::number(symbols.count()) + "). Command ignored"));
     return 1;
   }
 
@@ -119,14 +120,14 @@ int YahooQuotes::startUpdate (QStringList &input, QString &dbPath, QString &outp
     // parse the data and save quotes
     QByteArray ba = reply->readAll();
     parse(ba, dbPath);
-    qDebug() << QString(ba);
+//    qDebug() << QString(ba);
 
 //    qDebug() << "YahooQuotes::startUpdate: a cycle has completed";
 
     sleep(60);
   }
 
-  log.message(QSLog::Info, QString("YahooQuotes: update has been stopped"));
+  log.message(QSLog::Info, QString(" YahooQuotes: update has been stopped"));
 
   output = "OK";
 
@@ -141,7 +142,7 @@ int YahooQuotes::stopUpdate (QString &output)
   
   if (g_yahooQuotesStatus != 1)
   {
-    log.message(QSLog::Error, QString("YahooQuotes: update is either shutting down or already stopped. Command ignored."));
+    log.message(QSLog::Error, QString(" YahooQuotes: update is either shutting down or already stopped. Command ignored."));
     return 1;
   }
 
@@ -149,7 +150,7 @@ int YahooQuotes::stopUpdate (QString &output)
   g_yahooQuotesStatus = 0;
   g_mutex.unlock();
 
-  log.message(QSLog::Info, QString("YahooQuotes: update shutting down...waiting for next cycle to complete"));
+  log.message(QSLog::Info, QString(" YahooQuotes: update shutting down...waiting for next cycle to complete"));
 
   output = "OK";
 
@@ -185,7 +186,7 @@ void YahooQuotes::parse (QByteArray &ba, QString &dbPath)
     QStringList l = ts.split(",");
     if (l.count() != 5)
     {
-      log.message(QSLog::Error, QString("YahooQuotes: " + l.at(0) + " invalid # bar fields at line " + QString::number(loop) + " record skipped"));
+      log.message(QSLog::Error, QString(" YahooQuotes: " + l.at(0) + " invalid # bar fields at line " + QString::number(loop) + " record skipped"));
       continue;
     }
 
@@ -196,7 +197,7 @@ void YahooQuotes::parse (QByteArray &ba, QString &dbPath)
     YahooParseSymbol yps;
     if (yps.parse(data))
     {
-      log.message(QSLog::Error, QString("YahooQuotes: symbol parse error " + l.at(0)));
+      log.message(QSLog::Error, QString(" YahooQuotes: symbol parse error " + l.at(0)));
       continue;
     }
 
@@ -207,7 +208,7 @@ void YahooQuotes::parse (QByteArray &ba, QString &dbPath)
     QDateTime dt = QDateTime::fromString(l.at(1) + l.at(2), QString("M/d/yyyyh:mmap"));
     if (! dt.isValid())
     {
-      log.message(QSLog::Error, QString("YahooQuotes: invalid date " + l.at(1) + l.at(2) + " at line " + QString::number(loop)));       
+      log.message(QSLog::Error, QString(" YahooQuotes: invalid date " + l.at(1) + l.at(2) + " at line " + QString::number(loop)));       
       continue;
     }
     else
@@ -215,31 +216,31 @@ void YahooQuotes::parse (QByteArray &ba, QString &dbPath)
 
     if (bar.setOpen(l[3]))
     {
-      log.message(QSLog::Error, QString("YahooQuotes: invalid open " + l.at(3) + " at line " + QString::number(loop)));
+      log.message(QSLog::Error, QString(" YahooQuotes: invalid open " + l.at(3) + " at line " + QString::number(loop)));
       continue;
     }
 
     if (bar.setHigh(l[3]))
     {
-      log.message(QSLog::Error, QString("YahooQuotes: invalid high " + l.at(3) + " at line " + QString::number(loop)));
+      log.message(QSLog::Error, QString(" YahooQuotes: invalid high " + l.at(3) + " at line " + QString::number(loop)));
       continue;
     }
 
     if (bar.setLow(l[3]))
     {
-      log.message(QSLog::Error, QString("YahooQuotes: invalid low " + l.at(3) + " at line " + QString::number(loop)));
+      log.message(QSLog::Error, QString(" YahooQuotes: invalid low " + l.at(3) + " at line " + QString::number(loop)));
       continue;
     }
 
     if (bar.setClose(l[3]))
     {
-      log.message(QSLog::Error, QString("YahooQuotes: invalid close " + l.at(3) + " at line " + QString::number(loop)));
+      log.message(QSLog::Error, QString(" YahooQuotes: invalid close " + l.at(3) + " at line " + QString::number(loop)));
       continue;
     }
 
     if (bar.verify())
     {
-      log.message(QSLog::Error, QString("YahooQuotes: invalid bar values at line " + QString::number(loop)));
+      log.message(QSLog::Error, QString(" YahooQuotes: invalid bar values at line " + QString::number(loop)));
       continue;
     }
 

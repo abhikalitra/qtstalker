@@ -85,6 +85,7 @@ class CSVThread : public QThread
     QStringList _fieldList;
     QStringList _fields;
     int _stopFlag;
+    int _removeSuffix;
 };
 
 #endif

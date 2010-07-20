@@ -27,13 +27,14 @@
 
 BarData::BarData ()
 {
+  clear();
+}
+
+void BarData::clear ()
+{
   _high = -99999999;
   _low = 99999999;
-  _length = Bar::DailyBar;
-  _dateRange = 5;
-  _dateRangeOverride = 0;
-  _startDate = QDateTime::currentDateTime();
-  _endDate = _startDate;
+  _length = DailyBar;
 }
 
 void BarData::getInputFields (QStringList &l)
@@ -73,37 +74,37 @@ PlotLine * BarData::getInput (BarData::InputType field, int lineType, QColor &co
     {
       case Open:
       {
-        PlotLineBar b(color, bar.getOpen());
+        PlotLineBar b(color, bar.getData(Bar::BarFieldOpen));
         in->setData(loop, b);
         break;
       }
       case High:
       {
-        PlotLineBar b(color, bar.getHigh());
+        PlotLineBar b(color, bar.getData(Bar::BarFieldHigh));
         in->setData(loop, b);
         break;
       }
       case Low:
       {
-        PlotLineBar b(color, bar.getLow());
+        PlotLineBar b(color, bar.getData(Bar::BarFieldLow));
         in->setData(loop, b);
         break;
       }
       case Close:
       {
-        PlotLineBar b(color, bar.getClose());
+        PlotLineBar b(color, bar.getData(Bar::BarFieldClose));
         in->setData(loop, b);
         break;
       }
       case Volume:
       {
-        PlotLineBar b(color, bar.getVolume());
+        PlotLineBar b(color, bar.getData(Bar::BarFieldVolume));
         in->setData(loop, b);
         break;
       }
       case OI:
       {
-        PlotLineBar b(color, bar.getOI());
+        PlotLineBar b(color, bar.getData(Bar::BarFieldOI));
         in->setData(loop, b);
         break;
       }
@@ -127,7 +128,7 @@ PlotLine * BarData::getInput (BarData::InputType field, int lineType, QColor &co
       }
       case WeightedClosePrice:
       {
-        double t = (bar.getHigh() + bar.getLow() + (bar.getClose() * 2)) / 4.0;
+        double t = (bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow) + (bar.getData(Bar::BarFieldClose) * 2)) / 4.0;
         PlotLineBar b(color, t);
         in->setData(loop, b);
         break;
@@ -189,15 +190,15 @@ void BarData::setMinMax ()
   {
     Bar bar = _barList.at(loop);
 
-    if (bar.getHigh() > _high)
-      _high = bar.getHigh();
+    if (bar.getData(Bar::BarFieldHigh) > _high)
+      _high = bar.getData(Bar::BarFieldHigh);
 
-    if (bar.getLow() < _low)
-      _low = bar.getLow();
+    if (bar.getData(Bar::BarFieldLow) < _low)
+      _low = bar.getData(Bar::BarFieldLow);
   }
 }
 
-void BarData::setBarLength (Bar::BarLength d)
+void BarData::setBarLength (BarLength d)
 {
   _length = d;
 }
@@ -205,12 +206,11 @@ void BarData::setBarLength (Bar::BarLength d)
 void BarData::setBarLength (QString &d)
 {
   QStringList l;
-  Bar tbar;
-  tbar.getBarLengthList(l);
-  _length = (Bar::BarLength) l.indexOf(d);
+  getBarLengthList(l);
+  _length = (BarLength) l.indexOf(d);
 }
 
-Bar::BarLength BarData::getBarLength ()
+BarData::BarLength & BarData::getBarLength ()
 {
   return _length;
 }
@@ -235,45 +235,35 @@ void BarData::setName (QString &d)
   _name = d;
 }
 
+QString & BarData::getTable ()
+{
+  return _table;
+}
+
+void BarData::setTable (QString &d)
+{
+  _table = d;
+}
+
 double BarData::getAvgPrice (int d)
 {
   Bar bar = getBar(d);
-  double t = (bar.getOpen() + bar.getHigh() + bar.getLow() + bar.getClose()) / 4.0;
+  double t = (bar.getData(Bar::BarFieldOpen) + bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow) + bar.getData(Bar::BarFieldClose)) / 4.0;
   return t;
 }
 
 double BarData::getMedianPrice (int d)
 {
   Bar bar = getBar(d);
-  double t = (bar.getHigh() + bar.getLow()) / 2.0;
+  double t = (bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow)) / 2.0;
   return t;
 }
 
 double BarData::getTypicalPrice (int d)
 {
   Bar bar = getBar(d);
-  double t = (bar.getHigh() + bar.getLow() + bar.getClose()) / 3.0;
+  double t = (bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow) + bar.getData(Bar::BarFieldClose)) / 3.0;
   return t;
-}
-
-QString & BarData::getTableName ()
-{
-  return _tableName;
-}
-
-void BarData::setTableName (QString &d)
-{
-  _tableName = d;
-}
-
-QString & BarData::getPlugin ()
-{
-  return _plugin;
-}
-
-void BarData::setPlugin (QString &d)
-{
-  _plugin = d;
 }
 
 QString & BarData::getExchange ()
@@ -286,43 +276,81 @@ void BarData::setExchange (QString &d)
   _exchange = d;
 }
 
-void BarData::setDateRange (int d)
+void BarData::getBarLengthList (QStringList &l)
 {
-  _dateRange = d;
+  l.clear();
+  l << QObject::tr("1 Minute");
+  l << QObject::tr("5 Minute");
+  l << QObject::tr("10 Minute");
+  l << QObject::tr("15 Minute");
+  l << QObject::tr("30 Minute");
+  l << QObject::tr("60 Minute");
+  l << QObject::tr("Daily");
+  l << QObject::tr("Weekly");
+  l << QObject::tr("Monthly");
 }
 
-int BarData::dateRange ()
+void BarData::setBars (QString &d)
 {
-  return _dateRange;
+  QStringList l = d.split(":");
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QStringList l2 = l.at(loop).split(",");
+    if (l2.count() < 7 && l2.count() > 8)
+      continue;
+
+    Bar bar;
+    bar.setDates(l2[0], l2[1]);
+    bar.setData(Bar::BarFieldOpen, l2[2]);
+    bar.setData(Bar::BarFieldHigh, l2[3]);
+    bar.setData(Bar::BarFieldLow, l2[4]);
+    bar.setData(Bar::BarFieldClose, l2[5]);
+    bar.setData(Bar::BarFieldVolume, l2[6]);
+
+    if (l2.count() == 8)
+      bar.setData(Bar::BarFieldOI, l2[7]);
+
+    append(bar);
+  }
 }
 
-void BarData::setDateRangeOverride (int d)
+void BarData::barLengthText (BarData::BarLength k, QString &d)
 {
-  _dateRangeOverride = d;
-}
-
-int BarData::dateRangeOverride ()
-{
-  return _dateRangeOverride;
-}
-
-void BarData::setStartDate (QDateTime &d)
-{
-  _startDate = d;
-}
-
-QDateTime & BarData::startDate ()
-{
-  return _startDate;
-}
-
-void BarData::setEndDate (QDateTime &d)
-{
-  _endDate = d;
-}
-
-QDateTime & BarData::endDate ()
-{
-  return _endDate;
+  d.clear();
+  
+  switch (k)
+  {
+    case Minute1:
+      d = "1";
+      break;
+    case Minute5:
+      d = "5";
+      break;
+    case Minute10:
+      d = "10";
+      break;
+    case Minute15:
+      d = "15";
+      break;
+    case Minute30:
+      d = "30";
+      break;
+    case Minute60:
+      d = "60";
+      break;
+    case DailyBar:
+      d = "D";
+      break;
+    case WeeklyBar:
+      d = "W";
+      break;
+    case MonthlyBar:
+      d = "M";
+      break;
+    default:
+      break;
+  }
 }
 

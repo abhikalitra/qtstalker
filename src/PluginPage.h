@@ -48,7 +48,7 @@ class PluginPage : public QWidget
       Configure
     };
 
-    PluginPage (QWidget *);
+    PluginPage ();
     void createActions ();
     void createButtonMenu (QToolBar *);
 

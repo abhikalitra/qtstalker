@@ -2,8 +2,8 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += SetQuotes.h
+HEADERS += Quotes.h
 
-SOURCES += SetQuotes.cpp
+SOURCES += Quotes.cpp
 
 

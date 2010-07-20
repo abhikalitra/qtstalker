@@ -59,6 +59,16 @@ int Indicator::tabRow ()
   return _tabRow;
 }
 
+void Indicator::setColumn (int d)
+{
+  _column = d;
+}
+
+int Indicator::column ()
+{
+  return _column;
+}
+
 void Indicator::setDate (int d)
 {
   _date = d;
@@ -215,6 +225,7 @@ void Indicator::init ()
   _date = 1;
   _log = 0;
   _cus = 0;
+  _column = 1;
 //  _name.clear();
   _indicator.clear();
   _settings.clear();

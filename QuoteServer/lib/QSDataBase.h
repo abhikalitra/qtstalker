@@ -30,7 +30,6 @@ class QSDataBase
     QSDataBase ();
     void transaction ();
     void commit ();
-    int command (QString &, QString);
     
   protected:
     QString _dbName;

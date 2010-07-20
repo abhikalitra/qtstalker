@@ -127,10 +127,6 @@ SUBDIRS += plugins/indicators/VIDYA
 SUBDIRS += plugins/indicators/VOL
 SUBDIRS += plugins/indicators/WILLR
 
-# compile database plugins
-SUBDIRS += plugins/database/Stock
-SUBDIRS += plugins/database/Futures
-
 # compile misc plugins
 SUBDIRS += plugins/misc/CSV
 SUBDIRS += plugins/misc/Yahoo

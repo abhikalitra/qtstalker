@@ -37,7 +37,8 @@ class CORREL : public IndicatorPlugin
       Period,
       Ref1Color,
       Ref2Color,
-      Ref3Color
+      Ref3Color,
+      Exchange
     };
 
     CORREL ();

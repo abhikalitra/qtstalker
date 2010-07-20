@@ -20,7 +20,6 @@
  */
 
 #include "SCSymbol.h"
-#include "QuoteIndexDataBase.h"
 #include "Group.h"
 #include "Config.h"
 
@@ -29,7 +28,7 @@
 
 SCSymbol::SCSymbol ()
 {
-  methodList << "CURRENT" << "SEARCH";
+  methodList << "CURRENT";
 }
 
 int SCSymbol::calculate (QStringList &l, QByteArray &ba)
@@ -51,38 +50,11 @@ int SCSymbol::calculate (QStringList &l, QByteArray &ba)
     case CURRENT:
       rc = getCurrent(l, ba);
       break;
-    case SEARCH:
-      rc = getSearch(l, ba);
-      break;
     default:
       break;
   }
   
   return rc;
-}
-
-int SCSymbol::getSearch (QStringList &l, QByteArray &ba)
-{
-  // format = SYMBOL,SEARCH,EXCHANGE,SEARCH_STRING
-
-  if (l.count() != 4)
-  {
-    qDebug() << "SCSymbol::getSearch: invalid parm count" << l.count();
-    return 1;
-  }
-
-  QuoteIndexDataBase idb;
-  Group bdl;
-  idb.getSearchList(l[2], l[3], bdl);
-  
-  QStringList sl;
-  bdl.getStringList(sl);
-  
-  ba.clear();
-  ba.append(sl.join(","));
-  ba.append('\n');
-
-  return 0;
 }
 
 int SCSymbol::getCurrent (QStringList &l, QByteArray &ba)

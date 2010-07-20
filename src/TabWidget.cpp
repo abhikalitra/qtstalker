@@ -23,58 +23,27 @@
 
 #include <QInputDialog>
 #include <QCursor>
+#include <QLabel>
 
-TabWidget::TabWidget (int row)
+TabWidget::TabWidget (QString &id)
 {
-  switch (row)
-  {
-    case 0:
-      _rowPositionParm = Config::IndicatorRow1Position;
-      _lastIndexParm = Config::LastIndicatorRow1;
-      break;
-    case 1:
-      _rowPositionParm = Config::IndicatorRow2Position;
-      _lastIndexParm = Config::LastIndicatorRow2;
-      break;
-    case 2:
-      _rowPositionParm = Config::IndicatorRow3Position;
-      _lastIndexParm = Config::LastIndicatorRow3;
-      break;
-    default:
-      break;
-  }
-
+  _id = "TabWidget" + id;
+  
   _menu = new QMenu(this);
-  _menu->addAction(tr("Tab Rows"), this, SLOT(tabRowsDialog()), Qt::ALT+Qt::Key_R);
   _menu->addAction(tr("Tab &Position"), this, SLOT(tabPositionDialog()), Qt::ALT+Qt::Key_P);
 
   setDocumentMode(TRUE); // remove tab frame, get a few more pixels of space
   setContentsMargins(0, 0, 0, 0);
   
   Config config;
-  setTabPosition((QTabWidget::TabPosition) config.getInt(_rowPositionParm));
-}
+  QString d;
+  config.getData(_id, d);
+  if (! d.isEmpty())
+    setTabPosition((QTabWidget::TabPosition) d.toInt());
+  else
+    setTabPosition(East);
 
-void TabWidget::tabRowsDialog ()
-{
-  Config config;
-  int t = config.getInt(Config::IndicatorTabRows);
-  
-  bool ok;
-  t = QInputDialog::getInt(0,
-                           tr("Chart Tab Rows"),
-                           tr("Enter number of chart tab rows"),
-                           t,
-                           1,
-                           3,
-                           1,
-                           &ok,
-                           0);
-
-  if (! ok)
-    return;
-
-  config.setData(Config::IndicatorTabRows, t);
+  setTabHeight();
 }
 
 void TabWidget::tabPositionDialog ()
@@ -87,7 +56,7 @@ void TabWidget::tabPositionDialog ()
                                        tr("Chart Tab Position"),
                                        tr("Select position"),
                                        l,
-                                       0,
+                                       (int) tabPosition(),
                                        FALSE,
                                        &ok,
                                        0);
@@ -95,28 +64,12 @@ void TabWidget::tabPositionDialog ()
     return;
 
   Config config;
-  
-  switch (l.indexOf(item))
-  {
-    case 0:
-      config.setData(_rowPositionParm, North);
-      setTabPosition(North);
-      break;
-    case 1:
-      config.setData(_rowPositionParm, South);
-      setTabPosition(South);
-      break;
-    case 2:
-      config.setData(_rowPositionParm, West);
-      setTabPosition(West);
-      break;
-    case 3:
-      config.setData(_rowPositionParm, East);
-      setTabPosition(East);
-      break;
-    default:
-      break;
-  }
+  int index = l.indexOf(item);
+  QString d = QString::number(index);
+  config.setData(_id, d);
+
+  setTabPosition((QTabWidget::TabPosition) index);
+  setTabHeight();
 }
 
 void TabWidget::contextMenuEvent (QContextMenuEvent *)
@@ -124,39 +77,17 @@ void TabWidget::contextMenuEvent (QContextMenuEvent *)
   _menu->exec(QCursor::pos());
 }
 
-void TabWidget::save ()
+QTabBar * TabWidget::getTabBar ()
 {
-  // save last indicators used
-  Config config;
-  config.setData(_lastIndexParm, currentIndex());
+  return tabBar();
 }
 
-void TabWidget::load ()
+void TabWidget::setTabHeight ()
 {
-  // set last indicators used
-  Config config;
-  QString s;
-  config.getData((Config::Parm) _rowPositionParm, s);
-  if (s.isEmpty())
-  {
-    s = QString::number(QTabWidget::North);
-    config.setData((Config::Parm) _rowPositionParm, s);
-  }
-
-  setCurrentIndex(config.getInt(_lastIndexParm));
+  // make the tab narrower
+  if (tabPosition() == North || tabPosition() == South)
+    setStyleSheet("QTabBar::tab { height: 14px;}");
+  else
+    setStyleSheet("QTabBar::tab { height: 6px; width: 60px; }");
 }
-
-void TabWidget::deleteTab (QString text)
-{
-  int loop = 0;
-  for (; loop < count(); loop++)
-  {
-    if (QString::compare(tabText(loop), text) == 0)
-    {
-      removeTab(loop);
-      break;
-    }
-  }
-}
-
 

@@ -1,7 +1,7 @@
 /*
- *  Qtstalker stock charter
+ *  QuoteServer
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,24 +19,21 @@
  *  USA.
  */
 
-#ifndef SC_QUOTE_HPP
-#define SC_QUOTE_HPP
+#ifndef QS_DETAILS_DATA_BASE_HPP
+#define QS_DETAILS_DATA_BASE_HPP
 
-#include <QStringList>
 #include <QString>
-#include <QByteArray>
 
-#include "DBPluginFactory.h"
-#include "Indicator.h"
+#include "QSDataBase.h"
+#include "QSDetail.h"
 
-class SCQuote
+class QSDetailsDataBase : public QSDataBase
 {
   public:
-    SCQuote ();
-    int calculate (QStringList &, QByteArray &, Indicator &);
-    
-  protected:
-    DBPluginFactory fac;
+    QSDetailsDataBase ();
+    int remove (QSDetail &);
+    int details (QSDetail &);
+    int setDetails (QSDetail &);
 };
 
 #endif

@@ -19,27 +19,41 @@
  *  USA.
  */
 
-#ifndef QUOTE_INDEX_DATA_BASE_HPP
-#define QUOTE_INDEX_DATA_BASE_HPP
 
-#include <QString>
-#include <QStringList>
+#include "UpdateGroupPageThread.h"
+#include "QuoteServerRequest.h"
 
-#include "QuotesDataBase.h"
-#include "BarData.h"
-#include "Group.h"
+#include <QDebug>
 
-class QuoteIndexDataBase : public QuotesDataBase
+UpdateGroupPageThread::UpdateGroupPageThread (QObject *p, Group &group) : QThread(p)
 {
-  public:
-    QuoteIndexDataBase ();
-    int deleteSymbol (BarData *);
-//    void init (QString &);
-    void getSearchList (QString &ex, QString &pat, Group &);
-    int getIndexData (BarData *);
-    int addSymbolIndex (BarData *);
-    void getExchangeList (QStringList &);
-    int rename (BarData *, BarData *);
-};
+  _group = group;
+}
 
-#endif
+void UpdateGroupPageThread::run()
+{
+  int loop = 0;
+  for (; loop < _group.count(); loop++)
+  {
+    BarData bd;
+    _group.getItem(loop, bd);
+
+    QStringList tl;
+    tl << "Details" << "G" << bd.getExchange() << bd.getSymbol() << "Name";
+    QString _request = tl.join(",") + "\n";
+
+    QuoteServerRequest qsr;
+    if (qsr.run(_request))
+    {
+      emit signalSymbol(bd);
+      continue;
+    }
+
+    bd.setName(qsr.data());
+  
+    emit signalSymbol(bd);
+  }
+
+  emit signalDone();
+}
+

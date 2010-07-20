@@ -29,11 +29,13 @@
 #include "PlotCursorFactory.h"
 #include "IndicatorDataBase.h"
 #include "Globals.h"
+#include "IndicatorThread.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
+#include "../pics/indicator.xpm"
 
 #include <QPainter>
 #include <QPen>
@@ -46,7 +48,7 @@
 #include <QColorDialog>
 #include <QFontDialog>
 
-Plot::Plot (QWidget *w) : QWidget(w)
+Plot::Plot ()
 {
   _plotData.barSpacing = 0;
   _plotData.startIndex = 0;
@@ -57,7 +59,7 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _plotData.y1 = 0;
   _plotData.infoFlag = 1;
   _plotData.pos = 0;
-  _plotData.interval = Bar::DailyBar;
+  _plotData.interval = BarData::DailyBar;
   _plotData.dateHeight = 30;
   _plotData.scaleWidth = 70;
   _plotData.barWidth = 5;
@@ -73,17 +75,21 @@ Plot::Plot (QWidget *w) : QWidget(w)
   _menuFlag = TRUE;
   _newObjectFlag = 0;
   _cursor = 0;
-  _thread = 0;
 
   _coMenu = new QMenu(this);
   _coMenu->addAction(QPixmap(edit), tr("&Edit Chart Object"), this, SLOT(objectDialog()), Qt::ALT+Qt::Key_E);
   _coMenu->addAction(QPixmap(delete_xpm), tr("&Delete Chart Object"), this, SLOT(chartObjectDeleted()), Qt::ALT+Qt::Key_D);
   
   _chartMenu = new QMenu(this);
+  _chartMenu->addAction(QPixmap(indicator_xpm), tr("&New Indicator"), this, SIGNAL(signalNewIndicator()), Qt::ALT+Qt::Key_N);
+  _chartMenu->addAction(QPixmap(edit), tr("Edit &Indicator"), this, SLOT(editIndicator()), Qt::ALT+Qt::Key_I);
+  _chartMenu->addAction(QPixmap(), tr("&Move Indicator"), this, SLOT(moveIndicator()), Qt::ALT+Qt::Key_M);
+  _chartMenu->addAction(QPixmap(delete_xpm), tr("De&lete Indicator"), this, SLOT(deleteIndicator()), Qt::ALT+Qt::Key_L);
+  _chartMenu->addSeparator ();
   _chartMenu->addAction(QPixmap(delete_xpm), tr("Delete &All Chart Objects"), this, SLOT(deleteAllChartObjects()), Qt::ALT+Qt::Key_A);
   _chartMenu->addSeparator ();
   _chartMenu->addAction(QPixmap(date), tr("&Date"), this, SLOT(toggleDate()), Qt::ALT+Qt::Key_D);
-  _chartMenu->addAction(QPixmap(loggridicon), tr("&Log Scaling"), this, SLOT(toggleLog()), Qt::ALT+Qt::Key_L);
+  _chartMenu->addAction(QPixmap(loggridicon), tr("Log &Scaling"), this, SLOT(toggleLog()), Qt::ALT+Qt::Key_S);
   _chartMenu->addSeparator ();
   _chartMenu->addAction(tr("&Background Color"), this, SLOT(editBackgroundColor()), Qt::ALT+Qt::Key_B);
   _chartMenu->addAction(tr("Bo&rder Color"), this, SLOT(editBorderColor()), Qt::ALT+Qt::Key_R);
@@ -128,10 +134,6 @@ void Plot::draw ()
     // calculate the right most bar on screen
     _plotData.infoIndex = convertXToDataIndex((_plotData.buffer.width() - _plotData.scaleWidth));
 
-    // draw the date section
-    if (_indicator.date())
-      _datePlot.draw(_plotData, _dateBars);
-
     // draw the grid
     _grid.drawXGrid(_plotData);
     _grid.drawYGrid(_plotData, _indicator.scaler());
@@ -141,6 +143,10 @@ void Plot::draw ()
 
     // draw chart objects
     drawObjects();
+
+    // draw the date section
+    if (_indicator.date())
+      _datePlot.draw(_plotData, _dateBars);
 
     // draw the top left indicator stats of the right most bar on screen
     PlotDrawInfo di;
@@ -191,7 +197,7 @@ void Plot::resizeEvent (QResizeEvent *event)
 {
   _plotData.buffer = QPixmap(event->size());
 
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::cursorChanged (int d)
@@ -208,7 +214,7 @@ void Plot::cursorChanged (int d)
   connect(_cursor, SIGNAL(signalIndexChanged(int)), this, SIGNAL(signalIndexChanged(int)));
   setCursor(QCursor((Qt::CursorShape) _cursor->getCursor()));
 
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 //*********************************************************************
@@ -238,7 +244,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
         {
           _plotData.mouseFlag = None;
 	  _coSelected->setSelected(FALSE);
-          emit signalDraw();
+          emit signalDraw(_indicator.name());
         }
       }
       break;
@@ -256,7 +262,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
       {
 	_plotData.mouseFlag = _saveMouseFlag;
         setCursor(QCursor(Qt::ArrowCursor));
-        emit signalDraw();
+        emit signalDraw(_indicator.name());
 	
         int i = convertXToDataIndex(event->x());
         PlotCursorInfo info;
@@ -274,7 +280,7 @@ void Plot::mousePressEvent (QMouseEvent *event)
       {
 	_plotData.mouseFlag = _saveMouseFlag;
         setCursor(QCursor(Qt::ArrowCursor));
-        emit signalDraw();
+        emit signalDraw(_indicator.name());
 	
         int i = convertXToDataIndex(event->x());
         PlotCursorInfo info;
@@ -313,12 +319,12 @@ void Plot::mouseMoveEvent (QMouseEvent *event)
     case Moving:
       getXY(event->x(), event->y());
       _coSelected->moving(_plotData.x1, _plotData.y1, _moveFlag);
-      emit signalDraw();
+      emit signalDraw(_indicator.name());
       break;
     case ClickWait2:
       getXY(event->x(), event->y());
       _coSelected->moving(_plotData.x1, _plotData.y1, 0);
-      emit signalDraw();
+      emit signalDraw(_indicator.name());
       break;
     case None:
       getXY(event->x(), event->y());
@@ -399,7 +405,7 @@ void Plot::toggleDate ()
   _indicator.setDate(flag);
 
   emit signalDateFlag(flag);
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::toggleLog ()
@@ -411,7 +417,7 @@ void Plot::toggleLog ()
     flag = FALSE;
   _indicator.setLog(flag);
 
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::sliderChanged (int v)
@@ -427,7 +433,7 @@ void Plot::gridChanged (bool d)
 void Plot::logScaleChanged (bool d)
 {
   setLogScale(d);
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::loadIndicator (BarData &data, int index)
@@ -438,19 +444,19 @@ void Plot::loadIndicator (BarData &data, int index)
   IndicatorDataBase db;
   db.getIndicator(_indicator);
 
-  _thread = new IndicatorThread(this, data, _indicator);
-  connect(_thread, SIGNAL(finished()), this, SLOT(indicatorThreadFinished()));
-  _thread->start();
+  qRegisterMetaType<Indicator>("Indicator");
+  IndicatorThread *r = new IndicatorThread(this, data, _indicator);
+  connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
+  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+  r->start();
 }
 
-void Plot::indicatorThreadFinished ()
+void Plot::indicatorThreadFinished (Indicator i)
 {
-  setIndicator(_thread->indicator());
+  setIndicator(i);
   loadChartObjects();
   if (isVisible())
     draw();
-
-  delete _thread;
 }
 
 void Plot::setData (BarData &data)
@@ -484,7 +490,7 @@ bool Plot::logScale ()
   return _indicator.getLog();
 }
 
-void Plot::setInterval (Bar::BarLength d)
+void Plot::setInterval (BarData::BarLength d)
 {
   _plotData.interval = d;
 }
@@ -492,25 +498,25 @@ void Plot::setInterval (Bar::BarLength d)
 void Plot::setBackgroundColor (QColor d)
 {
   _plotData.backgroundColor = d;
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::setBorderColor (QColor d)
 {
   _plotData.borderColor = d;
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::setGridColor (QColor d)
 {
   _grid.setGridColor(d);
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::setPlotFont (QFont d)
 {
   _plotData.plotFont = d;
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::setGridFlag (bool d)
@@ -624,6 +630,41 @@ void Plot::loadSettings ()
   _plotData.interval = config.getInt(Config::BarLength);
 }
 
+void Plot::editIndicator ()
+{
+  emit signalEditIndicator(_indicator.name());
+}
+
+void Plot::deleteIndicator ()
+{
+  emit signalDeleteIndicator(_indicator.name());
+}
+
+void Plot::moveIndicator ()
+{
+  emit signalMoveIndicator(_indicator.name());
+}
+
+void Plot::setRow (int d)
+{
+  _row = d;
+}
+
+int Plot::row ()
+{
+  return _row;
+}
+
+void Plot::setColumn (int d)
+{
+  _column = d;
+}
+
+int Plot::column ()
+{
+  return _column;
+}
+
 //*********************************************************************
 //*************** INTERNAL FUNCTIONS **********************************
 //********************************************************************
@@ -667,7 +708,7 @@ void Plot::setExternalChartObjectFlag ()
   _coSelected = 0;
 
 //  updateCursor();
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::newExternalChartObject (QString d)
@@ -750,7 +791,7 @@ void Plot::deleteAllChartObjects ()
 
   _plotData.mouseFlag = None;
 
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::chartObjectDeleted ()
@@ -766,7 +807,7 @@ void Plot::chartObjectDeleted ()
 
   _plotData.mouseFlag = None;
 
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::saveChartObjects ()
@@ -805,7 +846,7 @@ void Plot::loadChartObjects ()
 void Plot::objectDialog ()
 {
   _coSelected->dialog();
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 
 void Plot::coSelected (int d)
@@ -818,6 +859,6 @@ void Plot::coSelected (int d)
   _coSelected->getInfo(mess);
   emit signalInfoMessage(mess);
   
-  emit signalDraw();
+  emit signalDraw(_indicator.name());
 }
 

@@ -1,5 +1,5 @@
 /* XPM */
-static const char *indicator[] = {
+static const char *indicator_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "22 22 133 2",
 "   c gray50",

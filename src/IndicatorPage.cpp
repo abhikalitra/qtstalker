@@ -45,7 +45,7 @@
 #include <QtDebug>
 #include <QLabel>
 
-IndicatorPage::IndicatorPage (QWidget *w) : QWidget (w)
+IndicatorPage::IndicatorPage ()
 {
   createActions();
 

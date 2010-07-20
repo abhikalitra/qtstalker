@@ -24,40 +24,16 @@
 
 #include <QString>
 
-class CSVRule
+struct CSVRule
 {
-  public:
-    CSVRule ();
-
-    void setName (QString);
-    QString & name ();
-    
-    void setExchange (QString);
-    QString & exchange ();
-
-    void setType (QString);
-    QString & type ();
-
-    void setDelimeter (QString);
-    QString & delimeter ();
-
-    void setFile (QString);
-    QString & file ();
-
-    void setRule (QString);
-    QString & rule ();
-
-    void setFileSymbol (int);
-    int fileSymbol ();
-
-  protected:
-    QString _name;
-    QString _exchange;
-    QString _type;
-    QString _delimeter;
-    QString _file;
-    QString _rule;
-    int _fileSymbol;
+  QString name;
+  QString exchange;
+  QString type;
+  QString delimeter;
+  QString file;
+  QString rule;
+  int fileSymbol;
+  int removeSuffix;
 };
 
 #endif

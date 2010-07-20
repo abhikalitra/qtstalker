@@ -22,379 +22,93 @@
 #include "Bar.h"
 
 #include <QtDebug>
-#include <QObject>
 
 Bar::Bar ()
 {
-  error = RC_None;
-  rangeFlag = FALSE;
 }
 
-int Bar::setDate (QDateTime &d)
+int Bar::setDates (QString &start, QString &end)
 {
-  if (! d.isValid())
+  _startDate = QDateTime::fromString(start, "yyyyMMddHHmmss");
+  if (! _startDate.isValid())
     return TRUE;
 
-  if (rangeFlag)
-  {
-    if (d > displayDate)
-      displayDate = d;
-  }
-  else
-    startDate = d;
-  
+  _endDate = QDateTime::fromString(end, "yyyyMMddHHmmss");
+  if (! _endDate.isValid())
+    return TRUE;
+
   return FALSE;
 }
 
-void Bar::setDateRange (QDateTime &dt, Bar::BarLength l)
-{
-  length = l;
-  startDate = dt;
-  rangeFlag = TRUE;
-
-  switch (length)
-  {
-    case Bar::Minute1:
-      startDate.setTime(QTime(startDate.time().hour(), startDate.time().minute(), 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(59);
-      displayDate = endDate;
-      displayDate = displayDate.addSecs(1);
-      break;
-    case Bar::Minute5:
-    {
-      int tint = startDate.time().minute() / 5;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 5, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(299);
-      displayDate = endDate;
-      displayDate = displayDate.addSecs(1);
-      break;
-    }
-    case Bar::Minute10:
-    {
-      int tint = startDate.time().minute() / 10;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 10, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(599);
-      displayDate = endDate;
-      displayDate = displayDate.addSecs(1);
-      break;
-    }
-    case Bar::Minute15:
-    {
-      int tint = startDate.time().minute() / 15;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 15, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(899);
-      displayDate = endDate;
-      displayDate = displayDate.addSecs(1);
-      break;
-    }
-    case Bar::Minute30:
-    {
-      int tint = startDate.time().minute() / 30;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 30, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(1799);
-      displayDate = endDate;
-      displayDate = displayDate.addSecs(1);
-      break;
-    }
-    case Bar::Minute60:
-      startDate.setTime(QTime(startDate.time().hour(), 0, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(3599);
-      displayDate = endDate;
-      displayDate = displayDate.addSecs(1);
-      break;
-    case Bar::DailyBar:
-      startDate.setTime(QTime(0, 0, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addDays(1);
-      endDate = endDate.addSecs(-1);
-      displayDate = dt;
-      break;
-    case Bar::WeeklyBar:
-      startDate.setTime(QTime(0, 0, 0, 0));
-      startDate = startDate.addDays(- startDate.date().dayOfWeek());
-      endDate = startDate;
-      endDate = endDate.addDays(7);
-      endDate = endDate.addSecs(-1);
-      displayDate = dt;
-      break;
-    case Bar::MonthlyBar:
-      startDate.setTime(QTime(0, 0, 0, 0));
-      startDate = startDate.addDays(- (startDate.date().day() - 1));
-      endDate = startDate;
-      endDate = endDate.addDays(endDate.date().daysInMonth());
-      endDate = endDate.addSecs(-1);
-      displayDate = dt;
-      break;
-    default:
-      break;
-  }
-}
-
-QDateTime & Bar::getDate ()
-{
-  if (rangeFlag)
-    return displayDate;
-  else
-    return startDate;
-}
-
-void Bar::setOpen (double d)
-{
-  data.insert(BarFieldOpen, d);
-}
-
-void Bar::setOpen (QString &s)
+int Bar::setData (BarField k, QString &d)
 {
   bool ok;
-  double d = s.toDouble(&ok);
+  double v = d.toDouble(&ok);
   if (! ok)
-  {
-    error = RC_InvalidOpen;
-    return;
-  }
+    return 1;
 
-  data.insert(BarFieldOpen, d);
+  _data.insert(k, v);
+
+  return 0;
 }
 
-double Bar::getOpen ()
+double Bar::getData (BarField k)
 {
-  return data.value(BarFieldOpen);
-}
-
-void Bar::setHigh (double d)
-{
-  data.insert(BarFieldHigh, d);
-}
-
-void Bar::setHigh (QString &s)
-{
-  bool ok;
-  double d = s.toDouble(&ok);
-  if (! ok)
-  {
-    error = RC_InvalidHigh;
-    return;
-  }
-
-  data.insert(BarFieldHigh, d);
-}
-
-double Bar::getHigh ()
-{
-  return data.value(BarFieldHigh);
-}
-
-void Bar::setLow (double d)
-{
-  data.insert(BarFieldLow, d);
-}
-
-void Bar::setLow (QString &s)
-{
-  bool ok;
-  double d = s.toDouble(&ok);
-  if (! ok)
-  {
-    error = RC_InvalidLow;
-    return;
-  }
-
-  data.insert(BarFieldLow, d);
-}
-
-double Bar::getLow ()
-{
-  return data.value(BarFieldLow);
-}
-
-void Bar::setClose (double d)
-{
-  data.insert(BarFieldClose, d);
-}
-
-void Bar::setClose (QString &s)
-{
-  bool ok;
-  double d = s.toDouble(&ok);
-  if (! ok)
-  {
-    error = RC_InvalidClose;
-    return;
-  }
-
-  data.insert(BarFieldClose, d);
-}
-
-double Bar::getClose ()
-{
-  return data.value(BarFieldClose);
-}
-
-void Bar::setVolume (double d)
-{
-  data.insert(BarFieldVolume, d);
-}
-
-void Bar::setVolume (QString &s)
-{
-  bool ok;
-  double d = s.toDouble(&ok);
-  if (! ok)
-  {
-    error = RC_InvalidVolume;
-    return;
-  }
-
-  data.insert(BarFieldVolume, d);
-}
-
-double Bar::getVolume ()
-{
-  return data.value(BarFieldVolume);
-}
-
-void Bar::setOI (double d)
-{
-  data.insert(BarFieldOI, d);
-}
-
-void Bar::setOI (QString &s)
-{
-  bool ok;
-  double d = s.toDouble(&ok);
-  if (! ok)
-  {
-    error = RC_InvalidOI;
-    return;
-  }
-
-  data.insert(BarFieldOI, d);
-}
-
-double Bar::getOI ()
-{
-  return data.value(BarFieldOI);
+  return _data.value(k);
 }
 
 void Bar::getDateString (QString &d)
 {
-  d.clear();
-  if (rangeFlag)
-    d = displayDate.toString("yyyy-MM-dd");
-  else
-    d = startDate.toString("yyyy-MM-dd");
+  d = _endDate.toString("yyyy-MM-dd");
 }
 
 void Bar::getDateTimeString (QString &d)
 {
-  d.clear();
-  if (rangeFlag)
-    d = displayDate.toString(Qt::ISODate);
-  else
-    d = startDate.toString(Qt::ISODate);
+  d = _endDate.toString(Qt::ISODate);
 }
 
 void Bar::getTimeString (QString &d)
 {
-  d.clear();
-  if (rangeFlag)
-    d = displayDate.toString("HH:mm:ss");
-  else
-    d = startDate.toString("HH:mm:ss");
-}
-
-void Bar::verify ()
-{
-  double open = getOpen();
-  double high = getHigh();
-  if (open > high)
-  {
-    error = RC_OGTH;
-    return;
-  }
-    
-  double low = getLow();
-  if (open < low)
-  {
-    error = RC_OLTL;
-    return;
-  }
-    
-  double close = getClose();
-  if (close > high)
-  {
-    error = RC_CGTH;
-    return;
-  }
-    
-  if (close < low)
-  {
-    error = RC_CLTL;
-    return;
-  }
-    
-  if (getVolume() < 0)
-  {
-    error = RC_VLT0;
-    return;
-  }
-    
-  if (low > high)
-  {
-    error = RC_LGTH;
-    return;
-  }
-    
-  if (high < low)
-  {
-    error = RC_HLTL;
-    return;
-  }
-  
-  if (data.contains(BarFieldOI))
-  {
-    if (getOI() < 0)
-    {
-      error = RC_OILT0;
-      return;
-    }
-  }
-}
-
-int Bar::getError ()
-{
-  return error;
-}
-
-void Bar::getRangeKey (QString &d)
-{
-  d.clear();
-  if (rangeFlag)
-    d = startDate.toString(Qt::ISODate) + endDate.toString(Qt::ISODate);
-}
-
-void Bar::getBarLengthList (QStringList &l)
-{
-  l.clear();
-  l << QObject::tr("1 Minute");
-  l << QObject::tr("5 Minute");
-  l << QObject::tr("10 Minute");
-  l << QObject::tr("15 Minute");
-  l << QObject::tr("30 Minute");
-  l << QObject::tr("60 Minute");
-  l << QObject::tr("Daily");
-  l << QObject::tr("Weekly");
-  l << QObject::tr("Monthly");
+  d = _endDate.toString("HH:mm:ss");
 }
 
 int Bar::count ()
 {
-  return data.count();
+  return _data.count();
+}
+
+void Bar::getRangeKey (QString &d)
+{
+  d = _startDate.toString(Qt::ISODate) + _endDate.toString(Qt::ISODate);
+}
+
+QDateTime & Bar::date ()
+{
+  return _endDate;
+}
+
+double Bar::getOpen ()
+{
+  return _data.value(BarFieldOpen);
+}
+
+double Bar::getHigh ()
+{
+  return _data.value(BarFieldHigh);
+}
+
+double Bar::getLow ()
+{
+  return _data.value(BarFieldLow);
+}
+
+double Bar::getClose ()
+{
+  return _data.value(BarFieldClose);
+}
+
+double Bar::getVolume ()
+{
+  return _data.value(BarFieldVolume);
 }
 

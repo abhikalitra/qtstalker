@@ -24,6 +24,7 @@
 
 #include <QTabWidget>
 #include <QMenu>
+#include <QString>
 
 #include "Config.h"
 
@@ -32,22 +33,19 @@ class TabWidget : public QTabWidget
   Q_OBJECT
   
   public:
-    TabWidget (int);
+    TabWidget (QString &);
+    QTabBar * getTabBar ();
+    void setTabHeight();
 
   public slots:
-    void tabRowsDialog ();
     void tabPositionDialog ();
-    void save ();
-    void load ();
-    void deleteTab (QString);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);
     
   private:
     QMenu *_menu;
-    Config::Parm _rowPositionParm;
-    Config::Parm _lastIndexParm;
+    QString _id;
 };
 
 #endif

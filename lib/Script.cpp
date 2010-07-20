@@ -41,7 +41,10 @@ void Script::run ()
     emit signalMessage(QString(tr("Script ")) + _name + tr(" started."));
     
     ExScript scriptServer;
-    scriptServer.calculate(command);
+    scriptServer.calculate2(command);
+    QEventLoop e;
+    connect(&scriptServer, SIGNAL(signalDone()), &e, SLOT(quit()));
+    e.exec();
     
     emit signalMessage(QString(tr("Script ")) + _name + tr(" completed."));
 

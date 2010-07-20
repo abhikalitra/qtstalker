@@ -32,6 +32,7 @@
 
 DataWindow::DataWindow (QWidget *w) : QDialog (w, 0)
 {
+  setAttribute(Qt::WA_DeleteOnClose);
   dateFlag = 0;
   ohlcFlag = 0;
   

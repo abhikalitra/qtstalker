@@ -31,26 +31,11 @@ BaseConfig::BaseConfig ()
   _tableName = "config";
 }
 
-/*
-void BaseConfig::createTable ()
-{
-  QSqlDatabase db = QSqlDatabase::database(_dbName);
-  QSqlQuery q(db);
-  QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
-  s.append("key INT PRIMARY KEY UNIQUE");
-  s.append(", setting TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "BaseConfig::createTable: " << q.lastError().text();
-}
-*/
-
-void BaseConfig::getData (int p, QString &d)
+void BaseConfig::getData (QString &k, QString &d)
 {
   d.clear();
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "SELECT setting FROM " + _tableName + " WHERE key=" + QString::number(p);
+  QString s = "SELECT setting FROM " + _tableName + " WHERE key='" + k + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -62,19 +47,31 @@ void BaseConfig::getData (int p, QString &d)
     d = q.value(0).toString();
 }
 
-void BaseConfig::setData (int p, QString &d)
+void BaseConfig::setData (QString &k, QString &d)
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO " + _tableName + " (key,setting) VALUES (";
-  s.append(QString::number(p)); // key
+  s.append("'" + k + "'"); // key
   s.append(",'" + d + "'"); // setting
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "BaseConfig::setData: " << q.lastError().text() << p << " " << d;
+    qDebug() << "BaseConfig::setData: " << q.lastError().text() << k << d;
     return;
   }
+}
+
+void BaseConfig::getData (int p, QString &d)
+{
+  QString s = QString::number(p);
+  getData(s, d);
+}
+
+void BaseConfig::setData (int p, QString &d)
+{
+  QString s = QString::number(p);
+  setData(s, d);
 }
 
 void BaseConfig::getData (int p, QSplitter *sp)

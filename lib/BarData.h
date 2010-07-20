@@ -25,7 +25,7 @@
 #include <QList>
 #include <QHash>
 #include <QStringList>
-#include <QDateTime>
+#include <QMetaType>
 
 #include "Bar.h"
 #include "PlotLine.h"
@@ -33,6 +33,19 @@
 class BarData
 {
   public:
+    enum BarLength
+    {
+      Minute1,
+      Minute5,
+      Minute10,
+      Minute15,
+      Minute30,
+      Minute60,
+      DailyBar,
+      WeeklyBar,
+      MonthlyBar
+    };
+
     enum InputType
     {
       Open,
@@ -48,6 +61,7 @@ class BarData
     };
 
     BarData ();
+    void clear ();
     int count ();
     void prepend (Bar bar);
     void append (Bar bar);
@@ -59,45 +73,38 @@ class BarData
     BarData::InputType getInputType (QString &);
     Bar & getBar (int);
     void setMinMax ();
-    void setBarLength (Bar::BarLength);
+    void setBarLength (BarLength);
     void setBarLength (QString &);
-    Bar::BarLength getBarLength ();
+    BarData::BarLength & getBarLength ();
     QString & getSymbol ();
     void setSymbol (QString &);
     QString & getName ();
     void setName (QString &);
+    QString & getTable ();
+    void setTable (QString &);
     double getAvgPrice (int);
     double getMedianPrice (int);
     double getTypicalPrice (int);
-    QString & getTableName ();
-    void setTableName (QString &);
-    QString & getPlugin ();
-    void setPlugin (QString &);
     QString & getExchange ();
     void setExchange (QString &);
-    void setDateRange (int);
-    int dateRange ();
-    void setDateRangeOverride (int);
-    int dateRangeOverride ();
-    void setStartDate (QDateTime &);
-    QDateTime & startDate ();
-    void setEndDate (QDateTime &);
-    QDateTime & endDate ();
+    void getBarLengthList (QStringList &);
+    void setBars (QString &);
+    void barLengthText (BarData::BarLength, QString &);
 
   protected:
     QList<Bar> _barList;
     double _high;
     double _low;
-    Bar::BarLength _length;
+    BarLength _length;
     QString _symbol;
     QString _name;
-    QString _tableName;
-    QString _plugin;
     QString _exchange;
-    int _dateRange;
-    int _dateRangeOverride;
-    QDateTime _startDate;
-    QDateTime _endDate;
+    QString _table;
 };
 
+// this is for passing Indicator data between threads
+Q_DECLARE_METATYPE(BarData)
+
 #endif
+
+

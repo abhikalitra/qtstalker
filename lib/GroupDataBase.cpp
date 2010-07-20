@@ -20,8 +20,9 @@
  */
 
 #include "GroupDataBase.h"
-#include "QuoteIndexDataBase.h"
-#include "DBPluginFactory.h"
+
+#include <QtDebug>
+#include <QtSql>
 
 GroupDataBase::GroupDataBase ()
 {
@@ -29,7 +30,7 @@ GroupDataBase::GroupDataBase ()
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS groupIndex (";
   s.append("name TEXT PRIMARY KEY UNIQUE");
-  s.append(", tableName TEXT");
+  s.append(", symbols TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -59,60 +60,33 @@ void GroupDataBase::getGroup (Group &group)
   
   // get the table from the group index
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "SELECT tableName FROM groupIndex WHERE name='" + group.getName() + "'";
+  QString s = "SELECT symbols FROM groupIndex WHERE name='" + group.getName() + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "GroupDataBase::getGroup: get tableName" << q.lastError().text();
-    return;
-  }
-
-  QString table;
-  if (q.next())
-    table = q.value(0).toString();
-  else
-    return;
-  
-  // get the group contents
-  s = "SELECT exchange,symbol FROM " + table + " ORDER BY symbol,exchange ASC";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "GroupDataBase::getGroup: group contents" << q.lastError().text();
-    qDebug() << s;
+    qDebug() << "GroupDataBase::getGroup: get tableNames" << q.lastError().text();
     return;
   }
 
   group.clear();
-
-  QuoteIndexDataBase qidb;
-  DBPluginFactory fac;
   
-  while (q.next())
+  if (q.next())
   {
-    int pos = 0;
-    BarData bd;
-    
-    s = q.value(pos++).toString();
-    bd.setExchange(s);
-    
-    s = q.value(pos++).toString();
-    bd.setSymbol(s);
+    QStringList l = q.value(0).toString().split(",");
 
-    // get the security name
-    if (! qidb.getIndexData(&bd))
+    int loop = 0;
+    for (; loop < l.count(); loop++)
     {
-      DBPlugin *plug = fac.plugin(bd.getPlugin());
-      if (plug)
-      {
-        QString name;
-        s = "NAME";
-        plug->detail(s, &bd, name);
-        bd.setName(name);
-      }
+      QStringList l2 = l.at(loop).split(":");
+      if (l2.count() != 2)
+        continue;
+      
+      BarData bd;
+      bd.setExchange(l2[0]);
+      bd.setSymbol(l2[1]);
+      
+      group.append(bd);
     }
-    
-    group.append(bd);
   }
 }
 
@@ -128,66 +102,50 @@ void GroupDataBase::setGroup (Group &group)
   
   // get the table from the group index
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "SELECT tableName FROM groupIndex WHERE name='" + group.getName() + "'";
+  QString s = "SELECT symbols FROM groupIndex WHERE name='" + group.getName() + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "GroupDataBase::setGroup: tableName" << q.lastError().text();
+    qDebug() << "GroupDataBase::setGroup: tableNames" << q.lastError().text();
     return;
   }
 
-  QString table;
+  QStringList tl;
+  int loop = 0;
+  for (; loop < group.count(); loop++)
+  {
+    BarData bd;
+    group.getItem(loop, bd);
+    tl.append(bd.getExchange() + ":" + bd.getSymbol());
+  }
+
   if (q.next())
   {
-    table = q.value(0).toString();
-
-    s = "DROP TABLE " + table;
+    // record exists, use UPDATE 
+    s = "UPDATE groupIndex";
+    s.append(" SET symbols='" + tl.join(",") + "'");
+    s.append(" WHERE name='" + group.getName() + "'");
     q.exec(s);
     if (q.lastError().isValid())
     {
-      qDebug() << "GroupDataBase::setGroup: drop table" << q.lastError().text();
+      qDebug() << "GroupDataBase::setGroup:" << q.lastError().text();
       return;
     }
   }
   else
   {
-    // create new index entry
-    table = "G" + group.getName();
-    s = "INSERT OR REPLACE INTO groupIndex (name,tableName) VALUES (";
+    s = "INSERT OR REPLACE INTO groupIndex (name,symbols) VALUES (";
     s.append("'" + group.getName() + "'");
-    s.append(",'" + table + "'");
+    s.append(",'" + tl.join(",") + "'");
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())
-      qDebug() << "GroupDataBase::setGroup: new index entry" << q.lastError().text();
+    {
+      qDebug() << "GroupDataBase::setGroup:" << q.lastError().text();
+      return;
+    }
   }
 
-  // create a new one
-  s = "CREATE TABLE IF NOT EXISTS " + table + " (";
-  s.append("record INTEGER PRIMARY KEY AUTOINCREMENT");
-  s.append(", exchange TEXT");
-  s.append(", symbol TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "GroupDataBase::setGroup: create table" << q.lastError().text();
-
-  int loop;
-  for (loop = 0; loop < group.count(); loop++)
-  {
-    BarData bd;
-    group.getItem(loop, bd);
-    
-    // populate the table
-    s = "INSERT OR REPLACE INTO " + table + " (exchange,symbol) VALUES (";
-    s.append("'" + bd.getExchange() + "'");
-    s.append(",'" + bd.getSymbol() + "'");
-    s.append(")");
-    q.exec(s);
-    if (q.lastError().isValid())
-      qDebug() << "GroupDataBase::setGroup: populate table" << q.lastError().text();
-  }
-  
   commit();
 }
 
@@ -195,33 +153,9 @@ void GroupDataBase::deleteGroup (QString &n)
 {
   // get the table name for the group
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "SELECT tableName FROM groupIndex WHERE name='" + n + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "GroupDataBase::deleteGroup: get tableName" << q.lastError().text();
-    return;
-  }
-
-  QString table;
-  if (q.next())
-    table = q.value(0).toString();
-  else
-  {
-    qDebug() << "GroupDataBase::deleteGroup: group table not found" << n;
-    return;
-  }
-
-  // delete the index entry
-  s = "DELETE FROM groupIndex WHERE name='" + n + "'";
+  QString s = "DELETE FROM groupIndex WHERE name='" + n + "'";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "GroupDataBase::deleteGroup: delete groupIndex" << q.lastError().text();
-  
-  // drop the table
-  s = "DROP TABLE " + table;
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "GroupDataBase::setGroup: drop table" << q.lastError().text();
 }
 

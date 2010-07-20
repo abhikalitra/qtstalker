@@ -22,7 +22,7 @@
 #ifndef YAHOO_URL_DATA_HPP
 #define YAHOO_URL_DATA_HPP
 
-#include <QString>
+#include <QStringList>
 
 struct YahooUrlData
 {
@@ -31,6 +31,8 @@ struct YahooUrlData
   QString symbol;
   QString exchange;
   int adjustment;
+  QStringList ycodes;
+  QStringList dcodes;
 };
 
 #endif

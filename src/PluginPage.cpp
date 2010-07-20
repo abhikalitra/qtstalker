@@ -32,7 +32,7 @@
 #include <QIcon>
 #include <QtDebug>
 
-PluginPage::PluginPage (QWidget *w) : QWidget (w)
+PluginPage::PluginPage ()
 {
   createActions();
 

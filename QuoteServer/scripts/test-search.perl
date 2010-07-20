@@ -8,8 +8,8 @@ my $sock = new IO::Socket::INET (
                                 );
 die "Could not create socket: $!\n" unless $sock;
 
-#print $sock "Search,XNYS,MMM\n";
-print $sock "Search,*,*\n";
+#print $sock "Search,S,XNYS,MMM\n";
+print $sock "Search,S,*,*\n";
 $rc = <$sock>;
 close($sock);
 print $rc;

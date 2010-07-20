@@ -32,9 +32,11 @@ class IndicatorThread : public QThread
 {
   Q_OBJECT
 
+  signals:
+    void signalDone (Indicator);
+
   public:
     IndicatorThread (QObject *, BarData &, Indicator &);
-    Indicator & indicator ();
 
   protected:
     void run ();
@@ -42,7 +44,6 @@ class IndicatorThread : public QThread
   private:
     BarData _data;
     Indicator _indicator;
-    int _timeOut;
 };
 
 #endif

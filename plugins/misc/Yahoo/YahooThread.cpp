@@ -20,62 +20,42 @@
  */
 
 #include "YahooThread.h"
-#include "YahooParseQuote.h"
+#include "QuoteServerRequest.h"
 
 #include <QDebug>
-#include <QtNetwork>
+#include <QTcpSocket>
 
-YahooThread::YahooThread (QObject *p) : QThread (p)
+YahooThread::YahooThread (QObject *p, QString &type, QStringList &symbols, QDateTime sd, QDateTime ed) : QThread (p)
 {
-  _stopFlag = 0;
-}
-
-void YahooThread::setParms (QList<YahooUrlData> &urls)
-{
-  _urls = urls;
-}
-
-void YahooThread::stop ()
-{
-  _stopFlag = 1;
+  _type = type;
+  _symbols = symbols;
+  _startDate = sd;
+  _endDate = ed;
 }
 
 void YahooThread::run ()
 {
-  QNetworkAccessManager manager;
+  QStringList l;
+  l << "YahooHistorical";
+  if (_type == "H")
+    l << "H" << _startDate.toString("yyyyMMdd") << _endDate.toString("yyyyMMdd");
+  else
+    l << "D" << "n" << "Name";
+  QString command = l.join(",");
+
+  QuoteServerRequest qsr;
   int loop = 0;
-  for (; loop <_urls.count(); loop++)
+  for (; loop < _symbols.count(); loop++)
   {
-    YahooUrlData data = _urls.at(loop);
+    QString s = command + "," + _symbols.at(loop) + "\n";
+
+    QString msg = _symbols.at(loop);
     
-    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(data.url)));
-    QEventLoop e;
-    connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
-    e.exec();
-
-    QByteArray ba = reply->readAll();
-
-    YahooParseQuote pq;
-    connect(&pq, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-
-    switch ((UrlType) data.type)
-    {
-      case UrlTypeHistory:
-        pq.history(ba, data);
-        break;
-      case UrlTypeDetails:
-        pq.details(ba, data);
-        break;
-      default:
-        break;
-    }
-
-    if (_stopFlag)
-    {
-      emit signalMessage(QString("\n*** " + tr("Download cancelled") + " ***"));
-      break;
-    }
+    if (qsr.run(s))
+      msg.append("...ERROR");
+    else
+      msg.append("...OK");
+    
+    emit signalMessage(msg);
   }
-
-  quit();
 }

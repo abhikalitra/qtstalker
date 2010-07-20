@@ -29,6 +29,12 @@ HEADERS += TabWidget.h
 HEADERS += Splitter.h
 HEADERS += DateRangeControl.h
 HEADERS += DateRangeButton.h
+HEADERS += SidePanel.h
+HEADERS += ChartLayout.h
+HEADERS += IndicatorDialog.h
+HEADERS += UpdateChartPageThread.h
+HEADERS += UpdateGroupPageThread.h
+HEADERS += ChartHolder.h
 
 
 SOURCES += Qtstalker.cpp
@@ -56,6 +62,13 @@ SOURCES += TabWidget.cpp
 SOURCES += Splitter.cpp
 SOURCES += DateRangeControl.cpp
 SOURCES += DateRangeButton.cpp
+SOURCES += SidePanel.cpp
+SOURCES += ChartLayout.cpp
+SOURCES += IndicatorDialog.cpp
+SOURCES += UpdateChartPageThread.cpp
+SOURCES += UpdateGroupPageThread.cpp
+SOURCES += ChartHolder.cpp
+
 
 
 TARGET = qtstalker
@@ -76,4 +89,7 @@ INSTALLS += target
 # so doing it here.
 QMAKE_DISTCLEAN += ../.qmake.cache
 
+QT += core
+QT += gui
 QT += sql
+QT += network

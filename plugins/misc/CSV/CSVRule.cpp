@@ -24,6 +24,7 @@
 CSVRule::CSVRule ()
 {
   _fileSymbol = 0;
+  _removeSuffix = 0;
 }
 
 void CSVRule::setName (QString d)
@@ -94,5 +95,15 @@ void CSVRule::setFileSymbol (int d)
 int CSVRule::fileSymbol ()
 {
   return _fileSymbol;
+}
+
+void CSVRule::setRemoveSuffix (int d)
+{
+  _removeSuffix = d;
+}
+
+int CSVRule::removeSuffix ()
+{
+  return _removeSuffix;
 }
 

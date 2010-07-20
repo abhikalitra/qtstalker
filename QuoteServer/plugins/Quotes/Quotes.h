@@ -19,18 +19,36 @@
  *  USA.
  */
 
-#ifndef SCRIPT_HPP
-#define SCRIPT_HPP
+#ifndef QUOTES_HPP
+#define QUOTES_HPP
 
 #include <QStringList>
 
 #include "QSPlugin.h"
+#include "QSLog.h"
 
-class Script : public QSPlugin
+class Quotes : public QSPlugin
 {
   public:
-    Script ();
+    enum Method
+    {
+      _Set,
+      _Date,
+      _Recent,
+      _Delete,
+      _Rename
+    };
+
+    Quotes ();
     int command (QStringList &input, QString &dbPath, QString &output);
+    int set (QStringList &input, QString &dbPath, QString &output, QSLog &);
+    int date (QStringList &input, QString &dbPath, QString &output, QSLog &);
+    int recent (QStringList &input, QString &dbPath, QString &output, QSLog &);
+    int remove (QStringList &input, QString &dbPath, QString &output, QSLog &);
+    int rename (QStringList &input, QString &dbPath, QString &output, QSLog &);
+
+  private:
+    QStringList _methodList;
 };
 
 extern "C"

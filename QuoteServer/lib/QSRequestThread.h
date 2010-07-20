@@ -38,7 +38,6 @@ class QSRequestThread : public QThread
     void run();
 
   private:
-    int _timeOut;
     int _socketDescriptor;
     QString _dbPath;
 };

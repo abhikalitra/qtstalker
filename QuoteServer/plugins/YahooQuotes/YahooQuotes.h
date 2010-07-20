@@ -34,12 +34,21 @@ class YahooQuotes : public QSPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _Start,
+      _Stop
+    };
+
     YahooQuotes ();
     int command (QStringList &input, QString &dbPath, QString &output);
     int startUpdate (QStringList &input, QString &dbPath, QString &output);
     int stopUpdate (QString &output);
     void url (QStringList &symbols, YahooUrlData &data);
     void parse (QByteArray &, QString &dbPath);
+
+  private:
+    QStringList _methodList;
 };
 
 extern "C"

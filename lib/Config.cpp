@@ -45,7 +45,7 @@ void Config::init (QString session)
 
   QSqlQuery q(db);
   s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
-  s.append("key INT PRIMARY KEY UNIQUE");
+  s.append("key TEXT PRIMARY KEY UNIQUE");
   s.append(", setting TEXT");
   s.append(")");
   q.exec(s);

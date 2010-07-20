@@ -42,12 +42,15 @@ class SymbolDialog : public QDialog
     void setSymbols (QString &ex, QString &ss);
     void getSymbols (Group &);
     void getSymbolSearch (QString &ex, QString &ss);
+    void loadExchanges ();
 
   public slots:
     void cancelPressed ();
     void deleteButtonPressed ();
     void addButtonPressed ();
     void searchButtonPressed ();
+    void exchangeRequestDone (QString);
+    void searchRequestDone (QString);
 
   private:
     int modified;

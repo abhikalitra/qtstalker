@@ -234,7 +234,10 @@ int SCIndicator::getIndexDate (QStringList &l, QByteArray &ba, BarData &data)
 
   ba.clear();
 
-  ba.append(bar.getDate().toString(Qt::ISODate) + "\n");
+  QString s;
+  bar.getDateTimeString(s);
+  
+  ba.append(s + "\n");
 
   return 0;
 }

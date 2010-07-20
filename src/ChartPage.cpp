@@ -21,16 +21,16 @@
 
 #include "ChartPage.h"
 #include "GroupDataBase.h"
-#include "DBPlugin.h"
-#include "DBPluginFactory.h"
 #include "Config.h"
 #include "SymbolDialog.h"
-#include "QuoteIndexDataBase.h"
+#include "PrefDialog.h"
+#include "UpdateChartPageThread.h"
 
 #include "../pics/addgroup.xpm"
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
-#include "../pics/delete.xpm"
+//#include "../pics/delete.xpm"
+#include "../pics/configure.xpm"
 
 #include <QMessageBox>
 #include <QCursor>
@@ -44,7 +44,7 @@
 #include <QGridLayout>
 #include <QList>
 
-ChartPage::ChartPage (QWidget *w) : QWidget (w)
+ChartPage::ChartPage ()
 {
   createActions();
 
@@ -75,7 +75,6 @@ ChartPage::ChartPage (QWidget *w) : QWidget (w)
   config.getData(Config::LastChartPanelSymbolSearch, _searchString);
 
   updateList();
-  listStatus();
 }
 
 void ChartPage::createActions ()
@@ -98,11 +97,17 @@ void ChartPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
   _actions.insert(AddGroup, action);
 
-  action  = new QAction(QIcon(delete_xpm), tr("&Delete Symbol"), this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
-  action->setToolTip(tr("Delete symbol from the database permanently"));
-  connect(action, SIGNAL(activated()), this, SLOT(deleteSymbol()));
-  _actions.insert(Delete, action);
+//  action  = new QAction(QIcon(delete_xpm), tr("&Delete Symbol"), this);
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
+//  action->setToolTip(tr("Delete symbol from the database permanently"));
+//  connect(action, SIGNAL(activated()), this, SLOT(deleteSymbol()));
+//  _actions.insert(Delete, action);
+
+  action  = new QAction(QIcon(configure_xpm), tr("&Configure Quote Server"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
+  action->setToolTip(tr("Configure Quote Server"));
+  connect(action, SIGNAL(activated()), this, SLOT(serverDialog()));
+  _actions.insert(Server, action);
 }
 
 void ChartPage::createButtonMenu (QToolBar *tb)
@@ -110,7 +115,8 @@ void ChartPage::createButtonMenu (QToolBar *tb)
   tb->addAction(_actions.value(ShowAll));
   tb->addAction(_actions.value(Search));
   tb->addAction(_actions.value(AddGroup));
-  tb->addAction(_actions.value(Delete));
+//  tb->addAction(_actions.value(Delete));
+  tb->addAction(_actions.value(Server));
 
   _menu = new QMenu(this);
   _menu->addAction(_actions.value(AddGroup));
@@ -118,7 +124,9 @@ void ChartPage::createButtonMenu (QToolBar *tb)
   _menu->addAction(_actions.value(ShowAll));
   _menu->addAction(_actions.value(Search));
   _menu->addSeparator();
-  _menu->addAction(_actions.value(Delete));
+//  _menu->addAction(_actions.value(Delete));
+//  _menu->addSeparator();
+  _menu->addAction(_actions.value(Server));
 }
 
 void ChartPage::chartOpened (QListWidgetItem *item)
@@ -210,31 +218,33 @@ void ChartPage::updateList ()
   _nav->clear();
   _symbols.clear();
 
-  QuoteIndexDataBase idb;
-  idb.getSearchList(_searchExchange, _searchString, _symbols);
+  setEnabled(FALSE);
 
-  DBPluginFactory fac;
+  _nav->setSortingEnabled(FALSE);
+  
+  qRegisterMetaType<BarData>("BarData");
+  UpdateChartPageThread *r = new UpdateChartPageThread(this, _searchExchange, _searchString);
+  connect(r, SIGNAL(signalSymbol(BarData)), this, SLOT(addSymbol(BarData)), Qt::QueuedConnection);
+  connect(r, SIGNAL(signalDone()), this, SLOT(requestDone()), Qt::QueuedConnection);
+  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+  r->start();
+}
 
-  int loop;
-  for (loop = 0; loop < _symbols.count(); loop++)
-  {
-    BarData bd;
-    _symbols.getItem(loop, bd);
+void ChartPage::addSymbol (BarData bd)
+{
+  _symbols.append(bd);
 
-    // get the name field
-    QString name;
-    DBPlugin *plug = fac.plugin(bd.getPlugin());
-    if (plug)
-    {
-      QString s = "NAME";
-      plug->detail(s, &bd, name);
-    }
-    
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setText(bd.getSymbol());
-    item->setToolTip(QString(tr("Name: ") + name + "\n" + tr("Exchange: ") + bd.getExchange()));
-    _nav->addItem(item);
-  }
+  QListWidgetItem *item = new QListWidgetItem;
+  item->setText(bd.getSymbol());
+  item->setToolTip(QString(tr("Name: ") + bd.getName() + "\n" + tr("Exchange: ") + bd.getExchange()));
+  _nav->addItem(item);
+}
+
+void ChartPage::requestDone ()
+{
+  _nav->setSortingEnabled(TRUE);
+  setEnabled(TRUE);
+  listStatus();
 }
 
 void ChartPage::symbolSearch ()
@@ -256,8 +266,8 @@ void ChartPage::symbolSearch ()
 
 void ChartPage::allButtonPressed ()
 {
-  _searchExchange.clear();
-  _searchString.clear();
+  _searchExchange = "*";
+  _searchString = "*";
   updateList();
 }
 
@@ -287,8 +297,6 @@ void ChartPage::deleteSymbol ()
   if (rc == QMessageBox::No)
     return;
 
-  DBPluginFactory fac;
-
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
@@ -301,20 +309,57 @@ void ChartPage::deleteSymbol ()
       continue;
     }
 
-    DBPlugin *plug = fac.plugin(bd.getPlugin());
-    if (! plug)
-    {
-      qDebug() << "ChartPage::deleteSymbol: plugin not found" << bd.getPlugin();
-      continue;
-    }
-
+// FIXME:
+/*
     if (plug->deleteSymbol(&bd))
     {
       qDebug() << "ChartPage::deleteSymbol: plugin deleteSymbol error";
       continue;
     }
+*/    
   }
 
   updateList();
+}
+
+void ChartPage::serverDialog ()
+{
+  PrefDialog *dialog = new PrefDialog;
+  dialog->setWindowTitle(tr("Configure Quote Server"));
+  QString s = tr("Settings");
+  int page = 0;
+  dialog->addPage(page, s);
+
+  Config config;
+  QString d;
+  config.getData(Config::QuoteServerName, d);
+  
+  int pos = 0;
+  s = tr("Quote server hostname");
+  dialog->addTextItem(pos++, page, s, d, tr("Quote server hostname (default 127.0.0.1)"));
+
+  s = tr("Quote server port #");
+  dialog->addIntItem(pos++, page, s, config.getInt(Config::QuoteServerPort), 5000, 99999);
+
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return;
+  }
+
+  pos = 0;    
+  dialog->getItem(pos++, d);
+  if (d.isEmpty())
+  {
+    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Hostname missing."));
+    delete dialog;
+    return;
+  }
+  config.setData(Config::QuoteServerName, d);
+
+  config.setData(Config::QuoteServerPort, dialog->getInt(pos++));
+
+  delete dialog;
 }
 

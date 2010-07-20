@@ -28,7 +28,6 @@ IndicatorThread::IndicatorThread (QObject *p, BarData &data, Indicator &ind) : Q
 {
   _data = data;
   _indicator = ind;
-  _timeOut = 5000;
 }
 
 void IndicatorThread::run ()
@@ -40,10 +39,7 @@ void IndicatorThread::run ()
 
   ip->setSettings(_indicator);
   ip->getIndicator(_indicator, _data);
-}
 
-Indicator & IndicatorThread::indicator ()
-{
-  return _indicator;
+  emit signalDone(_indicator);
 }
 

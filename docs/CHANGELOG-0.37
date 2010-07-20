@@ -596,6 +596,52 @@
            using the sample scripts. I would appreciate comments from those of you that do test it out.
 
 
+20100718:  Changed the ~/.qtstalker/config* file db structure. You will have to delete your old one before starting
+           this latest CVS version.
+
+           Changed the indicatorIndex table structure in the ~/.qtstalker/data.sqlite file.  You will have to delete
+           the old table before starting this latest CVS version.
+
+           The groupIndex table schema has changed in ~/.qtstalker/data.sqlite. Drop the table manually
+           before starting qtstalker so it will be recreated properly. Old groups will have to be
+           manually recreated.
+
+           Added the ability to create multiple columns of charts as well as rows of charts. When you create a new
+           indicator, there is a new column field to set. This allows you to create multiple groups of tabbed
+           charts in the same row. This works well if you have a nice big monitor and can have several columns of
+           charts on several rows. If you have a small screen, then you can still keep everything as it was.
+
+           Removed the 'Tab Rows' setting from indicator tabs as there is no need for them anymore. We have a
+           limit of 3 rows that can be easily increased if the need arises and is more dynamic now.
+
+           Removed the indicator panel tab. I found it to be cumbersome and a little clunky. It would be
+           better to just click on the indicator to change the settings, add or delete etc. That is now
+           implemented. Right click on the indicator to bring up the context menu. The only thing that
+           is missing is the instant on/off of indicators in the list. Not a big deal as I don't think
+           it was used much.
+
+           Put back the old 'new indicator' toolbar button on the main toolbar.
+
+           Moved a lot of code from QtstalkerApp into ChartLayout class. Moving towards the QtstalkerApp
+           class containing just the init and glue code for all the gui objects.
+
+           Changed the bar length buttons on the toolbar to a control scheme that uses much less space. It
+           was taking up too much room on the toolbar.
+
+           Added an option to the CSV plugin to try to remove any file suffix from the file name when using
+           the filename as the symbol name.
+
+           Right justified all the gui elements in order to keep mouse travel to a minimum.
+
+           The QuoteServer is now being used. It starts and stops under qtstalker control. Users will have to import
+           their quotes into the QuoteServer. User scripts will also have to be modified to import data using
+           the QuoteServer. There are some sample scripts provided in the QuoteServer/scripts directory.
+           The QuoteServer runs in localhost mode for best speed. This may change in the future if users would
+           like to run the server on a network to serve qtstalker clients once the server has matured and is
+           stable enough for heavy network usage. Might have to also compress the data stream if users want
+           to run on a network. We will see.
+
+
 
 
 
