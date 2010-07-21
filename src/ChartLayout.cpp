@@ -461,3 +461,8 @@ void ChartLayout::moveIndicator (QString indicator)
   emit signalRefresh();
 }
 
+QHash<QString, Plot *> & ChartLayout::plotList ()
+{
+  return _plotList;
+}
+

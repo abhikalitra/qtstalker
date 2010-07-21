@@ -24,7 +24,6 @@ To Do:
 Priority
 ========
 
-- fix datawindow, no data showing
 - fix scripts not finishing
 - convert any long running functions that may slow response to use threads
 

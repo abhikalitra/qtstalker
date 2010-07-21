@@ -164,6 +164,10 @@
         <source>Enter time mask format</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Try to remove suffix from file name</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CSVThread</name>
@@ -233,6 +237,10 @@
     </message>
     <message>
         <source>Quotes imported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ERROR saving name, ignored</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2366,6 +2374,18 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Starting history download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download symbol details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting details download</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

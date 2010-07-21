@@ -109,7 +109,7 @@ void SidePanel::load ()
   int t = config.getInt(Config::SidePanelTabWidth);
   if (! t)
   {
-    t = 200;
+    t = 100;
     config.setData(Config::SidePanelTabWidth, t);
   }
   size.setWidth(t);

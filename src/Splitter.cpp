@@ -37,7 +37,7 @@ void Splitter::load ()
   if (s.isEmpty())
   {
     QList<int> l;
-    l << 437 << 200;
+    l << 437 << 20 << 200;
     
     setSizes(l);
     config.setData((Config::Parm) _parm, (QSplitter *) this);

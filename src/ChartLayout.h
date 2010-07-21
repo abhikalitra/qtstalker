@@ -68,6 +68,8 @@ class ChartLayout : public QSplitter
     void refresh (QString);
     void loadPlots (BarData &, int index);
     int plotWidth ();
+    QHash<QString, Plot *> & plotList ();
+    
 
   public slots:
     void save ();

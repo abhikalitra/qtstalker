@@ -354,11 +354,10 @@ QString QtstalkerApp::getWindowCaption ()
 
 void QtstalkerApp::dataWindow ()
 {
-  // FIXME: no data for datawindow
   // show the datawindow dialog
   DataWindow *dw = new DataWindow(this);
   dw->setWindowTitle(getWindowCaption());
-//  dw->setData(_plotList);
+  dw->setData(_chartLayout->plotList());
   dw->show();
   dw->scrollToBottom();
 }
