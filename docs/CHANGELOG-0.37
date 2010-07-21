@@ -633,7 +633,7 @@
 
            Right justified all the gui elements in order to keep mouse travel to a minimum.
 
-           The QuoteServer is now being used. It starts and stops under qtstalker control. Users will have to import
+           The QuoteServer is now being used. It starts under qtstalker control. Users will have to import
            their quotes into the QuoteServer. User scripts will also have to be modified to import data using
            the QuoteServer. There are some sample scripts provided in the QuoteServer/scripts directory.
            The QuoteServer runs in localhost mode for best speed. This may change in the future if users would

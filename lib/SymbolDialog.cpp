@@ -240,7 +240,6 @@ void SymbolDialog::searchButtonPressed ()
   QString command = l.join(",") + "\n";
 
   QuoteServerRequestThread *r = new QuoteServerRequestThread(this, command);
-//  connect(r, SIGNAL(finished()), this, SLOT(searchRequestDone()));
   connect(r, SIGNAL(signalDone(QString)), this, SLOT(searchRequestDone(QString)), Qt::QueuedConnection);
   connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
   r->start();
@@ -283,7 +282,7 @@ void SymbolDialog::loadExchanges ()
 
 void SymbolDialog::exchangeRequestDone (QString data)
 {
-  QStringList l = data.split(",");
+  QStringList l = data.split(":");
   
   exchanges->clear();
   exchanges->addItems(l);
