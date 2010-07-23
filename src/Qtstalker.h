@@ -47,6 +47,7 @@
 #include "DateRangeButton.h"
 #include "SidePanel.h"
 #include "ChartLayout.h"
+#include "SidePanelButton.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -95,6 +96,7 @@ class QtstalkerApp : public QMainWindow
     SidePanel *_sidePanel;
     ChartLayout *_chartLayout;
     QAction *_newIndicatorAction;
+    SidePanelButton *_sidePanelButton;
 };
 
 #endif

@@ -31,7 +31,6 @@
 #include "../pics/delete.xpm"
 #include "../pics/newchart.xpm"
 #include "../pics/ok.xpm"
-#include "../pics/refresh.xpm"
 #include "../pics/script.xpm"
 
 #include <QCursor>
@@ -149,8 +148,6 @@ ScriptPage::ScriptPage ()
 
   showAllScripts();
   
-  loadSavedScripts();
-
   listStatus();
   queStatus();
 }
@@ -298,10 +295,6 @@ void ScriptPage::editScript (QString &d)
   QString file = script->getFile();
   dialog->addFileItem(pos++, page, s, file, tr("The script location"));
 
-  s = tr("Run every X seconds");
-  int refresh = script->getRefresh();
-  dialog->addIntItem(pos++, page, s, refresh, 0, 999999);
-
   s = tr("Comment");
   QString comment = script->getComment();
   dialog->addTextEditItem(pos++, page, s, comment);
@@ -316,14 +309,12 @@ void ScriptPage::editScript (QString &d)
   pos = 0;
   dialog->getItem(pos++, command);
   dialog->getItem(pos++, file);
-  refresh = dialog->getInt(pos++);
   dialog->getItem(pos++, comment);
 
   delete dialog;
 
   script->setCommand(command);
   script->setFile(file);
-  script->setRefresh(refresh);
   script->setComment(comment);
   db.setScript(script);
 
@@ -483,16 +474,8 @@ void ScriptPage::updateQueList ()
 
     QString name = script->getName();
     
-    if (script->getRefresh())
-    {
-      QListWidgetItem *item = new QListWidgetItem(QIcon(refresh_xpm), name, queList);
-      item->setToolTip(QString(tr("Run every ") + QString::number(script->getRefresh()) + tr(" seconds.")));
-    }
-    else
-    {
-      QListWidgetItem *item = new QListWidgetItem(QIcon(ok), name, queList);
-      item->setToolTip(QString(tr("Running...")));
-    }
+    QListWidgetItem *item = new QListWidgetItem(QIcon(ok), name, queList);
+    item->setToolTip(QString(tr("Running...")));
   }
 }
 
@@ -534,49 +517,6 @@ void ScriptPage::removeScriptQueue ()
   updateQueList();
   
   emit signalMessage(QString(tr("Script removed.")));
-}
-
-void ScriptPage::saveRunningScripts ()
-{
-  QStringList l;
-  QHashIterator<QString, Script *> it(scripts);
-  while (it.hasNext())
-  {
-    it.next();
-    Script *script = it.value();
-    if (script->getRefresh())
-      l.append(script->getName());
-  }
-  
-  Config config;
-  config.setData(Config::SavedRunningScripts, l);
-}
-
-void ScriptPage::loadSavedScripts ()
-{
-  QStringList l;
-  Config config;
-  config.getData(Config::SavedRunningScripts, l);
-  
-  ScriptDataBase db;
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
-  {
-    Script *script = new Script;
-    script->setName(l[loop]);
-    if (db.getScript(script))
-    {
-      delete script;
-      continue;
-    }
-      
-    scripts.insert(l[loop], script);
-    connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptDone(QString)));
-    connect(script, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-    script->start();
-  }
-  
-  updateQueList();
 }
 
 void ScriptPage::runScript (Script *script)
@@ -625,10 +565,6 @@ void ScriptPage::runScriptDialog ()
   s = tr("Script File");
   dialog->addFileItem(pos++, page, s, file, tr("The script location"));
 
-  s = tr("Run every X seconds");
-  int refresh = 0;
-  dialog->addIntItem(pos++, page, s, refresh, 0, 999999);
-
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -640,7 +576,6 @@ void ScriptPage::runScriptDialog ()
   pos = 0;
   dialog->getItem(pos++, command);
   dialog->getItem(pos++, file);
-  refresh = dialog->getInt(pos++);
 
   delete dialog;
 
@@ -656,7 +591,6 @@ void ScriptPage::runScriptDialog ()
   script->setName(name);
   script->setCommand(command);
   script->setFile(file);
-  script->setRefresh(refresh);
   
   // run the script
   runScript(script);

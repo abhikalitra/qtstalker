@@ -12,26 +12,6 @@ YahooHistorical<br>
 <br>
 These script commands allow quote access to yahoo financial. <br>
 <br>
-&lt;LENGTH&gt; is defined as one of the following:<br>
-<ul>
-  <li>1 - 1 minute bar<br>
-  </li>
-  <li>5 - 5 minute bar</li>
-  <li>10 - 10 minute bar<br>
-  </li>
-  <li>15 - 15 minute bar<br>
-  </li>
-  <li>30 - 30 minute bar<br>
-  </li>
-  <li>60 - 60 minute bar<br>
-  </li>
-  <li>D - daily bar<br>
-  </li>
-  <li>W - weekly bar<br>
-  </li>
-  <li>M - monthly bar<br>
-  </li>
-</ul>
 <br>
 <br>
 <hr style="width: 100%; height: 2px;"><br>
@@ -70,7 +50,8 @@ colon. eg. 'x:n' Some yahoo codes follows:</li>
     <li>x - exchange<br>
     </li>
   </ul>
-  <li>&lt;DETAIL&gt; the detail code(s) delimited by a colon eg. 'T1:T2'<br>
+  <li>&lt;DETAIL&gt; the detail code(s) delimited by a colon eg.
+'Name:T1'<br>
   </li>
   <li>&lt;SYMBOL&gt; is the yahoo symbol eg. 'GOOG'<a
  href="PlotTypes.html"> </a></li>
@@ -78,7 +59,8 @@ colon. eg. 'x:n' Some yahoo codes follows:</li>
 Success returns 'OK\n'. Failure returns 'ERROR\n'.<br>
 <br>
 A full example would be to request company name and exchange data '<span
- style="font-weight: bold;">YahooHistorical,D,n:x,T1:T2,GOOG\n</span>'<br>
+ style="font-weight: bold;">YahooHistorical,D,n:x,Name:T1,GOOG\n</span>'<br>
+<br>
 <br>
 <br>
 <hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><span

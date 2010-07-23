@@ -27,7 +27,6 @@
 Script::Script ()
 {
   _status = 0;
-  _refresh = 0;
   _stopFlag = 0;
 }
 
@@ -36,36 +35,20 @@ void Script::run ()
   _stopFlag = 0;
   QString command = _command + " " + _file;
 
-  while (! _stopFlag)
-  {
-    emit signalMessage(QString(tr("Script ")) + _name + tr(" started."));
+  emit signalMessage(QString(tr("Script ")) + _name + tr(" started."));
     
-    ExScript scriptServer;
-    scriptServer.calculate2(command);
-    QEventLoop e;
-    connect(&scriptServer, SIGNAL(signalDone()), &e, SLOT(quit()));
-    e.exec();
+  ExScript scriptServer;
+  scriptServer.calculate2(command);
+  QEventLoop e;
+  connect(&scriptServer, SIGNAL(signalDone()), &e, SLOT(quit()));
+  connect(this, SIGNAL(signalCancel()), &e, SLOT(quit()));
+  e.exec();
     
+  if (_stopFlag)
+    emit signalMessage(QString(tr("Script ")) + _name + tr(" cancelled."));
+  else
     emit signalMessage(QString(tr("Script ")) + _name + tr(" completed."));
-
-    if (! _refresh)
-      break;
-
-    if (_stopFlag)
-    {
-      emit signalMessage(QString(tr("Script ")) + _name + tr(" cancelled."));
-      break;
-    }
     
-    sleep (_refresh);
-
-    if (_stopFlag)
-    {
-      emit signalMessage(QString(tr("Script ")) + _name + tr(" cancelled."));
-      break;
-    }
-  }
-
   emit signalDone(_name);
 }
 
@@ -129,18 +112,9 @@ QDateTime & Script::getLastRun ()
   return _lastRun;
 }
 
-void Script::setRefresh (int d)
-{
-  _refresh = d;
-}
-
-int Script::getRefresh ()
-{
-  return _refresh;
-}
-
 void Script::stop ()
 {
   _stopFlag = 1;
+  emit signalCancel();
 }
 

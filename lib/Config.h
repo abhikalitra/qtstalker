@@ -64,18 +64,18 @@ class Config : public BaseConfig
       ChartLayoutSizes, // splitter sizes for the ChartLayout rows
       CurrentChart, // csv string (exchange,symbol) currently loaded chart
       DefaultIndicators, // install flag for default indicators, == 0 if not installed, == 1 if installed
-      ChartLayoutRow1Sizes, //  ******** UNUSED *************
+      SidePanelStatus, //  show / hide status of the side panel
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
       ScriptLaunchButton2, // script panel launch button 2
-      SavedRunningScripts, // saved scripts that were running when app terminated
+      ChartTabNorthSouthWidth, // ************* UNUSED *****************
       ExchangeFileDate,  // the last modification date of /docs/exchanges.csv
       LastScriptPath, // the dir of the last script run from a dialog
       FuturesFileDate,   // the file size of /docs/futures.csv
-      ChartLayoutRow2Sizes, //  ******** UNUSED *************
-      ChartLayoutRow3Sizes, //  ******** UNUSED *************
-      UNUSED4, // ******** UNUSED *************
+      ChartTabNorthSouthHeight, // ************* UNUSED *****************
+      ChartTabEastWestWidth, // ************* UNUSED *****************
+      ChartTabEastWestHeight, // ************* UNUSED *****************
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel
       ScriptLaunchButton3, // script panel launch button 3
       ScriptLaunchButton4, // script panel launch button 4

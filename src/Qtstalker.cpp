@@ -121,9 +121,10 @@ void QtstalkerApp::createGUI (Config &)
   connect(_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalSaveSettings()), _sidePanel, SLOT(save()));
   connect(this, SIGNAL(signalLoadSettings()), _sidePanel, SLOT(load()));
+  connect(_sidePanelButton, SIGNAL(signalChanged(bool)), _sidePanel, SLOT(toggleStatus(bool)));
   _navSplitter->addWidget(_sidePanel);
-
-
+  _sidePanel->toggleStatus(_sidePanelButton->isChecked());
+  
   // delay chart layout signals until all objects are created
   
   connect(_chartLayout, SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
@@ -185,6 +186,10 @@ void QtstalkerApp::createToolBars ()
   _refreshAction = new RefreshAction;
   connect(_refreshAction, SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
   toolbar->addWidget(_refreshAction);
+
+  // toggle side panel button
+  _sidePanelButton = new SidePanelButton;
+  toolbar->addWidget(_sidePanelButton);
 
   a = new QAction(QIcon(datawindow), tr("&Data Window"), this);
   a->setShortcut(QKeySequence(Qt::ALT+Qt::Key_1));
@@ -356,7 +361,7 @@ void QtstalkerApp::dataWindow ()
 {
   // show the datawindow dialog
   DataWindow *dw = new DataWindow(this);
-  dw->setWindowTitle(getWindowCaption());
+  dw->setWindowTitle("DataWindow - " + getWindowCaption());
   dw->setData(_chartLayout->plotList());
   dw->show();
   dw->scrollToBottom();

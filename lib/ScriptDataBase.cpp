@@ -33,7 +33,7 @@ ScriptDataBase::ScriptDataBase ()
   s.append(", comment TEXT"); // 2
   s.append(", lastRun TEXT"); // 3
   s.append(", file TEXT"); // 4
-  s.append(", refresh INT"); // 5
+  s.append(", refresh INT"); // 5 ***** UNUSED *********
   
   s.append(", t1 TEXT"); // 6
   s.append(", t2 TEXT"); // 7
@@ -83,7 +83,7 @@ int ScriptDataBase::getScript (Script *script)
   QString name = script->getName();
 
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "SELECT command,comment,lastRun,file,refresh FROM script WHERE name='" + name + "'";
+  QString s = "SELECT command,comment,lastRun,file FROM script WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -107,8 +107,6 @@ int ScriptDataBase::getScript (Script *script)
 
     s = q.value(pos++).toString();
     script->setFile(s);
-
-    script->setRefresh(q.value(pos++).toInt());
   }
   
   return rc;
@@ -119,13 +117,12 @@ void ScriptDataBase::setScript (Script *script)
   QDateTime dt = script->getLastRun();
 
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "INSERT OR REPLACE INTO script (name,command,comment,lastRun,file,refresh) VALUES (";
+  QString s = "INSERT OR REPLACE INTO script (name,command,comment,lastRun,file) VALUES (";
   s.append("'" + script->getName() + "'");
   s.append(",'" + script->getCommand() + "'");
   s.append(",'" + script->getComment() + "'");
   s.append(",'" + dt.toString(Qt::ISODate) + "'");
   s.append(",'" + script->getFile() + "'");
-  s.append("," + QString::number(script->getRefresh()));
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

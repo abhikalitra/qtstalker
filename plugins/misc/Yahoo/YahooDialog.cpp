@@ -23,6 +23,7 @@
 #include "YahooSymbolDialog.h"
 #include "YahooDataBase.h"
 #include "YahooConfig.h"
+#include "YahooThread.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -31,8 +32,7 @@
 
 YahooDialog::YahooDialog ()
 {
-  _thread = 0;
-  
+  _runningFlag = 0;
   setWindowTitle(tr("Configure Yahoo"));
   createMainPage();
   loadSettings();
@@ -75,14 +75,25 @@ void YahooDialog::createMainPage ()
   grid->addWidget(_edate, row++, col--);
 
 
+  // symbols selection area
+  _allSymbols = new QCheckBox;
+  _allSymbols->setText(tr("Select All Symbols"));
+  connect(_allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
+  grid->addWidget(_allSymbols, row, col++);
+
+  _selectSymbolsButton = new QPushButton;
+  _selectSymbolsButton->setText(tr("Symbols..."));
+  connect(_selectSymbolsButton, SIGNAL(clicked()), this, SLOT(selectSymbolsDialog()));
+  grid->addWidget(_selectSymbolsButton, row++, col--);
+
+
   // adjustment
   _adjustment = new QCheckBox;
-  grid->addWidget(_adjustment, row, col++);
-
-  label = new QLabel(tr("Adjust for splits"));
-  grid->addWidget(label, row++, col--);
+  _adjustment->setText(tr("Adjust for splits"));
+  grid->addWidget(_adjustment, row++, col);
 
 
+  
   // message log
   QGroupBox *gbox = new QGroupBox;
   gbox->setTitle(tr("Message Log"));
@@ -109,27 +120,18 @@ void YahooDialog::createMainPage ()
   _buttonBox->addButton(_detailsButton, QDialogButtonBox::ActionRole);
   connect(_detailsButton, SIGNAL(clicked()), this, SLOT(startDetails()));
 
-  _symbolsButton = new QPushButton(tr("&Symbols"));
-  _symbolsButton->setToolTip(tr("Edit symbols to download"));
-  _buttonBox->addButton(_symbolsButton, QDialogButtonBox::ActionRole);
-  connect(_symbolsButton, SIGNAL(clicked()), this, SLOT(editSymbols()));
-
   _cancelButton = new QPushButton(tr("&Cancel"));
   _buttonBox->addButton(_cancelButton, QDialogButtonBox::ActionRole);
   connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancelButton()));
 }
 
-void YahooDialog::editSymbols ()
-{
-  YahooSymbolDialog *sdialog = new YahooSymbolDialog;
-  sdialog->exec();
-  delete sdialog;
-}
-
 void YahooDialog::cancelButton ()
 {
-  if (_thread)
-    _thread->terminate();
+  if (_runningFlag)
+  {
+    emit signalStop();
+    _runningFlag = 0;
+  }
   else
     accept();
 }
@@ -175,53 +177,89 @@ void YahooDialog::downloadDone ()
 {
   _log->append("*** " + tr("Download finished") + " ***");
 
-  _symbolsButton->setEnabled(TRUE);
   _histButton->setEnabled(TRUE);
   _detailsButton->setEnabled(TRUE);
-
-  delete _thread;
-  _thread = 0;
+  _runningFlag = 0;
 
   emit signalChartRefresh();
 }
 
 void YahooDialog::startHistory ()
 {
-  _symbolsButton->setEnabled(FALSE);
   _histButton->setEnabled(FALSE);
   _detailsButton->setEnabled(FALSE);
 
   _log->append("\n*** " + tr("Starting history download") + " ***");
 
+  _runningFlag = 1;
+
   // get the symbols to download
-  YahooDataBase db;
   QStringList sl;
-  db.getSymbols(sl);
+  if (_allSymbols->isChecked())
+  {
+    YahooDataBase db;
+    db.getSymbols(sl);
+  }
+  else
+    sl = _symbolList;
 
   QString type = "H";
-  _thread = new YahooThread(this, type, sl, _sdate->dateTime(), _edate->dateTime());
-  connect(_thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
-  connect(_thread, SIGNAL(finished()), this, SLOT(downloadDone()));
-  _thread->start();
+  YahooThread *thread = new YahooThread(this, type, sl, _sdate->dateTime(), _edate->dateTime());
+  connect(thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
+  connect(thread, SIGNAL(finished()), this, SLOT(downloadDone()));
+  connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+  connect(this, SIGNAL(signalStop()), thread, SLOT(stop()));
+  thread->start();
 }
 
 void YahooDialog::startDetails ()
 {
-  _symbolsButton->setEnabled(FALSE);
   _histButton->setEnabled(FALSE);
   _detailsButton->setEnabled(FALSE);
 
   _log->append("\n*** " + tr("Starting details download") + " ***");
 
+  _runningFlag = 1;
+
   // get the symbols to download
-  YahooDataBase db;
   QStringList sl;
-  db.getSymbols(sl);
+  if (_allSymbols->isChecked())
+  {
+    YahooDataBase db;
+    db.getSymbols(sl);
+  }
+  else
+    sl = _symbolList;
 
   QString type = "D";
-  _thread = new YahooThread(this, type, sl, _sdate->dateTime(), _edate->dateTime());
-  connect(_thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
-  connect(_thread, SIGNAL(finished()), this, SLOT(downloadDone()));
-  _thread->start();
+  YahooThread *thread = new YahooThread(this, type, sl, _sdate->dateTime(), _edate->dateTime());
+  connect(thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
+  connect(thread, SIGNAL(finished()), this, SLOT(downloadDone()));
+  connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+  connect(this, SIGNAL(signalStop()), thread, SLOT(stop()));
+  thread->start();
 }
+
+void YahooDialog::allSymbolsToggled (bool status)
+{
+  if (status)
+    _selectSymbolsButton->setEnabled(FALSE);
+  else
+    _selectSymbolsButton->setEnabled(TRUE);
+}
+
+void YahooDialog::selectSymbolsDialog ()
+{
+  YahooSymbolDialog *sdialog = new YahooSymbolDialog;
+  connect(sdialog, SIGNAL(signalSymbols(QStringList)), this, SLOT(setSymbols(QStringList)));
+  connect(sdialog, SIGNAL(finished(int)), sdialog, SLOT(deleteLater()));
+  sdialog->show();
+}
+
+void YahooDialog::setSymbols (QStringList list)
+{
+  _symbolList = list;
+}
+
+
 

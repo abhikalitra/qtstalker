@@ -36,6 +36,10 @@ void Line::draw (PlotData &pd, Scaler &scaler)
   QPainter painter;
   painter.begin(&pd.buffer);
 
+  // testing
+  // slow as molassis
+//  painter.setRenderHint(QPainter::Antialiasing, TRUE);
+
   int x = -1;
   int x2 = 0;
   int y = -1;

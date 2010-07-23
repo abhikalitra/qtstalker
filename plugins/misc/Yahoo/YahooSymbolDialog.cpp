@@ -59,6 +59,7 @@ void YahooSymbolDialog::createMainPage ()
   gbox->setLayout(hbox);
 
   _list = new QListWidget;
+  _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   hbox->addWidget(_list);
 
   QVBoxLayout *tvbox = new QVBoxLayout;
@@ -83,7 +84,7 @@ void YahooSymbolDialog::createMainPage ()
 
   QPushButton *b = new QPushButton(tr("&OK"));
   _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
-  connect(b, SIGNAL(clicked()), this, SLOT(accept()));
+  connect(b, SIGNAL(clicked()), this, SLOT(done()));
 
   b = new QPushButton(tr("&Cancel"));
   _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
@@ -211,5 +212,24 @@ int YahooSymbolDialog::getSymbolExchange (QString &ysymbol, QString &symbol, QSt
   }
 
   return rc;
+}
+
+void YahooSymbolDialog::done ()
+{
+  QList<QListWidgetItem *> sel = _list->selectedItems();
+  if (! sel.count())
+  {
+    accept();
+    return;
+  }
+
+  QStringList l;
+  int loop = 0;
+  for (; loop < sel.count(); loop++)
+    l.append(sel.at(loop)->text());
+
+  emit signalSymbols(l);
+
+  accept();
 }
 

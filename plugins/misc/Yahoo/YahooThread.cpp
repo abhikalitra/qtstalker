@@ -27,6 +27,8 @@
 
 YahooThread::YahooThread (QObject *p, QString &type, QStringList &symbols, QDateTime sd, QDateTime ed) : QThread (p)
 {
+  _stopFlag = 0;
+  
   _type = type;
   _symbols = symbols;
   _startDate = sd;
@@ -43,10 +45,17 @@ void YahooThread::run ()
     l << "D" << "n" << "Name";
   QString command = l.join(",");
 
+  _stopFlag = 0;
   QuoteServerRequest qsr;
   int loop = 0;
   for (; loop < _symbols.count(); loop++)
   {
+    if (_stopFlag)
+    {
+      emit signalMessage(QString("Download cancelled."));
+      break;
+    }
+    
     QString s = command + "," + _symbols.at(loop) + "\n";
 
     QString msg = _symbols.at(loop);
@@ -58,4 +67,9 @@ void YahooThread::run ()
     
     emit signalMessage(msg);
   }
+}
+
+void YahooThread::stop ()
+{
+  _stopFlag = TRUE;
 }

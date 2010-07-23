@@ -135,7 +135,6 @@ void SymbolDialog::setSymbols (QString &ex, QString &ss)
 {
   exchanges->setCurrentIndex(exchanges->findText(ex, Qt::MatchExactly));
   search->setText(ss);
-//  searchButtonPressed();
 }
 
 void SymbolDialog::getSymbols (Group &l)
@@ -227,12 +226,9 @@ void SymbolDialog::searchButtonPressed ()
   QStringList l;
   l << "Search" << "S";
   
-  QString s = exchanges->currentText();
-  if (s.isEmpty())
-    s = "*";
-  l << s;
+  l << exchanges->currentText();
   
-  s = search->text();
+  QString s = search->text();
   if (s.isEmpty())
     s = "*";
   l << s;
@@ -283,6 +279,7 @@ void SymbolDialog::loadExchanges ()
 void SymbolDialog::exchangeRequestDone (QString data)
 {
   QStringList l = data.split(":");
+  l.prepend("*");
   
   exchanges->clear();
   exchanges->addItems(l);

@@ -55,6 +55,7 @@ class SidePanel : public QSplitter
   public slots:
     void save ();
     void load ();
+    void toggleStatus (bool);
 
   private:
     QTabWidget *_tabs;

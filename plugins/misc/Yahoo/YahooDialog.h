@@ -28,8 +28,8 @@
 #include <QPushButton>
 #include <QDateTimeEdit>
 #include <QCheckBox>
-
-#include "YahooThread.h"
+#include <QToolButton>
+#include <QStringList>
 
 class YahooDialog : public QDialog
 {
@@ -37,6 +37,7 @@ class YahooDialog : public QDialog
 
   signals:
     void signalChartRefresh ();
+    void signalStop ();
 
   public:
     YahooDialog ();
@@ -45,23 +46,27 @@ class YahooDialog : public QDialog
     void saveSettings ();
       
   public slots:
-    void editSymbols ();
     void cancelButton ();
     void downloadDone ();
     void startHistory ();
     void startDetails ();
+    void allSymbolsToggled (bool);
+    void selectSymbolsDialog ();
+    void setSymbols (QStringList);
 
   private:
     QTextEdit *_log;
     QDialogButtonBox *_buttonBox;
-    QPushButton *_symbolsButton;
     QPushButton *_histButton;
     QPushButton *_cancelButton;
     QPushButton *_detailsButton;
     QDateTimeEdit *_sdate;
     QDateTimeEdit *_edate;
     QCheckBox *_adjustment;
-    YahooThread *_thread;
+    QCheckBox *_allSymbols;
+    QPushButton *_selectSymbolsButton;
+    QStringList _symbolList;
+    int _runningFlag;
 };
 
 #endif

@@ -33,6 +33,7 @@ class Script : public QThread
   signals:
     void signalDone (QString);
     void signalMessage (QString);
+    void signalCancel ();
   
   public:
     Script ();
@@ -48,8 +49,8 @@ class Script : public QThread
     int getStatus ();
     void setLastRun (QDateTime &);
     QDateTime & getLastRun ();
-    void setRefresh (int);
-    int getRefresh ();
+
+  public slots:
     void stop ();
     
   protected:
@@ -62,7 +63,6 @@ class Script : public QThread
     QString _comment;
     int _status;
     QDateTime _lastRun;
-    int _refresh;
     int _stopFlag;
 };
 

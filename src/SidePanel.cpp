@@ -114,9 +114,6 @@ void SidePanel::load ()
   }
   size.setWidth(t);
   _tabs->resize(size);
-  
-  // script tab stuff
-  _scriptTab->loadSavedScripts();
 }
 
 void SidePanel::save ()
@@ -126,9 +123,6 @@ void SidePanel::save ()
 
   QSize size = _tabs->size();
   config.setData(Config::SidePanelTabWidth, size.width());
-
-  // save script tab stuff
-  _scriptTab->saveRunningScripts();
 }
 
 PlotSlider * SidePanel::slider ()
@@ -144,5 +138,13 @@ InfoPanel * SidePanel::info ()
 void SidePanel::updateChartTab ()
 {
   _chartTab->updateList();
+}
+
+void SidePanel::toggleStatus (bool status)
+{
+  if (status)
+    this->show();
+  else
+    this->hide();
 }
 

@@ -19,33 +19,23 @@
  *  USA.
  */
 
-#ifndef TAB_WIDGET_HPP
-#define TAB_WIDGET_HPP
+#ifndef SIDE_PANEL_BUTTON_HPP
+#define SIDE_PANEL_BUTTON_HPP
 
-#include <QTabWidget>
-#include <QMenu>
-#include <QString>
+#include <QToolButton>
 
-#include "Config.h"
-
-class TabWidget : public QTabWidget
+class SidePanelButton : public QToolButton
 {
   Q_OBJECT
   
+  signals:
+    void signalChanged (bool);
+
   public:
-    TabWidget (QString &);
-    QTabBar * getTabBar ();
-    void setTabSizes();
-
-  public slots:
-    void tabDialog ();
-
-  protected:
-    virtual void contextMenuEvent (QContextMenuEvent *);
+    SidePanelButton ();
     
-  private:
-    QMenu *_menu;
-    QString _id;
+  public slots:
+    void changed (bool);
 };
 
 #endif

@@ -641,7 +641,19 @@
            stable enough for heavy network usage. Might have to also compress the data stream if users want
            to run on a network. We will see.
 
+20100722:  Removed the script refresh options from the script side panel. It would be better to let scripts do
+           the refreshing the way they want instead of imposing one way on them from the app. Also removed
+           the save/load running scripts when qtstalker is restarted. Lets not assume the user wants to have the
+           scripts restarted if there is some problem with them.
 
+           Fixed symbol search dialog bug. Option for all exchanges ('*') search was missing.
+
+           Now back due to popular demand, added the toggle show/hide side panel button back on the toolbar.
+
+           Added tab size settings to the chart tab dialog. Now you can adjust the sizes of the tabs depending
+           on their orientation. My personal pet peeve now put to rest.
+
+           Added symbol selection to the yahoo plugin. Converted dialogs to non blocking.
 
 
 

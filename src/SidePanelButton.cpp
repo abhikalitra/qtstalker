@@ -19,40 +19,40 @@
  *  USA.
  */
 
-#ifndef YAHOO_SYMBOL_DIALOG_HPP
-#define YAHOO_SYMBOL_DIALOG_HPP
+#include "SidePanelButton.h"
+#include "Config.h"
+#include "../pics/nav.xpm"
 
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QListWidget>
-#include <QStringList>
-
-class YahooSymbolDialog : public QDialog
+SidePanelButton::SidePanelButton ()
 {
-  Q_OBJECT
+  setIcon(QIcon(nav));
+  setText(tr("Show / Hide Side Panel"));
+  setStatusTip(tr("Show / Hide Side Panel"));
+  setToolTip(tr("Show / Hide Side Panel"));
+  setCheckable(TRUE);
 
-  signals:
-    void signalSymbols (QStringList);
+  Config config;
+  QString s;
+  config.getData(Config::SidePanelStatus, s);
 
-  public:
-    YahooSymbolDialog ();
-    ~YahooSymbolDialog ();
-    void createMainPage ();
-    void loadSettings ();
-    int getSymbolExchange (QString &ysymbol, QString &symbol, QString &exchange);
-      
-  public slots:
-    void addSymbol ();
-    void deleteSymbol ();
-    void done ();
+  bool ok;
+  int status = s.toInt(&ok);
+  if (ok)
+    setChecked(status);
+  else
+  {
+    setChecked(TRUE);
+    config.setData(Config::SidePanelStatus, 1);
+  }
 
-  private:
-    QStringList _yexchange;
-    QListWidget *_list;
-    QDialogButtonBox *_buttonBox;
-    QPushButton *_addButton;
-    QPushButton *_deleteButton;
-};
+  connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
+}
 
-#endif
+void SidePanelButton::changed (bool status)
+{
+  Config config;
+  config.setData(Config::SidePanelStatus, status);
+
+  emit signalChanged(status);
+}
+

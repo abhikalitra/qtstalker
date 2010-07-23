@@ -36,6 +36,9 @@ class YahooThread : public QThread
   public:
     YahooThread (QObject *, QString &type, QStringList &symbols, QDateTime sd, QDateTime ed);
 
+  public slots:
+    void stop ();
+
   protected:
     void run ();
     
@@ -44,6 +47,7 @@ class YahooThread : public QThread
     QStringList _symbols;
     QDateTime _startDate;
     QDateTime _endDate;
+    int _stopFlag;
 };
 
 #endif

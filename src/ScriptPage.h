@@ -77,8 +77,6 @@ class ScriptPage : public QWidget
     void runScriptDialog ();
     void listStatus ();
     void queStatus ();
-    void saveRunningScripts ();
-    void loadSavedScripts ();
 
   protected:
     QListWidget *list;
