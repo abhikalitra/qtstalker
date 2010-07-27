@@ -23,8 +23,8 @@
 #include "GroupDataBase.h"
 #include "Config.h"
 #include "SymbolDialog.h"
-#include "PrefDialog.h"
 #include "UpdateChartPageThread.h"
+#include "QuoteServerDialog.h"
 
 #include "../pics/addgroup.xpm"
 #include "../pics/search.xpm"
@@ -324,42 +324,8 @@ void ChartPage::deleteSymbol ()
 
 void ChartPage::serverDialog ()
 {
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(tr("Configure Quote Server"));
-  QString s = tr("Settings");
-  int page = 0;
-  dialog->addPage(page, s);
-
-  Config config;
-  QString d;
-  config.getData(Config::QuoteServerName, d);
-  
-  int pos = 0;
-  s = tr("Quote server hostname");
-  dialog->addTextItem(pos++, page, s, d, tr("Quote server hostname (default 127.0.0.1)"));
-
-  s = tr("Quote server port #");
-  dialog->addIntItem(pos++, page, s, config.getInt(Config::QuoteServerPort), 5000, 99999);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return;
-  }
-
-  pos = 0;    
-  dialog->getItem(pos++, d);
-  if (d.isEmpty())
-  {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Hostname missing."));
-    delete dialog;
-    return;
-  }
-  config.setData(Config::QuoteServerName, d);
-
-  config.setData(Config::QuoteServerPort, dialog->getInt(pos++));
-
-  delete dialog;
+  QuoteServerDialog *dialog = new QuoteServerDialog(this);
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
 }
-
+  

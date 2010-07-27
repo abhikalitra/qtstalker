@@ -8,15 +8,19 @@
 $|++;
 
 # get the Candles
-print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,dimgray";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles";
+$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+
+# set the color
+print STDOUT "INDICATOR,SET_COLOR_ALL,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Harami
-print STDOUT "INDICATOR,PLUGIN,CANDLES,HARAMI,ch1,0,Line,red";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,HARAMI,ch1,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Harami Cross
-print STDOUT "INDICATOR,PLUGIN,CANDLES,HARAMICROSS,ch2,0,Line,red";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,HARAMICROSS,ch2,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get the index range of the harami bars
@@ -70,5 +74,5 @@ for ($count = $range[0]; $count <= $range[1]; $count++)
 }
 
 # plot the candles 
-print STDOUT "PLOT,candles";
+print STDOUT "INDICATOR,SET_PLOT,candles";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }

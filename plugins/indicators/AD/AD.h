@@ -43,14 +43,7 @@ class AD : public IndicatorPlugin
     AD ();
     int getIndicator (Indicator &ind, BarData &data);
     int getCUS (QStringList &, Indicator &, BarData &);
-    int getCUS_AD (QStringList &, Indicator &, BarData &);
-    int getCUS_ADOSC (QStringList &, Indicator &, BarData &);
-    PlotLine * getAD (BarData &data, int, QColor &);
-    PlotLine * getADOSC (BarData &data, int fast, int slow, int lineType, QColor &color);
     int dialog (int);
-
-  private:
-    QStringList _methodList;
 };
 
 extern "C"

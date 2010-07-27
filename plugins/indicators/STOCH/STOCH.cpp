@@ -20,18 +20,14 @@
  */
 
 #include "STOCH.h"
-#include "MAFactory.h"
-#include "ta_libc.h"
-#include "PlotFactory.h"
+#include "FunctionMA.h"
+#include "FunctionSTOCH.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 
 STOCH::STOCH ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("STOCH::error on TA_Initialize");
-
   _indicator = "STOCH";
 
   _settings.setData(FastKColor, "red");
@@ -53,16 +49,13 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
 {
   // create first ref line
   QString s = "Horizontal";
-  PlotFactory fac;
-  PlotLine *line = fac.plot(s);
-  if (! line)
-    return 1;
+  PlotLine *line = new PlotLine;
+  line->setType(s);
 
   _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  PlotLineBar bar(color, (double) _settings.getInt(Ref1));
-  line->setData(0, bar);
+  line->setData(0, (double) _settings.getInt(Ref1), color);
   
   s = "0";
   ind.setLine(s, line);
@@ -70,15 +63,13 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
 
   // create second ref line
   s = "Horizontal";
-  line = fac.plot(s);
-  if (! line)
-    return 1;
+  line = new PlotLine;
+  line->setType(s);
 
   _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  PlotLineBar bar2(color, (double) _settings.getInt(Ref2));
-  line->setData(0, bar2);
+  line->setData(0, (double) _settings.getInt(Ref2), color);
   
   s = "1";
   ind.setLine(s, line);
@@ -86,38 +77,25 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
 
   // create the fastk line
   int kperiod = _settings.getInt(FastKPeriod);
-
-  _settings.getData(FastKColor, s);
-  QColor kcolor(s);
-
-  _settings.getData(FastKPlot, s);
-  int klineType = fac.typeFromString(s);
-
   int dperiod = _settings.getInt(FastDPeriod);
 
-  MAFactory mau;
+  FunctionMA mau;
   _settings.getData(FastDMA, s);
   int maType = mau.typeFromString(s);
 
-  _settings.getData(FastDColor, s);
-  QColor dcolor(s);
-
-  _settings.getData(FastDPlot, s);
-  int dlineType = fac.typeFromString(s);
-
+  FunctionSTOCH f;
   QList<PlotLine *> pl;
-  if (getSTOCH(data,
-               kperiod,
-               dperiod,
-               maType,
-               klineType,
-               kcolor,
-               dlineType,
-               dcolor,
-               pl))
+  if (f.calculate(data, kperiod, dperiod, maType, pl))
     return 1;
 
   line = pl.at(0);
+
+  _settings.getData(FastKPlot, s);
+  line->setType(s);
+
+  _settings.getData(FastKColor, s);
+  line->setColor(s);
+
   _settings.getData(FastKLabel, s);
   line->setLabel(s);
   
@@ -126,6 +104,13 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
   ind.addPlotOrder(s);
   
   line = pl.at(1);
+
+  _settings.getData(FastDPlot, s);
+  line->setType(s);
+
+  _settings.getData(FastDColor, s);
+  line->setColor(s);
+
   _settings.getData(FastDLabel, s);
   line->setLabel(s);
   
@@ -138,175 +123,8 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
 
 int STOCH::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,STOCH,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>,<FASTK PLOT TYPE>,<FASTD PLOT TYPE>,<FASTK COLOR>,<FASTD COLOR>
-  //     0        1    2         3            4              5             6              7                 8                9                10            11
-
-  if (set.count() != 12)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate fastk name" << set[3];
-    return 1;
-  }
-
-  tl = ind.line(set[4]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate fastd name" << set[4];
-    return 1;
-  }
-
-  bool ok;
-  int fkp = set[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid fastk period" << set[5];
-    return 1;
-  }
-
-  int fdp = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid fastd period" << set[6];
-    return 1;
-  }
-
-  MAFactory mau;
-  int ma = mau.typeFromString(set[7]);
-  if (ma == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid fastd ma" << set[7];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int klineType = fac.typeFromString(set[8]);
-  if (klineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid fastk plot type" << set[8];
-    return 1;
-  }
-
-  int dlineType = fac.typeFromString(set[9]);
-  if (dlineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid fastd plot type" << set[9];
-    return 1;
-  }
-
-  QColor kcolor(set[10]);
-  if (! kcolor.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid fastk color" << set[10];
-    return 1;
-  }
-
-  QColor dcolor(set[11]);
-  if (! dcolor.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid fastd color" << set[11];
-    return 1;
-  }
-
-  QList<PlotLine *> pl;
-  if (getSTOCH(data,
-               fkp,
-               fdp,
-               ma,
-               klineType,
-               kcolor,
-               dlineType,
-               dcolor,
-               pl))
-    return 1;
-
-  PlotLine *line = pl.at(0);
-  line->setLabel(set[3]);
-  ind.setLine(set[3], line);
-
-  line = pl.at(1);
-  line->setLabel(set[4]);
-  ind.setLine(set[4], line);
-
-  return 0;
-}
-
-int STOCH::getSTOCH (BarData &data, int kperiod, int dperiod, int ma, int klineType, QColor &kcolor,
-                     int dlineType, QColor &dcolor, QList<PlotLine *> &pl)
-{
-  if (data.count() < kperiod || data.count() < dperiod)
-    return 1;
-
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
-
-  TA_RetCode rc = TA_STOCHF(0,
-                            size - 1,
-                            &high[0],
-                            &low[0],
-                            &close[0],
-                            kperiod,
-                            dperiod,
-                            (TA_MAType) ma,
-                            &outBeg,
-                            &outNb,
-                            &out[0],
-                            &out2[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _indicator << "::getSTOCH: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotFactory fac;
-  PlotLine *kline = fac.plot(klineType);
-  if (! kline)
-    return 1;
-
-  PlotLine *dline = fac.plot(dlineType);
-  if (! dline)
-  {
-    delete kline;
-    return 1;
-  }
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    PlotLineBar bar(kcolor, out[outLoop]);
-    kline->setData(dataLoop, bar);
-    
-    PlotLineBar bar2(dcolor, out2[outLoop]);
-    dline->setData(dataLoop, bar2);
-    dataLoop--;
-    outLoop--;
-  }
-
-  pl.append(kline);
-  pl.append(dline);
-
-  return 0;
+  FunctionSTOCH f;
+  return f.script(set, ind, data);
 }
 
 int STOCH::dialog (int)
@@ -322,7 +140,7 @@ int STOCH::dialog (int)
   _settings.getData(FastKColor, d);
   dialog->addColorItem(FastKColor, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
@@ -349,7 +167,7 @@ int STOCH::dialog (int)
 
   dialog->addIntItem(FastDPeriod, page, QObject::tr("Period"), _settings.getInt(FastDPeriod), 1, 100000);
 
-  MAFactory mau;
+  FunctionMA mau;
   QStringList maList = mau.list();
 
   _settings.getData(FastDMA, d);

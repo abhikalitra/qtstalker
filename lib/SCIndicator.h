@@ -41,7 +41,10 @@ class SCIndicator
       PLUGIN, // get a plugin indicator
       SET_INDEX, // pass a single indicator value from script to qtstalker
       SET_COLOR, // set the color of the bar at index pos
-      DELETE  // delete an indicator
+      DELETE,  // delete an indicator
+      SET_COLOR_ALL, // set all bars to color
+      SET_PLOT_STYLE, // set the plot style
+      SET_PLOT // plot this indicator
     };
     
     SCIndicator ();
@@ -54,6 +57,9 @@ class SCIndicator
     int getPlugin (QStringList &, QByteArray &, Indicator &, BarData &);
     int getNew (QStringList &, QByteArray &, Indicator &, BarData &);
     int setDelete (QStringList &, QByteArray &, Indicator &);
+    int setColorAll (QStringList &, QByteArray &, Indicator &);
+    int setPlotStyle (QStringList &, QByteArray &, Indicator &);
+    int setPlot (QStringList &, QByteArray &, Indicator &);
 
   protected:
     QStringList methodList;

@@ -22,6 +22,7 @@
 #include "CSVThread.h"
 #include "Indicator.h"
 #include "QuoteServerRequest.h"
+#include "CSVData.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -82,8 +83,7 @@ void CSVThread::run ()
     }
   }
 
-  QHash<QString, QString> commands;
-  QStringList nameCommands;
+  QHash<QString, CSVData *> data;
 
   while (stream.atEnd() == 0)
   {
@@ -140,58 +140,77 @@ void CSVThread::run ()
     }
 
     QString key = bar.exchange + ":" + bar.symbol;
-    QString command = commands.value(key);
-    if (command.isEmpty())
+    CSVData *symbol = data.value(key);
+    if (! symbol)
     {
-      // create new command entry
-      command = "Quotes,Set";
-      command.append("," + _type);
-      command.append("," + bar.exchange);
-      command.append("," + bar.symbol);
-      command.append(",yyyyMMddHHmmss");
-
-      if (! bar.name.isEmpty())
-      {
-        QStringList tl;
-        tl << "Details" << "S" << bar.exchange << bar.symbol << "Name" << bar.name;
-        nameCommands.append(tl.join(",") + "\n");
-      }
+      symbol = new CSVData;
+      symbol->exchange = bar.exchange;
+      symbol->symbol = bar.symbol;
+      symbol->type = _type;
+      symbol->name = bar.name;
+      data.insert(key, symbol);
     }
 
-    command.append("," + bar.date.toString("yyyyMMddHHmmss"));
-    command.append("," + bar.open);
-    command.append("," + bar.high);
-    command.append("," + bar.low);
-    command.append("," + bar.close);
-    command.append("," + bar.volume);
+    QStringList tl;
+    tl << bar.date.toString("yyyyMMddHHmmss") << bar.open << bar.high << bar.low << bar.close << bar.volume;
     if (_type == "F")
-      command.append("," + bar.oi);
-
-    commands.insert(key, command);
+      tl << bar.oi;
+    symbol->data.append(tl.join(","));
   }
 
   f.close();
 
   // save the quotes
-  QHashIterator<QString, QString> it(commands);
+  QHashIterator<QString, CSVData *> it(data);
   while (it.hasNext())
   {
     it.next();
+    
+    CSVData *symbol = it.value();
 
+
+// test start
+/*
+    int loop = 0;
+    for (; loop < symbol->data.count(); loop++)
+    {
+      QStringList tl;
+      tl << "Quotes" << "Set" << symbol->type << symbol->exchange << symbol->symbol << "yyyyMMddHHmmss";
+      QString command = tl.join(",");
+
+      command.append("," + symbol->data.join(",") + "\n");
+
+      QuoteServerRequest qsr;
+      if (qsr.run(command))
+        emit signalMessage(tr("ERROR ") + it.key() + tr(" record #") + QString::number(loop) + tr(" quote ignored"));
+    }
+*/
+// test end
+
+
+    
+    QStringList tl;
+    tl << "Quotes" << "Set" << symbol->type << symbol->exchange << symbol->symbol << "yyyyMMddHHmmss";
+    QString command = tl.join(",");
+
+    command.append("," + symbol->data.join(",") + "\n");
+      
     QuoteServerRequest qsr;
-    QString s = it.value() + "\n";
-    if (qsr.run(s))
+    if (qsr.run(command))
       emit signalMessage(tr("ERROR ") + it.key() + tr(" quotes ignored"));
+
+    if (symbol->name.isEmpty())
+      continue;
+    
+    tl.clear();
+    tl << "Details" << "S" << symbol->exchange << symbol->symbol << "Name" << symbol->name;
+    command = tl.join(",") + "\n";
+
+    if (qsr.run(command))
+      emit signalMessage(it.key() + tr(" ERROR saving name, ignored"));
   }
 
-  // save any names
-  int loop = 0;
-  for (; loop < nameCommands.count(); loop++)
-  {
-    QuoteServerRequest qsr;
-    if (qsr.run(nameCommands[loop]))
-      emit signalMessage(tr("ERROR saving name, ignored"));
-  }
+  qDeleteAll(data);
 
   // send the done message along with some stats
 //  emit signalMessage(tr("Quotes imported: ") + QString::number(records));

@@ -39,7 +39,6 @@ class VAR : public IndicatorPlugin
     VAR ();
     int getIndicator (Indicator &ind, BarData &data);
     int getCUS (QStringList &, Indicator &, BarData &);
-    PlotLine * getVAR (PlotLine *in, int period, int, QColor &);
     int dialog (int);
 };
 

@@ -48,23 +48,10 @@ class ADX : public IndicatorPlugin
       Period
     };
 
-    enum Method
-    {
-      _ADX,
-      ADXR,
-      PDI,
-      MDI,
-      DX
-    };
-
     ADX ();
     int getIndicator (Indicator &ind, BarData &data);
     int getCUS (QStringList &, Indicator &, BarData &);
     int dialog (int);
-    PlotLine * getLine (BarData &data, int period, int method, int lineType, QColor &color);
-
-  protected:
-    QStringList _methodList;
 };
 
 extern "C"

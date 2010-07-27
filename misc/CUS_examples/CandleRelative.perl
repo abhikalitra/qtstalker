@@ -3,12 +3,16 @@
 
 $|++;
 
-# get the Candles
-print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,dimgray";
+# get the candles
+print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles";
+$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+
+# set candles color
+print STDOUT "INDICATOR,SET_COLOR_ALL,candles,dimgray";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get Close
-print STDOUT "INDICATOR,NEW,Close,cl,Line,red";
+print STDOUT "INDICATOR,NEW,Close,cl";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get the index range of the close bars
@@ -55,5 +59,6 @@ for (; $count <= $range[1]; $count++, $pcount++)
   }
 }
 
-print STDOUT "PLOT,candles";
+print STDOUT "INDICATOR,SET_PLOT,candles";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+

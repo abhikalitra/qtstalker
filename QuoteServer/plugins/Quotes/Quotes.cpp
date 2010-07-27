@@ -111,11 +111,12 @@ int Quotes::set (QStringList &input, QString &dbPath, QString &output, QSLog &lo
   
   QList<QSBar> bars;
   int loop = 6;
-  for (; loop < input.count(); loop += fields)
+  int record = 1;
+  for (; loop < input.count(); loop += fields, record += 1)
   {
     if (loop + fields > input.count())
     {
-      log.message(QSLog::Error, QString(" Quotes::set: not enough bar values starting at pos " + QString::number(loop)));
+      log.message(QSLog::Error, QString(" Quotes::set: not enough bar values starting at record " + QString::number(record)));
       break;
     }
     
@@ -125,7 +126,7 @@ int Quotes::set (QStringList &input, QString &dbPath, QString &output, QSLog &lo
     QDateTime dt = QDateTime::fromString(input[loop], dateMask);
     if (! dt.isValid())
     {
-      log.message(QSLog::Error, QString(" Quotes::set: bar date or date mask " + input.at(loop) + " at pos " + QString::number(loop)));
+      log.message(QSLog::Error, QString(" Quotes::set: bar date or date mask " + input.at(loop) + " in record " + QString::number(record)));
       continue;
     }
     else
@@ -133,31 +134,31 @@ int Quotes::set (QStringList &input, QString &dbPath, QString &output, QSLog &lo
     
     if (bar.setOpen(input[loop + 1]))
     {
-      log.message(QSLog::Error, QString(" Quotes::set: invalid bar open " + input.at(loop + 1) + " at pos " + QString::number(loop + 1)));
+      log.message(QSLog::Error, QString(" Quotes::set: invalid bar open " + input.at(loop + 1) + " in record " + QString::number(record)));
       continue;
     }
 
     if (bar.setHigh(input[loop + 2]))
     {
-      log.message(QSLog::Error, QString(" Quotes::set: invalid bar high " + input.at(loop + 2) + " at pos " + QString::number(loop + 2)));
+      log.message(QSLog::Error, QString(" Quotes::set: invalid bar high " + input.at(loop + 2) + " in record " + QString::number(record)));
       continue;
     }
 
     if (bar.setLow(input[loop + 3]))
     {
-      log.message(QSLog::Error, QString(" Quotes::set: invalid bar low " + input.at(loop + 3) + " at pos " + QString::number(loop + 3)));
+      log.message(QSLog::Error, QString(" Quotes::set: invalid bar low " + input.at(loop + 3) + " in record " + QString::number(record)));
       continue;
     }
 
     if (bar.setClose(input[loop + 4]))
     {
-      log.message(QSLog::Error, QString(" Quotes::set: invalid bar close " + input.at(loop + 4) + " at pos " + QString::number(loop + 4)));
+      log.message(QSLog::Error, QString(" Quotes::set: invalid bar close " + input.at(loop + 4) + " in record " + QString::number(record)));
       continue;
     }
 
     if (bar.setVolume(input[loop + 5]))
     {
-      log.message(QSLog::Error, QString(" Quotes::set: invalid bar volume " + input.at(loop + 5) + " at pos " + QString::number(loop + 5)));
+      log.message(QSLog::Error, QString(" Quotes::set: invalid bar volume " + input.at(loop + 5) + " in record " + QString::number(record)));
       continue;
     }
 
@@ -165,14 +166,14 @@ int Quotes::set (QStringList &input, QString &dbPath, QString &output, QSLog &lo
     {
       if (bar.setOI(input[loop + 6]))
       {
-        log.message(QSLog::Error, QString(" Quotes::set: invalid bar oi " + input.at(loop + 6) + " at pos " + QString::number(loop + 6)));
+        log.message(QSLog::Error, QString(" Quotes::set: invalid bar oi " + input.at(loop + 6) + " in record " + QString::number(record)));
         continue;
       }
     }
 
     if (bar.verify())
     {
-      log.message(QSLog::Error, QString(" Quotes::set: invalid bar values at pos " + QString::number(loop)));
+      log.message(QSLog::Error, QString(" Quotes::set: invalid bar values in record " + QString::number(record)));
       continue;
     }
 

@@ -9,6 +9,7 @@ HEADERS += CSVRuleDialog.h
 HEADERS += CSVThread.h
 HEADERS += CSVRule.h
 HEADERS += CSVConfig.h
+HEADERS += CSVData.h
 
 SOURCES += CSV.cpp
 SOURCES += CSVDialog.cpp

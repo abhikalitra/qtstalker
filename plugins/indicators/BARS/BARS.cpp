@@ -21,9 +21,9 @@
 
 #include "BARS.h"
 #include "PrefDialog.h"
-#include "MAFactory.h"
+#include "FunctionMA.h"
 #include "BARSUtils.h"
-#include "PlotFactory.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 #include <QObject>
@@ -81,19 +81,18 @@ int BARS::getIndicator (Indicator &ind, BarData &data)
   if (period > 1)
   {
     _settings.getData(MAType, s);
-    MAFactory mafac;
+    FunctionMA mafac;
     int type = mafac.typeFromString(s);
 
-    _settings.getData(MAColor, s);
-    QColor color(s);
-
-    _settings.getData(MAPlot, s);
-    PlotFactory plfac;
-    int lineType = plfac.typeFromString(s);
-    
-    PlotLine *ma = mafac.ma(line, period, type, lineType, color);
+    PlotLine *ma = mafac.calculate(line, period, type);
     if (ma)
     {
+      _settings.getData(MAPlot, s);
+      ma->setType(s);
+
+      _settings.getData(MAColor, s);
+      ma->setColor(s);
+
       _settings.getData(MALabel, s);
       ma->setLabel(s);
       
@@ -107,19 +106,18 @@ int BARS::getIndicator (Indicator &ind, BarData &data)
   if (period > 1)
   {
     _settings.getData(MA2Type, s);
-    MAFactory mafac;
+    FunctionMA mafac;
     int type = mafac.typeFromString(s);
 
-    _settings.getData(MA2Color, s);
-    QColor color(s);
-
-    _settings.getData(MA2Plot, s);
-    PlotFactory plfac;
-    int lineType = plfac.typeFromString(s);
-
-    PlotLine *ma = mafac.ma(line, period, type, lineType, color);
+    PlotLine *ma = mafac.calculate(line, period, type);
     if (ma)
     {
+      _settings.getData(MA2Plot, s);
+      ma->setType(s);
+
+      _settings.getData(MA2Color, s);
+      ma->setColor(s);
+
       _settings.getData(MA2Label, s);
       ma->setLabel(s);
       
@@ -133,19 +131,18 @@ int BARS::getIndicator (Indicator &ind, BarData &data)
   if (period > 1)
   {
     _settings.getData(MA3Type, s);
-    MAFactory mafac;
+    FunctionMA mafac;
     int type = mafac.typeFromString(s);
 
-    _settings.getData(MA3Color, s);
-    QColor color(s);
-
-    _settings.getData(MA3Plot, s);
-    PlotFactory plfac;
-    int lineType = plfac.typeFromString(s);
-
-    PlotLine *ma = mafac.ma(line, period, type, lineType, color);
+    PlotLine *ma = mafac.calculate(line, period, type);
     if (ma)
     {
+      _settings.getData(MA3Plot, s);
+      ma->setType(s);
+
+      _settings.getData(MA3Color, s);
+      ma->setColor(s);
+
       _settings.getData(MA3Label, s);
       ma->setLabel(s);
       
@@ -226,10 +223,10 @@ int BARS::dialog (int)
   _settings.getData(BarsLabel, d);
   dialog->addTextItem(BarsLabel, page, QObject::tr("Label"), d, QString());
 
-  MAFactory mau;
+  FunctionMA mau;
   QStringList maList = mau.list();
   
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 

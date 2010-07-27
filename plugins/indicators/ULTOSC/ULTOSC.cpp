@@ -20,17 +20,13 @@
  */
 
 #include "ULTOSC.h"
-#include "ta_libc.h"
-#include "PlotFactory.h"
+#include "FunctionULTOSC.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 
 ULTOSC::ULTOSC ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("ULTOSC::error on TA_Initialize");
-
   _indicator = "ULTOSC";
 
   _settings.setData(Color, "red");
@@ -48,16 +44,13 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
 {
   // 30 ref line
   QString s = "Horizontal";
-  PlotFactory fac;
-  PlotLine *line = fac.plot(s);
-  if (! line)
-    return 0;
+  PlotLine *line = new PlotLine;
+  line->setType(s);
 
   _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  PlotLineBar bar(color, (double) 30);
-  line->setData(0, bar);
+  line->setData(0, 30.0, color);
   
   s = "0";
   ind.setLine(s, line);
@@ -65,15 +58,13 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
 
   // 50 ref line
   s = "Horizontal";
-  line = fac.plot(s);
-  if (! line)
-    return 0;
+  line = new PlotLine;
+  line->setType(s);
 
   _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  PlotLineBar bar2(color, (double) 50);
-  line->setData(0, bar2);
+  line->setData(0, 50.0, color);
   
   s = "1";
   ind.setLine(s, line);
@@ -81,15 +72,13 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
 
   // 70 ref line
   s = "Horizontal";
-  line = fac.plot(s);
-  if (! line)
-    return 0;
+  line = new PlotLine;
+  line->setType(s);
 
   _settings.getData(Ref3Color, s);
   color.setNamedColor(s);
 
-  PlotLineBar bar3(color, (double) 70);
-  line->setData(0, bar3);
+  line->setData(0, 70.0, color);
   
   s = "2";
   ind.setLine(s, line);
@@ -100,15 +89,16 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
   int mp = _settings.getInt(MidPeriod);
   int lp = _settings.getInt(LongPeriod);
 
-  _settings.getData(Color, s);
-  color.setNamedColor(s);
-
-  _settings.getData(Plot, s);
-  int lineType = fac.typeFromString(s);
-
-  line = getULTOSC(data, sp, mp, lp, lineType, color);
+  FunctionULTOSC f;
+  line = f.calculate(data, sp, mp, lp);
   if (! line)
     return 1;
+
+  _settings.getData(Plot, s);
+  line->setType(s);
+
+  _settings.getData(Color, s);
+  line->setColor(s);
 
   _settings.getData(Label, s);
   line->setLabel(s);
@@ -122,124 +112,8 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
 
 int ULTOSC::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>,<PLOT TYPE>,<COLOR>
-
-  if (set.count() != 7)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
-    return 1;
-  }
-
-  bool ok;
-  int sp = set[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid short period" << set[4];
-    return 1;
-  }
-
-  int mp = set[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid med period" << set[5];
-    return 1;
-  }
-
-  int lp = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid long period" << set[6];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[7]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[7];
-    return 1;
-  }
-
-  QColor color(set[8]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[8];
-    return 1;
-  }
-
-  PlotLine *line = getULTOSC(data, sp, mp, lp, lineType, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[3]);
-
-  ind.setLine(set[3], line);
-
-  return 0;
-}
-
-PlotLine * ULTOSC::getULTOSC (BarData &data, int sp, int mp, int lp, int lineType, QColor &color)
-{
-  if (data.count() < sp || data.count() < mp || data.count() < lp)
-    return 0;
-
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
-
-  TA_RetCode rc = TA_ULTOSC(0,
-                            size - 1,
-                            &high[0],
-                            &low[0],
-                            &close[0],
-                            sp,
-                            mp,
-                            lp,
-                            &outBeg,
-                            &outNb,
-                            &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _indicator << "::getULTOSC: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    PlotLineBar bar(color, out[outLoop]);
-    line->setData(dataLoop, bar);
-    dataLoop--;
-    outLoop--;
-  }
-
-  return line;
+  FunctionULTOSC f;
+  return f.script(set, ind, data);
 }
 
 int ULTOSC::dialog (int)
@@ -255,7 +129,7 @@ int ULTOSC::dialog (int)
   _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 

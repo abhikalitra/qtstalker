@@ -240,7 +240,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ERROR saving name, ignored</source>
+        <source> ERROR saving name, ignored</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1937,10 +1937,6 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Run every X seconds</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Active Scripts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1958,14 +1954,6 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>This script is currently running. Request denied.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run every </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2045,6 +2033,13 @@ Are you sure you want to remove this script?</source>
     </message>
 </context>
 <context>
+    <name>SidePanelButton</name>
+    <message>
+        <source>Show / Hide Side Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SymbolButton</name>
     <message>
         <source>Symbols</source>
@@ -2105,10 +2100,6 @@ Are you sure you want to remove this script?</source>
 <context>
     <name>TabWidget</name>
     <message>
-        <source>Tab &amp;Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>North</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2125,11 +2116,31 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Chart Tab Position</source>
+        <source>Tab &amp;Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select position</source>
+        <source>Chart Tab Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>North / South Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>North / South Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>East / West Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>East / West Width</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2357,14 +2368,6 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit symbols to download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2386,6 +2389,14 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Starting details download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select All Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

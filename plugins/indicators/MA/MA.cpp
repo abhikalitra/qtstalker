@@ -20,9 +20,9 @@
  */
 
 #include "MA.h"
-#include "MAFactory.h"
+#include "FunctionMA.h"
 #include "BARSUtils.h"
-#include "PlotFactory.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -64,23 +64,23 @@ int MA::getIndicator (Indicator &ind, BarData &data)
 
   int period = _settings.getInt(Period);
 
+  FunctionMA f;
   _settings.getData(Method, s);
-  MAFactory mau;
-  int method = mau.typeFromString(s);
+  FunctionMA mau;
+  int method = f.typeFromString(s);
 
-  _settings.getData(Color, s);
-  QColor color(s);
-
-  PlotFactory fac;
-  _settings.getData(Plot, s);
-  int lineType = fac.typeFromString(s);
-
-  PlotLine *line = mau.ma(in, period, method, lineType, color);
+  PlotLine *line = f.calculate(in, period, method);
   if (! line)
   {
     delete in;
     return 1;
   }
+
+  _settings.getData(Plot, s);
+  line->setType(s);
+
+  _settings.getData(Color, s);
+  line->setColor(s);
 
   _settings.getData(Label, s);
   line->setLabel(s);
@@ -96,75 +96,8 @@ int MA::getIndicator (Indicator &ind, BarData &data)
 
 int MA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,MA,<METHOD>,<NAME>,<INPUT>,<PERIOD>,<PLOT TYPE>,<COLOR>
-  //     0       1    2     3       4       5       6          7         8
-
-  if (set.count() != 9)
-  {
-    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
-    return 1;
-  }
-
-  MAFactory mau;
-  int method = mau.typeFromString(set[3]);
-  if (method == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid method" << set[3];
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[4]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[4];
-    return 1;
-  }
-
-  PlotLine *in = ind.line(set[5]);
-  if (! in)
-  {
-    in = data.getInput(data.getInputType(set[5]));
-    if (! in)
-    {
-      qDebug() << _indicator << "::getCUS: input not found" << set[5];
-      return 1;
-    }
-
-    ind.setLine(set[5], in);
-  }
-
-  bool ok;
-  int period = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid period" << set[6];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[7]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[7];
-    return 1;
-  }
-
-  QColor color(set[8]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[8];
-    return 1;
-  }
-
-  PlotLine *line = mau.ma(in, period, method, lineType, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[4]);
-
-  ind.setLine(set[4], line);
-
-  return 0;
+  FunctionMA f;
+  return f.script(set, ind, data);
 }
 
 int MA::dialog (int)
@@ -180,7 +113,7 @@ int MA::dialog (int)
   _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
@@ -199,8 +132,8 @@ int MA::dialog (int)
 
   dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
 
-  MAFactory mau;
-  QStringList methodList = mau.list();
+  FunctionMA f;
+  QStringList methodList = f.list();
   
   _settings.getData(Method, d);
   dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);

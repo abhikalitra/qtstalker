@@ -1,0 +1,55 @@
+/*
+ *  Qtstalker stock charter
+ *
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  USA.
+ */
+
+#ifndef PLOT_STYLE_FACTORY_HPP
+#define PLOT_STYLE_FACTORY_HPP
+
+#include <QStringList>
+#include <QString>
+
+#include "PlotStyle.h"
+
+class PlotStyleFactory
+{
+  public:
+    enum Style
+    {
+      _Candle,
+      _Dash,
+      _Dot,
+      _Histogram,
+      _HistogramBar,
+      _Horizontal,
+      _Line,
+      _OHLC
+    };
+
+    PlotStyleFactory ();
+    PlotStyle * plotStyle (int);
+    PlotStyle * plotStyle (QString &);
+    void list (QStringList &, int);
+    QString typeToString (int);
+    
+  private:
+    QStringList _styleList;
+};
+
+#endif

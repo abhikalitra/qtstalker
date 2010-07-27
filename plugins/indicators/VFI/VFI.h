@@ -38,7 +38,6 @@ class VFI : public IndicatorPlugin
     VFI ();
     int getIndicator (Indicator &ind, BarData &data);
     int getCUS (QStringList &, Indicator &, BarData &);
-    PlotLine * getVFI (BarData &data, int period, int, QColor &);
     int dialog (int);
 };
 

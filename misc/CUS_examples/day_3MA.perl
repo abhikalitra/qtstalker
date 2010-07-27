@@ -7,36 +7,67 @@ $|++;
 
 
 # create the day indicator
-print STDOUT "INDICATOR,NEW,Close,Day,Line,red";
+print STDOUT "INDICATOR,NEW,Close,Day";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # create the 20 SMA indicator
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,20MA,Close,20,Dash,#09ff00";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,20MA,Close,20";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # create the 50 SMA indicator
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,50MA,Close,50,Dash,#9041ff";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,50MA,Close,50";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # create the 200 SMA indicator
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,200MA,Close,200,Dot,#f3ff88";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,200MA,Close,200";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot 200SMA - 50SMA - 20SMA - Day, day is on the foreground
 
-# plot 200 MA
-print STDOUT "PLOT,200MA";
+# set 200MA plot style
+print STDOUT "INDICATOR,SET_PLOT_STYLE,200MA,Dot";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-#plot 50 SMA
-print STDOUT "PLOT,50MA";
+print STDOUT "INDICATOR,SET_COLOR_ALL,200MA,#f3ff88";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# plot 200 MA
+print STDOUT "INDICATOR,SET_PLOT,200MA";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# set 50MA plot style
+print STDOUT "INDICATOR,SET_PLOT_STYLE,50MA,Dash";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# set 50MA color
+print STDOUT "INDICATOR,SET_COLOR_ALL,50MA,#9041ff";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+#plot 50MA
+print STDOUT "INDICATOR,SET_PLOT,50MA";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+#set 20MA plot style
+print STDOUT "INDICATOR,SET_PLOT_STYLE,20MA,Dash";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# set 20MA color
+print STDOUT "INDICATOR,SET_COLOR_ALL,20MA,#09ff00";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 #plot 20 SMA
-print STDOUT "PLOT,20MA";
+print STDOUT "INDICATOR,SET_PLOT,20MA";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-# plot day
-print STDOUT "PLOT,Day";
+# set Day plot style
+print STDOUT "INDICATOR,SET_PLOT_STYLE,Day,Line";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# set Day color
+print STDOUT "INDICATOR,SET_COLOR_ALL,Day,red";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# plot Day
+print STDOUT "INDICATOR,SET_PLOT,Day";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 

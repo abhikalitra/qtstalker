@@ -134,9 +134,8 @@ void DataWindow::setLine (PlotLine *line)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar bar;
-    line->data(keys.at(loop), bar);
-    strip.strip(bar.data(), 4, s);
+    PlotLineBar *bar = line->data(keys.at(loop));
+    strip.strip(bar->data(), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
     table->setItem(keys.at(loop), table->columnCount() - 1, item);
   }
@@ -158,23 +157,22 @@ void DataWindow::setOHLC (PlotLine *line)
 
   for (loop = 0; loop < line->count(); loop++)
   {
-    PlotLineBar bar;
-    line->data(loop, bar);
+    PlotLineBar *bar = line->data(loop);
     
     QString s;
-    strip.strip(bar.data(0), 4, s);
+    strip.strip(bar->data(0), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 4, item);
 
-    strip.strip(bar.data(1), 4, s);
+    strip.strip(bar->data(1), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 3, item);
 
-    strip.strip(bar.data(2), 4, s);
+    strip.strip(bar->data(2), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 2, item);
 
-    strip.strip(bar.data(3), 4, s);
+    strip.strip(bar->data(3), 4, s);
     item = new QTableWidgetItem(s);
     table->setItem(loop, table->columnCount() - 1, item);
   }

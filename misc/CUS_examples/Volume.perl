@@ -3,11 +3,11 @@
 $|++;
 
 # get the volume data
-print STDOUT "INDICATOR,NEW,Volume,Volume,Histogram Bar,red";
+print STDOUT "INDICATOR,NEW,Volume,Volume";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # get close data
-print STDOUT "INDICATOR,NEW,Close,cl,Line,red";
+print STDOUT "INDICATOR,NEW,Close,cl";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # get the index range of the close bars
@@ -54,6 +54,11 @@ for (; $count <= $range[1]; $count++, $pcount++)
   }
 }
 
-# plot the volume bars
-print STDOUT "PLOT,Volume";
+# set the plot style to Histogram Bar
+print STDOUT "INDICATOR,SET_PLOT_STYLE,Volume,Histogram Bar";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# plot the Volume indicator
+print STDOUT "INDICATOR,SET_PLOT,Volume";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+

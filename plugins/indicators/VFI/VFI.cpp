@@ -20,7 +20,8 @@
  */
 
 #include "VFI.h"
-#include "PlotFactory.h"
+#include "FunctionVFI.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -39,17 +40,17 @@ int VFI::getIndicator (Indicator &ind, BarData &data)
 {
   int period = _settings.getInt(Period);
 
-  QString s;
-  _settings.getData(Color, s);
-  QColor color(s);
-
-  PlotFactory fac;
-  _settings.getData(Plot, s);
-  int lineType = fac.typeFromString(s);
-
-  PlotLine *line = getVFI(data, period, lineType, color);
+  FunctionVFI f;
+  PlotLine *line = f.calculate(data, period);
   if (! line)
     return 1;
+
+  QString s;
+  _settings.getData(Plot, s);
+  line->setType(s);
+
+  _settings.getData(Color, s);
+  line->setColor(s);
 
   _settings.getData(Label, s);
   line->setLabel(s);
@@ -63,122 +64,8 @@ int VFI::getIndicator (Indicator &ind, BarData &data)
 
 int VFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,VFI,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
-  //     0       1     2    3        4         5         6
-
-  if (set.count() != 7)
-  {
-    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
-    return 1;
-  }
-
-  bool ok;
-  int period = set[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid period" << set[4];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[5]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[5];
-    return 1;
-  }
-
-  QColor color(set[6]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[6];
-    return 1;
-  }
-
-  PlotLine *line = getVFI(data, period, lineType, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[3]);
-
-  ind.setLine(set[3], line);
-
-  return 0;
-}
-
-PlotLine * VFI::getVFI (BarData &data, int period, int lineType, QColor &color)
-{
-  if (data.count() < period)
-    return 0;
-
-  PlotFactory fac;
-  PlotLine *vfi = fac.plot(lineType);
-  if (! vfi)
-    return 0;
-
-  int loop = period;
-  for (; loop < (int) data.count(); loop++)
-  {
-    double inter = 0.0;
-    double sma_vol = 0.0;
-    int i;
-    Bar bar = data.getBar(loop - period);
-    double close = bar.getClose();
-    double high = bar.getHigh();
-    double low = bar.getLow();
-    double typical = (high + low + close) / 3.0;
-    for (i = loop - period + 1; i <= loop; i++)
-    {
-      bar = data.getBar(i);
-      double ytypical = typical;
-      close = bar.getClose();
-      high = bar.getHigh();
-      low = bar.getLow();
-      typical = (high + low + close) / 3.0;
-      double delta = (log(typical) - log(ytypical));
-      inter += delta * delta;
-      sma_vol += bar.getVolume();
-    }
-    inter = 0.2 * sqrt(inter / (double) period) * typical;
-    sma_vol /= (double) period;
-
-    bar = data.getBar(loop - period);
-    close = bar.getClose();
-    high = bar.getHigh();
-    low = bar.getLow();
-    typical = (high + low + close) / 3.0;
-    double t = 0;
-    for (i = loop - period + 1; i <= loop; i++)
-    {
-      bar = data.getBar(i);
-      double ytypical = typical;
-      double volume = bar.getVolume();
-      close = bar.getClose();
-      high = bar.getHigh();
-      low = bar.getLow();
-      typical = (high + low + close) / 3.0;
-
-      if (typical > ytypical + inter)
-        t = t + log (1.0 + volume / sma_vol);
-      else
-      {
-        if (typical < ytypical - inter)
-          t = t - log (1.0 + volume / sma_vol);
-      }
-    }
-
-    PlotLineBar lbar(color, t);
-    vfi->setData(loop, lbar);
-  }
-
-  return vfi;
+  FunctionVFI f;
+  return f.script(set, ind, data);
 }
 
 int VFI::dialog (int)
@@ -194,7 +81,7 @@ int VFI::dialog (int)
   _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 

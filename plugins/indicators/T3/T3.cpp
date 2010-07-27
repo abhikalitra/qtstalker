@@ -20,18 +20,14 @@
  */
 
 #include "T3.h"
-#include "ta_libc.h"
+#include "FunctionT3.h"
 #include "BARSUtils.h"
-#include "PlotFactory.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 
 T3::T3 ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("T3::error on TA_Initialize");
-
   _indicator = "T3";
 
   _settings.setData(Color, "red");
@@ -68,19 +64,19 @@ int T3::getIndicator (Indicator &ind, BarData &data)
   int period = _settings.getInt(Period);
   double vfactor = _settings.getDouble(VFactor);
 
-  _settings.getData(Color, s);
-  QColor color(s);
-
-  PlotFactory fac;
-  _settings.getData(Plot, s);
-  int lineType = fac.typeFromString(s);
-
-  PlotLine *line = getT3(in, period, vfactor, lineType, color);
+  FunctionT3 f;
+  PlotLine *line = f.calculate(in, period, vfactor);
   if (! line)
   {
     delete in;
     return 1;
   }
+
+  _settings.getData(Plot, s);
+  line->setType(s);
+
+  _settings.getData(Color, s);
+  line->setColor(s);
 
   _settings.getData(Label, s);
   line->setLabel(s);
@@ -96,128 +92,8 @@ int T3::getIndicator (Indicator &ind, BarData &data)
 
 int T3::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,T3,<NAME>,<INPUT>,<PERIOD>,<VFACTOR>,<PLOT TYPE>,<COLOR>
-  //     0       1    2    3       4       5         6          7         8
-
-  if (set.count() != 9)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
-    return 1;
-  }
-
-  PlotLine *in = ind.line(set[4]);
-  if (! in)
-  {
-    in = data.getInput(data.getInputType(set[4]));
-    if (! in)
-    {
-      qDebug() << _indicator << "::getCUS: input not found" << set[4];
-      return 1;
-    }
-
-    ind.setLine(set[4], in);
-  }
-
-  bool ok;
-  int period = set[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid period settings" << set[5];
-    return 1;
-  }
-
-  double vfactor = set[6].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid vfactor" << set[6];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[7]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[7];
-    return 1;
-  }
-
-  QColor color(set[8]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[8];
-    return 1;
-  }
-
-  PlotLine *line = getT3(in, period, vfactor, lineType, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[3]);
-
-  ind.setLine(set[3], line);
-
-  return 0;
-}
-
-PlotLine * T3::getT3 (PlotLine *in, int period, double vfactor, int lineType, QColor &color)
-{
-  if (in->count() < period)
-    return 0;
-
-  QList<int> keys;
-  in->keys(keys);
-  int size = keys.count();
-
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    PlotLineBar bar;
-    in->data(keys.at(loop), bar);
-    input[loop] = (TA_Real) bar.data();
-  }
-
-  TA_RetCode rc = TA_T3(0,
-                        size - 1,
-                        &input[0],
-                        period,
-                        vfactor,
-                        &outBeg,
-                        &outNb,
-                        &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _indicator << "::getT3: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    PlotLineBar bar(color, out[outLoop]);
-    line->setData(keys.at(keyLoop), bar);
-    keyLoop--;
-    outLoop--;
-  }
-
-  return line;
+  FunctionT3 f;
+  return f.script(set, ind, data);
 }
 
 int T3::dialog (int)
@@ -233,7 +109,7 @@ int T3::dialog (int)
   _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 

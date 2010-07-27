@@ -20,7 +20,7 @@
  */
 
 #include "BarData.h"
-#include "PlotFactory.h"
+#include "PlotLine.h"
 
 #include <QObject>
 #include <QtDebug>
@@ -35,6 +35,7 @@ void BarData::clear ()
   _high = -99999999;
   _low = 99999999;
   _length = DailyBar;
+  _barList.clear();
 }
 
 void BarData::getInputFields (QStringList &l)
@@ -54,16 +55,7 @@ void BarData::getInputFields (QStringList &l)
 
 PlotLine * BarData::getInput (BarData::InputType field)
 {
-  QColor color("red");
-  return getInput(field, (int) PlotFactory::PlotTypeLine, color);
-}
-
-PlotLine * BarData::getInput (BarData::InputType field, int lineType, QColor &color)
-{
-  PlotFactory fac;
-  PlotLine *in = fac.plot(lineType);
-  if (! in)
-    return 0;
+  PlotLine *in = new PlotLine;
 
   int loop;
   for (loop = 0; loop < count(); loop++)
@@ -74,63 +66,53 @@ PlotLine * BarData::getInput (BarData::InputType field, int lineType, QColor &co
     {
       case Open:
       {
-        PlotLineBar b(color, bar.getData(Bar::BarFieldOpen));
-        in->setData(loop, b);
+        in->setData(loop, bar.getData(Bar::BarFieldOpen));
         break;
       }
       case High:
       {
-        PlotLineBar b(color, bar.getData(Bar::BarFieldHigh));
-        in->setData(loop, b);
+        in->setData(loop, bar.getData(Bar::BarFieldHigh));
         break;
       }
       case Low:
       {
-        PlotLineBar b(color, bar.getData(Bar::BarFieldLow));
-        in->setData(loop, b);
+        in->setData(loop, bar.getData(Bar::BarFieldLow));
         break;
       }
       case Close:
       {
-        PlotLineBar b(color, bar.getData(Bar::BarFieldClose));
-        in->setData(loop, b);
+        in->setData(loop, bar.getData(Bar::BarFieldClose));
         break;
       }
       case Volume:
       {
-        PlotLineBar b(color, bar.getData(Bar::BarFieldVolume));
-        in->setData(loop, b);
+        in->setData(loop, bar.getData(Bar::BarFieldVolume));
         break;
       }
       case OI:
       {
-        PlotLineBar b(color, bar.getData(Bar::BarFieldOI));
-        in->setData(loop, b);
+        in->setData(loop, bar.getData(Bar::BarFieldOI));
         break;
       }
       case AveragePrice:
       {
-        PlotLineBar b(color, getAvgPrice(loop));
-        in->setData(loop, b);
+        in->setData(loop, getAvgPrice(loop));
         break;
       }
       case MedianPrice:
       {
-        PlotLineBar b(color, getMedianPrice(loop));
-        in->setData(loop, b);
+        in->setData(loop, getMedianPrice(loop));
         break;
       }
       case TypicalPrice:
       {
-        PlotLineBar b(color, getTypicalPrice(loop));
-        in->setData(loop, b);
+        in->setData(loop, getTypicalPrice(loop));
         break;
       }
       case WeightedClosePrice:
       {
         double t = (bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow) + (bar.getData(Bar::BarFieldClose) * 2)) / 4.0;
-        PlotLineBar b(color, t);
-        in->setData(loop, b);
+        in->setData(loop, t);
         break;
       }
       default:
@@ -292,6 +274,14 @@ void BarData::getBarLengthList (QStringList &l)
 
 void BarData::setBars (QString &d)
 {
+  _barList.clear();
+
+  if (d.isEmpty())
+    return;
+
+  if (d == "ERROR")
+    return;
+  
   QStringList l = d.split(":");
 
   int loop = 0;

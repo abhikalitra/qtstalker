@@ -20,18 +20,14 @@
  */
 
 #include "MFI.h"
-#include "MAFactory.h"
-#include "PlotFactory.h"
-#include "ta_libc.h"
+#include "FunctionMA.h"
+#include "PlotStyleFactory.h"
+#include "FunctionMFI.h"
 
 #include <QtDebug>
 
 MFI::MFI ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("MFI::error on TA_Initialize");
-
   _indicator = "MFI";
 
   _settings.setData(Color, "red");
@@ -50,16 +46,13 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
 {
   // Ref1 line
   QString s = "Horizontal";
-  PlotFactory fac;
-  PlotLine *line = fac.plot(s);
-  if (! line)
-    return 0;
+  PlotLine *line = new PlotLine;
+  line->setType(s);
 
   _settings.getData(Ref1Color, s);
   QColor color(s);
-
-  PlotLineBar bar(color, _settings.getInt(Ref1));
-  line->setData(0, bar);
+  
+  line->setData(0, (double) _settings.getInt(Ref1), color);
   
   s = "0";
   ind.setLine(s, line);
@@ -67,15 +60,13 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
 
   // Ref2 line
   s = "Horizontal";
-  line = fac.plot(s);
-  if (! line)
-    return 0;
+  line = new PlotLine;
+  line->setType(s);
 
   _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  PlotLineBar bar2(color, _settings.getInt(Ref2));
-  line->setData(0, bar2);
+  line->setData(0, (double) _settings.getInt(Ref2), color);
   
   s = "1";
   ind.setLine(s, line);
@@ -85,19 +76,20 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
   int period = _settings.getInt(Period);
   int smoothing = _settings.getInt(Smoothing);
 
-  MAFactory mau;
+  FunctionMA mau;
   _settings.getData(SmoothingType, s);
   int type = mau.typeFromString(s);
 
-  _settings.getData(Color, s);
-  color.setNamedColor(s);
-
-  _settings.getData(Plot, s);
-  int lineType = fac.typeFromString(s);
-
-  line = getMFI(data, period, smoothing, type, lineType, color);
+  FunctionMFI f;
+  line = f.calculate(data, period, smoothing, type);
   if (! line)
     return 1;
+
+  _settings.getData(Plot, s);
+  line->setType(s);
+
+  _settings.getData(Color, s);
+  line->setColor(s);
 
   _settings.getData(Label, s);
   line->setLabel(s);
@@ -111,135 +103,8 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
 
 int MFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,MFI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>,<PLOT TYPE>,<COLOR>
-  //     0       1     2    3       4             5                 6              7         8
-
-  if (set.count() != 9)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
-    return 1;
-  }
-
-  bool ok;
-  int period = set[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid period settings" << set[4];
-    return 1;
-  }
-
-  int smoothing = set[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid smoothing period" << set[5];
-    return 1;
-  }
-
-  MAFactory mau;
-  int ma = mau.typeFromString(set[6]);
-  if (ma == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid smoothing type" << set[6];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[7]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[7];
-    return 1;
-  }
-
-  QColor color(set[8]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[8];
-    return 1;
-  }
-
-  PlotLine *line = getMFI(data, period, smoothing, ma, lineType, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[3]);
-
-  ind.setLine(set[3], line);
-
-  return 0;
-}
-
-PlotLine * MFI::getMFI (BarData &data, int period, int smoothing, int type, int lineType, QColor &color)
-{
-  if (data.count() < period || data.count() < smoothing)
-    return 0;
-
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real volume[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-    volume[loop] = (TA_Real) bar.getVolume();
-  }
-
-  TA_RetCode rc = TA_MFI(0,
-                         size - 1,
-                         &high[0],
-                         &low[0],
-                         &close[0],
-                         &volume[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _indicator << "::getMFI: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    PlotLineBar bar(color, out[outLoop]);
-    line->setData(dataLoop, bar);
-    dataLoop--;
-    outLoop--;
-  }
-
-  if (smoothing > 1)
-  {
-    MAFactory mau;
-    PlotLine *ma = mau.ma(line, smoothing, type, lineType, color);
-    delete line;
-    line = ma;
-  }
-
-  return line;
+  FunctionMFI f;
+  return f.script(set, ind, data);
 }
 
 int MFI::dialog (int)
@@ -255,7 +120,7 @@ int MFI::dialog (int)
   _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
@@ -269,7 +134,7 @@ int MFI::dialog (int)
 
   dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), _settings.getInt(Smoothing), 1, 100000);
 
-  MAFactory mau;
+  FunctionMA mau;
   QStringList maList = mau.list();
   
   _settings.getData(SmoothingType, d);

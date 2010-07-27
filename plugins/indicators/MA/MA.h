@@ -48,5 +48,4 @@ extern "C"
   IndicatorPlugin * createIndicatorPlugin ();
 }
 
-
 #endif

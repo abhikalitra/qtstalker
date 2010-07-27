@@ -21,7 +21,7 @@
 
 #include "BARSUtils.h"
 #include "PlotLineBar.h"
-#include "PlotFactory.h"
+#include "PlotLine.h"
 
 #include <QtDebug>
 
@@ -34,11 +34,9 @@ PlotLine * BARSUtils::getBARS (BarData &data, QColor &_up, QColor &_down, QColor
   if (data.count() < 2)
     return 0;
   
-  PlotFactory fac;
   QString s = "OHLC";
-  PlotLine *line = fac.plot(s);
-  if (! line)
-    return 0;
+  PlotLine *line = new PlotLine;
+  line->setType(s);
   
   int size = data.count();
 
@@ -48,28 +46,28 @@ PlotLine * BARSUtils::getBARS (BarData &data, QColor &_up, QColor &_down, QColor
   int loop;
   for (loop = 0; loop < size; loop++)
   {
-    PlotLineBar bar;
+    PlotLineBar *bar = new PlotLineBar;
     Bar tbar = data.getBar(loop);
-    bar.setData(0, tbar.getData(Bar::BarFieldOpen));
-    bar.setData(1, tbar.getData(Bar::BarFieldHigh));
-    bar.setData(2, tbar.getData(Bar::BarFieldLow));
-    bar.setData(3, tbar.getData(Bar::BarFieldClose));
+    bar->setData(0, tbar.getData(Bar::BarFieldOpen));
+    bar->setData(1, tbar.getData(Bar::BarFieldHigh));
+    bar->setData(2, tbar.getData(Bar::BarFieldLow));
+    bar->setData(3, tbar.getData(Bar::BarFieldClose));
     
     if (loop > 0)
     {
       Bar pbar = data.getBar(loop - 1);
       if (tbar.getData(Bar::BarFieldClose) > pbar.getData(Bar::BarFieldClose))
-        bar.setColor(_up);
+        bar->setColor(_up);
       else
       {
         if (tbar.getData(Bar::BarFieldClose) < pbar.getData(Bar::BarFieldClose))
-          bar.setColor(_down);
+          bar->setColor(_down);
         else
-          bar.setColor(_neutral);
+          bar->setColor(_neutral);
       }
     }
     else
-      bar.setColor(_neutral);
+      bar->setColor(_neutral);
     
     line->setData(loop, bar);
   }

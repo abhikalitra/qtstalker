@@ -179,17 +179,16 @@ void ScalePlot::points (PlotData &pd, QList<Setting> &l, Indicator &indicator)
     if (line->type() == "Horizontal")
       continue;
 
-    PlotLineBar bar;
-    line->data(pd.infoIndex, bar);
-    if (! bar.count())
+    PlotLineBar *bar = line->data(pd.infoIndex);
+    if (! bar)
       continue;
 
-    QColor color = bar.color();
+    QColor color = bar->color();
     Setting set;
     s = color.name();
     set.setData(0, s);
 
-    strip.strip(bar.data(), 4, s);
+    strip.strip(bar->data(), 4, s);
     set.setData(1, s);
 
     l.append(set);

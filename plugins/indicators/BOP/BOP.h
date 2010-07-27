@@ -39,7 +39,6 @@ class BOP : public IndicatorPlugin
     BOP ();
     int getIndicator (Indicator &ind, BarData &data);
     int getCUS (QStringList &, Indicator &, BarData &);
-    PlotLine * getBOP (BarData &data, int smoothing, int type, int, QColor &);
     int dialog (int);
 };
 

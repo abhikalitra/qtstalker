@@ -20,20 +20,52 @@
  */
 
 #include "PlotLine.h"
+#include "PlotStyleFactory.h"
+
+#include <QDebug>
 
 PlotLine::PlotLine ()
 {
   _plotFlag = FALSE;
+  _plotStyle = 0;
 }
 
-// virtual
-void PlotLine::draw (PlotData &, Scaler &)
+PlotLine::~PlotLine ()
 {
+  if (_plotStyle)
+    delete _plotStyle;
+
+  if (_data.count())
+    qDeleteAll(_data);
 }
 
-// virtual
-void PlotLine::info (int, Setting *)
+void PlotLine::draw (PlotData &pd, Scaler &scaler)
 {
+  if (! _plotStyle)
+    return;
+
+  _plotStyle->draw(pd, scaler, _data);
+}
+
+void PlotLine::info (int index, Setting *info)
+{
+  if (! _plotStyle)
+    return;
+
+  _plotStyle->info(index, info, _data, _label);
+}
+
+void PlotLine::setType (QString &type)
+{
+  _type = type;
+
+  if (_plotStyle)
+    delete _plotStyle;
+
+  PlotStyleFactory fac;
+  _plotStyle = fac.plotStyle(_type);
+  if (! _plotStyle)
+    qDebug() << "PlotLine::setType: no style found" << _type;
 }
 
 QString & PlotLine::type ()
@@ -51,17 +83,45 @@ QString & PlotLine::label ()
   return _label;
 }
 
-void PlotLine::setData (int i, PlotLineBar &d)
+void PlotLine::setData (int i, double d)
 {
-  _data.insert(i, d);
+  PlotLineBar *bar = _data.value(i);
+  if (bar)
+  {
+    bar->setData(d);
+    return;
+  }
+
+  bar = new PlotLineBar(d);
+  _data.insert(i, bar);
 }
 
-void PlotLine::data (int i, PlotLineBar &d)
+void PlotLine::setData (int i, double d, QColor &color)
 {
-  if (! _data.contains(i))
+  PlotLineBar *bar = _data.value(i);
+  if (bar)
+  {
+    bar->setData(d);
+    bar->setColor(color);
     return;
-  
-  d = _data.value(i);
+  }
+
+  bar = new PlotLineBar(color, d);
+  _data.insert(i, bar);
+}
+
+void PlotLine::setData (int i, PlotLineBar *b)
+{
+  PlotLineBar *bar = _data.value(i);
+  if (bar)
+    delete bar;
+
+  _data.insert(i, b);
+}
+
+PlotLineBar * PlotLine::data (int i)
+{
+  return _data.value(i);
 }
 
 int PlotLine::count ()
@@ -78,13 +138,12 @@ int PlotLine::highLowRange (int start, int end, double &h, double &l)
 
   for (loop = start; loop <= end; loop++)
   {
-    if (! _data.contains(loop))
+    PlotLineBar *r = _data.value(loop);
+    if (! r)
       continue;
-    
-    PlotLineBar r = _data.value(loop);
 
     double th, tl;
-    if (r.highLow(th, tl))
+    if (r->highLow(th, tl))
       continue;
 
     rc = 0;
@@ -116,7 +175,7 @@ void PlotLine::keys (QList<int> &l)
 
 void PlotLine::keyRange (int &start, int &end)
 {
-  QMapIterator<int, PlotLineBar> it(_data);
+  QMapIterator<int, PlotLineBar *> it(_data);
   it.toFront();
   if (! it.hasNext())
   {
@@ -127,13 +186,23 @@ void PlotLine::keyRange (int &start, int &end)
   
   it.next();
 
-  PlotLineBar bar = it.value();
-
   start = it.key();
 
   it.toBack();
   it.previous();
   end = it.key();
+}
+
+void PlotLine::setColor (QString &d)
+{
+  QColor color(d);
+  
+  QMapIterator<int, PlotLineBar *> it(_data);
+  while (it.hasNext())
+  {
+    it.next();
+    it.value()->setColor(color);
+  }
 }
 
 

@@ -41,6 +41,7 @@ QuoteServer::QuoteServer (QObject *p, QString &, QString &port, QString &path, Q
 
   if (port.isEmpty())
     port = "5000";
+//    port = "0";
 
   if (! listen(QHostAddress(host), (quint16) port.toInt()))
   {

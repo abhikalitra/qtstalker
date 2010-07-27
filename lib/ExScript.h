@@ -42,9 +42,8 @@ class ExScript : public QObject
     enum Function
     {
       CO, // chart object functions
-      INDICATOR, // get indicator functions
+      INDICATOR, // indicator functions
       GROUP, // group database functions
-      PLOT, // plot the desired indicator
       _SYMBOL, // symbol functions
       TEST // tester functions
     };

@@ -24,7 +24,8 @@
 
 #include "SZ.h"
 #include "BARSUtils.h"
-#include "PlotFactory.h"
+#include "PlotStyleFactory.h"
+#include "FunctionSZ.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -40,15 +41,16 @@ SZ::SZ ()
   _settings.setData(Method, "Long");
   _settings.setData(NoDeclinePeriod, 2);
   _settings.setData(Coefficient, 2);
-
-  _methodList << QObject::tr("Long");
-  _methodList << QObject::tr("Short");
 }
 
 int SZ::getIndicator (Indicator &ind, BarData &data)
 {
-  QString method;
-  _settings.getData(Method, method);
+  QString s;
+  _settings.getData(Method, s);
+
+  FunctionSZ f;
+  QStringList methodList = f.list();
+  int method = methodList.indexOf(s);
 
   int period = _settings.getInt(Period);
   int ndperiod = _settings.getInt(NoDeclinePeriod);
@@ -66,17 +68,15 @@ int SZ::getIndicator (Indicator &ind, BarData &data)
     ind.addPlotOrder(s);
   }
 
-  QString s;
-  _settings.getData(Color, s);
-  QColor color(s);
-
-  PlotFactory fac;
-  _settings.getData(Plot, s);
-  int lineType = fac.typeFromString(s);
-
-  PlotLine *line = getSZ(data, method, period, ndperiod, coeff, lineType, color);
+  PlotLine *line = f.calculate(data, method, period, ndperiod, coeff);
   if (! line)
     return 1;
+
+  _settings.getData(Plot, s);
+  line->setType(s);
+
+  _settings.getData(Color, s);
+  line->setColor(s);
 
   _settings.getData(Label, s);
   line->setLabel(s);
@@ -90,210 +90,8 @@ int SZ::getIndicator (Indicator &ind, BarData &data)
 
 int SZ::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,SZ,<NAME>,<METHOD>,<PERIOD>,<NO_DECLINE_PERIOD>,<COEFFICIENT>,<PLOT TYPE>,<COLOR>
-  //     0       1    2    3       4        5              6               7             8         9
-
-  if (set.count() != 10)
-  {
-    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: invalid name" << set[3];
-    return 1;
-  }
-
-  if (set[4] != "Long" && set[4] != "Short")
-  {
-    qDebug() << _indicator << "::getCUS: invalid method" << set[4];
-    return 1;
-  }
-
-  bool ok;
-  int period = set[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid period" << set[5];
-    return 1;
-  }
-  if (period < 1)
-    period = 1;
-
-  int no_decline_period = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid no_decline_period" << set[6];
-    return 1;
-  }
-
-  double coefficient = set[7].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid coefficient" << set[7];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[8]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[8];
-    return 1;
-  }
-
-  QColor color(set[9]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[9];
-    return 1;
-  }
-
-  PlotLine *line = getSZ(data, set[4], period, no_decline_period, coefficient, lineType, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[3]);
-
-  ind.setLine(set[3], line);
-
-  return 0;
-}
-
-PlotLine * SZ::getSZ (BarData &data, QString &method, int period, int no_decline_period, double coefficient,
-                      int lineType, QColor &color)
-{
-  if (data.count() < period || data.count() < no_decline_period)
-    return 0;
-
-  int display_uptrend = 0;
-  int display_dntrend = 0;
-  int position = 1;
-  if (method == "Long")
-    position = 1;
-  else
-    position = 2;
-  if (position & 1) // long
-    display_uptrend = 1;
-  if (position & 2) // short
-    display_dntrend = 1;
-
-  PlotFactory fac;
-  PlotLine *sz_uptrend = fac.plot(lineType);
-  if (! sz_uptrend)
-    return 0;
-  
-  PlotLine *sz_dntrend = fac.plot(lineType);
-  if (! sz_dntrend)
-    return 0;
-
-  double uptrend_stop = 0;
-  double dntrend_stop = 0;
-
-  if (no_decline_period < 0)
-    no_decline_period = 0;
-  if (no_decline_period > 365)
-    no_decline_period = 365;
-
-  double old_uptrend_stops[no_decline_period];
-  double old_dntrend_stops[no_decline_period];
-
-  int loop;
-  for (loop = 0; loop < no_decline_period; loop++)
-  {
-    old_uptrend_stops[loop] = 0;
-    old_dntrend_stops[loop] = 0;
-  }
-
-  int start = period + 1;
-  for (loop = start; loop < (int) data.count(); loop++)
-  {
-    // calculate downside/upside penetration for lookback period
-    int lbloop;
-    int lbstart = loop - period;
-    if (lbstart < 2)
-      lbstart = 2;
-    double uptrend_noise_avg = 0;
-    double uptrend_noise_cnt = 0;
-    double dntrend_noise_avg = 0;
-    double dntrend_noise_cnt = 0;
-    for (lbloop = lbstart; lbloop < loop; lbloop++)
-    {
-      Bar bar = data.getBar(lbloop);
-      Bar pbar = data.getBar(lbloop - 1);
-      double lo_curr = bar.getLow();
-      double lo_last = pbar.getLow();
-      double hi_curr = bar.getHigh();
-      double hi_last = pbar.getHigh();
-      if (lo_last > lo_curr)
-      {
-	uptrend_noise_avg += lo_last - lo_curr;
-	uptrend_noise_cnt++;
-      }
-      if (hi_last < hi_curr)
-      {
-	dntrend_noise_avg += hi_curr - hi_last;
-	dntrend_noise_cnt++;
-      }
-    }
-    // make *_avg into actual averages
-    if (uptrend_noise_cnt > 0)
-      uptrend_noise_avg /= uptrend_noise_cnt;
-    if (dntrend_noise_cnt > 0)
-      dntrend_noise_avg /= dntrend_noise_cnt;
-
-    Bar pbar = data.getBar(loop - 1);
-    double lo_last = pbar.getLow();
-    double hi_last = pbar.getHigh();
-    uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
-    dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
-
-    double adjusted_uptrend_stop = uptrend_stop;
-    double adjusted_dntrend_stop = dntrend_stop;
-
-    int backloop;
-    for (backloop = no_decline_period - 1; backloop >= 0; backloop--)
-    {
-      if (loop - backloop > start)
-      {
-	if (old_uptrend_stops[backloop] > adjusted_uptrend_stop)
-	  adjusted_uptrend_stop = old_uptrend_stops[backloop];
-	if (old_dntrend_stops[backloop] < adjusted_dntrend_stop)
-	  adjusted_dntrend_stop = old_dntrend_stops[backloop];
-      }
-      if (backloop > 0)
-      {
-	old_uptrend_stops[backloop] = old_uptrend_stops[backloop-1];
-	old_dntrend_stops[backloop] = old_dntrend_stops[backloop-1];
-      }
-    }
-
-    old_uptrend_stops[0] = uptrend_stop;
-    old_dntrend_stops[0] = dntrend_stop;
-
-    PlotLineBar bar(color, adjusted_uptrend_stop);
-    sz_uptrend->setData(loop, bar);
-    
-    PlotLineBar bar2(color, adjusted_dntrend_stop);
-    sz_dntrend->setData(loop, bar2);
-  }
-
-  PlotLine *pl = 0;
-  if (display_uptrend)
-  {
-    pl = sz_uptrend;
-    delete sz_dntrend;
-  }
-
-  if (display_dntrend)
-  {
-    pl = sz_dntrend;
-    delete sz_uptrend;
-  }
-
-  return pl;
+  FunctionSZ f;
+  return f.script(set, ind, data);
 }
 
 int SZ::dialog (int)
@@ -309,7 +107,7 @@ int SZ::dialog (int)
   _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
@@ -321,8 +119,11 @@ int SZ::dialog (int)
 
   dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
 
+  FunctionSZ f;
+  QStringList methodList = f.list();
+  
   _settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), _methodList, d);
+  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
 
   dialog->addIntItem(NoDeclinePeriod, page, QObject::tr("No Decline Period"), _settings.getInt(NoDeclinePeriod), 1, 100000);
 

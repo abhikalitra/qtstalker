@@ -10,7 +10,6 @@ HEADERS += assistant.h
 HEADERS += DataWindow.h
 HEADERS += ChartPage.h
 HEADERS += GroupPage.h
-HEADERS += IndicatorPage.h
 HEADERS += ScriptPage.h
 HEADERS += InfoPanel.h
 HEADERS += PlotSlider.h
@@ -35,6 +34,7 @@ HEADERS += IndicatorDialog.h
 HEADERS += UpdateChartPageThread.h
 HEADERS += UpdateGroupPageThread.h
 HEADERS += SidePanelButton.h
+HEADERS += QuoteServerDialog.h
 
 
 SOURCES += Qtstalker.cpp
@@ -43,7 +43,6 @@ SOURCES += assistant.cpp
 SOURCES += DataWindow.cpp
 SOURCES += ChartPage.cpp
 SOURCES += GroupPage.cpp
-SOURCES += IndicatorPage.cpp
 SOURCES += ScriptPage.cpp
 SOURCES += InfoPanel.cpp
 SOURCES += PlotSlider.cpp
@@ -68,6 +67,7 @@ SOURCES += IndicatorDialog.cpp
 SOURCES += UpdateChartPageThread.cpp
 SOURCES += UpdateGroupPageThread.cpp
 SOURCES += SidePanelButton.cpp
+SOURCES += QuoteServerDialog.cpp
 
 
 

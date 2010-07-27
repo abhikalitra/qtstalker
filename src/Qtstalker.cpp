@@ -359,8 +359,12 @@ QString QtstalkerApp::getWindowCaption ()
 
 void QtstalkerApp::dataWindow ()
 {
+  if (_currentChart.getSymbol().isEmpty())
+    return;
+  
   // show the datawindow dialog
   DataWindow *dw = new DataWindow(this);
+  connect(dw, SIGNAL(finished(int)), dw, SLOT(deleteLater()));
   dw->setWindowTitle("DataWindow - " + getWindowCaption());
   dw->setData(_chartLayout->plotList());
   dw->show();

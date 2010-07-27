@@ -20,18 +20,14 @@
  */
 
 #include "MAMA.h"
-#include "ta_libc.h"
+#include "FunctionMAMA.h"
 #include "BARSUtils.h"
-#include "PlotFactory.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 
 MAMA::MAMA ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("TALIB::setDefaults:error on TA_Initialize");
-
   _indicator = "MAMA";
 
   _settings.setData(OSC, 1);
@@ -62,21 +58,9 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
   double fast = _settings.getDouble(FastLimit);
   double slow = _settings.getDouble(SlowLimit);
 
-  _settings.getData(MAMAColor, s);
-  QColor mcolor(s);
-
-  _settings.getData(FAMAColor, s);
-  QColor fcolor(s);
-
-  PlotFactory fac;
-  _settings.getData(MAMAPlot, s);
-  int mlineType = fac.typeFromString(s);
-
-  _settings.getData(FAMAPlot, s);
-  int flineType = fac.typeFromString(s);
-
+  FunctionMAMA f;
   QList<PlotLine *> l;
-  if (getMAMA(in, fast, slow, l, mlineType, flineType, mcolor, fcolor))
+  if (f.calculate(in, fast, slow, l))
   {
     delete in;
     return 1;
@@ -89,17 +73,8 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
   if (osc)
   {
     s = "Histogram Bar";
-    PlotLine *line = fac.plot(s);
-    if (! line)
-    {
-      delete in;
-      delete mama;
-      delete fama;
-      return 1;
-    }
-
-    _settings.getData(OSCColor, s);
-    QColor color(s);
+    PlotLine *line = new PlotLine;
+    line->setType(s);
 
     _settings.getData(OSCLabel, s);
     line->setLabel(s);
@@ -110,19 +85,19 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
     int loop = 0;
     for (; loop < keys.count(); loop++)
     {
-      PlotLineBar mbar;
-      mama->data(keys.at(loop), mbar);
-      if (! mbar.count())
+      PlotLineBar *mbar = mama->data(keys.at(loop));
+      if (! mbar)
         continue;
 
-      PlotLineBar fbar;
-      fama->data(keys.at(loop), fbar);
-      if (! fbar.count())
+      PlotLineBar *fbar = fama->data(keys.at(loop));
+      if (! fbar)
         continue;
 
-      PlotLineBar bar(color, mbar.data() - fbar.data());
-      line->setData(keys.at(loop), bar);
+      line->setData(keys.at(loop), mbar->data() - fbar->data());
     }
+
+    _settings.getData(OSCColor, s);
+    line->setColor(s);
 
     s = "0";
     ind.setLine(s, line);
@@ -142,6 +117,12 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
       ind.addPlotOrder(s);
     }
 
+    _settings.getData(MAMAPlot, s);
+    mama->setType(s);
+
+    _settings.getData(MAMAColor, s);
+    mama->setColor(s);
+
     _settings.getData(MAMALabel, s);
     mama->setLabel(s);
     
@@ -150,6 +131,12 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
     ind.addPlotOrder(s);
 
     // fama line
+    _settings.getData(FAMAPlot, s);
+    fama->setType(s);
+
+    _settings.getData(FAMAColor, s);
+    fama->setColor(s);
+
     _settings.getData(FAMALabel, s);
     fama->setLabel(s);
     
@@ -165,159 +152,8 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
 
 int MAMA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,MAMA,<INPUT>,<NAME_MAMA>,<NAME_FAMA>,<FAST_LIMIT>,<SLOW_LIMIT>,<MAMA PLOT TYPE>,<FAMA PLOT TYPE>,<MAMA COLOR>,<FAMA COLOR>
-  //      0       1     2     3         4           5           6            7              8                9              10          11
-
-  if (set.count() != 12)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  PlotLine *in = ind.line(set[3]);
-  if (! in)
-  {
-    in = data.getInput(data.getInputType(set[3]));
-    if (! in)
-    {
-      qDebug() << _indicator << "::getCUS: input not found" << set[3];
-      return 1;
-    }
-
-    ind.setLine(set[3], in);
-  }
-
-  PlotLine *tl = ind.line(set[4]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: mama duplicate name" << set[4];
-    return 1;
-  }
-
-  tl = ind.line(set[5]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: fama duplicate name" << set[5];
-    return 1;
-  }
-
-  bool ok;
-  double fast = set[6].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid fast limit" << set[6];
-    return 1;
-  }
-
-  double slow = set[7].toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid slow limit" << set[7];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int mlineType = fac.typeFromString(set[8]);
-  if (mlineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid mama plot type" << set[8];
-    return 1;
-  }
-
-  int flineType = fac.typeFromString(set[9]);
-  if (flineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid fama plot type" << set[9];
-    return 1;
-  }
-
-  QColor mcolor(set[10]);
-  if (! mcolor.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid mama color" << set[10];
-    return 1;
-  }
-
-  QColor fcolor(set[11]);
-  if (! fcolor.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid fama color" << set[11];
-    return 1;
-  }
-
-  QList<PlotLine *> l;
-  if (getMAMA(in, fast, slow, l, mlineType, flineType, mcolor, fcolor))
-    return 1;
-
-  l.at(0)->setLabel(set[4]);
-  l.at(1)->setLabel(set[5]);
-
-  ind.setLine(set[4], l.at(0));
-  ind.setLine(set[5], l.at(1));
-
-  return 0;
-}
-
-int MAMA::getMAMA (PlotLine *in, double fast, double slow, QList<PlotLine *> &l, int mlineType, int flineType,
-                   QColor &mcolor, QColor &fcolor)
-{
-  if (in->count() < fast || in->count() < slow)
-    return 1;
-
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-
-  QList<int> keys;
-  in->keys(keys);
-  
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar bar;
-    in->data(keys.at(loop), bar);
-    input[loop] = (TA_Real) bar.data();
-  }
-
-  TA_RetCode rc = TA_MAMA(0, size - 1, &input[0], fast, slow, &outBeg, &outNb, &out[0], &out2[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _indicator << "::getMAMA: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotFactory fac;
-  PlotLine *mama = fac.plot(mlineType);
-  if (! mama)
-    return 1;
-
-  PlotLine *fama = fac.plot(flineType);
-  if (! fama)
-  {
-    delete mama;
-    return 1;
-  }
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    PlotLineBar bar(mcolor, out[outLoop]);
-    mama->setData(keys.at(keyLoop), bar);
-    
-    PlotLineBar bar2(fcolor, out2[outLoop]);
-    fama->setData(keys.at(keyLoop), bar2);
-    keyLoop--;
-    outLoop--;
-  }
-
-  l.append(mama);
-  l.append(fama);
-
-  return 0;
+  FunctionMAMA f;
+  return f.script(set, ind, data);
 }
 
 int MAMA::dialog (int)
@@ -350,7 +186,7 @@ int MAMA::dialog (int)
   _settings.getData(MAMAColor, d);
   dialog->addColorItem(MAMAColor, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 

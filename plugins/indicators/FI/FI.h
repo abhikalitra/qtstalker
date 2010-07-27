@@ -39,7 +39,6 @@ class FI : public IndicatorPlugin
     FI ();
     int getIndicator (Indicator &ind, BarData &data);
     int getCUS (QStringList &, Indicator &, BarData &);
-    PlotLine * getFI (BarData &data, int period, int type, int, QColor &);
     int dialog (int);
 };
 

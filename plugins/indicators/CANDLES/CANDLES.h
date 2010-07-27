@@ -24,77 +24,9 @@
 
 #include "IndicatorPlugin.h"
 
-#include <QColor>
-
 class CANDLES : public IndicatorPlugin
 {
   public:
-    enum Function
-    {
-      _NONE,
-      _2CROWS,
-      _3BLACKCROWS,
-      _3INSIDE,
-      _3LINESTRIKE,
-      _3OUTSIDE,
-      _3STARSINSOUTH,
-      _3WHITESOLDIERS,
-      _ABANDONEDBABY,
-      _ADVANCEBLOCK,
-      _BELTHOLD,
-      _BREAKAWAY,
-      _CLOSINGMARUBOZU,
-      _CONCEALBABYSWALL,
-      _COUNTERATTACK,
-      _DARKCLOUDCOVER,
-      _DOJI,
-      _DOJISTAR,
-      _DRAGONFLYDOJI,
-      _ENGULFING,
-      _EVENINGDOJISTAR,
-      _EVENINGSTAR,
-      _GAPSIDESIDEWHITE,
-      _GRAVESTONEDOJI,
-      _HAMMER,
-      _HANGINGMAN,
-      _HARAMI,
-      _HARAMICROSS,
-      _HIGHWAVE,
-      _HIKKAKE,
-      _HIKKAKEMOD,
-      _HOMINGPIGEON,
-      _IDENTICAL3CROWS,
-      _INNECK,
-      _INVERTEDHAMMER,
-      _KICKING,
-      _KICKINGBYLENGTH,
-      _LADDERBOTTOM,
-      _LONGLEGGEDDOJI,
-      _LONGLINE,
-      _MARUBOZU,
-      _MATCHINGLOW,
-      _MATHOLD,
-      _MORNINGDOJISTAR,
-      _MORNINGSTAR,
-      _ONNECK,
-      _PIERCING,
-      _RICKSHAWMAN,
-      _RISEFALL3METHODS,
-      _SEPARATINGLINES,
-      _SHOOTINGSTAR,
-      _SHORTLINE,
-      _SPINNINGTOP,
-      _STALLEDPATTERN,
-      _STICKSANDWICH,
-      _TAKURI,
-      _TASUKIGAP,
-      _THRUSTING,
-      _TRISTAR,
-      _UNIQUE3RIVER,
-      _UPSIDEGAP2CROWS,
-      _XSIDEGAP3METHODS
-    };
-
     enum Parm
     {
       Method,
@@ -122,14 +54,7 @@ class CANDLES : public IndicatorPlugin
     CANDLES ();
     int getIndicator (Indicator &, BarData &);
     int getCUS (QStringList &, Indicator &, BarData &);
-    int getCUSNone (QStringList &, Indicator &, BarData &);
-    int getCUSMethod (QStringList &, Indicator &, BarData &);
     int dialog (int);
-    PlotLine * getMethod (BarData &, int, double, int, QColor &);
-    PlotLine * getCANDLES (BarData &, QColor &);
-
-  protected:
-    QStringList _methodList;
 };
 
 extern "C"

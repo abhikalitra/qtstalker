@@ -1,9 +1,17 @@
 # qtstalker Candle indicator
+# NOTE: we dont need to set the plot type because the CANDLES plugin does it for you
+
 $|++;
 
-print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,green"; # get the Candle indicator
+# get the Candle indicator
+print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
-print STDOUT "PLOT,candles";
+# set the color
+print STDOUT "INDICATOR,SET_COLOR_ALL,candles,green";
+$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+
+# plot it
+print STDOUT "INDICATOR,SET_PLOT,candles";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 

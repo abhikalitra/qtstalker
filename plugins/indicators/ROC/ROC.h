@@ -39,22 +39,10 @@ class ROC : public IndicatorPlugin
       SmoothingType
     };
 
-    enum _Method
-    {
-      ROCN,
-      ROCP,
-      ROCR,
-      ROCR100
-    };
-
     ROC ();
     int getIndicator (Indicator &ind, BarData &data);
     int getCUS (QStringList &, Indicator &, BarData &);
     int dialog (int);
-    PlotLine * getROC (PlotLine *in, int period, int method, int smoothing, int type, int, QColor &);
-
-  protected:
-    QStringList _methodList;
 };
 
 extern "C"

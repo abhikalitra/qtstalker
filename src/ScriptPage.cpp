@@ -74,7 +74,7 @@ ScriptPage::ScriptPage ()
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(0);
   grid->setSpacing(0);
-  grid->setColumnStretch(7, 1);
+//  grid->setColumnStretch(5, 1);
   vbox->addLayout(grid);
 
 
@@ -96,6 +96,9 @@ ScriptPage::ScriptPage ()
   connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
   grid->addWidget(b, row, col++);
   
+  row++;
+  col = 0;
+
   b = new ScriptLaunchButton(Config::ScriptLaunchButton5, 5);
   connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
   grid->addWidget(b, row, col++);
@@ -104,9 +107,6 @@ ScriptPage::ScriptPage ()
   connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
   grid->addWidget(b, row, col++);
 
-  row++;
-  col = 0;
-  
   b = new ScriptLaunchButton(Config::ScriptLaunchButton7, 7);
   connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
   grid->addWidget(b, row, col++);
@@ -115,6 +115,9 @@ ScriptPage::ScriptPage ()
   connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
   grid->addWidget(b, row, col++);
   
+  row++;
+  col = 0;
+
   b = new ScriptLaunchButton(Config::ScriptLaunchButton9, 9);
   connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
   grid->addWidget(b, row, col++);

@@ -4,15 +4,15 @@
 $|++;
 
 # Get today's close
-print STDOUT "INDICATOR,NEW,Close,cl,Line,red";
+print STDOUT "INDICATOR,NEW,Close,cl";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # Get the 13-bar SMA
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,sma_13,Close,13,Line,red";
+print STDOUT "INDICATOR,PLUGIN,MA,SMA,sma_13,Close,13";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # create the disparity indicator
-print STDOUT "INDICATOR,NEW,EMPTY,Disparity,Histogram Bar,red";
+print STDOUT "INDICATOR,NEW,EMPTY,Disparity";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # get the index range of the close
@@ -39,6 +39,15 @@ for ($count = 12; $count <= $range[1]; $count++)
   $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 }
 
-print STDOUT "PLOT,Disparity";
+# set the plot style
+print STDOUT "INDICATOR,SET_PLOT_STYLE,Disparity,Histogram Bar";
+$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+
+#set the color
+print STDOUT "INDICATOR,SET_COLOR_ALL,Disparity,red";
+$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+
+#plot the disparity
+print STDOUT "INDICATOR,SET_PLOT,Disparity";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 

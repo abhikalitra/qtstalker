@@ -22,15 +22,15 @@
 #include "SCIndicator.h"
 #include "IndicatorPluginFactory.h"
 #include "PlotLineBar.h"
-#include "PlotFactory.h"
 #include "PlotLine.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 
 SCIndicator::SCIndicator ()
 {
   methodList << "NEW" << "GET_INDEX" << "GET_INDEX_DATE" << "GET_RANGE" << "PLUGIN" << "SET_INDEX";
-  methodList << "SET_COLOR" << "DELETE";
+  methodList << "SET_COLOR" << "DELETE" << "SET_COLOR_ALL" << "SET_PLOT_STYLE" << "SET_PLOT";
 }
 
 int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData &data)
@@ -72,6 +72,15 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarD
     case DELETE:
       rc = setDelete(l, ba, ind);
       break;
+    case SET_COLOR_ALL:
+      rc = setColorAll(l, ba, ind);
+      break;
+    case SET_PLOT_STYLE:
+      rc = setPlotStyle(l, ba, ind);
+      break;
+    case SET_PLOT:
+      rc = setPlot(l, ba, ind);
+      break;
     default:
       qDebug() << "SCIndicator::calculate: invalid method" << l[1];
       break;
@@ -82,30 +91,15 @@ int SCIndicator::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarD
 
 int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData &data)
 {
-  // INDICATOR,NEW,<METHOD>,<NAME>,<LINE TYPE>,<COLOR>
-  //     0      1     2        3        4         5
+  // INDICATOR,NEW,<METHOD>,<NAME>
+  //     0      1     2        3
 
-  if (l.count() != 6)
+  if (l.count() != 4)
   {
     qDebug() << "SCIndicator::getNew: invalid parm count" << l.count();
     return 1;
   }
 
-  PlotFactory fac;
-  int lineType = fac.typeFromString(l[4]);
-  if (lineType == -1)
-  {
-    qDebug() << "SCIndicator::getNEW: invalid plot type" << l[4];
-    return 1;
-  }
-  
-  QColor color(l[5]);
-  if (! color.isValid())
-  {
-    qDebug() << "SCIndicator::getNEW: invalid color" << l[5];
-    return 1;
-  }
-  
   BarData bd;
   QStringList fl;
   bd.getInputFields(fl);
@@ -136,11 +130,11 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData
         return 1;
       }
 
-      out = fac.plot(lineType);
+      out = new PlotLine;
       break;
     }
     default:
-      out = data.getInput(data.getInputType(l[2]), lineType, color);
+      out = data.getInput(data.getInputType(l[2]));
       if (! out)
       {
         qDebug() << "SCIndicator::getNEW: input not found" << l[2];
@@ -185,9 +179,8 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  PlotLineBar bar;
-  line->data(index, bar);
-  if (! bar.count())
+  PlotLineBar *bar = line->data(index);
+  if (! bar)
   {
     qDebug() << "SCIndicator::getIndex: invalid index value" << l[3];
     return 1;
@@ -195,7 +188,7 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, Indicator &ind)
   
   ba.clear();
 
-  ba.append(QString::number(bar.data()) + "\n");
+  ba.append(QString::number(bar->data()) + "\n");
 
   return 0;
 }
@@ -282,8 +275,7 @@ int SCIndicator::setIndex (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  PlotLineBar bar(color, value);
-  line->setData(index, bar);
+  line->setData(index, value, color);
 
   ba.clear();
   ba.append("0\n");
@@ -352,16 +344,14 @@ int SCIndicator::setColor (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  PlotLineBar bar;
-  line->data(index, bar);
-  if (! bar.count())
+  PlotLineBar *bar = line->data(index);
+  if (! bar)
   {
     qDebug() << "SCIndicator::setColor: bar not found" << l[3];
     return 1;
   }
   
-  bar.setColor(color);
-  line->setData(index, bar);
+  bar->setColor(color);
 
   ba.clear();
   ba.append("0\n");
@@ -417,6 +407,101 @@ int SCIndicator::setDelete (QStringList &l, QByteArray &ba, Indicator &ind)
     qDebug() << "SCIndicator::getDelete: name not found" << l[2];
     return 1;
   }
+
+  ba.clear();
+  ba.append("0\n");
+
+  return 0;
+}
+
+int SCIndicator::setColorAll (QStringList &l, QByteArray &ba, Indicator &ind)
+{
+  // INDICATOR,SET_COLOR_ALL,<NAME>,<COLOR>
+  //     0          1          2       3
+
+  if (l.count() != 4)
+  {
+    qDebug() << "SCIndicator::setColorAll: invalid parm count " << l.count();
+    return 1;
+  }
+
+  PlotLine *line = ind.line(l[2]);
+  if (! line)
+  {
+    qDebug() << "SCIndicator::setColorAll: name not found" << l[2];
+    return 1;
+  }
+
+  QColor color(l[3]);
+  if (! color.isValid())
+  {
+    qDebug() << "SCIndicator::setColorAll: invalid color" << l[3];
+    return 1;
+  }
+
+  line->setColor(l[3]);
+
+  ba.clear();
+  ba.append("0\n");
+
+  return 0;
+}
+
+int SCIndicator::setPlotStyle (QStringList &l, QByteArray &ba, Indicator &ind)
+{
+  // INDICATOR,SET_PLOT_STYLE,<NAME>,<STYLE>
+  //     0          1           2       3
+
+  if (l.count() != 4)
+  {
+    qDebug() << "SCIndicator::setPlotStyle: invalid parm count " << l.count();
+    return 1;
+  }
+
+  PlotLine *line = ind.line(l[2]);
+  if (! line)
+  {
+    qDebug() << "SCIndicator::setPlotStyle: name not found" << l[2];
+    return 1;
+  }
+
+  PlotStyleFactory fac;
+  QStringList plotList;
+  fac.list(plotList, FALSE);
+  int style = plotList.indexOf(l.at(3));
+  if (style == -1)
+  {
+    qDebug() << "SCIndicator::setPlotStyle: invalid style" << l.at(3);
+    return 1;
+  }
+
+  line->setType(l[3]);
+
+  ba.clear();
+  ba.append("0\n");
+
+  return 0;
+}
+
+int SCIndicator::setPlot (QStringList &l, QByteArray &ba, Indicator &ind)
+{
+  // INDICATOR,SET_PLOT,<NAME>
+  //     0        1       2
+
+  if (l.count() != 3)
+  {
+    qDebug() << "SCIndicator::setPlot: invalid parm count " << l.count();
+    return 1;
+  }
+
+  PlotLine *line = ind.line(l[2]);
+  if (! line)
+  {
+    qDebug() << "SCIndicator::setPlot: name not found" << l[2];
+    return 1;
+  }
+
+  ind.addPlotOrder(l[2]);
 
   ba.clear();
   ba.append("0\n");

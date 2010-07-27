@@ -653,7 +653,28 @@
            Added tab size settings to the chart tab dialog. Now you can adjust the sizes of the tabs depending
            on their orientation. My personal pet peeve now put to rest.
 
-           Added symbol selection to the yahoo plugin. Converted dialogs to non blocking.
+           Added symbol selection to the yahoo plugin for downloading. This allows only what symbols selected
+           to be updated. Converted dialogs to non blocking.
 
+20100726:  Removed the PLOT script command and replaced it with 3 new INDICATOR command options. SET_PLOT,
+           SET_COLOR_ALL and SET_PLOT_STYLE. see docs. NOTE: users with personal indicator scripts will
+           have to update them to reflect the new changes.
 
+           Moved the TA-Lib wrapper code from the indicator plugins to the library for better availability.
+
+           Fixed 0 bars returned from the QuoteServer bug that segs qtstalker.
+
+           Plot types no longer inherits from PlotLine. Code was spun off into smaller classes so it is more
+           efficient to change PlotLine style types.
+
+           Removed the PLOT_TYPE and COLOR parms from each of the indicators in the INDICATOR api.
+           These are now determined when needed in the script using the new commands mentioned above.
+           NOTE: please update your personal scripts to reflect these changes.
+
+           Removed the script api to the VOL plugin. This was redundant by other commands.
+
+           Added option to restart the QuoteServer if the port number is changed.
+
+           Re-arranged the script launcher buttons on the script panel from 2 rows to 3 so that we can shrink
+           the size of the side panel a little more.
 

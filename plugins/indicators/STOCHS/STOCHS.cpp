@@ -20,18 +20,14 @@
  */
 
 #include "STOCHS.h"
-#include "MAFactory.h"
-#include "ta_libc.h"
-#include "PlotFactory.h"
+#include "FunctionMA.h"
+#include "FunctionSTOCHS.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 
 STOCHS::STOCHS ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("STOCHS::error on TA_Initialize");
-
   _indicator = "STOCHS";
 
   _settings.setData(SlowKColor, "red");
@@ -55,16 +51,13 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
 {
   // create first ref line
   QString s = "Horizontal";
-  PlotFactory fac;
-  PlotLine *line = fac.plot(s);
-  if (! line)
-    return 1;
+  PlotLine *line = new PlotLine;
+  line->setType(s);
 
   _settings.getData(Ref1Color, s);
   QColor color(s);
 
-  PlotLineBar bar(color, (double) _settings.getInt(Ref1));
-  line->setData(0, bar);
+  line->setData(0, (double) _settings.getInt(Ref1), color);
   
   s = "0";
   ind.setLine(s, line);
@@ -72,31 +65,22 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
 
   // create second ref line
   s = "Horizontal";
-  line = fac.plot(s);
-  if (! line)
-    return 1;
+  line = new PlotLine;
+  line->setType(s);
 
   _settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  PlotLineBar bar2(color, (double) _settings.getInt(Ref2));
-  line->setData(0, bar2);
+  line->setData(0, (double) _settings.getInt(Ref2), color);
   
   s = "1";
   ind.setLine(s, line);
   ind.addPlotOrder(s);
 
   int fkperiod = _settings.getInt(FastKPeriod);
-
-  _settings.getData(SlowKColor, s);
-  QColor kcolor(s);
-
-  _settings.getData(SlowKPlot, s);
-  int klineType = fac.typeFromString(s);
-
   int skperiod = _settings.getInt(SlowKPeriod);
 
-  MAFactory mau;
+  FunctionMA mau;
   _settings.getData(SlowKMA, s);
   int kmaType = mau.typeFromString(s);
 
@@ -105,27 +89,19 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(SlowDMA, s);
   int dmaType = mau.typeFromString(s);
 
-  _settings.getData(SlowDColor, s);
-  QColor dcolor(s);
-
-  _settings.getData(SlowDPlot, s);
-  int dlineType = fac.typeFromString(s);
-
+  FunctionSTOCHS f;
   QList<PlotLine *> pl;
-  if (getSTOCHS(data,
-                fkperiod,
-                skperiod,
-                dperiod,
-                kmaType,
-                dmaType,
-                klineType,
-                kcolor,
-                dlineType,
-                dcolor,
-                pl))
+  if (f.calculate(data, fkperiod, skperiod, dperiod, kmaType, dmaType, pl))
     return 1;
 
   line = pl.at(0);
+
+  _settings.getData(SlowKPlot, s);
+  line->setType(s);
+
+  _settings.getData(SlowKColor, s);
+  line->setColor(s);
+
   _settings.getData(SlowKLabel, s);
   line->setLabel(s);
   
@@ -134,6 +110,13 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
   ind.addPlotOrder(s);
 
   line = pl.at(1);
+
+  _settings.getData(SlowDPlot, s);
+  line->setType(s);
+
+  _settings.getData(SlowDColor, s);
+  line->setColor(s);
+
   _settings.getData(SlowDLabel, s);
   line->setLabel(s);
   
@@ -146,193 +129,8 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
 
 int STOCHS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,STOCHS,<NAME SLOWK>,<NAME SLOWD>,<FASTK PERIOD>,<SLOWK PERIOD>,<SLOWK MA TYPE>,<SLOWD PERIOD>,<SLOWD MA TYPE>,<SLOWK PLOT TYPE>,<SLOWD PLOT TYPE>,<SLOWK COLOR>,<SLOWD COLOR>
-  //     0       1      2         3            4             5              6               7              8              9                10                11               12            13
-
-  if (set.count() != 14)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
-    return 1;
-  }
-
-  tl = ind.line(set[4]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[4];
-    return 1;
-  }
-
-  bool ok;
-  int fkp = set[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid fastk period" << set[5];
-    return 1;
-  }
-
-  int skp = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid slowk period" << set[6];
-    return 1;
-  }
-
-  MAFactory mau;
-  int kma = mau.typeFromString(set[7]);
-  if (kma == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid slowk ma" << set[7];
-    return 1;
-  }
-
-  int sdp = set[8].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid slowd period" << set[8];
-    return 1;
-  }
-
-  int dma = mau.typeFromString(set[9]);
-  if (dma == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid slowd ma" << set[9];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int klineType = fac.typeFromString(set[10]);
-  if (klineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid slowk plot type" << set[10];
-    return 1;
-  }
-
-  int dlineType = fac.typeFromString(set[11]);
-  if (dlineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid slowd plot type" << set[11];
-    return 1;
-  }
-
-  QColor kcolor(set[12]);
-  if (! kcolor.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid slowk color" << set[12];
-    return 1;
-  }
-
-  QColor dcolor(set[13]);
-  if (! dcolor.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid slowd color" << set[13];
-    return 1;
-  }
-
-  QList<PlotLine *> pl;
-  if (getSTOCHS(data,
-                fkp,
-                skp,
-                sdp,
-                kma,
-                dma,
-                klineType,
-                kcolor,
-                dlineType,
-                dcolor,
-                pl))
-    return 1;
-
-  PlotLine *line = pl.at(0);
-  line->setLabel(set[3]);
-  ind.setLine(set[3], line);
-
-  line = pl.at(1);
-  line->setLabel(set[4]);
-  ind.setLine(set[4], line);
-
-  return 0;
-}
-
-int STOCHS::getSTOCHS (BarData &data, int fkperiod, int skperiod, int sdperiod, int kma, int dma,
-                       int klineType, QColor &kcolor, int dlineType, QColor &dcolor, QList<PlotLine *> &pl)
-{
-  if (data.count() < fkperiod || data.count() < skperiod)
-    return 1;
-
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
-
-  TA_RetCode rc = TA_STOCH(0,
-                           size - 1,
-                           &high[0],
-                           &low[0],
-                           &close[0],
-                           fkperiod,
-                           skperiod,
-                           (TA_MAType) kma,
-                           sdperiod,
-                           (TA_MAType) dma,
-                           &outBeg,
-                           &outNb,
-                           &out[0],
-                           &out2[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _indicator << "::getSTOCHS: TA-Lib error" << rc;
-    return 1;
-  }
-
-  PlotFactory fac;
-  PlotLine *kline = fac.plot(klineType);
-  if (! kline)
-    return 1;
-
-  PlotLine *dline = fac.plot(dlineType);
-  if (! dline)
-  {
-    delete kline;
-    return 1;
-  }
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    PlotLineBar bar(kcolor, out[outLoop]);
-    kline->setData(dataLoop, bar);
-    
-    PlotLineBar bar2(dcolor, out2[outLoop]);
-    dline->setData(dataLoop, bar2);
-    dataLoop--;
-    outLoop--;
-  }
-
-  pl.append(kline);
-  pl.append(dline);
-
-  return 0;
+  FunctionSTOCHS f;
+  return f.script(set, ind, data);
 }
 
 int STOCHS::dialog (int)
@@ -348,7 +146,7 @@ int STOCHS::dialog (int)
   _settings.getData(SlowKColor, d);
   dialog->addColorItem(SlowKColor, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
@@ -362,7 +160,7 @@ int STOCHS::dialog (int)
 
   dialog->addIntItem(SlowKPeriod, page, QObject::tr("Period"), _settings.getInt(SlowKPeriod), 1, 100000);
 
-  MAFactory mau;
+  FunctionMA mau;
   QStringList maList = mau.list();
 
   _settings.getData(SlowKMA, d);

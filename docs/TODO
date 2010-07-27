@@ -19,7 +19,6 @@ To Do:
 - add yahoo details code selection to the yahoo plugin (default is only name now)
 - add some qtstalker plugins to display details data from QuoteServer
 - add search method to quoteserver details plugin
-- add way of downloading all data when adding new symbols in yahoo plugin
 - convert all blocking dialogs to non blocking
 - add more control options to the QuoteServer dialog eg. shutdown/restart options when changing settings
 
@@ -28,8 +27,8 @@ To Do:
 Priority
 ========
 
-- fix scripts not finishing
-- convert any long running functions that may slow response to use threads
+- fix scripts not finishing ? fix pending confimation
+- convert any long running functions that gui block to use threads
 
 
 

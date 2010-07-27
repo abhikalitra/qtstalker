@@ -20,8 +20,8 @@
  */
 
 #include "PP.h"
+#include "FunctionPP.h"
 #include "BARSUtils.h"
-#include "PlotFactory.h"
 
 #include <QtDebug>
 
@@ -62,17 +62,18 @@ int PP::getIndicator (Indicator &ind, BarData &data)
     ind.setLine(s, bars);
     ind.addPlotOrder(s);
   }
-  
+
+  FunctionPP f;
   QString s;
   // 1R line
   if (_settings.getInt(R1Show))
   {
-    _settings.getData(R1Color, s);
-    QColor color(s);
-
-    PlotLine *line = getPP(data, 0, color);
+    PlotLine *line = f.calculate(data, 0);
     if (line)
     {
+      _settings.getData(R1Color, s);
+      line->setColor(s);
+
       _settings.getData(R1Label, s);
       line->setLabel(s);
       
@@ -85,12 +86,12 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   // 2R line
   if (_settings.getInt(R2Show))
   {
-    _settings.getData(R2Color, s);
-    QColor color(s);
-
-    PlotLine *line = getPP(data, 1, color);
+    PlotLine *line = f.calculate(data, 1);
     if (line)
     {
+      _settings.getData(R2Color, s);
+      line->setColor(s);
+
       _settings.getData(R2Label, s);
       line->setLabel(s);
       
@@ -103,12 +104,12 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   // 3R line
   if (_settings.getInt(R3Show))
   {
-    _settings.getData(R3Color, s);
-    QColor color(s);
-
-    PlotLine *line = getPP(data, 2, color);
+    PlotLine *line = f.calculate(data, 2);
     if (line)
     {
+      _settings.getData(R3Color, s);
+      line->setColor(s);
+
       _settings.getData(R3Label, s);
       line->setLabel(s);
       
@@ -121,12 +122,12 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   // 1S line
   if (_settings.getInt(S1Show))
   {
-    _settings.getData(S1Color, s);
-    QColor color(s);
-
-    PlotLine *line = getPP(data, 3, color);
+    PlotLine *line = f.calculate(data, 3);
     if (line)
     {
+      _settings.getData(S1Color, s);
+      line->setColor(s);
+
       _settings.getData(S1Label, s);
       line->setLabel(s);
       
@@ -139,12 +140,12 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   // 2S line
   if (_settings.getInt(S2Show))
   {
-    _settings.getData(S2Color, s);
-    QColor color(s);
-
-    PlotLine *line = getPP(data, 4, color);
+    PlotLine *line = f.calculate(data, 4);
     if (line)
     {
+      _settings.getData(S2Color, s);
+      line->setColor(s);
+
       _settings.getData(S2Label, s);
       line->setLabel(s);
       
@@ -157,12 +158,12 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   // 3S line
   if (_settings.getInt(S3Show))
   {
-    _settings.getData(S3Color, s);
-    QColor color(s);
-
-    PlotLine *line = getPP(data, 5, color);
+    PlotLine *line = f.calculate(data, 5);
     if (line)
     {
+      _settings.getData(S3Color, s);
+      line->setColor(s);
+
       _settings.getData(S3Label, s);
       line->setLabel(s);
       
@@ -177,129 +178,8 @@ int PP::getIndicator (Indicator &ind, BarData &data)
 
 int PP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,PP,<NAME>,<POINT>,<COLOR>
-  //     0       1     2    3      4       5
-
-  if (set.count() != 6)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
-    return 1;
-  }
-
-  bool ok;
-  int point = set[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid point" << set[4];
-    return 1;
-  }
-  else
-  {
-    if (point < 0 || point > 5)
-    {
-      qDebug() << _indicator << "::getCUS: invalid point" << set[4];
-      return 1;
-    }
-  }
-
-  QColor color(set[5]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[5];
-    return 1;
-  }
-
-  PlotLine *line = getPP(data, point, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[3]);
-
-  ind.setLine(set[3], line);
-
-  return 0;
-}
-
-PlotLine * PP::getPP (BarData &data, int point, QColor &color)
-{
-  if (data.count() < 1)
-    return 0;
-
-  QString s = "Horizontal";
-  PlotFactory fac;
-  PlotLine *output = fac.plot(s);
-  if (! output)
-    return 0;
-
-  Bar bar = data.getBar(data.count() - 1);
-  double high = bar.getHigh();
-  double low = bar.getLow();
-  double close = bar.getClose();
-  double pp = 0;
-  double t = 0;
-
-  switch (point)
-  {
-    case 0: // first resistance
-    {
-      pp = (high + low + close) / 3;
-      t = (2 * pp) - low;
-      PlotLineBar bar(color, t);
-      output->setData(0, bar);
-      break;
-    }
-    case 1: // second resistance
-    {
-      pp = (high + low + close) / 3;
-      t = pp + (high - low);
-      PlotLineBar bar(color, t);
-      output->setData(0, bar);
-      break;
-    }
-    case 2: // third resistance
-    {
-      pp = (high + low + close) / 3;
-      t = (2 * pp) + (high - (2 * low));
-      PlotLineBar bar(color, t);
-      output->setData(0, bar);
-      break;
-    }
-    case 3: // first support
-    {
-      pp = (high + low + close) / 3;
-      t = (2 * pp) - high;
-      PlotLineBar bar(color, t);
-      output->setData(0, bar);
-      break;
-    }
-    case 4: // second support
-    {
-      pp = (high + low + close) / 3;
-      t = pp - (high - low);
-      PlotLineBar bar(color, t);
-      output->setData(0, bar);
-      break;
-    }
-    case 5: // third support
-    {
-      pp = (high + low + close) / 3;
-      t = (2 * pp) - ((2 * high) - low);
-      PlotLineBar bar(color, t);
-      output->setData(0, bar);
-      break;
-    }
-    default:
-      break;
-  }
-
-  return output;
+  FunctionPP f;
+  return f.script(set, ind, data);
 }
 
 int PP::dialog (int)

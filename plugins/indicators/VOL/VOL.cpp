@@ -20,8 +20,8 @@
  */
 
 #include "VOL.h"
-#include "MAFactory.h"
-#include "PlotFactory.h"
+#include "FunctionMA.h"
+#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 
@@ -44,10 +44,6 @@ VOL::VOL ()
 int VOL::getIndicator (Indicator &ind, BarData &data)
 {
   QString s;
-  _settings.getData(Plot, s);
-  PlotFactory fac;
-  int lineType = fac.typeFromString(s);
-
   _settings.getData(UpColor, s);
   QColor up(s);
 
@@ -57,9 +53,12 @@ int VOL::getIndicator (Indicator &ind, BarData &data)
   _settings.getData(NeutralColor, s);
   QColor neutral(s);
 
-  PlotLine *line = getVOL(data, lineType, up, down, neutral);
+  PlotLine *line = getVOL(data, up, down, neutral);
   if (! line)
     return 1;
+
+  _settings.getData(Plot, s);
+  line->setType(s);
 
   _settings.getData(Label, s);
   line->setLabel(s);
@@ -72,18 +71,18 @@ int VOL::getIndicator (Indicator &ind, BarData &data)
   int period = _settings.getInt(MAPeriod);
 
   _settings.getData(MAType, s);
-  MAFactory mau;
+  FunctionMA mau;
   int type = mau.typeFromString(s);
 
-  _settings.getData(MAColor, s);
-  QColor color(s);
-
-  _settings.getData(MAPlot, s);
-  lineType = fac.typeFromString(s);
-
-  PlotLine *ma = mau.ma(line, period, type, lineType, color);
+  PlotLine *ma = mau.calculate(line, period, type);
   if (ma)
   {
+    _settings.getData(MAPlot, s);
+    ma->setType(s);
+
+    _settings.getData(MAColor, s);
+    ma->setColor(s);
+
     _settings.getData(MALabel, s);
     ma->setLabel(s);
     
@@ -95,66 +94,18 @@ int VOL::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int VOL::getCUS (QStringList &set, Indicator &ind, BarData &data)
-{
-  // INDICATOR,PLUGIN,VOL,<NAME>,<PLOT TYPE>,<COLOR>
-  //     0       1     2    3         4         5
-
-  if (set.count() != 6)
-  {
-    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[4]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[4];
-    return 1;
-  }
-
-  QColor color(set[5]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[5];
-    return 1;
-  }
-
-  PlotLine *line = getVOL(data, lineType, color, color, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[3]);
-
-  ind.setLine(set[3], line);
-
-  return 0;
-}
-
-PlotLine * VOL::getVOL (BarData &data, int lineType, QColor &up, QColor &down, QColor &neutral)
+PlotLine * VOL::getVOL (BarData &data, QColor &up, QColor &down, QColor &neutral)
 {
   if (data.count() < 2)
     return 0;
   
-  PlotFactory fac;
-  PlotLine *vol = fac.plot(lineType);
-  if (! vol)
-    return 0;
+  PlotLine *vol = new PlotLine;
 
   // set the first bar to neutral
   int loop = 0;
   Bar bar = data.getBar(loop);
   
-  PlotLineBar lbar(neutral, bar.getVolume());
-  vol->setData(loop, lbar);
+  vol->setData(loop, bar.getVolume(), neutral);
 
   loop++;
   for (; loop < data.count(); loop++)
@@ -163,22 +114,13 @@ PlotLine * VOL::getVOL (BarData &data, int lineType, QColor &up, QColor &down, Q
     Bar pbar = data.getBar(loop - 1);
     
     if (bar.getClose() < pbar.getClose())
-    {
-      PlotLineBar lbar(down, bar.getVolume());
-      vol->setData(loop, lbar);
-    }
+      vol->setData(loop, bar.getVolume(), down);
     else
     {
       if (bar.getClose() > pbar.getClose())
-      {
-        PlotLineBar lbar(up, bar.getVolume());
-        vol->setData(loop, lbar);
-      }
+        vol->setData(loop, bar.getVolume(), up);
       else
-      {
-        PlotLineBar lbar(neutral, bar.getVolume());
-        vol->setData(loop, lbar);
-      }
+        vol->setData(loop, bar.getVolume(), neutral);
     }
   }
   
@@ -204,7 +146,7 @@ int VOL::dialog (int)
   _settings.getData(NeutralColor, d);
   dialog->addColorItem(NeutralColor, page, QObject::tr("Neutral Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 
@@ -229,7 +171,7 @@ int VOL::dialog (int)
 
   dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), _settings.getInt(MAPeriod), 1, 100000);
 
-  MAFactory mau;
+  FunctionMA mau;
   QStringList maList = mau.list();
   
   _settings.getData(MAType, d);

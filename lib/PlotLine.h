@@ -30,31 +30,37 @@
 #include "Scaler.h"
 #include "PlotLineBar.h"
 #include "Setting.h"
+#include "PlotStyle.h"
 
 class PlotLine
 {
   public:
     PlotLine ();
-    virtual void draw (PlotData &, Scaler &);
-    virtual void info (int, Setting *);
-
+    ~PlotLine ();
+    void draw (PlotData &, Scaler &);
+    void info (int, Setting *);
+    void setType (QString &);
     QString & type ();
     void setLabel (QString &);
     QString & label ();
-    void data (int, PlotLineBar &);
-    void setData (int, PlotLineBar &);
+    PlotLineBar * data (int);
+    void setData (int, double);
+    void setData (int, double, QColor &);
+    void setData (int, PlotLineBar *);
     int count ();
     void setPlotFlag (bool);
     bool plotFlag ();
     int highLowRange (int, int, double &, double &);
     void keys (QList<int> &);
     void keyRange (int &, int &);
+    void setColor (QString &);
 
   protected:
-    QMap<int, PlotLineBar> _data;
+    QMap<int, PlotLineBar *> _data;
     QString _label;
     QString _type;
     bool _plotFlag;
+    PlotStyle *_plotStyle;
 };
 
 #endif

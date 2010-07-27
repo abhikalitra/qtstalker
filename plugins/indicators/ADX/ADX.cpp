@@ -20,17 +20,13 @@
  */
 
 #include "ADX.h"
-#include "PlotFactory.h"
-#include "ta_libc.h"
+#include "PlotStyleFactory.h"
+#include "FunctionADX.h"
 
 #include <QtDebug>
 
 ADX::ADX ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("ADX::error on TA_Initialize");
-
   _indicator = "ADX";
 
   _settings.setData(ADXColor, "blue");
@@ -50,27 +46,26 @@ ADX::ADX ()
   _settings.setData(PDICheck, 1);
   _settings.setData(MDICheck, 1);
   _settings.setData(Period, 14);
-
-  _methodList << "ADX" << "ADXR" << "+DI" << "-DI" << "DX";
 }
 
 int ADX::getIndicator (Indicator &ind, BarData &data)
 {
   int period = _settings.getInt(Period);
 
+  FunctionADX f;
+
   if (_settings.getInt(MDICheck))
   {
-    QString s;
-    _settings.getData(MDIColor, s);
-    QColor color(s);
-
-    PlotFactory fac;
-    _settings.getData(MDIPlot, s);
-    int lineType = fac.typeFromString(s);
-    
-    PlotLine *line = getLine(data, period, MDI, lineType, color);
+    PlotLine *line = f.calculate(data, period, (int) FunctionADX::_MDI);
     if (! line)
       return 1;
+
+    QString s;
+    _settings.getData(MDIPlot, s);
+    line->setType(s);
+
+    _settings.getData(MDIColor, s);
+    line->setColor(s);
 
     _settings.getData(MDILabel, s);
     line->setLabel(s);
@@ -82,17 +77,16 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
 
   if (_settings.getInt(PDICheck))
   {
-    QString s;
-    _settings.getData(PDIColor, s);
-    QColor color(s);
-
-    PlotFactory fac;
-    _settings.getData(PDIPlot, s);
-    int lineType = fac.typeFromString(s);
-
-    PlotLine *line = getLine(data, period, PDI, lineType, color);
+    PlotLine *line = f.calculate(data, period, (int) FunctionADX::_PDI);
     if (! line)
       return 1;
+
+    QString s;
+    _settings.getData(PDIPlot, s);
+    line->setType(s);
+
+    _settings.getData(PDIColor, s);
+    line->setColor(s);
 
     _settings.getData(PDILabel, s);
     line->setLabel(s);
@@ -104,17 +98,16 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
 
   if (_settings.getInt(ADXCheck))
   {
-    QString s;
-    _settings.getData(ADXColor, s);
-    QColor color(s);
-
-    PlotFactory fac;
-    _settings.getData(ADXPlot, s);
-    int lineType = fac.typeFromString(s);
-
-    PlotLine *line = getLine(data, period, _ADX, lineType, color);
+    PlotLine *line = f.calculate(data, period, (int) FunctionADX::_ADX);
     if (! line)
       return 1;
+
+    QString s;
+    _settings.getData(ADXPlot, s);
+    line->setType(s);
+
+    _settings.getData(ADXColor, s);
+    line->setColor(s);
 
     _settings.getData(ADXLabel, s);
     line->setLabel(s);
@@ -126,17 +119,16 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
 
   if (_settings.getInt(ADXRCheck))
   {
-    QString s;
-    _settings.getData(ADXRColor, s);
-    QColor color(s);
-
-    PlotFactory fac;
-    _settings.getData(ADXRPlot, s);
-    int lineType = fac.typeFromString(s);
-
-    PlotLine *line = getLine(data, period, ADXR, lineType, color);
+    PlotLine *line = f.calculate(data, period, (int) FunctionADX::_ADXR);
     if (! line)
       return 1;
+
+    QString s;
+    _settings.getData(ADXRPlot, s);
+    line->setType(s);
+
+    _settings.getData(ADXRColor, s);
+    line->setColor(s);
 
     _settings.getData(ADXRLabel, s);
     line->setLabel(s);
@@ -151,130 +143,8 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
 
 int ADX::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,ADX,<METHOD>,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
-  //     0       1     2     3        4      5          6         7
-
-  if (set.count() != 8)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  int method = _methodList.indexOf(set[3]);
-  if (method == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid method" << set[3];
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[4]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[4];
-    return 1;
-  }
-
-  bool ok;
-  int period = set[5].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid period" << set[5];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[6]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[6];
-    return 1;
-  }
-
-  QColor color(set[7]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[7];
-    return 1;
-  }
-
-  PlotLine *line = getLine(data, period, method, lineType, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[4]);
-
-  ind.setLine(set[4], line);
-
-  return 0;
-}
-
-PlotLine * ADX::getLine (BarData &data, int period, int method, int lineType, QColor &color)
-{
-  if (data.count() < period)
-    return 0;
-  
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
-
-  TA_RetCode rc = TA_SUCCESS;
-  
-  switch ((Method) method)
-  {
-    case MDI:
-      rc = TA_MINUS_DI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case PDI:
-      rc = TA_PLUS_DI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case _ADX:
-      rc = TA_ADX(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case ADXR:
-      rc = TA_ADXR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case DX:
-      rc = TA_DX(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _indicator << "::getLine: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    PlotLineBar bar(color, out[outLoop]);
-    line->setData(dataLoop, bar);
-    dataLoop--;
-    outLoop--;
-  }
-
-  return line;
+  FunctionADX f;
+  return f.script(set, ind, data);
 }
 
 int ADX::dialog (int)
@@ -296,7 +166,7 @@ int ADX::dialog (int)
   _settings.getData(MDIColor, d);
   dialog->addColorItem(MDIColor, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 

@@ -20,18 +20,14 @@
  */
 
 #include "BETA.h"
-#include "ta_libc.h"
-#include "PlotFactory.h"
+#include "PlotStyleFactory.h"
 #include "QuoteServerRequest.h"
+#include "FunctionBETA.h"
 
 #include <QtDebug>
 
 BETA::BETA ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("TALIB::setDefaults:error on TA_Initialize");
-
   _indicator = "BETA";
 
   _settings.setData(Index, "SP500");
@@ -91,20 +87,20 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
 
   int period = _settings.getInt(Period);
 
-  _settings.getData(Color, s);
-  QColor color(s);
-
-  _settings.getData(Plot, s);
-  PlotFactory fac;
-  int lineType = fac.typeFromString(s);
-
-  PlotLine *line = getBETA(in, in2, period, lineType, color);
+  FunctionBETA f;
+  PlotLine *line = f.calculate(in, in2, period);
   if (! line)
   {
     delete in;
     delete in2;
     return 1;
   }
+
+  _settings.getData(Plot, s);
+  line->setType(s);
+
+  _settings.getData(Color, s);
+  line->setColor(s);
 
   _settings.getData(Label, s);
   line->setLabel(s);
@@ -121,143 +117,8 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
 
 int BETA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,BETA,<NAME>,<INPUT_1>,<INPUT_2>,<PERIOD>,<PLOT TYPE>,<COLOR>
-  //     0       1      2     3       4         5        6          7         8
-
-  if (set.count() != 9)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
-    return 1;
-  }
-
-  PlotLine *in = ind.line(set[4]);
-  if (! in)
-  {
-    in = data.getInput(data.getInputType(set[4]));
-    if (! in)
-    {
-      qDebug() << _indicator << "::getCUS: input not found" << set[4];
-      return 1;
-    }
-
-    ind.setLine(set[4], in);
-  }
-
-  PlotLine *in2 = ind.line(set[5]);
-  if (! in2)
-  {
-    in2 = data.getInput(data.getInputType(set[5]));
-    if (! in2)
-    {
-      qDebug() << _indicator << "::getCUS: input2 not found" << set[5];
-      return 1;
-    }
-
-    ind.setLine(set[5], in2);
-  }
-
-  bool ok;
-  int period = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid period settings" << set[6];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[7]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[7];
-    return 1;
-  }
-
-  QColor color(set[8]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[8];
-    return 1;
-  }
-
-  PlotLine *line = getBETA(in, in2, period, lineType, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[3]);
-
-  ind.setLine(set[3], line);
-
-  return 0;
-}
-
-PlotLine * BETA::getBETA (PlotLine *in, PlotLine *in2, int period, int lineType, QColor &color)
-{
-  if (in->count() < period || in2->count() < period)
-    return 0;
-
-  QList<int> keys;
-  int size = in->count();
-  if (in2->count() < size)
-  {
-    size = in2->count();
-    in2->keys(keys);
-  }
-  else
-    in->keys(keys);
-
-  TA_Real input[size];
-  TA_Real input2[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    PlotLineBar bar;
-    in->data(keys.at(loop), bar);
-    if (! bar.count())
-      continue;
-
-    PlotLineBar bar2;
-    in2->data(keys.at(loop), bar2);
-    if (! bar2.count())
-      continue;
-
-    input[loop] = (TA_Real) bar.data();
-    input2[loop] = (TA_Real) bar2.data();
-  }
-
-  TA_RetCode rc = TA_BETA(0, size - 1, &input[0], &input2[0], period, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _indicator << "::calculate: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    PlotLineBar bar(color, out[outLoop]);
-    line->setData(keys.at(keyLoop), bar);
-    keyLoop--;
-    outLoop--;
-  }
-
-  return line;
+  FunctionBETA f;
+  return f.script(set, ind, data);
 }
 
 int BETA::dialog (int)
@@ -273,7 +134,7 @@ int BETA::dialog (int)
   _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 

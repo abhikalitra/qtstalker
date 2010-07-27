@@ -23,7 +23,6 @@
 #include "Config.h"
 #include "CODataBase.h"
 #include "COFactory.h"
-#include "PlotFactory.h"
 #include "PlotCursorInfo.h"
 #include "PlotDrawInfo.h"
 #include "PlotCursorFactory.h"
@@ -167,7 +166,6 @@ void Plot::drawRefresh ()
 
 void Plot::drawLines ()
 {
-  PlotFactory fac;
   int loop = 0;
   QStringList plotList = _indicator.plotOrder();
   for (; loop < plotList.count(); loop++)

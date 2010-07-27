@@ -20,17 +20,13 @@
  */
 
 #include "WILLR.h"
-#include "PlotFactory.h"
-#include "ta_libc.h"
+#include "PlotStyleFactory.h"
+#include "FunctionWILLR.h"
 
 #include <QtDebug>
 
 WILLR::WILLR ()
 {
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("WILLR::error on TA_Initialize");
-
   _indicator = "WILLR";
 
   _settings.setData(Color, "red");
@@ -43,17 +39,17 @@ int WILLR::getIndicator (Indicator &ind, BarData &data)
 {
   int period = _settings.getInt(Period);
 
-  QString s;
-  _settings.getData(Color, s);
-  QColor color(s);
-
-  PlotFactory fac;
-  _settings.getData(Plot, s);
-  int lineType = fac.typeFromString(s);
-
-  PlotLine *line = getWILLR(data, period, lineType, color);
+  FunctionWILLR f;
+  PlotLine *line = f.calculate(data, period);
   if (! line)
     return 1;
+
+  QString s;
+  _settings.getData(Plot, s);
+  line->setType(s);
+
+  _settings.getData(Color, s);
+  line->setColor(s);
 
   _settings.getData(Label, s);
   line->setLabel(s);
@@ -67,109 +63,8 @@ int WILLR::getIndicator (Indicator &ind, BarData &data)
 
 int WILLR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,WILLR,<NAME>,<PERIOD>,<PLOT TYPE>,<COLOR>
-  //     0       1      2     3       4          5         6
-
-  if (set.count() != 7)
-  {
-    qDebug() << _indicator << "::getCUS: invalid settings count" << set.count();
-    return 1;
-  }
-
-  PlotLine *tl = ind.line(set[3]);
-  if (tl)
-  {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
-    return 1;
-  }
-
-  bool ok;
-  int period = set[4].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _indicator << "::getCUS: invalid period settings" << set[4];
-    return 1;
-  }
-
-  PlotFactory fac;
-  int lineType = fac.typeFromString(set[5]);
-  if (lineType == -1)
-  {
-    qDebug() << _indicator << "::getCUS: invalid plot type" << set[5];
-    return 1;
-  }
-
-  QColor color(set[6]);
-  if (! color.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid color" << set[6];
-    return 1;
-  }
-
-  PlotLine *line = getWILLR(data, period, lineType, color);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[3]);
-
-  ind.setLine(set[3], line);
-
-  return 0;
-}
-
-PlotLine * WILLR::getWILLR (BarData &data, int period, int lineType, QColor &color)
-{
-  if (data.count() < period)
-    return 0;
-
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
-
-  TA_RetCode rc = TA_WILLR(0,
-                           size - 1,
-                           &high[0],
-                           &low[0],
-                           &close[0],
-                           period,
-                           &outBeg,
-                           &outNb,
-                           &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _indicator << "::getWILLR: TA-Lib error" << rc;
-    return 0;
-  }
-
-  PlotFactory fac;
-  PlotLine *line = fac.plot(lineType);
-  if (! line)
-    return 0;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    PlotLineBar bar(color, out[outLoop]);
-    line->setData(dataLoop, bar);
-    dataLoop--;
-    outLoop--;
-  }
-
-  return line;
+  FunctionWILLR f;
+  return f.script(set, ind, data);
 }
 
 int WILLR::dialog (int)
@@ -185,7 +80,7 @@ int WILLR::dialog (int)
   _settings.getData(Color, d);
   dialog->addColorItem(Color, page, QObject::tr("Color"), d);
 
-  PlotFactory fac;
+  PlotStyleFactory fac;
   QStringList plotList;
   fac.list(plotList, TRUE);
 

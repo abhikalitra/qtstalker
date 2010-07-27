@@ -68,7 +68,6 @@ class BarData
     double getMax ();
     double getMin ();
     void getInputFields (QStringList &);
-    PlotLine * getInput (BarData::InputType, int, QColor &);
     PlotLine * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
     Bar & getBar (int);

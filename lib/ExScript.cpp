@@ -21,7 +21,6 @@
 
 #include "ExScript.h"
 #include "SCIndicator.h"
-#include "SCPlot.h"
 #include "SCGroup.h"
 #include "SCTest.h"
 #include "SCSymbol.h"
@@ -37,7 +36,6 @@ ExScript::ExScript ()
   _functionList << "CO";
   _functionList << "INDICATOR";
   _functionList << "GROUP";
-  _functionList << "PLOT";
   _functionList << "SYMBOL";
   _functionList << "TEST";
   
@@ -160,13 +158,6 @@ void ExScript::readFromStdout ()
     {
       SCGroup sc;
       sc.calculate(l, ba);
-      _proc->write(ba);
-      break;
-    }
-    case PLOT:
-    {
-      SCPlot sc;
-      sc.calculate(l, _indicator, ba);
       _proc->write(ba);
       break;
     }
