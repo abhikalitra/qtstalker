@@ -19,6 +19,12 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Chart object database. Used for storing/returning chart object settings for any chart objects
+// created on charts.
+// *************************************************************************************************
+
+
 #ifndef CO_DATA_BASE_HPP
 #define CO_DATA_BASE_HPP
 

@@ -20,8 +20,7 @@ To Do:
 - add some qtstalker plugins to display details data from QuoteServer
 - add search method to quoteserver details plugin
 - convert all blocking dialogs to non blocking
-- add more control options to the QuoteServer dialog eg. shutdown/restart options when changing settings
-
+- add some example rules to the CSV plugin so noobs have an idea of construction (wait till release)
 
 
 Priority

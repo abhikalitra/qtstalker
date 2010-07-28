@@ -155,7 +155,7 @@ void QtstalkerApp::createGUI (Config &)
 
 void QtstalkerApp::createToolBars ()
 {
-  // construct the left side toolbar
+  // construct the cursor/chart object toolbar
   _toolBar2 = new COToolBar;
   addToolBar(_toolBar2);
   _toolBar2->setOrientation(Qt::Vertical);
@@ -236,12 +236,6 @@ void QtstalkerApp::createToolBars ()
   connect(_recentCharts, SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
   connect(this, SIGNAL(signalSaveSettings()), _recentCharts, SLOT(save()));
   connect(this, SIGNAL(signalLoadSettings()), _recentCharts, SLOT(load()));
-
-  // add this to right justify everything after on the toolbar
-//  spacerWidget = new QWidget;
-//  spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-//  spacerWidget->setVisible(true);
-//  toolbar->addWidget(spacerWidget);
 }
 
 void QtstalkerApp::loadSettings (Config &config)
@@ -297,6 +291,7 @@ void QtstalkerApp::loadChart (BarData symbol)
 
   _currentChart = symbol;
 
+  // construct a QuoteServer command to get the quotes
   QStringList l;
   l << "Quotes";
   if (_dateRangeButton->isChecked())
@@ -316,7 +311,8 @@ void QtstalkerApp::loadChart (BarData symbol)
     l << QString::number(_dateRange->dateRange());
   
   QString command = l.join(",") + "\n";
-  
+
+  // create a thread and not block until results are returned
   QuoteServerRequestThread *r = new QuoteServerRequestThread(this, command);
   connect(r, SIGNAL(signalDone(QString)), this, SLOT(loadChart2(QString)), Qt::QueuedConnection);
   connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
@@ -325,6 +321,7 @@ void QtstalkerApp::loadChart (BarData symbol)
 
 void QtstalkerApp::loadChart2 (QString data)
 {
+  // we got results from a QuoteServer thread command
   // set plots to empty
   _chartLayout->clearIndicator();
 
@@ -332,12 +329,17 @@ void QtstalkerApp::loadChart2 (QString data)
   BarData bd = _currentChart;
   bd.setBarLength((BarData::BarLength) _barLengthButtons->length());
   bd.setBars(data);
-  
+
+  // adjust the starting position of the displayed chart to show a full page of the most recent bars
   setSliderStart(bd.count());
 
+  // set the window title to update what symbol we are displaying
   setWindowTitle(getWindowCaption());
+
+  // clear the status bar of any messages
   statusMessage(QString());
 
+  // tell the charts to update with the new bar data
   _chartLayout->loadPlots(bd, _plotSlider->getValue());
 }
 
@@ -373,6 +375,7 @@ void QtstalkerApp::dataWindow ()
 
 void QtstalkerApp::chartUpdated ()
 {
+  // we are here because something wants us to reload the chart with fresh bars
   _sidePanel->updateChartTab();
 
   if (_currentChart.getSymbol().isEmpty())
@@ -383,17 +386,20 @@ void QtstalkerApp::chartUpdated ()
 
 void QtstalkerApp::statusMessage (QString d)
 {
+  // update the status bar with a new message from somewhere
   _statusBar->showMessage(d);
   wakeup();
 }
 
 void QtstalkerApp::wakeup ()
 {
+  // force app to process the event que so we keep from any blocking
   qApp->processEvents();
 }
 
 void QtstalkerApp::appFont (QFont d)
 {
+  // app font changed, update the app with it and NO BLOCKING
   qApp->setFont(d, 0);
   wakeup();
 }
@@ -404,6 +410,7 @@ void QtstalkerApp::appFont (QFont d)
 
 void QtstalkerApp::setSliderStart (int count)
 {
+  // figure out a nice spot to show the most recent bars in the charts
   if (_currentChart.getSymbol().isEmpty())
     return;
 

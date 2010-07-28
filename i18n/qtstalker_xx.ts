@@ -325,30 +325,6 @@
         <source>Configure Quote Server</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quote server hostname</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quote server hostname (default 127.0.0.1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quote server port #</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hostname missing.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DataWindow</name>
@@ -1141,14 +1117,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Long</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Ref 1 Color</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1785,6 +1753,57 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Add a new indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QuoteServerDialog</name>
+    <message>
+        <source>Quote server hostname</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>default 127.0.0.1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quote server port #</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure Quote Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restarts the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hostname missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error stopping the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error starting the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to restart the server?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

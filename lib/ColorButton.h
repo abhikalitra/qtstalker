@@ -19,6 +19,12 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Custom class for PrefDialog to display a nice color on a button so we can display the color
+// without having to bring up the color dialog first. When pressed, displays the color selection dialog.
+// Used by PrefDialog
+// *************************************************************************************************
+
 #ifndef COLORBUTTON_HPP
 #define COLORBUTTON_HPP
 

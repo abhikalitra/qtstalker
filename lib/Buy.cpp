@@ -21,7 +21,6 @@
 
 
 #include "Buy.h"
-#include "PrefDialog.h"
 #include "Config.h"
 #include "CODataBase.h"
 
@@ -34,7 +33,8 @@ Buy::Buy ()
 {
   _plugin = "Buy";
   _price = 0;
-
+  _dialog = 0;
+  
   Config config;
   config.getData(Config::DefaultBuyColor, _color);
   if (! _color.isValid())
@@ -111,24 +111,32 @@ void Buy::getInfo (Setting *info)
 
 void Buy::dialog ()
 {
-  PrefDialog *dialog = new PrefDialog;
+  if (_dialog)
+    return;
+  
+  _dialog = new PrefDialog;
   QString s = QObject::tr("Edit Buy");
-  dialog->setWindowTitle(s);
+  _dialog->setWindowTitle(s);
   s = QObject::tr("Settings");
   int page = 0;
   int pid = 0 ;
-  dialog->addPage(page, s);
+  _dialog->addPage(page, s);
 
   s = QObject::tr("Color");
-  dialog->addColorItem(pid++, page, s, _color);
+  _dialog->addColorItem(pid++, page, s, _color);
 
   s = QObject::tr("Price");
-  dialog->addDoubleItem(pid++, page, s, _price);
+  _dialog->addDoubleItem(pid++, page, s, _price);
 
   int def = FALSE;
   s = QObject::tr("Default");
-  dialog->addCheckItem(pid++, page, s, def);
+  _dialog->addCheckItem(pid++, page, s, def);
 
+  connect(_dialog, SIGNAL(accepted()), this, SLOT(dialogAccepted()));
+  connect(_dialog, SIGNAL(rejected()), this, SLOT(dialogRejected()));
+  _dialog->show();
+
+/*  
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -150,6 +158,38 @@ void Buy::dialog ()
   _saveFlag = TRUE;
   
   delete dialog;
+*/
+}
+
+void Buy::dialogAccepted ()
+{
+  if (! _dialog)
+    return;
+  
+  int pid = 0;
+  _dialog->getColor(pid++, _color);
+  _price = _dialog->getDouble(pid++);
+  int def = _dialog->getCheck(pid++);
+
+  if (def)
+  {
+    Config config;
+    config.setData((int) Config::DefaultBuyColor, _color);
+  }
+
+  _saveFlag = TRUE;
+
+  delete _dialog;
+  _dialog = 0;
+}
+
+void Buy::dialogRejected ()
+{
+  if (! _dialog)
+    return;
+  
+  delete _dialog;
+  _dialog = 0;
 }
 
 void Buy::load (QSqlQuery &q)

@@ -23,7 +23,6 @@
 #include "Config.h"
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
-//#include "../pics/indicator.xpm"
 #include "../pics/script.xpm"
 #include "../pics/plugin.xpm"
 
@@ -77,14 +76,14 @@ void SidePanel::createTabs ()
   connect(_scriptTab, SIGNAL(signalScriptDone()), _chartTab, SLOT(updateList()));
   connect(_scriptTab, SIGNAL(signalScriptDone()), _groupTab, SLOT(updateList()));
   _tabs->addTab(_scriptTab, QIcon(script_xpm), QString());
-  _tabs->setTabToolTip(3, tr("Scripts"));
+  _tabs->setTabToolTip(2, tr("Scripts"));
 
   // plugin tab
   _pluginTab = new PluginPage;
   connect(_pluginTab, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
   connect(_pluginTab, SIGNAL(signalChartRefresh()), this, SIGNAL(signalReloadChart()));
   _tabs->addTab(_pluginTab, QIcon(plugin_xpm), QString());
-  _tabs->setTabToolTip(4, tr("Plugins"));
+  _tabs->setTabToolTip(3, tr("Plugins"));
 }
 
 void SidePanel::load ()

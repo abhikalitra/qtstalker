@@ -673,10 +673,20 @@
 
            Removed the script api to the VOL plugin. This was redundant by other commands.
 
-           Added option to restart the QuoteServer if the port number is changed.
+           QuoteServer restarts with the new settings if modified from the chart panel dialog.
 
            Re-arranged the script launcher buttons on the script panel from 2 rows to 3 so that we can shrink
-           the size of the side panel a little more.
+           the size of the side panel a little more. Perhaps make it more customizable in the future.
+
+20100727:  Updated docs with QuoteServer, CSV, Yahoo info and lots more.
+
+           CSV plugin dialogs are now non blocking.
+
+           Added a refresh option to restart the QuoteServer from the QuoteServerDialog.
+
+           
+
+
 
 
 

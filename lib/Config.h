@@ -19,6 +19,12 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// All the qtstalker app settings along with any plugin settings are stored using this interface
+// to a sqlite db. the enums serve as a way of keeping the keys from being corrupted. plugins use
+// a string key to keep things local to the plugin that Config will not know about. just dont use
+// any numbers for keys or there will be a conflict between app and plugin settings
+// *************************************************************************************************
 
 #ifndef CONFIG_HPP
 #define CONFIG_HPP

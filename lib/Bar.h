@@ -19,6 +19,10 @@
  *  USA.
  */
 
+// ******************************************************
+// This class is used for holding 1 bar or quote of data.
+// ******************************************************
+
 #ifndef BAR_HPP
 #define BAR_HPP
 

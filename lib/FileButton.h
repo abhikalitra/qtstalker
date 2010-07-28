@@ -19,6 +19,11 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Custom pushbutton that displays a selected file on the button or if more than 1 file, displays
+// the total number of files selected. When pressed, opens the file selection dialog. Used by PrefDialog
+// *************************************************************************************************
+
 #ifndef FILE_BUTTON_HPP
 #define FILE_BUTTON_HPP
 

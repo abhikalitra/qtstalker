@@ -19,15 +19,22 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Buy chart object
+// *************************************************************************************************
+
 #ifndef BUY_HPP
 #define BUY_HPP
 
 #include <QDateTime>
 
 #include "COPlugin.h"
+#include "PrefDialog.h"
 
 class Buy : public COPlugin
 {
+  Q_OBJECT
+
   public:
     Buy ();
     void draw (PlotData &, DateBar &, Scaler &);
@@ -42,11 +49,16 @@ class Buy : public COPlugin
     int getHighLow (double &, double &);
     int inDateRange (QDateTime &, QDateTime &, DateBar &);
     int CUS (QStringList &);
+
+  public slots:
+    void dialogAccepted ();
+    void dialogRejected ();
     
   protected:
     QDateTime _date;
     double _price;
     QColor _color;
+    PrefDialog *_dialog;
 };
 
 #endif

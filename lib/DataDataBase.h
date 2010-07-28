@@ -19,6 +19,10 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Another base class for any classes that need to use the ~/qtstalker/data.sqlite db, inherit this
+// *************************************************************************************************
+
 #ifndef DATA_DATA_BASE_HPP
 #define DATA_DATA_BASE_HPP
 

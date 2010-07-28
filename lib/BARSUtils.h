@@ -19,6 +19,10 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Used by indicator plugins to create an OHLC PlotStyle with up/down/neutral colors
+// *************************************************************************************************
+
 #ifndef BARS_UTILS_HPP
 #define BARS_UTILS_HPP
 

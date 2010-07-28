@@ -19,6 +19,11 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Used internally by Plot and indicator plugins to store datetime info that easily indexes to a
+// specific X plot position. give it a date and it will tell you the X position on the chart
+// *************************************************************************************************
+
 #ifndef DATE_BAR_HPP
 #define DATE_BAR_HPP
 

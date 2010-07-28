@@ -19,6 +19,11 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Custom pushbutton that displays a selected font on the button and when pushed, displays the
+// font dialog. Used by PrefDialog
+// *************************************************************************************************
+
 #ifndef FONTBUTTON_HPP
 #define FONTBUTTON_HPP
 

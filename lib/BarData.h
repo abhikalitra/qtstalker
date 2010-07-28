@@ -19,6 +19,11 @@
  *  USA.
  */
 
+// ******************************************************
+// Holds all the Bar.h bars for a financial symbol
+// also holds some basic info for exchange, symbol, name etc.
+// ******************************************************
+
 #ifndef BAR_DATA_HPP
 #define BAR_DATA_HPP
 

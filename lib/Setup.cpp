@@ -202,6 +202,7 @@ void Setup::setupQuoteServer (Config &config)
   // quoteserver is not running, start it
 
   // attempt to find a free port # and use it
+/*  
   QTcpServer serv;
   if (! serv.listen(QHostAddress("127.0.0.1"), 0))
   {
@@ -210,6 +211,7 @@ void Setup::setupQuoteServer (Config &config)
   }
 
   qDebug() << "Setup::setupQuoteServer" << serv.serverPort();
+*/
 
   QString serverName;
   config.getData(Config::QuoteServerName, serverName);
@@ -219,10 +221,10 @@ void Setup::setupQuoteServer (Config &config)
   command.append("QuoteServer");
   command.append(" -p ");
   command.append(QString::number(serverPort));
-  QProcess::startDetached(command);
-
-  // for testing, check if the quote server is running, kill it and let the main app start it again
-//  QString command("killall QuoteServer");
-//  QProcess::execute(command);
+  int rc = QProcess::startDetached(command);
+  if (! rc)
+  {
+    qDebug() << "Setup::setupQuoteServer: error starting the server";
+  }
 }
 

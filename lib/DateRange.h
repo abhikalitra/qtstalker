@@ -19,6 +19,11 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Input the Range and input datetime and the output datetime will be a ranged back from the
+// input. eg. Range is Day, output datetime will be one day back from the input datetime
+// *************************************************************************************************
+
 #ifndef DATE_RANGE_HPP
 #define DATE_RANGE_HPP
 

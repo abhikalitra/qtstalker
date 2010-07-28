@@ -27,6 +27,7 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QString>
+#include <QPushButton>
 
 class QuoteServerDialog : public QDialog
 {
@@ -37,6 +38,7 @@ class QuoteServerDialog : public QDialog
 
   public slots:
     void done ();
+    void refreshServer ();
 
   private:
     QLineEdit *_hostName;
@@ -44,6 +46,7 @@ class QuoteServerDialog : public QDialog
     QDialogButtonBox *_buttonBox;
     int _oport;
     QString _ohostName;
+    QPushButton *_refreshButton;
 };
 
 #endif

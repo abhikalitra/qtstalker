@@ -188,8 +188,8 @@ void CSVDialog::editRule ()
 void CSVDialog::editRule (QString name)
 {
   CSVRuleDialog *dialog = new CSVRuleDialog(name);
-  dialog->exec();
-  loadSettings();  
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
 }
 
 void CSVDialog::deleteRule ()

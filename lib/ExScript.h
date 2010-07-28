@@ -19,6 +19,11 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Script interface for qtstalker scripts during runtime. Serves as a IPC between script and
+// qtstalker to route data back and forth. all scripts that run use this to execute.
+// *************************************************************************************************
+
 #ifndef EXSCRIPT_HPP
 #define EXSCRIPT_HPP
 

@@ -39,5 +39,36 @@ the dialog.<br>
 <br>
 <br>
 <br>
+<span style="font-weight: bold;">NOTES:</span> A few things to keep in
+mind when using QuoteServer...<br>
+<br>
+<ol>
+  <li>All commands sent to QuoteServer's API must be delimited by
+a&nbsp; newline
+'\n' character. This signals the server the end of the command has been
+received and can then act on it. If no newline is received, then the
+server will wait 3 seconds and time out.</li>
+  <li>All commands sent to QuoteServer will return text also delimited
+by the
+newline '\n' character. The returned text is either the data requested
+by the command in a specific format, 'OK\n' for success or 'ERROR\n'
+for an error condition. The ~/QuoteServer/QuoteServer.log file will
+contain the details for the error.</li>
+  <li>Only 1 command per socket connection is allowed. In other words,
+each
+time you send a command to QuoteServer, you are allowed only one
+command/return transaction. So if you wanted to run a series of
+commands to QuoteServer, you would have to establish a new socket each
+time. The server does this to minimize long write transactions between
+threads so one thread does not hog the sql tables with a lock on the
+database while making other threads/users wait.</li>
+  <li>There is a default 3 second time out provision for sending and
+receiving data to and from QuoteServer. If a script opens a socket and
+3 seconds pass before any data is sent, then the server will close the
+socket. Same goes for receiving data from the server.</li>
+</ol>
+<br>
+<br>
+<br>
 </body>
 </html>

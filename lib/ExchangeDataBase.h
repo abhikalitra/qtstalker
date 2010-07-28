@@ -19,6 +19,12 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Interface for the Exchange db. This holds a list of all ISO????? exchange symbols so that
+// we can keep a standard exchange naming system. The db is updated at each app startup depending
+// if the docs/exchanges.csv file has been modified.
+// *************************************************************************************************
+
 #ifndef EXCHANGE_DATA_BASE_HPP
 #define EXCHANGE_DATA_BASE_HPP
 

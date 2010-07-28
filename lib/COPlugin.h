@@ -19,6 +19,11 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Base class for chart objects. Buy,Sell etc inherit this. Used to be a plugin hence the COPlugin
+// class name. FIXME low priority
+// *************************************************************************************************
+
 #ifndef CO_PLUGIN_HPP
 #define CO_PLUGIN_HPP
 

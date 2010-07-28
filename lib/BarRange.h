@@ -19,6 +19,10 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Calculates a start and end datetime range given a specific datetime and length
+// *************************************************************************************************
+
 #ifndef BAR_RANGE_HPP
 #define BAR_RANGE_HPP
 

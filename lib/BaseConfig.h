@@ -19,6 +19,10 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// Base class for config databases. saves/returns different types of data and converts to a string
+// for storage in an sqlite db.
+// *************************************************************************************************
 
 #ifndef BASECONFIG_HPP
 #define BASECONFIG_HPP
