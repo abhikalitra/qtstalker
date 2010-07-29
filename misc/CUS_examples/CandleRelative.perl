@@ -33,8 +33,12 @@ for (; $count <= $range[1]; $count++, $pcount++)
   $close = <STDIN>; chomp($close); if ($close eq "ERROR") { next; } # empty index position, continue
 
   # get the yesterdays close value
-  print STDOUT "INDICATOR,GET_INDEX,cl,$pcount";
-  $yclose = <STDIN>; chomp($yclose); if ($yclose eq "ERROR") { next; } # empty index position, continue
+  if ($pcount == -1) { next; }
+  else
+  {
+    print STDOUT "INDICATOR,GET_INDEX,cl,$pcount";
+    $yclose = <STDIN>; chomp($yclose); if ($yclose eq "ERROR") { next; } # empty index position, continue
+  }
 
   if ($close > $yclose)
   {
