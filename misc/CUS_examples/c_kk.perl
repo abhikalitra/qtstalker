@@ -6,7 +6,7 @@
 $|++;
 
 # get the Candles
-print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles,dimgray";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # set the color
