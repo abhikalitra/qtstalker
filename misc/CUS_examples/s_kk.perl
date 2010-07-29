@@ -6,35 +6,35 @@
 $|++;
 
 # get Kirikomi
-print STDOUT "INDICATOR,PLUGIN,CANDLES,PIERCING,s-kk-1,0";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,PIERCING,Kirikomi,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # set the plot style
-print STDOUT "INDICATOR,SET_PLOT_STYLE,s-kk-1,Histogram Bar";
+print STDOUT "INDICATOR,SET_PLOT_STYLE,Kirikomi,Histogram Bar";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # set the color
-print STDOUT "INDICATOR,SET_COLOR_ALL,s-kk-1,yellow";
+print STDOUT "INDICATOR,SET_COLOR_ALL,Kirikomi,yellow";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # plot it
-print STDOUT "INDICATOR,SET_PLOT,s-kk-1";
+print STDOUT "INDICATOR,SET_PLOT,Kirikomi";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 
 # get Kabuse
-print STDOUT "INDICATOR,PLUGIN,CANDLES,DARKCLOUDCOVER,s-kk-2,0";
+print STDOUT "INDICATOR,PLUGIN,CANDLES,DARKCLOUDCOVER,Kabuse,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # set the plot style
-print STDOUT "INDICATOR,SET_PLOT_STYLE,s-kk-2,Histogram Bar";
+print STDOUT "INDICATOR,SET_PLOT_STYLE,Kabuse,Histogram Bar";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # set the color
-print STDOUT "INDICATOR,SET_COLOR_ALL,s-kk-2,orange";
+print STDOUT "INDICATOR,SET_COLOR_ALL,Kabuse,orange";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # plot it
-print STDOUT "INDICATOR,SET_PLOT,s-kk-2";
+print STDOUT "INDICATOR,SET_PLOT,Kabuse";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
