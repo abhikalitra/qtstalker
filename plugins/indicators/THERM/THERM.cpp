@@ -30,8 +30,9 @@
 
 #include "THERM.h"
 #include "FunctionMA.h"
-#include "PlotStyleFactory.h"
+#include "THERMDialog.h"
 #include "FunctionTHERM.h"
+#include "Curve.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -39,74 +40,64 @@
 THERM::THERM ()
 {
   _indicator = "THERM";
-
-  _settings.setData(DownColor, "green");
-  _settings.setData(UpColor, "magenta");
-  _settings.setData(ThreshColor, "red");
-  _settings.setData(MAColor, "yellow");
-  _settings.setData(MAPlot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(MALabel, "THERM_MA");
-  _settings.setData(Threshold, 3);
-  _settings.setData(Smoothing, 2);
-  _settings.setData(MAPeriod, 22);
-  _settings.setData(MAType, "SMA");
-  _settings.setData(SmoothingType, "SMA");
 }
 
 int THERM::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QString s;
-  int smoothing = _settings.getInt(Smoothing);
+  int smoothing = settings.getInt(Smoothing);
 
   FunctionMA mau;
-  _settings.getData(SmoothingType, s);
+  settings.getData(SmoothingType, s);
   int type = mau.typeFromString(s);
 
   FunctionTHERM f;
-  PlotLine *line = f.calculate(data, smoothing, type);
+  Curve *line = f.calculate(data, smoothing, type);
   if (! line)
     return 1;
 
-  s = "Histogram Bar";
-  line->setType(s);
+  line->setType(Curve::HistogramBar);
 
-  _settings.getData(MAColor, s);
-  line->setColor(s);
+  settings.getData(MAColor, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   // therm ma
-  int maPeriod = _settings.getInt(MAPeriod);
+  int maPeriod = settings.getInt(MAPeriod);
 
-  _settings.getData(MAType, s);
+  settings.getData(MAType, s);
   int maType = mau.typeFromString(s);
 
-  PlotLine *ma = mau.calculate(line, maPeriod, maType);
+  Curve *ma = mau.calculate(line, maPeriod, maType);
   if (! ma)
   {
     delete line;
     return 1;
   }
 
-  _settings.getData(MAPlot, s);
-  ma->setType(s);
+  settings.getData(MAPlot, s);
+  ma->setType((Curve::Type) ma->typeFromString(s));
 
-  _settings.getData(MAColor, s);
-  ma->setColor(s);
+  settings.getData(MAColor, s);
+  c.setNamedColor(s);
+  ma->setColor(c);
 
-  _settings.getData(MALabel, s);
+  settings.getData(MALabel, s);
   ma->setLabel(s);
 
   // assign therm colors
-  double threshold = _settings.getDouble(Threshold);
+  double threshold = settings.getDouble(Threshold);
 
-  _settings.getData(ThreshColor, s);
+  settings.getData(ThreshColor, s);
   QColor threshColor(s);
-  _settings.getData(UpColor, s);
+  settings.getData(UpColor, s);
   QColor upColor(s);
-  _settings.getData(DownColor, s);
+  settings.getData(DownColor, s);
   QColor downColor(s);
 
   QList<int> keys;
@@ -115,8 +106,8 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *lbar = line->data(keys.at(loop));
-    PlotLineBar *mbar = ma->data(keys.at(loop));
+    CurveBar *lbar = line->bar(keys.at(loop));
+    CurveBar *mbar = ma->bar(keys.at(loop));
     
     if (! mbar)
       lbar->setColor(downColor);
@@ -137,13 +128,11 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
     }
   }
 
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
-  s = "1";
-  ind.setLine(s, ma);
-  ind.addPlotOrder(s);
+  ma->setZ(1);
+  ind.setLine(1, ma);
 
   return 0;
 }
@@ -154,71 +143,27 @@ int THERM::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int THERM::dialog (int)
+IndicatorPluginDialog * THERM::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new THERMDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(UpColor, d);
-  dialog->addColorItem(UpColor, page, QObject::tr("Up Color"), d);
-
-  _settings.getData(DownColor, d);
-  dialog->addColorItem(DownColor, page, QObject::tr("Down Color"), d);
-
-  _settings.getData(ThreshColor, d);
-  dialog->addColorItem(ThreshColor, page, QObject::tr("Threshold Color"), d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addDoubleItem(Threshold, page, QObject::tr("Threshold"), _settings.getDouble(Threshold), 0, 100000);
-
-  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), _settings.getInt(Smoothing), 1, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-  
-  _settings.getData(SmoothingType, d);
-  dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);
-
-  page++;
-  k = QObject::tr("MA");
-  dialog->addPage(page, k);
-
-  _settings.getData(MAColor, d);
-  dialog->addColorItem(MAColor, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(MAPlot, d);
-  dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(MALabel, d);
-  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), _settings.getInt(MAPeriod), 1, 100000);
-
-  _settings.getData(MAType, d);
-  dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void THERM::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(DownColor, "green");
+  set.setData(UpColor, "magenta");
+  set.setData(ThreshColor, "red");
+  set.setData(MAColor, "yellow");
+  set.setData(MAPlot, "Line");
+  set.setData(Label, _indicator);
+  set.setData(MALabel, "THERM_MA");
+  set.setData(Threshold, 3);
+  set.setData(Smoothing, 2);
+  set.setData(MAPeriod, 22);
+  set.setData(MAType, "SMA");
+  set.setData(SmoothingType, "SMA");
+  i.setSettings(set);
 }
 
 //*************************************************************

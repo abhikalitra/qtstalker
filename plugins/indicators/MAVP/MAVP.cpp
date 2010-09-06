@@ -22,38 +22,32 @@
 #include "MAVP.h"
 #include "FunctionMAVP.h"
 #include "FunctionMA.h"
-#include "BARSUtils.h"
-#include "PlotStyleFactory.h"
+#include "FunctionBARS.h"
+#include "MAVPDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 MAVP::MAVP ()
 {
   _indicator = "MAVP";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Input, "Close");
-  _settings.setData(Input2, "Close");
-  _settings.setData(Min, 2);
-  _settings.setData(Max, 30);
-  _settings.setData(MAType, "SMA");
 }
 
 int MAVP::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QString s;
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  _settings.getData(Input2, s);
-  PlotLine *in2 = data.getInput(data.getInputType(s));
+  settings.getData(Input2, s);
+  Curve *in2 = data.getInput(data.getInputType(s));
   if (! in2)
   {
     delete in;
@@ -61,15 +55,15 @@ int MAVP::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  int min = _settings.getInt(Min);
-  int max = _settings.getInt(Max);
+  int min = settings.getInt(Min);
+  int max = settings.getInt(Max);
 
   FunctionMA mau;
-  _settings.getData(MAType, s);
+  settings.getData(MAType, s);
   int ma = mau.typeFromString(s);
 
   FunctionMAVP f;
-  PlotLine *line = f.calculate(in, in2, min, max, ma);
+  Curve *line = f.calculate(in, in2, min, max, ma);
   if (! line)
   {
     delete in;
@@ -77,30 +71,29 @@ int MAVP::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  BARSUtils b;
-  PlotLine *bars = b.getBARS(data, up, down, neutral);
+  FunctionBARS b;
+  Curve *bars = b.getBARS(data, up, down, neutral);
   if (bars)
   {
-    s = "0";
-    ind.setLine(s, bars);
-    ind.addPlotOrder(s);
+    bars->setZ(0);
+    ind.setLine(0, bars);
   }
 
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
   delete in;
   delete in2;
@@ -114,60 +107,23 @@ int MAVP::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int MAVP::dialog (int)
+IndicatorPluginDialog * MAVP::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new MAVPDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  _settings.getData(Input2, d);
-  dialog->addComboItem(Input2, page, QObject::tr("Input 2"), inputList, d);
-
-  dialog->addIntItem(Min, page, QObject::tr("Min"), _settings.getInt(Min), 2, 100000);
-
-  dialog->addIntItem(Max, page, QObject::tr("Max"), _settings.getInt(Max), 2, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-
-  _settings.getData(MAType, d);
-  dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void MAVP::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Plot, "Line");
+  set.setData(Label, _indicator);
+  set.setData(Input, "Close");
+  set.setData(Input2, "Close");
+  set.setData(Min, 2);
+  set.setData(Max, 30);
+  set.setData(MAType, "SMA");
+  i.setSettings(set);
 }
 
 //*************************************************************

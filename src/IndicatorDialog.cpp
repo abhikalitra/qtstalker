@@ -21,172 +21,127 @@
 
 #include "IndicatorDialog.h"
 #include "IndicatorDataBase.h"
+#include "Config.h"
 #include "IndicatorPluginFactory.h"
 #include "IndicatorPlugin.h"
-#include "Config.h"
-#include "PrefDialog.h"
 
 #include <QtDebug>
-#include <QObject>
 #include <QMessageBox>
+#include <QLayout>
+#include <QLabel>
+#include <QStringList>
 
-IndicatorDialog::IndicatorDialog ()
+IndicatorDialog::IndicatorDialog () : QDialog (0, 0)
 {
-}
+  setAttribute(Qt::WA_DeleteOnClose);
+  
+  setWindowTitle(tr("QtStalker: New Indicator"));
 
-int IndicatorDialog::newDialog ()
-{
-  Config config;
-  QStringList l;
-  config.getData(Config::IndicatorPluginList, l);
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(10);
+  vbox->setMargin(5);
+  setLayout(vbox);
 
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("New Indicator"));
-  QString s = QObject::tr("Main");
-  int page = 0;
-  int pos = 0;
-  dialog->addPage(page, s);
+  QGridLayout *grid = new QGridLayout;
+  grid->setSpacing(2);
+  grid->setColumnStretch(1, 1);
+  vbox->addLayout(grid);
+
+  int row = 0;
+  int col = 0;
+
+  // name
+  QLabel *label = new QLabel(tr("Method"));
+  grid->addWidget(label, row, col++);
 
   // create a unique default name
-  QStringList nl;
   IndicatorDataBase db;
-  db.getIndicatorList(nl);
+  QStringList l;
+  db.getIndicatorList(l);
   int loop = -1;
+  QString d;
   do
   {
     loop++;
-    _name = QObject::tr("Indicator") + QString::number(loop);
+    d = tr("Indicator") + QString::number(loop);
   }
-  while (nl.indexOf(_name) > -1);
+  while (l.indexOf(d) > -1);
 
-  s = QObject::tr("Name");
-  dialog->addTextItem(pos++, page, s, _name, QObject::tr("Indicator name"));
+  _name = new QLineEdit(d);
+  _name->setToolTip(tr("Indicator name"));
+  grid->addWidget(_name, row++, col--);
 
-  s = QObject::tr("Indicator");
-  QString indicator;
-  dialog->addComboItem(pos++, page, s, l, 0);
+  // indicator
+  label = new QLabel(tr("Indicator"));
+  grid->addWidget(label, row, col++);
 
-  s = QObject::tr("Tab Row");
-  dialog->addIntItem(pos++, page, s, 1, 1, 3);
+  Config config;
+  config.getData(Config::IndicatorPluginList, l);
+  
+  _indicator = new QComboBox;
+  _indicator->addItems(l);
+  grid->addWidget(_indicator, row++, col--);
+  
+  // tab row
+  label = new QLabel(tr("Tab Row"));
+  grid->addWidget(label, row, col++);
 
-  s = QObject::tr("Tab Column");
-  dialog->addIntItem(pos++, page, s, 1, 1, 3);
+  _row = new QSpinBox;
+  _row->setRange(1, 3);
+  grid->addWidget(_row, row++, col--);
+  
+  // tab column
+  label = new QLabel(tr("Tab Column"));
+  grid->addWidget(label, row, col++);
 
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
+  _col = new QSpinBox;
+  _col->setRange(1, 3);
+  grid->addWidget(_col, row++, col--);
+
+  // buttonbox
+  _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
+  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  vbox->addWidget(_buttonBox);
+
+  vbox->addStretch(1);
+}
+
+void IndicatorDialog::done ()
+{
+  if (_name->text().isEmpty())
   {
-    delete dialog;
-    return 1;
+    QMessageBox::information(0,
+                             tr("Qtstalker: New Indicator Error"),
+                             tr("Name missing."));
+    return;
   }
-
-  pos = 0;
-  dialog->getItem(pos++, _name);
-  if (_name.isEmpty())
-  {
-    QMessageBox::information(0, QObject::tr("Qtstalker: Error"), QObject::tr("Name missing."));
-    delete dialog;
-    return 1;
-  }
-
-  dialog->getItem(pos++, indicator);
-  int tabRow = dialog->getInt(pos++);
-  int column = dialog->getInt(pos++);
-
-  delete dialog;
 
   // check is name already exists
-  nl.clear();
-  db.getIndicatorList(nl);
-  if (nl.indexOf(_name) > -1)
+  IndicatorDataBase db;
+  QStringList l;
+  db.getIndicatorList(l);
+  if (l.indexOf(_name->text()) != -1)
   {
-    QMessageBox::information(0, QObject::tr("Qtstalker: Error"), QObject::tr("This indicator already exists."));
-    return 1;
+    QMessageBox::information(0,
+                             tr("Qtstalker: New Indicator Error"),
+                             tr("This indicator already exists."));
+    return;
   }
 
   Indicator i;
   i.setEnable(1);
-  i.setName(_name);
-  i.setTabRow(tabRow);
-  i.setColumn(column);
+  i.setTabRow(_row->value());
+  i.setColumn(_col->value());
 
-  IndicatorPluginFactory fac;
-  IndicatorPlugin *ip = fac.plugin(indicator);
-  if (! ip)
-    return 1;
+  QString s = _name->text();
+  i.setName(s);
 
-  rc = ip->dialog(0);
-  if (rc == QDialog::Rejected)
-    return 1;
+  s = _indicator->currentText();
+  i.setIndicator(s);
 
-  ip->settings(i);
+  emit signalDone(i);
 
-  db.setIndicator(i);
-
-  return 0;
-}
-
-int IndicatorDialog::dialog (QString name)
-{
-  _name = name;
-  Indicator i;
-  i.setName(name);
-
-  IndicatorDataBase db;
-  db.getIndicator(i);
-  QString indicator;
-  indicator = i.indicator();
-
-  IndicatorPluginFactory fac;
-  IndicatorPlugin *ip = fac.plugin(indicator);
-  if (! ip)
-    return 1;
-
-  ip->setSettings(i);
-
-  int rc = ip->dialog(0);
-  if (rc == QDialog::Rejected)
-    return 1;
-
-  ip->settings(i);
-
-  db.setIndicator(i);
-
-  return 0;
-}
-
-int IndicatorDialog::moveDialog (Indicator &i)
-{
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Move Indicator"));
-  QString s = QObject::tr("Main");
-  int page = 0;
-  int pos = 0;
-  dialog->addPage(page, s);
-
-  s = QObject::tr("Tab Row");
-  dialog->addIntItem(pos++, page, s, i.tabRow(), 1, 3);
-
-  s = QObject::tr("Tab Column");
-  dialog->addIntItem(pos++, page, s, i.column(), 1, 3);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return 1;
-  }
-
-  pos = 0;
-  i.setTabRow(dialog->getInt(pos++));
-  i.setColumn(dialog->getInt(pos++));
-
-  delete dialog;
-
-  return 0;
-}
-
-QString & IndicatorDialog::name ()
-{
-  return _name;
+  accept();
 }
 

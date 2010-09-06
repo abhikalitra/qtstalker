@@ -2,6 +2,322 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
+    <name>ADDialog</name>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ADXDialog</name>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AROONDialog</name>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ATRDialog</name>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BARSDialog</name>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BARS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BBANDSDialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upper Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lower Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upper</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Middle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lower</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BARS</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BETADialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index symbol used for comparison eg. SP500</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BOPDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BarLengthButtons</name>
     <message>
         <source>Previous Bar Length</source>
@@ -11,19 +327,176 @@
         <source>Next Bar Length</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Bar Length</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
-    <name>COToolBar</name>
+    <name>CANDLESDialog</name>
     <message>
-        <source>Select Cursor</source>
+        <source>Candle Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Zoom Cursor</source>
+        <source>Method Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Crosshairs Cursor</source>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Penetration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CCIDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CMODialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CORRELDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index symbol used for comparison eg. SP500</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 3</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -245,6 +718,30 @@
     </message>
 </context>
 <context>
+    <name>CUSDialog</name>
+    <message>
+        <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The interpreter command line and any switches required.
+eg. perl -l -T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The script location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChartLayout</name>
     <message>
         <source>Qtstalker: Warning</source>
@@ -260,6 +757,262 @@
     </message>
     <message>
         <source> deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectBuyDialog</name>
+    <message>
+        <source>Edit Buy Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectDialog</name>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete group this chart object?</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectHLineDialog</name>
+    <message>
+        <source>Edit HLine Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectRetracementDialog</name>
+    <message>
+        <source>Edit Retracement Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Levels</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectSellDialog</name>
+    <message>
+        <source>Edit Sell Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectTLineDialog</name>
+    <message>
+        <source>Edit TLine Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectTextDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Text Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectVLineDialog</name>
+    <message>
+        <source>Edit VLine Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -332,22 +1085,6 @@
         <source>Date</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DateRangeButton</name>
@@ -378,6 +1115,10 @@
         <source>Next Date Range</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DocsAction</name>
@@ -403,6 +1144,33 @@
     </message>
     <message>
         <source>About Qtstalker</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FIDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -547,6 +1315,128 @@
     </message>
 </context>
 <context>
+    <name>HTDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phase Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quad Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phase Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quad Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phase Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quad Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phasor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sine Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lead Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sine Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lead Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sine Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lead Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sine</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IndicatorDialog</name>
+    <message>
+        <source>QtStalker: New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab Row</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab Column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: New Indicator Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This indicator already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IndicatorPage</name>
     <message>
         <source>Qtstalker: Error</source>
@@ -675,6 +1565,368 @@ a partial match like %SI or %RSI%</source>
     </message>
 </context>
 <context>
+    <name>IndicatorPluginDialog</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>LINEARREGDialog</name>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MACDDialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MACD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Histogram</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MADialog</name>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MAMADialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast Limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow Limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Oscillator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MAVPDialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MFIDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MOMDialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PODialog</name>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PPDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>R1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>R2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>R3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>S1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>S2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>S3</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PixelSpaceButton</name>
     <message>
         <source>Set pixel spacing button 1</source>
@@ -696,54 +1948,6 @@ a partial match like %SI or %RSI%</source>
 <context>
     <name>Plot</name>
     <message>
-        <source>&amp;Edit Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete &amp;All Chart Objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete all chart objects?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Background Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bo&amp;rder Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Background Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Border Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;New Indicator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -752,15 +1956,67 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Move Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>De&amp;lete Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Delete &amp;All Chart Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Log &amp;Scaling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Chart Object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New &amp;Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New &amp;HLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New &amp;Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New &amp;Sell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Te&amp;xt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New &amp;TLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New &amp;VLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete all chart objects from this indicator?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -869,26 +2125,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Qtstalker</source>
         <translation type="unfinished"></translation>
     </message>
@@ -897,251 +2133,7 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Up Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Neutral Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upper Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lower Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Penetration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Phase Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quad Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Phase Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quad Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Phase Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quad Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sine Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lead Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sine Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lead Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sine Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lead Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast Limit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow Limit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastK Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No Decline Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Coefficient</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>V Factor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Long Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MACD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hist</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MAMA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FAMA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SlowD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>FastD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref Lines</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>-DI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>+DI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADX</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ADXR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1158,158 +2150,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>WCPrice</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Oscillator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Smoothing Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Threshold Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Threshold</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 30 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 50 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 70 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OSC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Aroon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Phasor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sine Wave</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>AD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Neutral</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upper</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lower</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Smoothing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Candle Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Method Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 1 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 2 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 3 Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref. 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Initial</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mid Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1334,175 +2174,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Exit Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Buy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Buy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place Buy arrow...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>HLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit HLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place Horizontal Line...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High Point</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low Point</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lines</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Retracement high point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Retracement low point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sell</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Sell</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place Sell arrow...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit TLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select TLine starting point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select TLine ending point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit VLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place Text...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select point to place VLine...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>C</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index symbol used for comparison eg. SP500</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The interpreter command line and any switches required.
-eg. perl -l -T</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The script location.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1599,6 +2270,98 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Move Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>HLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ST</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ED</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ET</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VLine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1808,6 +2571,92 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>ROCDialog</name>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RSIDialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RecentCharts</name>
     <message>
         <source>Recent Charts</source>
@@ -1834,6 +2683,181 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source> Right click mouse for options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SARDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Initial</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SAR</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>STOCHDialog</name>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>STOCHRSIDialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>STOCHSDialog</name>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast K Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow K Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SZDialog</name>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Decline Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Coefficient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2117,6 +3141,119 @@ Are you sure you want to remove this script?</source>
     </message>
 </context>
 <context>
+    <name>T3Dialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>V Factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>THERMDialog</name>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Threshold Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>THERM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TRIXDialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>TabWidget</name>
     <message>
         <source>North</source>
@@ -2353,6 +3490,200 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ULTOSCDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Medium Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ref 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VARDialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VFIDialog</name>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VIDYADialog</name>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>V Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VOLDialog</name>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WILLRDialog</name>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -27,7 +27,7 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionCANDLES
 {
@@ -102,8 +102,8 @@ class FunctionCANDLES
     int script (QStringList &, Indicator &, BarData &);
     int scriptCandles (QStringList &, Indicator &, BarData &);
     int scriptMethod (QStringList &, Indicator &, BarData &);
-    PlotLine * getMethod (BarData &, int, double);
-    PlotLine * candles (BarData &);
+    Curve * getMethod (BarData &, int, double);
+    Curve * candles (BarData &);
     QStringList & list ();
 
   protected:

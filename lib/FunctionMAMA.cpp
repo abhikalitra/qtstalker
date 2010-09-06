@@ -39,7 +39,7 @@ int FunctionMAMA::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *in = ind.line(set[3]);
+  Curve *in = ind.line(set[3]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[3]));
@@ -52,7 +52,7 @@ int FunctionMAMA::script (QStringList &set, Indicator &ind, BarData &data)
     ind.setLine(set[3], in);
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionMAMA::script: mama duplicate name" << set[4];
@@ -81,7 +81,7 @@ int FunctionMAMA::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  QList<PlotLine *> l;
+  QList<Curve *> l;
   if (calculate(in, fast, slow, l))
     return 1;
 
@@ -94,7 +94,7 @@ int FunctionMAMA::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-int FunctionMAMA::calculate (PlotLine *in, double fast, double slow, QList<PlotLine *> &l)
+int FunctionMAMA::calculate (Curve *in, double fast, double slow, QList<Curve *> &l)
 {
   if (in->count() < fast || in->count() < slow)
     return 1;
@@ -112,7 +112,7 @@ int FunctionMAMA::calculate (PlotLine *in, double fast, double slow, QList<PlotL
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -132,15 +132,15 @@ int FunctionMAMA::calculate (PlotLine *in, double fast, double slow, QList<PlotL
     return 1;
   }
 
-  PlotLine *mama = new PlotLine;
-  PlotLine *fama = new PlotLine;
+  Curve *mama = new Curve;
+  Curve *fama = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    mama->setData(keys.at(keyLoop), out[outLoop]);
-    fama->setData(keys.at(keyLoop), out2[outLoop]);
+    mama->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    fama->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
     
     keyLoop--;
     outLoop--;

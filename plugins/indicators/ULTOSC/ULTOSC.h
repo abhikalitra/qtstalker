@@ -26,6 +26,8 @@
 
 class ULTOSC : public IndicatorPlugin
 {
+  Q_OBJECT
+
   public:
     enum Parm
     {
@@ -37,13 +39,17 @@ class ULTOSC : public IndicatorPlugin
       LongPeriod,
       Ref1Color,
       Ref2Color,
-      Ref3Color
+      Ref3Color,
+      Ref1,
+      Ref2,
+      Ref3
     };
 
     ULTOSC ();
-    int getIndicator (Indicator &ind, BarData &data);
+    int getIndicator (Indicator &ind, BarData &);
     int getCUS (QStringList &, Indicator &, BarData &);
-    int dialog (int);
+    IndicatorPluginDialog * dialog (Indicator &);
+    void defaults (Indicator &);
 };
 
 extern "C"

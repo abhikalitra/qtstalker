@@ -33,7 +33,7 @@
 #include <QMetaType>
 
 #include "Bar.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class BarData
 {
@@ -73,7 +73,7 @@ class BarData
     double getMax ();
     double getMin ();
     void getInputFields (QStringList &);
-    PlotLine * getInput (BarData::InputType);
+    Curve * getInput (BarData::InputType);
     BarData::InputType getInputType (QString &);
     Bar & getBar (int);
     void setMinMax ();

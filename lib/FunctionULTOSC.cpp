@@ -39,7 +39,7 @@ int FunctionULTOSC::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionULTOSC::script: duplicate name" << set[3];
@@ -68,7 +68,7 @@ int FunctionULTOSC::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, sp, mp, lp);
+  Curve *line = calculate(data, sp, mp, lp);
   if (! line)
     return 1;
 
@@ -79,7 +79,7 @@ int FunctionULTOSC::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionULTOSC::calculate (BarData &data, int sp, int mp, int lp)
+Curve * FunctionULTOSC::calculate (BarData &data, int sp, int mp, int lp)
 {
   if (data.count() < sp || data.count() < mp || data.count() < lp)
     return 0;
@@ -118,13 +118,13 @@ PlotLine * FunctionULTOSC::calculate (BarData &data, int sp, int mp, int lp)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, out[outLoop]);
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }

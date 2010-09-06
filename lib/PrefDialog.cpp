@@ -21,7 +21,6 @@
 
 #include "PrefDialog.h"
 #include "Config.h"
-#include "PlotLine.h"
 #include "BarData.h"
 
 #include <QHBoxLayout>
@@ -109,7 +108,7 @@ void PrefDialog::getColor (int key, QColor &color)
 {
   ColorButton *button = colorButtonList.value(key);
   if (button)
-    button->getColor(color);
+    color = button->color();
 }
 
 void PrefDialog::addDoubleItem (int key, int page, QString name, double num)
@@ -257,7 +256,7 @@ void PrefDialog::getFont (int key, QFont &font)
 {
   FontButton *button = fontButtonList.value(key);
   if (button)
-    button->getFont(font);
+    font = button->font();
 }
 
 void PrefDialog::addTextItem (int key, int page, QString name, QString &t, QString tip)

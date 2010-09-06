@@ -48,6 +48,7 @@ int DataBase::command (QString &sql, QString errMess)
   if (q.lastError().isValid())
   {
     qDebug() << errMess << q.lastError().text();
+    qDebug() << sql;
     return 1;
   }
 

@@ -21,48 +21,45 @@
 
 #include "BOP.h"
 #include "FunctionMA.h"
-#include "PlotStyleFactory.h"
 #include "FunctionBOP.h"
+#include "BOPDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 BOP::BOP ()
 {
   _indicator = "BOP";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Histogram Bar");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Smoothing, 10);
-  _settings.setData(SmoothingType, "SMA");
 }
 
 int BOP::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QString s;
-  int smoothing = _settings.getInt(Smoothing);
+  int smoothing = settings.getInt(Smoothing);
 
   FunctionMA mau;
-  _settings.getData(SmoothingType, s);
+  settings.getData(SmoothingType, s);
   int type = mau.typeFromString(s);
 
   FunctionBOP f;
-  PlotLine *line = f.calculate(data, smoothing, type);
+  Curve *line = f.calculate(data, smoothing, type);
   if (! line)
     return 1;
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   return 0;
 }
@@ -73,48 +70,20 @@ int BOP::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int BOP::dialog (int)
+IndicatorPluginDialog * BOP::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new BOPDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), _settings.getInt(Smoothing), 1, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-
-  _settings.getData(SmoothingType, d);
-  dialog->addComboItem(SmoothingType, page, QObject::tr("Smoothing Type"), maList, d);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void BOP::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Plot, "Histogram Bar");
+  set.setData(Label, _indicator);
+  set.setData(Smoothing, 10);
+  set.setData(SmoothingType, "SMA");
+  i.setSettings(set);
 }
 
 //*************************************************************

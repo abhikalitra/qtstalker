@@ -47,14 +47,14 @@ int FunctionMA::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionMA::script: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[5]);
+  Curve *in = ind.line(set[5]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[5]));
@@ -75,7 +75,7 @@ int FunctionMA::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(in, period, method);
+  Curve *line = calculate(in, period, method);
   if (! line)
     return 1;
 
@@ -86,13 +86,14 @@ int FunctionMA::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionMA::calculate (PlotLine *in, int period, int method)
+Curve * FunctionMA::calculate (Curve *in, int period, int method)
 {
   if (in->count() < period)
     return 0;
-  
+
   QList<int> keys;
   in->keys(keys);
+
   int size = keys.count();
 
   TA_Real input[size];
@@ -103,7 +104,7 @@ PlotLine * FunctionMA::calculate (PlotLine *in, int period, int method)
   int loop = 0;
   for (; loop < size; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -147,13 +148,13 @@ PlotLine * FunctionMA::calculate (PlotLine *in, int period, int method)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), out[outLoop]);
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
     keyLoop--;
     outLoop--;
   }
@@ -171,12 +172,12 @@ int FunctionMA::typeFromString (QString &d)
   return _maList.indexOf(d);
 }
 
-PlotLine * FunctionMA::getWilder (PlotLine *in, int period)
+Curve * FunctionMA::getWilder (Curve *in, int period)
 {
   if (in->count() < period)
     return 0;
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   QList<int> keys;
   in->keys(keys);
@@ -185,19 +186,19 @@ PlotLine * FunctionMA::getWilder (PlotLine *in, int period)
   int loop = 0;
   for (; loop < period; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     t += bar->data();
   }
   double yesterday = t / (double) period;
-  line->setData(keys.at(loop), yesterday);
+  line->setBar(keys.at(loop), new CurveBar(yesterday));
 
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     double t  = (yesterday * (period - 1) + bar->data()) / (double) period;
     yesterday = t;
 
-    line->setData(keys.at(loop), t);
+    line->setBar(keys.at(loop), new CurveBar(t));
   }
 
   return line;

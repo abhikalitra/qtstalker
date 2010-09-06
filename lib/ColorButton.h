@@ -37,31 +37,26 @@ class ColorButton : public QPushButton
 {
   Q_OBJECT
 
+  signals:
+    void robPressed(QColor); // read only button pressed
+    void valueChanged();
+
   public:
     ColorButton (QWidget *, QColor &);
-    void getColor (QColor &);
+    QColor & color ();
     void setColorButton ();
     void setDialogOff();
-    QPixmap pix;
-    bool isChanged();
+    int isChanged();
     
-  public 
-    slots:
-      void colorDialog ();
-      void setColor (QColor);
+  public slots:
+    void colorDialog ();
+    void setColor (QColor);
     
-    signals:
-      void valueChanged();
-        
   private:
-    QColor color;
-    //QPixmap pix;
-    bool readonly;
-    bool changed;
-  
-    signals:
-      void robPressed(QColor); // read only button pressed
-
+    QPixmap _pix;
+    QColor _color;
+    int _readonly;
+    int _changed;
 };
 
 #endif

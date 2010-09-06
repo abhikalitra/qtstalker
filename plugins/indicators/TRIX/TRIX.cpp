@@ -21,54 +21,51 @@
 
 #include "TRIX.h"
 #include "FunctionTRIX.h"
-#include "PlotStyleFactory.h"
+#include "TRIXDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 TRIX::TRIX ()
 {
   _indicator = "TRIX";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Histogram Bar");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Period, 30);
-  _settings.setData(Input, "Close");
 }
 
 int TRIX::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QString s;
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  int period = _settings.getInt(Period);
+  int period = settings.getInt(Period);
 
   FunctionTRIX f;
-  PlotLine *line = f.calculate(in, period);
+  Curve *line = f.calculate(in, period);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   delete in;
 
@@ -81,49 +78,20 @@ int TRIX::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int TRIX::dialog (int)
+IndicatorPluginDialog * TRIX::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new TRIXDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void TRIX::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Plot, "Histogram Bar");
+  set.setData(Label, _indicator);
+  set.setData(Period, 30);
+  set.setData(Input, "Close");
+  i.setSettings(set);
 }
 
 //*************************************************************

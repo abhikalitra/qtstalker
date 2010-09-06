@@ -3,6 +3,8 @@
 } 
 
 HEADERS += FI.h
+HEADERS += FIDialog.h
 
 SOURCES += FI.cpp
+SOURCES += FIDialog.cpp
 

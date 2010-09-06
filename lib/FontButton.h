@@ -24,8 +24,8 @@
 // font dialog. Used by PrefDialog
 // *************************************************************************************************
 
-#ifndef FONTBUTTON_HPP
-#define FONTBUTTON_HPP
+#ifndef FONT_BUTTON_HPP
+#define FONT_BUTTON_HPP
 
 #include <QWidget>
 #include <QPushButton>
@@ -36,22 +36,21 @@ class FontButton : public QPushButton
 {
   Q_OBJECT
 
+  signals:
+    void valueChanged();
+
   public:
     FontButton (QWidget *, QFont &);
-    void getFont (QFont &);
+    QFont & font ();
     void setFontButton ();
-    bool isChanged();
+    int isChanged();
     
-  public 
-    slots:
-      void fontDialog ();
-      
-    signals:
-      void valueChanged();
+  public slots:
+    void fontDialog ();
       
   private:
-    QFont font;
-    bool changed;
+    QFont _font;
+    int _changed;
 };
 
 #endif

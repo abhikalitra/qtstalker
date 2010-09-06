@@ -40,7 +40,7 @@ int FunctionSTOCHS::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionSTOCHS::script: duplicate name" << set[3];
@@ -91,11 +91,11 @@ int FunctionSTOCHS::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  QList<PlotLine *> pl;
+  QList<Curve *> pl;
   if (calculate(data, fkp, skp, sdp, kma, dma, pl))
     return 1;
 
-  PlotLine *line = pl.at(0);
+  Curve *line = pl.at(0);
   line->setLabel(set[3]);
   ind.setLine(set[3], line);
 
@@ -106,7 +106,7 @@ int FunctionSTOCHS::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-int FunctionSTOCHS::calculate (BarData &data, int fkperiod, int skperiod, int sdperiod, int kma, int dma, QList<PlotLine *> &pl)
+int FunctionSTOCHS::calculate (BarData &data, int fkperiod, int skperiod, int sdperiod, int kma, int dma, QList<Curve *> &pl)
 {
   if (data.count() < fkperiod || data.count() < skperiod)
     return 1;
@@ -150,15 +150,15 @@ int FunctionSTOCHS::calculate (BarData &data, int fkperiod, int skperiod, int sd
     return 1;
   }
 
-  PlotLine *kline = new PlotLine;
-  PlotLine *dline = new PlotLine;
+  Curve *kline = new Curve;
+  Curve *dline = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    kline->setData(dataLoop, out[outLoop]);
-    dline->setData(dataLoop, out2[outLoop]);
+    kline->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dline->setBar(dataLoop, new CurveBar(out2[outLoop]));
     
     dataLoop--;
     outLoop--;

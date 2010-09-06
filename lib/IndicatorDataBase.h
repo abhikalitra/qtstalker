@@ -39,6 +39,7 @@ class IndicatorDataBase : public DataDataBase
     void getActiveIndicatorList (QStringList &);
     void getSearchIndicatorList (QString &pattern, QStringList &list);
     void setIndicatorEnable (Indicator &);
+    void setIndicatorSettings (Indicator &);
 };
 
 #endif

@@ -39,14 +39,14 @@ int FunctionCMO::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionCMO::script: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[4]);
+  Curve *in = ind.line(set[4]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[4]));
@@ -67,7 +67,7 @@ int FunctionCMO::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(in, period);
+  Curve *line = calculate(in, period);
   if (! line)
     return 1;
 
@@ -78,7 +78,7 @@ int FunctionCMO::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionCMO::calculate (PlotLine *in, int period)
+Curve * FunctionCMO::calculate (Curve *in, int period)
 {
   if (in->count() < period)
     return 0;
@@ -94,7 +94,7 @@ PlotLine * FunctionCMO::calculate (PlotLine *in, int period)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -111,13 +111,13 @@ PlotLine * FunctionCMO::calculate (PlotLine *in, int period)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), out[outLoop]);
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
     keyLoop--;
     outLoop--;
   }

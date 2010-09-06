@@ -43,14 +43,14 @@ int FunctionVIDYA::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionVIDYA::script: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *inSignal = ind.line(set[4]);
+  Curve *inSignal = ind.line(set[4]);
   if (! inSignal)
   {
     inSignal = data.getInput(data.getInputType(set[4]));
@@ -78,7 +78,7 @@ int FunctionVIDYA::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(inSignal, period, volPeriod);
+  Curve *line = calculate(inSignal, period, volPeriod);
   if (! line)
     return 1;
 
@@ -89,17 +89,17 @@ int FunctionVIDYA::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionVIDYA::calculate (PlotLine *inSignal, int period, int volPeriod)
+Curve * FunctionVIDYA::calculate (Curve *inSignal, int period, int volPeriod)
 {
   if (inSignal->count() < period || inSignal->count() < volPeriod)
     return 0;
 
   FunctionCMO f;
-  PlotLine *cmo = f.calculate(inSignal, volPeriod);
+  Curve *cmo = f.calculate(inSignal, volPeriod);
   if (! cmo)
     return 0;
 
-  PlotLine *out = new PlotLine;
+  Curve *out = new Curve;
 
   int size = inSignal->count();
   QVector<double> *inSeries = new QVector<double>(size);
@@ -119,7 +119,7 @@ PlotLine * FunctionVIDYA::calculate (PlotLine *inSignal, int period, int volPeri
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = inSignal->data(keys.at(loop));
+    CurveBar *bar = inSignal->bar(keys.at(loop));
     (*inSeries)[loop] = bar->data();
   }
 
@@ -130,7 +130,7 @@ PlotLine * FunctionVIDYA::calculate (PlotLine *inSignal, int period, int volPeri
   loop = keys.count() - 1;
   for (; loop > -1; loop--)
   {
-    PlotLineBar *bar = cmo->data(keys.at(loop));
+    CurveBar *bar = cmo->bar(keys.at(loop));
     (*absCmo)[index] = fabs(bar->data() / 100);
     index--;
   }
@@ -141,7 +141,7 @@ PlotLine * FunctionVIDYA::calculate (PlotLine *inSignal, int period, int volPeri
     (*vidya)[loop] = (inSeries->at(loop) * c * absCmo->at(loop)) + ((1 - absCmo->at(loop) * c) * vidya->at(loop - 1));
     //!  (Price*Const*AbsCMO) + ((1-AbsCMO*Const)*FunctionVIDYA[1]),Price);
     
-    out->setData(loop, vidya->at(loop));
+    out->setBar(loop, new CurveBar(vidya->at(loop)));
   }
 
   delete inSeries;

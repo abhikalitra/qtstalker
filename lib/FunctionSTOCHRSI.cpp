@@ -40,14 +40,14 @@ int FunctionSTOCHRSI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionSTOCHRSI::script: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[4]);
+  Curve *in = ind.line(set[4]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[4]));
@@ -68,7 +68,7 @@ int FunctionSTOCHRSI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(in, period);
+  Curve *line = calculate(in, period);
   if (! line)
     return 1;
 
@@ -79,7 +79,7 @@ int FunctionSTOCHRSI::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionSTOCHRSI::calculate (PlotLine *in, int period)
+Curve * FunctionSTOCHRSI::calculate (Curve *in, int period)
 {
   if (in->count() < period)
     return 0;
@@ -97,7 +97,7 @@ PlotLine * FunctionSTOCHRSI::calculate (PlotLine *in, int period)
   int loop = 0;
   for (; loop < size; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -118,13 +118,13 @@ PlotLine * FunctionSTOCHRSI::calculate (PlotLine *in, int period)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, out[outLoop]);
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }

@@ -3,6 +3,8 @@
 } 
 
 HEADERS += MAVP.h
+HEADERS += MAVPDialog.h
 
 SOURCES += MAVP.cpp
+SOURCES += MAVPDialog.cpp
 

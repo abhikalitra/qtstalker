@@ -23,9 +23,12 @@
 #define VOL_HPP
 
 #include "IndicatorPlugin.h"
+#include "Curve.h"
 
 class VOL : public IndicatorPlugin
 {
+  Q_OBJECT
+
   public:
     enum Parm
     {
@@ -43,8 +46,9 @@ class VOL : public IndicatorPlugin
 
     VOL ();
     int getIndicator (Indicator &ind, BarData &data);
-    PlotLine * getVOL (BarData &data, QColor &, QColor &, QColor &);
-    int dialog (int);
+    Curve * getVOL (BarData &data, QColor &, QColor &, QColor &);
+    IndicatorPluginDialog * dialog (Indicator &);
+    void defaults (Indicator &);
 };
 
 extern "C"

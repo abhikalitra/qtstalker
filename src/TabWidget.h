@@ -39,6 +39,7 @@ class TabWidget : public QTabWidget
 
   public slots:
     void tabDialog ();
+    void currentTabChanged ();
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);

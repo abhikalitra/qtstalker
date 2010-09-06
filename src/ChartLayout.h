@@ -29,36 +29,34 @@
 #include <QFont>
 #include <QLayout>
 
-#include "Plot.h"
 #include "Indicator.h"
 #include "Setting.h"
 #include "BarData.h"
 #include "TabWidget.h"
+#include "DateBar.h"
+#include "PlotSettings.h"
 
 class ChartLayout : public QSplitter
 {
   Q_OBJECT
 
   signals:
+    void signalDraw ();
+    void signalIndex (int);
+    void signalClear ();
+    void signalSaveSettings ();
     void signalBackgroundColor (QColor);
     void signalBorderColor (QColor);
     void signalGridColor (QColor);
-    void signalPlotFont (QFont);
-    void signalZoom (int, int);
-    void signalInfo (Setting *);
+    void signalFont (QFont);
     void signalStatus (QString);
     void signalPixelSpace (int);
-    void signalIndex (int);
-    void signalInterval (BarData::BarLength);
-    void signalClearIndicator ();
-    void signalSaveSettings ();
     void signalGrid (bool);
-    void signalNewExternalChartObject (QString);
-    void signalNewExternalChartObjectDone ();
-    void signalSetExternalChartObject ();
-    void signalCursorChanged (int);
-    void signalIndexChanged (int);
-    void signalRefresh ();
+    void signalNewChartObject (int);
+//    void signalZoom (int, int);
+    void signalInfo (Setting);
+//    void signalInterval (BarData::BarLength);
+//    void signalRefresh ();
 
   public:
     ChartLayout ();
@@ -68,37 +66,35 @@ class ChartLayout : public QSplitter
     void refresh (QString);
     void loadPlots (BarData &, int index);
     int plotWidth ();
-    QHash<QString, Plot *> & plotList ();
-    
+    QHash<QString, PlotSettings> & plots ();
 
   public slots:
     void save ();
     void load ();
-    void drawTab (QWidget *);
-    void drawPlot (QString d);
-    void drawPlots ();
     void setGridColor (QColor);
     void setPixelSpace (int);
     void setIndex (int);
-    void setInterval (int);
     void clearIndicator ();
     void saveSettings ();
     void setGrid (bool);
-    void newExternalChartObject (QString);
-    void newExternalChartObjectDone ();
-    void setExternalChartObject ();
-    void cursorChanged (int);
     void setZoom (int, int);
     void newIndicator ();
     void editIndicator (QString);
+    void editIndicator2 (Indicator);
     void deleteIndicator (QString);
-    void moveIndicator (QString);
+    void newIndicator2 (Indicator);
+    void newIndicator3 (Indicator);
+    void indicatorThreadFinished (Indicator i);
+    void backgroundColorChanged (QColor);
+    void fontChanged (QFont);
 
   private:
-    QHash<QString, Plot *> _plotList;
+    QHash<QString, PlotSettings> _plots;
     QHash<QString, TabWidget *> _tabs;
     QHash<int, QGridLayout *> _grids;
     QHash<int, QWidget *> _holders;
+    BarData _barData;
+    DateBar _dateBars;
 };
 
 #endif

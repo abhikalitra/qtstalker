@@ -24,15 +24,11 @@
 
 #include <QString>
 #include <QList>
-#include <QHash>
+#include <QMap>
 
-#include "PlotLine.h"
 #include "Setting.h"
-#include "COPlugin.h"
-
-#include "Scaler.h"
-#include "PlotData.h"
 #include "DateBar.h"
+#include "Curve.h"
 
 class Indicator
 {
@@ -54,40 +50,39 @@ class Indicator
     int CUS ();
     void setIndicator (QString &);
     QString & indicator ();
-    void setLine (QString &, PlotLine *);
-    PlotLine * line (QString &);
-    int deleteLine (QString &);
+    void setLine (int, Curve *);
+    void setLine (QString &, Curve *);
+    Curve * line (int);
+    Curve * line (QString &);
+    QMap<int, Curve *> & curves ();
+    void clearLines ();
+    int deleteLine (int);
     void setSettings (Setting &);
     Setting & settings ();
     void clear ();
-    COPlugin * chartObject (int);
-    void addChartObject (COPlugin *);
+    Setting chartObject (int);
+    void addChartObject (int, Setting &);
     void clearChartObjects ();
     void deleteChartObject (int);
-
-    void addPlotOrder (QString &);
-    QStringList & plotOrder ();
     void weedPlots ();
     void cleanClear ();
     void init ();
     void coKeys (QList<int> &);
-    Scaler & scaler ();
-    void setScale (PlotData &, DateBar &);
+    void lineKeys (QList<int> &);
+    int coCount ();
 
   protected:
-    QHash<QString, PlotLine *> _lines;
-    QHash<int, COPlugin *> _chartObjects;
+    QMap<int, Curve *> _lines;
+    QMap<int, Setting> _chartObjects;
     Setting _settings;
     QString _name;
     QString _indicator;
-    QStringList _plotOrder;
     int _enable;
     int _tabRow;
     int _date;
     int _log;
     int _cus;
     int _column;
-    Scaler _scaler;
 };
 
 // this is for passing Indicator data between threads

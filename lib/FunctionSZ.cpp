@@ -23,8 +23,7 @@
    Dr. Alexander Elder's book _Come Into My Trading Room_, p.173 */
 
 #include "FunctionSZ.h"
-#include "BARSUtils.h"
-#include "PlotStyleFactory.h"
+#include "FunctionBARS.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -45,7 +44,7 @@ int FunctionSZ::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionSZ::script: invalid name" << set[3];
@@ -83,7 +82,7 @@ int FunctionSZ::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, method, period, no_decline_period, coefficient);
+  Curve *line = calculate(data, method, period, no_decline_period, coefficient);
   if (! line)
     return 1;
 
@@ -94,7 +93,7 @@ int FunctionSZ::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionSZ::calculate (BarData &data, int method, int period, int no_decline_period, double coefficient)
+Curve * FunctionSZ::calculate (BarData &data, int method, int period, int no_decline_period, double coefficient)
 {
   if (data.count() < period || data.count() < no_decline_period)
     return 0;
@@ -109,8 +108,8 @@ PlotLine * FunctionSZ::calculate (BarData &data, int method, int period, int no_
   if (position & 2) // short
     display_dntrend = 1;
 
-  PlotLine *sz_uptrend = new PlotLine;
-  PlotLine *sz_dntrend = new PlotLine;
+  Curve *sz_uptrend = new Curve;
+  Curve *sz_dntrend = new Curve;
 
   double uptrend_stop = 0;
   double dntrend_stop = 0;
@@ -196,11 +195,11 @@ PlotLine * FunctionSZ::calculate (BarData &data, int method, int period, int no_
     old_uptrend_stops[0] = uptrend_stop;
     old_dntrend_stops[0] = dntrend_stop;
 
-    sz_uptrend->setData(loop, adjusted_uptrend_stop);
-    sz_dntrend->setData(loop, adjusted_dntrend_stop);
+    sz_uptrend->setBar(loop, new CurveBar(adjusted_uptrend_stop));
+    sz_dntrend->setBar(loop, new CurveBar(adjusted_dntrend_stop));
   }
 
-  PlotLine *pl = 0;
+  Curve *pl = 0;
   if (display_uptrend)
   {
     pl = sz_uptrend;

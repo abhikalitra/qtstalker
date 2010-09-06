@@ -26,14 +26,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionSAR
 {
   public:
     FunctionSAR ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (BarData &, double, double);
+    Curve * calculate (BarData &, double, double);
 };
 
 #endif

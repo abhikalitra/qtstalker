@@ -40,7 +40,7 @@ int FunctionMACD::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionMACD::script: duplicate name" << set[4];
@@ -61,7 +61,7 @@ int FunctionMACD::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *in = ind.line(set[3]);
+  Curve *in = ind.line(set[3]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[3]));
@@ -118,11 +118,11 @@ int FunctionMACD::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  QList<PlotLine *> pl;
+  QList<Curve *> pl;
   if (calculate(in, fast, fastma, slow, slowma, signal, signalma, pl))
     return 1;
 
-  PlotLine *line = pl.at(0);
+  Curve *line = pl.at(0);
   line->setLabel(set[4]);
   ind.setLine(set[4], line);
   
@@ -137,8 +137,8 @@ int FunctionMACD::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-int FunctionMACD::calculate (PlotLine *in, int fastPeriod, int fastMA, int slowPeriod, int slowMA, int signalPeriod,
-                             int signalMA, QList<PlotLine *> &pl)
+int FunctionMACD::calculate (Curve *in, int fastPeriod, int fastMA, int slowPeriod, int slowMA, int signalPeriod,
+                             int signalMA, QList<Curve *> &pl)
 {
   if (in->count() < fastPeriod || in->count() < slowPeriod || in->count() < signalPeriod)
     return 1;
@@ -157,7 +157,7 @@ int FunctionMACD::calculate (PlotLine *in, int fastPeriod, int fastMA, int slowP
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -181,17 +181,17 @@ int FunctionMACD::calculate (PlotLine *in, int fastPeriod, int fastMA, int slowP
     return 1;
   }
 
-  PlotLine *macd = new PlotLine;
-  PlotLine *signal = new PlotLine;
-  PlotLine *hist = new PlotLine;
+  Curve *macd = new Curve;
+  Curve *signal = new Curve;
+  Curve *hist = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    macd->setData(keys.at(keyLoop), out[outLoop]);
-    signal->setData(keys.at(keyLoop), out2[outLoop]);
-    hist->setData(keys.at(keyLoop), out3[outLoop]);
+    macd->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    signal->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
+    hist->setBar(keys.at(keyLoop), new CurveBar(out3[outLoop]));
     
     keyLoop--;
     outLoop--;

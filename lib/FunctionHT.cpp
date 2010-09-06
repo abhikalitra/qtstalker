@@ -75,7 +75,7 @@ int FunctionHT::scriptPHASE (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *in = ind.line(set[4]);
+  Curve *in = ind.line(set[4]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[4]));
@@ -88,7 +88,7 @@ int FunctionHT::scriptPHASE (QStringList &set, Indicator &ind, BarData &data)
     ind.setLine(set[4], in);
   }
 
-  PlotLine *tl = ind.line(set[5]);
+  Curve *tl = ind.line(set[5]);
   if (tl)
   {
     qDebug() << "FunctionHT::scriptPHASE: duplicate phase name" << set[5];
@@ -102,7 +102,7 @@ int FunctionHT::scriptPHASE (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  QList<PlotLine *> pl;
+  QList<Curve *> pl;
   if (getPHASE(in, pl))
     return 1;
 
@@ -126,7 +126,7 @@ int FunctionHT::scriptSINE (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *in = ind.line(set[4]);
+  Curve *in = ind.line(set[4]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[4]));
@@ -139,7 +139,7 @@ int FunctionHT::scriptSINE (QStringList &set, Indicator &ind, BarData &data)
     ind.setLine(set[4], in);
   }
 
-  PlotLine *tl = ind.line(set[5]);
+  Curve *tl = ind.line(set[5]);
   if (tl)
   {
     qDebug() << "FunctionHT::scriptSINE: duplicate sine name" << set[5];
@@ -153,7 +153,7 @@ int FunctionHT::scriptSINE (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  QList<PlotLine *> pl;
+  QList<Curve *> pl;
   if (getSINE(in, pl))
     return 1;
 
@@ -184,14 +184,14 @@ int FunctionHT::scriptHT (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionHT::scriptHT: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[5]);
+  Curve *in = ind.line(set[5]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[5]));
@@ -204,7 +204,7 @@ int FunctionHT::scriptHT (QStringList &set, Indicator &ind, BarData &data)
     ind.setLine(set[5], in);
   }
 
-  PlotLine *line = getHT(in, method);
+  Curve *line = getHT(in, method);
   if (! line)
     return 1;
 
@@ -215,7 +215,7 @@ int FunctionHT::scriptHT (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionHT::getHT (PlotLine *in, int method)
+Curve * FunctionHT::getHT (Curve *in, int method)
 {
   if (in->count() < 1)
     return 0;
@@ -232,7 +232,7 @@ PlotLine * FunctionHT::getHT (PlotLine *in, int method)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -258,12 +258,12 @@ PlotLine * FunctionHT::getHT (PlotLine *in, int method)
         return 0;
       }
       
-      PlotLine *line = new PlotLine;
+      Curve *line = new Curve;
       int keyLoop = keys.count() - 1;
       int outLoop = outNb - 1;
       while (keyLoop > -1 && outLoop > -1)
       {
-        line->setData(keys.at(keyLoop), (double) iout[outLoop]);
+        line->setBar(keys.at(keyLoop), new CurveBar((double) iout[outLoop]));
         keyLoop--;
         outLoop--;
       }
@@ -281,13 +281,13 @@ PlotLine * FunctionHT::getHT (PlotLine *in, int method)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), out[outLoop]);
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
     keyLoop--;
     outLoop--;
   }
@@ -295,7 +295,7 @@ PlotLine * FunctionHT::getHT (PlotLine *in, int method)
   return line;
 }
 
-int FunctionHT::getPHASE (PlotLine *in, QList<PlotLine *> &pl)
+int FunctionHT::getPHASE (Curve *in, QList<Curve *> &pl)
 {
   if (in->count() < 1)
     return 1;
@@ -313,7 +313,7 @@ int FunctionHT::getPHASE (PlotLine *in, QList<PlotLine *> &pl)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -331,15 +331,15 @@ int FunctionHT::getPHASE (PlotLine *in, QList<PlotLine *> &pl)
     return 1;
   }
 
-  PlotLine *pline = new PlotLine;
-  PlotLine *qline = new PlotLine;
+  Curve *pline = new Curve;
+  Curve *qline = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    pline->setData(keys.at(keyLoop), out[outLoop]);
-    qline->setData(keys.at(keyLoop), out2[outLoop]);
+    pline->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    qline->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
     
     keyLoop--;
     outLoop--;
@@ -351,7 +351,7 @@ int FunctionHT::getPHASE (PlotLine *in, QList<PlotLine *> &pl)
   return 0;
 }
 
-int FunctionHT::getSINE (PlotLine *in, QList<PlotLine *> &pl)
+int FunctionHT::getSINE (Curve *in, QList<Curve *> &pl)
 {
   if (in->count() < 1)
     return 1;
@@ -369,7 +369,7 @@ int FunctionHT::getSINE (PlotLine *in, QList<PlotLine *> &pl)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -387,15 +387,15 @@ int FunctionHT::getSINE (PlotLine *in, QList<PlotLine *> &pl)
     return 1;
   }
 
-  PlotLine *sline = new PlotLine;
-  PlotLine *lline = new PlotLine;
+  Curve *sline = new Curve;
+  Curve *lline = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    sline->setData(keys.at(keyLoop), out[outLoop]);
-    lline->setData(keys.at(keyLoop), out2[outLoop]);
+    sline->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    lline->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
     
     keyLoop--;
     outLoop--;

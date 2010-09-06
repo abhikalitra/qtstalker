@@ -684,9 +684,9 @@
 
            Added a refresh option to restart the QuoteServer from the QuoteServerDialog.
 
-           
+20100728:  Delete chart object segs fixed.
 
-
+20100729:  Spun off chart object dialog code into separate classes to enable non blocking versions.
 
 
 

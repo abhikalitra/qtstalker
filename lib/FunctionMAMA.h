@@ -27,14 +27,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionMAMA
 {
   public:
     FunctionMAMA ();
     int script (QStringList &, Indicator &, BarData &);
-    int calculate (PlotLine *in, double fast, double slow, QList<PlotLine *> &l);
+    int calculate (Curve *in, double fast, double slow, QList<Curve *> &l);
 };
 
 #endif

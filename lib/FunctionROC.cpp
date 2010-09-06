@@ -48,14 +48,14 @@ int FunctionROC::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionROC::script: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[5]);
+  Curve *in = ind.line(set[5]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[5]));
@@ -91,7 +91,7 @@ int FunctionROC::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(in, period, method, smoothing, type);
+  Curve *line = calculate(in, period, method, smoothing, type);
   if (! line)
     return 1;
 
@@ -102,7 +102,7 @@ int FunctionROC::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionROC::calculate (PlotLine *in, int period, int method, int smoothing, int type)
+Curve * FunctionROC::calculate (Curve *in, int period, int method, int smoothing, int type)
 {
   if (in->count() < period || in->count() < smoothing)
     return 0;
@@ -119,7 +119,7 @@ PlotLine * FunctionROC::calculate (PlotLine *in, int period, int method, int smo
   int loop = 0;
   for (; loop < size; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -149,13 +149,13 @@ PlotLine * FunctionROC::calculate (PlotLine *in, int period, int method, int smo
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), out[outLoop]);
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
     keyLoop--;
     outLoop--;
   }
@@ -163,7 +163,7 @@ PlotLine * FunctionROC::calculate (PlotLine *in, int period, int method, int smo
   if (smoothing > 1)
   {
     FunctionMA mau;
-    PlotLine *ma = mau.calculate(line, smoothing, type);
+    Curve *ma = mau.calculate(line, smoothing, type);
     delete line;
     line = ma;
   }

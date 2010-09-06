@@ -22,64 +22,54 @@
 #include "STOCHRSI.h"
 #include "FunctionMA.h"
 #include "FunctionSTOCHRSI.h"
-#include "PlotStyleFactory.h"
+#include "STOCHRSIDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 STOCHRSI::STOCHRSI ()
 {
   _indicator = "STOCHRSI";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Ref1Color, "white");
-  _settings.setData(Ref2Color, "white");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, "STOCHRSI");
-  _settings.setData(Ref1, 0.2);
-  _settings.setData(Ref2, 0.8);
-  _settings.setData(Input, "Close");
-  _settings.setData(Period, 14);
 }
 
 int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
 {
-  // create first ref line
-  QString s = "Horizontal";
-  PlotLine *line = new PlotLine;
-  line->setType(s);
+  Setting settings = ind.settings();
 
-  _settings.getData(Ref1Color, s);
+  // create first ref line
+  QString s;
+  Curve *line = new Curve;
+  line->setType(Curve::Horizontal);
+
+  settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, (double) _settings.getInt(Ref1), color);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref1)));
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   // create second ref line
-  s = "Horizontal";
-  line = new PlotLine;
-  line->setType(s);
+  line = new Curve;
+  line->setType(Curve::Horizontal);
 
-  _settings.getData(Ref2Color, s);
+  settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, (double) _settings.getInt(Ref2), color);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref2)));
   
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
     return 1;
   }
 
-  int period = _settings.getInt(Period);
+  int period = settings.getInt(Period);
 
   FunctionSTOCHRSI f;
   line = f.calculate(in, period);
@@ -89,18 +79,18 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
   
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  color.setNamedColor(s);
+  line->setColor(color);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "2";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(2);
+  ind.setLine(2, line);
 
   delete in;
 
@@ -113,63 +103,24 @@ int STOCHRSI::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int STOCHRSI::dialog (int)
+IndicatorPluginDialog * STOCHRSI::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new STOCHRSIDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  page++;
-  k = QObject::tr("Ref");
-  dialog->addPage(page, k);
-
-  _settings.getData(Ref1Color, d);
-  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
-
-  _settings.getData(Ref2Color, d);
-  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
-
-  dialog->addDoubleItem(Ref1, page, QObject::tr("Ref. 1"), _settings.getDouble(Ref1), 0.0, 1.0);
-
-  dialog->addDoubleItem(Ref2, page, QObject::tr("Ref. 2"), _settings.getDouble(Ref2), 0.0, 1.0);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void STOCHRSI::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Ref1Color, "white");
+  set.setData(Ref2Color, "white");
+  set.setData(Plot, "Line");
+  set.setData(Label, "STOCHRSI");
+  set.setData(Ref1, 0.2);
+  set.setData(Ref2, 0.8);
+  set.setData(Input, "Close");
+  set.setData(Period, 14);
+  i.setSettings(set);
 }
 
 //*************************************************************

@@ -3,6 +3,8 @@
 } 
 
 HEADERS += BARS.h
+HEADERS += BARSDialog.h
 
 SOURCES += BARS.cpp
+SOURCES += BARSDialog.cpp
 

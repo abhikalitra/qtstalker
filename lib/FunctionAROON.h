@@ -27,7 +27,7 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionAROON
 {
@@ -42,8 +42,8 @@ class FunctionAROON
     int script (QStringList &, Indicator &, BarData &);
     int scriptAROON (QStringList &, Indicator &, BarData &);
     int scriptAROONOSC (QStringList &, Indicator &, BarData &);
-    int getAROON (BarData &data, int period, QList<PlotLine *> &);
-    PlotLine * getAROONOSC (BarData &, int period);
+    int getAROON (BarData &data, int period, QList<Curve *> &);
+    Curve * getAROONOSC (BarData &, int period);
     QStringList & list ();
 
   protected:

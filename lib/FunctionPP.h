@@ -26,14 +26,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionPP
 {
   public:
     FunctionPP ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (BarData &data, int point);
+    Curve * calculate (BarData &data, int point);
 };
 
 #endif

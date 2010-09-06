@@ -20,47 +20,46 @@
  */
 
 #include "ColorButton.h"
+
 #include <QColorDialog>
 
 ColorButton::ColorButton (QWidget *w, QColor &c) : QPushButton (w)
 {
-  color = c;
+  _color = c;
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(colorDialog()));
   setMaximumHeight(25);
-  pix = QPixmap(50, 15);
-  readonly = FALSE;
-  changed = FALSE;
+  _pix = QPixmap(50, 15);
+  _readonly = FALSE;
+  _changed = FALSE;
   
   setColorButton();
 }
 
 void ColorButton::setColorButton ()
 {
-  pix.fill(color);
-  setIcon(QIcon(pix));
+  _pix.fill(_color);
+  setIcon(QIcon(_pix));
 }
 
-void ColorButton::getColor (QColor &c)
+QColor & ColorButton::color ()
 {
-  c = color;
+  return _color;
 }
 
 void ColorButton::colorDialog ()
 {
-  if (readonly)
-  {
-    emit robPressed(color);
-  }
+  if (_readonly)
+    emit robPressed(_color);
   else
   {
-    QColor c = QColorDialog::getColor(color, this, 0);
+    QColor c = QColorDialog::getColor(_color, this, 0);
     if (c.isValid())
     {
-      if (color != c)
+      if (_color != c)
       {
-        color = c;
+        _color = c;
         setColorButton();
-        changed = TRUE;
+        _changed = TRUE;
         emit valueChanged();
       }
     }
@@ -69,19 +68,17 @@ void ColorButton::colorDialog ()
 
 void ColorButton::setColor (QColor c)
 {
-  color = c;
-  pix.fill(color);
-  setIcon(QIcon(pix));
+  _color = c;
+  _pix.fill(_color);
+  setIcon(QIcon(_pix));
 }
 
 void ColorButton::setDialogOff ()
 {
-  readonly = TRUE;
+  _readonly = TRUE;
 }
 
-bool ColorButton::isChanged()
+int ColorButton::isChanged()
 {
-  bool b = changed;
-  changed = FALSE;
-  return b;
+  return _changed;
 }

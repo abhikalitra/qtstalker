@@ -31,7 +31,7 @@ InfoPanel::InfoPanel ()
   setReadOnly(TRUE);
 }
 
-void InfoPanel::showInfo (Setting *d)
+void InfoPanel::showInfo (Setting d)
 {
   // list bar values first
   QStringList l;
@@ -41,20 +41,20 @@ void InfoPanel::showInfo (Setting *d)
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    d->getData(l[loop], s);
+    d.getData(l[loop], s);
     if (s.length())
     {
       str.append(l[loop] + " " + s + "\n");
-      d->remove(l[loop]);
+      d.remove(l[loop]);
     }
   }
 
-  d->getKeyList(l);
+  d.getKeyList(l);
   l.sort();
   
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    d->getData(l[loop], s);
+    d.getData(l[loop], s);
     
     // If it is a big number, then use zero precision.
     bool ok;
@@ -67,8 +67,6 @@ void InfoPanel::showInfo (Setting *d)
     
     str.append(l[loop] + " " + s + "\n");
   }
-
-  delete d;
 
   setText(str);
 }

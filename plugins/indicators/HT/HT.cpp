@@ -21,39 +21,24 @@
 
 #include "HT.h"
 #include "FunctionHT.h"
-#include "BARSUtils.h"
-#include "PlotStyleFactory.h"
+#include "FunctionBARS.h"
+#include "HTDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 HT::HT ()
 {
   _indicator = "HT";
-
-  _settings.setData(Method, "TRENDLINE");
-  _settings.setData(Color, "red");
-  _settings.setData(PhaseColor, "red");
-  _settings.setData(QuadColor, "yellow");
-  _settings.setData(SineColor, "red");
-  _settings.setData(LeadColor, "yellow");
-  _settings.setData(Plot, "Line");
-  _settings.setData(PhasePlot, "Line");
-  _settings.setData(QuadPlot, "Line");
-  _settings.setData(SinePlot, "Line");
-  _settings.setData(LeadPlot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(PhaseLabel, "PHASE");
-  _settings.setData(QuadLabel, "QUAD");
-  _settings.setData(SineLabel, "SINE");
-  _settings.setData(LeadLabel, "LEAD");
-  _settings.setData(Input, "Close");
 }
 
 int HT::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QString s;
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -63,89 +48,89 @@ int HT::getIndicator (Indicator &ind, BarData &data)
   FunctionHT f;
   QStringList methodList = f.list();
   
-  _settings.getData(Method, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
   switch ((FunctionHT::Method) method)
   {
     case FunctionHT::_PHASOR:
     {
-      QList<PlotLine *> pl;
+      QList<Curve *> pl;
       if (f.getPHASE(in, pl))
       {
         delete in;
         return 1;
       }
 
-      PlotLine *line = pl.at(0);
+      Curve *line = pl.at(0);
 
-      _settings.getData(PhasePlot, s);
-      line->setType(s);
+      settings.getData(PhasePlot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
 
-      _settings.getData(PhaseColor, s);
-      line->setColor(s);
+      settings.getData(PhaseColor, s);
+      QColor c(s);
+      line->setColor(c);
 
-      _settings.getData(PhaseLabel, s);
+      settings.getData(PhaseLabel, s);
       line->setLabel(s);
 
-      s = "0";
-      ind.setLine(s, line);
-      ind.addPlotOrder(s);
+      line->setZ(0);
+      ind.setLine(0, line);
 
       line = pl.at(1);
 
-      _settings.getData(QuadPlot, s);
-      line->setType(s);
+      settings.getData(QuadPlot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
 
-      _settings.getData(QuadColor, s);
-      line->setColor(s);
+      settings.getData(QuadColor, s);
+      c.setNamedColor(s);
+      line->setColor(c);
 
-      _settings.getData(QuadLabel, s);
+      settings.getData(QuadLabel, s);
       line->setLabel(s);
       
-      s = "1";
-      ind.setLine(s, line);
-      ind.addPlotOrder(s);
+      line->setZ(1);
+      ind.setLine(1, line);
       break;
     }
     case FunctionHT::_SINE:
     {
-      QList<PlotLine *> pl;
+      QList<Curve *> pl;
       if (f.getSINE(in, pl))
       {
         delete in;
         return 1;
       }
       
-      PlotLine *line = pl.at(0);
+      Curve *line = pl.at(0);
 
-      _settings.getData(SinePlot, s);
-      line->setType(s);
+      settings.getData(SinePlot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
 
-      _settings.getData(SineColor, s);
-      line->setColor(s);
+      settings.getData(SineColor, s);
+      QColor c(s);
+      line->setColor(c);
 
-      _settings.getData(SineLabel, s);
+      settings.getData(SineLabel, s);
       line->setLabel(s);
       
-      s = "2";
-      ind.setLine(s, line);
-      ind.addPlotOrder(s);
+      line->setZ(2);
+      ind.setLine(2, line);
 
       line = pl.at(1);
 
-      _settings.getData(LeadPlot, s);
-      line->setType(s);
+      settings.getData(LeadPlot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
 
-      _settings.getData(LeadColor, s);
-      line->setColor(s);
+      settings.getData(LeadColor, s);
+      c.setNamedColor(s);
+      line->setColor(c);
 
-      _settings.getData(LeadLabel, s);
+      settings.getData(LeadLabel, s);
       line->setLabel(s);
       
-      s = "3";
-      ind.setLine(s, line);
-      ind.addPlotOrder(s);
+      line->setZ(3);
+      ind.setLine(3, line);
       break;
     }
     default:
@@ -153,34 +138,33 @@ int HT::getIndicator (Indicator &ind, BarData &data)
       QColor up("green");
       QColor down("red");
       QColor neutral("blue");
-      BARSUtils b;
-      PlotLine *bars = b.getBARS(data, up, down, neutral);
+      FunctionBARS b;
+      Curve *bars = b.getBARS(data, up, down, neutral);
       if (bars)
       {
-        s = "4";
-        ind.setLine(s, bars);
-        ind.addPlotOrder(s);
+        bars->setZ(4);
+        ind.setLine(4, bars);
       }
 
-      PlotLine *line = f.getHT(in, method);
+      Curve *line = f.getHT(in, method);
       if (! line)
       {
         delete in;
         return 1;
       }
 
-      _settings.getData(Plot, s);
-      line->setType(s);
+      settings.getData(Plot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
 
-      _settings.getData(Color, s);
-      line->setColor(s);
+      settings.getData(Color, s);
+      QColor c(s);
+      line->setColor(c);
 
-      _settings.getData(Label, s);
+      settings.getData(Label, s);
       line->setLabel(s);
       
-      s = "5";
-      ind.setLine(s, line);
-      ind.addPlotOrder(s);
+      line->setZ(5);
+      ind.setLine(5, line);
       break;
     }
   }
@@ -195,99 +179,33 @@ int HT::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int HT::dialog (int)
+IndicatorPluginDialog * HT::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
-
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  FunctionHT f;
-  QStringList methodList = f.list();
-  
-  _settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
-
-  page++;
-  k = QObject::tr("Phasor");
-  dialog->addPage(page, k);
-
-  _settings.getData(PhaseColor, d);
-  dialog->addColorItem(PhaseColor, page, QObject::tr("Phase Color"), d);
-
-  _settings.getData(QuadColor, d);
-  dialog->addColorItem(QuadColor, page, QObject::tr("Quad Color"), d);
-
-  _settings.getData(PhasePlot, d);
-  dialog->addComboItem(PhasePlot, page, QObject::tr("Phase Plot"), plotList, d);
-
-  _settings.getData(QuadPlot, d);
-  dialog->addComboItem(QuadPlot, page, QObject::tr("Quad Plot"), plotList, d);
-
-  _settings.getData(PhaseLabel, d);
-  dialog->addTextItem(PhaseLabel, page, QObject::tr("Phase Label"), d, QString());
-
-  _settings.getData(QuadLabel, d);
-  dialog->addTextItem(QuadLabel, page, QObject::tr("Quad Label"), d, QString());
-
-  page++;
-  k = QObject::tr("Sine Wave");
-  dialog->addPage(page, k);
-
-  _settings.getData(SineColor, d);
-  dialog->addColorItem(SineColor, page, QObject::tr("Sine Color"), d);
-
-  _settings.getData(LeadColor, d);
-  dialog->addColorItem(LeadColor, page, QObject::tr("Lead Color"), d);
-
-  _settings.getData(SinePlot, d);
-  dialog->addComboItem(SinePlot, page, QObject::tr("Sine Plot"), plotList, d);
-
-  _settings.getData(LeadPlot, d);
-  dialog->addComboItem(LeadPlot, page, QObject::tr("Lead Plot"), plotList, d);
-
-  _settings.getData(SineLabel, d);
-  dialog->addTextItem(SineLabel, page, QObject::tr("Sine Label"), d, QString());
-
-  _settings.getData(LeadLabel, d);
-  dialog->addTextItem(LeadLabel, page, QObject::tr("Lead Label"), d, QString());
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+  return new HTDialog(i);
 }
 
+void HT::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Method, "TRENDLINE");
+  set.setData(Color, "red");
+  set.setData(PhaseColor, "red");
+  set.setData(QuadColor, "yellow");
+  set.setData(SineColor, "red");
+  set.setData(LeadColor, "yellow");
+  set.setData(Plot, "Line");
+  set.setData(PhasePlot, "Line");
+  set.setData(QuadPlot, "Line");
+  set.setData(SinePlot, "Line");
+  set.setData(LeadPlot, "Line");
+  set.setData(Label, _indicator);
+  set.setData(PhaseLabel, "PHASE");
+  set.setData(QuadLabel, "QUAD");
+  set.setData(SineLabel, "SINE");
+  set.setData(LeadLabel, "LEAD");
+  set.setData(Input, "Close");
+  i.setSettings(set);
+}
 
 //*************************************************************
 //*************************************************************

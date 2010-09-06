@@ -30,7 +30,6 @@
 
 #include "FunctionTHERM.h"
 #include "FunctionMA.h"
-#include "PlotStyleFactory.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -50,7 +49,7 @@ int FunctionTHERM::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionTHERM::script: duplicate name" << set[3];
@@ -73,7 +72,7 @@ int FunctionTHERM::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, smoothing, type);
+  Curve *line = calculate(data, smoothing, type);
   if (! line)
     return 1;
 
@@ -84,12 +83,12 @@ int FunctionTHERM::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionTHERM::calculate (BarData &data, int smoothing, int type)
+Curve * FunctionTHERM::calculate (BarData &data, int smoothing, int type)
 {
   if (data.count() < smoothing || data.count() < 2)
     return 0;
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int loop = 1;
   double thermometer = 0;
@@ -105,13 +104,13 @@ PlotLine * FunctionTHERM::calculate (BarData &data, int smoothing, int type)
     else
       thermometer = lo;
 
-    line->setData(loop, thermometer);
+    line->setBar(loop, new CurveBar(thermometer));
   }
 
   if (smoothing > 1)
   {
     FunctionMA mau;
-    PlotLine *ma = mau.calculate(line, smoothing, type);
+    Curve *ma = mau.calculate(line, smoothing, type);
     if (! ma)
     {
       delete line;

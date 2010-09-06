@@ -26,7 +26,7 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionPO
 {
@@ -39,7 +39,7 @@ class FunctionPO
 
     FunctionPO ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (PlotLine *in, int fast, int slow, int ma, int method);
+    Curve * calculate (Curve *in, int fast, int slow, int ma, int method);
     QStringList & list ();
 
   private:

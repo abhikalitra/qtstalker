@@ -22,7 +22,6 @@
 #include "ExScript.h"
 #include "SCIndicator.h"
 #include "SCGroup.h"
-#include "SCTest.h"
 #include "SCSymbol.h"
 #include "SCChartObject.h"
 

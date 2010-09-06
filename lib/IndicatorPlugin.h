@@ -22,35 +22,34 @@
 #ifndef INDICATOR_PLUGIN_HPP
 #define INDICATOR_PLUGIN_HPP
 
-#include <QString>
 #include <QStringList>
-#include <QColor>
+#include <QObject>
 
 #include "BarData.h"
 #include "Indicator.h"
-#include "Setting.h"
-#include "PrefDialog.h"
+#include "IndicatorPluginDialog.h"
 
-class IndicatorPlugin
+class IndicatorPlugin : public QObject
 {
+  Q_OBJECT
+
+  signals:
+    void signalChanged ();
+  
   public:
     IndicatorPlugin ();
     virtual ~IndicatorPlugin ();
     virtual int getIndicator (Indicator &, BarData &);
     virtual int getCUS (QStringList &, Indicator &, BarData &);
-    virtual int dialog (int);
+    virtual IndicatorPluginDialog * dialog (Indicator &);
+    virtual void defaults (Indicator &);
 
-    void setSettings (Indicator &);
-    void settings (Indicator &);
     QString & indicator ();
-    void getDialogSettings (PrefDialog *);
     int deleteFlag ();
 
   protected:
-    Setting _settings;
-    QString _name;
     QString _indicator;
-    QStringList _opList;
+//    QStringList _opList;
     int _deleteFlag;
 };
 

@@ -21,6 +21,7 @@
 
 #include "TabWidget.h"
 #include "PrefDialog.h"
+#include "Plot.h"
 
 #include <QInputDialog>
 #include <QCursor>
@@ -77,6 +78,8 @@ TabWidget::TabWidget (QString &id)
   }
 
   setTabSizes();
+
+//  connect(this, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged()));
 }
 
 void TabWidget::contextMenuEvent (QContextMenuEvent *)
@@ -226,16 +229,11 @@ void TabWidget::tabDialog ()
     setTabSizes();
 }
 
+void TabWidget::currentTabChanged ()
+{
+  Plot *p = (Plot *) currentWidget();
+  if (! p)
+    return;
 
-
-
-
-
-
-
-
-
-
-
-
-
+  p->replot();
+}

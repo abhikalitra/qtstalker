@@ -20,7 +20,6 @@
  */
 
 #include "BarData.h"
-#include "PlotLine.h"
 
 #include <QObject>
 #include <QtDebug>
@@ -53,9 +52,9 @@ void BarData::getInputFields (QStringList &l)
   l << QObject::tr("WCPrice");
 }
 
-PlotLine * BarData::getInput (BarData::InputType field)
+Curve * BarData::getInput (BarData::InputType field)
 {
-  PlotLine *in = new PlotLine;
+  Curve *line = new Curve;
 
   int loop;
   for (loop = 0; loop < count(); loop++)
@@ -66,53 +65,53 @@ PlotLine * BarData::getInput (BarData::InputType field)
     {
       case Open:
       {
-        in->setData(loop, bar.getData(Bar::BarFieldOpen));
+        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldOpen)));
         break;
       }
       case High:
       {
-        in->setData(loop, bar.getData(Bar::BarFieldHigh));
+        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldHigh)));
         break;
       }
       case Low:
       {
-        in->setData(loop, bar.getData(Bar::BarFieldLow));
+        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldLow)));
         break;
       }
       case Close:
       {
-        in->setData(loop, bar.getData(Bar::BarFieldClose));
+        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldClose)));
         break;
       }
       case Volume:
       {
-        in->setData(loop, bar.getData(Bar::BarFieldVolume));
+        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldVolume)));
         break;
       }
       case OI:
       {
-        in->setData(loop, bar.getData(Bar::BarFieldOI));
+        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldOI)));
         break;
       }
       case AveragePrice:
       {
-        in->setData(loop, getAvgPrice(loop));
+        line->setBar(loop, new CurveBar(getAvgPrice(loop)));
         break;
       }
       case MedianPrice:
       {
-        in->setData(loop, getMedianPrice(loop));
+        line->setBar(loop, new CurveBar(getMedianPrice(loop)));
         break;
       }
       case TypicalPrice:
       {
-        in->setData(loop, getTypicalPrice(loop));
+        line->setBar(loop, new CurveBar(getTypicalPrice(loop)));
         break;
       }
       case WeightedClosePrice:
       {
         double t = (bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow) + (bar.getData(Bar::BarFieldClose) * 2)) / 4.0;
-        in->setData(loop, t);
+        line->setBar(loop, new CurveBar(t));
         break;
       }
       default:
@@ -120,7 +119,7 @@ PlotLine * BarData::getInput (BarData::InputType field)
     }
   }
 
-  return in;
+  return line;
 }
 
 int BarData::count ()

@@ -40,7 +40,7 @@ int FunctionBOP::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionBOP::script: duplicate name" << set[3];
@@ -63,7 +63,7 @@ int FunctionBOP::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, smoothing, ma);
+  Curve *line = calculate(data, smoothing, ma);
   if (! line)
     return 1;
 
@@ -74,7 +74,7 @@ int FunctionBOP::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionBOP::calculate (BarData &data, int smoothing, int type)
+Curve * FunctionBOP::calculate (BarData &data, int smoothing, int type)
 {
   if (data.count() < 1 || data.count() < smoothing)
     return 0;
@@ -113,15 +113,15 @@ PlotLine * FunctionBOP::calculate (BarData &data, int smoothing, int type)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   for (loop = 0; loop < size; loop++)
-    line->setData(loop, out[loop]);
+    line->setBar(loop, new CurveBar(out[loop]));
 
   if (smoothing > 1)
   {
     FunctionMA mau;
-    PlotLine *ma = mau.calculate(line, smoothing, type);
+    Curve *ma = mau.calculate(line, smoothing, type);
     delete line;
     line = ma;
   }

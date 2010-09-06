@@ -21,63 +21,52 @@
 
 #include "MFI.h"
 #include "FunctionMA.h"
-#include "PlotStyleFactory.h"
+#include "MFIDialog.h"
 #include "FunctionMFI.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 MFI::MFI ()
 {
   _indicator = "MFI";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Period, 14);
-  _settings.setData(Smoothing, 10);
-  _settings.setData(SmoothingType, "SMA");
-  _settings.setData(Ref1Color, "white");
-  _settings.setData(Ref2Color, "white");
-  _settings.setData(Ref1, 20);
-  _settings.setData(Ref2, 80);
 }
 
 int MFI::getIndicator (Indicator &ind, BarData &data)
 {
-  // Ref1 line
-  QString s = "Horizontal";
-  PlotLine *line = new PlotLine;
-  line->setType(s);
+  Setting settings = ind.settings();
 
-  _settings.getData(Ref1Color, s);
+  // Ref1 line
+  QString s;
+  Curve *line = new Curve;
+  line->setType(Curve::Horizontal);
+
+  settings.getData(Ref1Color, s);
   QColor color(s);
   
-  line->setData(0, (double) _settings.getInt(Ref1), color);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref1)));
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   // Ref2 line
-  s = "Horizontal";
-  line = new PlotLine;
-  line->setType(s);
+  line = new Curve;
+  line->setType(Curve::Horizontal);
 
-  _settings.getData(Ref2Color, s);
+  settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, (double) _settings.getInt(Ref2), color);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref2)));
   
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
   // mfi plot
-  int period = _settings.getInt(Period);
-  int smoothing = _settings.getInt(Smoothing);
+  int period = settings.getInt(Period);
+  int smoothing = settings.getInt(Smoothing);
 
   FunctionMA mau;
-  _settings.getData(SmoothingType, s);
+  settings.getData(SmoothingType, s);
   int type = mau.typeFromString(s);
 
   FunctionMFI f;
@@ -85,18 +74,18 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
   if (! line)
     return 1;
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  color.setNamedColor(s);
+  line->setColor(color);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "2";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(2);
+  ind.setLine(2, line);
 
   return 0;
 }
@@ -107,66 +96,26 @@ int MFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int MFI::dialog (int)
+IndicatorPluginDialog * MFI::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
-
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
-
-  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), _settings.getInt(Smoothing), 1, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-  
-  _settings.getData(SmoothingType, d);
-  dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);
-
-  page++;
-  k = QObject::tr("Ref");
-  dialog->addPage(page, k);
-
-  _settings.getData(Ref1Color, d);
-  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
-
-  _settings.getData(Ref2Color, d);
-  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
-
-  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), _settings.getInt(Ref1), 0, 100);
-
-  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), _settings.getInt(Ref2), 0, 100);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+  return new MFIDialog(i);
 }
 
+void MFI::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Plot, "Line");
+  set.setData(Label, _indicator);
+  set.setData(Period, 14);
+  set.setData(Smoothing, 10);
+  set.setData(SmoothingType, "SMA");
+  set.setData(Ref1Color, "white");
+  set.setData(Ref2Color, "white");
+  set.setData(Ref1, 20);
+  set.setData(Ref2, 80);
+  i.setSettings(set);
+}
 
 //*************************************************************
 //*************************************************************

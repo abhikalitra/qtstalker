@@ -20,95 +20,87 @@
  */
 
 #include "AROON.h"
-#include "PlotStyleFactory.h"
+#include "Curve.h"
 #include "FunctionAROON.h"
+#include "AROONDialog.h"
 
 #include <QtDebug>
 
 AROON::AROON ()
 {
   _indicator = "AROON";
-  _settings.setData(Method, "AROON");
-  _settings.setData(DownColor, "red");
-  _settings.setData(UpColor, "green");
-  _settings.setData(DownPlot, "Line");
-  _settings.setData(UpPlot, "Line");
-  _settings.setData(DownLabel, "AROOND");
-  _settings.setData(UpLabel, "AROONU");
-  _settings.setData(OSCColor, "red");
-  _settings.setData(OSCPlot, "Histogram Bar");
-  _settings.setData(OSCLabel, "AROONOSC");
-  _settings.setData(Period, 14);
 }
 
 int AROON::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   FunctionAROON f;
   QStringList methodList = f.list();
   
   QString s;
-  _settings.getData(Method, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
-  int period = _settings.getInt(Period);
+  int period = settings.getInt(Period);
 
   switch ((FunctionAROON::Method) method)
   {
     case FunctionAROON::_AROONOSC:
     {
-      PlotLine *line = f.getAROONOSC(data, period);
+      Curve *line = f.getAROONOSC(data, period);
       if (! line)
         return 1;
 
-      _settings.getData(OSCPlot, s);
-      line->setType(s);
+      settings.getData(OSCPlot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
 
-      _settings.getData(OSCColor, s);
-      line->setColor(s);
+      settings.getData(OSCColor, s);
+      QColor c(s);
+      line->setColor(c);
 
-      _settings.getData(OSCLabel, s);
+      settings.getData(OSCLabel, s);
       line->setLabel(s);
 
-      s = "0";
-      ind.setLine(s, line);
-      ind.addPlotOrder(s);
+      line->setZ(0);
+      ind.setLine(0, line);
       break;
     }
     default:
     {
-      QList<PlotLine *> pl;
+      QList<Curve *> pl;
       if (f.getAROON(data, period, pl))
         return 1;
 
-      PlotLine *line = pl.at(0);
+      Curve *line = pl.at(0);
 
-      _settings.getData(UpPlot, s);
-      line->setType(s);
+      settings.getData(UpPlot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
 
-      _settings.getData(UpColor, s);
-      line->setColor(s);
+      settings.getData(UpColor, s);
+      QColor c(s);
+      line->setColor(c);
 
-      _settings.getData(UpLabel, s);
+      settings.getData(UpLabel, s);
       line->setLabel(s);
       
-      s = "1";
-      ind.setLine(s, line);
-      ind.addPlotOrder(s);
+      line->setZ(1);
+      ind.setLine(1, line);
 
       line = pl.at(1);
 
-      _settings.getData(DownPlot, s);
-      line->setType(s);
+      settings.getData(DownPlot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
 
-      _settings.getData(DownColor, s);
-      line->setColor(s);
+      settings.getData(DownColor, s);
+      c.setNamedColor(s);
+      line->setColor(c);
 
-      _settings.getData(DownLabel, s);
+      settings.getData(DownLabel, s);
       line->setLabel(s);
       
-      s = "2";
-      ind.setLine(s, line);
-      ind.addPlotOrder(s);
+      line->setZ(2);
+      ind.setLine(2, line);
       break;
     }
   }
@@ -122,74 +114,26 @@ int AROON::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int AROON::dialog (int)
+IndicatorPluginDialog * AROON::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new AROONDialog(i);
+}
 
-  k = QObject::tr("General");
-  dialog->addPage(page, k);
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
-
-  FunctionAROON f;
-  QStringList methodList = f.list();
-  
-  _settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
-
-  page++;
-  k = QObject::tr("Aroon");
-  dialog->addPage(page, k);
-
-  _settings.getData(UpColor, d);
-  dialog->addColorItem(UpColor, page, QObject::tr("Up Color"), d);
-
-  _settings.getData(DownColor, d);
-  dialog->addColorItem(DownColor, page, QObject::tr("Down Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(UpPlot, d);
-  dialog->addComboItem(UpPlot, page, QObject::tr("Up Plot"), plotList, d);
-
-  _settings.getData(DownPlot, d);
-  dialog->addComboItem(DownPlot, page, QObject::tr("Down Plot"), plotList, d);
-
-  _settings.getData(UpLabel, d);
-  dialog->addTextItem(UpLabel, page, QObject::tr("Up Label"), d, QString());
-
-  _settings.getData(DownLabel, d);
-  dialog->addTextItem(DownLabel, page, QObject::tr("Down Label"), d, QString());
-
-  page++;
-  k = QObject::tr("OSC");
-  dialog->addPage(page, k);
-
-  _settings.getData(OSCColor, d);
-  dialog->addColorItem(OSCColor, page, QObject::tr("Color"), d);
-
-  _settings.getData(OSCPlot, d);
-  dialog->addComboItem(OSCPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(OSCLabel, d);
-  dialog->addTextItem(OSCLabel, page, QObject::tr("Label"), d, QString());
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void AROON::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Method, "AROON");
+  set.setData(DownColor, "red");
+  set.setData(UpColor, "green");
+  set.setData(DownPlot, "Line");
+  set.setData(UpPlot, "Line");
+  set.setData(DownLabel, "AROOND");
+  set.setData(UpLabel, "AROONU");
+  set.setData(OSCColor, "red");
+  set.setData(OSCPlot, "Histogram Bar");
+  set.setData(OSCLabel, "AROONOSC");
+  set.setData(Period, 14);
+  i.setSettings(set);
 }
 
 //*************************************************************

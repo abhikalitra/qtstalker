@@ -29,28 +29,15 @@
 #include <QColor>
 #include <QStringList>
 #include <QDateTime>
-#include <QVBoxLayout>
 #include <QtDebug>
 #include <QToolButton>
 #include <QApplication>
-#include <QHBoxLayout>
-#include <QTimer>
 
 #include "Qtstalker.h"
 #include "DataWindow.h"
-#include "ChartPage.h"
-#include "PlotLine.h"
-#include "PrefDialog.h"
-#include "Indicator.h"
 #include "Setup.h"
-#include "IndicatorPage.h"
-#include "PluginFactory.h"
-#include "IndicatorPlugin.h"
-#include "IndicatorPluginFactory.h"
-#include "IndicatorDataBase.h"
-#include "COFactory.h"
-#include "DateRange.h"
 #include "QuoteServerRequestThread.h"
+#include "DocsAction.h"
 
 #include "../pics/done.xpm"
 #include "../pics/datawindow.xpm"
@@ -110,8 +97,6 @@ void QtstalkerApp::createGUI (Config &)
   _chartLayout->setOrientation(Qt::Vertical);
   _navSplitter->addWidget(_chartLayout);
 
-  _navSplitter->addWidget(_toolBar2);
-
   _sidePanel = new SidePanel;
   _plotSlider = _sidePanel->slider();
   _infoPanel = _sidePanel->info();
@@ -131,19 +116,18 @@ void QtstalkerApp::createGUI (Config &)
   connect(this, SIGNAL(signalSaveSettings()), _chartLayout, SLOT(save()));
   connect(this, SIGNAL(signalLoadSettings()), _chartLayout, SLOT(load()));
   connect(_chartLayout, SIGNAL(signalZoom(int, int)), _zoomButtons, SLOT(addZoom(int, int)));
-  connect(_chartLayout, SIGNAL(signalInfo(Setting *)), _infoPanel, SLOT(showInfo(Setting *)));
+  connect(_chartLayout, SIGNAL(signalInfo(Setting)), _infoPanel, SLOT(showInfo(Setting)));
   connect(_chartLayout, SIGNAL(signalStatus(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalSaveSettings()), _chartLayout, SLOT(saveSettings()));
   connect(_chartLayout, SIGNAL(signalIndexChanged(int)), _plotSlider, SLOT(setValue(int)));
   connect(_sidePanel, SIGNAL(signalSliderChanged(int)), _chartLayout, SLOT(setIndex(int)));
-  connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), _chartLayout, SLOT(setInterval(int)));
+//  connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), _chartLayout, SLOT(setInterval(int)));
+  connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
   connect(_gridAction, SIGNAL(signalChanged(bool)), _chartLayout, SLOT(setGrid(bool)));
   connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), _chartLayout, SLOT(setPixelSpace(int)));
   connect(_zoomButtons, SIGNAL(signalZoom(int, int)), _chartLayout, SLOT(setZoom(int, int)));
   connect(_gridAction, SIGNAL(signalColorChanged(QColor)), _chartLayout, SLOT(setGridColor(QColor)));
   connect(_newIndicatorAction, SIGNAL(activated()), _chartLayout, SLOT(newIndicator()));
-  connect(_toolBar2, SIGNAL(signalCursorButtonClicked(int)), _chartLayout, SLOT(cursorChanged(int)));
-  connect(_toolBar2, SIGNAL(signalCOButtonClicked(QString)), _chartLayout, SLOT(newExternalChartObject(QString)));
   
   // end chart layout signals
   
@@ -155,11 +139,6 @@ void QtstalkerApp::createGUI (Config &)
 
 void QtstalkerApp::createToolBars ()
 {
-  // construct the cursor/chart object toolbar
-  _toolBar2 = new COToolBar;
-  addToolBar(_toolBar2);
-  _toolBar2->setOrientation(Qt::Vertical);
-
   //construct main toolbar
   QToolBar *toolbar = addToolBar("buttonToolBar");
   toolbar->setIconSize(QSize(18, 18));
@@ -368,7 +347,7 @@ void QtstalkerApp::dataWindow ()
   DataWindow *dw = new DataWindow(this);
   connect(dw, SIGNAL(finished(int)), dw, SLOT(deleteLater()));
   dw->setWindowTitle("DataWindow - " + getWindowCaption());
-  dw->setData(_chartLayout->plotList());
+//  dw->setData(_chartLayout->plotList());
   dw->show();
   dw->scrollToBottom();
 }
@@ -415,8 +394,9 @@ void QtstalkerApp::setSliderStart (int count)
     return;
 
   int width = _chartLayout->plotWidth();
-  
-  _plotSlider->setStart(count, width, _zoomButtons->getPixelSpace());
+
+//  _plotSlider->setStart(count, width, _zoomButtons->getPixelSpace());
+  _plotSlider->setStart(count, width, 8);
 }
 
 // ******************************************************************************

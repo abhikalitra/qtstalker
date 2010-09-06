@@ -22,153 +22,105 @@
 #ifndef PLOT_HPP
 #define PLOT_HPP
 
-#include <QWidget>
 #include <QString>
-#include <QRect>
-#include <QPaintEvent>
-#include <QResizeEvent>
-#include <QMouseEvent>
-#include <QContextMenuEvent>
+#include <QHash>
 #include <QDateTime>
-#include <QPixmap>
+#include <QMap>
 #include <QMenu>
-#include <QPoint>
-#include <QList>
+#include <QColor>
+#include <QFont>
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
+#include <qwt_plot_grid.h>
+#include <qwt_scale_engine.h>
 
-#include "COPlugin.h"
-#include "Setting.h"
 #include "BarData.h"
-#include "PlotGrid.h"
-#include "PlotData.h"
-#include "Indicator.h"
-#include "DatePlot.h"
-#include "ScalePlot.h"
-#include "Scaler.h"
-#include "DateBar.h"
-#include "PlotCursor.h"
+#include "DateScaleDraw.h"
+#include "PlotScaleDraw.h"
+#include "Curve.h"
+#include "PlotPicker.h"
+#include "Setting.h"
+#include "ChartObject.h"
+#include "ChartObjectDialog.h"
+#include "ChartObjectSettings.h"
 
-class Plot : public QWidget
+class Plot : public QwtPlot
 {
   Q_OBJECT
 
   signals:
-    void signalStatusMessage (QString);
-    void signalInfoMessage (Setting *);
-    void signalPixelSpaceChanged (int, int);
-    void signalDraw (QString);
-    void signalDateFlag (bool);
-    void signalLogFlag (bool);
-    void signalNewExternalChartObjectDone();
-    void signalIndexChanged (int);
-    void signalBackgroundColorChanged (QColor);
-    void signalBorderColorChanged (QColor);
-    void signalPlotFontChanged (QFont);
+    void signalMessage (QString);
     void signalNewIndicator ();
     void signalEditIndicator (QString);
     void signalDeleteIndicator (QString);
-    void signalMoveIndicator (QString);
+    void signalBackgroundColorChanged (QColor);
+    void signalFontChanged (QFont);
+    void signalInfoMessage (Setting);
 
   public:
-    enum MouseStatus
-    {
-      None,
-      ClickWait,
-      COSelected,
-      Moving,
-      ClickWait2,
-      NewObjectWait
-    };
-
     Plot ();
     ~Plot ();
-    void setData (BarData &);
-    void setLogScale (bool);
-    bool logScale ();
-    void setInfoFlag (bool);
-    int convertXToDataIndex (int);
-    void setGridFlag (bool);
-    void setDateFlag (bool);
-    void setXGrid (QList<int> &);
-    void setMenuFlag (bool);
-    void setIndicator (Indicator &);
-    Indicator & indicator ();
+    void updatePlot ();
+    void setDates (BarData &);
+    void addCurve (int id, Curve *);
+    void addCurves (QMap<int, Curve *> &);
+    void setIndicator (QString &);
+    void setHighLow ();
+    void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
+    void addCurve3 (int id, Curve *curve, QwtPlotCurve *qcurve);
     void loadChartObjects ();
-    DateBar & dateBars ();
-    int width ();
-    void loadIndicator (BarData &, int);
-    void setRow (int);
-    int row ();
-    void setColumn (int);
-    int column ();
+    void newChartObjectDialog (ChartObjectSettings &, ChartObjectDialog *);
+    void newChartObjectSettings (ChartObjectSettings &);
 
   public slots:
-    void draw();
-    void drawRefresh();
-    void setPixelspace (int);
+    virtual void clear ();
+    void setStartIndex (int index);
     void setBackgroundColor (QColor);
-    void setBorderColor (QColor);
+    void setFont (QFont);
     void setGridColor (QColor);
-    void setPlotFont (QFont);
-    void setIndex (int);
-    void showPopupMenu ();
-    void sliderChanged (int);
-    void gridChanged (bool);
-    void logScaleChanged (bool);
-    void setInterval(BarData::BarLength);
-    void newExternalChartObject (QString);
-    void setExternalChartObjectFlag ();
-    void cursorChanged (int);
-    void clear ();
-    void editBackgroundColor ();
-    void editBorderColor ();
-    void editFont ();
-    void loadSettings ();
-
-  protected:
-    virtual void paintEvent (QPaintEvent *);
-    virtual void resizeEvent (QResizeEvent *);
-    virtual void mousePressEvent (QMouseEvent *);
-    virtual void mouseMoveEvent (QMouseEvent *);
-    virtual void mouseDoubleClickEvent (QMouseEvent *);
-    virtual void contextMenuEvent (QContextMenuEvent *);
-
-  private slots:
-    void drawObjects ();
-    void drawLines ();
-    void getXY (int, int);
-    void newChartObject (QString);
-    void deleteAllChartObjects ();
-    void chartObjectDeleted ();
-    void toggleDate ();
-    void toggleLog ();
-    void saveChartObjects ();
-    void objectDialog ();
-    void coSelected (int);
-    void indicatorThreadFinished (Indicator);
+    void setGrid (bool);
+    void showDate (bool);
+    void setLogScaling (bool);
+    void setCrosshair (bool);
+    void showContextMenu ();
     void editIndicator ();
     void deleteIndicator ();
-    void moveIndicator ();
+    void deleteAllChartObjects ();
+    void toggleDate ();
+    void toggleLog ();
+    void editBackgroundColor ();
+    void editFont ();
+    void mouseMove (QPoint);
+    void mouseClick (int, QPoint);
+    void newBuy ();
+    void newHLine ();
+    void newRetracement ();
+    void newSell ();
+    void newText ();
+    void newTLine ();
+    void newVLine ();
+    void newChartObject (ChartObjectSettings);
+    void updateChartObject (ChartObjectSettings);
+    void deleteChartObject (ChartObjectSettings);
 
-  private:
-    Indicator _indicator;
-    PlotData _plotData;
-    PlotGrid _grid;
-    bool _menuFlag;
-    COPlugin *_coSelected;
+private:
+    int _spacing;
+    QMap<int, QwtPlotCurve *> _qwtCurves;
+    QMap<int, Curve *> _curves;
+    QMap<int, ChartObject *> _chartObjects;
+    DateScaleDraw *_dateScaleDraw;
+    PlotScaleDraw *_plotScaleDraw;
+    QwtPlotGrid *_grid;
+    QwtLinearScaleEngine *_linearScaleEngine;
+    QwtLog10ScaleEngine *_logScaleEngine;
     QMenu *_chartMenu;
-    QMenu *_coMenu;
-    QString _symbol;
+    QMenu *_coListMenu;
+    PlotPicker *_picker;
+    QString _indicator;
     QString _exchange;
-    int _moveFlag;
-    int _newObjectFlag;
-    int _dragPos;
-    MouseStatus _saveMouseFlag;
-    DatePlot _datePlot;
-    ScalePlot _scalePlot;
-    DateBar _dateBars;
-    PlotCursor *_cursor;
-    int _row;
-    int _column;
+    QString _symbol;
+    double _high;
+    double _low;
 };
 
 #endif

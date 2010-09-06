@@ -63,20 +63,20 @@ int FunctionAD::scriptAD (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4].toInt());
   if (tl)
   {
     qDebug() << "FunctionAD::scriptAD: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *line = getAD(data);
+  Curve *line = getAD(data);
   if (! line)
     return 1;
 
   line->setLabel(set[4]);
   
-  ind.setLine(set[4], line);
+  ind.setLine(set[4].toInt(), line);
 
   return 0;
 }
@@ -92,7 +92,7 @@ int FunctionAD::scriptADOSC (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4].toInt());
   if (tl)
   {
     qDebug() << "FunctionAD::scriptADOSC: duplicate name" << set[4];
@@ -114,18 +114,18 @@ int FunctionAD::scriptADOSC (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = getADOSC(data, fast, slow);
+  Curve *line = getADOSC(data, fast, slow);
   if (! line)
     return 1;
 
   line->setLabel(set[4]);
 
-  ind.setLine(set[4], line);
+  ind.setLine(set[4].toInt(), line);
 
   return 0;
 }
 
-PlotLine * FunctionAD::getAD (BarData &data)
+Curve * FunctionAD::getAD (BarData &data)
 {
   if (data.count() < 1)
     return 0;
@@ -164,13 +164,13 @@ PlotLine * FunctionAD::getAD (BarData &data)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
   
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, out[outLoop]);
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }
@@ -178,7 +178,7 @@ PlotLine * FunctionAD::getAD (BarData &data)
   return line;
 }
 
-PlotLine * FunctionAD::getADOSC (BarData &data, int fast, int slow)
+Curve * FunctionAD::getADOSC (BarData &data, int fast, int slow)
 {
   if (data.count() < 1)
     return 0;
@@ -219,13 +219,13 @@ PlotLine * FunctionAD::getADOSC (BarData &data, int fast, int slow)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, out[outLoop]);
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }

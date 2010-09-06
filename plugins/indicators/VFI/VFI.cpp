@@ -21,7 +21,8 @@
 
 #include "VFI.h"
 #include "FunctionVFI.h"
-#include "PlotStyleFactory.h"
+#include "VFIDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -29,35 +30,32 @@
 VFI::VFI ()
 {
   _indicator = "VFI";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Period, 100);
 }
 
 int VFI::getIndicator (Indicator &ind, BarData &data)
 {
-  int period = _settings.getInt(Period);
+  Setting settings = ind.settings();
+
+  int period = settings.getInt(Period);
 
   FunctionVFI f;
-  PlotLine *line = f.calculate(data, period);
+  Curve *line = f.calculate(data, period);
   if (! line)
     return 1;
 
   QString s;
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   return 0;
 }
@@ -68,42 +66,19 @@ int VFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int VFI::dialog (int)
+IndicatorPluginDialog * VFI::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new VFIDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void VFI::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Plot, "Line");
+  set.setData(Label, _indicator);
+  set.setData(Period, 100);
+  i.setSettings(set);
 }
 
 //*************************************************************

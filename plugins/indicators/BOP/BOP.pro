@@ -3,6 +3,8 @@
 } 
 
 HEADERS += BOP.h
+HEADERS += BOPDialog.h
 
 SOURCES += BOP.cpp
+SOURCES += BOPDialog.cpp
 

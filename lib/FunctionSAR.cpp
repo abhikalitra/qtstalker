@@ -39,7 +39,7 @@ int FunctionSAR::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionSAR::script: duplicate name" << set[3];
@@ -61,7 +61,7 @@ int FunctionSAR::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, init, max);
+  Curve *line = calculate(data, init, max);
   if (! line)
     return 1;
 
@@ -72,7 +72,7 @@ int FunctionSAR::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionSAR::calculate (BarData &data, double _init, double _max)
+Curve * FunctionSAR::calculate (BarData &data, double _init, double _max)
 {
   if (data.count() < 1)
     return 0;
@@ -107,12 +107,10 @@ PlotLine * FunctionSAR::calculate (BarData &data, double _init, double _max)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
-  QString s("Dot");
-  line->setType(s);
+  Curve *line = new Curve(Curve::Dot);
 
   for (loop = 0; loop < outNb; loop++)
-    line->setData(loop + 1, out[loop]);
+    line->setBar(loop + 1, new CurveBar(out[loop]));
 
   return line;
 }

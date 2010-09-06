@@ -39,14 +39,14 @@ int FunctionNORMALIZE::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3].toInt());
   if (tl)
   {
     qDebug() << "FunctionNORMALIZE::script: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[4]);
+  Curve *in = ind.line(set[4].toInt());
   if (! in)
   {
     in = data.getInput(data.getInputType(set[4]));
@@ -56,24 +56,24 @@ int FunctionNORMALIZE::script (QStringList &set, Indicator &ind, BarData &data)
       return 1;
     }
 
-    ind.setLine(set[4], in);
+    ind.setLine(set[4].toInt(), in);
   }
 
-  PlotLine *line = calculate(in);
+  Curve *line = calculate(in);
   if (! line)
     return 1;
 
-  ind.setLine(set[3], line);
+  ind.setLine(set[3].toInt(), line);
 
   return 0;
 }
 
-PlotLine * FunctionNORMALIZE::calculate (PlotLine *in)
+Curve * FunctionNORMALIZE::calculate (Curve *in)
 {
   if (in->count() < 1)
     return 0;
   
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
   double max = 0;
   double min = 0;
   QList<int> keys;
@@ -85,8 +85,8 @@ PlotLine * FunctionNORMALIZE::calculate (PlotLine *in)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    line->setData(keys.at(loop), ((bar->data() - min) / range) * 100);
+    CurveBar *bar = in->bar(keys.at(loop));
+    line->setBar(keys.at(loop), new CurveBar(((bar->data() - min) / range) * 100));
   }
 
   return line;

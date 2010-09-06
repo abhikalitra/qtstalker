@@ -21,91 +21,79 @@
 
 #include "ULTOSC.h"
 #include "FunctionULTOSC.h"
-#include "PlotStyleFactory.h"
+#include "ULTOSCDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 ULTOSC::ULTOSC ()
 {
   _indicator = "ULTOSC";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(ShortPeriod, 7);
-  _settings.setData(MidPeriod, 14);
-  _settings.setData(LongPeriod, 28);
-  _settings.setData(Ref1Color, "white");
-  _settings.setData(Ref2Color, "white");
-  _settings.setData(Ref3Color, "white");
 }
 
 int ULTOSC::getIndicator (Indicator &ind, BarData &data)
 {
-  // 30 ref line
-  QString s = "Horizontal";
-  PlotLine *line = new PlotLine;
-  line->setType(s);
+  Setting settings = ind.settings();
 
-  _settings.getData(Ref1Color, s);
+  // 30 ref line
+  QString s;
+  Curve *line = new Curve;
+  line->setType(Curve::Horizontal);
+
+  settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, 30.0, color);
+  line->setBar(0, new CurveBar(color, settings.getDouble(Ref1)));
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   // 50 ref line
-  s = "Horizontal";
-  line = new PlotLine;
-  line->setType(s);
+  line = new Curve;
+  line->setType(Curve::Horizontal);
 
-  _settings.getData(Ref2Color, s);
+  settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, 50.0, color);
+  line->setBar(0, new CurveBar(color, settings.getDouble(Ref2)));
   
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
   // 70 ref line
-  s = "Horizontal";
-  line = new PlotLine;
-  line->setType(s);
+  line = new Curve;
+  line->setType(Curve::Horizontal);
 
-  _settings.getData(Ref3Color, s);
+  settings.getData(Ref3Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, 70.0, color);
+  line->setBar(0, new CurveBar(color, settings.getDouble(Ref3)));
   
-  s = "2";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(2);
+  ind.setLine(2, line);
 
   // ultosc line
-  int sp = _settings.getInt(ShortPeriod);
-  int mp = _settings.getInt(MidPeriod);
-  int lp = _settings.getInt(LongPeriod);
+  int sp = settings.getInt(ShortPeriod);
+  int mp = settings.getInt(MidPeriod);
+  int lp = settings.getInt(LongPeriod);
 
   FunctionULTOSC f;
   line = f.calculate(data, sp, mp, lp);
   if (! line)
     return 1;
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  color.setNamedColor(s);
+  line->setColor(color);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "3";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(3);
+  ind.setLine(3, line);
 
   return 0;
 }
@@ -116,59 +104,27 @@ int ULTOSC::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int ULTOSC::dialog (int)
+IndicatorPluginDialog * ULTOSC::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new ULTOSCDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(ShortPeriod, page, QObject::tr("Short Period"), _settings.getInt(ShortPeriod), 1, 100000);
-
-  dialog->addIntItem(MidPeriod, page, QObject::tr("Mid Period"), _settings.getInt(MidPeriod), 1, 100000);
-
-  dialog->addIntItem(LongPeriod, page, QObject::tr("Long Period"), _settings.getInt(LongPeriod), 1, 100000);
-
-  page++;
-  k = QObject::tr("Ref");
-  dialog->addPage(page, k);
-
-  _settings.getData(Ref1Color, d);
-  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 30 Color"), d);
-
-  _settings.getData(Ref2Color, d);
-  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 50 Color"), d);
-
-  _settings.getData(Ref3Color, d);
-  dialog->addColorItem(Ref3Color, page, QObject::tr("Ref. 70 Color"), d);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void ULTOSC::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Plot, "Line");
+  set.setData(Label, _indicator);
+  set.setData(ShortPeriod, 7);
+  set.setData(MidPeriod, 14);
+  set.setData(LongPeriod, 28);
+  set.setData(Ref1Color, "white");
+  set.setData(Ref2Color, "white");
+  set.setData(Ref3Color, "white");
+  set.setData(Ref1, 30);
+  set.setData(Ref2, 50);
+  set.setData(Ref3, 70);
+  i.setSettings(set);
 }
 
 //*************************************************************

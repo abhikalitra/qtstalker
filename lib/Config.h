@@ -47,7 +47,7 @@ class Config : public BaseConfig
       BackgroundColor, // color of chart background
       BorderColor, // color of chart borders
       GridColor, // color of chart grid
-      DefaultBuyColor, // default buy arrow color
+      DefaultChartObjectBuyColor, // default buy arrow color
       LastDateRange, // last date range setting (int)
       DateRangeButtonStatus, // status of the date range button on/off (int)
       DateRangeStart, // the start date range
@@ -109,24 +109,24 @@ class Config : public BaseConfig
       IndicatorRow3Position, // tab position of the 3rd row
       RecentChartsList, // csv list of the contents of the recent charts combobox
       LastChartObjectID, // used to assign a new co object id number
-      DefaultTextLabel,
+      DefaultChartObjectTextLabel,
       LastChartPanelSymbolSearch, // the last symbol search used in the chart panel
-      DefaultRetracementColor,
-      DefaultRetracementLine1,
-      DefaultRetracementLine2,
-      DefaultRetracementLine3,
-      DefaultRetracementLine4,
-      DefaultRetracementLine5,
-      DefaultRetracementLine6,
-      DefaultHLineColor,
-      DefaultSellColor,
-      DefaultTextColor,
-      DefaultTextFont,
-      DefaultTLineColor,
-      DefaultTLineBar,
-      DefaultTLineExtend,
-      DefaultTLineUseBar,
-      DefaultVLineColor, // default vertical line color
+      DefaultChartObjectRetracementColor,
+      DefaultChartObjectRetracementLine1,
+      DefaultChartObjectRetracementLine2,
+      DefaultChartObjectRetracementLine3,
+      DefaultChartObjectRetracementLine4,
+      DefaultChartObjectRetracementLine5,
+      DefaultChartObjectRetracementLine6,
+      DefaultChartObjectHLineColor,
+      DefaultChartObjectSellColor,
+      DefaultChartObjectTextColor,
+      DefaultChartObjectTextFont,
+      DefaultChartObjectTLineColor,
+      DefaultChartObjectTLineBar,
+      DefaultChartObjectTLineExtend,
+      DefaultChartObjectTLineUseBar,
+      DefaultChartObjectVLineColor, // default vertical line color
       IndicatorTabRows, // # of indicator tab rows
       LastIndicatorRow1, // last visible tab on row 1
       LastIndicatorRow2, // last visible tab on row 2

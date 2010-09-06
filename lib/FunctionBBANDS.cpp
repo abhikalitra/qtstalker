@@ -43,7 +43,7 @@ int FunctionBBANDS::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *in = ind.line(set[3]);
+  Curve *in = ind.line(set[3]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[3]));
@@ -56,7 +56,7 @@ int FunctionBBANDS::script (QStringList &set, Indicator &ind, BarData &data)
     ind.setLine(set[3], in);
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionBBANDS::script: duplicate upper name" << set[4];
@@ -107,7 +107,7 @@ int FunctionBBANDS::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  QList<PlotLine *> pl;
+  QList<Curve *> pl;
   if (calculate(in, period, udev, ldev, ma, pl))
     return 1;
   
@@ -122,7 +122,7 @@ int FunctionBBANDS::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-int FunctionBBANDS::calculate (PlotLine *in, int period, double udev, double ddev, int maType, QList<PlotLine *> &rl)
+int FunctionBBANDS::calculate (Curve *in, int period, double udev, double ddev, int maType, QList<Curve *> &rl)
 {
   if (in->count() < period)
     return 1;
@@ -141,7 +141,7 @@ int FunctionBBANDS::calculate (PlotLine *in, int period, double udev, double dde
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -163,17 +163,17 @@ int FunctionBBANDS::calculate (PlotLine *in, int period, double udev, double dde
     return 1;
   }
 
-  PlotLine *upper = new PlotLine;
-  PlotLine *middle = new PlotLine;
-  PlotLine *lower = new PlotLine;
+  Curve *upper = new Curve;
+  Curve *middle = new Curve;
+  Curve *lower = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    upper->setData(keys.at(keyLoop), uout[outLoop]);
-    middle->setData(keys.at(keyLoop), mout[outLoop]);
-    lower->setData(keys.at(keyLoop), lout[outLoop]);
+    upper->setBar(keys.at(keyLoop), new CurveBar(uout[outLoop]));
+    middle->setBar(keys.at(keyLoop), new CurveBar(mout[outLoop]));
+    lower->setBar(keys.at(keyLoop), new CurveBar(lout[outLoop]));
 
     keyLoop--;
     outLoop--;

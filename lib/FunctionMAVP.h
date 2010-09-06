@@ -26,14 +26,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionMAVP
 {
   public:
     FunctionMAVP ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (PlotLine *in, PlotLine *in2, int min, int max, int ma);
+    Curve * calculate (Curve *in, Curve *in2, int min, int max, int ma);
 };
 
 #endif

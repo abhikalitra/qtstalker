@@ -45,6 +45,8 @@
 #include <QListWidgetItem>
 #include <QToolButton>
 #include <QSize>
+#include <QDir>
+#include <QFileInfo>
 
 ScriptPage::ScriptPage ()
 {

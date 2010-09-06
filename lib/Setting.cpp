@@ -26,7 +26,7 @@ Setting::Setting ()
 {
 }
 
-void Setting::setData (QString &k, QString &d)
+void Setting::setData (QString k, QString d)
 {
   QString s = k;
   strip(s);
@@ -57,7 +57,7 @@ void Setting::setData (int k, double d)
   dict.insert(s, s2);
 }
 
-void Setting::setData (QString &k, int d)
+void Setting::setData (QString k, int d)
 {
   QString s = k;
   strip(s);
@@ -65,7 +65,7 @@ void Setting::setData (QString &k, int d)
   dict.insert(s, s2);
 }
 
-void Setting::setData (QString &k, double d)
+void Setting::setData (QString k, double d)
 {
   QString s = k;
   strip(s);

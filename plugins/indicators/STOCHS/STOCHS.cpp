@@ -22,107 +22,91 @@
 #include "STOCHS.h"
 #include "FunctionMA.h"
 #include "FunctionSTOCHS.h"
-#include "PlotStyleFactory.h"
+#include "STOCHSDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 STOCHS::STOCHS ()
 {
   _indicator = "STOCHS";
-
-  _settings.setData(SlowKColor, "red");
-  _settings.setData(SlowDColor, "yellow");
-  _settings.setData(Ref1Color, "white");
-  _settings.setData(Ref2Color, "white");
-  _settings.setData(SlowKPlot, "Line");
-  _settings.setData(SlowDPlot, "Dash");
-  _settings.setData(SlowKLabel, "SLOWK");
-  _settings.setData(SlowDLabel, "SLOWD");
-  _settings.setData(FastKPeriod, 5);
-  _settings.setData(SlowKPeriod, 3);
-  _settings.setData(SlowDPeriod, 3);
-  _settings.setData(SlowKMA, "SMA");
-  _settings.setData(SlowDMA, "SMA");
-  _settings.setData(Ref1, 20);
-  _settings.setData(Ref2, 80);
 }
 
 int STOCHS::getIndicator (Indicator &ind, BarData &data)
 {
-  // create first ref line
-  QString s = "Horizontal";
-  PlotLine *line = new PlotLine;
-  line->setType(s);
+  Setting settings = ind.settings();
 
-  _settings.getData(Ref1Color, s);
+  // create first ref line
+  QString s;
+  Curve *line = new Curve;
+  line->setType(Curve::Horizontal);
+
+  settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, (double) _settings.getInt(Ref1), color);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref1)));
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   // create second ref line
-  s = "Horizontal";
-  line = new PlotLine;
-  line->setType(s);
+  line = new Curve;
+  line->setType(Curve::Horizontal);
 
-  _settings.getData(Ref2Color, s);
+  settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, (double) _settings.getInt(Ref2), color);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref2)));
   
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
-  int fkperiod = _settings.getInt(FastKPeriod);
-  int skperiod = _settings.getInt(SlowKPeriod);
+  int fkperiod = settings.getInt(FastKPeriod);
+  int skperiod = settings.getInt(SlowKPeriod);
 
   FunctionMA mau;
-  _settings.getData(SlowKMA, s);
+  settings.getData(SlowKMA, s);
   int kmaType = mau.typeFromString(s);
 
-  int dperiod = _settings.getInt(SlowDPeriod);
+  int dperiod = settings.getInt(SlowDPeriod);
 
-  _settings.getData(SlowDMA, s);
+  settings.getData(SlowDMA, s);
   int dmaType = mau.typeFromString(s);
 
   FunctionSTOCHS f;
-  QList<PlotLine *> pl;
+  QList<Curve *> pl;
   if (f.calculate(data, fkperiod, skperiod, dperiod, kmaType, dmaType, pl))
     return 1;
 
   line = pl.at(0);
 
-  _settings.getData(SlowKPlot, s);
-  line->setType(s);
+  settings.getData(SlowKPlot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(SlowKColor, s);
-  line->setColor(s);
+  settings.getData(SlowKColor, s);
+  color.setNamedColor(s);
+  line->setColor(color);
 
-  _settings.getData(SlowKLabel, s);
+  settings.getData(SlowKLabel, s);
   line->setLabel(s);
   
-  s = "2";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(2);
+  ind.setLine(2, line);
 
   line = pl.at(1);
 
-  _settings.getData(SlowDPlot, s);
-  line->setType(s);
+  settings.getData(SlowDPlot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(SlowDColor, s);
-  line->setColor(s);
+  settings.getData(SlowDColor, s);
+  color.setNamedColor(s);
+  line->setColor(color);
 
-  _settings.getData(SlowDLabel, s);
+  settings.getData(SlowDLabel, s);
   line->setLabel(s);
   
-  s = "3";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(3);
+  ind.setLine(3, line);
 
   return 0;
 }
@@ -133,82 +117,30 @@ int STOCHS::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int STOCHS::dialog (int)
+IndicatorPluginDialog * STOCHS::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new STOCHSDialog(i);
+}
 
-  k = QObject::tr("SlowK");
-  dialog->addPage(page, k);
-
-  _settings.getData(SlowKColor, d);
-  dialog->addColorItem(SlowKColor, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(SlowKPlot, d);
-  dialog->addComboItem(SlowKPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(SlowKLabel, d);
-  dialog->addTextItem(SlowKLabel, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(FastKPeriod, page, QObject::tr("FastK Period"), _settings.getInt(FastKPeriod), 1, 100000);
-
-  dialog->addIntItem(SlowKPeriod, page, QObject::tr("Period"), _settings.getInt(SlowKPeriod), 1, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-
-  _settings.getData(SlowKMA, d);
-  dialog->addComboItem(SlowKMA, page, QObject::tr("MA Type"), maList, d);
-
-  page++;
-  k = QObject::tr("SlowD");
-  dialog->addPage(page, k);
-
-  _settings.getData(SlowDColor, d);
-  dialog->addColorItem(SlowDColor, page, QObject::tr("Color"), d);
-
-  _settings.getData(SlowDPlot, d);
-  dialog->addComboItem(SlowDPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(SlowDLabel, d);
-  dialog->addTextItem(SlowDLabel, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(SlowDPeriod, page, QObject::tr("Period"), _settings.getInt(SlowDPeriod), 1, 100000);
-
-  _settings.getData(SlowDMA, d);
-  dialog->addComboItem(SlowDMA, page, QObject::tr("MA Type"), maList, d);
-
-  page++;
-  k = QObject::tr("Ref");
-  dialog->addPage(page, k);
-
-  _settings.getData(Ref1Color, d);
-  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
-
-  _settings.getData(Ref2Color, d);
-  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
-
-  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), _settings.getInt(Ref1), 0, 100);
-
-  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), _settings.getInt(Ref2), 0, 100);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void STOCHS::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(SlowKColor, "red");
+  set.setData(SlowDColor, "yellow");
+  set.setData(Ref1Color, "white");
+  set.setData(Ref2Color, "white");
+  set.setData(SlowKPlot, "Line");
+  set.setData(SlowDPlot, "Dash");
+  set.setData(SlowKLabel, "SLOWK");
+  set.setData(SlowDLabel, "SLOWD");
+  set.setData(FastKPeriod, 5);
+  set.setData(SlowKPeriod, 3);
+  set.setData(SlowDPeriod, 3);
+  set.setData(SlowKMA, "SMA");
+  set.setData(SlowDMA, "SMA");
+  set.setData(Ref1, 20);
+  set.setData(Ref2, 80);
+  i.setSettings(set);
 }
 
 //*************************************************************

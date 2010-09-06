@@ -21,56 +21,52 @@
 
 #include "SAR.h"
 #include "FunctionSAR.h"
-#include "BARSUtils.h"
+#include "FunctionBARS.h"
+#include "SARDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 SAR::SAR ()
 {
   _indicator = "SAR";
-
-  _settings.setData(Color, "yellow");
-  _settings.setData(Plot, "Dot");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Init, 0.02);
-  _settings.setData(Max, 0.2);
 }
 
 int SAR::getIndicator (Indicator &ind, BarData &data)
 {
-  double tinit = _settings.getDouble(Init);
-  double tmax = _settings.getDouble(Max);
+  Setting settings = ind.settings();
+
+  double tinit = settings.getDouble(Init);
+  double tmax = settings.getDouble(Max);
 
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  BARSUtils b;
-  PlotLine *bars = b.getBARS(data, up, down, neutral);
+  FunctionBARS b;
+  Curve *bars = b.getBARS(data, up, down, neutral);
   if (bars)
   {
-    QString s = "0";
-    ind.setLine(s, bars);
-    ind.addPlotOrder(s);
+    bars->setZ(0);
+    ind.setLine(0, bars);
   }
 
   FunctionSAR f;
-  PlotLine *line = f.calculate(data, tinit, tmax);
+  Curve *line = f.calculate(data, tinit, tmax);
   if (! line)
     return 1;
 
+  line->setType((Curve::Dot));
+  
   QString s;
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Color, s);
-  line->setColor(s);
-
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
   return 0;
 }
@@ -81,8 +77,12 @@ int SAR::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int SAR::dialog (int)
+IndicatorPluginDialog * SAR::dialog (Indicator &i)
 {
+  return new SARDialog(i);
+}
+
+/*  
   int page = 0;
   QString k, d;
   PrefDialog *dialog = new PrefDialog;
@@ -112,6 +112,16 @@ int SAR::dialog (int)
 
   delete dialog;
   return rc;
+*/
+
+void SAR::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(SAR::Color, "yellow");
+  set.setData(SAR::Label, _indicator);
+  set.setData(SAR::Init, 0.02);
+  set.setData(SAR::Max, 0.2);
+  i.setSettings(set);
 }
 
 //*************************************************************

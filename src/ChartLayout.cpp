@@ -23,12 +23,19 @@
 #include "Config.h"
 #include "IndicatorDataBase.h"
 #include "IndicatorDialog.h"
+#include "IndicatorPluginFactory.h"
+#include "IndicatorPluginDialog.h"
+#include "IndicatorThread.h"
+#include "ChartObjectDataBase.h"
+#include "Plot.h"
 
+#include <QDebug>
 #include <QInputDialog>
 #include <QCursor>
 #include <QMessageBox>
 #include <QLabel>
 #include <QTabBar>
+#include <qwt_plot.h>
 
 ChartLayout::ChartLayout ()
 {
@@ -103,6 +110,17 @@ void ChartLayout::load ()
       it.value()->setCurrentIndex(d.toInt());
     }
   }
+
+  // set plot settings from config
+  QColor color;
+  config.getData(Config::BackgroundColor, color);
+  emit signalBackgroundColor(color);
+  
+  QFont font;
+  config.getData(Config::PlotFont, font);
+  emit signalFont(font);
+
+  emit signalDraw();
 }
 
 void ChartLayout::addTab (QString &name)
@@ -132,15 +150,17 @@ void ChartLayout::addTab (Indicator &i)
   if (! tab)
   {
     tab = new TabWidget(key);
-    connect(tab, SIGNAL(currentChanged(QWidget *)), this, SLOT(drawTab(QWidget *)));
+//    connect(tab, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged()));
     _tabs.insert(key, tab);
     grid->addWidget(tab, 0, i.column() - 1);
     w->show();
   }
-  
-  Plot *plot = new Plot;
-  _plotList.insert(i.name(), plot);
-  int pos = tab->addTab(plot, QString());
+
+  PlotSettings settings;
+  settings.plot = new Plot;
+  settings.name = i.name();
+  settings.plot->setIndicator(i.name());
+  int pos = tab->addTab(settings.plot, QString());
 
   // create a label that paints horizontally
   QTabBar *tb = tab->getTabBar();
@@ -151,84 +171,40 @@ void ChartLayout::addTab (Indicator &i)
   label->setText(i.name());
   tb->setTabButton(pos, QTabBar::LeftSide, label);
 
-  plot->setIndicator(i);
-  plot->setRow(i.tabRow());
-  plot->setColumn(i.column());
+  settings.row = i.tabRow();
+  settings.col = i.column();
+  _plots.insert(i.name(), settings);
 
-  connect(plot, SIGNAL(signalNewIndicator()), this, SLOT(newIndicator()));
-  connect(plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(editIndicator(QString)));
-  connect(plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator(QString)));
-  connect(plot, SIGNAL(signalMoveIndicator(QString)), this, SLOT(moveIndicator(QString)));
-
-  connect(this, SIGNAL(signalBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
-  connect(plot, SIGNAL(signalBackgroundColorChanged(QColor)), this, SIGNAL(signalBackgroundColor(QColor)));
-
-  connect(this, SIGNAL(signalBorderColor(QColor)), plot, SLOT(setBorderColor(QColor)));
-  connect(plot, SIGNAL(signalBorderColorChanged(QColor)), this, SIGNAL(signalBorderColor(QColor)));
-
-  connect(this, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setPlotFont(QFont)));
-  connect(plot, SIGNAL(signalPlotFontChanged(QFont)), this, SIGNAL(signalPlotFont(QFont)));
-
-  connect(this, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
-  connect(plot, SIGNAL(signalPixelSpaceChanged(int, int)), this, SIGNAL(signalZoom(int, int)));
-  connect(plot, SIGNAL(signalInfoMessage(Setting *)), this, SIGNAL(signalInfo(Setting *)));
-  connect(plot, SIGNAL(signalStatusMessage(QString)), this, SIGNAL(signalStatus(QString)));
-  connect(this, SIGNAL(signalPixelSpace(int)), plot, SLOT(setPixelspace(int)));
-  connect(this, SIGNAL(signalIndex(int)), plot, SLOT(setIndex(int)));
-  connect(this, SIGNAL(signalInterval(BarData::BarLength)), plot, SLOT(setInterval(BarData::BarLength)));
-  connect(this, SIGNAL(signalClearIndicator()), plot, SLOT(clear()));
-  connect(this, SIGNAL(signalSaveSettings()), plot, SLOT(clear()));
-  connect(this, SIGNAL(signalGrid(bool)), plot, SLOT(gridChanged(bool)));
-  connect(this, SIGNAL(signalNewExternalChartObject(QString)), plot, SLOT(newExternalChartObject(QString)));
-  connect(plot, SIGNAL(signalNewExternalChartObjectDone()), this, SLOT(newExternalChartObjectDone()));
-  connect(this, SIGNAL(signalSetExternalChartObject()), plot, SLOT(setExternalChartObjectFlag()));
-  connect(this, SIGNAL(signalCursorChanged(int)), plot, SLOT(cursorChanged(int)));
-  connect(plot, SIGNAL(signalIndexChanged(int)), this, SIGNAL(signalIndexChanged(int)));
-  connect(plot, SIGNAL(signalDraw(QString)), this, SLOT(drawPlot(QString)));
+  connect(this, SIGNAL(signalBackgroundColor(QColor)), settings.plot, SLOT(setBackgroundColor(QColor)));
+  connect(this, SIGNAL(signalFont(QFont)), settings.plot, SLOT(setFont(QFont)));
+  connect(this, SIGNAL(signalGridColor(QColor)), settings.plot, SLOT(setGridColor(QColor)));
+//  connect(plot, SIGNAL(signalPixelSpaceChanged(int, int)), this, SIGNAL(signalZoom(int, int)));
+  connect(settings.plot, SIGNAL(signalInfoMessage(Setting)), this, SIGNAL(signalInfo(Setting)));
+  connect(settings.plot, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatus(QString)));
+//  connect(this, SIGNAL(signalPixelSpace(int)), settings.plot, SLOT(setSpacing(int)));
+  connect(this, SIGNAL(signalClear()), settings.plot, SLOT(clear()));
+  connect(this, SIGNAL(signalGrid(bool)), settings.plot, SLOT(setGrid(bool)));
+  connect(this, SIGNAL(signalDraw()), settings.plot, SLOT(replot()));
+  connect(this, SIGNAL(signalIndex(int)), settings.plot, SLOT(setStartIndex(int)));
+  connect(settings.plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(editIndicator(QString)));
+  connect(settings.plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator(QString)));
+  connect(settings.plot, SIGNAL(signalBackgroundColorChanged(QColor)), this, SLOT(backgroundColorChanged(QColor)));
+  connect(settings.plot, SIGNAL(signalFontChanged(QFont)), this, SLOT(fontChanged(QFont)));
 }
 
 //******************************************************************
 //************* DRAW FUNCTIONS ************************************
 //*****************************************************************
 
-void ChartLayout::drawTab (QWidget *w)
-{
-  if (! w)
-    return;
-
-  Plot *p = (Plot *) w;
-  p->draw();
-}
-
-void ChartLayout::drawPlot (QString d)
-{
-  Plot *p = _plotList.value(d);
-  if (! p || ! p->isVisible())
-    return;
-  p->draw();
-}
-
-void ChartLayout::drawPlots ()
-{
-  QHashIterator<QString, TabWidget *> it(_tabs);
-  while (it.hasNext())
-  {
-    it.next();
-    Plot *p = (Plot *) it.value()->currentWidget();
-    if (p)
-      p->draw();
-  }
-}
-
-void ChartLayout::refresh (QString name)
-{
-  Plot *p = _plotList.value(name);
-  if (p)
-    p->draw();
-}
-
 void ChartLayout::loadPlots (BarData &bd, int index)
 {
+  if (! bd.count())
+    return;
+
+  _barData = bd;
+
+  _dateBars.createDateList(_barData);
+
   IndicatorDataBase db;
   QStringList indicatorList;
   db.getActiveIndicatorList(indicatorList);
@@ -236,41 +212,73 @@ void ChartLayout::loadPlots (BarData &bd, int index)
   int loop = 0;
   for (; loop < indicatorList.count(); loop++)
   {
-    Plot *plot = _plotList.value(indicatorList[loop]);
-    if (! plot)
+    if (! _plots.contains(indicatorList[loop]))
       continue;
+    
+    PlotSettings ps = _plots.value(indicatorList[loop]);
 
-    plot->loadIndicator(bd, index);
+    ps.plot->setDates(_barData);
+    
+    ps.plot->setStartIndex(index);
+
+    Indicator i;
+    i.setName(indicatorList[loop]);
+    db.getIndicator(i);
+
+    qRegisterMetaType<Indicator>("Indicator");
+    IndicatorThread *r = new IndicatorThread(this, _barData, i);
+    connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
+    connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+    r->start();
   }
+
+  emit signalDraw();
+}
+
+void ChartLayout::indicatorThreadFinished (Indicator i)
+{
+  // add plots to the plot
+  if (! _plots.contains(i.name()))
+    return;
+  
+  PlotSettings settings = _plots.value(i.name());
+  
+  settings.plot->clear();
+
+  settings.plot->addCurves(i.curves());
+
+  settings.plot->loadChartObjects();
+
+  settings.plot->setHighLow();
+  
+  emit signalDraw();
 }
 
 void ChartLayout::setGridColor (QColor d)
 {
   emit signalGridColor(d);
-  drawPlots();
+  emit signalDraw();
 }
 
 void ChartLayout::setPixelSpace (int d)
 {
   emit signalPixelSpace(d);
-  drawPlots();
+  emit signalDraw();
 }
 
 void ChartLayout::setIndex (int d)
 {
   emit signalIndex(d);
-  drawPlots();
-}
-
-void ChartLayout::setInterval (int d)
-{
-  emit signalInterval((BarData::BarLength) d);
-  emit signalRefresh ();
+  emit signalDraw();
 }
 
 void ChartLayout::clearIndicator ()
 {
-  emit signalClearIndicator();
+  _barData.clear();
+  _dateBars.clear();
+  
+  emit signalClear();
+  emit signalDraw();
 }
 
 void ChartLayout::saveSettings ()
@@ -281,35 +289,30 @@ void ChartLayout::saveSettings ()
 void ChartLayout::setGrid (bool d)
 {
   emit signalGrid(d);
-  drawPlots();
-}
-
-void ChartLayout::newExternalChartObject (QString d)
-{
-  emit signalNewExternalChartObject(d);
-}
-
-void ChartLayout::setExternalChartObject ()
-{
-  emit signalSetExternalChartObject();
-}
-
-void ChartLayout::cursorChanged (int d)
-{
-  emit signalCursorChanged(d);
+  emit signalDraw();
 }
 
 void ChartLayout::setZoom (int pixelSpace, int index)
 {
   emit signalPixelSpace(pixelSpace);
   emit signalIndex(index);
-//  emit signalIndexChanged(index)
-  drawPlots();
+  emit signalDraw();
 }
 
-void ChartLayout::newExternalChartObjectDone ()
+void ChartLayout::backgroundColorChanged (QColor c)
 {
-  emit signalSetExternalChartObject();
+  Config config;
+  config.setData(Config::BackgroundColor, c);
+  emit signalBackgroundColor(c);
+  emit signalDraw();
+}
+
+void ChartLayout::fontChanged (QFont f)
+{
+  Config config;
+  config.setData(Config::PlotFont, f);
+  emit signalFont(f);
+  emit signalDraw();
 }
 
 int ChartLayout::plotWidth ()
@@ -318,20 +321,22 @@ int ChartLayout::plotWidth ()
   int maxWidth = 0;
   int minWidth = 999999;
   int cols = 1;
-  QHashIterator<QString, Plot *> it(_plotList);
+  QHashIterator<QString, PlotSettings> it(_plots);
   while (it.hasNext())
   {
      it.next();
-     Plot *p = it.value();
+     PlotSettings settings = it.value();
 
-     if (p->column() > cols)
-       cols = p->column();
+     if (settings.col > cols)
+       cols = settings.col;
+
+     int width = settings.plot->width();
      
-     if (p->width() > maxWidth)
-       maxWidth = p->width();
+     if (width > maxWidth)
+       maxWidth = width;
 
-     if (p->width() < minWidth)
-       minWidth = p->width();
+     if (width < minWidth)
+       minWidth = width;
   }
 
   if (cols > 1)
@@ -343,33 +348,78 @@ int ChartLayout::plotWidth ()
 void ChartLayout::newIndicator ()
 {
   IndicatorDialog *dialog = new IndicatorDialog;
-  if (dialog->newDialog())
-  {
-    delete dialog;
-    return;
-  }
-
-  QString name = dialog->name();
-
-  delete dialog;
-
-  addTab(name);
-
-  emit signalRefresh();
+  connect(dialog, SIGNAL(signalDone(Indicator)), this, SLOT(newIndicator2(Indicator)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
 }
 
-void ChartLayout::editIndicator (QString indicator)
+void ChartLayout::newIndicator2 (Indicator i)
 {
-  IndicatorDialog *dialog = new IndicatorDialog;
-  if (dialog->dialog(indicator))
+  IndicatorPluginFactory fac;
+  IndicatorPlugin *ip = fac.plugin(i.indicator());
+  if (! ip)
   {
-    delete dialog;
+    qDebug() << "ChartLayout::newIndicator2: plugin error" << i.indicator();
     return;
   }
 
-  delete dialog;
+  ip->defaults(i);
+  
+  IndicatorPluginDialog *dialog = ip->dialog(i);
+  if (! dialog)
+  {
+    qDebug() << "ChartLayout::newIndicator2: no dialog";
+    return;
+  }
 
-  emit signalRefresh();
+  connect(dialog, SIGNAL(signalDone(Indicator)), this, SLOT(newIndicator3(Indicator)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void ChartLayout::newIndicator3 (Indicator i)
+{
+  addTab(i.name());
+  emit signalDraw();
+}
+
+void ChartLayout::editIndicator (QString name)
+{
+  Indicator i;
+  i.setName(name);
+  IndicatorDataBase db;
+  db.getIndicator(i);
+  
+  IndicatorPluginFactory fac;
+  IndicatorPlugin *ip = fac.plugin(i.indicator());
+  if (! ip)
+  {
+    qDebug() << "ChartLayout::editIndicator: plugin error" << i.indicator();
+    return;
+  }
+
+  IndicatorPluginDialog *dialog = ip->dialog(i);
+  if (! dialog)
+  {
+    qDebug() << "ChartLayout::editIndicator: no dialog";
+    return;
+  }
+
+  connect(dialog, SIGNAL(signalDone(Indicator)), this, SLOT(editIndicator2(Indicator)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void ChartLayout::editIndicator2 (Indicator i)
+{
+  if (! _barData.count())
+    return;
+
+  qRegisterMetaType<Indicator>("Indicator");
+  IndicatorThread *r = new IndicatorThread(this, _barData, i);
+  connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
+  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+  r->start();
 }
 
 void ChartLayout::deleteIndicator (QString indicator)
@@ -397,22 +447,22 @@ void ChartLayout::deleteIndicator (QString indicator)
 
 void ChartLayout::removeTab (Indicator &i)
 {
-  Plot *plot = _plotList.value(i.name());
-  if (! plot)
+  if (! _plots.contains(i.name()))
     return;
 
-  int row = plot->row();
-  int col = plot->column();
+  PlotSettings settings = _plots.value(i.name());
+
+  int row = settings.row;
+  int col = settings.col;
 
   QString key = QString::number(row) + ":" + QString::number(col);
   TabWidget *tab = _tabs.value(key);
   if (! tab)
     return;
 
-  tab->removeTab(tab->indexOf(plot));
+  tab->removeTab(tab->indexOf(settings.plot));
 
-  delete plot;
-  _plotList.remove(i.name());
+  _plots.remove(i.name());
 
   if (! tab->count())
   {
@@ -432,37 +482,8 @@ void ChartLayout::removeTab (Indicator &i)
   }
 }
 
-void ChartLayout::moveIndicator (QString indicator)
+QHash<QString, PlotSettings> & ChartLayout::plots ()
 {
-  Indicator oi, ni;
-  oi.setName(indicator);
-  IndicatorDataBase db;
-  db.getIndicator(oi);
-  ni = oi;
-
-  IndicatorDialog *dialog = new IndicatorDialog;
-  if (dialog->moveDialog(ni))
-  {
-    delete dialog;
-    return;
-  }
-
-  delete dialog;
-
-  if (oi.tabRow() == ni.tabRow() && oi.column() == ni.column())
-    return;
-  
-  db.setIndicator(ni);
-
-  removeTab(oi);
-  
-  addTab(ni);
-
-  emit signalRefresh();
-}
-
-QHash<QString, Plot *> & ChartLayout::plotList ()
-{
-  return _plotList;
+  return _plots;
 }
 

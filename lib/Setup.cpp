@@ -27,7 +27,6 @@
 #include "IndicatorPlugin.h"
 #include "ExchangeDataBase.h"
 #include "FuturesDataBase.h"
-#include "PlotLine.h"
 #include "MiscPluginFactory.h"
 #include "QuoteServerRequest.h"
 
@@ -109,12 +108,13 @@ void Setup::setupDefaultIndicators (Config &config)
   else
   {
     Indicator i;
-    ip->settings(i);
+    i.setIndicator(s);
     i.setTabRow(1);
     i.setColumn(1);
     i.setEnable(1);
     s = "Bars";
     i.setName(s);
+    ip->defaults(i);
     db.setIndicator(i);
   }
 
@@ -126,12 +126,13 @@ void Setup::setupDefaultIndicators (Config &config)
   else
   {
     Indicator i;
-    ip->settings(i);
+    i.setIndicator(s);
     i.setTabRow(2);
     i.setColumn(1);
     i.setEnable(1);
     s = "Volume";
     i.setName(s);
+    ip->defaults(i);
     db.setIndicator(i);
   }
 

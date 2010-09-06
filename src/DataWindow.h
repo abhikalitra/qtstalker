@@ -29,10 +29,8 @@
 #include <QHash>
 
 #include "BarData.h"
-#include "Plot.h"
 #include "Setting.h"
 #include "DateBar.h"
-#include "PlotLine.h"
 
 class DataWindow : public QDialog
 {
@@ -40,11 +38,11 @@ class DataWindow : public QDialog
 
   public:
     DataWindow (QWidget *);
-    void setData (QHash<QString, Plot *> &);
-    void setPlot (Plot *);
+//    void setData (QHash<QString, QFP_Plot *> &);
+//    void setPlot (QFP_Plot *);
     void setDates (DateBar &);
-    void setLine (PlotLine *);
-    void setOHLC (PlotLine *);
+//    void setLine (QFP_Curve *);
+//    void setOHLC (QFP_Curve *);
     void scrollToBottom ();
 
   private:

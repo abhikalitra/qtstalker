@@ -21,8 +21,9 @@
 
 #include "MA.h"
 #include "FunctionMA.h"
-#include "BARSUtils.h"
-#include "PlotStyleFactory.h"
+#include "FunctionBARS.h"
+#include "MADialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -30,64 +31,58 @@
 MA::MA ()
 {
   _indicator = "MA";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Input, "Close");
-  _settings.setData(Period, 14);
-  _settings.setData(Method, "SMA");
 }
 
 int MA::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  BARSUtils b;
-  PlotLine *bars = b.getBARS(data, up, down, neutral);
+  FunctionBARS b;
+  Curve *bars = b.getBARS(data, up, down, neutral);
   if (bars)
   {
-    QString s = "0";
-    ind.setLine(s, bars);
-    ind.addPlotOrder(s);
+    bars->setZ(0);
+    ind.setLine(0, bars);
   }
 
   QString s;
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  int period = _settings.getInt(Period);
+  int period = settings.getInt(Period);
 
   FunctionMA f;
-  _settings.getData(Method, s);
+  settings.getData(Method, s);
   FunctionMA mau;
   int method = f.typeFromString(s);
 
-  PlotLine *line = f.calculate(in, period, method);
+  Curve *line = f.calculate(in, period, method);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
   delete in;
 
@@ -100,55 +95,21 @@ int MA::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int MA::dialog (int)
+IndicatorPluginDialog * MA::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new MADialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
-
-  FunctionMA f;
-  QStringList methodList = f.list();
-  
-  _settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void MA::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Plot, "Line");
+  set.setData(Label, _indicator);
+  set.setData(Input, "Close");
+  set.setData(Period, 14);
+  set.setData(Method, "SMA");
+  i.setSettings(set);
 }
 
 //*************************************************************

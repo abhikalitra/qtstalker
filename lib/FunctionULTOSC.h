@@ -26,14 +26,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionULTOSC
 {
   public:
     FunctionULTOSC ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (BarData &data, int sp, int mp, int lp);
+    Curve * calculate (BarData &data, int sp, int mp, int lp);
 };
 
 #endif

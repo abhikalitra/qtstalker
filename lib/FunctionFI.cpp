@@ -39,7 +39,7 @@ int FunctionFI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionFI::script: duplicate name" << set[3];
@@ -62,7 +62,7 @@ int FunctionFI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, period, ma);
+  Curve *line = calculate(data, period, ma);
   if (! line)
     return 1;
 
@@ -73,12 +73,12 @@ int FunctionFI::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionFI::calculate (BarData &data, int period, int type)
+Curve * FunctionFI::calculate (BarData &data, int period, int type)
 {
   if (data.count() < period)
     return 0;
   
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int loop = 1;
   double force = 0;
@@ -89,13 +89,13 @@ PlotLine * FunctionFI::calculate (BarData &data, int period, int type)
     double cdiff = bar.getClose() - pbar.getClose();
     force = bar.getVolume() * cdiff;
   
-    line->setData(loop, force);
+    line->setBar(loop, new CurveBar(force));
   }
 
   if (period > 1)
   {
     FunctionMA mau;
-    PlotLine *ma = mau.calculate(line, period, type);
+    Curve *ma = mau.calculate(line, period, type);
     if (! ma)
     {
       delete line;

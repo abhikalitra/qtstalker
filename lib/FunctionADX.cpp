@@ -47,7 +47,7 @@ int FunctionADX::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
   
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionADX::script: duplicate name" << set[4];
@@ -62,7 +62,7 @@ int FunctionADX::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, period, method);
+  Curve *line = calculate(data, period, method);
   if (! line)
     return 1;
 
@@ -73,7 +73,7 @@ int FunctionADX::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionADX::calculate (BarData &data, int period, int method)
+Curve * FunctionADX::calculate (BarData &data, int period, int method)
 {
   if (data.count() < period)
     return 0;
@@ -124,13 +124,13 @@ PlotLine * FunctionADX::calculate (BarData &data, int period, int method)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, out[outLoop]);
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }

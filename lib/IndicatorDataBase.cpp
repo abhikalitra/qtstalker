@@ -20,7 +20,9 @@
  */
 
 #include "IndicatorDataBase.h"
-#include "CODataBase.h"
+#include "ChartObjectDataBase.h"
+
+#include <QtSql>
 
 IndicatorDataBase::IndicatorDataBase ()
 {
@@ -131,7 +133,7 @@ void IndicatorDataBase::setIndicator (Indicator &i)
 void IndicatorDataBase::deleteIndicator (QString &name)
 {
   // delete any chart objects tied to this indicator before we delete it
-  CODataBase codb;
+  ChartObjectDataBase codb;
   codb.deleteChartObjectsIndicator(name);
 
   QSqlQuery q(QSqlDatabase::database(_dbName));
@@ -207,5 +209,26 @@ void IndicatorDataBase::setIndicatorEnable (Indicator &i)
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "IndicatorDataBase::setIndicatorEnable:" << q.lastError().text();
+}
+
+void IndicatorDataBase::setIndicatorSettings (Indicator &i)
+{
+  QString name = i.name();
+  Setting set = i.settings();
+  QString settings;
+  set.getString(settings);
+
+  transaction();
+
+  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QString s = "INSERT OR REPLACE INTO indicatorIndex (name,settings) VALUES (";
+  s.append("'" + name + "'");
+  s.append(",'" + settings + "'");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "IndicatorDataBase::setIndicatorSettings" << q.lastError().text();
+
+  commit();
 }
 

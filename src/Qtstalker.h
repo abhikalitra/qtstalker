@@ -30,19 +30,16 @@
 #include <QSplitter>
 #include <QAction>
 
+#include "Splitter.h"
 #include "Config.h"
-#include "Plot.h"
-#include "BarData.h"
 #include "InfoPanel.h"
-#include "PlotSlider.h"
-#include "COToolBar.h"
-#include "ZoomButtons.h"
-#include "BarLengthButtons.h"
 #include "RecentCharts.h"
+#include "BarLengthButtons.h"
+#include "BarData.h"
+#include "PlotSlider.h"
+#include "ZoomButtons.h"
 #include "GridAction.h"
 #include "RefreshAction.h"
-#include "DocsAction.h"
-#include "Splitter.h"
 #include "DateRangeControl.h"
 #include "DateRangeButton.h"
 #include "SidePanel.h"
@@ -86,7 +83,6 @@ class QtstalkerApp : public QMainWindow
     BarLengthButtons *_barLengthButtons;
     BarData _currentChart;
     PlotSlider *_plotSlider;
-    COToolBar *_toolBar2;
     ZoomButtons *_zoomButtons;
     QString _clAsset;
     GridAction *_gridAction;

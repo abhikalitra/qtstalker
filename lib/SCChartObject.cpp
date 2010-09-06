@@ -20,8 +20,6 @@
  */
 
 #include "SCChartObject.h"
-#include "COFactory.h"
-#include "COPlugin.h"
 
 #include <QtDebug>
 
@@ -44,8 +42,10 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, Ba
     return rc;
   }
 
-  COFactory fac;
-  COPlugin *co = fac.getCO(l[1]);
+// FIXME
+/*
+  ChartObjectFactory fac;
+  ChartObject *co = fac.chartObject(l[1]);
   if (! co)
   {
     qDebug() << "SCChartObject::calculate: invalid type" << l.count();
@@ -82,7 +82,8 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, Ba
   co->setID(id);
 
   ind.addChartObject(co);
-  
+*/
+
   ba.clear();
   ba.append("0\n");
 

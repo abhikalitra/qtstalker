@@ -23,6 +23,7 @@
 #include "ExScript.h"
 
 #include <QDebug>
+#include <QEventLoop>
 
 Script::Script ()
 {

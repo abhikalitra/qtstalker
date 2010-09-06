@@ -21,71 +21,54 @@
 
 #include "CANDLES.h"
 #include "FunctionMA.h"
-#include "PlotStyleFactory.h"
 #include "FunctionCANDLES.h"
+#include "CANDLESDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 CANDLES::CANDLES ()
 {
   _indicator = "CANDLES";
-
-  _settings.setData(Penetration, 0.3);
-  _settings.setData(Method, "NONE");
-  _settings.setData(MethodColor, "cyan");
-  _settings.setData(Color, "green");
-  _settings.setData(Label, _indicator);
-  _settings.setData(MAColor, "red");
-  _settings.setData(MA2Color, "yellow");
-  _settings.setData(MA3Color, "blue");
-  _settings.setData(MAPlot, "Line");
-  _settings.setData(MA2Plot, "Line");
-  _settings.setData(MA3Plot, "Line");
-  _settings.setData(MALabel, "MA1");
-  _settings.setData(MA2Label, "MA2");
-  _settings.setData(MA3Label, "MA3");
-  _settings.setData(MAPeriod, 20);
-  _settings.setData(MA2Period, 50);
-  _settings.setData(MA3Period, 200);
-  _settings.setData(MAType, "SMA");
-  _settings.setData(MA2Type, "SMA");
-  _settings.setData(MA3Type, "SMA");
 }
 
 int CANDLES::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   FunctionCANDLES f;
-  PlotLine *line = f.candles(data);
+  Curve *line = f.candles(data);
   if (! line)
     return 1;
 
   QString s;
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setAllColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
   QStringList methodList = f.list();
-  _settings.getData(Method, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
   if (method != FunctionCANDLES::_NONE)
   {
-    double pen = _settings.getDouble(Penetration);
+    double pen = settings.getDouble(Penetration);
 
-    PlotLine *line2 = f.getMethod(data, method, pen);
+    Curve *line2 = f.getMethod(data, method, pen);
     if (line2)
     {
-      _settings.getData(MethodColor, s);
+      settings.getData(MethodColor, s);
       QColor color(s);
       
       int loop = 0;
       for (; loop < line2->count(); loop++)
       {
-        PlotLineBar *bar2 = line2->data(loop);
+        CurveBar *bar2 = line2->bar(loop);
         if (bar2->data() > 0)
         {
-          PlotLineBar *bar = line->data(loop);
+          CurveBar *bar = line->bar(loop);
           bar->setColor(color);
         }
       }
@@ -94,82 +77,85 @@ int CANDLES::getIndicator (Indicator &ind, BarData &data)
     }
   }
 
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
-  
-  int period = _settings.getInt(MAPeriod);
+  line->setZ(0);
+
+  ind.setLine(0, line);
+
+  int period = settings.getInt(MAPeriod);
   if (period > 1)
   {
     FunctionMA mau;
-    _settings.getData(MAType, s);
+    settings.getData(MAType, s);
     int type = mau.typeFromString(s);
 
-    PlotLine *ma = mau.calculate(line, period, type);
+    Curve *ma = mau.calculate(line, period, type);
     if (ma)
     {
-      _settings.getData(MAPlot, s);
-      ma->setType(s);
+      settings.getData(MAPlot, s);
+      ma->setType((Curve::Type) ma->typeFromString(s));
 
-      _settings.getData(MAColor, s);
-      ma->setColor(s);
+      settings.getData(MAColor, s);
+      c.setNamedColor(s);
+      ma->setColor(c);
 
-      _settings.getData(MALabel, s);
+      settings.getData(MALabel, s);
       ma->setLabel(s);
       
-      s = "1";
-      ind.setLine(s, ma);
-      ind.addPlotOrder(s);
+      ind.setLine(1, ma);
+
+      ma->setZ(1);
     }
   }
 
-  period = _settings.getInt(MA2Period);
+  period = settings.getInt(MA2Period);
   if (period > 1)
   {
     FunctionMA mau;
-    _settings.getData(MA2Type, s);
+    settings.getData(MA2Type, s);
     int type = mau.typeFromString(s);
 
-    PlotLine *ma = mau.calculate(line, period, type);
+    Curve *ma = mau.calculate(line, period, type);
     if (ma)
     {
-      _settings.getData(MA2Plot, s);
-      ma->setType(s);
+      settings.getData(MA2Plot, s);
+      ma->setType((Curve::Type) ma->typeFromString(s));
 
-      _settings.getData(MA2Color, s);
-      ma->setColor(s);
+      settings.getData(MA2Color, s);
+      c.setNamedColor(s);
+      ma->setColor(c);
 
-      _settings.getData(MA2Label, s);
+      settings.getData(MA2Label, s);
       ma->setLabel(s);
       
-      s = "2";
-      ind.setLine(s, ma);
-      ind.addPlotOrder(s);
+      ind.setLine(2, ma);
+      
+      ma->setZ(2);
     }
   }
 
-  period = _settings.getInt(MA3Period);
+  period = settings.getInt(MA3Period);
   if (period > 1)
   {
     FunctionMA mau;
-    _settings.getData(MA3Type, s);
+    settings.getData(MA3Type, s);
     int type = mau.typeFromString(s);
 
-    PlotLine *ma = mau.calculate(line, period, type);
+    Curve *ma = mau.calculate(line, period, type);
     if (ma)
     {
-      _settings.getData(MA3Plot, s);
-      ma->setType(s);
+      settings.getData(MA3Plot, s);
+      ma->setType((Curve::Type) ma->typeFromString(s));
 
-      _settings.getData(MA3Color, s);
-      ma->setColor(s);
+      settings.getData(MA3Color, s);
+      c.setNamedColor(s);
+      ma->setColor(c);
 
-      _settings.getData(MA3Label, s);
+      settings.getData(MA3Label, s);
       ma->setLabel(s);
       
-      s = "3";
-      ind.setLine(s, ma);
-      ind.addPlotOrder(s);
+      ind.setLine(3, ma);
+      
+      ma->setZ(3);
     }
   }
 
@@ -182,8 +168,11 @@ int CANDLES::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int CANDLES::dialog (int)
+IndicatorPluginDialog * CANDLES::dialog (Indicator &i)
 {
+  return new CANDLESDialog(i);
+
+/*
   int page = 0;
   QString k, d;
   PrefDialog *dialog = new PrefDialog;
@@ -281,7 +270,35 @@ int CANDLES::dialog (int)
 
   delete dialog;
   return rc;
+*/
 }
+
+void CANDLES::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(CANDLES::Penetration, 0.3);
+  set.setData(CANDLES::Method, "NONE");
+  set.setData(CANDLES::MethodColor, "cyan");
+  set.setData(CANDLES::Color, "green");
+  set.setData(CANDLES::Label, _indicator);
+  set.setData(CANDLES::MAColor, "red");
+  set.setData(CANDLES::MA2Color, "yellow");
+  set.setData(CANDLES::MA3Color, "blue");
+  set.setData(CANDLES::MAPlot, "Line");
+  set.setData(CANDLES::MA2Plot, "Line");
+  set.setData(CANDLES::MA3Plot, "Line");
+  set.setData(CANDLES::MALabel, "MA1");
+  set.setData(CANDLES::MA2Label, "MA2");
+  set.setData(CANDLES::MA3Label, "MA3");
+  set.setData(CANDLES::MAPeriod, 20);
+  set.setData(CANDLES::MA2Period, 50);
+  set.setData(CANDLES::MA3Period, 200);
+  set.setData(CANDLES::MAType, "SMA");
+  set.setData(CANDLES::MA2Type, "SMA");
+  set.setData(CANDLES::MA3Type, "SMA");
+  i.setSettings(set);
+}
+
 
 //*************************************************************
 //*************************************************************

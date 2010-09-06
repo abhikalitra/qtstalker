@@ -39,7 +39,7 @@ int FunctionVFI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionVFI::script: duplicate name" << set[3];
@@ -54,7 +54,7 @@ int FunctionVFI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, period);
+  Curve *line = calculate(data, period);
   if (! line)
     return 1;
 
@@ -65,12 +65,12 @@ int FunctionVFI::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionVFI::calculate (BarData &data, int period)
+Curve * FunctionVFI::calculate (BarData &data, int period)
 {
   if (data.count() < period)
     return 0;
 
-  PlotLine *vfi = new PlotLine;
+  Curve *vfi = new Curve;
 
   int loop = period;
   for (; loop < (int) data.count(); loop++)
@@ -123,7 +123,7 @@ PlotLine * FunctionVFI::calculate (BarData &data, int period)
       }
     }
 
-    vfi->setData(loop, t);
+    vfi->setBar(loop, new CurveBar(t));
   }
 
   return vfi;

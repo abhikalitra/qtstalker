@@ -3,6 +3,8 @@
 } 
 
 HEADERS += VIDYA.h
+HEADERS += VIDYADialog.h
 
 SOURCES += VIDYA.cpp
+SOURCES += VIDYADialog.cpp
 

@@ -21,68 +21,62 @@
 
 #include "PO.h"
 #include "FunctionMA.h"
-#include "PlotStyleFactory.h"
+#include "PODialog.h"
 #include "FunctionPO.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 PO::PO ()
 {
   _indicator = "PO";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Histogram Bar");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Input, "Close");
-  _settings.setData(FastPeriod, 12);
-  _settings.setData(SlowPeriod, 26);
-  _settings.setData(MAType, "SMA");
-  _settings.setData(Method, "APO");
 }
 
 int PO::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QString s;
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  int fast = _settings.getInt(FastPeriod);
-  int slow = _settings.getInt(SlowPeriod);
+  int fast = settings.getInt(FastPeriod);
+  int slow = settings.getInt(SlowPeriod);
 
   FunctionMA mau;
-  _settings.getData(MAType, s);
+  settings.getData(MAType, s);
   int ma = mau.typeFromString(s);
 
   FunctionPO f;
   QStringList methodList = f.list();
   
-  _settings.getData(Method, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
-  PlotLine *line = f.calculate(in, fast, slow, ma, method);
+  Curve *line = f.calculate(in, fast, slow, ma, method);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   delete in;
 
@@ -95,63 +89,23 @@ int PO::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int PO::dialog (int)
+IndicatorPluginDialog * PO::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new PODialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), _settings.getInt(FastPeriod), 2, 100000);
-
-  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), _settings.getInt(SlowPeriod), 2, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-
-  _settings.getData(MAType, d);
-  dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
-
-  FunctionPO f;
-  QStringList methodList = f.list();
-  
-  _settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void PO::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Plot, "Histogram Bar");
+  set.setData(Label, _indicator);
+  set.setData(Input, "Close");
+  set.setData(FastPeriod, 12);
+  set.setData(SlowPeriod, 26);
+  set.setData(MAType, "SMA");
+  set.setData(Method, "APO");
+  i.setSettings(set);
 }
 
 //*************************************************************

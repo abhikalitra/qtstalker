@@ -53,6 +53,8 @@ void DateRangeControl::createButtons (QToolBar *tb)
   DateRange dr;
   dr.list(l);
   _ranges = new QComboBox;
+  _ranges->setToolTip(QString(tr("Date Range")));
+  _ranges->setStatusTip(QString(tr("Date Range")));
   _ranges->addItems(l);
   _ranges->setCurrentIndex(5); // 1 year default
   QString s;

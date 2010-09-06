@@ -34,7 +34,7 @@ class InfoPanel : public QTextEdit
     InfoPanel ();
     
   public slots:
-    void showInfo (Setting *);
+    void showInfo (Setting);
 };
 
 #endif

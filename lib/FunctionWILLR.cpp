@@ -39,7 +39,7 @@ int FunctionWILLR::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionWILLR::script: duplicate name" << set[3];
@@ -54,7 +54,7 @@ int FunctionWILLR::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, period);
+  Curve *line = calculate(data, period);
   if (! line)
     return 1;
 
@@ -65,7 +65,7 @@ int FunctionWILLR::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionWILLR::calculate (BarData &data, int period)
+Curve * FunctionWILLR::calculate (BarData &data, int period)
 {
   if (data.count() < period)
     return 0;
@@ -102,13 +102,13 @@ PlotLine * FunctionWILLR::calculate (BarData &data, int period)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, out[outLoop]);
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }

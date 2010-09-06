@@ -3,6 +3,8 @@
 } 
 
 HEADERS += TRIX.h
+HEADERS += TRIXDialog.h
 
 SOURCES += TRIX.cpp
+SOURCES += TRIXDialog.cpp
 

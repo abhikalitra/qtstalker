@@ -21,6 +21,7 @@
 
 #include "CUS.h"
 #include "ExScript.h"
+#include "CUSDialog.h"
 
 #include <QtDebug>
 #include <QList>
@@ -28,16 +29,15 @@
 CUS::CUS ()
 {
   _indicator = "CUS";
-
-  _settings.setData(Command, "perl");
-  _settings.setData(Script, "/usr/local/share/qtstalker/indicator/");
 }
 
 int CUS::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QString s, s2;
-  _settings.getData(Command, s);
-  _settings.getData(Script, s2);
+  settings.getData(Command, s);
+  settings.getData(Script, s2);
   s.append(" " + s2);
 
   ExScript script;
@@ -50,37 +50,18 @@ int CUS::getIndicator (Indicator &ind, BarData &data)
   return rc;
 }
 
-int CUS::dialog (int)
+IndicatorPluginDialog * CUS::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
-
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Command, d);
-  dialog->addTextItem(Command, page, QObject::tr("Command"), d,
-                      QObject::tr("The interpreter command line and any switches required.\neg. perl -l -T"));
-
-  _settings.getData(Script, d);
-  dialog->addFileItem(Script, page, QObject::tr("Script"), d,
-                      QObject::tr("The script location."));
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+  return new CUSDialog(i);
 }
 
+void CUS::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Command, "perl");
+  set.setData(Script, "/usr/local/share/qtstalker/indicator/");
+  i.setSettings(set);
+}
 
 //*************************************************************
 //*************************************************************

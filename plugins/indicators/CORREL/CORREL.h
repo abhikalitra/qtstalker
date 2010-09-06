@@ -26,6 +26,8 @@
 
 class CORREL : public IndicatorPlugin
 {
+  Q_OBJECT
+
   public:
     enum Parm
     {
@@ -38,13 +40,17 @@ class CORREL : public IndicatorPlugin
       Ref1Color,
       Ref2Color,
       Ref3Color,
-      Exchange
+      Exchange,
+      Ref1,
+      Ref2,
+      Ref3
     };
 
     CORREL ();
-    int getIndicator (Indicator &ind, BarData &data);
+    int getIndicator (Indicator &ind, BarData &);
     int getCUS (QStringList &, Indicator &, BarData &);
-    int dialog (int);
+    IndicatorPluginDialog * dialog (Indicator &);
+    void defaults (Indicator &);
 };
 
 extern "C"

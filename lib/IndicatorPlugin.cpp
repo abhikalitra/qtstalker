@@ -21,11 +21,11 @@
 
 #include "IndicatorPlugin.h"
 
-#include <QList>
+#include <QDebug>
 
 IndicatorPlugin::IndicatorPlugin ()
 {
-  _opList << "=" << "<" << "<=" << ">" << ">=";
+//  _opList << "=" << "<" << "<=" << ">" << ">=";
   _deleteFlag = 0;
 }
 
@@ -46,45 +46,23 @@ int IndicatorPlugin::getCUS (QStringList &, Indicator &, BarData &)
 }
 
 // virtual function
-int IndicatorPlugin::dialog (int)
+IndicatorPluginDialog * IndicatorPlugin::dialog (Indicator &)
 {
   return 0;
+}
+
+// virtual function
+void IndicatorPlugin::defaults (Indicator &)
+{
 }
 
 //****************************************************
 //*************** NON VIRTUAL FUNCTIONS **************
 //****************************************************
 
-void IndicatorPlugin::setSettings (Indicator &ind)
-{
-  _settings = ind.settings();
-  _indicator = ind.indicator();
-}
-
-void IndicatorPlugin::settings (Indicator &ind)
-{
-  ind.setIndicator(_indicator);
-  ind.setSettings(_settings);
-}
-
 QString & IndicatorPlugin::indicator ()
 {
   return _indicator;
-}
-
-void IndicatorPlugin::getDialogSettings (PrefDialog *dialog)
-{
-  QList<int> keys;
-  dialog->getKeyList(keys);
-
-  int loop;
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    QString d;
-    dialog->getItem(keys[loop], d);
-    if (! d.isEmpty())
-      _settings.setData(keys[loop], d);
-  }
 }
 
 int IndicatorPlugin::deleteFlag ()

@@ -3,6 +3,8 @@
 } 
 
 HEADERS += VOL.h
+HEADERS += VOLDialog.h
 
 SOURCES += VOL.cpp
+SOURCES += VOLDialog.cpp
 

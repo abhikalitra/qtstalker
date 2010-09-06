@@ -26,14 +26,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionBETA
 {
   public:
     FunctionBETA ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (PlotLine *in, PlotLine *in2, int period);
+    Curve * calculate (Curve *in, Curve *in2, int period);
 };
 
 #endif

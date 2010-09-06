@@ -3,6 +3,8 @@
 } 
 
 HEADERS += AROON.h
+HEADERS += AROONDialog.h
 
 SOURCES += AROON.cpp
+SOURCES += AROONDialog.cpp
 

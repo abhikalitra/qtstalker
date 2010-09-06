@@ -40,14 +40,14 @@ int FunctionBETA::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionBETA::getCUS: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[4]);
+  Curve *in = ind.line(set[4]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[4]));
@@ -60,7 +60,7 @@ int FunctionBETA::script (QStringList &set, Indicator &ind, BarData &data)
     ind.setLine(set[4], in);
   }
 
-  PlotLine *in2 = ind.line(set[5]);
+  Curve *in2 = ind.line(set[5]);
   if (! in2)
   {
     in2 = data.getInput(data.getInputType(set[5]));
@@ -81,7 +81,7 @@ int FunctionBETA::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(in, in2, period);
+  Curve *line = calculate(in, in2, period);
   if (! line)
     return 1;
 
@@ -92,7 +92,7 @@ int FunctionBETA::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionBETA::calculate (PlotLine *in, PlotLine *in2, int period)
+Curve * FunctionBETA::calculate (Curve *in, Curve *in2, int period)
 {
   if (in->count() < period || in2->count() < period)
     return 0;
@@ -116,11 +116,11 @@ PlotLine * FunctionBETA::calculate (PlotLine *in, PlotLine *in2, int period)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     if (! bar)
       continue;
 
-    PlotLineBar *bar2 = in2->data(keys.at(loop));
+    CurveBar *bar2 = in2->bar(keys.at(loop));
     if (! bar2)
       continue;
 
@@ -143,13 +143,13 @@ PlotLine * FunctionBETA::calculate (PlotLine *in, PlotLine *in2, int period)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), out[outLoop]);
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
     keyLoop--;
     outLoop--;
   }

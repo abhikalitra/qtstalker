@@ -20,7 +20,6 @@
  */
 
 #include "DataWindow.h"
-#include "Plot.h"
 #include "Strip.h"
 #include "IndicatorDataBase.h"
 
@@ -48,7 +47,8 @@ DataWindow::DataWindow (QWidget *w) : QDialog (w, 0)
   resize(750, 550);
 }
 
-void DataWindow::setData (QHash<QString, Plot *> &list)
+/*
+void DataWindow::setData (QHash<QString, QFP_Plot *> &list)
 {
   IndicatorDataBase db;
   QStringList l;
@@ -56,15 +56,17 @@ void DataWindow::setData (QHash<QString, Plot *> &list)
   int loop;
   for (loop = 0; loop < l.count(); loop++)
   {
-    Plot *plot = list.value(l[loop]);
+    QFP_Plot *plot = list.value(l[loop]);
     if (! plot)
       continue;
 
     setPlot(plot);
   }
 }
+*/
 
-void DataWindow::setPlot (Plot *d)
+/*
+void DataWindow::setPlot (QFP_Plot *d)
 {
   Indicator indicator = d->indicator();
   QStringList pl = indicator.plotOrder();
@@ -81,7 +83,7 @@ void DataWindow::setPlot (Plot *d)
   for (; loop < pl.count(); loop++)
   {
     QString s = pl.at(loop);
-    PlotLine *line = indicator.line(s);
+    QFP_Curve *line = indicator.line(s);
     
     if (line->type() == "Horizontal")
       continue;
@@ -97,6 +99,7 @@ void DataWindow::setPlot (Plot *d)
       setLine(line);
   }
 }
+*/
 
 void DataWindow::setDates (DateBar &dates)
 {
@@ -120,7 +123,8 @@ void DataWindow::setDates (DateBar &dates)
   dateFlag = TRUE;
 }
 
-void DataWindow::setLine (PlotLine *line)
+/*
+void DataWindow::setLine (QFP_Curve *line)
 {
   Strip strip;
   QString s = line->label();
@@ -134,14 +138,16 @@ void DataWindow::setLine (PlotLine *line)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    PlotLineBar *bar = line->data(keys.at(loop));
+    QFP_CurveBar *bar = line->data(keys.at(loop));
     strip.strip(bar->data(), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
     table->setItem(keys.at(loop), table->columnCount() - 1, item);
   }
 }
+*/
 
-void DataWindow::setOHLC (PlotLine *line)
+/*
+void DataWindow::setOHLC (QFP_Curve *line)
 {
   Strip strip;
   QStringList l;
@@ -157,7 +163,7 @@ void DataWindow::setOHLC (PlotLine *line)
 
   for (loop = 0; loop < line->count(); loop++)
   {
-    PlotLineBar *bar = line->data(loop);
+    QFP_CurveBar *bar = line->data(loop);
     
     QString s;
     strip.strip(bar->data(0), 4, s);
@@ -179,6 +185,7 @@ void DataWindow::setOHLC (PlotLine *line)
   
   ohlcFlag = TRUE;
 }
+*/
 
 void DataWindow::scrollToBottom ()
 {

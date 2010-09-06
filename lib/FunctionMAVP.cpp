@@ -40,14 +40,14 @@ int FunctionMAVP::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionMAVP::script: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[4]);
+  Curve *in = ind.line(set[4]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[4]));
@@ -60,7 +60,7 @@ int FunctionMAVP::script (QStringList &set, Indicator &ind, BarData &data)
     ind.setLine(set[4], in);
   }
 
-  PlotLine *in2 = ind.line(set[5]);
+  Curve *in2 = ind.line(set[5]);
   if (! in2)
   {
     in2 = data.getInput(data.getInputType(set[5]));
@@ -96,7 +96,7 @@ int FunctionMAVP::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(in, in2, min, max, ma);
+  Curve *line = calculate(in, in2, min, max, ma);
   if (! line)
     return 1;
 
@@ -107,7 +107,7 @@ int FunctionMAVP::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionMAVP::calculate (PlotLine *in, PlotLine *in2, int min, int max, int ma)
+Curve * FunctionMAVP::calculate (Curve *in, Curve *in2, int min, int max, int ma)
 {
   if (in->count() < min || in->count() < max)
     return 0;
@@ -135,8 +135,8 @@ PlotLine * FunctionMAVP::calculate (PlotLine *in, PlotLine *in2, int min, int ma
   int loop2 = keys2.count() - 1;
   while (loop > -1 && loop2 > -1)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
-    PlotLineBar *bar2 = in2->data(keys2.at(loop2));
+    CurveBar *bar = in->bar(keys.at(loop));
+    CurveBar *bar2 = in2->bar(keys2.at(loop2));
     input[loop] = (TA_Real) bar->data();
     input2[loop2] = (TA_Real) bar2->data();
 
@@ -161,7 +161,7 @@ PlotLine * FunctionMAVP::calculate (PlotLine *in, PlotLine *in2, int min, int ma
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   if (! flag)
   {
@@ -169,7 +169,7 @@ PlotLine * FunctionMAVP::calculate (PlotLine *in, PlotLine *in2, int min, int ma
     int outLoop = outNb - 1;
     while (keyLoop > -1 && outLoop > -1)
     {
-      line->setData(keys.at(keyLoop), out[outLoop]);
+      line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
       keyLoop--;
       outLoop--;
     }
@@ -180,7 +180,7 @@ PlotLine * FunctionMAVP::calculate (PlotLine *in, PlotLine *in2, int min, int ma
     int outLoop = outNb - 1;
     while (keyLoop > -1 && outLoop > -1)
     {
-      line->setData(keys2.at(keyLoop), out[outLoop]);
+      line->setBar(keys2.at(keyLoop), new CurveBar(out[outLoop]));
       keyLoop--;
       outLoop--;
     }

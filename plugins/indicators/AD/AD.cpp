@@ -20,78 +20,71 @@
  */
 
 #include "AD.h"
-#include "PlotStyleFactory.h"
 #include "FunctionAD.h"
+#include "ADDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 AD::AD ()
 {
   _indicator = "AD";
-
-  _settings.setData(Method, QString("AD"));
-  _settings.setData(ADColor, QString("red"));
-  _settings.setData(ADPlot, QString("Line"));
-  _settings.setData(ADLabel, QString("AD"));
-  _settings.setData(FastPeriod, 3);
-  _settings.setData(SlowPeriod, 10);
-  _settings.setData(OSCColor, QString("red"));
-  _settings.setData(OSCPlot, QString("Histogram Bar"));
-  _settings.setData(OSCLabel, QString("ADOSC"));
 }
 
 int AD::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   FunctionAD f;
   QStringList methodList = f.list();
   
   QString s;
-  _settings.getData(Method, s);
+  settings.getData(Method, s);
   int method = methodList.indexOf(s);
 
   switch ((FunctionAD::Method) method)
   {
     case FunctionAD::_ADOSC:
     {
-      int fp = _settings.getInt(FastPeriod);
-      int sp = _settings.getInt(SlowPeriod);
+      int fp = settings.getInt(FastPeriod);
+      int sp = settings.getInt(SlowPeriod);
 
-      PlotLine *line = f.getADOSC(data, fp, sp);
+      Curve *line = f.getADOSC(data, fp, sp);
       if (! line)
 	return 1;
 
-      _settings.getData(OSCPlot, s);
-      line->setType(s);
+      settings.getData(OSCPlot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
       
-      _settings.getData(OSCColor, s);
-      line->setColor(s);
+      settings.getData(OSCColor, s);
+      QColor c(s);
+      line->setColor(c);
       
-      _settings.getData(OSCLabel, s);
+      settings.getData(OSCLabel, s);
       line->setLabel(s);
 
-      s = "0";
+      line->setZ(0);
       ind.setLine(s, line);
-      ind.addPlotOrder(s);
       break;
     }
     default:
     {
-      PlotLine *line = f.getAD(data);
+      Curve *line = f.getAD(data);
       if (! line)
 	return 1;
       
-      _settings.getData(ADPlot, s);
-      line->setType(s);
+      settings.getData(ADPlot, s);
+      line->setType((Curve::Type) line->typeFromString(s));
 
-      _settings.getData(ADColor, s);
-      line->setColor(s);
+      settings.getData(ADColor, s);
+      QColor c(s);
+      line->setColor(c);
 
-      _settings.getData(ADLabel, s);
+      settings.getData(ADLabel, s);
       line->setLabel(s);
 
-      s = "0";
+      line->setZ(0);
       ind.setLine(s, line);
-      ind.addPlotOrder(s);
       break;
     }
   }
@@ -105,69 +98,25 @@ int AD::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int AD::dialog (int)
+IndicatorPluginDialog * AD::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
-
-  k = QObject::tr("General");
-  dialog->addPage(page, k);
-
-  FunctionAD f;
-  QStringList methodList = f.list();
-  
-  _settings.getData(Method, d);
-  dialog->addComboItem((int) Method, page, QObject::tr("Method"), methodList, d);
-
-  page++;
-  k = QObject::tr("AD");
-  dialog->addPage(page, k);
-
-  _settings.getData(ADColor, d);
-  dialog->addColorItem((int) ADColor, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-  
-  _settings.getData(ADPlot, d);
-  dialog->addComboItem((int) ADPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(ADLabel, d);
-  dialog->addTextItem((int) ADLabel, page, QObject::tr("Label"), d, QString());
-
-  page++;
-  k = QObject::tr("OSC");
-  dialog->addPage(page, k);
-
-  _settings.getData(OSCColor, d);
-  dialog->addColorItem(OSCColor, page, QObject::tr("Color"), d);
-
-  _settings.getData(OSCPlot, d);
-  dialog->addComboItem(OSCPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(OSCLabel, d);
-  dialog->addTextItem(OSCLabel, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(FastPeriod, page, QObject::tr("Fast Period"), _settings.getInt(FastPeriod), 1, 100000);
-
-  dialog->addIntItem(SlowPeriod, page, QObject::tr("Slow Period"), _settings.getInt(SlowPeriod), 1, 100000);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+  return new ADDialog(i);
 }
 
+void AD::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(AD::Method, QString("AD"));
+  set.setData(AD::ADColor, QString("red"));
+  set.setData(AD::ADPlot, QString("Line"));
+  set.setData(AD::ADLabel, QString("AD"));
+  set.setData(AD::FastPeriod, 3);
+  set.setData(AD::SlowPeriod, 10);
+  set.setData(AD::OSCColor, QString("red"));
+  set.setData(AD::OSCPlot, QString("Histogram Bar"));
+  set.setData(AD::OSCLabel, QString("ADOSC"));
+  i.setSettings(set);
+}
 
 //*************************************************************
 //*************************************************************

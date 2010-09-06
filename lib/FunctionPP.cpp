@@ -38,7 +38,7 @@ int FunctionPP::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionPP::script: duplicate name" << set[3];
@@ -61,7 +61,7 @@ int FunctionPP::script (QStringList &set, Indicator &ind, BarData &data)
     }
   }
 
-  PlotLine *line = calculate(data, point);
+  Curve *line = calculate(data, point);
   if (! line)
     return 1;
 
@@ -72,14 +72,12 @@ int FunctionPP::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionPP::calculate (BarData &data, int point)
+Curve * FunctionPP::calculate (BarData &data, int point)
 {
   if (data.count() < 1)
     return 0;
 
-  QString s = "Horizontal";
-  PlotLine *output = new PlotLine;
-  output->setType(s);
+  Curve *output = new Curve(Curve::Horizontal);
 
   Bar bar = data.getBar(data.count() - 1);
   double high = bar.getHigh();
@@ -94,42 +92,42 @@ PlotLine * FunctionPP::calculate (BarData &data, int point)
     {
       pp = (high + low + close) / 3;
       t = (2 * pp) - low;
-      output->setData(0, t);
+      output->setBar(0, new CurveBar(t));
       break;
     }
     case 1: // second resistance
     {
       pp = (high + low + close) / 3;
       t = pp + (high - low);
-      output->setData(0, t);
+      output->setBar(0, new CurveBar(t));
       break;
     }
     case 2: // third resistance
     {
       pp = (high + low + close) / 3;
       t = (2 * pp) + (high - (2 * low));
-      output->setData(0, t);
+      output->setBar(0, new CurveBar(t));
       break;
     }
     case 3: // first support
     {
       pp = (high + low + close) / 3;
       t = (2 * pp) - high;
-      output->setData(0, t);
+      output->setBar(0, new CurveBar(t));
       break;
     }
     case 4: // second support
     {
       pp = (high + low + close) / 3;
       t = pp - (high - low);
-      output->setData(0, t);
+      output->setBar(0, new CurveBar(t));
       break;
     }
     case 5: // third support
     {
       pp = (high + low + close) / 3;
       t = (2 * pp) - ((2 * high) - low);
-      output->setData(0, t);
+      output->setBar(0, new CurveBar(t));
       break;
     }
     default:

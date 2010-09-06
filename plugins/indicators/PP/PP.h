@@ -26,6 +26,8 @@
 
 class PP : public IndicatorPlugin
 {
+  Q_OBJECT
+
   public:
     enum Parm
     {
@@ -50,9 +52,10 @@ class PP : public IndicatorPlugin
     };
 
     PP ();
-    int getIndicator (Indicator &ind, BarData &data);
+    int getIndicator (Indicator &ind, BarData &);
     int getCUS (QStringList &, Indicator &, BarData &);
-    int dialog (int);
+    IndicatorPluginDialog * dialog (Indicator &);
+    void defaults (Indicator &);
 };
 
 extern "C"

@@ -31,6 +31,7 @@
 #include <QObject>
 #include <QDateTime>
 #include <QFileInfo>
+#include <QtSql>
 
 ExchangeDataBase::ExchangeDataBase ()
 {

@@ -127,14 +127,14 @@ int FunctionCANDLES::scriptCandles (QStringList &set, Indicator &ind, BarData &d
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionCANDLES::scriptCandles: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *line = candles(data);
+  Curve *line = candles(data);
   if (! line)
     return 1;
 
@@ -163,7 +163,7 @@ int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind, BarData &da
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionCANDLES::scriptMethod: duplicate name" << set[4];
@@ -178,7 +178,7 @@ int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind, BarData &da
     return 1;
   }
 
-  PlotLine *line = getMethod(data, method, pen);
+  Curve *line = getMethod(data, method, pen);
   if (! line)
     return 1;
 
@@ -189,32 +189,30 @@ int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind, BarData &da
   return 0;
 }
 
-PlotLine * FunctionCANDLES::candles (BarData &data)
+Curve * FunctionCANDLES::candles (BarData &data)
 {
   if (! data.count())
     return 0;
   
-  QString s = "Candle";
-  PlotLine *line = new PlotLine;
-  line->setType(s);
+  Curve *line = new Curve(Curve::Candle);
 
   int loop;
   int size = data.count();
   for (loop = 0; loop < size; loop++)
   {
-    PlotLineBar *bar = new PlotLineBar;
+    CurveBar *bar = new CurveBar;
     Bar tbar = data.getBar(loop);
     bar->setData(0, tbar.getOpen());
     bar->setData(1, tbar.getHigh());
     bar->setData(2, tbar.getLow());
     bar->setData(3, tbar.getClose());
-    line->setData(loop, bar);
+    line->setBar(loop, bar);
   }
 
   return line;
 }
 
-PlotLine * FunctionCANDLES::getMethod (BarData &data, int method, double pen)
+Curve * FunctionCANDLES::getMethod (BarData &data, int method, double pen)
 {
   if (data.count() < 1)
     return 0;
@@ -429,13 +427,13 @@ PlotLine * FunctionCANDLES::getMethod (BarData &data, int method, double pen)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int dataLoop = data.count() - 1;
   int outLoop = outNb - 1;
   while (dataLoop > -1 && outLoop > -1)
   {
-    line->setData(dataLoop, out[outLoop]);
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }

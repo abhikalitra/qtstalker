@@ -41,7 +41,7 @@ int FunctionCCI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionCCI::script: duplicate name" << set[3];
@@ -71,7 +71,7 @@ int FunctionCCI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, period, smoothing, ma);
+  Curve *line = calculate(data, period, smoothing, ma);
   if (! line)
     return 1;
 
@@ -82,7 +82,7 @@ int FunctionCCI::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionCCI::calculate (BarData &data, int period, int smoothing, int type)
+Curve * FunctionCCI::calculate (BarData &data, int period, int smoothing, int type)
 {
   int size = data.count();
   if (size < period || size < smoothing)
@@ -119,13 +119,13 @@ PlotLine * FunctionCCI::calculate (BarData &data, int period, int smoothing, int
     return 0;
   }
 
-  PlotLine *cci = new PlotLine;
+  Curve *cci = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (dataLoop > -1 && outLoop > -1)
   {
-    cci->setData(dataLoop, out[outLoop]);
+    cci->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }
@@ -133,7 +133,7 @@ PlotLine * FunctionCCI::calculate (BarData &data, int period, int smoothing, int
   if (smoothing > 1)
   {
     FunctionMA maf;
-    PlotLine *ma = maf.calculate(cci, smoothing, type);
+    Curve *ma = maf.calculate(cci, smoothing, type);
     delete cci;
     cci = ma;
   }

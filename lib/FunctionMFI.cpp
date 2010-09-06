@@ -40,7 +40,7 @@ int FunctionMFI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionMFI::script: duplicate name" << set[3];
@@ -70,7 +70,7 @@ int FunctionMFI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(data, period, smoothing, ma);
+  Curve *line = calculate(data, period, smoothing, ma);
   if (! line)
     return 1;
 
@@ -81,7 +81,7 @@ int FunctionMFI::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionMFI::calculate (BarData &data, int period, int smoothing, int type)
+Curve * FunctionMFI::calculate (BarData &data, int period, int smoothing, int type)
 {
   if (data.count() < period || data.count() < smoothing)
     return 0;
@@ -122,13 +122,13 @@ PlotLine * FunctionMFI::calculate (BarData &data, int period, int smoothing, int
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, out[outLoop]);
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }
@@ -136,7 +136,7 @@ PlotLine * FunctionMFI::calculate (BarData &data, int period, int smoothing, int
   if (smoothing > 1)
   {
     FunctionMA mau;
-    PlotLine *ma = mau.calculate(line, smoothing, type);
+    Curve *ma = mau.calculate(line, smoothing, type);
     delete line;
     line = ma;
   }

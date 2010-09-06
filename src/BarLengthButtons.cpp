@@ -51,6 +51,8 @@ void BarLengthButtons::createButtons (QToolBar *tb)
   BarData bd;
   bd.getBarLengthList(l);
   _lengths = new QComboBox;
+  _lengths->setToolTip(QString(tr("Bar Length")));
+  _lengths->setStatusTip(QString(tr("Bar Length")));
   _lengths->addItems(l);
   _lengths->setCurrentIndex(6); // daily default
   QString s;

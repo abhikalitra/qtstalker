@@ -22,70 +22,58 @@
 #include "RSI.h"
 #include "FunctionMA.h"
 #include "FunctionRSI.h"
-#include "PlotStyleFactory.h"
+#include "RSIDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 RSI::RSI ()
 {
   _indicator = "RSI";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Period, 14);
-  _settings.setData(Smoothing, 1);
-  _settings.setData(SmoothingType, "SMA");
-  _settings.setData(Input, "Close");
-  _settings.setData(Ref1Color, "white");
-  _settings.setData(Ref2Color, "white");
-  _settings.setData(Ref1, 30);
-  _settings.setData(Ref2, 70);
 }
 
 int RSI::getIndicator (Indicator &ind, BarData &data)
 {
-  // ref1 line
-  QString s = "Horizontal";
-  PlotLine *line = new PlotLine;
-  line->setType(s);
+  Setting settings = ind.settings();
 
-  _settings.getData(Ref1Color, s);
+  // ref1 line
+  Curve *line = new Curve;
+  line->setType((Curve::Horizontal));
+
+  QString s;
+  settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, (double) _settings.getInt(Ref1), color);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref1)));
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   // ref2 line
-  s = "Horizontal";
-  line = new PlotLine;
-  line->setType(s);
+  line = new Curve;
+  line->setType((Curve::Horizontal));
 
-  _settings.getData(Ref2Color, s);
+  settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, (double) _settings.getInt(Ref2), color);
-  
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref2)));
 
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  line->setZ(0);
+  ind.setLine(1, line);
+
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  int period = _settings.getInt(Period);
-  int smoothing = _settings.getInt(Smoothing);
+  int period = settings.getInt(Period);
+  int smoothing = settings.getInt(Smoothing);
 
   FunctionMA mau;
-  _settings.getData(SmoothingType, s);
+  settings.getData(SmoothingType, s);
   int type = mau.typeFromString(s);
 
   FunctionRSI r;
@@ -96,18 +84,18 @@ int RSI::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  color.setNamedColor(s);
+  line->setColor(color);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
-  
-  s = "2";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+
+  line->setZ(2);
+  ind.setLine(2, line);
 
   delete in;
 
@@ -120,8 +108,7 @@ int RSI::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int RSI::dialog (int)
-{
+/*  
   int page = 0;
   QString k, d;
   PrefDialog *dialog = new PrefDialog;
@@ -185,6 +172,28 @@ int RSI::dialog (int)
 
   delete dialog;
   return rc;
+*/
+
+IndicatorPluginDialog * RSI::dialog (Indicator &i)
+{
+  return new RSIDialog(i);
+}
+
+void RSI::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(RSI::Color, "red");
+  set.setData(RSI::Plot, "Line");
+  set.setData(RSI::Label, _indicator);
+  set.setData(RSI::Period, 14);
+  set.setData(RSI::Smoothing, 1);
+  set.setData(RSI::SmoothingType, "SMA");
+  set.setData(RSI::Input, "Close");
+  set.setData(RSI::Ref1Color, "white");
+  set.setData(RSI::Ref2Color, "white");
+  set.setData(RSI::Ref1, 30);
+  set.setData(RSI::Ref2, 70);
+  i.setSettings(set);
 }
 
 //*************************************************************

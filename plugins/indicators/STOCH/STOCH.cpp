@@ -22,101 +22,87 @@
 #include "STOCH.h"
 #include "FunctionMA.h"
 #include "FunctionSTOCH.h"
-#include "PlotStyleFactory.h"
+#include "STOCHDialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 STOCH::STOCH ()
 {
   _indicator = "STOCH";
-
-  _settings.setData(FastKColor, "red");
-  _settings.setData(FastDColor, "yellow");
-  _settings.setData(Ref1Color, "white");
-  _settings.setData(Ref2Color, "white");
-  _settings.setData(FastKPlot, "Line");
-  _settings.setData(FastDPlot, "Dash");
-  _settings.setData(FastKLabel, "FASTK");
-  _settings.setData(FastDLabel, "FASTD");
-  _settings.setData(FastKPeriod, 5);
-  _settings.setData(FastDPeriod, 3);
-  _settings.setData(FastDMA, "SMA");
-  _settings.setData(Ref1, 20);
-  _settings.setData(Ref2, 80);
 }
 
 int STOCH::getIndicator (Indicator &ind, BarData &data)
 {
-  // create first ref line
-  QString s = "Horizontal";
-  PlotLine *line = new PlotLine;
-  line->setType(s);
+  Setting settings = ind.settings();
 
-  _settings.getData(Ref1Color, s);
+  // create first ref line
+  QString s;
+  Curve *line = new Curve;
+  line->setType(Curve::Horizontal);
+
+  settings.getData(Ref1Color, s);
   QColor color(s);
 
-  line->setData(0, (double) _settings.getInt(Ref1), color);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref1)));
   
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   // create second ref line
-  s = "Horizontal";
-  line = new PlotLine;
-  line->setType(s);
+  line = new Curve;
+  line->setType(Curve::Horizontal);
 
-  _settings.getData(Ref2Color, s);
+  settings.getData(Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setData(0, (double) _settings.getInt(Ref2), color);
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref2)));
   
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
   // create the fastk line
-  int kperiod = _settings.getInt(FastKPeriod);
-  int dperiod = _settings.getInt(FastDPeriod);
+  int kperiod = settings.getInt(FastKPeriod);
+  int dperiod = settings.getInt(FastDPeriod);
 
   FunctionMA mau;
-  _settings.getData(FastDMA, s);
+  settings.getData(FastDMA, s);
   int maType = mau.typeFromString(s);
 
   FunctionSTOCH f;
-  QList<PlotLine *> pl;
+  QList<Curve *> pl;
   if (f.calculate(data, kperiod, dperiod, maType, pl))
     return 1;
 
   line = pl.at(0);
 
-  _settings.getData(FastKPlot, s);
-  line->setType(s);
+  settings.getData(FastKPlot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(FastKColor, s);
-  line->setColor(s);
+  settings.getData(FastKColor, s);
+  color.setNamedColor(s);
+  line->setColor(color);
 
-  _settings.getData(FastKLabel, s);
+  settings.getData(FastKLabel, s);
   line->setLabel(s);
   
-  s = "2";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(2);
+  ind.setLine(2, line);
   
   line = pl.at(1);
 
-  _settings.getData(FastDPlot, s);
-  line->setType(s);
+  settings.getData(FastDPlot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(FastDColor, s);
-  line->setColor(s);
+  settings.getData(FastDColor, s);
+  color.setNamedColor(s);
+  line->setColor(color);
 
-  _settings.getData(FastDLabel, s);
+  settings.getData(FastDLabel, s);
   line->setLabel(s);
   
-  s = "3";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(3);
+  ind.setLine(3, line);
 
   return 0;
 }
@@ -127,77 +113,28 @@ int STOCH::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int STOCH::dialog (int)
+IndicatorPluginDialog * STOCH::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new STOCHDialog(i);
+}
 
-  k = QObject::tr("FastK");
-  dialog->addPage(page, k);
-
-  _settings.getData(FastKColor, d);
-  dialog->addColorItem(FastKColor, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(FastKPlot, d);
-  dialog->addComboItem(FastKPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(FastKLabel, d);
-  dialog->addTextItem(FastKLabel, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(FastKPeriod, page, QObject::tr("Period"), _settings.getInt(FastKPeriod), 1, 100000);
-
-  page++;
-  k = QObject::tr("FastD");
-  dialog->addPage(page, k);
-
-  _settings.getData(FastDColor, d);
-  dialog->addColorItem(FastDColor, page, QObject::tr("Color"), d);
-
-  _settings.getData(FastDPlot, d);
-  dialog->addComboItem(FastDPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(FastDLabel, d);
-  dialog->addTextItem(FastDLabel, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(FastDPeriod, page, QObject::tr("Period"), _settings.getInt(FastDPeriod), 1, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-
-  _settings.getData(FastDMA, d);
-  dialog->addComboItem(FastDMA, page, QObject::tr("MA Type"), maList, d);
-
-  page++;
-  k = QObject::tr("Ref");
-  dialog->addPage(page, k);
-
-  _settings.getData(Ref1Color, d);
-  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
-
-  _settings.getData(Ref2Color, d);
-  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
-
-  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), _settings.getInt(Ref1), 0, 100);
-
-  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), _settings.getInt(Ref2), 0, 100);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void STOCH::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(FastKColor, "red");
+  set.setData(FastDColor, "yellow");
+  set.setData(Ref1Color, "white");
+  set.setData(Ref2Color, "white");
+  set.setData(FastKPlot, "Line");
+  set.setData(FastDPlot, "Dash");
+  set.setData(FastKLabel, "FASTK");
+  set.setData(FastDLabel, "FASTD");
+  set.setData(FastKPeriod, 5);
+  set.setData(FastDPeriod, 3);
+  set.setData(FastDMA, "SMA");
+  set.setData(Ref1, 20);
+  set.setData(Ref2, 80);
+  i.setSettings(set);
 }
 
 //*************************************************************

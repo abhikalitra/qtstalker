@@ -63,7 +63,7 @@ int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionAROON::scriptAROON: duplicate upper name" << set[4];
@@ -85,7 +85,7 @@ int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  QList<PlotLine *> pl;
+  QList<Curve *> pl;
   if (getAROON(data, period, pl))
     return 1;
 
@@ -109,7 +109,7 @@ int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind, BarData &da
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionAROONOSC::scriptAROONOSC: duplicate name" << set[4];
@@ -124,7 +124,7 @@ int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind, BarData &da
     return 1;
   }
 
-  PlotLine *line = getAROONOSC(data, period);
+  Curve *line = getAROONOSC(data, period);
   if (! line)
     return 1;
 
@@ -136,7 +136,7 @@ int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind, BarData &da
 }
 
 
-int FunctionAROON::getAROON (BarData &data, int period, QList<PlotLine *> &pl)
+int FunctionAROON::getAROON (BarData &data, int period, QList<Curve *> &pl)
 {
   int size = data.count();
   if (size < period)
@@ -172,15 +172,15 @@ int FunctionAROON::getAROON (BarData &data, int period, QList<PlotLine *> &pl)
     return 1;
   }
 
-  PlotLine *upper = new PlotLine;
-  PlotLine *lower = new PlotLine;
+  Curve *upper = new Curve;
+  Curve *lower = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    upper->setData(dataLoop, uout[outLoop]);
-    lower->setData(dataLoop, dout[outLoop]);
+    upper->setBar(dataLoop, new CurveBar(uout[outLoop]));
+    lower->setBar(dataLoop, new CurveBar(dout[outLoop]));
 
     dataLoop--;
     outLoop--;
@@ -192,7 +192,7 @@ int FunctionAROON::getAROON (BarData &data, int period, QList<PlotLine *> &pl)
   return 0;
 }
 
-PlotLine * FunctionAROON::getAROONOSC (BarData &data, int period)
+Curve * FunctionAROON::getAROONOSC (BarData &data, int period)
 {
   if (data.count() < period)
     return 0;
@@ -227,13 +227,13 @@ PlotLine * FunctionAROON::getAROONOSC (BarData &data, int period)
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setData(dataLoop, out[outLoop]);
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
     dataLoop--;
     outLoop--;
   }

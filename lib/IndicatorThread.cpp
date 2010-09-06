@@ -37,7 +37,6 @@ void IndicatorThread::run ()
   if (! ip)
     return;
 
-  ip->setSettings(_indicator);
   ip->getIndicator(_indicator, _data);
 
   emit signalDone(_indicator);

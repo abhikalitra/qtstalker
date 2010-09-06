@@ -23,9 +23,10 @@
    Dr. Alexander Elder's book _Come Into My Trading Room_, p.173 */
 
 #include "SZ.h"
-#include "BARSUtils.h"
-#include "PlotStyleFactory.h"
+#include "FunctionBARS.h"
+#include "SZDialog.h"
 #include "FunctionSZ.h"
+#include "Curve.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -33,57 +34,50 @@
 SZ::SZ ()
 {
   _indicator = "SZ";
-
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Period, 10);
-  _settings.setData(Method, "Long");
-  _settings.setData(NoDeclinePeriod, 2);
-  _settings.setData(Coefficient, 2);
 }
 
 int SZ::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QString s;
-  _settings.getData(Method, s);
+  settings.getData(Method, s);
 
   FunctionSZ f;
   QStringList methodList = f.list();
   int method = methodList.indexOf(s);
 
-  int period = _settings.getInt(Period);
-  int ndperiod = _settings.getInt(NoDeclinePeriod);
-  double coeff = _settings.getDouble(Coefficient);
+  int period = settings.getInt(Period);
+  int ndperiod = settings.getInt(NoDeclinePeriod);
+  double coeff = settings.getDouble(Coefficient);
 
   QColor up("green");
   QColor down("red");
   QColor neutral("blue");
-  BARSUtils b;
-  PlotLine *bars = b.getBARS(data, up, down, neutral);
+  FunctionBARS b;
+  Curve *bars = b.getBARS(data, up, down, neutral);
   if (bars)
   {
-    QString s = "0";
-    ind.setLine(s, bars);
-    ind.addPlotOrder(s);
+    bars->setZ(0);
+    ind.setLine(0, bars);
   }
 
-  PlotLine *line = f.calculate(data, method, period, ndperiod, coeff);
+  Curve *line = f.calculate(data, method, period, ndperiod, coeff);
   if (! line)
     return 1;
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
   
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
   return 0;
 }
@@ -94,52 +88,22 @@ int SZ::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int SZ::dialog (int)
+IndicatorPluginDialog * SZ::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new SZDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
-
-  FunctionSZ f;
-  QStringList methodList = f.list();
-  
-  _settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
-
-  dialog->addIntItem(NoDeclinePeriod, page, QObject::tr("No Decline Period"), _settings.getInt(NoDeclinePeriod), 1, 100000);
-
-  dialog->addDoubleItem(Coefficient, page, QObject::tr("Coefficient"), _settings.getDouble(Coefficient), 0, 100000);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void SZ::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Color, "red");
+  set.setData(Plot, "Line");
+  set.setData(Label, _indicator);
+  set.setData(Period, 10);
+  set.setData(Method, "Long");
+  set.setData(NoDeclinePeriod, 2);
+  set.setData(Coefficient, 2);
+  i.setSettings(set);
 }
 
 //*************************************************************

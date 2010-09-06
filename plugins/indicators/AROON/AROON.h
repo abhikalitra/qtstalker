@@ -28,6 +28,8 @@
 
 class AROON : public IndicatorPlugin
 {
+  Q_OBJECT
+
   public:
     enum Parm
     {
@@ -45,9 +47,10 @@ class AROON : public IndicatorPlugin
     };
 
     AROON ();
-    int getIndicator (Indicator &, BarData &);
+    int getIndicator (Indicator &ind, BarData &);
     int getCUS (QStringList &, Indicator &, BarData &);
-    int dialog (int);
+    IndicatorPluginDialog * dialog (Indicator &);
+    void defaults (Indicator &);
 };
 
 extern "C"

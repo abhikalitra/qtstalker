@@ -26,14 +26,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionVIDYA
 {
   public:
     FunctionVIDYA ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (PlotLine *inSignal, int period, int volPeriod);
+    Curve * calculate (Curve *inSignal, int period, int volPeriod);
 };
 
 #endif

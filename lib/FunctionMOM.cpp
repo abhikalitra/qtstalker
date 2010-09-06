@@ -40,14 +40,14 @@ int FunctionMOM::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[3]);
+  Curve *tl = ind.line(set[3]);
   if (tl)
   {
     qDebug() << "FunctionMOM::script: duplicate name" << set[3];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[4]);
+  Curve *in = ind.line(set[4]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[4]));
@@ -83,7 +83,7 @@ int FunctionMOM::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(in, period, smoothing, type);
+  Curve *line = calculate(in, period, smoothing, type);
   if (! line)
     return 1;
 
@@ -94,7 +94,7 @@ int FunctionMOM::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionMOM::calculate (PlotLine *in, int period, int smoothing, int type)
+Curve * FunctionMOM::calculate (Curve *in, int period, int smoothing, int type)
 {
   if (in->count() < period || in->count() < smoothing)
     return 0;
@@ -111,7 +111,7 @@ PlotLine * FunctionMOM::calculate (PlotLine *in, int period, int smoothing, int 
   int loop = 0;
   for (; loop < size; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -129,13 +129,13 @@ PlotLine * FunctionMOM::calculate (PlotLine *in, int period, int smoothing, int 
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), out[outLoop]);
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
     keyLoop--;
     outLoop--;
   }
@@ -143,7 +143,7 @@ PlotLine * FunctionMOM::calculate (PlotLine *in, int period, int smoothing, int 
   if (smoothing > 1)
   {
     FunctionMA mau;
-    PlotLine *ma = mau.calculate(line, smoothing, type);
+    Curve *ma = mau.calculate(line, smoothing, type);
     delete line;
     line = ma;
   }

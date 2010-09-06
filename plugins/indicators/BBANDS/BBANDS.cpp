@@ -21,9 +21,10 @@
 
 #include "BBANDS.h"
 #include "FunctionMA.h"
-#include "BARSUtils.h"
-#include "PlotStyleFactory.h"
+#include "FunctionBARS.h"
+#include "Curve.h"
 #include "FunctionBBANDS.h"
+#include "BBANDSDialog.h"
 
 #include <QtDebug>
 #include <QColor>
@@ -31,54 +32,47 @@
 BBANDS::BBANDS ()
 {
   _indicator = "BBANDS";
-
-  _settings.setData(UpColor, "red");
-  _settings.setData(MidColor, "red");
-  _settings.setData(DownColor, "red");
-  _settings.setData(UpPlot, "Line");
-  _settings.setData(MidPlot, "Line");
-  _settings.setData(DownPlot, "Line");
-  _settings.setData(UpLabel, "BBU");
-  _settings.setData(MidLabel, "BBM");
-  _settings.setData(DownLabel, "BBL");
-  _settings.setData(UpDeviation, 2);
-  _settings.setData(DownDeviation, 2);
-  _settings.setData(Input, "Close");
-  _settings.setData(Period, 20);
-  _settings.setData(MAType, "SMA");
 }
 
 int BBANDS::getIndicator (Indicator &ind, BarData &data)
 {
-  QColor up("green");
-  QColor down("red");
-  QColor neutral("blue");
-  BARSUtils b;
-  PlotLine *bars = b.getBARS(data, up, down, neutral);
+  Setting settings = ind.settings();
+
+  QString s;
+  settings.getData(BarsUpColor, s);
+  QColor up(s);
+  
+  settings.getData(BarsDownColor, s);
+  QColor down(s);
+  
+  settings.getData(BarsNeutralColor, s);
+  QColor neutral(s);
+  
+  FunctionBARS b;
+  Curve *bars = b.getBARS(data, up, down, neutral);
   if (! bars)
     return 1;
 
-  QString s = "0";
-  ind.setLine(s, bars);
-  ind.addPlotOrder(s);
+  bars->setZ(0);
+  ind.setLine(0, bars);
 
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
     return 1;
   }
 
-  int period = _settings.getInt(Period);
-  double udev = _settings.getDouble(UpDeviation);
-  double ldev = _settings.getDouble(DownDeviation);
+  int period = settings.getInt(Period);
+  double udev = settings.getDouble(UpDeviation);
+  double ldev = settings.getDouble(DownDeviation);
 
   FunctionMA mau;
-  _settings.getData(MAType, s);
+  settings.getData(MAType, s);
   int maType = mau.typeFromString(s);
 
-  QList<PlotLine *> pl;
+  QList<Curve *> pl;
   FunctionBBANDS f;
   if (f.calculate(in, period, udev, ldev, maType, pl))
   {
@@ -86,50 +80,50 @@ int BBANDS::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = pl.at(0);
+  Curve *line = pl.at(0);
 
-  _settings.getData(UpPlot, s);
-  line->setType(s);
+  settings.getData(UpPlot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(UpColor, s);
-  line->setColor(s);
+  settings.getData(UpColor, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(UpLabel, s);
+  settings.getData(UpLabel, s);
   line->setLabel(s);
   
-  s = "1";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(1);
+  ind.setLine(1, line);
 
   line = pl.at(1);
 
-  _settings.getData(MidPlot, s);
-  line->setType(s);
+  settings.getData(MidPlot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(MidColor, s);
-  line->setColor(s);
+  settings.getData(MidColor, s);
+  c.setNamedColor(s);
+  line->setColor(c);
 
-  _settings.getData(MidLabel, s);
+  settings.getData(MidLabel, s);
   line->setLabel(s);
   
-  s = "2";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(2);
+  ind.setLine(2, line);
 
   line = pl.at(2);
 
-  _settings.getData(DownPlot, s);
-  line->setType(s);
+  settings.getData(DownPlot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(DownColor, s);
-  line->setColor(s);
+  settings.getData(DownColor, s);
+  c.setNamedColor(s);
+  line->setColor(c);
 
-  _settings.getData(DownLabel, s);
+  settings.getData(DownLabel, s);
   line->setLabel(s);
   
-  s = "3";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(3);
+  ind.setLine(3, line);
 
   delete in;
 
@@ -142,89 +136,33 @@ int BBANDS::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int BBANDS::dialog (int)
+IndicatorPluginDialog * BBANDS::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new BBANDSDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-  
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 2, 100000);
-
-  dialog->addDoubleItem(UpDeviation, page, QObject::tr("Upper Deviation"), _settings.getDouble(UpDeviation), -100000, 100000);
-
-  dialog->addDoubleItem(DownDeviation, page, QObject::tr("Lower Deviation"), _settings.getDouble(DownDeviation), -100000, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-  
-  _settings.getData(MAType, d);
-  dialog->addComboItem(MAType, page, QObject::tr("MA Type"), maList, d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  page++;
-  k = QObject::tr("Upper");
-  dialog->addPage(page, k);
-
-  _settings.getData(UpColor, d);
-  dialog->addColorItem(UpColor, page, QObject::tr("Color"), d);
-
-  _settings.getData(UpPlot, d);
-  dialog->addComboItem(UpPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(UpLabel, d);
-  dialog->addTextItem(UpLabel, page, QObject::tr("Label"), d, QString());
-
-  page++;
-  k = QObject::tr("Mid");
-  dialog->addPage(page, k);
-
-  _settings.getData(MidColor, d);
-  dialog->addColorItem(MidColor, page, QObject::tr("Color"), d);
-
-  _settings.getData(MidPlot, d);
-  dialog->addComboItem(MidPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(MidLabel, d);
-  dialog->addTextItem(MidLabel, page, QObject::tr("Label"), d, QString());
-
-  page++;
-  k = QObject::tr("Lower");
-  dialog->addPage(page, k);
-
-  _settings.getData(DownColor, d);
-  dialog->addColorItem(DownColor, page, QObject::tr("Color"), d);
-
-  _settings.getData(DownPlot, d);
-  dialog->addComboItem(DownPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(DownLabel, d);
-  dialog->addTextItem(DownLabel, page, QObject::tr("Label"), d, QString());
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void BBANDS::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(UpColor, "red");
+  set.setData(MidColor, "red");
+  set.setData(DownColor, "red");
+  set.setData(UpPlot, "Line");
+  set.setData(MidPlot, "Line");
+  set.setData(DownPlot, "Line");
+  set.setData(UpLabel, "BBU");
+  set.setData(MidLabel, "BBM");
+  set.setData(DownLabel, "BBL");
+  set.setData(UpDeviation, 2);
+  set.setData(DownDeviation, 2);
+  set.setData(Input, "Close");
+  set.setData(Period, 20);
+  set.setData(MAType, "SMA");
+  set.setData(BarsUpColor, "green");
+  set.setData(BarsDownColor, "red");
+  set.setData(BarsNeutralColor, "blue");
+  set.setData(BarsLabel, "BARS");
+  i.setSettings(set);
 }
 
 //*************************************************************

@@ -20,47 +20,46 @@
  */
 
 #include "FontButton.h"
+
 #include <QFontDialog>
 
 FontButton::FontButton (QWidget *w, QFont &f) : QPushButton (w)
 {
-  font = f;
+  _font = f;
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fontDialog()));
   setMaximumHeight(25);
   setFontButton();
   setText(tr("Font"));
-  changed = FALSE;
+  _changed = FALSE;
 }
 
 void FontButton::setFontButton ()
 {
-  setFont(font);
+  setFont(_font);
 }
 
-void FontButton::getFont (QFont &d)
+QFont & FontButton::font ()
 {
-  d = font;
+  return _font;
 }
 
 void FontButton::fontDialog ()
 {
   bool ok;
-  QFont f = QFontDialog::getFont(&ok, font, this);
+  QFont f = QFontDialog::getFont(&ok, _font, this);
   if (ok)
   {
-    if (font != f)
+    if (_font != f)
     {
-      font = f;
+      _font = f;
       setFontButton();
-      changed = TRUE;
+      _changed = TRUE;
       emit valueChanged();
     }
   }
 }
 
-bool FontButton::isChanged()
+int FontButton::isChanged()
 {  
-  bool b = changed;
-  changed = FALSE;
-  return b;
+  return _changed;
 }

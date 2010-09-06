@@ -26,14 +26,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionTRIX
 {
   public:
     FunctionTRIX ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (PlotLine *in, int period);
+    Curve * calculate (Curve *in, int period);
 };
 
 #endif

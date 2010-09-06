@@ -28,6 +28,8 @@
 
 class BBANDS : public IndicatorPlugin
 {
+  Q_OBJECT
+
   public:
     enum Parm
     {
@@ -44,14 +46,18 @@ class BBANDS : public IndicatorPlugin
       UpDeviation,
       DownDeviation,
       Input,
-      MAType
+      MAType,
+      BarsUpColor,
+      BarsDownColor,
+      BarsNeutralColor,
+      BarsLabel
     };
 
     BBANDS ();
-    int getIndicator (Indicator &ind, BarData &data);
+    int getIndicator (Indicator &ind, BarData &);
     int getCUS (QStringList &, Indicator &, BarData &);
-    int dialog (int);
-//    int getBBANDS (PlotLine *in, int period, double udev, double ddev, int maType, QList<PlotLine *> &rl);
+    IndicatorPluginDialog * dialog (Indicator &);
+    void defaults (Indicator &);
 };
 
 extern "C"

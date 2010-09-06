@@ -21,62 +21,51 @@
 
 #include "MAMA.h"
 #include "FunctionMAMA.h"
-#include "BARSUtils.h"
-#include "PlotStyleFactory.h"
+#include "FunctionBARS.h"
+#include "MAMADialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 MAMA::MAMA ()
 {
   _indicator = "MAMA";
-
-  _settings.setData(OSC, 1);
-  _settings.setData(OSCColor, "red");
-  _settings.setData(MAMAColor, "red");
-  _settings.setData(FAMAColor, "yellow");
-  _settings.setData(MAMAPlot, "Line");
-  _settings.setData(FAMAPlot, "Line");
-  _settings.setData(MAMALabel, "MAMA");
-  _settings.setData(FAMALabel, "FAMA");
-  _settings.setData(OSCLabel, "MAMAOSC");
-  _settings.setData(FastLimit, 0.5);
-  _settings.setData(SlowLimit, 0.05);
-  _settings.setData(Input, "Close");
 }
 
 int MAMA::getIndicator (Indicator &ind, BarData &data)
 {
+  Setting settings = ind.settings();
+
   QString s;
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
-  double fast = _settings.getDouble(FastLimit);
-  double slow = _settings.getDouble(SlowLimit);
+  double fast = settings.getDouble(FastLimit);
+  double slow = settings.getDouble(SlowLimit);
 
   FunctionMAMA f;
-  QList<PlotLine *> l;
+  QList<Curve *> l;
   if (f.calculate(in, fast, slow, l))
   {
     delete in;
     return 1;
   }
 
-  PlotLine *mama = l.at(0);
-  PlotLine *fama = l.at(1);
+  Curve *mama = l.at(0);
+  Curve *fama = l.at(1);
 
-  int osc = _settings.getInt(OSC);
+  int osc = settings.getInt(OSC);
   if (osc)
   {
-    s = "Histogram Bar";
-    PlotLine *line = new PlotLine;
-    line->setType(s);
+    Curve *line = new Curve;
+    line->setType(Curve::HistogramBar);
 
-    _settings.getData(OSCLabel, s);
+    settings.getData(OSCLabel, s);
     line->setLabel(s);
 
     QList<int> keys;
@@ -85,64 +74,63 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
     int loop = 0;
     for (; loop < keys.count(); loop++)
     {
-      PlotLineBar *mbar = mama->data(keys.at(loop));
+      CurveBar *mbar = mama->bar(keys.at(loop));
       if (! mbar)
         continue;
 
-      PlotLineBar *fbar = fama->data(keys.at(loop));
+      CurveBar *fbar = fama->bar(keys.at(loop));
       if (! fbar)
         continue;
 
-      line->setData(keys.at(loop), mbar->data() - fbar->data());
+      line->setBar(keys.at(loop), new CurveBar(mbar->data() - fbar->data()));
     }
 
-    _settings.getData(OSCColor, s);
-    line->setColor(s);
+    settings.getData(OSCColor, s);
+    QColor c(s);
+    line->setColor(c);
 
-    s = "0";
-    ind.setLine(s, line);
-    ind.addPlotOrder(s);
+    line->setZ(0);
+    ind.setLine(0, line);
   }
   else
   {
     QColor up("green");
     QColor down("red");
     QColor neutral("blue");
-    BARSUtils b;
-    PlotLine *bars = b.getBARS(data, up, down, neutral);
+    FunctionBARS b;
+    Curve *bars = b.getBARS(data, up, down, neutral);
     if (bars)
     {
-      s = "1";
-      ind.setLine(s, bars);
-      ind.addPlotOrder(s);
+      bars->setZ(1);
+      ind.setLine(1, bars);
     }
 
-    _settings.getData(MAMAPlot, s);
-    mama->setType(s);
+    settings.getData(MAMAPlot, s);
+    mama->setType((Curve::Type) mama->typeFromString(s));
 
-    _settings.getData(MAMAColor, s);
-    mama->setColor(s);
+    settings.getData(MAMAColor, s);
+    QColor c(s);
+    mama->setColor(c);
 
-    _settings.getData(MAMALabel, s);
+    settings.getData(MAMALabel, s);
     mama->setLabel(s);
     
-    s = "2";
-    ind.setLine(s, mama);
-    ind.addPlotOrder(s);
+    mama->setZ(2);
+    ind.setLine(2, mama);
 
     // fama line
-    _settings.getData(FAMAPlot, s);
-    fama->setType(s);
+    settings.getData(FAMAPlot, s);
+    fama->setType((Curve::Type) fama->typeFromString(s));
 
-    _settings.getData(FAMAColor, s);
-    fama->setColor(s);
+    settings.getData(FAMAColor, s);
+    c.setNamedColor(s);
+    fama->setColor(c);
 
-    _settings.getData(FAMALabel, s);
+    settings.getData(FAMALabel, s);
     fama->setLabel(s);
     
-    s = "3";
-    ind.setLine(s, fama);
-    ind.addPlotOrder(s);
+    fama->setZ(3);
+    ind.setLine(3, fama);
   }
 
   delete in;
@@ -156,70 +144,28 @@ int MAMA::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int MAMA::dialog (int)
+IndicatorPluginDialog * MAMA::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new MAMADialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  dialog->addDoubleItem(FastLimit, page, QObject::tr("Fast Limit"), _settings.getDouble(FastLimit), 0.01, 0.99);
-
-  dialog->addDoubleItem(SlowLimit, page, QObject::tr("Slow Limit"), _settings.getDouble(SlowLimit), 0.01, 0.99);
-
-  dialog->addCheckItem(OSC, page, QObject::tr("Oscillator"), _settings.getInt(OSC));
-
-  page++;
-  k = QObject::tr("MAMA");
-  dialog->addPage(page, k);
-
-  _settings.getData(MAMAColor, d);
-  dialog->addColorItem(MAMAColor, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(MAMAPlot, d);
-  dialog->addComboItem(MAMAPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(MAMALabel, d);
-  dialog->addTextItem(MAMALabel, page, QObject::tr("Label"), d, QString());
-
-  page++;
-  k = QObject::tr("FAMA");
-  dialog->addPage(page, k);
-
-  _settings.getData(FAMAColor, d);
-  dialog->addColorItem(FAMAColor, page, QObject::tr("Color"), d);
-
-  _settings.getData(FAMAPlot, d);
-  dialog->addComboItem(FAMAPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(FAMALabel, d);
-  dialog->addTextItem(FAMALabel, page, QObject::tr("Label"), d, QString());
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void MAMA::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(OSC, 1);
+  set.setData(OSCColor, "red");
+  set.setData(MAMAColor, "red");
+  set.setData(FAMAColor, "yellow");
+  set.setData(MAMAPlot, "Line");
+  set.setData(FAMAPlot, "Line");
+  set.setData(OSCPlot, "Histogram Bar");
+  set.setData(MAMALabel, "MAMA");
+  set.setData(FAMALabel, "FAMA");
+  set.setData(OSCLabel, "MAMAOSC");
+  set.setData(FastLimit, 0.5);
+  set.setData(SlowLimit, 0.05);
+  set.setData(Input, "Close");
+  i.setSettings(set);
 }
 
 //*************************************************************

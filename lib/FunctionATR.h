@@ -26,7 +26,7 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionATR
 {
@@ -39,7 +39,7 @@ class FunctionATR
 
     FunctionATR ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (BarData &, int period, int method);
+    Curve * calculate (BarData &, int period, int method);
     QStringList & list ();
 
   private:

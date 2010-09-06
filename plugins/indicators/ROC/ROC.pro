@@ -3,6 +3,8 @@
 } 
 
 HEADERS += ROC.h
+HEADERS += ROCDialog.h
 
 SOURCES += ROC.cpp
+SOURCES += ROCDialog.cpp
 

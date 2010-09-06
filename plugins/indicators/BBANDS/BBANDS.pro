@@ -3,6 +3,8 @@
 } 
 
 HEADERS += BBANDS.h
+HEADERS += BBANDSDialog.h
 
 SOURCES += BBANDS.cpp
+SOURCES += BBANDSDialog.cpp
 

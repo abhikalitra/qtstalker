@@ -20,49 +20,46 @@
  */
 
 #include "ATR.h"
-#include "PlotStyleFactory.h"
+#include "Curve.h"
 #include "FunctionATR.h"
+#include "ATRDialog.h"
 
 #include <QtDebug>
 
 ATR::ATR ()
 {
   _indicator = "ATR";
-
-  _settings.setData(Method, "ATR");
-  _settings.setData(Period, 14);
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, _indicator);
 }
 
 int ATR::getIndicator (Indicator &ind, BarData &data)
 {
-  int period = _settings.getInt(Period);
+  Setting settings = ind.settings();
+
+  int period = settings.getInt(Period);
 
   FunctionATR f;
   QStringList l = f.list();
   
   QString s;
-  _settings.getData(Method, s);
+  settings.getData(Method, s);
   int method = l.indexOf(s);
 
-  PlotLine *line = f.calculate(data, period, method);
+  Curve *line = f.calculate(data, period, method);
   if (! line)
     return 1;
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   return 0;
 }
@@ -73,48 +70,20 @@ int ATR::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int ATR::dialog (int)
+IndicatorPluginDialog * ATR::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new ATRDialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
-
-  FunctionATR f;
-  QStringList methodList = f.list();
-  
-  _settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void ATR::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Method, "ATR");
+  set.setData(Period, 14);
+  set.setData(Color, "red");
+  set.setData(Plot, "Line");
+  set.setData(Label, _indicator);
+  i.setSettings(set);
 }
 
 //*************************************************************

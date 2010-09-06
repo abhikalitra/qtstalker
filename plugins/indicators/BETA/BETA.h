@@ -26,6 +26,8 @@
 
 class BETA : public IndicatorPlugin
 {
+  Q_OBJECT
+
   public:
     enum Parm
     {
@@ -39,10 +41,10 @@ class BETA : public IndicatorPlugin
     };
 
     BETA ();
-    int getIndicator (Indicator &ind, BarData &data);
+    int getIndicator (Indicator &ind, BarData &);
     int getCUS (QStringList &, Indicator &, BarData &);
-//    PlotLine * getBETA (PlotLine *in, PlotLine *in2, int period);
-    int dialog (int);
+    IndicatorPluginDialog * dialog (Indicator &);
+    void defaults (Indicator &);
 };
 
 extern "C"

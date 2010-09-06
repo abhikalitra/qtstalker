@@ -26,7 +26,7 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionMA
 {
@@ -45,10 +45,10 @@ class FunctionMA
 
     FunctionMA ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (PlotLine *, int period, int method);
+    Curve * calculate (Curve *, int period, int method);
     QStringList & list ();
     int typeFromString (QString &);
-    PlotLine * getWilder (PlotLine *, int period);
+    Curve * getWilder (Curve *, int period);
     
   private:
     QStringList _maList;

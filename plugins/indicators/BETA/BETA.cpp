@@ -20,23 +20,16 @@
  */
 
 #include "BETA.h"
-#include "PlotStyleFactory.h"
 #include "QuoteServerRequest.h"
 #include "FunctionBETA.h"
+#include "BETADialog.h"
+#include "Curve.h"
 
 #include <QtDebug>
 
 BETA::BETA ()
 {
   _indicator = "BETA";
-
-  _settings.setData(Index, "SP500");
-  _settings.setData(Exchange, "XNYS");
-  _settings.setData(Color, "red");
-  _settings.setData(Plot, "Line");
-  _settings.setData(Label, _indicator);
-  _settings.setData(Input, "Close");
-  _settings.setData(Period, 5);
 }
 
 int BETA::getIndicator (Indicator &ind, BarData &data)
@@ -44,9 +37,11 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
   if (! data.count())
     return 1;
   
+  Setting settings = ind.settings();
+
   QString s;
-  _settings.getData(Input, s);
-  PlotLine *in = data.getInput(data.getInputType(s));
+  settings.getData(Input, s);
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -54,9 +49,9 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
   }
 
   BarData bd;
-  _settings.getData(Index, s);
+  settings.getData(Index, s);
   bd.setSymbol(s);
-  _settings.getData(Exchange, s);
+  settings.getData(Exchange, s);
   bd.setExchange(s);
   bd.setBarLength(data.getBarLength());
 
@@ -77,7 +72,7 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
 
   bd.setBars(qsr.data());
 
-  PlotLine *in2 = bd.getInput(BarData::Close);
+  Curve *in2 = bd.getInput(BarData::Close);
   if (! in2)
   {
     qDebug() << _indicator << "::calculate: index not found";
@@ -85,10 +80,10 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  int period = _settings.getInt(Period);
+  int period = settings.getInt(Period);
 
   FunctionBETA f;
-  PlotLine *line = f.calculate(in, in2, period);
+  Curve *line = f.calculate(in, in2, period);
   if (! line)
   {
     delete in;
@@ -96,18 +91,18 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  _settings.getData(Plot, s);
-  line->setType(s);
+  settings.getData(Plot, s);
+  line->setType((Curve::Type) line->typeFromString(s));
 
-  _settings.getData(Color, s);
-  line->setColor(s);
+  settings.getData(Color, s);
+  QColor c(s);
+  line->setColor(c);
 
-  _settings.getData(Label, s);
+  settings.getData(Label, s);
   line->setLabel(s);
 
-  s = "0";
-  ind.setLine(s, line);
-  ind.addPlotOrder(s);
+  line->setZ(0);
+  ind.setLine(0, line);
 
   delete in;
   delete in2;
@@ -121,53 +116,22 @@ int BETA::getCUS (QStringList &set, Indicator &ind, BarData &data)
   return f.script(set, ind, data);
 }
 
-int BETA::dialog (int)
+IndicatorPluginDialog * BETA::dialog (Indicator &i)
 {
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
+  return new BETADialog(i);
+}
 
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
-
-  _settings.getData(Index, d);
-  dialog->addTextItem(Index, page, QObject::tr("Index"), d,
-                      QObject::tr("Index symbol used for comparison eg. SP500"));
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
+void BETA::defaults (Indicator &i)
+{
+  Setting set;
+  set.setData(Index, "SP500");
+  set.setData(Exchange, "XNYS");
+  set.setData(Color, "red");
+  set.setData(Plot, "Line");
+  set.setData(Label, _indicator);
+  set.setData(Input, "Close");
+  set.setData(Period, 5);
+  i.setSettings(set);
 }
 
 //*************************************************************

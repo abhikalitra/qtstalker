@@ -26,14 +26,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionRSI
 {
   public:
     FunctionRSI ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (PlotLine *in, int period, int smoothing, int type);
+    Curve * calculate (Curve *in, int period, int smoothing, int type);
 };
 
 #endif

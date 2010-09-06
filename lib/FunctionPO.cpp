@@ -48,14 +48,14 @@ int FunctionPO::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *tl = ind.line(set[4]);
+  Curve *tl = ind.line(set[4]);
   if (tl)
   {
     qDebug() << "FunctionPO::script: duplicate name" << set[4];
     return 1;
   }
 
-  PlotLine *in = ind.line(set[5]);
+  Curve *in = ind.line(set[5]);
   if (! in)
   {
     in = data.getInput(data.getInputType(set[5]));
@@ -91,7 +91,7 @@ int FunctionPO::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  PlotLine *line = calculate(in, fast, slow, ma, method);
+  Curve *line = calculate(in, fast, slow, ma, method);
   if (! line)
     return 1;
 
@@ -102,7 +102,7 @@ int FunctionPO::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-PlotLine * FunctionPO::calculate (PlotLine *in, int fast, int slow, int ma, int method)
+Curve * FunctionPO::calculate (Curve *in, int fast, int slow, int ma, int method)
 {
   if (in->count() < fast || in->count() < slow)
     return 0;
@@ -119,7 +119,7 @@ PlotLine * FunctionPO::calculate (PlotLine *in, int fast, int slow, int ma, int 
   int loop = 0;
   for (; loop < size; loop++)
   {
-    PlotLineBar *bar = in->data(keys.at(loop));
+    CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
 
@@ -143,13 +143,13 @@ PlotLine * FunctionPO::calculate (PlotLine *in, int fast, int slow, int ma, int 
     return 0;
   }
 
-  PlotLine *line = new PlotLine;
+  Curve *line = new Curve;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setData(keys.at(keyLoop), out[outLoop]);
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
     keyLoop--;
     outLoop--;
   }

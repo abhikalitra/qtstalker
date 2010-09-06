@@ -26,14 +26,14 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "PlotLine.h"
+#include "Curve.h"
 
 class FunctionNORMALIZE
 {
   public:
     FunctionNORMALIZE ();
     int script (QStringList &, Indicator &, BarData &);
-    PlotLine * calculate (PlotLine *);
+    Curve * calculate (Curve *);
 };
 
 #endif
