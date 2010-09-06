@@ -688,5 +688,17 @@
 
 20100729:  Spun off chart object dialog code into separate classes to enable non blocking versions.
 
+20100906:  ************************** BIG CHANGES *********************************************
+           Qtstalker now uses the Qwt charting library for all charting functions. http://qwt.sourceforge.net
+           Please install the most recent version before compiling qtstalker. 
 
+           ChartObjectDataBase format has changed. Please delete the chartObjectIndex table from the
+           ~/.qtstalker/data.sqlite file before starting qtstalker. NOTE: There have been so many changes
+           i have lost track, so it might be best to start with a fresh new install by deleting or renaming
+           your ~/.qtstalker directory before starting it.
 
+           All indicator dialogs have been recoded into non blocking versions.
+
+           Removed Cursor / Chart Object toolbar. Use chart context menu.
+
+           NOTE: Features not implemeted yet please see TODO priority list.

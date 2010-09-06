@@ -26,8 +26,18 @@ To Do:
 Priority
 ========
 
+BUG: new indicators do not chart until quotes are re-loaded
+BUG: indicators do not update until exposed first, then it's ok.
+
 - fix scripts not finishing ? fix pending confimation
 - convert any long running functions that gui block to use threads
+- Scale to screen
+- Interactive chart objects. Use dialogs to change settings for now.
+- Cursor crosshairs.
+- Bar spacing. Using fixed value of 8 currently.
+- Date axis toggle.
+- log scaling toggle.
+- chart zooming
 
 
 
