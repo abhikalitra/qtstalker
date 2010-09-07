@@ -32,6 +32,7 @@
 
 ChartObjectFactory::ChartObjectFactory ()
 {
+  _types << "Buy" << "HLine" << "Retracement" << "Sell" << "Text" << "TLine" << "VLine";
 }
 
 ChartObject * ChartObjectFactory::chartObject (int type)
@@ -66,5 +67,10 @@ ChartObject * ChartObjectFactory::chartObject (int type)
   }
   
   return co;
+}
+
+ChartObject * ChartObjectFactory::chartObject (QString &type)
+{
+  return chartObject(_types.indexOf(type));
 }
 

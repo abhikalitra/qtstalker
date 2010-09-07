@@ -20,6 +20,9 @@
  */
 
 #include "SCChartObject.h"
+#include "ChartObjectSettings.h"
+#include "ChartObjectFactory.h"
+#include "ChartObject.h"
 
 #include <QtDebug>
 
@@ -42,8 +45,12 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, Ba
     return rc;
   }
 
-// FIXME
-/*
+  if (! data.count())
+  {
+    qDebug() << "SCChartObject::calculate: no bars available";
+    return rc;
+  }
+
   ChartObjectFactory fac;
   ChartObject *co = fac.chartObject(l[1]);
   if (! co)
@@ -58,15 +65,13 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, Ba
     return rc;
   }
 
-  if (! data.count())
-  {
-    qDebug() << "SCChartObject::calculate: no bars available";
-    return rc;
-  }
-
-  co->setSymbol(data.getSymbol());
-  co->setExchange(data.getExchange());
-  co->setIndicator(ind.name());
+  ChartObjectSettings set;
+  co->settings(set);
+  delete co;
+  
+  set.symbol = data.getSymbol();
+  set.exchange = data.getExchange();
+  set.indicator = ind.name();
 
   // we use < 0 id nums for script chart objects so there are no conflicts
   // with permanent chart object id's that are >= 0
@@ -79,10 +84,9 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, Ba
     id = ids.at(0);
   }
   id--;
-  co->setID(id);
+  set.id = id;
 
-  ind.addChartObject(co);
-*/
+  ind.addChartObject(id, set);
 
   ba.clear();
   ba.append("0\n");

@@ -175,6 +175,9 @@ void ChartLayout::addTab (Indicator &i)
   settings.col = i.column();
   _plots.insert(i.name(), settings);
 
+  settings.plot->showDate(i.date());
+//  settings.plot->setLogScaling(i.getLog());
+
   connect(this, SIGNAL(signalBackgroundColor(QColor)), settings.plot, SLOT(setBackgroundColor(QColor)));
   connect(this, SIGNAL(signalFont(QFont)), settings.plot, SLOT(setFont(QFont)));
   connect(this, SIGNAL(signalGridColor(QColor)), settings.plot, SLOT(setGridColor(QColor)));
@@ -186,6 +189,7 @@ void ChartLayout::addTab (Indicator &i)
   connect(this, SIGNAL(signalGrid(bool)), settings.plot, SLOT(setGrid(bool)));
   connect(this, SIGNAL(signalDraw()), settings.plot, SLOT(replot()));
   connect(this, SIGNAL(signalIndex(int)), settings.plot, SLOT(setStartIndex(int)));
+  connect(settings.plot, SIGNAL(signalNewIndicator()), this, SLOT(newIndicator()));
   connect(settings.plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(editIndicator(QString)));
   connect(settings.plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator(QString)));
   connect(settings.plot, SIGNAL(signalBackgroundColorChanged(QColor)), this, SLOT(backgroundColorChanged(QColor)));

@@ -41,6 +41,7 @@ class DateRangeButton : public QToolButton
   public slots:
     void dialog ();
     void buttonClicked (bool);
+    void dateChanged (QDateTime sd, QDateTime ed);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);

@@ -29,6 +29,7 @@
 #include <QMenu>
 #include <QColor>
 #include <QFont>
+#include <QAction>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
@@ -69,8 +70,6 @@ class Plot : public QwtPlot
     void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
     void addCurve3 (int id, Curve *curve, QwtPlotCurve *qcurve);
     void loadChartObjects ();
-    void newChartObjectDialog (ChartObjectSettings &, ChartObjectDialog *);
-    void newChartObjectSettings (ChartObjectSettings &);
 
   public slots:
     virtual void clear ();
@@ -92,16 +91,10 @@ class Plot : public QwtPlot
     void editFont ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
-    void newBuy ();
-    void newHLine ();
-    void newRetracement ();
-    void newSell ();
-    void newText ();
-    void newTLine ();
-    void newVLine ();
     void newChartObject (ChartObjectSettings);
     void updateChartObject (ChartObjectSettings);
     void deleteChartObject (ChartObjectSettings);
+    void chartObjectMenuSelected (QAction *);
 
 private:
     int _spacing;

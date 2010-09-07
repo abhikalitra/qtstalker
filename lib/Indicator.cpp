@@ -180,12 +180,12 @@ void Indicator::clear ()
   clearChartObjects();
 }
 
-Setting Indicator::chartObject (int k)
+ChartObjectSettings Indicator::chartObject (int k)
 {
   return _chartObjects.value(k);
 }
 
-void Indicator::addChartObject (int id, Setting &co)
+void Indicator::addChartObject (int id, ChartObjectSettings &co)
 {
   _chartObjects.insert(id, co);
 }
@@ -194,7 +194,6 @@ void Indicator::clearChartObjects ()
 {
   _chartObjects.clear();
 }
-
 
 void Indicator::deleteChartObject (int d)
 {

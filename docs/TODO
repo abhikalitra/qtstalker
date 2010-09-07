@@ -35,7 +35,6 @@ BUG: indicators do not update until exposed first, then it's ok.
 - Interactive chart objects. Use dialogs to change settings for now.
 - Cursor crosshairs.
 - Bar spacing. Using fixed value of 8 currently.
-- Date axis toggle.
 - log scaling toggle.
 - chart zooming
 

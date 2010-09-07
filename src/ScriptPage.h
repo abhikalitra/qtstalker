@@ -75,8 +75,10 @@ class ScriptPage : public QWidget
     void removeScriptQueue ();
     void runScript (Script *);
     void runScriptDialog ();
+    void runScriptDialog2 (QString command, QString file);
     void listStatus ();
     void queStatus ();
+    void scriptChanged (QString);
 
   protected:
     QListWidget *list;

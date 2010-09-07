@@ -19,26 +19,32 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Returns a default chart object from the given type name.
-// *************************************************************************************************
+#ifndef DATE_RANGE_DIALOG_HPP
+#define DATE_RANGE_DIALOG_HPP
 
-#ifndef CHART_OBJECT_FACTORY_HPP
-#define CHART_OBJECT_FACTORY_HPP
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QDateTimeEdit>
 
-#include "ChartObject.h"
-
-#include <QString>
-
-class ChartObjectFactory
+class DateRangeDialog : public QDialog
 {
+  Q_OBJECT
+
+  signals:
+    void signalDateChanged (QDateTime, QDateTime);
+  
   public:
-    ChartObjectFactory ();
-    ChartObject * chartObject (int);
-    ChartObject * chartObject (QString &);
+    DateRangeDialog (QDateTime &sd, QDateTime &ed);
+
+  public slots:
+    void done ();
 
   private:
-    QStringList _types;
+    QDialogButtonBox *_buttonBox;
+    QDateTimeEdit *_start;
+    QDateTimeEdit *_end;
+    QDateTime _sd;
+    QDateTime _ed;
 };
 
 #endif

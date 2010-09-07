@@ -702,3 +702,6 @@
            Removed Cursor / Chart Object toolbar. Use chart context menu.
 
            NOTE: Features not implemeted yet please see TODO priority list.
+
+20100907:  Removed PrefDialog class from lib and replaced with all non blocking dialogs.
+

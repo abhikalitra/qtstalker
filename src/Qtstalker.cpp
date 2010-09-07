@@ -112,14 +112,14 @@ void QtstalkerApp::createGUI (Config &)
   
   // delay chart layout signals until all objects are created
   
-  connect(_chartLayout, SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
+//  connect(_chartLayout, SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
   connect(this, SIGNAL(signalSaveSettings()), _chartLayout, SLOT(save()));
   connect(this, SIGNAL(signalLoadSettings()), _chartLayout, SLOT(load()));
-  connect(_chartLayout, SIGNAL(signalZoom(int, int)), _zoomButtons, SLOT(addZoom(int, int)));
+//  connect(_chartLayout, SIGNAL(signalZoom(int, int)), _zoomButtons, SLOT(addZoom(int, int)));
   connect(_chartLayout, SIGNAL(signalInfo(Setting)), _infoPanel, SLOT(showInfo(Setting)));
   connect(_chartLayout, SIGNAL(signalStatus(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalSaveSettings()), _chartLayout, SLOT(saveSettings()));
-  connect(_chartLayout, SIGNAL(signalIndexChanged(int)), _plotSlider, SLOT(setValue(int)));
+//  connect(_chartLayout, SIGNAL(signalIndexChanged(int)), _plotSlider, SLOT(setValue(int)));
   connect(_sidePanel, SIGNAL(signalSliderChanged(int)), _chartLayout, SLOT(setIndex(int)));
 //  connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), _chartLayout, SLOT(setInterval(int)));
   connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));

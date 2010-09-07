@@ -39,6 +39,7 @@ class TabWidget : public QTabWidget
 
   public slots:
     void tabDialog ();
+    void tabDialog2 ();
     void currentTabChanged ();
 
   protected:

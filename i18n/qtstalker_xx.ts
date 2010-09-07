@@ -2229,50 +2229,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Main</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tab Row</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tab Column</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name missing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This indicator already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Move Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>

@@ -36,6 +36,7 @@
 #include "ChartObjectText.h"
 #include "ChartObjectTLine.h"
 #include "ChartObjectVLine.h"
+#include "IndicatorDataBase.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -107,13 +108,28 @@ Plot::Plot ()
 
   _coListMenu = new QMenu(this);
   _coListMenu->setTitle(tr("New Chart Object..."));
-  _coListMenu->addAction(QPixmap(buyarrow_xpm), tr("New &Buy"), this, SLOT(newBuy()), Qt::ALT+Qt::Key_B);
-  _coListMenu->addAction(QPixmap(horizontal_xpm), tr("New &HLine"), this, SLOT(newHLine()), Qt::ALT+Qt::Key_H);
-  _coListMenu->addAction(QPixmap(fib_xpm), tr("New &Retracement"), this, SLOT(newRetracement()), Qt::ALT+Qt::Key_R);
-  _coListMenu->addAction(QPixmap(sellarrow_xpm), tr("New &Sell"), this, SLOT(newSell()), Qt::ALT+Qt::Key_S);
-  _coListMenu->addAction(QPixmap(text_xpm), tr("New Te&xt"), this, SLOT(newText()), Qt::ALT+Qt::Key_X);
-  _coListMenu->addAction(QPixmap(trend_xpm), tr("New &TLine"), this, SLOT(newTLine()), Qt::ALT+Qt::Key_T);
-  _coListMenu->addAction(QPixmap(vertical_xpm), tr("New &VLine"), this, SLOT(newVLine()), Qt::ALT+Qt::Key_V);
+  QAction *a = _coListMenu->addAction(QPixmap(buyarrow_xpm), tr("New &Buy"));
+  a->setShortcut(Qt::ALT+Qt::Key_B);
+  a->setData(QVariant(ChartObject::_Buy));
+  a = _coListMenu->addAction(QPixmap(horizontal_xpm), tr("New &HLine"));
+  a->setShortcut(Qt::ALT+Qt::Key_H);
+  a->setData(QVariant(ChartObject::_HLine));
+  a = _coListMenu->addAction(QPixmap(fib_xpm), tr("New &Retracement"));
+  a->setShortcut(Qt::ALT+Qt::Key_R);
+  a->setData(QVariant(ChartObject::_Retracement));
+  a = _coListMenu->addAction(QPixmap(sellarrow_xpm), tr("New &Sell"));
+  a->setShortcut(Qt::ALT+Qt::Key_S);
+  a->setData(QVariant(ChartObject::_Sell));
+  a = _coListMenu->addAction(QPixmap(text_xpm), tr("New Te&xt"));
+  a->setShortcut(Qt::ALT+Qt::Key_X);
+  a->setData(QVariant(ChartObject::_Text));
+  a = _coListMenu->addAction(QPixmap(trend_xpm), tr("New &TLine"));
+  a->setShortcut(Qt::ALT+Qt::Key_T);
+  a->setData(QVariant(ChartObject::_TLine));
+  a = _coListMenu->addAction(QPixmap(vertical_xpm), tr("New &VLine"));
+  a->setShortcut(Qt::ALT+Qt::Key_V);
+  a->setData(QVariant(ChartObject::_VLine));
+  connect(_coListMenu, SIGNAL(triggered(QAction *)), this, SLOT(chartObjectMenuSelected(QAction *)));
   
   _chartMenu = new QMenu(this);
   _chartMenu->addAction(QPixmap(indicator_xpm), tr("&New Indicator"), this, SIGNAL(signalNewIndicator()), Qt::ALT+Qt::Key_N);
@@ -360,10 +376,7 @@ void Plot::setLogScaling (bool d)
 
 void Plot::showDate (bool d)
 {
-  if (d)
-    enableAxis(QwtPlot::xBottom, TRUE);
-  else
-    enableAxis(QwtPlot::xBottom, FALSE);
+  enableAxis(QwtPlot::xBottom, d);
 }
 
 void Plot::setCrosshair (bool d)
@@ -407,10 +420,40 @@ void Plot::deleteIndicator ()
 
 void Plot::toggleDate ()
 {
+  IndicatorDataBase db;
+  Indicator i;
+  i.setName(_indicator);
+  db.getIndicator(i);
+  
+  int status = axisEnabled(QwtPlot::xBottom);
+  if (status)
+    status = 0;
+  else
+    status = 1;
+
+  i.setDate(status);
+  db.setIndicator(i);
+
+  showDate(status);
 }
 
 void Plot::toggleLog ()
 {
+  IndicatorDataBase db;
+  Indicator i;
+  i.setName(_indicator);
+  db.getIndicator(i);
+
+  int status = i.getLog();
+  if (status)
+    status = 0;
+  else
+    status = 1;
+
+  i.setLog(status);
+  db.setIndicator(i);
+
+  setLogScaling(status);
 }
 
 void Plot::editBackgroundColor ()
@@ -538,126 +581,63 @@ void Plot::deleteAllChartObjects ()
   updatePlot();
 }
 
-void Plot::newChartObjectDialog (ChartObjectSettings &set, ChartObjectDialog *dialog) 
+void Plot::chartObjectMenuSelected (QAction *a)
 {
-  dialog->setSettings(set);
+  ChartObjectDialog *dialog = 0;
+  
+  switch ((ChartObject::Type) a->data().toInt())
+  {
+    case ChartObject::_Buy:
+    {
+      ChartObjectBuy co;
+      dialog = co.dialog();
+      break;
+    }
+    case ChartObject::_HLine:
+    {
+      ChartObjectHLine co;
+      dialog = co.dialog();
+      break;
+    }
+    case ChartObject::_Retracement:
+    {
+      ChartObjectRetracement co;
+      dialog = co.dialog();
+      break;
+    }
+    case ChartObject::_Sell:
+    {
+      ChartObjectSell co;
+      dialog = co.dialog();
+      break;
+    }
+    case ChartObject::_Text:
+    {
+      ChartObjectText co;
+      dialog = co.dialog();
+      break;
+    }
+    case ChartObject::_TLine:
+    {
+      ChartObjectTLine co;
+      dialog = co.dialog();
+      break;
+    }
+    case ChartObject::_VLine:
+    {
+      ChartObjectVLine co;
+      dialog = co.dialog();
+      break;
+    }
+    default:
+      return;
+      break;
+  }
   
   dialog->enableDeleteButton(0);
-
   connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(newChartObject(ChartObjectSettings)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  
   dialog->show();
-}
-
-void Plot::newChartObjectSettings (ChartObjectSettings &set)
-{
-  Config config;
-  QString d = QString::number(config.getInt(Config::LastChartObjectID) + 1);
-  config.setData(Config::LastChartObjectID, d);
-  set.id = d.toInt();
-
-  set.exchange = _exchange;
-  set.symbol = _symbol;
-  set.indicator = _indicator;
-}
-
-void Plot::newBuy ()
-{
-  ChartObjectBuy co;
-  ChartObjectSettings set;
-  co.settings(set);
-  newChartObjectSettings(set);
-
-  ChartObjectDialog *dialog = co.dialog();
-  if (! dialog)
-    return;
-  
-  newChartObjectDialog(set, dialog);
-}
-
-void Plot::newHLine ()
-{
-  ChartObjectHLine co;
-  ChartObjectSettings set;
-  co.settings(set);
-  newChartObjectSettings(set);
-
-  ChartObjectDialog *dialog = co.dialog();
-  if (! dialog)
-    return;
-
-  newChartObjectDialog(set, dialog);
-}
-
-void Plot::newRetracement ()
-{
-  ChartObjectRetracement co;
-  ChartObjectSettings set;
-  co.settings(set);
-  newChartObjectSettings(set);
-
-  ChartObjectDialog *dialog = co.dialog();
-  if (! dialog)
-    return;
-
-  newChartObjectDialog(set, dialog);
-}
-
-void Plot::newSell ()
-{
-  ChartObjectSell co;
-  ChartObjectSettings set;
-  co.settings(set);
-  newChartObjectSettings(set);
-
-  ChartObjectDialog *dialog = co.dialog();
-  if (! dialog)
-    return;
-
-  newChartObjectDialog(set, dialog);
-}
-
-void Plot::newText ()
-{
-  ChartObjectText co;
-  ChartObjectSettings set;
-  co.settings(set);
-  newChartObjectSettings(set);
-
-  ChartObjectDialog *dialog = co.dialog();
-  if (! dialog)
-    return;
-
-  newChartObjectDialog(set, dialog);
-}
-
-void Plot::newTLine ()
-{
-  ChartObjectTLine co;
-  ChartObjectSettings set;
-  co.settings(set);
-  newChartObjectSettings(set);
-
-  ChartObjectDialog *dialog = co.dialog();
-  if (! dialog)
-    return;
-
-  newChartObjectDialog(set, dialog);
-}
-
-void Plot::newVLine ()
-{
-  ChartObjectVLine co;
-  ChartObjectSettings set;
-  co.settings(set);
-  newChartObjectSettings(set);
-
-  ChartObjectDialog *dialog = co.dialog();
-  if (! dialog)
-    return;
-
-  newChartObjectDialog(set, dialog);
 }
 
 void Plot::newChartObject (ChartObjectSettings set)
@@ -666,6 +646,15 @@ void Plot::newChartObject (ChartObjectSettings set)
   ChartObject *co = fac.chartObject(set.type);
   if (! co)
     return;
+
+  Config config;
+  QString d = QString::number(config.getInt(Config::LastChartObjectID) + 1);
+  config.setData(Config::LastChartObjectID, d);
+  set.id = d.toInt();
+
+  set.exchange = _exchange;
+  set.symbol = _symbol;
+  set.indicator = _indicator;
 
   co->setSettings(set);
   co->setZ(10);

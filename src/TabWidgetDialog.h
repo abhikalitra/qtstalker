@@ -19,26 +19,42 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Returns a default chart object from the given type name.
-// *************************************************************************************************
+#ifndef TAB_WIDGET_DIALOG_HPP
+#define TAB_WIDGET_DIALOG_HPP
 
-#ifndef CHART_OBJECT_FACTORY_HPP
-#define CHART_OBJECT_FACTORY_HPP
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QSpinBox>
+#include <QComboBox>
+#include <QStringList>
 
-#include "ChartObject.h"
-
-#include <QString>
-
-class ChartObjectFactory
+class TabWidgetDialog : public QDialog
 {
+  Q_OBJECT
+
+  signals:
+    void signalChanged ();
+  
   public:
-    ChartObjectFactory ();
-    ChartObject * chartObject (int);
-    ChartObject * chartObject (QString &);
+    TabWidgetDialog (QString id);
+
+  public slots:
+    void done ();
 
   private:
-    QStringList _types;
+    QStringList _posList;
+    QString _id;
+    int _ttp;
+    int _tnsh;
+    int _tnsw;
+    int _tewh;
+    int _teww;
+    QDialogButtonBox *_buttonBox;
+    QComboBox *_position;
+    QSpinBox *_nsh;
+    QSpinBox *_nsw;
+    QSpinBox *_ewh;
+    QSpinBox *_eww;
 };
 
 #endif

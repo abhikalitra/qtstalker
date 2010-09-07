@@ -19,26 +19,36 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Returns a default chart object from the given type name.
-// *************************************************************************************************
+#ifndef EXCHANGE_SEARCH_DIALOG_HPP
+#define EXCHANGE_SEARCH_DIALOG_HPP
 
-#ifndef CHART_OBJECT_FACTORY_HPP
-#define CHART_OBJECT_FACTORY_HPP
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QListWidget>
+#include <QListWidgetItem>
 
-#include "ChartObject.h"
-
-#include <QString>
-
-class ChartObjectFactory
+class ExchangeSearchDialog : public QDialog
 {
+  Q_OBJECT
+
+  signals:
+    void signalExchangeCode (QString);
+  
   public:
-    ChartObjectFactory ();
-    ChartObject * chartObject (int);
-    ChartObject * chartObject (QString &);
+    ExchangeSearchDialog ();
+
+  public slots:
+    void done ();
+    void itemSelected (QListWidgetItem *);
 
   private:
-    QStringList _types;
+    QDialogButtonBox *_buttonBox;
+    QLineEdit *_exchange;
+    QComboBox *_country;
+    QComboBox *_city;
+    QListWidget *_list;
 };
 
 #endif

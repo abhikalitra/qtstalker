@@ -19,26 +19,37 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Returns a default chart object from the given type name.
-// *************************************************************************************************
+#ifndef SCRIPT_DIALOG_HPP
+#define SCRIPT_DIALOG_HPP
 
-#ifndef CHART_OBJECT_FACTORY_HPP
-#define CHART_OBJECT_FACTORY_HPP
-
-#include "ChartObject.h"
-
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QString>
+#include <QLineEdit>
 
-class ChartObjectFactory
+#include "Script.h"
+#include "FileButton.h"
+
+class ScriptDialog : public QDialog
 {
+  Q_OBJECT
+
+  signals:
+    void signalScriptChanged (QString);
+    void signalRunScript (QString, QString);
+  
   public:
-    ChartObjectFactory ();
-    ChartObject * chartObject (int);
-    ChartObject * chartObject (QString &);
+    ScriptDialog (QString);
+
+  public slots:
+    void done ();
 
   private:
-    QStringList _types;
+    QDialogButtonBox *_buttonBox;
+    Script _script;
+    QLineEdit *_command;
+    QLineEdit *_comment;
+    FileButton *_file;
 };
 
 #endif

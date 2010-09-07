@@ -20,7 +20,7 @@
  */
 
 #include "TabWidget.h"
-#include "PrefDialog.h"
+#include "TabWidgetDialog.h"
 #include "Plot.h"
 
 #include <QInputDialog>
@@ -124,109 +124,21 @@ void TabWidget::setTabSizes ()
 
 void TabWidget::tabDialog ()
 {
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(tr("Chart Tab Settings"));
-  QString s = tr("Settings");
-  int page = 0;
-  dialog->addPage(page, s);
+  TabWidgetDialog *dialog = new TabWidgetDialog(_id);
+  connect(dialog, SIGNAL(signalChanged()), this, SLOT(tabDialog2()));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
 
-  Config config;
-  int pos = 0;
-
-  QStringList l;
-  l << tr("North") << tr("South") << tr("West") << tr("East");
-  config.getData(_id, s);
-  int tp = (int) tabPosition();
-  dialog->addComboItem(pos++, page, QString("Position"), l, tp);
-
-  // north south height
-  s = tr("North / South Height");
-  QString key = _id + "NSH";
+void TabWidget::tabDialog2 ()
+{
   QString d;
-  config.getData(key, d);
-  int nsh = d.toInt();
-  dialog->addIntItem(pos++, page, s, nsh, 1, 100);
+  Config config;
+  config.getData(_id, d);
+  if (! d.isEmpty())
+    setTabPosition((QTabWidget::TabPosition) d.toInt());
 
-  // north south width
-  s = tr("North / South Width");
-  key = _id + "NSW";
-  config.getData(key, d);
-  int nsw = d.toInt();
-  dialog->addIntItem(pos++, page, s, nsw, 1, 100);
-
-  // east west height
-  s = tr("East / West Height");
-  key = _id + "EWH";
-  config.getData(key, d);
-  int ewh = d.toInt();
-  dialog->addIntItem(pos++, page, s, ewh, 1, 100);
-
-  // east west width
-  s = tr("East / West Width");
-  key = _id + "EWW";
-  config.getData(key, d);
-  int eww = d.toInt();
-  dialog->addIntItem(pos++, page, s, eww, 1, 100);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return;
-  }
-
-  int flag = 0;
-  pos = 0;
-  dialog->getCombo(pos++, s);
-  int index = l.indexOf(s);
-  if (index != tp)
-  {
-    d = QString::number(index);
-    config.setData(_id, d);
-    setTabPosition((QTabWidget::TabPosition) index);
-    flag = 1;
-  }
-
-  int t = dialog->getInt(pos++);
-  if (t != nsh)
-  {
-    key = _id + "NSH";
-    d = QString::number(t);
-    config.setData(key, d);
-    flag = 1;
-  }
-
-  t = dialog->getInt(pos++);
-  if (t != nsw)
-  {
-    key = _id + "NSW";
-    d = QString::number(t);
-    config.setData(key, d);
-    flag = 1;
-  }
-
-  t = dialog->getInt(pos++);
-  if (t != ewh)
-  {
-    key = _id + "EWH";
-    d = QString::number(t);
-    config.setData(key, d);
-    flag = 1;
-  }
-  
-  t = dialog->getInt(pos++);
-  if (t != eww)
-  {
-    key = _id + "EWW";
-    d = QString::number(t);
-    config.setData(key, d);
-    flag = 1;
-  }
-
-  delete dialog;
-
-  if (flag)
-    setTabSizes();
+  setTabSizes();
 }
 
 void TabWidget::currentTabChanged ()

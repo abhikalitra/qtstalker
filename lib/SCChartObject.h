@@ -34,7 +34,7 @@ class SCChartObject
   public:
     enum Method
     {
-      NEW, // 
+      NEW //
     };
     
     SCChartObject ();

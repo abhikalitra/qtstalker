@@ -21,7 +21,7 @@
 
 #include "ScriptPage.h"
 #include "ScriptDataBase.h"
-#include "PrefDialog.h"
+#include "ScriptDialog.h"
 #include "Config.h"
 #include "ScriptLaunchButton.h"
 
@@ -276,55 +276,16 @@ void ScriptPage::editScript ()
 
 void ScriptPage::editScript (QString &d)
 {
-  ScriptDataBase db;
-  Script *script = new Script;
-  script->setName(d);
-  db.getScript(script);
+  ScriptDialog *dialog = new ScriptDialog(d);
+  connect(dialog, SIGNAL(signalScriptChanged(QString)), this, SLOT(scriptChanged(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
 
-  PrefDialog *dialog = new PrefDialog;
-  QString s = tr("Edit Script ") + d;
-  dialog->setWindowTitle(s);
-  s = tr("Settings");
-  int page = 0;
-  dialog->addPage(page, s);
-
-  int pos = 0;
-  
-  s = tr("Command");
-  QString command = script->getCommand();
-  if (command.isEmpty())
-    command = "perl";
-  dialog->addTextItem(pos++, page, s, command, tr("Interpreter command and switches eg. perl -l -T"));
-
-  s = tr("Script File");
-  QString file = script->getFile();
-  dialog->addFileItem(pos++, page, s, file, tr("The script location"));
-
-  s = tr("Comment");
-  QString comment = script->getComment();
-  dialog->addTextEditItem(pos++, page, s, comment);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return;
-  }
-
-  pos = 0;
-  dialog->getItem(pos++, command);
-  dialog->getItem(pos++, file);
-  dialog->getItem(pos++, comment);
-
-  delete dialog;
-
-  script->setCommand(command);
-  script->setFile(file);
-  script->setComment(comment);
-  db.setScript(script);
-
+void ScriptPage::scriptChanged (QString d)
+{
   // check if script is running and restart it with the new parms
-  if (scripts.contains(script->getName()))
+  if (scripts.contains(d))
   {
     int rc = QMessageBox::warning(this,
     			          tr("Qtstalker: Warning"),
@@ -335,6 +296,11 @@ void ScriptPage::editScript (QString &d)
     if (rc == QMessageBox::No)
       return;
     
+    ScriptDataBase db;
+    Script *script = new Script;
+    script->setName(d);
+    db.getScript(script);
+
     Script *tscript = scripts.value(script->getName());
     scripts.remove(script->getName());
     delete tscript;
@@ -343,8 +309,6 @@ void ScriptPage::editScript (QString &d)
     script->start();
     updateQueList();
   }
-  else
-    delete script;
   
   emit signalMessage(QString(tr("Script saved.")));
 }
@@ -547,48 +511,20 @@ void ScriptPage::runScript (Script *script)
 void ScriptPage::runScriptDialog ()
 {
   // create a dialog to obtain script settings
-  
-  PrefDialog *dialog = new PrefDialog;
-  QString s = tr("Run Script");
-  dialog->setWindowTitle(s);
-  s = tr("Settings");
-  int page = 0;
-  dialog->addPage(page, s);
+  ScriptDialog *dialog = new ScriptDialog(QString());
+  connect(dialog, SIGNAL(signalRunScript(QString, QString)), this, SLOT(runScriptDialog2(QString, QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
 
-  int pos = 0;
-  
-  s = tr("Command");
-  QString command = "perl";
-  dialog->addTextItem(pos++, page, s, command, tr("Interpreter command and switches eg. perl -l -T"));
-
-  Config config;
-  QString file;
-  config.getData(Config::LastScriptPath, file);
-  if (file.isEmpty())
-    file = QDir::homePath();
-  
-  s = tr("Script File");
-  dialog->addFileItem(pos++, page, s, file, tr("The script location"));
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return;
-  }
-
-  // get the dialog settings
-  pos = 0;
-  dialog->getItem(pos++, command);
-  dialog->getItem(pos++, file);
-
-  delete dialog;
-
+void ScriptPage::runScriptDialog2 (QString command, QString file)
+{
   // get the script file name
   QFileInfo fi(file);
   QString name = fi.fileName();
   
   // save the script path
+  Config config;
   config.setData(Config::LastScriptPath, file);
   
   // create the script and settings

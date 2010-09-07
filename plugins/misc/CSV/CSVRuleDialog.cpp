@@ -24,6 +24,7 @@
 #include "ExchangeDataBase.h"
 #include "Config.h"
 #include "CSVRule.h"
+#include "ExchangeSearchDialog.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -46,7 +47,7 @@ CSVRuleDialog::CSVRuleDialog (QString &name) : QDialog (0, 0)
 
   loadRule();
 
-  QString s = tr("Editing CSV Rule: ") + _name;
+  QString s = tr("Qtstalker: Editing CSV Rule ") + _name;
   setWindowTitle(s);
 }
 
@@ -365,12 +366,14 @@ void CSVRuleDialog::clear ()
 
 void CSVRuleDialog::searchExchange ()
 {
-  ExchangeDataBase db;
-  QString code;
-  db.searchExchangeDialog(code);
-  if (code.isEmpty())
-    return;
+  ExchangeSearchDialog *dialog = new ExchangeSearchDialog;
+  connect(dialog, SIGNAL(signalExchangeCode(QString)), this, SLOT(setExchangeCode(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
 
-  _exchange->setCurrentIndex(_exchange->findText(code, Qt::MatchExactly));
+void CSVRuleDialog::setExchangeCode (QString d)
+{
+  _exchange->setCurrentIndex(_exchange->findText(d, Qt::MatchExactly));
 }
 

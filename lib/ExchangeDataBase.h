@@ -43,7 +43,7 @@ class ExchangeDataBase : public DataDataBase
     void getFieldList (QString &, QStringList &);
     int search (QString &, QString &, QString &, QStringList &);
     void codeFromName (QString &, QString &);
-    void searchExchangeDialog (QString &);
+//    void searchExchangeDialog (QString &);
 };
 
 #endif

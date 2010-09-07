@@ -29,6 +29,7 @@
 #include "Setting.h"
 #include "DateBar.h"
 #include "Curve.h"
+#include "ChartObjectSettings.h"
 
 class Indicator
 {
@@ -60,8 +61,8 @@ class Indicator
     void setSettings (Setting &);
     Setting & settings ();
     void clear ();
-    Setting chartObject (int);
-    void addChartObject (int, Setting &);
+    ChartObjectSettings chartObject (int);
+    void addChartObject (int, ChartObjectSettings &);
     void clearChartObjects ();
     void deleteChartObject (int);
     void weedPlots ();
@@ -73,7 +74,7 @@ class Indicator
 
   protected:
     QMap<int, Curve *> _lines;
-    QMap<int, Setting> _chartObjects;
+    QMap<int, ChartObjectSettings> _chartObjects;
     Setting _settings;
     QString _name;
     QString _indicator;

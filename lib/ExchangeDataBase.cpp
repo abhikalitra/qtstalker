@@ -21,7 +21,7 @@
 
 #include "ExchangeDataBase.h"
 #include "Config.h"
-#include "PrefDialog.h"
+//#include "PrefDialog.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -218,6 +218,7 @@ void ExchangeDataBase::codeFromName (QString &name, QString &code)
     code = q.value(0).toString();
 }
 
+/*
 void ExchangeDataBase::searchExchangeDialog (QString &code)
 {
   code.clear();
@@ -302,4 +303,5 @@ void ExchangeDataBase::searchExchangeDialog (QString &code)
     return;
   }
 }
+*/
 

@@ -21,7 +21,7 @@
 
 #include "DateRangeButton.h"
 #include "Config.h"
-#include "PrefDialog.h"
+#include "DateRangeDialog.h"
 
 #include "../pics/date.xpm"
 #include "../pics/configure.xpm"
@@ -65,50 +65,22 @@ void DateRangeButton::buttonClicked (bool status)
 
 void DateRangeButton::dialog ()
 {
-  int page = 0;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Set Date Range"));
+  DateRangeDialog *dialog = new DateRangeDialog(_startDate, _endDate);
+  connect(dialog, SIGNAL(signalDateChanged(QDateTime, QDateTime)), this, SLOT(dateChanged(QDateTime, QDateTime)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
 
-  QString s = QObject::tr("Settings");
-  dialog->addPage(page, s);
-
-  int pos = 0;
-  s = tr("First Date");
-  dialog->addDateItem(pos++, page, s, _startDate);
-
-  s = tr("Last Date");
-  dialog->addDateItem(pos++, page, s, _endDate);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return;
-  }
-
-  pos = 0;
-  int flag = 0;
+void DateRangeButton::dateChanged (QDateTime sd, QDateTime ed)
+{
   Config config;
-  QDateTime dt;
-  dialog->getDate(pos++, dt);
-  if (dt != _startDate)
-  {
-    config.setData(Config::DateRangeStart, dt);
-    flag = 1;
-    _startDate = dt;
-  }
+  config.setData(Config::DateRangeStart, sd);
+  _startDate = sd;
   
-  dialog->getDate(pos++, dt);
-  if (dt != _endDate)
-  {
-    config.setData(Config::DateRangeEnd, dt);
-    flag = 1;
-    _endDate = dt;
-  }
+  config.setData(Config::DateRangeEnd, ed);
+  _endDate = ed;
 
-  delete dialog;
-
-  if (flag && isChecked())
+  if (isChecked())
     emit signalDateRangeChanged();
 }
 

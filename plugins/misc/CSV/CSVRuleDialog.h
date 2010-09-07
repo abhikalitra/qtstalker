@@ -54,6 +54,7 @@ class CSVRuleDialog : public QDialog
     void deleteClicked ();
     void done ();
     void searchExchange ();
+    void setExchangeCode (QString);
           
   private:
     QDialogButtonBox *_buttonBox;
