@@ -42,7 +42,7 @@ ScriptDialog::ScriptDialog (QString name) : QDialog (0, 0)
     setWindowTitle(s);
   }
   else
-    setWindowTitle(tr("Run Script"));
+    setWindowTitle(tr("Qtstalker: Run Script"));
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(10);

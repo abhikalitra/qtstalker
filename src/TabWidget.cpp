@@ -43,7 +43,11 @@ TabWidget::TabWidget (QString &id)
   if (! d.isEmpty())
     setTabPosition((QTabWidget::TabPosition) d.toInt());
   else
+  {
     setTabPosition(East);
+    d = QString::number(tabPosition());
+    config.setData(_id, d);
+  }
 
   QString key = _id + "NSW";
   config.getData(key, d);
