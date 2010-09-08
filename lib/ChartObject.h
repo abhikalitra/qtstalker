@@ -20,8 +20,7 @@
  */
 
 // *************************************************************************************************
-// Base class for chart objects. Buy,Sell etc inherit this. Used to be a plugin hence the ChartObject
-// class name. FIXME low priority
+// Base class for chart objects. Buy,Sell etc inherit this.
 // *************************************************************************************************
 
 #ifndef CHART_OBJECT_HPP
@@ -59,7 +58,7 @@ class ChartObject : public QwtPlotItem
     virtual void load ();
     virtual int CUS (QStringList &);
     virtual int isSelected (QPoint);
-    virtual void highLow (double &high, double &low);
+    virtual int highLow (int start, int end, double &high, double &low);
     void setSettings (ChartObjectSettings &);
     void settings (ChartObjectSettings &);
 

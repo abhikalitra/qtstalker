@@ -124,10 +124,18 @@ ChartObjectDialog * ChartObjectText::dialog ()
   return dialog;
 }
 
-void ChartObjectText::highLow (double &h, double &l)
+int ChartObjectText::highLow (int start, int end, double &h, double &l)
 {
+  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
+  int x = dsd->x(_settings.date);
+
+  if (x < start || x > end)
+    return 0;
+
   h = _settings.price;
   l = _settings.price;
+
+  return 1;
 }
 
 int ChartObjectText::CUS (QStringList &l)

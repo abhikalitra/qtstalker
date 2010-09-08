@@ -141,22 +141,33 @@ ChartObjectDialog * ChartObjectTLine::dialog ()
   return dialog;
 }
 
-void ChartObjectTLine::highLow (double &h, double &l)
+int ChartObjectTLine::highLow (int start, int end, double &h, double &l)
 {
-  h = -99999999.0;
-  l = 99999999.0;
-  
-  if (_settings.price > h)
-    h = _settings.price;
-  
-  if (_settings.price < l)
-    l = _settings.price;
+  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
+  int x = dsd->x(_settings.date);
+  int x2 = dsd->x(_settings.date2);
 
-  if (_settings.price2 > h)
-    h = _settings.price2;
-  
-  if (_settings.price2 < l)
-    l = _settings.price2;
+  if ((x >= start && x <= end) || ((x2 >= start && x2 <= end)))
+  {
+    h = -99999999.0;
+    l = 99999999.0;
+
+    if (_settings.price > h)
+      h = _settings.price;
+
+    if (_settings.price < l)
+      l = _settings.price;
+
+    if (_settings.price2 > h)
+      h = _settings.price2;
+
+    if (_settings.price2 < l)
+      l = _settings.price2;
+    
+    return 1;
+  }
+
+  return 0;
 }
 
 int ChartObjectTLine::CUS (QStringList &l)

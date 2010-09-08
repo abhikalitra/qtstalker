@@ -213,10 +213,20 @@ ChartObjectDialog * ChartObjectRetracement::dialog ()
   return dialog;
 }
 
-void ChartObjectRetracement::highLow (double &h, double &l)
+int ChartObjectRetracement::highLow (int start, int end, double &h, double &l)
 {
-  h = _settings.high;
-  l = _settings.low;
+  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
+  int x = dsd->x(_settings.date);
+  int x2 = dsd->x(_settings.date2);
+
+  if ((x >= start && x <= end) || ((x2 >= start && x2 <= end)))
+  {
+    h = _settings.high;
+    l = _settings.low;
+    return 1;
+  }
+
+  return 0;
 }
 
 int ChartObjectRetracement::CUS (QStringList &l)

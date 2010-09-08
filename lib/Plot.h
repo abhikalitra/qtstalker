@@ -66,10 +66,10 @@ class Plot : public QwtPlot
     void addCurve (int id, Curve *);
     void addCurves (QMap<int, Curve *> &);
     void setIndicator (QString &);
-    void setHighLow ();
     void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
     void addCurve3 (int id, Curve *curve, QwtPlotCurve *qcurve);
     void loadChartObjects ();
+    void setHighLow ();
 
   public slots:
     virtual void clear ();
@@ -96,7 +96,9 @@ class Plot : public QwtPlot
     void deleteChartObject (ChartObjectSettings);
     void chartObjectMenuSelected (QAction *);
 
-private:
+  private:
+    QAction *_dateAction;
+    QAction *_logAction;
     int _spacing;
     QMap<int, QwtPlotCurve *> _qwtCurves;
     QMap<int, Curve *> _curves;
@@ -114,6 +116,8 @@ private:
     QString _symbol;
     double _high;
     double _low;
+    int _startPos;
+    int _endPos;
 };
 
 #endif

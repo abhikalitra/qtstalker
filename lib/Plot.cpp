@@ -66,6 +66,8 @@ Plot::Plot ()
   _spacing = 8;
   _high = 0;
   _low = 0;
+  _startPos = -1;
+  _endPos = -1;
   
   setMinimumHeight(20);
   
@@ -139,8 +141,10 @@ Plot::Plot ()
   _chartMenu->addMenu(_coListMenu);
   _chartMenu->addAction(QPixmap(delete_xpm), tr("Delete &All Chart Objects"), this, SLOT(deleteAllChartObjects()), Qt::ALT+Qt::Key_A);
   _chartMenu->addSeparator ();
-  _chartMenu->addAction(QPixmap(date), tr("&Date"), this, SLOT(toggleDate()), Qt::ALT+Qt::Key_D);
-  _chartMenu->addAction(QPixmap(loggridicon), tr("Log &Scaling"), this, SLOT(toggleLog()), Qt::ALT+Qt::Key_S);
+  _dateAction = _chartMenu->addAction(QPixmap(date), tr("&Date"), this, SLOT(toggleDate()), Qt::ALT+Qt::Key_D);
+  _dateAction->setCheckable(TRUE);
+  _logAction = _chartMenu->addAction(QPixmap(loggridicon), tr("Log &Scaling"), this, SLOT(toggleLog()), Qt::ALT+Qt::Key_S);
+  _logAction->setCheckable(TRUE);
   _chartMenu->addSeparator ();
   _chartMenu->addAction(tr("&Background Color"), this, SLOT(editBackgroundColor()), Qt::ALT+Qt::Key_B);
   _chartMenu->addAction(tr("&Font"), this, SLOT(editFont()), Qt::ALT+Qt::Key_F);
@@ -190,42 +194,6 @@ void Plot::updatePlot ()
 {
   setHighLow();
   replot();
-}
-
-void Plot::setHighLow ()
-{
-  _high = -99999999;
-  _low = 99999999;
-  
-  QList<int> keys;
-  keys = _curves.keys();
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    double h, l;
-    Curve *curve = _curves.value(keys.at(loop));
-    curve->highLowRange(0, _dateScaleDraw->count() - 1, h, l);
-    if (h > _high)
-      _high = h;
-    if (l < _low)
-      _low = l;
-  }
-
-  keys = _chartObjects.keys();
-
-  for (loop = 0; loop < keys.count(); loop++)
-  {
-    double h, l;
-    ChartObject *co = _chartObjects.value(keys.at(loop));
-    co->highLow(h, l);
-    if (h > _high)
-      _high = h;
-    if (l < _low)
-      _low = l;
-  }
-
-  setAxisScale(QwtPlot::yRight, _low, _high, 0);
 }
 
 void Plot::addCurves (QMap<int, Curve *> &curves)
@@ -391,14 +359,55 @@ void Plot::setCrosshair (bool d)
   }
 }
 
+void Plot::setHighLow ()
+{
+  _high = -99999999;
+  _low = 99999999;
+
+  QList<int> keys;
+  keys = _curves.keys();
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    double h, l;
+    Curve *curve = _curves.value(keys.at(loop));
+    curve->highLowRange(_startPos, _endPos, h, l);
+    if (h > _high)
+      _high = h;
+    if (l < _low)
+      _low = l;
+  }
+
+  keys = _chartObjects.keys();
+
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    double h, l;
+    ChartObject *co = _chartObjects.value(keys.at(loop));
+    if (! co->highLow(_startPos, _endPos, h, l))
+      continue;
+
+    if (h > _high)
+      _high = h;
+    if (l < _low)
+      _low = l;
+  }
+
+  setAxisScale(QwtPlot::yRight, _low, _high);
+}
+
 void Plot::setStartIndex (int index)
 {
+  _startPos = index;
   int page = width() / _spacing;
-  int end = index + page;
-  if (end > (_dateScaleDraw->count() + _dateScaleDraw->count()))
-    end = _dateScaleDraw->count() + _dateScaleDraw->count();
-  
-  setAxisScale(QwtPlot::xBottom, index, end);
+  _endPos = _startPos + page;
+  if (_endPos > (_dateScaleDraw->count() + _dateScaleDraw->count()))
+    _endPos = _dateScaleDraw->count() + _dateScaleDraw->count();
+
+  setHighLow();
+
+  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
   
   replot();
 }

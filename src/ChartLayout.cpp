@@ -39,6 +39,8 @@
 
 ChartLayout::ChartLayout ()
 {
+  _startIndex = -1;
+  
   setOpaqueResize(FALSE); // only draw widget after resize is complete to speed things up
 
   int loop = 1;
@@ -206,6 +208,7 @@ void ChartLayout::loadPlots (BarData &bd, int index)
     return;
 
   _barData = bd;
+  _startIndex = index;
 
   _dateBars.createDateList(_barData);
 
@@ -223,8 +226,6 @@ void ChartLayout::loadPlots (BarData &bd, int index)
 
     ps.plot->setDates(_barData);
     
-    ps.plot->setStartIndex(index);
-
     Indicator i;
     i.setName(indicatorList[loop]);
     db.getIndicator(i);
@@ -235,8 +236,6 @@ void ChartLayout::loadPlots (BarData &bd, int index)
     connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
     r->start();
   }
-
-  emit signalDraw();
 }
 
 void ChartLayout::indicatorThreadFinished (Indicator i)
@@ -253,9 +252,7 @@ void ChartLayout::indicatorThreadFinished (Indicator i)
 
   settings.plot->loadChartObjects();
 
-  settings.plot->setHighLow();
-  
-  emit signalDraw();
+  settings.plot->setStartIndex(_startIndex);
 }
 
 void ChartLayout::setGridColor (QColor d)
@@ -273,7 +270,7 @@ void ChartLayout::setPixelSpace (int d)
 void ChartLayout::setIndex (int d)
 {
   emit signalIndex(d);
-  emit signalDraw();
+//  emit signalDraw();
 }
 
 void ChartLayout::clearIndicator ()

@@ -95,6 +95,7 @@ class ChartLayout : public QSplitter
     QHash<int, QWidget *> _holders;
     BarData _barData;
     DateBar _dateBars;
+    int _startIndex;
 };
 
 #endif

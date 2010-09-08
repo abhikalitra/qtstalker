@@ -93,8 +93,9 @@ int ChartObjectDrawBuy::isGrabSelected (QPoint p)
 }
 */
 
-void ChartObject::highLow (double &, double &)
+int ChartObject::highLow (int, int, double &, double &)
 {
+  return 0;
 }
 
 void ChartObject::setSettings (ChartObjectSettings &d)

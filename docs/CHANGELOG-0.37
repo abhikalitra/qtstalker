@@ -705,3 +705,5 @@
 
 20100907:  Removed PrefDialog class from lib and replaced with all non blocking dialogs.
 
+20100908:  Scale to screen is now working.
+

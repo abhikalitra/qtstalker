@@ -109,8 +109,9 @@ ChartObjectDialog * ChartObjectVLine::dialog ()
   return dialog;
 }
 
-void ChartObjectVLine::highLow (double &, double &)
+int ChartObjectVLine::highLow (int, int, double &, double &)
 {
+  return 0;
 }
 
 int ChartObjectVLine::CUS (QStringList &l)

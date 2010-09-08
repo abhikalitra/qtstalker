@@ -61,8 +61,32 @@ QwtText DateScaleDraw::label (double v) const
   int t = (int) v;
   if (t < 1 || t >= _dateList.count())
     return QString();
+
+  QwtText date;
   
-  return _dateList.at(t).toString("MMM-dd");
+  switch ((BarData::BarLength) _barLength)
+  {
+    case BarData::Minute1:
+    case BarData::Minute5:
+    case BarData::Minute10:
+    case BarData::Minute15:
+    case BarData::Minute30:
+    case BarData::Minute60:
+      date = _dateList.at(t).toString("dd HH:mm");
+      break;
+    case BarData::DailyBar:
+    case BarData::WeeklyBar:
+      date = _dateList.at(t).toString("yy-MMM-dd");
+      break;
+    case BarData::MonthlyBar:
+      date = _dateList.at(t).toString("yyyy-MMM");
+      break;
+    default:
+      break;
+  }
+  
+//  return _dateList.at(t).toString("yy-MMM-dd");
+  return date;
 }
 
 void DateScaleDraw::date (int x, QDateTime &dt)

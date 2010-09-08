@@ -37,7 +37,7 @@ class ChartObjectSell : public ChartObject
     void info (Setting &);
     ChartObjectDialog * dialog ();
     int CUS (QStringList &);
-    void highLow (double &h, double &l);
+    int highLow (int start, int end, double &high, double &low);
 };
 
 #endif

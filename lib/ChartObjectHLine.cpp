@@ -119,10 +119,12 @@ ChartObjectDialog * ChartObjectHLine::dialog ()
   return dialog;
 }
 
-void ChartObjectHLine::highLow (double &h, double &l)
+int ChartObjectHLine::highLow (int, int, double &h, double &l)
 {
   h = _settings.price;
   l = _settings.price;
+
+  return 1;
 }
 
 int ChartObjectHLine::CUS (QStringList &l)

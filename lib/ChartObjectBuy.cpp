@@ -145,9 +145,17 @@ int ChartObjectBuy::CUS (QStringList &l)
   return 0;
 }
 
-void ChartObjectBuy::highLow (double &h, double &l)
+int ChartObjectBuy::highLow (int start, int end, double &h, double &l)
 {
+  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
+  int x = dsd->x(_settings.date);
+
+  if (x < start || x > end)
+    return 0;
+  
   h = _settings.price;
   l = _settings.price;
+
+  return 1;
 }
 
