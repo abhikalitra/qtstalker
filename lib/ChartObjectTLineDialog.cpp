@@ -22,7 +22,6 @@
 #include "ChartObjectTLineDialog.h"
 #include "Config.h"
 #include "ChartObject.h"
-#include "ChartObjectDataBase.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -130,11 +129,6 @@ void ChartObjectTLineDialog::done ()
   _settings.price = _price->value();
   _settings.price2 = _price2->value();
   _settings.extend = _extend->isChecked();
-
-  ChartObjectDataBase db;
-  g_mutex.lock();
-  db.setChartObject(_settings);
-  g_mutex.unlock();
 
   emit signalDone(_settings);
 

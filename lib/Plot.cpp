@@ -29,13 +29,6 @@
 #include "ChartObjectFactory.h"
 #include "ChartObjectDataBase.h"
 #include "Globals.h"
-#include "ChartObjectBuy.h"
-#include "ChartObjectHLine.h"
-#include "ChartObjectRetracement.h"
-#include "ChartObjectSell.h"
-#include "ChartObjectText.h"
-#include "ChartObjectTLine.h"
-#include "ChartObjectVLine.h"
 #include "IndicatorDataBase.h"
 
 #include "../pics/loggrid.xpm"
@@ -68,6 +61,7 @@ Plot::Plot ()
   _low = 0;
   _startPos = -1;
   _endPos = -1;
+  _selected = 0;
   
   setMinimumHeight(20);
   
@@ -171,6 +165,8 @@ void Plot::clear ()
     qDeleteAll(_curves);
   _curves.clear();
 
+  saveChartObjects();
+  
   if (_chartObjects.count())
     qDeleteAll(_chartObjects);
   _chartObjects.clear();
@@ -483,37 +479,13 @@ void Plot::editFont ()
 
 void Plot::mouseClick (int button, QPoint p)
 {
-  switch (button)
+  if (! _selected && button == Qt::RightButton) 
   {
-    case Qt::LeftButton:
-    {
-      // check if we clicked on a chart object
-      QList<int> keys;
-      keys = _chartObjects.keys();
-
-      int loop = 0;
-      for (; loop < keys.count(); loop++)
-      {
-        ChartObject *co = _chartObjects.value(keys.at(loop));
-        if (co->isSelected(p))
-        {
-          ChartObjectDialog *dialog = co->dialog();
-          connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(updateChartObject(ChartObjectSettings)));
-          connect(dialog, SIGNAL(signalDelete(ChartObjectSettings)), this, SLOT(deleteChartObject(ChartObjectSettings)));
-          connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-          dialog->show();
-          return;
-        }
-      }
-
-      break;
-    }
-    case Qt::RightButton:
-      showContextMenu();
-      break;
-    default:
-      break;
+    showContextMenu();
+    return;
   }
+  
+  emit signalClick(button, p);
 }
 
 void Plot::mouseMove (QPoint p)
@@ -521,6 +493,8 @@ void Plot::mouseMove (QPoint p)
   if (! _dateScaleDraw->count())
     return;
   
+  emit signalMove(p);
+
   Setting set;
   int index = (int) invTransform(QwtPlot::xBottom, p.x());
 
@@ -574,16 +548,6 @@ void Plot::deleteAllChartObjects ()
   db.deleteChartObjectsIndicator(_indicator);
   g_mutex.unlock();
 
-  QList<int> keys;
-  keys = _chartObjects.keys();
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    ChartObject *co = _chartObjects.value(keys.at(loop));
-    co->detach();
-  }
-
   qDeleteAll(_chartObjects);
   _chartObjects.clear();
 
@@ -592,70 +556,14 @@ void Plot::deleteAllChartObjects ()
 
 void Plot::chartObjectMenuSelected (QAction *a)
 {
-  ChartObjectDialog *dialog = 0;
-  
-  switch ((ChartObject::Type) a->data().toInt())
-  {
-    case ChartObject::_Buy:
-    {
-      ChartObjectBuy co;
-      dialog = co.dialog();
-      break;
-    }
-    case ChartObject::_HLine:
-    {
-      ChartObjectHLine co;
-      dialog = co.dialog();
-      break;
-    }
-    case ChartObject::_Retracement:
-    {
-      ChartObjectRetracement co;
-      dialog = co.dialog();
-      break;
-    }
-    case ChartObject::_Sell:
-    {
-      ChartObjectSell co;
-      dialog = co.dialog();
-      break;
-    }
-    case ChartObject::_Text:
-    {
-      ChartObjectText co;
-      dialog = co.dialog();
-      break;
-    }
-    case ChartObject::_TLine:
-    {
-      ChartObjectTLine co;
-      dialog = co.dialog();
-      break;
-    }
-    case ChartObject::_VLine:
-    {
-      ChartObjectVLine co;
-      dialog = co.dialog();
-      break;
-    }
-    default:
-      return;
-      break;
-  }
-  
-  dialog->enableDeleteButton(0);
-  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(newChartObject(ChartObjectSettings)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-}
-
-void Plot::newChartObject (ChartObjectSettings set)
-{
   ChartObjectFactory fac;
-  ChartObject *co = fac.chartObject(set.type);
+  ChartObject *co = fac.chartObject(a->data().toInt());
   if (! co)
     return;
 
+  ChartObjectSettings set;
+  co->settings(set);
+  
   Config config;
   QString d = QString::number(config.getInt(Config::LastChartObjectID) + 1);
   config.setData(Config::LastChartObjectID, d);
@@ -666,34 +574,38 @@ void Plot::newChartObject (ChartObjectSettings set)
   set.indicator = _indicator;
 
   co->setSettings(set);
-  co->setZ(10);
-  co->attach(this);
+
+  setupChartObject(co);
 
   _chartObjects.insert(set.id, co);
 
-  updatePlot();
+  co->create();
 }
 
-void Plot::updateChartObject (ChartObjectSettings set)
+void Plot::deleteChartObject (int id)
 {
-  ChartObject *co = _chartObjects.value(set.id);
+  ChartObject *co = _chartObjects.value(id);
   if (! co)
     return;
 
-  co->setSettings(set);
+  int rc = QMessageBox::warning(this,
+                                tr("Qtstalker: Warning"),
+                                tr("Are you sure you want to delete group this chart object?"),
+                                QMessageBox::Yes,
+                                QMessageBox::No,
+                                QMessageBox::NoButton);
 
-  updatePlot();
-}
-
-void Plot::deleteChartObject (ChartObjectSettings set)
-{
-  ChartObject *co = _chartObjects.value(set.id);
-  if (! co)
+  if (rc == QMessageBox::No)
     return;
 
-  co->detach();
+  ChartObjectDataBase db;
+  g_mutex.lock();
+  db.deleteChartObject(id);
+  g_mutex.unlock();
+
   delete co;
-  _chartObjects.remove(set.id);
+  
+  _chartObjects.remove(id);
 
   updatePlot();
 }
@@ -710,11 +622,83 @@ void Plot::loadChartObjects ()
   for (; loop < keys.count(); loop++)
   {
     ChartObject *co = _chartObjects.value(keys.at(loop));
-    co->setZ(10);
-    co->attach(this);
+    setupChartObject(co);
   }
 }
 
+void Plot::chartObjectSelected (int id)
+{
+  ChartObject *co = _chartObjects.value(id);
+  if (! co)
+    return;
+
+  _selected = 1;
+}
+
+void Plot::chartObjectUnselected (int id)
+{
+  ChartObject *co = _chartObjects.value(id);
+  if (! co)
+    return;
+
+  _selected = 0;
+}
+
+void Plot::chartObjectMoveStart (int id)
+{
+  ChartObject *co = _chartObjects.value(id);
+  if (! co)
+    return;
+
+  connect(this, SIGNAL(signalMove(QPoint)), co, SLOT(move(QPoint)));
+}
+
+void Plot::chartObjectMoveEnd (int id)
+{
+  ChartObject *co = _chartObjects.value(id);
+  if (! co)
+    return;
+
+  disconnect(this, SIGNAL(signalMove(QPoint)), co, SLOT(move(QPoint)));
+}
+
+void Plot::setupChartObject (ChartObject *co)
+{
+  co->setZ(10);
+  co->attach(this);
+  
+  connect(co, SIGNAL(signalSelected(int)), this, SLOT(chartObjectSelected(int)));
+  connect(co, SIGNAL(signalUnselected(int)), this, SLOT(chartObjectUnselected(int)));
+  connect(co, SIGNAL(signalDelete(int)), this, SLOT(deleteChartObject(int)));
+  connect(co, SIGNAL(signalMoveStart(int)), this, SLOT(chartObjectMoveStart(int)));
+  connect(co, SIGNAL(signalMoveEnd(int)), this, SLOT(chartObjectMoveEnd(int)));
+  connect(this, SIGNAL(signalClick(int, QPoint)), co, SLOT(click(int, QPoint)));
+}
+
+void Plot::saveChartObjects ()
+{
+  QList<int> keys;
+  keys = _chartObjects.keys();
+
+  ChartObjectDataBase db;
+  g_mutex.lock();
+  db.transaction();
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    ChartObject *co = _chartObjects.value(keys.at(loop));
+    if (co->isModified())
+    {
+      ChartObjectSettings set;
+      co->settings(set);
+      db.setChartObject(set);
+    }
+  }
+
+  db.commit();
+  g_mutex.unlock();
+}
 
 
 

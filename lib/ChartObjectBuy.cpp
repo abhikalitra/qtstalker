@@ -22,16 +22,16 @@
 
 #include "ChartObjectBuy.h"
 #include "Config.h"
-#include "ChartObjectDataBase.h"
 #include "ChartObjectBuyDialog.h"
 #include "DateScaleDraw.h"
+#include "ChartObjectBuyDraw.h"
 
 #include <QDebug>
-#include <QtSql>
-#include <qwt_plot.h>
 
 ChartObjectBuy::ChartObjectBuy ()
 {
+  _draw = new ChartObjectBuyDraw;
+  
   _settings.type = (int) ChartObject::_Buy;
   
   Config config;
@@ -41,57 +41,6 @@ ChartObjectBuy::ChartObjectBuy ()
     _settings.color = QColor(Qt::green);
     config.setData(Config::DefaultChartObjectBuyColor, _settings.color);
   }
-
-  setYAxis(QwtPlot::yRight);
-}
-
-int ChartObjectBuy::rtti () const
-{
-  return Rtti_PlotUserItem;
-}
-
-void ChartObjectBuy::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
-{
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings.date));
-
-  int y = yMap.transform(_settings.price);
-
-  p->setBrush(_settings.color);
-
-  QPolygon arrow;
-  arrow.putPoints(0, 7, x, y,
-                  x + 5, y + 5,
-                  x + 2, y + 5,
-                  x + 2, y + 11,
-                  x - 2, y + 11,
-                  x - 2, y + 5,
-                  x - 5, y + 5);
-  
-  p->drawPolygon(arrow, Qt::OddEvenFill);
-
-  _selectionArea.clear();
-
-  _selectionArea.append(QRegion(arrow));
-
-/*
-  if (_selected)
-  {
-    _grabHandles.clear();
-
-    _grabHandles.append(QRegion(x - (_handleWidth / 2),
-                        y - _handleWidth,
-                        _handleWidth,
-                        _handleWidth,
-                        QRegion::Rectangle));
-
-    p->fillRect(x - (_handleWidth / 2),
-                y - _handleWidth,
-                _handleWidth,
-                _handleWidth,
-                _color);
-  }
-*/
 }
 
 void ChartObjectBuy::info (Setting &info)
@@ -100,13 +49,6 @@ void ChartObjectBuy::info (Setting &info)
   info.setData(QObject::tr("D"), _settings.date.toString("yyyy-MM-dd"));
   info.setData(QObject::tr("T"), _settings.date.toString("HH:mm:ss"));
   info.setData(QObject::tr("Price"), _settings.price);
-}
-
-ChartObjectDialog * ChartObjectBuy::dialog ()
-{
-  ChartObjectBuyDialog *dialog = new ChartObjectBuyDialog;
-  dialog->setSettings(_settings);
-  return dialog;
 }
 
 int ChartObjectBuy::CUS (QStringList &l)
@@ -147,7 +89,7 @@ int ChartObjectBuy::CUS (QStringList &l)
 
 int ChartObjectBuy::highLow (int start, int end, double &h, double &l)
 {
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
+  DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
   int x = dsd->x(_settings.date);
 
   if (x < start || x > end)
@@ -157,5 +99,126 @@ int ChartObjectBuy::highLow (int start, int end, double &h, double &l)
   l = _settings.price;
 
   return 1;
+}
+
+void ChartObjectBuy::move (QPoint p)
+{
+  switch (_status)
+  {
+    case _Move:
+    {
+      QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
+      int x = map.invTransform((double) p.x());
+      
+      DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
+      dsd->date(x, _settings.date);
+
+      map = _draw->plot()->canvasMap(QwtPlot::yRight);
+      _settings.price = map.invTransform((double) p.y());
+      
+      _draw->setSettings(_settings);
+
+      _draw->plot()->replot();
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void ChartObjectBuy::click (int button, QPoint p)
+{
+  switch (_status)
+  {
+    case _Selected:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_draw->isGrabSelected(p))
+          {
+            _status = _Move;
+            emit signalMoveStart(_settings.id);
+            _modified = 1;
+            return;
+          }
+
+          if (! _draw->isSelected(p))
+          {
+            _status = _None;
+            _draw->setSelected(FALSE);
+            emit signalUnselected(_settings.id);
+            _draw->plot()->replot();
+            return;
+          }
+          break;
+        case Qt::RightButton:
+          _menu->exec(QCursor::pos());
+          break;
+        default:
+          break;
+      }
+      
+      break;
+    }
+    case _Move:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          _status = _Selected;
+          emit signalMoveEnd(_settings.id);
+          return;
+        default:
+          break;
+      }
+
+      break;      
+    }
+    default: // _None
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_draw->isSelected(p))
+          {
+            _status = _Selected;
+            _draw->setSelected(TRUE);
+            emit signalSelected(_settings.id);
+            _draw->plot()->replot();
+          }
+          break;
+        default:
+          break;
+      }
+      
+      break;
+    }
+  }
+}
+
+void ChartObjectBuy::dialog ()
+{
+  ChartObjectBuyDialog *dialog = new ChartObjectBuyDialog;
+  dialog->setSettings(_settings);
+  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void ChartObjectBuy::dialog2 (ChartObjectSettings set)
+{
+  _modified = 1;
+  setSettings(set);
+  _draw->plot()->replot();
+}
+
+void ChartObjectBuy::create ()
+{
+  _modified = 1;
+  _status = _Move;
+  _draw->setSelected(TRUE);
+  emit signalSelected(_settings.id);
+  emit signalMoveStart(_settings.id);
 }
 

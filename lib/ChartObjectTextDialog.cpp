@@ -22,8 +22,6 @@
 #include "ChartObjectTextDialog.h"
 #include "Config.h"
 #include "ChartObject.h"
-#include "ChartObjectDataBase.h"
-#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -121,11 +119,6 @@ void ChartObjectTextDialog::done ()
   _settings.price = _price->value();
   _settings.text = _label->text();
   _settings.font = _font->font();
-
-  ChartObjectDataBase db;
-  g_mutex.lock();
-  db.setChartObject(_settings);
-  g_mutex.unlock();
 
   emit signalDone(_settings);
 

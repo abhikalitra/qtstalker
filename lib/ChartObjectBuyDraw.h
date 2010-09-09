@@ -20,32 +20,21 @@
  */
 
 // *************************************************************************************************
-// Buy chart object
 // *************************************************************************************************
 
-#ifndef CHART_OBJECT_BUY_HPP
-#define CHART_OBJECT_BUY_HPP
+#ifndef CHART_OBJECT_BUY_DRAW_HPP
+#define CHART_OBJECT_BUY_DRAW_HPP
 
-#include "ChartObject.h"
+#include <QPainter>
+#include <qwt_scale_map.h>
 
-class ChartObjectBuy : public ChartObject
+#include "ChartObjectDraw.h"
+
+class ChartObjectBuyDraw : public ChartObjectDraw
 {
-  Q_OBJECT
-  
   public:
-    ChartObjectBuy ();
-    void info (Setting &);
-    int CUS (QStringList &);
-    int highLow (int start, int end, double &high, double &low);
-    void create ();
-    
-  public slots:
-    void move (QPoint);
-    void click (int, QPoint);
-    void dialog ();
-    void dialog2 (ChartObjectSettings);
-    
-  private:
+    ChartObjectBuyDraw ();
+    void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
 };
 
 #endif

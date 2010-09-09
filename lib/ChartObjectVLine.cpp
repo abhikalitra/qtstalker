@@ -22,16 +22,17 @@
 
 #include "ChartObjectVLine.h"
 #include "Config.h"
-#include "ChartObjectDataBase.h"
 #include "ChartObjectVLineDialog.h"
 #include "DateScaleDraw.h"
+#include "ChartObjectVLineDraw.h"
 
 #include <QDebug>
-#include <QtSql>
 #include <qwt_plot.h>
 
 ChartObjectVLine::ChartObjectVLine ()
 {
+  _draw = new ChartObjectVLineDraw;
+
   _settings.type = (int) ChartObject::_VLine;
 
   Config config;
@@ -41,58 +42,6 @@ ChartObjectVLine::ChartObjectVLine ()
     _settings.color = QColor(Qt::red);
     config.setData(Config::DefaultChartObjectVLineColor, _settings.color);
   }
-
-  setYAxis(QwtPlot::yRight);
-}
-
-int ChartObjectVLine::rtti () const
-{
-  return Rtti_PlotUserItem;
-}
-
-void ChartObjectVLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &, const QRect &) const
-{
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings.date));
-
-  p->setPen(_settings.color);
-
-  p->drawLine (x, 0, x, p->window().height());
-
-  _selectionArea.clear();
-  
-  QPolygon array;
-  array.putPoints(0,
-  	          4,
-		  x - 2, 0,
-		  x + 2, 0,
-		  x + 2, p->window().height(),
-		  x - 2, p->window().height());
-  
-  _selectionArea.append(QRegion(array));
-
-/*  
-  if (_selected)
-  {
-    clearGrabHandles();
-    int t = (int) pd.buffer.height() / 4;
-    int loop;
-    for (loop = 0; loop < 5; loop++)
-    {
-      setGrabHandle(new QRegion(x - (_handleWidth / 2),
-		    t * loop,
-		    _handleWidth,
-		    _handleWidth,
-		    QRegion::Rectangle));
-
-      painter.fillRect(x - (_handleWidth / 2),
-		       t * loop,
-		       _handleWidth,
-		       _handleWidth,
-		       _color);
-    }
-  }
-*/
 }
 
 void ChartObjectVLine::info (Setting &info)
@@ -100,13 +49,6 @@ void ChartObjectVLine::info (Setting &info)
   info.setData(QObject::tr("Type"), QObject::tr("VLine"));
   info.setData(QObject::tr("D"), _settings.date.toString("yyyy-MM-dd"));
   info.setData(QObject::tr("T"), _settings.date.toString("HH:mm:ss"));
-}
-
-ChartObjectDialog * ChartObjectVLine::dialog ()
-{
-  ChartObjectVLineDialog *dialog = new ChartObjectVLineDialog;
-  dialog->setSettings(_settings);
-  return dialog;
 }
 
 int ChartObjectVLine::highLow (int, int, double &, double &)
@@ -140,5 +82,123 @@ int ChartObjectVLine::CUS (QStringList &l)
   }
 
   return 0;
+}
+
+void ChartObjectVLine::move (QPoint p)
+{
+  switch (_status)
+  {
+    case _Move:
+    {
+      QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
+      int x = map.invTransform((double) p.x());
+
+      DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
+      dsd->date(x, _settings.date);
+      
+      _draw->setSettings(_settings);
+
+      _draw->plot()->replot();
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void ChartObjectVLine::click (int button, QPoint p)
+{
+  switch (_status)
+  {
+    case _Selected:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_draw->isGrabSelected(p))
+          {
+            _status = _Move;
+            emit signalMoveStart(_settings.id);
+            _modified = 1;
+            return;
+          }
+
+          if (! _draw->isSelected(p))
+          {
+            _status = _None;
+            _draw->setSelected(FALSE);
+            emit signalUnselected(_settings.id);
+            _draw->plot()->replot();
+            return;
+          }
+          break;
+        case Qt::RightButton:
+          _menu->exec(QCursor::pos());
+          break;
+        default:
+          break;
+      }
+
+      break;
+    }
+    case _Move:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          _status = _Selected;
+          emit signalMoveEnd(_settings.id);
+          return;
+        default:
+          break;
+      }
+
+      break;
+    }
+    default: // _None
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_draw->isSelected(p))
+          {
+            _status = _Selected;
+            _draw->setSelected(TRUE);
+            emit signalSelected(_settings.id);
+            _draw->plot()->replot();
+          }
+          break;
+        default:
+          break;
+      }
+
+      break;
+    }
+  }
+}
+
+void ChartObjectVLine::dialog ()
+{
+  ChartObjectVLineDialog *dialog = new ChartObjectVLineDialog;
+  dialog->setSettings(_settings);
+  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void ChartObjectVLine::dialog2 (ChartObjectSettings set)
+{
+  _modified = 1;
+  setSettings(set);
+  _draw->plot()->replot();
+}
+
+void ChartObjectVLine::create ()
+{
+  _modified = 1;
+  _status = _Move;
+  _draw->setSelected(TRUE);
+  emit signalSelected(_settings.id);
+  emit signalMoveStart(_settings.id);
 }
 

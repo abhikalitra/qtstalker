@@ -36,22 +36,18 @@ class ChartObjectDialog : public QDialog
 
   signals:
     void signalDone (ChartObjectSettings);
-    void signalDelete (ChartObjectSettings);
 
   public:
     ChartObjectDialog ();
     virtual ~ChartObjectDialog ();
-    void enableDeleteButton (int);
     virtual void setSettings (ChartObjectSettings &);
 
   public slots:
     virtual void done ();
-    void deleteChartObject ();
 
   protected:
     QTabWidget *_tabs;
     QDialogButtonBox *_buttonBox;
-    QPushButton *_deleteButton;
     ChartObjectSettings _settings;
 };
 

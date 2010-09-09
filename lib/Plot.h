@@ -58,6 +58,9 @@ class Plot : public QwtPlot
     void signalFontChanged (QFont);
     void signalInfoMessage (Setting);
 
+    void signalClick (int, QPoint);
+    void signalMove (QPoint);
+
   public:
     Plot ();
     ~Plot ();
@@ -70,6 +73,8 @@ class Plot : public QwtPlot
     void addCurve3 (int id, Curve *curve, QwtPlotCurve *qcurve);
     void loadChartObjects ();
     void setHighLow ();
+    void setupChartObject (ChartObject *);
+    void saveChartObjects ();
 
   public slots:
     virtual void clear ();
@@ -91,10 +96,13 @@ class Plot : public QwtPlot
     void editFont ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
-    void newChartObject (ChartObjectSettings);
-    void updateChartObject (ChartObjectSettings);
-    void deleteChartObject (ChartObjectSettings);
+    void deleteChartObject (int);
     void chartObjectMenuSelected (QAction *);
+
+    void chartObjectSelected (int);
+    void chartObjectUnselected (int);
+    void chartObjectMoveStart (int);
+    void chartObjectMoveEnd (int);
 
   private:
     QAction *_dateAction;
@@ -118,6 +126,7 @@ class Plot : public QwtPlot
     double _low;
     int _startPos;
     int _endPos;
+    int _selected;
 };
 
 #endif

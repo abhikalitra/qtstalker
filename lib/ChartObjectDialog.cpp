@@ -20,7 +20,6 @@
  */
 
 #include "ChartObjectDialog.h"
-#include "ChartObjectDataBase.h"
 #include "ChartObject.h"
 
 #include <QtDebug>
@@ -41,10 +40,6 @@ ChartObjectDialog::ChartObjectDialog () : QDialog (0, 0)
 
   // buttonbox
   _buttonBox = new QDialogButtonBox;
-
-  _deleteButton = _buttonBox->addButton(tr("Delete"), QDialogButtonBox::RejectRole);
-  connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteChartObject()));
-  
   _buttonBox->addButton(QDialogButtonBox::Help);
   _buttonBox->addButton(QDialogButtonBox::Ok);
   _buttonBox->addButton(QDialogButtonBox::Cancel);
@@ -62,34 +57,6 @@ ChartObjectDialog::~ChartObjectDialog ()
 // virtual
 void ChartObjectDialog::done ()
 {
-}
-
-void ChartObjectDialog::deleteChartObject ()
-{
-  int rc = QMessageBox::warning(this,
-                                tr("Qtstalker: Warning"),
-                                tr("Are you sure you want to delete group this chart object?"),
-                                QMessageBox::Yes,
-                                QMessageBox::No,
-                                QMessageBox::NoButton);
-
-  if (rc == QMessageBox::No)
-    return;
-  
-  ChartObjectDataBase db;
-  db.deleteChartObject(_settings.id);
-  
-  signalDelete(_settings);
-
-  reject();
-}
-
-void ChartObjectDialog::enableDeleteButton (int d)
-{
-  if (d)
-    _deleteButton->show();
-  else
-    _deleteButton->hide();
 }
 
 void ChartObjectDialog::setSettings (ChartObjectSettings &)

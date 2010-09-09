@@ -566,10 +566,6 @@
 <context>
     <name>CSVRuleDialog</name>
     <message>
-        <source>Editing CSV Rule: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -639,6 +635,10 @@
     </message>
     <message>
         <source>Try to remove suffix from file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Editing CSV Rule </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -761,6 +761,17 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>ChartObject</name>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChartObjectBuyDialog</name>
     <message>
         <source>Edit Buy Chart Object</source>
@@ -784,21 +795,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ChartObjectDialog</name>
-    <message>
-        <source>Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete group this chart object?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1096,14 +1092,6 @@ eg. perl -l -T</source>
         <source>Date Range Override</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>First Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Last Date</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DateRangeControl</name>
@@ -1117,6 +1105,21 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DateRangeDialog</name>
+    <message>
+        <source>Qtstalker: Set Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last Date</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1144,6 +1147,41 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>About Qtstalker</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ExchangeSearchDialog</name>
+    <message>
+        <source>Search For Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Country</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>City</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Exchange Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid search pattern.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No items found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No item found.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2019,6 +2057,10 @@ a partial match like %SI or %RSI%</source>
         <source>Are you sure you want to delete all chart objects from this indicator?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Are you sure you want to delete group this chart object?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PlotSlider</name>
@@ -2133,10 +2175,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>AvgPrice</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2174,58 +2212,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Exit Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search For Exchange</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search Fields</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Country</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>City</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exchange Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CSV Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid search pattern.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CSV Exchange Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No items found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exchange Search Results</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select item to use as exchange</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No item found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Date Range</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2837,6 +2823,37 @@ a partial match like %SI or %RSI%</source>
     </message>
 </context>
 <context>
+    <name>ScriptDialog</name>
+    <message>
+        <source>Qtstalker: Edit Script </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Interpreter command and switches eg. perl -l -T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The script location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ScriptLaunchButton</name>
     <message>
         <source>&amp;Configure</source>
@@ -2863,22 +2880,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Enter name of new script.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Script </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2929,10 +2930,6 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Script removed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2993,18 +2990,6 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Run script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Interpreter command and switches eg. perl -l -T</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The script location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3212,6 +3197,13 @@ Are you sure you want to remove this script?</source>
 <context>
     <name>TabWidget</name>
     <message>
+        <source>Tab &amp;Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TabWidgetDialog</name>
+    <message>
         <source>North</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3228,15 +3220,11 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Tab &amp;Settings</source>
+        <source>Qtstalker: Chart Tab Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Chart Tab Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
+        <source>Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -22,23 +22,27 @@
 #ifndef CHART_OBJECT_TLINE_HPP
 #define CHART_OBJECT_TLINE_HPP
 
-#include <QStringList>
-
 #include "ChartObject.h"
 
 class ChartObjectTLine : public ChartObject
 {
+  Q_OBJECT
+
   public:
     ChartObjectTLine ();
-    int rtti () const;
-    void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
     void info (Setting &);
-    ChartObjectDialog * dialog ();
     int CUS (QStringList &);
     int highLow (int start, int end, double &high, double &low);
+    void create ();
 
-  protected:
-    QStringList _fieldList;
+  public slots:
+    void move (QPoint);
+    void click (int, QPoint);
+    void dialog ();
+    void dialog2 (ChartObjectSettings);
+
+  private:
+    int _createFlag;
 };
 
 #endif

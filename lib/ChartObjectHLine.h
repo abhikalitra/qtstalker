@@ -26,14 +26,22 @@
 
 class ChartObjectHLine : public ChartObject
 {
+  Q_OBJECT
+  
   public:
     ChartObjectHLine ();
-    int rtti () const;
-    void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
     void info (Setting &);
-    ChartObjectDialog * dialog ();
     int CUS (QStringList &);
     int highLow (int start, int end, double &high, double &low);
+    void create ();
+
+  public slots:
+    void move (QPoint);
+    void click (int, QPoint);
+    void dialog ();
+    void dialog2 (ChartObjectSettings);
+
+  private:
 };
 
 #endif

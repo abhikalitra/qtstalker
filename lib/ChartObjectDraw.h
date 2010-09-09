@@ -19,33 +19,31 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Buy chart object
-// *************************************************************************************************
+#ifndef CHART_OBJECT_DRAW_HPP
+#define CHART_OBJECT_DRAW_HPP
 
-#ifndef CHART_OBJECT_BUY_HPP
-#define CHART_OBJECT_BUY_HPP
+#include <QList>
+#include <QRegion>
+#include <qwt_plot_item.h>
 
-#include "ChartObject.h"
+#include "ChartObjectSettings.h"
 
-class ChartObjectBuy : public ChartObject
+class ChartObjectDraw : public QwtPlotItem
 {
-  Q_OBJECT
-  
   public:
-    ChartObjectBuy ();
-    void info (Setting &);
-    int CUS (QStringList &);
-    int highLow (int start, int end, double &high, double &low);
-    void create ();
-    
-  public slots:
-    void move (QPoint);
-    void click (int, QPoint);
-    void dialog ();
-    void dialog2 (ChartObjectSettings);
-    
-  private:
+    ChartObjectDraw ();
+    int rtti () const;
+    void setSettings (ChartObjectSettings &);
+    int isSelected (QPoint);
+    int isGrabSelected (QPoint);
+    void setSelected (int);
+
+  protected:
+    ChartObjectSettings _settings;
+    int _selected;
+    int _handleWidth;
+    mutable QList<QRegion> _selectionArea;
+    mutable QList<QRegion> _grabHandles;
 };
 
 #endif

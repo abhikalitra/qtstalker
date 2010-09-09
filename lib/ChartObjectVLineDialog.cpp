@@ -22,8 +22,6 @@
 #include "ChartObjectVLineDialog.h"
 #include "Config.h"
 #include "ChartObject.h"
-#include "ChartObjectDataBase.h"
-#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -90,11 +88,6 @@ void ChartObjectVLineDialog::done ()
 
   _settings.color = _color->color();
   _settings.date = _date->dateTime();
-
-  ChartObjectDataBase db;
-  g_mutex.lock();
-  db.setChartObject(_settings);
-  g_mutex.unlock();
 
   emit signalDone(_settings);
 

@@ -31,7 +31,6 @@ BUG: indicator tabs do not update unless tab is exposed first, then works.
 
 - fix scripts not finishing ? fix pending confimation
 - convert any long running functions that gui block to use threads
-- Interactive chart objects. Use dialogs to change settings for now.
 - Cursor crosshairs.
 - Bar spacing. Using fixed value of 8 currently.
 - log scaling toggle.

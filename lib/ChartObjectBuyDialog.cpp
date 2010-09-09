@@ -22,7 +22,6 @@
 #include "ChartObjectBuyDialog.h"
 #include "Config.h"
 #include "ChartObject.h"
-#include "ChartObjectDataBase.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -101,11 +100,6 @@ void ChartObjectBuyDialog::done ()
   _settings.date = _date->dateTime();
   _settings.price = _price->value();
   
-  ChartObjectDataBase db;
-  g_mutex.lock();
-  db.setChartObject(_settings);
-  g_mutex.unlock();
-
   emit signalDone(_settings);
 
   accept();

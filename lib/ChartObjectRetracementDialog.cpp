@@ -22,8 +22,6 @@
 #include "ChartObjectRetracementDialog.h"
 #include "Config.h"
 #include "ChartObject.h"
-#include "ChartObjectDataBase.h"
-#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -213,11 +211,6 @@ void ChartObjectRetracementDialog::done ()
   _settings.line4 = _line4->value();
   _settings.line5 = _line5->value();
   _settings.line6 = _line6->value();
-
-  ChartObjectDataBase db;
-  g_mutex.lock();
-  db.setChartObject(_settings);
-  g_mutex.unlock();
 
   emit signalDone(_settings);
 

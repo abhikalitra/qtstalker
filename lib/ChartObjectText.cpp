@@ -22,16 +22,16 @@
 
 #include "ChartObjectText.h"
 #include "Config.h"
-#include "ChartObjectDataBase.h"
 #include "ChartObjectTextDialog.h"
 #include "DateScaleDraw.h"
+#include "ChartObjectTextDraw.h"
 
 #include <QDebug>
-#include <QtSql>
-#include <qwt_plot.h>
 
 ChartObjectText::ChartObjectText ()
 {
+  _draw = new ChartObjectTextDraw;
+
   _settings.type = (int) ChartObject::_Text;
 
   Config config;
@@ -58,54 +58,6 @@ ChartObjectText::ChartObjectText ()
     _settings.text = "Text";
     config.setData(Config::DefaultChartObjectTextLabel, _settings.text);
   }
-
-  setYAxis(QwtPlot::yRight);
-}
-
-int ChartObjectText::rtti () const
-{
-  return Rtti_PlotUserItem;
-}
-
-void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
-{
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings.date));
-
-  int y = yMap.transform(_settings.price);
-
-  p->setPen(_settings.color);
-
-  p->drawText(x, y, _settings.text);
-
-  QFontMetrics fm = p->fontMetrics();
-  
-  _selectionArea.clear();
-  
-  _selectionArea.append(QRegion(x,
-		                y - fm.height(),
-		                fm.width(_settings.text, -1),
-		                fm.height(),
-		                QRegion::Rectangle));
-
-/*  
-  if (_selected)
-  {
-    clearGrabHandles();
-
-    setGrabHandle(new QRegion(x - _handleWidth - 1,
-		  y - (fm.height() / 2),
-		  _handleWidth,
-		  _handleWidth,
-		  QRegion::Rectangle));
-
-    painter.fillRect(x - _handleWidth - 1,
-		     y - (fm.height() / 2),
-		     _handleWidth,
-		     _handleWidth,
-		     _color);
-  }
-*/
 }
 
 void ChartObjectText::info (Setting &info)
@@ -117,16 +69,9 @@ void ChartObjectText::info (Setting &info)
   info.setData(QObject::tr("Text"), _settings.text);
 }
 
-ChartObjectDialog * ChartObjectText::dialog ()
-{
-  ChartObjectTextDialog *dialog = new ChartObjectTextDialog;
-  dialog->setSettings(_settings);
-  return dialog;
-}
-
 int ChartObjectText::highLow (int start, int end, double &h, double &l)
 {
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
+  DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
   int x = dsd->x(_settings.date);
 
   if (x < start || x > end)
@@ -174,5 +119,126 @@ int ChartObjectText::CUS (QStringList &l)
   }
 
   return 0;
+}
+
+void ChartObjectText::move (QPoint p)
+{
+  switch (_status)
+  {
+    case _Move:
+    {
+      QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
+      int x = map.invTransform((double) p.x());
+
+      DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
+      dsd->date(x, _settings.date);
+
+      map = _draw->plot()->canvasMap(QwtPlot::yRight);
+      _settings.price = map.invTransform((double) p.y());
+      
+      _draw->setSettings(_settings);
+
+      _draw->plot()->replot();
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void ChartObjectText::click (int button, QPoint p)
+{
+  switch (_status)
+  {
+    case _Selected:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_draw->isGrabSelected(p))
+          {
+            _status = _Move;
+            emit signalMoveStart(_settings.id);
+            _modified = 1;
+            return;
+          }
+
+          if (! _draw->isSelected(p))
+          {
+            _status = _None;
+            _draw->setSelected(FALSE);
+            emit signalUnselected(_settings.id);
+            _draw->plot()->replot();
+            return;
+          }
+          break;
+        case Qt::RightButton:
+          _menu->exec(QCursor::pos());
+          break;
+        default:
+          break;
+      }
+
+      break;
+    }
+    case _Move:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          _status = _Selected;
+          emit signalMoveEnd(_settings.id);
+          return;
+        default:
+          break;
+      }
+
+      break;
+    }
+    default: // _None
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_draw->isSelected(p))
+          {
+            _status = _Selected;
+            _draw->setSelected(TRUE);
+            emit signalSelected(_settings.id);
+            _draw->plot()->replot();
+          }
+          break;
+        default:
+          break;
+      }
+
+      break;
+    }
+  }
+}
+
+void ChartObjectText::dialog ()
+{
+  ChartObjectTextDialog *dialog = new ChartObjectTextDialog;
+  dialog->setSettings(_settings);
+  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void ChartObjectText::dialog2 (ChartObjectSettings set)
+{
+  _modified = 1;
+  setSettings(set);
+  _draw->plot()->replot();
+}
+
+void ChartObjectText::create ()
+{
+  _modified = 1;
+  _status = _Move;
+  _draw->setSelected(TRUE);
+  emit signalSelected(_settings.id);
+  emit signalMoveStart(_settings.id);
 }
 

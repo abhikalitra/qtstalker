@@ -22,17 +22,18 @@
 
 #include "ChartObjectTLine.h"
 #include "Config.h"
-#include "ChartObjectDataBase.h"
 #include "ChartObjectTLineDialog.h"
 #include "DateScaleDraw.h"
+#include "ChartObjectTLineDraw.h"
 
 #include <QDebug>
-#include <QtSql>
 #include <qwt_plot.h>
 
 ChartObjectTLine::ChartObjectTLine ()
 {
-  _fieldList << QObject::tr("Open") << QObject::tr("High") << QObject::tr("Low") << QObject::tr("Close");
+  _createFlag = 0;
+  
+  _draw = new ChartObjectTLineDraw;
 
   _settings.type = (int) ChartObject::_TLine;
 
@@ -48,79 +49,11 @@ ChartObjectTLine::ChartObjectTLine ()
   config.getData(Config::DefaultChartObjectTLineExtend, s);
   if (s.isEmpty())
   {
-    _settings.extend = 1;
+    _settings.extend = 0;
     config.setData(Config::DefaultChartObjectTLineExtend, _settings.extend);
   }
   else
     _settings.extend = s.toInt();
-
-  setYAxis(QwtPlot::yRight);
-}
-
-int ChartObjectTLine::rtti () const
-{
-  return Rtti_PlotUserItem;
-}
-
-void ChartObjectTLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
-{
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings.date));
-  if (x == -1)
-    return;
-
-  QDateTime dt = _settings.date2;
-  if (_settings.extend)
-    dsd->date(dsd->count() - 1, dt);
-
-  int x2 = xMap.transform(dsd->x(dt));
-  if (x2 == -1)
-    return;
-
-  int y = yMap.transform(_settings.price);
-  int y2 = yMap.transform(_settings.price2);
-
-  p->setPen(_settings.color);
-
-  p->drawLine (x, y, x2, y2);
-
-  // store the selectable area the line occupies
-  _selectionArea.clear();
-  
-  QPolygon array;
-  array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y2 + 4, x2, y2 - 4);
-  _selectionArea.append(QRegion(array));
-
-/*  
-  if (_selected)
-  {
-    clearGrabHandles();
-
-    setGrabHandle(new QRegion(tx,
-		  ty - (_handleWidth / 2),
-		  _handleWidth,
-		  _handleWidth,
-		  QRegion::Rectangle));
-
-    painter.fillRect(tx,
-		     ty - (_handleWidth / 2),
-		     _handleWidth,
-		     _handleWidth,
-		     _color);
-
-    setGrabHandle(new QRegion(tx2,
-		  ty2 - (_handleWidth / 2),
-		  _handleWidth,
-		  _handleWidth,
-		  QRegion::Rectangle));
-
-    painter.fillRect(tx2,
-		     ty2 - (_handleWidth / 2),
-		     _handleWidth,
-		     _handleWidth,
-		     _color);
-  }
-*/
 }
 
 void ChartObjectTLine::info (Setting &info)
@@ -134,16 +67,9 @@ void ChartObjectTLine::info (Setting &info)
   info.setData(QObject::tr("EP"), _settings.price2);
 }
 
-ChartObjectDialog * ChartObjectTLine::dialog ()
-{
-  ChartObjectTLineDialog *dialog = new ChartObjectTLineDialog;
-  dialog->setSettings(_settings);
-  return dialog;
-}
-
 int ChartObjectTLine::highLow (int start, int end, double &h, double &l)
 {
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
+  DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
   int x = dsd->x(_settings.date);
   int x2 = dsd->x(_settings.date2);
 
@@ -218,5 +144,169 @@ int ChartObjectTLine::CUS (QStringList &l)
   }
 
   return 0;
+}
+
+void ChartObjectTLine::move (QPoint p)
+{
+  switch (_status)
+  {
+    case _Move:
+    {
+      QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
+      int x = map.invTransform((double) p.x());
+
+      DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
+      dsd->date(x, _settings.date);
+
+      map = _draw->plot()->canvasMap(QwtPlot::yRight);
+      _settings.price = map.invTransform((double) p.y());
+      
+      _draw->setSettings(_settings);
+
+      _draw->plot()->replot();
+      break;
+    }
+    case _Move2:
+    {
+      QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
+      int x = map.invTransform((double) p.x());
+
+      DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
+      dsd->date(x, _settings.date2);
+
+      map = _draw->plot()->canvasMap(QwtPlot::yRight);
+      _settings.price2 = map.invTransform((double) p.y());
+      
+      _draw->setSettings(_settings);
+
+      _draw->plot()->replot();
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void ChartObjectTLine::click (int button, QPoint p)
+{
+  switch (_status)
+  {
+    case _Selected:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+        {
+          int grab = _draw->isGrabSelected(p);
+          if (grab)
+          {
+            _status = _Move;
+            if (grab == 2)
+              _status = _Move2;
+            emit signalMoveStart(_settings.id);
+            _modified = 1;
+            return;
+          }
+
+          if (! _draw->isSelected(p))
+          {
+            _status = _None;
+            _draw->setSelected(FALSE);
+            emit signalUnselected(_settings.id);
+            _draw->plot()->replot();
+            return;
+          }
+          break;
+        }
+        case Qt::RightButton:
+          _menu->exec(QCursor::pos());
+          break;
+        default:
+          break;
+      }
+
+      break;
+    }
+    case _Move:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_createFlag)
+          {
+            _status = _Move2;
+            return;
+          }
+          
+          _status = _Selected;
+          emit signalMoveEnd(_settings.id);
+          return;
+        default:
+          break;
+      }
+
+      break;
+    }
+    case _Move2:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          _status = _Selected;
+          _createFlag = 0;
+          emit signalMoveEnd(_settings.id);
+          return;
+        default:
+          break;
+      }
+
+      break;
+    }
+    default: // _None
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_draw->isSelected(p))
+          {
+            _status = _Selected;
+            _draw->setSelected(TRUE);
+            emit signalSelected(_settings.id);
+            _draw->plot()->replot();
+          }
+          break;
+        default:
+          break;
+      }
+
+      break;
+    }
+  }
+}
+
+void ChartObjectTLine::dialog ()
+{
+  ChartObjectTLineDialog *dialog = new ChartObjectTLineDialog;
+  dialog->setSettings(_settings);
+  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void ChartObjectTLine::dialog2 (ChartObjectSettings set)
+{
+  _modified = 1;
+  setSettings(set);
+  _draw->plot()->replot();
+}
+
+void ChartObjectTLine::create ()
+{
+  _modified = 1;
+  _createFlag = 1;
+  _status = _Move;
+  _draw->setSelected(TRUE);
+  emit signalSelected(_settings.id);
+  emit signalMoveStart(_settings.id);
 }
 

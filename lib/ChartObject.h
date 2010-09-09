@@ -29,16 +29,25 @@
 #include <QStringList>
 #include <QDateTime>
 #include <QPoint>
-#include <QPainter>
+#include <QObject>
+#include <QMenu>
+#include <qwt_plot.h>
 
 #include "Setting.h"
-#include "ChartObjectDialog.h"
 #include "ChartObjectSettings.h"
-#include <qwt_plot_item.h>
-#include <qwt_scale_map.h>
+#include "ChartObjectDraw.h"
 
-class ChartObject : public QwtPlotItem
+class ChartObject : public QObject
 {
+  Q_OBJECT
+
+  signals:
+    void signalSelected (int);
+    void signalUnselected (int);
+    void signalDelete (int);
+    void signalMoveStart (int);
+    void signalMoveEnd (int);
+  
   public:
     enum Type
     {
@@ -51,21 +60,43 @@ class ChartObject : public QwtPlotItem
       _VLine
     };
 
+    enum Status
+    {
+      _None,
+      _Selected,
+      _Move,
+      _Move2
+    };
+
     ChartObject ();
-    virtual ~ChartObject ();
+    ~ChartObject ();
     virtual void info (Setting &);
-    virtual ChartObjectDialog * dialog ();
     virtual void load ();
     virtual int CUS (QStringList &);
-    virtual int isSelected (QPoint);
     virtual int highLow (int start, int end, double &high, double &low);
-    void setSettings (ChartObjectSettings &);
+    virtual void create ();
+
     void settings (ChartObjectSettings &);
+    ChartObject::Status status ();
+    int isModified ();
+    void setZ (int);
+    void attach (QwtPlot *);
+    int isSelected (QPoint);
+    void setSettings (ChartObjectSettings &);
+
+  public slots:
+    virtual void move (QPoint);
+    virtual void click (int, QPoint);
+    virtual void dialog ();
+
+    void deleteChartObject ();
 
   protected:
+    Status _status;
     ChartObjectSettings _settings;
-    mutable QList<QRegion> _selectionArea;
-//    mutable QList<QRegion> _grabHandles;
+    int _modified;
+    QMenu *_menu;
+    ChartObjectDraw *_draw;
 };
 
 #endif

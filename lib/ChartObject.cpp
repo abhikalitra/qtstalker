@@ -20,11 +20,16 @@
  */
 
 #include "ChartObject.h"
+#include "../pics/delete.xpm"
+#include "../pics/edit.xpm"
 
 #include <QDebug>
 
 ChartObject::ChartObject ()
 {
+  _status = _None;
+  _modified = 0;
+  
   _settings.id = -1;
   _settings.type = -1;
   _settings.color = QColor(Qt::red);
@@ -41,19 +46,22 @@ ChartObject::ChartObject ()
   _settings.line4 = 0;
   _settings.line5 = 0;
   _settings.line6 = 0;
+
+  _menu = new QMenu;
+  _menu->addAction(QPixmap(edit), tr("&Edit"), this, SLOT(dialog()), Qt::ALT+Qt::Key_E);
+  _menu->addAction(QPixmap(delete_xpm), tr("&Delete"), this, SLOT(deleteChartObject()), Qt::ALT+Qt::Key_D);
 }
 
 ChartObject::~ChartObject ()
 {
+  delete _menu;
+  
+  _draw->detach();
+  delete _draw;
 }
 
 void ChartObject::info (Setting &)
 {
-}
-
-ChartObjectDialog * ChartObject::dialog ()
-{
-  return 0;
 }
 
 void ChartObject::load ()
@@ -67,44 +75,63 @@ int ChartObject::CUS (QStringList &)
 
 int ChartObject::isSelected (QPoint p)
 {
-  int loop;
-  for (loop = 0; loop < (int) _selectionArea.count(); loop++)
-  {
-    QRegion r = _selectionArea.at(loop);
-    if (r.contains(p))
-      return 1;
-  }
-
-  return 0;
+  return _draw->isSelected(p);
 }
-
-/*
-int ChartObjectDrawBuy::isGrabSelected (QPoint p)
-{
-  int loop;
-  for (loop = 0; loop < (int) _grabHandles.count(); loop++)
-  {
-    QRegion r = _grabHandles.at(loop);
-    if (r.contains(p))
-      return loop + 1;
-  }
-
-  return 0;
-}
-*/
 
 int ChartObject::highLow (int, int, double &, double &)
 {
   return 0;
 }
 
-void ChartObject::setSettings (ChartObjectSettings &d)
+void ChartObject::move (QPoint)
 {
-  _settings = d;
+}
+
+void ChartObject::click (int, QPoint)
+{
 }
 
 void ChartObject::settings (ChartObjectSettings &d)
 {
   d = _settings;
+}
+
+ChartObject::Status ChartObject::status ()
+{
+  return _status;
+}
+
+int ChartObject::isModified ()
+{
+  return _modified;
+}
+
+void ChartObject::create ()
+{
+}
+
+void ChartObject::dialog ()
+{
+}
+
+void ChartObject::deleteChartObject ()
+{
+  emit signalDelete(_settings.id);
+}
+
+void ChartObject::setZ (int d)
+{
+  _draw->setZ(d);
+}
+
+void ChartObject::attach (QwtPlot *p)
+{
+  _draw->attach(p);
+}
+
+void ChartObject::setSettings (ChartObjectSettings &d)
+{
+  _settings = d;
+  _draw->setSettings(d);
 }
 

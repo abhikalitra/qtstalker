@@ -22,16 +22,18 @@
 
 #include "ChartObjectRetracement.h"
 #include "Config.h"
-#include "ChartObjectDataBase.h"
 #include "ChartObjectRetracementDialog.h"
 #include "DateScaleDraw.h"
+#include "ChartObjectRetracementDraw.h"
 
 #include <QDebug>
-#include <QtSql>
-#include <qwt_plot.h>
 
 ChartObjectRetracement::ChartObjectRetracement ()
 {
+  _createFlag = 0;
+  
+  _draw = new ChartObjectRetracementDraw;
+
   _settings.type = (int) ChartObject::_Retracement;
 
   Config config;
@@ -66,127 +68,6 @@ ChartObjectRetracement::ChartObjectRetracement ()
   _settings.line4 = config.getDouble(Config::DefaultChartObjectRetracementLine4);
   _settings.line5 = config.getDouble(Config::DefaultChartObjectRetracementLine5);
   _settings.line6 = config.getDouble(Config::DefaultChartObjectRetracementLine6);
-
-  setYAxis(QwtPlot::yRight);
-}
-
-int ChartObjectRetracement::rtti () const
-{
-  return Rtti_PlotUserItem;
-}
-
-void ChartObjectRetracement::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
-{
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings.date));
-  if (x == -1)
-    return;
-
-  QDateTime dt = _settings.date2;
-  if (_settings.extend)
-    dsd->date(dsd->count() - 1, dt);
-
-  int x2 = xMap.transform(dsd->x(dt));
-  if (x2 == -1)
-    return;
-
-  p->setPen(_settings.color);
-
-  QPolygon array;
-  
-  _selectionArea.clear();
-
-  QList<double> lineList;
-  lineList.append(_settings.line1);
-  lineList.append(_settings.line2);
-  lineList.append(_settings.line3);
-  lineList.append(_settings.line4);
-  lineList.append(_settings.line5);
-  lineList.append(_settings.line6);
-
-  int loop;
-  for (loop = 0; loop < lineList.count(); loop++)
-  {
-    double td = lineList[loop];
-    if (td != 0)
-    {
-      double range = _settings.high - _settings.low;
-      double r = 0;
-      if (td < 0)
-        r = _settings.low + (range * td);
-      else
-      {
-        if (td > 0)
-          r = _settings.low + (range * td);
-        else
-        {
-          if (td < 0)
-            r = _settings.high;
-          else
-            r = _settings.low;
-        }
-      }
-      
-      int y = yMap.transform(r);
-      p->drawLine (x, y, x2, y);
-      p->drawText(x, y - 1, QString::number(td * 100) + "% - " + QString::number(r));
-
-      array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y + 4, x2, y - 4);
-      _selectionArea.append(QRegion(array));
-    }
-  }
-  
-  // draw the low line
-  int y = yMap.transform(_settings.low);
-  p->drawLine (x, y, x2, y);
-  p->drawText(x, y - 1, "0% - " + QString::number(_settings.low));
-
-  // store the selectable area the low line occupies
-  array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y + 4, x2, y - 4);
-  _selectionArea.append(QRegion(array));
-
-  // draw the high line
-  int y2 = yMap.transform(_settings.high);
-  p->drawLine (x, y2, x2, y2);
-  p->drawText(x, y2 - 1, "100% - " + QString::number(_settings.high));
-
-  // store the selectable area the high line occupies
-  array.putPoints(0, 4, x, y2 - 4, x, y2 + 4, x2, y2 + 4, x2, y2 - 4);
-  _selectionArea.append(QRegion(array));
-
-/*
-  if (_selected)
-  {
-    clearGrabHandles();
-
-    //top left corner
-    y = scaler.convertToY(_high);
-    setGrabHandle(new QRegion(x, y - (_handleWidth / 2),
-		  _handleWidth,
-		  _handleWidth,
-		  QRegion::Rectangle));
-
-    painter.fillRect(x,
-		     y - (_handleWidth / 2),
-		     _handleWidth,
-		     _handleWidth,
-		     _color);
-
-    //bottom right corner
-    x2 = (dateBars.getX(_date2) * pd.barSpacing) - (pd.startIndex * pd.barSpacing);
-    y2 = scaler.convertToY(_low);
-    setGrabHandle(new QRegion(x2, y2 - (_handleWidth / 2),
-		  _handleWidth,
-		  _handleWidth,
-		  QRegion::Rectangle));
-
-    painter.fillRect(x2,
-		     y2 - (_handleWidth / 2),
-		     _handleWidth,
-		     _handleWidth,
-		     _color);
-  }
-*/
 }
 
 void ChartObjectRetracement::info (Setting &info)
@@ -206,16 +87,9 @@ void ChartObjectRetracement::info (Setting &info)
   info.setData(QObject::tr("Level 6"), _settings.line6);
 }
 
-ChartObjectDialog * ChartObjectRetracement::dialog ()
-{
-  ChartObjectRetracementDialog *dialog = new ChartObjectRetracementDialog;
-  dialog->setSettings(_settings);
-  return dialog;
-}
-
 int ChartObjectRetracement::highLow (int start, int end, double &h, double &l)
 {
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
+  DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
   int x = dsd->x(_settings.date);
   int x2 = dsd->x(_settings.date2);
 
@@ -290,5 +164,169 @@ int ChartObjectRetracement::CUS (QStringList &l)
   _settings.line6 = 0;
 
   return 0;
+}
+
+void ChartObjectRetracement::move (QPoint p)
+{
+  switch (_status)
+  {
+    case _Move:
+    {
+      QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
+      int x = map.invTransform((double) p.x());
+
+      DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
+      dsd->date(x, _settings.date);
+
+      map = _draw->plot()->canvasMap(QwtPlot::yRight);
+      _settings.high = map.invTransform((double) p.y());
+      
+      _draw->setSettings(_settings);
+
+      _draw->plot()->replot();
+      break;
+    }
+    case _Move2:
+    {
+      QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
+      int x = map.invTransform((double) p.x());
+
+      DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
+      dsd->date(x, _settings.date2);
+
+      map = _draw->plot()->canvasMap(QwtPlot::yRight);
+      _settings.low = map.invTransform((double) p.y());
+      
+      _draw->setSettings(_settings);
+
+      _draw->plot()->replot();
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void ChartObjectRetracement::click (int button, QPoint p)
+{
+  switch (_status)
+  {
+    case _Selected:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+        {
+          int grab = _draw->isGrabSelected(p);
+          if (grab)
+          {
+            _status = _Move;
+            if (grab == 2)
+              _status = _Move2;
+            emit signalMoveStart(_settings.id);
+            _modified = 1;
+            return;
+          }
+
+          if (! _draw->isSelected(p))
+          {
+            _status = _None;
+            _draw->setSelected(FALSE);
+            emit signalUnselected(_settings.id);
+            _draw->plot()->replot();
+            return;
+          }
+          break;
+        }
+        case Qt::RightButton:
+          _menu->exec(QCursor::pos());
+          break;
+        default:
+          break;
+      }
+
+      break;
+    }
+    case _Move:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_createFlag)
+          {
+            _status = _Move2;
+            return;
+          }
+
+          _status = _Selected;
+          emit signalMoveEnd(_settings.id);
+          return;
+        default:
+          break;
+      }
+
+      break;
+    }
+    case _Move2:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          _status = _Selected;
+          _createFlag = 0;
+          emit signalMoveEnd(_settings.id);
+          return;
+        default:
+          break;
+      }
+
+      break;
+    }
+    default: // _None
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_draw->isSelected(p))
+          {
+            _status = _Selected;
+            _draw->setSelected(TRUE);
+            emit signalSelected(_settings.id);
+            _draw->plot()->replot();
+          }
+          break;
+        default:
+          break;
+      }
+
+      break;
+    }
+  }
+}
+
+void ChartObjectRetracement::dialog ()
+{
+  ChartObjectRetracementDialog *dialog = new ChartObjectRetracementDialog;
+  dialog->setSettings(_settings);
+  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void ChartObjectRetracement::dialog2 (ChartObjectSettings set)
+{
+  _modified = 1;
+  setSettings(set);
+  _draw->plot()->replot();
+}
+
+void ChartObjectRetracement::create ()
+{
+  _modified = 1;
+  _createFlag = 1;
+  _status = _Move;
+  _draw->setSelected(TRUE);
+  emit signalSelected(_settings.id);
+  emit signalMoveStart(_settings.id);
 }
 

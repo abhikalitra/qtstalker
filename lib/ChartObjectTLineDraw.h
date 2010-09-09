@@ -19,33 +19,23 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Buy chart object
-// *************************************************************************************************
+#ifndef CHART_OBJECT_TLINE_DRAW_HPP
+#define CHART_OBJECT_TLINE_DRAW_HPP
 
-#ifndef CHART_OBJECT_BUY_HPP
-#define CHART_OBJECT_BUY_HPP
+#include <QPainter>
+#include <QStringList>
+#include <qwt_scale_map.h>
 
-#include "ChartObject.h"
+#include "ChartObjectDraw.h"
 
-class ChartObjectBuy : public ChartObject
+class ChartObjectTLineDraw : public ChartObjectDraw
 {
-  Q_OBJECT
-  
   public:
-    ChartObjectBuy ();
-    void info (Setting &);
-    int CUS (QStringList &);
-    int highLow (int start, int end, double &high, double &low);
-    void create ();
-    
-  public slots:
-    void move (QPoint);
-    void click (int, QPoint);
-    void dialog ();
-    void dialog2 (ChartObjectSettings);
-    
+    ChartObjectTLineDraw ();
+    void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
+
   private:
+    QStringList _fieldList;
 };
 
 #endif
