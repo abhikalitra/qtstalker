@@ -33,6 +33,7 @@
   <li>A Linux or FreeBSD compatible or Mac OS X operating system.</li>
   <li><a href="http://qt.nokia.com/">Qt</a> development library. At least Qt
     4.5 version.</li>
+  <li><a href="http://qwt.sourceforge.net/">Qwt</a> graphics extension library.</li>
   <li><a href="http://ta-lib.org/">TA-Lib</a> Technical Analysis Library. At
     least ta-lib-0.3.0 version. See below.</li>
 </ul>
@@ -64,12 +65,16 @@ variable</a>).
 Do '<code>which qmake</code>' and '<code>which lupdate</code>' etc. to ensure
 that these are properly installed. </p>
 
+<p><strong>Important (Qwt):</strong> Ensure that Qwt is installed properly.
+Follow its installation instructions, especially about the "shared library".
+</p>
+
 <p><strong>Important (TA-Lib):</strong> Ensure that TA-Lib is installed
 properly. Also ensure that the '<code>ta-lib-config</code>' program is
 available on your <code>$PATH</code> environment variable. Do '<code>which
 ta-lib-config</code>' to ensure that this is properly installed. </p>
 
-<p>If you installed Qt or TA-Lib at a non-standard location, then edit the
+<p>If you installed Qt or Qwt or TA-Lib at a non-standard location, then edit the
 <code>qtstalker.config</code> file (e.g. "<code>INCLUDEPATH +=
 /opt/local/include/ta-lib</code>"). </p>
 

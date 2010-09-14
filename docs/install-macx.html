@@ -28,11 +28,11 @@
 </ul>
 <h2 id="install">Installation</h2>
 <p> See the general <a href="install.html">Installation</a>
-instructions for overview and tips. </p>
+instructions for overview, requirements, and tips. </p>
 <p> There are other build systems and IDEs, however this works from the
 command-line with minimal changes to Qtstalker sources. </p>
 <h3 id="ta-lib">Install TA-Lib</h3>
-<p> Install <a href="http://ta-lib.org">TA-Lib 0.4.0</a> from source.
+<p> Install TA-Lib 0.4.0 from source.
 This is easy. (It could instead be installed via <a
  href="http://macports.org/">MacPorts</a>.) </p>
 <pre>./configure<br>make<br>sudo make install </pre>
@@ -47,13 +47,27 @@ installed via <a href="http://macports.org/">MacPorts</a>.) </p>
 <p> For Snow Leopard use this configuration: </p>
 <pre>./configure -cocoa -arch x86_64<br>make<br>sudo make install </pre>
 <p> See important <a href="install.html#source">notes</a> about
-ensuring proper installation and adding to your <code>$PATH</code> to
-ensure that '<code>qmake</code>' etc can be found. </p>
+ensuring proper installation and adding to your <code>$PATH</code>
+<a href="http://en.wikipedia.org/wiki/Environment_variable">environment
+variable</a>
+to ensure that '<code>qmake</code>' etc can be found. </p>
+<h3 id="qwt">Install Qwt</h3>
+<p> Install Qwt 5.2 or newer from source.
+(It could instead be installed via <a href="http://macports.org/">MacPorts</a>.)
+</p>
+<p> See important <a href="install.html#source">notes</a> about
+ensuring proper installation and adding to your <code>$DYLD_LIBRARY_PATH</code>
+<a href="http://en.wikipedia.org/wiki/Environment_variable">environment
+variable</a>
+to ensure that its shared library can be found. </p>
 <h3 id="build">Building Qtstalker</h3>
 <p> Prepare for compiling Qtstalker: </p>
-<p> edit qtstalker.config ... to add the lines (using whatever version
-number): </p>
-<pre>INCLUDEPATH += /usr/local/Trolltech/Qt-4.6.3/include/Qt<br>LIBS = -L/usr/local/Trolltech/Qt-4.6.3/lib </pre>
+<p> edit qtstalker.config ... to add the following lines
+(using whatever relevant version numbers): </p>
+<pre>INCLUDEPATH += /usr/local/Trolltech/Qt-4.6.3/include/Qt
+LIBS = -L/usr/local/Trolltech/Qt-4.6.3/lib
+INCLUDEPATH += /usr/local/qwt-5.2.1/include
+LIBS += -L/usr/local/qwt-5.2.1/lib</pre>
 <p> For Snow Leopard, edit configure ... to tweak the 'qmake'
 invocation to include "CONFIG += qt x86_64" </p>
 <p> Now compile Qtstalker: </p>
