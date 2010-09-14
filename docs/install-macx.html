@@ -72,7 +72,10 @@ LIBS += -L/usr/local/qwt-5.2.1/lib</pre>
 invocation to include "CONFIG += qt x86_64" </p>
 <p> Now compile Qtstalker: </p>
 <pre>./configure<br>make<br>sudo make install </pre>
-<p> Now start Qtstalker: </p>
+<h3 id="start">Start Qtstalker</h3>
+<p>At the current stage of development, need to first start the QuoteServer:
+<pre>/usr/local/bin/QuoteServer.app/Contents/MacOS/QuoteServer</pre>
+<p>Then:</p>
 <pre>/usr/local/bin/qtstalker.app/Contents/MacOS/qtstalker</pre>
 <p> Tip: Use the "Keep in Dock" making it easier to start. </p>
 <p> Tip: Use the "Console" application to see any log messages, e.g.
