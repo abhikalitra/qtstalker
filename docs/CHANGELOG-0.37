@@ -709,3 +709,18 @@
 
 20100909:  Chart objects now interactive as before.
 
+20100911:  Chart and group panel now have new non blocking dialogs for all the toolbar and menu functions.
+
+           Changed format for the appearance of symbols in the chart and group panel lists.
+           They are now EXCHANGE:SYMBOL format for more efficient identification.
+
+20100913:  Script panel now has new non blocking dialogs for all the toolbar and menu functions.
+
+20100914:  Data window now working.
+
+           Script API changed for INDICATOR,SET_PLOT command. Added Z parm to determine the order of plots to draw.
+
+           Fixed CUS PLOT_STYLE and missing plots.
+
+
+

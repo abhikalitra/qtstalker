@@ -19,37 +19,41 @@
  *  USA.
  */
 
-#ifndef SCRIPT_DIALOG_HPP
-#define SCRIPT_DIALOG_HPP
+#ifndef DIALOG_HPP
+#define DIALOG_HPP
 
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QTabWidget>
+#include <QLayout>
 #include <QString>
-#include <QLineEdit>
+#include <QLabel>
 
-#include "Script.h"
-#include "FileButton.h"
-#include "Dialog.h"
-#include "ScriptDataBase.h"
-
-class ScriptDialog : public Dialog
+class Dialog : public QDialog
 {
   Q_OBJECT
 
   signals:
-    void signalRunScript (QString, QString);
-  
+    void signalMessage (QString);
+
   public:
-    ScriptDialog (QString);
-    void createMainPage ();
+    enum Type
+    {
+      _Message,
+      _Dialog
+    };
+    
+    Dialog (Dialog::Type, QWidget *parent);
+    void setMessage (QString message);
 
   public slots:
-    void done ();
+    virtual void done ();
 
-  private:
-    Script _script;
-    QLineEdit *_command;
-    QLineEdit *_comment;
-    FileButton *_file;
-    ScriptDataBase _db;
+  protected:
+    QTabWidget *_tabs;
+    QDialogButtonBox *_buttonBox;
+    QVBoxLayout *_vbox;
+    QLabel *_message;
 };
 
 #endif

@@ -12,6 +12,6 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,candles,green";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot it
-print STDOUT "INDICATOR,SET_PLOT,candles";
+print STDOUT "INDICATOR,SET_PLOT,candles,0";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 

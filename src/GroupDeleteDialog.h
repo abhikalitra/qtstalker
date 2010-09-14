@@ -19,37 +19,32 @@
  *  USA.
  */
 
-#ifndef SCRIPT_DIALOG_HPP
-#define SCRIPT_DIALOG_HPP
+#ifndef GROUP_DELETE_DIALOG_HPP
+#define GROUP_DELETE_DIALOG_HPP
 
-#include <QString>
-#include <QLineEdit>
+#include <QListWidget>
 
-#include "Script.h"
-#include "FileButton.h"
 #include "Dialog.h"
-#include "ScriptDataBase.h"
+#include "GroupDataBase.h"
 
-class ScriptDialog : public Dialog
+class GroupDeleteDialog : public Dialog
 {
   Q_OBJECT
 
   signals:
-    void signalRunScript (QString, QString);
+    void signalDelete ();
   
   public:
-    ScriptDialog (QString);
+    GroupDeleteDialog ();
     void createMainPage ();
 
   public slots:
     void done ();
+    void done2 ();
 
   private:
-    Script _script;
-    QLineEdit *_command;
-    QLineEdit *_comment;
-    FileButton *_file;
-    ScriptDataBase _db;
+    QListWidget *_list;
+    GroupDataBase _db;
 };
 
 #endif

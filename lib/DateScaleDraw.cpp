@@ -122,6 +122,11 @@ void DateScaleDraw::info (int index, Setting &set)
   }
 }
 
+QList<QDateTime> & DateScaleDraw::dates ()
+{
+  return _dateList;
+}
+
 
 
 

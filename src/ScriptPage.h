@@ -63,22 +63,24 @@ class ScriptPage : public QWidget
   public slots:
     void newScript ();
     void editScript ();
-    void editScript (QString &);
+    void editScript (QString);
     void deleteScript ();
     void listDoubleClick (QListWidgetItem *);
+    void listDoubleClick2 ();
     void listRightClick (const QPoint &);
     void queRightClick (const QPoint &);
     void search ();
+    void search2 (QString, QStringList);
     void showAllScripts ();
     void updateQueList ();
     void scriptDone (QString);
     void removeScriptQueue ();
+    void removeScriptQueue2 ();
     void runScript (Script *);
     void runScriptDialog ();
     void runScriptDialog2 (QString command, QString file);
     void listStatus ();
     void queStatus ();
-    void scriptChanged (QString);
 
   protected:
     QListWidget *list;

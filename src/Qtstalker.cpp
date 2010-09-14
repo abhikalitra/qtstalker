@@ -347,7 +347,7 @@ void QtstalkerApp::dataWindow ()
   DataWindow *dw = new DataWindow(this);
   connect(dw, SIGNAL(finished(int)), dw, SLOT(deleteLater()));
   dw->setWindowTitle("DataWindow - " + getWindowCaption());
-//  dw->setData(_chartLayout->plotList());
+  dw->setData(_chartLayout->plots());
   dw->show();
   dw->scrollToBottom();
 }

@@ -200,13 +200,19 @@ On success returns '0', failure returns "ERROR"<br>
 <br>
 <br>
 <hr style="width: 100%; height: 2px;"><br>
-<p style="font-weight: bold;">INDICATOR,SET_PLOT,&lt;NAME&gt;<br>
+<p style="font-weight: bold;">INDICATOR,SET_PLOT,&lt;NAME&gt;,&lt;Z&gt;<br>
 </p>
 <p><br>
-Plots the indicator on a chart.<br>
+Plots the indicator on a chart in the specified order. If we have
+multiple plots, the oder in which they are overlayed becomes essential.<br>
 </p>
 <ul>
   <li>&lt;NAME&gt; is the variable name of the dataset.</li>
+  <li>&lt;Z&gt; the order in which plots are drawn. the plots are drawn
+in <span
+ style="font-weight: bold; font-style: italic; text-decoration: underline;">ascending</span>
+order. eg. 0 first, 100 last.<br>
+  </li>
 </ul>
 <br>
 On success returns '0', failure returns "ERROR"<br>

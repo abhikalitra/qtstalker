@@ -23,7 +23,7 @@
 #define GROUP_HPP
 
 #include <QString>
-#include <QList>
+#include <QHash>
 
 #include "BarData.h"
 
@@ -33,19 +33,17 @@ class Group
     Group ();
     void clear ();
     QString & getName ();
-    void setName (QString &);
-    int deleteItem (int);
-    int getItem (int, BarData &);
+    void setName (QString);
+    void deleteSymbol (QString);
+    int getSymbol (QString, BarData &);
     int count ();
-    void append (BarData &);
-    void prepend (BarData &);
+    void setSymbol (BarData);
     void getStringList (QStringList &);
-    int contains (BarData &);
-    void move (int, int);
+    int contains (BarData);
 
   protected:
     QString _name;
-    QList<BarData> _symbols;
+    QHash<QString, BarData> _symbols;
 };
 
 #endif

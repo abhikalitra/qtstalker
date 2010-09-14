@@ -25,6 +25,7 @@
 #include "SymbolDialog.h"
 #include "UpdateChartPageThread.h"
 #include "QuoteServerDialog.h"
+#include "GroupAddDialog.h"
 
 #include "../pics/addgroup.xpm"
 #include "../pics/search.xpm"
@@ -59,14 +60,9 @@ ChartPage::ChartPage ()
   
   createButtonMenu(tb);
   
-  _nav = new ListWidget;
-  _nav->setContextMenuPolicy(Qt::CustomContextMenu);
-  _nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  _nav->setSortingEnabled(FALSE);
-  connect(_nav, SIGNAL(itemSelectionChanged()), this, SLOT(listStatus()));
+  _nav = new SymbolListWidget;
+  connect(_nav, SIGNAL(signalSymbolSelected(BarData)), this, SLOT(chartOpened(BarData)));
   connect(_nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
-  connect(_nav, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
-  connect(_nav, SIGNAL(signalEnterKeyPressed(QListWidgetItem *)), this, SLOT(chartOpened(QListWidgetItem *)));
   vbox->addWidget(_nav);
 
   // update to last symbol search before displaying
@@ -129,15 +125,8 @@ void ChartPage::createButtonMenu (QToolBar *tb)
   _menu->addAction(_actions.value(Server));
 }
 
-void ChartPage::chartOpened (QListWidgetItem *item)
+void ChartPage::chartOpened (BarData bd)
 {
-  if (! item)
-    return;
-
-  BarData bd;
-  if (_symbols.getItem(_nav->currentRow(), bd))
-    return;
-  
   emit fileSelected(bd);
   emit addRecentChart(bd);
 }
@@ -149,43 +138,9 @@ void ChartPage::rightClick (const QPoint &)
 
 void ChartPage::addToGroup ()
 {
-  QList<QListWidgetItem *> sl = _nav->selectedItems();
-  if (! sl.count())
-    return;
-
-  GroupDataBase db;
-  QStringList tl;
-  db.getAllGroupsList(tl);
-  bool ok;
-  QString name = QInputDialog::getItem(this,
-					QString(tr("Add To Group")),
-					QString(tr("Select group to add selected charts")),
-                                        tl,
-					0,
-					FALSE,
-                                        &ok,
-					0);
-  if (! ok || ! name.length())
-    return;
-
-  Group group;
-  group.setName(name);
-  db.getGroup(group);
-
-  int loop;
-  for (loop = 0; loop < sl.count(); loop++)
-  {
-    BarData bd;
-    if (_symbols.getItem(_nav->row(sl.at(loop)), bd))
-      continue;
-    
-    group.append(bd);
-  }
-
-  db.setGroup(group);
-
-  emit signalAddToGroup();
-  emit signalMessage(QString(tr("Symbol(s) added.")));
+  GroupAddDialog *dialog = new GroupAddDialog(_nav->symbols());
+  connect(dialog, SIGNAL(signalGroupChanged()), this, SIGNAL(signalAddToGroup()));
+  dialog->show();
 }
 
 void ChartPage::doKeyPress (QKeyEvent *key)
@@ -215,8 +170,7 @@ void ChartPage::doKeyPress (QKeyEvent *key)
 
 void ChartPage::updateList ()
 {
-  _nav->clear();
-  _symbols.clear();
+  _nav->clearSymbols();
 
   setEnabled(FALSE);
 
@@ -224,38 +178,32 @@ void ChartPage::updateList ()
   
   qRegisterMetaType<BarData>("BarData");
   UpdateChartPageThread *r = new UpdateChartPageThread(this, _searchExchange, _searchString);
-  connect(r, SIGNAL(signalSymbol(BarData)), this, SLOT(addSymbol(BarData)), Qt::QueuedConnection);
+  connect(r, SIGNAL(signalSymbol(BarData)), _nav, SLOT(addSymbol(BarData)), Qt::QueuedConnection);
   connect(r, SIGNAL(signalDone()), this, SLOT(requestDone()), Qt::QueuedConnection);
   connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
   r->start();
-}
-
-void ChartPage::addSymbol (BarData bd)
-{
-  _symbols.append(bd);
-
-  QListWidgetItem *item = new QListWidgetItem;
-  item->setText(bd.getSymbol());
-  item->setToolTip(QString(tr("Name: ") + bd.getName() + "\n" + tr("Exchange: ") + bd.getExchange()));
-  _nav->addItem(item);
 }
 
 void ChartPage::requestDone ()
 {
   _nav->setSortingEnabled(TRUE);
   setEnabled(TRUE);
-  listStatus();
+  buttonStatus();
 }
 
 void ChartPage::symbolSearch ()
 {
-  SymbolDialog dialog(1);
-  dialog.setSymbols(_searchExchange, _searchString);
-  int rc = dialog.exec();
-  if (rc == QDialog::Rejected)
-    return;
+  SymbolDialog *dialog = new SymbolDialog(1);
+  dialog->setSymbols(_searchExchange, _searchString);
+  connect(dialog, SIGNAL(signalResults(QString, QString)), this, SLOT(symbolSearch2(QString, QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
 
-  dialog.getSymbolSearch(_searchExchange, _searchString);
+void ChartPage::symbolSearch2 (QString ex, QString ss)
+{
+  _searchExchange = ex;
+  _searchString = ss;
   
   Config config;
   config.setData(Config::LastChartPanelSymbolSearch, _searchString);
@@ -271,18 +219,15 @@ void ChartPage::allButtonPressed ()
   updateList();
 }
 
-void ChartPage::listStatus ()
+void ChartPage::buttonStatus ()
 {
-  bool status = FALSE;
-  QList<QListWidgetItem *> l = _nav->selectedItems();
-  if (l.count())
-    status = TRUE;
-  
+  int status = _nav->count();
   _actions.value(AddGroup)->setEnabled(status); 
 }
 
 void ChartPage::deleteSymbol ()
 {
+/*  
   QList<QListWidgetItem *> l = _nav->selectedItems();
   if (! l.count())
     return;
@@ -310,16 +255,15 @@ void ChartPage::deleteSymbol ()
     }
 
 // FIXME:
-/*
     if (plug->deleteSymbol(&bd))
     {
       qDebug() << "ChartPage::deleteSymbol: plugin deleteSymbol error";
       continue;
     }
-*/    
   }
 
   updateList();
+*/  
 }
 
 void ChartPage::serverDialog ()

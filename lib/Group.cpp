@@ -35,27 +35,22 @@ QString & Group::getName ()
   return _name;
 }
 
-void Group::setName (QString &d)
+void Group::setName (QString d)
 {
   _name = d;
 }
 
-int Group::deleteItem (int row)
+void Group::deleteSymbol (QString key)
 {
-  if (row < 0 || row >= _symbols.count())
-    return 1;
-  
-  _symbols.removeAt(row);
-  
-  return 0;
+  _symbols.remove(key);
 }
 
-int Group::getItem (int row, BarData &d)
+int Group::getSymbol (QString key, BarData &d)
 {
-  if (row < 0 || row >= _symbols.count())
+  if (! _symbols.contains(key))
     return 1;
 
-  d = _symbols.at(row);
+  d = _symbols.value(key);
   return 0;
 }
 
@@ -64,49 +59,29 @@ int Group::count ()
   return _symbols.count();
 }
 
-void Group::append (BarData &d)
+void Group::setSymbol (BarData d)
 {
-  _symbols.append(d);
-}
-
-void Group::prepend (BarData &d)
-{
-  _symbols.prepend(d);
+  QString k = d.getKey();
+  _symbols.insert(k, d);
 }
 
 void Group::getStringList (QStringList &l)
 {
   l.clear();
-  
-  int loop;
-  for (loop = 0; loop < _symbols.count(); loop++)
+
+  QHashIterator<QString, BarData> it(_symbols);
+  while (it.hasNext())
   {
-    BarData bd;
-    getItem(loop, bd);
-    l.append(bd.getExchange());
-    l.append(bd.getSymbol());
+    it.next();
+    
+    BarData bd = it.value();
+    l.append(bd.getKey());
   }
 }
 
-int Group::contains (BarData &d)
+int Group::contains (BarData d)
 {
-  int loop;
-  for (loop = 0; loop < count(); loop++)
-  {
-    BarData bd;
-    getItem(loop, bd);
-    if (d.getSymbol() == bd.getSymbol())
-    {
-      if (d.getExchange() == bd.getExchange())
-	return 1;
-    }
-  }
-  
-  return 0;
-}
-
-void Group::move (int from, int to)
-{
-  _symbols.move(from, to);
+  QString k = d.getKey();
+  return _symbols.contains(k);
 }
 

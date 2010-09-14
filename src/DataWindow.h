@@ -22,15 +22,15 @@
 #ifndef DATAWINDOW_HPP
 #define DATAWINDOW_HPP
 
-#include <QString>
 #include <QDialog>
+#include <QString>
 #include <QTableWidget>
 #include <QList>
 #include <QHash>
+#include <QDateTime>
 
-#include "BarData.h"
-#include "Setting.h"
-#include "DateBar.h"
+#include "PlotSettings.h"
+#include "Curve.h"
 
 class DataWindow : public QDialog
 {
@@ -38,17 +38,17 @@ class DataWindow : public QDialog
 
   public:
     DataWindow (QWidget *);
-//    void setData (QHash<QString, QFP_Plot *> &);
-//    void setPlot (QFP_Plot *);
-    void setDates (DateBar &);
-//    void setLine (QFP_Curve *);
-//    void setOHLC (QFP_Curve *);
+    void setData (QHash<QString, PlotSettings> &);
+    void setPlot (PlotSettings &);
+    void setDates (PlotSettings &);
+    void setLine (Curve *);
+    void setOHLC (Curve *);
     void scrollToBottom ();
 
   private:
-    QTableWidget *table;
-    int dateFlag;
-    int ohlcFlag;
+    QTableWidget *_table;
+    int _dateFlag;
+    int _ohlcFlag;
 };
 
 #endif

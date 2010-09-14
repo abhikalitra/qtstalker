@@ -19,37 +19,41 @@
  *  USA.
  */
 
-#ifndef SCRIPT_DIALOG_HPP
-#define SCRIPT_DIALOG_HPP
+#ifndef SYMBOL_LIST_WIDGET_HPP
+#define SYMBOL_LIST_WIDGET_HPP
 
-#include <QString>
-#include <QLineEdit>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QKeyEvent>
 
-#include "Script.h"
-#include "FileButton.h"
-#include "Dialog.h"
-#include "ScriptDataBase.h"
+#include "Group.h"
+#include "BarData.h"
 
-class ScriptDialog : public Dialog
+class SymbolListWidget : public QListWidget
 {
   Q_OBJECT
 
   signals:
-    void signalRunScript (QString, QString);
-  
+    void signalSymbolSelected (BarData);
+
   public:
-    ScriptDialog (QString);
-    void createMainPage ();
+    SymbolListWidget ();
+    void clearSymbols ();
+    void deleteSymbol ();
+    Group & symbols ();
+    BarData symbol (QString);
 
   public slots:
-    void done ();
+    void itemClicked (QListWidgetItem *);
+    void addSymbol (BarData);
+
+  protected:
+    void keyPressEvent (QKeyEvent *);
 
   private:
-    Script _script;
-    QLineEdit *_command;
-    QLineEdit *_comment;
-    FileButton *_file;
-    ScriptDataBase _db;
+    Group _symbols;
 };
 
 #endif
+
+

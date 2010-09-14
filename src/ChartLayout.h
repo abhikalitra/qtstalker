@@ -33,7 +33,6 @@
 #include "Setting.h"
 #include "BarData.h"
 #include "TabWidget.h"
-#include "DateBar.h"
 #include "PlotSettings.h"
 
 class ChartLayout : public QSplitter
@@ -94,7 +93,6 @@ class ChartLayout : public QSplitter
     QHash<int, QGridLayout *> _grids;
     QHash<int, QWidget *> _holders;
     BarData _barData;
-    DateBar _dateBars;
     int _startIndex;
 };
 

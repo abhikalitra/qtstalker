@@ -1019,27 +1019,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add To Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select group to add selected charts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Add To &amp;Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol(s) added.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exchange: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1059,14 +1039,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to permanently delete symbol(s)?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Configure Quote Server</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1079,6 +1051,22 @@ eg. perl -l -T</source>
     <name>DataWindow</name>
     <message>
         <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1246,49 +1234,97 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>GroupAddDialog</name>
+    <message>
+        <source>QtStalker: Add To Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol(s) added.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GroupDeleteDialog</name>
+    <message>
+        <source>QtStalker: Delete Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Delete Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete selected groups?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group(s) deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GroupDeleteItemsDialog</name>
+    <message>
+        <source>QtStalker: Delete Group Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group Contents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Delete Group Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete selected items?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group Item(s) deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GroupNewDialog</name>
+    <message>
+        <source>QtStalker: New Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: New Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A group with this name already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>created</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GroupPage</name>
     <message>
         <source>Current Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter new group symbol.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>NewGroup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This group already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete current group </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add To Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select group to add selected charts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete group items?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1301,30 +1337,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>De&amp;lete Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Refresh List</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Group created.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Group deleted.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Group item(s) added.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exchange: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1345,10 +1357,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Delete group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh List</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2022,34 +2030,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New &amp;Buy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New &amp;HLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New &amp;Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New &amp;Sell</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Te&amp;xt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New &amp;TLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New &amp;VLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Qtstalker: Warning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2059,6 +2039,34 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>Are you sure you want to delete group this chart object?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;HLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Sell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Te&amp;xt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;TLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;VLine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2823,6 +2831,29 @@ a partial match like %SI or %RSI%</source>
     </message>
 </context>
 <context>
+    <name>ScriptDeleteDialog</name>
+    <message>
+        <source>QtStalker: Delete Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Delete Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete selected scripts?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scripts deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ScriptDialog</name>
     <message>
         <source>Qtstalker: Edit Script </source>
@@ -2852,6 +2883,14 @@ a partial match like %SI or %RSI%</source>
         <source>Comment</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>saved</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptLaunchButton</name>
@@ -2869,6 +2908,25 @@ a partial match like %SI or %RSI%</source>
     </message>
 </context>
 <context>
+    <name>ScriptNewDialog</name>
+    <message>
+        <source>QtStalker: New Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error New Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A script with this name already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ScriptPage</name>
     <message>
         <source>Search</source>
@@ -2876,18 +2934,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>New Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter name of new script.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to permanently delete this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2907,25 +2953,8 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter either a specific name like MyScript or
-a partial match like %Script or %Scr%</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script currently executing.
 Are you sure you want to remove this script?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script saved.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2934,18 +2963,6 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Active Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This script already exists. Replace it?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The script edited is currently running. Restart script?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The script deleted is currently running. Terminate script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2993,7 +3010,31 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script waiting for shutdown</source>
+        <source>Qtstalker: Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Stop running script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error run script</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScriptSearchDialog</name>
+    <message>
+        <source>QtStalker: Search Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter either a specific name like MyScript or
+a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3078,6 +3119,13 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>Remove selected symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SymbolListWidget</name>
+    <message>
+        <source>Name: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>

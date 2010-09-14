@@ -42,11 +42,11 @@ void RecentCharts::addRecentChart (BarData bd)
     return;
 
   if (count() == maxCount())
-    _group.deleteItem(maxCount() - 1);
+    _group.deleteSymbol(itemText(maxCount() - 1));
 
-  _group.prepend(bd);
+  _group.setSymbol(bd);
 
-  insertItem(0, bd.getSymbol());
+  insertItem(0, bd.getKey());
 }
 
 void RecentCharts::itemSelected (int row)
@@ -55,12 +55,10 @@ void RecentCharts::itemSelected (int row)
   removeItem(row);
   insertItem(0, s);
 
-  _group.move(row, 0);
-
   setCurrentIndex(0);
 
   BarData bd;
-  if (_group.getItem(0, bd))
+  if (_group.getSymbol(s, bd))
     return;
 
   emit signalChartSelected(bd);
@@ -81,14 +79,15 @@ void RecentCharts::load ()
   Config config;
   config.getData(Config::RecentChartsList, l);
 
-  int loop;
-  for (loop = 0; loop < l.count(); loop = loop + 2)
+  int loop = 0;
+  for (; loop < l.count(); loop++)
   {
     BarData bd;
-    bd.setExchange(l[loop]);
-    bd.setSymbol(l[loop + 1]);
-    _group.append(bd);
-    addItem(l[loop + 1]);
+    QStringList l2 = l.at(loop).split(":");
+    bd.setExchange(l2[0]);
+    bd.setSymbol(l2[1]);
+    _group.setSymbol(bd);
+    addItem(l.at(loop));
   }
 }
 

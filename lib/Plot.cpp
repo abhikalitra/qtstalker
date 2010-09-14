@@ -104,25 +104,25 @@ Plot::Plot ()
 
   _coListMenu = new QMenu(this);
   _coListMenu->setTitle(tr("New Chart Object..."));
-  QAction *a = _coListMenu->addAction(QPixmap(buyarrow_xpm), tr("New &Buy"));
+  QAction *a = _coListMenu->addAction(QPixmap(buyarrow_xpm), tr("&Buy"));
   a->setShortcut(Qt::ALT+Qt::Key_B);
   a->setData(QVariant(ChartObject::_Buy));
-  a = _coListMenu->addAction(QPixmap(horizontal_xpm), tr("New &HLine"));
+  a = _coListMenu->addAction(QPixmap(horizontal_xpm), tr("&HLine"));
   a->setShortcut(Qt::ALT+Qt::Key_H);
   a->setData(QVariant(ChartObject::_HLine));
-  a = _coListMenu->addAction(QPixmap(fib_xpm), tr("New &Retracement"));
+  a = _coListMenu->addAction(QPixmap(fib_xpm), tr("&Retracement"));
   a->setShortcut(Qt::ALT+Qt::Key_R);
   a->setData(QVariant(ChartObject::_Retracement));
-  a = _coListMenu->addAction(QPixmap(sellarrow_xpm), tr("New &Sell"));
+  a = _coListMenu->addAction(QPixmap(sellarrow_xpm), tr("&Sell"));
   a->setShortcut(Qt::ALT+Qt::Key_S);
   a->setData(QVariant(ChartObject::_Sell));
-  a = _coListMenu->addAction(QPixmap(text_xpm), tr("New Te&xt"));
+  a = _coListMenu->addAction(QPixmap(text_xpm), tr("Te&xt"));
   a->setShortcut(Qt::ALT+Qt::Key_X);
   a->setData(QVariant(ChartObject::_Text));
-  a = _coListMenu->addAction(QPixmap(trend_xpm), tr("New &TLine"));
+  a = _coListMenu->addAction(QPixmap(trend_xpm), tr("&TLine"));
   a->setShortcut(Qt::ALT+Qt::Key_T);
   a->setData(QVariant(ChartObject::_TLine));
-  a = _coListMenu->addAction(QPixmap(vertical_xpm), tr("New &VLine"));
+  a = _coListMenu->addAction(QPixmap(vertical_xpm), tr("&VLine"));
   a->setShortcut(Qt::ALT+Qt::Key_V);
   a->setData(QVariant(ChartObject::_VLine));
   connect(_coListMenu, SIGNAL(triggered(QAction *)), this, SLOT(chartObjectMenuSelected(QAction *)));
@@ -192,17 +192,18 @@ void Plot::updatePlot ()
   replot();
 }
 
-void Plot::addCurves (QMap<int, Curve *> &curves)
+void Plot::addCurves (QHash<QString, Curve *> &curves)
 {
-  QList<int> keys;
-  keys = curves.keys();
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-    addCurve(keys.at(loop), curves.value(keys.at(loop)));
+  QHashIterator<QString, Curve *> it(curves);
+  while (it.hasNext())
+  {
+    it.next();
+    Curve *curve = it.value();
+    addCurve(it.key(), curve);
+  }
 }
 
-void Plot::addCurve (int id, Curve *curve)
+void Plot::addCurve (QString id, Curve *curve)
 {
   switch ((Curve::Type) curve->type())
   {
@@ -297,7 +298,7 @@ void Plot::addCurve2 (Curve *curve, QwtPlotCurve *qcurve)
   qcurve->setData(x, y);
 }
 
-void Plot::addCurve3 (int id, Curve *curve, QwtPlotCurve *qcurve)
+void Plot::addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve)
 {
   qcurve->setTitle(curve->label());
   qcurve->setPen(QPen(curve->color()));
@@ -306,6 +307,16 @@ void Plot::addCurve3 (int id, Curve *curve, QwtPlotCurve *qcurve)
   qcurve->attach(this);
   _qwtCurves.insert(id, qcurve);
   _curves.insert(id, curve);
+}
+
+void Plot::curves (QHash<QString, Curve *> &d)
+{
+  d = _curves;
+}
+
+void Plot::dates (QList<QDateTime> &d)
+{
+  d = _dateScaleDraw->dates();
 }
 
 void Plot::setBackgroundColor (QColor d)
@@ -360,14 +371,13 @@ void Plot::setHighLow ()
   _high = -99999999;
   _low = 99999999;
 
-  QList<int> keys;
-  keys = _curves.keys();
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  QHashIterator<QString, Curve *> it(_curves);
+  while (it.hasNext())
   {
+    it.next();
+    Curve *curve = it.value();
+    
     double h, l;
-    Curve *curve = _curves.value(keys.at(loop));
     curve->highLowRange(_startPos, _endPos, h, l);
     if (h > _high)
       _high = h;
@@ -375,9 +385,11 @@ void Plot::setHighLow ()
       _low = l;
   }
 
+  QList<int> keys;
   keys = _chartObjects.keys();
 
-  for (loop = 0; loop < keys.count(); loop++)
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
     double h, l;
     ChartObject *co = _chartObjects.value(keys.at(loop));
@@ -515,12 +527,12 @@ void Plot::mouseMove (QPoint p)
 
   _dateScaleDraw->info(index, set);
 
-  keys = _curves.keys();
-  
   Strip strip;
-  for (loop = 0; loop < keys.count(); loop++)
+  QHashIterator<QString, Curve *> it(_curves);
+  while (it.hasNext())
   {
-    Curve *curve = _curves.value(keys.at(loop));
+    it.next();
+    Curve *curve = it.value();
     curve->info(index, set);
   }
 

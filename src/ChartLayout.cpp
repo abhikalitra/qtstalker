@@ -210,8 +210,6 @@ void ChartLayout::loadPlots (BarData &bd, int index)
   _barData = bd;
   _startIndex = index;
 
-  _dateBars.createDateList(_barData);
-
   IndicatorDataBase db;
   QStringList indicatorList;
   db.getActiveIndicatorList(indicatorList);
@@ -276,7 +274,6 @@ void ChartLayout::setIndex (int d)
 void ChartLayout::clearIndicator ()
 {
   _barData.clear();
-  _dateBars.clear();
   
   emit signalClear();
   emit signalDraw();

@@ -37,6 +37,9 @@ class SymbolDialog : public QDialog
 {
   Q_OBJECT
 
+  signals:
+    void signalResults (QString, QString);
+
   public:
     SymbolDialog (int);
     void setSymbols (QString &ex, QString &ss);
@@ -51,6 +54,7 @@ class SymbolDialog : public QDialog
     void searchButtonPressed ();
     void exchangeRequestDone (QString);
     void searchRequestDone (QString);
+    void done ();
 
   private:
     int modified;

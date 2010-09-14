@@ -35,7 +35,7 @@
 
 #include "BarData.h"
 #include "Group.h"
-#include "ListWidget.h"
+#include "SymbolListWidget.h"
 
 class ChartPage : public QWidget
 {
@@ -65,23 +65,22 @@ class ChartPage : public QWidget
   public slots:
     void rightClick (const QPoint &);
     void doKeyPress (QKeyEvent *);
-    void chartOpened (QListWidgetItem *);
+    void chartOpened (BarData);
     void addToGroup ();
     void updateList ();
     void symbolSearch ();
+    void symbolSearch2 (QString, QString);
     void allButtonPressed ();
-    void listStatus ();
+    void buttonStatus ();
     void deleteSymbol ();
-    void addSymbol (BarData);
     void requestDone ();
     void serverDialog ();
 
   protected:
     QString _searchString;
     QString _searchExchange;
-    ListWidget *_nav;
+    SymbolListWidget *_nav;
     QMenu *_menu;
-    Group _symbols;
     QHash<int, QAction *> _actions;
 };
 

@@ -20,39 +20,37 @@
  */
 
 #include "ScriptDialog.h"
-#include "ScriptDataBase.h"
 #include "Config.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
 #include <QLabel>
 #include <QDir>
 
-ScriptDialog::ScriptDialog (QString name) : QDialog (0, 0)
+ScriptDialog::ScriptDialog (QString name) : Dialog (Dialog::_Dialog, 0)
 {
-  setAttribute(Qt::WA_DeleteOnClose);
-
   if (! name.isEmpty())
   {
-    ScriptDataBase db;
     _script.setName(name);
-    db.getScript(&_script);
-    
-    QString s = tr("Qtstalker: Edit Script ") + name;
-    setWindowTitle(s);
+    _db.getScript(&_script);
+
+    setWindowTitle(tr("Qtstalker: Edit Script ") + name);
   }
   else
     setWindowTitle(tr("Qtstalker: Run Script"));
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(10);
-  vbox->setMargin(5);
-  setLayout(vbox);
+  createMainPage();
+}
+
+void ScriptDialog::createMainPage ()
+{
+  QWidget *w = new QWidget;
 
   QGridLayout *grid = new QGridLayout;
   grid->setSpacing(2);
   grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
+  w->setLayout(grid);
 
   int row = 0;
   int col = 0;
@@ -87,7 +85,8 @@ ScriptDialog::ScriptDialog (QString name) : QDialog (0, 0)
   grid->addWidget(_file, row++, col--);
 
   // check if run dialog format
-  if (! name.isEmpty())
+  s = _script.getName();
+  if (! s.isEmpty())
   {
     // comment
     label = new QLabel(tr("Comment"));
@@ -99,13 +98,9 @@ ScriptDialog::ScriptDialog (QString name) : QDialog (0, 0)
     grid->addWidget(_comment, row++, col--);
   }
 
-  // buttonbox
-  _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  vbox->addWidget(_buttonBox);
+  grid->setRowStretch(row, 1);
 
-  vbox->addStretch(1);
+  _tabs->addTab(w, QString());
 }
 
 void ScriptDialog::done ()
@@ -114,7 +109,6 @@ void ScriptDialog::done ()
     emit signalRunScript(_command->text(), _file->getFile());
   else
   {
-    ScriptDataBase db;
     QString s = _command->text();
     _script.setCommand(s);
 
@@ -124,9 +118,15 @@ void ScriptDialog::done ()
     s = _comment->text();
     _script.setComment(s);
   
-    db.setScript(&_script);
+    g_mutex.lock();
+    _db.transaction();
+    _db.setScript(&_script);
+    _db.commit();
+    g_mutex.unlock();
 
-    emit signalScriptChanged(_script.getName());
+    QStringList l;
+    l << tr("Script") << _script.getName() << tr("saved");
+    emit signalMessage(l.join(" "));
   }
 
   accept();

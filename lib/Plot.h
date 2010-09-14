@@ -66,15 +66,17 @@ class Plot : public QwtPlot
     ~Plot ();
     void updatePlot ();
     void setDates (BarData &);
-    void addCurve (int id, Curve *);
-    void addCurves (QMap<int, Curve *> &);
+    void addCurve (QString id, Curve *);
+    void addCurves (QHash<QString, Curve *> &);
     void setIndicator (QString &);
     void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
-    void addCurve3 (int id, Curve *curve, QwtPlotCurve *qcurve);
+    void addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve);
     void loadChartObjects ();
     void setHighLow ();
     void setupChartObject (ChartObject *);
     void saveChartObjects ();
+    void curves (QHash<QString, Curve *> &);
+    void dates (QList<QDateTime> &);
 
   public slots:
     virtual void clear ();
@@ -108,8 +110,8 @@ class Plot : public QwtPlot
     QAction *_dateAction;
     QAction *_logAction;
     int _spacing;
-    QMap<int, QwtPlotCurve *> _qwtCurves;
-    QMap<int, Curve *> _curves;
+    QHash<QString, QwtPlotCurve *> _qwtCurves;
+    QHash<QString, Curve *> _curves;
     QMap<int, ChartObject *> _chartObjects;
     DateScaleDraw *_dateScaleDraw;
     PlotScaleDraw *_plotScaleDraw;

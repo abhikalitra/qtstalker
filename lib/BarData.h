@@ -94,6 +94,7 @@ class BarData
     void getBarLengthList (QStringList &);
     void setBars (QString &);
     void barLengthText (BarData::BarLength, QString &);
+    QString getKey ();
 
   protected:
     QList<Bar> _barList;

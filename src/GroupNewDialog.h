@@ -19,37 +19,29 @@
  *  USA.
  */
 
-#ifndef SCRIPT_DIALOG_HPP
-#define SCRIPT_DIALOG_HPP
+#ifndef GROUP_NEW_DIALOG_HPP
+#define GROUP_NEW_DIALOG_HPP
 
-#include <QString>
 #include <QLineEdit>
 
-#include "Script.h"
-#include "FileButton.h"
 #include "Dialog.h"
-#include "ScriptDataBase.h"
 
-class ScriptDialog : public Dialog
+class GroupNewDialog : public Dialog
 {
   Q_OBJECT
 
   signals:
-    void signalRunScript (QString, QString);
+    void signalNewGroup ();
   
   public:
-    ScriptDialog (QString);
+    GroupNewDialog ();
     void createMainPage ();
 
   public slots:
     void done ();
 
   private:
-    Script _script;
-    QLineEdit *_command;
-    QLineEdit *_comment;
-    FileButton *_file;
-    ScriptDataBase _db;
+    QLineEdit *_name;
 };
 
 #endif

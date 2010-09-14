@@ -32,7 +32,7 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,200MA,#f3ff88";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot 200 MA
-print STDOUT "INDICATOR,SET_PLOT,200MA";
+print STDOUT "INDICATOR,SET_PLOT,200MA,0";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set 50MA plot style
@@ -44,7 +44,7 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,50MA,#9041ff";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 #plot 50MA
-print STDOUT "INDICATOR,SET_PLOT,50MA";
+print STDOUT "INDICATOR,SET_PLOT,50MA,1";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 #set 20MA plot style
@@ -56,7 +56,7 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,20MA,#09ff00";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 #plot 20 SMA
-print STDOUT "INDICATOR,SET_PLOT,20MA";
+print STDOUT "INDICATOR,SET_PLOT,20MA,2";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set Day plot style
@@ -68,6 +68,6 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,Day,red";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot Day
-print STDOUT "INDICATOR,SET_PLOT,Day";
+print STDOUT "INDICATOR,SET_PLOT,Day,3";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 

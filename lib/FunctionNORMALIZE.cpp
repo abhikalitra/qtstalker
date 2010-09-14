@@ -39,31 +39,31 @@ int FunctionNORMALIZE::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *tl = ind.line(set[3].toInt());
+  Curve *tl = ind.line(set.at(3));
   if (tl)
   {
-    qDebug() << "FunctionNORMALIZE::script: duplicate name" << set[3];
+    qDebug() << "FunctionNORMALIZE::script: duplicate name" << set.at(3);
     return 1;
   }
 
-  Curve *in = ind.line(set[4].toInt());
+  Curve *in = ind.line(set.at(4));
   if (! in)
   {
     in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
-      qDebug() << "FunctionNORMALIZE::script: input not found" << set[4];
+      qDebug() << "FunctionNORMALIZE::script: input not found" << set.at(4);
       return 1;
     }
 
-    ind.setLine(set[4].toInt(), in);
+    ind.setLine(set.at(4), in);
   }
 
   Curve *line = calculate(in);
   if (! line)
     return 1;
 
-  ind.setLine(set[3].toInt(), line);
+  ind.setLine(set.at(3), line);
 
   return 0;
 }

@@ -343,3 +343,9 @@ void BarData::barLengthText (BarData::BarLength k, QString &d)
   }
 }
 
+QString BarData::getKey ()
+{
+  QString s = _exchange + ":" + _symbol;
+  return s;
+}
+

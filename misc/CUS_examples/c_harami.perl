@@ -74,5 +74,5 @@ for ($count = $range[0]; $count <= $range[1]; $count++)
 }
 
 # plot the candles 
-print STDOUT "INDICATOR,SET_PLOT,candles";
+print STDOUT "INDICATOR,SET_PLOT,candles,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }

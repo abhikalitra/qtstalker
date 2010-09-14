@@ -48,6 +48,6 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,Disparity,red";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 #plot the disparity
-print STDOUT "INDICATOR,SET_PLOT,Disparity";
+print STDOUT "INDICATOR,SET_PLOT,Disparity,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 

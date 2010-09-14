@@ -121,7 +121,7 @@ SymbolDialog::SymbolDialog (int flag) : QDialog (0, 0)
   tvbox->addWidget(rightSymbols);
 
   buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-  connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+  connect(buttonBox, SIGNAL(accepted()), this, SLOT(done()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancelPressed()));
   vbox->addWidget(buttonBox);
   
@@ -156,7 +156,7 @@ void SymbolDialog::getSymbols (Group &l)
     s = item->text(2);
     bd.setExchange(s);
     
-    l.append(bd);
+    l.setSymbol(bd);
   }
 }
 
@@ -284,5 +284,12 @@ void SymbolDialog::exchangeRequestDone (QString data)
   exchanges->clear();
   exchanges->addItems(l);
   exchanges->setCurrentIndex(0);
+}
+
+void SymbolDialog::done ()
+{
+  emit signalResults(exchanges->currentText(), search->text());
+  
+  accept();  
 }
 

@@ -15,7 +15,7 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,oi,yellow";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot the oi
-print STDOUT "INDICATOR,SET_PLOT,oi";
+print STDOUT "INDICATOR,SET_PLOT,oi,0";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 

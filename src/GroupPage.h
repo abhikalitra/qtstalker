@@ -34,8 +34,7 @@
 #include <QAction>
 #include <QToolBar>
 
-#include "Group.h"
-#include "ListWidget.h"
+#include "SymbolListWidget.h"
 
 class GroupPage : public QWidget
 {
@@ -52,8 +51,7 @@ class GroupPage : public QWidget
       NewGroup,
       AddGroup,
       DeleteGroupItems,
-      DeleteGroup,
-      Refresh
+      DeleteGroup
     };
 
     GroupPage ();
@@ -68,20 +66,18 @@ class GroupPage : public QWidget
     void groupSelected (int);
     void rightClick (const QPoint &);
     void doKeyPress (QKeyEvent *);
-    void chartOpened (QListWidgetItem *);
+    void chartOpened (BarData);
     void updateGroups ();
     void addToGroup ();
     void loadGroups ();
-    void listStatus ();
-    void addSymbol (BarData);
+    void buttonStatus ();
     void requestDone ();
 
   protected:
-    ListWidget *_nav;
+    SymbolListWidget *_nav;
     QMenu *_menu;
     QComboBox *_groups;
     QHash<int, QAction *> _actions;
-    Group _group;
 };
 
 #endif

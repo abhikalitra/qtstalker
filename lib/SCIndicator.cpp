@@ -121,10 +121,10 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData
     case 0:
     {
       // check if name already exists
-      out = ind.line(l[3].toInt());
+      out = ind.line(l.at(3));
       if (out)
       {
-        qDebug() << "SCIndicator::getNew: name already exists" << l[3];
+        qDebug() << "SCIndicator::getNew: name already exists" << l.at(3);
         return 1;
       }
 
@@ -141,9 +141,9 @@ int SCIndicator::getNew (QStringList &l, QByteArray &ba, Indicator &ind, BarData
       break;
   }
 
-//  out->setLabel(l[3]);
+  out->setLabel(l[3]);
   
-  ind.setLine(l[3].toInt(), out);
+  ind.setLine(l.at(3), out);
 
   ba.clear();
   ba.append("0\n");
@@ -162,10 +162,10 @@ int SCIndicator::getIndex (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  Curve *line = ind.line(l[2].toInt());
+  Curve *line = ind.line(l.at(2));
   if (! line)
   {
-    qDebug() << "SCIndicator::getIndex: invalid input" << l[2];
+    qDebug() << "SCIndicator::getIndex: invalid input" << l.at(2);
     return 1;
   }
 
@@ -244,10 +244,10 @@ int SCIndicator::setIndex (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  Curve *line = ind.line(l[2].toInt());
+  Curve *line = ind.line(l.at(2));
   if (! line)
   {
-    qDebug() << "SCIndicator::setIndex: name not found" << l[2];
+    qDebug() << "SCIndicator::setIndex: name not found" << l.at(2);
     return 1;
   }
 
@@ -292,10 +292,10 @@ int SCIndicator::getRange (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  Curve *line = ind.line(l[2].toInt());
+  Curve *line = ind.line(l.at(2));
   if (! line)
   {
-    qDebug() << "SCIndicator::getRange: invalid input" << l[2];
+    qDebug() << "SCIndicator::getRange: invalid input" << l.at(2);
     return 1;
   }
 
@@ -320,10 +320,10 @@ int SCIndicator::setColor (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  Curve *line = ind.line(l[2].toInt());
+  Curve *line = ind.line(l.at(2));
   if (! line)
   {
-    qDebug() << "SCIndicator::setColor: name not found" << l[2];
+    qDebug() << "SCIndicator::setColor: name not found" << l.at(2);
     return 1;
   }
 
@@ -400,9 +400,9 @@ int SCIndicator::setDelete (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  if (ind.deleteLine(l[2].toInt()))
+  if (ind.deleteLine(l.at(2)))
   {
-    qDebug() << "SCIndicator::getDelete: name not found" << l[2];
+    qDebug() << "SCIndicator::getDelete: name not found" << l.at(2);
     return 1;
   }
 
@@ -423,10 +423,10 @@ int SCIndicator::setColorAll (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  Curve *line = ind.line(l[2].toInt());
+  Curve *line = ind.line(l.at(2));
   if (! line)
   {
-    qDebug() << "SCIndicator::setColorAll: name not found" << l[2];
+    qDebug() << "SCIndicator::setColorAll: name not found" << l.at(2);
     return 1;
   }
 
@@ -456,18 +456,14 @@ int SCIndicator::setPlotStyle (QStringList &l, QByteArray &ba, Indicator &ind)
     return 1;
   }
 
-  Curve *line = ind.line(l[2].toInt());
+  Curve *line = ind.line(l.at(2));
   if (! line)
   {
-    qDebug() << "SCIndicator::setPlotStyle: name not found" << l[2];
+    qDebug() << "SCIndicator::setPlotStyle: name not found" << l.at(2);
     return 1;
   }
 
-// FIXME
-//  PlotStyleFactory fac;
-  QStringList plotList;
-//  fac.list(plotList, FALSE);
-  int style = plotList.indexOf(l.at(3));
+  int style = line->typeFromString(l[3]);
   if (style == -1)
   {
     qDebug() << "SCIndicator::setPlotStyle: invalid style" << l.at(3);
@@ -484,23 +480,31 @@ int SCIndicator::setPlotStyle (QStringList &l, QByteArray &ba, Indicator &ind)
 
 int SCIndicator::setPlot (QStringList &l, QByteArray &ba, Indicator &ind)
 {
-  // INDICATOR,SET_PLOT,<NAME>
-  //     0        1       2
+  // INDICATOR,SET_PLOT,<NAME>,<Z>
+  //     0        1       2     3
 
-  if (l.count() != 3)
+  if (l.count() != 4)
   {
     qDebug() << "SCIndicator::setPlot: invalid parm count " << l.count();
     return 1;
   }
 
-  Curve *line = ind.line(l[2].toInt());
+  Curve *line = ind.line(l.at(2));
   if (! line)
   {
-    qDebug() << "SCIndicator::setPlot: name not found" << l[2];
+    qDebug() << "SCIndicator::setPlot: name not found" << l.at(2);
     return 1;
   }
 
-  line->setZ(l[2].toInt());
+  bool ok;
+  int z = l.at(3).toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "SCIndicator::setPlot: invalid z value" << l.at(3);
+    return 1;
+  }
+
+  line->setZ(z);
 
   ba.clear();
   ba.append("0\n");

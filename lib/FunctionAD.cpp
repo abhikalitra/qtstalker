@@ -63,10 +63,10 @@ int FunctionAD::scriptAD (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *tl = ind.line(set[4].toInt());
+  Curve *tl = ind.line(set.at(4));
   if (tl)
   {
-    qDebug() << "FunctionAD::scriptAD: duplicate name" << set[4];
+    qDebug() << "FunctionAD::scriptAD: duplicate name" << set.at(4);
     return 1;
   }
 
@@ -76,7 +76,7 @@ int FunctionAD::scriptAD (QStringList &set, Indicator &ind, BarData &data)
 
   line->setLabel(set[4]);
   
-  ind.setLine(set[4].toInt(), line);
+  ind.setLine(set.at(4), line);
 
   return 0;
 }
@@ -92,10 +92,10 @@ int FunctionAD::scriptADOSC (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *tl = ind.line(set[4].toInt());
+  Curve *tl = ind.line(set.at(4));
   if (tl)
   {
-    qDebug() << "FunctionAD::scriptADOSC: duplicate name" << set[4];
+    qDebug() << "FunctionAD::scriptADOSC: duplicate name" << set.at(4);
     return 1;
   }
 
@@ -120,7 +120,7 @@ int FunctionAD::scriptADOSC (QStringList &set, Indicator &ind, BarData &data)
 
   line->setLabel(set[4]);
 
-  ind.setLine(set[4].toInt(), line);
+  ind.setLine(set.at(4), line);
 
   return 0;
 }

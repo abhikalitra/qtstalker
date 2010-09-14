@@ -85,7 +85,7 @@ void GroupDataBase::getGroup (Group &group)
       bd.setExchange(l2[0]);
       bd.setSymbol(l2[1]);
       
-      group.append(bd);
+      group.setSymbol(bd);
     }
   }
 }
@@ -111,13 +111,7 @@ void GroupDataBase::setGroup (Group &group)
   }
 
   QStringList tl;
-  int loop = 0;
-  for (; loop < group.count(); loop++)
-  {
-    BarData bd;
-    group.getItem(loop, bd);
-    tl.append(bd.getExchange() + ":" + bd.getSymbol());
-  }
+  group.getStringList(tl);
 
   if (q.next())
   {

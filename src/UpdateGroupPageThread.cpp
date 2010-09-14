@@ -32,11 +32,14 @@ UpdateGroupPageThread::UpdateGroupPageThread (QObject *p, Group &group) : QThrea
 
 void UpdateGroupPageThread::run()
 {
+  QStringList keys;
+  _group.getStringList(keys);
+  
   int loop = 0;
-  for (; loop < _group.count(); loop++)
+  for (; loop < keys.count(); loop++)
   {
     BarData bd;
-    _group.getItem(loop, bd);
+    _group.getSymbol(keys.at(loop), bd);
 
     QStringList tl;
     tl << "Details" << "G" << bd.getExchange() << bd.getSymbol() << "Name";

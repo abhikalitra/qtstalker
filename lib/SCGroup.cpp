@@ -81,7 +81,7 @@ int SCGroup::addGroup (QStringList &l, QByteArray &ba)
   BarData bd;
   bd.setExchange(l[3]);
   bd.setSymbol(l[4]);
-  g.append(bd);
+  g.setSymbol(bd);
   
   db.setGroup(g);
 

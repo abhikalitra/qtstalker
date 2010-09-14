@@ -21,8 +21,7 @@
 
 #include "Indicator.h"
 
-#include <QDateTime>
-#include <cmath>
+#include <QDebug>
 
 Indicator::Indicator ()
 {
@@ -109,41 +108,24 @@ QString & Indicator::indicator ()
   return _indicator;
 }
 
-void Indicator::setLine (QString &k, Curve *d)
+void Indicator::setLine (QString k, Curve *d)
 {
-  Curve *l = _lines.value(k.toInt());
-  if (l)
-  {
-    delete l;
-    _lines.remove(k.toInt());
-  }
-
-  _lines.insert(k.toInt(), d);
+  deleteLine(k);
+  _lines.insert(k, d);
 }
 
 void Indicator::setLine (int k, Curve *d)
 {
-  Curve *l = _lines.value(k);
-  if (l)
-  {
-    delete l;
-    _lines.remove(k);
-  }
-  
-  _lines.insert(k, d);
+  QString s = QString::number(k);
+  setLine(s, d);
 }
 
-Curve * Indicator::line (QString &k)
-{
-  return _lines.value(k.toInt());
-}
-
-Curve * Indicator::line (int k)
+Curve * Indicator::line (QString k)
 {
   return _lines.value(k);
 }
 
-int Indicator::deleteLine (int k)
+int Indicator::deleteLine (QString k)
 {
   Curve *line = _lines.value(k);
   if (! line)
@@ -155,7 +137,7 @@ int Indicator::deleteLine (int k)
   return 0;
 }
 
-QMap<int, Curve *> &  Indicator::curves ()
+QHash<QString, Curve *> &  Indicator::curves ()
 {
   return _lines;
 }
@@ -202,20 +184,14 @@ void Indicator::deleteChartObject (int d)
 
 void Indicator::weedPlots ()
 {
-  QList<int> l = _lines.keys();
-  
-  int loop = 0;
-  for (; loop < l.count(); loop++)
+  QHashIterator<QString, Curve *> it(_lines);
+  while (it.hasNext())
   {
-    Curve *curve = _lines.value(l.at(loop));
-    if (! curve)
-      continue;
-
-//    if (curve->z() == -1)
-//    {
-//      delete curve;
-//      _lines.remove(l.at(loop));
-//    }
+    it.next();
+    Curve *curve = it.value();
+    
+    if (curve->z() == -1)
+      deleteLine(it.key());
   }
 }
 
@@ -242,11 +218,6 @@ void Indicator::init ()
 void Indicator::coKeys (QList<int> &l)
 {
   l = _chartObjects.keys();
-}
-
-void Indicator::lineKeys (QList<int> &l)
-{
-  l = _lines.keys();
 }
 
 int Indicator::coCount ()

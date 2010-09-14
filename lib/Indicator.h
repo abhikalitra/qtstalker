@@ -25,9 +25,10 @@
 #include <QString>
 #include <QList>
 #include <QMap>
+#include <QHash>
+#include <QMetaType>
 
 #include "Setting.h"
-#include "DateBar.h"
 #include "Curve.h"
 #include "ChartObjectSettings.h"
 
@@ -51,13 +52,12 @@ class Indicator
     int CUS ();
     void setIndicator (QString &);
     QString & indicator ();
+    void setLine (QString, Curve *);
     void setLine (int, Curve *);
-    void setLine (QString &, Curve *);
-    Curve * line (int);
-    Curve * line (QString &);
-    QMap<int, Curve *> & curves ();
+    Curve * line (QString);
+    QHash<QString, Curve *> & curves ();
     void clearLines ();
-    int deleteLine (int);
+    int deleteLine (QString);
     void setSettings (Setting &);
     Setting & settings ();
     void clear ();
@@ -69,11 +69,10 @@ class Indicator
     void cleanClear ();
     void init ();
     void coKeys (QList<int> &);
-    void lineKeys (QList<int> &);
     int coCount ();
 
   protected:
-    QMap<int, Curve *> _lines;
+    QHash<QString, Curve *> _lines;
     QMap<int, ChartObjectSettings> _chartObjects;
     Setting _settings;
     QString _name;

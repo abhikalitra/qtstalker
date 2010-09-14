@@ -43,6 +43,7 @@ class DateScaleDraw : public QwtScaleDraw
     void date (int, QDateTime &);
     int x (QDateTime d);
     void info (int index, Setting &);
+    QList<QDateTime> & dates ();
 
   private:
     QHash<QString, int> _data;

@@ -23,7 +23,7 @@ print STDOUT "INDICATOR,PLUGIN,MA,EMA,50MA,cl,50";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot BARS
-print STDOUT "INDICATOR,SET_PLOT,Bars";
+print STDOUT "INDICATOR,SET_PLOT,Bars,0";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set 10MA plot style
@@ -35,7 +35,7 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,10MA,blue";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot the 10MA
-print STDOUT "INDICATOR,SET_PLOT,10MA";
+print STDOUT "INDICATOR,SET_PLOT,10MA,1";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set 20MA plot style
@@ -47,7 +47,7 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,20MA,red";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot 20MA
-print STDOUT "INDICATOR,SET_PLOT,20MA";
+print STDOUT "INDICATOR,SET_PLOT,20MA,2";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set 50MA plot style
@@ -59,6 +59,6 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,50MA,yellow";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot the 50MA
-print STDOUT "INDICATOR,SET_PLOT,50MA";
+print STDOUT "INDICATOR,SET_PLOT,50MA,3";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 

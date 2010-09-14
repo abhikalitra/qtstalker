@@ -21,7 +21,6 @@
 
 #include "DataWindow.h"
 #include "Strip.h"
-#include "IndicatorDataBase.h"
 
 #include <QLayout>
 #include <QVBoxLayout>
@@ -32,122 +31,110 @@
 DataWindow::DataWindow (QWidget *w) : QDialog (w, 0)
 {
   setAttribute(Qt::WA_DeleteOnClose);
-  dateFlag = 0;
-  ohlcFlag = 0;
+  _dateFlag = 0;
+  _ohlcFlag = 0;
   
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(5);
   vbox->setMargin(5);
   setLayout(vbox);
 
-  table = new QTableWidget;
-  table->setSortingEnabled(FALSE);
-  vbox->addWidget (table);
+  _table = new QTableWidget;
+  _table->setSortingEnabled(FALSE);
+  vbox->addWidget(_table);
 
   resize(750, 550);
 }
 
-/*
-void DataWindow::setData (QHash<QString, QFP_Plot *> &list)
+void DataWindow::setData (QHash<QString, PlotSettings> &list)
 {
-  IndicatorDataBase db;
-  QStringList l;
-  db.getIndicatorList(l);
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
+  QHashIterator<QString, PlotSettings> it(list);
+  while (it.hasNext())
   {
-    QFP_Plot *plot = list.value(l[loop]);
-    if (! plot)
-      continue;
+    it.next();
+    PlotSettings set = it.value();
 
-    setPlot(plot);
+    if (! _dateFlag)
+      setDates(set);
+    
+    setPlot(set);
   }
 }
-*/
 
-/*
-void DataWindow::setPlot (QFP_Plot *d)
+void DataWindow::setPlot (PlotSettings &set)
 {
-  Indicator indicator = d->indicator();
-  QStringList pl = indicator.plotOrder();
-  
-  if (! dateFlag)
-  {
-    // get the dates
-    DateBar dates = d->dateBars();
-    setDates(dates);
-  }
+  QHash<QString, Curve *> curves;
+  set.plot->curves(curves);
 
   // get the plot data
-  int loop = 0;
-  for (; loop < pl.count(); loop++)
+  QHashIterator<QString, Curve *> it(curves);
+  while (it.hasNext())
   {
-    QString s = pl.at(loop);
-    QFP_Curve *line = indicator.line(s);
+    it.next();
+    Curve *line = it.value();
     
-    if (line->type() == "Horizontal")
-      continue;
-
-    if (line->type() == "OHLC" || line->type() == "Candle")
+    switch ((Curve::Type) line->type())
     {
-      if (ohlcFlag)
-	continue;
-      
-      setOHLC(line);
+      case Curve::Horizontal:
+        break;
+      case Curve::Candle:
+      case Curve::OHLC:
+        if (! _ohlcFlag)
+          setOHLC(line);
+        break;
+      default:
+        setLine(line);
+        break;
     }
-    else
-      setLine(line);
   }
 }
-*/
 
-void DataWindow::setDates (DateBar &dates)
+void DataWindow::setDates (PlotSettings &set)
 {
-  table->setColumnCount(table->columnCount() + 1);
+  QList<QDateTime> dates;
+  set.plot->dates(dates);
+  
+  _table->setColumnCount(_table->columnCount() + 1);
   QTableWidgetItem *item = new QTableWidgetItem(tr("Date"));
-  table->setHorizontalHeaderItem(table->columnCount() - 1, item);
+  _table->setHorizontalHeaderItem(_table->columnCount() - 1, item);
 
-  table->setRowCount(dates.count());
+  _table->setRowCount(dates.count());
   
   int loop;
   for (loop = 0; loop < (int) dates.count(); loop++)
   {
-    QDateTime dt;
-    dates.getDate(loop, dt);
-    QString s = dt.toString(Qt::ISODate);
+    QString s = dates.at(loop).toString("yyyy-MM-dd HH:mm:ss");
     
     QTableWidgetItem *item = new QTableWidgetItem(s);
-    table->setItem(loop, table->columnCount() - 1, item);
+    _table->setItem(loop, _table->columnCount() - 1, item);
   }
   
-  dateFlag = TRUE;
+  _dateFlag = TRUE;
 }
 
-/*
-void DataWindow::setLine (QFP_Curve *line)
+void DataWindow::setLine (Curve *line)
 {
   Strip strip;
   QString s = line->label();
 
-  table->setColumnCount(table->columnCount() + 1);
+  _table->setColumnCount(_table->columnCount() + 1);
   QTableWidgetItem *item = new QTableWidgetItem(s);
-  table->setHorizontalHeaderItem(table->columnCount() - 1, item);
+  _table->setHorizontalHeaderItem(_table->columnCount() - 1, item);
 
   QList<int> keys;
   line->keys(keys);
+  
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    QFP_CurveBar *bar = line->data(keys.at(loop));
+    CurveBar *bar = line->bar(keys.at(loop));
     strip.strip(bar->data(), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
-    table->setItem(keys.at(loop), table->columnCount() - 1, item);
+    _table->setItem(keys.at(loop), _table->columnCount() - 1, item);
   }
 }
-*/
 
-/*
-void DataWindow::setOHLC (QFP_Curve *line)
+void DataWindow::setOHLC (Curve *line)
 {
   Strip strip;
   QStringList l;
@@ -156,41 +143,38 @@ void DataWindow::setOHLC (QFP_Curve *line)
   int loop;
   for (loop = 0; loop < l.count(); loop++)
   {
-    table->setColumnCount(table->columnCount() + 1);
+    _table->setColumnCount(_table->columnCount() + 1);
     QTableWidgetItem *item = new QTableWidgetItem(l[loop]);
-    table->setHorizontalHeaderItem(table->columnCount() - 1, item);
+    _table->setHorizontalHeaderItem(_table->columnCount() - 1, item);
   }
 
   for (loop = 0; loop < line->count(); loop++)
   {
-    QFP_CurveBar *bar = line->data(loop);
+    CurveBar *bar = line->bar(loop);
     
     QString s;
     strip.strip(bar->data(0), 4, s);
     QTableWidgetItem *item = new QTableWidgetItem(s);
-    table->setItem(loop, table->columnCount() - 4, item);
+    _table->setItem(loop, _table->columnCount() - 4, item);
 
     strip.strip(bar->data(1), 4, s);
     item = new QTableWidgetItem(s);
-    table->setItem(loop, table->columnCount() - 3, item);
+    _table->setItem(loop, _table->columnCount() - 3, item);
 
     strip.strip(bar->data(2), 4, s);
     item = new QTableWidgetItem(s);
-    table->setItem(loop, table->columnCount() - 2, item);
+    _table->setItem(loop, _table->columnCount() - 2, item);
 
     strip.strip(bar->data(3), 4, s);
     item = new QTableWidgetItem(s);
-    table->setItem(loop, table->columnCount() - 1, item);
+    _table->setItem(loop, _table->columnCount() - 1, item);
   }
   
-  ohlcFlag = TRUE;
+  _ohlcFlag = TRUE;
 }
-*/
 
 void DataWindow::scrollToBottom ()
 {
-  table->scrollToBottom();
-  table->resizeColumnsToContents();
+  _table->scrollToBottom();
+  _table->resizeColumnsToContents();
 }
-
-

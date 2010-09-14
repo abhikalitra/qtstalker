@@ -59,6 +59,6 @@ print STDOUT "INDICATOR,SET_PLOT_STYLE,Volume,Histogram Bar";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # plot the Volume indicator
-print STDOUT "INDICATOR,SET_PLOT,Volume";
+print STDOUT "INDICATOR,SET_PLOT,Volume,0";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
