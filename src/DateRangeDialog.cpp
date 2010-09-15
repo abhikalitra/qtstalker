@@ -22,7 +22,6 @@
 #include "DateRangeDialog.h"
 
 #include <QtDebug>
-#include <QMessageBox>
 #include <QLayout>
 #include <QLabel>
 #include <QStringList>

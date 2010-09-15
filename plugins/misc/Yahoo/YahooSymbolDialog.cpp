@@ -21,12 +21,12 @@
 
 #include "YahooSymbolDialog.h"
 #include "YahooDataBase.h"
+#include "Dialog.h"
 
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
 #include <QInputDialog>
-#include <QMessageBox>
 #include <QDebug>
 
 YahooSymbolDialog::YahooSymbolDialog ()
@@ -93,16 +93,18 @@ void YahooSymbolDialog::createMainPage ()
 
 void YahooSymbolDialog::addSymbol ()
 {
-  bool ok;
-  QString s = QInputDialog::getText(this,
-                                    tr("Add Yahoo Symbol"),
-                                    tr("Enter Yahoo symbols separated by a space"),
-                                    QLineEdit::Normal,
-                                    QString(),
-                                    &ok,
-                                    0);
-
-  if (! ok || s.isEmpty())
+  QInputDialog *dialog = new QInputDialog;
+  dialog->setWindowTitle(tr("Qtstalker: Add Yahoo Symbol"));
+  dialog->setLabelText(tr("Enter Yahoo symbols separated by a space"));
+  dialog->setInputMode(QInputDialog::TextInput);
+  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(addSymbol2(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+  
+void YahooSymbolDialog::addSymbol2 (QString s)
+{
+  if (s.isEmpty())
     return;
 
   s = s.trimmed();
@@ -131,9 +133,11 @@ void YahooSymbolDialog::addSymbol ()
   if (errorList.count())
   {
     qDebug() << "Yahoo::addSymbol:" << errorList;
-    QMessageBox::warning(this,
-                         QString(tr("Yahoo Error")),
-                         QString(tr("Invalid symbols found. See console messages for details.")));
+    
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Yahoo Error"));
+    dialog->setMessage(tr("Invalid symbols found. See console messages for details."));
+    dialog->show();
   }
 
   loadSettings();

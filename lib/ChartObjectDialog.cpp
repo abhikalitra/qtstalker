@@ -24,7 +24,6 @@
 
 #include <QtDebug>
 #include <QLayout>
-#include <QMessageBox>
 
 ChartObjectDialog::ChartObjectDialog () : QDialog (0, 0)
 {

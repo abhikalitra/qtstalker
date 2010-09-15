@@ -22,13 +22,13 @@
 #include "DocsAction.h"
 #include "../pics/help.xpm"
 #include "../pics/qtstalker.xpm"
+#include "Dialog.h"
 
 #include <QApplication>
 #include <QDesktopServices>
 #include <QString>
 #include <QDebug>
 #include <QCursor>
-#include <QMessageBox>
 
 DocsAction::DocsAction ()
 {
@@ -77,7 +77,11 @@ void DocsAction::about ()
   versionString += "\n(C) 2001-2010 by Stefan Stratigakos\nqtstalker.sourceforge.net";
   versionString += "\nQtstalker is licensed with GNU General Public License (GPL) version 2.";
   versionString += "\nQt Assistant is licensed with GNU General Public License (GPL) version 3.";
-  QMessageBox::about(this, tr("About Qtstalker"), versionString);
+
+  Dialog *dialog = new Dialog(Dialog::_Message, 0);
+  dialog->setWindowTitle(tr("Qtstalker: About"));
+  dialog->setMessage(versionString);
+  dialog->show();
 }
 
 void DocsAction::contextMenuEvent (QContextMenuEvent *)

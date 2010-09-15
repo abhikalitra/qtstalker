@@ -92,6 +92,7 @@ class Plot : public QwtPlot
     void editIndicator ();
     void deleteIndicator ();
     void deleteAllChartObjects ();
+    void deleteAllChartObjects2 ();
     void toggleDate ();
     void toggleLog ();
     void editBackgroundColor ();

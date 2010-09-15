@@ -39,6 +39,7 @@ class QuoteServerDialog : public QDialog
   public slots:
     void done ();
     void refreshServer ();
+    void refreshServer2 ();
 
   private:
     QLineEdit *_hostName;

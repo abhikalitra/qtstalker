@@ -28,11 +28,10 @@
 #include "IndicatorThread.h"
 #include "ChartObjectDataBase.h"
 #include "Plot.h"
+#include "IndicatorDeleteDialog.h"
 
 #include <QDebug>
-#include <QInputDialog>
 #include <QCursor>
-#include <QMessageBox>
 #include <QLabel>
 #include <QTabBar>
 #include <qwt_plot.h>
@@ -193,7 +192,7 @@ void ChartLayout::addTab (Indicator &i)
   connect(this, SIGNAL(signalIndex(int)), settings.plot, SLOT(setStartIndex(int)));
   connect(settings.plot, SIGNAL(signalNewIndicator()), this, SLOT(newIndicator()));
   connect(settings.plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(editIndicator(QString)));
-  connect(settings.plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator(QString)));
+  connect(settings.plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator()));
   connect(settings.plot, SIGNAL(signalBackgroundColorChanged(QColor)), this, SLOT(backgroundColorChanged(QColor)));
   connect(settings.plot, SIGNAL(signalFontChanged(QFont)), this, SLOT(fontChanged(QFont)));
 }
@@ -420,30 +419,15 @@ void ChartLayout::editIndicator2 (Indicator i)
   r->start();
 }
 
-void ChartLayout::deleteIndicator (QString indicator)
+void ChartLayout::deleteIndicator ()
 {
-  int rc = QMessageBox::warning(this,
-                                tr("Qtstalker: Warning"),
-                                tr("Are you sure you want to permanently delete this indicator?"),
-                                QMessageBox::Yes,
-                                QMessageBox::No,
-                                QMessageBox::NoButton);
-  if (rc == QMessageBox::No)
-    return;
-
-  Indicator i;
-  i.setName(indicator);
-  IndicatorDataBase db;
-  db.getIndicator(i);
-
-  removeTab(i);
-  
-  db.deleteIndicator(indicator);
-
-  emit signalStatus(QString(tr("Indicator ") + indicator + tr(" deleted")));
+  IndicatorDeleteDialog *dialog = new IndicatorDeleteDialog;
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  connect(dialog, SIGNAL(signalDelete(Indicator)), this, SLOT(removeTab(Indicator)));
+  dialog->show();
 }
 
-void ChartLayout::removeTab (Indicator &i)
+void ChartLayout::removeTab (Indicator i)
 {
   if (! _plots.contains(i.name()))
     return;

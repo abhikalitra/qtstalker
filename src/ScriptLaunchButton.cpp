@@ -76,21 +76,20 @@ void ScriptLaunchButton::configure ()
   QStringList l;
   db.getScripts(l);
 
-  int index = l.indexOf(_scriptName);
+  QInputDialog *dialog = new QInputDialog;
+  dialog->setWindowTitle(tr("Qtstalker: Configure Script Launcher"));
+  dialog->setLabelText(tr("Script"));
+  dialog->setInputMode(QInputDialog::TextInput);
+  dialog->setComboBoxEditable(FALSE);
+  dialog->setComboBoxItems(l);
+  dialog->setTextValue(_scriptName);
+  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(configure2(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
 
-  bool ok = FALSE;
-  QString s = QInputDialog::getItem(this,
-                                    tr("Configure Script Launcher"),
-                                    tr("Script"),
-                                    l,
-                                    index,
-                                    FALSE,
-                                    &ok,
-                                    0);
-  
-  if (! ok)
-    return;
-
+void ScriptLaunchButton::configure2 (QString s)
+{
   _scriptName = s;
 
   Config config;

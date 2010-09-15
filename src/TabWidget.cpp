@@ -23,7 +23,6 @@
 #include "TabWidgetDialog.h"
 #include "Plot.h"
 
-#include <QInputDialog>
 #include <QCursor>
 #include <QLabel>
 

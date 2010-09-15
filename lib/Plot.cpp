@@ -30,6 +30,7 @@
 #include "ChartObjectDataBase.h"
 #include "Globals.h"
 #include "IndicatorDataBase.h"
+#include "Dialog.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -48,7 +49,6 @@
 #include <QCursor>
 #include <QColorDialog>
 #include <QFontDialog>
-#include <QMessageBox>
 #include <qwt_scale_div.h>
 #include <qwt_scale_widget.h>
 #include <qwt_plot_marker.h>
@@ -545,16 +545,15 @@ void Plot::mouseMove (QPoint p)
 
 void Plot::deleteAllChartObjects ()
 {
-  int rc = QMessageBox::warning(this,
-                                tr("Qtstalker: Warning"),
-                                tr("Are you sure you want to delete all chart objects from this indicator?"),
-                                QMessageBox::Yes,
-                                QMessageBox::No,
-                                QMessageBox::NoButton);
+  Dialog *dialog = new Dialog(Dialog::_Message, 0);
+  dialog->setWindowTitle(tr("Qtstalker: Delete All Chart Objects"));
+  dialog->setMessage(tr("Are you sure you want to delete all chart objects from this indicator?"));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
+  dialog->show();
+}
 
-  if (rc == QMessageBox::No)
-    return;
-
+void Plot::deleteAllChartObjects2 ()
+{
   ChartObjectDataBase db;
   g_mutex.lock();
   db.deleteChartObjectsIndicator(_indicator);
@@ -599,21 +598,6 @@ void Plot::deleteChartObject (int id)
   ChartObject *co = _chartObjects.value(id);
   if (! co)
     return;
-
-  int rc = QMessageBox::warning(this,
-                                tr("Qtstalker: Warning"),
-                                tr("Are you sure you want to delete group this chart object?"),
-                                QMessageBox::Yes,
-                                QMessageBox::No,
-                                QMessageBox::NoButton);
-
-  if (rc == QMessageBox::No)
-    return;
-
-  ChartObjectDataBase db;
-  g_mutex.lock();
-  db.deleteChartObject(id);
-  g_mutex.unlock();
 
   delete co;
   

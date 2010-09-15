@@ -527,18 +527,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New CSV Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete rule?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Configure CSV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -551,15 +539,31 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Duplicate rule. Overwrite?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Import started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Import finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: New CSV Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error New CSV Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate rule name. Request denied.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: CSV Delete Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete CSV rule?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -590,10 +594,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Insert</source>
         <translation type="unfinished"></translation>
     </message>
@@ -610,23 +610,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select CSV field to add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add CSV Date Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enter date mask format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add CSV Time Field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -639,6 +623,22 @@
     </message>
     <message>
         <source>Qtstalker: Editing CSV Rule </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: CSV Rule Insert Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select CSV field to insert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: CSV Rule Insert Date Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: CSV Rule Insert Time Field</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -742,25 +742,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ChartLayout</name>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to permanently delete this indicator?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> deleted</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ChartObject</name>
     <message>
         <source>&amp;Edit</source>
@@ -768,6 +749,14 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Delete Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete selected chart object?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1134,7 +1123,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>About Qtstalker</source>
+        <source>Qtstalker: About</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1161,15 +1150,20 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invalid search pattern.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No items found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>No item found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error Exchange Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid search pattern.
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1305,10 +1299,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: New Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>A group with this name already exists.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1318,6 +1308,10 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>created</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error New Group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1444,6 +1438,29 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>IndicatorDeleteDialog</name>
+    <message>
+        <source>QtStalker: Delete Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Delete Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete selected indicators?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicators deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IndicatorDialog</name>
     <message>
         <source>QtStalker: New Indicator</source>
@@ -1470,10 +1487,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: New Indicator Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Name missing.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1481,132 +1494,8 @@ eg. perl -l -T</source>
         <source>This indicator already exists.</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>IndicatorPage</name>
     <message>
-        <source>Qtstalker: Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to permanently delete this indicator?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This indicator already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show active indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show all indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter either a specific name like RSI or
-a partial match like %SI or %RSI%</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Main</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name missing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tab Row</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New indicator created.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator settings saved.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator deleted.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> disabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> enabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show Acti&amp;ve Indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show &amp;All Indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator name</source>
+        <source>Qtstalker: Error New Indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1975,19 +1864,19 @@ a partial match like %SI or %RSI%</source>
 <context>
     <name>PixelSpaceButton</name>
     <message>
-        <source>Set pixel spacing button 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter pixel spacing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Set Bar Spacing to </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source> Right click mouse for options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter bar spacing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Set Bar Spacing Button</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2030,15 +1919,7 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Are you sure you want to delete all chart objects from this indicator?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete group this chart object?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2067,6 +1948,10 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>&amp;VLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Delete All Chart Objects</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2172,10 +2057,6 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>OI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2312,6 +2193,10 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source>VLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2496,10 +2381,6 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Hostname missing.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2512,11 +2393,15 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Warning</source>
+        <source>Are you sure you want to restart the server?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to restart the server?</source>
+        <source>Qtstalker: Quote Server Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Refresh Quote Server</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2616,10 +2501,6 @@ a partial match like %SI or %RSI%</source>
 <context>
     <name>RefreshAction</name>
     <message>
-        <source>Set chart refresh timer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enter refresh rate in minutes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2633,6 +2514,10 @@ a partial match like %SI or %RSI%</source>
     </message>
     <message>
         <source> Right click mouse for options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Set Chart Refresh Timer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2899,11 +2784,11 @@ a partial match like %SI or %RSI%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure Script Launcher</source>
+        <source>Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script</source>
+        <source>Qtstalker: Configure Script Launcher</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3082,10 +2967,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Items modified. Are you sure you want to discard changes?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3119,6 +3000,10 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Remove selected symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Symbol Search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3769,19 +3654,19 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add Yahoo Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enter Yahoo symbols separated by a space</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Yahoo Error</source>
+        <source>Invalid symbols found. See console messages for details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invalid symbols found. See console messages for details.</source>
+        <source>Qtstalker: Add Yahoo Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Yahoo Error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

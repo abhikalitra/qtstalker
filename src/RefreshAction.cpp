@@ -92,21 +92,15 @@ void RefreshAction::refreshUpdated (int minutes)
 
 void RefreshAction::dialog ()
 {
-  bool ok;
-  int t = QInputDialog::getInt(0,
-                               tr("Set chart refresh timer"),
-                               tr("Enter refresh rate in minutes"),
-                               _minutes,
-                               1,
-                               99,
-                               1,
-                               &ok,
-                               0);
-
-  if (! ok)
-    return;
-
-  refreshUpdated(t);
+  QInputDialog *dialog = new QInputDialog;
+  dialog->setWindowTitle(tr("Qtstalker: Set Chart Refresh Timer"));
+  dialog->setLabelText(tr("Enter refresh rate in minutes"));
+  dialog->setInputMode(QInputDialog::IntInput);
+  dialog->setIntRange(1, 99);
+  dialog->setIntStep(1);
+  connect(dialog, SIGNAL(intValueSelected(int)), this, SLOT(refreshUpdated(int)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
 }
 
 void RefreshAction::changeText ()

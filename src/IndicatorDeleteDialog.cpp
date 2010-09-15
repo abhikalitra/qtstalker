@@ -19,22 +19,20 @@
  *  USA.
  */
 
-#include "GroupDeleteItemsDialog.h"
+#include "IndicatorDeleteDialog.h"
 #include "Globals.h"
 
 #include <QtDebug>
+#include <QLabel>
 
-GroupDeleteItemsDialog::GroupDeleteItemsDialog (QString name) : Dialog (Dialog::_Dialog, 0)
+IndicatorDeleteDialog::IndicatorDeleteDialog () : Dialog (Dialog::_Dialog, 0)
 {
-  _group.setName(name);
-  _db.getGroup(_group);
-  
-  setWindowTitle(tr("QtStalker: Delete Group Items"));
+  setWindowTitle(tr("QtStalker: Delete Indicator"));
 
   createMainPage();
 }
 
-void GroupDeleteItemsDialog::createMainPage ()
+void IndicatorDeleteDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
@@ -47,12 +45,12 @@ void GroupDeleteItemsDialog::createMainPage ()
   int col = 0;
 
   // name
-  QLabel *label = new QLabel(tr("Group Contents"));
+  QLabel *label = new QLabel(tr("Indicator Name"));
   grid->addWidget(label, row++, col);
 
   // list
   QStringList l;
-  _group.getStringList(l);
+  _db.getActiveIndicatorList(l);
   
   _list = new QListWidget;
   _list->addItems(l);
@@ -65,7 +63,7 @@ void GroupDeleteItemsDialog::createMainPage ()
   _tabs->addTab(w, QString());
 }
 
-void GroupDeleteItemsDialog::done ()
+void IndicatorDeleteDialog::done ()
 {
   QList<QListWidgetItem *> sl = _list->selectedItems();
   if (! sl.count())
@@ -75,13 +73,13 @@ void GroupDeleteItemsDialog::done ()
   }
 
   Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle(tr("Qtstalker: Delete Group Items"));
-  dialog->setMessage(tr("Are you sure you want to delete selected items?"));
+  dialog->setWindowTitle(tr("Qtstalker: Delete Indicator"));
+  dialog->setMessage(tr("Are you sure you want to delete selected indicators?"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(done2()));
   dialog->show();
 }
 
-void GroupDeleteItemsDialog::done2 ()
+void IndicatorDeleteDialog::done2 ()
 {
   QList<QListWidgetItem *> sl = _list->selectedItems();
   if (! sl.count())
@@ -97,17 +95,23 @@ void GroupDeleteItemsDialog::done2 ()
   for (; loop < sl.count(); loop++)
   {
     QListWidgetItem *item = sl.at(loop);
+
     QString s = item->text();
-    _group.deleteSymbol(s);
+    
+    Indicator i;
+    i.setName(s);
+    _db.getIndicator(i);
+
+    emit signalDelete(i);
+
+    _db.deleteIndicator(s);
   }
 
   _db.commit();
   g_mutex.unlock();
 
-  emit signalMessage(QString(tr("Group Item(s) deleted.")));
+  emit signalMessage(QString(tr("Indicators deleted.")));
 
-  emit signalDelete();
-  
   accept();
 }
 

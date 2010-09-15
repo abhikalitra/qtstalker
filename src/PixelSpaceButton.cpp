@@ -78,21 +78,15 @@ void PixelSpaceButton::setPixelSpace (int d)
 
 void PixelSpaceButton::dialog ()
 {
-  bool ok;
-  int t = QInputDialog::getInt(this,
-                               tr("Set pixel spacing button 1"),
-                               tr("Enter pixel spacing"),
-                               _pixelSpace,
-                               6,
-                               99,
-                               1,
-                               &ok,
-                               0);
-
-  if (! ok)
-    return;
-
-  setPixelSpace(t);
+  QInputDialog *dialog = new QInputDialog;
+  dialog->setWindowTitle(tr("Qtstalker: Set Bar Spacing Button"));
+  dialog->setLabelText(tr("Enter bar spacing"));
+  dialog->setInputMode(QInputDialog::IntInput);
+  dialog->setIntRange(6, 99);
+  dialog->setIntStep(1);
+  connect(dialog, SIGNAL(intValueSelected(int)), this, SLOT(setPixelSpace(int)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
 }
 
 void PixelSpaceButton::changeText ()

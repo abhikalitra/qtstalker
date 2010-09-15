@@ -24,9 +24,9 @@
 #include "Config.h"
 #include "IndicatorPluginFactory.h"
 #include "IndicatorPlugin.h"
+#include "Dialog.h"
 
 #include <QtDebug>
-#include <QMessageBox>
 #include <QLayout>
 #include <QLabel>
 #include <QStringList>
@@ -111,9 +111,10 @@ void IndicatorDialog::done ()
 {
   if (_name->text().isEmpty())
   {
-    QMessageBox::information(0,
-                             tr("Qtstalker: New Indicator Error"),
-                             tr("Name missing."));
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Error New Indicator"));
+    dialog->setMessage(tr("Name missing."));
+    dialog->show();
     return;
   }
 
@@ -123,9 +124,10 @@ void IndicatorDialog::done ()
   db.getIndicatorList(l);
   if (l.indexOf(_name->text()) != -1)
   {
-    QMessageBox::information(0,
-                             tr("Qtstalker: New Indicator Error"),
-                             tr("This indicator already exists."));
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Error New Indicator"));
+    dialog->setMessage(tr("This indicator already exists."));
+    dialog->show();
     return;
   }
 

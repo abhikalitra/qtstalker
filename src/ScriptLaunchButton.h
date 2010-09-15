@@ -41,6 +41,7 @@ class ScriptLaunchButton : public QToolButton
   public slots:
     void buttonClicked ();
     void configure ();
+    void configure2 (QString);
     void contextMenu ();
 
   private:

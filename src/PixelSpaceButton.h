@@ -34,12 +34,12 @@ class PixelSpaceButton : public QToolButton
 
   public:
     PixelSpaceButton (int);
-    void setPixelSpace (int);
     void changeText ();
     
   public slots:
     void buttonClicked ();
     void dialog ();
+    void setPixelSpace (int);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);

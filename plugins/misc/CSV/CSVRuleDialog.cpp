@@ -149,11 +149,6 @@ void CSVRuleDialog::createGUI ()
   tvbox->setSpacing(2);
   hbox->addLayout(tvbox);
 
-  _addButton = new QPushButton;
-  _addButton->setText(tr("Add"));
-  connect(_addButton, SIGNAL(clicked()), this, SLOT(addClicked()));
-  tvbox->addWidget(_addButton);
-
   _insertButton = new QPushButton;
   _insertButton->setText(tr("Insert"));
   connect(_insertButton, SIGNAL(clicked()), this, SLOT(insertClicked()));
@@ -248,79 +243,34 @@ void CSVRuleDialog::ruleChanged ()
   _saveFlag = TRUE;
 }
 
-void CSVRuleDialog::addClicked ()
-{
-  bool ok;
-  QString item = QInputDialog::getItem(this,
-                                       tr("Add Field"),
-                                       tr("Select CSV field to add"),
-                                       _fieldList,
-                                       0,
-                                       FALSE,
-                                       &ok,
-                                       0);
-
-  if (! ok || item.isEmpty())
-    return;
-
-  if (item == "Date")
-  {
-    item.clear();
-    dateDialog(item);
-    if (item.isEmpty())
-      return;
-
-    item = "Date=" + item;
-  }
-                                       
-  if (item == "Time")
-  {
-    item.clear();
-    timeDialog(item);
-    if (item.isEmpty())
-      return;
-
-    item = "Time=" + item;
-  }
-
-  new QListWidgetItem(item, _ruleList, 0);
-
-  ruleChanged();
-}
-
 void CSVRuleDialog::insertClicked ()
 {
-  bool ok;
-  QString item = QInputDialog::getItem(this,
-                                       tr("Add Field"),
-                                       tr("Select CSV field to add"),
-                                       _fieldList,
-                                       0,
-                                       FALSE,
-                                       &ok,
-                                       0);
+  QInputDialog *dialog = new QInputDialog;
+  dialog->setWindowTitle(tr("Qtstalker: CSV Rule Insert Field"));
+  dialog->setLabelText(tr("Select CSV field to insert"));
+  dialog->setInputMode(QInputDialog::TextInput);
+  dialog->setComboBoxEditable(FALSE);
+  dialog->setComboBoxItems(_fieldList);
+  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(insertClicked2(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
 
-  if (! ok || item.isEmpty())
+void CSVRuleDialog::insertClicked2 (QString item)
+{
+  if (item.isEmpty())
     return;
 
   if (item == "Date")
   {
-    item.clear();
-    dateDialog(item);
-    if (item.isEmpty())
-      return;
-    
-    item = "Date=" + item;
+    dateDialog();
+    return;
   }
-
+  
   if (item == "Time")
   {
-    item.clear();
-    timeDialog(item);
-    if (item.isEmpty())
-      return;
-    
-    item = "Time=" + item;
+    timeDialog();
+    return;
   }
 
   _ruleList->insertItem(_ruleList->currentRow(), item);
@@ -328,28 +278,50 @@ void CSVRuleDialog::insertClicked ()
   ruleChanged();
 }
 
-void CSVRuleDialog::dateDialog (QString &item)
+void CSVRuleDialog::dateDialog ()
 {
-  bool ok;
-  item = QInputDialog::getText(this,
-                               tr("Add CSV Date Field"),
-                               tr("Enter date mask format"),
-                               QLineEdit::Normal,
-                               QString("yyyy-MM-dd"),
-                               &ok,
-                               0);
+  QInputDialog *dialog = new QInputDialog;
+  dialog->setWindowTitle(tr("Qtstalker: CSV Rule Insert Date Field"));
+  dialog->setLabelText(tr("Enter date mask format"));
+  dialog->setInputMode(QInputDialog::TextInput);
+  dialog->setTextValue(QString("yyyy-MM-dd"));
+  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(dateDialog2(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
 }
 
-void CSVRuleDialog::timeDialog (QString &item)
+void CSVRuleDialog::dateDialog2 (QString item)
 {
-  bool ok;
-  item = QInputDialog::getText(this,
-                               tr("Add CSV Time Field"),
-                               tr("Enter time mask format"),
-                               QLineEdit::Normal,
-                               QString("HH:mm:ss"),
-                               &ok,
-                               0);
+  if (item.isEmpty())
+    return;
+
+  QString s = "Date=" + item;
+  _ruleList->insertItem(_ruleList->currentRow(), s);
+
+  ruleChanged();
+}
+
+void CSVRuleDialog::timeDialog ()
+{
+  QInputDialog *dialog = new QInputDialog;
+  dialog->setWindowTitle(tr("Qtstalker: CSV Rule Insert Time Field"));
+  dialog->setLabelText(tr("Enter time mask format"));
+  dialog->setInputMode(QInputDialog::TextInput);
+  dialog->setTextValue(QString("HH:mm:ss"));
+  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(timeDialog2(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void CSVRuleDialog::timeDialog2 (QString item)
+{
+  if (item.isEmpty())
+    return;
+
+  QString s = "Time=" + item;
+  _ruleList->insertItem(_ruleList->currentRow(), s);
+
+  ruleChanged();
 }
 
 void CSVRuleDialog::done ()

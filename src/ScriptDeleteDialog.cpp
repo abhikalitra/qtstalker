@@ -24,7 +24,6 @@
 
 #include <QtDebug>
 #include <QLabel>
-#include <QMessageBox>
 
 ScriptDeleteDialog::ScriptDeleteDialog () : Dialog (Dialog::_Dialog, 0)
 {

@@ -33,16 +33,12 @@
 //#include "../pics/delete.xpm"
 #include "../pics/configure.xpm"
 
-#include <QMessageBox>
 #include <QCursor>
 #include <QToolTip>
 #include <QLayout>
 #include <QMenu>
 #include <QKeyEvent>
-#include <QVBoxLayout>
 #include <QtDebug>
-#include <QInputDialog>
-#include <QGridLayout>
 #include <QList>
 
 ChartPage::ChartPage ()

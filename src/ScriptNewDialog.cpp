@@ -24,7 +24,6 @@
 
 #include <QtDebug>
 #include <QLabel>
-#include <QMessageBox>
 
 ScriptNewDialog::ScriptNewDialog () : Dialog (Dialog::_Dialog, 0)
 {
@@ -75,11 +74,9 @@ void ScriptNewDialog::done ()
   db.getScripts(l);
   if (l.contains(name))
   {
-    QMessageBox *dialog = new QMessageBox(this);
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
     dialog->setWindowTitle(tr("Qtstalker: Error New Script"));
-    dialog->setText(tr("A script with this name already exists."));
-    dialog->setWindowModality(Qt::NonModal);
-    connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+    dialog->setMessage(tr("A script with this name already exists."));
     dialog->show();
     return;
   }

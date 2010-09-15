@@ -23,8 +23,8 @@
 #include "CSVDataBase.h"
 #include "CSVRuleDialog.h"
 #include "CSVConfig.h"
+#include "Dialog.h"
 
-#include <QMessageBox>
 #include <QLayout>
 #include <QLabel>
 #include <QInputDialog>
@@ -150,28 +150,27 @@ void CSVDialog::saveSettings ()
 
 void CSVDialog::newRule ()
 {
-  bool ok;
-  QString name = QInputDialog::getText(this,
-                                       tr("New CSV Rule"),
-                                       tr("Enter rule name"),
-                                       QLineEdit::Normal,
-                                       QString(),
-                                       &ok,
-                                       0);
-  if (! ok || name.isEmpty())
+  QInputDialog *dialog = new QInputDialog;
+  dialog->setWindowTitle(tr("Qtstalker: New CSV Rule"));
+  dialog->setLabelText(tr("Enter rule name"));
+  dialog->setInputMode(QInputDialog::TextInput);
+  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(newRule2(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void CSVDialog::newRule2 (QString name)
+{
+  if (name.isEmpty())
     return;
 
   if (_rules->findText(name) != -1)
   {
-    int rc = QMessageBox::warning(this,
-                                  tr("Warning"),
-                                  tr("Duplicate rule. Overwrite?"),
-                                  QMessageBox::Yes,
-                                  QMessageBox::No,
-                                  QMessageBox::NoButton);
-
-    if (rc == QMessageBox::No)
-      return;
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Error New CSV Rule"));
+    dialog->setMessage(tr("Duplicate rule name. Request denied."));
+    dialog->show();
+    return;
   }
 
   editRule(name);
@@ -197,16 +196,15 @@ void CSVDialog::deleteRule ()
   if (! _rules->count())
     return;
 
-  int rc = QMessageBox::warning(this,
-                                tr("Warning"),
-                                tr("Are you sure you want to delete rule?"),
-                                QMessageBox::Yes,
-                                QMessageBox::No,
-                                QMessageBox::NoButton);
+  Dialog *dialog = new Dialog(Dialog::_Message, 0);
+  dialog->setWindowTitle(tr("Qtstalker: CSV Delete Rule"));
+  dialog->setMessage(tr("Are you sure you want to delete CSV rule?"));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteRule2()));
+  dialog->show();
+}
 
-  if (rc == QMessageBox::No)
-    return;
-
+void CSVDialog::deleteRule2 ()
+{
   CSVDataBase db;
   QString s = _rules->currentText();
   db.deleteRule(s);

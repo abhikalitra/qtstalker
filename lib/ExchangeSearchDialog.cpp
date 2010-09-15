@@ -21,9 +21,9 @@
 
 #include "ExchangeSearchDialog.h"
 #include "ExchangeDataBase.h"
+#include "Dialog.h"
 
 #include <QtDebug>
-#include <QMessageBox>
 #include <QLayout>
 #include <QLabel>
 #include <QStringList>
@@ -110,9 +110,10 @@ void ExchangeSearchDialog::done ()
   QStringList sl;
   if (db.search(country, city, pattern, sl))
   {
-    QMessageBox::information(0,
-                             tr("Qtstalker: Exchange Search"),
-                             tr("Invalid search pattern."));
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Error Exchange Search"));
+    dialog->setMessage(tr("Invalid search pattern.\n") + pattern);
+    dialog->show();
     return;
   }
 
@@ -120,9 +121,10 @@ void ExchangeSearchDialog::done ()
   
   if (! sl.count())
   {
-    QMessageBox::information(0,
-                             tr("Qtstalker: Exchange Search"),
-                             tr("No items found."));
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Exchange Search"));
+    dialog->setMessage(tr("No items found."));
+    dialog->show();
     return;
   }
 
@@ -140,9 +142,10 @@ void ExchangeSearchDialog::itemSelected (QListWidgetItem *item)
   db.codeFromName(d, code);
   if (code.isEmpty())
   {
-    QMessageBox::information(0,
-                             tr("Qtstalker: Exchange Search"),
-                             tr("No item found."));
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Exchange Search"));
+    dialog->setMessage(tr("No item found."));
+    dialog->show();
     return;
   }
 

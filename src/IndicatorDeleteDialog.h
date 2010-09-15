@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,53 +19,33 @@
  *  USA.
  */
 
-#ifndef CSV_DIALOG_HPP
-#define CSV_DIALOG_HPP
+#ifndef INDICATOR_DELETE_DIALOG_HPP
+#define INDICATOR_DELETE_DIALOG_HPP
 
-#include <QDialog>
-#include <QTextEdit>
-#include <QComboBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
+#include <QListWidget>
 
-#include "CSVThread.h"
-#include "CSVRule.h"
+#include "Dialog.h"
+#include "IndicatorDataBase.h"
+#include "Indicator.h"
 
-class CSVDialog : public QDialog
+class IndicatorDeleteDialog : public Dialog
 {
   Q_OBJECT
 
   signals:
-    void signalChartRefresh ();
+    void signalDelete (Indicator);
   
   public:
-    CSVDialog ();
+    IndicatorDeleteDialog ();
     void createMainPage ();
-    void loadSettings ();
-    void saveSettings ();
-    
+
   public slots:
-    void run ();
-    void newRule ();
-    void newRule2 (QString);
-    void editRule ();
-    void editRule (QString);
-    void deleteRule ();
-    void deleteRule2 ();
-    void cancelButton ();
     void done ();
-          
+    void done2 ();
+
   private:
-    QComboBox *_rules;
-    QTextEdit *_log;
-    QDialogButtonBox *_buttonBox;
-    QPushButton *_newButton;
-    QPushButton *_runButton;
-    QPushButton *_editButton;
-    QPushButton *_deleteButton;
-    QPushButton *_cancelButton;
-    CSVThread *_thread;
-    CSVRule _rule;
+    QListWidget *_list;
+    IndicatorDataBase _db;
 };
 
 #endif

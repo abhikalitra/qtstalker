@@ -22,6 +22,7 @@
 #include "SymbolDialog.h"
 #include "BarData.h"
 #include "QuoteServerRequestThread.h"
+#include "Dialog.h"
 
 #include "../pics/search.xpm"
 #include "../pics/add.xpm"
@@ -29,10 +30,7 @@
 
 #include <QLabel>
 #include <QLayout>
-#include <QGridLayout>
-#include <QVBoxLayout>
 #include <QtDebug>
-#include <QMessageBox>
 #include <QGroupBox>
 #include <QTreeWidgetItem>
 
@@ -168,19 +166,14 @@ void SymbolDialog::getSymbolSearch (QString &ex, QString &ss)
 
 void SymbolDialog::cancelPressed()
 {
-  if (modified)
-  {
-    int rc = QMessageBox::warning(this,
-    			        tr("Warning"),
-			        tr("Items modified. Are you sure you want to discard changes?"),
-			        QMessageBox::Yes,
-			        QMessageBox::No,
-			        QMessageBox::NoButton);
-    if (rc == QMessageBox::No)
-      return;
-  }
-
-  reject();
+  if (! modified)
+    reject();
+  
+  Dialog *dialog = new Dialog(Dialog::_Message, 0);
+  dialog->setWindowTitle(tr("Qtstalker: Symbol Search"));
+  dialog->setMessage(tr("Items modified. Are you sure you want to discard changes?"));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(reject()));
+  dialog->show();
 }
 
 void SymbolDialog::deleteButtonPressed ()

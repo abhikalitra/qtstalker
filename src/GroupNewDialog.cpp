@@ -25,7 +25,6 @@
 
 #include <QtDebug>
 #include <QLabel>
-#include <QMessageBox>
 
 GroupNewDialog::GroupNewDialog () : Dialog (Dialog::_Dialog, 0)
 {
@@ -75,11 +74,9 @@ void GroupNewDialog::done ()
   db.getAllGroupsList(l);
   if (l.contains(name))
   {
-    QMessageBox *dialog = new QMessageBox(this);
-    dialog->setWindowTitle(tr("Qtstalker: New Group"));
-    dialog->setText(tr("A group with this name already exists."));
-    dialog->setWindowModality(Qt::NonModal);
-    connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Error New Group"));
+    dialog->setMessage(tr("A group with this name already exists."));
     dialog->show();
     return;
   }

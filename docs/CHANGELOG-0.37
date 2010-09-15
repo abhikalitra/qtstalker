@@ -722,5 +722,7 @@
 
            Fixed CUS PLOT_STYLE and missing plots.
 
+20100915:  Removed the last of the blocking dialog and messageboxes. YAY!
+
 
 

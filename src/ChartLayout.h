@@ -61,7 +61,6 @@ class ChartLayout : public QSplitter
     ChartLayout ();
     void addTab (Indicator &);
     void addTab (QString &);
-    void removeTab (Indicator &);
     void refresh (QString);
     void loadPlots (BarData &, int index);
     int plotWidth ();
@@ -80,12 +79,13 @@ class ChartLayout : public QSplitter
     void newIndicator ();
     void editIndicator (QString);
     void editIndicator2 (Indicator);
-    void deleteIndicator (QString);
+    void deleteIndicator ();
     void newIndicator2 (Indicator);
     void newIndicator3 (Indicator);
     void indicatorThreadFinished (Indicator i);
     void backgroundColorChanged (QColor);
     void fontChanged (QFont);
+    void removeTab (Indicator);
 
   private:
     QHash<QString, PlotSettings> _plots;

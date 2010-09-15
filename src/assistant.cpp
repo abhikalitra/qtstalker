@@ -45,7 +45,7 @@ http://qt.nokia.com/doc/4.5/help-simpletextviewer-assistant-cpp.html
 
 Qtstalker changes are minor configuration and are noted below, and also in the
 project's revision control system.
-CVS $Revision: 1.2 $ $Date: 2009/10/20 04:22:06 $
+CVS $Revision: 1.3 $ $Date: 2010/09/15 23:16:36 $
 */
 
 #include <QtCore/QByteArray>
@@ -53,89 +53,89 @@ CVS $Revision: 1.2 $ $Date: 2009/10/20 04:22:06 $
 #include <QtCore/QLibraryInfo>
 #include <QtCore/QProcess>
 
-#include <QtGui/QMessageBox>
-
 #include "assistant.h"
 // Qtstalker start changes
 #include "../lib/qtstalker_defines.h"
+#include "Dialog.h"
 // Qtstalker end changes
 
-Assistant::Assistant()
-    : proc(0)
+Assistant::Assistant() : proc(0)
 {
 }
 
 //! [0]
 Assistant::~Assistant()
 {
-    if (proc && proc->state() == QProcess::Running) {
-        proc->terminate();
-        proc->waitForFinished(3000);
-    }
-    delete proc;
+  if (proc && proc->state() == QProcess::Running)
+  {
+    proc->terminate();
+    proc->waitForFinished(3000);
+  }
+    
+  delete proc;
 }
 //! [0]
 
 //! [1]
 void Assistant::showDocumentation(const QString &page)
 {
-    if (!startAssistant())
-        return;
+  if (!startAssistant())
+    return;
 
-    QByteArray ba("SetSource ");
+  QByteArray ba("SetSource ");
 // Qtstalker start changes
 /*
-    ba.append("qthelp://com.trolltech.examples.simpletextviewer/doc/");
+  ba.append("qthelp://com.trolltech.examples.simpletextviewer/doc/");
 */
-    ba.append("qthelp://qtstalker/doc/");
+  ba.append("qthelp://qtstalker/doc/");
 // Qtstalker end changes
     
-    proc->write(ba + page.toLocal8Bit() + '\0');
+  proc->write(ba + page.toLocal8Bit() + '\0');
 }
 //! [1]
 
 //! [2]
 bool Assistant::startAssistant()
 {
-    if (!proc)
-        proc = new QProcess();
+  if (!proc)
+    proc = new QProcess();
 
-    if (proc->state() != QProcess::Running) {
-        QString app = QLibraryInfo::location(QLibraryInfo::BinariesPath) + QDir::separator();
+  if (proc->state() != QProcess::Running)
+  {
+    QString app = QLibraryInfo::location(QLibraryInfo::BinariesPath) + QDir::separator();
 #if !defined(Q_OS_MAC)
-        app += QLatin1String("assistant");
+    app += QLatin1String("assistant");
 #else
-        app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");    
+    app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");
 #endif
 
-        QStringList args;
+    QStringList args;
 // Qtstalker start changes
 /*
-        args << QLatin1String("-collectionFile")
-            << QLibraryInfo::location(QLibraryInfo::ExamplesPath)
-            + QLatin1String("/help/simpletextviewer/documentation/simpletextviewer.qhc")
-            << QLatin1String("-enableRemoteControl");
+   args << QLatin1String("-collectionFile")
+        << QLibraryInfo::location(QLibraryInfo::ExamplesPath)
+        + QLatin1String("/help/simpletextviewer/documentation/simpletextviewer.qhc")
+        << QLatin1String("-enableRemoteControl");
 */
-        QString collectionFile = QString("%1/qtstalker/html/doc.qhc").arg(INSTALL_DOCS_DIR);
-        args << QLatin1String("-collectionFile")
-            << collectionFile
-            << QLatin1String("-enableRemoteControl");
+    QString collectionFile = QString("%1/qtstalker/html/doc.qhc").arg(INSTALL_DOCS_DIR);
+    
+    args << QLatin1String("-collectionFile") << collectionFile << QLatin1String("-enableRemoteControl");
 // Qtstalker end changes
 
-        proc->start(app, args);
+    proc->start(app, args);
 
-        if (!proc->waitForStarted()) {
+    if (! proc->waitForStarted())
+    {
 // Qtstalker start changes
-/*
-            QMessageBox::critical(0, QObject::tr("Simple Text Viewer"),
-                QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
-*/
-            QMessageBox::critical(0, QObject::tr("Qtstalker"),
-                QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
+      Dialog *dialog = new Dialog(Dialog::_Message, 0);
+      dialog->setWindowTitle(QObject::tr("Qtstalker: Error"));
+      dialog->setMessage(QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
+      dialog->show();
 // Qtstalker end changes
-            return false;
-        }    
-    }
-    return true;
+      return false;
+    }    
+  }
+  
+  return true;
 }
 //! [2]

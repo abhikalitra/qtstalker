@@ -21,9 +21,9 @@
 
 #include "QuoteServerDialog.h"
 #include "Config.h"
+#include "Dialog.h"
 
 #include <QtDebug>
-#include <QMessageBox>
 #include <QProcess>
 #include <QLayout>
 #include <QLabel>
@@ -89,7 +89,10 @@ void QuoteServerDialog::done ()
   QString hostName = _hostName->text();
   if (hostName.isEmpty())
   {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Hostname missing."));
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+    dialog->setMessage(tr("Hostname missing."));
+    dialog->show();
     return;
   }
 
@@ -114,7 +117,10 @@ void QuoteServerDialog::done ()
     int rc = QProcess::execute(command);
     if (rc)
     {
-      QMessageBox::information(this, tr("Qtstalker: Error"), tr("Error stopping the server"));
+      Dialog *dialog = new Dialog(Dialog::_Message, 0);
+      dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+      dialog->setMessage(tr("Error stopping the server"));
+      dialog->show();
       accept();
       return;
     }
@@ -126,7 +132,10 @@ void QuoteServerDialog::done ()
     rc = QProcess::startDetached(command);
     if (! rc)
     {
-      QMessageBox::information(this, tr("Qtstalker: Error"), tr("Error starting the server"));
+      Dialog *dialog = new Dialog(Dialog::_Message, 0);
+      dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+      dialog->setMessage(tr("Error starting the server"));
+      dialog->show();
     }
   }
 
@@ -135,22 +144,23 @@ void QuoteServerDialog::done ()
 
 void QuoteServerDialog::refreshServer ()
 {
-  int rc = QMessageBox::warning(this,
-                                tr("Qtstalker: Warning"),
-                                tr("Are you sure you want to restart the server?"),
-                                QMessageBox::Yes,
-                                QMessageBox::No,
-                                QMessageBox::NoButton);
-
-  if (rc == QMessageBox::No)
-    return;
-
+  Dialog *dialog = new Dialog(Dialog::_Message, 0);
+  dialog->setWindowTitle(tr("Qtstalker: Refresh Quote Server"));
+  dialog->setMessage(tr("Are you sure you want to restart the server?"));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(refreshServer2()));
+  dialog->show();
+}
+void QuoteServerDialog::refreshServer2 ()
+{
   // kill the QuoteServer
   QString command("killall QuoteServer");
-  rc = QProcess::execute(command);
+  int rc = QProcess::execute(command);
   if (rc)
   {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Error stopping the server"));
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+    dialog->setMessage(tr("Error stopping the server"));
+    dialog->show();
     return;
   }
 
@@ -161,8 +171,10 @@ void QuoteServerDialog::refreshServer ()
   rc = QProcess::startDetached(command);
   if (! rc)
   {
-    QMessageBox::information(this, tr("Qtstalker: Error"), tr("Error starting the server"));
+    Dialog *dialog = new Dialog(Dialog::_Message, 0);
+    dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+    dialog->setMessage(tr("Error starting the server"));
+    dialog->show();
     return;
   }
 }
-

@@ -85,6 +85,9 @@ TEMPLATE = subdirs
 # compile qtstalker lib
 SUBDIRS += lib
 
+# compile app
+SUBDIRS += src
+
 # compile indicator plugins
 SUBDIRS += plugins/indicators/AD
 SUBDIRS += plugins/indicators/ADX
@@ -130,9 +133,6 @@ SUBDIRS += plugins/indicators/WILLR
 # compile misc plugins
 SUBDIRS += plugins/misc/CSV
 SUBDIRS += plugins/misc/Yahoo
-
-# compile app
-SUBDIRS += src
 
 # compile QuoteServer
 SUBDIRS += QuoteServer

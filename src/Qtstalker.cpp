@@ -20,10 +20,8 @@
  */
 
 #include <QLayout>
-#include <QMessageBox>
 #include <QDir>
 #include <QFileDialog>
-#include <QInputDialog>
 #include <QFont>
 #include <QCursor>
 #include <QColor>

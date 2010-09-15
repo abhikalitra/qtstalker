@@ -21,13 +21,10 @@
 
 #include "ExchangeDataBase.h"
 #include "Config.h"
-//#include "PrefDialog.h"
 
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
-#include <QMessageBox>
-#include <QInputDialog>
 #include <QObject>
 #include <QDateTime>
 #include <QFileInfo>
@@ -217,91 +214,4 @@ void ExchangeDataBase::codeFromName (QString &name, QString &code)
   if(q.next())
     code = q.value(0).toString();
 }
-
-/*
-void ExchangeDataBase::searchExchangeDialog (QString &code)
-{
-  code.clear();
-  int page = 0;
-  int item = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Search For Exchange"));
-
-  k = QObject::tr("Search Fields");
-  dialog->addPage(page, k);
-
-  QStringList countryList;
-  k = "countryName";
-  getFieldList(k, countryList);
-  countryList.prepend(QString("<NONE>"));
-  dialog->addComboItem(item++, page, QObject::tr("Country"), countryList, d);
-
-  QStringList cityList;
-  k = "city";
-  getFieldList(k, cityList);
-  cityList.prepend(QString("<NONE>"));
-  dialog->addComboItem(item++, page, QObject::tr("City"), cityList, d);
-
-  dialog->addTextItem(item++, page, QObject::tr("Exchange Name"), d, QString());
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return;
-  }
-
-  item = 0;
-  QString country;
-  dialog->getCombo(item, country);
-  if (country == "<NONE>")
-    country.clear();
-
-  item++;
-  QString city;
-  dialog->getCombo(item, city);
-  if (city == "<NONE>")
-    city.clear();
-
-  item++;
-  QString pattern;
-  dialog->getText(item, pattern);
-
-  delete dialog;
-
-  QStringList sl;
-  if (search(country, city, pattern, sl))
-  {
-    QMessageBox::information(0, QObject::tr("CSV Error"), QObject::tr("Invalid search pattern."));
-    return;
-  }
-
-  if (! sl.count())
-  {
-    QMessageBox::information(0, QObject::tr("CSV Exchange Search"), QObject::tr("No items found."));
-    return;
-  }
-
-  bool ok;
-  d = QInputDialog::getItem(0,
-                            QObject::tr("Exchange Search Results"),
-                            QObject::tr("Select item to use as exchange"),
-                            sl,
-                            0,
-                            FALSE,
-                            &ok,
-                            0);
-
-  if (! ok || d.isEmpty())
-    return;
-
-  codeFromName(d, code);
-  if (code.isEmpty())
-  {
-    QMessageBox::information(0, QObject::tr("CSV Exchange Search"), QObject::tr("No item found."));
-    return;
-  }
-}
-*/
 

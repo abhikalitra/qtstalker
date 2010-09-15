@@ -44,17 +44,19 @@ class CSVRuleDialog : public QDialog
     void loadRule ();
     void saveRule ();
     void clear ();
-    void dateDialog (QString &);
-    void timeDialog (QString &);
+    void dateDialog ();
+    void timeDialog ();
     
   public slots:
     void ruleChanged ();
-    void addClicked ();
     void insertClicked ();
+    void insertClicked2 (QString);
     void deleteClicked ();
     void done ();
     void searchExchange ();
     void setExchangeCode (QString);
+    void dateDialog2 (QString);
+    void timeDialog2 (QString);
           
   private:
     QDialogButtonBox *_buttonBox;
@@ -66,7 +68,6 @@ class CSVRuleDialog : public QDialog
     QComboBox *_exchange;
     bool _saveFlag;
     QString _name;
-    QPushButton *_addButton;
     QPushButton *_insertButton;
     QPushButton *_deleteButton;
     QStringList _fieldList;

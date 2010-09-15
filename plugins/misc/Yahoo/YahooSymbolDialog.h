@@ -44,6 +44,7 @@ class YahooSymbolDialog : public QDialog
       
   public slots:
     void addSymbol ();
+    void addSymbol2 (QString);
     void deleteSymbol ();
     void done ();
 

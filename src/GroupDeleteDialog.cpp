@@ -24,7 +24,6 @@
 
 #include <QtDebug>
 #include <QLabel>
-#include <QMessageBox>
 
 GroupDeleteDialog::GroupDeleteDialog () : Dialog (Dialog::_Dialog, 0)
 {
