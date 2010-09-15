@@ -20,7 +20,7 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,Piercing Line,yellow";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # plot it
-print STDOUT "INDICATOR,SET_PLOT,Piercing Line";
+print STDOUT "INDICATOR,SET_PLOT,Piercing Line,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 
@@ -37,6 +37,6 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,Dark Cloud Cover,orange";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # plot it
-print STDOUT "INDICATOR,SET_PLOT,Dark Cloud Cover";
+print STDOUT "INDICATOR,SET_PLOT,Dark Cloud Cover,1";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 

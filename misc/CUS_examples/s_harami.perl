@@ -24,7 +24,7 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,Harami,yellow";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # plot the harami 
-print STDOUT "INDICATOR,SET_PLOT,Harami";
+print STDOUT "INDICATOR,SET_PLOT,Harami,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 
@@ -37,6 +37,6 @@ print STDOUT "INDICATOR,SET_COLOR_ALL,Harami Cross,orange";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 # plot the harami cross
-print STDOUT "INDICATOR,SET_PLOT,Harami Cross";
+print STDOUT "INDICATOR,SET_PLOT,Harami Cross,1";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 

@@ -63,6 +63,6 @@ for (; $count <= $range[1]; $count++, $pcount++)
   }
 }
 
-print STDOUT "INDICATOR,SET_PLOT,candles";
+print STDOUT "INDICATOR,SET_PLOT,candles,0";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
