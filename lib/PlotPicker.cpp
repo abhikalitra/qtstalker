@@ -20,6 +20,7 @@
  */
 
 #include "PlotPicker.h"
+#include "PickerMachine.h"
 
 #include <QString>
 #include <QDebug>
@@ -30,9 +31,34 @@ PlotPicker::PlotPicker (QwtPlot *p) : QwtPlotPicker (QwtPlot::xBottom, QwtPlot::
                                                      QwtPicker::AlwaysOn,
                                                      p->canvas())
 {
-  setRubberBandPen(QColor(Qt::white));
-  setRubberBand(QwtPicker::RectRubberBand);
-  setTrackerPen(QColor(Qt::white));
+  _crossHairs = 0;
+  _color = QColor(Qt::white);
+  p->canvas()->setMouseTracking(true);
+
+  setCrossHairs(_crossHairs);
+}
+
+void PlotPicker::setCrossHairs (int d)
+{
+  if (d)
+  {
+    setRubberBand(QwtPlotPicker::CrossRubberBand);
+    setRubberBandPen(_color);
+    setRubberBand(QwtPicker::CrossRubberBand);
+  }
+  else
+  {
+    setRubberBandPen(_color);
+    setRubberBand(QwtPicker::RectRubberBand);
+    setTrackerPen(_color);
+  }
+}
+
+void PlotPicker::setColor (QColor d)
+{
+  _color = d;
+  setRubberBandPen(_color);
+  setTrackerPen(_color);
 }
 
 QwtText PlotPicker::trackerText (const QPoint &) const
@@ -47,6 +73,13 @@ QwtText PlotPicker::trackerText (const QwtDoublePoint &) const
 
 void PlotPicker::widgetMouseMoveEvent (QMouseEvent *event)
 {
+  if (! isActive())
+  {
+    setSelectionFlags(QwtPicker::PointSelection);
+    begin();
+    append(event->pos());
+  }
+
   QwtPicker::widgetMouseMoveEvent(event);
   
   emit signalMouseMove(event->pos());
@@ -64,5 +97,15 @@ void PlotPicker::widgetMouseDoubleClickEvent (QMouseEvent *event)
   QwtPicker::widgetMousePressEvent(event);
 
   emit signalMouseDoubleClick(event->button(), event->pos());
+}
+
+void PlotPicker::widgetLeaveEvent(QEvent *)
+{
+  end();
+}
+
+QwtPickerMachine *PlotPicker::stateMachine (int) const
+{
+  return new PickerMachine;
 }
 

@@ -121,6 +121,12 @@ void ChartLayout::load ()
   config.getData(Config::PlotFont, font);
   emit signalFont(font);
 
+  int tint = config.getInt(Config::CrossHairs);
+  emit signalCrossHairs(tint);
+
+  config.getData(Config::CrossHairsColor, color);
+  emit signalCrossHairsColor(color);
+
   emit signalDraw();
 }
 
@@ -195,6 +201,8 @@ void ChartLayout::addTab (Indicator &i)
   connect(settings.plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator()));
   connect(settings.plot, SIGNAL(signalBackgroundColorChanged(QColor)), this, SLOT(backgroundColorChanged(QColor)));
   connect(settings.plot, SIGNAL(signalFontChanged(QFont)), this, SLOT(fontChanged(QFont)));
+  connect(this, SIGNAL(signalCrossHairs(bool)), settings.plot, SLOT(setCrossHairs(bool)));
+  connect(this, SIGNAL(signalCrossHairsColor(QColor)), settings.plot, SLOT(setCrossHairsColor(QColor)));
 }
 
 //******************************************************************
@@ -258,6 +266,12 @@ void ChartLayout::setGridColor (QColor d)
   emit signalDraw();
 }
 
+void ChartLayout::setCrossHairsColor (QColor d)
+{
+  emit signalCrossHairsColor(d);
+  emit signalDraw();
+}
+
 void ChartLayout::setPixelSpace (int d)
 {
   emit signalPixelSpace(d);
@@ -286,6 +300,12 @@ void ChartLayout::saveSettings ()
 void ChartLayout::setGrid (bool d)
 {
   emit signalGrid(d);
+  emit signalDraw();
+}
+
+void ChartLayout::setCrossHairs (bool d)
+{
+  emit signalCrossHairs(d);
   emit signalDraw();
 }
 

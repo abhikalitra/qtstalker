@@ -27,10 +27,11 @@ Priority
 
 BUG: new indicators do not chart until quotes are re-loaded
 BUG: indicator tabs do not update unless tab is exposed first, then works.
+BUG: gnome ubuntu has issues with qtstalker indicator tab resizing displays tiny tabs with misplaced text.
+     kde systems work.
 
 - fix scripts not finishing ? fix pending confimation
 - convert any long running functions that gui block to use threads
-- Cursor crosshairs.
 - Bar spacing. Using fixed value of 8 currently.
 - log scaling toggle.
 - chart zooming

@@ -103,6 +103,7 @@ HEADERS += IndicatorThread.h
 HEADERS += MiscPlugin.h
 HEADERS += MiscPluginFactory.h
 HEADERS += OHLC.h
+HEADERS += PickerMachine.h
 HEADERS += Plot.h
 HEADERS += PlotCandle.h
 HEADERS += PlotHistogramBar.h
@@ -221,6 +222,7 @@ SOURCES += IndicatorPluginFactory.cpp
 SOURCES += IndicatorThread.cpp
 SOURCES += MiscPlugin.cpp
 SOURCES += MiscPluginFactory.cpp
+SOURCES += PickerMachine.cpp
 SOURCES += Plot.cpp
 SOURCES += PlotCandle.cpp
 SOURCES += PlotHistogramBar.cpp
@@ -250,6 +252,17 @@ VERSION = 0.37.0
 unix {
   # qmake automatically adds /usr/lib
   INCLUDEPATH += /usr/include/qt4/Qt
+
+  # for Ubuntu
+  INCLUDEPATH += /usr/include/qwt-qt4
+
+  # Qwt library (check if ubuntu system)
+  exists(/usr/lib/libqwt-qt4.so) {
+    LIBS += -lqwt-qt4
+  } else {
+    LIBS += -lqwt
+  }
+
   exists(/usr/local/lib) {
     LIBS += -L/usr/local/lib
   }
@@ -263,9 +276,6 @@ contains(TA_LIB_VERSION, 0.3.0) {
   } else {
     LIBS += -lta_lib
   }
-
-# Qwt library
-LIBS += -lqwt
 
 message("Using INCLUDEPATH=$$INCLUDEPATH")
 message("Using LIBS=$$LIBS")

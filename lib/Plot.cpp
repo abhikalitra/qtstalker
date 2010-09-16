@@ -329,6 +329,11 @@ void Plot::setGridColor (QColor d)
   _grid->setMajPen(QPen(d, 0, Qt::DotLine));
 }
 
+void Plot::setCrossHairsColor (QColor d)
+{
+  _picker->setColor(d);
+}
+
 void Plot::setGrid (bool d)
 {
   _grid->enableX(d);
@@ -354,16 +359,9 @@ void Plot::showDate (bool d)
   enableAxis(QwtPlot::xBottom, d);
 }
 
-void Plot::setCrosshair (bool d)
+void Plot::setCrossHairs (bool d)
 {
-  if (d)
-  {
-//    _picker->setEnabled(TRUE);
-  }
-  else
-  {
-//    _picker->setEnabled(FALSE);
-  }
+  _picker->setCrossHairs(d);
 }
 
 void Plot::setHighLow ()

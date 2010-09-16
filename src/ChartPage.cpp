@@ -64,7 +64,18 @@ ChartPage::ChartPage ()
   // update to last symbol search before displaying
   Config config;
   config.getData(Config::LastChartPanelExchangeSearch, _searchExchange);
+  if (_searchExchange.isEmpty())
+  {
+    _searchExchange = "*";
+    config.setData(Config::LastChartPanelExchangeSearch, _searchExchange);
+  }
+  
   config.getData(Config::LastChartPanelSymbolSearch, _searchString);
+  if (_searchString.isEmpty())
+  {
+    _searchString = "*";
+    config.setData(Config::LastChartPanelSymbolSearch, _searchString);
+  }
 
   updateList();
 }

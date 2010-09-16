@@ -121,11 +121,13 @@ void QtstalkerApp::createGUI (Config &)
   connect(_sidePanel, SIGNAL(signalSliderChanged(int)), _chartLayout, SLOT(setIndex(int)));
 //  connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), _chartLayout, SLOT(setInterval(int)));
   connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
-  connect(_gridAction, SIGNAL(signalChanged(bool)), _chartLayout, SLOT(setGrid(bool)));
   connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), _chartLayout, SLOT(setPixelSpace(int)));
   connect(_zoomButtons, SIGNAL(signalZoom(int, int)), _chartLayout, SLOT(setZoom(int, int)));
+  connect(_gridAction, SIGNAL(signalChanged(bool)), _chartLayout, SLOT(setGrid(bool)));
   connect(_gridAction, SIGNAL(signalColorChanged(QColor)), _chartLayout, SLOT(setGridColor(QColor)));
   connect(_newIndicatorAction, SIGNAL(activated()), _chartLayout, SLOT(newIndicator()));
+  connect(_crossHairsButton, SIGNAL(signalChanged(bool)), _chartLayout, SLOT(setCrossHairs(bool)));
+  connect(_crossHairsButton, SIGNAL(signalColor(QColor)), _chartLayout, SLOT(setCrossHairsColor(QColor)));
   
   // end chart layout signals
   
@@ -167,6 +169,10 @@ void QtstalkerApp::createToolBars ()
   // toggle side panel button
   _sidePanelButton = new SidePanelButton;
   toolbar->addWidget(_sidePanelButton);
+
+  // toggle crosshairs button
+  _crossHairsButton = new CrossHairsButton;
+  toolbar->addWidget(_crossHairsButton);
 
   a = new QAction(QIcon(datawindow), tr("&Data Window"), this);
   a->setShortcut(QKeySequence(Qt::ALT+Qt::Key_1));

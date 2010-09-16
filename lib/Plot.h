@@ -87,7 +87,6 @@ class Plot : public QwtPlot
     void setGrid (bool);
     void showDate (bool);
     void setLogScaling (bool);
-    void setCrosshair (bool);
     void showContextMenu ();
     void editIndicator ();
     void deleteIndicator ();
@@ -101,11 +100,12 @@ class Plot : public QwtPlot
     void mouseClick (int, QPoint);
     void deleteChartObject (int);
     void chartObjectMenuSelected (QAction *);
-
     void chartObjectSelected (int);
     void chartObjectUnselected (int);
     void chartObjectMoveStart (int);
     void chartObjectMoveEnd (int);
+    void setCrossHairs (bool);
+    void setCrossHairsColor (QColor);
 
   private:
     QAction *_dateAction;

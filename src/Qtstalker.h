@@ -45,6 +45,7 @@
 #include "SidePanel.h"
 #include "ChartLayout.h"
 #include "SidePanelButton.h"
+#include "CrossHairsButton.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -93,6 +94,7 @@ class QtstalkerApp : public QMainWindow
     ChartLayout *_chartLayout;
     QAction *_newIndicatorAction;
     SidePanelButton *_sidePanelButton;
+    CrossHairsButton *_crossHairsButton;
 };
 
 #endif

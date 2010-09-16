@@ -722,7 +722,9 @@
 
            Fixed CUS PLOT_STYLE and missing plots.
 
-20100915:  Removed the last of the blocking dialog and messageboxes. YAY!
+20100915:  Removed the last of the blocking dialog and message boxes. YAY!
 
+           Added directives to the *.pro files to check for Ubuntu paths for include and lib files.
 
+20100916:  Cursor crosshairs button added to the main toolbar.
 

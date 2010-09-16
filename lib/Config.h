@@ -75,11 +75,11 @@ class Config : public BaseConfig
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
       ScriptLaunchButton2, // script panel launch button 2
-      ChartTabNorthSouthWidth, // ************* UNUSED *****************
+      CrossHairs, // crosshairs status
       ExchangeFileDate,  // the last modification date of /docs/exchanges.csv
       LastScriptPath, // the dir of the last script run from a dialog
       FuturesFileDate,   // the file size of /docs/futures.csv
-      ChartTabNorthSouthHeight, // ************* UNUSED *****************
+      CrossHairsColor, // crosshairs color
       ChartTabEastWestWidth, // ************* UNUSED *****************
       ChartTabEastWestHeight, // ************* UNUSED *****************
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel

@@ -9,6 +9,7 @@ HEADERS += assistant.h
 HEADERS += BarLengthButtons.h
 HEADERS += ChartLayout.h
 HEADERS += ChartPage.h
+HEADERS += CrossHairsButton.h
 HEADERS += DataWindow.h
 HEADERS += DateRangeButton.h
 HEADERS += DateRangeControl.h
@@ -52,6 +53,7 @@ SOURCES += assistant.cpp
 SOURCES += BarLengthButtons.cpp
 SOURCES += ChartLayout.cpp
 SOURCES += ChartPage.cpp
+SOURCES += CrossHairsButton.cpp
 SOURCES += DataWindow.cpp
 SOURCES += DateRangeButton.cpp
 SOURCES += DateRangeControl.cpp
@@ -92,13 +94,31 @@ SOURCES += UpdateGroupPageThread.cpp
 SOURCES += ZoomButtons.cpp
 
 
-
 TARGET = qtstalker
 
 INCLUDEPATH += ../lib
 
 LIBS += -L../lib -lqtstalker
-LIBS += -lqwt
+
+unix {
+  # qmake automatically adds /usr/lib
+  INCLUDEPATH += /usr/include/qt4/Qt
+
+  # for Ubuntu
+  INCLUDEPATH += /usr/include/qwt-qt4
+
+  # Qwt library (check if ubuntu system)
+  exists(/usr/lib/libqwt-qt4.so) {
+    LIBS += -lqwt-qt4
+  } else {
+    LIBS += -lqwt
+  }
+
+  exists(/usr/local/lib) {
+    LIBS += -L/usr/local/lib
+  }
+}
+
 
 message("Using INCLUDEPATH=$$INCLUDEPATH")
 message("Using LIBS=$$LIBS")

@@ -56,6 +56,8 @@ class ChartLayout : public QSplitter
     void signalInfo (Setting);
 //    void signalInterval (BarData::BarLength);
 //    void signalRefresh ();
+    void signalCrossHairsColor (QColor);
+    void signalCrossHairs (bool);
 
   public:
     ChartLayout ();
@@ -86,6 +88,8 @@ class ChartLayout : public QSplitter
     void backgroundColorChanged (QColor);
     void fontChanged (QFont);
     void removeTab (Indicator);
+    void setCrossHairs (bool);
+    void setCrossHairsColor (QColor);
 
   private:
     QHash<QString, PlotSettings> _plots;
