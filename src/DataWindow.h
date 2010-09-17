@@ -38,9 +38,9 @@ class DataWindow : public QDialog
 
   public:
     DataWindow (QWidget *);
-    void setData (QHash<QString, PlotSettings> &);
-    void setPlot (PlotSettings &);
-    void setDates (PlotSettings &);
+    void setData (QHash<QString, PlotSettings *> &);
+    void setPlot (PlotSettings *);
+    void setDates (PlotSettings *);
     void setLine (Curve *);
     void setOHLC (Curve *);
     void scrollToBottom ();

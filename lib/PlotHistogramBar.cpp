@@ -50,8 +50,6 @@ PlotHistogramBar::~PlotHistogramBar ()
 
 void PlotHistogramBar::init ()
 {
-  _spacing = 8;
-  
   _data = new PrivateData();
   _data->reference = 0.0;
   _data->attributes = PlotHistogramBar::Auto;
@@ -85,7 +83,6 @@ void PlotHistogramBar::setData (Curve *curve)
   QwtArray<QwtDoubleInterval> intervals;
   QwtArray<double> values;
   double pos = 0.0;
-//  int width = _spacing - 1;
   int width = 1;
   int loop = 0;
   for (; loop < keys.count(); loop++)

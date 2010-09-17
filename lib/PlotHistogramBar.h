@@ -64,7 +64,6 @@ class PlotHistogramBar : public QwtPlotCurve
   private:
     class PrivateData;
     PrivateData *_data;
-    int _spacing;
 };
 
 #endif

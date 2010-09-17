@@ -46,13 +46,13 @@ DataWindow::DataWindow (QWidget *w) : QDialog (w, 0)
   resize(750, 550);
 }
 
-void DataWindow::setData (QHash<QString, PlotSettings> &list)
+void DataWindow::setData (QHash<QString, PlotSettings *> &list)
 {
-  QHashIterator<QString, PlotSettings> it(list);
+  QHashIterator<QString, PlotSettings *> it(list);
   while (it.hasNext())
   {
     it.next();
-    PlotSettings set = it.value();
+    PlotSettings *set = it.value();
 
     if (! _dateFlag)
       setDates(set);
@@ -61,10 +61,10 @@ void DataWindow::setData (QHash<QString, PlotSettings> &list)
   }
 }
 
-void DataWindow::setPlot (PlotSettings &set)
+void DataWindow::setPlot (PlotSettings *set)
 {
   QHash<QString, Curve *> curves;
-  set.plot->curves(curves);
+  set->plot->curves(curves);
 
   // get the plot data
   QHashIterator<QString, Curve *> it(curves);
@@ -89,10 +89,10 @@ void DataWindow::setPlot (PlotSettings &set)
   }
 }
 
-void DataWindow::setDates (PlotSettings &set)
+void DataWindow::setDates (PlotSettings *set)
 {
   QList<QDateTime> dates;
-  set.plot->dates(dates);
+  set->plot->dates(dates);
   
   _table->setColumnCount(_table->columnCount() + 1);
   QTableWidgetItem *item = new QTableWidgetItem(tr("Date"));

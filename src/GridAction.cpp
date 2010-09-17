@@ -34,12 +34,11 @@ GridAction::GridAction ()
   setCheckable(TRUE);
 
   Config config;
-  QColor c;
-  config.getData(Config::GridColor, c);
-  if (! c.isValid())
+  config.getData(Config::GridColor, _color);
+  if (! _color.isValid())
   {
-    c = QColor("#626262");
-    config.setData(Config::GridColor, c);
+    _color = QColor("#626262");
+    config.setData(Config::GridColor, _color);
   }
 
   QString s;
@@ -65,19 +64,23 @@ void GridAction::changed (bool status)
 
 void GridAction::colorDialog ()
 {
-  Config config;
-  QColor oldColor;
-  config.getData(Config::GridColor, oldColor);
-
-  QColor newColor = QColorDialog::getColor(oldColor, this, tr("Select Grid Color"), 0);
-  if (! newColor.isValid())
+  QColorDialog *dialog = new QColorDialog(_color, this);
+  dialog->setWindowTitle(tr("Qtstalker: Grid Color"));
+  connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(setColor(QColor)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+  
+void GridAction::setColor (QColor c)
+{
+  if (! c.isValid())
     return;
 
-  if (oldColor != newColor)
-  {
-    config.setData(Config::GridColor, newColor);
-    emit signalColorChanged(newColor);
-  }
+  _color = c;
+
+  Config config;
+  config.setData(Config::GridColor, _color);
+  emit signalColorChanged(_color);
 }
 
 void GridAction::contextMenuEvent (QContextMenuEvent *)

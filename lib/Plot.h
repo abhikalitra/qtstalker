@@ -33,7 +33,6 @@
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
-#include <qwt_scale_engine.h>
 
 #include "BarData.h"
 #include "DateScaleDraw.h"
@@ -57,7 +56,6 @@ class Plot : public QwtPlot
     void signalBackgroundColorChanged (QColor);
     void signalFontChanged (QFont);
     void signalInfoMessage (Setting);
-
     void signalClick (int, QPoint);
     void signalMove (QPoint);
 
@@ -77,6 +75,7 @@ class Plot : public QwtPlot
     void saveChartObjects ();
     void curves (QHash<QString, Curve *> &);
     void dates (QList<QDateTime> &);
+    int index ();
 
   public slots:
     virtual void clear ();
@@ -106,6 +105,7 @@ class Plot : public QwtPlot
     void chartObjectMoveEnd (int);
     void setCrossHairs (bool);
     void setCrossHairsColor (QColor);
+    void setBarSpacing (int);
 
   private:
     QAction *_dateAction;
@@ -117,8 +117,6 @@ class Plot : public QwtPlot
     DateScaleDraw *_dateScaleDraw;
     PlotScaleDraw *_plotScaleDraw;
     QwtPlotGrid *_grid;
-    QwtLinearScaleEngine *_linearScaleEngine;
-    QwtLog10ScaleEngine *_logScaleEngine;
     QMenu *_chartMenu;
     QMenu *_coListMenu;
     PlotPicker *_picker;

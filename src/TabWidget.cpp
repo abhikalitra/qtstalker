@@ -82,7 +82,7 @@ TabWidget::TabWidget (QString &id)
 
   setTabSizes();
 
-//  connect(this, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged()));
+  connect(this, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged()));
 }
 
 void TabWidget::contextMenuEvent (QContextMenuEvent *)
@@ -150,5 +150,20 @@ void TabWidget::currentTabChanged ()
   if (! p)
     return;
 
-  p->replot();
+  p->setStartIndex(p->index());
 }
+
+void TabWidget::setTabButton (int pos, QString text)
+{
+  // create a label that paints horizontally
+  QTabBar *tb = tabBar();
+  QLabel *label = new QLabel;
+  label->setIndent(0);
+  label->setMargin(0);
+  label->setAlignment(Qt::AlignLeft);
+  label->setText(text);
+  tb->setTabButton(pos, QTabBar::LeftSide, label);
+}
+
+
+

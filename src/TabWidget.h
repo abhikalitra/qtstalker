@@ -36,6 +36,7 @@ class TabWidget : public QTabWidget
     TabWidget (QString &);
     QTabBar * getTabBar ();
     void setTabSizes();
+    void setTabButton (int, QString);
 
   public slots:
     void tabDialog ();

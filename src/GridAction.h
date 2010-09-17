@@ -39,9 +39,13 @@ class GridAction : public QToolButton
   public slots:
     void changed (bool);
     void colorDialog ();
+    void setColor (QColor);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);
+
+  private:
+    QColor _color;
 };
 
 #endif

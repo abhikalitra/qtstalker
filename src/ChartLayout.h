@@ -48,31 +48,30 @@ class ChartLayout : public QSplitter
     void signalBorderColor (QColor);
     void signalGridColor (QColor);
     void signalFont (QFont);
-    void signalStatus (QString);
-    void signalPixelSpace (int);
+    void signalMessage (QString);
     void signalGrid (bool);
     void signalNewChartObject (int);
 //    void signalZoom (int, int);
     void signalInfo (Setting);
-//    void signalInterval (BarData::BarLength);
-//    void signalRefresh ();
     void signalCrossHairsColor (QColor);
     void signalCrossHairs (bool);
+    void signalBarSpacing (int);
 
   public:
     ChartLayout ();
+    ~ChartLayout ();
     void addTab (Indicator &);
     void addTab (QString &);
     void refresh (QString);
     void loadPlots (BarData &, int index);
     int plotWidth ();
-    QHash<QString, PlotSettings> & plots ();
+    QHash<QString, PlotSettings *> & plots ();
 
   public slots:
     void save ();
     void load ();
     void setGridColor (QColor);
-    void setPixelSpace (int);
+    void setBarSpacing (int);
     void setIndex (int);
     void clearIndicator ();
     void saveSettings ();
@@ -87,14 +86,14 @@ class ChartLayout : public QSplitter
     void indicatorThreadFinished (Indicator i);
     void backgroundColorChanged (QColor);
     void fontChanged (QFont);
-    void removeTab (Indicator);
+    void removeTab (QStringList);
     void setCrossHairs (bool);
     void setCrossHairsColor (QColor);
 
   private:
-    QHash<QString, PlotSettings> _plots;
+    QHash<QString, PlotSettings *> _plots;
     QHash<QString, TabWidget *> _tabs;
-    QHash<int, QGridLayout *> _grids;
+    QHash<int, QHBoxLayout *> _grids;
     QHash<int, QWidget *> _holders;
     BarData _barData;
     int _startIndex;

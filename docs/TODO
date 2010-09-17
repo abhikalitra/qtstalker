@@ -10,7 +10,6 @@ To Do:
 - update classes with a description of purpose, usage etc.
 - Round off values to lesser precision when displaying in data panel.
 - Improve source code documentation. Javadoc comments are utilised by Doxygen.
-- create an integrated indicator editor.
 - add tooltips
 - interactive scripting
 - complete backtesting module
@@ -20,20 +19,17 @@ To Do:
 - add some qtstalker plugins to display details data from QuoteServer
 - add search method to quoteserver details plugin
 - add some example rules to the CSV plugin so noobs have an idea of construction (wait till release)
+- review make files to use .qmake.cache
 
 
 Priority
 ========
 
-BUG: new indicators do not chart until quotes are re-loaded
-BUG: indicator tabs do not update unless tab is exposed first, then works.
 BUG: gnome ubuntu has issues with qtstalker indicator tab resizing displays tiny tabs with misplaced text.
      kde systems work.
 
 - fix scripts not finishing ? fix pending confimation
 - convert any long running functions that gui block to use threads
-- Bar spacing. Using fixed value of 8 currently.
-- log scaling toggle.
 - chart zooming
 
 

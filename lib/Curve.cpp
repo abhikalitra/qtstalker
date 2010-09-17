@@ -211,8 +211,8 @@ int Curve::highLowRange (int start, int end, double &h, double &l)
 {
   int rc = 1;
   int loop;
-  h = -99999999;
-  l = 99999999;
+  h = -9999999999.0;
+  l = 9999999999.0;
 
   for (loop = start; loop <= end; loop++)
   {

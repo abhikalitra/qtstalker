@@ -48,15 +48,31 @@ ChartLayout::ChartLayout ()
     QWidget *w = new QWidget;
     _holders.insert(loop, w);
 
-    QGridLayout *grid = new QGridLayout;
-    grid->setMargin(0);
-    grid->setSpacing(0);
-    _grids.insert(loop, grid);
+    QHBoxLayout *hbox = new QHBoxLayout;
+    hbox->setMargin(0);
+    hbox->setSpacing(0);
+    w->setLayout(hbox);
+    _grids.insert(loop, hbox);
 
-    w->setLayout(grid);
     addWidget(w);
     w->hide();
+    
+    int loop2 = 1;
+    for (; loop2 < 3; loop2++)
+    {
+      QString key = QString::number(loop) + ":" + QString::number(loop2);
+      TabWidget *tab = new TabWidget(key);
+      _tabs.insert(key, tab);
+      hbox->addWidget(tab);
+      tab->hide();
+    }
   }
+}
+
+ChartLayout::~ChartLayout ()
+{
+  if (_plots.count())
+    qDeleteAll(_plots);
 }
 
 void ChartLayout::save ()
@@ -127,7 +143,7 @@ void ChartLayout::load ()
   config.getData(Config::CrossHairsColor, color);
   emit signalCrossHairsColor(color);
 
-  emit signalDraw();
+  emit signalIndex(0);
 }
 
 void ChartLayout::addTab (QString &name)
@@ -144,65 +160,58 @@ void ChartLayout::addTab (Indicator &i)
   if (! i.enable())
     return;
 
-  QGridLayout *grid = _grids.value(i.tabRow());
-  if (! grid)
-    return;
-  
   QWidget *w = _holders.value(i.tabRow());
   if (! w)
     return;
+  
+  w->show();
 
   QString key = QString::number(i.tabRow()) + ":" + QString::number(i.column());
   TabWidget *tab = _tabs.value(key);
-  if (! tab)
-  {
-    tab = new TabWidget(key);
+  tab->show();
+
+//  if (! tab)
+//  {
+//    tab = new TabWidget(key);
 //    connect(tab, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged()));
-    _tabs.insert(key, tab);
-    grid->addWidget(tab, 0, i.column() - 1);
-    w->show();
-  }
+//    _tabs.insert(key, tab);
+//    grid->addWidget(tab, 0, i.column() - 1);
+//    w->show();
+//  }
 
-  PlotSettings settings;
-  settings.plot = new Plot;
-  settings.name = i.name();
-  settings.plot->setIndicator(i.name());
-  int pos = tab->addTab(settings.plot, QString());
+  PlotSettings *settings = new PlotSettings;
+  settings->plot = new Plot;
 
-  // create a label that paints horizontally
-  QTabBar *tb = tab->getTabBar();
-  QLabel *label = new QLabel;
-  label->setIndent(0);
-  label->setMargin(0);
-  label->setAlignment(Qt::AlignLeft);
-  label->setText(i.name());
-  tb->setTabButton(pos, QTabBar::LeftSide, label);
+  settings->name = i.name();
+  settings->plot->setIndicator(i.name());
+  int pos = tab->addTab(settings->plot, QString());
+  tab->setTabButton(pos, i.name());
 
-  settings.row = i.tabRow();
-  settings.col = i.column();
+  settings->row = i.tabRow();
+  settings->col = i.column();
   _plots.insert(i.name(), settings);
 
-  settings.plot->showDate(i.date());
-//  settings.plot->setLogScaling(i.getLog());
+  settings->plot->showDate(i.date());
+  settings->plot->setLogScaling(i.getLog());
 
-  connect(this, SIGNAL(signalBackgroundColor(QColor)), settings.plot, SLOT(setBackgroundColor(QColor)));
-  connect(this, SIGNAL(signalFont(QFont)), settings.plot, SLOT(setFont(QFont)));
-  connect(this, SIGNAL(signalGridColor(QColor)), settings.plot, SLOT(setGridColor(QColor)));
+  connect(this, SIGNAL(signalBackgroundColor(QColor)), settings->plot, SLOT(setBackgroundColor(QColor)));
+  connect(this, SIGNAL(signalFont(QFont)), settings->plot, SLOT(setFont(QFont)));
+  connect(this, SIGNAL(signalGridColor(QColor)), settings->plot, SLOT(setGridColor(QColor)));
 //  connect(plot, SIGNAL(signalPixelSpaceChanged(int, int)), this, SIGNAL(signalZoom(int, int)));
-  connect(settings.plot, SIGNAL(signalInfoMessage(Setting)), this, SIGNAL(signalInfo(Setting)));
-  connect(settings.plot, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatus(QString)));
-//  connect(this, SIGNAL(signalPixelSpace(int)), settings.plot, SLOT(setSpacing(int)));
-  connect(this, SIGNAL(signalClear()), settings.plot, SLOT(clear()));
-  connect(this, SIGNAL(signalGrid(bool)), settings.plot, SLOT(setGrid(bool)));
-  connect(this, SIGNAL(signalDraw()), settings.plot, SLOT(replot()));
-  connect(this, SIGNAL(signalIndex(int)), settings.plot, SLOT(setStartIndex(int)));
-  connect(settings.plot, SIGNAL(signalNewIndicator()), this, SLOT(newIndicator()));
-  connect(settings.plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(editIndicator(QString)));
-  connect(settings.plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator()));
-  connect(settings.plot, SIGNAL(signalBackgroundColorChanged(QColor)), this, SLOT(backgroundColorChanged(QColor)));
-  connect(settings.plot, SIGNAL(signalFontChanged(QFont)), this, SLOT(fontChanged(QFont)));
-  connect(this, SIGNAL(signalCrossHairs(bool)), settings.plot, SLOT(setCrossHairs(bool)));
-  connect(this, SIGNAL(signalCrossHairsColor(QColor)), settings.plot, SLOT(setCrossHairsColor(QColor)));
+  connect(settings->plot, SIGNAL(signalInfoMessage(Setting)), this, SIGNAL(signalInfo(Setting)));
+  connect(settings->plot, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  connect(this, SIGNAL(signalBarSpacing(int)), settings->plot, SLOT(setBarSpacing(int)));
+  connect(this, SIGNAL(signalClear()), settings->plot, SLOT(clear()));
+  connect(this, SIGNAL(signalGrid(bool)), settings->plot, SLOT(setGrid(bool)));
+  connect(this, SIGNAL(signalDraw()), settings->plot, SLOT(replot()));
+  connect(this, SIGNAL(signalIndex(int)), settings->plot, SLOT(setStartIndex(int)));
+  connect(settings->plot, SIGNAL(signalNewIndicator()), this, SLOT(newIndicator()));
+  connect(settings->plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(editIndicator(QString)));
+  connect(settings->plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator()));
+  connect(settings->plot, SIGNAL(signalBackgroundColorChanged(QColor)), this, SLOT(backgroundColorChanged(QColor)));
+  connect(settings->plot, SIGNAL(signalFontChanged(QFont)), this, SLOT(fontChanged(QFont)));
+  connect(this, SIGNAL(signalCrossHairs(bool)), settings->plot, SLOT(setCrossHairs(bool)));
+  connect(this, SIGNAL(signalCrossHairsColor(QColor)), settings->plot, SLOT(setCrossHairsColor(QColor)));
 }
 
 //******************************************************************
@@ -227,9 +236,9 @@ void ChartLayout::loadPlots (BarData &bd, int index)
     if (! _plots.contains(indicatorList[loop]))
       continue;
     
-    PlotSettings ps = _plots.value(indicatorList[loop]);
+    PlotSettings *ps = _plots.value(indicatorList[loop]);
 
-    ps.plot->setDates(_barData);
+    ps->plot->setDates(_barData);
     
     Indicator i;
     i.setName(indicatorList[loop]);
@@ -249,15 +258,12 @@ void ChartLayout::indicatorThreadFinished (Indicator i)
   if (! _plots.contains(i.name()))
     return;
   
-  PlotSettings settings = _plots.value(i.name());
+  PlotSettings *settings = _plots.value(i.name());
   
-  settings.plot->clear();
-
-  settings.plot->addCurves(i.curves());
-
-  settings.plot->loadChartObjects();
-
-  settings.plot->setStartIndex(_startIndex);
+  settings->plot->clear();
+  settings->plot->addCurves(i.curves());
+  settings->plot->loadChartObjects();
+  settings->plot->setStartIndex(_startIndex);
 }
 
 void ChartLayout::setGridColor (QColor d)
@@ -272,16 +278,15 @@ void ChartLayout::setCrossHairsColor (QColor d)
   emit signalDraw();
 }
 
-void ChartLayout::setPixelSpace (int d)
+void ChartLayout::setBarSpacing (int d)
 {
-  emit signalPixelSpace(d);
+  emit signalBarSpacing(d);
   emit signalDraw();
 }
 
 void ChartLayout::setIndex (int d)
 {
   emit signalIndex(d);
-//  emit signalDraw();
 }
 
 void ChartLayout::clearIndicator ()
@@ -311,7 +316,7 @@ void ChartLayout::setCrossHairs (bool d)
 
 void ChartLayout::setZoom (int pixelSpace, int index)
 {
-  emit signalPixelSpace(pixelSpace);
+  emit signalBarSpacing(pixelSpace);
   emit signalIndex(index);
   emit signalDraw();
 }
@@ -338,16 +343,16 @@ int ChartLayout::plotWidth ()
   int maxWidth = 0;
   int minWidth = 999999;
   int cols = 1;
-  QHashIterator<QString, PlotSettings> it(_plots);
+  QHashIterator<QString, PlotSettings *> it(_plots);
   while (it.hasNext())
   {
      it.next();
-     PlotSettings settings = it.value();
+     PlotSettings *settings = it.value();
 
-     if (settings.col > cols)
-       cols = settings.col;
+     if (settings->col > cols)
+       cols = settings->col;
 
-     int width = settings.plot->width();
+     int width = settings->plot->width();
      
      if (width > maxWidth)
        maxWidth = width;
@@ -397,7 +402,19 @@ void ChartLayout::newIndicator2 (Indicator i)
 void ChartLayout::newIndicator3 (Indicator i)
 {
   addTab(i.name());
-  emit signalDraw();
+
+  if (! _barData.count())
+    return;
+
+  PlotSettings *ps = _plots.value(i.name());
+
+  ps->plot->setDates(_barData);
+  
+  qRegisterMetaType<Indicator>("Indicator");
+  IndicatorThread *r = new IndicatorThread(this, _barData, i);
+  connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
+  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
+  r->start();
 }
 
 void ChartLayout::editIndicator (QString name)
@@ -443,48 +460,67 @@ void ChartLayout::deleteIndicator ()
 {
   IndicatorDeleteDialog *dialog = new IndicatorDeleteDialog;
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalDelete(Indicator)), this, SLOT(removeTab(Indicator)));
+  connect(dialog, SIGNAL(signalDelete(QStringList)), this, SLOT(removeTab(QStringList)));
   dialog->show();
 }
 
-void ChartLayout::removeTab (Indicator i)
+void ChartLayout::removeTab (QStringList l)
 {
-  if (! _plots.contains(i.name()))
-    return;
-
-  PlotSettings settings = _plots.value(i.name());
-
-  int row = settings.row;
-  int col = settings.col;
-
-  QString key = QString::number(row) + ":" + QString::number(col);
-  TabWidget *tab = _tabs.value(key);
-  if (! tab)
-    return;
-
-  tab->removeTab(tab->indexOf(settings.plot));
-
-  _plots.remove(i.name());
-
-  if (! tab->count())
+  int loop = 0;
+  for (; loop < l.count(); loop++)
   {
-    delete tab;
-    _tabs.remove(key);
+    if (! _plots.contains(l.at(loop)))
+      continue;;
 
-    QGridLayout *grid = _grids.value(row);
-    if (grid)
+    PlotSettings *settings = _plots.value(l.at(loop));
+    int row = settings->row;
+    int col = settings->col;
+
+    QString key = QString::number(row) + ":" + QString::number(col);
+    TabWidget *tab = _tabs.value(key);
+    if (! tab)
+      continue;
+
+    int ti = tab->indexOf(settings->plot);
+    if (ti == -1)
     {
-      if (! grid->count())
+      qDebug() << "ChartLayout::removeTab: tab not found";
+      continue;
+    }
+    
+    tab->removeTab(ti);
+
+//    delete settings->plot;
+    settings->plot->deleteLater();
+    delete settings;
+//qDebug() << "1";
+    _plots.remove(l.at(loop));
+
+    if (! tab->count())
+      tab->hide();
+
+    int loop = 1;
+    int flag = 0;
+    for (; loop < 3; loop++)
+    {
+      key = QString::number(row) + ":" + QString::number(loop);
+      tab = _tabs.value(key);
+      if (tab->count())
       {
-        QWidget *w = _holders.value(row);
-        if (w)
-          w->hide();
+        flag = 1;
+        break;
       }
+    }
+
+    if (! flag)
+    {
+      QWidget *baseRow = _holders.value(row);
+      baseRow->hide();
     }
   }
 }
 
-QHash<QString, PlotSettings> & ChartLayout::plots ()
+QHash<QString, PlotSettings *> & ChartLayout::plots ()
 {
   return _plots;
 }

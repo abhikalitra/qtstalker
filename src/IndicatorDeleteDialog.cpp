@@ -90,25 +90,23 @@ void IndicatorDeleteDialog::done2 ()
 
   g_mutex.lock();
   _db.transaction();
-  
+
+  QStringList l;
   int loop = 0;
   for (; loop < sl.count(); loop++)
   {
     QListWidgetItem *item = sl.at(loop);
 
     QString s = item->text();
+    l.append(s);
     
-    Indicator i;
-    i.setName(s);
-    _db.getIndicator(i);
-
-    emit signalDelete(i);
-
     _db.deleteIndicator(s);
   }
 
   _db.commit();
   g_mutex.unlock();
+
+  emit signalDelete(l);
 
   emit signalMessage(QString(tr("Indicators deleted.")));
 

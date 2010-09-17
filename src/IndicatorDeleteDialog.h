@@ -33,7 +33,7 @@ class IndicatorDeleteDialog : public Dialog
   Q_OBJECT
 
   signals:
-    void signalDelete (Indicator);
+    void signalDelete (QStringList);
   
   public:
     IndicatorDeleteDialog ();

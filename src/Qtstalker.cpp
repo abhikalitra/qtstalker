@@ -115,14 +115,14 @@ void QtstalkerApp::createGUI (Config &)
   connect(this, SIGNAL(signalLoadSettings()), _chartLayout, SLOT(load()));
 //  connect(_chartLayout, SIGNAL(signalZoom(int, int)), _zoomButtons, SLOT(addZoom(int, int)));
   connect(_chartLayout, SIGNAL(signalInfo(Setting)), _infoPanel, SLOT(showInfo(Setting)));
-  connect(_chartLayout, SIGNAL(signalStatus(QString)), this, SLOT(statusMessage(QString)));
+  connect(_chartLayout, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalSaveSettings()), _chartLayout, SLOT(saveSettings()));
 //  connect(_chartLayout, SIGNAL(signalIndexChanged(int)), _plotSlider, SLOT(setValue(int)));
   connect(_sidePanel, SIGNAL(signalSliderChanged(int)), _chartLayout, SLOT(setIndex(int)));
 //  connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), _chartLayout, SLOT(setInterval(int)));
   connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
-  connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), _chartLayout, SLOT(setPixelSpace(int)));
-  connect(_zoomButtons, SIGNAL(signalZoom(int, int)), _chartLayout, SLOT(setZoom(int, int)));
+  connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), _chartLayout, SLOT(setBarSpacing(int)));
+//  connect(_zoomButtons, SIGNAL(signalZoom(int, int)), _chartLayout, SLOT(setZoom(int, int)));
   connect(_gridAction, SIGNAL(signalChanged(bool)), _chartLayout, SLOT(setGrid(bool)));
   connect(_gridAction, SIGNAL(signalColorChanged(QColor)), _chartLayout, SLOT(setGridColor(QColor)));
   connect(_newIndicatorAction, SIGNAL(activated()), _chartLayout, SLOT(newIndicator()));
@@ -193,6 +193,11 @@ void QtstalkerApp::createToolBars ()
   
   toolbar->addSeparator();
 
+  // create the zoom button box on the main toolbar
+  _zoomButtons = new ZoomButtons(toolbar);
+
+  toolbar->addSeparator();
+  
   // create the bar length button group
   _barLengthButtons = new BarLengthButtons(toolbar);
 
@@ -206,11 +211,6 @@ void QtstalkerApp::createToolBars ()
   _dateRangeButton = new DateRangeButton();
   connect(_dateRangeButton, SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
   toolbar->addWidget(_dateRangeButton);
-
-  toolbar->addSeparator();
-
-  // create the zoom button box on the main toolbar
-  _zoomButtons = new ZoomButtons(toolbar);
 
   toolbar->addSeparator();
 
@@ -350,7 +350,7 @@ void QtstalkerApp::dataWindow ()
   // show the datawindow dialog
   DataWindow *dw = new DataWindow(this);
   connect(dw, SIGNAL(finished(int)), dw, SLOT(deleteLater()));
-  dw->setWindowTitle("DataWindow - " + getWindowCaption());
+  dw->setWindowTitle("Indicators - " + getWindowCaption());
   dw->setData(_chartLayout->plots());
   dw->show();
   dw->scrollToBottom();

@@ -53,6 +53,7 @@
 #include <qwt_scale_widget.h>
 #include <qwt_plot_marker.h>
 #include <qwt_symbol.h>
+#include <qwt_scale_engine.h>
 
 Plot::Plot ()
 {
@@ -85,10 +86,6 @@ Plot::Plot ()
   _grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
   _grid->setYAxis(QwtPlot::yRight);
   _grid->attach(this);
-
-  _linearScaleEngine = new QwtLinearScaleEngine;
-  _logScaleEngine = new QwtLog10ScaleEngine;
-  setAxisScaleEngine(QwtPlot::yRight, _linearScaleEngine);
 
   // try to set the scale width to a sane size to keep plots aligned
   QwtScaleWidget *sw = axisWidget(QwtPlot::yRight);
@@ -150,9 +147,8 @@ Plot::~Plot ()
 
   delete _dateScaleDraw;
   delete _grid;
-  delete _linearScaleEngine;
-  delete _logScaleEngine;
   delete _picker;
+qDebug() << "plot deleted";
 }
 
 void Plot::clear ()
@@ -349,14 +345,19 @@ void Plot::setFont (QFont d)
 void Plot::setLogScaling (bool d)
 {
   if (d)
-    setAxisScaleEngine(QwtPlot::yRight, _logScaleEngine);
+    setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
   else
-    setAxisScaleEngine(QwtPlot::yRight, _linearScaleEngine);
+    setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
+
+  _logAction->setChecked(d);
+
+  replot();
 }
 
 void Plot::showDate (bool d)
 {
   enableAxis(QwtPlot::xBottom, d);
+  _dateAction->setChecked(d);
 }
 
 void Plot::setCrossHairs (bool d)
@@ -364,10 +365,16 @@ void Plot::setCrossHairs (bool d)
   _picker->setCrossHairs(d);
 }
 
+void Plot::setBarSpacing (int d)
+{
+  _spacing = d;
+  setStartIndex(_startPos);
+}
+
 void Plot::setHighLow ()
 {
-  _high = -99999999;
-  _low = 99999999;
+  _high = -999999999.0;
+  _low = 999999999.0;
 
   QHashIterator<QString, Curve *> it(_curves);
   while (it.hasNext())
@@ -431,6 +438,11 @@ void Plot::editIndicator ()
 void Plot::deleteIndicator ()
 {
   emit signalDeleteIndicator(_indicator);
+}
+
+int Plot::index ()
+{
+  return _startPos;
 }
 
 void Plot::toggleDate ()
@@ -694,61 +706,3 @@ void Plot::saveChartObjects ()
   g_mutex.unlock();
 }
 
-
-
-
-/*
-
-// code to have crosshairs always on
-class PickerMachine: public QwtPickerMachine
-{
-public:
-    virtual QwtPickerMachine::CommandList transition(
-        const QwtEventPattern &, const QEvent *e)
-    {
-        QwtPickerMachine::CommandList cmdList;
-        if ( e->type() == QEvent::MouseMove )
-            cmdList += Move;
-
-        return cmdList;
-    }
-};
-
-class Picker: public QwtPlotPicker
-{
-public:
-    Picker(QwtPlotCanvas *canvas):
-        QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, canvas)
-    {
-        setRubberBand(QwtPlotPicker::CrossRubberBand);
-        setRubberBandPen(QColor(Qt::green));
-        setRubberBand(QwtPicker::CrossRubberBand);
-
-        canvas->setMouseTracking(true);
-    }
-
-    void widgetMouseMoveEvent(QMouseEvent *e)
-    {
-        if ( !isActive() )
-        {
-            setSelectionFlags(QwtPicker::PointSelection);
-
-            begin();
-            append(e->pos());
-        }
-
-        QwtPlotPicker::widgetMouseMoveEvent(e);
-    }
-
-    void widgetLeaveEvent(QEvent *)
-    {
-        end();
-    }
-
-    virtual QwtPickerMachine *stateMachine(int) const
-    {
-        return new PickerMachine;
-    }
-};
-
-*/

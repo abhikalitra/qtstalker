@@ -728,3 +728,13 @@
 
 20100916:  Cursor crosshairs button added to the main toolbar.
 
+           Log scaling now working.
+
+           Bar spacing is now working.
+
+           Fixed bug: new indicators now plot properly.
+
+           Fixed bug: indicator tabs do not update unless tab is exposed first, then works.
+
+
+
