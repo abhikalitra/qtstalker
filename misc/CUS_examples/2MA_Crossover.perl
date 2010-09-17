@@ -23,7 +23,7 @@ print STDOUT "INDICATOR,SET_PLOT,Bars,0";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set 50MA plot style
-print STDOUT "INDICATOR,SET_PLOT,50MA,Line";
+print STDOUT "INDICATOR,SET_PLOT_STYLE,50MA,Line";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set 50MA color
