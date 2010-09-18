@@ -22,25 +22,25 @@
 #ifndef CSV_RULE_DIALOG_HPP
 #define CSV_RULE_DIALOG_HPP
 
-#include <QDialog>
 #include <QComboBox>
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QString>
 #include <QStringList>
-#include <QDialogButtonBox>
 #include <QCheckBox>
 #include <QPushButton>
 
 #include "FileButton.h"
+#include "Dialog.h"
 
-class CSVRuleDialog : public QDialog
+class CSVRuleDialog : public Dialog
 {
   Q_OBJECT
   
   public:
     CSVRuleDialog (QString &);
-    void createGUI ();
+    void createMainPage ();
+    void createRulePage ();
     void loadRule ();
     void saveRule ();
     void clear ();
@@ -57,14 +57,13 @@ class CSVRuleDialog : public QDialog
     void setExchangeCode (QString);
     void dateDialog2 (QString);
     void timeDialog2 (QString);
+    void selectionChanged ();
           
   private:
-    QDialogButtonBox *_buttonBox;
     QListWidget *_ruleList;
     QComboBox *_type;
     QComboBox *_delimeter;
     FileButton *_file;
-    QCheckBox *_fileSymbol;
     QComboBox *_exchange;
     bool _saveFlag;
     QString _name;
@@ -72,6 +71,7 @@ class CSVRuleDialog : public QDialog
     QPushButton *_deleteButton;
     QStringList _fieldList;
     QCheckBox *_removeSuffix;
+    QCheckBox *_fileSymbol;
 };
 
 #endif

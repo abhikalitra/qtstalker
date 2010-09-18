@@ -490,10 +490,8 @@ void ChartLayout::removeTab (QStringList l)
     
     tab->removeTab(ti);
 
-//    delete settings->plot;
-    settings->plot->deleteLater();
+    delete settings->plot;
     delete settings;
-//qDebug() << "1";
     _plots.remove(l.at(loop));
 
     if (! tab->count())

@@ -30,12 +30,11 @@
 #include <QLabel>
 #include <QInputDialog>
 #include <QDir>
-#include <QGroupBox>
 #include <QList>
 #include <QDebug>
 #include <QToolButton>
 
-CSVRuleDialog::CSVRuleDialog (QString &name) : QDialog (0, 0)
+CSVRuleDialog::CSVRuleDialog (QString &name) : Dialog (Dialog::_Dialog, 0)
 {
   _saveFlag = FALSE;
   _name = name;
@@ -43,20 +42,25 @@ CSVRuleDialog::CSVRuleDialog (QString &name) : QDialog (0, 0)
   _fieldList << "Exchange" << "Symbol" << "Date" << "Time" << "Open" << "High" << "Low" << "Close";
   _fieldList << "Volume" << "OI" << "Name" << "Ignore";
   
-  createGUI();
+  QString s = tr("Qtstalker: CSV Editing Rule ") + _name;
+  setWindowTitle(s);
+
+  createMainPage();
+  createRulePage();
 
   loadRule();
 
-  QString s = tr("Qtstalker: Editing CSV Rule ") + _name;
-  setWindowTitle(s);
+  selectionChanged();
 }
 
-void CSVRuleDialog::createGUI ()
+void CSVRuleDialog::createMainPage ()
 {
+  QWidget *w = new QWidget;
+
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
   vbox->setSpacing(2);
-  setLayout(vbox);
+  w->setLayout(vbox);
   
   QGridLayout *grid = new QGridLayout;
   grid->setSpacing(2);
@@ -76,6 +80,7 @@ void CSVRuleDialog::createGUI ()
   
   _type = new QComboBox;
   _type->addItems(l);
+  _type->setToolTip(tr("S = Stock, F = Futures"));
   connect(_type, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   grid->addWidget(_type, row++, col--);
 
@@ -99,7 +104,7 @@ void CSVRuleDialog::createGUI ()
   grid->addWidget(_file, row++, col--);
 
   // exchange parm
-  label = new QLabel(tr("Exchange"));
+  label = new QLabel(tr("Exchange Code"));
   grid->addWidget(label, row, col++);
 
   ExchangeDataBase edb;
@@ -113,64 +118,48 @@ void CSVRuleDialog::createGUI ()
 
   QToolButton *tb = new QToolButton;
   tb->setText(QString("..."));
+  tb->setToolTip(tr("Search for exchange code"));
   connect(tb, SIGNAL(clicked()), this, SLOT(searchExchange()));
   grid->addWidget(tb, row++, col);
 
   // filename parm
-  col -= 2;
-  _fileSymbol = new QCheckBox;
+  _fileSymbol = new QCheckBox(tr("Use filename as symbol"));
   connect(_fileSymbol, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
-  grid->addWidget(_fileSymbol, row, col++);
-
-  label = new QLabel(tr("Use filename as symbol"));
-  grid->addWidget(label, row++, col--);
+  vbox->addWidget(_fileSymbol);
 
   // remove suffix
-  _removeSuffix = new QCheckBox;
-  grid->addWidget(_removeSuffix, row, col++);
+  _removeSuffix = new QCheckBox(tr("Try to remove suffix from file name"));
+  vbox->addWidget(_removeSuffix);
 
-  label = new QLabel(tr("Try to remove suffix from file name"));
-  grid->addWidget(label, row++, col--);
+  _tabs->addTab(w, tr("Settings"));
+}
 
-
-  // rule box
-  QGroupBox *gbox = new QGroupBox;
-  gbox->setTitle(tr("CSV Rule Format"));
-  vbox->addWidget(gbox);
+void CSVRuleDialog::createRulePage ()
+{
+  QWidget *w = new QWidget;
 
   QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setMargin(5);
   hbox->setSpacing(2);
-  gbox->setLayout(hbox);
-  
+  w->setLayout(hbox);
+
   _ruleList = new QListWidget;
+  connect(_ruleList, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   hbox->addWidget(_ruleList);
 
-  QVBoxLayout *tvbox = new QVBoxLayout;
-  tvbox->setSpacing(2);
-  hbox->addLayout(tvbox);
+  QDialogButtonBox *bbox = new QDialogButtonBox;
+  bbox->setOrientation(Qt::Vertical);
+  hbox->addWidget(bbox);
 
-  _insertButton = new QPushButton;
-  _insertButton->setText(tr("Insert"));
+  _insertButton = bbox->addButton(QDialogButtonBox::Apply);
   connect(_insertButton, SIGNAL(clicked()), this, SLOT(insertClicked()));
-  tvbox->addWidget(_insertButton);
+  _insertButton->setText(tr("Insert"));
 
-  _deleteButton = new QPushButton;
-  _deleteButton->setText(tr("Delete"));
+  _deleteButton = bbox->addButton(QDialogButtonBox::Discard);
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteClicked()));
-  tvbox->addWidget(_deleteButton);
+  _deleteButton->setText(tr("Delete"));
 
-  tvbox->addStretch(1);
-
-  _buttonBox = new QDialogButtonBox;
-  vbox->addWidget(_buttonBox);
-
-  QPushButton *b = new QPushButton(tr("&OK"));
-  _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
-  connect(b, SIGNAL(clicked()), this, SLOT(done()));
-
-  b = new QPushButton(tr("&Cancel"));
-  _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
-  connect(b, SIGNAL(clicked()), this, SLOT(reject()));
+  _tabs->addTab(w, tr("Rule Format"));
 }
 
 void CSVRuleDialog::saveRule ()
@@ -347,5 +336,14 @@ void CSVRuleDialog::searchExchange ()
 void CSVRuleDialog::setExchangeCode (QString d)
 {
   _exchange->setCurrentIndex(_exchange->findText(d, Qt::MatchExactly));
+}
+
+void CSVRuleDialog::selectionChanged ()
+{
+  QList<QListWidgetItem *> sel = _ruleList->selectedItems();
+  if (! sel.count())
+    _deleteButton->setEnabled(FALSE);
+  else
+    _deleteButton->setEnabled(TRUE);
 }
 

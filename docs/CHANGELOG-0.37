@@ -736,5 +736,14 @@
 
            Fixed bug: indicator tabs do not update unless tab is exposed first, then works.
 
+20100917:  Fixed bug that did not plot histogram bar plots in the index offset. Colored bars now works.
+
+           Added some nice antialiasing to Line, Histogram plot styles. Qwt provides fast antialiasing
+           where Qt does not! Hmmmm....
+
+           Fixed bug that segfaults when indicator is deleted.
+
+
+
 
 

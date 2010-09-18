@@ -125,9 +125,9 @@ Plot::Plot ()
   connect(_coListMenu, SIGNAL(triggered(QAction *)), this, SLOT(chartObjectMenuSelected(QAction *)));
   
   _chartMenu = new QMenu(this);
-  _chartMenu->addAction(QPixmap(indicator_xpm), tr("&New Indicator"), this, SIGNAL(signalNewIndicator()), Qt::ALT+Qt::Key_N);
-  _chartMenu->addAction(QPixmap(edit), tr("Edit &Indicator"), this, SLOT(editIndicator()), Qt::ALT+Qt::Key_I);
-  _chartMenu->addAction(QPixmap(delete_xpm), tr("De&lete Indicator"), this, SLOT(deleteIndicator()), Qt::ALT+Qt::Key_L);
+  _chartMenu->addAction(QPixmap(indicator_xpm), tr("&New Indicator..."), this, SIGNAL(signalNewIndicator()), Qt::ALT+Qt::Key_N);
+  _chartMenu->addAction(QPixmap(edit_xpm), tr("Edit &Indicator..."), this, SLOT(editIndicator()), Qt::ALT+Qt::Key_I);
+  _chartMenu->addAction(QPixmap(delete_xpm), tr("De&lete Indicator..."), this, SLOT(deleteIndicator()), Qt::ALT+Qt::Key_L);
   _chartMenu->addSeparator ();
   _chartMenu->addMenu(_coListMenu);
   _chartMenu->addAction(QPixmap(delete_xpm), tr("Delete &All Chart Objects"), this, SLOT(deleteAllChartObjects()), Qt::ALT+Qt::Key_A);
@@ -137,17 +137,17 @@ Plot::Plot ()
   _logAction = _chartMenu->addAction(QPixmap(loggridicon), tr("Log &Scaling"), this, SLOT(toggleLog()), Qt::ALT+Qt::Key_S);
   _logAction->setCheckable(TRUE);
   _chartMenu->addSeparator ();
-  _chartMenu->addAction(tr("&Background Color"), this, SLOT(editBackgroundColor()), Qt::ALT+Qt::Key_B);
-  _chartMenu->addAction(tr("&Font"), this, SLOT(editFont()), Qt::ALT+Qt::Key_F);
+  _chartMenu->addAction(tr("&Background Color..."), this, SLOT(editBackgroundColor()), Qt::ALT+Qt::Key_B);
+  _chartMenu->addAction(tr("&Font..."), this, SLOT(editFont()), Qt::ALT+Qt::Key_F);
 }
 
 Plot::~Plot ()
 {
   clear();
 
-  delete _dateScaleDraw;
-  delete _grid;
-  delete _picker;
+//  delete _dateScaleDraw;
+//  delete _grid;
+//  delete _picker;
 qDebug() << "plot deleted";
 }
 
@@ -221,6 +221,7 @@ void Plot::addCurve (QString id, Curve *curve)
     case Curve::Histogram:
     {
       QwtPlotCurve *qcurve = new QwtPlotCurve;
+      qcurve->setRenderHint(QwtPlotItem::RenderAntialiased, TRUE);
       addCurve2(curve, qcurve);
 
       QColor c = curve->color();
@@ -257,6 +258,7 @@ void Plot::addCurve (QString id, Curve *curve)
     case Curve::Line:
     {
       QwtPlotCurve *qcurve = new QwtPlotCurve;
+      qcurve->setRenderHint(QwtPlotItem::RenderAntialiased, TRUE);
       qcurve->setStyle(QwtPlotCurve::Lines);
       addCurve2(curve, qcurve);
       addCurve3(id, curve, qcurve);
@@ -373,8 +375,16 @@ void Plot::setBarSpacing (int d)
 
 void Plot::setHighLow ()
 {
-  _high = -999999999.0;
-  _low = 999999999.0;
+  if (! _curves.count())
+  {
+    _high = 0;
+    _low = 0;
+  }
+  else
+  {
+    _high = -999999999.0;
+    _low = 999999999.0;
+  }
 
   QHashIterator<QString, Curve *> it(_curves);
   while (it.hasNext())

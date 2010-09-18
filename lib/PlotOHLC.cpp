@@ -23,6 +23,7 @@
 
 #include <qwt_plot.h>
 #include <qwt_painter.h>
+#include <qwt_scale_div.h>
 #include <QDebug>
 
 PlotOHLC::PlotOHLC (const QwtText &title) : QwtPlotCurve (title)
@@ -97,6 +98,36 @@ int PlotOHLC::rtti () const
 
 void PlotOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
+  QwtScaleDiv *sd = plot()->axisScaleDiv(QwtPlot::xBottom);
+
+  int loop = sd->lowerBound();
+  int size = sd->upperBound();
+  if (size > _list.count())
+    size = _list.count();
+
+  for (; loop < size; loop++)
+  {
+    OHLC ohlc = _list.at(loop);
+
+    painter->setPen(ohlc.color);
+
+    int x = xMap.transform(loop);
+
+    // draw the open tick
+    int y = yMap.transform(ohlc.open);
+    painter->drawLine (x, y, x + 2, y);
+
+    // draw the close tick
+    y = yMap.transform(ohlc.close);
+    painter->drawLine (x + 2, y, x + 4, y);
+
+    // draw the high/low tick
+    y = yMap.transform(ohlc.high);
+    int y2 = yMap.transform(ohlc.low);
+    painter->drawLine (x + 2, y, x + 2, y2);
+  }
+
+/*
   int loop = 0;
   for (; loop < _list.count(); loop++)
   {
@@ -119,6 +150,7 @@ void PlotOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMa
     int y2 = yMap.transform(ohlc.low);
     painter->drawLine (x + 2, y, x + 2, y2);
   }
+*/
 }
 
 double PlotOHLC::high ()

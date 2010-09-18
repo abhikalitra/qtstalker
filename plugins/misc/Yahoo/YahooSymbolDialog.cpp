@@ -21,74 +21,53 @@
 
 #include "YahooSymbolDialog.h"
 #include "YahooDataBase.h"
-#include "Dialog.h"
 
 #include <QLayout>
 #include <QLabel>
-#include <QGroupBox>
 #include <QInputDialog>
 #include <QDebug>
 
-YahooSymbolDialog::YahooSymbolDialog ()
+YahooSymbolDialog::YahooSymbolDialog () : Dialog (Dialog::_Dialog, 0)
 {
   _yexchange << "NYSE" << "AX" << "SA" << "TO" << "BO" << "NS" << "L";
 
-  setWindowTitle(tr("Yahoo: Edit Symbols"));
+  setWindowTitle(tr("Qtstalker: Yahoo Edit Symbols"));
   createMainPage();
   loadSettings();
-}
-
-YahooSymbolDialog::~YahooSymbolDialog ()
-{
+  selectionChanged();
 }
 
 void YahooSymbolDialog::createMainPage ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(5);
-  vbox->setSpacing(2);
-  setLayout(vbox);
+  QWidget *w = new QWidget;
 
-  // symbols box
-  QGroupBox *gbox = new QGroupBox;
-  gbox->setTitle(tr("Yahoo Symbols"));
-  vbox->addWidget(gbox);
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(0);
+  vbox->setMargin(0);
+  w->setLayout(vbox);
 
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
-  gbox->setLayout(hbox);
+  vbox->addLayout(hbox);
 
   _list = new QListWidget;
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   hbox->addWidget(_list);
 
-  QVBoxLayout *tvbox = new QVBoxLayout;
-  tvbox->setSpacing(2);
-  hbox->addLayout(tvbox);
-
-  _addButton = new QPushButton;
-  _addButton->setText(tr("Add"));
-  connect(_addButton, SIGNAL(clicked()), this, SLOT(addSymbol()));
-  tvbox->addWidget(_addButton);
-
-  _deleteButton = new QPushButton;
-  _deleteButton->setText(tr("Delete"));
+  QDialogButtonBox *bbox = new QDialogButtonBox;
+  bbox->setOrientation(Qt::Vertical);
+  hbox->addWidget(bbox);
+  
+  QPushButton *b = bbox->addButton(QDialogButtonBox::Apply);
+  connect(b, SIGNAL(clicked()), this, SLOT(addSymbol()));
+  b->setText(tr("Add..."));
+  
+  _deleteButton = bbox->addButton(QDialogButtonBox::Discard);
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteSymbol()));
-  tvbox->addWidget(_deleteButton);
-
-  tvbox->addStretch(1);
-
-  // button box
-  _buttonBox = new QDialogButtonBox;
-  vbox->addWidget(_buttonBox);
-
-  QPushButton *b = new QPushButton(tr("&OK"));
-  _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
-  connect(b, SIGNAL(clicked()), this, SLOT(done()));
-
-  b = new QPushButton(tr("&Cancel"));
-  _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
-  connect(b, SIGNAL(clicked()), this, SLOT(reject()));
+  _deleteButton->setText(tr("Delete"));
+  
+  _tabs->addTab(w, tr("Yahoo Symbols"));
 }
 
 void YahooSymbolDialog::addSymbol ()
@@ -235,5 +214,14 @@ void YahooSymbolDialog::done ()
   emit signalSymbols(l);
 
   accept();
+}
+
+void YahooSymbolDialog::selectionChanged ()
+{
+  QList<QListWidgetItem *> sel = _list->selectedItems();
+  if (! sel.count())
+    _deleteButton->setEnabled(FALSE);
+  else
+    _deleteButton->setEnabled(TRUE);
 }
 

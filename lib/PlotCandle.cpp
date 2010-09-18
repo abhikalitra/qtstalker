@@ -23,6 +23,7 @@
 
 #include <qwt_plot.h>
 #include <qwt_painter.h>
+#include <qwt_scale_div.h>
 #include <QDebug>
 
 PlotCandle::PlotCandle (const QwtText &title) : QwtPlotCurve (title)
@@ -97,6 +98,47 @@ int PlotCandle::rtti () const
 
 void PlotCandle::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
+  QwtScaleDiv *sd = plot()->axisScaleDiv(QwtPlot::xBottom); // test
+
+  int loop = sd->lowerBound();
+  int size = sd->upperBound();
+  if (size > _list.count())
+    size = _list.count();
+  
+  bool ff = FALSE;
+  for (; loop < size; loop++)
+  {
+    OHLC ohlc = _list.at(loop);
+
+    ff = FALSE;
+    if (ohlc.close < ohlc.open)
+      ff = TRUE;
+
+    painter->setPen(ohlc.color);
+
+    int x = xMap.transform(loop);
+
+    int xo = yMap.transform(ohlc.open);
+    int xh = yMap.transform(ohlc.high);
+    int xl = yMap.transform(ohlc.low);
+    int xc = yMap.transform(ohlc.close);
+
+    if (! ff)
+    {
+      // empty candle
+      painter->drawLine (x + 3, xh, x + 3, xc);
+      painter->drawLine (x + 3, xo, x + 3, xl);
+      painter->drawRect(x, xc, 6, xo - xc);
+    }
+    else
+    {
+      // filled candle
+      painter->drawLine (x + 2, xh, x + 2, xl);
+      painter->fillRect(x, xo, 5, xc - xo, ohlc.color);
+    }
+  }
+  
+/*  
   int loop = 0;
   bool ff = FALSE;
   for (; loop < _list.count(); loop++)
@@ -130,6 +172,7 @@ void PlotCandle::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScale
       painter->fillRect(x, xo, 5, xc - xo, ohlc.color);
     }
   }
+*/
 }
 
 double PlotCandle::high ()

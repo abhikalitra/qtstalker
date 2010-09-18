@@ -33,7 +33,7 @@
 YahooDialog::YahooDialog ()
 {
   _runningFlag = 0;
-  setWindowTitle(tr("Configure Yahoo"));
+  setWindowTitle(tr("Qtstalker: Yahoo"));
   createMainPage();
   loadSettings();
 }
@@ -90,6 +90,7 @@ void YahooDialog::createMainPage ()
   // adjustment
   _adjustment = new QCheckBox;
   _adjustment->setText(tr("Adjust for splits"));
+  _adjustment->setToolTip(tr("Uses the yahoo adjusted close instead of the actual close"));
   grid->addWidget(_adjustment, row++, col);
 
 
@@ -110,18 +111,17 @@ void YahooDialog::createMainPage ()
   _buttonBox = new QDialogButtonBox;
   vbox->addWidget(_buttonBox);
 
-  _histButton = new QPushButton(tr("&History"));
+  _histButton = _buttonBox->addButton(QDialogButtonBox::Apply);
   _histButton->setToolTip(tr("Download historical quotes"));
-  _buttonBox->addButton(_histButton, QDialogButtonBox::ActionRole);
+  _histButton->setText(tr("History"));
   connect(_histButton, SIGNAL(clicked()), this, SLOT(startHistory()));
 
-  _detailsButton = new QPushButton(tr("&Details"));
+  _detailsButton = _buttonBox->addButton(QDialogButtonBox::Apply);
   _detailsButton->setToolTip(tr("Download symbol details"));
-  _buttonBox->addButton(_detailsButton, QDialogButtonBox::ActionRole);
+  _detailsButton->setText(tr("Details"));
   connect(_detailsButton, SIGNAL(clicked()), this, SLOT(startDetails()));
 
-  _cancelButton = new QPushButton(tr("&Cancel"));
-  _buttonBox->addButton(_cancelButton, QDialogButtonBox::ActionRole);
+  _cancelButton = _buttonBox->addButton(QDialogButtonBox::Cancel);
   connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancelButton()));
 }
 
@@ -133,7 +133,10 @@ void YahooDialog::cancelButton ()
     _runningFlag = 0;
   }
   else
+  {
+    saveSettings();
     accept();
+  }
 }
 
 void YahooDialog::loadSettings ()
@@ -153,6 +156,8 @@ void YahooDialog::loadSettings ()
     move(p);
 
   _adjustment->setChecked(config.getInt(YahooConfig::Adjustment));
+
+  _allSymbols->setChecked(config.getInt(YahooConfig::AllSymbols));
 }
 
 void YahooDialog::saveSettings ()
@@ -169,6 +174,8 @@ void YahooDialog::saveSettings ()
   config.setData(YahooConfig::Pos, pt);
 
   config.setData(YahooConfig::Adjustment, _adjustment->isChecked());
+
+  config.setData(YahooConfig::AllSymbols, _allSymbols->isChecked());
 
   config.commit();
 }

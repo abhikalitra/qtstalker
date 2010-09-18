@@ -44,7 +44,7 @@ print STDOUT "INDICATOR,SET_PLOT_STYLE,Disparity,Histogram Bar";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 #set the color
-print STDOUT "INDICATOR,SET_COLOR_ALL,Disparity,red";
+print STDOUT "INDICATOR,SET_COLOR_ALL,Disparity,yellow";
 $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
 
 #plot the disparity

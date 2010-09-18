@@ -25,6 +25,7 @@
 #include <QColor>
 #include <QString>
 #include <QPainter>
+#include <QMap>
 #include <qwt_plot_curve.h>
 #include <qwt_interval_data.h>
 #include <qwt_text.h>
@@ -64,6 +65,7 @@ class PlotHistogramBar : public QwtPlotCurve
   private:
     class PrivateData;
     PrivateData *_data;
+    QMap<int, QColor> _colors;
 };
 
 #endif

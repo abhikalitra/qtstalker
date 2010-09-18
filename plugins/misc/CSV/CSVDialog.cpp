@@ -25,6 +25,9 @@
 #include "CSVConfig.h"
 #include "Dialog.h"
 
+#include "../pics/edit.xpm"
+#include "../pics/newchart.xpm"
+
 #include <QLayout>
 #include <QLabel>
 #include <QInputDialog>
@@ -32,8 +35,10 @@
 
 CSVDialog::CSVDialog () : QDialog (0, 0)
 {
-  setWindowTitle(tr("Configure CSV"));
+  setWindowTitle(tr("Qtstalker: CSV"));
+  
   createMainPage();
+  
   loadSettings();
 
   _thread = new CSVThread(this);
@@ -45,11 +50,11 @@ void CSVDialog::createMainPage ()
 {
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
-  vbox->setSpacing(2);
+  vbox->setSpacing(10);
   setLayout(vbox);
   
   QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
+  grid->setSpacing(5);
   grid->setColumnStretch(1, 1);
   vbox->addLayout(grid);
 
@@ -64,39 +69,45 @@ void CSVDialog::createMainPage ()
   grid->addWidget(_rules, row++, col--);
 
   // message log
-  QGroupBox *gbox = new QGroupBox;
-  gbox->setTitle(tr("Message Log"));
-  vbox->addWidget(gbox);
+  QTabWidget *tab = new QTabWidget;
+  vbox->addWidget(tab);
 
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setSpacing(2);
-  gbox->setLayout(hbox);
+  QWidget *w = new QWidget;
+
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox->setSpacing(2);
+  w->setLayout(tvbox);
 
   _log = new QTextEdit;
   _log->setReadOnly(TRUE);
-  hbox->addWidget(_log);
+  tvbox->addWidget(_log);
 
+  tab->addTab(w, tr("Message Log"));
+  
+
+  // button box
   _buttonBox = new QDialogButtonBox;
   vbox->addWidget(_buttonBox);
 
-  _runButton = new QPushButton(tr("&Run"));
-  _buttonBox->addButton(_runButton, QDialogButtonBox::ActionRole);
+  _runButton = _buttonBox->addButton(QDialogButtonBox::Ok);
+  _runButton->setText(tr("&Run"));
   connect(_runButton, SIGNAL(clicked()), this, SLOT(run()));
 
-  _newButton = new QPushButton(tr("&New"));
-  _buttonBox->addButton(_newButton, QDialogButtonBox::ActionRole);
+  _newButton = _buttonBox->addButton(QDialogButtonBox::Open);
+  _newButton->setText(tr("&New"));
+  _newButton->setIcon(QPixmap(newchart_xpm));
   connect(_newButton, SIGNAL(clicked()), this, SLOT(newRule()));
 
-  _editButton = new QPushButton(tr("&Edit"));
-  _buttonBox->addButton(_editButton, QDialogButtonBox::ActionRole);
+  _editButton = _buttonBox->addButton(QDialogButtonBox::Ok);
+  _editButton->setText(tr("&Edit"));
+  _editButton->setIcon(QPixmap(edit_xpm));
   connect(_editButton, SIGNAL(clicked()), this, SLOT(editRule()));
 
-  _deleteButton = new QPushButton(tr("&Delete"));
-  _buttonBox->addButton(_deleteButton, QDialogButtonBox::ActionRole);
+  _deleteButton = _buttonBox->addButton(QDialogButtonBox::Discard);
+  _deleteButton->setText(tr("&Delete"));
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteRule()));
 
-  _cancelButton = new QPushButton(tr("&Cancel"));
-  _buttonBox->addButton(_cancelButton, QDialogButtonBox::ActionRole);
+  _cancelButton = _buttonBox->addButton(QDialogButtonBox::Cancel);
   connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancelButton()));
 }
 
@@ -217,11 +228,17 @@ void CSVDialog::cancelButton ()
   if (_thread->isRunning())
     _thread->stop();
   else
+  {
+    saveSettings();
     accept();
+  }
 }
 
 void CSVDialog::run ()
 {
+  if (! _rules->count())
+    return;
+  
   _rule.name = _rules->currentText();
   
   CSVDataBase db;

@@ -32,9 +32,10 @@ class YahooConfig : public BaseConfig
   public:
     enum Parm
     {
-      Adjustment, // adjustment flag
+      Adjustment, // adjust for splits flag
       Size, // app window size
-      Pos // app position
+      Pos, // app position
+      AllSymbols // all symbols button checked
     };
 
     YahooConfig ();

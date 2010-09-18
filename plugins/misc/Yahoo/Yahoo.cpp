@@ -30,10 +30,7 @@ Yahoo::Yahoo ()
 Yahoo::~Yahoo ()
 {
   if (_dialog)
-  {
-    _dialog->saveSettings();
     delete _dialog;
-  }
 }
 
 int Yahoo::configureDialog ()

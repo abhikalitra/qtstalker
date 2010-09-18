@@ -51,7 +51,7 @@ ChartObject::ChartObject ()
   _settings.line6 = 0;
 
   _menu = new QMenu;
-  _menu->addAction(QPixmap(edit), tr("&Edit"), this, SLOT(dialog()), Qt::ALT+Qt::Key_E);
+  _menu->addAction(QPixmap(edit_xpm), tr("&Edit"), this, SLOT(dialog()), Qt::ALT+Qt::Key_E);
   _menu->addAction(QPixmap(delete_xpm), tr("&Delete"), this, SLOT(confirmDelete()), Qt::ALT+Qt::Key_D);
 }
 

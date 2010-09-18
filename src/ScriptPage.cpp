@@ -180,7 +180,7 @@ void ScriptPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(newScript()));
   actions.insert(NewScript, action);
 
-  action  = new QAction(QIcon(edit), tr("&Edit Script"), this);
+  action  = new QAction(QIcon(edit_xpm), tr("&Edit Script"), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
   action->setToolTip(tr("Edit Script"));
   connect(action, SIGNAL(activated()), this, SLOT(editScript()));

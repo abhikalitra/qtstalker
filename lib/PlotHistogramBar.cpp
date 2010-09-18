@@ -23,6 +23,7 @@
 
 #include <qwt_plot.h>
 #include <qwt_painter.h>
+#include <qwt_scale_div.h>
 
 class PlotHistogramBar::PrivateData
 {
@@ -79,22 +80,37 @@ void PlotHistogramBar::setData (Curve *curve)
 {
   QList<int> keys;
   curve->keys(keys);
-  
+  if (! keys.count())
+    return;
+
+  _colors.clear();
+
+  int end = keys.at(keys.count() - 1);
+
   QwtArray<QwtDoubleInterval> intervals;
   QwtArray<double> values;
-  double pos = 0.0;
+  double pos = 0;
   int width = 1;
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop <= end; loop++)
   {
     intervals << QwtDoubleInterval(pos, pos + double(width));
-    CurveBar *bar = curve->bar(keys.at(loop));
-    values << bar->data();
+    CurveBar *bar = curve->bar(loop);
+    if (bar)
+    {
+      values << bar->data();
+      _colors.insert(loop, bar->color());
+    }
+    else
+    {
+      values << 0;
+      _colors.insert(loop, QColor());
+    }
     pos += width;
   }
 
   _data->data = QwtIntervalData(intervals, values);
-  
+
   itemChanged();
 }
 
@@ -146,7 +162,6 @@ QwtDoubleRect PlotHistogramBar::boundingRect () const
 int PlotHistogramBar::rtti () const
 {
   return QwtPlotItem::Rtti_PlotHistogram;
-//  return QwtPlotCurve::UserCurve;
 }
 
 void PlotHistogramBar::setHistogramAttribute (HistogramAttribute attribute, bool on)
@@ -171,12 +186,17 @@ void PlotHistogramBar::draw(QPainter *painter, const QwtScaleMap &xMap, const Qw
 {
   const QwtIntervalData &iData = _data->data;
 
-  painter->setPen(QPen(_data->color));
-
   const int x0 = xMap.transform(baseline());
   const int y0 = yMap.transform(baseline());
 
-  for (int i = 0; i < (int)iData.size(); i++)
+  QwtScaleDiv *sd = plot()->axisScaleDiv(QwtPlot::xBottom);
+  int i = sd->lowerBound();
+  int size = sd->upperBound();
+  if (size > (int) iData.size())
+    size = (int) iData.size();
+
+//  for (int i = 0; i < (int)iData.size(); i++)
+  for (; i < size; i++)
   {
     if (_data->attributes & PlotHistogramBar::Xfy)
     {
@@ -204,6 +224,9 @@ void PlotHistogramBar::draw(QPainter *painter, const QwtScaleMap &xMap, const Qw
           }
         }
       }
+
+      QColor color = _colors.value(i);
+      painter->setPen(QPen(color));
 
       drawBar(painter, Qt::Horizontal, QRect(x0, y1, x2 - x0, y2 - y1));
     }
@@ -233,7 +256,10 @@ void PlotHistogramBar::draw(QPainter *painter, const QwtScaleMap &xMap, const Qw
           }
         }
       }
-      
+
+      QColor color = _colors.value(i);
+      painter->setPen(QPen(color));
+
       drawBar(painter, Qt::Vertical, QRect(x1, y0, x2 - x1, y2 - y0));
     }
   }
