@@ -55,8 +55,18 @@ href="https://sourceforge.net/mail/?group_id=25632">qtstalker-cvs-commits</a>
 mailing list. This read-only list keeps you informed about the daily changes.
 Especially notice the modifications to docs/CHANGELOG.* </p>
 
-<p>If there are major changes, then do '<code>make distclean; ./configure; make
-&amp;&amp; sudo make install</code>' </p>
+<p>
+If there are major changes, then do the following clean,
+then proceed to do the normal 'configure and make' process:
+</p>
+<pre>sudo make uninstall
+make distclean
+</pre>
+
+<p>
+From time-to-time you may also need to remove your user home directory with
+'<code>rm -rf ~/.qtstalker'.
+</p>
 
 <p>
 Browse the CVS repository and the changes with
