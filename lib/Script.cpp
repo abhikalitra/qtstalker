@@ -20,37 +20,39 @@
  */
 
 #include "Script.h"
-#include "ExScript.h"
 
 #include <QDebug>
-#include <QEventLoop>
 
 Script::Script ()
 {
   _status = 0;
   _stopFlag = 0;
+
+  connect(&_scriptServer, SIGNAL(signalDone()), this, SLOT(done()));
 }
 
-void Script::run ()
+void Script::start ()
 {
   _stopFlag = 0;
   QString command = _command + " " + _file;
 
   emit signalMessage(QString(tr("Script ")) + _name + tr(" started."));
     
-  ExScript scriptServer;
-  scriptServer.calculate2(command);
-  QEventLoop e;
-  connect(&scriptServer, SIGNAL(signalDone()), &e, SLOT(quit()));
-  connect(this, SIGNAL(signalCancel()), &e, SLOT(quit()));
-  e.exec();
-    
+  _scriptServer.calculate2(command);
+}
+
+void Script::done ()
+{
   if (_stopFlag)
+  {
     emit signalMessage(QString(tr("Script ")) + _name + tr(" cancelled."));
+    emit signalCancel();
+  }
   else
+  {
     emit signalMessage(QString(tr("Script ")) + _name + tr(" completed."));
-    
-  emit signalDone(_name);
+    emit signalDone(_name);
+  }
 }
 
 void Script::setName (QString &d)
@@ -116,6 +118,6 @@ QDateTime & Script::getLastRun ()
 void Script::stop ()
 {
   _stopFlag = 1;
-  emit signalCancel();
+  _scriptServer.stop();
 }
 

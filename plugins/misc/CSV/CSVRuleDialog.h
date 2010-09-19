@@ -44,23 +44,24 @@ class CSVRuleDialog : public Dialog
     void loadRule ();
     void saveRule ();
     void clear ();
-    void dateDialog ();
-    void timeDialog ();
     
   public slots:
     void ruleChanged ();
     void insertClicked ();
-    void insertClicked2 (QString);
     void deleteClicked ();
     void done ();
     void searchExchange ();
     void setExchangeCode (QString);
     void dateDialog2 (QString);
     void timeDialog2 (QString);
-    void selectionChanged ();
+    void ruleSelectionChanged ();
+    void fieldSelectionChanged ();
+    void dateDialog ();
+    void timeDialog ();
           
   private:
     QListWidget *_ruleList;
+    QListWidget *_fieldList;
     QComboBox *_type;
     QComboBox *_delimeter;
     FileButton *_file;
@@ -68,8 +69,10 @@ class CSVRuleDialog : public Dialog
     bool _saveFlag;
     QString _name;
     QPushButton *_insertButton;
+    QPushButton *_insertDateButton;
+    QPushButton *_insertTimeButton;
     QPushButton *_deleteButton;
-    QStringList _fieldList;
+    QStringList _fields;
     QCheckBox *_removeSuffix;
     QCheckBox *_fileSymbol;
 };

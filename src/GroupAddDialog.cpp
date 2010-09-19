@@ -21,10 +21,18 @@
 
 #include "GroupAddDialog.h"
 #include "Globals.h"
+#include "GroupNewDialog.h"
+#include "SymbolDialog.h"
+
+#include "../pics/newchart.xpm"
+#include "../pics/search.xpm"
 
 #include <QtDebug>
 #include <QLabel>
 #include <QString>
+#include <QToolButton>
+#include <QIcon>
+#include <QPushButton>
 
 GroupAddDialog::GroupAddDialog (Group group) : Dialog (Dialog::_Dialog, 0)
 {
@@ -59,19 +67,29 @@ void GroupAddDialog::createMainPage ()
   
   _groups = new QComboBox;
   _groups->addItems(gl);
-  grid->addWidget(_groups, row++, col--);
+  grid->addWidget(_groups, row, col++);
+
+  QToolButton *_newButton = new QToolButton;
+  _newButton->setIcon(QIcon(newchart_xpm));
+  _newButton->setText("...");
+  _newButton->setToolTip(tr("New Group"));
+  connect(_newButton, SIGNAL(clicked()), this, SLOT(newGroup()));
+  grid->addWidget(_newButton, row++, col--);
 
   // list
   QStringList l;
   _group.getStringList(l);
 
   _list = new QListWidget;
-  _list->addItems(l);
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   _list->setSortingEnabled(TRUE);
   vbox->addWidget(_list);
-  
-  vbox->addStretch(1);
+  _list->addItems(l);
+
+  QPushButton *b = _buttonBox->addButton(tr("Search..."), QDialogButtonBox::ActionRole);
+  b->setIcon(QIcon(search_xpm));
+  b->setToolTip(tr("Search symbols"));
+  connect(b, SIGNAL(clicked()), this, SLOT(search()));
 
   _tabs->addTab(w, QString());
 }
@@ -109,5 +127,39 @@ void GroupAddDialog::done ()
   emit signalGroupChanged();
 
   accept();
+}
+
+void GroupAddDialog::newGroup ()
+{
+  GroupNewDialog *dialog = new GroupNewDialog;
+  connect(dialog, SIGNAL(signalNewGroup()), this, SLOT(updateGroups()));
+  dialog->show();
+}
+
+void GroupAddDialog::updateGroups ()
+{
+  QStringList l;
+  _db.getAllGroupsList(l);
+
+  _groups->clear();
+  _groups->addItems(l);
+}
+
+void GroupAddDialog::search ()
+{
+  SymbolDialog *dialog = new SymbolDialog;
+  connect(dialog, SIGNAL(signalSymbols(Group)), this, SLOT(updateList(Group)));
+  dialog->show();
+}
+
+void GroupAddDialog::updateList (Group g)
+{
+  _group = g;
+
+  QStringList l;
+  _group.getStringList(l);
+
+  _list->clear();
+  _list->addItems(l);
 }
 

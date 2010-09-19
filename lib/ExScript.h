@@ -46,11 +46,12 @@ class ExScript : public QObject
   public:
     enum Function
     {
-      CO, // chart object functions
-      INDICATOR, // indicator functions
-      GROUP, // group database functions
+      _CO, // chart object functions
+      _INDICATOR, // indicator functions
+      _GROUP, // group database functions
+      _PROCESS, // start a detached system process
       _SYMBOL, // symbol functions
-      TEST // tester functions
+      _TEST // tester functions
     };
 
     ExScript ();

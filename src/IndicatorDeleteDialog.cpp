@@ -23,7 +23,6 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLabel>
 
 IndicatorDeleteDialog::IndicatorDeleteDialog () : Dialog (Dialog::_Dialog, 0)
 {
@@ -36,17 +35,10 @@ void IndicatorDeleteDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
-
-  // name
-  QLabel *label = new QLabel(tr("Indicator Name"));
-  grid->addWidget(label, row++, col);
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(5);
+  vbox->setMargin(0);
+  w->setLayout(vbox);
 
   // list
   QStringList l;
@@ -56,11 +48,9 @@ void IndicatorDeleteDialog::createMainPage ()
   _list->addItems(l);
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   _list->setSortingEnabled(TRUE);
-  grid->addWidget(_list, row++, col);
+  vbox->addWidget(_list);
   
-  grid->setRowStretch(row, 1);
-
-  _tabs->addTab(w, QString());
+  _tabs->addTab(w, QString(tr("Indicator Name")));
 }
 
 void IndicatorDeleteDialog::done ()

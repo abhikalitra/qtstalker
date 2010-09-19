@@ -24,7 +24,6 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLabel>
 
 GroupNewDialog::GroupNewDialog () : Dialog (Dialog::_Dialog, 0)
 {
@@ -37,24 +36,14 @@ void GroupNewDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
-
-  // name
-  QLabel *label = new QLabel(tr("Group Name"));
-  grid->addWidget(label, row, col++);
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(2);
+  w->setLayout(vbox);
 
   _name = new QLineEdit;
-  grid->addWidget(_name, row++, col--);
+  vbox->addWidget(_name);
   
-  grid->setRowStretch(row, 1);
-
-  _tabs->addTab(w, QString());
+  _tabs->addTab(w, tr("Group Name"));
 }
 
 void GroupNewDialog::done ()

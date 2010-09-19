@@ -39,8 +39,8 @@ CSVRuleDialog::CSVRuleDialog (QString &name) : Dialog (Dialog::_Dialog, 0)
   _saveFlag = FALSE;
   _name = name;
 
-  _fieldList << "Exchange" << "Symbol" << "Date" << "Time" << "Open" << "High" << "Low" << "Close";
-  _fieldList << "Volume" << "OI" << "Name" << "Ignore";
+  _fields << "Exchange" << "Symbol" << "Open" << "High" << "Low" << "Close";
+  _fields << "Volume" << "OI" << "Name" << "Ignore";
   
   QString s = tr("Qtstalker: CSV Editing Rule ") + _name;
   setWindowTitle(s);
@@ -50,7 +50,8 @@ CSVRuleDialog::CSVRuleDialog (QString &name) : Dialog (Dialog::_Dialog, 0)
 
   loadRule();
 
-  selectionChanged();
+  ruleSelectionChanged();
+  fieldSelectionChanged();
 }
 
 void CSVRuleDialog::createMainPage ()
@@ -144,7 +145,8 @@ void CSVRuleDialog::createRulePage ()
   w->setLayout(hbox);
 
   _ruleList = new QListWidget;
-  connect(_ruleList, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
+  _ruleList->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  connect(_ruleList, SIGNAL(itemSelectionChanged()), this, SLOT(ruleSelectionChanged()));
   hbox->addWidget(_ruleList);
 
   QDialogButtonBox *bbox = new QDialogButtonBox;
@@ -155,9 +157,23 @@ void CSVRuleDialog::createRulePage ()
   connect(_insertButton, SIGNAL(clicked()), this, SLOT(insertClicked()));
   _insertButton->setText(tr("Insert"));
 
+  _insertDateButton = bbox->addButton(QDialogButtonBox::Apply);
+  connect(_insertDateButton, SIGNAL(clicked()), this, SLOT(dateDialog()));
+  _insertDateButton->setText(tr("Insert Date"));
+
+  _insertTimeButton = bbox->addButton(QDialogButtonBox::Apply);
+  connect(_insertTimeButton, SIGNAL(clicked()), this, SLOT(timeDialog()));
+  _insertTimeButton->setText(tr("Insert Time"));
+
   _deleteButton = bbox->addButton(QDialogButtonBox::Discard);
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteClicked()));
   _deleteButton->setText(tr("Delete"));
+
+  _fieldList = new QListWidget;
+  _fieldList->addItems(_fields);
+  _fieldList->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  connect(_fieldList, SIGNAL(itemSelectionChanged()), this, SLOT(fieldSelectionChanged()));
+  hbox->addWidget(_fieldList);
 
   _tabs->addTab(w, tr("Rule Format"));
 }
@@ -234,35 +250,14 @@ void CSVRuleDialog::ruleChanged ()
 
 void CSVRuleDialog::insertClicked ()
 {
-  QInputDialog *dialog = new QInputDialog;
-  dialog->setWindowTitle(tr("Qtstalker: CSV Rule Insert Field"));
-  dialog->setLabelText(tr("Select CSV field to insert"));
-  dialog->setInputMode(QInputDialog::TextInput);
-  dialog->setComboBoxEditable(FALSE);
-  dialog->setComboBoxItems(_fieldList);
-  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(insertClicked2(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-}
+  QList<QListWidgetItem *> sel = _fieldList->selectedItems();
 
-void CSVRuleDialog::insertClicked2 (QString item)
-{
-  if (item.isEmpty())
-    return;
-
-  if (item == "Date")
-  {
-    dateDialog();
-    return;
-  }
+  QStringList l;
+  int loop = 0;
+  for (; loop < sel.count(); loop++)
+    l.append(sel.at(loop)->text());
   
-  if (item == "Time")
-  {
-    timeDialog();
-    return;
-  }
-
-  _ruleList->insertItem(_ruleList->currentRow(), item);
+  _ruleList->insertItems(_ruleList->currentRow() + 1, l);
 
   ruleChanged();
 }
@@ -285,7 +280,7 @@ void CSVRuleDialog::dateDialog2 (QString item)
     return;
 
   QString s = "Date=" + item;
-  _ruleList->insertItem(_ruleList->currentRow(), s);
+  _ruleList->insertItem(_ruleList->currentRow() + 1, s);
 
   ruleChanged();
 }
@@ -308,7 +303,7 @@ void CSVRuleDialog::timeDialog2 (QString item)
     return;
 
   QString s = "Time=" + item;
-  _ruleList->insertItem(_ruleList->currentRow(), s);
+  _ruleList->insertItem(_ruleList->currentRow() + 1, s);
 
   ruleChanged();
 }
@@ -338,12 +333,25 @@ void CSVRuleDialog::setExchangeCode (QString d)
   _exchange->setCurrentIndex(_exchange->findText(d, Qt::MatchExactly));
 }
 
-void CSVRuleDialog::selectionChanged ()
+void CSVRuleDialog::ruleSelectionChanged ()
 {
+  int status = 0;
   QList<QListWidgetItem *> sel = _ruleList->selectedItems();
-  if (! sel.count())
-    _deleteButton->setEnabled(FALSE);
-  else
-    _deleteButton->setEnabled(TRUE);
+  if (sel.count())
+    status = 1;
+  
+  _deleteButton->setEnabled(status);
+}
+
+void CSVRuleDialog::fieldSelectionChanged ()
+{
+  int status = 0;
+  QList<QListWidgetItem *> sel = _fieldList->selectedItems();
+  if (sel.count())
+    status = 1;
+
+  _insertButton->setEnabled(status);
+  _insertDateButton->setEnabled(status);
+  _insertTimeButton->setEnabled(status);
 }
 

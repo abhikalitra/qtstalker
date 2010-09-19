@@ -23,7 +23,6 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLabel>
 
 GroupDeleteDialog::GroupDeleteDialog () : Dialog (Dialog::_Dialog, 0)
 {
@@ -36,31 +35,21 @@ void GroupDeleteDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
-
-  // name
-  QLabel *label = new QLabel(tr("Group Name"));
-  grid->addWidget(label, row++, col);
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(2);
+  w->setLayout(vbox);
 
   // list
   QStringList l;
   _db.getAllGroupsList(l);
   
   _list = new QListWidget;
-  _list->addItems(l);
-  _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   _list->setSortingEnabled(TRUE);
-  grid->addWidget(_list, row++, col);
+  _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  vbox->addWidget(_list);
+  _list->addItems(l);
   
-  grid->setRowStretch(row, 1);
-
-  _tabs->addTab(w, QString());
+  _tabs->addTab(w, tr("Group Name"));
 }
 
 void GroupDeleteDialog::done ()

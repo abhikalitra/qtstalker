@@ -41,6 +41,10 @@ class GroupAddDialog : public Dialog
 
   public slots:
     void done ();
+    void newGroup ();
+    void updateGroups ();
+    void search ();
+    void updateList (Group);
 
   private:
     QComboBox *_groups;

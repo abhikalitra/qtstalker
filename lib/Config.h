@@ -80,7 +80,7 @@ class Config : public BaseConfig
       LastScriptPath, // the dir of the last script run from a dialog
       FuturesFileDate,   // the file size of /docs/futures.csv
       CrossHairsColor, // crosshairs color
-      ChartTabEastWestWidth, // ************* UNUSED *****************
+      SidePanelLastPage, // the last side panel page displayed
       ChartTabEastWestHeight, // ************* UNUSED *****************
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel
       ScriptLaunchButton3, // script panel launch button 3

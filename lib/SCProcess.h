@@ -19,45 +19,17 @@
  *  USA.
  */
 
-#ifndef SYMBOL_DIALOG_HPP
-#define SYMBOL_DIALOG_HPP
+#ifndef SCPROCESS_HPP
+#define SCPROCESS_HPP
 
 #include <QStringList>
-#include <QTreeWidget>
-#include <QToolButton>
-#include <QComboBox>
-#include <QLineEdit>
+#include <QByteArray>
 
-#include "Group.h"
-#include "Dialog.h"
-
-class SymbolDialog : public Dialog
+class SCProcess
 {
-  Q_OBJECT
-
-  signals:
-    void signalResults (QString, QString);
-    void signalSymbols (Group);
-
   public:
-    SymbolDialog ();
-    void createMainPage ();
-    void setSymbols (QString &ex, QString &ss);
-    void getSymbols (Group &);
-    void getSymbolSearch (QString &ex, QString &ss);
-    void loadExchanges ();
-
-  public slots:
-    void searchButtonPressed ();
-    void exchangeRequestDone (QString);
-    void searchRequestDone (QString);
-    void done ();
-
-  private:
-    QTreeWidget *_leftSymbols;
-    QComboBox *_exchanges;
-    QLineEdit *_search;
-    QToolButton *_searchButton;
+    SCProcess ();
+    int calculate (QStringList &l, QByteArray &ba);
 };
 
 #endif

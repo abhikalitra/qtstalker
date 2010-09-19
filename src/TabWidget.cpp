@@ -155,13 +155,40 @@ void TabWidget::currentTabChanged ()
 
 void TabWidget::setTabButton (int pos, QString text)
 {
+  QString s = text;
+
+  // if label is too big for tab, then shorten label to fit
+  QFont f;
+  QFontMetrics fm(f);
+  int width = fm.width(s);
+
+  Config config;
+  QString key = _id + "EWW";
+  QString d;
+  config.getData(key, d);
+  int tabWidth = d.toInt();
+  if (width > tabWidth)
+  {
+    QString s2;
+    while (width > tabWidth)
+    {
+      s2 = s;
+      s2.remove(s2.length() / 2, 1);
+      s = s2;
+      s2.insert(s2.length() / 2, "*");
+      width = fm.width(s2);
+    }
+
+    s = s2;
+  }
+  
   // create a label that paints horizontally
   QTabBar *tb = tabBar();
   QLabel *label = new QLabel;
   label->setIndent(0);
   label->setMargin(0);
   label->setAlignment(Qt::AlignLeft);
-  label->setText(text);
+  label->setText(s);
   tb->setTabButton(pos, QTabBar::LeftSide, label);
 }
 

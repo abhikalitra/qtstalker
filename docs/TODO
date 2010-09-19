@@ -13,13 +13,13 @@ To Do:
 - add tooltips
 - interactive scripting
 - complete backtesting module
-- add antialiasing to charts when Nokia fixes the speed issue...
 - add exchange checker to yahoo plugin symbols dialog
 - add yahoo details code selection to the yahoo plugin (default is only name now)
 - add some qtstalker plugins to display details data from QuoteServer
 - add search method to quoteserver details plugin
 - add some example rules to the CSV plugin so noobs have an idea of construction (wait till release)
 - review make files to use .qmake.cache
+- chart zooming
 
 
 Priority
@@ -29,8 +29,7 @@ BUG: gnome ubuntu has issues with qtstalker indicator tab resizing displays tiny
      kde systems work.
 
 - fix scripts not finishing ? fix pending confimation
-- convert any long running functions that gui block to use threads
-- chart zooming
+ 
 
 
 

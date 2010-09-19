@@ -743,7 +743,16 @@
 
            Fixed bug that segfaults when indicator is deleted.
 
+20100918:  Improved the Yahoo and CSV plugin dialogs.
 
+           Side panel now saves and restores last page viewed.
 
+           Cleaned up and improved many dialogs and menus.
+
+           Fixed logic errors in the group panel.
+
+           Indicator tabs now shorten labels if they do not fit.
+
+20100919:  Added new script command PROCESS. This allows scripts to fork a detached system process.
 
 

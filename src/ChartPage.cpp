@@ -27,7 +27,7 @@
 #include "QuoteServerDialog.h"
 #include "GroupAddDialog.h"
 
-#include "../pics/addgroup.xpm"
+#include "../pics/add.xpm"
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
 //#include "../pics/delete.xpm"
@@ -88,13 +88,13 @@ void ChartPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(allButtonPressed()));
   _actions.insert(ShowAll, action);
 
-  action  = new QAction(QIcon(search_xpm), tr("Symbol &Search"), this);
+  action  = new QAction(QIcon(search_xpm), tr("Symbol &Search..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
   action->setToolTip(tr("Symbol Search"));
   connect(action, SIGNAL(activated()), this, SLOT(symbolSearch()));
   _actions.insert(Search, action);
 
-  action  = new QAction(QIcon(addgroup), tr("Add To &Group"), this);
+  action  = new QAction(QIcon(add_xpm), tr("Add To &Group..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_G));
   action->setToolTip(tr("Add symbol to group"));
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
@@ -106,7 +106,7 @@ void ChartPage::createActions ()
 //  connect(action, SIGNAL(activated()), this, SLOT(deleteSymbol()));
 //  _actions.insert(Delete, action);
 
-  action  = new QAction(QIcon(configure_xpm), tr("&Configure Quote Server"), this);
+  action  = new QAction(QIcon(configure_xpm), tr("&Configure Quote Server..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
   action->setToolTip(tr("Configure Quote Server"));
   connect(action, SIGNAL(activated()), this, SLOT(serverDialog()));
@@ -200,7 +200,7 @@ void ChartPage::requestDone ()
 
 void ChartPage::symbolSearch ()
 {
-  SymbolDialog *dialog = new SymbolDialog(1);
+  SymbolDialog *dialog = new SymbolDialog;
   dialog->setSymbols(_searchExchange, _searchString);
   connect(dialog, SIGNAL(signalResults(QString, QString)), this, SLOT(symbolSearch2(QString, QString)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
@@ -275,8 +275,7 @@ void ChartPage::deleteSymbol ()
 
 void ChartPage::serverDialog ()
 {
-  QuoteServerDialog *dialog = new QuoteServerDialog(this);
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  QuoteServerDialog *dialog = new QuoteServerDialog;
   dialog->show();
 }
   

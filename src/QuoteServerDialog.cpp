@@ -21,23 +21,28 @@
 
 #include "QuoteServerDialog.h"
 #include "Config.h"
-#include "Dialog.h"
+
+#include "../pics/refresh.xpm"
 
 #include <QtDebug>
 #include <QProcess>
 #include <QLayout>
 #include <QLabel>
 
-QuoteServerDialog::QuoteServerDialog (QWidget *w) : QDialog (w, 0)
+QuoteServerDialog::QuoteServerDialog () : Dialog (Dialog::_Dialog, 0)
 {
   _oport = 5000;
-  setAttribute(Qt::WA_DeleteOnClose);
-  setWindowTitle(tr("Configure Quote Server"));
+  setWindowTitle(tr("Qtstalker: Configure Quote Server"));
+
+  createMainPage();
+}
+
+void QuoteServerDialog::createMainPage ()
+{
+  QWidget *w = new QWidget;
 
   QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(10);
-  vbox->setMargin(5);
-  setLayout(vbox);
+  w->setLayout(vbox);
 
   QGridLayout *grid = new QGridLayout;
   grid->setSpacing(2);
@@ -56,7 +61,7 @@ QuoteServerDialog::QuoteServerDialog (QWidget *w) : QDialog (w, 0)
 
   _hostName = new QLineEdit;
   _hostName->setText(_ohostName);
-  _hostName->setToolTip(tr("default 127.0.0.1"));
+  _hostName->setToolTip(tr("Default: 127.0.0.1"));
   grid->addWidget(_hostName, row++, col--);
   
 
@@ -69,19 +74,17 @@ QuoteServerDialog::QuoteServerDialog (QWidget *w) : QDialog (w, 0)
   _port = new QSpinBox;
   _port->setRange(5000, 99999);
   _port->setValue(_oport);
+  _port->setToolTip(tr("Default: 5000"));
   grid->addWidget(_port, row++, col--);
 
 
-  _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  vbox->addWidget(_buttonBox);
-
+  // refresh button
   _refreshButton = _buttonBox->addButton(tr("Refresh"), QDialogButtonBox::ActionRole);
   _refreshButton->setToolTip(tr("Restarts the server"));
+  _refreshButton->setIcon(QIcon(refresh_xpm));
   connect(_refreshButton, SIGNAL(clicked()), this, SLOT(refreshServer()));
 
-  vbox->addStretch(1);
+  _tabs->addTab(w, tr("Settings"));
 }
 
 void QuoteServerDialog::done ()

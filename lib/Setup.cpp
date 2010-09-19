@@ -200,20 +200,6 @@ void Setup::setupQuoteServer (Config &config)
   if (qsr.data() == "ERROR")
     return;
 
-  // quoteserver is not running, start it
-
-  // attempt to find a free port # and use it
-/*  
-  QTcpServer serv;
-  if (! serv.listen(QHostAddress("127.0.0.1"), 0))
-  {
-    qDebug() << "Setup::setupQuoteServer: unable to find an available port #" << serv.errorString();
-    return;
-  }
-
-  qDebug() << "Setup::setupQuoteServer" << serv.serverPort();
-*/
-
   QString serverName;
   config.getData(Config::QuoteServerName, serverName);
   int serverPort = config.getInt(Config::QuoteServerPort);

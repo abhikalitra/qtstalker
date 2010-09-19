@@ -100,7 +100,7 @@ void ScriptDialog::createMainPage ()
 
   grid->setRowStretch(row, 1);
 
-  _tabs->addTab(w, QString());
+  _tabs->addTab(w, tr("Settings"));
 }
 
 void ScriptDialog::done ()
@@ -114,6 +114,8 @@ void ScriptDialog::done ()
 
     s = _file->getFile();
     _script.setFile(s);
+    Config config;
+    config.setData(Config::LastScriptPath, s);
 
     s = _comment->text();
     _script.setComment(s);

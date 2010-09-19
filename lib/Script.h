@@ -24,9 +24,11 @@
 
 #include <QString>
 #include <QDateTime>
-#include <QThread>
+#include <QObject>
 
-class Script : public QThread
+#include "ExScript.h"
+
+class Script : public QObject
 {
   Q_OBJECT
   
@@ -52,9 +54,8 @@ class Script : public QThread
 
   public slots:
     void stop ();
-    
-  protected:
-    void run ();
+    void start ();
+    void done ();
 
   private:
     QString _name;
@@ -64,6 +65,7 @@ class Script : public QThread
     int _status;
     QDateTime _lastRun;
     int _stopFlag;
+    ExScript _scriptServer;
 };
 
 #endif

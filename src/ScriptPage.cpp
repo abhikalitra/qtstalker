@@ -168,25 +168,25 @@ void ScriptPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(showAllScripts()));
   actions.insert(ShowAllScripts, action);
 
-  action  = new QAction(QIcon(search_xpm), tr("&Search"), this);
+  action  = new QAction(QIcon(search_xpm), tr("&Search..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
   action->setToolTip(tr("Search"));
   connect(action, SIGNAL(activated()), this, SLOT(search()));
   actions.insert(SearchScript, action);
 
-  action  = new QAction(QIcon(newchart_xpm), tr("&New Script"), this);
+  action  = new QAction(QIcon(newchart_xpm), tr("&New Script..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
   action->setToolTip(tr("New Script"));
   connect(action, SIGNAL(activated()), this, SLOT(newScript()));
   actions.insert(NewScript, action);
 
-  action  = new QAction(QIcon(edit_xpm), tr("&Edit Script"), this);
+  action  = new QAction(QIcon(edit_xpm), tr("&Edit Script..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
   action->setToolTip(tr("Edit Script"));
   connect(action, SIGNAL(activated()), this, SLOT(editScript()));
   actions.insert(EditScript, action);
 
-  action  = new QAction(QIcon(delete_xpm), tr("&Delete Script"), this);
+  action  = new QAction(QIcon(delete_xpm), tr("&Delete Script..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
   action->setToolTip(tr("Delete Script"));
   connect(action, SIGNAL(activated()), this, SLOT(deleteScript()));
@@ -198,7 +198,7 @@ void ScriptPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(removeScriptQueue()));
   actions.insert(CancelScript, action);
 
-  action  = new QAction(QIcon(script_xpm), tr("&Run Script"), this);
+  action  = new QAction(QIcon(script_xpm), tr("&Run Script..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
   action->setToolTip(tr("Run script"));
   connect(action, SIGNAL(activated()), this, SLOT(runScriptDialog()));
@@ -397,9 +397,10 @@ void ScriptPage::runScript (Script *script)
     dialog->setWindowTitle(tr("Qtstalker: Error run script"));
     dialog->setMessage(tr("This script is currently running. Request denied."));
     dialog->show();
+    delete script;
     return;
   }
-	
+
   scripts.insert(name, script);
   connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptDone(QString)));
   connect(script, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));

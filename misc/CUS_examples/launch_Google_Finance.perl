@@ -30,7 +30,7 @@ CASE_EXCHANGE:
 
 if ($DEBUG) { doDebug("Launching ..."); }
 my $url = "http://www.google.com/finance?q=" . $exchangeG . ":" . $symbol;
-$rc = system("/usr/bin/open $url");
+$rc = system("/usr/bin/firefox $url");
 if ($rc ne "0") { die "System call failed: $?"; }
 
 if ($DEBUG) { doDebug("End launch"); }

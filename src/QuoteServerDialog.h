@@ -22,19 +22,20 @@
 #ifndef QUOTE_SERVER_DIALOG_HPP
 #define QUOTE_SERVER_DIALOG_HPP
 
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QString>
 #include <QPushButton>
 
-class QuoteServerDialog : public QDialog
+#include "Dialog.h"
+
+class QuoteServerDialog : public Dialog
 {
   Q_OBJECT
   
   public:
-    QuoteServerDialog (QWidget *);
+    QuoteServerDialog ();
+    void createMainPage ();
 
   public slots:
     void done ();
@@ -44,7 +45,6 @@ class QuoteServerDialog : public QDialog
   private:
     QLineEdit *_hostName;
     QSpinBox *_port;
-    QDialogButtonBox *_buttonBox;
     int _oport;
     QString _ohostName;
     QPushButton *_refreshButton;

@@ -34,7 +34,7 @@
 #include "../pics/delete.xpm"
 #include "../pics/delgroup.xpm"
 #include "../pics/newchart.xpm"
-#include "../pics/addgroup.xpm"
+#include "../pics/add.xpm"
 
 #include <QStringList>
 #include <QCursor>
@@ -80,25 +80,25 @@ GroupPage::GroupPage ()
 
 void GroupPage::createActions ()
 {
-  QAction *action  = new QAction(QIcon(newchart_xpm), tr("&New Group"), this);
+  QAction *action  = new QAction(QIcon(newchart_xpm), tr("&New Group..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
   action->setToolTip(tr("Create a new group"));
   connect(action, SIGNAL(activated()), this, SLOT(newGroup()));
   _actions.insert(NewGroup, action);
 
-  action  = new QAction(QIcon(addgroup), tr("&Add To Group"), this);
+  action  = new QAction(QIcon(add_xpm), tr("&Add To Group..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_A));
   action->setToolTip(tr("Add symbol to group"));
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
   _actions.insert(AddGroup, action);
 
-  action  = new QAction(QIcon(delete_xpm), tr("&Delete Group Items"), this);
+  action  = new QAction(QIcon(delete_xpm), tr("&Delete Group Items..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
   action->setToolTip(tr("Delete group items"));
   connect(action, SIGNAL(activated()), this, SLOT(deleteGroupItem()));
   _actions.insert(DeleteGroupItems, action);
 
-  action  = new QAction(QIcon(delgroup), tr("De&lete Group"), this);
+  action  = new QAction(QIcon(delgroup), tr("De&lete Group..."), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
   action->setToolTip(tr("Delete group"));
   connect(action, SIGNAL(activated()), this, SLOT(deleteGroup()));
@@ -230,6 +230,8 @@ void GroupPage::updateGroups ()
   _nav->setCurrentRow(cr);
   _nav->blockSignals(FALSE);
 
+  updateList();
+
   buttonStatus();
 }
 
@@ -272,7 +274,6 @@ void GroupPage::requestDone ()
 void GroupPage::buttonStatus ()
 {
   int status = _nav->count();
-  _actions.value(AddGroup)->setEnabled(status);
   _actions.value(DeleteGroupItems)->setEnabled(status);
 
   status = _groups->count();

@@ -113,6 +113,10 @@ void SidePanel::load ()
   }
   size.setWidth(t);
   _tabs->resize(size);
+
+  // set last displayed tab
+  int page = config.getInt(Config::SidePanelLastPage);
+  _tabs->setCurrentIndex(page);
 }
 
 void SidePanel::save ()
@@ -122,6 +126,8 @@ void SidePanel::save ()
 
   QSize size = _tabs->size();
   config.setData(Config::SidePanelTabWidth, size.width());
+
+  config.setData(Config::SidePanelLastPage, _tabs->currentIndex());
 }
 
 PlotSlider * SidePanel::slider ()

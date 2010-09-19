@@ -48,7 +48,7 @@ void SymbolButton::setSymbols (Group &d)
 
 void SymbolButton::symbolDialog ()
 {
-  SymbolDialog *dialog = new SymbolDialog(0);
+  SymbolDialog *dialog = new SymbolDialog;
   dialog->setSymbols(exchangeSearch, symbolSearch);
 
   int rc = dialog->exec();

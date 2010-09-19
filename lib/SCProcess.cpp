@@ -19,49 +19,39 @@
  *  USA.
  */
 
-#include "ScriptSearchDialog.h"
-#include "ScriptDataBase.h"
+#include "SCProcess.h"
 
 #include <QtDebug>
-#include <QLabel>
+#include <QProcess>
 
-ScriptSearchDialog::ScriptSearchDialog () : Dialog (Dialog::_Dialog, 0)
+SCProcess::SCProcess ()
 {
-  setWindowTitle(tr("QtStalker: Search Script"));
-
-  createMainPage();
 }
 
-void ScriptSearchDialog::createMainPage ()
+int SCProcess::calculate (QStringList &l, QByteArray &ba)
 {
-  QWidget *w = new QWidget;
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  w->setLayout(vbox);
-
-  _search = new QLineEdit;
-  _search->setToolTip(tr("Enter either a specific name like MyScript or\na partial match like %Script or %Scr%"));
-  vbox->addWidget(_search);
+  // format = PROCESS,COMMAND
+  //             0      1
   
-  _tabs->addTab(w, tr("Script Name"));
-}
+  ba.clear();
+  ba.append("ERROR\n");
 
-void ScriptSearchDialog::done ()
-{
-  QString ss = _search->text();
-  if (ss.isEmpty())
+  if (l.count() != 2)
   {
-    reject();
-    return;
+    qDebug() << "SCProcess::calculate: invalid parm count" << l.count();
+    return 1;
   }
 
-  ScriptDataBase db;
-  QStringList l;
-  db.getScriptSearch(ss, l);
+  int rc = QProcess::startDetached(l.at(1));
+  if (! rc)
+  {
+    qDebug() << "SCProcess::calculate: error starting the process";
+    return 1;
+  }
 
-  emit signalSearch(ss, l);
-  
-  accept();
+  ba.clear();
+  ba.append("0\n");
+
+  return 0;
 }
 

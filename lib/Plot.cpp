@@ -144,11 +144,6 @@ Plot::Plot ()
 Plot::~Plot ()
 {
   clear();
-
-//  delete _dateScaleDraw;
-//  delete _grid;
-//  delete _picker;
-qDebug() << "plot deleted";
 }
 
 void Plot::clear ()
@@ -496,6 +491,7 @@ void Plot::toggleLog ()
 void Plot::editBackgroundColor ()
 {
   QColorDialog *dialog = new QColorDialog(canvasBackground(), this);
+  dialog->setWindowTitle(tr("Qtstalker: Chart Background Color"));
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SIGNAL(signalBackgroundColorChanged(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
@@ -504,6 +500,7 @@ void Plot::editBackgroundColor ()
 void Plot::editFont ()
 {
   QFontDialog *dialog = new QFontDialog(axisFont(QwtPlot::xBottom), this);
+  dialog->setWindowTitle(tr("Qtstalker: Chart Font"));
   connect(dialog, SIGNAL(fontSelected(const QFont &)), this, SIGNAL(signalFontChanged(QFont)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();

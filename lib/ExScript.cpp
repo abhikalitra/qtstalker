@@ -24,6 +24,7 @@
 #include "SCGroup.h"
 #include "SCSymbol.h"
 #include "SCChartObject.h"
+#include "SCProcess.h"
 
 #include <QByteArray>
 #include <QtDebug>
@@ -35,6 +36,7 @@ ExScript::ExScript ()
   _functionList << "CO";
   _functionList << "INDICATOR";
   _functionList << "GROUP";
+  _functionList << "PROCESS";
   _functionList << "SYMBOL";
   _functionList << "TEST";
   
@@ -139,23 +141,30 @@ void ExScript::readFromStdout ()
   int i = _functionList.indexOf(l[0]);
   switch ((Function) i)
   {
-    case CO:
+    case _CO:
     {
       SCChartObject sc;
       sc.calculate(l, ba, _indicator, _data);
       _proc->write(ba);
       break;
     }
-    case INDICATOR:
+    case _INDICATOR:
     {
       SCIndicator sc;
       sc.calculate(l, ba, _indicator, _data);
       _proc->write(ba);
       break;
     }
-    case GROUP:
+    case _GROUP:
     {
       SCGroup sc;
+      sc.calculate(l, ba);
+      _proc->write(ba);
+      break;
+    }
+    case _PROCESS:
+    {
+      SCProcess sc;
       sc.calculate(l, ba);
       _proc->write(ba);
       break;
@@ -167,7 +176,7 @@ void ExScript::readFromStdout ()
       _proc->write(ba);
       break;
     }
-    case TEST:
+    case _TEST:
     {
 //      SCTest sc;
 //      sc.calculate(l, ba, _tlines);
@@ -218,5 +227,7 @@ void ExScript::stop ()
     return;
 
   _killFlag = TRUE;
+
+  clear();
 }
 
