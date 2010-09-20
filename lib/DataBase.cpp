@@ -22,11 +22,10 @@
 #include "DataBase.h"
 
 #include <QDebug>
-#include <QtSql>
+#include <QDir>
 
 DataBase::DataBase ()
 {
-//  _dbName = "data";
 }
 
 void DataBase::transaction ()
@@ -53,5 +52,30 @@ int DataBase::command (QString &sql, QString errMess)
   }
 
   return 0;
+}
+
+void DataBase::create (QString session)
+{
+  QString basePath = QDir::homePath() + "/.qtstalker/";
+
+  // create the config database
+  QString s = basePath + "config.sqlite" + session;
+  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "config");
+  db.setHostName("me");
+  db.setDatabaseName(s);
+  db.setUserName("QtStalker");
+  db.setPassword("QtStalker");
+  if (! db.open())
+    qDebug() << "DataBase::create: config" << db.lastError().text();
+
+  // create the data database
+  s = basePath + "data.sqlite";
+  QSqlDatabase db2 = QSqlDatabase::addDatabase("QSQLITE", "data");
+  db2.setHostName("localhost");
+  db2.setDatabaseName(s);
+  db2.setUserName("QtStalker");
+  db2.setPassword("QtStalker");
+  if (! db2.open())
+    qDebug() << "DataBase::create: data" << db2.lastError().text();
 }
 

@@ -24,9 +24,9 @@
 
 #include <QString>
 
-#include "BaseConfig.h"
+#include "ConfigDataBase.h"
 
-class CSVConfig : public BaseConfig
+class CSVConfig : public ConfigDataBase
 {
   public:
     enum Parm

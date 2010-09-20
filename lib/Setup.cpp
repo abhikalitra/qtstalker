@@ -29,15 +29,15 @@
 #include "FuturesDataBase.h"
 #include "MiscPluginFactory.h"
 #include "QuoteServerRequest.h"
+#include "Globals.h"
+#include "ChartObjectDataBase.h"
+#include "ScriptDataBase.h"
+#include "GroupDataBase.h"
 
 #include <QtDebug>
-#include <QtSql>
 #include <QDir>
-#include <QObject>
 #include <QStringList>
-#include <QHash>
 #include <QProcess>
-#include <QTcpServer>
 
 Setup::Setup ()
 {
@@ -45,17 +45,35 @@ Setup::Setup ()
 
 void Setup::setup (Config &config, QString session)
 {
+  // set the global variables
+  g_session = session;
+  
   // setup the disk environment and init databases
   // order is critical here
   setupDirectories(); // initialize directory structure
 
-  config.init(session); // initialize config db
-
+  // create the database and tables
+  config.create(session);
+  
+  config.init(); // initialize config db
+  
   setupConfigDefaults(config); // initialize config defaults
 
   // initialize data tables
   setupExchanges();
   setupFutures();
+
+  // initialize chart object tables
+  ChartObjectDataBase codb;
+  codb.init();
+
+  // initialize group tables
+  GroupDataBase gdb;
+  gdb.init();
+
+  // initialize script tables
+  ScriptDataBase sdb;
+  sdb.init();
 
   // get complete plugin inventory
   IndicatorPluginFactory ifac;
@@ -65,8 +83,6 @@ void Setup::setup (Config &config, QString session)
   mfac.setPluginList();
 
   setupDefaultIndicators(config);
-
-//  setupQuoteServer();
 }
 
 void Setup::setupDirectories ()
@@ -81,15 +97,6 @@ void Setup::setupDirectories ()
     if (! dir.mkdir(home))
       qDebug() << "Unable to create" << home <<  "directory.";
   }
-  
-  QString s = home + "/data.sqlite";
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "data");
-  db.setHostName("me");
-  db.setDatabaseName(s);
-  db.setUserName("qtstalker");
-  db.setPassword("qtstalker");
-  if (! db.open())
-    qDebug() << "Setup::setupDirectories:" << db.lastError().text();
 }
 
 void Setup::setupDefaultIndicators (Config &config)
@@ -98,9 +105,11 @@ void Setup::setupDefaultIndicators (Config &config)
   if (ti)
     return;
 
+  IndicatorDataBase db;
+  db.init();
+  
   // create the Bars indicator
   IndicatorPluginFactory fac;
-  IndicatorDataBase db;
   QString s = "BARS";
   IndicatorPlugin *ip = fac.plugin(s);
   if (! ip)

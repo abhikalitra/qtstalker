@@ -22,6 +22,7 @@
 #include "ExchangeSearchDialog.h"
 #include "ExchangeDataBase.h"
 #include "Dialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -32,7 +33,7 @@ ExchangeSearchDialog::ExchangeSearchDialog () : QDialog (0, 0)
 {
   setAttribute(Qt::WA_DeleteOnClose);
   
-  setWindowTitle(tr("Search For Exchange"));
+  setWindowTitle("Qtstalker" + g_session + ": " + tr("Search For Exchange"));
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(10);
@@ -111,7 +112,7 @@ void ExchangeSearchDialog::done ()
   if (db.search(country, city, pattern, sl))
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Error Exchange Search"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error Exchange Search"));
     dialog->setMessage(tr("Invalid search pattern.\n") + pattern);
     dialog->show();
     return;
@@ -122,7 +123,7 @@ void ExchangeSearchDialog::done ()
   if (! sl.count())
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Exchange Search"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Exchange Search"));
     dialog->setMessage(tr("No items found."));
     dialog->show();
     return;
@@ -143,7 +144,7 @@ void ExchangeSearchDialog::itemSelected (QListWidgetItem *item)
   if (code.isEmpty())
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Exchange Search"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Exchange Search"));
     dialog->setMessage(tr("No item found."));
     dialog->show();
     return;

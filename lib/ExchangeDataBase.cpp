@@ -24,14 +24,13 @@
 
 #include <QFile>
 #include <QTextStream>
-#include <QStringList>
 #include <QObject>
 #include <QDateTime>
 #include <QFileInfo>
-#include <QtSql>
 
 ExchangeDataBase::ExchangeDataBase ()
 {
+  _dbName = "data";
 }
 
 int ExchangeDataBase::verifyExchangeName (QString &exchange)

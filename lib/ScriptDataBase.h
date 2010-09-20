@@ -22,16 +22,16 @@
 #ifndef SCRIPT_DATA_BASE_HPP
 #define SCRIPT_DATA_BASE_HPP
 
-#include <QString>
 #include <QStringList>
 
 #include "Script.h"
-#include "DataDataBase.h"
+#include "DataBase.h"
 
-class ScriptDataBase : public DataDataBase
+class ScriptDataBase : public DataBase
 {
   public:
     ScriptDataBase ();
+    void init ();
     void getScripts (QStringList &);
     int getScript (Script *);
     void deleteScript (Script *);

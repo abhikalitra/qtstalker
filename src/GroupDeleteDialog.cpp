@@ -26,7 +26,7 @@
 
 GroupDeleteDialog::GroupDeleteDialog () : Dialog (Dialog::_Dialog, 0)
 {
-  setWindowTitle(tr("QtStalker: Delete Groups"));
+  setWindowTitle("QtStalker" + g_session + ": " + tr("Delete Groups"));
 
   createMainPage();
 }
@@ -62,7 +62,7 @@ void GroupDeleteDialog::done ()
   }
 
   Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle(tr("Qtstalker: Delete Group"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete Group"));
   dialog->setMessage(tr("Are you sure you want to delete selected groups?"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(done2()));
   dialog->show();

@@ -22,7 +22,6 @@
 #include "YahooConfig.h"
 
 #include <QtDebug>
-#include <QtSql>
 
 YahooConfig::YahooConfig ()
 {

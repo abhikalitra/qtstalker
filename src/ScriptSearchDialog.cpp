@@ -20,14 +20,13 @@
  */
 
 #include "ScriptSearchDialog.h"
-#include "ScriptDataBase.h"
+#include "Globals.h"
 
 #include <QtDebug>
-#include <QLabel>
 
 ScriptSearchDialog::ScriptSearchDialog () : Dialog (Dialog::_Dialog, 0)
 {
-  setWindowTitle(tr("QtStalker: Search Script"));
+  setWindowTitle("QtStalker" + g_session + ": " + tr("Search Script"));
 
   createMainPage();
 }
@@ -56,11 +55,7 @@ void ScriptSearchDialog::done ()
     return;
   }
 
-  ScriptDataBase db;
-  QStringList l;
-  db.getScriptSearch(ss, l);
-
-  emit signalSearch(ss, l);
+  emit signalSearch(ss);
   
   accept();
 }

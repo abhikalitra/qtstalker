@@ -27,7 +27,7 @@
 
 GroupNewDialog::GroupNewDialog () : Dialog (Dialog::_Dialog, 0)
 {
-  setWindowTitle(tr("QtStalker: New Group"));
+  setWindowTitle("QtStalker" + g_session + ": " + tr("New Group"));
 
   createMainPage();
 }
@@ -64,7 +64,7 @@ void GroupNewDialog::done ()
   if (l.contains(name))
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Error New Group"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error New Group"));
     dialog->setMessage(tr("A group with this name already exists."));
     dialog->show();
     return;

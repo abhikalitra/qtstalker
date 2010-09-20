@@ -755,4 +755,14 @@
 
 20100919:  Added new script command PROCESS. This allows scripts to fork a detached system process.
 
+           Updated dialogs to display the session number they are children of.
+
+20100920:  Moved indicator tables from data.sqlite into config.sqlite to keep multiple instances from
+           trashing each other's settings. CVS users will need to delete their ~/.qtstalker directory
+           before starting.
+
+           Fixed SET_COLOR_ALL script API bug that set all colors to red.
+
+
+
 

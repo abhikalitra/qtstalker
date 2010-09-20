@@ -22,10 +22,11 @@
 #include "CSVDataBase.h"
 
 #include <QtDebug>
-#include <QtSql>
 
 CSVDataBase::CSVDataBase ()
 {
+  _dbName = "data";
+  
   // create the CSV table
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS CSVPlugin (";

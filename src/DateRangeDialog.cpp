@@ -20,6 +20,7 @@
  */
 
 #include "DateRangeDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -33,7 +34,7 @@ DateRangeDialog::DateRangeDialog (QDateTime &sd, QDateTime &ed) : QDialog (0, 0)
   
   setAttribute(Qt::WA_DeleteOnClose);
   
-  setWindowTitle(tr("Qtstalker: Set Date Range"));
+  setWindowTitle("Qtstalker" + g_session + ": " +  tr("Set Date Range"));
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(10);

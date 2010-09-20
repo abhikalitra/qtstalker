@@ -23,7 +23,7 @@
 #include "BarData.h"
 #include "QuoteServerRequestThread.h"
 #include "Dialog.h"
-
+#include "Globals.h"
 #include "../pics/search.xpm"
 
 #include <QLabel>
@@ -34,7 +34,7 @@
 
 SymbolDialog::SymbolDialog () : Dialog (Dialog::_Dialog, 0)
 {
-  setWindowTitle(tr("Select Symbols"));
+  setWindowTitle("Qtstalker" + g_session + ": " + tr("Select Symbols"));
 
   createMainPage();
 }

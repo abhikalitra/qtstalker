@@ -22,9 +22,13 @@
 #include "GroupDataBase.h"
 
 #include <QtDebug>
-#include <QtSql>
 
 GroupDataBase::GroupDataBase ()
+{
+  _dbName = "data";
+}
+
+void GroupDataBase::init ()
 {
   // create the group index table
   QSqlQuery q(QSqlDatabase::database(_dbName));
@@ -34,7 +38,7 @@ GroupDataBase::GroupDataBase ()
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "GroupDataBase::GroupDataBase: " << q.lastError().text();
+    qDebug() << "GroupDataBase::init: " << q.lastError().text();
 }
 
 void GroupDataBase::getAllGroupsList (QStringList &l)

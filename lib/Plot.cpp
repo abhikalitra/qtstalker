@@ -491,7 +491,7 @@ void Plot::toggleLog ()
 void Plot::editBackgroundColor ()
 {
   QColorDialog *dialog = new QColorDialog(canvasBackground(), this);
-  dialog->setWindowTitle(tr("Qtstalker: Chart Background Color"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Chart Background Color"));
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SIGNAL(signalBackgroundColorChanged(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
@@ -500,7 +500,7 @@ void Plot::editBackgroundColor ()
 void Plot::editFont ()
 {
   QFontDialog *dialog = new QFontDialog(axisFont(QwtPlot::xBottom), this);
-  dialog->setWindowTitle(tr("Qtstalker: Chart Font"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Chart Font"));
   connect(dialog, SIGNAL(fontSelected(const QFont &)), this, SIGNAL(signalFontChanged(QFont)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
@@ -563,7 +563,7 @@ void Plot::mouseMove (QPoint p)
 void Plot::deleteAllChartObjects ()
 {
   Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle(tr("Qtstalker: Delete All Chart Objects"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete All Chart Objects"));
   dialog->setMessage(tr("Are you sure you want to delete all chart objects from this indicator?"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
   dialog->show();

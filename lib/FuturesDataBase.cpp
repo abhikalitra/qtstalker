@@ -26,11 +26,11 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QFileInfo>
-#include <QtSql>
 #include <QDebug>
 
 FuturesDataBase::FuturesDataBase ()
 {
+  _dbName = "data";
 }
 
 int FuturesDataBase::createFutures ()

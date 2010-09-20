@@ -24,10 +24,9 @@
 // for storage in an sqlite db.
 // *************************************************************************************************
 
-#ifndef BASECONFIG_HPP
-#define BASECONFIG_HPP
+#ifndef CONFIG_DATA_BASE_HPP
+#define CONFIG_DATA_BASE_HPP
 
-#include <QString>
 #include <QStringList>
 #include <QSplitter>
 #include <QColor>
@@ -38,10 +37,10 @@
 
 #include "DataBase.h"
 
-class BaseConfig : public DataBase
+class ConfigDataBase : public DataBase
 {
   public:
-    BaseConfig ();
+    ConfigDataBase ();
     
     void setData (QString &, QString &);
     void getData (QString &, QString &);

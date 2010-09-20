@@ -22,6 +22,7 @@
 #include "ChartObjectHLineDialog.h"
 #include "Config.h"
 #include "ChartObject.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -30,7 +31,7 @@
 
 ChartObjectHLineDialog::ChartObjectHLineDialog ()
 {
-  setWindowTitle(tr("Edit HLine Chart Object"));
+  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit HLine Chart Object"));
 
   createMainPage();
 }

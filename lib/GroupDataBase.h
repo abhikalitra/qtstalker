@@ -22,18 +22,18 @@
 #ifndef GROUP_DATA_BASE_HPP
 #define GROUP_DATA_BASE_HPP
 
-#include <QString>
 #include <QStringList>
 #include <QList>
 
 #include "BarData.h"
 #include "Group.h"
-#include "DataDataBase.h"
+#include "DataBase.h"
 
-class GroupDataBase : public DataDataBase
+class GroupDataBase : public DataBase
 {
   public:
     GroupDataBase ();
+    void init ();
     void getAllGroupsList (QStringList &);
     void getGroup (Group &);
     void deleteGroup (QString &);

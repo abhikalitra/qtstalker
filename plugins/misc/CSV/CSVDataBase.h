@@ -26,9 +26,9 @@
 #include <QStringList>
 
 #include "CSVRule.h"
-#include "DataDataBase.h"
+#include "DataBase.h"
 
-class CSVDataBase : public DataDataBase
+class CSVDataBase : public DataBase
 {
   public:
     CSVDataBase ();

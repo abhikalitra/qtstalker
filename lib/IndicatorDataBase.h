@@ -22,16 +22,16 @@
 #ifndef INDICATOR_DATA_BASE_HPP
 #define INDICATOR_DATA_BASE_HPP
 
-#include <QString>
 #include <QStringList>
 
 #include "Indicator.h"
-#include "DataDataBase.h"
+#include "DataBase.h"
 
-class IndicatorDataBase : public DataDataBase
+class IndicatorDataBase : public DataBase
 {
   public:
     IndicatorDataBase ();
+    void init ();
     void getIndicator (Indicator &);
     void setIndicator (Indicator &);
     void deleteIndicator (QString &);

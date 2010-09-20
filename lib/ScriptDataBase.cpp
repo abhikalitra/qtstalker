@@ -22,9 +22,13 @@
 #include "ScriptDataBase.h"
 
 #include <QDebug>
-#include <QtSql>
 
 ScriptDataBase::ScriptDataBase ()
+{
+  _dbName = "data";
+}
+
+void ScriptDataBase::init ()
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS script (";
@@ -33,30 +37,10 @@ ScriptDataBase::ScriptDataBase ()
   s.append(", comment TEXT"); // 2
   s.append(", lastRun TEXT"); // 3
   s.append(", file TEXT"); // 4
-  s.append(", refresh INT"); // 5 ***** UNUSED *********
-  
-  s.append(", t1 TEXT"); // 6
-  s.append(", t2 TEXT"); // 7
-  s.append(", t3 TEXT"); // 8
-  s.append(", t4 TEXT"); // 9
-  s.append(", t5 TEXT"); // 10
-  
-  s.append(", i1 INT"); // 11
-  s.append(", i2 INT"); // 12
-  s.append(", i3 INT"); // 13
-  s.append(", i4 INT"); // 14
-  s.append(", i5 INT"); // 15
-
-  s.append(", d1 REAL"); // 16
-  s.append(", d2 REAL"); // 17
-  s.append(", d3 REAL"); // 18
-  s.append(", d4 REAL"); // 19
-  s.append(", d5 REAL"); // 20
-
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "ScriptDataBase::ScriptDataBase: " << q.lastError().text();
+    qDebug() << "ScriptDataBase::init: " << q.lastError().text();
 }
 
 void ScriptDataBase::getScripts (QStringList &l)

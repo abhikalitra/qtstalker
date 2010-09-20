@@ -22,12 +22,11 @@
 #ifndef FUTURES_DATA_BASE_HPP
 #define FUTURES_DATA_BASE_HPP
 
-#include <QString>
 #include <QStringList>
 
-#include "DataDataBase.h"
+#include "DataBase.h"
 
-class FuturesDataBase : public DataDataBase
+class FuturesDataBase : public DataBase
 {
   public:
     FuturesDataBase ();

@@ -45,7 +45,7 @@ http://qt.nokia.com/doc/4.5/help-simpletextviewer-assistant-cpp.html
 
 Qtstalker changes are minor configuration and are noted below, and also in the
 project's revision control system.
-CVS $Revision: 1.3 $ $Date: 2010/09/15 23:16:36 $
+CVS $Revision: 1.4 $ $Date: 2010/09/20 20:00:08 $
 */
 
 #include <QtCore/QByteArray>
@@ -54,10 +54,9 @@ CVS $Revision: 1.3 $ $Date: 2010/09/15 23:16:36 $
 #include <QtCore/QProcess>
 
 #include "assistant.h"
-// Qtstalker start changes
 #include "../lib/qtstalker_defines.h"
 #include "Dialog.h"
-// Qtstalker end changes
+#include "Globals.h"
 
 Assistant::Assistant() : proc(0)
 {
@@ -128,7 +127,7 @@ bool Assistant::startAssistant()
     {
 // Qtstalker start changes
       Dialog *dialog = new Dialog(Dialog::_Message, 0);
-      dialog->setWindowTitle(QObject::tr("Qtstalker: Error"));
+      dialog->setWindowTitle("Qtstalker" + g_session + ": " + QObject::tr("Error"));
       dialog->setMessage(QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
       dialog->show();
 // Qtstalker end changes

@@ -59,6 +59,7 @@ class ScriptPage : public QWidget
     void createActions ();
     void startScript ();
     void createButtonMenu (QToolBar *);
+    void updateList ();
 
   public slots:
     void newScript ();
@@ -70,7 +71,7 @@ class ScriptPage : public QWidget
     void listRightClick (const QPoint &);
     void queRightClick (const QPoint &);
     void search ();
-    void search2 (QString, QStringList);
+    void search2 (QString);
     void showAllScripts ();
     void updateQueList ();
     void scriptDone (QString);
@@ -83,15 +84,15 @@ class ScriptPage : public QWidget
     void queStatus ();
 
   protected:
-    QListWidget *list;
-    QListWidget *queList;
-    QMenu *listMenu;
-    QMenu *queMenu;
-    QHash<int, QAction *> actions;
-    QToolButton *allButton;
-    QToolButton *searchButton;
-    QString searchString;
-    QHash<QString, Script *> scripts;
+    QListWidget *_list;
+    QListWidget *_queList;
+    QMenu *_listMenu;
+    QMenu *_queMenu;
+    QHash<int, QAction *> _actions;
+    QToolButton *_allButton;
+    QToolButton *_searchButton;
+    QString _searchString;
+    QHash<QString, Script *> _scripts;
 };
 
 #endif

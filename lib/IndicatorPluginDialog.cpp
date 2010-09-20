@@ -20,6 +20,7 @@
  */
 
 #include "IndicatorPluginDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -31,7 +32,8 @@ IndicatorPluginDialog::IndicatorPluginDialog (Indicator &i) : QDialog (0, 0)
   
   setAttribute(Qt::WA_DeleteOnClose);
 
-  QString s(tr("Edit"));
+  QString s = "Qtstalker" + g_session + ": ";
+  s.append(tr("Edit"));
   s.append(": ");
   s.append(_indicator.name());
   s.append(" ");

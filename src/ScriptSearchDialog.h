@@ -31,7 +31,7 @@ class ScriptSearchDialog : public Dialog
   Q_OBJECT
 
   signals:
-    void signalSearch (QString, QStringList);
+    void signalSearch (QString);
   
   public:
     ScriptSearchDialog ();

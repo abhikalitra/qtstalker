@@ -21,6 +21,7 @@
 
 #include "QuoteServerDialog.h"
 #include "Config.h"
+#include "Globals.h"
 
 #include "../pics/refresh.xpm"
 
@@ -32,7 +33,7 @@
 QuoteServerDialog::QuoteServerDialog () : Dialog (Dialog::_Dialog, 0)
 {
   _oport = 5000;
-  setWindowTitle(tr("Qtstalker: Configure Quote Server"));
+  setWindowTitle("Qtstalker" + g_session + ": " + tr("Configure Quote Server"));
 
   createMainPage();
 }
@@ -93,7 +94,7 @@ void QuoteServerDialog::done ()
   if (hostName.isEmpty())
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Quote Server Error"));
     dialog->setMessage(tr("Hostname missing."));
     dialog->show();
     return;
@@ -121,7 +122,7 @@ void QuoteServerDialog::done ()
     if (rc)
     {
       Dialog *dialog = new Dialog(Dialog::_Message, 0);
-      dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+      dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Quote Server Error"));
       dialog->setMessage(tr("Error stopping the server"));
       dialog->show();
       accept();
@@ -136,7 +137,7 @@ void QuoteServerDialog::done ()
     if (! rc)
     {
       Dialog *dialog = new Dialog(Dialog::_Message, 0);
-      dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+      dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Quote Server Error"));
       dialog->setMessage(tr("Error starting the server"));
       dialog->show();
     }
@@ -148,7 +149,7 @@ void QuoteServerDialog::done ()
 void QuoteServerDialog::refreshServer ()
 {
   Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle(tr("Qtstalker: Refresh Quote Server"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Refresh Quote Server"));
   dialog->setMessage(tr("Are you sure you want to restart the server?"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(refreshServer2()));
   dialog->show();
@@ -161,7 +162,7 @@ void QuoteServerDialog::refreshServer2 ()
   if (rc)
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Quote Server Error"));
     dialog->setMessage(tr("Error stopping the server"));
     dialog->show();
     return;
@@ -175,7 +176,7 @@ void QuoteServerDialog::refreshServer2 ()
   if (! rc)
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Quote Server Error"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Quote Server Error"));
     dialog->setMessage(tr("Error starting the server"));
     dialog->show();
     return;

@@ -31,7 +31,7 @@
 
 ChartObjectBuyDialog::ChartObjectBuyDialog ()
 {
-  setWindowTitle(tr("Edit Buy Chart Object"));
+  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit Buy Chart Object"));
 
   createMainPage();
 }

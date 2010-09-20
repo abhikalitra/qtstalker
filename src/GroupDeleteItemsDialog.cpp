@@ -29,7 +29,7 @@ GroupDeleteItemsDialog::GroupDeleteItemsDialog (QString name) : Dialog (Dialog::
   _group.setName(name);
   _db.getGroup(_group);
   
-  setWindowTitle(tr("QtStalker: Delete Group Items"));
+  setWindowTitle("QtStalker" + g_session + ": " + tr("Delete Group Items"));
 
   createMainPage();
 }
@@ -65,7 +65,7 @@ void GroupDeleteItemsDialog::done ()
   }
 
   Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle(tr("Qtstalker: Delete Group Items"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete Group Items"));
   dialog->setMessage(tr("Are you sure you want to delete selected items?"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(done2()));
   dialog->show();

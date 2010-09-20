@@ -23,14 +23,18 @@
 #include "ChartObjectFactory.h"
 
 #include <QtDebug>
-#include <QtSql>
 
 ChartObjectDataBase::ChartObjectDataBase ()
 {
+  _dbName = "data";
+  
   _fieldList << "id" << "type" << "exchange" << "symbol" << "indicator" << "color" << "date" << "date2";
   _fieldList  << "price" << "price2" << "label" << "font" << "extend" << "high" << "low";
   _fieldList  << "line1" << "line2" << "line3" << "line4" << "line5" << "line6";
-  
+}
+
+void ChartObjectDataBase::init ()
+{
   QSqlQuery q(QSqlDatabase::database(_dbName));
 
   // create index if needed
@@ -169,22 +173,6 @@ void ChartObjectDataBase::getChartObjects (QString &exchange, QString &symbol, Q
     cos.insert(set.id, co);
   }
 }
-
-/*
-void ChartObjectDataBase::getChartObject (QString &sql, QSqlQuery &rq)
-{
-  QSqlQuery q(QSqlDatabase::database(_dbName));
-  q.exec(sql);
-  if (q.lastError().isValid())
-  {
-    qDebug() << q.lastError().text();
-    qDebug() << sql;
-    return;
-  }
-
-  rq = q;
-}
-*/
 
 void ChartObjectDataBase::setChartObject (ChartObjectSettings &d)
 {

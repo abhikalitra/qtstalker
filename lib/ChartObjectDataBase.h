@@ -30,22 +30,21 @@
 
 #include <QStringList>
 #include <QMap>
-#include <QtSql>
 
-#include "DataDataBase.h"
+#include "DataBase.h"
 #include "BarData.h"
 #include "ChartObject.h"
 #include "ChartObjectSettings.h"
 
-class ChartObjectDataBase : public DataDataBase
+class ChartObjectDataBase : public DataBase
 {
   public:
     ChartObjectDataBase ();
+    void init ();
     void deleteChartObjects (BarData *);
     void deleteChartObjectsIndicator (QString &indicator);
     void deleteChartObject (int);
     void getChartObjects (QString &exchange, QString &symbol, QString &iname, QMap<int, ChartObject *> &);
-//    void getChartObject (QString &sql, QSqlQuery &rq);
     void setChartObject (ChartObjectSettings &);
     int renameSymbol (BarData *, BarData *);
 

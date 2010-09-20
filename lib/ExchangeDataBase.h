@@ -28,12 +28,11 @@
 #ifndef EXCHANGE_DATA_BASE_HPP
 #define EXCHANGE_DATA_BASE_HPP
 
-#include <QString>
 #include <QStringList>
 
-#include "DataDataBase.h"
+#include "DataBase.h"
 
-class ExchangeDataBase : public DataDataBase
+class ExchangeDataBase : public DataBase
 {
   public:
     ExchangeDataBase ();
@@ -43,7 +42,6 @@ class ExchangeDataBase : public DataDataBase
     void getFieldList (QString &, QStringList &);
     int search (QString &, QString &, QString &, QStringList &);
     void codeFromName (QString &, QString &);
-//    void searchExchangeDialog (QString &);
 };
 
 #endif

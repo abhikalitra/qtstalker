@@ -22,6 +22,7 @@
 #include "RefreshAction.h"
 #include "Config.h"
 #include "../pics/refresh.xpm"
+#include "Globals.h"
 
 #include <QString>
 #include <QDebug>
@@ -93,7 +94,7 @@ void RefreshAction::refreshUpdated (int minutes)
 void RefreshAction::dialog ()
 {
   QInputDialog *dialog = new QInputDialog;
-  dialog->setWindowTitle(tr("Qtstalker: Set Chart Refresh Timer"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Set Chart Refresh Timer"));
   dialog->setLabelText(tr("Enter refresh rate in minutes"));
   dialog->setInputMode(QInputDialog::IntInput);
   dialog->setIntRange(1, 99);

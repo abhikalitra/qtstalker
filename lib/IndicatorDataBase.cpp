@@ -22,9 +22,12 @@
 #include "IndicatorDataBase.h"
 #include "ChartObjectDataBase.h"
 
-#include <QtSql>
-
 IndicatorDataBase::IndicatorDataBase ()
+{
+  _dbName = "config";
+}
+
+void IndicatorDataBase::init ()
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS indicatorIndex (";
@@ -37,29 +40,10 @@ IndicatorDataBase::IndicatorDataBase ()
   s.append(", cus INT"); // 6
   s.append(", indicator TEXT"); // 7
   s.append(", settings TEXT"); // 8
-
-  s.append(", t1 TEXT"); // 9
-  s.append(", t2 TEXT"); // 10
-  s.append(", t3 TEXT"); // 11
-  s.append(", t4 TEXT"); // 12
-  s.append(", t5 TEXT"); // 13
-
-  s.append(", i1 INT"); // 14
-  s.append(", i2 INT"); // 15
-  s.append(", i3 INT"); // 16
-  s.append(", i4 INT"); // 17
-  s.append(", i5 INT"); // 18
-
-  s.append(", d1 REAL"); // 19
-  s.append(", d2 REAL"); // 20
-  s.append(", d3 REAL"); // 21
-  s.append(", d4 REAL"); // 22
-  s.append(", d5 REAL"); // 23
-
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "IndicatorDataBase::IndicatorDataBase: " << q.lastError().text();
+    qDebug() << "IndicatorDataBase::init: " << q.lastError().text();
 }
 
 void IndicatorDataBase::getIndicator (Indicator &i)

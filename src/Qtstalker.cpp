@@ -36,6 +36,7 @@
 #include "Setup.h"
 #include "QuoteServerRequestThread.h"
 #include "DocsAction.h"
+#include "Globals.h"
 
 #include "../pics/done.xpm"
 #include "../pics/datawindow.xpm"
@@ -68,6 +69,8 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   }
 
   _statusBar->showMessage(tr("Ready"), 2000);
+
+  setWindowTitle(getWindowCaption());
 }
 
 void QtstalkerApp::createGUI (Config &)
@@ -331,6 +334,7 @@ QString QtstalkerApp::getWindowCaption ()
   // update the main window text
 
   QString caption = tr("Qtstalker");
+  caption.append(g_session);
   caption.append(": " + _currentChart.getSymbol());
   if (! _currentChart.getName().isEmpty())
     caption.append(" (" + _currentChart.getName() + ")");
@@ -350,7 +354,7 @@ void QtstalkerApp::dataWindow ()
   // show the datawindow dialog
   DataWindow *dw = new DataWindow(this);
   connect(dw, SIGNAL(finished(int)), dw, SLOT(deleteLater()));
-  dw->setWindowTitle("Indicators - " + getWindowCaption());
+  dw->setWindowTitle(getWindowCaption() + " - " + tr("Indicators"));
   dw->setData(_chartLayout->plots());
   dw->show();
   dw->scrollToBottom();

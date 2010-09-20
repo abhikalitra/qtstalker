@@ -23,6 +23,7 @@
 #include "../pics/help.xpm"
 #include "../pics/qtstalker.xpm"
 #include "Dialog.h"
+#include "Globals.h"
 
 #include <QApplication>
 #include <QDesktopServices>
@@ -79,7 +80,7 @@ void DocsAction::about ()
   versionString += "\nQt Assistant is licensed with GNU General Public License (GPL) version 3.";
 
   Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle(tr("Qtstalker: About"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("About"));
   dialog->setMessage(versionString);
   dialog->show();
 }

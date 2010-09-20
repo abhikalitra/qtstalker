@@ -117,6 +117,8 @@ int Curve::setAllColor (QColor &color)
 {
   if (! color.isValid())
     return 1;
+
+  setColor(color);
   
   QMapIterator<int, CurveBar *> it(_data);
   while (it.hasNext())

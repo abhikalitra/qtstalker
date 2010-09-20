@@ -523,14 +523,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Configure CSV</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Message Log</source>
         <translation type="unfinished"></translation>
     </message>
@@ -566,6 +558,10 @@
         <source>Are you sure you want to delete CSV rule?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Qtstalker: CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CSVRuleDialog</name>
@@ -582,15 +578,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Exchange</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Use filename as symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CSV Rule Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -599,14 +587,6 @@
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -622,23 +602,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Editing CSV Rule </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: CSV Rule Insert Field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select CSV field to insert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Qtstalker: CSV Rule Insert Date Field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Qtstalker: CSV Rule Insert Time Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: CSV Editing Rule </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>S = Stock, F = Futures</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search for exchange code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rule Format</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1008,10 +1008,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add To &amp;Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Show All Symbols</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1020,19 +1016,42 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbol &amp;Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Add symbol to group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Configure Quote Server</source>
+        <source>Configure Quote Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure Quote Server</source>
+        <source>Symbol &amp;Search...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add To &amp;Group...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure Quote Server...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CrossHairsButton</name>
+    <message>
+        <source>Cursor Crosshairs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle the cursor crosshairs. Right click mouse for options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle the cursor crosshairs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Crosshairs Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1088,15 +1107,15 @@ eg. perl -l -T</source>
 <context>
     <name>DateRangeDialog</name>
     <message>
-        <source>Qtstalker: Set Date Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>First Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Last Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Date Range</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1123,7 +1142,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: About</source>
+        <source>About</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1146,10 +1165,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Exchange Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No items found.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1158,12 +1173,16 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Error Exchange Search</source>
+        <source>Invalid search pattern.
+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invalid search pattern.
-</source>
+        <source>Error Exchange Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange Search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1223,16 +1242,12 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select Grid Color</source>
+        <source>Grid Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GroupAddDialog</name>
-    <message>
-        <source>QtStalker: Add To Group</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Groups</source>
         <translation type="unfinished"></translation>
@@ -1241,19 +1256,27 @@ eg. perl -l -T</source>
         <source>Symbol(s) added.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Add To Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GroupDeleteDialog</name>
     <message>
-        <source>QtStalker: Delete Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Group Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Delete Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1264,19 +1287,19 @@ eg. perl -l -T</source>
         <source>Group(s) deleted.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Delete Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Group</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GroupDeleteItemsDialog</name>
     <message>
-        <source>QtStalker: Delete Group Items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Group Contents</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Delete Group Items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1287,13 +1310,13 @@ eg. perl -l -T</source>
         <source>Group Item(s) deleted.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Delete Group Items</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GroupNewDialog</name>
-    <message>
-        <source>QtStalker: New Group</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Group Name</source>
         <translation type="unfinished"></translation>
@@ -1311,7 +1334,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Error New Group</source>
+        <source>New Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error New Group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1322,23 +1349,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;New Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Group Items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>De&amp;lete Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Create a new group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Add To Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1351,6 +1362,22 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Delete group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Group...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Add To Group...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Group Items...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>De&amp;lete Group...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1440,15 +1467,7 @@ eg. perl -l -T</source>
 <context>
     <name>IndicatorDeleteDialog</name>
     <message>
-        <source>QtStalker: Delete Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Delete Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1459,13 +1478,13 @@ eg. perl -l -T</source>
         <source>Indicators deleted.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Delete Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IndicatorDialog</name>
-    <message>
-        <source>QtStalker: New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Method</source>
         <translation type="unfinished"></translation>
@@ -1495,7 +1514,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Error New Indicator</source>
+        <source>New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error New Indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1876,24 +1899,12 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Set Bar Spacing Button</source>
+        <source>Set Bar Spacing Button</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Plot</name>
-    <message>
-        <source>&amp;New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit &amp;Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>De&amp;lete Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Delete &amp;All Chart Objects</source>
         <translation type="unfinished"></translation>
@@ -1904,14 +1915,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Log &amp;Scaling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Background Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1951,7 +1954,35 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Delete All Chart Objects</source>
+        <source>&amp;New Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit &amp;Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>De&amp;lete Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Background Color...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Font...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete All Chart Objects</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1989,11 +2020,11 @@ eg. perl -l -T</source>
 <context>
     <name>PluginPage</name>
     <message>
-        <source>&amp;Configure Plugin</source>
+        <source>Configure plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure plugin</source>
+        <source>&amp;Configure Plugin...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2196,7 +2227,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Error</source>
+        <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2353,15 +2384,15 @@ eg. perl -l -T</source>
         <source>Add a new indicator</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QuoteServerDialog</name>
     <message>
         <source>Quote server hostname</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>default 127.0.0.1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2397,11 +2428,23 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Quote Server Error</source>
+        <source>Default: 127.0.0.1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Refresh Quote Server</source>
+        <source>Default: 5000</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quote Server Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Quote Server</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2517,7 +2560,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Set Chart Refresh Timer</source>
+        <source>Set Chart Refresh Timer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2718,15 +2761,7 @@ eg. perl -l -T</source>
 <context>
     <name>ScriptDeleteDialog</name>
     <message>
-        <source>QtStalker: Delete Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Delete Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2737,17 +2772,17 @@ eg. perl -l -T</source>
         <source>Scripts deleted.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Delete Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Script</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptDialog</name>
-    <message>
-        <source>Qtstalker: Edit Script </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Run Script</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Command</source>
         <translation type="unfinished"></translation>
@@ -2776,6 +2811,18 @@ eg. perl -l -T</source>
         <source>saved</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Edit Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptLaunchButton</name>
@@ -2788,26 +2835,26 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Configure Script Launcher</source>
+        <source>Configure Script Launcher</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ScriptNewDialog</name>
     <message>
-        <source>QtStalker: New Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Error New Script</source>
+        <source>A script with this name already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A script with this name already exists.</source>
+        <source>New Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error New Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2823,18 +2870,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Are you sure you want to execute this script?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;New Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2867,10 +2902,6 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit Script</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2887,32 +2918,44 @@ Are you sure you want to remove this script?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Run Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Run script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Run Script</source>
+        <source>&amp;Search...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Stop running script</source>
+        <source>&amp;New Script...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Error run script</source>
+        <source>&amp;Edit Script...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Script...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Run Script...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop running script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error run script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ScriptSearchDialog</name>
-    <message>
-        <source>QtStalker: Search Script</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Script Name</source>
         <translation type="unfinished"></translation>
@@ -2920,6 +2963,10 @@ Are you sure you want to remove this script?</source>
     <message>
         <source>Enter either a specific name like MyScript or
 a partial match like %Script or %Scr%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2963,14 +3010,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbols Selected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Items modified. Are you sure you want to discard changes?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbols</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2995,15 +3034,7 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add selected symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove selected symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Symbol Search</source>
+        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3153,10 +3184,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Chart Tab Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Position</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3174,6 +3201,10 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>East / West Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Tab Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3567,10 +3598,6 @@ a partial match like %Script or %Scr%</source>
 <context>
     <name>YahooDialog</name>
     <message>
-        <source>Configure Yahoo</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Start Date</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3587,15 +3614,7 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;History</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Download historical quotes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3604,10 +3623,6 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Starting history download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3626,31 +3641,31 @@ a partial match like %Script or %Scr%</source>
         <source>Symbols...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Qtstalker: Yahoo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Uses the yahoo adjusted close instead of the actual close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Details</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>YahooSymbolDialog</name>
-    <message>
-        <source>Yahoo: Edit Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Yahoo Symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3667,6 +3682,14 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Qtstalker: Yahoo Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qtstalker: Yahoo Edit Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

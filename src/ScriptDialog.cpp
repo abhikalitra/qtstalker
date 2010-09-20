@@ -30,15 +30,21 @@
 
 ScriptDialog::ScriptDialog (QString name) : Dialog (Dialog::_Dialog, 0)
 {
+  QString cap = "Qtstalker" + g_session + ": ";
+  
   if (! name.isEmpty())
   {
     _script.setName(name);
     _db.getScript(&_script);
 
-    setWindowTitle(tr("Qtstalker: Edit Script ") + name);
+    cap.append(tr("Edit Script") + " " + name);
+    setWindowTitle(cap);
   }
   else
-    setWindowTitle(tr("Qtstalker: Run Script"));
+  {
+    cap.append(tr("Run Script"));
+    setWindowTitle(cap);
+  }
 
   createMainPage();
 }

@@ -22,10 +22,11 @@
 #include "YahooDataBase.h"
 
 #include <QtDebug>
-#include <QtSql>
 
 YahooDataBase::YahooDataBase ()
 {
+  _dbName = "data";
+  
   // create the table
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS YahooPlugin (";

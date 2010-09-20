@@ -31,9 +31,9 @@
 
 #include <QString>
 
-#include "BaseConfig.h"
+#include "ConfigDataBase.h"
 
-class Config : public BaseConfig
+class Config : public ConfigDataBase
 {
   public:
     enum Parm
@@ -81,7 +81,7 @@ class Config : public BaseConfig
       FuturesFileDate,   // the file size of /docs/futures.csv
       CrossHairsColor, // crosshairs color
       SidePanelLastPage, // the last side panel page displayed
-      ChartTabEastWestHeight, // ************* UNUSED *****************
+      LastScriptSearch, // the last used script search string
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel
       ScriptLaunchButton3, // script panel launch button 3
       ScriptLaunchButton4, // script panel launch button 4
@@ -96,7 +96,7 @@ class Config : public BaseConfig
       DefaultSymbol, // default symbol flag used in Setup::
       MiscPluginPath, // path to the misc plugins
       MiscPluginList,  // csv list of current misc plugins from startup inventory
-      UNUSED5, // ******** UNUSED *************
+      UNUSED5, // *********** UNUSED ****************
       UNUSED6, // ********* UNUSED *************
       UNUSED7, // ******** UNUSED *************
       RefreshStatus, // status of the refresh chart toggle button
@@ -134,7 +134,7 @@ class Config : public BaseConfig
     };
 
     Config ();
-    void init (QString session); // called only at qtstalker startup, initializes tables
+    void init (); // called only at qtstalker startup, initializes tables
 };
 
 #endif

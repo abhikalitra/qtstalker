@@ -38,7 +38,7 @@ GroupAddDialog::GroupAddDialog (Group group) : Dialog (Dialog::_Dialog, 0)
 {
   _group = group;
   
-  setWindowTitle(tr("QtStalker: Add To Group"));
+  setWindowTitle("QtStalker" + g_session + ": " + tr("Add To Group"));
 
   createMainPage();
 }

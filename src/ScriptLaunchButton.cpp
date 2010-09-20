@@ -22,7 +22,7 @@
 #include "ScriptLaunchButton.h"
 #include "Config.h"
 #include "ScriptDataBase.h"
-
+#include "Globals.h"
 #include "../pics/configure.xpm"
 
 #include <QPixmap>
@@ -77,7 +77,7 @@ void ScriptLaunchButton::configure ()
   db.getScripts(l);
 
   QInputDialog *dialog = new QInputDialog;
-  dialog->setWindowTitle(tr("Qtstalker: Configure Script Launcher"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Configure Script Launcher"));
   dialog->setLabelText(tr("Script"));
   dialog->setInputMode(QInputDialog::TextInput);
   dialog->setComboBoxEditable(FALSE);

@@ -21,13 +21,14 @@
 
 #include "ScriptNewDialog.h"
 #include "ScriptDataBase.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLabel>
 
 ScriptNewDialog::ScriptNewDialog () : Dialog (Dialog::_Dialog, 0)
 {
-  setWindowTitle(tr("QtStalker: New Script"));
+  setWindowTitle("QtStalker" + g_session + ": " + tr("New Script"));
 
   createMainPage();
 }
@@ -65,7 +66,7 @@ void ScriptNewDialog::done ()
   if (l.contains(name))
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Error New Script"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error New Script"));
     dialog->setMessage(tr("A script with this name already exists."));
     dialog->show();
     return;

@@ -22,6 +22,7 @@
 #include "ChartObjectTextDialog.h"
 #include "Config.h"
 #include "ChartObject.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -30,7 +31,7 @@
 
 ChartObjectTextDialog::ChartObjectTextDialog ()
 {
-  setWindowTitle(tr("Edit Text Chart Object"));
+  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit Text Chart Object"));
 
   createMainPage();
 }

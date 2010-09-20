@@ -22,6 +22,7 @@
 #include "CrossHairsButton.h"
 #include "Config.h"
 #include "../pics/crosshair.xpm"
+#include "Globals.h"
 
 #include <QString>
 #include <QDebug>
@@ -68,7 +69,7 @@ void CrossHairsButton::changed (bool status)
 void CrossHairsButton::dialog ()
 {
   QColorDialog *dialog = new QColorDialog(_color, this);
-  dialog->setWindowTitle(tr("Qtstalker: Crosshairs Color"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Crosshairs Color"));
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(setColor(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();

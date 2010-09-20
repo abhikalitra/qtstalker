@@ -21,6 +21,7 @@
 
 #include "TabWidgetDialog.h"
 #include "Config.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -34,7 +35,7 @@ TabWidgetDialog::TabWidgetDialog (QString id) : QDialog (0, 0)
   
   setAttribute(Qt::WA_DeleteOnClose);
   
-  setWindowTitle(tr("Qtstalker: Chart Tab Settings"));
+  setWindowTitle("Qtstalker" + g_session + ": " + tr("Chart Tab Settings"));
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(10);

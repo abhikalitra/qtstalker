@@ -27,6 +27,7 @@
 #define DATABASE_HPP
 
 #include <QString>
+#include <QtSql>
 
 class DataBase
 {
@@ -35,6 +36,7 @@ class DataBase
     void transaction ();
     void commit ();
     int command (QString &, QString);
+    void create (QString);
     
   protected:
     QString _dbName;

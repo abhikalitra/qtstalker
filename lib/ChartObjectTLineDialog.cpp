@@ -31,7 +31,7 @@
 
 ChartObjectTLineDialog::ChartObjectTLineDialog ()
 {
-  setWindowTitle(tr("Edit TLine Chart Object"));
+  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit TLine Chart Object"));
 
   createMainPage();
 }

@@ -25,9 +25,9 @@
 
 #include <QString>
 
-#include "BaseConfig.h"
+#include "ConfigDataBase.h"
 
-class YahooConfig : public BaseConfig
+class YahooConfig : public ConfigDataBase
 {
   public:
     enum Parm

@@ -25,6 +25,7 @@
 #include "IndicatorPluginFactory.h"
 #include "IndicatorPlugin.h"
 #include "Dialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -35,7 +36,7 @@ IndicatorDialog::IndicatorDialog () : QDialog (0, 0)
 {
   setAttribute(Qt::WA_DeleteOnClose);
   
-  setWindowTitle(tr("QtStalker: New Indicator"));
+  setWindowTitle("QtStalker" + g_session + ": " + tr("New Indicator"));
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(10);
@@ -112,7 +113,7 @@ void IndicatorDialog::done ()
   if (_name->text().isEmpty())
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Error New Indicator"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error New Indicator"));
     dialog->setMessage(tr("Name missing."));
     dialog->show();
     return;
@@ -125,7 +126,7 @@ void IndicatorDialog::done ()
   if (l.indexOf(_name->text()) != -1)
   {
     Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Error New Indicator"));
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error New Indicator"));
     dialog->setMessage(tr("This indicator already exists."));
     dialog->show();
     return;

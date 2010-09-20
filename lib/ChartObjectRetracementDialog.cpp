@@ -22,6 +22,7 @@
 #include "ChartObjectRetracementDialog.h"
 #include "Config.h"
 #include "ChartObject.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -30,7 +31,7 @@
 
 ChartObjectRetracementDialog::ChartObjectRetracementDialog ()
 {
-  setWindowTitle(tr("Edit Retracement Chart Object"));
+  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit Retracement Chart Object"));
 
   createMainPage();
   createLinePage();

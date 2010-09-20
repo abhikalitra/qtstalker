@@ -22,7 +22,6 @@
 #include "CSVConfig.h"
 
 #include <QtDebug>
-#include <QtSql>
 
 CSVConfig::CSVConfig ()
 {

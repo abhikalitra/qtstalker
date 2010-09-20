@@ -22,6 +22,7 @@
 #include "GridAction.h"
 #include "Config.h"
 #include "../pics/grid.xpm"
+#include "Globals.h"
 
 #include <QColorDialog>
 
@@ -65,7 +66,7 @@ void GridAction::changed (bool status)
 void GridAction::colorDialog ()
 {
   QColorDialog *dialog = new QColorDialog(_color, this);
-  dialog->setWindowTitle(tr("Qtstalker: Grid Color"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Grid Color"));
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(setColor(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();

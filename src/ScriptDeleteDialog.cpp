@@ -27,7 +27,7 @@
 
 ScriptDeleteDialog::ScriptDeleteDialog () : Dialog (Dialog::_Dialog, 0)
 {
-  setWindowTitle(tr("QtStalker: Delete Scripts"));
+  setWindowTitle("QtStalker" + g_session + ": " + tr("Delete Scripts"));
 
   createMainPage();
 }
@@ -63,7 +63,7 @@ void ScriptDeleteDialog::done ()
   }
 
   Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle(tr("Qtstalker: Delete Script"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete Script"));
   dialog->setMessage(tr("Are you sure you want to delete selected scripts?"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(done2()));
   dialog->show();

@@ -21,6 +21,7 @@
 
 #include "PixelSpaceButton.h"
 #include "Config.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <QString>
@@ -79,7 +80,7 @@ void PixelSpaceButton::setPixelSpace (int d)
 void PixelSpaceButton::dialog ()
 {
   QInputDialog *dialog = new QInputDialog;
-  dialog->setWindowTitle(tr("Qtstalker: Set Bar Spacing Button"));
+  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Set Bar Spacing Button"));
   dialog->setLabelText(tr("Enter bar spacing"));
   dialog->setInputMode(QInputDialog::IntInput);
   dialog->setIntRange(6, 99);

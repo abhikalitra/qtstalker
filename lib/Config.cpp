@@ -21,30 +21,14 @@
 
 #include "Config.h"
 
-#include <QDir>
-#include <QtSql>
-
 Config::Config ()
 {
-//  version = "0.37";
 }
 
-void Config::init (QString session)
+void Config::init ()
 {
-  QString s = QDir::homePath() + "/.qtstalker/config.sqlite" + session;
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", _dbName);
-  db.setHostName("me");
-  db.setDatabaseName(s);
-  db.setUserName("QtStalker");
-  db.setPassword("QtStalker");
-  if (! db.open())
-  {
-    qDebug() << "Config::Config:" << db.lastError().text();
-    return;
-  }
-
-  QSqlQuery q(db);
-  s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
+  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
   s.append("key TEXT PRIMARY KEY UNIQUE");
   s.append(", setting TEXT");
   s.append(")");

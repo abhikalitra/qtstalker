@@ -25,9 +25,9 @@
 #include <QString>
 #include <QStringList>
 
-#include "DataDataBase.h"
+#include "DataBase.h"
 
-class YahooDataBase : public DataDataBase
+class YahooDataBase : public DataBase
 {
   public:
     YahooDataBase ();
