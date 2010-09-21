@@ -1,18 +1,19 @@
-
 exists(.qmake.cache) {
-  message("Using .qmake.cache")
+  message("Using the existing .qmake.cache")
 }
 else {
   message("Doing automated configuration ...")
 
   unix {
     MY_OS += "unix"
-    INCLUDEPATH += /usr/include/qt4/Qt
-    exists(/usr/local/include/ta-lib) {
-      INCLUDEPATH += /usr/local/include/ta-lib
+    exists(/usr/include/qt4/Qt) {
+      INCLUDEPATH += /usr/include/qt4/Qt
     }
     exists(/usr/include/ta-lib) {
       INCLUDEPATH += /usr/include/ta-lib
+    }
+    exists(/usr/local/include/ta-lib) {
+      INCLUDEPATH += /usr/local/include/ta-lib
     }
   }
 
@@ -43,13 +44,16 @@ else {
     }
   }
 
-  message("Using INCLUDEPATH=$$INCLUDEPATH")
-  message("Using LIBS=$$LIBS")
+  message("Initial INCLUDEPATH=$$INCLUDEPATH")
+  message("Initial LIBS=$$LIBS")
 
   !exists(qtstalker.config) {
-	error("Missing configuration file qtstalker.config")
+    error("Missing configuration file qtstalker.config")
   }
-	include(qtstalker.config)
+  else {
+    message("Including qtstalker.config")
+    include(qtstalker.config)
+  }
 
   INCLUDEPATH = $$unique(INCLUDEPATH)
   LIBS = $$unique(LIBS)
