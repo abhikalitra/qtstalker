@@ -32,14 +32,14 @@ VFI::VFI ()
   _indicator = "VFI";
 }
 
-int VFI::getIndicator (Indicator &ind, BarData &data)
+int VFI::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
   int period = settings.getInt(Period);
 
   FunctionVFI f;
-  Curve *line = f.calculate(data, period);
+  Curve *line = f.calculate(period);
   if (! line)
     return 1;
 
@@ -60,10 +60,10 @@ int VFI::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int VFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int VFI::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionVFI f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * VFI::dialog (Indicator &i)

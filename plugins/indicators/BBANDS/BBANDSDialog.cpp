@@ -24,6 +24,7 @@
 #include "Curve.h"
 #include "BBANDS.h"
 #include "IndicatorDataBase.h"
+#include "BarData.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -365,7 +366,9 @@ void BBANDSDialog::done ()
   _indicator.setSettings(_settings);
 
   IndicatorDataBase db;
+  db.transaction();
   db.setIndicator(_indicator);
+  db.commit();
 
   emit signalDone(_indicator);
 

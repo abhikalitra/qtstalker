@@ -31,7 +31,7 @@ AROON::AROON ()
   _indicator = "AROON";
 }
 
-int AROON::getIndicator (Indicator &ind, BarData &data)
+int AROON::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -48,7 +48,7 @@ int AROON::getIndicator (Indicator &ind, BarData &data)
   {
     case FunctionAROON::_AROONOSC:
     {
-      Curve *line = f.getAROONOSC(data, period);
+      Curve *line = f.getAROONOSC(period);
       if (! line)
         return 1;
 
@@ -69,7 +69,7 @@ int AROON::getIndicator (Indicator &ind, BarData &data)
     default:
     {
       QList<Curve *> pl;
-      if (f.getAROON(data, period, pl))
+      if (f.getAROON(period, pl))
         return 1;
 
       Curve *line = pl.at(0);
@@ -108,10 +108,10 @@ int AROON::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int AROON::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int AROON::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionAROON f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * AROON::dialog (Indicator &i)

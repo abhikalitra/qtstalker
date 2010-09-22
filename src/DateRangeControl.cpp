@@ -22,7 +22,6 @@
 #include "DateRangeControl.h"
 #include "Config.h"
 #include "DateRange.h"
-
 #include "../pics/prev.xpm"
 #include "../pics/next.xpm"
 
@@ -57,12 +56,18 @@ void DateRangeControl::createButtons (QToolBar *tb)
   _ranges->setStatusTip(QString(tr("Date Range")));
   _ranges->addItems(l);
   _ranges->setCurrentIndex(5); // 1 year default
+  
   QString s;
   config.getData(Config::LastDateRange, s);
   if (s.isEmpty())
+  {
+    config.transaction();
     config.setData(Config::LastDateRange, _ranges->currentIndex());
+    config.commit();
+  }
   else
     _ranges->setCurrentIndex(s.toInt());
+  
   _ranges->setMaxVisibleItems(l.count());
   connect(_ranges, SIGNAL(currentIndexChanged(int)), this, SLOT(rangeChanged(int)));
   tb->addWidget(_ranges);
@@ -108,7 +113,10 @@ void DateRangeControl::nextRange ()
 void DateRangeControl::rangeChanged (int d)
 {
   Config config;
+  config.transaction();
   config.setData(Config::LastDateRange, d);
+  config.commit();
+  
   buttonStatus();
 
   emit signalDateRangeChanged();

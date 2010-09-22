@@ -36,7 +36,7 @@ SZ::SZ ()
   _indicator = "SZ";
 }
 
-int SZ::getIndicator (Indicator &ind, BarData &data)
+int SZ::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -55,14 +55,14 @@ int SZ::getIndicator (Indicator &ind, BarData &data)
   QColor down("red");
   QColor neutral("blue");
   FunctionBARS b;
-  Curve *bars = b.getBARS(data, up, down, neutral);
+  Curve *bars = b.getBARS(up, down, neutral);
   if (bars)
   {
     bars->setZ(0);
     ind.setLine(0, bars);
   }
 
-  Curve *line = f.calculate(data, method, period, ndperiod, coeff);
+  Curve *line = f.calculate(method, period, ndperiod, coeff);
   if (! line)
     return 1;
 
@@ -82,10 +82,10 @@ int SZ::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int SZ::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int SZ::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionSZ f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * SZ::dialog (Indicator &i)

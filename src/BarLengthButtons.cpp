@@ -55,13 +55,19 @@ void BarLengthButtons::createButtons (QToolBar *tb)
   _lengths->setStatusTip(QString(tr("Bar Length")));
   _lengths->addItems(l);
   _lengths->setCurrentIndex(6); // daily default
+  
   QString s;
   Config config;
   config.getData(Config::BarLength, s);
   if (s.isEmpty())
+  {
+    config.transaction();
     config.setData(Config::BarLength, _lengths->currentIndex());
+    config.commit();
+  }
   else
     _lengths->setCurrentIndex(s.toInt());
+  
   _lengths->setMaxVisibleItems(l.count());
   connect(_lengths, SIGNAL(currentIndexChanged(int)), this, SLOT(lengthChanged(int)));
   tb->addWidget(_lengths);
@@ -107,7 +113,10 @@ void BarLengthButtons::nextLength ()
 void BarLengthButtons::lengthChanged (int d)
 {
   Config config;
+  config.transaction();
   config.setData(Config::BarLength, d);
+  config.commit();
+  
   buttonStatus();
 
   emit signalBarLengthChanged(d);

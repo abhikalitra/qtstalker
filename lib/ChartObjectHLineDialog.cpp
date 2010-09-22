@@ -93,7 +93,9 @@ void ChartObjectHLineDialog::done ()
   if (_default->isChecked())
   {
     Config config;
+    config.transaction();
     config.setData((int) Config::DefaultChartObjectHLineColor, _color->color());
+    config.commit();
   }
 
   _settings.color = _color->color();

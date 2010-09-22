@@ -24,10 +24,8 @@
 
 #include <QStringList>
 #include <QByteArray>
-#include <QHash>
 
 #include "Indicator.h"
-#include "BarData.h"
 
 class SCChartObject
 {
@@ -38,7 +36,7 @@ class SCChartObject
     };
     
     SCChartObject ();
-    int calculate (QStringList &, QByteArray &, Indicator &, BarData &);
+    int calculate (QStringList &, QByteArray &, Indicator &);
 };
 
 #endif

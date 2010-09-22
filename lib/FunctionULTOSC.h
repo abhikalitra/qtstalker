@@ -25,15 +25,14 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionULTOSC
 {
   public:
     FunctionULTOSC ();
-    int script (QStringList &, Indicator &, BarData &);
-    Curve * calculate (BarData &data, int sp, int mp, int lp);
+    int script (QStringList &, Indicator &);
+    Curve * calculate (int sp, int mp, int lp);
 };
 
 #endif

@@ -31,7 +31,10 @@ IndicatorPluginFactory::IndicatorPluginFactory ()
   if (_path.isEmpty())
   {
     _path = "/usr/local/lib/qtstalker/plugins/indicator";
+    
+    config.transaction();
     config.setData(Config::IndicatorPluginPath, _path);
+    config.commit();
   }
 }
 
@@ -70,6 +73,8 @@ void IndicatorPluginFactory::setPluginList ()
   getPluginList(_path, l);
 
   Config config;
+  config.transaction();
   config.setData(Config::IndicatorPluginList, l);
+  config.commit();
 }
 

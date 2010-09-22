@@ -20,10 +20,9 @@
  */
 
 #include "GroupAddDialog.h"
-#include "Globals.h"
 #include "GroupNewDialog.h"
 #include "SymbolDialog.h"
-
+#include "Globals.h"
 #include "../pics/newchart.xpm"
 #include "../pics/search.xpm"
 
@@ -116,11 +115,9 @@ void GroupAddDialog::done ()
     g.setSymbol(bd);
   }
     
-  g_mutex.lock();
   _db.transaction();
   _db.setGroup(g);
   _db.commit();
-  g_mutex.unlock();
 
   emit signalMessage(QString(tr("Symbol(s) added.")));
   

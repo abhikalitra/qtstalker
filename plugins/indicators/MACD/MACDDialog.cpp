@@ -24,6 +24,7 @@
 #include "Curve.h"
 #include "IndicatorDataBase.h"
 #include "MACD.h"
+#include "BarData.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -325,7 +326,9 @@ void MACDDialog::done ()
   _indicator.setSettings(_settings);
 
   IndicatorDataBase db;
+  db.transaction();
   db.setIndicator(_indicator);
+  db.commit();
 
   emit signalDone(_indicator);
 

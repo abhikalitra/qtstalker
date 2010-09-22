@@ -22,6 +22,7 @@
 #include "FunctionSTOCH.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +30,7 @@ FunctionSTOCH::FunctionSTOCH ()
 {
 }
 
-int FunctionSTOCH::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionSTOCH::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,STOCH,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>
   //     0        1    2         3            4              5             6              7 
@@ -78,7 +79,7 @@ int FunctionSTOCH::script (QStringList &set, Indicator &ind, BarData &data)
   }
 
   QList<Curve *> pl;
-  if (calculate(data, fkp, fdp, ma, pl))
+  if (calculate(fkp, fdp, ma, pl))
     return 1;
 
   Curve *line = pl.at(0);
@@ -92,34 +93,23 @@ int FunctionSTOCH::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-int FunctionSTOCH::calculate (BarData &data, int kperiod, int dperiod, int ma, QList<Curve *> &pl)
+int FunctionSTOCH::calculate (int kperiod, int dperiod, int ma, QList<Curve *> &pl)
 {
-  if (data.count() < kperiod || data.count() < dperiod)
+  int size = g_barData.count();
+  
+  if (size < kperiod || size < dperiod)
     return 1;
 
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
   TA_Real out[size];
   TA_Real out2[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
-
   TA_RetCode rc = TA_STOCHF(0,
                             size - 1,
-                            &high[0],
-                            &low[0],
-                            &close[0],
+                            g_barData.getTAData(BarData::High),
+                            g_barData.getTAData(BarData::Low),
+                            g_barData.getTAData(BarData::Close),
                             kperiod,
                             dperiod,
                             (TA_MAType) ma,

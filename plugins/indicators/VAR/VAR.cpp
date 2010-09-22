@@ -23,6 +23,7 @@
 #include "VARDialog.h"
 #include "FunctionVAR.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -31,13 +32,13 @@ VAR::VAR ()
   _indicator = "VAR";
 }
 
-int VAR::getIndicator (Indicator &ind, BarData &data)
+int VAR::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = data.getInput(data.getInputType(s));
+  Curve *in = g_barData.getInput(g_barData.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -72,10 +73,10 @@ int VAR::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int VAR::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int VAR::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionVAR f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * VAR::dialog (Indicator &i)

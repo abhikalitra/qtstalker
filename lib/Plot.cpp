@@ -165,11 +165,9 @@ void Plot::clear ()
   QwtPlot::clear();
 }
 
-void Plot::setDates (BarData &bd)
+void Plot::setDates ()
 {
-  _exchange = bd.getExchange();
-  _symbol = bd.getSymbol();
-  _dateScaleDraw->setDates(bd);
+  _dateScaleDraw->setDates();
 }
 
 void Plot::setIndicator (QString &d)
@@ -239,6 +237,8 @@ void Plot::addCurve (QString id, Curve *curve)
       CurveBar *bar = curve->bar(0);
       if (! bar)
         break;
+
+      _curves.insert(id, curve);
 
       QwtPlotMarker *line = new QwtPlotMarker;
       line->setYValue(bar->data());
@@ -464,7 +464,10 @@ void Plot::toggleDate ()
     status = 1;
 
   i.setDate(status);
+
+  db.transaction();
   db.setIndicator(i);
+  db.commit();
 
   showDate(status);
 }
@@ -483,7 +486,10 @@ void Plot::toggleLog ()
     status = 1;
 
   i.setLog(status);
+  
+  db.transaction();
   db.setIndicator(i);
+  db.commit();
 
   setLogScaling(status);
 }
@@ -572,9 +578,9 @@ void Plot::deleteAllChartObjects ()
 void Plot::deleteAllChartObjects2 ()
 {
   ChartObjectDataBase db;
-  g_mutex.lock();
+  db.transaction();
   db.deleteChartObjectsIndicator(_indicator);
-  g_mutex.unlock();
+  db.commit();
 
   qDeleteAll(_chartObjects);
   _chartObjects.clear();
@@ -594,11 +600,14 @@ void Plot::chartObjectMenuSelected (QAction *a)
   
   Config config;
   QString d = QString::number(config.getInt(Config::LastChartObjectID) + 1);
+  config.transaction();
   config.setData(Config::LastChartObjectID, d);
+  config.commit();
+  
   set.id = d.toInt();
 
-  set.exchange = _exchange;
-  set.symbol = _symbol;
+  set.exchange = g_barData.getExchange();
+  set.symbol = g_barData.getSymbol();
   set.indicator = _indicator;
 
   co->setSettings(set);
@@ -626,7 +635,7 @@ void Plot::deleteChartObject (int id)
 void Plot::loadChartObjects ()
 {
   ChartObjectDataBase db;
-  db.getChartObjects(_exchange, _symbol, _indicator, _chartObjects);
+  db.getChartObjects(g_barData.getExchange(), g_barData.getSymbol(), _indicator, _chartObjects);
 
   QList<int> keys;
   keys = _chartObjects.keys();
@@ -694,7 +703,6 @@ void Plot::saveChartObjects ()
   keys = _chartObjects.keys();
 
   ChartObjectDataBase db;
-  g_mutex.lock();
   db.transaction();
 
   int loop = 0;
@@ -710,6 +718,5 @@ void Plot::saveChartObjects ()
   }
 
   db.commit();
-  g_mutex.unlock();
 }
 

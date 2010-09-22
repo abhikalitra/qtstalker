@@ -68,8 +68,6 @@ void ChartObjectDataBase::init ()
 
 void ChartObjectDataBase::deleteChartObjects (BarData *bd)
 {
-  transaction();
-
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM chartObjectIndex";
   s.append(" WHERE exchange='" + bd->getExchange() + "'");
@@ -80,14 +78,10 @@ void ChartObjectDataBase::deleteChartObjects (BarData *bd)
     qDebug() << "ChartObjectDataBase::deleteChartObjects: " << q.lastError().text();
     return;
   }
-
-  commit();
 }
 
 void ChartObjectDataBase::deleteChartObjectsIndicator (QString &indicator)
 {
-  transaction();
-
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM chartObjectIndex";
   s.append(" WHERE indicator='" + indicator + "'");
@@ -97,21 +91,15 @@ void ChartObjectDataBase::deleteChartObjectsIndicator (QString &indicator)
     qDebug() << "ChartObjectDataBase::deleteChartObjectsIndicator: " << q.lastError().text();
     return;
   }
-
-  commit();
 }
 
 void ChartObjectDataBase::deleteChartObject (int id)
 {
-  transaction();
-
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM chartObjectIndex WHERE id=" + QString::number(id);
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ChartObjectDataBase::deleteChartObject: " << q.lastError().text();
-
-  commit();
 }
 
 void ChartObjectDataBase::getChartObjects (QString &exchange, QString &symbol, QString &iname,
@@ -230,12 +218,8 @@ int ChartObjectDataBase::renameSymbol (BarData *obd, BarData *nbd)
   s.append(" WHERE symbol='" + obd->getSymbol() + "'");
   s.append(" AND exchange='" + obd->getExchange() + "'");
 
-  transaction();
-
   if (command(s, QString("ChartObjectDataBase::renameSymbol")))
     return 1;
-  
-  commit();
   
   return 0;
 }

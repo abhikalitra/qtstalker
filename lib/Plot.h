@@ -34,7 +34,6 @@
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
 
-#include "BarData.h"
 #include "DateScaleDraw.h"
 #include "PlotScaleDraw.h"
 #include "Curve.h"
@@ -63,7 +62,7 @@ class Plot : public QwtPlot
     Plot ();
     ~Plot ();
     void updatePlot ();
-    void setDates (BarData &);
+    void setDates ();
     void addCurve (QString id, Curve *);
     void addCurves (QHash<QString, Curve *> &);
     void setIndicator (QString &);
@@ -121,8 +120,6 @@ class Plot : public QwtPlot
     QMenu *_coListMenu;
     PlotPicker *_picker;
     QString _indicator;
-    QString _exchange;
-    QString _symbol;
     double _high;
     double _low;
     int _startPos;
@@ -131,5 +128,4 @@ class Plot : public QwtPlot
 };
 
 #endif
-
 

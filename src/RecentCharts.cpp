@@ -70,7 +70,9 @@ void RecentCharts::save ()
   _group.getStringList(l);
 
   Config config;
+  config.transaction();
   config.setData(Config::RecentChartsList, l);
+  config.commit();
 }
 
 void RecentCharts::load ()

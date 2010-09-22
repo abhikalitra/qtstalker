@@ -21,6 +21,7 @@
 
 #include "FunctionCORREL.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -28,7 +29,7 @@ FunctionCORREL::FunctionCORREL ()
 {
 }
 
-int FunctionCORREL::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionCORREL::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,CORREL,<NAME>,<INPUT_1>,<INPUT_2>,<PERIOD>
   //      0      1       2     3        4        5          6 
@@ -49,7 +50,7 @@ int FunctionCORREL::script (QStringList &set, Indicator &ind, BarData &data)
   Curve *in = ind.line(set[4]);
   if (! in)
   {
-    in = data.getInput(data.getInputType(set[4]));
+    in = g_barData.getInput(g_barData.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionCORREL::script: input not found" << set[4];
@@ -62,7 +63,7 @@ int FunctionCORREL::script (QStringList &set, Indicator &ind, BarData &data)
   Curve *in2 = ind.line(set[5]);
   if (! in2)
   {
-    in2 = data.getInput(data.getInputType(set[5]));
+    in2 = g_barData.getInput(g_barData.getInputType(set[5]));
     if (! in2)
     {
       qDebug() << "FunctionCORREL::script: input not found" << set[5];

@@ -24,6 +24,7 @@
 #include "VOLDialog.h"
 #include "PlotOHLC.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,7 +33,7 @@ VOL::VOL ()
   _indicator = "VOL";
 }
 
-int VOL::getIndicator (Indicator &ind, BarData &data)
+int VOL::getIndicator (Indicator &ind)
 {
   Setting set = ind.settings();
   
@@ -46,7 +47,7 @@ int VOL::getIndicator (Indicator &ind, BarData &data)
   set.getData(NeutralColor, s);
   QColor neutral(s);
 
-  Curve *line = getVOL(data, up, down, neutral);
+  Curve *line = getVOL(up, down, neutral);
   if (! line)
     return 1;
 
@@ -88,25 +89,25 @@ int VOL::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-Curve * VOL::getVOL (BarData &data, QColor &up, QColor &down, QColor &neutral)
+Curve * VOL::getVOL (QColor &up, QColor &down, QColor &neutral)
 {
-  if (data.count() < 2)
+  if (g_barData.count() < 2)
     return 0;
   
   Curve *vol = new Curve;
 
   // set the first bar to neutral
   int loop = 0;
-  Bar bar = data.getBar(loop);
-  
+  Bar bar = g_barData.getBar(loop);
+
   vol->setBar(loop, new CurveBar(neutral, bar.getVolume()));
 
   loop++;
-  for (; loop < data.count(); loop++)
+  for (; loop < g_barData.count(); loop++)
   {
-    Bar bar = data.getBar(loop);
-    Bar pbar = data.getBar(loop - 1);
-    
+    Bar bar = g_barData.getBar(loop);
+    Bar pbar = g_barData.getBar(loop - 1);
+
     if (bar.getClose() < pbar.getClose())
       vol->setBar(loop, new CurveBar(down, bar.getVolume()));
     else

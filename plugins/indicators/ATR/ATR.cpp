@@ -31,7 +31,7 @@ ATR::ATR ()
   _indicator = "ATR";
 }
 
-int ATR::getIndicator (Indicator &ind, BarData &data)
+int ATR::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -44,7 +44,7 @@ int ATR::getIndicator (Indicator &ind, BarData &data)
   settings.getData(Method, s);
   int method = l.indexOf(s);
 
-  Curve *line = f.calculate(data, period, method);
+  Curve *line = f.calculate(period, method);
   if (! line)
     return 1;
 
@@ -64,10 +64,10 @@ int ATR::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int ATR::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int ATR::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionATR f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * ATR::dialog (Indicator &i)

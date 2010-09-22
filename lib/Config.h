@@ -96,7 +96,7 @@ class Config : public ConfigDataBase
       DefaultSymbol, // default symbol flag used in Setup::
       MiscPluginPath, // path to the misc plugins
       MiscPluginList,  // csv list of current misc plugins from startup inventory
-      UNUSED5, // *********** UNUSED ****************
+      LastNewIndicator, // the last selected indicator from the new indicator dialog
       UNUSED6, // ********* UNUSED *************
       UNUSED7, // ******** UNUSED *************
       RefreshStatus, // status of the refresh chart toggle button

@@ -35,6 +35,7 @@ ChartObjectText::ChartObjectText ()
   _settings.type = (int) ChartObject::_Text;
 
   Config config;
+  config.transaction();
   config.getData(Config::DefaultChartObjectTextColor, _settings.color);
   if (! _settings.color.isValid())
   {
@@ -58,6 +59,8 @@ ChartObjectText::ChartObjectText ()
     _settings.text = "Text";
     config.setData(Config::DefaultChartObjectTextLabel, _settings.text);
   }
+
+  config.commit();
 }
 
 void ChartObjectText::info (Setting &info)

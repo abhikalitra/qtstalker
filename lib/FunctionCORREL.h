@@ -25,14 +25,13 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionCORREL
 {
   public:
     FunctionCORREL ();
-    int script (QStringList &, Indicator &, BarData &);
+    int script (QStringList &, Indicator &);
     Curve * calculate (Curve *in, Curve *in2, int period);
 };
 

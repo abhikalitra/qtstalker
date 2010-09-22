@@ -20,6 +20,7 @@
  */
 
 #include "FunctionPP.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -27,7 +28,7 @@ FunctionPP::FunctionPP ()
 {
 }
 
-int FunctionPP::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionPP::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,PP,<NAME>,<POINT>
   //     0       1     2    3      4 
@@ -61,7 +62,7 @@ int FunctionPP::script (QStringList &set, Indicator &ind, BarData &data)
     }
   }
 
-  Curve *line = calculate(data, point);
+  Curve *line = calculate(point);
   if (! line)
     return 1;
 
@@ -72,14 +73,14 @@ int FunctionPP::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-Curve * FunctionPP::calculate (BarData &data, int point)
+Curve * FunctionPP::calculate (int point)
 {
-  if (data.count() < 1)
+  if (g_barData.count() < 1)
     return 0;
 
   Curve *output = new Curve(Curve::Horizontal);
 
-  Bar bar = data.getBar(data.count() - 1);
+  Bar bar = g_barData.getBar(g_barData.count() - 1);
   double high = bar.getHigh();
   double low = bar.getLow();
   double close = bar.getClose();

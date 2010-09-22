@@ -25,7 +25,6 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionHT
@@ -42,10 +41,10 @@ class FunctionHT
     };
 
     FunctionHT ();
-    int script (QStringList &, Indicator &, BarData &);
-    int scriptPHASE (QStringList &set, Indicator &, BarData &data);
-    int scriptSINE (QStringList &set, Indicator &, BarData &data);
-    int scriptHT (QStringList &set, Indicator &, BarData &data);
+    int script (QStringList &, Indicator &);
+    int scriptPHASE (QStringList &set, Indicator &);
+    int scriptSINE (QStringList &set, Indicator &);
+    int scriptHT (QStringList &set, Indicator &);
     Curve * getHT (Curve *in, int method);
     int getPHASE (Curve *in, QList<Curve *> &pl);
     int getSINE (Curve *in, QList<Curve *> &pl);

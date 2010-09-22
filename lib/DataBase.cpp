@@ -20,6 +20,7 @@
  */
 
 #include "DataBase.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <QDir>
@@ -31,6 +32,7 @@ DataBase::DataBase ()
 void DataBase::transaction ()
 {
   QSqlDatabase db = QSqlDatabase::database(_dbName);
+  g_mutex.lock();
   db.transaction();
 }
 
@@ -38,6 +40,7 @@ void DataBase::commit ()
 {
   QSqlDatabase db = QSqlDatabase::database(_dbName);
   db.commit();
+  g_mutex.unlock();
 }
 
 int DataBase::command (QString &sql, QString errMess)

@@ -42,7 +42,7 @@ THERM::THERM ()
   _indicator = "THERM";
 }
 
-int THERM::getIndicator (Indicator &ind, BarData &data)
+int THERM::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -54,7 +54,7 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
   int type = mau.typeFromString(s);
 
   FunctionTHERM f;
-  Curve *line = f.calculate(data, smoothing, type);
+  Curve *line = f.calculate(smoothing, type);
   if (! line)
     return 1;
 
@@ -137,10 +137,10 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int THERM::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int THERM::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionTHERM f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * THERM::dialog (Indicator &i)

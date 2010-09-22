@@ -25,7 +25,6 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionAD
@@ -38,11 +37,11 @@ class FunctionAD
     };
 
     FunctionAD ();
-    int script (QStringList &, Indicator &, BarData &);
-    int scriptAD (QStringList &, Indicator &, BarData &);
-    int scriptADOSC (QStringList &, Indicator &, BarData &);
-    Curve * getAD (BarData &data);
-    Curve * getADOSC (BarData &data, int fast, int slow);
+    int script (QStringList &, Indicator &);
+    int scriptAD (QStringList &, Indicator &);
+    int scriptADOSC (QStringList &, Indicator &);
+    Curve * getAD ();
+    Curve * getADOSC (int fast, int slow);
     QStringList & list ();
 
   private:

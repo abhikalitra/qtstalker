@@ -25,14 +25,13 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionMACD
 {
   public:
     FunctionMACD ();
-    int script (QStringList &, Indicator &, BarData &);
+    int script (QStringList &, Indicator &);
     int calculate (Curve *, int fastPeriod, int fastMA, int slowPeriod, int slowMA, int signalPeriod,
                    int signalMA, QList<Curve *> &pl);
 };

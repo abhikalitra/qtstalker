@@ -78,7 +78,6 @@ void IndicatorDeleteDialog::done2 ()
     return;
   }
 
-  g_mutex.lock();
   _db.transaction();
 
   QStringList l;
@@ -94,7 +93,6 @@ void IndicatorDeleteDialog::done2 ()
   }
 
   _db.commit();
-  g_mutex.unlock();
 
   emit signalDelete(l);
 

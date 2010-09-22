@@ -150,12 +150,16 @@ ScriptPage::ScriptPage ()
   vbox->addWidget(_queList);
 
   Config config;
+  config.transaction();
+
   config.getData(Config::LastScriptSearch, _searchString);
   if (_searchString.isEmpty())
   {
     _searchString = "%";
     config.setData(Config::LastScriptSearch, _searchString);
   }
+
+  config.commit();
 
   updateList();
   
@@ -322,7 +326,9 @@ void ScriptPage::search2 (QString ss)
   _searchString = ss;
 
   Config config;
+  config.transaction();
   config.setData(Config::LastScriptSearch, _searchString);
+  config.commit();
   
   updateList();
 }
@@ -343,7 +349,9 @@ void ScriptPage::showAllScripts ()
   _searchString = "%";
 
   Config config;
+  config.transaction();
   config.setData(Config::LastScriptSearch, _searchString);
+  config.commit();
 
   updateList();
 }
@@ -448,7 +456,9 @@ void ScriptPage::runScriptDialog2 (QString command, QString file)
   
   // save the script path
   Config config;
+  config.transaction();
   config.setData(Config::LastScriptPath, file);
+  config.commit();
   
   // create the script and settings
   Script *script = new Script;

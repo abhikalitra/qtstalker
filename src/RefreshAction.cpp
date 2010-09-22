@@ -34,6 +34,8 @@ RefreshAction::RefreshAction ()
   _timer = 0;
   
   Config config;
+  config.transaction();
+
   _minutes = config.getInt(Config::Refresh);
   if (! _minutes)
   {
@@ -54,6 +56,8 @@ RefreshAction::RefreshAction ()
   }
   else
     setChecked(s.toInt());
+
+  config.commit();
   
   connect(this, SIGNAL(toggled(bool)), this, SLOT(refreshChart(bool)));
 
@@ -72,7 +76,9 @@ void RefreshAction::refreshChart (bool status)
     _timer->stop();
 
   Config config;
+  config.transaction();
   config.setData((int) Config::RefreshStatus, status);
+  config.commit();
 }
 
 void RefreshAction::refreshUpdated (int minutes)
@@ -88,7 +94,9 @@ void RefreshAction::refreshUpdated (int minutes)
   changeText();
 
   Config config;
+  config.transaction();
   config.setData(Config::Refresh, _minutes);
+  config.commit();
 }
 
 void RefreshAction::dialog ()

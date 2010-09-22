@@ -47,7 +47,9 @@ PixelSpaceButton::PixelSpaceButton (int d)
         break;
     }
 
+    config.transaction();
     config.setData((Config::Parm) _key, _pixelSpace);
+    config.commit();
   }
 
   setCheckable(FALSE);
@@ -74,7 +76,9 @@ void PixelSpaceButton::setPixelSpace (int d)
   changeText();
 
   Config config;
+  config.transaction();
   config.setData((Config::Parm) _key, _pixelSpace);
+  config.commit();
 }
 
 void PixelSpaceButton::dialog ()

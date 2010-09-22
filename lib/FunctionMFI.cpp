@@ -22,6 +22,7 @@
 #include "FunctionMFI.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +30,7 @@ FunctionMFI::FunctionMFI ()
 {
 }
 
-int FunctionMFI::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionMFI::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,MFI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
   //     0       1     2    3       4             5                 6 
@@ -70,7 +71,7 @@ int FunctionMFI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *line = calculate(data, period, smoothing, ma);
+  Curve *line = calculate(period, smoothing, ma);
   if (! line)
     return 1;
 
@@ -81,36 +82,23 @@ int FunctionMFI::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-Curve * FunctionMFI::calculate (BarData &data, int period, int smoothing, int type)
+Curve * FunctionMFI::calculate (int period, int smoothing, int type)
 {
-  if (data.count() < period || data.count() < smoothing)
+  int size = g_barData.count();
+
+  if (size < period || size < smoothing)
     return 0;
 
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real volume[size];
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-    volume[loop] = (TA_Real) bar.getVolume();
-  }
-
   TA_RetCode rc = TA_MFI(0,
                          size - 1,
-                         &high[0],
-                         &low[0],
-                         &close[0],
-                         &volume[0],
+                         g_barData.getTAData(BarData::High),
+                         g_barData.getTAData(BarData::Low),
+                         g_barData.getTAData(BarData::Close),
+                         g_barData.getTAData(BarData::Volume),
                          period,
                          &outBeg,
                          &outNb,

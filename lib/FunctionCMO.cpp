@@ -21,6 +21,7 @@
 
 #include "FunctionCMO.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -28,7 +29,7 @@ FunctionCMO::FunctionCMO ()
 {
 }
 
-int FunctionCMO::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionCMO::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,CMO,<NAME>,<INPUT>,<PERIOD>
   //     0       1     2    3       4       5
@@ -49,7 +50,7 @@ int FunctionCMO::script (QStringList &set, Indicator &ind, BarData &data)
   Curve *in = ind.line(set[4]);
   if (! in)
   {
-    in = data.getInput(data.getInputType(set[4]));
+    in = g_barData.getInput(g_barData.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionCMO::script: input not found" << set[4];

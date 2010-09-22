@@ -241,7 +241,9 @@ void AROONDialog::done ()
   _indicator.setSettings(_settings);
 
   IndicatorDataBase db;
+  db.transaction();
   db.setIndicator(_indicator);
+  db.commit();
 
   emit signalDone(_indicator);
 

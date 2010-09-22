@@ -763,6 +763,14 @@
 
            Fixed SET_COLOR_ALL script API bug that set all colors to red.
 
+           Added database write mutex locks to all classes. This gives a thread safe app except when running
+           multiple instances and they try to write to the same table at the same time. Unless sqlite
+           has a kernel process lock, there is a very small chance of inter-process database corruption
+           in the group and script tables. If this becomes a problem in the future, we can always add
+           a settings server and serve multiple qtstalker clients. Originally started to implement that,
+           but decided to wait and see if we can manage without. Less code the better.
+
+20100921:  New indicator dialog now saves and restores the last used indicator.
 
 
 

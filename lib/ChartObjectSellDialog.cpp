@@ -22,6 +22,7 @@
 #include "ChartObjectSellDialog.h"
 #include "Config.h"
 #include "ChartObject.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -92,7 +93,9 @@ void ChartObjectSellDialog::done ()
   if (_default->isChecked())
   {
     Config config;
+    config.transaction();
     config.setData((int) Config::DefaultChartObjectSellColor, _color->color());
+    config.commit();
   }
 
   _settings.color = _color->color();

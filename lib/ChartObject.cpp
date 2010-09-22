@@ -23,7 +23,6 @@
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
 #include "Dialog.h"
-#include "Globals.h"
 #include "ChartObjectDataBase.h"
 
 #include <QDebug>
@@ -120,9 +119,9 @@ void ChartObject::dialog ()
 void ChartObject::deleteChartObject ()
 {
   ChartObjectDataBase db;
-  g_mutex.lock();
+  db.transaction();
   db.deleteChartObject(_settings.id);
-  g_mutex.unlock();
+  db.commit();
 
   emit signalDelete(_settings.id);
 }

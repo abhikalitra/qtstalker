@@ -211,31 +211,53 @@ void Curve::info (int index, Setting &set)
 
 int Curve::highLowRange (int start, int end, double &h, double &l)
 {
-  int rc = 1;
-  int loop;
-  h = -9999999999.0;
-  l = 9999999999.0;
-
-  for (loop = start; loop <= end; loop++)
+  switch (_type)
   {
-    CurveBar *r = _data.value(loop);
-    if (! r)
-      continue;
+    case Horizontal:
+    {
+      if (! _data.count())
+        return 1;
 
-    double th, tl;
-    if (r->highLow(th, tl))
-      continue;
+      CurveBar *r = _data.value(0);
+      if (! r)
+        return 1;
 
-    rc = 0;
+      if (r->highLow(h, l))
+        return 0;
+      
+      break;
+    }
+    default:
+    {
+      int rc = 1;
+      int loop;
+      h = -9999999999.0;
+      l = 9999999999.0;
 
-    if (th > h)
-      h = th;
+      for (loop = start; loop <= end; loop++)
+      {
+        CurveBar *r = _data.value(loop);
+        if (! r)
+          continue;
 
-    if (tl < l)
-      l = tl;
+        double th, tl;
+        if (r->highLow(th, tl))
+          continue;
+
+        rc = 0;
+
+        if (th > h)
+          h = th;
+  
+        if (tl < l)
+          l = tl;
+      }
+
+      return rc;
+    }
   }
 
-  return rc;
+  return 1;
 }
 
 

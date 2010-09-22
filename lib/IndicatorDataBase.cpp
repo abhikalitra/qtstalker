@@ -93,8 +93,6 @@ void IndicatorDataBase::setIndicator (Indicator &i)
   QString settings;
   set.getString(settings);
 
-  transaction();
-
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO indicatorIndex (name,enable,tabRow,column,date,log,cus,indicator,settings) VALUES (";
   s.append("'" + name + "'");
@@ -110,15 +108,15 @@ void IndicatorDataBase::setIndicator (Indicator &i)
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "IndicatorDataBase::setIndicator: save index" << q.lastError().text();
-
-  commit();
 }
 
 void IndicatorDataBase::deleteIndicator (QString &name)
 {
   // delete any chart objects tied to this indicator before we delete it
   ChartObjectDataBase codb;
+  codb.transaction();
   codb.deleteChartObjectsIndicator(name);
+  codb.commit();
 
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM indicatorIndex WHERE name='" + name + "'";
@@ -202,8 +200,6 @@ void IndicatorDataBase::setIndicatorSettings (Indicator &i)
   QString settings;
   set.getString(settings);
 
-  transaction();
-
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO indicatorIndex (name,settings) VALUES (";
   s.append("'" + name + "'");
@@ -212,7 +208,5 @@ void IndicatorDataBase::setIndicatorSettings (Indicator &i)
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "IndicatorDataBase::setIndicatorSettings" << q.lastError().text();
-
-  commit();
 }
 

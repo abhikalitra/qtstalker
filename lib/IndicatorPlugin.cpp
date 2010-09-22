@@ -25,7 +25,6 @@
 
 IndicatorPlugin::IndicatorPlugin ()
 {
-//  _opList << "=" << "<" << "<=" << ">" << ">=";
   _deleteFlag = 0;
 }
 
@@ -34,13 +33,13 @@ IndicatorPlugin::~IndicatorPlugin ()
 }
 
 // virtual function
-int IndicatorPlugin::getIndicator (Indicator &, BarData &)
+int IndicatorPlugin::getIndicator (Indicator &)
 {
   return 0;
 }
 
 // virtual function
-int IndicatorPlugin::getCUS (QStringList &, Indicator &, BarData &)
+int IndicatorPlugin::getCUS (QStringList &, Indicator &)
 {
   return 0;
 }

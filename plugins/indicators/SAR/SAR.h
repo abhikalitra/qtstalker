@@ -38,8 +38,8 @@ class SAR : public IndicatorPlugin
     };
 
     SAR ();
-    int getIndicator (Indicator &ind, BarData &);
-    int getCUS (QStringList &, Indicator &, BarData &);
+    int getIndicator (Indicator &ind);
+    int getCUS (QStringList &, Indicator &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
 };

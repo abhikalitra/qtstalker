@@ -31,7 +31,7 @@ ADX::ADX ()
   _indicator = "ADX";
 }
 
-int ADX::getIndicator (Indicator &ind, BarData &data)
+int ADX::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -41,7 +41,7 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
 
   if (settings.getInt(MDICheck))
   {
-    Curve *line = f.calculate(data, period, (int) FunctionADX::_MDI);
+    Curve *line = f.calculate(period, (int) FunctionADX::_MDI);
     if (! line)
       return 1;
 
@@ -62,7 +62,7 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
 
   if (settings.getInt(PDICheck))
   {
-    Curve *line = f.calculate(data, period, (int) FunctionADX::_PDI);
+    Curve *line = f.calculate(period, (int) FunctionADX::_PDI);
     if (! line)
       return 1;
 
@@ -83,7 +83,7 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
 
   if (settings.getInt(ADXCheck))
   {
-    Curve *line = f.calculate(data, period, (int) FunctionADX::_ADX);
+    Curve *line = f.calculate(period, (int) FunctionADX::_ADX);
     if (! line)
       return 1;
 
@@ -104,7 +104,7 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
 
   if (settings.getInt(ADXRCheck))
   {
-    Curve *line = f.calculate(data, period, (int) FunctionADX::_ADXR);
+    Curve *line = f.calculate(period, (int) FunctionADX::_ADXR);
     if (! line)
       return 1;
 
@@ -126,10 +126,10 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int ADX::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int ADX::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionADX f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * ADX::dialog (Indicator &i)

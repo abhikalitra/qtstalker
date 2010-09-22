@@ -31,12 +31,16 @@
 ZoomButtons::ZoomButtons (QToolBar *tb) : QObject (tb)
 {
   Config config;
+  config.transaction();
+
   _pixelSpace = config.getInt(Config::Pixelspace);
   if (! _pixelSpace)
   {
     _pixelSpace = 6;
     config.setData(Config::Pixelspace, _pixelSpace);
   }
+
+  config.commit();
   
   createButtons(tb);
 }
@@ -110,6 +114,8 @@ int ZoomButtons::getPixelSpace ()
 void ZoomButtons::savePixelSpace ()
 {
   Config config;
+  config.transaction();
   config.setData(Config::Pixelspace, _pixelSpace);
+  config.commit();
 }
 

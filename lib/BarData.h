@@ -34,6 +34,7 @@
 
 #include "Bar.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 class BarData
 {
@@ -66,6 +67,7 @@ class BarData
     };
 
     BarData ();
+    ~BarData ();
     void clear ();
     int count ();
     void prepend (Bar bar);
@@ -96,6 +98,9 @@ class BarData
     void barLengthText (BarData::BarLength, QString &);
     QString getKey ();
 
+    void setTAData ();
+    TA_Real * getTAData (BarData::InputType);
+
   protected:
     QList<Bar> _barList;
     double _high;
@@ -105,6 +110,12 @@ class BarData
     QString _name;
     QString _exchange;
     QString _table;
+    TA_Real *taOpen;
+    TA_Real *taHigh;
+    TA_Real *taLow;
+    TA_Real *taClose;
+    TA_Real *taVolume;
+    
 };
 
 // this is for passing Indicator data between threads

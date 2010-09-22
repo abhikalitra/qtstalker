@@ -21,6 +21,7 @@
 
 #include "FunctionAROON.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +30,7 @@ FunctionAROON::FunctionAROON ()
   _methodList << "AROON" << "OSC";
 }
 
-int FunctionAROON::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionAROON::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,AROON,<METHOD>,*
   //     0       1      2      3
@@ -40,10 +41,10 @@ int FunctionAROON::script (QStringList &set, Indicator &ind, BarData &data)
   switch ((Method) method)
   {
     case _AROON:
-      rc = scriptAROON(set, ind, data);
+      rc = scriptAROON(set, ind);
       break;
     case _AROONOSC:
-      rc = scriptAROONOSC(set, ind, data);
+      rc = scriptAROONOSC(set, ind);
       break;
     default:
       break;
@@ -52,7 +53,7 @@ int FunctionAROON::script (QStringList &set, Indicator &ind, BarData &data)
   return rc;
 }
 
-int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind, BarData &data)
+int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,AROON,AROON,<UPPER NAME>,<LOWER NAME>,<PERIOD>
   //     0       1      2     3         4           5          6
@@ -86,7 +87,7 @@ int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind, BarData &data)
   }
 
   QList<Curve *> pl;
-  if (getAROON(data, period, pl))
+  if (getAROON(period, pl))
     return 1;
 
   pl.at(0)->setLabel(set[4]);
@@ -98,7 +99,7 @@ int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind, BarData &data)
+int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,AROON,AROONOSC,<NAME>,<PERIOD>
   //     0       1      2       3       4      5
@@ -124,7 +125,7 @@ int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind, BarData &da
     return 1;
   }
 
-  Curve *line = getAROONOSC(data, period);
+  Curve *line = getAROONOSC(period);
   if (! line)
     return 1;
 
@@ -136,31 +137,21 @@ int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind, BarData &da
 }
 
 
-int FunctionAROON::getAROON (BarData &data, int period, QList<Curve *> &pl)
+int FunctionAROON::getAROON (int period, QList<Curve *> &pl)
 {
-  int size = data.count();
+  int size = g_barData.count();
   if (size < period)
     return 1;
   
-  TA_Real high[size];
-  TA_Real low[size];
   TA_Real dout[size];
   TA_Real uout[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-  }
-
   TA_RetCode rc = TA_AROON(0,
                            size - 1,
-                           &high[0],
-                           &low[0],
+                           g_barData.getTAData(BarData::High),
+                           g_barData.getTAData(BarData::Low),
                            period,
                            &outBeg,
                            &outNb,
@@ -192,31 +183,21 @@ int FunctionAROON::getAROON (BarData &data, int period, QList<Curve *> &pl)
   return 0;
 }
 
-Curve * FunctionAROON::getAROONOSC (BarData &data, int period)
+Curve * FunctionAROON::getAROONOSC (int period)
 {
-  if (data.count() < period)
+  int size = g_barData.count();
+
+  if (size < period)
     return 0;
 
-  int size = data.count();
-
-  TA_Real high[size];
-  TA_Real low[size];
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-  }
-
   TA_RetCode rc = TA_AROONOSC(0,
                               size - 1,
-                              &high[0],
-                              &low[0],
+                              g_barData.getTAData(BarData::High),
+                              g_barData.getTAData(BarData::Low),
                               period,
                               &outBeg,
                               &outNb,

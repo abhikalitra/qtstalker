@@ -37,6 +37,7 @@ ChartObjectRetracement::ChartObjectRetracement ()
   _settings.type = (int) ChartObject::_Retracement;
 
   Config config;
+  config.transaction();
   config.getData(Config::DefaultChartObjectRetracementColor, _settings.color);
   if (! _settings.color.isValid())
   {
@@ -64,6 +65,8 @@ ChartObjectRetracement::ChartObjectRetracement ()
     _settings.line3 = 0.618;
     config.setData(Config::DefaultChartObjectRetracementLine3, _settings.line3);
   }
+
+  config.commit();
 
   _settings.line4 = config.getDouble(Config::DefaultChartObjectRetracementLine4);
   _settings.line5 = config.getDouble(Config::DefaultChartObjectRetracementLine5);

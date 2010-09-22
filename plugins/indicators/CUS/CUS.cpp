@@ -31,7 +31,7 @@ CUS::CUS ()
   _indicator = "CUS";
 }
 
-int CUS::getIndicator (Indicator &ind, BarData &data)
+int CUS::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -41,7 +41,6 @@ int CUS::getIndicator (Indicator &ind, BarData &data)
   s.append(" " + s2);
 
   ExScript script;
-  script.setBarData(data);
   script.setIndicator(ind);
   int rc = script.calculate(s);
   if (! rc)

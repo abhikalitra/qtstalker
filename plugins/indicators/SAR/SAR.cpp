@@ -32,7 +32,7 @@ SAR::SAR ()
   _indicator = "SAR";
 }
 
-int SAR::getIndicator (Indicator &ind, BarData &data)
+int SAR::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -43,7 +43,7 @@ int SAR::getIndicator (Indicator &ind, BarData &data)
   QColor down("red");
   QColor neutral("blue");
   FunctionBARS b;
-  Curve *bars = b.getBARS(data, up, down, neutral);
+  Curve *bars = b.getBARS(up, down, neutral);
   if (bars)
   {
     bars->setZ(0);
@@ -51,7 +51,7 @@ int SAR::getIndicator (Indicator &ind, BarData &data)
   }
 
   FunctionSAR f;
-  Curve *line = f.calculate(data, tinit, tmax);
+  Curve *line = f.calculate(tinit, tmax);
   if (! line)
     return 1;
 
@@ -71,48 +71,16 @@ int SAR::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int SAR::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int SAR::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionSAR f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * SAR::dialog (Indicator &i)
 {
   return new SARDialog(i);
 }
-
-/*  
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
-
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addDoubleItem(Init, page, QObject::tr("Initial"), _settings.getDouble(Init), 0.0, 100000.0);
-
-  dialog->addDoubleItem(Max, page, QObject::tr("Max"), _settings.getDouble(Max), 0.0, 100000.0);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
-*/
 
 void SAR::defaults (Indicator &i)
 {

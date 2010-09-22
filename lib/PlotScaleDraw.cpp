@@ -33,42 +33,52 @@ QwtText PlotScaleDraw::label (double v) const
 {
   Strip strip;
 
+  double tv = v;
+  
+  int flag = 0;
+  if (tv < 0)
+  {
+    flag = 1;
+    tv = tv * 1;
+  }
+
   QString s;
-  if (v < 1000000)
-    strip.strip(v, 4, s);
+  if (tv < 1000)
+    strip.strip(tv, 4, s);
   else
   {
-    bool flag = FALSE;
-    if (v < 0)
+    if (tv >= 1000 && tv < 1000000)
     {
-      flag = TRUE;
-      v = v * 1;
+      s = QString::number(tv / 1000, 'f', 2);
+      while (s.endsWith("0"))
+        s.chop(1);
+      while (s.endsWith("."))
+        s.chop(1);
+      s.append("K");
     }
-
-    if (v >= 1000000 && v < 1000000000)
+    else if (tv >= 1000000 && tv < 1000000000)
     {
-      s = QString::number(v / 1000000, 'f', 2);
+      s = QString::number(tv / 1000000, 'f', 2);
       while (s.endsWith("0"))
         s.chop(1);
       while (s.endsWith("."))
         s.chop(1);
       s.append("M");
-      if (flag)
-        s.prepend("-");
     }
-    else if (v >= 1000000000)
+    else if (tv >= 1000000000)
     {
-      s = QString::number(v / 1000000000, 'f', 2);
+      s = QString::number(tv / 1000000000, 'f', 2);
       while (s.endsWith("0"))
         s.chop(1);
       while (s.endsWith("."))
         s.chop(1);
       s.append("B");
-      if (flag)
-        s.prepend("-");
     }
   }
 
+//  if (flag)
+//    s.prepend("-");
+  
   return s;
 }
 

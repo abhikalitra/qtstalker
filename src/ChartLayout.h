@@ -31,7 +31,6 @@
 
 #include "Indicator.h"
 #include "Setting.h"
-#include "BarData.h"
 #include "TabWidget.h"
 #include "PlotSettings.h"
 
@@ -63,7 +62,7 @@ class ChartLayout : public QSplitter
     void addTab (Indicator &);
     void addTab (QString &);
     void refresh (QString);
-    void loadPlots (BarData &, int index);
+    void loadPlots (int index);
     int plotWidth ();
     QHash<QString, PlotSettings *> & plots ();
 
@@ -95,7 +94,6 @@ class ChartLayout : public QSplitter
     QHash<QString, TabWidget *> _tabs;
     QHash<int, QHBoxLayout *> _grids;
     QHash<int, QWidget *> _holders;
-    BarData _barData;
     int _startIndex;
 };
 

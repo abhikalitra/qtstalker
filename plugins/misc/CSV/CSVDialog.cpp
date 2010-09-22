@@ -143,7 +143,6 @@ void CSVDialog::loadSettings ()
 void CSVDialog::saveSettings ()
 {
   CSVConfig config;
-
   config.transaction();
   
   // save app size and position

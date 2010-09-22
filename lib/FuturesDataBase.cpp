@@ -21,6 +21,7 @@
 
 #include "FuturesDataBase.h"
 #include "Config.h"
+#include "Globals.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -55,14 +56,14 @@ int FuturesDataBase::createFutures ()
     return 0;
   }
   
+  config.transaction();
   config.setData(Config::FuturesFileDate, dt2);
+  config.commit();
   qDebug() << "FuturesDataBase::createFutures: creating new futures db";
 
   QTextStream in(&file);
   in.readLine(); // skip past first line
  
-  transaction();
-  
   // delete the old table
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DROP TABLE futuresIndex";
@@ -123,7 +124,6 @@ int FuturesDataBase::createFutures ()
       qDebug() << "FuturesDataBase::createFutures: add records" << q.lastError().text();
   }
   
-  commit();
   file.close();
   return 0;
 }

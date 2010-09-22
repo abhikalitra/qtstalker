@@ -24,6 +24,7 @@
 #include "FunctionBARS.h"
 #include "HTDialog.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,13 +33,13 @@ HT::HT ()
   _indicator = "HT";
 }
 
-int HT::getIndicator (Indicator &ind, BarData &data)
+int HT::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = data.getInput(data.getInputType(s));
+  Curve *in = g_barData.getInput(g_barData.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -139,7 +140,7 @@ int HT::getIndicator (Indicator &ind, BarData &data)
       QColor down("red");
       QColor neutral("blue");
       FunctionBARS b;
-      Curve *bars = b.getBARS(data, up, down, neutral);
+      Curve *bars = b.getBARS(up, down, neutral);
       if (bars)
       {
         bars->setZ(4);
@@ -173,10 +174,10 @@ int HT::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int HT::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int HT::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionHT f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * HT::dialog (Indicator &i)

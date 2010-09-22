@@ -21,6 +21,7 @@
 
 #include "DateScaleDraw.h"
 #include "BarRange.h"
+#include "Globals.h"
 
 #include <QString>
 #include <QDebug>
@@ -29,17 +30,17 @@ DateScaleDraw::DateScaleDraw ()
 {
 }
 
-void DateScaleDraw::setDates (BarData &bd)
+void DateScaleDraw::setDates ()
 {
   _dateList.clear();
   _data.clear();
 
-  _barLength = bd.getBarLength();
+  _barLength = g_barData.getBarLength();
 
   int loop;
-  for (loop = 0; loop < (int) bd.count(); loop++)
+  for (loop = 0; loop < (int) g_barData.count(); loop++)
   {
-    Bar bar = bd.getBar(loop);
+    Bar bar = g_barData.getBar(loop);
     if (! bar.count())
       continue;
 

@@ -32,6 +32,8 @@ Splitter::Splitter (int d)
 void Splitter::load ()
 {
   Config config;
+  config.transaction();
+
   QString s;
   config.getData((Config::Parm) _parm, s);
   if (s.isEmpty())
@@ -44,6 +46,8 @@ void Splitter::load ()
   }
   else
     config.getData((Config::Parm) _parm, (QSplitter *) this);
+
+  config.commit();
 }
 
 void Splitter::save ()

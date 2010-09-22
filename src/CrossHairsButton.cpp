@@ -38,6 +38,8 @@ CrossHairsButton::CrossHairsButton ()
   setCheckable(TRUE);
 
   Config config;
+  config.transaction();
+
   QString s;
   config.getData(Config::CrossHairs, s);
   if (s.isEmpty())
@@ -55,13 +57,17 @@ CrossHairsButton::CrossHairsButton ()
     config.setData(Config::CrossHairsColor, _color);
   }
 
+  config.commit();
+  
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }
 
 void CrossHairsButton::changed (bool status)
 {
   Config config;
+  config.transaction();
   config.setData(Config::CrossHairs, status);
+  config.commit();
 
   emit signalChanged(status);
 }
@@ -83,7 +89,10 @@ void CrossHairsButton::setColor (QColor c)
   _color = c;
 
   Config config;
+  config.transaction();
   config.setData(Config::CrossHairsColor, _color);
+  config.commit();
+
   emit signalColor(_color);
 }
 

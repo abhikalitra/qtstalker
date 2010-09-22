@@ -26,7 +26,6 @@
 #include <QColor>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionCANDLES
@@ -99,11 +98,11 @@ class FunctionCANDLES
     };
 
     FunctionCANDLES ();
-    int script (QStringList &, Indicator &, BarData &);
-    int scriptCandles (QStringList &, Indicator &, BarData &);
-    int scriptMethod (QStringList &, Indicator &, BarData &);
-    Curve * getMethod (BarData &, int, double);
-    Curve * candles (BarData &);
+    int script (QStringList &, Indicator &);
+    int scriptCandles (QStringList &, Indicator &);
+    int scriptMethod (QStringList &, Indicator &);
+    Curve * getMethod (int, double);
+    Curve * candles ();
     QStringList & list ();
 
   protected:

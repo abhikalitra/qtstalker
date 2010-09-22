@@ -26,15 +26,46 @@
 
 BarData::BarData ()
 {
+  taOpen = 0;
+  taHigh = 0;
+  taLow = 0;
+  taClose = 0;
+  taVolume = 0;
+  
+  clear();
+}
+
+BarData::~BarData ()
+{
   clear();
 }
 
 void BarData::clear ()
 {
+  _barList.clear();
   _high = -99999999;
   _low = 99999999;
   _length = DailyBar;
-  _barList.clear();
+
+  if (taOpen)
+    delete [] taOpen;
+  taOpen = 0;
+  
+  if (taHigh)
+    delete [] taHigh;
+  taHigh = 0;
+  
+  if (taLow)
+    delete [] taLow;
+  taLow = 0;
+  
+  if (taClose)
+    delete [] taClose;
+  taClose = 0;
+  
+  if (taVolume)
+    delete [] taVolume;
+  taVolume = 0;
 }
 
 void BarData::getInputFields (QStringList &l)
@@ -303,6 +334,8 @@ void BarData::setBars (QString &d)
 
     append(bar);
   }
+
+  setTAData();
 }
 
 void BarData::barLengthText (BarData::BarLength k, QString &d)
@@ -347,5 +380,51 @@ QString BarData::getKey ()
 {
   QString s = _exchange + ":" + _symbol;
   return s;
+}
+
+void BarData::setTAData ()
+{
+  taOpen = new TA_Real[_barList.count()];
+  taHigh = new TA_Real[_barList.count()];
+  taLow = new TA_Real[_barList.count()];
+  taClose = new TA_Real[_barList.count()];
+  taVolume = new TA_Real[_barList.count()];
+
+  int loop = 0;
+  for (; loop < _barList.count(); loop++)
+  {
+    Bar bar = getBar(loop);
+    taOpen[loop] = (TA_Real) bar.getOpen();
+    taHigh[loop] = (TA_Real) bar.getHigh();
+    taLow[loop] = (TA_Real) bar.getLow();
+    taClose[loop] = (TA_Real) bar.getClose();
+    taVolume[loop] = (TA_Real) bar.getVolume();
+  }
+}
+
+TA_Real * BarData::getTAData (BarData::InputType field)
+{
+  switch (field)
+  {
+    case Open:
+      return taOpen;
+      break;
+    case High:
+      return taHigh;
+      break;
+    case Low:
+      return taLow;
+      break;
+    case Close:
+      return taClose;
+      break;
+    case Volume:
+      return taVolume;
+      break;
+    default:
+      break;
+  }
+
+  return 0;
 }
 

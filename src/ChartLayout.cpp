@@ -29,6 +29,7 @@
 #include "ChartObjectDataBase.h"
 #include "Plot.h"
 #include "IndicatorDeleteDialog.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <QCursor>
@@ -78,6 +79,7 @@ ChartLayout::~ChartLayout ()
 void ChartLayout::save ()
 {
   Config config;
+  config.transaction();
   config.setData(Config::ChartLayoutSizes, (QSplitter *) this);
 
   QHashIterator<QString, TabWidget *> it(_tabs);
@@ -92,6 +94,8 @@ void ChartLayout::save ()
       config.setData(k, d);
     }
   }
+
+  config.commit();
 }
 
 void ChartLayout::load ()
@@ -218,12 +222,11 @@ void ChartLayout::addTab (Indicator &i)
 //************* DRAW FUNCTIONS ************************************
 //*****************************************************************
 
-void ChartLayout::loadPlots (BarData &bd, int index)
+void ChartLayout::loadPlots (int index)
 {
-  if (! bd.count())
+  if (! g_barData.count())
     return;
 
-  _barData = bd;
   _startIndex = index;
 
   IndicatorDataBase db;
@@ -238,14 +241,14 @@ void ChartLayout::loadPlots (BarData &bd, int index)
     
     PlotSettings *ps = _plots.value(indicatorList[loop]);
 
-    ps->plot->setDates(_barData);
+    ps->plot->setDates();
     
     Indicator i;
     i.setName(indicatorList[loop]);
     db.getIndicator(i);
 
     qRegisterMetaType<Indicator>("Indicator");
-    IndicatorThread *r = new IndicatorThread(this, _barData, i);
+    IndicatorThread *r = new IndicatorThread(this, i);
     connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
     connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
     r->start();
@@ -291,8 +294,6 @@ void ChartLayout::setIndex (int d)
 
 void ChartLayout::clearIndicator ()
 {
-  _barData.clear();
-  
   emit signalClear();
   emit signalDraw();
 }
@@ -324,7 +325,10 @@ void ChartLayout::setZoom (int pixelSpace, int index)
 void ChartLayout::backgroundColorChanged (QColor c)
 {
   Config config;
+  config.transaction();
   config.setData(Config::BackgroundColor, c);
+  config.commit();
+  
   emit signalBackgroundColor(c);
   emit signalDraw();
 }
@@ -332,7 +336,10 @@ void ChartLayout::backgroundColorChanged (QColor c)
 void ChartLayout::fontChanged (QFont f)
 {
   Config config;
+  config.transaction();
   config.setData(Config::PlotFont, f);
+  config.commit();
+
   emit signalFont(f);
   emit signalDraw();
 }
@@ -403,15 +410,15 @@ void ChartLayout::newIndicator3 (Indicator i)
 {
   addTab(i.name());
 
-  if (! _barData.count())
+  if (! g_barData.count())
     return;
 
   PlotSettings *ps = _plots.value(i.name());
 
-  ps->plot->setDates(_barData);
+  ps->plot->setDates();
   
   qRegisterMetaType<Indicator>("Indicator");
-  IndicatorThread *r = new IndicatorThread(this, _barData, i);
+  IndicatorThread *r = new IndicatorThread(this, i);
   connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
   connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
   r->start();
@@ -446,11 +453,11 @@ void ChartLayout::editIndicator (QString name)
 
 void ChartLayout::editIndicator2 (Indicator i)
 {
-  if (! _barData.count())
+  if (! g_barData.count())
     return;
 
   qRegisterMetaType<Indicator>("Indicator");
-  IndicatorThread *r = new IndicatorThread(this, _barData, i);
+  IndicatorThread *r = new IndicatorThread(this, i);
   connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
   connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
   r->start();

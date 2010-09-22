@@ -32,7 +32,7 @@ BOP::BOP ()
   _indicator = "BOP";
 }
 
-int BOP::getIndicator (Indicator &ind, BarData &data)
+int BOP::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -44,7 +44,7 @@ int BOP::getIndicator (Indicator &ind, BarData &data)
   int type = mau.typeFromString(s);
 
   FunctionBOP f;
-  Curve *line = f.calculate(data, smoothing, type);
+  Curve *line = f.calculate(smoothing, type);
   if (! line)
     return 1;
 
@@ -64,10 +64,10 @@ int BOP::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int BOP::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int BOP::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionBOP f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * BOP::dialog (Indicator &i)

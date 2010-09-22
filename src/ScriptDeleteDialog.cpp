@@ -78,7 +78,6 @@ void ScriptDeleteDialog::done2 ()
     return;
   }
 
-  g_mutex.lock();
   _db.transaction();
 
   int loop = 0;
@@ -93,7 +92,6 @@ void ScriptDeleteDialog::done2 ()
   }
 
   _db.commit();
-  g_mutex.unlock();
 
   emit signalMessage(QString(tr("Scripts deleted.")));
 

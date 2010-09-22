@@ -77,7 +77,6 @@ void GroupDeleteDialog::done2 ()
     return;
   }
 
-  g_mutex.lock();
   _db.transaction();
   
   int loop = 0;
@@ -90,7 +89,6 @@ void GroupDeleteDialog::done2 ()
   }
 
   _db.commit();
-  g_mutex.unlock();
 
   emit signalMessage(QString(tr("Group(s) deleted.")));
 

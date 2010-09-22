@@ -25,14 +25,13 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionMOM
 {
   public:
     FunctionMOM ();
-    int script (QStringList &, Indicator &, BarData &);
+    int script (QStringList &, Indicator &);
     Curve * calculate (Curve *in, int period, int smoothing, int type);
 };
 

@@ -130,6 +130,8 @@ TabWidgetDialog::TabWidgetDialog (QString id) : QDialog (0, 0)
 void TabWidgetDialog::done ()
 {
   Config config;
+  config.transaction();
+
   int flag = 0;
   QString d, key;
   
@@ -172,6 +174,8 @@ void TabWidgetDialog::done ()
     config.setData(key, d);
     flag = 1;
   }
+
+  config.commit();
 
   if (flag)
     emit signalChanged();

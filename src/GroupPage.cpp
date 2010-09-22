@@ -28,7 +28,6 @@
 #include "GroupDeleteDialog.h"
 #include "GroupAddDialog.h"
 #include "Dialog.h"
-#include "Globals.h"
 #include "GroupDeleteItemsDialog.h"
 
 #include "../pics/delete.xpm"
@@ -159,7 +158,9 @@ void GroupPage::groupSelected (int i)
   updateList();
   
   Config config;
+  config.transaction();
   config.setData(Config::LastGroupUsed, s);
+  config.commit();
 }
 
 void GroupPage::chartOpened (BarData bd)

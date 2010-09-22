@@ -58,7 +58,9 @@ DateRangeButton::DateRangeButton ()
 void DateRangeButton::buttonClicked (bool status)
 {
   Config config;
+  config.transaction();
   config.setData(Config::DateRangeButtonStatus, status);
+  config.commit();
 
   emit signalDateRangeChanged();
 }
@@ -74,10 +76,14 @@ void DateRangeButton::dialog ()
 void DateRangeButton::dateChanged (QDateTime sd, QDateTime ed)
 {
   Config config;
+  config.transaction();
   config.setData(Config::DateRangeStart, sd);
+  
   _startDate = sd;
   
   config.setData(Config::DateRangeEnd, ed);
+  config.commit();
+  
   _endDate = ed;
 
   if (isChecked())

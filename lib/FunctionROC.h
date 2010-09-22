@@ -25,7 +25,6 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionROC
@@ -40,7 +39,7 @@ class FunctionROC
     };
 
     FunctionROC ();
-    int script (QStringList &, Indicator &, BarData &);
+    int script (QStringList &, Indicator &);
     Curve * calculate (Curve *in, int period, int method, int smoothing, int type);
     QStringList & list ();
 

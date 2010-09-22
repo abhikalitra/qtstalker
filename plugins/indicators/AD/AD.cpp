@@ -31,7 +31,7 @@ AD::AD ()
   _indicator = "AD";
 }
 
-int AD::getIndicator (Indicator &ind, BarData &data)
+int AD::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -49,7 +49,7 @@ int AD::getIndicator (Indicator &ind, BarData &data)
       int fp = settings.getInt(FastPeriod);
       int sp = settings.getInt(SlowPeriod);
 
-      Curve *line = f.getADOSC(data, fp, sp);
+      Curve *line = f.getADOSC(fp, sp);
       if (! line)
 	return 1;
 
@@ -69,7 +69,7 @@ int AD::getIndicator (Indicator &ind, BarData &data)
     }
     default:
     {
-      Curve *line = f.getAD(data);
+      Curve *line = f.getAD();
       if (! line)
 	return 1;
       
@@ -92,10 +92,10 @@ int AD::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int AD::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int AD::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionAD f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * AD::dialog (Indicator &i)

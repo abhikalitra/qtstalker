@@ -24,9 +24,8 @@
 
 #include <QDebug>
 
-IndicatorThread::IndicatorThread (QObject *p, BarData &data, Indicator &ind) : QThread (p)
+IndicatorThread::IndicatorThread (QObject *p, Indicator &ind) : QThread (p)
 {
-  _data = data;
   _indicator = ind;
 }
 
@@ -37,7 +36,7 @@ void IndicatorThread::run ()
   if (! ip)
     return;
 
-  ip->getIndicator(_indicator, _data);
+  ip->getIndicator(_indicator);
 
   emit signalDone(_indicator);
 }

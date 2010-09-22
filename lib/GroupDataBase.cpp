@@ -102,8 +102,6 @@ void GroupDataBase::setGroup (Group &group)
     return;
   }
   
-  transaction();
-  
   // get the table from the group index
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT symbols FROM groupIndex WHERE name='" + group.getName() + "'";
@@ -143,8 +141,6 @@ void GroupDataBase::setGroup (Group &group)
       return;
     }
   }
-
-  commit();
 }
 
 void GroupDataBase::deleteGroup (QString &n)

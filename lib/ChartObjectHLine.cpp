@@ -39,7 +39,10 @@ ChartObjectHLine::ChartObjectHLine ()
   if (! _settings.color.isValid())
   {
     _settings.color = QColor(Qt::red);
+
+    config.transaction();
     config.setData(Config::DefaultChartObjectHLineColor, _settings.color);
+    config.commit();
   }
 }
 

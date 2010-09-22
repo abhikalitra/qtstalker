@@ -24,6 +24,7 @@
 #include "FunctionRSI.h"
 #include "RSIDialog.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,7 +33,7 @@ RSI::RSI ()
   _indicator = "RSI";
 }
 
-int RSI::getIndicator (Indicator &ind, BarData &data)
+int RSI::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -62,7 +63,7 @@ int RSI::getIndicator (Indicator &ind, BarData &data)
   ind.setLine(1, line);
 
   settings.getData(Input, s);
-  Curve *in = data.getInput(data.getInputType(s));
+  Curve *in = g_barData.getInput(g_barData.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -102,77 +103,11 @@ int RSI::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int RSI::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int RSI::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionRSI f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
-
-/*  
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
-
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Color"), d);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  _settings.getData(Plot, d);
-  dialog->addComboItem(Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(Period, page, QObject::tr("Period"), _settings.getInt(Period), 1, 100000);
-
-  dialog->addIntItem(Smoothing, page, QObject::tr("Smoothing"), _settings.getInt(Smoothing), 1, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-
-  _settings.getData(SmoothingType, d);
-  dialog->addComboItem(Smoothing, page, QObject::tr("Smoothing Type"), maList, d);
-
-  BarData bd;
-  QStringList inputList;
-  bd.getInputFields(inputList);
-
-  _settings.getData(Input, d);
-  dialog->addComboItem(Input, page, QObject::tr("Input"), inputList, d);
-
-  page++;
-  k = QObject::tr("Ref");
-  dialog->addPage(page, k);
-
-  _settings.getData(Ref1Color, d);
-  dialog->addColorItem(Ref1Color, page, QObject::tr("Ref. 1 Color"), d);
-
-  _settings.getData(Ref2Color, d);
-  dialog->addColorItem(Ref2Color, page, QObject::tr("Ref. 2 Color"), d);
-
-  dialog->addIntItem(Ref1, page, QObject::tr("Ref. 1"), _settings.getInt(Ref1), 0, 100);
-
-  dialog->addIntItem(Ref2, page, QObject::tr("Ref. 2"), _settings.getInt(Ref2), 0, 100);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
-*/
 
 IndicatorPluginDialog * RSI::dialog (Indicator &i)
 {

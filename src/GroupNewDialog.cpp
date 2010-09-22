@@ -72,11 +72,9 @@ void GroupNewDialog::done ()
 
   Group g;
   g.setName(name);
-  g_mutex.lock();
   db.transaction();
   db.setGroup(g);
   db.commit();
-  g_mutex.unlock();
 
   QStringList ml;
   ml << tr("Group") << name << tr("created");

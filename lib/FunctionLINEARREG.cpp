@@ -21,6 +21,7 @@
 
 #include "FunctionLINEARREG.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +30,7 @@ FunctionLINEARREG::FunctionLINEARREG ()
   _methodList << "LINEARREG" << "ANGLE" << "INTERCEPT" "SLOPE" << "TSF";
 }
 
-int FunctionLINEARREG::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionLINEARREG::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,LINEARREG,<METHOD>,<NAME>,<INPUT>,<PERIOD>
   //     0       1        2        3       4       5        6 
@@ -57,7 +58,7 @@ int FunctionLINEARREG::script (QStringList &set, Indicator &ind, BarData &data)
   Curve *in = ind.line(set[5]);
   if (! in)
   {
-    in = data.getInput(data.getInputType(set[5]));
+    in = g_barData.getInput(g_barData.getInputType(set[5]));
     if (! in)
     {
       qDebug() << "FunctionLINEARREG::script: input not found" << set[5];

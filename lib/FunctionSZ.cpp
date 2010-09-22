@@ -24,6 +24,7 @@
 
 #include "FunctionSZ.h"
 #include "FunctionBARS.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -33,7 +34,7 @@ FunctionSZ::FunctionSZ ()
   _methodList << "Long" << "Short";
 }
 
-int FunctionSZ::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionSZ::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,SZ,<NAME>,<METHOD>,<PERIOD>,<NO_DECLINE_PERIOD>,<COEFFICIENT>
   //     0       1    2    3       4        5              6               7 
@@ -82,7 +83,7 @@ int FunctionSZ::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *line = calculate(data, method, period, no_decline_period, coefficient);
+  Curve *line = calculate(method, period, no_decline_period, coefficient);
   if (! line)
     return 1;
 
@@ -93,9 +94,9 @@ int FunctionSZ::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-Curve * FunctionSZ::calculate (BarData &data, int method, int period, int no_decline_period, double coefficient)
+Curve * FunctionSZ::calculate (int method, int period, int no_decline_period, double coefficient)
 {
-  if (data.count() < period || data.count() < no_decline_period)
+  if (g_barData.count() < period || g_barData.count() < no_decline_period)
     return 0;
 
   int display_uptrend = 0;
@@ -130,7 +131,7 @@ Curve * FunctionSZ::calculate (BarData &data, int method, int period, int no_dec
   }
 
   int start = period + 1;
-  for (loop = start; loop < (int) data.count(); loop++)
+  for (loop = start; loop < g_barData.count(); loop++)
   {
     // calculate downside/upside penetration for lookback period
     int lbloop;
@@ -143,8 +144,8 @@ Curve * FunctionSZ::calculate (BarData &data, int method, int period, int no_dec
     double dntrend_noise_cnt = 0;
     for (lbloop = lbstart; lbloop < loop; lbloop++)
     {
-      Bar bar = data.getBar(lbloop);
-      Bar pbar = data.getBar(lbloop - 1);
+      Bar bar = g_barData.getBar(lbloop);
+      Bar pbar = g_barData.getBar(lbloop - 1);
       double lo_curr = bar.getLow();
       double lo_last = pbar.getLow();
       double hi_curr = bar.getHigh();
@@ -166,7 +167,7 @@ Curve * FunctionSZ::calculate (BarData &data, int method, int period, int no_dec
     if (dntrend_noise_cnt > 0)
       dntrend_noise_avg /= dntrend_noise_cnt;
 
-    Bar pbar = data.getBar(loop - 1);
+    Bar pbar = g_barData.getBar(loop - 1);
     double lo_last = pbar.getLow();
     double hi_last = pbar.getHigh();
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;

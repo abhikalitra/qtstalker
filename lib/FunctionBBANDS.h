@@ -26,14 +26,13 @@
 #include <QList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionBBANDS
 {
   public:
     FunctionBBANDS ();
-    int script (QStringList &, Indicator &, BarData &);
+    int script (QStringList &, Indicator &);
     int calculate (Curve *in, int period, double udev, double ddev, int maType, QList<Curve *> &rl);
 };
 

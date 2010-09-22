@@ -78,9 +78,11 @@ IndicatorDialog::IndicatorDialog () : QDialog (0, 0)
 
   Config config;
   config.getData(Config::IndicatorPluginList, l);
+  config.getData(Config::LastNewIndicator, d);
   
   _indicator = new QComboBox;
   _indicator->addItems(l);
+  _indicator->setCurrentIndex(_indicator->findText(d));
   grid->addWidget(_indicator, row++, col--);
   
   // tab row
@@ -132,12 +134,18 @@ void IndicatorDialog::done ()
     return;
   }
 
+  Config config;
+  config.transaction();
+  QString s = _indicator->currentText();
+  config.setData(Config::LastNewIndicator, s);
+  config.commit();
+
   Indicator i;
   i.setEnable(1);
   i.setTabRow(_row->value());
   i.setColumn(_col->value());
 
-  QString s = _name->text();
+  s = _name->text();
   i.setName(s);
 
   s = _indicator->currentText();

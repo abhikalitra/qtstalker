@@ -25,7 +25,6 @@
 #include <QStringList>
 #include <QObject>
 
-#include "BarData.h"
 #include "Indicator.h"
 #include "IndicatorPluginDialog.h"
 
@@ -39,8 +38,8 @@ class IndicatorPlugin : public QObject
   public:
     IndicatorPlugin ();
     virtual ~IndicatorPlugin ();
-    virtual int getIndicator (Indicator &, BarData &);
-    virtual int getCUS (QStringList &, Indicator &, BarData &);
+    virtual int getIndicator (Indicator &);
+    virtual int getCUS (QStringList &, Indicator &);
     virtual IndicatorPluginDialog * dialog (Indicator &);
     virtual void defaults (Indicator &);
 
@@ -49,7 +48,6 @@ class IndicatorPlugin : public QObject
 
   protected:
     QString _indicator;
-//    QStringList _opList;
     int _deleteFlag;
 };
 

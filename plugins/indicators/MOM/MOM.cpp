@@ -24,6 +24,7 @@
 #include "MOMDialog.h"
 #include "FunctionMOM.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,13 +33,13 @@ MOM::MOM ()
   _indicator = "MOM";
 }
 
-int MOM::getIndicator (Indicator &ind, BarData &data)
+int MOM::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = data.getInput(data.getInputType(s));
+  Curve *in = g_barData.getInput(g_barData.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -78,10 +79,10 @@ int MOM::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int MOM::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int MOM::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionMOM f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * MOM::dialog (Indicator &i)

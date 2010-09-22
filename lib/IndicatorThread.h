@@ -25,7 +25,6 @@
 #include <QString>
 #include <QThread>
 
-#include "BarData.h"
 #include "Indicator.h"
 
 class IndicatorThread : public QThread
@@ -36,13 +35,12 @@ class IndicatorThread : public QThread
     void signalDone (Indicator);
 
   public:
-    IndicatorThread (QObject *, BarData &, Indicator &);
+    IndicatorThread (QObject *, Indicator &);
 
   protected:
     void run ();
 
   private:
-    BarData _data;
     Indicator _indicator;
 };
 

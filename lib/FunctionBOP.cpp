@@ -22,6 +22,7 @@
 #include "FunctionBOP.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +30,7 @@ FunctionBOP::FunctionBOP ()
 {
 }
 
-int FunctionBOP::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionBOP::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,BOP,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
   //     0       1     2    3             4                 5 
@@ -63,7 +64,7 @@ int FunctionBOP::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *line = calculate(data, smoothing, ma);
+  Curve *line = calculate(smoothing, ma);
   if (! line)
     return 1;
 
@@ -74,36 +75,23 @@ int FunctionBOP::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-Curve * FunctionBOP::calculate (BarData &data, int smoothing, int type)
+Curve * FunctionBOP::calculate (int smoothing, int type)
 {
-  if (data.count() < 1 || data.count() < smoothing)
+  int size = g_barData.count();
+  
+  if (size < 1 || size < smoothing)
     return 0;
 
-  int size = data.count();
-  TA_Real open[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    open[loop] = (TA_Real) bar.getOpen();
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
-
   TA_RetCode rc = TA_BOP(0,
                          size - 1,
-                         &open[0],
-                         &high[0],
-                         &low[0],
-                         &close[0],
+                         g_barData.getTAData(BarData::Open),
+                         g_barData.getTAData(BarData::High),
+                         g_barData.getTAData(BarData::Low),
+                         g_barData.getTAData(BarData::Close),
                          &outBeg,
                          &outNb,
                          &out[0]);
@@ -115,7 +103,8 @@ Curve * FunctionBOP::calculate (BarData &data, int smoothing, int type)
 
   Curve *line = new Curve;
 
-  for (loop = 0; loop < size; loop++)
+  int loop = 0;
+  for (; loop < size; loop++)
     line->setBar(loop, new CurveBar(out[loop]));
 
   if (smoothing > 1)

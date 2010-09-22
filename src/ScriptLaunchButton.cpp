@@ -22,8 +22,8 @@
 #include "ScriptLaunchButton.h"
 #include "Config.h"
 #include "ScriptDataBase.h"
-#include "Globals.h"
 #include "../pics/configure.xpm"
+#include "Globals.h"
 
 #include <QPixmap>
 #include <QCursor>
@@ -93,7 +93,9 @@ void ScriptLaunchButton::configure2 (QString s)
   _scriptName = s;
 
   Config config;
+  config.transaction();
   config.setData((Config::Parm) _position, _scriptName);
+  config.commit();
 
   setToolTip(_scriptName);
 }

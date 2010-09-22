@@ -21,6 +21,7 @@
 
 #include "FunctionSAR.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -28,7 +29,7 @@ FunctionSAR::FunctionSAR ()
 {
 }
 
-int FunctionSAR::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionSAR::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>
   //      0       1    2     3         4            5
@@ -61,7 +62,7 @@ int FunctionSAR::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *line = calculate(data, init, max);
+  Curve *line = calculate(init, max);
   if (! line)
     return 1;
 
@@ -72,29 +73,20 @@ int FunctionSAR::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-Curve * FunctionSAR::calculate (BarData &data, double _init, double _max)
+Curve * FunctionSAR::calculate (double _init, double _max)
 {
-  if (data.count() < 1)
+  int size = g_barData.count();
+  
+  if (size < 1)
     return 0;
 
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
   TA_Real out[size];
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-  }
-
   TA_Integer outBeg;
   TA_Integer outNb;
   TA_RetCode rc = TA_SAR(0,
                          size - 1,
-                         &high[0],
-                         &low[0],
+                         g_barData.getTAData(BarData::High),
+                         g_barData.getTAData(BarData::Low),
                          _init,
                          _max,
                          &outBeg,
@@ -109,7 +101,8 @@ Curve * FunctionSAR::calculate (BarData &data, double _init, double _max)
 
   Curve *line = new Curve(Curve::Dot);
 
-  for (loop = 0; loop < outNb; loop++)
+  int loop = 0;
+  for (; loop < outNb; loop++)
     line->setBar(loop + 1, new CurveBar(out[loop]));
 
   return line;

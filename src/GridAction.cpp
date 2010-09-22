@@ -35,6 +35,8 @@ GridAction::GridAction ()
   setCheckable(TRUE);
 
   Config config;
+  config.transaction();
+  
   config.getData(Config::GridColor, _color);
   if (! _color.isValid())
   {
@@ -52,13 +54,17 @@ GridAction::GridAction ()
     setChecked(TRUE);
   }
 
+  config.commit();
+
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }
 
 void GridAction::changed (bool status)
 {
   Config config;
+  config.transaction();
   config.setData(Config::Grid, status);
+  config.commit();
 
   emit signalChanged(status);
 }
@@ -80,7 +86,10 @@ void GridAction::setColor (QColor c)
   _color = c;
 
   Config config;
+  config.transaction();
   config.setData(Config::GridColor, _color);
+  config.commit();
+
   emit signalColorChanged(_color);
 }
 

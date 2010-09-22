@@ -25,6 +25,7 @@
 #include "STOCHRSI.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
+#include "BarData.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -205,7 +206,9 @@ void STOCHRSIDialog::done ()
   _indicator.setSettings(_settings);
 
   IndicatorDataBase db;
+  db.transaction();
   db.setIndicator(_indicator);
+  db.commit();
 
   emit signalDone(_indicator);
 

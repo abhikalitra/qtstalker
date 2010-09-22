@@ -38,6 +38,7 @@ ChartObjectTLine::ChartObjectTLine ()
   _settings.type = (int) ChartObject::_TLine;
 
   Config config;
+  config.transaction();
   config.getData(Config::DefaultChartObjectTLineColor, _settings.color);
   if (! _settings.color.isValid())
   {
@@ -54,6 +55,8 @@ ChartObjectTLine::ChartObjectTLine ()
   }
   else
     _settings.extend = s.toInt();
+
+  config.commit();
 }
 
 void ChartObjectTLine::info (Setting &info)

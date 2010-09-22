@@ -31,7 +31,7 @@ ULTOSC::ULTOSC ()
   _indicator = "ULTOSC";
 }
 
-int ULTOSC::getIndicator (Indicator &ind, BarData &data)
+int ULTOSC::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -78,7 +78,7 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
   int lp = settings.getInt(LongPeriod);
 
   FunctionULTOSC f;
-  line = f.calculate(data, sp, mp, lp);
+  line = f.calculate(sp, mp, lp);
   if (! line)
     return 1;
 
@@ -98,10 +98,10 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int ULTOSC::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int ULTOSC::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionULTOSC f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * ULTOSC::dialog (Indicator &i)

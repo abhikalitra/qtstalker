@@ -83,7 +83,9 @@ int SCGroup::addGroup (QStringList &l, QByteArray &ba)
   bd.setSymbol(l[4]);
   g.setSymbol(bd);
   
+  db.transaction();
   db.setGroup(g);
+  db.commit();
 
   ba.clear();
   ba.append("0\n");
@@ -102,7 +104,9 @@ int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
   }
 
   GroupDataBase db;
+  db.transaction();
   db.deleteGroup(l[2]);
+  db.commit();
 
   ba.clear();
   ba.append("0\n");

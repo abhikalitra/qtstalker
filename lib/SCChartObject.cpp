@@ -23,6 +23,7 @@
 #include "ChartObjectSettings.h"
 #include "ChartObjectFactory.h"
 #include "ChartObject.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +31,7 @@ SCChartObject::SCChartObject ()
 {
 }
 
-int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, BarData &data)
+int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind)
 {
   // CO,<TYPE>,*
   // 0    1
@@ -45,7 +46,7 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, Ba
     return rc;
   }
 
-  if (! data.count())
+  if (! g_barData.count())
   {
     qDebug() << "SCChartObject::calculate: no bars available";
     return rc;
@@ -69,8 +70,8 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind, Ba
   co->settings(set);
   delete co;
   
-  set.symbol = data.getSymbol();
-  set.exchange = data.getExchange();
+  set.symbol = g_barData.getSymbol();
+  set.exchange = g_barData.getExchange();
   set.indicator = ind.name();
 
   // we use < 0 id nums for script chart objects so there are no conflicts

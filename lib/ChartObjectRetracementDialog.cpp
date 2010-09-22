@@ -191,6 +191,7 @@ void ChartObjectRetracementDialog::done ()
   if (_default->isChecked())
   {
     Config config;
+    config.transaction();
     config.setData(Config::DefaultChartObjectRetracementColor, _color->color());
     config.setData(Config::DefaultChartObjectRetracementLine1, _line1->value());
     config.setData(Config::DefaultChartObjectRetracementLine2, _line2->value());
@@ -198,6 +199,7 @@ void ChartObjectRetracementDialog::done ()
     config.setData(Config::DefaultChartObjectRetracementLine4, _line4->value());
     config.setData(Config::DefaultChartObjectRetracementLine5, _line5->value());
     config.setData(Config::DefaultChartObjectRetracementLine6, _line6->value());
+    config.commit();
   }
 
   _settings.color = _color->color();

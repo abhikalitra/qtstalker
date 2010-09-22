@@ -93,7 +93,9 @@ void ChartObjectBuyDialog::done ()
   if (_default->isChecked())
   {
     Config config;
+    config.transaction();
     config.setData((int) Config::DefaultChartObjectBuyColor, _color->color());
+    config.commit();
   }
 
   _settings.color = _color->color();

@@ -20,6 +20,7 @@
  */
 
 #include "FunctionNORMALIZE.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -28,7 +29,7 @@ FunctionNORMALIZE::FunctionNORMALIZE ()
 {
 }
 
-int FunctionNORMALIZE::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionNORMALIZE::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,NORMALIZE,<NAME>,<INPUT>
   //     0        1       2       3       4 
@@ -49,7 +50,7 @@ int FunctionNORMALIZE::script (QStringList &set, Indicator &ind, BarData &data)
   Curve *in = ind.line(set.at(4));
   if (! in)
   {
-    in = data.getInput(data.getInputType(set[4]));
+    in = g_barData.getInput(g_barData.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionNORMALIZE::script: input not found" << set.at(4);

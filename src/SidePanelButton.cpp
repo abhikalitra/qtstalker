@@ -32,6 +32,8 @@ SidePanelButton::SidePanelButton ()
   setCheckable(TRUE);
 
   Config config;
+  config.transaction();
+
   QString s;
   config.getData(Config::SidePanelStatus, s);
 
@@ -44,6 +46,8 @@ SidePanelButton::SidePanelButton ()
     setChecked(TRUE);
     config.setData(Config::SidePanelStatus, 1);
   }
+
+  config.commit();
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }

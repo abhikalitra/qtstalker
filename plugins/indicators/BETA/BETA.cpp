@@ -24,6 +24,7 @@
 #include "FunctionBETA.h"
 #include "BETADialog.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,16 +33,16 @@ BETA::BETA ()
   _indicator = "BETA";
 }
 
-int BETA::getIndicator (Indicator &ind, BarData &data)
+int BETA::getIndicator (Indicator &ind)
 {
-  if (! data.count())
+  if (! g_barData.count())
     return 1;
   
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = data.getInput(data.getInputType(s));
+  Curve *in = g_barData.getInput(g_barData.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -53,15 +54,15 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
   bd.setSymbol(s);
   settings.getData(Exchange, s);
   bd.setExchange(s);
-  bd.setBarLength(data.getBarLength());
+  bd.setBarLength(g_barData.getBarLength());
 
   QStringList l;
   l << "GetQuotes" << bd.getExchange() << bd.getSymbol();
   bd.barLengthText(bd.getBarLength(), s);
   l << s;
-  Bar bar = data.getBar(0);
+  Bar bar = g_barData.getBar(0);
   l << bar.date().toString("yyyyMMddHHmmss");
-  bar = data.getBar(data.count() - 1);
+  bar = g_barData.getBar(g_barData.count() - 1);
   l << bar.date().toString("yyyyMMddHHmmss");
 
   QString command = l.join(",") + "\n";
@@ -110,10 +111,10 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int BETA::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int BETA::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionBETA f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * BETA::dialog (Indicator &i)

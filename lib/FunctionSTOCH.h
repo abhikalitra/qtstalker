@@ -26,15 +26,14 @@
 #include <QList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionSTOCH
 {
   public:
     FunctionSTOCH ();
-    int script (QStringList &, Indicator &, BarData &);
-    int calculate (BarData &data, int kperiod, int dperiod, int ma, QList<Curve *> &pl);
+    int script (QStringList &, Indicator &);
+    int calculate (int kperiod, int dperiod, int ma, QList<Curve *> &pl);
 };
 
 #endif

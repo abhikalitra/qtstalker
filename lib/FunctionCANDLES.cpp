@@ -21,6 +21,7 @@
 
 #include "FunctionCANDLES.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -90,7 +91,7 @@ FunctionCANDLES::FunctionCANDLES ()
   _methodList << "XSIDEGAP3METHODS";
 }
 
-int FunctionCANDLES::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionCANDLES::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,CANDLES,<METHOD>,*
   //     0       1      2        3
@@ -106,17 +107,17 @@ int FunctionCANDLES::script (QStringList &set, Indicator &ind, BarData &data)
   switch (method)
   {
     case _NONE:
-      rc = scriptCandles(set, ind, data);
+      rc = scriptCandles(set, ind);
       break;
     default:
-      rc = scriptMethod(set, ind, data);
+      rc = scriptMethod(set, ind);
       break;
   }
 
   return rc;
 }
 
-int FunctionCANDLES::scriptCandles (QStringList &set, Indicator &ind, BarData &data)
+int FunctionCANDLES::scriptCandles (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>
   //    0        1       2       3       4
@@ -134,7 +135,7 @@ int FunctionCANDLES::scriptCandles (QStringList &set, Indicator &ind, BarData &d
     return 1;
   }
 
-  Curve *line = candles(data);
+  Curve *line = candles();
   if (! line)
     return 1;
 
@@ -145,7 +146,7 @@ int FunctionCANDLES::scriptCandles (QStringList &set, Indicator &ind, BarData &d
   return 0;
 }
 
-int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind, BarData &data)
+int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<PENETRATION>
   //    0        1       2       3       4         5 
@@ -178,7 +179,7 @@ int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind, BarData &da
     return 1;
   }
 
-  Curve *line = getMethod(data, method, pen);
+  Curve *line = getMethod(method, pen);
   if (! line)
     return 1;
 
@@ -189,19 +190,20 @@ int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind, BarData &da
   return 0;
 }
 
-Curve * FunctionCANDLES::candles (BarData &data)
+Curve * FunctionCANDLES::candles ()
 {
-  if (! data.count())
+  int size = g_barData.count();
+  
+  if (! size)
     return 0;
   
   Curve *line = new Curve(Curve::Candle);
 
   int loop;
-  int size = data.count();
   for (loop = 0; loop < size; loop++)
   {
     CurveBar *bar = new CurveBar;
-    Bar tbar = data.getBar(loop);
+    Bar tbar = g_barData.getBar(loop);
     bar->setData(0, tbar.getOpen());
     bar->setData(1, tbar.getHigh());
     bar->setData(2, tbar.getLow());
@@ -212,210 +214,674 @@ Curve * FunctionCANDLES::candles (BarData &data)
   return line;
 }
 
-Curve * FunctionCANDLES::getMethod (BarData &data, int method, double pen)
+Curve * FunctionCANDLES::getMethod (int method, double pen)
 {
-  if (data.count() < 1)
+  int size = g_barData.count();
+
+  if (size < 1)
     return 0;
 
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real open[size];
   TA_Integer out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
-
-  int loop;
-  for (loop = 0; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    open[loop] = (TA_Real) bar.getOpen();
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
 
   TA_RetCode rc = TA_SUCCESS;
 
   switch ((Method) method)
   {
     case _ABANDONEDBABY:
-      rc = TA_CDLABANDONEDBABY(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLABANDONEDBABY(0,
+                               size - 1,
+                               g_barData.getTAData(BarData::Open),
+                               g_barData.getTAData(BarData::High),
+                               g_barData.getTAData(BarData::Low),
+                               g_barData.getTAData(BarData::Close),
+                               pen,
+                               &outBeg,
+                               &outNb,
+                               &out[0]);
       break;
     case _DARKCLOUDCOVER:
-      rc = TA_CDLDARKCLOUDCOVER(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLDARKCLOUDCOVER(0,
+                                size - 1,
+                                g_barData.getTAData(BarData::Open),
+                                g_barData.getTAData(BarData::High),
+                                g_barData.getTAData(BarData::Low),
+                                g_barData.getTAData(BarData::Close),
+                                pen,
+                                &outBeg,
+                                &outNb,
+                                &out[0]);
       break;
     case _EVENINGDOJISTAR:
-      rc = TA_CDLEVENINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLEVENINGDOJISTAR(0,
+                                 size - 1,
+                                 g_barData.getTAData(BarData::Open),
+                                 g_barData.getTAData(BarData::High),
+                                 g_barData.getTAData(BarData::Low),
+                                 g_barData.getTAData(BarData::Close),
+                                 pen,
+                                 &outBeg,
+                                 &outNb,
+                                 &out[0]);
       break;
     case _EVENINGSTAR:
-      rc = TA_CDLEVENINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLEVENINGSTAR(0,
+                             size - 1,
+                             g_barData.getTAData(BarData::Open),
+                             g_barData.getTAData(BarData::High),
+                             g_barData.getTAData(BarData::Low),
+                             g_barData.getTAData(BarData::Close),
+                             pen,
+                             &outBeg,
+                             &outNb,
+                             &out[0]);
       break;
     case _MORNINGDOJISTAR:
-      rc = TA_CDLMORNINGDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], pen, &outBeg, &outNb, &out[0]);
+      rc = TA_CDLMORNINGDOJISTAR(0,
+                                 size - 1,
+                                 g_barData.getTAData(BarData::Open),
+                                 g_barData.getTAData(BarData::High),
+                                 g_barData.getTAData(BarData::Low),
+                                 g_barData.getTAData(BarData::Close),
+                                 pen,
+                                 &outBeg,
+                                 &outNb,
+                                 &out[0]);
       break;
     case _2CROWS:
-      rc = TA_CDL2CROWS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDL2CROWS(0,
+                        size - 1,
+                        g_barData.getTAData(BarData::Open),
+                        g_barData.getTAData(BarData::High),
+                        g_barData.getTAData(BarData::Low),
+                        g_barData.getTAData(BarData::Close),
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
       break;
     case _3BLACKCROWS:
-      rc = TA_CDL3BLACKCROWS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDL3BLACKCROWS(0,
+                             size - 1,
+                             g_barData.getTAData(BarData::Open),
+                             g_barData.getTAData(BarData::High),
+                             g_barData.getTAData(BarData::Low),
+                             g_barData.getTAData(BarData::Close),
+                             &outBeg,
+                             &outNb,
+                             &out[0]);
       break;
     case _3INSIDE:
-      rc = TA_CDL3INSIDE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDL3INSIDE(0,
+                         size - 1,
+                         g_barData.getTAData(BarData::Open),
+                         g_barData.getTAData(BarData::High),
+                         g_barData.getTAData(BarData::Low),
+                         g_barData.getTAData(BarData::Close),
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
       break;
     case _3LINESTRIKE:
-      rc = TA_CDL3LINESTRIKE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDL3LINESTRIKE(0,
+                             size - 1,
+                             g_barData.getTAData(BarData::Open),
+                             g_barData.getTAData(BarData::High),
+                             g_barData.getTAData(BarData::Low),
+                             g_barData.getTAData(BarData::Close),
+                             &outBeg,
+                             &outNb,
+                             &out[0]);
       break;
     case _3OUTSIDE:
-      rc = TA_CDL3OUTSIDE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDL3OUTSIDE(0,
+                          size - 1,
+                          g_barData.getTAData(BarData::Open),
+                          g_barData.getTAData(BarData::High),
+                          g_barData.getTAData(BarData::Low),
+                          g_barData.getTAData(BarData::Close),
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
       break;
     case _3STARSINSOUTH:
-      rc = TA_CDL3STARSINSOUTH(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDL3STARSINSOUTH(0,
+                               size - 1,
+                               g_barData.getTAData(BarData::Open),
+                               g_barData.getTAData(BarData::High),
+                               g_barData.getTAData(BarData::Low),
+                               g_barData.getTAData(BarData::Close),
+                               &outBeg,
+                               &outNb,
+                               &out[0]);
       break;
     case _3WHITESOLDIERS:
-      rc = TA_CDL3WHITESOLDIERS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDL3WHITESOLDIERS(0,
+                                size - 1,
+                                g_barData.getTAData(BarData::Open),
+                                g_barData.getTAData(BarData::High),
+                                g_barData.getTAData(BarData::Low),
+                                g_barData.getTAData(BarData::Close),
+                                &outBeg,
+                                &outNb,
+                                &out[0]);
       break;
     case _ADVANCEBLOCK:
-      rc = TA_CDLADVANCEBLOCK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLADVANCEBLOCK(0,
+                              size - 1,
+                              g_barData.getTAData(BarData::Open),
+                              g_barData.getTAData(BarData::High),
+                              g_barData.getTAData(BarData::Low),
+                              g_barData.getTAData(BarData::Close),
+                              &outBeg,
+                              &outNb,
+                              &out[0]);
       break;
     case _BELTHOLD:
-      rc = TA_CDLBELTHOLD(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLBELTHOLD(0,
+                          size - 1,
+                          g_barData.getTAData(BarData::Open),
+                          g_barData.getTAData(BarData::High),
+                          g_barData.getTAData(BarData::Low),
+                          g_barData.getTAData(BarData::Close),
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
       break;
     case _BREAKAWAY:
-      rc = TA_CDLBREAKAWAY(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLBREAKAWAY(0,
+                           size - 1,
+                           g_barData.getTAData(BarData::Open),
+                           g_barData.getTAData(BarData::High),
+                           g_barData.getTAData(BarData::Low),
+                           g_barData.getTAData(BarData::Close),
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
       break;
     case _CLOSINGMARUBOZU:
-      rc = TA_CDLCLOSINGMARUBOZU(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLCLOSINGMARUBOZU(0,
+                                 size - 1,
+                                 g_barData.getTAData(BarData::Open),
+                                 g_barData.getTAData(BarData::High),
+                                 g_barData.getTAData(BarData::Low),
+                                 g_barData.getTAData(BarData::Close),
+                                 &outBeg,
+                                 &outNb,
+                                 &out[0]);
       break;
     case _CONCEALBABYSWALL:
-      rc = TA_CDLCONCEALBABYSWALL(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLCONCEALBABYSWALL(0,
+                                  size - 1,
+                                  g_barData.getTAData(BarData::Open),
+                                  g_barData.getTAData(BarData::High),
+                                  g_barData.getTAData(BarData::Low),
+                                  g_barData.getTAData(BarData::Close),
+                                  &outBeg,
+                                  &outNb,
+                                  &out[0]);
       break;
     case _COUNTERATTACK:
-      rc = TA_CDLCOUNTERATTACK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLCOUNTERATTACK(0,
+                               size - 1,
+                               g_barData.getTAData(BarData::Open),
+                               g_barData.getTAData(BarData::High),
+                               g_barData.getTAData(BarData::Low),
+                               g_barData.getTAData(BarData::Close),
+                               &outBeg,
+                               &outNb,
+                               &out[0]);
       break;
     case _DOJI:
-      rc = TA_CDLDOJI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLDOJI(0,
+                      size - 1,
+                      g_barData.getTAData(BarData::Open),
+                      g_barData.getTAData(BarData::High),
+                      g_barData.getTAData(BarData::Low),
+                      g_barData.getTAData(BarData::Close),
+                      &outBeg,
+                      &outNb,
+                      &out[0]);
       break;
     case _DOJISTAR:
-      rc = TA_CDLDOJISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLDOJISTAR(0,
+                          size - 1,
+                          g_barData.getTAData(BarData::Open),
+                          g_barData.getTAData(BarData::High),
+                          g_barData.getTAData(BarData::Low),
+                          g_barData.getTAData(BarData::Close),
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
       break;
     case _DRAGONFLYDOJI:
-      rc = TA_CDLDRAGONFLYDOJI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLDRAGONFLYDOJI(0,
+                               size - 1,
+                               g_barData.getTAData(BarData::Open),
+                               g_barData.getTAData(BarData::High),
+                               g_barData.getTAData(BarData::Low),
+                               g_barData.getTAData(BarData::Close),
+                               &outBeg,
+                               &outNb,
+                               &out[0]);
       break;
     case _ENGULFING:
-      rc = TA_CDLENGULFING(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLENGULFING(0,
+                           size - 1,
+                           g_barData.getTAData(BarData::Open),
+                           g_barData.getTAData(BarData::High),
+                           g_barData.getTAData(BarData::Low),
+                           g_barData.getTAData(BarData::Close),
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
       break;
     case _GAPSIDESIDEWHITE:
-      rc = TA_CDLGAPSIDESIDEWHITE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLGAPSIDESIDEWHITE(0,
+                                  size - 1,
+                                  g_barData.getTAData(BarData::Open),
+                                  g_barData.getTAData(BarData::High),
+                                  g_barData.getTAData(BarData::Low),
+                                  g_barData.getTAData(BarData::Close),
+                                  &outBeg,
+                                  &outNb,
+                                  &out[0]);
       break;
     case _GRAVESTONEDOJI:
-      rc = TA_CDLGRAVESTONEDOJI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLGRAVESTONEDOJI(0,
+                                size - 1,
+                                g_barData.getTAData(BarData::Open),
+                                g_barData.getTAData(BarData::High),
+                                g_barData.getTAData(BarData::Low),
+                                g_barData.getTAData(BarData::Close),
+                                &outBeg,
+                                &outNb,
+                                &out[0]);
       break;
     case _HAMMER:
-      rc = TA_CDLHAMMER(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLHAMMER(0,
+                        size - 1,
+                        g_barData.getTAData(BarData::Open),
+                        g_barData.getTAData(BarData::High),
+                        g_barData.getTAData(BarData::Low),
+                        g_barData.getTAData(BarData::Close),
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
       break;
     case _HANGINGMAN:
-      rc = TA_CDLHANGINGMAN(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLHANGINGMAN(0,
+                            size - 1,
+                            g_barData.getTAData(BarData::Open),
+                            g_barData.getTAData(BarData::High),
+                            g_barData.getTAData(BarData::Low),
+                            g_barData.getTAData(BarData::Close),
+                            &outBeg,
+                            &outNb,
+                            &out[0]);
       break;
     case _HARAMI:
-      rc = TA_CDLHARAMI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLHARAMI(0,
+                        size - 1,
+                        g_barData.getTAData(BarData::Open),
+                        g_barData.getTAData(BarData::High),
+                        g_barData.getTAData(BarData::Low),
+                        g_barData.getTAData(BarData::Close),
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
       break;
     case _HARAMICROSS:
-      rc = TA_CDLHARAMICROSS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLHARAMICROSS(0,
+                             size - 1,
+                             g_barData.getTAData(BarData::Open),
+                             g_barData.getTAData(BarData::High),
+                             g_barData.getTAData(BarData::Low),
+                             g_barData.getTAData(BarData::Close),
+                             &outBeg,
+                             &outNb,
+                             &out[0]);
       break;
     case _HIGHWAVE:
-      rc = TA_CDLHIGHWAVE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLHIGHWAVE(0,
+                          size - 1,
+                          g_barData.getTAData(BarData::Open),
+                          g_barData.getTAData(BarData::High),
+                          g_barData.getTAData(BarData::Low),
+                          g_barData.getTAData(BarData::Close),
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
       break;
     case _HIKKAKE:
-      rc = TA_CDLHIKKAKE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLHIKKAKE(0,
+                         size - 1,
+                         g_barData.getTAData(BarData::Open),
+                         g_barData.getTAData(BarData::High),
+                         g_barData.getTAData(BarData::Low),
+                         g_barData.getTAData(BarData::Close),
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
       break;
     case _HIKKAKEMOD:
-      rc = TA_CDLHIKKAKEMOD(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLHIKKAKEMOD(0,
+                            size - 1,
+                            g_barData.getTAData(BarData::Open),
+                            g_barData.getTAData(BarData::High),
+                            g_barData.getTAData(BarData::Low),
+                            g_barData.getTAData(BarData::Close),
+                            &outBeg,
+                            &outNb,
+                            &out[0]);
       break;
     case _HOMINGPIGEON:
-      rc = TA_CDLHOMINGPIGEON(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLHOMINGPIGEON(0,
+                              size - 1,
+                              g_barData.getTAData(BarData::Open),
+                              g_barData.getTAData(BarData::High),
+                              g_barData.getTAData(BarData::Low),
+                              g_barData.getTAData(BarData::Close),
+                              &outBeg,
+                              &outNb,
+                              &out[0]);
       break;
     case _IDENTICAL3CROWS:
-      rc = TA_CDLIDENTICAL3CROWS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLIDENTICAL3CROWS(0,
+                                 size - 1,
+                                 g_barData.getTAData(BarData::Open),
+                                 g_barData.getTAData(BarData::High),
+                                 g_barData.getTAData(BarData::Low),
+                                 g_barData.getTAData(BarData::Close),
+                                 &outBeg,
+                                 &outNb,
+                                 &out[0]);
       break;
     case _INNECK:
-      rc = TA_CDLINNECK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLINNECK(0,
+                        size - 1,
+                        g_barData.getTAData(BarData::Open),
+                        g_barData.getTAData(BarData::High),
+                        g_barData.getTAData(BarData::Low),
+                        g_barData.getTAData(BarData::Close),
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
       break;
     case _INVERTEDHAMMER:
-      rc = TA_CDLINVERTEDHAMMER(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLINVERTEDHAMMER(0,
+                                size - 1,
+                                g_barData.getTAData(BarData::Open),
+                                g_barData.getTAData(BarData::High),
+                                g_barData.getTAData(BarData::Low),
+                                g_barData.getTAData(BarData::Close),
+                                &outBeg,
+                                &outNb,
+                                &out[0]);
       break;
     case _KICKING:
-      rc = TA_CDLKICKING(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLKICKING(0,
+                         size - 1,
+                         g_barData.getTAData(BarData::Open),
+                         g_barData.getTAData(BarData::High),
+                         g_barData.getTAData(BarData::Low),
+                         g_barData.getTAData(BarData::Close),
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
       break;
     case _KICKINGBYLENGTH:
-      rc = TA_CDLKICKINGBYLENGTH(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLKICKINGBYLENGTH(0,
+                                 size - 1,
+                                 g_barData.getTAData(BarData::Open),
+                                 g_barData.getTAData(BarData::High),
+                                 g_barData.getTAData(BarData::Low),
+                                 g_barData.getTAData(BarData::Close),
+                                 &outBeg,
+                                 &outNb,
+                                 &out[0]);
       break;
     case _LADDERBOTTOM:
-      rc = TA_CDLLADDERBOTTOM(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLLADDERBOTTOM(0,
+                              size - 1,
+                              g_barData.getTAData(BarData::Open),
+                              g_barData.getTAData(BarData::High),
+                              g_barData.getTAData(BarData::Low),
+                              g_barData.getTAData(BarData::Close),
+                              &outBeg,
+                              &outNb,
+                              &out[0]);
       break;
     case _LONGLEGGEDDOJI:
-      rc = TA_CDLLONGLEGGEDDOJI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLLONGLEGGEDDOJI(0,
+                                size - 1,
+                                g_barData.getTAData(BarData::Open),
+                                g_barData.getTAData(BarData::High),
+                                g_barData.getTAData(BarData::Low),
+                                g_barData.getTAData(BarData::Close),
+                                &outBeg,
+                                &outNb,
+                                &out[0]);
       break;
     case _LONGLINE:
-      rc = TA_CDLLONGLINE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLLONGLINE(0,
+                          size - 1,
+                          g_barData.getTAData(BarData::Open),
+                          g_barData.getTAData(BarData::High),
+                          g_barData.getTAData(BarData::Low),
+                          g_barData.getTAData(BarData::Close),
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
       break;
     case _MARUBOZU:
-      rc = TA_CDLMARUBOZU(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLMARUBOZU(0,
+                          size - 1,
+                          g_barData.getTAData(BarData::Open),
+                          g_barData.getTAData(BarData::High),
+                          g_barData.getTAData(BarData::Low),
+                          g_barData.getTAData(BarData::Close),
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
       break;
     case _MATCHINGLOW:
-      rc = TA_CDLMATCHINGLOW(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLMATCHINGLOW(0,
+                             size - 1,
+                             g_barData.getTAData(BarData::Open),
+                             g_barData.getTAData(BarData::High),
+                             g_barData.getTAData(BarData::Low),
+                             g_barData.getTAData(BarData::Close),
+                             &outBeg,
+                             &outNb,
+                             &out[0]);
       break;
     case _ONNECK:
-      rc = TA_CDLONNECK(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLONNECK(0,
+                        size - 1,
+                        g_barData.getTAData(BarData::Open),
+                        g_barData.getTAData(BarData::High),
+                        g_barData.getTAData(BarData::Low),
+                        g_barData.getTAData(BarData::Close),
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
       break;
     case _PIERCING:
-      rc = TA_CDLPIERCING(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLPIERCING(0,
+                          size - 1,
+                          g_barData.getTAData(BarData::Open),
+                          g_barData.getTAData(BarData::High),
+                          g_barData.getTAData(BarData::Low),
+                          g_barData.getTAData(BarData::Close),
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
       break;
     case _RICKSHAWMAN:
-      rc = TA_CDLRICKSHAWMAN(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLRICKSHAWMAN(0,
+                             size - 1,
+                             g_barData.getTAData(BarData::Open),
+                             g_barData.getTAData(BarData::High),
+                             g_barData.getTAData(BarData::Low),
+                             g_barData.getTAData(BarData::Close),
+                             &outBeg,
+                             &outNb,
+                             &out[0]);
       break;
     case _RISEFALL3METHODS:
-      rc = TA_CDLRISEFALL3METHODS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLRISEFALL3METHODS(0,
+                                  size - 1,
+                                  g_barData.getTAData(BarData::Open),
+                                  g_barData.getTAData(BarData::High),
+                                  g_barData.getTAData(BarData::Low),
+                                  g_barData.getTAData(BarData::Close),
+                                  &outBeg,
+                                  &outNb,
+                                  &out[0]);
       break;
     case _SEPARATINGLINES:
-      rc = TA_CDLSEPARATINGLINES(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLSEPARATINGLINES(0,
+                                 size - 1,
+                                 g_barData.getTAData(BarData::Open),
+                                 g_barData.getTAData(BarData::High),
+                                 g_barData.getTAData(BarData::Low),
+                                 g_barData.getTAData(BarData::Close),
+                                 &outBeg,
+                                 &outNb,
+                                 &out[0]);
       break;
     case _SHOOTINGSTAR:
-      rc = TA_CDLSHOOTINGSTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLSHOOTINGSTAR(0,
+                              size - 1,
+                              g_barData.getTAData(BarData::Open),
+                              g_barData.getTAData(BarData::High),
+                              g_barData.getTAData(BarData::Low),
+                              g_barData.getTAData(BarData::Close),
+                              &outBeg,
+                              &outNb,
+                              &out[0]);
       break;
     case _SHORTLINE:
-      rc = TA_CDLSHORTLINE(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLSHORTLINE(0,
+                           size - 1,
+                           g_barData.getTAData(BarData::Open),
+                           g_barData.getTAData(BarData::High),
+                           g_barData.getTAData(BarData::Low),
+                           g_barData.getTAData(BarData::Close),
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
       break;
     case _SPINNINGTOP:
-      rc = TA_CDLSPINNINGTOP(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLSPINNINGTOP(0,
+                             size - 1,
+                             g_barData.getTAData(BarData::Open),
+                             g_barData.getTAData(BarData::High),
+                             g_barData.getTAData(BarData::Low),
+                             g_barData.getTAData(BarData::Close),
+                             &outBeg,
+                             &outNb,
+                             &out[0]);
       break;
     case _STALLEDPATTERN:
-      rc = TA_CDLSTALLEDPATTERN(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLSTALLEDPATTERN(0,
+                                size - 1,
+                                g_barData.getTAData(BarData::Open),
+                                g_barData.getTAData(BarData::High),
+                                g_barData.getTAData(BarData::Low),
+                                g_barData.getTAData(BarData::Close),
+                                &outBeg,
+                                &outNb,
+                                &out[0]);
       break;
     case _STICKSANDWICH:
-      rc = TA_CDLSTICKSANDWICH(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLSTICKSANDWICH(0,
+                               size - 1,
+                               g_barData.getTAData(BarData::Open),
+                               g_barData.getTAData(BarData::High),
+                               g_barData.getTAData(BarData::Low),
+                               g_barData.getTAData(BarData::Close),
+                               &outBeg,
+                               &outNb,
+                               &out[0]);
       break;
     case _TAKURI:
-      rc = TA_CDLTAKURI(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLTAKURI(0,
+                        size - 1,
+                        g_barData.getTAData(BarData::Open),
+                        g_barData.getTAData(BarData::High),
+                        g_barData.getTAData(BarData::Low),
+                        g_barData.getTAData(BarData::Close),
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
       break;
     case _TASUKIGAP:
-      rc = TA_CDLTASUKIGAP(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLTASUKIGAP(0,
+                           size - 1,
+                           g_barData.getTAData(BarData::Open),
+                           g_barData.getTAData(BarData::High),
+                           g_barData.getTAData(BarData::Low),
+                           g_barData.getTAData(BarData::Close),
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
       break;
     case _THRUSTING:
-      rc = TA_CDLTHRUSTING(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLTHRUSTING(0,
+                           size - 1,
+                           g_barData.getTAData(BarData::Open),
+                           g_barData.getTAData(BarData::High),
+                           g_barData.getTAData(BarData::Low),
+                           g_barData.getTAData(BarData::Close),
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
       break;
     case _TRISTAR:
-      rc = TA_CDLTRISTAR(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLTRISTAR(0,
+                         size - 1,
+                         g_barData.getTAData(BarData::Open),
+                         g_barData.getTAData(BarData::High),
+                         g_barData.getTAData(BarData::Low),
+                         g_barData.getTAData(BarData::Close),
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
       break;
     case _UNIQUE3RIVER:
-      rc = TA_CDLUNIQUE3RIVER(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLUNIQUE3RIVER(0,
+                              size - 1,
+                              g_barData.getTAData(BarData::Open),
+                              g_barData.getTAData(BarData::High),
+                              g_barData.getTAData(BarData::Low),
+                              g_barData.getTAData(BarData::Close),
+                              &outBeg,
+                              &outNb,
+                              &out[0]);
       break;
     case _UPSIDEGAP2CROWS:
-      rc = TA_CDLUPSIDEGAP2CROWS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLUPSIDEGAP2CROWS(0,
+                                 size - 1,
+                                 g_barData.getTAData(BarData::Open),
+                                 g_barData.getTAData(BarData::High),
+                                 g_barData.getTAData(BarData::Low),
+                                 g_barData.getTAData(BarData::Close),
+                                 &outBeg,
+                                 &outNb,
+                                 &out[0]);
       break;
     case _XSIDEGAP3METHODS:
-      rc = TA_CDLXSIDEGAP3METHODS(0, size - 1, &open[0], &high[0], &low[0], &close[0], &outBeg, &outNb, &out[0]);
+      rc = TA_CDLXSIDEGAP3METHODS(0,
+                                  size - 1,
+                                  g_barData.getTAData(BarData::Open),
+                                  g_barData.getTAData(BarData::High),
+                                  g_barData.getTAData(BarData::Low),
+                                  g_barData.getTAData(BarData::Close),
+                                  &outBeg,
+                                  &outNb,
+                                  &out[0]);
       break;
     default:
       break;
@@ -429,7 +895,7 @@ Curve * FunctionCANDLES::getMethod (BarData &data, int method, double pen)
 
   Curve *line = new Curve;
 
-  int dataLoop = data.count() - 1;
+  int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (dataLoop > -1 && outLoop > -1)
   {

@@ -39,7 +39,10 @@ ChartObjectBuy::ChartObjectBuy ()
   if (! _settings.color.isValid())
   {
     _settings.color = QColor(Qt::green);
+
+    config.transaction();
     config.setData(Config::DefaultChartObjectBuyColor, _settings.color);
+    config.commit();
   }
 }
 

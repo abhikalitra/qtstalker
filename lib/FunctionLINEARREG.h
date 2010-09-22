@@ -25,7 +25,6 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionLINEARREG
@@ -41,7 +40,7 @@ class FunctionLINEARREG
     };
 
     FunctionLINEARREG ();
-    int script (QStringList &, Indicator &, BarData &);
+    int script (QStringList &, Indicator &);
     Curve * calculate (Curve *in, int period, int method);
     QStringList & list ();
 

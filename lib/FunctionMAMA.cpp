@@ -21,6 +21,7 @@
 
 #include "FunctionMAMA.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -28,7 +29,7 @@ FunctionMAMA::FunctionMAMA ()
 {
 }
 
-int FunctionMAMA::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionMAMA::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,MAMA,<INPUT>,<NAME_MAMA>,<NAME_FAMA>,<FAST_LIMIT>,<SLOW_LIMIT>
   //      0       1     2     3         4           5           6            7 
@@ -42,7 +43,7 @@ int FunctionMAMA::script (QStringList &set, Indicator &ind, BarData &data)
   Curve *in = ind.line(set[3]);
   if (! in)
   {
-    in = data.getInput(data.getInputType(set[3]));
+    in = g_barData.getInput(g_barData.getInputType(set[3]));
     if (! in)
     {
       qDebug() << "FunctionMAMA::script: input not found" << set[3];

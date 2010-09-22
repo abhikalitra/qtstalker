@@ -32,7 +32,7 @@ MFI::MFI ()
   _indicator = "MFI";
 }
 
-int MFI::getIndicator (Indicator &ind, BarData &data)
+int MFI::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -70,7 +70,7 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
   int type = mau.typeFromString(s);
 
   FunctionMFI f;
-  line = f.calculate(data, period, smoothing, type);
+  line = f.calculate(period, smoothing, type);
   if (! line)
     return 1;
 
@@ -90,10 +90,10 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int MFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int MFI::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionMFI f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * MFI::dialog (Indicator &i)

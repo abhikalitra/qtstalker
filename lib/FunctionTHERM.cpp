@@ -30,6 +30,7 @@
 
 #include "FunctionTHERM.h"
 #include "FunctionMA.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -38,7 +39,7 @@ FunctionTHERM::FunctionTHERM ()
 {
 }
 
-int FunctionTHERM::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionTHERM::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,THERM,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
   //     0       1     2      3             4               5
@@ -72,7 +73,7 @@ int FunctionTHERM::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *line = calculate(data, smoothing, type);
+  Curve *line = calculate(smoothing, type);
   if (! line)
     return 1;
 
@@ -83,19 +84,19 @@ int FunctionTHERM::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-Curve * FunctionTHERM::calculate (BarData &data, int smoothing, int type)
+Curve * FunctionTHERM::calculate (int smoothing, int type)
 {
-  if (data.count() < smoothing || data.count() < 2)
+  if (g_barData.count() < smoothing || g_barData.count() < 2)
     return 0;
 
   Curve *line = new Curve;
 
   int loop = 1;
   double thermometer = 0;
-  for (; loop < (int) data.count(); loop++)
+  for (; loop < (int) g_barData.count(); loop++)
   {
-    Bar bar = data.getBar(loop);
-    Bar pbar = data.getBar(loop - 1);
+    Bar bar = g_barData.getBar(loop);
+    Bar pbar = g_barData.getBar(loop - 1);
     double high = fabs(bar.getHigh() - pbar.getHigh());
     double lo = fabs(pbar.getLow() - bar.getLow());
 

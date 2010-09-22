@@ -25,6 +25,7 @@
 #include "Curve.h"
 #include "FunctionBBANDS.h"
 #include "BBANDSDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QColor>
@@ -34,7 +35,7 @@ BBANDS::BBANDS ()
   _indicator = "BBANDS";
 }
 
-int BBANDS::getIndicator (Indicator &ind, BarData &data)
+int BBANDS::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -49,7 +50,7 @@ int BBANDS::getIndicator (Indicator &ind, BarData &data)
   QColor neutral(s);
   
   FunctionBARS b;
-  Curve *bars = b.getBARS(data, up, down, neutral);
+  Curve *bars = b.getBARS(up, down, neutral);
   if (! bars)
     return 1;
 
@@ -57,7 +58,7 @@ int BBANDS::getIndicator (Indicator &ind, BarData &data)
   ind.setLine(0, bars);
 
   settings.getData(Input, s);
-  Curve *in = data.getInput(data.getInputType(s));
+  Curve *in = g_barData.getInput(g_barData.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -130,10 +131,10 @@ int BBANDS::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int BBANDS::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int BBANDS::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionBBANDS f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * BBANDS::dialog (Indicator &i)

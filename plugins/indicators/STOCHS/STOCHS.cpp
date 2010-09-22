@@ -32,7 +32,7 @@ STOCHS::STOCHS ()
   _indicator = "STOCHS";
 }
 
-int STOCHS::getIndicator (Indicator &ind, BarData &data)
+int STOCHS::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -75,7 +75,7 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
 
   FunctionSTOCHS f;
   QList<Curve *> pl;
-  if (f.calculate(data, fkperiod, skperiod, dperiod, kmaType, dmaType, pl))
+  if (f.calculate(fkperiod, skperiod, dperiod, kmaType, dmaType, pl))
     return 1;
 
   line = pl.at(0);
@@ -111,10 +111,10 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int STOCHS::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int STOCHS::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionSTOCHS f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * STOCHS::dialog (Indicator &i)

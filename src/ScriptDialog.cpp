@@ -120,17 +120,18 @@ void ScriptDialog::done ()
 
     s = _file->getFile();
     _script.setFile(s);
+    
     Config config;
+    config.transaction();
     config.setData(Config::LastScriptPath, s);
+    config.commit();
 
     s = _comment->text();
     _script.setComment(s);
   
-    g_mutex.lock();
     _db.transaction();
     _db.setScript(&_script);
     _db.commit();
-    g_mutex.unlock();
 
     QStringList l;
     l << tr("Script") << _script.getName() << tr("saved");

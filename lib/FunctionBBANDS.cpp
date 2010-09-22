@@ -22,6 +22,7 @@
 #include "FunctionBBANDS.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,7 +33,7 @@ FunctionBBANDS::FunctionBBANDS ()
     qDebug("FunctionBBANDS::error on TA_Initialize");
 }
 
-int FunctionBBANDS::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionBBANDS::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,BBANDS,<INPUT>,<NAME UPPER>,<NAME MIDDLE>,<NAME LOWER>,<PERIOD>,<MA_TYPE>,<UP DEV>,<LOW DEV>
   //     0       1      2       3         4             5            6          7         8        9        10
@@ -46,7 +47,7 @@ int FunctionBBANDS::script (QStringList &set, Indicator &ind, BarData &data)
   Curve *in = ind.line(set[3]);
   if (! in)
   {
-    in = data.getInput(data.getInputType(set[3]));
+    in = g_barData.getInput(g_barData.getInputType(set[3]));
     if (! in)
     {
       qDebug() << "FunctionBBANDS::script: input not found" << set[3];

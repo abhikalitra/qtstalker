@@ -31,7 +31,10 @@ MiscPluginFactory::MiscPluginFactory ()
   if (_path.isEmpty())
   {
     _path = "/usr/local/lib/qtstalker/plugins/misc";
+    
+    config.transaction();
     config.setData(Config::MiscPluginPath, _path);
+    config.commit();
   }
 }
 
@@ -70,6 +73,8 @@ void MiscPluginFactory::setPluginList ()
   getPluginList(_path, l);
 
   Config config;
+  config.transaction();
   config.setData(Config::MiscPluginList, l);
+  config.commit();
 }
 

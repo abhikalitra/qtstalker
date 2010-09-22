@@ -24,6 +24,7 @@
 #include "FunctionBARS.h"
 #include "T3Dialog.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,7 +33,7 @@ T3::T3 ()
   _indicator = "T3";
 }
 
-int T3::getIndicator (Indicator &ind, BarData &data)
+int T3::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -40,7 +41,7 @@ int T3::getIndicator (Indicator &ind, BarData &data)
   QColor down("red");
   QColor neutral("blue");
   FunctionBARS b;
-  Curve *bars = b.getBARS(data, up, down, neutral);
+  Curve *bars = b.getBARS(up, down, neutral);
   if (bars)
   {
     bars->setZ(0);
@@ -49,7 +50,7 @@ int T3::getIndicator (Indicator &ind, BarData &data)
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = data.getInput(data.getInputType(s));
+  Curve *in = g_barData.getInput(g_barData.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -85,10 +86,10 @@ int T3::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int T3::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int T3::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionT3 f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * T3::dialog (Indicator &i)

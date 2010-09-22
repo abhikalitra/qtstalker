@@ -27,7 +27,6 @@
 #ifndef EXSCRIPT_HPP
 #define EXSCRIPT_HPP
 
-#include "BarData.h"
 #include "Indicator.h"
 
 #include <QProcess>
@@ -57,7 +56,6 @@ class ExScript : public QObject
     ExScript ();
     ~ExScript ();
     void clear ();
-    void setBarData (BarData &);
     void setIndicator (Indicator &);
     int calculate (QString &command); // blocking version
     int calculate2 (QString &command); // no blocking version
@@ -73,7 +71,6 @@ class ExScript : public QObject
   private:
     QProcess *_proc;
     QStringList _functionList;
-    BarData _data;
     int _killFlag;
     Indicator _indicator;
 };

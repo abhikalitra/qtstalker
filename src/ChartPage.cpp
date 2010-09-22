@@ -20,7 +20,6 @@
  */
 
 #include "ChartPage.h"
-#include "GroupDataBase.h"
 #include "Config.h"
 #include "SymbolDialog.h"
 #include "UpdateChartPageThread.h"
@@ -63,6 +62,8 @@ ChartPage::ChartPage ()
 
   // update to last symbol search before displaying
   Config config;
+  config.transaction();
+  
   config.getData(Config::LastChartPanelExchangeSearch, _searchExchange);
   if (_searchExchange.isEmpty())
   {
@@ -76,6 +77,8 @@ ChartPage::ChartPage ()
     _searchString = "*";
     config.setData(Config::LastChartPanelSymbolSearch, _searchString);
   }
+
+  config.commit();
 
   updateList();
 }
@@ -213,8 +216,10 @@ void ChartPage::symbolSearch2 (QString ex, QString ss)
   _searchString = ss;
   
   Config config;
+  config.transaction();
   config.setData(Config::LastChartPanelSymbolSearch, _searchString);
   config.setData(Config::LastChartPanelExchangeSearch, _searchExchange);
+  config.commit();
   
   updateList();
 }

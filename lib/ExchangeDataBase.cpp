@@ -21,10 +21,10 @@
 
 #include "ExchangeDataBase.h"
 #include "Config.h"
+#include "Globals.h"
 
 #include <QFile>
 #include <QTextStream>
-#include <QObject>
 #include <QDateTime>
 #include <QFileInfo>
 
@@ -70,14 +70,14 @@ int ExchangeDataBase::createExchanges ()
     return 0;
   }
   
+  config.transaction();
   config.setData(Config::ExchangeFileDate, dt2);
+  config.commit();
   qDebug() << "ExchangeDataBase::createExchanges: creating new exchange db";
 
   QTextStream in(&file);
   in.readLine(); // skip past first line
  
-  transaction();
-  
   // delete the old table
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DROP TABLE exchangeIndex";
@@ -113,7 +113,6 @@ int ExchangeDataBase::createExchanges ()
       qDebug() << "ExchangeDataBase::createExchanges: add records" << q.lastError().text();
   }
   
-  commit();
   file.close();
   return 0;
 }

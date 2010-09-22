@@ -25,7 +25,6 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionADX
@@ -41,8 +40,8 @@ class FunctionADX
     };
 
     FunctionADX ();
-    int script (QStringList &, Indicator &, BarData &);
-    Curve * calculate (BarData &data, int period, int method);
+    int script (QStringList &, Indicator &);
+    Curve * calculate (int period, int method);
 
   protected:
     QStringList _methodList;

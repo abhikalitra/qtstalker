@@ -25,7 +25,6 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionSZ
@@ -38,8 +37,8 @@ class FunctionSZ
     };
 
     FunctionSZ ();
-    int script (QStringList &, Indicator &, BarData &);
-    Curve * calculate (BarData &data, int method, int period, int no_decline_period, double coefficient);
+    int script (QStringList &, Indicator &);
+    Curve * calculate (int method, int period, int no_decline_period, double coefficient);
     QStringList & list ();
 
   protected:

@@ -228,12 +228,15 @@ void QtstalkerApp::loadSettings (Config &config)
 {
   // restore the size of the app
   QSize sz;
+  config.transaction();
+  
   config.getData(Config::MainWindowSize, sz);
   if (! sz.isValid())
   {
     sz = QSize(800, 600);
     config.setData(Config::MainWindowSize, sz);
   }
+  
   resize(sz);
 
   // restore the position of the app
@@ -244,6 +247,9 @@ void QtstalkerApp::loadSettings (Config &config)
     p = QPoint(0, 0); // 30,30 ?
     config.setData(Config::MainWindowPos, p);
   }
+
+  config.commit();
+
   move(p);
 
   // load gui class settings that need to now
@@ -312,12 +318,13 @@ void QtstalkerApp::loadChart2 (QString data)
   _chartLayout->clearIndicator();
 
   // create and populate the quote data
-  BarData bd = _currentChart;
-  bd.setBarLength((BarData::BarLength) _barLengthButtons->length());
-  bd.setBars(data);
-
+  g_barData.clear();
+  g_barData = _currentChart;
+  g_barData.setBarLength((BarData::BarLength) _barLengthButtons->length());
+  g_barData.setBars(data);
+  
   // adjust the starting position of the displayed chart to show a full page of the most recent bars
-  setSliderStart(bd.count());
+  setSliderStart(g_barData.count());
 
   // set the window title to update what symbol we are displaying
   setWindowTitle(getWindowCaption());
@@ -326,7 +333,7 @@ void QtstalkerApp::loadChart2 (QString data)
   statusMessage(QString());
 
   // tell the charts to update with the new bar data
-  _chartLayout->loadPlots(bd, _plotSlider->getValue());
+  _chartLayout->loadPlots(_plotSlider->getValue());
 }
 
 QString QtstalkerApp::getWindowCaption ()

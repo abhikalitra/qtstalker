@@ -25,15 +25,14 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionBOP
 {
   public:
     FunctionBOP ();
-    int script (QStringList &, Indicator &, BarData &);
-    Curve * calculate (BarData &data, int smoothing, int type);
+    int script (QStringList &, Indicator &);
+    Curve * calculate (int smoothing, int type);
 };
 
 #endif

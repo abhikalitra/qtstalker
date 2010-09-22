@@ -37,6 +37,8 @@ TabWidget::TabWidget (QString &id)
   setContentsMargins(0, 0, 0, 0);
   
   Config config;
+  config.transaction();
+
   QString d;
   config.getData(_id, d);
   if (! d.isEmpty())
@@ -79,6 +81,8 @@ TabWidget::TabWidget (QString &id)
     d = "6";
     config.setData(key, d);
   }
+
+  config.commit();
 
   setTabSizes();
 

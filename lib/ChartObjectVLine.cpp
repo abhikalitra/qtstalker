@@ -40,7 +40,10 @@ ChartObjectVLine::ChartObjectVLine ()
   if (! _settings.color.isValid())
   {
     _settings.color = QColor(Qt::red);
+    
+    config.transaction();
     config.setData(Config::DefaultChartObjectVLineColor, _settings.color);
+    config.commit();
   }
 }
 

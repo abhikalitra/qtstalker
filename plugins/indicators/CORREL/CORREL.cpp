@@ -24,6 +24,7 @@
 #include "FunctionCORREL.h"
 #include "CORRELDialog.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,16 +33,16 @@ CORREL::CORREL ()
   _indicator = "CORREL";
 }
 
-int CORREL::getIndicator (Indicator &ind, BarData &data)
+int CORREL::getIndicator (Indicator &ind)
 {
-  if (! data.count())
+  if (! g_barData.count())
     return 1;
 
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = data.getInput(data.getInputType(s));
+  Curve *in = g_barData.getInput(g_barData.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -53,15 +54,15 @@ int CORREL::getIndicator (Indicator &ind, BarData &data)
   bd.setSymbol(s);
   settings.getData(Exchange, s);
   bd.setExchange(s);
-  bd.setBarLength(data.getBarLength());
+  bd.setBarLength(g_barData.getBarLength());
 
   QStringList l;
   l << "GetQuotes" << bd.getExchange() << bd.getSymbol();
   bd.barLengthText(bd.getBarLength(), s);
   l << s;
-  Bar tbar = data.getBar(0);
+  Bar tbar = g_barData.getBar(0);
   l << tbar.date().toString("yyyyMMddHHmmss");
-  tbar = data.getBar(data.count() - 1);
+  tbar = g_barData.getBar(g_barData.count() - 1);
   l << tbar.date().toString("yyyyMMddHHmmss");
 
   QString command = l.join(",") + "\n";
@@ -149,10 +150,10 @@ int CORREL::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int CORREL::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int CORREL::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionCORREL f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * CORREL::dialog (Indicator &i)

@@ -21,6 +21,7 @@
 
 #include "FunctionATR.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +30,7 @@ FunctionATR::FunctionATR ()
   _methodList << "ATR" << "NATR";
 }
 
-int FunctionATR::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionATR::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,ATR,<METHOD>,<NAME>,<PERIOD>
   //     0       1     2     3       4       5
@@ -62,7 +63,7 @@ int FunctionATR::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *line = calculate(data, period, method);
+  Curve *line = calculate(period, method);
   if (! line)
     return 1;
 
@@ -73,37 +74,42 @@ int FunctionATR::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-Curve * FunctionATR::calculate (BarData &data, int period, int method)
+Curve * FunctionATR::calculate (int period, int method)
 {
-  if (data.count() < period)
+  int size = g_barData.count();
+
+  if (size < period)
     return 0;
 
-  int size = data.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
 
   TA_RetCode rc = TA_SUCCESS;
 
   switch ((Method) method)
   {
     case _ATR:
-      rc = TA_ATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_ATR(0,
+                  size - 1,
+                  g_barData.getTAData(BarData::High),
+                  g_barData.getTAData(BarData::Low),
+                  g_barData.getTAData(BarData::Close),
+                  period,
+                  &outBeg,
+                  &outNb,
+                  &out[0]);
       break;
     case _NATR:
-      rc = TA_NATR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_NATR(0,
+                   size - 1,
+                   g_barData.getTAData(BarData::High),
+                   g_barData.getTAData(BarData::Low),
+                   g_barData.getTAData(BarData::Close),
+                   period,
+                   &outBeg,
+                   &outNb,
+                   &out[0]);
       break;
     default:
       break;

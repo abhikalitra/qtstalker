@@ -25,15 +25,14 @@
 #include <QStringList>
 
 #include "Indicator.h"
-#include "BarData.h"
 #include "Curve.h"
 
 class FunctionPP
 {
   public:
     FunctionPP ();
-    int script (QStringList &, Indicator &, BarData &);
-    Curve * calculate (BarData &data, int point);
+    int script (QStringList &, Indicator &);
+    Curve * calculate (int point);
 };
 
 #endif

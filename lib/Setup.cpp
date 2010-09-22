@@ -56,11 +56,12 @@ void Setup::setup (Config &config, QString session)
   config.create(session);
   
   config.init(); // initialize config db
-  
+
   setupConfigDefaults(config); // initialize config defaults
 
   // initialize data tables
   setupExchanges();
+
   setupFutures();
 
   // initialize chart object tables
@@ -70,7 +71,7 @@ void Setup::setup (Config &config, QString session)
   // initialize group tables
   GroupDataBase gdb;
   gdb.init();
-
+  
   // initialize script tables
   ScriptDataBase sdb;
   sdb.init();
@@ -107,6 +108,8 @@ void Setup::setupDefaultIndicators (Config &config)
 
   IndicatorDataBase db;
   db.init();
+
+  db.transaction();
   
   // create the Bars indicator
   IndicatorPluginFactory fac;
@@ -145,19 +148,27 @@ void Setup::setupDefaultIndicators (Config &config)
     db.setIndicator(i);
   }
 
+  db.commit();
+
+  config.transaction();
   config.setData(Config::DefaultIndicators, 1);
+  config.commit();
 }
 
 void Setup::setupExchanges ()
 {
   ExchangeDataBase db;
+  db.transaction();
   db.createExchanges();  
+  db.commit();
 }
 
 void Setup::setupFutures ()
 {
   FuturesDataBase db;
+  db.transaction();
   db.createFutures();  
+  db.commit();
 }
 
 void Setup::setupConfigDefaults (Config &config)

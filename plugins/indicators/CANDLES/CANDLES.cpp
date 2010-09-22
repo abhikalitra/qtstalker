@@ -32,12 +32,12 @@ CANDLES::CANDLES ()
   _indicator = "CANDLES";
 }
 
-int CANDLES::getIndicator (Indicator &ind, BarData &data)
+int CANDLES::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
   FunctionCANDLES f;
-  Curve *line = f.candles(data);
+  Curve *line = f.candles();
   if (! line)
     return 1;
 
@@ -56,7 +56,7 @@ int CANDLES::getIndicator (Indicator &ind, BarData &data)
   {
     double pen = settings.getDouble(Penetration);
 
-    Curve *line2 = f.getMethod(data, method, pen);
+    Curve *line2 = f.getMethod(method, pen);
     if (line2)
     {
       settings.getData(MethodColor, s);
@@ -162,115 +162,15 @@ int CANDLES::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int CANDLES::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int CANDLES::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionCANDLES f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * CANDLES::dialog (Indicator &i)
 {
   return new CANDLESDialog(i);
-
-/*
-  int page = 0;
-  QString k, d;
-  PrefDialog *dialog = new PrefDialog;
-  dialog->setWindowTitle(QObject::tr("Edit Indicator"));
-
-  k = QObject::tr("Settings");
-  dialog->addPage(page, k);
-
-  _settings.getData(Color, d);
-  dialog->addColorItem(Color, page, QObject::tr("Candle Color"), d);
-
-  _settings.getData(MethodColor, d);
-  dialog->addColorItem(MethodColor, page, QObject::tr("Method Color"), d);
-
-  _settings.getData(Label, d);
-  dialog->addTextItem(Label, page, QObject::tr("Label"), d, QString());
-
-  FunctionCANDLES f;
-  QStringList methodList = f.list();
-  
-  _settings.getData(Method, d);
-  dialog->addComboItem(Method, page, QObject::tr("Method"), methodList, d);
-
-  dialog->addDoubleItem(Penetration, page, QObject::tr("Penetration"), _settings.getDouble(Penetration), 0, 100);
-
-  PlotStyleFactory fac;
-  QStringList plotList;
-  fac.list(plotList, TRUE);
-
-  page++;
-  k = QObject::tr("MA 1");
-  dialog->addPage(page, k);
-
-  _settings.getData(MAColor, d);
-  dialog->addColorItem(MAColor, page, QObject::tr("Color"), d);
-
-  _settings.getData(MAPlot, d);
-  dialog->addComboItem(MAPlot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(MALabel, d);
-  dialog->addTextItem(MALabel, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(MAPeriod, page, QObject::tr("Period"), _settings.getInt(MAPeriod), 1, 100000);
-
-  FunctionMA mau;
-  QStringList maList = mau.list();
-
-  _settings.getData(MAType, d);
-  dialog->addComboItem(MAType, page, QObject::tr("Type"), maList, d);
-
-  page++;
-  k = QObject::tr("MA 2");
-  dialog->addPage(page, k);
-
-  _settings.getData(MA2Color, d);
-  dialog->addColorItem(MA2Color, page, QObject::tr("Color"), d);
-
-  _settings.getData(MA2Plot, d);
-  dialog->addComboItem(MA2Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(MA2Label, d);
-  dialog->addTextItem(MA2Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(MA2Period, page, QObject::tr("Period"), _settings.getInt(MA2Period), 1, 100000);
-
-  _settings.getData(MA2Type, d);
-  dialog->addComboItem(MA2Type, page, QObject::tr("Type"), maList, d);
-
-  page++;
-  k = QObject::tr("MA 3");
-  dialog->addPage(page, k);
-
-  _settings.getData(MA3Color, d);
-  dialog->addColorItem(MA3Color, page, QObject::tr("Color"), d);
-
-  _settings.getData(MA3Plot, d);
-  dialog->addComboItem(MA3Plot, page, QObject::tr("Plot"), plotList, d);
-
-  _settings.getData(MA3Label, d);
-  dialog->addTextItem(MA3Label, page, QObject::tr("Label"), d, QString());
-
-  dialog->addIntItem(MA3Period, page, QObject::tr("Period"), _settings.getInt(MA3Period), 1, 100000);
-
-  _settings.getData(MA3Type, d);
-  dialog->addComboItem(MA3Type, page, QObject::tr("Type"), maList, d);
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return rc;
-  }
-
-  getDialogSettings(dialog);
-
-  delete dialog;
-  return rc;
-*/
 }
 
 void CANDLES::defaults (Indicator &i)

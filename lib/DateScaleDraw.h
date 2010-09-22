@@ -31,13 +31,13 @@
 #include <QHash>
 #include <qwt_scale_draw.h>
 
-#include "BarData.h"
+#include "Setting.h"
 
 class DateScaleDraw : public QwtScaleDraw
 {
   public:
     DateScaleDraw ();
-    void setDates (BarData &);
+    void setDates ();
     int count ();
     virtual QwtText label (double v) const;
     void date (int, QDateTime &);

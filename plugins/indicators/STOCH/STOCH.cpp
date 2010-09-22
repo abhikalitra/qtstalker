@@ -32,7 +32,7 @@ STOCH::STOCH ()
   _indicator = "STOCH";
 }
 
-int STOCH::getIndicator (Indicator &ind, BarData &data)
+int STOCH::getIndicator (Indicator &ind)
 {
   Setting settings = ind.settings();
 
@@ -71,7 +71,7 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
 
   FunctionSTOCH f;
   QList<Curve *> pl;
-  if (f.calculate(data, kperiod, dperiod, maType, pl))
+  if (f.calculate(kperiod, dperiod, maType, pl))
     return 1;
 
   line = pl.at(0);
@@ -107,10 +107,10 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
   return 0;
 }
 
-int STOCH::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int STOCH::getCUS (QStringList &set, Indicator &ind)
 {
   FunctionSTOCH f;
-  return f.script(set, ind, data);
+  return f.script(set, ind);
 }
 
 IndicatorPluginDialog * STOCH::dialog (Indicator &i)

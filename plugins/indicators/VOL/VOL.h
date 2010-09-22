@@ -45,8 +45,8 @@ class VOL : public IndicatorPlugin
     };
 
     VOL ();
-    int getIndicator (Indicator &ind, BarData &data);
-    Curve * getVOL (BarData &data, QColor &, QColor &, QColor &);
+    int getIndicator (Indicator &ind);
+    Curve * getVOL (QColor &, QColor &, QColor &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
 };

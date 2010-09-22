@@ -90,6 +90,8 @@ void SidePanel::load ()
 {
   // we need to load our splitter sizes
   Config config;
+  config.transaction();
+
   QString s;
   config.getData(Config::DataPanelSize, s);
   if (s.isEmpty())
@@ -117,17 +119,23 @@ void SidePanel::load ()
   // set last displayed tab
   int page = config.getInt(Config::SidePanelLastPage);
   _tabs->setCurrentIndex(page);
+
+  config.commit();
 }
 
 void SidePanel::save ()
 {
   Config config;
+  config.transaction();
+
   config.setData(Config::DataPanelSize, (QSplitter *) this);
 
   QSize size = _tabs->size();
   config.setData(Config::SidePanelTabWidth, size.width());
 
   config.setData(Config::SidePanelLastPage, _tabs->currentIndex());
+
+  config.commit();
 }
 
 PlotSlider * SidePanel::slider ()

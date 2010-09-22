@@ -22,7 +22,6 @@
 #include "QuoteServerDialog.h"
 #include "Config.h"
 #include "Globals.h"
-
 #include "../pics/refresh.xpm"
 
 #include <QtDebug>
@@ -102,6 +101,8 @@ void QuoteServerDialog::done ()
 
   int flag = 0;
   Config config;
+  config.transaction();
+  
   if (hostName != _ohostName)
   {
     flag = TRUE;
@@ -113,6 +114,8 @@ void QuoteServerDialog::done ()
     flag = TRUE;
     config.setData(Config::QuoteServerPort, _port->value());
   }
+
+  config.commit();
 
   if (flag)
   {

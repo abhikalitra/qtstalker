@@ -22,6 +22,7 @@
 #include "FunctionCCI.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -30,7 +31,7 @@ FunctionCCI::FunctionCCI ()
 {
 }
 
-int FunctionCCI::script (QStringList &set, Indicator &ind, BarData &data)
+int FunctionCCI::script (QStringList &set, Indicator &ind)
 {
   // INDICATOR,PLUGIN,CCI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
   //     0       1     2    3       4             5                  6 
@@ -71,7 +72,7 @@ int FunctionCCI::script (QStringList &set, Indicator &ind, BarData &data)
     return 1;
   }
 
-  Curve *line = calculate(data, period, smoothing, ma);
+  Curve *line = calculate(period, smoothing, ma);
   if (! line)
     return 1;
 
@@ -82,33 +83,22 @@ int FunctionCCI::script (QStringList &set, Indicator &ind, BarData &data)
   return 0;
 }
 
-Curve * FunctionCCI::calculate (BarData &data, int period, int smoothing, int type)
+Curve * FunctionCCI::calculate (int period, int smoothing, int type)
 {
-  int size = data.count();
+  int size = g_barData.count();
+  
   if (size < period || size < smoothing)
     return 0;
 
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    Bar bar = data.getBar(loop);
-    high[loop] = (TA_Real) bar.getHigh();
-    low[loop] = (TA_Real) bar.getLow();
-    close[loop] = (TA_Real) bar.getClose();
-  }
-
   TA_RetCode rc = TA_CCI(0,
                          size - 1,
-                         &high[0],
-                         &low[0],
-                         &close[0],
+                         g_barData.getTAData(BarData::High),
+                         g_barData.getTAData(BarData::Low),
+                         g_barData.getTAData(BarData::Close),
                          period,
                          &outBeg,
                          &outNb,
