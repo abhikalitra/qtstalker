@@ -46,7 +46,7 @@ href="#upgrade">notes</a> below. </p>
 
 <h3>Installing via packages</h3>
 
-<p>Packages are available for some operating systems:</p>
+<p>Packages are available for some operating systems. (Warning: Packages are often out-of-date.)</p>
 <ul>
   <li><a href="http://www.zwets.com/qtstalker/">Debian packages</a></li>
 </ul>
@@ -86,16 +86,25 @@ ta-lib-config</code>' to ensure that this is properly installed. </p>
     to your <code>/etc/ld.so.conf</code> file and run <code>ldconfig -v</code>
     (as root).</p>
 
-<h4>Install Qtstalker</h4>
+<h4>Build and install Qtstalker</h4>
 
 <p>See important pre-requisite notes <a href="#source">above</a>.</p>
 <ul>
-  <li>Unpack the Qtstalker source.</li>
-  <li><code>./configure</code> (this will create the Makefiles)</li>
+  <li><code>./configure</code> (this will create the Makefiles, etc.)</li>
   <li><code>make</code></li>
   <li><code>sudo make install</code> (i.e. as superuser)</li>
 </ul>
 <p>See instructions for <a href="install-macx.html">Mac OS X</a>.</p>
+
+<h4>Trouble building?</h4>
+
+<p>
+Perhaps there was trouble finding your supporting products, for example
+if Qt or Qwt or TA-Lib is installed at a non-standard location, then edit the
+<code>qtstalker.config</code> file to specify your locations
+(e.g. "<code>INCLUDEPATH += /opt/local/include/ta-lib</code>") and then do
+'<code>make distclean</code>' before doing the normal configure-and-make process.
+</p>
 
 <h2>Where does stuff get installed</h2>
 <ul>
