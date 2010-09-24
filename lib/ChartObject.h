@@ -89,7 +89,6 @@ class ChartObject : public QObject
     virtual void click (int, QPoint);
     virtual void dialog ();
 
-    void confirmDelete ();
     void deleteChartObject ();
 
   protected:

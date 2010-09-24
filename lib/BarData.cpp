@@ -247,16 +247,6 @@ void BarData::setName (QString &d)
   _name = d;
 }
 
-QString & BarData::getTable ()
-{
-  return _table;
-}
-
-void BarData::setTable (QString &d)
-{
-  _table = d;
-}
-
 double BarData::getAvgPrice (int d)
 {
   Bar bar = getBar(d);

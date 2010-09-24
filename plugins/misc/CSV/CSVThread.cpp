@@ -27,10 +27,11 @@
 #include <QFile>
 #include <QTextStream>
 #include <QFileInfo>
+#include <QDebug>
 
-CSVThread::CSVThread (QObject *p) : QThread (p)
+CSVThread::CSVThread (QObject *p, CSVRule rule) : QThread (p)
 {
-  _rule = 0;
+  _rule = rule;
   _fileSymbol = 0;
   _lineCount = 0;
   _stopFlag = 0;
@@ -38,11 +39,8 @@ CSVThread::CSVThread (QObject *p) : QThread (p)
 
   _fields << "Exchange" << "Symbol" << "Open" << "High" << "Low" << "Close";
   _fields << "Volume" << "OI" << "Ignore" << "Name";
-}
 
-void CSVThread::setRule (CSVRule *rule)
-{
-  _rule = rule;
+  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void CSVThread::run ()
@@ -50,6 +48,7 @@ void CSVThread::run ()
   // verify rule parms
   if (verifyRule())
   {
+    emit signalDone(_rule.name());
     quit();
     return;
   }
@@ -58,7 +57,10 @@ void CSVThread::run ()
   QFile f(_file);
   if (! f.open(QIODevice::ReadOnly))
   {
-    emit signalMessage(QString("Error opening CSV file"));
+    QStringList ml;
+    ml << _rule.name() << ":" << tr("Error opening CSV file");
+    emit signalMessage(ml.join(" "));
+    emit signalDone(_rule.name());
     quit();
     return;
   }
@@ -90,7 +92,10 @@ void CSVThread::run ()
     if (_stopFlag)
     {
       f.close();
-      emit signalMessage(QString("*** " + tr("Import cancelled") + " ***"));
+      QStringList ml;
+      ml << "***" << _rule.name() << tr("cancelled") << "***";
+      emit signalMessage(ml.join(" "));
+      emit signalDone(_rule.name());
       quit();
       return;
     }
@@ -109,8 +114,9 @@ void CSVThread::run ()
     // verify date
     if (! bar.date.isValid())
     {
-      QString s = _fileName + tr(": Line ") + QString::number(_lineCount) + tr(": bad date");
-      emit signalMessage(s);
+      QStringList ml;
+      ml << _rule.name() << ":" << _fileName << ":" << tr("Line") << QString::number(_lineCount) << tr("bad date");
+      emit signalMessage(ml.join(" "));
       continue;
     }
 
@@ -121,8 +127,9 @@ void CSVThread::run ()
         bar.symbol = _fileName;
       else
       {
-        QString s = _fileName + tr(": Line ") + QString::number(_lineCount) + tr(": symbol missing");
-        emit signalMessage(s);
+        QStringList ml;
+        ml << _rule.name() << ":" << _fileName << ":" << tr("Line") << QString::number(_lineCount) << tr("symbol missing");
+        emit signalMessage(ml.join(" "));
         continue;
       }
     }
@@ -130,11 +137,12 @@ void CSVThread::run ()
     // verify we have an exchange
     if (bar.exchange.isEmpty())
     {
-      bar.exchange = _rule->exchange;
+      bar.exchange = _rule.exchange();
       if (bar.exchange.isEmpty())
       {
-        QString s = _fileName + tr(": Line ") + QString::number(_lineCount) + tr(": exchange missing");
-        emit signalMessage(s);
+        QStringList ml;
+        ml << _rule.name() << ":" << _fileName << ":" << tr("Line") << QString::number(_lineCount) << tr("exchange missing");
+        emit signalMessage(ml.join(" "));
         continue;
       }
     }
@@ -168,27 +176,6 @@ void CSVThread::run ()
     
     CSVData *symbol = it.value();
 
-
-// test start
-/*
-    int loop = 0;
-    for (; loop < symbol->data.count(); loop++)
-    {
-      QStringList tl;
-      tl << "Quotes" << "Set" << symbol->type << symbol->exchange << symbol->symbol << "yyyyMMddHHmmss";
-      QString command = tl.join(",");
-
-      command.append("," + symbol->data.join(",") + "\n");
-
-      QuoteServerRequest qsr;
-      if (qsr.run(command))
-        emit signalMessage(tr("ERROR ") + it.key() + tr(" record #") + QString::number(loop) + tr(" quote ignored"));
-    }
-*/
-// test end
-
-
-    
     QStringList tl;
     tl << "Quotes" << "Set" << symbol->type << symbol->exchange << symbol->symbol << "yyyyMMddHHmmss";
     QString command = tl.join(",");
@@ -197,7 +184,11 @@ void CSVThread::run ()
       
     QuoteServerRequest qsr;
     if (qsr.run(command))
-      emit signalMessage(tr("ERROR ") + it.key() + tr(" quotes ignored"));
+    {
+      QStringList ml;
+      ml << _rule.name() << tr("ERROR") << it.key() << tr(" quotes ignored");
+      emit signalMessage(ml.join(" "));
+    }
 
     if (symbol->name.isEmpty())
       continue;
@@ -207,15 +198,22 @@ void CSVThread::run ()
     command = tl.join(",") + "\n";
 
     if (qsr.run(command))
-      emit signalMessage(it.key() + tr(" ERROR saving name, ignored"));
+    {
+      QStringList ml;
+      ml << _rule.name() << it.key() << tr("ERROR saving name, ignored");
+      emit signalMessage(ml.join(" "));
+    }
   }
 
   qDeleteAll(data);
 
   // send the done message along with some stats
-//  emit signalMessage(tr("Quotes imported: ") + QString::number(records));
-  emit signalMessage(tr("Quotes imported"));
+  QStringList ml;
+  ml << _rule.name() << tr("quotes imported");
+  emit signalMessage(ml.join(" "));
 
+  emit signalDone(_rule.name());
+  
   quit();
 }
 
@@ -226,48 +224,52 @@ void CSVThread::stop ()
 
 int CSVThread::verifyRule ()
 {
-  if (! _rule)
-  {
-    emit signalMessage(QString("Rule missing"));
-    return 1;
-  }
-
-  _type = _rule->type;
+  _type = _rule.type();
   if (_type.isEmpty())
   {
-    emit signalMessage(QString("Type missing"));
+    QStringList ml;
+    ml << _rule.name() << tr("type missing");
+    emit signalMessage(ml.join(" "));
     return 1;
   }
 
-  _delimeter = _rule->delimeter;
+  _delimeter = _rule.delimiter();
   if (_delimeter.isEmpty())
   {
-    emit signalMessage(QString("Delimeter missing"));
+    QStringList ml;
+    ml << _rule.name() << tr("delimiter missing");
+    emit signalMessage(ml.join(" "));
     return 1;
   }
 
-  _file = _rule->file;
+  _file = _rule.file();
   if (_file.isEmpty())
   {
-    emit signalMessage(QString("File missing"));
+    QStringList ml;
+    ml << _rule.name() << tr("file missing");
+    emit signalMessage(ml.join(" "));
     return 1;
   }
 
-  _fileSymbol = _rule->fileSymbol;
+  _fileSymbol = _rule.fileSymbol();
 
-  _removeSuffix = _rule->removeSuffix;
+  _removeSuffix = _rule.removeSuffix();
 
-  QString d = _rule->rule;
+  QString d = _rule.rule();
   if (d.isEmpty())
   {
-    emit signalMessage(QString("Rule missing"));
+    QStringList ml;
+    ml << _rule.name() << tr("rule missing");
+    emit signalMessage(ml.join(" "));
     return 1;
   }
 
   _fieldList = d.split(",");
   if (! _fieldList.count())
   {
-    emit signalMessage(QString("Rule empty"));
+    QStringList ml;
+    ml << _rule.name() << tr("rule empty");
+    emit signalMessage(ml.join(" "));
     return 1;
   }
 
@@ -278,9 +280,10 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
 {
   if (pl.count() != _fieldList.count())
   {
-    QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
-    s.append(tr(": number of fields in file != rule format"));
-    emit signalMessage(s);
+    QStringList ml;
+    ml << _rule.name() << ":" << _fileName << ":" << tr("line") << QString::number(_lineCount);
+    ml << tr("number of fields in file != rule format");
+    emit signalMessage(ml.join(" "));
     return 1;
   }
 
@@ -306,9 +309,10 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
         pl[fieldLoop].toDouble(&ok);
         if (! ok)
         {
-          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
-          s.append(tr(": bad open: ") + pl[fieldLoop]);
-          emit signalMessage(s);
+          QStringList ml;
+          ml << _rule.name() << ":" << _fileName << ":" << tr("line") << QString::number(_lineCount);
+          ml << tr("bad open") << pl[fieldLoop];
+          emit signalMessage(ml.join(" "));
           return 1;
           break;
         }
@@ -322,9 +326,10 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
         pl[fieldLoop].toDouble(&ok);
         if (! ok)
         {
-          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
-          s.append(tr(": bad high: ") + pl[fieldLoop]);
-          emit signalMessage(s);
+          QStringList ml;
+          ml << _rule.name() << ":" << _fileName << ":" << tr("line") << QString::number(_lineCount);
+          ml << tr("bad high") << pl[fieldLoop];
+          emit signalMessage(ml.join(" "));
           return 1;
           break;
         }
@@ -338,9 +343,10 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
         pl[fieldLoop].toDouble(&ok);
         if (! ok)
         {
-          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
-          s.append(tr(": bad low: ") + pl[fieldLoop]);
-          emit signalMessage(s);
+          QStringList ml;
+          ml << _rule.name() << ":" << _fileName << ":" << tr("line") << QString::number(_lineCount);
+          ml << tr("bad low") << pl[fieldLoop];
+          emit signalMessage(ml.join(" "));
           return 1;
           break;
         }
@@ -354,9 +360,10 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
         pl[fieldLoop].toDouble(&ok);
         if (! ok)
         {
-          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
-          s.append(tr(": bad close: ") + pl[fieldLoop]);
-          emit signalMessage(s);
+          QStringList ml;
+          ml << _rule.name() << ":" << _fileName << ":" << tr("line") << QString::number(_lineCount);
+          ml << tr("bad close") << pl[fieldLoop];
+          emit signalMessage(ml.join(" "));
           return 1;
           break;
         }
@@ -370,9 +377,10 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
         pl[fieldLoop].toDouble(&ok);
         if (! ok)
         {
-          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
-          s.append(tr(": bad volume: ") + pl[fieldLoop]);
-          emit signalMessage(s);
+          QStringList ml;
+          ml << _rule.name() << ":" << _fileName << ":" << tr("line") << QString::number(_lineCount);
+          ml << tr("bad volume") << pl[fieldLoop];
+          emit signalMessage(ml.join(" "));
           return 1;
           break;
         }
@@ -386,9 +394,10 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
         pl[fieldLoop].toDouble(&ok);
         if (! ok)
         {
-          QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
-          s.append(tr(": bad oi: ") + pl[fieldLoop]);
-          emit signalMessage(s);
+          QStringList ml;
+          ml << _rule.name() << ":" << _fileName << ":" << tr("line") << QString::number(_lineCount);
+          ml << tr("bad oi") << pl[fieldLoop];
+          emit signalMessage(ml.join(" "));
           return 1;
           break;
         }
@@ -404,9 +413,10 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
           bar.date = QDateTime::fromString(pl[fieldLoop], l[1]);
           if (! bar.date.isValid())
           {
-            QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
-            s.append(tr(": bad date: ") + pl[fieldLoop]);
-            emit signalMessage(s);
+            QStringList ml;
+            ml << _rule.name() << ":" << _fileName << ":" << tr("line") << QString::number(_lineCount);
+            ml << tr("bad date") << pl[fieldLoop];
+            emit signalMessage(ml.join(" "));
             return 1;
             break;
           }
@@ -420,9 +430,10 @@ int CSVThread::verifyCSVBar (QStringList &pl, CSVBar &bar)
           QTime time = QTime::fromString(pl[fieldLoop], l[1]);
           if (! time.isValid())
           {
-            QString s = _fileName + tr(": Line ") + QString::number(_lineCount);
-            s.append(tr(": bad time: ") + pl[fieldLoop]);
-            emit signalMessage(s);
+            QStringList ml;
+            ml << _rule.name() << ":" << _fileName << ":" << tr("line") << QString::number(_lineCount);
+            ml << tr("bad time") << pl[fieldLoop];
+            emit signalMessage(ml.join(" "));
             return 1;
             break;
           }

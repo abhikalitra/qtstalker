@@ -86,8 +86,6 @@ class BarData
     void setSymbol (QString &);
     QString & getName ();
     void setName (QString &);
-    QString & getTable ();
-    void setTable (QString &);
     double getAvgPrice (int);
     double getMedianPrice (int);
     double getTypicalPrice (int);
@@ -109,7 +107,6 @@ class BarData
     QString _symbol;
     QString _name;
     QString _exchange;
-    QString _table;
     TA_Real *taOpen;
     TA_Real *taHigh;
     TA_Real *taLow;

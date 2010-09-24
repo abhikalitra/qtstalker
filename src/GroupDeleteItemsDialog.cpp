@@ -24,61 +24,43 @@
 
 #include <QtDebug>
 
-GroupDeleteItemsDialog::GroupDeleteItemsDialog (QString name) : Dialog (Dialog::_Dialog, 0)
+GroupDeleteItemsDialog::GroupDeleteItemsDialog (QString name)
 {
   _group.setName(name);
   _db.getGroup(_group);
+
+  QStringList l;
+  _group.getStringList(l);
+  setList(l);
   
   setWindowTitle("QtStalker" + g_session + ": " + tr("Delete Group Items"));
 
-  createMainPage();
-}
-
-void GroupDeleteItemsDialog::createMainPage ()
-{
-  QWidget *w = new QWidget;
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  w->setLayout(vbox);
-
-  // list
-  QStringList l;
-  _group.getStringList(l);
-  
-  _list = new QListWidget;
-  _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  _list->setSortingEnabled(TRUE);
-  vbox->addWidget(_list);
-  _list->addItems(l);
-  
-  _tabs->addTab(w, tr("Group Contents"));
+  _tabs->setTabText(0, tr("Group Contents"));
 }
 
 void GroupDeleteItemsDialog::done ()
 {
-  QList<QListWidgetItem *> sl = _list->selectedItems();
-  if (! sl.count())
+  switch (_confirmFlag)
   {
-    reject();
-    return;
+    case _ConfirmNone:
+      setConfirm(tr("Confirm Delete:"),
+                 tr("Delete selected group contents."));
+      break;
+    case _ConfirmNo:
+      unsetConfirm();
+      return;
+    case _ConfirmYes:
+      deleteItems();
+      return;
+      break;
+    default:
+      break;
   }
-
-  Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete Group Items"));
-  dialog->setMessage(tr("Are you sure you want to delete selected items?"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(done2()));
-  dialog->show();
 }
 
-void GroupDeleteItemsDialog::done2 ()
+void GroupDeleteItemsDialog::deleteItems ()
 {
   QList<QListWidgetItem *> sl = _list->selectedItems();
-  if (! sl.count())
-  {
-    reject();
-    return;
-  }
 
   _db.transaction();
   
@@ -99,4 +81,3 @@ void GroupDeleteItemsDialog::done2 ()
   
   accept();
 }
-

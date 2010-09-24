@@ -4,6 +4,7 @@
 
 
 HEADERS += Yahoo.h
+HEADERS += YahooAddSymbolDialog.h
 HEADERS += YahooDialog.h
 HEADERS += YahooThread.h
 HEADERS += YahooSymbolDialog.h
@@ -12,6 +13,7 @@ HEADERS += YahooConfig.h
 
 
 SOURCES += Yahoo.cpp
+SOURCES += YahooAddSymbolDialog.cpp
 SOURCES += YahooDialog.cpp
 SOURCES += YahooThread.cpp
 SOURCES += YahooSymbolDialog.cpp

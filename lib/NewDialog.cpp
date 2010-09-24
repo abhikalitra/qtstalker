@@ -19,48 +19,50 @@
  *  USA.
  */
 
-#include "GroupNewDialog.h"
-#include "GroupDataBase.h"
-#include "Globals.h"
+#include "NewDialog.h"
 
 #include <QtDebug>
-#include <QLineEdit>
+#include <QPushButton>
 
-GroupNewDialog::GroupNewDialog ()
+NewDialog::NewDialog ()
 {
-  setWindowTitle("QtStalker" + g_session + ": " + tr("New Group"));
-
-  GroupDataBase db;
-  db.getAllGroupsList(_groups);
-  setList(_groups);
-}
-
-void GroupNewDialog::done ()
-{
-  QString name = _name->lineEdit()->text();
-
-  // remove any forbidden sql characters
-  name = name.remove(QString("'"), Qt::CaseSensitive);
-
-  if (_groups.contains(name))
-  {
-    setMessage(tr("A group with this name already exists."));
-    return;
-  }
-
-  GroupDataBase db;
-  Group g;
-  g.setName(name);
-  db.transaction();
-  db.setGroup(g);
-  db.commit();
-
-  QStringList ml;
-  ml << tr("Group") << name << tr("created");
-  emit signalMessage(ml.join(" "));
-
-  emit signalNew();
+  createMainPage();
   
-  accept();
+  _name->setFocus();
+
+  nameChanged(QString());
 }
 
+void NewDialog::createMainPage ()
+{
+  QWidget *w = new QWidget;
+
+  _ndvbox = new QVBoxLayout;
+  _ndvbox->setSpacing(2);
+  w->setLayout(_ndvbox);
+
+  _name = new QComboBox;
+  _name->setEditable(TRUE);
+  connect(_name, SIGNAL(editTextChanged(const QString &)), this, SLOT(nameChanged(const QString &)));
+  _ndvbox->addWidget(_name);
+  
+  _tabs->addTab(w, tr("Name"));
+}
+
+void NewDialog::nameChanged (const QString &text)
+{
+  QPushButton *b = _buttonBox->button(QDialogButtonBox::Ok);
+
+  int status = 0;
+  if (text.length())
+    status = 1;
+  
+  b->setEnabled(status);
+}
+
+void NewDialog::setList (QStringList &l)
+{
+  _name->clear();
+  _name->addItems(l);
+  _name->clearEditText();
+}

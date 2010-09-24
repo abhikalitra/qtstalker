@@ -23,103 +23,118 @@
 #include "CSVDataBase.h"
 #include "CSVRuleDialog.h"
 #include "CSVConfig.h"
-#include "Dialog.h"
+#include "CSVNewDialog.h"
+#include "CSVDeleteDialog.h"
+#include "CSVRule.h"
+#include "CSVEditDialog.h"
+#include "CSVRunDialog.h"
+#include "Globals.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/newchart.xpm"
 
 #include <QLayout>
-#include <QLabel>
-#include <QInputDialog>
-#include <QGroupBox>
+#include <QDialogButtonBox>
 
-CSVDialog::CSVDialog () : QDialog (0, 0)
+CSVDialog::CSVDialog ()
 {
-  setWindowTitle(tr("Qtstalker: CSV"));
-  
+  setWindowTitle("QtStalker" + g_session + ": CSV ");
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(5);
+  vbox->setMargin(5);
+  setLayout(vbox);
+
+  _tabs = new QTabWidget;
+  vbox->addWidget(_tabs);
+
+  // buttonbox
+  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
+
+  QPushButton *b = bbox->addButton(QDialogButtonBox::Close);
+  connect(b, SIGNAL(clicked()), this, SLOT(closeDialog()));
+  vbox->addWidget(bbox);
+
   createMainPage();
-  
+  createMonitorPage();
+
   loadSettings();
 
-  _thread = new CSVThread(this);
-  connect(_thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
-  connect(_thread, SIGNAL(finished()), this, SLOT(done()));
+  rulesSelectionChanged();
 }
 
 void CSVDialog::createMainPage ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(5);
-  vbox->setSpacing(10);
-  setLayout(vbox);
+  QWidget *w = new QWidget;
   
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(5);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
-
-  // rule parm
-  QLabel *label = new QLabel(tr("Rule"));
-  grid->addWidget(label, row,col++);
-  
-  _rules = new QComboBox;
-  grid->addWidget(_rules, row++, col--);
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setMargin(0);
+  hbox->setSpacing(5);
+  w->setLayout(hbox);
 
   // message log
-  QTabWidget *tab = new QTabWidget;
-  vbox->addWidget(tab);
-
-  QWidget *w = new QWidget;
-
-  QVBoxLayout *tvbox = new QVBoxLayout;
-  tvbox->setSpacing(2);
-  w->setLayout(tvbox);
-
   _log = new QTextEdit;
   _log->setReadOnly(TRUE);
-  tvbox->addWidget(_log);
+  hbox->addWidget(_log);
 
-  tab->addTab(w, tr("Message Log"));
+  // create button box
+  QDialogButtonBox *bbox = new QDialogButtonBox;
+  bbox->setOrientation(Qt::Vertical);
+  hbox->addWidget(bbox);
+
+  QPushButton *b = bbox->addButton(QDialogButtonBox::Ok);
+  b->setText(tr("&Run"));
+  b->setToolTip(tr("Run CSV rules"));
+  connect(b, SIGNAL(clicked()), this, SLOT(run()));
+
+  b = bbox->addButton(QDialogButtonBox::Open);
+  b->setText(tr("&New"));
+  b->setIcon(QPixmap(newchart_xpm));
+  b->setToolTip(tr("Create a new CSV rule"));
+  connect(b, SIGNAL(clicked()), this, SLOT(newRule()));
+
+  b = bbox->addButton(QDialogButtonBox::Ok);
+  b->setText(tr("&Edit"));
+  b->setIcon(QPixmap(edit_xpm));
+  b->setToolTip(tr("Edit CSV rule"));
+  connect(b, SIGNAL(clicked()), this, SLOT(editRule()));
+
+  b = bbox->addButton(QDialogButtonBox::Discard);
+  b->setText(tr("&Delete"));
+  b->setToolTip(tr("Delete CSV rules"));
+  connect(b, SIGNAL(clicked()), this, SLOT(deleteRule()));
+
+  _tabs->addTab(w, tr("Log"));
+}
+
+void CSVDialog::createMonitorPage ()
+{
+  QWidget *w = new QWidget;
+
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setMargin(0);
+  hbox->setSpacing(5);
+  w->setLayout(hbox);
+
+  _rules = new QListWidget;
+  _rules->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  connect(_rules, SIGNAL(itemSelectionChanged()), this, SLOT(rulesSelectionChanged()));
+  hbox->addWidget(_rules);
   
+  // create button box
+  QDialogButtonBox *bbox = new QDialogButtonBox;
+  bbox->setOrientation(Qt::Vertical);
+  hbox->addWidget(bbox);
 
-  // button box
-  _buttonBox = new QDialogButtonBox;
-  vbox->addWidget(_buttonBox);
+  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
+  _cancelButton->setToolTip(tr("Cancel running CSV rules"));
+  connect(_cancelButton, SIGNAL(clicked()), this, SLOT(stop()));
 
-  _runButton = _buttonBox->addButton(QDialogButtonBox::Ok);
-  _runButton->setText(tr("&Run"));
-  connect(_runButton, SIGNAL(clicked()), this, SLOT(run()));
-
-  _newButton = _buttonBox->addButton(QDialogButtonBox::Open);
-  _newButton->setText(tr("&New"));
-  _newButton->setIcon(QPixmap(newchart_xpm));
-  connect(_newButton, SIGNAL(clicked()), this, SLOT(newRule()));
-
-  _editButton = _buttonBox->addButton(QDialogButtonBox::Ok);
-  _editButton->setText(tr("&Edit"));
-  _editButton->setIcon(QPixmap(edit_xpm));
-  connect(_editButton, SIGNAL(clicked()), this, SLOT(editRule()));
-
-  _deleteButton = _buttonBox->addButton(QDialogButtonBox::Discard);
-  _deleteButton->setText(tr("&Delete"));
-  connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteRule()));
-
-  _cancelButton = _buttonBox->addButton(QDialogButtonBox::Cancel);
-  connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancelButton()));
+  _tabs->addTab(w, tr("Monitor"));
 }
 
 void CSVDialog::loadSettings ()
 {
-  _rules->clear();
-
-  CSVDataBase db;
-  QStringList l;
-  db.getRules(l);
-  _rules->addItems(l);
-
   CSVConfig config;
 
   // restore the size of the window
@@ -133,11 +148,6 @@ void CSVDialog::loadSettings ()
   config.getData(CSVConfig::Pos, p);
   if (! p.isNull())
     move(p);
-
-  QString s;
-  config.getData(CSVConfig::LastRule, s);
-  if (! s.isEmpty())
-    _rules->setCurrentIndex(_rules->findText(s, Qt::MatchExactly));
 }
 
 void CSVDialog::saveSettings ()
@@ -152,117 +162,131 @@ void CSVDialog::saveSettings ()
   QPoint pt = pos();
   config.setData(CSVConfig::Pos, pt);
 
-  QString s = _rules->currentText();
-  config.setData(CSVConfig::LastRule, s);
-
   config.commit();
 }
 
 void CSVDialog::newRule ()
 {
-  QInputDialog *dialog = new QInputDialog;
-  dialog->setWindowTitle(tr("Qtstalker: New CSV Rule"));
-  dialog->setLabelText(tr("Enter rule name"));
-  dialog->setInputMode(QInputDialog::TextInput);
-  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(newRule2(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  CSVNewDialog *dialog = new CSVNewDialog;
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   dialog->show();
-}
-
-void CSVDialog::newRule2 (QString name)
-{
-  if (name.isEmpty())
-    return;
-
-  if (_rules->findText(name) != -1)
-  {
-    Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Error New CSV Rule"));
-    dialog->setMessage(tr("Duplicate rule name. Request denied."));
-    dialog->show();
-    return;
-  }
-
-  editRule(name);
 }
 
 void CSVDialog::editRule ()
 {
-  if (! _rules->count())
-    return;
-  
-  editRule(_rules->currentText());
+  CSVEditDialog *dialog = new CSVEditDialog;
+  connect(dialog, SIGNAL(signalSelect(QStringList)), this, SLOT(editRule2(QStringList)));
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  dialog->show();
 }
 
-void CSVDialog::editRule (QString name)
+void CSVDialog::editRule2 (QStringList l)
 {
-  CSVRuleDialog *dialog = new CSVRuleDialog(name);
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  if (! l.count())
+    return;
+  
+  CSVRuleDialog *dialog = new CSVRuleDialog(l.at(0));
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   dialog->show();
 }
 
 void CSVDialog::deleteRule ()
 {
-  if (! _rules->count())
-    return;
-
-  Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle(tr("Qtstalker: CSV Delete Rule"));
-  dialog->setMessage(tr("Are you sure you want to delete CSV rule?"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteRule2()));
+  CSVDeleteDialog *dialog = new CSVDeleteDialog();
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   dialog->show();
-}
-
-void CSVDialog::deleteRule2 ()
-{
-  CSVDataBase db;
-  QString s = _rules->currentText();
-  db.deleteRule(s);
-  
-  _rules->removeItem(_rules->currentIndex());
-}
-
-void CSVDialog::cancelButton ()
-{
-  if (_thread->isRunning())
-    _thread->stop();
-  else
-  {
-    saveSettings();
-    accept();
-  }
 }
 
 void CSVDialog::run ()
 {
-  if (! _rules->count())
-    return;
-  
-  _rule.name = _rules->currentText();
-  
-  CSVDataBase db;
-  db.getRule(_rule);
-
-  _log->append("*** " + tr("Import started") + " ***");
-  
-  _runButton->setEnabled(FALSE);
-  _newButton->setEnabled(FALSE);
-  _editButton->setEnabled(FALSE);
-  _deleteButton->setEnabled(FALSE);
-
-  _thread->setRule(&_rule);
-  _thread->start();
+  CSVRunDialog *dialog = new CSVRunDialog();
+  connect(dialog, SIGNAL(signalSelect(QStringList)), this, SLOT(run2(QStringList)));
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  dialog->show();
 }
 
-void CSVDialog::done ()
+void CSVDialog::run2 (QStringList l)
 {
-  _log->append("*** " + tr("Import finished") + " ***");
+  CSVDataBase db;
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    CSVRule rule;
+    rule.setName(l.at(loop));
+    db.getRule(rule);
+
+    CSVThread *thread = new CSVThread(this, rule);
+    connect(thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
+    connect(thread, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
+
+    _log->append("*** " + rule.name() + " " + tr("started") + " ***");
   
-  _runButton->setEnabled(TRUE);
-  _newButton->setEnabled(TRUE);
-  _editButton->setEnabled(TRUE);
-  _deleteButton->setEnabled(TRUE);
+    thread->start();
+
+    _threads.insert(l.at(loop), thread);
+  }
+
+  updateRules();
+}
+
+void CSVDialog::done (QString name)
+{
+  _log->append("*** " + name + " " + tr("finished") + " ***");
+
+  _threads.remove(name);
+
+  updateRules();
 
   emit signalChartRefresh();
+}
+
+void CSVDialog::closeDialog ()
+{
+  saveSettings();
+  hide();
+}
+
+void CSVDialog::stop ()
+{
+  QList<QListWidgetItem *> l = _rules->selectedItems();
+  if (! l.count())
+    return;
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    CSVThread *thread = _threads.value(l.at(loop)->text());
+    if (! thread)
+      continue;
+
+    thread->stop();
+  }
+}
+
+void CSVDialog::rulesSelectionChanged ()
+{
+  int status = 0;
+  QList<QListWidgetItem *> l = _rules->selectedItems();
+  if (l.count())
+    status = 1;
+
+  _cancelButton->setEnabled(status);
+}
+
+void CSVDialog::updateRules ()
+{
+  _rules->clear();
+
+  QStringList l;
+  QHashIterator<QString, CSVThread *> it(_threads);
+  while (it.hasNext())
+  {
+    it.next();
+    l.append(it.key());
+  }
+
+  _rules->addItems(l);
+
+  rulesSelectionChanged();
 }
 

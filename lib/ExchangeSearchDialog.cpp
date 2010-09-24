@@ -21,20 +21,23 @@
 
 #include "ExchangeSearchDialog.h"
 #include "ExchangeDataBase.h"
-#include "Dialog.h"
 #include "Globals.h"
 
 #include <QtDebug>
 #include <QLayout>
 #include <QLabel>
 #include <QStringList>
+#include <QPushButton>
 
-ExchangeSearchDialog::ExchangeSearchDialog () : QDialog (0, 0)
+ExchangeSearchDialog::ExchangeSearchDialog ()
 {
-  setAttribute(Qt::WA_DeleteOnClose);
-  
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Search For Exchange"));
 
+  createMainPage();
+}
+
+void ExchangeSearchDialog::createMainPage ()
+{
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(10);
   vbox->setMargin(5);
@@ -82,20 +85,19 @@ ExchangeSearchDialog::ExchangeSearchDialog () : QDialog (0, 0)
   _exchange = new QLineEdit;
   grid->addWidget(_exchange, row++, col--);
 
-  _list = new QListWidget;
-  connect(_list, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(itemSelected(QListWidgetItem *)));
-  vbox->addWidget(_list);
-  
-  // buttonbox
-  _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  vbox->addWidget(_buttonBox);
+  QPushButton *b = new QPushButton;
+  b->setText(tr("Search"));
+  connect(b, SIGNAL(clicked()), this, SLOT(search()));
+  vbox->addWidget(b);
 
-  vbox->addStretch(1);
+  _list = new QListWidget;
+  _list->setSelectionMode(QAbstractItemView::SingleSelection);
+  connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
+  connect(_list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(done()));
+  vbox->addWidget(_list);
 }
 
-void ExchangeSearchDialog::done ()
+void ExchangeSearchDialog::search ()
 {
   QString country = _country->currentText();
   if (country == "<NONE>")
@@ -111,10 +113,7 @@ void ExchangeSearchDialog::done ()
   QStringList sl;
   if (db.search(country, city, pattern, sl))
   {
-    Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error Exchange Search"));
-    dialog->setMessage(tr("Invalid search pattern.\n") + pattern);
-    dialog->show();
+    setMessage(tr("Invalid search pattern\n") + pattern);
     return;
   }
 
@@ -122,34 +121,37 @@ void ExchangeSearchDialog::done ()
   
   if (! sl.count())
   {
-    Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Exchange Search"));
-    dialog->setMessage(tr("No items found."));
-    dialog->show();
+    setMessage(tr("No items found"));
     return;
   }
 
   _list->addItems(sl);
 }
 
-void ExchangeSearchDialog::itemSelected (QListWidgetItem *item)
+void ExchangeSearchDialog::done ()
 {
-  if (! item)
+  QList<QListWidgetItem *> sl = _list->selectedItems();
+  if (! sl.count())
     return;
 
   ExchangeDataBase db;
   QString code;
-  QString d = item->text();
+  QString d = sl.at(0)->text();
   db.codeFromName(d, code);
   if (code.isEmpty())
-  {
-    Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Exchange Search"));
-    dialog->setMessage(tr("No item found."));
-    dialog->show();
     return;
-  }
 
   emit signalExchangeCode(code);
+}
+
+void ExchangeSearchDialog::selectionChanged ()
+{
+  int status = 0;
+  QList<QListWidgetItem *> sl = _list->selectedItems();
+  if (sl.count())
+    status = 1;
+
+  QPushButton *b = _buttonBox->button(QDialogButtonBox::Ok);
+  b->setEnabled(status);
 }
 

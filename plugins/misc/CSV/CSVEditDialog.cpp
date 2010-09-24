@@ -19,47 +19,31 @@
  *  USA.
  */
 
-#include "GroupNewDialog.h"
-#include "GroupDataBase.h"
+#include "CSVEditDialog.h"
+#include "CSVDataBase.h"
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLineEdit>
 
-GroupNewDialog::GroupNewDialog ()
+CSVEditDialog::CSVEditDialog ()
 {
-  setWindowTitle("QtStalker" + g_session + ": " + tr("New Group"));
+  setWindowTitle("QtStalker" + g_session + ": CSV " + tr("Edit Rule"));
 
-  GroupDataBase db;
-  db.getAllGroupsList(_groups);
-  setList(_groups);
+  _list->setSelectionMode(QAbstractItemView::SingleSelection);
+
+  CSVDataBase db;
+  QStringList l;
+  db.getRules(l);
+  _list->addItems(l);
 }
 
-void GroupNewDialog::done ()
+void CSVEditDialog::done ()
 {
-  QString name = _name->lineEdit()->text();
+  QList<QListWidgetItem *> sl = _list->selectedItems();
 
-  // remove any forbidden sql characters
-  name = name.remove(QString("'"), Qt::CaseSensitive);
-
-  if (_groups.contains(name))
-  {
-    setMessage(tr("A group with this name already exists."));
-    return;
-  }
-
-  GroupDataBase db;
-  Group g;
-  g.setName(name);
-  db.transaction();
-  db.setGroup(g);
-  db.commit();
-
-  QStringList ml;
-  ml << tr("Group") << name << tr("created");
-  emit signalMessage(ml.join(" "));
-
-  emit signalNew();
+  QStringList l;
+  l << sl.at(0)->text();
+  emit signalSelect(l);
   
   accept();
 }

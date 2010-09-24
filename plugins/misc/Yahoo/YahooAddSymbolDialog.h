@@ -19,48 +19,26 @@
  *  USA.
  */
 
-#include "GroupNewDialog.h"
-#include "GroupDataBase.h"
-#include "Globals.h"
+#ifndef YAHOO_ADD_SYMBOL_DIALOG_HPP
+#define YAHOO_ADD_SYMBOL_DIALOG_HPP
 
-#include <QtDebug>
-#include <QLineEdit>
+#include <QStringList>
 
-GroupNewDialog::GroupNewDialog ()
+#include "NewDialog.h"
+
+class YahooAddSymbolDialog : public NewDialog
 {
-  setWindowTitle("QtStalker" + g_session + ": " + tr("New Group"));
+  Q_OBJECT
 
-  GroupDataBase db;
-  db.getAllGroupsList(_groups);
-  setList(_groups);
-}
+  public:
+    YahooAddSymbolDialog ();
+    int getSymbolExchange (QString &ysymbol, QString &symbol, QString &exchange);
 
-void GroupNewDialog::done ()
-{
-  QString name = _name->lineEdit()->text();
+  public slots:
+    void done ();
 
-  // remove any forbidden sql characters
-  name = name.remove(QString("'"), Qt::CaseSensitive);
+  private:
+    QStringList _yexchange;
+};
 
-  if (_groups.contains(name))
-  {
-    setMessage(tr("A group with this name already exists."));
-    return;
-  }
-
-  GroupDataBase db;
-  Group g;
-  g.setName(name);
-  db.transaction();
-  db.setGroup(g);
-  db.commit();
-
-  QStringList ml;
-  ml << tr("Group") << name << tr("created");
-  emit signalMessage(ml.join(" "));
-
-  emit signalNew();
-  
-  accept();
-}
-
+#endif

@@ -22,7 +22,6 @@
 #include "ChartObject.h"
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
-#include "Dialog.h"
 #include "ChartObjectDataBase.h"
 
 #include <QDebug>
@@ -34,9 +33,9 @@ ChartObject::ChartObject ()
   
   _settings.id = -1;
   _settings.type = -1;
-  _settings.color = QColor(Qt::red);
-  _settings.date = QDateTime::currentDateTime();
-  _settings.date2 = _settings.date;
+//  _settings.color = QColor(Qt::red);
+//  _settings.date = QDateTime::currentDateTime();
+//  _settings.date2 = _settings.date;
   _settings.price = 0;
   _settings.price2 = 0;
   _settings.high = 0;
@@ -51,7 +50,7 @@ ChartObject::ChartObject ()
 
   _menu = new QMenu;
   _menu->addAction(QPixmap(edit_xpm), tr("&Edit"), this, SLOT(dialog()), Qt::ALT+Qt::Key_E);
-  _menu->addAction(QPixmap(delete_xpm), tr("&Delete"), this, SLOT(confirmDelete()), Qt::ALT+Qt::Key_D);
+  _menu->addAction(QPixmap(delete_xpm), tr("&Delete"), this, SLOT(deleteChartObject()), Qt::ALT+Qt::Key_D);
 }
 
 ChartObject::~ChartObject ()
@@ -140,14 +139,5 @@ void ChartObject::setSettings (ChartObjectSettings &d)
 {
   _settings = d;
   _draw->setSettings(d);
-}
-
-void ChartObject::confirmDelete ()
-{
-  Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle(tr("Qtstalker: Delete Chart Object"));
-  dialog->setMessage(tr("Are you sure you want to delete selected chart object?"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteChartObject()));
-  dialog->show();
 }
 

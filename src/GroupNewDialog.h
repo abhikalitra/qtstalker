@@ -22,26 +22,22 @@
 #ifndef GROUP_NEW_DIALOG_HPP
 #define GROUP_NEW_DIALOG_HPP
 
-#include <QLineEdit>
+#include <QStringList>
 
-#include "Dialog.h"
+#include "NewDialog.h"
 
-class GroupNewDialog : public Dialog
+class GroupNewDialog : public NewDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalNewGroup ();
-  
   public:
     GroupNewDialog ();
-    void createMainPage ();
 
   public slots:
     void done ();
 
   private:
-    QLineEdit *_name;
+    QStringList _groups;
 };
 
 #endif

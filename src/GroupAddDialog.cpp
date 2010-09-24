@@ -33,7 +33,7 @@
 #include <QIcon>
 #include <QPushButton>
 
-GroupAddDialog::GroupAddDialog (Group group) : Dialog (Dialog::_Dialog, 0)
+GroupAddDialog::GroupAddDialog (Group group)
 {
   _group = group;
   
@@ -129,7 +129,7 @@ void GroupAddDialog::done ()
 void GroupAddDialog::newGroup ()
 {
   GroupNewDialog *dialog = new GroupNewDialog;
-  connect(dialog, SIGNAL(signalNewGroup()), this, SLOT(updateGroups()));
+  connect(dialog, SIGNAL(signalNew()), this, SLOT(updateGroups()));
   dialog->show();
 }
 

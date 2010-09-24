@@ -22,26 +22,22 @@
 #ifndef SCRIPT_NEW_DIALOG_HPP
 #define SCRIPT_NEW_DIALOG_HPP
 
-#include <QLineEdit>
+#include <QStringList>
 
-#include "Dialog.h"
+#include "NewDialog.h"
 
-class ScriptNewDialog : public Dialog
+class ScriptNewDialog : public NewDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalNewScript (QString);
-  
   public:
     ScriptNewDialog ();
-    void createMainPage ();
 
   public slots:
     void done ();
 
   private:
-    QLineEdit *_name;
+    QStringList _scripts;
 };
 
 #endif

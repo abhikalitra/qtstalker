@@ -568,9 +568,9 @@ void Plot::mouseMove (QPoint p)
 
 void Plot::deleteAllChartObjects ()
 {
-  Dialog *dialog = new Dialog(Dialog::_Message, 0);
+  Dialog *dialog = new Dialog;
   dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete All Chart Objects"));
-  dialog->setMessage(tr("Are you sure you want to delete all chart objects from this indicator?"));
+  dialog->setConfirm(tr("Confirm Delete"), tr("Delete all chart objects from this indicator"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
   dialog->show();
 }

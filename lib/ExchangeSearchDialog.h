@@ -22,14 +22,13 @@
 #ifndef EXCHANGE_SEARCH_DIALOG_HPP
 #define EXCHANGE_SEARCH_DIALOG_HPP
 
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QListWidget>
-#include <QListWidgetItem>
 
-class ExchangeSearchDialog : public QDialog
+#include "Dialog.h"
+
+class ExchangeSearchDialog : public Dialog
 {
   Q_OBJECT
 
@@ -38,13 +37,14 @@ class ExchangeSearchDialog : public QDialog
   
   public:
     ExchangeSearchDialog ();
+    void createMainPage ();
 
   public slots:
     void done ();
-    void itemSelected (QListWidgetItem *);
+    void search ();
+    void selectionChanged ();
 
   private:
-    QDialogButtonBox *_buttonBox;
     QLineEdit *_exchange;
     QComboBox *_country;
     QComboBox *_city;

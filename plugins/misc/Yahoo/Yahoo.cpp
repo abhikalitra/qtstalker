@@ -38,21 +38,14 @@ int Yahoo::configureDialog ()
   if (! _dialog)
   {
     _dialog = new YahooDialog;
-    connect(_dialog, SIGNAL(accepted()), this, SLOT(done()));
     connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
-    _dialog->show();
   }
-  else
-    _dialog->raise();
-  
-  return 0;
-}
 
-void Yahoo::done ()
-{
-  _dialog->saveSettings();
-  delete _dialog;
-  _dialog = 0;
+  _dialog->show();
+  _dialog->raise();
+  _dialog->activateWindow();
+
+  return 0;
 }
 
 //**********************************************************

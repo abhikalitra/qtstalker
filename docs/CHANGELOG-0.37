@@ -772,5 +772,9 @@
 
 20100921:  New indicator dialog now saves and restores the last used indicator.
 
+20100922:  Revised the CSV dialog to allow multiple threads to enable a batch of rules to run.
+           Added a new tab to allow monitoring/stopping running threads.
 
+20100924:  Revised dialogs to include error messages and confirmations without having to spawn
+           a message box. Hoping to reduce popup messages to a minimum.
 

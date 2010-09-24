@@ -22,26 +22,17 @@
 #ifndef SCRIPT_SEARCH_DIALOG_HPP
 #define SCRIPT_SEARCH_DIALOG_HPP
 
-#include <QLineEdit>
+#include "NewDialog.h"
 
-#include "Dialog.h"
-
-class ScriptSearchDialog : public Dialog
+class ScriptSearchDialog : public NewDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalSearch (QString);
-  
   public:
     ScriptSearchDialog ();
-    void createMainPage ();
 
   public slots:
     void done ();
-
-  private:
-    QLineEdit *_search;
 };
 
 #endif

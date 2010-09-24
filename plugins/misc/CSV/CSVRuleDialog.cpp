@@ -34,7 +34,7 @@
 #include <QDebug>
 #include <QToolButton>
 
-CSVRuleDialog::CSVRuleDialog (QString &name) : Dialog (Dialog::_Dialog, 0)
+CSVRuleDialog::CSVRuleDialog (QString name)
 {
   _saveFlag = FALSE;
   _name = name;
@@ -184,20 +184,20 @@ void CSVRuleDialog::saveRule ()
     return;
 
   CSVRule rule;
-  rule.name = _name;
-  rule.type = _type->currentText();
-  rule.delimeter = _delimeter->currentText();
-  rule.file = _file->getFile();
+  rule.setName(_name);
+  rule.setType(_type->currentText());
+  rule.setDelimiter(_delimeter->currentText());
+  rule.setFile(_file->getFile());
 
   QStringList l;
   int loop = 0;
   for (; loop < _ruleList->count(); loop++)
     l.append(_ruleList->item(loop)->text());
-  rule.rule = l.join(",");
+  rule.setRule(l.join(","));
 
-  rule.fileSymbol = _fileSymbol->isChecked();
-  rule.exchange = _exchange->currentText();
-  rule.removeSuffix = _removeSuffix->isChecked();
+  rule.setFileSymbol(_fileSymbol->isChecked());
+  rule.setExchange(_exchange->currentText());
+  rule.setRemoveSuffix(_removeSuffix->isChecked());
 
   CSVDataBase db;
   db.setRule(rule);
@@ -210,24 +210,24 @@ void CSVRuleDialog::loadRule ()
   clear();
   
   CSVRule rule;
-  rule.name = _name;
+  rule.setName(_name);
   
   CSVDataBase db;
   if (db.getRule(rule))
     return;
 
-  _type->setCurrentIndex(_type->findText(rule.type, Qt::MatchExactly));
-  _delimeter->setCurrentIndex(_delimeter->findText(rule.delimeter, Qt::MatchExactly));
-  _file->setFile(rule.file);
+  _type->setCurrentIndex(_type->findText(rule.type(), Qt::MatchExactly));
+  _delimeter->setCurrentIndex(_delimeter->findText(rule.delimiter(), Qt::MatchExactly));
+  _file->setFile(rule.file());
 
-  QStringList l = rule.rule.split(",");
+  QStringList l = rule.rule().split(",");
   int loop = 0;
   for (; loop < l.count(); loop++)
     new QListWidgetItem(l[loop], _ruleList, 0);
 
-  _fileSymbol->setChecked(rule.fileSymbol);
-  _exchange->setCurrentIndex(_exchange->findText(rule.exchange, Qt::MatchExactly));
-  _removeSuffix->setChecked(rule.removeSuffix);
+  _fileSymbol->setChecked(rule.fileSymbol());
+  _exchange->setCurrentIndex(_exchange->findText(rule.exchange(), Qt::MatchExactly));
+  _removeSuffix->setChecked(rule.removeSuffix());
 }
 
 void CSVRuleDialog::deleteClicked ()
@@ -251,11 +251,16 @@ void CSVRuleDialog::ruleChanged ()
 void CSVRuleDialog::insertClicked ()
 {
   QList<QListWidgetItem *> sel = _fieldList->selectedItems();
+  if (! sel.count())
+    return;
 
   QStringList l;
   int loop = 0;
   for (; loop < sel.count(); loop++)
-    l.append(sel.at(loop)->text());
+  {
+    if (sel.at(loop)->text().length())
+      l.append(sel.at(loop)->text());
+  }
   
   _ruleList->insertItems(_ruleList->currentRow() + 1, l);
 
@@ -276,7 +281,7 @@ void CSVRuleDialog::dateDialog ()
 
 void CSVRuleDialog::dateDialog2 (QString item)
 {
-  if (item.isEmpty())
+  if (! item.length())
     return;
 
   QString s = "Date=" + item;
@@ -351,7 +356,5 @@ void CSVRuleDialog::fieldSelectionChanged ()
     status = 1;
 
   _insertButton->setEnabled(status);
-  _insertDateButton->setEnabled(status);
-  _insertTimeButton->setEnabled(status);
 }
 

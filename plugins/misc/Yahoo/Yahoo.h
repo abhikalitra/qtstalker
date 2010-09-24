@@ -34,9 +34,6 @@ class Yahoo : public MiscPlugin
     ~Yahoo ();
     int configureDialog ();
 
-  public slots:
-    void done ();
-
   private:
     YahooDialog *_dialog;
 };

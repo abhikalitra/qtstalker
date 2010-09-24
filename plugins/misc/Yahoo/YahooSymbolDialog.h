@@ -38,18 +38,15 @@ class YahooSymbolDialog : public Dialog
   public:
     YahooSymbolDialog ();
     void createMainPage ();
-    void loadSettings ();
-    int getSymbolExchange (QString &ysymbol, QString &symbol, QString &exchange);
       
   public slots:
     void addSymbol ();
-    void addSymbol2 (QString);
     void deleteSymbol ();
     void done ();
     void selectionChanged ();
+    void loadSettings ();
 
   private:
-    QStringList _yexchange;
     QListWidget *_list;
     QPushButton *_deleteButton;
 };

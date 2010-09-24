@@ -27,7 +27,6 @@
 #include "GroupNewDialog.h"
 #include "GroupDeleteDialog.h"
 #include "GroupAddDialog.h"
-#include "Dialog.h"
 #include "GroupDeleteItemsDialog.h"
 
 #include "../pics/delete.xpm"
@@ -123,7 +122,7 @@ void GroupPage::newGroup ()
 {
   GroupNewDialog *dialog = new GroupNewDialog;
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalNewGroup()), this, SLOT(updateGroups()));
+  connect(dialog, SIGNAL(signalNew()), this, SLOT(updateGroups()));
   dialog->show();
 }
 

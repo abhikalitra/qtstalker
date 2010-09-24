@@ -28,7 +28,7 @@
 #include <QLabel>
 #include <QDir>
 
-ScriptDialog::ScriptDialog (QString name) : Dialog (Dialog::_Dialog, 0)
+ScriptDialog::ScriptDialog (QString name)
 {
   QString cap = "Qtstalker" + g_session + ": ";
   

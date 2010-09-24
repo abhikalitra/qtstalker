@@ -22,29 +22,21 @@
 #ifndef INDICATOR_DELETE_DIALOG_HPP
 #define INDICATOR_DELETE_DIALOG_HPP
 
-#include <QListWidget>
-
-#include "Dialog.h"
+#include "ListDialog.h"
 #include "IndicatorDataBase.h"
-#include "Indicator.h"
 
-class IndicatorDeleteDialog : public Dialog
+class IndicatorDeleteDialog : public ListDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalDelete (QStringList);
-  
   public:
     IndicatorDeleteDialog ();
-    void createMainPage ();
 
   public slots:
     void done ();
-    void done2 ();
+    void deleteIndicators ();
 
   private:
-    QListWidget *_list;
     IndicatorDataBase _db;
 };
 

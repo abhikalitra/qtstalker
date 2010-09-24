@@ -38,7 +38,7 @@ class CSVRuleDialog : public Dialog
   Q_OBJECT
   
   public:
-    CSVRuleDialog (QString &);
+    CSVRuleDialog (QString);
     void createMainPage ();
     void createRulePage ();
     void loadRule ();

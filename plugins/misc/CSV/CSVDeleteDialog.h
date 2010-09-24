@@ -19,48 +19,23 @@
  *  USA.
  */
 
-#include "GroupNewDialog.h"
-#include "GroupDataBase.h"
-#include "Globals.h"
+#ifndef CSV_DELETE_DIALOG_HPP
+#define CSV_DELETE_DIALOG_HPP
 
-#include <QtDebug>
-#include <QLineEdit>
+#include "ListDialog.h"
 
-GroupNewDialog::GroupNewDialog ()
+class CSVDeleteDialog : public ListDialog
 {
-  setWindowTitle("QtStalker" + g_session + ": " + tr("New Group"));
+  Q_OBJECT
 
-  GroupDataBase db;
-  db.getAllGroupsList(_groups);
-  setList(_groups);
-}
+  public:
+    CSVDeleteDialog ();
 
-void GroupNewDialog::done ()
-{
-  QString name = _name->lineEdit()->text();
+  public slots:
+    void done ();
+    void deleteRules ();
 
-  // remove any forbidden sql characters
-  name = name.remove(QString("'"), Qt::CaseSensitive);
+  private:
+};
 
-  if (_groups.contains(name))
-  {
-    setMessage(tr("A group with this name already exists."));
-    return;
-  }
-
-  GroupDataBase db;
-  Group g;
-  g.setName(name);
-  db.transaction();
-  db.setGroup(g);
-  db.commit();
-
-  QStringList ml;
-  ml << tr("Group") << name << tr("created");
-  emit signalMessage(ml.join(" "));
-
-  emit signalNew();
-  
-  accept();
-}
-
+#endif

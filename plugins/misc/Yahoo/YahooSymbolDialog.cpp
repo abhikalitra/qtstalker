@@ -21,19 +21,21 @@
 
 #include "YahooSymbolDialog.h"
 #include "YahooDataBase.h"
+#include "Globals.h"
+#include "YahooAddSymbolDialog.h"
 
 #include <QLayout>
 #include <QLabel>
-#include <QInputDialog>
 #include <QDebug>
 
-YahooSymbolDialog::YahooSymbolDialog () : Dialog (Dialog::_Dialog, 0)
+YahooSymbolDialog::YahooSymbolDialog ()
 {
-  _yexchange << "NYSE" << "AX" << "SA" << "TO" << "BO" << "NS" << "L";
-
-  setWindowTitle(tr("Qtstalker: Yahoo Edit Symbols"));
+  setWindowTitle("QtStalker" + g_session + ": Yahoo " + tr("Edit Symbols"));
+  
   createMainPage();
+  
   loadSettings();
+  
   selectionChanged();
 }
 
@@ -41,14 +43,10 @@ void YahooSymbolDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(0);
-  vbox->setMargin(0);
-  w->setLayout(vbox);
-
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
-  vbox->addLayout(hbox);
+  hbox->setMargin(0);
+  w->setLayout(hbox);
 
   _list = new QListWidget;
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -72,56 +70,12 @@ void YahooSymbolDialog::createMainPage ()
 
 void YahooSymbolDialog::addSymbol ()
 {
-  QInputDialog *dialog = new QInputDialog;
-  dialog->setWindowTitle(tr("Qtstalker: Add Yahoo Symbol"));
-  dialog->setLabelText(tr("Enter Yahoo symbols separated by a space"));
-  dialog->setInputMode(QInputDialog::TextInput);
-  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(addSymbol2(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  YahooAddSymbolDialog *dialog = new YahooAddSymbolDialog;
+  connect(dialog, SIGNAL(signalNew()), this, SLOT(loadSettings()));
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   dialog->show();
 }
   
-void YahooSymbolDialog::addSymbol2 (QString s)
-{
-  if (s.isEmpty())
-    return;
-
-  s = s.trimmed();
-  s = s.toUpper();
-  QStringList l = s.split(" ");
-
-  YahooDataBase db;
-  db.transaction();
-  
-  QStringList errorList;
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    QString symbol, exchange;
-    if (getSymbolExchange(l[loop], symbol, exchange))
-    {
-      qDebug() << l[loop] << symbol << exchange;
-//      errorList.append(l[loop]);
-    }
-    else
-      db.setSymbol(l[loop], symbol, exchange);
-  }
-
-  db.commit();
-
-  if (errorList.count())
-  {
-    qDebug() << "Yahoo::addSymbol:" << errorList;
-    
-    Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle(tr("Qtstalker: Yahoo Error"));
-    dialog->setMessage(tr("Invalid symbols found. See console messages for details."));
-    dialog->show();
-  }
-
-  loadSettings();
-}
-
 void YahooSymbolDialog::deleteSymbol ()
 {
   QList<QListWidgetItem *> l = _list->selectedItems();
@@ -135,6 +89,7 @@ void YahooSymbolDialog::deleteSymbol ()
     QListWidgetItem *item = l.at(loop);
     QString s = item->text();
     db.deleteSymbol(s);
+    delete item;
   }
 }
 
@@ -146,55 +101,7 @@ void YahooSymbolDialog::loadSettings ()
   QStringList l;
   db.getSymbols(l);
 
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-    new QListWidgetItem(l.at(loop), _list, 0);
-}
-
-int YahooSymbolDialog::getSymbolExchange (QString &ysymbol, QString &symbol, QString &exchange)
-{
-  QString s;
-  QStringList l = ysymbol.split(".");
-  if (l.count() == 1)
-    l.append("NYSE");
-
-  int rc = 0;
-  
-  switch (_yexchange.indexOf(l[1]))
-  {
-    // unfortunately yahoo does not separate NYSE,NASDAQ,ASE quotes
-    // so we lump them into the NYSE exchange
-    case 0: // NYSE
-      symbol = l[0];
-      exchange = "XNYS";
-      break;
-    case 1: // AX
-      symbol = l[0];
-      exchange = "XASX";
-      break;
-    case 2: // SA
-      symbol = l[0];
-      exchange = "BVMF";
-      break;
-    case 3: // TO
-      symbol = l[0];
-      exchange = "XTSE";
-      break;
-    case 4: // BO
-    case 5: // NS
-      symbol = l[0];
-      exchange = "XNSE";
-      break;
-    case 6: // L
-      symbol = l[0];
-      exchange = "XLON";
-      break;
-    default: // error
-      rc = 1;
-      break;
-  }
-
-  return rc;
+  _list->addItems(l);
 }
 
 void YahooSymbolDialog::done ()

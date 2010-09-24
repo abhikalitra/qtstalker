@@ -24,6 +24,7 @@
 #include "YahooDataBase.h"
 #include "YahooConfig.h"
 #include "YahooThread.h"
+#include "Globals.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -33,8 +34,10 @@
 YahooDialog::YahooDialog ()
 {
   _runningFlag = 0;
-  setWindowTitle(tr("Qtstalker: Yahoo"));
+  setWindowTitle("QtStalker" + g_session + ": Yahoo ");
+  
   createMainPage();
+  
   loadSettings();
 }
 
@@ -135,7 +138,7 @@ void YahooDialog::cancelButton ()
   else
   {
     saveSettings();
-    accept();
+    hide();
   }
 }
 

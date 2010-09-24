@@ -22,17 +22,15 @@
 #include "SymbolDialog.h"
 #include "BarData.h"
 #include "QuoteServerRequestThread.h"
-#include "Dialog.h"
 #include "Globals.h"
 #include "../pics/search.xpm"
 
 #include <QLabel>
 #include <QLayout>
 #include <QtDebug>
-#include <QGroupBox>
 #include <QTreeWidgetItem>
 
-SymbolDialog::SymbolDialog () : Dialog (Dialog::_Dialog, 0)
+SymbolDialog::SymbolDialog ()
 {
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Select Symbols"));
 
@@ -51,32 +49,19 @@ void SymbolDialog::createMainPage ()
   hbox->setSpacing(5);
   vbox->addLayout(hbox);
   
-  // construct left box
-  QGroupBox *gbox = new QGroupBox;
-  gbox->setTitle(tr("Symbols"));
-  hbox->addWidget(gbox);
-  
-  QVBoxLayout *tvbox = new QVBoxLayout;
-  tvbox->setMargin(5);
-  gbox->setLayout(tvbox);
-
-  QHBoxLayout *thbox = new QHBoxLayout;
-  thbox->setSpacing(2);
-  tvbox->addLayout(thbox);
-  
   _exchanges = new QComboBox;
   _exchanges->setToolTip(QString(tr("Exchange")));
-  thbox->addWidget(_exchanges);
+  hbox->addWidget(_exchanges);
   
   _search = new QLineEdit("*");
   _search->setToolTip(QString(tr("Symbol pattern")));
-  thbox->addWidget(_search);
+  hbox->addWidget(_search);
   
   _searchButton = new QToolButton;
   _searchButton->setIcon(QIcon(search_xpm));
   _searchButton->setToolTip(QString(tr("Search")));
   connect(_searchButton, SIGNAL(clicked()), this, SLOT(searchButtonPressed()));
-  thbox->addWidget(_searchButton);
+  hbox->addWidget(_searchButton);
 
   QStringList l;
   l << tr("Symbol") << tr("Name") << tr("Exchange");
@@ -86,9 +71,9 @@ void SymbolDialog::createMainPage ()
   _leftSymbols->setRootIsDecorated(FALSE);
   _leftSymbols->setHeaderLabels(l);
   _leftSymbols->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  tvbox->addWidget(_leftSymbols);
+  vbox->addWidget(_leftSymbols);
   
-  _tabs->addTab(w, tr("Settings"));
+  _tabs->addTab(w, tr("Search"));
 
   loadExchanges();
 }

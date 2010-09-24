@@ -19,48 +19,32 @@
  *  USA.
  */
 
-#include "GroupNewDialog.h"
-#include "GroupDataBase.h"
-#include "Globals.h"
+#ifndef LIST_DIALOG_HPP
+#define LIST_DIALOG_HPP
 
-#include <QtDebug>
-#include <QLineEdit>
+#include <QListWidget>
+#include <QStringList>
 
-GroupNewDialog::GroupNewDialog ()
+#include "Dialog.h"
+
+class ListDialog : public Dialog
 {
-  setWindowTitle("QtStalker" + g_session + ": " + tr("New Group"));
+  Q_OBJECT
 
-  GroupDataBase db;
-  db.getAllGroupsList(_groups);
-  setList(_groups);
-}
-
-void GroupNewDialog::done ()
-{
-  QString name = _name->lineEdit()->text();
-
-  // remove any forbidden sql characters
-  name = name.remove(QString("'"), Qt::CaseSensitive);
-
-  if (_groups.contains(name))
-  {
-    setMessage(tr("A group with this name already exists."));
-    return;
-  }
-
-  GroupDataBase db;
-  Group g;
-  g.setName(name);
-  db.transaction();
-  db.setGroup(g);
-  db.commit();
-
-  QStringList ml;
-  ml << tr("Group") << name << tr("created");
-  emit signalMessage(ml.join(" "));
-
-  emit signalNew();
+  signals:
+    void signalDelete ();
+    void signalSelect (QStringList);
   
-  accept();
-}
+  public:
+    ListDialog ();
+    void createMainPage ();
+    void setList (QStringList &);
 
+  public slots:
+    void selectionChanged ();
+
+  protected:
+    QListWidget *_list;
+};
+
+#endif

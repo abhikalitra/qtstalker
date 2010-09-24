@@ -23,39 +23,21 @@
 #include "Globals.h"
 
 #include <QtDebug>
+#include <QLineEdit>
 
-ScriptSearchDialog::ScriptSearchDialog () : Dialog (Dialog::_Dialog, 0)
+ScriptSearchDialog::ScriptSearchDialog ()
 {
   setWindowTitle("QtStalker" + g_session + ": " + tr("Search Script"));
 
-  createMainPage();
-}
+  QLabel *label = new QLabel(tr("Enter either a specific name like MyScript or\na partial match like %Script or %Scr%"));
+  _ndvbox->insertWidget(0, label);
 
-void ScriptSearchDialog::createMainPage ()
-{
-  QWidget *w = new QWidget;
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  w->setLayout(vbox);
-
-  _search = new QLineEdit;
-  _search->setToolTip(tr("Enter either a specific name like MyScript or\na partial match like %Script or %Scr%"));
-  vbox->addWidget(_search);
-  
-  _tabs->addTab(w, tr("Script Name"));
+  _tabs->setTabText(0, tr("Script Name"));
 }
 
 void ScriptSearchDialog::done ()
 {
-  QString ss = _search->text();
-  if (ss.isEmpty())
-  {
-    reject();
-    return;
-  }
-
-  emit signalSearch(ss);
+  emit signalNew(_name->lineEdit()->text());
   
   accept();
 }

@@ -24,55 +24,31 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLabel>
+#include <QLineEdit>
 
-ScriptNewDialog::ScriptNewDialog () : Dialog (Dialog::_Dialog, 0)
+ScriptNewDialog::ScriptNewDialog ()
 {
   setWindowTitle("QtStalker" + g_session + ": " + tr("New Script"));
 
-  createMainPage();
-}
-
-void ScriptNewDialog::createMainPage ()
-{
-  QWidget *w = new QWidget;
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  w->setLayout(vbox);
-
-  _name = new QLineEdit;
-  vbox->addWidget(_name);
-  
-  _tabs->addTab(w, tr("Script Name"));
+  ScriptDataBase db;
+  db.getScripts(_scripts);
 }
 
 void ScriptNewDialog::done ()
 {
-  QString name = _name->text();
-  if (name.isEmpty())
-  {
-    reject();
-    return;
-  }
+  QString name = _name->lineEdit()->text();
 
   // remove any forbidden sql characters
   name = name.remove(QString("'"), Qt::CaseSensitive);
 
   // check is name already exists
-  QStringList l;
-  ScriptDataBase db;
-  db.getScripts(l);
-  if (l.contains(name))
+  if (_scripts.contains(name))
   {
-    Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error New Script"));
-    dialog->setMessage(tr("A script with this name already exists."));
-    dialog->show();
+    setMessage(tr("A script with this name already exists."));
     return;
   }
 
-  emit signalNewScript(name);
+  emit signalNew(name);
   
   accept();
 }

@@ -67,7 +67,6 @@ class ScriptPage : public QWidget
     void editScript (QString);
     void deleteScript ();
     void listDoubleClick (QListWidgetItem *);
-    void listDoubleClick2 ();
     void listRightClick (const QPoint &);
     void queRightClick (const QPoint &);
     void search ();
@@ -76,7 +75,6 @@ class ScriptPage : public QWidget
     void updateQueList ();
     void scriptDone (QString);
     void removeScriptQueue ();
-    void removeScriptQueue2 ();
     void runScript (Script *);
     void runScriptDialog ();
     void runScriptDialog2 (QString command, QString file);

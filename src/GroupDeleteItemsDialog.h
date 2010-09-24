@@ -22,29 +22,22 @@
 #ifndef GROUP_DELETE_ITEMS_DIALOG_HPP
 #define GROUP_DELETE_ITEMS_DIALOG_HPP
 
-#include <QListWidget>
-
-#include "Dialog.h"
+#include "ListDialog.h"
 #include "GroupDataBase.h"
 #include "Group.h"
 
-class GroupDeleteItemsDialog : public Dialog
+class GroupDeleteItemsDialog : public ListDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalDelete ();
-  
   public:
     GroupDeleteItemsDialog (QString name);
-    void createMainPage ();
 
   public slots:
     void done ();
-    void done2 ();
+    void deleteItems ();
 
   private:
-    QListWidget *_list;
     GroupDataBase _db;
     Group _group;
 };

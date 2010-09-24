@@ -24,7 +24,6 @@
 #include "Config.h"
 #include "IndicatorPluginFactory.h"
 #include "IndicatorPlugin.h"
-#include "Dialog.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -32,16 +31,21 @@
 #include <QLabel>
 #include <QStringList>
 
-IndicatorDialog::IndicatorDialog () : QDialog (0, 0)
+IndicatorDialog::IndicatorDialog ()
 {
-  setAttribute(Qt::WA_DeleteOnClose);
-  
   setWindowTitle("QtStalker" + g_session + ": " + tr("New Indicator"));
 
+  createMainPage();
+}
+
+void IndicatorDialog::createMainPage ()
+{
+  QWidget *w = new QWidget;
+  
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(10);
   vbox->setMargin(5);
-  setLayout(vbox);
+  w->setLayout(vbox);
 
   QGridLayout *grid = new QGridLayout;
   grid->setSpacing(2);
@@ -101,23 +105,14 @@ IndicatorDialog::IndicatorDialog () : QDialog (0, 0)
   _col->setRange(1, 3);
   grid->addWidget(_col, row++, col--);
 
-  // buttonbox
-  _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  vbox->addWidget(_buttonBox);
-
-  vbox->addStretch(1);
+  _tabs->addTab(w, tr("Settings"));
 }
 
 void IndicatorDialog::done ()
 {
   if (_name->text().isEmpty())
   {
-    Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error New Indicator"));
-    dialog->setMessage(tr("Name missing."));
-    dialog->show();
+    setMessage(tr("Name missing."));
     return;
   }
 
@@ -127,10 +122,7 @@ void IndicatorDialog::done ()
   db.getIndicatorList(l);
   if (l.indexOf(_name->text()) != -1)
   {
-    Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error New Indicator"));
-    dialog->setMessage(tr("This indicator already exists."));
-    dialog->show();
+    setMessage(tr("This indicator already exists."));
     return;
   }
 

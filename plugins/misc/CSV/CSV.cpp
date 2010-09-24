@@ -30,10 +30,7 @@ CSV::CSV ()
 CSV::~CSV ()
 {
   if (_dialog)
-  {
-    _dialog->saveSettings();
     delete _dialog;
-  }
 }
 
 int CSV::configureDialog ()
@@ -41,23 +38,16 @@ int CSV::configureDialog ()
   if (! _dialog)
   {
     _dialog = new CSVDialog;
-    connect(_dialog, SIGNAL(accepted()), this, SLOT(done()));
     connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
-    _dialog->show();
+    connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   }
-  else
-    _dialog->raise();
+  
+  _dialog->show();
+  _dialog->raise();
+  _dialog->activateWindow();
   
   return 0;
 }
-
-void CSV::done ()
-{
-  _dialog->saveSettings();
-  delete _dialog;
-  _dialog = 0;
-}
-
 
 //**********************************************************
 //**********************************************************

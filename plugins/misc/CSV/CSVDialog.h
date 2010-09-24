@@ -24,12 +24,13 @@
 
 #include <QDialog>
 #include <QTextEdit>
-#include <QComboBox>
-#include <QDialogButtonBox>
+#include <QStringList>
+#include <QTabWidget>
+#include <QListWidget>
 #include <QPushButton>
+#include <QHash>
 
 #include "CSVThread.h"
-#include "CSVRule.h"
 
 class CSVDialog : public QDialog
 {
@@ -37,35 +38,34 @@ class CSVDialog : public QDialog
 
   signals:
     void signalChartRefresh ();
+    void signalMessage (QString);
   
   public:
     CSVDialog ();
     void createMainPage ();
+    void createMonitorPage ();
     void loadSettings ();
     void saveSettings ();
+    void updateRules ();
     
   public slots:
     void run ();
+    void run2 (QStringList);
     void newRule ();
-    void newRule2 (QString);
     void editRule ();
-    void editRule (QString);
+    void editRule2 (QStringList);
     void deleteRule ();
-    void deleteRule2 ();
-    void cancelButton ();
-    void done ();
+    void done (QString);
+    void closeDialog ();
+    void rulesSelectionChanged ();
+    void stop ();
           
   private:
-    QComboBox *_rules;
     QTextEdit *_log;
-    QDialogButtonBox *_buttonBox;
-    QPushButton *_newButton;
-    QPushButton *_runButton;
-    QPushButton *_editButton;
-    QPushButton *_deleteButton;
+    QTabWidget *_tabs;
+    QListWidget *_rules;
     QPushButton *_cancelButton;
-    CSVThread *_thread;
-    CSVRule _rule;
+    QHash<QString, CSVThread *> _threads;
 };
 
 #endif

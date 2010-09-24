@@ -22,15 +22,14 @@
 #ifndef INDICATOR_DIALOG_HPP
 #define INDICATOR_DIALOG_HPP
 
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QSpinBox>
 
 #include "Indicator.h"
+#include "Dialog.h"
 
-class IndicatorDialog : public QDialog
+class IndicatorDialog : public Dialog
 {
   Q_OBJECT
 
@@ -39,12 +38,12 @@ class IndicatorDialog : public QDialog
   
   public:
     IndicatorDialog ();
+    void createMainPage ();
 
   public slots:
     void done ();
 
   private:
-    QDialogButtonBox *_buttonBox;
     QLineEdit *_name;
     QComboBox *_indicator;
     QSpinBox *_row;

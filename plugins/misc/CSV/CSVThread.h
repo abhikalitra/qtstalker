@@ -35,6 +35,7 @@ class CSVThread : public QThread
 
   signals:
     void signalMessage (QString);
+    void signalDone (QString);
     
   public:
     enum Field
@@ -65,8 +66,7 @@ class CSVThread : public QThread
       QString oi;
     };
 
-    CSVThread (QObject *);
-    void setRule (CSVRule *rule);
+    CSVThread (QObject *, CSVRule rule);
     int verifyRule ();
     int verifyCSVBar (QStringList &pl, CSVBar &bar);
     void stop ();
@@ -75,7 +75,7 @@ class CSVThread : public QThread
     void run();
 
   private:
-    CSVRule *_rule;
+    CSVRule _rule;
     int _fileSymbol;
     int _lineCount;
     QString _type;

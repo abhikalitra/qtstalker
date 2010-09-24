@@ -22,28 +22,21 @@
 #ifndef SCRIPT_DELETE_DIALOG_HPP
 #define SCRIPT_DELETE_DIALOG_HPP
 
-#include <QListWidget>
-
-#include "Dialog.h"
+#include "ListDialog.h"
 #include "ScriptDataBase.h"
 
-class ScriptDeleteDialog : public Dialog
+class ScriptDeleteDialog : public ListDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalDelete ();
-  
   public:
     ScriptDeleteDialog ();
-    void createMainPage ();
 
   public slots:
     void done ();
-    void done2 ();
+    void deleteScripts ();
 
   private:
-    QListWidget *_list;
     ScriptDataBase _db;
 };
 

@@ -19,35 +19,40 @@
  *  USA.
  */
 
-#include "IndicatorDeleteDialog.h"
+#include "CSVDeleteDialog.h"
+#include "CSVDataBase.h"
 #include "Globals.h"
 
 #include <QtDebug>
+#include <QPushButton>
 
-IndicatorDeleteDialog::IndicatorDeleteDialog ()
+CSVDeleteDialog::CSVDeleteDialog ()
 {
-  setWindowTitle("QtStalker" + g_session + ": " + tr("Delete Indicator"));
+  setWindowTitle("QtStalker" + g_session + ": CSV " + tr("Delete Rules"));
 
+  CSVDataBase db;
   QStringList l;
-  _db.getActiveIndicatorList(l);
-  setList(l);  
+  db.getRules(l);
+  _list->addItems(l);
 
-  _tabs->setTabText(0, tr("Indicator Name"));
+  // set the default button
+  QPushButton *b = _buttonBox->button(QDialogButtonBox::Cancel);
+  b->setDefault(TRUE);
 }
 
-void IndicatorDeleteDialog::done ()
+void CSVDeleteDialog::done ()
 {
   switch (_confirmFlag)
   {
     case _ConfirmNone:
       setConfirm(tr("Confirm Delete:"),
-                 tr("Delete selected indicators."));
+                 tr("Yes. Delete selected rules."));
       break;
     case _ConfirmNo:
       unsetConfirm();
       return;
     case _ConfirmYes:
-      deleteIndicators();
+      deleteRules();
       return;
       break;
     default:
@@ -55,29 +60,27 @@ void IndicatorDeleteDialog::done ()
   }
 }
 
-void IndicatorDeleteDialog::deleteIndicators ()
+void CSVDeleteDialog::deleteRules ()
 {
   QList<QListWidgetItem *> sl = _list->selectedItems();
 
-  _db.transaction();
-
-  QStringList l;
+  CSVDataBase db;
+  db.transaction();
+  
   int loop = 0;
   for (; loop < sl.count(); loop++)
   {
     QListWidgetItem *item = sl.at(loop);
 
-    QString s = item->text();
-    l.append(s);
-    
-    _db.deleteIndicator(s);
+    QString s = item->text(); 
+    db.deleteRule(s);
   }
 
-  _db.commit();
+  db.commit();
 
-  emit signalSelect(l);
+  emit signalDelete();
 
-  emit signalMessage(QString(tr("Indicators deleted.")));
+  emit signalMessage(tr("Rules deleted"));
 
   accept();
 }

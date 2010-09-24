@@ -245,7 +245,7 @@ void ScriptPage::newScript ()
 {
   ScriptNewDialog *dialog = new ScriptNewDialog;
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalNewScript(QString)), this, SLOT(editScript(QString)));
+  connect(dialog, SIGNAL(signalNew(QString)), this, SLOT(editScript(QString)));
   dialog->show();
 }
 
@@ -262,7 +262,6 @@ void ScriptPage::editScript (QString d)
 {
   ScriptDialog *dialog = new ScriptDialog(d);
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
 }
 
@@ -271,7 +270,6 @@ void ScriptPage::deleteScript ()
   ScriptDeleteDialog *dialog = new ScriptDeleteDialog;
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   connect(dialog, SIGNAL(signalDelete()), this, SLOT(showAllScripts()));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
 }
 
@@ -280,19 +278,6 @@ void ScriptPage::listDoubleClick (QListWidgetItem *item)
   if (! item)
     return;
 
-  Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Run Script"));
-  dialog->setMessage(tr("Are you sure you want to execute this script?"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(listDoubleClick2()));
-  dialog->show();
-}
-
-void ScriptPage::listDoubleClick2 ()
-{
-  QListWidgetItem *item = _list->currentItem();
-  if (! item)
-    return;
-      
   QString name = item->text();
 
   Script *script = new Script;
@@ -317,7 +302,7 @@ void ScriptPage::search ()
 {
   ScriptSearchDialog *dialog = new ScriptSearchDialog;
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalSearch(QString)), this, SLOT(search2(QString)));
+  connect(dialog, SIGNAL(signalNew(QString)), this, SLOT(search2(QString)));
   dialog->show();
 }
 
@@ -393,19 +378,6 @@ void ScriptPage::removeScriptQueue ()
   if (! item)
     return;
 
-  Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Stop running script"));
-  dialog->setMessage(tr("Script currently executing.\nAre you sure you want to remove this script?"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(removeScriptQueue2()));
-  dialog->show();
-}
-
-void ScriptPage::removeScriptQueue2 ()
-{
-  QListWidgetItem *item = _queList->currentItem();
-  if (! item)
-    return;
-
   QString name = item->text();
   Script *script = _scripts.value(name);
   script->stop();
@@ -420,17 +392,14 @@ void ScriptPage::removeScriptQueue2 ()
 void ScriptPage::runScript (Script *script)
 {
   QString name = script->getName();
-  
-  if (_scripts.contains(name))
-  {
-    Dialog *dialog = new Dialog(Dialog::_Message, 0);
-    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Error run script"));
-    dialog->setMessage(tr("This script is currently running. Request denied."));
-    dialog->show();
-    delete script;
-    return;
-  }
 
+  int loop = 2;
+  while (_scripts.contains(name))
+  {
+    name = script->getName() + QString::number(loop);
+    loop++;
+  }
+  
   _scripts.insert(name, script);
   connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptDone(QString)));
   connect(script, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));

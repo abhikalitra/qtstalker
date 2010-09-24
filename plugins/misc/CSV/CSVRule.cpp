@@ -57,14 +57,14 @@ QString & CSVRule::type ()
   return _type;
 }
 
-void CSVRule::setDelimeter (QString d)
+void CSVRule::setDelimiter (QString d)
 {
-  _delimeter = d;
+  _delimiter = d;
 }
 
-QString & CSVRule::delimeter ()
+QString & CSVRule::delimiter ()
 {
-  return _delimeter;
+  return _delimiter;
 }
 
 void CSVRule::setFile (QString d)

@@ -19,47 +19,46 @@
  *  USA.
  */
 
-#include "GroupNewDialog.h"
-#include "GroupDataBase.h"
+#include "CSVNewDialog.h"
 #include "Globals.h"
+#include "CSVDataBase.h"
+#include "CSVRule.h"
 
 #include <QtDebug>
 #include <QLineEdit>
 
-GroupNewDialog::GroupNewDialog ()
+CSVNewDialog::CSVNewDialog ()
 {
-  setWindowTitle("QtStalker" + g_session + ": " + tr("New Group"));
-
-  GroupDataBase db;
-  db.getAllGroupsList(_groups);
-  setList(_groups);
+  setWindowTitle("QtStalker" + g_session + ": CSV " + tr("New Rule"));
 }
 
-void GroupNewDialog::done ()
+void CSVNewDialog::done ()
 {
   QString name = _name->lineEdit()->text();
 
   // remove any forbidden sql characters
   name = name.remove(QString("'"), Qt::CaseSensitive);
 
-  if (_groups.contains(name))
+  CSVDataBase db;
+  CSVRule rule;
+  rule.setName(name);
+  if (! db.getRule(rule))
   {
-    setMessage(tr("A group with this name already exists."));
+    setMessage(tr("Duplicate rule name. Enter a unique name."));
+    _name->lineEdit()->selectAll();
+    _name->setFocus();
     return;
   }
 
-  GroupDataBase db;
-  Group g;
-  g.setName(name);
   db.transaction();
-  db.setGroup(g);
+  db.setRule(rule);
   db.commit();
+  
+  emit signalNew();
 
   QStringList ml;
-  ml << tr("Group") << name << tr("created");
+  ml << name << tr("rule created");
   emit signalMessage(ml.join(" "));
-
-  emit signalNew();
   
   accept();
 }

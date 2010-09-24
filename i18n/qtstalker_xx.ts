@@ -501,11 +501,26 @@
     </message>
 </context>
 <context>
-    <name>CSVDialog</name>
+    <name>CSVDeleteDialog</name>
     <message>
-        <source>Rule</source>
+        <source>Delete Rules</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Confirm Delete:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yes. Delete selected rules.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rules deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CSVDialog</name>
     <message>
         <source>&amp;Run</source>
         <translation type="unfinished"></translation>
@@ -523,43 +538,61 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Message Log</source>
+        <source>Run CSV rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter rule name</source>
+        <source>Create a new CSV rule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Import started</source>
+        <source>Edit CSV rule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Import finished</source>
+        <source>Delete CSV rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: New CSV Rule</source>
+        <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Error New CSV Rule</source>
+        <source>Cancel running CSV rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Duplicate rule name. Request denied.</source>
+        <source>Monitor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: CSV Delete Rule</source>
+        <source>started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to delete CSV rule?</source>
+        <source>finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CSVEditDialog</name>
+    <message>
+        <source>Edit Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CSVNewDialog</name>
+    <message>
+        <source>New Rule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: CSV</source>
+        <source>Duplicate rule name. Enter a unique name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>rule created</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -643,77 +676,108 @@
     </message>
 </context>
 <context>
+    <name>CSVRunDialog</name>
+    <message>
+        <source>Run</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CSVThread</name>
-    <message>
-        <source>Import cancelled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: Line </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: bad date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: symbol missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: exchange missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: number of fields in file != rule format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: bad open: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: bad high: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: bad low: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: bad close: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: bad volume: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: bad oi: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: bad date: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>: bad time: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ERROR </source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source> quotes ignored</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Quotes imported</source>
+        <source>Error opening CSV file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> ERROR saving name, ignored</source>
+        <source>cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bad date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>symbol missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>exchange missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ERROR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ERROR saving name, ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>quotes imported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>type missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>delimiter missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>file missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>rule missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>rule empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>number of fields in file != rule format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bad open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bad high</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bad low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bad close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bad volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bad oi</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bad time</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -749,14 +813,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Delete Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete selected chart object?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1165,24 +1221,16 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No items found.</source>
+        <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No item found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid search pattern.
+        <source>Invalid search pattern
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error Exchange Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exchange Search</source>
+        <source>No items found</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1276,14 +1324,6 @@ eg. perl -l -T</source>
 <context>
     <name>GroupDeleteDialog</name>
     <message>
-        <source>Group Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete selected groups?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Group(s) deleted.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1292,7 +1332,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Group</source>
+        <source>Confirm Delete:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected groups.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1303,10 +1347,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to delete selected items?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Group Item(s) deleted.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1314,13 +1354,17 @@ eg. perl -l -T</source>
         <source>Delete Group Items</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Confirm Delete:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected group contents.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GroupNewDialog</name>
-    <message>
-        <source>Group Name</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>A group with this name already exists.</source>
         <translation type="unfinished"></translation>
@@ -1335,10 +1379,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>New Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error New Group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1471,15 +1511,19 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to delete selected indicators?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicators deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Delete Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Delete:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected indicators.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1518,7 +1562,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error New Indicator</source>
+        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1561,6 +1605,13 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ListDialog</name>
+    <message>
+        <source>Items</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1807,6 +1858,13 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>NewDialog</name>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PODialog</name>
     <message>
         <source>Method</source>
@@ -1922,10 +1980,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to delete all chart objects from this indicator?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Buy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1983,6 +2037,14 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Delete All Chart Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete all chart objects from this indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2226,10 +2288,6 @@ eg. perl -l -T</source>
         <source>VLine</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Error</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QtStalkerTester</name>
@@ -2424,10 +2482,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to restart the server?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Default: 127.0.0.1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2437,14 +2491,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quote Server Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh Quote Server</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2765,10 +2811,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to delete selected scripts?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Scripts deleted.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2777,7 +2819,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Script</source>
+        <source>Confirm Delete:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected scripts. Not the actual scripts, just the database records.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2842,19 +2888,11 @@ eg. perl -l -T</source>
 <context>
     <name>ScriptNewDialog</name>
     <message>
-        <source>Script Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>A script with this name already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>New Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error New Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3010,10 +3048,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Exchange</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3031,10 +3065,6 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3596,6 +3626,26 @@ a partial match like %Script or %Scr%</source>
     </message>
 </context>
 <context>
+    <name>YahooAddSymbolDialog</name>
+    <message>
+        <source>Add Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Yahoo symbols separated by a space</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid symbols found
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>YahooDialog</name>
     <message>
         <source>Start Date</source>
@@ -3642,10 +3692,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: Yahoo</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Uses the yahoo adjusted close instead of the actual close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3669,27 +3715,11 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter Yahoo symbols separated by a space</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid symbols found. See console messages for details.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Add Yahoo Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Yahoo Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Qtstalker: Yahoo Edit Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Add...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -60,6 +60,7 @@ on different OSs (but perhaps i do not understand).
 This workaround should all go away when the Qt bug is fixed, but only if we
 raise the minimum Qt version.
 */
+
   QString location = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #ifdef Q_WS_MAC
   location.insert(location.count() - QCoreApplication::applicationName().count(),
@@ -67,7 +68,6 @@ raise the minimum Qt version.
 #endif
   qDebug("DocsAction::startDocumentation: Documentation cache: %s/", qPrintable(location));
 
-  // start _assistant
   _assistant->showDocumentation("index.html");
 }
 
@@ -79,7 +79,7 @@ void DocsAction::about ()
   versionString += "\nQtstalker is licensed with GNU General Public License (GPL) version 2.";
   versionString += "\nQt Assistant is licensed with GNU General Public License (GPL) version 3.";
 
-  Dialog *dialog = new Dialog(Dialog::_Message, 0);
+  Dialog *dialog = new Dialog;
   dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("About"));
   dialog->setMessage(versionString);
   dialog->show();

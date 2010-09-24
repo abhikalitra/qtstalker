@@ -45,24 +45,23 @@ http://qt.nokia.com/doc/4.5/help-simpletextviewer-assistant-cpp.html
 
 Qtstalker changes are minor configuration and are noted below, and also in the
 project's revision control system.
-CVS $Revision: 1.4 $ $Date: 2010/09/20 20:00:08 $
+CVS $Revision: 1.5 $ $Date: 2010/09/24 23:25:51 $
 */
 
 #include <QtCore/QByteArray>
 #include <QtCore/QDir>
 #include <QtCore/QLibraryInfo>
 #include <QtCore/QProcess>
+#include <QDebug>
 
 #include "assistant.h"
 #include "../lib/qtstalker_defines.h"
-#include "Dialog.h"
 #include "Globals.h"
 
 Assistant::Assistant() : proc(0)
 {
 }
 
-//! [0]
 Assistant::~Assistant()
 {
   if (proc && proc->state() == QProcess::Running)
@@ -73,27 +72,19 @@ Assistant::~Assistant()
     
   delete proc;
 }
-//! [0]
 
-//! [1]
 void Assistant::showDocumentation(const QString &page)
 {
   if (!startAssistant())
     return;
 
   QByteArray ba("SetSource ");
-// Qtstalker start changes
-/*
-  ba.append("qthelp://com.trolltech.examples.simpletextviewer/doc/");
-*/
+//  ba.append("qthelp://com.trolltech.examples.simpletextviewer/doc/");
   ba.append("qthelp://qtstalker/doc/");
-// Qtstalker end changes
     
   proc->write(ba + page.toLocal8Bit() + '\0');
 }
-//! [1]
 
-//! [2]
 bool Assistant::startAssistant()
 {
   if (!proc)
@@ -109,7 +100,6 @@ bool Assistant::startAssistant()
 #endif
 
     QStringList args;
-// Qtstalker start changes
 /*
    args << QLatin1String("-collectionFile")
         << QLibraryInfo::location(QLibraryInfo::ExamplesPath)
@@ -119,22 +109,15 @@ bool Assistant::startAssistant()
     QString collectionFile = QString("%1/qtstalker/html/doc.qhc").arg(INSTALL_DOCS_DIR);
     
     args << QLatin1String("-collectionFile") << collectionFile << QLatin1String("-enableRemoteControl");
-// Qtstalker end changes
 
     proc->start(app, args);
 
     if (! proc->waitForStarted())
     {
-// Qtstalker start changes
-      Dialog *dialog = new Dialog(Dialog::_Message, 0);
-      dialog->setWindowTitle("Qtstalker" + g_session + ": " + QObject::tr("Error"));
-      dialog->setMessage(QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
-      dialog->show();
-// Qtstalker end changes
+      qDebug() << QObject::tr("Unable to launch Qt Assistant (%1)").arg(app);
       return false;
     }    
   }
   
   return true;
 }
-//! [2]

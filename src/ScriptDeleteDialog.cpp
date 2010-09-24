@@ -23,60 +23,41 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLabel>
 
-ScriptDeleteDialog::ScriptDeleteDialog () : Dialog (Dialog::_Dialog, 0)
+ScriptDeleteDialog::ScriptDeleteDialog ()
 {
   setWindowTitle("QtStalker" + g_session + ": " + tr("Delete Scripts"));
 
-  createMainPage();
-}
-
-void ScriptDeleteDialog::createMainPage ()
-{
-  QWidget *w = new QWidget;
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  w->setLayout(vbox);
-
-  // list
   QStringList l;
   _db.getScripts(l);
-  
-  _list = new QListWidget;
-  _list->addItems(l);
-  _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  _list->setSortingEnabled(TRUE);
-  vbox->addWidget(_list);
-  
-  _tabs->addTab(w, tr("Script Name"));
+  setList(l);
+
+  _tabs->setTabText(0, tr("Script Name"));
 }
 
 void ScriptDeleteDialog::done ()
 {
-  QList<QListWidgetItem *> sl = _list->selectedItems();
-  if (! sl.count())
+  switch (_confirmFlag)
   {
-    reject();
-    return;
+    case _ConfirmNone:
+      setConfirm(tr("Confirm Delete:"),
+                 tr("Delete selected scripts. Not the actual scripts, just the database records."));
+      break;
+    case _ConfirmNo:
+      unsetConfirm();
+      return;
+    case _ConfirmYes:
+      deleteScripts();
+      return;
+      break;
+    default:
+      break;
   }
-
-  Dialog *dialog = new Dialog(Dialog::_Message, 0);
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete Script"));
-  dialog->setMessage(tr("Are you sure you want to delete selected scripts?"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(done2()));
-  dialog->show();
 }
 
-void ScriptDeleteDialog::done2 ()
+void ScriptDeleteDialog::deleteScripts ()
 {
   QList<QListWidgetItem *> sl = _list->selectedItems();
-  if (! sl.count())
-  {
-    reject();
-    return;
-  }
 
   _db.transaction();
 
