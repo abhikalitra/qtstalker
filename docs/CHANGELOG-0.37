@@ -778,3 +778,5 @@
 20100924:  Revised dialogs to include error messages and confirmations without having to spawn
            a message box. Hoping to reduce popup messages to a minimum.
 
+           Added icons to the dialog message areas.
+

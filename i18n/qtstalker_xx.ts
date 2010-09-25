@@ -2907,24 +2907,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to execute this script?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script currently executing.
-Are you sure you want to remove this script?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script removed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Active Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This script is currently running. Request denied.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2977,18 +2964,6 @@ Are you sure you want to remove this script?</source>
     </message>
     <message>
         <source>&amp;Run Script...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop running script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error run script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

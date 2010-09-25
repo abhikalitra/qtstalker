@@ -22,6 +22,8 @@
 #ifndef CSV_NEW_DIALOG_HPP
 #define CSV_NEW_DIALOG_HPP
 
+#include <QStringList>
+
 #include "NewDialog.h"
 
 class CSVNewDialog : public NewDialog
@@ -33,6 +35,9 @@ class CSVNewDialog : public NewDialog
 
   public slots:
     void done ();
+
+  private:
+    QStringList _rules;
 };
 
 #endif

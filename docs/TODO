@@ -28,6 +28,8 @@ Priority
 BUG: gnome ubuntu has issues with qtstalker indicator tab resizing displays tiny tabs with misplaced text.
      kde systems work.
 BUG: PlotScaleDraw does not shorten negative labels but does work for positive
+BUG: after chart object delete, cannot right click context menu
+
 
 
 

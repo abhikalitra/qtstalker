@@ -73,15 +73,18 @@ raise the minimum Qt version.
 
 void DocsAction::about ()
 {
-  QString versionString = "Qtstalker version 0.37-dev (working title)\nBuilt using Qt ";
+  QString versionString = "Qtstalker version 0.37-dev (working title)";
+  versionString.append("\nBuilt using Qt ");
   versionString += QT_VERSION_STR;
-  versionString += "\n(C) 2001-2010 by Stefan Stratigakos\nqtstalker.sourceforge.net";
-  versionString += "\nQtstalker is licensed with GNU General Public License (GPL) version 2.";
-  versionString += "\nQt Assistant is licensed with GNU General Public License (GPL) version 3.";
+  versionString.append("\n(C) 2001-2010 by Stefan Stratigakos\nqtstalker.sourceforge.net");
+  versionString.append("\n\nQtstalker is licensed with GNU General Public License (GPL) version 2.");
+  versionString.append("\nQt Assistant is licensed with GNU General Public License (GPL) version 3.");
 
   Dialog *dialog = new Dialog;
   dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("About"));
   dialog->setMessage(versionString);
+  dialog->setIcon(qtstalker);
+  dialog->setFontBold(0);
   dialog->show();
 }
 

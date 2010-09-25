@@ -23,6 +23,7 @@
 
 #include <QtDebug>
 #include <QPushButton>
+#include <QMessageBox>
 
 Dialog::Dialog ()
 {
@@ -48,26 +49,40 @@ void Dialog::createGUI ()
   _tabs = new QTabWidget;
   _vbox->addWidget(_tabs);
 
-  _message = new QLabel;
-  _vbox->addWidget(_message);
-  _message->hide();
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setSpacing(5);
+  hbox->setMargin(0);
+  _vbox->addLayout(hbox);
 
-/*  
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setMargin(0);
-  grid->setColumnStretch(0, 1);
-  _vbox->addLayout(grid);
-*/
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox->setSpacing(0);
+  tvbox->setMargin(0);
+  hbox->addLayout(tvbox);
+
+  _icon = new QLabel;
+  tvbox->addWidget(_icon);
+  _icon->hide();
+
+  tvbox->addStretch(1);
+  
+  tvbox = new QVBoxLayout;
+  tvbox->setSpacing(5);
+  tvbox->setMargin(0);
+  hbox->addLayout(tvbox);
+
+  _message = new QLabel;
+  tvbox->addWidget(_message);
+  _message->hide();
 
   _confirm = new QCheckBox;
   connect(_confirm, SIGNAL(stateChanged(int)), this, SLOT(confirmChanged(int)));
-//  grid->addWidget(_confirm, 0, 1);
-  _vbox->addWidget(_confirm);
+  tvbox->addWidget(_confirm);
   _confirm->hide();
 
-//  _vbox->addStretch(1);
+  tvbox->addStretch(1);
 
+  hbox->addStretch(1);
+  
   // buttonbox
   _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
@@ -99,19 +114,27 @@ void Dialog::done ()
 
 void Dialog::setMessage (QString message)
 {
-  _message->setText(message);
-  _message->show();
+  setMessage2(message);
+
+  QMessageBox tbox;
+  tbox.setIcon(QMessageBox::Warning);
+  _icon->setPixmap(tbox.iconPixmap());
+  _icon->show();
 }
 
 void Dialog::setConfirm (QString message, QString check)
 {
-  _message->setText(message);
-  _message->show();
+  setMessage2(message);
 
   _confirm->setText(check);
   _confirm->show();
   
   _confirmFlag = _ConfirmNo;
+
+  QMessageBox tbox;
+  tbox.setIcon(QMessageBox::Question);
+  _icon->setPixmap(tbox.iconPixmap());
+  _icon->show();
 }
 
 void Dialog::unsetConfirm ()
@@ -122,10 +145,31 @@ void Dialog::unsetConfirm ()
   _confirm->setChecked(FALSE);
 
   _confirmFlag = _ConfirmNone;
+
+  _icon->hide();
 }
 
 void Dialog::confirmChanged (int state)
 {
   _confirmFlag = (ConfirmStatus) state;
+}
+
+void Dialog::setIcon (QPixmap pic)
+{
+  _icon->setPixmap(pic);
+}
+
+void Dialog::setMessage2 (QString message)
+{
+  setFontBold(1);
+  _message->setText(message);
+  _message->show();
+}
+
+void Dialog::setFontBold (int d)
+{
+  QFont f = _message->font();
+  f.setBold(d);
+  _message->setFont(f);
 }
 

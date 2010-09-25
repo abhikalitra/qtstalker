@@ -30,6 +30,10 @@
 CSVNewDialog::CSVNewDialog ()
 {
   setWindowTitle("QtStalker" + g_session + ": CSV " + tr("New Rule"));
+
+  CSVDataBase db;
+  db.getRules(_rules);
+  setList(_rules);
 }
 
 void CSVNewDialog::done ()
@@ -39,16 +43,17 @@ void CSVNewDialog::done ()
   // remove any forbidden sql characters
   name = name.remove(QString("'"), Qt::CaseSensitive);
 
-  CSVDataBase db;
-  CSVRule rule;
-  rule.setName(name);
-  if (! db.getRule(rule))
+  if (_rules.contains(name))
   {
     setMessage(tr("Duplicate rule name. Enter a unique name."));
     _name->lineEdit()->selectAll();
     _name->setFocus();
     return;
   }
+
+  CSVDataBase db;
+  CSVRule rule;
+  rule.setName(name);
 
   db.transaction();
   db.setRule(rule);
@@ -62,4 +67,3 @@ void CSVNewDialog::done ()
   
   accept();
 }
-

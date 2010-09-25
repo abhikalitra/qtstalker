@@ -48,9 +48,12 @@ class Dialog : public QDialog
     Dialog ();
     Dialog (QWidget *parent);
     void createGUI ();
-    void setMessage (QString message);
+    void setMessage (QString);
+    void setMessage2 (QString);
     void setConfirm (QString message, QString check);
     void unsetConfirm ();
+    void setIcon (QPixmap);
+    void setFontBold (int);
 
   public slots:
     virtual void done ();
@@ -61,6 +64,7 @@ class Dialog : public QDialog
     QDialogButtonBox *_buttonBox;
     QVBoxLayout *_vbox;
     QLabel *_message;
+    QLabel *_icon;
     QCheckBox *_confirm;
     ConfirmStatus _confirmFlag;
 };
