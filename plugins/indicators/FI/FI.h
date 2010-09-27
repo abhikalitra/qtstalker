@@ -31,18 +31,19 @@ class FI : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color,
-      Plot,
-      Label,
-      MAType,
-      Period
+      Color = 10,
+      Plot = 20,
+      Label = 30,
+      MAType = 40,
+      Period = 50
     };
 
     FI ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

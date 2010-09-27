@@ -24,7 +24,6 @@
 #include "FunctionRSI.h"
 #include "RSIDialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,7 +32,7 @@ RSI::RSI ()
   _indicator = "RSI";
 }
 
-int RSI::getIndicator (Indicator &ind)
+int RSI::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -63,7 +62,7 @@ int RSI::getIndicator (Indicator &ind)
   ind.setLine(1, line);
 
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -103,10 +102,10 @@ int RSI::getIndicator (Indicator &ind)
   return 0;
 }
 
-int RSI::getCUS (QStringList &set, Indicator &ind)
+int RSI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionRSI f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * RSI::dialog (Indicator &i)
@@ -129,6 +128,16 @@ void RSI::defaults (Indicator &i)
   set.setData(RSI::Ref1, 30);
   set.setData(RSI::Ref2, 70);
   i.setSettings(set);
+}
+
+void RSI::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

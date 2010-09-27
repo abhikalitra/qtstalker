@@ -24,7 +24,6 @@
 #include "MACDDialog.h"
 #include "FunctionMACD.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,13 +32,13 @@ MACD::MACD ()
   _indicator = "MACD";
 }
 
-int MACD::getIndicator (Indicator &ind)
+int MACD::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -121,10 +120,10 @@ int MACD::getIndicator (Indicator &ind)
   return 0;
 }
 
-int MACD::getCUS (QStringList &set, Indicator &ind)
+int MACD::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionMACD f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * MACD::dialog (Indicator &i)
@@ -152,6 +151,23 @@ void MACD::defaults (Indicator &i)
   set.setData(SignalMA, "EMA");
   set.setData(Input, "Close");
   i.setSettings(set);
+}
+
+void MACD::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  
+  settings.getData(MACDLabel, s);
+  l.append(s);
+  
+  settings.getData(SignalLabel, s);
+  l.append(s);
+  
+  settings.getData(HistLabel, s);
+  l.append(s);
 }
 
 //*************************************************************

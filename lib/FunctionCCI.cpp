@@ -22,7 +22,6 @@
 #include "FunctionCCI.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -31,7 +30,7 @@ FunctionCCI::FunctionCCI ()
 {
 }
 
-int FunctionCCI::script (QStringList &set, Indicator &ind)
+int FunctionCCI::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,CCI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
   //     0       1     2    3       4             5                  6 
@@ -72,7 +71,7 @@ int FunctionCCI::script (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = calculate(period, smoothing, ma);
+  Curve *line = calculate(period, smoothing, ma, data);
   if (! line)
     return 1;
 
@@ -83,9 +82,9 @@ int FunctionCCI::script (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionCCI::calculate (int period, int smoothing, int type)
+Curve * FunctionCCI::calculate (int period, int smoothing, int type, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
   
   if (size < period || size < smoothing)
     return 0;
@@ -96,9 +95,9 @@ Curve * FunctionCCI::calculate (int period, int smoothing, int type)
 
   TA_RetCode rc = TA_CCI(0,
                          size - 1,
-                         g_barData.getTAData(BarData::High),
-                         g_barData.getTAData(BarData::Low),
-                         g_barData.getTAData(BarData::Close),
+                         data.getTAData(BarData::High),
+                         data.getTAData(BarData::Low),
+                         data.getTAData(BarData::Close),
                          period,
                          &outBeg,
                          &outNb,

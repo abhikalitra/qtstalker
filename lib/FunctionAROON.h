@@ -27,6 +27,7 @@
 
 #include "Indicator.h"
 #include "Curve.h"
+#include "BarData.h"
 
 class FunctionAROON
 {
@@ -38,11 +39,11 @@ class FunctionAROON
     };
 
     FunctionAROON ();
-    int script (QStringList &, Indicator &);
-    int scriptAROON (QStringList &, Indicator &);
-    int scriptAROONOSC (QStringList &, Indicator &);
-    int getAROON (int period, QList<Curve *> &);
-    Curve * getAROONOSC (int period);
+    int script (QStringList &, Indicator &, BarData &);
+    int scriptAROON (QStringList &, Indicator &, BarData &);
+    int scriptAROONOSC (QStringList &, Indicator &, BarData &);
+    int getAROON (int period, QList<Curve *> &, BarData &);
+    Curve * getAROONOSC (int period, BarData &);
     QStringList & list ();
 
   protected:

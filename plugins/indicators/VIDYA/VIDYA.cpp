@@ -24,7 +24,6 @@
 #include "FunctionVIDYA.h"
 #include "FunctionBARS.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,7 +32,7 @@ VIDYA::VIDYA ()
   _indicator = "VIDYA";
 }
 
-int VIDYA::getIndicator (Indicator &ind)
+int VIDYA::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -41,7 +40,7 @@ int VIDYA::getIndicator (Indicator &ind)
   QColor down("red");
   QColor neutral("blue");
   FunctionBARS b;
-  Curve *bars = b.getBARS(up, down, neutral);
+  Curve *bars = b.getBARS(up, down, neutral, data);
   if (bars)
   {
     bars->setZ(0);
@@ -50,7 +49,7 @@ int VIDYA::getIndicator (Indicator &ind)
   
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -86,10 +85,10 @@ int VIDYA::getIndicator (Indicator &ind)
   return 0;
 }
 
-int VIDYA::getCUS (QStringList &set, Indicator &ind)
+int VIDYA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionVIDYA f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * VIDYA::dialog (Indicator &i)
@@ -107,6 +106,16 @@ void VIDYA::defaults (Indicator &i)
   set.setData(Input, "Close");
   set.setData(VPeriod, 10);
   i.setSettings(set);
+}
+
+void VIDYA::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

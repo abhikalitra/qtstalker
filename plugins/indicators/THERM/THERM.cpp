@@ -42,7 +42,7 @@ THERM::THERM ()
   _indicator = "THERM";
 }
 
-int THERM::getIndicator (Indicator &ind)
+int THERM::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -54,7 +54,7 @@ int THERM::getIndicator (Indicator &ind)
   int type = mau.typeFromString(s);
 
   FunctionTHERM f;
-  Curve *line = f.calculate(smoothing, type);
+  Curve *line = f.calculate(smoothing, type, data);
   if (! line)
     return 1;
 
@@ -137,10 +137,10 @@ int THERM::getIndicator (Indicator &ind)
   return 0;
 }
 
-int THERM::getCUS (QStringList &set, Indicator &ind)
+int THERM::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionTHERM f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * THERM::dialog (Indicator &i)
@@ -164,6 +164,20 @@ void THERM::defaults (Indicator &i)
   set.setData(MAType, "SMA");
   set.setData(SmoothingType, "SMA");
   i.setSettings(set);
+}
+
+void THERM::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  
+  settings.getData(Label, s);
+  l.append(s);
+
+  settings.getData(MALabel, s);
+  l.append(s);
 }
 
 //*************************************************************

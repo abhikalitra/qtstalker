@@ -33,13 +33,13 @@ IndicatorPlugin::~IndicatorPlugin ()
 }
 
 // virtual function
-int IndicatorPlugin::getIndicator (Indicator &)
+int IndicatorPlugin::getIndicator (Indicator &, BarData &)
 {
   return 0;
 }
 
 // virtual function
-int IndicatorPlugin::getCUS (QStringList &, Indicator &)
+int IndicatorPlugin::getCUS (QStringList &, Indicator &, BarData &)
 {
   return 0;
 }
@@ -52,6 +52,11 @@ IndicatorPluginDialog * IndicatorPlugin::dialog (Indicator &)
 
 // virtual function
 void IndicatorPlugin::defaults (Indicator &)
+{
+}
+
+// virtual function
+void IndicatorPlugin::plotNames (Indicator &, QStringList &)
 {
 }
 

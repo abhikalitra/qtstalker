@@ -27,6 +27,7 @@
 
 #include "Indicator.h"
 #include "IndicatorPluginDialog.h"
+#include "BarData.h"
 
 class IndicatorPlugin : public QObject
 {
@@ -38,10 +39,11 @@ class IndicatorPlugin : public QObject
   public:
     IndicatorPlugin ();
     virtual ~IndicatorPlugin ();
-    virtual int getIndicator (Indicator &);
-    virtual int getCUS (QStringList &, Indicator &);
+    virtual int getIndicator (Indicator &, BarData &);
+    virtual int getCUS (QStringList &, Indicator &, BarData &);
     virtual IndicatorPluginDialog * dialog (Indicator &);
     virtual void defaults (Indicator &);
+    virtual void plotNames (Indicator &, QStringList &);
 
     QString & indicator ();
     int deleteFlag ();

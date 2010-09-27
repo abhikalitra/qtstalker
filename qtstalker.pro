@@ -135,6 +135,7 @@ SUBDIRS += plugins/indicators/VOL
 SUBDIRS += plugins/indicators/WILLR
 
 # compile misc plugins
+SUBDIRS += plugins/misc/Alert
 SUBDIRS += plugins/misc/CSV
 SUBDIRS += plugins/misc/Yahoo
 

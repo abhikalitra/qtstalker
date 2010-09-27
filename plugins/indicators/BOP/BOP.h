@@ -31,18 +31,19 @@ class BOP : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color,
-      Plot,
-      Label,
-      Smoothing,
-      SmoothingType
+      Color = 10,
+      Plot = 20,
+      Label = 30,
+      Smoothing = 40,
+      SmoothingType = 50
     };
 
     BOP ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

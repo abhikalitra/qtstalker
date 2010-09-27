@@ -32,6 +32,7 @@ class ChartObjectDraw : public QwtPlotItem
 {
   public:
     ChartObjectDraw ();
+    ~ChartObjectDraw ();
     int rtti () const;
     void setSettings (ChartObjectSettings &);
     int isSelected (QPoint);

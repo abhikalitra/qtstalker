@@ -31,26 +31,27 @@ class STOCH : public IndicatorPlugin
   public:
     enum Parm
     {
-      FastKColor,
-      FastDColor,
-      Ref1Color,
-      Ref2Color,
-      FastKPlot,
-      FastDPlot,
-      FastKLabel,
-      FastDLabel,
-      FastKPeriod,
-      FastDPeriod,
-      FastDMA,
-      Ref1,
-      Ref2
+      FastKColor = 10,
+      FastDColor = 20,
+      Ref1Color = 30,
+      Ref2Color = 40,
+      FastKPlot = 50,
+      FastDPlot = 60,
+      FastKLabel = 70,
+      FastDLabel = 80,
+      FastKPeriod = 90,
+      FastDPeriod = 100,
+      FastDMA = 110,
+      Ref1 = 120,
+      Ref2 = 130
     };
 
     STOCH ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

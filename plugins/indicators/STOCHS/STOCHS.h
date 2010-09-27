@@ -31,28 +31,29 @@ class STOCHS : public IndicatorPlugin
   public:
     enum Parm
     {
-      SlowKColor,
-      SlowDColor,
-      Ref1Color,
-      Ref2Color,
-      SlowKPlot,
-      SlowDPlot,
-      SlowKLabel,
-      SlowDLabel,
-      FastKPeriod,
-      SlowKPeriod,
-      SlowDPeriod,
-      SlowKMA,
-      SlowDMA,
-      Ref1,
-      Ref2
+      SlowKColor = 10,
+      SlowDColor = 20,
+      Ref1Color = 30,
+      Ref2Color = 40,
+      SlowKPlot = 50,
+      SlowDPlot = 60,
+      SlowKLabel = 70,
+      SlowDLabel = 80,
+      FastKPeriod = 90,
+      SlowKPeriod = 100,
+      SlowDPeriod = 110,
+      SlowKMA = 120,
+      SlowDMA = 130,
+      Ref1 = 140,
+      Ref2 = 150
     };
 
     STOCHS ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

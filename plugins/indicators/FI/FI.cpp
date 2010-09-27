@@ -32,7 +32,7 @@ FI::FI ()
   _indicator = "FI";
 }
 
-int FI::getIndicator (Indicator &ind)
+int FI::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -44,7 +44,7 @@ int FI::getIndicator (Indicator &ind)
   int ma = mau.typeFromString(s);
 
   FunctionFI f;
-  Curve *line = f.calculate(period, ma);
+  Curve *line = f.calculate(period, ma, data);
   if (! line)
     return 1;
 
@@ -64,10 +64,10 @@ int FI::getIndicator (Indicator &ind)
   return 0;
 }
 
-int FI::getCUS (QStringList &set, Indicator &ind)
+int FI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionFI f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * FI::dialog (Indicator &i)
@@ -85,6 +85,17 @@ void FI::defaults (Indicator &i)
   set.setData(Period, 2);
   i.setSettings(set);
 }
+
+void FI::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
+}
+
 
 //*************************************************************
 //*************************************************************

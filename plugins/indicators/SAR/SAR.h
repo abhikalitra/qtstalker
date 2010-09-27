@@ -31,17 +31,18 @@ class SAR : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color,
-      Label,
-      Init,
-      Max
+      Color = 10,
+      Label = 20,
+      Init = 30,
+      Max = 40
     };
 
     SAR ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

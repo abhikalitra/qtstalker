@@ -31,21 +31,22 @@ class ROC : public IndicatorPlugin
   public:
     enum Parm
     {
-      Method,
-      Input,
-      Color,
-      Plot,
-      Label,
-      Period,
-      Smoothing,
-      SmoothingType
+      Method = 10,
+      Input = 20,
+      Color = 30,
+      Plot = 40,
+      Label = 50,
+      Period = 60,
+      Smoothing = 70,
+      SmoothingType = 80
     };
 
     ROC ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

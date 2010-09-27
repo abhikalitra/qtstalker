@@ -136,7 +136,7 @@ The returned data (if any) would be
 <hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><span
  style="font-weight: bold;"></span></span><br>
 <p style="font-weight: bold;">Quotes,Recent,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;LENGTH&gt;,&lt;DATE
-RANGE&gt;\n<br>
+RANGE&gt;,&lt;BARS&gt;\n<br>
 </p>
 <p>Returns the most recent quotes for the &lt;DATE RANGE&gt; provided
 for a specific database symbol.<br>
@@ -161,9 +161,10 @@ values</li>
     <li>Y10 - 10 years</li>
     <li>Y25 - 25 years</li>
     <li>Y50 - 50 years</li>
-    <li>* - everything<br>
-    </li>
+    <li>* - everything</li>
   </ul>
+  <li>&lt;BARS&gt; the number of bars. use 0 for all bars.<br>
+  </li>
 </ul>
 <br>
 On success, the quotes are returned in a string. Each bar record is
@@ -187,7 +188,7 @@ Failure returns 'ERROR\n'. Note that the bar data is returned is in
 ascending datetime order.<br>
 <br>
 A full example would be to request the most recent daily quotes for the
-1 year '<span style="font-weight: bold;">Quotes,Recent,XNYS,GOOG,D,Y1\n</span>'<br>
+1 year '<span style="font-weight: bold;">Quotes,Recent,XNYS,GOOG,D,Y1,0\n</span>'<br>
 The returned data (if any) would be
 '20100104093000,20100104160000,450,475.5,425.25,442.75,123456789:blah:blah:blah\n'<br>
 <br>

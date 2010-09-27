@@ -24,7 +24,6 @@
 #include "FunctionBARS.h"
 #include "HTDialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,13 +32,13 @@ HT::HT ()
   _indicator = "HT";
 }
 
-int HT::getIndicator (Indicator &ind)
+int HT::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -140,7 +139,7 @@ int HT::getIndicator (Indicator &ind)
       QColor down("red");
       QColor neutral("blue");
       FunctionBARS b;
-      Curve *bars = b.getBARS(up, down, neutral);
+      Curve *bars = b.getBARS(up, down, neutral, data);
       if (bars)
       {
         bars->setZ(4);
@@ -174,10 +173,10 @@ int HT::getIndicator (Indicator &ind)
   return 0;
 }
 
-int HT::getCUS (QStringList &set, Indicator &ind)
+int HT::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionHT f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * HT::dialog (Indicator &i)
@@ -206,6 +205,42 @@ void HT::defaults (Indicator &i)
   set.setData(LeadLabel, "LEAD");
   set.setData(Input, "Close");
   i.setSettings(set);
+}
+
+void HT::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  
+  FunctionHT f;
+  QStringList methodList = f.list();
+
+  settings.getData(Method, s);
+  int method = methodList.indexOf(s);
+
+  switch ((FunctionHT::Method) method)
+  {
+    case FunctionHT::_PHASOR:
+      settings.getData(PhaseLabel, s);
+      l.append(s);
+
+      settings.getData(QuadLabel, s);
+      l.append(s);
+      break;
+    case FunctionHT::_SINE:
+      settings.getData(SineLabel, s);
+      l.append(s);
+
+      settings.getData(LeadLabel, s);
+      l.append(s);
+      break;
+    default:
+      settings.getData(Label, s);
+      l.append(s);
+      break;
+  }
 }
 
 //*************************************************************

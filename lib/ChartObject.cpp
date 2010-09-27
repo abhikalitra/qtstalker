@@ -56,8 +56,6 @@ ChartObject::ChartObject ()
 ChartObject::~ChartObject ()
 {
   delete _menu;
-  
-  _draw->detach();
   delete _draw;
 }
 

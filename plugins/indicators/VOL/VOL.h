@@ -32,23 +32,24 @@ class VOL : public IndicatorPlugin
   public:
     enum Parm
     {
-      UpColor,
-      DownColor,
-      NeutralColor,
-      MAColor,
-      Plot,
-      MAPlot,
-      Label,
-      MALabel,
-      MAPeriod,
-      MAType
+      UpColor = 10,
+      DownColor = 20,
+      NeutralColor = 30,
+      MAColor = 40,
+      Plot = 50,
+      MAPlot = 60,
+      Label = 70,
+      MALabel = 80,
+      MAPeriod = 90,
+      MAType = 100
     };
 
     VOL ();
-    int getIndicator (Indicator &ind);
-    Curve * getVOL (QColor &, QColor &, QColor &);
+    int getIndicator (Indicator &ind, BarData &);
+    Curve * getVOL (QColor &, QColor &, QColor &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

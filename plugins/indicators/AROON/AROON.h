@@ -33,24 +33,25 @@ class AROON : public IndicatorPlugin
   public:
     enum Parm
     {
-      Method,
-      DownColor,
-      UpColor,
-      OSCColor,
-      DownPlot,
-      UpPlot,
-      OSCPlot,
-      DownLabel,
-      UpLabel,
-      OSCLabel,
-      Period
+      Method = 10,
+      DownColor = 20,
+      UpColor = 30,
+      OSCColor = 40,
+      DownPlot = 50,
+      UpPlot = 60,
+      OSCPlot = 70,
+      DownLabel = 80,
+      UpLabel = 90,
+      OSCLabel = 100,
+      Period = 110
     };
 
     AROON ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

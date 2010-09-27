@@ -21,7 +21,6 @@
 
 #include "FunctionFI.h"
 #include "FunctionMA.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +28,7 @@ FunctionFI::FunctionFI ()
 {
 }
 
-int FunctionFI::script (QStringList &set, Indicator &ind)
+int FunctionFI::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,FI,<NAME>,<PERIOD>,<MA_TYPE>
   //     0       1    2     3      4         5 
@@ -63,7 +62,7 @@ int FunctionFI::script (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = calculate(period, ma);
+  Curve *line = calculate(period, ma, data);
   if (! line)
     return 1;
 
@@ -74,19 +73,19 @@ int FunctionFI::script (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionFI::calculate (int period, int type)
+Curve * FunctionFI::calculate (int period, int type, BarData &data)
 {
-  if (g_barData.count() < period)
+  if (data.count() < period)
     return 0;
   
   Curve *line = new Curve;
 
   int loop = 1;
   double force = 0;
-  for (; loop < g_barData.count(); loop++)
+  for (; loop < data.count(); loop++)
   {
-    Bar bar = g_barData.getBar(loop);
-    Bar pbar = g_barData.getBar(loop - 1);
+    Bar bar = data.getBar(loop);
+    Bar pbar = data.getBar(loop - 1);
     double cdiff = bar.getClose() - pbar.getClose();
     force = bar.getVolume() * cdiff;
   

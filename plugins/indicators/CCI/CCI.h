@@ -31,23 +31,24 @@ class CCI : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color,
-      Plot,
-      Label,
-      Smoothing,
-      SmoothingType,
-      Period,
-      Ref1,
-      Ref2,
-      Ref1Color,
-      Ref2Color
+      Color = 10,
+      Plot = 20,
+      Label = 30,
+      Smoothing = 40,
+      SmoothingType = 50,
+      Period = 60,
+      Ref1 = 70,
+      Ref2 = 80,
+      Ref1Color = 90,
+      Ref2Color = 100
     };
 
     CCI ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

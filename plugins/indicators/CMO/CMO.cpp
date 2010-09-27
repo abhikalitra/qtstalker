@@ -23,7 +23,6 @@
 #include "FunctionCMO.h"
 #include "CMODialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,13 +31,13 @@ CMO::CMO ()
   _indicator = "CMO";
 }
 
-int CMO::getIndicator (Indicator &ind)
+int CMO::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -73,10 +72,10 @@ int CMO::getIndicator (Indicator &ind)
   return 0;
 }
 
-int CMO::getCUS (QStringList &set, Indicator &ind)
+int CMO::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionCMO f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * CMO::dialog (Indicator &i)
@@ -94,6 +93,17 @@ void CMO::defaults (Indicator &i)
   set.setData(Period, 14);
   i.setSettings(set);
 }
+
+void CMO::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
+}
+
 
 //*************************************************************
 //*************************************************************

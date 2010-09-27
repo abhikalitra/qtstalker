@@ -31,22 +31,23 @@ class STOCHRSI : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color,
-      Ref1Color,
-      Ref2Color,
-      Plot,
-      Label,
-      Ref1,
-      Ref2,
-      Input,
-      Period
+      Color = 10,
+      Ref1Color = 20,
+      Ref2Color = 30,
+      Plot = 40,
+      Label = 50,
+      Ref1 = 60,
+      Ref2 = 70,
+      Input = 80,
+      Period = 90
     };
 
     STOCHRSI ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

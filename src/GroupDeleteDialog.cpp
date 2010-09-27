@@ -38,8 +38,8 @@ void GroupDeleteDialog::done ()
   switch (_confirmFlag)
   {
     case _ConfirmNone:
-      setConfirm(tr("Confirm Delete:"),
-                 tr("Delete selected groups."));
+      setMessage(tr("Confirm Delete:"));
+      setConfirm(tr("Delete selected groups."));
       break;
     case _ConfirmNo:
       unsetConfirm();

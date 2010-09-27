@@ -24,7 +24,6 @@
 #include "FunctionBARS.h"
 #include "MAMADialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,13 +32,13 @@ MAMA::MAMA ()
   _indicator = "MAMA";
 }
 
-int MAMA::getIndicator (Indicator &ind)
+int MAMA::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -99,7 +98,7 @@ int MAMA::getIndicator (Indicator &ind)
     QColor down("red");
     QColor neutral("blue");
     FunctionBARS b;
-    Curve *bars = b.getBARS(up, down, neutral);
+    Curve *bars = b.getBARS(up, down, neutral, data);
     if (bars)
     {
       bars->setZ(1);
@@ -139,10 +138,10 @@ int MAMA::getIndicator (Indicator &ind)
   return 0;
 }
 
-int MAMA::getCUS (QStringList &set, Indicator &ind)
+int MAMA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionMAMA f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * MAMA::dialog (Indicator &i)
@@ -167,6 +166,29 @@ void MAMA::defaults (Indicator &i)
   set.setData(SlowLimit, 0.05);
   set.setData(Input, "Close");
   i.setSettings(set);
+}
+
+void MAMA::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  
+  int osc = settings.getInt(OSC);
+  if (osc)
+  {
+    settings.getData(OSCLabel, s);
+    l.append(s);
+  }
+  else
+  {
+    settings.getData(MAMALabel, s);
+    l.append(s);
+
+    settings.getData(FAMALabel, s);
+    l.append(s);
+  }
 }
 
 //*************************************************************

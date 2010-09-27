@@ -49,11 +49,11 @@ class Dialog : public QDialog
     Dialog (QWidget *parent);
     void createGUI ();
     void setMessage (QString);
-    void setMessage2 (QString);
-    void setConfirm (QString message, QString check);
+    void setConfirm (QString);
     void unsetConfirm ();
     void setIcon (QPixmap);
-    void setFontBold (int);
+    QFont messageFont ();
+    void setMessageFont (QFont);
 
   public slots:
     virtual void done ();

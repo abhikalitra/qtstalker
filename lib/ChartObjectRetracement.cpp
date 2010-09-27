@@ -184,6 +184,12 @@ void ChartObjectRetracement::move (QPoint p)
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
       _settings.high = map.invTransform((double) p.y());
       
+      if (_createFlag)
+      {
+        _settings.date2 = _settings.date;
+        _settings.low = _settings.high;
+      }
+
       _draw->setSettings(_settings);
 
       _draw->plot()->replot();

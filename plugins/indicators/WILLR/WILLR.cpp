@@ -31,14 +31,14 @@ WILLR::WILLR ()
   _indicator = "WILLR";
 }
 
-int WILLR::getIndicator (Indicator &ind)
+int WILLR::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   int period = settings.getInt(Period);
 
   FunctionWILLR f;
-  Curve *line = f.calculate(period);
+  Curve *line = f.calculate(period, data);
   if (! line)
     return 1;
 
@@ -59,10 +59,10 @@ int WILLR::getIndicator (Indicator &ind)
   return 0;
 }
 
-int WILLR::getCUS (QStringList &set, Indicator &ind)
+int WILLR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionWILLR f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * WILLR::dialog (Indicator &i)
@@ -78,6 +78,16 @@ void WILLR::defaults (Indicator &i)
   set.setData(Label, _indicator);
   set.setData(Period, 14);
   i.setSettings(set);
+}
+
+void WILLR::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

@@ -42,7 +42,7 @@ ChartObjectTLine::ChartObjectTLine ()
   config.getData(Config::DefaultChartObjectTLineColor, _settings.color);
   if (! _settings.color.isValid())
   {
-    _settings.color = QColor(Qt::green);
+    _settings.color = QColor(Qt::red);
     config.setData(Config::DefaultChartObjectTLineColor, _settings.color);
   }
 
@@ -163,6 +163,12 @@ void ChartObjectTLine::move (QPoint p)
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
       _settings.price = map.invTransform((double) p.y());
+
+      if (_createFlag)
+      {
+        _settings.date2 = _settings.date;
+        _settings.price2 = _settings.price;
+      }
       
       _draw->setSettings(_settings);
 

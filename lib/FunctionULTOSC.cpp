@@ -21,7 +21,6 @@
 
 #include "FunctionULTOSC.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +28,7 @@ FunctionULTOSC::FunctionULTOSC ()
 {
 }
 
-int FunctionULTOSC::script (QStringList &set, Indicator &ind)
+int FunctionULTOSC::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>
   //     0       1       2     3          4             5             6
@@ -69,7 +68,7 @@ int FunctionULTOSC::script (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = calculate(sp, mp, lp);
+  Curve *line = calculate(sp, mp, lp, data);
   if (! line)
     return 1;
 
@@ -80,9 +79,9 @@ int FunctionULTOSC::script (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionULTOSC::calculate (int sp, int mp, int lp)
+Curve * FunctionULTOSC::calculate (int sp, int mp, int lp, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
   
   if (size < sp || size < mp || size < lp)
     return 0;
@@ -93,9 +92,9 @@ Curve * FunctionULTOSC::calculate (int sp, int mp, int lp)
 
   TA_RetCode rc = TA_ULTOSC(0,
                             size - 1,
-                            g_barData.getTAData(BarData::High),
-                            g_barData.getTAData(BarData::Low),
-                            g_barData.getTAData(BarData::Close),
+                            data.getTAData(BarData::High),
+                            data.getTAData(BarData::Low),
+                            data.getTAData(BarData::Close),
                             sp,
                             mp,
                             lp,

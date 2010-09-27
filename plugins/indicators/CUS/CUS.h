@@ -31,12 +31,12 @@ class CUS : public IndicatorPlugin
   public:
     enum Parm
     {
-      Script,
-      Command
+      Script = 10,
+      Command = 20
     };
 
     CUS ();
-    int getIndicator (Indicator &ind);
+    int getIndicator (Indicator &ind, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
 };

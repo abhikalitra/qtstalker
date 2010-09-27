@@ -45,8 +45,8 @@ void CSVDeleteDialog::done ()
   switch (_confirmFlag)
   {
     case _ConfirmNone:
-      setConfirm(tr("Confirm Delete:"),
-                 tr("Yes. Delete selected rules."));
+      setMessage(tr("Confirm Delete:"));
+      setConfirm(tr("Yes. Delete selected rules."));
       break;
     case _ConfirmNo:
       unsetConfirm();

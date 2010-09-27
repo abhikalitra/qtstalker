@@ -82,9 +82,14 @@ void DocsAction::about ()
 
   Dialog *dialog = new Dialog;
   dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("About"));
+
+  QFont f = dialog->messageFont();
+  f.setBold(FALSE);
+  dialog->setMessageFont(f);
+
   dialog->setMessage(versionString);
+  
   dialog->setIcon(qtstalker);
-  dialog->setFontBold(0);
   dialog->show();
 }
 

@@ -31,26 +31,27 @@ class MAMA : public IndicatorPlugin
   public:
     enum Parm
     {
-      OSC,
-      OSCColor,
-      MAMAColor,
-      FAMAColor,
-      MAMAPlot,
-      FAMAPlot,
-      OSCLabel,
-      MAMALabel,
-      FAMALabel,
-      FastLimit,
-      SlowLimit,
-      Input,
-      OSCPlot,
+      OSC = 10,
+      OSCColor = 20,
+      MAMAColor = 30,
+      FAMAColor = 40,
+      MAMAPlot = 50,
+      FAMAPlot = 60,
+      OSCLabel = 70,
+      MAMALabel = 80,
+      FAMALabel = 90,
+      FastLimit = 100,
+      SlowLimit = 110,
+      Input = 120,
+      OSCPlot = 130
     };
 
     MAMA ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

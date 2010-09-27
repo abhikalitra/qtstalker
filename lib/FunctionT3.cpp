@@ -21,7 +21,6 @@
 
 #include "FunctionT3.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +28,7 @@ FunctionT3::FunctionT3 ()
 {
 }
 
-int FunctionT3::script (QStringList &set, Indicator &ind)
+int FunctionT3::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,T3,<NAME>,<INPUT>,<PERIOD>,<VFACTOR>
   //     0       1    2    3       4       5         6 
@@ -50,7 +49,7 @@ int FunctionT3::script (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[4]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionT3::script: input not found" << set[4];

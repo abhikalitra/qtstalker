@@ -31,23 +31,24 @@ class MFI : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color,
-      Plot,
-      Label,
-      Period,
-      Smoothing,
-      SmoothingType,
-      Ref1,
-      Ref2,
-      Ref1Color,
-      Ref2Color
+      Color = 10,
+      Plot = 20,
+      Label = 30,
+      Period = 40,
+      Smoothing = 50,
+      SmoothingType = 60,
+      Ref1 = 70,
+      Ref2 = 80,
+      Ref1Color = 90,
+      Ref2Color = 100
     };
 
     MFI ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

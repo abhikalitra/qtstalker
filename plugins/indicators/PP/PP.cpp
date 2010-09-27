@@ -32,7 +32,7 @@ PP::PP ()
   _indicator = "PP";
 }
 
-int PP::getIndicator (Indicator &ind)
+int PP::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -40,7 +40,7 @@ int PP::getIndicator (Indicator &ind)
   QColor down("red");
   QColor neutral("blue");
   FunctionBARS b;
-  Curve *bars = b.getBARS(up, down, neutral);
+  Curve *bars = b.getBARS(up, down, neutral, data);
   if (bars)
   {
     bars->setZ(0);
@@ -52,7 +52,7 @@ int PP::getIndicator (Indicator &ind)
   // 1R line
   if (settings.getInt(R1Show))
   {
-    Curve *line = f.calculate(0);
+    Curve *line = f.calculate(0, data);
     if (line)
     {
       settings.getData(R1Color, s);
@@ -70,7 +70,7 @@ int PP::getIndicator (Indicator &ind)
   // 2R line
   if (settings.getInt(R2Show))
   {
-    Curve *line = f.calculate(1);
+    Curve *line = f.calculate(1, data);
     if (line)
     {
       settings.getData(R2Color, s);
@@ -88,7 +88,7 @@ int PP::getIndicator (Indicator &ind)
   // 3R line
   if (settings.getInt(R3Show))
   {
-    Curve *line = f.calculate(2);
+    Curve *line = f.calculate(2, data);
     if (line)
     {
       settings.getData(R3Color, s);
@@ -106,7 +106,7 @@ int PP::getIndicator (Indicator &ind)
   // 1S line
   if (settings.getInt(S1Show))
   {
-    Curve *line = f.calculate(3);
+    Curve *line = f.calculate(3, data);
     if (line)
     {
       settings.getData(S1Color, s);
@@ -124,7 +124,7 @@ int PP::getIndicator (Indicator &ind)
   // 2S line
   if (settings.getInt(S2Show))
   {
-    Curve *line = f.calculate(4);
+    Curve *line = f.calculate(4, data);
     if (line)
     {
       settings.getData(S2Color, s);
@@ -142,7 +142,7 @@ int PP::getIndicator (Indicator &ind)
   // 3S line
   if (settings.getInt(S3Show))
   {
-    Curve *line = f.calculate(5);
+    Curve *line = f.calculate(5, data);
     if (line)
     {
       settings.getData(S3Color, s);
@@ -160,10 +160,10 @@ int PP::getIndicator (Indicator &ind)
   return 0;
 }
 
-int PP::getCUS (QStringList &set, Indicator &ind)
+int PP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionPP f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * PP::dialog (Indicator &i)
@@ -193,6 +193,32 @@ void PP::defaults (Indicator &i)
   set.setData(S2Show, 1);
   set.setData(S3Show, 1);
   i.setSettings(set);
+}
+
+void PP::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  
+  settings.getData(R1Label, s);
+  l.append(s);
+
+  settings.getData(R2Label, s);
+  l.append(s);
+
+  settings.getData(R3Label, s);
+  l.append(s);
+
+  settings.getData(S1Label, s);
+  l.append(s);
+  
+  settings.getData(S2Label, s);
+  l.append(s);
+
+  settings.getData(S3Label, s);
+  l.append(s);
 }
 
 //*************************************************************

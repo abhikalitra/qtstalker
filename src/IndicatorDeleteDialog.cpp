@@ -40,8 +40,8 @@ void IndicatorDeleteDialog::done ()
   switch (_confirmFlag)
   {
     case _ConfirmNone:
-      setConfirm(tr("Confirm Delete:"),
-                 tr("Delete selected indicators."));
+      setMessage(tr("Confirm Delete:"));
+      setConfirm(tr("Delete selected indicators."));
       break;
     case _ConfirmNo:
       unsetConfirm();

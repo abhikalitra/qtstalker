@@ -21,7 +21,6 @@
 
 #include "FunctionHT.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionHT::FunctionHT ()
   _methodList << "DCPERIOD" << "DCPHASE" << "TRENDLINE" << "TRENDMODE" << "PHASOR" << "SINE";
 }
 
-int FunctionHT::script (QStringList &set, Indicator &ind)
+int FunctionHT::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,HT,<METHOD>,*
   //     0       1     2    3
@@ -50,13 +49,13 @@ int FunctionHT::script (QStringList &set, Indicator &ind)
     case _DCPHASE:
     case _TRENDLINE:
     case _TRENDMODE:
-      rc = scriptHT(set, ind);
+      rc = scriptHT(set, ind, data);
       break;      
     case _PHASOR:
-      rc = scriptPHASE(set, ind);
+      rc = scriptPHASE(set, ind, data);
       break;
     case _SINE:
-      rc = scriptSINE(set, ind);
+      rc = scriptSINE(set, ind, data);
       break;
     default:
       break;
@@ -65,7 +64,7 @@ int FunctionHT::script (QStringList &set, Indicator &ind)
   return rc;
 }
 
-int FunctionHT::scriptPHASE (QStringList &set, Indicator &ind)
+int FunctionHT::scriptPHASE (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,HT,<METHOD>,<INPUT>,<PHASE NAME>,<QUAD NAME>
   //     0       1     2     3       4          5           6 
@@ -79,7 +78,7 @@ int FunctionHT::scriptPHASE (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[4]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionHT::scriptPHASE: input not found" << set[4];
@@ -116,7 +115,7 @@ int FunctionHT::scriptPHASE (QStringList &set, Indicator &ind)
   return 0;
 }
 
-int FunctionHT::scriptSINE (QStringList &set, Indicator &ind)
+int FunctionHT::scriptSINE (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,HT,<METHOD>,<INPUT>,<SINE NAME>,<LEAD NAME>
   //     0       1     2     3       4          5           6 
@@ -130,7 +129,7 @@ int FunctionHT::scriptSINE (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[4]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionHT::scriptSINE: input not found" << set[4];
@@ -167,7 +166,7 @@ int FunctionHT::scriptSINE (QStringList &set, Indicator &ind)
   return 0;
 }
 
-int FunctionHT::scriptHT (QStringList &set, Indicator &ind)
+int FunctionHT::scriptHT (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,HT,<METHOD>,<NAME>,<INPUT>
   //     0       1     2    3       4       5 
@@ -195,7 +194,7 @@ int FunctionHT::scriptHT (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[5]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[5]));
+    in = data.getInput(data.getInputType(set[5]));
     if (! in)
     {
       qDebug() << "FunctionHT::scriptHT: input not found" << set[5];

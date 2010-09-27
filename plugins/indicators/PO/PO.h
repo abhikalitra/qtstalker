@@ -31,21 +31,22 @@ class PO : public IndicatorPlugin
   public:
     enum Parm
     {
-      Method,
-      Input,
-      Color,
-      Plot,
-      Label,
-      FastPeriod,
-      SlowPeriod,
-      MAType
+      Method = 10,
+      Input = 20,
+      Color = 30,
+      Plot = 40,
+      Label = 50,
+      FastPeriod = 60,
+      SlowPeriod = 70,
+      MAType = 80
     };
 
     PO ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

@@ -50,6 +50,11 @@ ChartObjectDraw::ChartObjectDraw ()
   setYAxis(QwtPlot::yRight);
 }
 
+ChartObjectDraw::~ChartObjectDraw ()
+{
+  detach();
+}
+
 int ChartObjectDraw::rtti () const
 {
   return Rtti_PlotUserItem;

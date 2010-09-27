@@ -20,7 +20,6 @@
  */
 
 #include "FunctionBARS.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -28,20 +27,20 @@ FunctionBARS::FunctionBARS ()
 {
 }
 
-Curve * FunctionBARS::getBARS (QColor &_up, QColor &_down, QColor &_neutral)
+Curve * FunctionBARS::getBARS (QColor &_up, QColor &_down, QColor &_neutral, BarData &data)
 {
-  if (g_barData.count() < 2)
+  if (data.count() < 2)
     return 0;
 
   Curve *line = new Curve(Curve::OHLC);
 
-  int size = g_barData.count();
+  int size = data.count();
 
   int loop;
   for (loop = 0; loop < size; loop++)
   {
     CurveBar *bar = new CurveBar;
-    Bar tbar = g_barData.getBar(loop);
+    Bar tbar = data.getBar(loop);
     bar->setData(0, tbar.getData(Bar::BarFieldOpen));
     bar->setData(1, tbar.getData(Bar::BarFieldHigh));
     bar->setData(2, tbar.getData(Bar::BarFieldLow));
@@ -49,7 +48,7 @@ Curve * FunctionBARS::getBARS (QColor &_up, QColor &_down, QColor &_neutral)
 
     if (loop > 0)
     {
-      Bar pbar = g_barData.getBar(loop - 1);
+      Bar pbar = data.getBar(loop - 1);
       if (tbar.getData(Bar::BarFieldClose) > pbar.getData(Bar::BarFieldClose))
         bar->setColor(_up);
       else

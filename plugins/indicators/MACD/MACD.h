@@ -31,29 +31,30 @@ class MACD : public IndicatorPlugin
   public:
     enum Parm
     {
-      MACDColor,
-      SignalColor,
-      HistColor,
-      MACDPlot,
-      SignalPlot,
-      HistPlot,
-      MACDLabel,
-      SignalLabel,
-      HistLabel,
-      FastPeriod,
-      SlowPeriod,
-      SignalPeriod,
-      FastMA,
-      SlowMA,
-      SignalMA,
-      Input
+      MACDColor = 10,
+      SignalColor = 20,
+      HistColor = 30,
+      MACDPlot = 40,
+      SignalPlot = 50,
+      HistPlot = 60,
+      MACDLabel = 70,
+      SignalLabel = 80,
+      HistLabel = 90,
+      FastPeriod = 100,
+      SlowPeriod = 110,
+      SignalPeriod = 120,
+      FastMA = 130,
+      SlowMA = 140,
+      SignalMA = 150,
+      Input = 160
     };
 
     MACD ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

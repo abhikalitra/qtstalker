@@ -31,30 +31,31 @@ class HT : public IndicatorPlugin
   public:
     enum Parm
     {
-      Method,
-      Input,
-      Color,
-      PhaseColor,
-      QuadColor,
-      SineColor,
-      LeadColor,
-      Plot,
-      PhasePlot,
-      QuadPlot,
-      SinePlot,
-      LeadPlot,
-      Label,
-      PhaseLabel,
-      QuadLabel,
-      SineLabel,
-      LeadLabel
+      Method = 10,
+      Input = 20,
+      Color = 30,
+      PhaseColor = 40,
+      QuadColor = 50,
+      SineColor = 60,
+      LeadColor = 70,
+      Plot = 80,
+      PhasePlot = 90,
+      QuadPlot = 100,
+      SinePlot = 110,
+      LeadPlot = 120,
+      Label = 130,
+      PhaseLabel = 140,
+      QuadLabel = 150,
+      SineLabel = 160,
+      LeadLabel = 170
     };
 
     HT ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

@@ -22,7 +22,6 @@
 #include "FunctionROC.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -31,7 +30,7 @@ FunctionROC::FunctionROC ()
   _methodList << "ROC" << "ROCP" << "ROCR" << "ROCR100";
 }
 
-int FunctionROC::script (QStringList &set, Indicator &ind)
+int FunctionROC::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,ROC,METHOD,<NAME>,<INPUT>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
   //     0       1     2    3      4       5       6             7                 8 
@@ -59,7 +58,7 @@ int FunctionROC::script (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[5]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[5]));
+    in = data.getInput(data.getInputType(set[5]));
     if (! in)
     {
       qDebug() << "FunctionROC::script: input not found" << set[5];

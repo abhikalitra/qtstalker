@@ -31,33 +31,34 @@ class CANDLES : public IndicatorPlugin
   public:
     enum Parm
     {
-      Method,
-      Penetration,
-      MethodColor,
-      Color,
-      Label,
-      MAColor,
-      MA2Color,
-      MA3Color,
-      MAPlot,
-      MA2Plot,
-      MA3Plot,
-      MALabel,
-      MA2Label,
-      MA3Label,
-      MAPeriod,
-      MA2Period,
-      MA3Period,
-      MAType,
-      MA2Type,
-      MA3Type
+      Method = 10,
+      Penetration = 20,
+      MethodColor = 30,
+      Color = 40,
+      Label = 50,
+      MAColor = 60,
+      MA2Color = 70,
+      MA3Color = 80,
+      MAPlot = 90,
+      MA2Plot = 100,
+      MA3Plot = 110,
+      MALabel = 120,
+      MA2Label = 130,
+      MA3Label = 140,
+      MAPeriod = 150,
+      MA2Period = 160,
+      MA3Period = 170,
+      MAType = 180,
+      MA2Type = 190,
+      MA3Type = 200
     };
 
     CANDLES ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

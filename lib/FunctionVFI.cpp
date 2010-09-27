@@ -20,7 +20,6 @@
  */
 
 #include "FunctionVFI.h"
-#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -29,7 +28,7 @@ FunctionVFI::FunctionVFI ()
 {
 }
 
-int FunctionVFI::script (QStringList &set, Indicator &ind)
+int FunctionVFI::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,VFI,<NAME>,<PERIOD>
   //     0       1     2    3        4 
@@ -55,7 +54,7 @@ int FunctionVFI::script (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = calculate(period);
+  Curve *line = calculate(period, data);
   if (! line)
     return 1;
 
@@ -66,9 +65,9 @@ int FunctionVFI::script (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionVFI::calculate (int period)
+Curve * FunctionVFI::calculate (int period, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
   
   if (size < period)
     return 0;
@@ -81,14 +80,14 @@ Curve * FunctionVFI::calculate (int period)
     double inter = 0.0;
     double sma_vol = 0.0;
     int i;
-    Bar bar = g_barData.getBar(loop - period);
+    Bar bar = data.getBar(loop - period);
     double close = bar.getClose();
     double high = bar.getHigh();
     double low = bar.getLow();
     double typical = (high + low + close) / 3.0;
     for (i = loop - period + 1; i <= loop; i++)
     {
-      bar = g_barData.getBar(i);
+      bar = data.getBar(i);
       double ytypical = typical;
       close = bar.getClose();
       high = bar.getHigh();
@@ -101,7 +100,7 @@ Curve * FunctionVFI::calculate (int period)
     inter = 0.2 * sqrt(inter / (double) period) * typical;
     sma_vol /= (double) period;
 
-    bar = g_barData.getBar(loop - period);
+    bar = data.getBar(loop - period);
     close = bar.getClose();
     high = bar.getHigh();
     low = bar.getLow();
@@ -109,7 +108,7 @@ Curve * FunctionVFI::calculate (int period)
     double t = 0;
     for (i = loop - period + 1; i <= loop; i++)
     {
-      bar = g_barData.getBar(i);
+      bar = data.getBar(i);
       double ytypical = typical;
       double volume = bar.getVolume();
       close = bar.getClose();

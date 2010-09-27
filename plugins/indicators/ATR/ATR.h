@@ -31,18 +31,19 @@ class ATR : public IndicatorPlugin
   public:
     enum Parm
     {
-      Method,
-      Period,
-      Color,
-      Plot,
-      Label
+      Method = 10,
+      Period = 20,
+      Color = 30,
+      Plot = 40,
+      Label = 50
     };
 
     ATR ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

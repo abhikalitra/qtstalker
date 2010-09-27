@@ -24,7 +24,6 @@
 #include "ROCDialog.h"
 #include "FunctionROC.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,13 +32,13 @@ ROC::ROC ()
   _indicator = "ROC";
 }
 
-int ROC::getIndicator (Indicator &ind)
+int ROC::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -84,10 +83,10 @@ int ROC::getIndicator (Indicator &ind)
   return 0;
 }
 
-int ROC::getCUS (QStringList &set, Indicator &ind)
+int ROC::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionROC f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * ROC::dialog (Indicator &i)
@@ -107,6 +106,16 @@ void ROC::defaults (Indicator &i)
   set.setData(Input, "Close");
   set.setData(Method, "ROC");
   i.setSettings(set);
+}
+
+void ROC::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

@@ -570,7 +570,8 @@ void Plot::deleteAllChartObjects ()
 {
   Dialog *dialog = new Dialog;
   dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete All Chart Objects"));
-  dialog->setConfirm(tr("Confirm Delete"), tr("Delete all chart objects from this indicator"));
+  dialog->setMessage(tr("Confirm Delete"));
+  dialog->setConfirm(tr("Delete all chart objects from this indicator"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
   dialog->show();
 }
@@ -584,6 +585,8 @@ void Plot::deleteAllChartObjects2 ()
 
   qDeleteAll(_chartObjects);
   _chartObjects.clear();
+
+  _selected = 0;
 
   updatePlot();
 }
@@ -628,6 +631,8 @@ void Plot::deleteChartObject (int id)
   delete co;
   
   _chartObjects.remove(id);
+
+  _selected = 0;
 
   updatePlot();
 }

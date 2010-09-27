@@ -22,7 +22,6 @@
 #include "FunctionMACD.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionMACD::FunctionMACD ()
 {
 }
 
-int FunctionMACD::script (QStringList &set, Indicator &ind)
+int FunctionMACD::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<FAST_MA_TYPE>,<SLOW_PERIOD>,<SLOW_MA_TYPE>,<SIGNAL_PERIOD>,<SIGNAL_MA_TYPE>
   //     0       1     2      3         4           5             6           7               8            9             10                11              12 
@@ -65,7 +64,7 @@ int FunctionMACD::script (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[3]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[3]));
+    in = data.getInput(data.getInputType(set[3]));
     if (! in)
     {
       qDebug() << "FunctionMACD::script: input not found" << set[3];

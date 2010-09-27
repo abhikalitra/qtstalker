@@ -24,7 +24,6 @@
 #include "FunctionBETA.h"
 #include "BETADialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,16 +32,16 @@ BETA::BETA ()
   _indicator = "BETA";
 }
 
-int BETA::getIndicator (Indicator &ind)
+int BETA::getIndicator (Indicator &ind, BarData &data)
 {
-  if (! g_barData.count())
+  if (! data.count())
     return 1;
   
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -54,15 +53,15 @@ int BETA::getIndicator (Indicator &ind)
   bd.setSymbol(s);
   settings.getData(Exchange, s);
   bd.setExchange(s);
-  bd.setBarLength(g_barData.getBarLength());
+  bd.setBarLength(data.getBarLength());
 
   QStringList l;
   l << "GetQuotes" << bd.getExchange() << bd.getSymbol();
   bd.barLengthText(bd.getBarLength(), s);
   l << s;
-  Bar bar = g_barData.getBar(0);
+  Bar bar = data.getBar(0);
   l << bar.date().toString("yyyyMMddHHmmss");
-  bar = g_barData.getBar(g_barData.count() - 1);
+  bar = data.getBar(data.count() - 1);
   l << bar.date().toString("yyyyMMddHHmmss");
 
   QString command = l.join(",") + "\n";
@@ -111,10 +110,10 @@ int BETA::getIndicator (Indicator &ind)
   return 0;
 }
 
-int BETA::getCUS (QStringList &set, Indicator &ind)
+int BETA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionBETA f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * BETA::dialog (Indicator &i)
@@ -134,6 +133,17 @@ void BETA::defaults (Indicator &i)
   set.setData(Period, 5);
   i.setSettings(set);
 }
+
+void BETA::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
+}
+
 
 //*************************************************************
 //*************************************************************

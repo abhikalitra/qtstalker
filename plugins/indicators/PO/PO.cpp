@@ -24,7 +24,6 @@
 #include "PODialog.h"
 #include "FunctionPO.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,13 +32,13 @@ PO::PO ()
   _indicator = "PO";
 }
 
-int PO::getIndicator (Indicator &ind)
+int PO::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -84,10 +83,10 @@ int PO::getIndicator (Indicator &ind)
   return 0;
 }
 
-int PO::getCUS (QStringList &set, Indicator &ind)
+int PO::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionPO f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * PO::dialog (Indicator &i)
@@ -107,6 +106,16 @@ void PO::defaults (Indicator &i)
   set.setData(MAType, "SMA");
   set.setData(Method, "APO");
   i.setSettings(set);
+}
+
+void PO::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

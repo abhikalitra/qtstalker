@@ -31,20 +31,21 @@ class MOM : public IndicatorPlugin
   public:
     enum Parm
     {
-      Input,
-      Color,
-      Plot,
-      Label,
-      Period,
-      Smoothing,
-      SmoothingType
+      Input = 10,
+      Color = 10,
+      Plot = 10,
+      Label = 10,
+      Period = 10,
+      Smoothing = 10,
+      SmoothingType = 10
     };
 
     MOM ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

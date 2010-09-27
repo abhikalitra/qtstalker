@@ -147,7 +147,7 @@ void ExScript::readFromStdout ()
     case _INDICATOR:
     {
       SCIndicator sc;
-      sc.calculate(l, ba, _indicator);
+      sc.calculate(l, ba, _indicator, g_barData);
       _proc->write(ba);
       break;
     }

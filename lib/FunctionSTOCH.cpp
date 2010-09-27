@@ -22,7 +22,6 @@
 #include "FunctionSTOCH.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionSTOCH::FunctionSTOCH ()
 {
 }
 
-int FunctionSTOCH::script (QStringList &set, Indicator &ind)
+int FunctionSTOCH::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,STOCH,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>
   //     0        1    2         3            4              5             6              7 
@@ -79,7 +78,7 @@ int FunctionSTOCH::script (QStringList &set, Indicator &ind)
   }
 
   QList<Curve *> pl;
-  if (calculate(fkp, fdp, ma, pl))
+  if (calculate(fkp, fdp, ma, pl, data))
     return 1;
 
   Curve *line = pl.at(0);
@@ -93,9 +92,9 @@ int FunctionSTOCH::script (QStringList &set, Indicator &ind)
   return 0;
 }
 
-int FunctionSTOCH::calculate (int kperiod, int dperiod, int ma, QList<Curve *> &pl)
+int FunctionSTOCH::calculate (int kperiod, int dperiod, int ma, QList<Curve *> &pl, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
   
   if (size < kperiod || size < dperiod)
     return 1;
@@ -107,9 +106,9 @@ int FunctionSTOCH::calculate (int kperiod, int dperiod, int ma, QList<Curve *> &
 
   TA_RetCode rc = TA_STOCHF(0,
                             size - 1,
-                            g_barData.getTAData(BarData::High),
-                            g_barData.getTAData(BarData::Low),
-                            g_barData.getTAData(BarData::Close),
+                            data.getTAData(BarData::High),
+                            data.getTAData(BarData::Low),
+                            data.getTAData(BarData::Close),
                             kperiod,
                             dperiod,
                             (TA_MAType) ma,

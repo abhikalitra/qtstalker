@@ -30,6 +30,14 @@ Dialog::Dialog ()
   _confirmFlag = _ConfirmNone;
   
   createGUI();
+
+  QFont f = messageFont();
+  f.setBold(TRUE);
+  setMessageFont(f);
+
+  QMessageBox tbox;
+  tbox.setIcon(QMessageBox::Warning);
+  _icon->setPixmap(tbox.iconPixmap());
 }
 
 Dialog::Dialog (QWidget *parent) : QDialog (parent, 0)
@@ -66,7 +74,7 @@ void Dialog::createGUI ()
   tvbox->addStretch(1);
   
   tvbox = new QVBoxLayout;
-  tvbox->setSpacing(5);
+  tvbox->setSpacing(10);
   tvbox->setMargin(0);
   hbox->addLayout(tvbox);
 
@@ -114,18 +122,14 @@ void Dialog::done ()
 
 void Dialog::setMessage (QString message)
 {
-  setMessage2(message);
+  _message->setText(message);
+  _message->show();
 
-  QMessageBox tbox;
-  tbox.setIcon(QMessageBox::Warning);
-  _icon->setPixmap(tbox.iconPixmap());
   _icon->show();
 }
 
-void Dialog::setConfirm (QString message, QString check)
+void Dialog::setConfirm (QString check)
 {
-  setMessage2(message);
-
   _confirm->setText(check);
   _confirm->show();
   
@@ -159,17 +163,13 @@ void Dialog::setIcon (QPixmap pic)
   _icon->setPixmap(pic);
 }
 
-void Dialog::setMessage2 (QString message)
+QFont Dialog::messageFont ()
 {
-  setFontBold(1);
-  _message->setText(message);
-  _message->show();
+  return _message->font();
 }
 
-void Dialog::setFontBold (int d)
+void Dialog::setMessageFont (QFont font)
 {
-  QFont f = _message->font();
-  f.setBold(d);
-  _message->setFont(f);
+  _message->setFont(font);
 }
 

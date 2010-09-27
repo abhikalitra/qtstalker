@@ -31,7 +31,7 @@ AD::AD ()
   _indicator = "AD";
 }
 
-int AD::getIndicator (Indicator &ind)
+int AD::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -49,7 +49,7 @@ int AD::getIndicator (Indicator &ind)
       int fp = settings.getInt(FastPeriod);
       int sp = settings.getInt(SlowPeriod);
 
-      Curve *line = f.getADOSC(fp, sp);
+      Curve *line = f.getADOSC(fp, sp, data);
       if (! line)
 	return 1;
 
@@ -69,7 +69,7 @@ int AD::getIndicator (Indicator &ind)
     }
     default:
     {
-      Curve *line = f.getAD();
+      Curve *line = f.getAD(data);
       if (! line)
 	return 1;
       
@@ -92,10 +92,10 @@ int AD::getIndicator (Indicator &ind)
   return 0;
 }
 
-int AD::getCUS (QStringList &set, Indicator &ind)
+int AD::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionAD f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * AD::dialog (Indicator &i)
@@ -116,6 +116,36 @@ void AD::defaults (Indicator &i)
   set.setData(AD::OSCPlot, QString("Histogram Bar"));
   set.setData(AD::OSCLabel, QString("ADOSC"));
   i.setSettings(set);
+}
+
+void AD::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+  
+  Setting settings = i.settings();
+
+  FunctionAD f;
+  QStringList methodList = f.list();
+
+  QString s;
+  settings.getData(Method, s);
+  int method = methodList.indexOf(s);
+
+  switch ((FunctionAD::Method) method)
+  {
+    case FunctionAD::_ADOSC:
+    {
+      settings.getData(OSCLabel, s);
+      l.append(s);
+      break;
+    }
+    default:
+    {
+      settings.getData(ADLabel, s);
+      l.append(s);
+      break;
+    }
+  }
 }
 
 //*************************************************************

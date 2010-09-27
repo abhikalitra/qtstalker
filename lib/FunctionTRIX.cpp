@@ -21,7 +21,6 @@
 
 #include "FunctionTRIX.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +28,7 @@ FunctionTRIX::FunctionTRIX ()
 {
 }
 
-int FunctionTRIX::script (QStringList &set, Indicator &ind)
+int FunctionTRIX::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,TRIX,<NAME>,<INPUT>,<PERIOD>
   //     0       1     2     3       4       5 
@@ -50,7 +49,7 @@ int FunctionTRIX::script (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[4]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionTRIX::script: input not found" << set[4];

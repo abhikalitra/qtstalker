@@ -23,7 +23,6 @@
 #include "FunctionTRIX.h"
 #include "TRIXDialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -32,13 +31,13 @@ TRIX::TRIX ()
   _indicator = "TRIX";
 }
 
-int TRIX::getIndicator (Indicator &ind)
+int TRIX::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -73,10 +72,10 @@ int TRIX::getIndicator (Indicator &ind)
   return 0;
 }
 
-int TRIX::getCUS (QStringList &set, Indicator &ind)
+int TRIX::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionTRIX f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * TRIX::dialog (Indicator &i)
@@ -93,6 +92,16 @@ void TRIX::defaults (Indicator &i)
   set.setData(Period, 30);
   set.setData(Input, "Close");
   i.setSettings(set);
+}
+
+void TRIX::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

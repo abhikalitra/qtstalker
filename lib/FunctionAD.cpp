@@ -21,7 +21,6 @@
 
 #include "FunctionAD.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionAD::FunctionAD ()
   _methodList << "AD" << "ADOSC";
 }
 
-int FunctionAD::script (QStringList &set, Indicator &ind)
+int FunctionAD::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AD,<METHOD>,*
   //      0      1     2    3
@@ -41,10 +40,10 @@ int FunctionAD::script (QStringList &set, Indicator &ind)
   switch ((Method) method)
   {
     case _AD:
-      rc = scriptAD(set, ind);
+      rc = scriptAD(set, ind, data);
       break;
     case _ADOSC:
-      rc = scriptADOSC(set, ind);
+      rc = scriptADOSC(set, ind, data);
       break;
     default:
       break;
@@ -53,7 +52,7 @@ int FunctionAD::script (QStringList &set, Indicator &ind)
   return rc;
 }
 
-int FunctionAD::scriptAD (QStringList &set, Indicator &ind)
+int FunctionAD::scriptAD (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AD,AD,<NAME>
   //      0      1    2  3    4
@@ -71,7 +70,7 @@ int FunctionAD::scriptAD (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = getAD();
+  Curve *line = getAD(data);
   if (! line)
     return 1;
 
@@ -82,7 +81,7 @@ int FunctionAD::scriptAD (QStringList &set, Indicator &ind)
   return 0;
 }
 
-int FunctionAD::scriptADOSC (QStringList &set, Indicator &ind)
+int FunctionAD::scriptADOSC (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AD,ADOSC,<NAME>,<FAST_PERIOD>,<SLOW_PERIOD>
   //      0      1    2    3      4        5             6
@@ -115,7 +114,7 @@ int FunctionAD::scriptADOSC (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = getADOSC(fast, slow);
+  Curve *line = getADOSC(fast, slow, data);
   if (! line)
     return 1;
 
@@ -126,21 +125,21 @@ int FunctionAD::scriptADOSC (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionAD::getAD ()
+Curve * FunctionAD::getAD (BarData &data)
 {
-  if (g_barData.count() < 1)
+  if (data.count() < 1)
     return 0;
 
-  TA_Real out[g_barData.count()];
+  TA_Real out[data.count()];
   TA_Integer outBeg;
   TA_Integer outNb;
 
   TA_RetCode rc = TA_AD(0,
-                        g_barData.count() - 1,
-                        g_barData.getTAData(BarData::High),
-                        g_barData.getTAData(BarData::Low),
-                        g_barData.getTAData(BarData::Close),
-                        g_barData.getTAData(BarData::Volume),
+                        data.count() - 1,
+                        data.getTAData(BarData::High),
+                        data.getTAData(BarData::Low),
+                        data.getTAData(BarData::Close),
+                        data.getTAData(BarData::Volume),
                         &outBeg,
                         &outNb,
                         &out[0]);
@@ -152,7 +151,7 @@ Curve * FunctionAD::getAD ()
 
   Curve *line = new Curve;
   
-  int dataLoop = g_barData.count() - 1;
+  int dataLoop = data.count() - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
@@ -164,21 +163,21 @@ Curve * FunctionAD::getAD ()
   return line;
 }
 
-Curve * FunctionAD::getADOSC (int fast, int slow)
+Curve * FunctionAD::getADOSC (int fast, int slow, BarData &data)
 {
-  if (g_barData.count() < 1)
+  if (data.count() < 1)
     return 0;
 
-  TA_Real out[g_barData.count()];
+  TA_Real out[data.count()];
   TA_Integer outBeg;
   TA_Integer outNb;
 
   TA_RetCode rc = TA_ADOSC(0,
-                           g_barData.count() - 1,
-                           g_barData.getTAData(BarData::High),
-                           g_barData.getTAData(BarData::Low),
-                           g_barData.getTAData(BarData::Close),
-                           g_barData.getTAData(BarData::Volume),
+                           data.count() - 1,
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
+                           data.getTAData(BarData::Close),
+                           data.getTAData(BarData::Volume),
                            fast,
                            slow,
                            &outBeg,
@@ -192,7 +191,7 @@ Curve * FunctionAD::getADOSC (int fast, int slow)
 
   Curve *line = new Curve;
 
-  int dataLoop = g_barData.count() - 1;
+  int dataLoop = data.count() - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {

@@ -24,7 +24,6 @@
 #include "FunctionBARS.h"
 #include "LINEARREGDialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,13 +32,13 @@ LINEARREG::LINEARREG ()
   _indicator = "LINEARREG";
 }
 
-int LINEARREG::getIndicator (Indicator &ind)
+int LINEARREG::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -70,7 +69,7 @@ int LINEARREG::getIndicator (Indicator &ind)
       QColor down("red");
       QColor neutral("blue");
       FunctionBARS b;
-      Curve *bars = b.getBARS(up, down, neutral);
+      Curve *bars = b.getBARS(up, down, neutral, data);
       if (bars)
       {
         bars->setZ(0);
@@ -100,10 +99,10 @@ int LINEARREG::getIndicator (Indicator &ind)
   return 0;
 }
 
-int LINEARREG::getCUS (QStringList &set, Indicator &ind)
+int LINEARREG::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionLINEARREG f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * LINEARREG::dialog (Indicator &i)
@@ -121,6 +120,16 @@ void LINEARREG::defaults (Indicator &i)
   set.setData(Input, "Close");
   set.setData(Period, 14);
   i.setSettings(set);
+}
+
+void LINEARREG::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

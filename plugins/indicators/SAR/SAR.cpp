@@ -32,7 +32,7 @@ SAR::SAR ()
   _indicator = "SAR";
 }
 
-int SAR::getIndicator (Indicator &ind)
+int SAR::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -43,7 +43,7 @@ int SAR::getIndicator (Indicator &ind)
   QColor down("red");
   QColor neutral("blue");
   FunctionBARS b;
-  Curve *bars = b.getBARS(up, down, neutral);
+  Curve *bars = b.getBARS(up, down, neutral, data);
   if (bars)
   {
     bars->setZ(0);
@@ -51,7 +51,7 @@ int SAR::getIndicator (Indicator &ind)
   }
 
   FunctionSAR f;
-  Curve *line = f.calculate(tinit, tmax);
+  Curve *line = f.calculate(tinit, tmax, data);
   if (! line)
     return 1;
 
@@ -71,10 +71,10 @@ int SAR::getIndicator (Indicator &ind)
   return 0;
 }
 
-int SAR::getCUS (QStringList &set, Indicator &ind)
+int SAR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionSAR f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * SAR::dialog (Indicator &i)
@@ -90,6 +90,16 @@ void SAR::defaults (Indicator &i)
   set.setData(SAR::Init, 0.02);
   set.setData(SAR::Max, 0.2);
   i.setSettings(set);
+}
+
+void SAR::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

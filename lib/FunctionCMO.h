@@ -26,12 +26,13 @@
 
 #include "Indicator.h"
 #include "Curve.h"
+#include "BarData.h"
 
 class FunctionCMO
 {
   public:
     FunctionCMO ();
-    int script (QStringList &, Indicator &);
+    int script (QStringList &, Indicator &, BarData &);
     Curve * calculate (Curve *in, int period);
 };
 

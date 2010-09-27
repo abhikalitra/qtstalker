@@ -21,7 +21,6 @@
 
 #include "FunctionATR.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionATR::FunctionATR ()
   _methodList << "ATR" << "NATR";
 }
 
-int FunctionATR::script (QStringList &set, Indicator &ind)
+int FunctionATR::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,ATR,<METHOD>,<NAME>,<PERIOD>
   //     0       1     2     3       4       5
@@ -63,7 +62,7 @@ int FunctionATR::script (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = calculate(period, method);
+  Curve *line = calculate(period, method, data);
   if (! line)
     return 1;
 
@@ -74,9 +73,9 @@ int FunctionATR::script (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionATR::calculate (int period, int method)
+Curve * FunctionATR::calculate (int period, int method, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
 
   if (size < period)
     return 0;
@@ -92,9 +91,9 @@ Curve * FunctionATR::calculate (int period, int method)
     case _ATR:
       rc = TA_ATR(0,
                   size - 1,
-                  g_barData.getTAData(BarData::High),
-                  g_barData.getTAData(BarData::Low),
-                  g_barData.getTAData(BarData::Close),
+                  data.getTAData(BarData::High),
+                  data.getTAData(BarData::Low),
+                  data.getTAData(BarData::Close),
                   period,
                   &outBeg,
                   &outNb,
@@ -103,9 +102,9 @@ Curve * FunctionATR::calculate (int period, int method)
     case _NATR:
       rc = TA_NATR(0,
                    size - 1,
-                   g_barData.getTAData(BarData::High),
-                   g_barData.getTAData(BarData::Low),
-                   g_barData.getTAData(BarData::Close),
+                   data.getTAData(BarData::High),
+                   data.getTAData(BarData::Low),
+                   data.getTAData(BarData::Close),
                    period,
                    &outBeg,
                    &outNb,

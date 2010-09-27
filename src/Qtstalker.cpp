@@ -300,7 +300,10 @@ void QtstalkerApp::loadChart (BarData symbol)
     l << _dateRangeButton->endDate().toString("yyyyMMddHHmmss");
   }
   else
+  {
     l << QString::number(_dateRange->dateRange());
+    l << "0";
+  }
   
   QString command = l.join(",") + "\n";
 

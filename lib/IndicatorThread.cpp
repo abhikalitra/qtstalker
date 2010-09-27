@@ -21,6 +21,7 @@
 
 #include "IndicatorThread.h"
 #include "IndicatorPluginFactory.h"
+#include "Globals.h"
 
 #include <QDebug>
 
@@ -36,7 +37,7 @@ void IndicatorThread::run ()
   if (! ip)
     return;
 
-  ip->getIndicator(_indicator);
+  ip->getIndicator(_indicator, g_barData);
 
   emit signalDone(_indicator);
 }

@@ -217,6 +217,7 @@ int Quotes::date (QStringList &input, QString &dbPath, QString &output, QSLog &l
   }
 
   QSSymbol symbol;
+  symbol.bars = 0;
   symbol.exchange = input.at(2);
   symbol.symbol = input.at(3);
 
@@ -258,8 +259,8 @@ int Quotes::date (QStringList &input, QString &dbPath, QString &output, QSLog &l
 
 int Quotes::recent (QStringList &input, QString &dbPath, QString &output, QSLog &log)
 {
-  // format = Quotes,Recent,<EXCHANGE>,<SYMBOL>,<BAR LENGTH>,<DATE RANGE>
-  //            0      1        2         3          4            5
+  // format = Quotes,Recent,<EXCHANGE>,<SYMBOL>,<BAR LENGTH>,<DATE RANGE>,<BARS>
+  //            0      1        2         3          4            5          6
   // will return the most recent bars available for <DATE RANGE>
 
   // each parm is delimited by a comma
@@ -271,7 +272,7 @@ int Quotes::recent (QStringList &input, QString &dbPath, QString &output, QSLog 
   // each bar is delimited by a colon, and each bar value is delimited by a comma
   // the end of data is delimited by a new line
 
-  if (input.count() != 6)
+  if (input.count() != 7)
   {
     log.message(QSLog::Error, QString(" Quotes::recent: invalid parm count " + QString::number(input.count())));
     return 1;
@@ -307,6 +308,14 @@ int Quotes::recent (QStringList &input, QString &dbPath, QString &output, QSLog 
   if (symbol.dateRange < 0 || symbol.dateRange >= l.count())
   {
     log.message(QSLog::Error, QString(" Quotes::recent: invalid date range " + input.at(5)));
+    return 1;
+  }
+
+  symbol.bars = 0;
+  symbol.bars = input.at(6).toInt(&ok);
+  if (! ok)
+  {
+    log.message(QSLog::Error, QString(" Quotes::recent: invalid bars value " + input.at(6)));
     return 1;
   }
 

@@ -33,7 +33,7 @@ BARS::BARS ()
   _indicator = "BARS";
 }
 
-int BARS::getIndicator (Indicator &ind)
+int BARS::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
   
@@ -48,7 +48,7 @@ int BARS::getIndicator (Indicator &ind)
   QColor neutral(s);
 
   FunctionBARS b;
-  Curve *line = b.getBARS(up, down, neutral);
+  Curve *line = b.getBARS(up, down, neutral, data);
   if (! line)
     return 1;
 
@@ -139,7 +139,7 @@ int BARS::getIndicator (Indicator &ind)
   return 0;
 }
 
-int BARS::getCUS (QStringList &set, Indicator &ind)
+int BARS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,BARS,<NAME>,<BAR_UP_COLOR>,<BAR_DOWN_COLOR>,<BAR_NEUTRAL_COLOR>
   //     0       1     2     3          4              5                  6
@@ -179,7 +179,7 @@ int BARS::getCUS (QStringList &set, Indicator &ind)
   }
 
   FunctionBARS b;
-  Curve *line = b.getBARS(barUpColor, barDownColor, barNeutralColor);
+  Curve *line = b.getBARS(barUpColor, barDownColor, barNeutralColor, data);
 
   line->setLabel(set[3]);
 
@@ -216,6 +216,16 @@ void BARS::defaults (Indicator &i)
   set.setData(BARS::MA2Type, "SMA");
   set.setData(BARS::MA3Type, "SMA");
   i.setSettings(set);
+}
+
+void BARS::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(BarsLabel, s);
+  l.append(s);
 }
 
 //*************************************************************

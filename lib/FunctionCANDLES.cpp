@@ -21,7 +21,6 @@
 
 #include "FunctionCANDLES.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -91,7 +90,7 @@ FunctionCANDLES::FunctionCANDLES ()
   _methodList << "XSIDEGAP3METHODS";
 }
 
-int FunctionCANDLES::script (QStringList &set, Indicator &ind)
+int FunctionCANDLES::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,CANDLES,<METHOD>,*
   //     0       1      2        3
@@ -107,17 +106,17 @@ int FunctionCANDLES::script (QStringList &set, Indicator &ind)
   switch (method)
   {
     case _NONE:
-      rc = scriptCandles(set, ind);
+      rc = scriptCandles(set, ind, data);
       break;
     default:
-      rc = scriptMethod(set, ind);
+      rc = scriptMethod(set, ind, data);
       break;
   }
 
   return rc;
 }
 
-int FunctionCANDLES::scriptCandles (QStringList &set, Indicator &ind)
+int FunctionCANDLES::scriptCandles (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>
   //    0        1       2       3       4
@@ -135,7 +134,7 @@ int FunctionCANDLES::scriptCandles (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = candles();
+  Curve *line = candles(data);
   if (! line)
     return 1;
 
@@ -146,7 +145,7 @@ int FunctionCANDLES::scriptCandles (QStringList &set, Indicator &ind)
   return 0;
 }
 
-int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind)
+int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,CANDLES,<METHOD>,<NAME>,<PENETRATION>
   //    0        1       2       3       4         5 
@@ -179,7 +178,7 @@ int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = getMethod(method, pen);
+  Curve *line = getMethod(method, pen, data);
   if (! line)
     return 1;
 
@@ -190,9 +189,9 @@ int FunctionCANDLES::scriptMethod (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionCANDLES::candles ()
+Curve * FunctionCANDLES::candles (BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
   
   if (! size)
     return 0;
@@ -203,7 +202,7 @@ Curve * FunctionCANDLES::candles ()
   for (loop = 0; loop < size; loop++)
   {
     CurveBar *bar = new CurveBar;
-    Bar tbar = g_barData.getBar(loop);
+    Bar tbar = data.getBar(loop);
     bar->setData(0, tbar.getOpen());
     bar->setData(1, tbar.getHigh());
     bar->setData(2, tbar.getLow());
@@ -214,9 +213,9 @@ Curve * FunctionCANDLES::candles ()
   return line;
 }
 
-Curve * FunctionCANDLES::getMethod (int method, double pen)
+Curve * FunctionCANDLES::getMethod (int method, double pen, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
 
   if (size < 1)
     return 0;
@@ -232,10 +231,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _ABANDONEDBABY:
       rc = TA_CDLABANDONEDBABY(0,
                                size - 1,
-                               g_barData.getTAData(BarData::Open),
-                               g_barData.getTAData(BarData::High),
-                               g_barData.getTAData(BarData::Low),
-                               g_barData.getTAData(BarData::Close),
+                               data.getTAData(BarData::Open),
+                               data.getTAData(BarData::High),
+                               data.getTAData(BarData::Low),
+                               data.getTAData(BarData::Close),
                                pen,
                                &outBeg,
                                &outNb,
@@ -244,10 +243,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _DARKCLOUDCOVER:
       rc = TA_CDLDARKCLOUDCOVER(0,
                                 size - 1,
-                                g_barData.getTAData(BarData::Open),
-                                g_barData.getTAData(BarData::High),
-                                g_barData.getTAData(BarData::Low),
-                                g_barData.getTAData(BarData::Close),
+                                data.getTAData(BarData::Open),
+                                data.getTAData(BarData::High),
+                                data.getTAData(BarData::Low),
+                                data.getTAData(BarData::Close),
                                 pen,
                                 &outBeg,
                                 &outNb,
@@ -256,10 +255,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _EVENINGDOJISTAR:
       rc = TA_CDLEVENINGDOJISTAR(0,
                                  size - 1,
-                                 g_barData.getTAData(BarData::Open),
-                                 g_barData.getTAData(BarData::High),
-                                 g_barData.getTAData(BarData::Low),
-                                 g_barData.getTAData(BarData::Close),
+                                 data.getTAData(BarData::Open),
+                                 data.getTAData(BarData::High),
+                                 data.getTAData(BarData::Low),
+                                 data.getTAData(BarData::Close),
                                  pen,
                                  &outBeg,
                                  &outNb,
@@ -268,10 +267,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _EVENINGSTAR:
       rc = TA_CDLEVENINGSTAR(0,
                              size - 1,
-                             g_barData.getTAData(BarData::Open),
-                             g_barData.getTAData(BarData::High),
-                             g_barData.getTAData(BarData::Low),
-                             g_barData.getTAData(BarData::Close),
+                             data.getTAData(BarData::Open),
+                             data.getTAData(BarData::High),
+                             data.getTAData(BarData::Low),
+                             data.getTAData(BarData::Close),
                              pen,
                              &outBeg,
                              &outNb,
@@ -280,10 +279,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _MORNINGDOJISTAR:
       rc = TA_CDLMORNINGDOJISTAR(0,
                                  size - 1,
-                                 g_barData.getTAData(BarData::Open),
-                                 g_barData.getTAData(BarData::High),
-                                 g_barData.getTAData(BarData::Low),
-                                 g_barData.getTAData(BarData::Close),
+                                 data.getTAData(BarData::Open),
+                                 data.getTAData(BarData::High),
+                                 data.getTAData(BarData::Low),
+                                 data.getTAData(BarData::Close),
                                  pen,
                                  &outBeg,
                                  &outNb,
@@ -292,10 +291,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _2CROWS:
       rc = TA_CDL2CROWS(0,
                         size - 1,
-                        g_barData.getTAData(BarData::Open),
-                        g_barData.getTAData(BarData::High),
-                        g_barData.getTAData(BarData::Low),
-                        g_barData.getTAData(BarData::Close),
+                        data.getTAData(BarData::Open),
+                        data.getTAData(BarData::High),
+                        data.getTAData(BarData::Low),
+                        data.getTAData(BarData::Close),
                         &outBeg,
                         &outNb,
                         &out[0]);
@@ -303,10 +302,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _3BLACKCROWS:
       rc = TA_CDL3BLACKCROWS(0,
                              size - 1,
-                             g_barData.getTAData(BarData::Open),
-                             g_barData.getTAData(BarData::High),
-                             g_barData.getTAData(BarData::Low),
-                             g_barData.getTAData(BarData::Close),
+                             data.getTAData(BarData::Open),
+                             data.getTAData(BarData::High),
+                             data.getTAData(BarData::Low),
+                             data.getTAData(BarData::Close),
                              &outBeg,
                              &outNb,
                              &out[0]);
@@ -314,10 +313,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _3INSIDE:
       rc = TA_CDL3INSIDE(0,
                          size - 1,
-                         g_barData.getTAData(BarData::Open),
-                         g_barData.getTAData(BarData::High),
-                         g_barData.getTAData(BarData::Low),
-                         g_barData.getTAData(BarData::Close),
+                         data.getTAData(BarData::Open),
+                         data.getTAData(BarData::High),
+                         data.getTAData(BarData::Low),
+                         data.getTAData(BarData::Close),
                          &outBeg,
                          &outNb,
                          &out[0]);
@@ -325,10 +324,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _3LINESTRIKE:
       rc = TA_CDL3LINESTRIKE(0,
                              size - 1,
-                             g_barData.getTAData(BarData::Open),
-                             g_barData.getTAData(BarData::High),
-                             g_barData.getTAData(BarData::Low),
-                             g_barData.getTAData(BarData::Close),
+                             data.getTAData(BarData::Open),
+                             data.getTAData(BarData::High),
+                             data.getTAData(BarData::Low),
+                             data.getTAData(BarData::Close),
                              &outBeg,
                              &outNb,
                              &out[0]);
@@ -336,10 +335,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _3OUTSIDE:
       rc = TA_CDL3OUTSIDE(0,
                           size - 1,
-                          g_barData.getTAData(BarData::Open),
-                          g_barData.getTAData(BarData::High),
-                          g_barData.getTAData(BarData::Low),
-                          g_barData.getTAData(BarData::Close),
+                          data.getTAData(BarData::Open),
+                          data.getTAData(BarData::High),
+                          data.getTAData(BarData::Low),
+                          data.getTAData(BarData::Close),
                           &outBeg,
                           &outNb,
                           &out[0]);
@@ -347,10 +346,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _3STARSINSOUTH:
       rc = TA_CDL3STARSINSOUTH(0,
                                size - 1,
-                               g_barData.getTAData(BarData::Open),
-                               g_barData.getTAData(BarData::High),
-                               g_barData.getTAData(BarData::Low),
-                               g_barData.getTAData(BarData::Close),
+                               data.getTAData(BarData::Open),
+                               data.getTAData(BarData::High),
+                               data.getTAData(BarData::Low),
+                               data.getTAData(BarData::Close),
                                &outBeg,
                                &outNb,
                                &out[0]);
@@ -358,10 +357,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _3WHITESOLDIERS:
       rc = TA_CDL3WHITESOLDIERS(0,
                                 size - 1,
-                                g_barData.getTAData(BarData::Open),
-                                g_barData.getTAData(BarData::High),
-                                g_barData.getTAData(BarData::Low),
-                                g_barData.getTAData(BarData::Close),
+                                data.getTAData(BarData::Open),
+                                data.getTAData(BarData::High),
+                                data.getTAData(BarData::Low),
+                                data.getTAData(BarData::Close),
                                 &outBeg,
                                 &outNb,
                                 &out[0]);
@@ -369,10 +368,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _ADVANCEBLOCK:
       rc = TA_CDLADVANCEBLOCK(0,
                               size - 1,
-                              g_barData.getTAData(BarData::Open),
-                              g_barData.getTAData(BarData::High),
-                              g_barData.getTAData(BarData::Low),
-                              g_barData.getTAData(BarData::Close),
+                              data.getTAData(BarData::Open),
+                              data.getTAData(BarData::High),
+                              data.getTAData(BarData::Low),
+                              data.getTAData(BarData::Close),
                               &outBeg,
                               &outNb,
                               &out[0]);
@@ -380,10 +379,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _BELTHOLD:
       rc = TA_CDLBELTHOLD(0,
                           size - 1,
-                          g_barData.getTAData(BarData::Open),
-                          g_barData.getTAData(BarData::High),
-                          g_barData.getTAData(BarData::Low),
-                          g_barData.getTAData(BarData::Close),
+                          data.getTAData(BarData::Open),
+                          data.getTAData(BarData::High),
+                          data.getTAData(BarData::Low),
+                          data.getTAData(BarData::Close),
                           &outBeg,
                           &outNb,
                           &out[0]);
@@ -391,10 +390,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _BREAKAWAY:
       rc = TA_CDLBREAKAWAY(0,
                            size - 1,
-                           g_barData.getTAData(BarData::Open),
-                           g_barData.getTAData(BarData::High),
-                           g_barData.getTAData(BarData::Low),
-                           g_barData.getTAData(BarData::Close),
+                           data.getTAData(BarData::Open),
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
+                           data.getTAData(BarData::Close),
                            &outBeg,
                            &outNb,
                            &out[0]);
@@ -402,10 +401,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _CLOSINGMARUBOZU:
       rc = TA_CDLCLOSINGMARUBOZU(0,
                                  size - 1,
-                                 g_barData.getTAData(BarData::Open),
-                                 g_barData.getTAData(BarData::High),
-                                 g_barData.getTAData(BarData::Low),
-                                 g_barData.getTAData(BarData::Close),
+                                 data.getTAData(BarData::Open),
+                                 data.getTAData(BarData::High),
+                                 data.getTAData(BarData::Low),
+                                 data.getTAData(BarData::Close),
                                  &outBeg,
                                  &outNb,
                                  &out[0]);
@@ -413,10 +412,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _CONCEALBABYSWALL:
       rc = TA_CDLCONCEALBABYSWALL(0,
                                   size - 1,
-                                  g_barData.getTAData(BarData::Open),
-                                  g_barData.getTAData(BarData::High),
-                                  g_barData.getTAData(BarData::Low),
-                                  g_barData.getTAData(BarData::Close),
+                                  data.getTAData(BarData::Open),
+                                  data.getTAData(BarData::High),
+                                  data.getTAData(BarData::Low),
+                                  data.getTAData(BarData::Close),
                                   &outBeg,
                                   &outNb,
                                   &out[0]);
@@ -424,10 +423,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _COUNTERATTACK:
       rc = TA_CDLCOUNTERATTACK(0,
                                size - 1,
-                               g_barData.getTAData(BarData::Open),
-                               g_barData.getTAData(BarData::High),
-                               g_barData.getTAData(BarData::Low),
-                               g_barData.getTAData(BarData::Close),
+                               data.getTAData(BarData::Open),
+                               data.getTAData(BarData::High),
+                               data.getTAData(BarData::Low),
+                               data.getTAData(BarData::Close),
                                &outBeg,
                                &outNb,
                                &out[0]);
@@ -435,10 +434,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _DOJI:
       rc = TA_CDLDOJI(0,
                       size - 1,
-                      g_barData.getTAData(BarData::Open),
-                      g_barData.getTAData(BarData::High),
-                      g_barData.getTAData(BarData::Low),
-                      g_barData.getTAData(BarData::Close),
+                      data.getTAData(BarData::Open),
+                      data.getTAData(BarData::High),
+                      data.getTAData(BarData::Low),
+                      data.getTAData(BarData::Close),
                       &outBeg,
                       &outNb,
                       &out[0]);
@@ -446,10 +445,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _DOJISTAR:
       rc = TA_CDLDOJISTAR(0,
                           size - 1,
-                          g_barData.getTAData(BarData::Open),
-                          g_barData.getTAData(BarData::High),
-                          g_barData.getTAData(BarData::Low),
-                          g_barData.getTAData(BarData::Close),
+                          data.getTAData(BarData::Open),
+                          data.getTAData(BarData::High),
+                          data.getTAData(BarData::Low),
+                          data.getTAData(BarData::Close),
                           &outBeg,
                           &outNb,
                           &out[0]);
@@ -457,10 +456,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _DRAGONFLYDOJI:
       rc = TA_CDLDRAGONFLYDOJI(0,
                                size - 1,
-                               g_barData.getTAData(BarData::Open),
-                               g_barData.getTAData(BarData::High),
-                               g_barData.getTAData(BarData::Low),
-                               g_barData.getTAData(BarData::Close),
+                               data.getTAData(BarData::Open),
+                               data.getTAData(BarData::High),
+                               data.getTAData(BarData::Low),
+                               data.getTAData(BarData::Close),
                                &outBeg,
                                &outNb,
                                &out[0]);
@@ -468,10 +467,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _ENGULFING:
       rc = TA_CDLENGULFING(0,
                            size - 1,
-                           g_barData.getTAData(BarData::Open),
-                           g_barData.getTAData(BarData::High),
-                           g_barData.getTAData(BarData::Low),
-                           g_barData.getTAData(BarData::Close),
+                           data.getTAData(BarData::Open),
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
+                           data.getTAData(BarData::Close),
                            &outBeg,
                            &outNb,
                            &out[0]);
@@ -479,10 +478,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _GAPSIDESIDEWHITE:
       rc = TA_CDLGAPSIDESIDEWHITE(0,
                                   size - 1,
-                                  g_barData.getTAData(BarData::Open),
-                                  g_barData.getTAData(BarData::High),
-                                  g_barData.getTAData(BarData::Low),
-                                  g_barData.getTAData(BarData::Close),
+                                  data.getTAData(BarData::Open),
+                                  data.getTAData(BarData::High),
+                                  data.getTAData(BarData::Low),
+                                  data.getTAData(BarData::Close),
                                   &outBeg,
                                   &outNb,
                                   &out[0]);
@@ -490,10 +489,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _GRAVESTONEDOJI:
       rc = TA_CDLGRAVESTONEDOJI(0,
                                 size - 1,
-                                g_barData.getTAData(BarData::Open),
-                                g_barData.getTAData(BarData::High),
-                                g_barData.getTAData(BarData::Low),
-                                g_barData.getTAData(BarData::Close),
+                                data.getTAData(BarData::Open),
+                                data.getTAData(BarData::High),
+                                data.getTAData(BarData::Low),
+                                data.getTAData(BarData::Close),
                                 &outBeg,
                                 &outNb,
                                 &out[0]);
@@ -501,10 +500,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _HAMMER:
       rc = TA_CDLHAMMER(0,
                         size - 1,
-                        g_barData.getTAData(BarData::Open),
-                        g_barData.getTAData(BarData::High),
-                        g_barData.getTAData(BarData::Low),
-                        g_barData.getTAData(BarData::Close),
+                        data.getTAData(BarData::Open),
+                        data.getTAData(BarData::High),
+                        data.getTAData(BarData::Low),
+                        data.getTAData(BarData::Close),
                         &outBeg,
                         &outNb,
                         &out[0]);
@@ -512,10 +511,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _HANGINGMAN:
       rc = TA_CDLHANGINGMAN(0,
                             size - 1,
-                            g_barData.getTAData(BarData::Open),
-                            g_barData.getTAData(BarData::High),
-                            g_barData.getTAData(BarData::Low),
-                            g_barData.getTAData(BarData::Close),
+                            data.getTAData(BarData::Open),
+                            data.getTAData(BarData::High),
+                            data.getTAData(BarData::Low),
+                            data.getTAData(BarData::Close),
                             &outBeg,
                             &outNb,
                             &out[0]);
@@ -523,10 +522,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _HARAMI:
       rc = TA_CDLHARAMI(0,
                         size - 1,
-                        g_barData.getTAData(BarData::Open),
-                        g_barData.getTAData(BarData::High),
-                        g_barData.getTAData(BarData::Low),
-                        g_barData.getTAData(BarData::Close),
+                        data.getTAData(BarData::Open),
+                        data.getTAData(BarData::High),
+                        data.getTAData(BarData::Low),
+                        data.getTAData(BarData::Close),
                         &outBeg,
                         &outNb,
                         &out[0]);
@@ -534,10 +533,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _HARAMICROSS:
       rc = TA_CDLHARAMICROSS(0,
                              size - 1,
-                             g_barData.getTAData(BarData::Open),
-                             g_barData.getTAData(BarData::High),
-                             g_barData.getTAData(BarData::Low),
-                             g_barData.getTAData(BarData::Close),
+                             data.getTAData(BarData::Open),
+                             data.getTAData(BarData::High),
+                             data.getTAData(BarData::Low),
+                             data.getTAData(BarData::Close),
                              &outBeg,
                              &outNb,
                              &out[0]);
@@ -545,10 +544,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _HIGHWAVE:
       rc = TA_CDLHIGHWAVE(0,
                           size - 1,
-                          g_barData.getTAData(BarData::Open),
-                          g_barData.getTAData(BarData::High),
-                          g_barData.getTAData(BarData::Low),
-                          g_barData.getTAData(BarData::Close),
+                          data.getTAData(BarData::Open),
+                          data.getTAData(BarData::High),
+                          data.getTAData(BarData::Low),
+                          data.getTAData(BarData::Close),
                           &outBeg,
                           &outNb,
                           &out[0]);
@@ -556,10 +555,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _HIKKAKE:
       rc = TA_CDLHIKKAKE(0,
                          size - 1,
-                         g_barData.getTAData(BarData::Open),
-                         g_barData.getTAData(BarData::High),
-                         g_barData.getTAData(BarData::Low),
-                         g_barData.getTAData(BarData::Close),
+                         data.getTAData(BarData::Open),
+                         data.getTAData(BarData::High),
+                         data.getTAData(BarData::Low),
+                         data.getTAData(BarData::Close),
                          &outBeg,
                          &outNb,
                          &out[0]);
@@ -567,10 +566,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _HIKKAKEMOD:
       rc = TA_CDLHIKKAKEMOD(0,
                             size - 1,
-                            g_barData.getTAData(BarData::Open),
-                            g_barData.getTAData(BarData::High),
-                            g_barData.getTAData(BarData::Low),
-                            g_barData.getTAData(BarData::Close),
+                            data.getTAData(BarData::Open),
+                            data.getTAData(BarData::High),
+                            data.getTAData(BarData::Low),
+                            data.getTAData(BarData::Close),
                             &outBeg,
                             &outNb,
                             &out[0]);
@@ -578,10 +577,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _HOMINGPIGEON:
       rc = TA_CDLHOMINGPIGEON(0,
                               size - 1,
-                              g_barData.getTAData(BarData::Open),
-                              g_barData.getTAData(BarData::High),
-                              g_barData.getTAData(BarData::Low),
-                              g_barData.getTAData(BarData::Close),
+                              data.getTAData(BarData::Open),
+                              data.getTAData(BarData::High),
+                              data.getTAData(BarData::Low),
+                              data.getTAData(BarData::Close),
                               &outBeg,
                               &outNb,
                               &out[0]);
@@ -589,10 +588,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _IDENTICAL3CROWS:
       rc = TA_CDLIDENTICAL3CROWS(0,
                                  size - 1,
-                                 g_barData.getTAData(BarData::Open),
-                                 g_barData.getTAData(BarData::High),
-                                 g_barData.getTAData(BarData::Low),
-                                 g_barData.getTAData(BarData::Close),
+                                 data.getTAData(BarData::Open),
+                                 data.getTAData(BarData::High),
+                                 data.getTAData(BarData::Low),
+                                 data.getTAData(BarData::Close),
                                  &outBeg,
                                  &outNb,
                                  &out[0]);
@@ -600,10 +599,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _INNECK:
       rc = TA_CDLINNECK(0,
                         size - 1,
-                        g_barData.getTAData(BarData::Open),
-                        g_barData.getTAData(BarData::High),
-                        g_barData.getTAData(BarData::Low),
-                        g_barData.getTAData(BarData::Close),
+                        data.getTAData(BarData::Open),
+                        data.getTAData(BarData::High),
+                        data.getTAData(BarData::Low),
+                        data.getTAData(BarData::Close),
                         &outBeg,
                         &outNb,
                         &out[0]);
@@ -611,10 +610,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _INVERTEDHAMMER:
       rc = TA_CDLINVERTEDHAMMER(0,
                                 size - 1,
-                                g_barData.getTAData(BarData::Open),
-                                g_barData.getTAData(BarData::High),
-                                g_barData.getTAData(BarData::Low),
-                                g_barData.getTAData(BarData::Close),
+                                data.getTAData(BarData::Open),
+                                data.getTAData(BarData::High),
+                                data.getTAData(BarData::Low),
+                                data.getTAData(BarData::Close),
                                 &outBeg,
                                 &outNb,
                                 &out[0]);
@@ -622,10 +621,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _KICKING:
       rc = TA_CDLKICKING(0,
                          size - 1,
-                         g_barData.getTAData(BarData::Open),
-                         g_barData.getTAData(BarData::High),
-                         g_barData.getTAData(BarData::Low),
-                         g_barData.getTAData(BarData::Close),
+                         data.getTAData(BarData::Open),
+                         data.getTAData(BarData::High),
+                         data.getTAData(BarData::Low),
+                         data.getTAData(BarData::Close),
                          &outBeg,
                          &outNb,
                          &out[0]);
@@ -633,10 +632,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _KICKINGBYLENGTH:
       rc = TA_CDLKICKINGBYLENGTH(0,
                                  size - 1,
-                                 g_barData.getTAData(BarData::Open),
-                                 g_barData.getTAData(BarData::High),
-                                 g_barData.getTAData(BarData::Low),
-                                 g_barData.getTAData(BarData::Close),
+                                 data.getTAData(BarData::Open),
+                                 data.getTAData(BarData::High),
+                                 data.getTAData(BarData::Low),
+                                 data.getTAData(BarData::Close),
                                  &outBeg,
                                  &outNb,
                                  &out[0]);
@@ -644,10 +643,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _LADDERBOTTOM:
       rc = TA_CDLLADDERBOTTOM(0,
                               size - 1,
-                              g_barData.getTAData(BarData::Open),
-                              g_barData.getTAData(BarData::High),
-                              g_barData.getTAData(BarData::Low),
-                              g_barData.getTAData(BarData::Close),
+                              data.getTAData(BarData::Open),
+                              data.getTAData(BarData::High),
+                              data.getTAData(BarData::Low),
+                              data.getTAData(BarData::Close),
                               &outBeg,
                               &outNb,
                               &out[0]);
@@ -655,10 +654,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _LONGLEGGEDDOJI:
       rc = TA_CDLLONGLEGGEDDOJI(0,
                                 size - 1,
-                                g_barData.getTAData(BarData::Open),
-                                g_barData.getTAData(BarData::High),
-                                g_barData.getTAData(BarData::Low),
-                                g_barData.getTAData(BarData::Close),
+                                data.getTAData(BarData::Open),
+                                data.getTAData(BarData::High),
+                                data.getTAData(BarData::Low),
+                                data.getTAData(BarData::Close),
                                 &outBeg,
                                 &outNb,
                                 &out[0]);
@@ -666,10 +665,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _LONGLINE:
       rc = TA_CDLLONGLINE(0,
                           size - 1,
-                          g_barData.getTAData(BarData::Open),
-                          g_barData.getTAData(BarData::High),
-                          g_barData.getTAData(BarData::Low),
-                          g_barData.getTAData(BarData::Close),
+                          data.getTAData(BarData::Open),
+                          data.getTAData(BarData::High),
+                          data.getTAData(BarData::Low),
+                          data.getTAData(BarData::Close),
                           &outBeg,
                           &outNb,
                           &out[0]);
@@ -677,10 +676,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _MARUBOZU:
       rc = TA_CDLMARUBOZU(0,
                           size - 1,
-                          g_barData.getTAData(BarData::Open),
-                          g_barData.getTAData(BarData::High),
-                          g_barData.getTAData(BarData::Low),
-                          g_barData.getTAData(BarData::Close),
+                          data.getTAData(BarData::Open),
+                          data.getTAData(BarData::High),
+                          data.getTAData(BarData::Low),
+                          data.getTAData(BarData::Close),
                           &outBeg,
                           &outNb,
                           &out[0]);
@@ -688,10 +687,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _MATCHINGLOW:
       rc = TA_CDLMATCHINGLOW(0,
                              size - 1,
-                             g_barData.getTAData(BarData::Open),
-                             g_barData.getTAData(BarData::High),
-                             g_barData.getTAData(BarData::Low),
-                             g_barData.getTAData(BarData::Close),
+                             data.getTAData(BarData::Open),
+                             data.getTAData(BarData::High),
+                             data.getTAData(BarData::Low),
+                             data.getTAData(BarData::Close),
                              &outBeg,
                              &outNb,
                              &out[0]);
@@ -699,10 +698,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _ONNECK:
       rc = TA_CDLONNECK(0,
                         size - 1,
-                        g_barData.getTAData(BarData::Open),
-                        g_barData.getTAData(BarData::High),
-                        g_barData.getTAData(BarData::Low),
-                        g_barData.getTAData(BarData::Close),
+                        data.getTAData(BarData::Open),
+                        data.getTAData(BarData::High),
+                        data.getTAData(BarData::Low),
+                        data.getTAData(BarData::Close),
                         &outBeg,
                         &outNb,
                         &out[0]);
@@ -710,10 +709,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _PIERCING:
       rc = TA_CDLPIERCING(0,
                           size - 1,
-                          g_barData.getTAData(BarData::Open),
-                          g_barData.getTAData(BarData::High),
-                          g_barData.getTAData(BarData::Low),
-                          g_barData.getTAData(BarData::Close),
+                          data.getTAData(BarData::Open),
+                          data.getTAData(BarData::High),
+                          data.getTAData(BarData::Low),
+                          data.getTAData(BarData::Close),
                           &outBeg,
                           &outNb,
                           &out[0]);
@@ -721,10 +720,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _RICKSHAWMAN:
       rc = TA_CDLRICKSHAWMAN(0,
                              size - 1,
-                             g_barData.getTAData(BarData::Open),
-                             g_barData.getTAData(BarData::High),
-                             g_barData.getTAData(BarData::Low),
-                             g_barData.getTAData(BarData::Close),
+                             data.getTAData(BarData::Open),
+                             data.getTAData(BarData::High),
+                             data.getTAData(BarData::Low),
+                             data.getTAData(BarData::Close),
                              &outBeg,
                              &outNb,
                              &out[0]);
@@ -732,10 +731,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _RISEFALL3METHODS:
       rc = TA_CDLRISEFALL3METHODS(0,
                                   size - 1,
-                                  g_barData.getTAData(BarData::Open),
-                                  g_barData.getTAData(BarData::High),
-                                  g_barData.getTAData(BarData::Low),
-                                  g_barData.getTAData(BarData::Close),
+                                  data.getTAData(BarData::Open),
+                                  data.getTAData(BarData::High),
+                                  data.getTAData(BarData::Low),
+                                  data.getTAData(BarData::Close),
                                   &outBeg,
                                   &outNb,
                                   &out[0]);
@@ -743,10 +742,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _SEPARATINGLINES:
       rc = TA_CDLSEPARATINGLINES(0,
                                  size - 1,
-                                 g_barData.getTAData(BarData::Open),
-                                 g_barData.getTAData(BarData::High),
-                                 g_barData.getTAData(BarData::Low),
-                                 g_barData.getTAData(BarData::Close),
+                                 data.getTAData(BarData::Open),
+                                 data.getTAData(BarData::High),
+                                 data.getTAData(BarData::Low),
+                                 data.getTAData(BarData::Close),
                                  &outBeg,
                                  &outNb,
                                  &out[0]);
@@ -754,10 +753,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _SHOOTINGSTAR:
       rc = TA_CDLSHOOTINGSTAR(0,
                               size - 1,
-                              g_barData.getTAData(BarData::Open),
-                              g_barData.getTAData(BarData::High),
-                              g_barData.getTAData(BarData::Low),
-                              g_barData.getTAData(BarData::Close),
+                              data.getTAData(BarData::Open),
+                              data.getTAData(BarData::High),
+                              data.getTAData(BarData::Low),
+                              data.getTAData(BarData::Close),
                               &outBeg,
                               &outNb,
                               &out[0]);
@@ -765,10 +764,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _SHORTLINE:
       rc = TA_CDLSHORTLINE(0,
                            size - 1,
-                           g_barData.getTAData(BarData::Open),
-                           g_barData.getTAData(BarData::High),
-                           g_barData.getTAData(BarData::Low),
-                           g_barData.getTAData(BarData::Close),
+                           data.getTAData(BarData::Open),
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
+                           data.getTAData(BarData::Close),
                            &outBeg,
                            &outNb,
                            &out[0]);
@@ -776,10 +775,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _SPINNINGTOP:
       rc = TA_CDLSPINNINGTOP(0,
                              size - 1,
-                             g_barData.getTAData(BarData::Open),
-                             g_barData.getTAData(BarData::High),
-                             g_barData.getTAData(BarData::Low),
-                             g_barData.getTAData(BarData::Close),
+                             data.getTAData(BarData::Open),
+                             data.getTAData(BarData::High),
+                             data.getTAData(BarData::Low),
+                             data.getTAData(BarData::Close),
                              &outBeg,
                              &outNb,
                              &out[0]);
@@ -787,10 +786,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _STALLEDPATTERN:
       rc = TA_CDLSTALLEDPATTERN(0,
                                 size - 1,
-                                g_barData.getTAData(BarData::Open),
-                                g_barData.getTAData(BarData::High),
-                                g_barData.getTAData(BarData::Low),
-                                g_barData.getTAData(BarData::Close),
+                                data.getTAData(BarData::Open),
+                                data.getTAData(BarData::High),
+                                data.getTAData(BarData::Low),
+                                data.getTAData(BarData::Close),
                                 &outBeg,
                                 &outNb,
                                 &out[0]);
@@ -798,10 +797,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _STICKSANDWICH:
       rc = TA_CDLSTICKSANDWICH(0,
                                size - 1,
-                               g_barData.getTAData(BarData::Open),
-                               g_barData.getTAData(BarData::High),
-                               g_barData.getTAData(BarData::Low),
-                               g_barData.getTAData(BarData::Close),
+                               data.getTAData(BarData::Open),
+                               data.getTAData(BarData::High),
+                               data.getTAData(BarData::Low),
+                               data.getTAData(BarData::Close),
                                &outBeg,
                                &outNb,
                                &out[0]);
@@ -809,10 +808,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _TAKURI:
       rc = TA_CDLTAKURI(0,
                         size - 1,
-                        g_barData.getTAData(BarData::Open),
-                        g_barData.getTAData(BarData::High),
-                        g_barData.getTAData(BarData::Low),
-                        g_barData.getTAData(BarData::Close),
+                        data.getTAData(BarData::Open),
+                        data.getTAData(BarData::High),
+                        data.getTAData(BarData::Low),
+                        data.getTAData(BarData::Close),
                         &outBeg,
                         &outNb,
                         &out[0]);
@@ -820,10 +819,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _TASUKIGAP:
       rc = TA_CDLTASUKIGAP(0,
                            size - 1,
-                           g_barData.getTAData(BarData::Open),
-                           g_barData.getTAData(BarData::High),
-                           g_barData.getTAData(BarData::Low),
-                           g_barData.getTAData(BarData::Close),
+                           data.getTAData(BarData::Open),
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
+                           data.getTAData(BarData::Close),
                            &outBeg,
                            &outNb,
                            &out[0]);
@@ -831,10 +830,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _THRUSTING:
       rc = TA_CDLTHRUSTING(0,
                            size - 1,
-                           g_barData.getTAData(BarData::Open),
-                           g_barData.getTAData(BarData::High),
-                           g_barData.getTAData(BarData::Low),
-                           g_barData.getTAData(BarData::Close),
+                           data.getTAData(BarData::Open),
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
+                           data.getTAData(BarData::Close),
                            &outBeg,
                            &outNb,
                            &out[0]);
@@ -842,10 +841,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _TRISTAR:
       rc = TA_CDLTRISTAR(0,
                          size - 1,
-                         g_barData.getTAData(BarData::Open),
-                         g_barData.getTAData(BarData::High),
-                         g_barData.getTAData(BarData::Low),
-                         g_barData.getTAData(BarData::Close),
+                         data.getTAData(BarData::Open),
+                         data.getTAData(BarData::High),
+                         data.getTAData(BarData::Low),
+                         data.getTAData(BarData::Close),
                          &outBeg,
                          &outNb,
                          &out[0]);
@@ -853,10 +852,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _UNIQUE3RIVER:
       rc = TA_CDLUNIQUE3RIVER(0,
                               size - 1,
-                              g_barData.getTAData(BarData::Open),
-                              g_barData.getTAData(BarData::High),
-                              g_barData.getTAData(BarData::Low),
-                              g_barData.getTAData(BarData::Close),
+                              data.getTAData(BarData::Open),
+                              data.getTAData(BarData::High),
+                              data.getTAData(BarData::Low),
+                              data.getTAData(BarData::Close),
                               &outBeg,
                               &outNb,
                               &out[0]);
@@ -864,10 +863,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _UPSIDEGAP2CROWS:
       rc = TA_CDLUPSIDEGAP2CROWS(0,
                                  size - 1,
-                                 g_barData.getTAData(BarData::Open),
-                                 g_barData.getTAData(BarData::High),
-                                 g_barData.getTAData(BarData::Low),
-                                 g_barData.getTAData(BarData::Close),
+                                 data.getTAData(BarData::Open),
+                                 data.getTAData(BarData::High),
+                                 data.getTAData(BarData::Low),
+                                 data.getTAData(BarData::Close),
                                  &outBeg,
                                  &outNb,
                                  &out[0]);
@@ -875,10 +874,10 @@ Curve * FunctionCANDLES::getMethod (int method, double pen)
     case _XSIDEGAP3METHODS:
       rc = TA_CDLXSIDEGAP3METHODS(0,
                                   size - 1,
-                                  g_barData.getTAData(BarData::Open),
-                                  g_barData.getTAData(BarData::High),
-                                  g_barData.getTAData(BarData::Low),
-                                  g_barData.getTAData(BarData::Close),
+                                  data.getTAData(BarData::Open),
+                                  data.getTAData(BarData::High),
+                                  data.getTAData(BarData::Low),
+                                  data.getTAData(BarData::Close),
                                   &outBeg,
                                   &outNb,
                                   &out[0]);

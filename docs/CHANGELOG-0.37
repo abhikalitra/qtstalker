@@ -780,3 +780,19 @@
 
            Added icons to the dialog message areas.
 
+20100925:  Fixed bug after chart object delete, cannot right click context menu. Also fixed chart object delete
+           segfault.
+
+           Fixed TLine and Retracement creation draw errors.
+
+           Fixed bug that did not save most recent chart object changes when app shuts down.
+
+20100927:  Fixed mutex lock startup bug.
+
+           Added new misc plugin Alert. Alert allows the user to set threshholds on indicators and notifies you
+           when those threshholds are hit. Only indicator plugins are applicable to alerts. If you want to use a CUS
+           indicator then it would be a simple matter to code an alert from within the script itself. I will add the
+           script commands to create notifications later. Alert is meant for the casual user.
+           NOTE: not fully working yet.
+
+

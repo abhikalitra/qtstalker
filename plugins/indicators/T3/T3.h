@@ -31,19 +31,20 @@ class T3 : public IndicatorPlugin
   public:
     enum Parm
     {
-      Input,
-      Color,
-      Plot,
-      Label,
-      Period,
-      VFactor
+      Input = 10,
+      Color = 20,
+      Plot = 30,
+      Label = 40,
+      Period = 50,
+      VFactor = 60
     };
 
     T3 ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

@@ -22,7 +22,6 @@
 #include "FunctionBOP.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionBOP::FunctionBOP ()
 {
 }
 
-int FunctionBOP::script (QStringList &set, Indicator &ind)
+int FunctionBOP::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,BOP,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
   //     0       1     2    3             4                 5 
@@ -64,7 +63,7 @@ int FunctionBOP::script (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = calculate(smoothing, ma);
+  Curve *line = calculate(smoothing, ma, data);
   if (! line)
     return 1;
 
@@ -75,9 +74,9 @@ int FunctionBOP::script (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionBOP::calculate (int smoothing, int type)
+Curve * FunctionBOP::calculate (int smoothing, int type, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
   
   if (size < 1 || size < smoothing)
     return 0;
@@ -88,10 +87,10 @@ Curve * FunctionBOP::calculate (int smoothing, int type)
 
   TA_RetCode rc = TA_BOP(0,
                          size - 1,
-                         g_barData.getTAData(BarData::Open),
-                         g_barData.getTAData(BarData::High),
-                         g_barData.getTAData(BarData::Low),
-                         g_barData.getTAData(BarData::Close),
+                         data.getTAData(BarData::Open),
+                         data.getTAData(BarData::High),
+                         data.getTAData(BarData::Low),
+                         data.getTAData(BarData::Close),
                          &outBeg,
                          &outNb,
                          &out[0]);

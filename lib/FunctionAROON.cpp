@@ -21,7 +21,6 @@
 
 #include "FunctionAROON.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionAROON::FunctionAROON ()
   _methodList << "AROON" << "OSC";
 }
 
-int FunctionAROON::script (QStringList &set, Indicator &ind)
+int FunctionAROON::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AROON,<METHOD>,*
   //     0       1      2      3
@@ -41,10 +40,10 @@ int FunctionAROON::script (QStringList &set, Indicator &ind)
   switch ((Method) method)
   {
     case _AROON:
-      rc = scriptAROON(set, ind);
+      rc = scriptAROON(set, ind, data);
       break;
     case _AROONOSC:
-      rc = scriptAROONOSC(set, ind);
+      rc = scriptAROONOSC(set, ind, data);
       break;
     default:
       break;
@@ -53,7 +52,7 @@ int FunctionAROON::script (QStringList &set, Indicator &ind)
   return rc;
 }
 
-int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind)
+int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AROON,AROON,<UPPER NAME>,<LOWER NAME>,<PERIOD>
   //     0       1      2     3         4           5          6
@@ -87,7 +86,7 @@ int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind)
   }
 
   QList<Curve *> pl;
-  if (getAROON(period, pl))
+  if (getAROON(period, pl, data))
     return 1;
 
   pl.at(0)->setLabel(set[4]);
@@ -99,7 +98,7 @@ int FunctionAROON::scriptAROON (QStringList &set, Indicator &ind)
   return 0;
 }
 
-int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind)
+int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,AROON,AROONOSC,<NAME>,<PERIOD>
   //     0       1      2       3       4      5
@@ -125,7 +124,7 @@ int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = getAROONOSC(period);
+  Curve *line = getAROONOSC(period, data);
   if (! line)
     return 1;
 
@@ -137,9 +136,9 @@ int FunctionAROON::scriptAROONOSC (QStringList &set, Indicator &ind)
 }
 
 
-int FunctionAROON::getAROON (int period, QList<Curve *> &pl)
+int FunctionAROON::getAROON (int period, QList<Curve *> &pl, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
   if (size < period)
     return 1;
   
@@ -150,8 +149,8 @@ int FunctionAROON::getAROON (int period, QList<Curve *> &pl)
 
   TA_RetCode rc = TA_AROON(0,
                            size - 1,
-                           g_barData.getTAData(BarData::High),
-                           g_barData.getTAData(BarData::Low),
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
                            period,
                            &outBeg,
                            &outNb,
@@ -183,9 +182,9 @@ int FunctionAROON::getAROON (int period, QList<Curve *> &pl)
   return 0;
 }
 
-Curve * FunctionAROON::getAROONOSC (int period)
+Curve * FunctionAROON::getAROONOSC (int period, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
 
   if (size < period)
     return 0;
@@ -196,8 +195,8 @@ Curve * FunctionAROON::getAROONOSC (int period)
 
   TA_RetCode rc = TA_AROONOSC(0,
                               size - 1,
-                              g_barData.getTAData(BarData::High),
-                              g_barData.getTAData(BarData::Low),
+                              data.getTAData(BarData::High),
+                              data.getTAData(BarData::Low),
                               period,
                               &outBeg,
                               &outNb,

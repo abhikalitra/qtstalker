@@ -70,9 +70,7 @@ int ExchangeDataBase::createExchanges ()
     return 0;
   }
   
-  config.transaction();
   config.setData(Config::ExchangeFileDate, dt2);
-  config.commit();
   qDebug() << "ExchangeDataBase::createExchanges: creating new exchange db";
 
   QTextStream in(&file);

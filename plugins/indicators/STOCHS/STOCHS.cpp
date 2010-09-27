@@ -32,7 +32,7 @@ STOCHS::STOCHS ()
   _indicator = "STOCHS";
 }
 
-int STOCHS::getIndicator (Indicator &ind)
+int STOCHS::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -75,7 +75,7 @@ int STOCHS::getIndicator (Indicator &ind)
 
   FunctionSTOCHS f;
   QList<Curve *> pl;
-  if (f.calculate(fkperiod, skperiod, dperiod, kmaType, dmaType, pl))
+  if (f.calculate(fkperiod, skperiod, dperiod, kmaType, dmaType, pl, data))
     return 1;
 
   line = pl.at(0);
@@ -111,10 +111,10 @@ int STOCHS::getIndicator (Indicator &ind)
   return 0;
 }
 
-int STOCHS::getCUS (QStringList &set, Indicator &ind)
+int STOCHS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionSTOCHS f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * STOCHS::dialog (Indicator &i)
@@ -142,6 +142,21 @@ void STOCHS::defaults (Indicator &i)
   set.setData(Ref2, 80);
   i.setSettings(set);
 }
+
+void STOCHS::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+
+  settings.getData(SlowKLabel, s);
+  l.append(s);
+
+  settings.getData(SlowDLabel, s);
+  l.append(s);
+}
+
 
 //*************************************************************
 //*************************************************************

@@ -22,7 +22,6 @@
 #include "FunctionMAVP.h"
 #include "ta_libc.h"
 #include "FunctionMA.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionMAVP::FunctionMAVP ()
 {
 }
 
-int FunctionMAVP::script (QStringList &set, Indicator &ind)
+int FunctionMAVP::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,MAVP,<NAME>,<INPUT_1>,<INPUT_2>,<MIN_PERIOD>,<MAX_PERIOD>,<MA_TYPE>
   //     0       1     2     3        4        5           6            7          8 
@@ -51,7 +50,7 @@ int FunctionMAVP::script (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[4]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionMAVP::script: input not found" << set[4];
@@ -64,7 +63,7 @@ int FunctionMAVP::script (QStringList &set, Indicator &ind)
   Curve *in2 = ind.line(set[5]);
   if (! in2)
   {
-    in2 = g_barData.getInput(g_barData.getInputType(set[5]));
+    in2 = data.getInput(data.getInputType(set[5]));
     if (! in2)
     {
       qDebug() << "FunctionMAVP::script: input not found" << set[5];

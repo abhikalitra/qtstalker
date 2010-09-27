@@ -31,7 +31,7 @@ CUS::CUS ()
   _indicator = "CUS";
 }
 
-int CUS::getIndicator (Indicator &ind)
+int CUS::getIndicator (Indicator &ind, BarData &)
 {
   Setting settings = ind.settings();
 

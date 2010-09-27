@@ -24,7 +24,6 @@
 #include "FunctionSTOCHRSI.h"
 #include "STOCHRSIDialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,7 +32,7 @@ STOCHRSI::STOCHRSI ()
   _indicator = "STOCHRSI";
 }
 
-int STOCHRSI::getIndicator (Indicator &ind)
+int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -63,7 +62,7 @@ int STOCHRSI::getIndicator (Indicator &ind)
   ind.setLine(1, line);
 
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::calculate: input not found" << s;
@@ -98,10 +97,10 @@ int STOCHRSI::getIndicator (Indicator &ind)
   return 0;
 }
 
-int STOCHRSI::getCUS (QStringList &set, Indicator &ind)
+int STOCHRSI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionSTOCHRSI f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * STOCHRSI::dialog (Indicator &i)
@@ -123,6 +122,17 @@ void STOCHRSI::defaults (Indicator &i)
   set.setData(Period, 14);
   i.setSettings(set);
 }
+
+void STOCHRSI::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
+}
+
 
 //*************************************************************
 //*************************************************************

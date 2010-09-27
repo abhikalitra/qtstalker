@@ -31,32 +31,33 @@ class BARS : public IndicatorPlugin
   public:
     enum Parm
     {
-      UpColor,
-      DownColor,
-      NeutralColor,
-      BarsLabel,
-      MAColor,
-      MA2Color,
-      MA3Color,
-      MAPlot,
-      MA2Plot,
-      MA3Plot,
-      MALabel,
-      MA2Label,
-      MA3Label,
-      MAPeriod,
-      MA2Period,
-      MA3Period,
-      MAType,
-      MA2Type,
-      MA3Type
+      UpColor = 10,
+      DownColor = 20,
+      NeutralColor = 30,
+      BarsLabel = 40,
+      MAColor = 50,
+      MA2Color = 60,
+      MA3Color = 70,
+      MAPlot = 80,
+      MA2Plot = 90,
+      MA3Plot = 100,
+      MALabel = 110,
+      MA2Label = 120,
+      MA3Label = 130,
+      MAPeriod = 140,
+      MA2Period = 150,
+      MA3Period = 160,
+      MAType = 170,
+      MA2Type = 180,
+      MA3Type = 190
     };
 
     BARS ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

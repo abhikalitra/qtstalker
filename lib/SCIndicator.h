@@ -27,6 +27,7 @@
 #include <QHash>
 
 #include "Indicator.h"
+#include "BarData.h"
 
 class SCIndicator
 {
@@ -47,14 +48,14 @@ class SCIndicator
     };
     
     SCIndicator ();
-    int calculate (QStringList &, QByteArray &, Indicator &);
+    int calculate (QStringList &, QByteArray &, Indicator &, BarData &);
     int getIndex (QStringList &, QByteArray &, Indicator &);
-    int getIndexDate (QStringList &, QByteArray &);
+    int getIndexDate (QStringList &, QByteArray &, BarData &);
     int setIndex (QStringList &, QByteArray &, Indicator &);
     int getRange (QStringList &, QByteArray &, Indicator &);
     int setColor (QStringList &, QByteArray &, Indicator &);
-    int getPlugin (QStringList &, QByteArray &, Indicator &);
-    int getNew (QStringList &, QByteArray &, Indicator &);
+    int getPlugin (QStringList &, QByteArray &, Indicator &, BarData &);
+    int getNew (QStringList &, QByteArray &, Indicator &, BarData &);
     int setDelete (QStringList &, QByteArray &, Indicator &);
     int setColorAll (QStringList &, QByteArray &, Indicator &);
     int setPlotStyle (QStringList &, QByteArray &, Indicator &);

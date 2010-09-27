@@ -31,25 +31,26 @@ class ULTOSC : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color,
-      Plot,
-      Label,
-      ShortPeriod,
-      MidPeriod,
-      LongPeriod,
-      Ref1Color,
-      Ref2Color,
-      Ref3Color,
-      Ref1,
-      Ref2,
-      Ref3
+      Color = 10,
+      Plot = 20,
+      Label = 30,
+      ShortPeriod = 40,
+      MidPeriod = 50,
+      LongPeriod = 60,
+      Ref1Color = 70,
+      Ref2Color = 80,
+      Ref3Color = 90,
+      Ref1 = 100,
+      Ref2 = 110,
+      Ref3 = 120
     };
 
     ULTOSC ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

@@ -31,20 +31,21 @@ class SZ : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color,
-      Plot,
-      Label,
-      Period,
-      Method,
-      NoDeclinePeriod,
-      Coefficient
+      Color = 10,
+      Plot = 20,
+      Label = 30,
+      Period = 40,
+      Method = 50,
+      NoDeclinePeriod = 60,
+      Coefficient = 70
     };
 
     SZ ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

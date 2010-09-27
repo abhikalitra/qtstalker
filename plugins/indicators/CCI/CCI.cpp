@@ -33,7 +33,7 @@ CCI::CCI ()
   _indicator = "CCI";
 }
 
-int CCI::getIndicator (Indicator &ind)
+int CCI::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -71,7 +71,7 @@ int CCI::getIndicator (Indicator &ind)
   int type = mau.typeFromString(s);
 
   FunctionCCI f;
-  Curve *line = f.calculate(period, smoothing, type);
+  Curve *line = f.calculate(period, smoothing, type, data);
   if (! line)
     return 1;
 
@@ -91,10 +91,10 @@ int CCI::getIndicator (Indicator &ind)
   return 0;
 }
 
-int CCI::getCUS (QStringList &set, Indicator &ind)
+int CCI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionCCI f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * CCI::dialog (Indicator &i)
@@ -117,6 +117,17 @@ void CCI::defaults (Indicator &i)
   set.setData(Ref2Color, "white");
   i.setSettings(set);
 }
+
+void CCI::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
+}
+
 
 //*************************************************************
 //*************************************************************

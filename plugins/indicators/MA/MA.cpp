@@ -24,7 +24,6 @@
 #include "FunctionBARS.h"
 #include "MADialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -34,7 +33,7 @@ MA::MA ()
   _indicator = "MA";
 }
 
-int MA::getIndicator (Indicator &ind)
+int MA::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -42,7 +41,7 @@ int MA::getIndicator (Indicator &ind)
   QColor down("red");
   QColor neutral("blue");
   FunctionBARS b;
-  Curve *bars = b.getBARS(up, down, neutral);
+  Curve *bars = b.getBARS(up, down, neutral, data);
   if (bars)
   {
     bars->setZ(0);
@@ -51,7 +50,7 @@ int MA::getIndicator (Indicator &ind)
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -90,10 +89,10 @@ int MA::getIndicator (Indicator &ind)
   return 0;
 }
 
-int MA::getCUS (QStringList &set, Indicator &ind)
+int MA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionMA f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * MA::dialog (Indicator &i)
@@ -111,6 +110,16 @@ void MA::defaults (Indicator &i)
   set.setData(Period, 14);
   set.setData(Method, "SMA");
   i.setSettings(set);
+}
+
+void MA::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

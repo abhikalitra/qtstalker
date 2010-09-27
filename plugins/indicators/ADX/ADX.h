@@ -31,30 +31,31 @@ class ADX : public IndicatorPlugin
   public:
     enum Parm
     {
-      ADXColor,
-      ADXRColor,
-      PDIColor,
-      MDIColor,
-      ADXPlot,
-      ADXRPlot,
-      PDIPlot,
-      MDIPlot,
-      ADXLabel,
-      ADXRLabel,
-      PDILabel,
-      MDILabel,
-      ADXCheck,
-      ADXRCheck,
-      PDICheck,
-      MDICheck,
-      Period
+      ADXColor = 10,
+      ADXRColor = 20,
+      PDIColor = 30,
+      MDIColor = 40,
+      ADXPlot = 50,
+      ADXRPlot = 60,
+      PDIPlot = 70,
+      MDIPlot = 80,
+      ADXLabel = 90,
+      ADXRLabel = 100,
+      PDILabel = 110,
+      MDILabel = 120,
+      ADXCheck = 130,
+      ADXRCheck = 140,
+      PDICheck = 150,
+      MDICheck = 160,
+      Period = 170
     };
 
     ADX ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

@@ -32,14 +32,14 @@ VFI::VFI ()
   _indicator = "VFI";
 }
 
-int VFI::getIndicator (Indicator &ind)
+int VFI::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   int period = settings.getInt(Period);
 
   FunctionVFI f;
-  Curve *line = f.calculate(period);
+  Curve *line = f.calculate(period, data);
   if (! line)
     return 1;
 
@@ -60,10 +60,10 @@ int VFI::getIndicator (Indicator &ind)
   return 0;
 }
 
-int VFI::getCUS (QStringList &set, Indicator &ind)
+int VFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionVFI f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * VFI::dialog (Indicator &i)
@@ -79,6 +79,16 @@ void VFI::defaults (Indicator &i)
   set.setData(Label, _indicator);
   set.setData(Period, 100);
   i.setSettings(set);
+}
+
+void VFI::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

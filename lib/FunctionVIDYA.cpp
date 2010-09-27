@@ -21,7 +21,6 @@
 
 #include "FunctionVIDYA.h"
 #include "FunctionCMO.h"
-#include "Globals.h"
 
 #include <cmath>
 #include <QVector>
@@ -33,7 +32,7 @@ FunctionVIDYA::FunctionVIDYA ()
 {
 }
 
-int FunctionVIDYA::script (QStringList &set, Indicator &ind)
+int FunctionVIDYA::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,VIDYA,<NAME>,<INPUT>,<PERIOD>,<VOLUME_PERIOD>
   //     0       1      2     3       4       5            6 
@@ -54,7 +53,7 @@ int FunctionVIDYA::script (QStringList &set, Indicator &ind)
   Curve *inSignal = ind.line(set[4]);
   if (! inSignal)
   {
-    inSignal = g_barData.getInput(g_barData.getInputType(set[4]));
+    inSignal = data.getInput(data.getInputType(set[4]));
     if (! inSignal)
     {
       qDebug() << "FunctionVIDYA::script: input not found" << set[4];

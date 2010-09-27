@@ -25,7 +25,6 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QStringList>
-#include <QString>
 
 #include "Group.h"
 
@@ -42,6 +41,7 @@ class SymbolButton : public QPushButton
     
   public slots:
     void symbolDialog ();
+    void symbolDialog2 (Group);
       
   private:
     QString exchangeSearch;

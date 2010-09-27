@@ -33,31 +33,32 @@ class BBANDS : public IndicatorPlugin
   public:
     enum Parm
     {
-      UpColor,
-      DownColor,
-      MidColor,
-      UpPlot,
-      DownPlot,
-      MidPlot,
-      UpLabel,
-      DownLabel,
-      MidLabel,
-      Period,
-      UpDeviation,
-      DownDeviation,
-      Input,
-      MAType,
-      BarsUpColor,
-      BarsDownColor,
-      BarsNeutralColor,
-      BarsLabel
+      UpColor = 10,
+      DownColor = 20,
+      MidColor = 30,
+      UpPlot = 40,
+      DownPlot = 50,
+      MidPlot = 60,
+      UpLabel = 70,
+      DownLabel = 80,
+      MidLabel = 90,
+      Period = 100,
+      UpDeviation = 110,
+      DownDeviation = 120,
+      Input = 130,
+      MAType = 140,
+      BarsUpColor = 150,
+      BarsDownColor = 160,
+      BarsNeutralColor = 170,
+      BarsLabel = 180
     };
 
     BBANDS ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

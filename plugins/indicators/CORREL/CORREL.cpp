@@ -24,7 +24,6 @@
 #include "FunctionCORREL.h"
 #include "CORRELDialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,16 +32,16 @@ CORREL::CORREL ()
   _indicator = "CORREL";
 }
 
-int CORREL::getIndicator (Indicator &ind)
+int CORREL::getIndicator (Indicator &ind, BarData &data)
 {
-  if (! g_barData.count())
+  if (! data.count())
     return 1;
 
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -54,15 +53,15 @@ int CORREL::getIndicator (Indicator &ind)
   bd.setSymbol(s);
   settings.getData(Exchange, s);
   bd.setExchange(s);
-  bd.setBarLength(g_barData.getBarLength());
+  bd.setBarLength(data.getBarLength());
 
   QStringList l;
   l << "GetQuotes" << bd.getExchange() << bd.getSymbol();
   bd.barLengthText(bd.getBarLength(), s);
   l << s;
-  Bar tbar = g_barData.getBar(0);
+  Bar tbar = data.getBar(0);
   l << tbar.date().toString("yyyyMMddHHmmss");
-  tbar = g_barData.getBar(g_barData.count() - 1);
+  tbar = data.getBar(data.count() - 1);
   l << tbar.date().toString("yyyyMMddHHmmss");
 
   QString command = l.join(",") + "\n";
@@ -150,10 +149,10 @@ int CORREL::getIndicator (Indicator &ind)
   return 0;
 }
 
-int CORREL::getCUS (QStringList &set, Indicator &ind)
+int CORREL::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionCORREL f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * CORREL::dialog (Indicator &i)
@@ -179,6 +178,17 @@ void CORREL::defaults (Indicator &i)
   set.setData(Ref3, 1);
   i.setSettings(set);
 }
+
+void CORREL::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
+}
+
 
 //*************************************************************
 //*************************************************************

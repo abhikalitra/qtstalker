@@ -32,12 +32,12 @@ CANDLES::CANDLES ()
   _indicator = "CANDLES";
 }
 
-int CANDLES::getIndicator (Indicator &ind)
+int CANDLES::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   FunctionCANDLES f;
-  Curve *line = f.candles();
+  Curve *line = f.candles(data);
   if (! line)
     return 1;
 
@@ -56,7 +56,7 @@ int CANDLES::getIndicator (Indicator &ind)
   {
     double pen = settings.getDouble(Penetration);
 
-    Curve *line2 = f.getMethod(method, pen);
+    Curve *line2 = f.getMethod(method, pen, data);
     if (line2)
     {
       settings.getData(MethodColor, s);
@@ -162,10 +162,10 @@ int CANDLES::getIndicator (Indicator &ind)
   return 0;
 }
 
-int CANDLES::getCUS (QStringList &set, Indicator &ind)
+int CANDLES::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionCANDLES f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * CANDLES::dialog (Indicator &i)
@@ -199,6 +199,15 @@ void CANDLES::defaults (Indicator &i)
   i.setSettings(set);
 }
 
+void CANDLES::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
+}
 
 //*************************************************************
 //*************************************************************

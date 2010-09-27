@@ -26,13 +26,14 @@
 
 #include "Indicator.h"
 #include "Curve.h"
+#include "BarData.h"
 
 class FunctionVFI
 {
   public:
     FunctionVFI ();
-    int script (QStringList &, Indicator &);
-    Curve * calculate (int period);
+    int script (QStringList &, Indicator &, BarData &);
+    Curve * calculate (int period, BarData &);
 };
 
 #endif

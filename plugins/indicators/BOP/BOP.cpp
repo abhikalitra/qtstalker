@@ -32,7 +32,7 @@ BOP::BOP ()
   _indicator = "BOP";
 }
 
-int BOP::getIndicator (Indicator &ind)
+int BOP::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
@@ -44,7 +44,7 @@ int BOP::getIndicator (Indicator &ind)
   int type = mau.typeFromString(s);
 
   FunctionBOP f;
-  Curve *line = f.calculate(smoothing, type);
+  Curve *line = f.calculate(smoothing, type, data);
   if (! line)
     return 1;
 
@@ -64,10 +64,10 @@ int BOP::getIndicator (Indicator &ind)
   return 0;
 }
 
-int BOP::getCUS (QStringList &set, Indicator &ind)
+int BOP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionBOP f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * BOP::dialog (Indicator &i)
@@ -85,6 +85,17 @@ void BOP::defaults (Indicator &i)
   set.setData(SmoothingType, "SMA");
   i.setSettings(set);
 }
+
+void BOP::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
+}
+
 
 //*************************************************************
 //*************************************************************

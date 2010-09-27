@@ -24,7 +24,7 @@
 
 SymbolButton::SymbolButton (QWidget *w) : QPushButton (w)
 {
-  QObject::connect(this, SIGNAL(clicked()), this, SLOT(symbolDialog()));
+  connect(this, SIGNAL(clicked()), this, SLOT(symbolDialog()));
   updateButtonText();
 }
 
@@ -50,25 +50,18 @@ void SymbolButton::symbolDialog ()
 {
   SymbolDialog *dialog = new SymbolDialog;
   dialog->setSymbols(exchangeSearch, symbolSearch);
+  connect(dialog, SIGNAL(signalSymbols(Group)), this, SLOT(symbolDialog2(Group)));
+  dialog->show();
+}
 
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
-  {
-    delete dialog;
-    return;
-  }
-
-  dialog->getSymbols(symbols);
-  dialog->getSymbolSearch(exchangeSearch, symbolSearch);
-
+void SymbolButton::symbolDialog2 (Group g)
+{
+  symbols = g;
   updateButtonText();
-  
-  delete dialog;  
 }
 
 void SymbolButton::updateButtonText ()
 {
   setText(QString::number(symbols.count()) + " " + tr("Symbols"));
 }
-
 

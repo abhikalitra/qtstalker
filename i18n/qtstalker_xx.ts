@@ -146,6 +146,128 @@
     </message>
 </context>
 <context>
+    <name>AlertDialog</name>
+    <message>
+        <source>ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create a new alert...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit alert...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Reset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset alert back to monitor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set the timer interval...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alerts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Alert Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select indicator for alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AlertEditDialog</name>
+    <message>
+        <source>New Alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol search...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator settings...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notify with mail</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notify with sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notify with popup message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BARSDialog</name>
     <message>
         <source>Up Color</source>
@@ -2286,6 +2408,18 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>VLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notify</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

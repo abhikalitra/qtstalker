@@ -21,7 +21,6 @@
 
 #include "FunctionADX.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionADX::FunctionADX ()
   _methodList << "ADX" << "ADXR" << "+DI" << "-DI" << "DX";
 }
 
-int FunctionADX::script (QStringList &set, Indicator &ind)
+int FunctionADX::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,ADX,<METHOD>,<NAME>,<PERIOD>
   //     0       1     2     3       4       5
@@ -63,7 +62,7 @@ int FunctionADX::script (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = calculate(period, method);
+  Curve *line = calculate(period, method, data);
   if (! line)
     return 1;
 
@@ -74,12 +73,12 @@ int FunctionADX::script (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionADX::calculate (int period, int method)
+Curve * FunctionADX::calculate (int period, int method, BarData &data)
 {
-  if (g_barData.count() < period)
+  if (data.count() < period)
     return 0;
   
-  int size = g_barData.count();
+  int size = data.count();
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
@@ -91,9 +90,9 @@ Curve * FunctionADX::calculate (int period, int method)
     case _ADX:
       rc = TA_ADX(0,
                   size - 1,
-                  g_barData.getTAData(BarData::High),
-                  g_barData.getTAData(BarData::Low),
-                  g_barData.getTAData(BarData::Close),
+                  data.getTAData(BarData::High),
+                  data.getTAData(BarData::Low),
+                  data.getTAData(BarData::Close),
                   period,
                   &outBeg,
                   &outNb,
@@ -102,9 +101,9 @@ Curve * FunctionADX::calculate (int period, int method)
     case _ADXR:
       rc = TA_ADXR(0,
                    size - 1,
-                   g_barData.getTAData(BarData::High),
-                   g_barData.getTAData(BarData::Low),
-                   g_barData.getTAData(BarData::Close),
+                   data.getTAData(BarData::High),
+                   data.getTAData(BarData::Low),
+                   data.getTAData(BarData::Close),
                    period,
                    &outBeg,
                    &outNb,
@@ -113,9 +112,9 @@ Curve * FunctionADX::calculate (int period, int method)
     case _PDI:
       rc = TA_PLUS_DI(0,
                       size - 1,
-                      g_barData.getTAData(BarData::High),
-                      g_barData.getTAData(BarData::Low),
-                      g_barData.getTAData(BarData::Close),
+                      data.getTAData(BarData::High),
+                      data.getTAData(BarData::Low),
+                      data.getTAData(BarData::Close),
                       period,
                       &outBeg,
                       &outNb,
@@ -124,9 +123,9 @@ Curve * FunctionADX::calculate (int period, int method)
     case _MDI:
       rc = TA_MINUS_DI(0,
                        size - 1,
-                       g_barData.getTAData(BarData::High),
-                       g_barData.getTAData(BarData::Low),
-                       g_barData.getTAData(BarData::Close),
+                       data.getTAData(BarData::High),
+                       data.getTAData(BarData::Low),
+                       data.getTAData(BarData::Close),
                        period,
                        &outBeg,
                        &outNb,
@@ -135,9 +134,9 @@ Curve * FunctionADX::calculate (int period, int method)
     case _DX:
       rc = TA_DX(0,
                  size - 1,
-                 g_barData.getTAData(BarData::High),
-                 g_barData.getTAData(BarData::Low),
-                 g_barData.getTAData(BarData::Close),
+                 data.getTAData(BarData::High),
+                 data.getTAData(BarData::Low),
+                 data.getTAData(BarData::Close),
                  period,
                  &outBeg,
                  &outNb,

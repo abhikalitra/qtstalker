@@ -29,12 +29,13 @@
 #include <QColor>
 
 #include "Curve.h"
+#include "BarData.h"
 
 class FunctionBARS
 {
   public:
     FunctionBARS ();
-    Curve * getBARS (QColor &_up, QColor &_down, QColor &_neutral);
+    Curve * getBARS (QColor &_up, QColor &_down, QColor &_neutral, BarData &);
 };
 
 #endif

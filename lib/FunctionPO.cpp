@@ -22,7 +22,6 @@
 #include "FunctionPO.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -31,7 +30,7 @@ FunctionPO::FunctionPO ()
   _methodList << "APO" << "PPO";
 }
 
-int FunctionPO::script (QStringList &set, Indicator &ind)
+int FunctionPO::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,PO,<METHOD>,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>
   //     0       1     2    3       4       5         6             7           8 
@@ -59,7 +58,7 @@ int FunctionPO::script (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[5]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[5]));
+    in = data.getInput(data.getInputType(set[5]));
     if (! in)
     {
       qDebug() << "FunctionPO::script: input not found" << set[5];

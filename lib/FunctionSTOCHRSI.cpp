@@ -22,7 +22,6 @@
 #include "FunctionSTOCHRSI.h"
 #include "FunctionMA.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,7 +29,7 @@ FunctionSTOCHRSI::FunctionSTOCHRSI ()
 {
 }
 
-int FunctionSTOCHRSI::script (QStringList &set, Indicator &ind)
+int FunctionSTOCHRSI::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,STOCHRSI,<NAME>,<INPUT>,<PERIOD>
   //    0        1       2       3       4       5 
@@ -51,7 +50,7 @@ int FunctionSTOCHRSI::script (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[4]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionSTOCHRSI::script: input not found" << set[4];

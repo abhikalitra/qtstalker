@@ -25,7 +25,6 @@
 #include "FunctionBARS.h"
 #include "MAVPDialog.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -34,13 +33,13 @@ MAVP::MAVP ()
   _indicator = "MAVP";
 }
 
-int MAVP::getIndicator (Indicator &ind)
+int MAVP::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
   QString s;
   settings.getData(Input, s);
-  Curve *in = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
     qDebug() << _indicator << "::getIndicator: input not found" << s;
@@ -48,7 +47,7 @@ int MAVP::getIndicator (Indicator &ind)
   }
 
   settings.getData(Input2, s);
-  Curve *in2 = g_barData.getInput(g_barData.getInputType(s));
+  Curve *in2 = data.getInput(data.getInputType(s));
   if (! in2)
   {
     delete in;
@@ -86,7 +85,7 @@ int MAVP::getIndicator (Indicator &ind)
   QColor down("red");
   QColor neutral("blue");
   FunctionBARS b;
-  Curve *bars = b.getBARS(up, down, neutral);
+  Curve *bars = b.getBARS(up, down, neutral, data);
   if (bars)
   {
     bars->setZ(0);
@@ -102,10 +101,10 @@ int MAVP::getIndicator (Indicator &ind)
   return 0;
 }
 
-int MAVP::getCUS (QStringList &set, Indicator &ind)
+int MAVP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
   FunctionMAVP f;
-  return f.script(set, ind);
+  return f.script(set, ind, data);
 }
 
 IndicatorPluginDialog * MAVP::dialog (Indicator &i)
@@ -125,6 +124,16 @@ void MAVP::defaults (Indicator &i)
   set.setData(Max, 30);
   set.setData(MAType, "SMA");
   i.setSettings(set);
+}
+
+void MAVP::plotNames (Indicator &i, QStringList &l)
+{
+  l.clear();
+
+  Setting settings = i.settings();
+  QString s;
+  settings.getData(Label, s);
+  l.append(s);
 }
 
 //*************************************************************

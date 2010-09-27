@@ -96,6 +96,9 @@ void ChartLayout::save ()
   }
 
   config.commit();
+
+  // save any chart object changes
+  emit signalSaveSettings();
 }
 
 void ChartLayout::load ()
@@ -216,6 +219,7 @@ void ChartLayout::addTab (Indicator &i)
   connect(settings->plot, SIGNAL(signalFontChanged(QFont)), this, SLOT(fontChanged(QFont)));
   connect(this, SIGNAL(signalCrossHairs(bool)), settings->plot, SLOT(setCrossHairs(bool)));
   connect(this, SIGNAL(signalCrossHairsColor(QColor)), settings->plot, SLOT(setCrossHairsColor(QColor)));
+  connect(this, SIGNAL(signalSaveSettings()), settings->plot, SLOT(clear()));
 }
 
 //******************************************************************
@@ -467,7 +471,7 @@ void ChartLayout::deleteIndicator ()
 {
   IndicatorDeleteDialog *dialog = new IndicatorDeleteDialog;
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalDelete(QStringList)), this, SLOT(removeTab(QStringList)));
+  connect(dialog, SIGNAL(signalSelect(QStringList)), this, SLOT(removeTab(QStringList)));
   dialog->show();
 }
 

@@ -23,7 +23,6 @@
 #include "FunctionMA.h"
 #include "ta_libc.h"
 #include "Curve.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -31,7 +30,7 @@ FunctionRSI::FunctionRSI ()
 {
 }
 
-int FunctionRSI::script (QStringList &set, Indicator &ind)
+int FunctionRSI::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,RSI,<NAME>,<INPUT>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
   //     0        1    2     3      4       5              6                 7 
@@ -52,7 +51,7 @@ int FunctionRSI::script (QStringList &set, Indicator &ind)
   Curve *in = ind.line(set[4]);
   if (! in)
   {
-    in = g_barData.getInput(g_barData.getInputType(set[4]));
+    in = data.getInput(data.getInputType(set[4]));
     if (! in)
     {
       qDebug() << "FunctionRSI::script: input not found" << set[4];

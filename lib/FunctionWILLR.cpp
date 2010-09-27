@@ -21,7 +21,6 @@
 
 #include "FunctionWILLR.h"
 #include "ta_libc.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,7 +28,7 @@ FunctionWILLR::FunctionWILLR ()
 {
 }
 
-int FunctionWILLR::script (QStringList &set, Indicator &ind)
+int FunctionWILLR::script (QStringList &set, Indicator &ind, BarData &data)
 {
   // INDICATOR,PLUGIN,WILLR,<NAME>,<PERIOD>
   //     0       1      2     3       4 
@@ -55,7 +54,7 @@ int FunctionWILLR::script (QStringList &set, Indicator &ind)
     return 1;
   }
 
-  Curve *line = calculate(period);
+  Curve *line = calculate(period, data);
   if (! line)
     return 1;
 
@@ -66,9 +65,9 @@ int FunctionWILLR::script (QStringList &set, Indicator &ind)
   return 0;
 }
 
-Curve * FunctionWILLR::calculate (int period)
+Curve * FunctionWILLR::calculate (int period, BarData &data)
 {
-  int size = g_barData.count();
+  int size = data.count();
 
   if (size < period)
     return 0;
@@ -79,9 +78,9 @@ Curve * FunctionWILLR::calculate (int period)
 
   TA_RetCode rc = TA_WILLR(0,
                            size - 1,
-                           g_barData.getTAData(BarData::High),
-                           g_barData.getTAData(BarData::Low),
-                           g_barData.getTAData(BarData::Close),
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
+                           data.getTAData(BarData::Close),
                            period,
                            &outBeg,
                            &outNb,

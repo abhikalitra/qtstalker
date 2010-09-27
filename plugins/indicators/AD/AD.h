@@ -31,22 +31,23 @@ class AD : public IndicatorPlugin
   public:
     enum Parm
     {
-      Method,
-      FastPeriod,
-      SlowPeriod,
-      ADColor,
-      ADPlot,
-      ADLabel,
-      OSCColor,
-      OSCPlot,
-      OSCLabel
+      Method = 10,
+      FastPeriod = 20,
+      SlowPeriod = 30,
+      ADColor = 40,
+      ADPlot = 50,
+      ADLabel = 60,
+      OSCColor = 70,
+      OSCPlot = 80,
+      OSCLabel = 90
     };
 
     AD ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

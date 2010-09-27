@@ -31,21 +31,22 @@ class MAVP : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color,
-      Plot,
-      Label,
-      Input,
-      Input2,
-      Min,
-      Max,
-      MAType
+      Color = 10,
+      Plot = 20,
+      Label = 30,
+      Input = 40,
+      Input2 = 50,
+      Min = 60,
+      Max = 70,
+      MAType = 80
     };
 
     MAVP ();
-    int getIndicator (Indicator &ind);
-    int getCUS (QStringList &, Indicator &);
+    int getIndicator (Indicator &ind, BarData &);
+    int getCUS (QStringList &, Indicator &, BarData &);
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
+    void plotNames (Indicator &, QStringList &);
 };
 
 extern "C"

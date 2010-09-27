@@ -56,9 +56,7 @@ int FuturesDataBase::createFutures ()
     return 0;
   }
   
-  config.transaction();
   config.setData(Config::FuturesFileDate, dt2);
-  config.commit();
   qDebug() << "FuturesDataBase::createFutures: creating new futures db";
 
   QTextStream in(&file);
