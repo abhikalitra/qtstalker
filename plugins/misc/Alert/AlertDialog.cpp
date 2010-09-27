@@ -31,6 +31,7 @@
 #include "../pics/newchart.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/refresh.xpm"
+#include "../pics/que.xpm"
 #include "../pics/configure.xpm"
 
 #include <QLayout>
@@ -387,8 +388,8 @@ void AlertDialog::notify (AlertItem alert)
 
 void AlertDialog::configureDialog ()
 {
-//  AlertConfigureDialog *dialog = new AlertConfigureDialog;
-//  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-//  dialog->show();
+  AlertConfigureDialog *dialog = new AlertConfigureDialog;
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  dialog->show();
 }
 
