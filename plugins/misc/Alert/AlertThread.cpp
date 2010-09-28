@@ -43,7 +43,7 @@ void AlertThread::run ()
   BarData bd;
   QString s;
   bd.barLengthText((BarData::BarLength) _alert.barLength(), s);
-  tl << s << "5" << "0";
+  tl << s << QString::number(_alert.bars()) << "0";
   QString command = tl.join(",") + "\n";
       
   QuoteServerRequest qsr;
@@ -136,10 +136,11 @@ void AlertThread::run ()
   }
 
   if (count == total && total != 0)
+  {
     _alert.setStatus(AlertItem::_Notify);
+    emit signalDone(_alert);
+  }
 
-  emit signalDone(_alert);
-  
   quit();
 }
 

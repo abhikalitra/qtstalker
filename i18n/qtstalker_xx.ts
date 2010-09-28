@@ -146,6 +146,68 @@
     </message>
 </context>
 <context>
+    <name>AlertConfigureDialog</name>
+    <message>
+        <source>Configure Alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Alerts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable / disable alerts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scan Interval Minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alert Sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sound file to play for notification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Address to receive mail
+e.g yourname@youraddress.com</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subject header of mail
+e.g. Qtstalker Alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message Body</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message body of mail
+e.g. Qtstalker alert was triggered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Email</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AlertDialog</name>
     <message>
         <source>ID</source>
@@ -196,10 +258,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Set the timer interval...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Alerts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -209,6 +267,14 @@
     </message>
     <message>
         <source>Select indicator for alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure settings for alerts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -264,6 +330,10 @@
     </message>
     <message>
         <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Length</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

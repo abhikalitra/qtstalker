@@ -114,9 +114,7 @@ void IndicatorDataBase::deleteIndicator (QString &name)
 {
   // delete any chart objects tied to this indicator before we delete it
   ChartObjectDataBase codb;
-  codb.transaction();
   codb.deleteChartObjectsIndicator(name);
-  codb.commit();
 
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM indicatorIndex WHERE name='" + name + "'";

@@ -43,6 +43,7 @@ AlertDataBase::AlertDataBase ()
   s.append(", value TEXT");
   s.append(", status INT");
   s.append(", barLength INT");
+  s.append(", bars INT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -55,7 +56,7 @@ int AlertDataBase::getAlerts (QList<AlertItem> &l)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT ";
-  s.append("id,exchange,symbol,settings,indicator,mail,sound,popup,enable,op,value,status,barLength");
+  s.append("id,exchange,symbol,settings,indicator,mail,sound,popup,enable,op,value,status,barLength,bars");
   s.append(" FROM AlertPlugin");
   q.exec(s);
   if (q.lastError().isValid())
@@ -82,6 +83,7 @@ int AlertDataBase::getAlerts (QList<AlertItem> &l)
     item.setValueString(q.value(pos++).toString());
     item.setStatus((AlertItem::Status) q.value(pos++).toInt());
     item.setBarLength(q.value(pos++).toInt());
+    item.setBars(q.value(pos++).toInt());
 
     l.append(item);
   }
@@ -96,7 +98,7 @@ int AlertDataBase::getAlert (AlertItem &item)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString k = "SELECT";
-  k.append(" id,exchange,symbol,settings,indicator,mail,sound,popup,enable,op,value,status,barLength");
+  k.append(" id,exchange,symbol,settings,indicator,mail,sound,popup,enable,op,value,status,barLength,bars");
   k.append(" FROM AlertPlugin WHERE id=" + QString::number(item.id()));
   q.exec(k);
   if (q.lastError().isValid())
@@ -123,6 +125,7 @@ int AlertDataBase::getAlert (AlertItem &item)
   item.setValueString(q.value(pos++).toString());
   item.setStatus((AlertItem::Status) q.value(pos++).toInt());
   item.setBarLength(q.value(pos++).toInt());
+  item.setBars(q.value(pos++).toInt());
 
   return 0;
 }
@@ -137,7 +140,7 @@ int AlertDataBase::setAlert (AlertItem &item)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO AlertPlugin (";
-  s.append("id,exchange,symbol,settings,indicator,mail,sound,popup,enable,op,value,status,barLength");
+  s.append("id,exchange,symbol,settings,indicator,mail,sound,popup,enable,op,value,status,barLength,bars");
   s.append(") VALUES (");
   s.append(QString::number(item.id()));
   s.append(",'" + item.exchange() + "'");
@@ -152,6 +155,7 @@ int AlertDataBase::setAlert (AlertItem &item)
   s.append(",'" + item.valueString() + "'");
   s.append("," + QString::number(item.status()));
   s.append("," + QString::number(item.barLength()));
+  s.append("," + QString::number(item.bars()));
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

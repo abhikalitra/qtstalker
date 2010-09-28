@@ -26,18 +26,19 @@
 #include "AlertEditDialog.h"
 #include "AlertThread.h"
 #include "Config.h"
+#include "AlertConfigureDialog.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/newchart.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/refresh.xpm"
-#include "../pics/que.xpm"
 #include "../pics/configure.xpm"
 
 #include <QLayout>
 #include <QDialogButtonBox>
 #include <QToolButton>
 #include <QInputDialog>
+#include <QSound>
 
 AlertDialog::AlertDialog ()
 {
@@ -119,7 +120,7 @@ void AlertDialog::createMainPage ()
 
   _resetButton = new QPushButton;
   _resetButton->setText(tr("&Reset"));
-  _resetButton->setToolTip(tr("Reset alert back to monitor"));
+  _resetButton->setToolTip(tr("Reset alert back to waiting"));
   _resetButton->setIcon(QPixmap(refresh_xpm));
   connect(_resetButton, SIGNAL(clicked()), this, SLOT(resetAlert()));
   bbox->addWidget(_resetButton);
@@ -142,21 +143,23 @@ void AlertDialog::loadSettings ()
 
   // restore the size of the window
   QSize sz;
-  config.getData(AlertConfig::Size, sz);
+  config.getData(AlertConfig::_Size, sz);
   if (! sz.isNull())
     resize(sz);
 
   // restore the position of the window
   QPoint p;
-  config.getData(AlertConfig::Pos, p);
+  config.getData(AlertConfig::_Pos, p);
   if (! p.isNull())
     move(p);
 
-  int t = config.getInt(AlertConfig::Timer);
+  int t = config.getInt(AlertConfig::_TimerInterval);
   if (! t)
     t = 1;
   _timer.setInterval(60000 * t);
-  _timer.start();
+
+  if (config.getInt(AlertConfig::_AlertsEnable))
+    _timer.start();
 
   loadAlerts();
 }
@@ -168,12 +171,10 @@ void AlertDialog::saveSettings ()
   
   // save app size and position
   QSize sz = size();
-  config.setData(AlertConfig::Size, sz);
+  config.setData(AlertConfig::_Size, sz);
 
   QPoint pt = pos();
-  config.setData(AlertConfig::Pos, pt);
-
-  config.setData(AlertConfig::Timer, (int) _timer.interval() / 60000);
+  config.setData(AlertConfig::_Pos, pt);
 
   config.commit();
 }
@@ -200,23 +201,18 @@ void AlertDialog::newAlert2 (QString indicator)
   item.setIndicator(indicator);
   
   AlertEditDialog *dialog = new AlertEditDialog(item);
+  dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("New Alert"));
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalEdit(int)), this, SLOT(newAlert3(int)));
+  connect(dialog, SIGNAL(signalEdit(AlertItem)), this, SLOT(newAlert3(AlertItem)));
   dialog->show();
 }
 
-void AlertDialog::newAlert3 (int id)
+void AlertDialog::newAlert3 (AlertItem alert)
 {
-  AlertItem alert;
-  alert.setId(id);
-  
-  AlertDataBase db;
-  db.getAlert(alert);
-
   QTreeWidgetItem *item = new QTreeWidgetItem(_alerts);
-  _treeItems.insert(id, item);
+  _treeItems.insert(alert.id(), item);
 
-  item->setText(0, QString::number(id));
+  item->setText(0, QString::number(alert.id()));
   
   QString symbol = alert.exchange() + ":" + alert.symbol();
   item->setText(1, symbol);
@@ -224,6 +220,8 @@ void AlertDialog::newAlert3 (int id)
   item->setText(2, alert.indicator());
   
   item->setText(3, alert.statusToString(alert.status()));
+
+  resizeColumns();
 }
 
 void AlertDialog::editAlert ()
@@ -237,27 +235,24 @@ void AlertDialog::editAlert ()
   db.getAlert(alert);
   
   AlertEditDialog *dialog = new AlertEditDialog(alert);
+  dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Edit Alert"));
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalEdit(int)), this, SLOT(editAlert2(int)));
+  connect(dialog, SIGNAL(signalEdit(AlertItem)), this, SLOT(editAlert2(AlertItem)));
   dialog->show();
 }
 
-void AlertDialog::editAlert2 (int id)
+void AlertDialog::editAlert2 (AlertItem alert)
 {
-  QTreeWidgetItem *item = _treeItems.value(id);
+  QTreeWidgetItem *item = _treeItems.value(alert.id());
   if (! item)
     return;
   
-  AlertItem alert;
-  alert.setId(id);
-
-  AlertDataBase db;
-  db.getAlert(alert);
-
   QString s = alert.exchange() + ":" + alert.symbol();
   item->setText(1, s);
 
   item->setText(2, alert.indicator());
+
+  resizeColumns();
 }
 
 void AlertDialog::deleteAlert ()
@@ -274,6 +269,8 @@ void AlertDialog::deleteAlert ()
   db.commit();
   
   delete item;
+
+  resizeColumns();
 }
 
 void AlertDialog::run ()
@@ -303,6 +300,8 @@ void AlertDialog::done (AlertItem alert)
   if (! item)
     return;
 
+  alert.setStatus(AlertItem::_Hit);
+
   item->setText(3, alert.statusToString(alert.status()));
 
   AlertDataBase db;
@@ -310,8 +309,33 @@ void AlertDialog::done (AlertItem alert)
   db.setAlert(alert);
   db.commit();
 
-  if (alert.status() == AlertItem::_Notify)
-    notify(alert);
+  if (alert.popup())
+  {
+    Dialog *dialog = new Dialog;
+    dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Alert Triggered"));
+    QStringList l;
+    l << tr("ID")  + ": " + QString::number(alert.id());
+    l << tr("Symbol") + ": " + alert.exchange() + ":" + alert.symbol();
+    l << tr("Indicator")  + ": " + alert.indicator();
+    l << tr("Time")  + ": " + QDateTime::currentDateTime().toString(Qt::ISODate);
+    dialog->setMessage(l.join("\n"));
+    QFont f = dialog->messageFont();
+    f.setBold(FALSE);
+    dialog->setMessageFont(f);
+    dialog->show();
+  }
+
+  if (alert.sound())
+  {
+    AlertConfig config;
+    QString s;
+    config.getData(AlertConfig::_SoundFile, s);
+    QSound::play(s);
+  }
+
+  if (alert.mail())
+  {
+  }
 }
 
 void AlertDialog::closeDialog ()
@@ -344,7 +368,7 @@ void AlertDialog::loadAlerts ()
   for (; loop < l.count(); loop++)
   {
     AlertItem alert = l.at(loop);
-    newAlert3(alert.id());
+    newAlert3(alert);
   }
 
   selectionChanged();
@@ -369,27 +393,32 @@ void AlertDialog::resetAlert ()
   l.at(0)->setText(3, alert.statusToString(AlertItem::_Waiting));
 }
 
-void AlertDialog::notify (AlertItem alert)
-{
-  if (alert.popup())
-  {
-//    Dialog *dialog = new Dialog;
-//    dialog->setMessage();
-  }
-
-  if (alert.sound())
-  {
-  }
-
-  if (alert.mail())
-  {
-  }
-}
-
 void AlertDialog::configureDialog ()
 {
   AlertConfigureDialog *dialog = new AlertConfigureDialog;
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  connect(dialog, SIGNAL(signalInterval(int)), this, SLOT(intervalChanged(int)));
+  connect(dialog, SIGNAL(signalEnable(int)), this, SLOT(enableChanged(int)));
   dialog->show();
+}
+
+void AlertDialog::intervalChanged (int d)
+{
+  _timer.setInterval(60000 * d);
+}
+
+void AlertDialog::enableChanged (int d)
+{
+  if (! d)
+    _timer.stop();
+  else
+    _timer.start();
+}
+
+void AlertDialog::resizeColumns ()
+{
+  int loop = 0;
+  for (; loop < _alerts->topLevelItemCount(); loop++)
+    _alerts->resizeColumnToContents(loop);
 }
 

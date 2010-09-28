@@ -31,10 +31,15 @@ class AlertConfig : public ConfigDataBase
   public:
     enum Parm
     {
-      Size, // window size
-      Pos, // position
-      LastId, // next available alert id
-      Timer // timer interval
+      _Size, // window size
+      _Pos, // position
+      _LastId, // next available alert id
+      _TimerInterval, // timer interval
+      _AlertsEnable, // enable / disable alert scans
+      _SoundFile, // path to sound file to play on notification
+      _MailAddress, // email address to send notifications
+      _MailSubject, // subject header text for notifications
+      _MailBody // text body for notifications
     };
 
     AlertConfig ();

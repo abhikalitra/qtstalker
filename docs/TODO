@@ -20,6 +20,7 @@ To Do:
 - add some example rules to the CSV plugin so noobs have an idea of construction (wait till release)
 - review make files to use .qmake.cache
 - chart zooming
+- add script API for notifications for alerts.
 
 
 Priority
@@ -28,7 +29,6 @@ Priority
 BUG: gnome ubuntu has issues with qtstalker indicator tab resizing displays tiny tabs with misplaced text.
      kde systems work.
 BUG: PlotScaleDraw does not shorten negative labels but does work for positive
-- add script API for notifications for alerts.
 
 
 

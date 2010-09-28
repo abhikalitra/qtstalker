@@ -795,4 +795,7 @@
            script commands to create notifications later. Alert is meant for the casual user.
            NOTE: not fully working yet.
 
+           Fixed another mutex bug with indicator deletes.
+
+
 

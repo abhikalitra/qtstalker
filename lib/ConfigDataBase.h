@@ -42,41 +42,41 @@ class ConfigDataBase : public DataBase
   public:
     ConfigDataBase ();
     
-    void setData (QString &, QString &);
+    void setData (QString, QString);
     void getData (QString &, QString &);
 
-    void setData (int, QString &);
+    void setData (int, QString);
     void getData (int, QString &);
     
-    void getData (int, QSplitter *);
     void setData (int, QSplitter *);
+    void getData (int, QSplitter *);
     
-    bool getBool (int);
     void setData (int, bool);
+    bool getBool (int);
     
-    int getInt (int);
     void setData (int, int);
     void setData (int, qint64);
+    int getInt (int);
     
-    double getDouble (int);
     void setData (int, double);
+    double getDouble (int);
     
+    void setData (int, QColor);
     void getData (int, QColor &);
-    void setData (int, QColor &);
     
+    void setData (int, QFont);
     void getData (int, QFont &);
-    void setData (int, QFont &);
     
+    void setData (int, QPoint);
     void getData (int, QPoint &);
-    void setData (int, QPoint &);
     
+    void setData (int, QSize);
     void getData (int, QSize &);
-    void setData (int, QSize &);
     
     void setData (int, QStringList &);
     void getData (int, QStringList &);
     
-    void setData (int, QDateTime &);
+    void setData (int, QDateTime);
     void getData (int, QDateTime &);
 
   protected:

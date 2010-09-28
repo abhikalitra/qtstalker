@@ -47,21 +47,23 @@ class AlertDialog : public QDialog
     void loadSettings ();
     void saveSettings ();
     void loadAlerts ();
+    void resizeColumns ();
     
   public slots:
     void run ();
     void newAlert ();
     void newAlert2 (QString);
-    void newAlert3 (int);
+    void newAlert3 (AlertItem);
     void editAlert ();
-    void editAlert2 (int);
+    void editAlert2 (AlertItem);
     void deleteAlert ();
     void done (AlertItem);
     void closeDialog ();
     void selectionChanged ();
     void resetAlert ();
-    void notify (AlertItem);
     void configureDialog ();
+    void enableChanged (int);
+    void intervalChanged (int);
           
   private:
     QTabWidget *_tabs;

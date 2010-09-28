@@ -46,7 +46,7 @@ void ConfigDataBase::getData (QString &k, QString &d)
     d = q.value(0).toString();
 }
 
-void ConfigDataBase::setData (QString &k, QString &d)
+void ConfigDataBase::setData (QString k, QString d)
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO " + _tableName + " (key,setting) VALUES (";
@@ -67,7 +67,7 @@ void ConfigDataBase::getData (int p, QString &d)
   getData(s, d);
 }
 
-void ConfigDataBase::setData (int p, QString &d)
+void ConfigDataBase::setData (int p, QString d)
 {
   QString s = QString::number(p);
   setData(s, d);
@@ -117,7 +117,7 @@ void ConfigDataBase::getData (int name, QColor &color)
     color.setNamedColor(c);
 }
 
-void ConfigDataBase::setData (int name, QColor &color)
+void ConfigDataBase::setData (int name, QColor color)
 {
   QString c = color.name();
   setData(name, c);
@@ -139,7 +139,7 @@ void ConfigDataBase::getData (int name, QFont &font)
   font.setBold(l[4].toInt());
 }
 
-void ConfigDataBase::setData (int name, QFont &font)
+void ConfigDataBase::setData (int name, QFont font)
 {
   QString f = font.family() + "," +
               QString::number(font.pointSize()) + "," +
@@ -162,7 +162,7 @@ void ConfigDataBase::getData (int name, QPoint &p)
   p.setY(l[1].toInt());
 }
 
-void ConfigDataBase::setData (int name, QPoint &p)
+void ConfigDataBase::setData (int name, QPoint p)
 {
   QString s = QString::number(p.x()) + "," + QString::number(p.y());
   setData(name, s);
@@ -180,7 +180,7 @@ void ConfigDataBase::getData (int name, QSize &sz)
   sz.setHeight(l[1].toInt());
 }
 
-void ConfigDataBase::setData (int name, QSize &sz)
+void ConfigDataBase::setData (int name, QSize sz)
 {
   QString s = QString::number(sz.width()) + "," + QString::number(sz.height());
   setData(name, s);
@@ -262,7 +262,7 @@ void ConfigDataBase::getData (int name, QDateTime &dt)
   dt = QDateTime::fromString(s, Qt::ISODate);
 }
 
-void ConfigDataBase::setData (int name, QDateTime &dt)
+void ConfigDataBase::setData (int name, QDateTime dt)
 {
   if (! dt.isValid())
     return;

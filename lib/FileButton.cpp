@@ -24,7 +24,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 
-FileButton::FileButton (QWidget *w, QString &f) : QPushButton (w)
+FileButton::FileButton (QWidget *w, QString f) : QPushButton (w)
 {
   connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   file = f;
@@ -36,7 +36,7 @@ QString & FileButton::getFile ()
   return file;
 }
 
-void FileButton::setFile (QString &d)
+void FileButton::setFile (QString d)
 {
   file = d;
   updateButtonText();

@@ -19,49 +19,45 @@
  *  USA.
  */
 
-#ifndef ALERT_EDIT_DIALOG_HPP
-#define ALERT_EDIT_DIALOG_HPP
+#ifndef ALERT_CONFIGURE_DIALOG_HPP
+#define ALERT_CONFIGURE_DIALOG_HPP
 
-#include <QTreeWidget>
-#include <QComboBox>
+#include <QSpinBox>
 #include <QCheckBox>
 #include <QLineEdit>
-#include <QSpinBox>
+#include <QTextEdit>
 
 #include "Dialog.h"
-#include "Indicator.h"
-#include "AlertItem.h"
-#include "Group.h"
+#include "FileButton.h"
 
-class AlertEditDialog : public Dialog
+class AlertConfigureDialog : public Dialog
 {
   Q_OBJECT
 
   signals:
-    void signalEdit (AlertItem);
-
+    void signalInterval (int);
+    void signalEnable (int);
+    
   public:
-    AlertEditDialog (AlertItem);
+    AlertConfigureDialog ();
     void createMainPage ();
-    void setSettings ();
+    void createMailPage ();
+    void loadSettings ();
 
   public slots:
     void done ();
-    void indicatorSettings ();
-    void indicatorSettings2 (Indicator);
-    void symbolSearch ();
-    void symbolSearch2 (Group);
+    void intervalChanged (int);
+    void enableChanged (int);
 
   private:
-    AlertItem _item;
-    QLineEdit *_symbol;
-    QTreeWidget *_alertList;
-    QLineEdit *_indicator;
-    QCheckBox *_mailNotify;
-    QCheckBox *_soundNotify;
-    QCheckBox *_popupNotify;
-    QComboBox *_barLength;
-    QComboBox *_bars;
+    QCheckBox *_enable;
+    QSpinBox *_interval;
+    FileButton *_sound;
+    QLineEdit *_address;
+    QLineEdit *_subject;
+    QTextEdit *_text;
+    int _intervalFlag;
+    int _enableFlag;
 };
 
 #endif

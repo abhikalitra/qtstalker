@@ -39,9 +39,9 @@ class FileButton : public QPushButton
     void signalFileChanged ();
 
   public:
-    FileButton (QWidget *, QString &);
+    FileButton (QWidget *, QString);
     QString & getFile ();
-    void setFile (QString &);
+    void setFile (QString);
     void updateButtonText ();
 
   public slots:

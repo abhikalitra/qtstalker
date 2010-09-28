@@ -74,6 +74,8 @@ class AlertItem
     int dateRange ();
     int count ();
     void keys (QStringList &);
+    void setBars (int);
+    int bars ();
 
   private:
     QString _exchange;
@@ -91,6 +93,7 @@ class AlertItem
     QStringList _statusList;
     int _barLength;
     int _dateRange;
+    int _bars;
 };
 
 // this is for passing Indicator data between threads

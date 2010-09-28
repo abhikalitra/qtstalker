@@ -64,7 +64,7 @@ class ChartLayout : public QSplitter
     void refresh (QString);
     void loadPlots (int index);
     int plotWidth ();
-    QHash<QString, PlotSettings *> & plots ();
+    QHash<QString, PlotSettings> & plots ();
 
   public slots:
     void save ();
@@ -90,7 +90,7 @@ class ChartLayout : public QSplitter
     void setCrossHairsColor (QColor);
 
   private:
-    QHash<QString, PlotSettings *> _plots;
+    QHash<QString, PlotSettings> _plots;
     QHash<QString, TabWidget *> _tabs;
     QHash<int, QHBoxLayout *> _grids;
     QHash<int, QWidget *> _holders;

@@ -30,6 +30,7 @@
 #include "AlertConfig.h"
 #include "SymbolDialog.h"
 #include "AlertOperator.h"
+#include "DateRange.h"
 
 #include <QtDebug>
 #include <QComboBox>
@@ -41,8 +42,6 @@ AlertEditDialog::AlertEditDialog (AlertItem item)
 {
   _item = item;
   
-  setWindowTitle("QtStalker" + g_session + ": Alert " + tr("New Alert"));
-
   createMainPage();
 
   setSettings();
@@ -54,59 +53,51 @@ void AlertEditDialog::createMainPage ()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
-  vbox->setSpacing(5);
+  vbox->setSpacing(2);
   w->setLayout(vbox);
 
-  QHBoxLayout *thbox = new QHBoxLayout;
-  thbox->setMargin(0);
-  thbox->setSpacing(2);
-  vbox->addLayout(thbox);
+  QGridLayout *grid = new QGridLayout;
+  grid->setMargin(0);
+  grid->setSpacing(2);
+  grid->setColumnStretch(3, 1);
+  vbox->addLayout(grid);
+
+  int row = 0;
+  int col = 0;
 
   // symbol
   QLabel *label = new QLabel(tr("Symbol"));
-  thbox->addWidget(label);
+  grid->addWidget(label, row, col++);
 
   _symbol = new QLineEdit;
   _symbol->setReadOnly(TRUE);
-  thbox->addWidget(_symbol);
+  grid->addWidget(_symbol, row, col++);
 
   QToolButton *tb = new QToolButton;
   tb->setIcon(QIcon(search_xpm));
   tb->setToolTip(tr("Symbol search..."));
   connect(tb, SIGNAL(clicked()), this, SLOT(symbolSearch()));
-  thbox->addWidget(tb);
+  grid->addWidget(tb, row++, col);
+  col -= 2;
 
-  thbox->addStretch();
-  
   // indicator
-  thbox = new QHBoxLayout;
-  thbox->setMargin(0);
-  thbox->setSpacing(2);
-  vbox->addLayout(thbox);
-
   label = new QLabel(tr("Indicator"));
-  thbox->addWidget(label);
+  grid->addWidget(label, row, col++);
 
   _indicator = new QLineEdit;
   _indicator->setReadOnly(TRUE);
-  thbox->addWidget(_indicator);
+  grid->addWidget(_indicator, row, col++);
 
   tb = new QToolButton;
   tb->setIcon(QIcon(indicator_xpm));
   tb->setToolTip(tr("Indicator settings..."));
   connect(tb, SIGNAL(clicked()), this, SLOT(indicatorSettings()));
-  thbox->addWidget(tb);
-
-  thbox->addStretch();
+  grid->addWidget(tb, row++, col);
+  col -= 2;
 
   // bar length
-  thbox = new QHBoxLayout;
-  thbox->setMargin(0);
-  thbox->setSpacing(2);
-  vbox->addLayout(thbox);
-
   label = new QLabel(tr("Bar Length"));
-  thbox->addWidget(label);
+  grid->addWidget(label, row, col++);
 
   BarData bd;
   QStringList l;
@@ -114,24 +105,45 @@ void AlertEditDialog::createMainPage ()
   
   _barLength = new QComboBox;
   _barLength->addItems(l);
-  thbox->addWidget(_barLength);
+  grid->addWidget(_barLength, row++, col--);
+
+  // bar range
+  label = new QLabel(tr("Bars"));
+  grid->addWidget(label, row, col++);
+
+  DateRange dr;
+  l.clear();
+  dr.list(l);
   
-  thbox->addStretch();
+  _bars = new QComboBox;
+  _bars->addItems(l);
+  _bars->setToolTip(tr("The amount of bars to use for the indicator"));
+  grid->addWidget(_bars, row++, col--);
 
   // mail notify
+  QHBoxLayout *thbox = new QHBoxLayout;
+  thbox->setMargin(0);
+  thbox->setSpacing(2);
+  vbox->addLayout(thbox);
+
   _mailNotify = new QCheckBox;
-  _mailNotify->setText(tr("Notify with mail"));
-  vbox->addWidget(_mailNotify);
+  _mailNotify->setText(tr("Mail"));
+  _mailNotify->setToolTip(tr("Notify by mail"));
+  thbox->addWidget(_mailNotify);
   
   // sound notify
   _soundNotify = new QCheckBox;
-  _soundNotify->setText(tr("Notify with sound"));
-  vbox->addWidget(_soundNotify);
+  _soundNotify->setText(tr("Sound"));
+  _soundNotify->setToolTip(tr("Notify by playing a sound file"));
+  thbox->addWidget(_soundNotify);
 
   // popup notify
   _popupNotify = new QCheckBox;
-  _popupNotify->setText(tr("Notify with popup message"));
-  vbox->addWidget(_popupNotify);
+  _popupNotify->setText(tr("Popup"));
+  _popupNotify->setToolTip(tr("Notify by popup message"));
+  thbox->addWidget(_popupNotify);
+
+  thbox->addStretch();
 
   // alert list
   l.clear();
@@ -193,6 +205,8 @@ void AlertEditDialog::setSettings ()
 
   _barLength->setCurrentIndex(_item.barLength());
   
+  _bars->setCurrentIndex(_item.bars());
+
   _mailNotify->setChecked(_item.mail());
   
   _soundNotify->setChecked(_item.sound());
@@ -230,7 +244,7 @@ void AlertEditDialog::setSettings ()
   {
     QTreeWidgetItem *item = new QTreeWidgetItem(_alertList);
 
-    item->setCheckState(_item.enable(plotNames.at(loop)), Qt::Unchecked);
+    item->setCheckState(0, (Qt::CheckState) _item.enable(plotNames.at(loop)));
 
     item->setText(1, plotNames.at(loop));
 
@@ -245,19 +259,22 @@ void AlertEditDialog::setSettings ()
     sb->setValue(_item.value(plotNames.at(loop)));
     _alertList->setItemWidget(item, 3, sb);
   }
+
+  for (loop = 0; loop < _alertList->topLevelItemCount(); loop++)
+    _alertList->resizeColumnToContents(loop);
 }
 
-void AlertEditDialog::getSettings ()
+void AlertEditDialog::done ()
 {
   if (_item.id() == -1)
   {
     AlertConfig db;
-    int id = db.getInt(AlertConfig::LastId);
+    int id = db.getInt(AlertConfig::_LastId);
     _item.setId(id);
 
     id++;
     db.transaction();
-    db.setData(AlertConfig::LastId, id);
+    db.setData(AlertConfig::_LastId, id);
     db.commit();
   }
 
@@ -269,11 +286,13 @@ void AlertEditDialog::getSettings ()
   }
 
   _item.setBarLength(_barLength->currentIndex());
-  
+
+  _item.setBars(_bars->currentIndex());
+
   _item.setMail(_mailNotify->isChecked());
-  
+
   _item.setSound(_soundNotify->isChecked());
-  
+
   _item.setPopup(_popupNotify->isChecked());
 
   int loop = 0;
@@ -289,18 +308,13 @@ void AlertEditDialog::getSettings ()
     QDoubleSpinBox *sb = (QDoubleSpinBox *) _alertList->itemWidget(item, 3);
     _item.setValue(item->text(1), sb->value());
   }
-}
-
-void AlertEditDialog::done ()
-{
-  getSettings();
 
   AlertDataBase db;
   db.transaction();
   db.setAlert(_item);
   db.commit();
   
-  emit signalEdit(_item.id());
+  emit signalEdit(_item);
 
   accept();
 }

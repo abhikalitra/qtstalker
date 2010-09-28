@@ -34,6 +34,7 @@ AlertItem::AlertItem ()
   _status = AlertItem::_Waiting;
   _barLength = 0;
   _dateRange = 0;
+  _bars = 0;
 }
 
 void AlertItem::setExchange (QString d)
@@ -271,5 +272,15 @@ void AlertItem::keys (QStringList &l)
     it.next();
     l.append(it.key());
   }
+}
+
+void AlertItem::setBars (int d)
+{
+  _bars = d;
+}
+
+int AlertItem::bars ()
+{
+  return _bars;
 }
 
