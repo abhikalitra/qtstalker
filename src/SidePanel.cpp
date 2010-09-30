@@ -82,6 +82,7 @@ void SidePanel::createTabs ()
   _pluginTab = new PluginPage;
   connect(_pluginTab, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
   connect(_pluginTab, SIGNAL(signalChartRefresh()), this, SIGNAL(signalReloadChart()));
+  connect(_pluginTab, SIGNAL(signalGroupRefresh()), _groupTab, SLOT(updateGroups()));
   _tabs->addTab(_pluginTab, QIcon(plugin_xpm), QString());
   _tabs->setTabToolTip(3, tr("Plugins"));
 }

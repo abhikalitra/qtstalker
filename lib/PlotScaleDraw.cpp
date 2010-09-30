@@ -39,7 +39,7 @@ QwtText PlotScaleDraw::label (double v) const
   if (tv < 0)
   {
     flag = 1;
-    tv = tv * 1;
+    tv = tv * -1;
   }
 
   QString s;
@@ -76,8 +76,8 @@ QwtText PlotScaleDraw::label (double v) const
     }
   }
 
-//  if (flag)
-//    s.prepend("-");
+  if (flag)
+    s.prepend("-");
   
   return s;
 }

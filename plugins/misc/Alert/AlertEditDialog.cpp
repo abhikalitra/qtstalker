@@ -29,7 +29,7 @@
 #include "../../../pics/search.xpm"
 #include "AlertConfig.h"
 #include "SymbolDialog.h"
-#include "AlertOperator.h"
+#include "Operator.h"
 #include "DateRange.h"
 
 #include <QtDebug>
@@ -249,7 +249,7 @@ void AlertEditDialog::setSettings ()
     item->setText(1, plotNames.at(loop));
 
     QComboBox *cb = new QComboBox;
-    AlertOperator op;
+    Operator op;
     cb->addItems(op.list());
     cb->setCurrentIndex(_item.op(plotNames.at(loop)));
     _alertList->setItemWidget(item, 2, cb);

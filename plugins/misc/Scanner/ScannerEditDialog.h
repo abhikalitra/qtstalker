@@ -19,54 +19,46 @@
  *  USA.
  */
 
-#ifndef PLUGIN_PAGE_HPP
-#define PLUGIN_PAGE_HPP
+#ifndef SCANNER_EDIT_DIALOG_HPP
+#define SCANNER_EDIT_DIALOG_HPP
 
-#include <QString>
-#include <QWidget>
-#include <QMenu>
-#include <QListWidget>
-#include <QList>
-#include <QAction>
-#include <QToolButton>
-#include <QHash>
-#include <QToolBar>
+#include <QTreeWidget>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QSpinBox>
 
-#include "MiscPluginFactory.h"
+#include "Dialog.h"
+#include "Indicator.h"
+#include "ScannerItem.h"
+#include "Group.h"
+#include "SymbolButton.h"
 
-class PluginPage : public QWidget
+class ScannerEditDialog : public Dialog
 {
   Q_OBJECT
 
   signals:
-    void signalMessage (QString);
-    void signalChartRefresh ();
-    void signalGroupRefresh ();
+    void signalEdit (ScannerItem);
 
   public:
-    enum Action
-    {
-      Configure
-    };
-
-    PluginPage ();
-    void createActions ();
-    void createButtonMenu (QToolBar *);
+    ScannerEditDialog (ScannerItem);
+    void createMainPage ();
+    void setSettings ();
 
   public slots:
-    void doubleClick (QListWidgetItem *);
-    void rightClick (const QPoint &);
-    void configure ();
-    void configure (QString &);
-    void updateList ();
-    void listStatus ();
+    void done ();
+    void indicatorSettings ();
+    void indicatorSettings2 (Indicator);
 
-  protected:
-    QListWidget *_list;
-    QMenu *_menu;
-    QHash<int, QAction *> _actions;
-    MiscPluginFactory _fac;
+  private:
+    ScannerItem _scanner;
+    SymbolButton *_symbols;
+    QTreeWidget *_list;
+    QLineEdit *_indicator;
+    QLineEdit *_groupName;
+    QComboBox *_barLength;
+    QComboBox *_dateRange;
 };
 
 #endif
-

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,54 +19,33 @@
  *  USA.
  */
 
-#ifndef PLUGIN_PAGE_HPP
-#define PLUGIN_PAGE_HPP
+#ifndef SCANNER_THREAD_HPP
+#define SCANNER_THREAD_HPP
 
-#include <QString>
-#include <QWidget>
-#include <QMenu>
-#include <QListWidget>
-#include <QList>
-#include <QAction>
-#include <QToolButton>
-#include <QHash>
-#include <QToolBar>
+#include <QThread>
+#include <QStringList>
 
-#include "MiscPluginFactory.h"
+#include "ScannerItem.h"
 
-class PluginPage : public QWidget
+class ScannerThread : public QThread
 {
   Q_OBJECT
 
   signals:
     void signalMessage (QString);
-    void signalChartRefresh ();
-    void signalGroupRefresh ();
-
+    void signalDone (QString);
+    void signalStopped (QString);
+    
   public:
-    enum Action
-    {
-      Configure
-    };
-
-    PluginPage ();
-    void createActions ();
-    void createButtonMenu (QToolBar *);
-
-  public slots:
-    void doubleClick (QListWidgetItem *);
-    void rightClick (const QPoint &);
-    void configure ();
-    void configure (QString &);
-    void updateList ();
-    void listStatus ();
+    ScannerThread (QObject *, ScannerItem);
+    void stop ();
 
   protected:
-    QListWidget *_list;
-    QMenu *_menu;
-    QHash<int, QAction *> _actions;
-    MiscPluginFactory _fac;
+    void run();
+
+  private:
+    ScannerItem _scanner;
+    int _stop;
 };
 
 #endif
-

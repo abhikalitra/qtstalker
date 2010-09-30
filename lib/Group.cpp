@@ -79,6 +79,19 @@ void Group::getStringList (QStringList &l)
   }
 }
 
+void Group::setStringList (QStringList &l)
+{
+  clear();
+  
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    BarData bd;
+    if (! bd.setKey(l.at(loop)))
+      setSymbol(bd);
+  }
+}
+
 int Group::contains (BarData d)
 {
   QString k = d.getKey();

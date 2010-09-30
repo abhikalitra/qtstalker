@@ -19,54 +19,20 @@
  *  USA.
  */
 
-#ifndef PLUGIN_PAGE_HPP
-#define PLUGIN_PAGE_HPP
+#ifndef SCANNER_SELECT_EDIT_DIALOG_HPP
+#define SCANNER_SELECT_EDIT_DIALOG_HPP
 
-#include <QString>
-#include <QWidget>
-#include <QMenu>
-#include <QListWidget>
-#include <QList>
-#include <QAction>
-#include <QToolButton>
-#include <QHash>
-#include <QToolBar>
+#include "ListDialog.h"
 
-#include "MiscPluginFactory.h"
-
-class PluginPage : public QWidget
+class ScannerSelectEditDialog : public ListDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalMessage (QString);
-    void signalChartRefresh ();
-    void signalGroupRefresh ();
-
   public:
-    enum Action
-    {
-      Configure
-    };
-
-    PluginPage ();
-    void createActions ();
-    void createButtonMenu (QToolBar *);
+    ScannerSelectEditDialog ();
 
   public slots:
-    void doubleClick (QListWidgetItem *);
-    void rightClick (const QPoint &);
-    void configure ();
-    void configure (QString &);
-    void updateList ();
-    void listStatus ();
-
-  protected:
-    QListWidget *_list;
-    QMenu *_menu;
-    QHash<int, QAction *> _actions;
-    MiscPluginFactory _fac;
+    void done ();
 };
 
 #endif
-

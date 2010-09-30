@@ -34,7 +34,6 @@ class Quotes : public QSPlugin
     {
       _Set,
       _Date,
-      _Recent,
       _Delete,
       _Rename
     };
@@ -43,7 +42,6 @@ class Quotes : public QSPlugin
     int command (QStringList &input, QString &dbPath, QString &output);
     int set (QStringList &input, QString &dbPath, QString &output, QSLog &);
     int date (QStringList &input, QString &dbPath, QString &output, QSLog &);
-    int recent (QStringList &input, QString &dbPath, QString &output, QSLog &);
     int remove (QStringList &input, QString &dbPath, QString &output, QSLog &);
     int rename (QStringList &input, QString &dbPath, QString &output, QSLog &);
 

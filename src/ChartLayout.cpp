@@ -40,6 +40,7 @@
 ChartLayout::ChartLayout ()
 {
   _startIndex = -1;
+  _barSpacing = 8;
   
   setOpaqueResize(FALSE); // only draw widget after resize is complete to speed things up
 
@@ -199,6 +200,8 @@ void ChartLayout::addTab (Indicator &i)
   settings.plot->showDate(i.date());
   settings.plot->setLogScaling(i.getLog());
 
+  settings.plot->setBarSpacing(_barSpacing);
+
   connect(this, SIGNAL(signalBackgroundColor(QColor)), settings.plot, SLOT(setBackgroundColor(QColor)));
   connect(this, SIGNAL(signalFont(QFont)), settings.plot, SLOT(setFont(QFont)));
   connect(this, SIGNAL(signalGridColor(QColor)), settings.plot, SLOT(setGridColor(QColor)));
@@ -285,6 +288,7 @@ void ChartLayout::setCrossHairsColor (QColor d)
 
 void ChartLayout::setBarSpacing (int d)
 {
+  _barSpacing = d;
   emit signalBarSpacing(d);
   emit signalDraw();
 }

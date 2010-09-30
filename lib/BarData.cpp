@@ -366,6 +366,18 @@ void BarData::barLengthText (BarData::BarLength k, QString &d)
   }
 }
 
+int BarData::setKey (QString d)
+{
+  QStringList l = d.split(":");
+  if (l.count() != 2)
+    return 1;
+  
+  _exchange  = l.at(0);
+  _symbol = l.at(1);
+  
+  return 0;
+}
+
 QString BarData::getKey ()
 {
   QString s = _exchange + ":" + _symbol;

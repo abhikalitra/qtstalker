@@ -121,8 +121,8 @@ SUBDIRS += plugins/indicators/ROC
 SUBDIRS += plugins/indicators/RSI
 SUBDIRS += plugins/indicators/SAR
 SUBDIRS += plugins/indicators/STOCH
-SUBDIRS += plugins/indicators/STOCHS
 SUBDIRS += plugins/indicators/STOCHRSI
+SUBDIRS += plugins/indicators/STOCHS
 SUBDIRS += plugins/indicators/SZ
 SUBDIRS += plugins/indicators/T3
 SUBDIRS += plugins/indicators/THERM
@@ -137,6 +137,7 @@ SUBDIRS += plugins/indicators/WILLR
 # compile misc plugins
 SUBDIRS += plugins/misc/Alert
 SUBDIRS += plugins/misc/CSV
+SUBDIRS += plugins/misc/Scanner
 SUBDIRS += plugins/misc/Yahoo
 
 # compile QuoteServer

@@ -99,6 +99,7 @@ void PluginPage::configure (QString &name)
   if (! plug->connected())
   {
     connect(plug, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
+    connect(plug, SIGNAL(signalGroupRefresh()), this, SIGNAL(signalGroupRefresh()));
     plug->setConnected(1);
   }
 

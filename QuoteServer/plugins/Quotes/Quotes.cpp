@@ -29,7 +29,7 @@
 
 Quotes::Quotes ()
 {
-  _methodList << "Set" << "Date" << "Recent" << "Delete" << "Rename";
+  _methodList << "Set" << "Date" << "Delete" << "Rename";
 }
 
 int Quotes::command (QStringList &input, QString &dbPath, QString &output)
@@ -53,9 +53,6 @@ int Quotes::command (QStringList &input, QString &dbPath, QString &output)
       break;
     case _Date:
       rc = date(input, dbPath, output, log);
-      break;
-    case _Recent:
-      rc = recent(input, dbPath, output, log);
       break;
     case _Delete:
       rc = remove(input, dbPath, output, log);
@@ -198,8 +195,8 @@ int Quotes::set (QStringList &input, QString &dbPath, QString &output, QSLog &lo
 
 int Quotes::date (QStringList &input, QString &dbPath, QString &output, QSLog &log)
 {
-  // format = Quotes,Date,<EXCHANGE>,<SYMBOL>,<LENGTH>,<START_DATE>,<END_DATE>
-  //           0       1      2         3        4          5           6
+  // format = Quotes,Date,<EXCHANGE>,<SYMBOL>,<LENGTH>,<START_DATE>,<END_DATE>,<DATE RANGE>
+  //           0       1      2         3        4          5           6           7
   //
   // each parm is delimited by a comma
   // the end of data is delimited by a new line
@@ -210,7 +207,7 @@ int Quotes::date (QStringList &input, QString &dbPath, QString &output, QSLog &l
   // each bar is delimited by a colon, and each bar value is delimited by a comma
   // the end of data is delimited by a new line
 
-  if (input.count() != 7)
+  if (input.count() != 8)
   {
     log.message(QSLog::Error, QString(" Quotes::date: invalid parm count " + QString::number(input.count())));
     return 1;
@@ -231,92 +228,49 @@ int Quotes::date (QStringList &input, QString &dbPath, QString &output, QSLog &l
     return 1;
   }
 
-  symbol.startDate = QDateTime::fromString(input.at(5), QString("yyyyMMddHHmmss"));
-  if (! symbol.startDate.isValid())
+  // check if valid date range index number
+  bool ok;
+  symbol.dateRange = input.at(7).toInt(&ok);
+  if (! ok)
   {
-    log.message(QSLog::Error, QString(" Quotes::date: invalid start date " + input.at(5)));
+    log.message(QSLog::Error, QString(" Quotes::date: invalid date range " + input.at(7)));
     return 1;
+  }
+
+  int recentFlag = 0;
+  if (symbol.dateRange != -1)
+  {
+    // check if date range number is in list index bounds
+    QSDateRange dr;
+    l.clear();
+    dr.list(l);
+    if (symbol.dateRange < 0 || symbol.dateRange >= l.count())
+    {
+      log.message(QSLog::Error, QString(" Quotes::date: invalid date range " + input.at(7)));
+      return 1;
+    }
+
+    recentFlag = 1;
+  }
+
+  symbol.startDate = QDateTime::fromString(input.at(5), QString("yyyyMMddHHmmss"));
+  if (! recentFlag)
+  {
+    if (! symbol.startDate.isValid())
+    {
+      log.message(QSLog::Error, QString(" Quotes::date: invalid start date " + input.at(5)));
+      return 1;
+    }
   }
 
   symbol.endDate = QDateTime::fromString(input.at(6), QString("yyyyMMddHHmmss"));
-  if (! symbol.endDate.isValid())
+  if (! recentFlag)
   {
-    log.message(QSLog::Error, QString(" Quotes::date: invalid end date " + input.at(6)));
-    return 1;
-  }
-
-  QSQuoteDataBase db(dbPath);
-  if (db.symbol(symbol))
-   return 1;
-
-  if (db.getBars(symbol))
-    return 1;
-
-  output = symbol.data;
-
-  return 0;
-}
-
-int Quotes::recent (QStringList &input, QString &dbPath, QString &output, QSLog &log)
-{
-  // format = Quotes,Recent,<EXCHANGE>,<SYMBOL>,<BAR LENGTH>,<DATE RANGE>,<BARS>
-  //            0      1        2         3          4            5          6
-  // will return the most recent bars available for <DATE RANGE>
-
-  // each parm is delimited by a comma
-  // the end of data is delimited by a new line
-
-  // output format depends on security type Stock,Futures
-  // the stable output portion is Start DateTime,End DateTime,Open,High,Low,Close,Volume,*
-  //
-  // each bar is delimited by a colon, and each bar value is delimited by a comma
-  // the end of data is delimited by a new line
-
-  if (input.count() != 7)
-  {
-    log.message(QSLog::Error, QString(" Quotes::recent: invalid parm count " + QString::number(input.count())));
-    return 1;
-  }
-
-  QSSymbol symbol;
-  symbol.exchange = input.at(2);
-  symbol.symbol = input.at(3);
-
-  QSBar bar;
-  QStringList l;
-  bar.lengthList(l);
-  symbol.length = l.indexOf(input.at(4));
-  if (symbol.length == -1)
-  {
-    log.message(QSLog::Error, QString(" Quotes::recent: invalid length " + input.at(4)));
-    return 1;
-  }
-
-  // check if valid date range index number
-  bool ok;
-  symbol.dateRange = input.at(5).toInt(&ok);
-  if (! ok)
-  {
-    log.message(QSLog::Error, QString(" Quotes::recent: invalid date range " + input.at(5)));
-    return 1;
-  }
-
-  // check if date range number is in list index bounds
-  QSDateRange dr;
-  l.clear();
-  dr.list(l);
-  if (symbol.dateRange < 0 || symbol.dateRange >= l.count())
-  {
-    log.message(QSLog::Error, QString(" Quotes::recent: invalid date range " + input.at(5)));
-    return 1;
-  }
-
-  symbol.bars = 0;
-  symbol.bars = input.at(6).toInt(&ok);
-  if (! ok)
-  {
-    log.message(QSLog::Error, QString(" Quotes::recent: invalid bars value " + input.at(6)));
-    return 1;
+    if (! symbol.endDate.isValid())
+    {
+      log.message(QSLog::Error, QString(" Quotes::date: invalid end date " + input.at(6)));
+      return 1;
+    }
   }
 
   QSQuoteDataBase db(dbPath);

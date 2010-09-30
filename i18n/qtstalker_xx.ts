@@ -160,10 +160,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scan Interval Minutes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Alert Sound</source>
         <translation type="unfinished"></translation>
     </message>
@@ -194,16 +190,24 @@ e.g. Qtstalker Alert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Message Body</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Message body of mail
 e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Email</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scan interval in minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -254,10 +258,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reset alert back to monitor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Alerts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -277,13 +277,29 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Configure settings for alerts</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>AlertEditDialog</name>
+    <message>
+        <source>Reset alert back to waiting</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>New Alert</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Edit Alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alert Triggered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AlertEditDialog</name>
     <message>
         <source>Symbol</source>
         <translation type="unfinished"></translation>
@@ -298,18 +314,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Indicator settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Notify with mail</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Notify with sound</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Notify with popup message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -334,6 +338,38 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Bar Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The amount of bars to use for the indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mail</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notify by mail</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notify by playing a sound file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Popup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notify by popup message</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2986,6 +3022,164 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScannerDeleteDialog</name>
+    <message>
+        <source>Delete Scanners</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Delete:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected scanners.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scanner(s) deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScannerDialog</name>
+    <message>
+        <source>&amp;Run</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run scanner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create a new scanner...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit scanner...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete scanner...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scanners</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop scanner</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScannerEditDialog</name>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator settings...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The amount of bars to use for the indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scan results group name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group name empty or invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScannerNewDialog</name>
+    <message>
+        <source>New Scanner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A scanner with this name already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScannerRunDialog</name>
+    <message>
+        <source>Run Scanners</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScannerSelectEditDialog</name>
+    <message>
+        <source>Edit Scanner</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

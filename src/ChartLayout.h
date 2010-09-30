@@ -95,6 +95,7 @@ class ChartLayout : public QSplitter
     QHash<int, QHBoxLayout *> _grids;
     QHash<int, QWidget *> _holders;
     int _startIndex;
+    int _barSpacing;
 };
 
 #endif

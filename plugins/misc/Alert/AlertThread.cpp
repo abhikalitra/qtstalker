@@ -25,7 +25,7 @@
 #include "BarData.h"
 #include "IndicatorPluginFactory.h"
 #include "IndicatorPlugin.h"
-#include "AlertOperator.h"
+#include "Operator.h"
 
 #include <QDebug>
 
@@ -39,11 +39,11 @@ AlertThread::AlertThread (QObject *p, AlertItem alert) : QThread (p)
 void AlertThread::run ()
 {
   QStringList tl;
-  tl << "Quotes" << "Recent" << _alert.exchange() << _alert.symbol();
+  tl << "Quotes" << "Date" << _alert.exchange() << _alert.symbol();
   BarData bd;
   QString s;
   bd.barLengthText((BarData::BarLength) _alert.barLength(), s);
-  tl << s << QString::number(_alert.bars()) << "0";
+  tl << s << "0" << "0" << QString::number(_alert.bars());
   QString command = tl.join(",") + "\n";
       
   QuoteServerRequest qsr;
@@ -93,37 +93,37 @@ void AlertThread::run ()
 
     total++;
     
-    switch ((AlertOperator::Operator) _alert.op(plotNames.at(loop)))
+    switch ((Operator::Type) _alert.op(plotNames.at(loop)))
     {
-      case AlertOperator::_LessThan:
+      case Operator::_LessThan:
       {
         CurveBar *bar = curve->bar(curve->count() - 1);
         if (bar->data() < _alert.value(plotNames.at(loop)))
           count++;
         break;
       }
-      case AlertOperator::_LessThanEqual:
+      case Operator::_LessThanEqual:
       {
         CurveBar *bar = curve->bar(curve->count() - 1);
         if (bar->data() <= _alert.value(plotNames.at(loop)))
           count++;
         break;
       }
-      case AlertOperator::_Equal:
+      case Operator::_Equal:
       {
         CurveBar *bar = curve->bar(curve->count() - 1);
         if (bar->data() == _alert.value(plotNames.at(loop)))
           count++;
         break;
       }
-      case AlertOperator::_GreaterThanEqual:
+      case Operator::_GreaterThanEqual:
       {
         CurveBar *bar = curve->bar(curve->count() - 1);
         if (bar->data() >= _alert.value(plotNames.at(loop)))
           count++;
         break;
       }
-      case AlertOperator::_GreaterThan:
+      case Operator::_GreaterThan:
       {
         CurveBar *bar = curve->bar(curve->count() - 1);
         if (bar->data() > _alert.value(plotNames.at(loop)))

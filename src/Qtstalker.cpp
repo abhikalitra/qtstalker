@@ -285,12 +285,7 @@ void QtstalkerApp::loadChart (BarData symbol)
 
   // construct a QuoteServer command to get the quotes
   QStringList l;
-  l << "Quotes";
-  if (_dateRangeButton->isChecked())
-    l << "Date";
-  else
-    l << "Recent";
-  l << _currentChart.getExchange() << _currentChart.getSymbol();
+  l << "Quotes" << "Date" << _currentChart.getExchange() << _currentChart.getSymbol();
   QString s;
   _barLengthButtons->getCurrentText(s);
   l << s;
@@ -298,12 +293,10 @@ void QtstalkerApp::loadChart (BarData symbol)
   {
     l << _dateRangeButton->startDate().toString("yyyyMMddHHmmss");
     l << _dateRangeButton->endDate().toString("yyyyMMddHHmmss");
+    l << "-1";
   }
   else
-  {
-    l << QString::number(_dateRange->dateRange());
-    l << "0";
-  }
+    l << "0" << "0" << QString::number(_dateRange->dateRange());
   
   QString command = l.join(",") + "\n";
 

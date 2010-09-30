@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,35 +19,29 @@
  *  USA.
  */
 
-#ifndef MISC_PLUGIN_HPP
-#define MISC_PLUGIN_HPP
+#ifndef OPERATOR_HPP
+#define OPERATOR_HPP
 
-#include <QObject>
-#include <QString>
+#include <QStringList>
 
-class MiscPlugin : public QObject
+class Operator
 {
-  Q_OBJECT
-  
-  signals:
-    void signalMessage (QString);
-    void signalChartRefresh ();
-    void signalGroupRefresh ();
-
   public:
-    MiscPlugin ();
-    virtual ~MiscPlugin ();
-    virtual int configureDialog ();
+    enum Type
+    {
+      _LessThan,
+      _LessThanEqual,
+      _Equal,
+      _GreaterThanEqual,
+      _GreaterThan
+    };
+    
+    Operator ();
+    QStringList & list ();
+    Operator::Type stringToOperator (QString);
 
-    QString & name ();
-    QString & description ();
-    void setConnected (int);
-    int connected ();
-
-  protected:
-    QString _name;
-    QString _description;
-    int _connected;
+  private:
+    QStringList _list;
 };
 
 #endif

@@ -38,7 +38,9 @@
 #include <QDialogButtonBox>
 #include <QToolButton>
 #include <QInputDialog>
-#include <QSound>
+//#include <QSound>
+#include <QProcess>
+#include <phonon/mediaobject.h>
 
 AlertDialog::AlertDialog ()
 {
@@ -330,11 +332,24 @@ void AlertDialog::done (AlertItem alert)
     AlertConfig config;
     QString s;
     config.getData(AlertConfig::_SoundFile, s);
-    QSound::play(s);
+    Phonon::MediaObject *sound = Phonon::createPlayer(Phonon::MusicCategory,
+                                                      Phonon::MediaSource(s));
+    connect(sound, SIGNAL(finished()), sound, SLOT(deleteLater()));
+    sound->play();
   }
 
   if (alert.mail())
   {
+    AlertConfig config;
+    QString addy, subject, body;
+    config.getData(AlertConfig::_MailAddress, addy);
+    config.getData(AlertConfig::_MailSubject, subject);
+    config.getData(AlertConfig::_MailBody, body);
+
+    QString command = "echo \"" + body + "\" | mail -s \"" + subject + "\" " + addy;
+    int rc = QProcess::startDetached(command);
+    if (! rc)
+      qDebug() << "AlertDialog::done: process error";
   }
 }
 

@@ -795,5 +795,16 @@
 
            Fixed another mutex bug with indicator deletes.
 
+20100929:  Fixed negative scaling values to shorter display strings.
+
+20100930:  Added new misc plugin Scanner. Scanner works much the same as Alert. Symbols that meet values are
+           put into the specified group that can be viewed in the group panel. Working, but not tested
+           thoroughly.
+
+           Removed the 'Recent' QuoteServer option from the Quotes module and merged it with the 'Date' option.
+
+           Alert plugin now working but also not tested much.
+
+
 
 

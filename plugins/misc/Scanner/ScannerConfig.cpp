@@ -19,35 +19,23 @@
  *  USA.
  */
 
-#ifndef MISC_PLUGIN_HPP
-#define MISC_PLUGIN_HPP
+#include "ScannerConfig.h"
 
-#include <QObject>
-#include <QString>
+#include <QtDebug>
 
-class MiscPlugin : public QObject
+ScannerConfig::ScannerConfig ()
 {
-  Q_OBJECT
-  
-  signals:
-    void signalMessage (QString);
-    void signalChartRefresh ();
-    void signalGroupRefresh ();
+  _dbName = "data";
+  _tableName = "ScannerPluginConfig";
 
-  public:
-    MiscPlugin ();
-    virtual ~MiscPlugin ();
-    virtual int configureDialog ();
+  QSqlDatabase db = QSqlDatabase::database(_dbName);
+  QSqlQuery q(db);
+  QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
+  s.append("key INT PRIMARY KEY UNIQUE");
+  s.append(", setting TEXT");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "ScannerConfig::ScannerConfig: " << q.lastError().text();
+}
 
-    QString & name ();
-    QString & description ();
-    void setConnected (int);
-    int connected ();
-
-  protected:
-    QString _name;
-    QString _description;
-    int _connected;
-};
-
-#endif

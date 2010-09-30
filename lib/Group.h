@@ -39,6 +39,7 @@ class Group
     int count ();
     void setSymbol (BarData);
     void getStringList (QStringList &);
+    void setStringList (QStringList &);
     int contains (BarData);
 
   protected:

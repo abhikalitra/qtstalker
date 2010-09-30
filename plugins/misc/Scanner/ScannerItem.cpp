@@ -19,105 +19,67 @@
  *  USA.
  */
 
-#include "AlertItem.h"
+#include "ScannerItem.h"
 
-#include <QObject>
+#include <QDebug>
 
-AlertItem::AlertItem ()
+ScannerItem::ScannerItem ()
 {
-  _statusList << QObject::tr("Waiting") << QObject::tr("Notify") << QObject::tr("Hit");
-  
-  _mail = 0;
-  _sound = 0;
-  _popup = 0;
-  _id = -1;
-  _status = AlertItem::_Waiting;
   _barLength = 0;
   _dateRange = 0;
-  _bars = 0;
 }
 
-void AlertItem::setExchange (QString d)
+void ScannerItem::setName (QString d)
 {
-  _exchange = d;
+  _name = d;
 }
 
-QString & AlertItem::exchange ()
+QString & ScannerItem::name ()
 {
-  return _exchange;
+  return _name;
 }
 
-void AlertItem::setSymbol (QString d)
+void ScannerItem::setGroup (Group &d)
 {
-  _symbol = d;
+  _group = d;
 }
 
-QString & AlertItem::symbol ()
+Group & ScannerItem::group ()
 {
-  return _symbol;
+  return _group;
 }
 
-void AlertItem::setSettings (QString d)
+void ScannerItem::setSettings (QString d)
 {
   _settings = d;
 }
 
-QString & AlertItem::settings ()
+QString & ScannerItem::settings ()
 {
   return _settings;
 }
 
-void AlertItem::setIndicator (QString d)
+void ScannerItem::setIndicator (QString d)
 {
   _indicator = d;
 }
 
-QString & AlertItem::indicator ()
+QString & ScannerItem::indicator ()
 {
   return _indicator;
 }
 
-void AlertItem::setMail (int d)
-{
-  _mail = d;
-}
-
-int AlertItem::mail ()
-{
-  return _mail;
-}
-
-void AlertItem::setSound (int d)
-{
-  _sound = d;
-}
-
-int AlertItem::sound ()
-{
-  return _sound;
-}
-
-void AlertItem::setPopup (int d)
-{
-  _popup = d;
-}
-
-int AlertItem::popup ()
-{
-  return _popup;
-}
-
-void AlertItem::setEnable (QString k, int d)
+void ScannerItem::setEnable (QString k, int d)
 {
   _enable.insert(k, d);
 }
 
-int AlertItem::enable (QString k)
+int ScannerItem::enable (QString k)
 {
   return _enable.value(k);
 }
 
-QString AlertItem::enableString ()
+QString ScannerItem::enableString ()
 {
   QStringList l;
   QHashIterator<QString, int> it(_enable);
@@ -131,13 +93,13 @@ QString AlertItem::enableString ()
   return l.join(",");
 }
 
-void AlertItem::setEnableString (QString d)
+void ScannerItem::setEnableString (QString d)
 {
   _enable.clear();
-  
+
   if (d.isEmpty())
     return;
-
+  
   QStringList l = d.split(",");
 
   int loop = 0;
@@ -145,17 +107,17 @@ void AlertItem::setEnableString (QString d)
     _enable.insert(l.at(loop), l.at(loop + 1).toInt());
 }
 
-void AlertItem::setOp (QString k, int d)
+void ScannerItem::setOp (QString k, int d)
 {
   _op.insert(k, d);
 }
 
-int AlertItem::op (QString k)
+int ScannerItem::op (QString k)
 {
   return _op.value(k);
 }
 
-QString AlertItem::opString ()
+QString ScannerItem::opString ()
 {
   QStringList l;
   QHashIterator<QString, int> it(_op);
@@ -169,7 +131,7 @@ QString AlertItem::opString ()
   return l.join(",");
 }
 
-void AlertItem::setOpString (QString d)
+void ScannerItem::setOpString (QString d)
 {
   _op.clear();
 
@@ -183,17 +145,17 @@ void AlertItem::setOpString (QString d)
     _op.insert(l.at(loop), l.at(loop + 1).toInt());
 }
 
-void AlertItem::setValue (QString k, double d)
+void ScannerItem::setValue (QString k, double d)
 {
   _value.insert(k, d);
 }
 
-double AlertItem::value (QString k)
+double ScannerItem::value (QString k)
 {
   return _value.value(k);
 }
 
-QString AlertItem::valueString ()
+QString ScannerItem::valueString ()
 {
   QStringList l;
   QHashIterator<QString, double> it(_value);
@@ -207,7 +169,7 @@ QString AlertItem::valueString ()
   return l.join(",");
 }
 
-void AlertItem::setValueString (QString d)
+void ScannerItem::setValueString (QString d)
 {
   _value.clear();
 
@@ -221,57 +183,32 @@ void AlertItem::setValueString (QString d)
     _value.insert(l.at(loop), l.at(loop + 1).toDouble());
 }
 
-void AlertItem::setId (int d)
-{
-  _id = d;
-}
-
-int AlertItem::id ()
-{
-  return _id;
-}
-
-void AlertItem::setStatus (AlertItem::Status d)
-{
-  _status = d;
-}
-
-AlertItem::Status AlertItem::status ()
-{
-  return _status;
-}
-
-QString AlertItem::statusToString (AlertItem::Status d)
-{
-  return _statusList.at((int) d);
-}
-
-void AlertItem::setBarLength (int d)
+void ScannerItem::setBarLength (int d)
 {
   _barLength = d;
 }
 
-int AlertItem::barLength ()
+int ScannerItem::barLength ()
 {
   return _barLength;
 }
 
-void AlertItem::setDateRange (int d)
+void ScannerItem::setDateRange (int d)
 {
   _dateRange = d;
 }
 
-int AlertItem::dateRange ()
+int ScannerItem::dateRange ()
 {
   return _dateRange;
 }
 
-int AlertItem::count ()
+int ScannerItem::count ()
 {
   return _enable.count();
 }
 
-void AlertItem::keys (QStringList &l)
+void ScannerItem::keys (QStringList &l)
 {
   l.clear();
   
@@ -283,13 +220,13 @@ void AlertItem::keys (QStringList &l)
   }
 }
 
-void AlertItem::setBars (int d)
+void ScannerItem::setGroupName (QString d)
 {
-  _bars = d;
+  _groupName = d;
 }
 
-int AlertItem::bars ()
+QString & ScannerItem::groupName ()
 {
-  return _bars;
+  return _groupName;
 }
 

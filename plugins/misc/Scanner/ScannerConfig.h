@@ -19,53 +19,23 @@
  *  USA.
  */
 
-#ifndef PLUGIN_PAGE_HPP
-#define PLUGIN_PAGE_HPP
+#ifndef SCANNER_CONFIG_HPP
+#define SCANNER_CONFIG_HPP
 
 #include <QString>
-#include <QWidget>
-#include <QMenu>
-#include <QListWidget>
-#include <QList>
-#include <QAction>
-#include <QToolButton>
-#include <QHash>
-#include <QToolBar>
 
-#include "MiscPluginFactory.h"
+#include "ConfigDataBase.h"
 
-class PluginPage : public QWidget
+class ScannerConfig : public ConfigDataBase
 {
-  Q_OBJECT
-
-  signals:
-    void signalMessage (QString);
-    void signalChartRefresh ();
-    void signalGroupRefresh ();
-
   public:
-    enum Action
+    enum Parm
     {
-      Configure
+      _Size, // window size
+      _Pos // position
     };
 
-    PluginPage ();
-    void createActions ();
-    void createButtonMenu (QToolBar *);
-
-  public slots:
-    void doubleClick (QListWidgetItem *);
-    void rightClick (const QPoint &);
-    void configure ();
-    void configure (QString &);
-    void updateList ();
-    void listStatus ();
-
-  protected:
-    QListWidget *_list;
-    QMenu *_menu;
-    QHash<int, QAction *> _actions;
-    MiscPluginFactory _fac;
+    ScannerConfig ();
 };
 
 #endif

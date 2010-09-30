@@ -19,35 +19,33 @@
  *  USA.
  */
 
-#ifndef MISC_PLUGIN_HPP
-#define MISC_PLUGIN_HPP
+#include "ScannerRunDialog.h"
+#include "ScannerDataBase.h"
+#include "Globals.h"
 
-#include <QObject>
-#include <QString>
+#include <QtDebug>
 
-class MiscPlugin : public QObject
+ScannerRunDialog::ScannerRunDialog ()
 {
-  Q_OBJECT
+  setWindowTitle("QtStalker" + g_session + ": " + tr("Run Scanners"));
+
+  ScannerDataBase db;
+  QStringList l;
+  db.getScanners(l);
+  _list->addItems(l);
+}
+
+void ScannerRunDialog::done ()
+{
+  QList<QListWidgetItem *> sl = _list->selectedItems();
+
+  QStringList l;
+  int loop = 0;
+  for (; loop < sl.count(); loop++)
+    l.append(sl.at(loop)->text());
   
-  signals:
-    void signalMessage (QString);
-    void signalChartRefresh ();
-    void signalGroupRefresh ();
+  emit signalSelect(l);
+  
+  accept();
+}
 
-  public:
-    MiscPlugin ();
-    virtual ~MiscPlugin ();
-    virtual int configureDialog ();
-
-    QString & name ();
-    QString & description ();
-    void setConnected (int);
-    int connected ();
-
-  protected:
-    QString _name;
-    QString _description;
-    int _connected;
-};
-
-#endif

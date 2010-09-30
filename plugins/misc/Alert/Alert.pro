@@ -9,7 +9,6 @@ HEADERS += AlertDataBase.h
 HEADERS += AlertDialog.h
 HEADERS += AlertEditDialog.h
 HEADERS += AlertItem.h
-HEADERS += AlertOperator.h
 HEADERS += AlertThread.h
 
 SOURCES += Alert.cpp
@@ -19,5 +18,6 @@ SOURCES += AlertDataBase.cpp
 SOURCES += AlertDialog.cpp
 SOURCES += AlertEditDialog.cpp
 SOURCES += AlertItem.cpp
-SOURCES += AlertOperator.cpp
 SOURCES += AlertThread.cpp
+
+QT += phonon
