@@ -5,7 +5,6 @@ CONFIG += thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 
-
 HEADERS += Bar.h
 HEADERS += BarData.h
 HEADERS += BarRange.h
@@ -254,34 +253,6 @@ SOURCES += SymbolDialog.cpp
 TARGET = qtstalker
 
 VERSION = 0.37.0
-
-unix {
-  # qmake automatically adds /usr/lib
-  INCLUDEPATH += /usr/include/qt4/Qt
-
-  # for Ubuntu
-  INCLUDEPATH += /usr/include/qwt-qt4
-
-  # Qwt library (check if ubuntu system)
-  exists(/usr/lib/libqwt-qt4.so) {
-    LIBS += -lqwt-qt4
-  } else {
-    LIBS += -lqwt
-  }
-
-  exists(/usr/local/lib) {
-    LIBS += -L/usr/local/lib
-  }
-}
-
-TA_LIB_VERSION = $$system(ta-lib-config --version)
-contains(TA_LIB_VERSION, 0.3.0) {
-    LIBS += -lta_abstract
-    LIBS += -lta_common
-    LIBS += -lta_func
-  } else {
-    LIBS += -lta_lib
-  }
 
 message("Using INCLUDEPATH=$$INCLUDEPATH")
 message("Using LIBS=$$LIBS")

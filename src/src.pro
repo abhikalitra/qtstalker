@@ -100,26 +100,6 @@ INCLUDEPATH += ../lib
 
 LIBS += -L../lib -lqtstalker
 
-unix {
-  # qmake automatically adds /usr/lib
-  INCLUDEPATH += /usr/include/qt4/Qt
-
-  # for Ubuntu
-  INCLUDEPATH += /usr/include/qwt-qt4
-
-  # Qwt library (check if ubuntu system)
-  exists(/usr/lib/libqwt-qt4.so) {
-    LIBS += -lqwt-qt4
-  } else {
-    LIBS += -lqwt
-  }
-
-  exists(/usr/local/lib) {
-    LIBS += -L/usr/local/lib
-  }
-}
-
-
 message("Using INCLUDEPATH=$$INCLUDEPATH")
 message("Using LIBS=$$LIBS")
 

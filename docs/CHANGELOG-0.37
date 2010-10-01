@@ -805,6 +805,9 @@
 
            Alert plugin now working but also not tested much.
 
-
+20100930:  Streamlined the qmake configuration process. For non-standard locations of libraries and
+           installation, utilise the qtstalker.config file. See docs/install.html
+           Note that CVS users will need to do 'make distclean'.
+           Thanks to xley.
 
 

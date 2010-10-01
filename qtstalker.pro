@@ -1,7 +1,6 @@
 exists(.qmake.cache) {
   message("Using the existing .qmake.cache")
-}
-else {
+} else {
   message("Doing automated configuration ...")
 
   unix {
@@ -14,6 +13,18 @@ else {
     }
     exists(/usr/local/include/ta-lib) {
       INCLUDEPATH += /usr/local/include/ta-lib
+    }
+    exists(/usr/local/lib) {
+      LIBS += -L/usr/local/lib
+    }
+    # Determine Qwt for Ubuntu
+    exists(/usr/include/qwt-qt4) {
+      INCLUDEPATH += /usr/include/qwt-qt4
+    }
+    exists(/usr/lib/libqwt-qt4.so) {
+      LIBS += -lqwt-qt4
+    } else {
+      LIBS += -lqwt
     }
   }
 
@@ -49,10 +60,18 @@ else {
 
   !exists(qtstalker.config) {
     error("Missing configuration file qtstalker.config")
-  }
-  else {
+  } else {
     message("Including qtstalker.config")
     include(qtstalker.config)
+  }
+
+  TA_LIB_VERSION = $$system(ta-lib-config --version)
+  contains(TA_LIB_VERSION, 0.3.0) {
+    LIBS += -lta_abstract
+    LIBS += -lta_common
+    LIBS += -lta_func
+  } else {
+    LIBS += -lta_lib
   }
 
   INCLUDEPATH = $$unique(INCLUDEPATH)

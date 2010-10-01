@@ -35,17 +35,8 @@ SOURCES += QSDetail.cpp
 
 VERSION = 0.1.0
 
-unix {
-  # qmake automatically adds /usr/lib
-  INCLUDEPATH += /usr/include/qt4/Qt
-  exists(/usr/local/lib) {
-    LIBS += -L/usr/local/lib
-  }
-}
-
-
 TARGET = QuoteServer
-target.path = /usr/local/lib
+target.path = "$${INSTALL_LIB_DIR}"
 INSTALLS += target
 
 
