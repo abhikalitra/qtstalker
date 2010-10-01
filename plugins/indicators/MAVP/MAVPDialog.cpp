@@ -20,7 +20,6 @@
  */
 
 #include "MAVPDialog.h"
-#include "FunctionMAVP.h"
 #include "FunctionMA.h"
 #include "MAVP.h"
 #include "Curve.h"
@@ -58,7 +57,7 @@ void MAVPDialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(MAVP::Input, d);
+  _settings.getData(MAVP::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -69,7 +68,7 @@ void MAVPDialog::createGeneralPage ()
   label = new QLabel(tr("Input 2"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MAVP::Input2, d);
+  _settings.getData(MAVP::_Input2, d);
 
   _input2 = new QComboBox;
   _input2->addItems(l);
@@ -83,7 +82,7 @@ void MAVPDialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(MAVP::MAType, d);
+  _settings.getData(MAVP::_MAType, d);
 
   _maType = new QComboBox;
   _maType->addItems(l);
@@ -96,7 +95,7 @@ void MAVPDialog::createGeneralPage ()
 
   _min = new QSpinBox;
   _min->setRange(2, 100000);
-  _min->setValue(_settings.getInt(MAVP::Min));
+  _min->setValue(_settings.getInt(MAVP::_Min));
   grid->addWidget(_min, row++, col--);
 
   // max
@@ -105,14 +104,14 @@ void MAVPDialog::createGeneralPage ()
 
   _max = new QSpinBox;
   _max->setRange(2, 100000);
-  _max->setValue(_settings.getInt(MAVP::Max));
+  _max->setValue(_settings.getInt(MAVP::_Max));
   grid->addWidget(_max, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MAVP::Color, d);
+  _settings.getData(MAVP::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -126,7 +125,7 @@ void MAVPDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(MAVP::Plot, d);
+  _settings.getData(MAVP::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -137,7 +136,7 @@ void MAVPDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MAVP::Label, d);
+  _settings.getData(MAVP::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -149,14 +148,14 @@ void MAVPDialog::createGeneralPage ()
 
 void MAVPDialog::done ()
 {
-  _settings.setData(MAVP::MAType, _maType->currentText());
-  _settings.setData(MAVP::Input, _input->currentText());
-  _settings.setData(MAVP::Input2, _input2->currentText());
-  _settings.setData(MAVP::Min, _min->value());
-  _settings.setData(MAVP::Max, _max->value());
-  _settings.setData(MAVP::Color, _color->color().name());
-  _settings.setData(MAVP::Plot, _plotStyle->currentText());
-  _settings.setData(MAVP::Label, _label->text());
+  _settings.setData(MAVP::_MAType, _maType->currentText());
+  _settings.setData(MAVP::_Input, _input->currentText());
+  _settings.setData(MAVP::_Input2, _input2->currentText());
+  _settings.setData(MAVP::_Min, _min->value());
+  _settings.setData(MAVP::_Max, _max->value());
+  _settings.setData(MAVP::_Color, _color->color().name());
+  _settings.setData(MAVP::_Plot, _plotStyle->currentText());
+  _settings.setData(MAVP::_Label, _label->text());
 
   _indicator.setSettings(_settings);
 

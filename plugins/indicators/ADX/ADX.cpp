@@ -21,102 +21,102 @@
 
 #include "ADX.h"
 #include "Curve.h"
-#include "FunctionADX.h"
 #include "ADXDialog.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 ADX::ADX ()
 {
   _indicator = "ADX";
+  
+  _methodList << "ADX" << "ADXR" << "+DI" << "-DI" << "DX";
 }
 
 int ADX::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
-  int period = settings.getInt(Period);
+  int period = settings.getInt(_Period);
 
-  FunctionADX f;
-
-  if (settings.getInt(MDICheck))
+  if (settings.getInt(_MDICheck))
   {
-    Curve *line = f.calculate(period, (int) FunctionADX::_MDI, data);
+    Curve *line = calculate(period, (int) _MDI, data);
     if (! line)
       return 1;
 
     QString s;
-    settings.getData(MDIPlot, s);
+    settings.getData(_MDIPlot, s);
     line->setType((Curve::Type) line->typeFromString(s));
 
-    settings.getData(MDIColor, s);
+    settings.getData(_MDIColor, s);
     QColor c(s);
     line->setColor(c);
 
-    settings.getData(MDILabel, s);
+    settings.getData(_MDILabel, s);
     line->setLabel(s);
 
     line->setZ(0);
     ind.setLine(0, line);
   }
 
-  if (settings.getInt(PDICheck))
+  if (settings.getInt(_PDICheck))
   {
-    Curve *line = f.calculate(period, (int) FunctionADX::_PDI, data);
+    Curve *line = calculate(period, (int) _PDI, data);
     if (! line)
       return 1;
 
     QString s;
-    settings.getData(PDIPlot, s);
+    settings.getData(_PDIPlot, s);
     line->setType((Curve::Type) line->typeFromString(s));
 
-    settings.getData(PDIColor, s);
+    settings.getData(_PDIColor, s);
     QColor c(s);
     line->setColor(c);
 
-    settings.getData(PDILabel, s);
+    settings.getData(_PDILabel, s);
     line->setLabel(s);
     
     line->setZ(1);
     ind.setLine(1, line);
   }
 
-  if (settings.getInt(ADXCheck))
+  if (settings.getInt(_ADXCheck))
   {
-    Curve *line = f.calculate(period, (int) FunctionADX::_ADX, data);
+    Curve *line = calculate(period, (int) _ADX, data);
     if (! line)
       return 1;
 
     QString s;
-    settings.getData(ADXPlot, s);
+    settings.getData(_ADXPlot, s);
     line->setType((Curve::Type) line->typeFromString(s));
 
-    settings.getData(ADXColor, s);
+    settings.getData(_ADXColor, s);
     QColor c(s);
     line->setColor(c);
 
-    settings.getData(ADXLabel, s);
+    settings.getData(_ADXLabel, s);
     line->setLabel(s);
     
     line->setZ(2);
     ind.setLine(2, line);
   }
 
-  if (settings.getInt(ADXRCheck))
+  if (settings.getInt(_ADXRCheck))
   {
-    Curve *line = f.calculate(period, (int) FunctionADX::_ADXR, data);
+    Curve *line = calculate(period, (int) _ADXR, data);
     if (! line)
       return 1;
 
     QString s;
-    settings.getData(ADXRPlot, s);
+    settings.getData(_ADXRPlot, s);
     line->setType((Curve::Type) line->typeFromString(s));
 
-    settings.getData(ADXRColor, s);
+    settings.getData(_ADXRColor, s);
     QColor c(s);
     line->setColor(c);
 
-    settings.getData(ADXRLabel, s);
+    settings.getData(_ADXRLabel, s);
     line->setLabel(s);
     
     line->setZ(3);
@@ -128,8 +128,46 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
 
 int ADX::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionADX f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,ADX,<METHOD>,<NAME>,<PERIOD>
+  //     0       1     2     3       4       5
+
+  if (set.count() != 6)
+  {
+    qDebug() << "ADX::getCUS: invalid settings count" << set.count();
+    return 1;
+  }
+
+  int method = _methodList.indexOf(set.at(3));
+  if (method == -1)
+  {
+    qDebug() << "ADX::getCUS: invalid method" << set.at(3);
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[4]);
+  if (tl)
+  {
+    qDebug() << "ADX::getCUS: duplicate name" << set[4];
+    return 1;
+  }
+
+  bool ok;
+  int period = set[5].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "ADX::getCUS: invalid period" << set[5];
+    return 1;
+  }
+
+  Curve *line = calculate(period, method, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[4]);
+
+  ind.setLine(set[4], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * ADX::dialog (Indicator &i)
@@ -140,23 +178,23 @@ IndicatorPluginDialog * ADX::dialog (Indicator &i)
 void ADX::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(ADXColor, "blue");
-  set.setData(ADXRColor, "yellow");
-  set.setData(PDIColor, "green");
-  set.setData(MDIColor, "red");
-  set.setData(ADXPlot, "Line");
-  set.setData(ADXRPlot, "Line");
-  set.setData(PDIPlot, "Line");
-  set.setData(MDIPlot, "Line");
-  set.setData(ADXLabel, "ADX");
-  set.setData(ADXRLabel, "ADXR");
-  set.setData(PDILabel, "+DI");
-  set.setData(MDILabel, "-DI");
-  set.setData(ADXCheck, 1);
-  set.setData(ADXRCheck, 1);
-  set.setData(PDICheck, 1);
-  set.setData(MDICheck, 1);
-  set.setData(Period, 14);
+  set.setData(_ADXColor, "blue");
+  set.setData(_ADXRColor, "yellow");
+  set.setData(_PDIColor, "green");
+  set.setData(_MDIColor, "red");
+  set.setData(_ADXPlot, "Line");
+  set.setData(_ADXRPlot, "Line");
+  set.setData(_PDIPlot, "Line");
+  set.setData(_MDIPlot, "Line");
+  set.setData(_ADXLabel, "ADX");
+  set.setData(_ADXRLabel, "ADXR");
+  set.setData(_PDILabel, "+DI");
+  set.setData(_MDILabel, "-DI");
+  set.setData(_ADXCheck, 1);
+  set.setData(_ADXRCheck, 1);
+  set.setData(_PDICheck, 1);
+  set.setData(_MDICheck, 1);
+  set.setData(_Period, 14);
   i.setSettings(set);
 }
 
@@ -165,6 +203,112 @@ void ADX::plotNames (Indicator &i, QStringList &l)
   l.clear();
 
   Setting settings = i.settings();
+  QString s;
+
+  settings.getData(_ADXLabel, s);
+  l.append(s);
+
+  settings.getData(_ADXRLabel, s);
+  l.append(s);
+
+  settings.getData(_PDILabel, s);
+  l.append(s);
+
+  settings.getData(_MDILabel, s);
+  l.append(s);
+}
+
+Curve * ADX::calculate (int period, int method, BarData &data)
+{
+  if (data.count() < period)
+    return 0;
+
+  int size = data.count();
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  TA_RetCode rc = TA_SUCCESS;
+
+  switch ((Method) method)
+  {
+    case _ADX:
+      rc = TA_ADX(0,
+                  size - 1,
+                  data.getTAData(BarData::High),
+                  data.getTAData(BarData::Low),
+                  data.getTAData(BarData::Close),
+                  period,
+                  &outBeg,
+                  &outNb,
+                  &out[0]);
+      break;
+    case _ADXR:
+      rc = TA_ADXR(0,
+                   size - 1,
+                   data.getTAData(BarData::High),
+                   data.getTAData(BarData::Low),
+                   data.getTAData(BarData::Close),
+                   period,
+                   &outBeg,
+                   &outNb,
+                   &out[0]);
+      break;
+    case _PDI:
+      rc = TA_PLUS_DI(0,
+                      size - 1,
+                      data.getTAData(BarData::High),
+                      data.getTAData(BarData::Low),
+                      data.getTAData(BarData::Close),
+                      period,
+                      &outBeg,
+                      &outNb,
+                      &out[0]);
+      break;
+    case _MDI:
+      rc = TA_MINUS_DI(0,
+                       size - 1,
+                       data.getTAData(BarData::High),
+                       data.getTAData(BarData::Low),
+                       data.getTAData(BarData::Close),
+                       period,
+                       &outBeg,
+                       &outNb,
+                       &out[0]);
+      break;
+    case _DX:
+      rc = TA_DX(0,
+                 size - 1,
+                 data.getTAData(BarData::High),
+                 data.getTAData(BarData::Low),
+                 data.getTAData(BarData::Close),
+                 period,
+                 &outBeg,
+                 &outNb,
+                 &out[0]);
+      break;
+    default:
+      break;
+  }
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "ADX::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  return line;
 }
 
 //*************************************************************

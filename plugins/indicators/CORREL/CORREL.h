@@ -31,19 +31,19 @@ class CORREL : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      Input = 40,
-      Input2 = 50,
-      Period = 60,
-      Ref1Color = 70,
-      Ref2Color = 80,
-      Ref3Color = 90,
-      Exchange = 100,
-      Ref1 = 110,
-      Ref2 = 120,
-      Ref3 = 130
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _Input = 40,
+      _Input2 = 50,
+      _Period = 60,
+      _Ref1Color = 70,
+      _Ref2Color = 80,
+      _Ref3Color = 90,
+      _Exchange = 100,
+      _Ref1 = 110,
+      _Ref2 = 120,
+      _Ref3 = 130
     };
 
     CORREL ();
@@ -52,6 +52,7 @@ class CORREL : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (Curve *in, Curve *in2, int period);
 };
 
 extern "C"

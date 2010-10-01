@@ -55,7 +55,7 @@ void BARSDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BARS::UpColor, d);
+  _settings.getData(BARS::_UpColor, d);
   QColor c(d);
 
   _upColor = new ColorButton(this, c);
@@ -67,7 +67,7 @@ void BARSDialog::createGeneralPage ()
   label = new QLabel(tr("Down Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BARS::DownColor, d);
+  _settings.getData(BARS::_DownColor, d);
   c.setNamedColor(d);
 
   _downColor = new ColorButton(this, c);
@@ -79,7 +79,7 @@ void BARSDialog::createGeneralPage ()
   label = new QLabel(tr("Neutral Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BARS::NeutralColor, d);
+  _settings.getData(BARS::_NeutralColor, d);
   c.setNamedColor(d);
 
   _neutralColor = new ColorButton(this, c);
@@ -91,7 +91,7 @@ void BARSDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BARS::BarsLabel, d);
+  _settings.getData(BARS::_BarsLabel, d);
 
   _barsLabel = new QLineEdit(d);
   grid->addWidget(_barsLabel, row++, col--);
@@ -119,7 +119,7 @@ void BARSDialog::createMA1Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BARS::MAColor, d);
+  _settings.getData(BARS::_MAColor, d);
   QColor c(d);
 
   _ma1Color = new ColorButton(this, c);
@@ -135,7 +135,7 @@ void BARSDialog::createMA1Page ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(BARS::MAPlot, d);
+  _settings.getData(BARS::_MAPlot, d);
 
   _ma1PlotStyle = new QComboBox;
   _ma1PlotStyle->addItems(l);
@@ -147,7 +147,7 @@ void BARSDialog::createMA1Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BARS::MALabel, d);
+  _settings.getData(BARS::_MALabel, d);
 
   _ma1Label = new QLineEdit(d);
   grid->addWidget(_ma1Label, row++, col--);
@@ -159,7 +159,7 @@ void BARSDialog::createMA1Page ()
 
   _ma1Period = new QSpinBox;
   _ma1Period->setRange(1, 100000);
-  _ma1Period->setValue(_settings.getInt(BARS::MAPeriod));
+  _ma1Period->setValue(_settings.getInt(BARS::_MAPeriod));
   grid->addWidget(_ma1Period, row++, col--);
 
 
@@ -170,7 +170,7 @@ void BARSDialog::createMA1Page ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(BARS::MAType, d);
+  _settings.getData(BARS::_MAType, d);
 
   _ma1Type = new QComboBox;
   _ma1Type->addItems(l);
@@ -200,7 +200,7 @@ void BARSDialog::createMA2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BARS::MA2Color, d);
+  _settings.getData(BARS::_MA2Color, d);
   QColor c(d);
 
   _ma2Color = new ColorButton(this, c);
@@ -216,7 +216,7 @@ void BARSDialog::createMA2Page ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(BARS::MA2Plot, d);
+  _settings.getData(BARS::_MA2Plot, d);
 
   _ma2PlotStyle = new QComboBox;
   _ma2PlotStyle->addItems(l);
@@ -228,7 +228,7 @@ void BARSDialog::createMA2Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BARS::MA2Label, d);
+  _settings.getData(BARS::_MA2Label, d);
 
   _ma2Label = new QLineEdit(d);
   grid->addWidget(_ma2Label, row++, col--);
@@ -240,7 +240,7 @@ void BARSDialog::createMA2Page ()
 
   _ma2Period = new QSpinBox;
   _ma2Period->setRange(1, 100000);
-  _ma2Period->setValue(_settings.getInt(BARS::MA2Period));
+  _ma2Period->setValue(_settings.getInt(BARS::_MA2Period));
   grid->addWidget(_ma2Period, row++, col--);
 
 
@@ -251,7 +251,7 @@ void BARSDialog::createMA2Page ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(BARS::MA2Type, d);
+  _settings.getData(BARS::_MA2Type, d);
 
   _ma2Type = new QComboBox;
   _ma2Type->addItems(l);
@@ -281,7 +281,7 @@ void BARSDialog::createMA3Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BARS::MA3Color, d);
+  _settings.getData(BARS::_MA3Color, d);
   QColor c(d);
 
   _ma3Color = new ColorButton(this, c);
@@ -297,7 +297,7 @@ void BARSDialog::createMA3Page ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(BARS::MA3Plot, d);
+  _settings.getData(BARS::_MA3Plot, d);
 
   _ma3PlotStyle = new QComboBox;
   _ma3PlotStyle->addItems(l);
@@ -309,7 +309,7 @@ void BARSDialog::createMA3Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BARS::MA3Label, d);
+  _settings.getData(BARS::_MA3Label, d);
 
   _ma3Label = new QLineEdit(d);
   grid->addWidget(_ma3Label, row++, col--);
@@ -321,7 +321,7 @@ void BARSDialog::createMA3Page ()
 
   _ma3Period = new QSpinBox;
   _ma3Period->setRange(1, 100000);
-  _ma3Period->setValue(_settings.getInt(BARS::MA3Period));
+  _ma3Period->setValue(_settings.getInt(BARS::_MA3Period));
   grid->addWidget(_ma3Period, row++, col--);
 
 
@@ -332,7 +332,7 @@ void BARSDialog::createMA3Page ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(BARS::MA3Type, d);
+  _settings.getData(BARS::_MA3Type, d);
 
   _ma3Type = new QComboBox;
   _ma3Type->addItems(l);
@@ -347,25 +347,25 @@ void BARSDialog::createMA3Page ()
 
 void BARSDialog::done ()
 {
-  _settings.setData(BARS::UpColor, _upColor->color().name());
-  _settings.setData(BARS::DownColor, _downColor->color().name());
-  _settings.setData(BARS::NeutralColor, _neutralColor->color().name());
-  _settings.setData(BARS::BarsLabel, _barsLabel->text());
-  _settings.setData(BARS::MAColor, _ma1Color->color().name());
-  _settings.setData(BARS::MA2Color, _ma2Color->color().name());
-  _settings.setData(BARS::MA3Color, _ma3Color->color().name());
-  _settings.setData(BARS::MAPlot, _ma1PlotStyle->currentText());
-  _settings.setData(BARS::MA2Plot, _ma2PlotStyle->currentText());
-  _settings.setData(BARS::MA3Plot, _ma3PlotStyle->currentText());
-  _settings.setData(BARS::MALabel, _ma1Label->text());
-  _settings.setData(BARS::MA2Label, _ma2Label->text());
-  _settings.setData(BARS::MA3Label, _ma3Label->text());
-  _settings.setData(BARS::MAPeriod, _ma1Period->value());
-  _settings.setData(BARS::MA2Period, _ma2Period->value());
-  _settings.setData(BARS::MA3Period, _ma3Period->value());
-  _settings.setData(BARS::MAType, _ma1Type->currentText());
-  _settings.setData(BARS::MA2Type, _ma2Type->currentText());
-  _settings.setData(BARS::MA3Type, _ma3Type->currentText());
+  _settings.setData(BARS::_UpColor, _upColor->color().name());
+  _settings.setData(BARS::_DownColor, _downColor->color().name());
+  _settings.setData(BARS::_NeutralColor, _neutralColor->color().name());
+  _settings.setData(BARS::_BarsLabel, _barsLabel->text());
+  _settings.setData(BARS::_MAColor, _ma1Color->color().name());
+  _settings.setData(BARS::_MA2Color, _ma2Color->color().name());
+  _settings.setData(BARS::_MA3Color, _ma3Color->color().name());
+  _settings.setData(BARS::_MAPlot, _ma1PlotStyle->currentText());
+  _settings.setData(BARS::_MA2Plot, _ma2PlotStyle->currentText());
+  _settings.setData(BARS::_MA3Plot, _ma3PlotStyle->currentText());
+  _settings.setData(BARS::_MALabel, _ma1Label->text());
+  _settings.setData(BARS::_MA2Label, _ma2Label->text());
+  _settings.setData(BARS::_MA3Label, _ma3Label->text());
+  _settings.setData(BARS::_MAPeriod, _ma1Period->value());
+  _settings.setData(BARS::_MA2Period, _ma2Period->value());
+  _settings.setData(BARS::_MA3Period, _ma3Period->value());
+  _settings.setData(BARS::_MAType, _ma1Type->currentText());
+  _settings.setData(BARS::_MA2Type, _ma2Type->currentText());
+  _settings.setData(BARS::_MA3Type, _ma3Type->currentText());
 
   _indicator.setSettings(_settings);
 

@@ -33,24 +33,24 @@ class BBANDS : public IndicatorPlugin
   public:
     enum Parm
     {
-      UpColor = 10,
-      DownColor = 20,
-      MidColor = 30,
-      UpPlot = 40,
-      DownPlot = 50,
-      MidPlot = 60,
-      UpLabel = 70,
-      DownLabel = 80,
-      MidLabel = 90,
-      Period = 100,
-      UpDeviation = 110,
-      DownDeviation = 120,
-      Input = 130,
-      MAType = 140,
-      BarsUpColor = 150,
-      BarsDownColor = 160,
-      BarsNeutralColor = 170,
-      BarsLabel = 180
+      _UpColor = 10,
+      _DownColor = 20,
+      _MidColor = 30,
+      _UpPlot = 40,
+      _DownPlot = 50,
+      _MidPlot = 60,
+      _UpLabel = 70,
+      _DownLabel = 80,
+      _MidLabel = 90,
+      _Period = 100,
+      _UpDeviation = 110,
+      _DownDeviation = 120,
+      _Input = 130,
+      _MAType = 140,
+      _BarsUpColor = 150,
+      _BarsDownColor = 160,
+      _BarsNeutralColor = 170,
+      _BarsLabel = 180
     };
 
     BBANDS ();
@@ -59,6 +59,7 @@ class BBANDS : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    int calculate (Curve *in, int period, double udev, double ddev, int maType, QList<Curve *> &rl);
 };
 
 extern "C"

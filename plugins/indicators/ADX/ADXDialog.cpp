@@ -20,7 +20,6 @@
  */
 
 #include "ADXDialog.h"
-#include "FunctionADX.h"
 #include "ADX.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -56,7 +55,7 @@ void ADXDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings.getInt(ADX::Period));
+  _period->setValue(_settings.getInt(ADX::_Period));
   grid->addWidget(_period, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -81,7 +80,7 @@ void ADXDialog::createMDIPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(ADX::MDIColor, d);
+  _settings.getData(ADX::_MDIColor, d);
   QColor c(d);
 
   _mdiColor = new ColorButton(this, c);
@@ -97,7 +96,7 @@ void ADXDialog::createMDIPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(ADX::MDIPlot, d);
+  _settings.getData(ADX::_MDIPlot, d);
 
   _mdiPlotStyle = new QComboBox;
   _mdiPlotStyle->addItems(l);
@@ -109,7 +108,7 @@ void ADXDialog::createMDIPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(ADX::MDILabel, d);
+  _settings.getData(ADX::_MDILabel, d);
 
   _mdiLabel = new QLineEdit(d);
   grid->addWidget(_mdiLabel, row++, col--);
@@ -120,7 +119,7 @@ void ADXDialog::createMDIPage ()
   grid->addWidget(label, row, col++);
 
   _mdiShow = new QCheckBox;
-  _mdiShow->setChecked(_settings.getInt(ADX::MDICheck));
+  _mdiShow->setChecked(_settings.getInt(ADX::_MDICheck));
   grid->addWidget(_mdiShow, row++, col--);
   
 
@@ -146,7 +145,7 @@ void ADXDialog::createPDIPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(ADX::PDIColor, d);
+  _settings.getData(ADX::_PDIColor, d);
   QColor c(d);
 
   _pdiColor = new ColorButton(this, c);
@@ -162,7 +161,7 @@ void ADXDialog::createPDIPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(ADX::PDIPlot, d);
+  _settings.getData(ADX::_PDIPlot, d);
 
   _pdiPlotStyle = new QComboBox;
   _pdiPlotStyle->addItems(l);
@@ -174,7 +173,7 @@ void ADXDialog::createPDIPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(ADX::PDILabel, d);
+  _settings.getData(ADX::_PDILabel, d);
 
   _pdiLabel = new QLineEdit(d);
   grid->addWidget(_pdiLabel, row++, col--);
@@ -185,9 +184,8 @@ void ADXDialog::createPDIPage ()
   grid->addWidget(label, row, col++);
 
   _pdiShow = new QCheckBox;
-  _pdiShow->setChecked(_settings.getInt(ADX::PDICheck));
+  _pdiShow->setChecked(_settings.getInt(ADX::_PDICheck));
   grid->addWidget(_pdiShow, row++, col--);
-
 
   grid->setRowStretch(row, 1);
 
@@ -211,7 +209,7 @@ void ADXDialog::createADXPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(ADX::ADXColor, d);
+  _settings.getData(ADX::_ADXColor, d);
   QColor c(d);
 
   _adxColor = new ColorButton(this, c);
@@ -227,7 +225,7 @@ void ADXDialog::createADXPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(ADX::ADXPlot, d);
+  _settings.getData(ADX::_ADXPlot, d);
 
   _adxPlotStyle = new QComboBox;
   _adxPlotStyle->addItems(l);
@@ -239,7 +237,7 @@ void ADXDialog::createADXPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(ADX::ADXLabel, d);
+  _settings.getData(ADX::_ADXLabel, d);
 
   _adxLabel = new QLineEdit(d);
   grid->addWidget(_adxLabel, row++, col--);
@@ -250,7 +248,7 @@ void ADXDialog::createADXPage ()
   grid->addWidget(label, row, col++);
 
   _adxShow = new QCheckBox;
-  _adxShow->setChecked(_settings.getInt(ADX::ADXCheck));
+  _adxShow->setChecked(_settings.getInt(ADX::_ADXCheck));
   grid->addWidget(_adxShow, row++, col--);
 
 
@@ -276,7 +274,7 @@ void ADXDialog::createADXRPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(ADX::ADXRColor, d);
+  _settings.getData(ADX::_ADXRColor, d);
   QColor c(d);
 
   _adxrColor = new ColorButton(this, c);
@@ -292,7 +290,7 @@ void ADXDialog::createADXRPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(ADX::ADXRPlot, d);
+  _settings.getData(ADX::_ADXRPlot, d);
 
   _adxrPlotStyle = new QComboBox;
   _adxrPlotStyle->addItems(l);
@@ -304,7 +302,7 @@ void ADXDialog::createADXRPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(ADX::ADXRLabel, d);
+  _settings.getData(ADX::_ADXRLabel, d);
 
   _adxrLabel = new QLineEdit(d);
   grid->addWidget(_adxrLabel, row++, col--);
@@ -315,7 +313,7 @@ void ADXDialog::createADXRPage ()
   grid->addWidget(label, row, col++);
 
   _adxrShow = new QCheckBox;
-  _adxrShow->setChecked(_settings.getInt(ADX::ADXRCheck));
+  _adxrShow->setChecked(_settings.getInt(ADX::_ADXRCheck));
   grid->addWidget(_adxrShow, row++, col--);
 
 
@@ -326,23 +324,23 @@ void ADXDialog::createADXRPage ()
 
 void ADXDialog::done ()
 {
-  _settings.setData(ADX::ADXColor, _adxColor->color().name());
-  _settings.setData(ADX::ADXRColor, _adxrColor->color().name());
-  _settings.setData(ADX::PDIColor, _pdiColor->color().name());
-  _settings.setData(ADX::MDIColor, _mdiColor->color().name());
-  _settings.setData(ADX::ADXPlot, _adxPlotStyle->currentText());
-  _settings.setData(ADX::ADXRPlot, _adxrPlotStyle->currentText());
-  _settings.setData(ADX::PDIPlot, _pdiPlotStyle->currentText());
-  _settings.setData(ADX::MDIPlot, _mdiPlotStyle->currentText());
-  _settings.setData(ADX::ADXLabel, _adxLabel->text());
-  _settings.setData(ADX::ADXRLabel, _adxrLabel->text());
-  _settings.setData(ADX::PDILabel, _pdiLabel->text());
-  _settings.setData(ADX::MDILabel, _mdiLabel->text());
-  _settings.setData(ADX::ADXCheck, (int) _adxShow->isChecked());
-  _settings.setData(ADX::ADXRCheck, (int) _adxrShow->isChecked());
-  _settings.setData(ADX::PDICheck, (int) _pdiShow->isChecked());
-  _settings.setData(ADX::MDICheck, (int) _mdiShow->isChecked());
-  _settings.setData(ADX::Period, (int) _period->value());
+  _settings.setData(ADX::_ADXColor, _adxColor->color().name());
+  _settings.setData(ADX::_ADXRColor, _adxrColor->color().name());
+  _settings.setData(ADX::_PDIColor, _pdiColor->color().name());
+  _settings.setData(ADX::_MDIColor, _mdiColor->color().name());
+  _settings.setData(ADX::_ADXPlot, _adxPlotStyle->currentText());
+  _settings.setData(ADX::_ADXRPlot, _adxrPlotStyle->currentText());
+  _settings.setData(ADX::_PDIPlot, _pdiPlotStyle->currentText());
+  _settings.setData(ADX::_MDIPlot, _mdiPlotStyle->currentText());
+  _settings.setData(ADX::_ADXLabel, _adxLabel->text());
+  _settings.setData(ADX::_ADXRLabel, _adxrLabel->text());
+  _settings.setData(ADX::_PDILabel, _pdiLabel->text());
+  _settings.setData(ADX::_MDILabel, _mdiLabel->text());
+  _settings.setData(ADX::_ADXCheck, (int) _adxShow->isChecked());
+  _settings.setData(ADX::_ADXRCheck, (int) _adxrShow->isChecked());
+  _settings.setData(ADX::_PDICheck, (int) _pdiShow->isChecked());
+  _settings.setData(ADX::_MDICheck, (int) _mdiShow->isChecked());
+  _settings.setData(ADX::_Period, (int) _period->value());
 
   _indicator.setSettings(_settings);
 

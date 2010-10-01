@@ -31,13 +31,13 @@ class BETA : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      Period = 40,
-      Input = 50,
-      Index = 60,
-      Exchange = 70
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _Period = 40,
+      _Input = 50,
+      _Index = 60,
+      _Exchange = 70
     };
 
     BETA ();
@@ -46,6 +46,7 @@ class BETA : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (Curve *in, Curve *in2, int period);
 };
 
 extern "C"

@@ -22,7 +22,6 @@
 #include "CANDLESDialog.h"
 #include "CANDLES.h"
 #include "FunctionMA.h"
-#include "FunctionCANDLES.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
 
@@ -57,7 +56,7 @@ void CANDLESDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CANDLES::Color, d);
+  _settings.getData(CANDLES::_Color, d);
   QColor c(d);
 
   _candleColor = new ColorButton(this, c);
@@ -68,7 +67,7 @@ void CANDLESDialog::createGeneralPage ()
   label = new QLabel(tr("Method Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(CANDLES::MethodColor, d);
+  _settings.getData(CANDLES::_MethodColor, d);
   c.setNamedColor(d);
 
   _methodColor = new ColorButton(this, c);
@@ -79,7 +78,7 @@ void CANDLESDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(CANDLES::Label, d);
+  _settings.getData(CANDLES::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -88,10 +87,10 @@ void CANDLESDialog::createGeneralPage ()
   label = new QLabel(tr("Method"));
   grid->addWidget(label, row, col++);
 
-  FunctionCANDLES f;
+  CANDLES f;
   QStringList l = f.list();
 
-  _settings.getData(CANDLES::Method, d);
+  _settings.getData(CANDLES::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
@@ -104,7 +103,7 @@ void CANDLESDialog::createGeneralPage ()
 
   _pen = new QDoubleSpinBox;
   _pen->setRange(0, 100);
-  _pen->setValue(_settings.getDouble(CANDLES::Penetration));
+  _pen->setValue(_settings.getDouble(CANDLES::_Penetration));
   grid->addWidget(_pen, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -129,7 +128,7 @@ void CANDLESDialog::createMA1Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CANDLES::MAColor, d);
+  _settings.getData(CANDLES::_MAColor, d);
   QColor c(d);
 
   _ma1Color = new ColorButton(this, c);
@@ -144,7 +143,7 @@ void CANDLESDialog::createMA1Page ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(CANDLES::MAPlot, d);
+  _settings.getData(CANDLES::_MAPlot, d);
 
   _ma1PlotStyle = new QComboBox;
   _ma1PlotStyle->addItems(l);
@@ -155,7 +154,7 @@ void CANDLESDialog::createMA1Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(CANDLES::MALabel, d);
+  _settings.getData(CANDLES::_MALabel, d);
 
   _ma1Label = new QLineEdit(d);
   grid->addWidget(_ma1Label, row++, col--);
@@ -166,7 +165,7 @@ void CANDLESDialog::createMA1Page ()
 
   _ma1Period = new QSpinBox;
   _ma1Period->setRange(1, 100000);
-  _ma1Period->setValue(_settings.getInt(CANDLES::MAPeriod));
+  _ma1Period->setValue(_settings.getInt(CANDLES::_MAPeriod));
   grid->addWidget(_ma1Period, row++, col--);
 
   // ma type
@@ -176,7 +175,7 @@ void CANDLESDialog::createMA1Page ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(CANDLES::MAType, d);
+  _settings.getData(CANDLES::_MAType, d);
 
   _ma1Type = new QComboBox;
   _ma1Type->addItems(l);
@@ -205,7 +204,7 @@ void CANDLESDialog::createMA2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CANDLES::MA2Color, d);
+  _settings.getData(CANDLES::_MA2Color, d);
   QColor c(d);
 
   _ma2Color = new ColorButton(this, c);
@@ -221,7 +220,7 @@ void CANDLESDialog::createMA2Page ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(CANDLES::MA2Plot, d);
+  _settings.getData(CANDLES::_MA2Plot, d);
 
   _ma2PlotStyle = new QComboBox;
   _ma2PlotStyle->addItems(l);
@@ -233,7 +232,7 @@ void CANDLESDialog::createMA2Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(CANDLES::MA2Label, d);
+  _settings.getData(CANDLES::_MA2Label, d);
 
   _ma2Label = new QLineEdit(d);
   grid->addWidget(_ma2Label, row++, col--);
@@ -245,7 +244,7 @@ void CANDLESDialog::createMA2Page ()
 
   _ma2Period = new QSpinBox;
   _ma2Period->setRange(1, 100000);
-  _ma2Period->setValue(_settings.getInt(CANDLES::MA2Period));
+  _ma2Period->setValue(_settings.getInt(CANDLES::_MA2Period));
   grid->addWidget(_ma2Period, row++, col--);
 
 
@@ -256,7 +255,7 @@ void CANDLESDialog::createMA2Page ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(CANDLES::MA2Type, d);
+  _settings.getData(CANDLES::_MA2Type, d);
 
   _ma2Type = new QComboBox;
   _ma2Type->addItems(l);
@@ -286,7 +285,7 @@ void CANDLESDialog::createMA3Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CANDLES::MA3Color, d);
+  _settings.getData(CANDLES::_MA3Color, d);
   QColor c(d);
 
   _ma3Color = new ColorButton(this, c);
@@ -302,7 +301,7 @@ void CANDLESDialog::createMA3Page ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(CANDLES::MA3Plot, d);
+  _settings.getData(CANDLES::_MA3Plot, d);
 
   _ma3PlotStyle = new QComboBox;
   _ma3PlotStyle->addItems(l);
@@ -314,7 +313,7 @@ void CANDLESDialog::createMA3Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(CANDLES::MA3Label, d);
+  _settings.getData(CANDLES::_MA3Label, d);
 
   _ma3Label = new QLineEdit(d);
   grid->addWidget(_ma3Label, row++, col--);
@@ -326,7 +325,7 @@ void CANDLESDialog::createMA3Page ()
 
   _ma3Period = new QSpinBox;
   _ma3Period->setRange(1, 100000);
-  _ma3Period->setValue(_settings.getInt(CANDLES::MA3Period));
+  _ma3Period->setValue(_settings.getInt(CANDLES::_MA3Period));
   grid->addWidget(_ma3Period, row++, col--);
 
 
@@ -337,7 +336,7 @@ void CANDLESDialog::createMA3Page ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(CANDLES::MA3Type, d);
+  _settings.getData(CANDLES::_MA3Type, d);
 
   _ma3Type = new QComboBox;
   _ma3Type->addItems(l);
@@ -352,26 +351,26 @@ void CANDLESDialog::createMA3Page ()
 
 void CANDLESDialog::done ()
 {
-  _settings.setData(CANDLES::Penetration, _pen->value());
-  _settings.setData(CANDLES::Method, _method->currentText());
-  _settings.setData(CANDLES::MethodColor, _methodColor->color().name());
-  _settings.setData(CANDLES::Color, _candleColor->color().name());
-  _settings.setData(CANDLES::Label, _label->text());
-  _settings.setData(CANDLES::MAColor, _ma1Color->color().name());
-  _settings.setData(CANDLES::MA2Color, _ma2Color->color().name());
-  _settings.setData(CANDLES::MA3Color, _ma3Color->color().name());
-  _settings.setData(CANDLES::MAPlot, _ma1PlotStyle->currentText());
-  _settings.setData(CANDLES::MA2Plot, _ma2PlotStyle->currentText());
-  _settings.setData(CANDLES::MA3Plot, _ma3PlotStyle->currentText());
-  _settings.setData(CANDLES::MALabel, _ma1Label->text());
-  _settings.setData(CANDLES::MA2Label, _ma2Label->text());
-  _settings.setData(CANDLES::MA3Label, _ma3Label->text());
-  _settings.setData(CANDLES::MAPeriod, _ma1Period->value());
-  _settings.setData(CANDLES::MA2Period, _ma2Period->value());
-  _settings.setData(CANDLES::MA3Period, _ma3Period->value());
-  _settings.setData(CANDLES::MAType, _ma1Type->currentText());
-  _settings.setData(CANDLES::MA2Type, _ma2Type->currentText());
-  _settings.setData(CANDLES::MA3Type, _ma3Type->currentText());
+  _settings.setData(CANDLES::_Penetration, _pen->value());
+  _settings.setData(CANDLES::_Method, _method->currentText());
+  _settings.setData(CANDLES::_MethodColor, _methodColor->color().name());
+  _settings.setData(CANDLES::_Color, _candleColor->color().name());
+  _settings.setData(CANDLES::_Label, _label->text());
+  _settings.setData(CANDLES::_MAColor, _ma1Color->color().name());
+  _settings.setData(CANDLES::_MA2Color, _ma2Color->color().name());
+  _settings.setData(CANDLES::_MA3Color, _ma3Color->color().name());
+  _settings.setData(CANDLES::_MAPlot, _ma1PlotStyle->currentText());
+  _settings.setData(CANDLES::_MA2Plot, _ma2PlotStyle->currentText());
+  _settings.setData(CANDLES::_MA3Plot, _ma3PlotStyle->currentText());
+  _settings.setData(CANDLES::_MALabel, _ma1Label->text());
+  _settings.setData(CANDLES::_MA2Label, _ma2Label->text());
+  _settings.setData(CANDLES::_MA3Label, _ma3Label->text());
+  _settings.setData(CANDLES::_MAPeriod, _ma1Period->value());
+  _settings.setData(CANDLES::_MA2Period, _ma2Period->value());
+  _settings.setData(CANDLES::_MA3Period, _ma3Period->value());
+  _settings.setData(CANDLES::_MAType, _ma1Type->currentText());
+  _settings.setData(CANDLES::_MA2Type, _ma2Type->currentText());
+  _settings.setData(CANDLES::_MA3Type, _ma3Type->currentText());
 
   _indicator.setSettings(_settings);
 

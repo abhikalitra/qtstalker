@@ -23,14 +23,12 @@
 #include "Config.h"
 #include "SymbolDialog.h"
 #include "UpdateChartPageThread.h"
-#include "QuoteServerDialog.h"
 #include "GroupAddDialog.h"
 
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
 //#include "../pics/delete.xpm"
-#include "../pics/configure.xpm"
 
 #include <QCursor>
 #include <QToolTip>
@@ -108,12 +106,6 @@ void ChartPage::createActions ()
 //  action->setToolTip(tr("Delete symbol from the database permanently"));
 //  connect(action, SIGNAL(activated()), this, SLOT(deleteSymbol()));
 //  _actions.insert(Delete, action);
-
-  action  = new QAction(QIcon(configure_xpm), tr("&Configure Quote Server..."), this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
-  action->setToolTip(tr("Configure Quote Server"));
-  connect(action, SIGNAL(activated()), this, SLOT(serverDialog()));
-  _actions.insert(Server, action);
 }
 
 void ChartPage::createButtonMenu (QToolBar *tb)
@@ -122,7 +114,6 @@ void ChartPage::createButtonMenu (QToolBar *tb)
   tb->addAction(_actions.value(Search));
   tb->addAction(_actions.value(AddGroup));
 //  tb->addAction(_actions.value(Delete));
-  tb->addAction(_actions.value(Server));
 
   _menu = new QMenu(this);
   _menu->addAction(_actions.value(AddGroup));
@@ -131,8 +122,6 @@ void ChartPage::createButtonMenu (QToolBar *tb)
   _menu->addAction(_actions.value(Search));
   _menu->addSeparator();
 //  _menu->addAction(_actions.value(Delete));
-//  _menu->addSeparator();
-  _menu->addAction(_actions.value(Server));
 }
 
 void ChartPage::chartOpened (BarData bd)
@@ -278,9 +267,3 @@ void ChartPage::deleteSymbol ()
 */  
 }
 
-void ChartPage::serverDialog ()
-{
-  QuoteServerDialog *dialog = new QuoteServerDialog;
-  dialog->show();
-}
-  

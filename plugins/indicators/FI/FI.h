@@ -31,11 +31,11 @@ class FI : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      MAType = 40,
-      Period = 50
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _MAType = 40,
+      _Period = 50
     };
 
     FI ();
@@ -44,6 +44,7 @@ class FI : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (int period, int type, BarData &);
 };
 
 extern "C"

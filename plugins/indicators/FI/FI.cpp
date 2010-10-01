@@ -21,7 +21,6 @@
 
 #include "FI.h"
 #include "FunctionMA.h"
-#include "FunctionFI.h"
 #include "FIDialog.h"
 #include "Curve.h"
 
@@ -37,25 +36,24 @@ int FI::getIndicator (Indicator &ind, BarData &data)
   Setting settings = ind.settings();
 
   QString s;
-  int period = settings.getInt(Period);
+  int period = settings.getInt(_Period);
 
   FunctionMA mau;
-  settings.getData(MAType, s);
+  settings.getData(_MAType, s);
   int ma = mau.typeFromString(s);
 
-  FunctionFI f;
-  Curve *line = f.calculate(period, ma, data);
+  Curve *line = calculate(period, ma, data);
   if (! line)
     return 1;
 
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
 
   line->setZ(0);
@@ -66,8 +64,47 @@ int FI::getIndicator (Indicator &ind, BarData &data)
 
 int FI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionFI f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,FI,<NAME>,<PERIOD>,<MA_TYPE>
+  //     0       1    2     3      4         5
+
+  if (set.count() != 6)
+  {
+    qDebug() << "FI::getCUS: invalid parm count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "FI::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  bool ok;
+  int period = set[4].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "FI::getCUS: invalid period" << set[4];
+    return 1;
+  }
+
+  FunctionMA mau;
+  int ma = mau.typeFromString(set[5]);
+  if (ma == -1)
+  {
+    qDebug() << "FI::getCUS: invalid ma" << set[5];
+    return 1;
+  }
+
+  Curve *line = calculate(period, ma, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * FI::dialog (Indicator &i)
@@ -78,11 +115,11 @@ IndicatorPluginDialog * FI::dialog (Indicator &i)
 void FI::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Color, "red");
-  set.setData(Plot, "Histogram Bar");
-  set.setData(Label, _indicator);
-  set.setData(MAType, "EMA");
-  set.setData(Period, 2);
+  set.setData(_Color, "red");
+  set.setData(_Plot, "Histogram Bar");
+  set.setData(_Label, _indicator);
+  set.setData(_MAType, "EMA");
+  set.setData(_Period, 2);
   i.setSettings(set);
 }
 
@@ -92,10 +129,45 @@ void FI::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
 }
 
+Curve * FI::calculate (int period, int type, BarData &data)
+{
+  if (data.count() < period)
+    return 0;
+
+  Curve *line = new Curve;
+
+  int loop = 1;
+  double force = 0;
+  for (; loop < data.count(); loop++)
+  {
+    Bar bar = data.getBar(loop);
+    Bar pbar = data.getBar(loop - 1);
+    double cdiff = bar.getClose() - pbar.getClose();
+    force = bar.getVolume() * cdiff;
+
+    line->setBar(loop, new CurveBar(force));
+  }
+
+  if (period > 1)
+  {
+    FunctionMA mau;
+    Curve *ma = mau.calculate(line, period, type);
+    if (! ma)
+    {
+      delete line;
+      return 0;
+    }
+
+    delete line;
+    line = ma;
+  }
+
+  return line;
+}
 
 //*************************************************************
 //*************************************************************

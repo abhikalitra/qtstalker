@@ -20,7 +20,6 @@
  */
 
 #include "TRIXDialog.h"
-#include "FunctionTRIX.h"
 #include "FunctionMA.h"
 #include "TRIX.h"
 #include "Curve.h"
@@ -58,7 +57,7 @@ void TRIXDialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(TRIX::Input, d);
+  _settings.getData(TRIX::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -71,14 +70,14 @@ void TRIXDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(TRIX::Period));
+  _period->setValue(_settings.getInt(TRIX::_Period));
   grid->addWidget(_period, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(TRIX::Color, d);
+  _settings.getData(TRIX::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -92,7 +91,7 @@ void TRIXDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(TRIX::Plot, d);
+  _settings.getData(TRIX::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -103,7 +102,7 @@ void TRIXDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(TRIX::Label, d);
+  _settings.getData(TRIX::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -115,11 +114,11 @@ void TRIXDialog::createGeneralPage ()
 
 void TRIXDialog::done ()
 {
-  _settings.setData(TRIX::Input, _input->currentText());
-  _settings.setData(TRIX::Color, _color->color().name());
-  _settings.setData(TRIX::Plot, _plotStyle->currentText());
-  _settings.setData(TRIX::Label, _label->text());
-  _settings.setData(TRIX::Period, _period->value());
+  _settings.setData(TRIX::_Input, _input->currentText());
+  _settings.setData(TRIX::_Color, _color->color().name());
+  _settings.setData(TRIX::_Plot, _plotStyle->currentText());
+  _settings.setData(TRIX::_Label, _label->text());
+  _settings.setData(TRIX::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

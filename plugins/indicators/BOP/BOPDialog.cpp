@@ -20,7 +20,6 @@
  */
 
 #include "BOPDialog.h"
-#include "FunctionBOP.h"
 #include "FunctionMA.h"
 #include "BOP.h"
 #include "Curve.h"
@@ -53,7 +52,7 @@ void BOPDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BOP::Color, d);
+  _settings.getData(BOP::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -68,7 +67,7 @@ void BOPDialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(BOP::Plot, d);
+  _settings.getData(BOP::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -79,7 +78,7 @@ void BOPDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BOP::Label, d);
+  _settings.getData(BOP::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -90,7 +89,7 @@ void BOPDialog::createGeneralPage ()
 
   _smoothing = new QSpinBox;
   _smoothing->setRange(1, 100000);
-  _smoothing->setValue(_settings.getInt(BOP::Smoothing));
+  _smoothing->setValue(_settings.getInt(BOP::_Smoothing));
   grid->addWidget(_smoothing, row++, col--);
 
   // smoothing type
@@ -100,7 +99,7 @@ void BOPDialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(BOP::SmoothingType, d);
+  _settings.getData(BOP::_SmoothingType, d);
 
   _smoothingType = new QComboBox;
   _smoothingType->addItems(l);
@@ -114,11 +113,11 @@ void BOPDialog::createGeneralPage ()
 
 void BOPDialog::done ()
 {
-  _settings.setData(BOP::Color, _color->color().name());
-  _settings.setData(BOP::Plot, _plotStyle->currentText());
-  _settings.setData(BOP::Label, _label->text());
-  _settings.setData(BOP::Smoothing, _smoothing->value());
-  _settings.setData(BOP::SmoothingType, _smoothingType->currentText());
+  _settings.setData(BOP::_Color, _color->color().name());
+  _settings.setData(BOP::_Plot, _plotStyle->currentText());
+  _settings.setData(BOP::_Label, _label->text());
+  _settings.setData(BOP::_Smoothing, _smoothing->value());
+  _settings.setData(BOP::_SmoothingType, _smoothingType->currentText());
 
   _indicator.setSettings(_settings);
 

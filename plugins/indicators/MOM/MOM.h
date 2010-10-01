@@ -31,13 +31,13 @@ class MOM : public IndicatorPlugin
   public:
     enum Parm
     {
-      Input = 10,
-      Color = 10,
-      Plot = 10,
-      Label = 10,
-      Period = 10,
-      Smoothing = 10,
-      SmoothingType = 10
+      _Input = 10,
+      _Color = 10,
+      _Plot = 10,
+      _Label = 10,
+      _Period = 10,
+      _Smoothing = 10,
+      _SmoothingType = 10
     };
 
     MOM ();
@@ -46,6 +46,7 @@ class MOM : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (Curve *in, int period, int smoothing, int type);
 };
 
 extern "C"

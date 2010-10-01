@@ -29,14 +29,23 @@ class LINEARREG : public IndicatorPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _LINEARREG,
+      _ANGLE,
+      _INTERCEPT,
+      _SLOPE,
+      _TSF
+    };
+
     enum Parm
     {
-      Method = 10,
-      Color = 20,
-      Plot = 30,
-      Label = 40,
-      Input = 50,
-      Period = 60
+      _Method = 10,
+      _Color = 20,
+      _Plot = 30,
+      _Label = 40,
+      _Input = 50,
+      _Period = 60
     };
 
     LINEARREG ();
@@ -45,6 +54,12 @@ class LINEARREG : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    
+    Curve * calculate (Curve *in, int period, int method);
+    QStringList & list ();
+
+  protected:
+    QStringList _methodList;
 };
 
 extern "C"

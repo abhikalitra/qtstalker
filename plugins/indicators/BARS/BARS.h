@@ -31,25 +31,25 @@ class BARS : public IndicatorPlugin
   public:
     enum Parm
     {
-      UpColor = 10,
-      DownColor = 20,
-      NeutralColor = 30,
-      BarsLabel = 40,
-      MAColor = 50,
-      MA2Color = 60,
-      MA3Color = 70,
-      MAPlot = 80,
-      MA2Plot = 90,
-      MA3Plot = 100,
-      MALabel = 110,
-      MA2Label = 120,
-      MA3Label = 130,
-      MAPeriod = 140,
-      MA2Period = 150,
-      MA3Period = 160,
-      MAType = 170,
-      MA2Type = 180,
-      MA3Type = 190
+      _UpColor = 10,
+      _DownColor = 20,
+      _NeutralColor = 30,
+      _BarsLabel = 40,
+      _MAColor = 50,
+      _MA2Color = 60,
+      _MA3Color = 70,
+      _MAPlot = 80,
+      _MA2Plot = 90,
+      _MA3Plot = 100,
+      _MALabel = 110,
+      _MA2Label = 120,
+      _MA3Label = 130,
+      _MAPeriod = 140,
+      _MA2Period = 150,
+      _MA3Period = 160,
+      _MAType = 170,
+      _MA2Type = 180,
+      _MA3Type = 190
     };
 
     BARS ();

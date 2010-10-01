@@ -29,28 +29,94 @@ class CANDLES : public IndicatorPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _NONE,
+      _2CROWS,
+      _3BLACKCROWS,
+      _3INSIDE,
+      _3LINESTRIKE,
+      _3OUTSIDE,
+      _3STARSINSOUTH,
+      _3WHITESOLDIERS,
+      _ABANDONEDBABY,
+      _ADVANCEBLOCK,
+      _BELTHOLD,
+      _BREAKAWAY,
+      _CLOSINGMARUBOZU,
+      _CONCEALBABYSWALL,
+      _COUNTERATTACK,
+      _DARKCLOUDCOVER,
+      _DOJI,
+      _DOJISTAR,
+      _DRAGONFLYDOJI,
+      _ENGULFING,
+      _EVENINGDOJISTAR,
+      _EVENINGSTAR,
+      _GAPSIDESIDEWHITE,
+      _GRAVESTONEDOJI,
+      _HAMMER,
+      _HANGINGMAN,
+      _HARAMI,
+      _HARAMICROSS,
+      _HIGHWAVE,
+      _HIKKAKE,
+      _HIKKAKEMOD,
+      _HOMINGPIGEON,
+      _IDENTICAL3CROWS,
+      _INNECK,
+      _INVERTEDHAMMER,
+      _KICKING,
+      _KICKINGBYLENGTH,
+      _LADDERBOTTOM,
+      _LONGLEGGEDDOJI,
+      _LONGLINE,
+      _MARUBOZU,
+      _MATCHINGLOW,
+      _MATHOLD,
+      _MORNINGDOJISTAR,
+      _MORNINGSTAR,
+      _ONNECK,
+      _PIERCING,
+      _RICKSHAWMAN,
+      _RISEFALL3METHODS,
+      _SEPARATINGLINES,
+      _SHOOTINGSTAR,
+      _SHORTLINE,
+      _SPINNINGTOP,
+      _STALLEDPATTERN,
+      _STICKSANDWICH,
+      _TAKURI,
+      _TASUKIGAP,
+      _THRUSTING,
+      _TRISTAR,
+      _UNIQUE3RIVER,
+      _UPSIDEGAP2CROWS,
+      _XSIDEGAP3METHODS
+    };
+
     enum Parm
     {
-      Method = 10,
-      Penetration = 20,
-      MethodColor = 30,
-      Color = 40,
-      Label = 50,
-      MAColor = 60,
-      MA2Color = 70,
-      MA3Color = 80,
-      MAPlot = 90,
-      MA2Plot = 100,
-      MA3Plot = 110,
-      MALabel = 120,
-      MA2Label = 130,
-      MA3Label = 140,
-      MAPeriod = 150,
-      MA2Period = 160,
-      MA3Period = 170,
-      MAType = 180,
-      MA2Type = 190,
-      MA3Type = 200
+      _Method = 10,
+      _Penetration = 20,
+      _MethodColor = 30,
+      _Color = 40,
+      _Label = 50,
+      _MAColor = 60,
+      _MA2Color = 70,
+      _MA3Color = 80,
+      _MAPlot = 90,
+      _MA2Plot = 100,
+      _MA3Plot = 110,
+      _MALabel = 120,
+      _MA2Label = 130,
+      _MA3Label = 140,
+      _MAPeriod = 150,
+      _MA2Period = 160,
+      _MA3Period = 170,
+      _MAType = 180,
+      _MA2Type = 190,
+      _MA3Type = 200
     };
 
     CANDLES ();
@@ -59,6 +125,15 @@ class CANDLES : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    
+    int scriptCandles (QStringList &, Indicator &, BarData &);
+    int scriptMethod (QStringList &, Indicator &, BarData &);
+    Curve * getMethod (int, double, BarData &);
+    Curve * candles (BarData &);
+    QStringList & list ();
+
+  protected:
+    QStringList _methodList;
 };
 
 extern "C"

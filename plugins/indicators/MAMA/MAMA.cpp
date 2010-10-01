@@ -20,10 +20,10 @@
  */
 
 #include "MAMA.h"
-#include "FunctionMAMA.h"
 #include "FunctionBARS.h"
 #include "MAMADialog.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -37,7 +37,7 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
   Setting settings = ind.settings();
 
   QString s;
-  settings.getData(Input, s);
+  settings.getData(_Input, s);
   Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
@@ -45,12 +45,11 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  double fast = settings.getDouble(FastLimit);
-  double slow = settings.getDouble(SlowLimit);
+  double fast = settings.getDouble(_FastLimit);
+  double slow = settings.getDouble(_SlowLimit);
 
-  FunctionMAMA f;
   QList<Curve *> l;
-  if (f.calculate(in, fast, slow, l))
+  if (calculate(in, fast, slow, l))
   {
     delete in;
     return 1;
@@ -59,13 +58,13 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
   Curve *mama = l.at(0);
   Curve *fama = l.at(1);
 
-  int osc = settings.getInt(OSC);
+  int osc = settings.getInt(_OSC);
   if (osc)
   {
     Curve *line = new Curve;
     line->setType(Curve::HistogramBar);
 
-    settings.getData(OSCLabel, s);
+    settings.getData(_OSCLabel, s);
     line->setLabel(s);
 
     QList<int> keys;
@@ -85,7 +84,7 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
       line->setBar(keys.at(loop), new CurveBar(mbar->data() - fbar->data()));
     }
 
-    settings.getData(OSCColor, s);
+    settings.getData(_OSCColor, s);
     QColor c(s);
     line->setColor(c);
 
@@ -105,28 +104,28 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
       ind.setLine(1, bars);
     }
 
-    settings.getData(MAMAPlot, s);
+    settings.getData(_MAMAPlot, s);
     mama->setType((Curve::Type) mama->typeFromString(s));
 
-    settings.getData(MAMAColor, s);
+    settings.getData(_MAMAColor, s);
     QColor c(s);
     mama->setColor(c);
 
-    settings.getData(MAMALabel, s);
+    settings.getData(_MAMALabel, s);
     mama->setLabel(s);
     
     mama->setZ(2);
     ind.setLine(2, mama);
 
     // fama line
-    settings.getData(FAMAPlot, s);
+    settings.getData(_FAMAPlot, s);
     fama->setType((Curve::Type) fama->typeFromString(s));
 
-    settings.getData(FAMAColor, s);
+    settings.getData(_FAMAColor, s);
     c.setNamedColor(s);
     fama->setColor(c);
 
-    settings.getData(FAMALabel, s);
+    settings.getData(_FAMALabel, s);
     fama->setLabel(s);
     
     fama->setZ(3);
@@ -140,8 +139,68 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
 
 int MAMA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionMAMA f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,MAMA,<INPUT>,<NAME_MAMA>,<NAME_FAMA>,<FAST_LIMIT>,<SLOW_LIMIT>
+  //      0       1     2     3         4           5           6            7
+
+  if (set.count() != 8)
+  {
+    qDebug() << "MAMA::getCUS: invalid settings count" << set.count();
+    return 1;
+  }
+
+  Curve *in = ind.line(set[3]);
+  if (! in)
+  {
+    in = data.getInput(data.getInputType(set[3]));
+    if (! in)
+    {
+      qDebug() << "MAMA::getCUS: input not found" << set[3];
+      return 1;
+    }
+
+    ind.setLine(set[3], in);
+  }
+
+  Curve *tl = ind.line(set[4]);
+  if (tl)
+  {
+    qDebug() << "MAMA::getCUS: mama duplicate name" << set[4];
+    return 1;
+  }
+
+  tl = ind.line(set[5]);
+  if (tl)
+  {
+    qDebug() << "MAMA::getCUS: fama duplicate name" << set[5];
+    return 1;
+  }
+
+  bool ok;
+  double fast = set[6].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << "MAMA::getCUS: invalid fast limit" << set[6];
+    return 1;
+  }
+
+  double slow = set[7].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << "MAMA::getCUS: invalid slow limit" << set[7];
+    return 1;
+  }
+
+  QList<Curve *> l;
+  if (calculate(in, fast, slow, l))
+    return 1;
+
+  l.at(0)->setLabel(set[4]);
+  l.at(1)->setLabel(set[5]);
+
+  ind.setLine(set[4], l.at(0));
+  ind.setLine(set[5], l.at(1));
+
+  return 0;
 }
 
 IndicatorPluginDialog * MAMA::dialog (Indicator &i)
@@ -152,19 +211,19 @@ IndicatorPluginDialog * MAMA::dialog (Indicator &i)
 void MAMA::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(OSC, 1);
-  set.setData(OSCColor, "red");
-  set.setData(MAMAColor, "red");
-  set.setData(FAMAColor, "yellow");
-  set.setData(MAMAPlot, "Line");
-  set.setData(FAMAPlot, "Line");
-  set.setData(OSCPlot, "Histogram Bar");
-  set.setData(MAMALabel, "MAMA");
-  set.setData(FAMALabel, "FAMA");
-  set.setData(OSCLabel, "MAMAOSC");
-  set.setData(FastLimit, 0.5);
-  set.setData(SlowLimit, 0.05);
-  set.setData(Input, "Close");
+  set.setData(_OSC, 1);
+  set.setData(_OSCColor, "red");
+  set.setData(_MAMAColor, "red");
+  set.setData(_FAMAColor, "yellow");
+  set.setData(_MAMAPlot, "Line");
+  set.setData(_FAMAPlot, "Line");
+  set.setData(_OSCPlot, "Histogram Bar");
+  set.setData(_MAMALabel, "MAMA");
+  set.setData(_FAMALabel, "FAMA");
+  set.setData(_OSCLabel, "MAMAOSC");
+  set.setData(_FastLimit, 0.5);
+  set.setData(_SlowLimit, 0.05);
+  set.setData(_Input, "Close");
   i.setSettings(set);
 }
 
@@ -175,20 +234,78 @@ void MAMA::plotNames (Indicator &i, QStringList &l)
   Setting settings = i.settings();
   QString s;
   
-  int osc = settings.getInt(OSC);
+  int osc = settings.getInt(_OSC);
   if (osc)
   {
-    settings.getData(OSCLabel, s);
+    settings.getData(_OSCLabel, s);
     l.append(s);
   }
   else
   {
-    settings.getData(MAMALabel, s);
+    settings.getData(_MAMALabel, s);
     l.append(s);
 
-    settings.getData(FAMALabel, s);
+    settings.getData(_FAMALabel, s);
     l.append(s);
   }
+}
+
+int MAMA::calculate (Curve *in, double fast, double slow, QList<Curve *> &l)
+{
+  if (in->count() < fast || in->count() < slow)
+    return 1;
+
+  int size = in->count();
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_MAMA(0,
+                          size - 1,
+                          &input[0],
+                          fast,
+                          slow,
+                          &outBeg,
+                          &outNb,
+                          &out[0],
+                          &out2[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "MAMA::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *mama = new Curve;
+  Curve *fama = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    mama->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    fama->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
+
+    keyLoop--;
+    outLoop--;
+  }
+
+  l.append(mama);
+  l.append(fama);
+
+  return 0;
 }
 
 //*************************************************************

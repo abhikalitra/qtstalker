@@ -29,16 +29,22 @@ class PO : public IndicatorPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _APO,
+      _PPO
+    };
+
     enum Parm
     {
-      Method = 10,
-      Input = 20,
-      Color = 30,
-      Plot = 40,
-      Label = 50,
-      FastPeriod = 60,
-      SlowPeriod = 70,
-      MAType = 80
+      _Method = 10,
+      _Input = 20,
+      _Color = 30,
+      _Plot = 40,
+      _Label = 50,
+      _FastPeriod = 60,
+      _SlowPeriod = 70,
+      _MAType = 80
     };
 
     PO ();
@@ -47,6 +53,12 @@ class PO : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    
+    Curve * calculate (Curve *in, int fast, int slow, int ma, int method);
+    QStringList & list ();
+
+  private:
+    QStringList _methodList;
 };
 
 extern "C"

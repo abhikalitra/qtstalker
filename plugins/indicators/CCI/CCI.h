@@ -31,16 +31,16 @@ class CCI : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      Smoothing = 40,
-      SmoothingType = 50,
-      Period = 60,
-      Ref1 = 70,
-      Ref2 = 80,
-      Ref1Color = 90,
-      Ref2Color = 100
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _Smoothing = 40,
+      _SmoothingType = 50,
+      _Period = 60,
+      _Ref1 = 70,
+      _Ref2 = 80,
+      _Ref1Color = 90,
+      _Ref2Color = 100
     };
 
     CCI ();
@@ -49,6 +49,7 @@ class CCI : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (int period, int smoothing, int type, BarData &);
 };
 
 extern "C"

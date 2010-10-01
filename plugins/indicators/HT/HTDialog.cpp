@@ -20,7 +20,6 @@
  */
 
 #include "HTDialog.h"
-#include "FunctionHT.h"
 #include "HT.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -55,7 +54,7 @@ void HTDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(HT::Color, d);
+  _settings.getData(HT::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -70,7 +69,7 @@ void HTDialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(HT::Plot, d);
+  _settings.getData(HT::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -81,7 +80,7 @@ void HTDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(HT::Label, d);
+  _settings.getData(HT::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -93,7 +92,7 @@ void HTDialog::createGeneralPage ()
   BarData bd;
   bd.getInputFields(l);
 
-  _settings.getData(HT::Input, d);
+  _settings.getData(HT::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -104,10 +103,10 @@ void HTDialog::createGeneralPage ()
   label = new QLabel(tr("Method"));
   grid->addWidget(label, row, col++);
 
-  FunctionHT f;
+  HT f;
   l = f.list();
 
-  _settings.getData(HT::Method, d);
+  _settings.getData(HT::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
@@ -136,7 +135,7 @@ void HTDialog::createPhasorPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(HT::PhaseColor, d);
+  _settings.getData(HT::_PhaseColor, d);
   QColor c(d);
 
   _phaseColor = new ColorButton(this, c);
@@ -148,7 +147,7 @@ void HTDialog::createPhasorPage ()
   label = new QLabel(tr("Quad Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(HT::QuadColor, d);
+  _settings.getData(HT::_QuadColor, d);
   c.setNamedColor(d);
 
   _quadColor = new ColorButton(this, c);
@@ -164,7 +163,7 @@ void HTDialog::createPhasorPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(HT::PhasePlot, d);
+  _settings.getData(HT::_PhasePlot, d);
 
   _phasePlotStyle = new QComboBox;
   _phasePlotStyle->addItems(l);
@@ -176,7 +175,7 @@ void HTDialog::createPhasorPage ()
   label = new QLabel(tr("Quad Plot"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(HT::QuadPlot, d);
+  _settings.getData(HT::_QuadPlot, d);
 
   _quadPlotStyle = new QComboBox;
   _quadPlotStyle->addItems(l);
@@ -188,7 +187,7 @@ void HTDialog::createPhasorPage ()
   label = new QLabel(tr("Phase Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(HT::PhaseLabel, d);
+  _settings.getData(HT::_PhaseLabel, d);
 
   _phaseLabel = new QLineEdit(d);
   grid->addWidget(_phaseLabel, row++, col--);
@@ -198,7 +197,7 @@ void HTDialog::createPhasorPage ()
   label = new QLabel(tr("Quad Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(HT::QuadLabel, d);
+  _settings.getData(HT::_QuadLabel, d);
 
   _quadLabel = new QLineEdit(d);
   grid->addWidget(_quadLabel, row++, col--);
@@ -226,7 +225,7 @@ void HTDialog::createSinePage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(HT::SineColor, d);
+  _settings.getData(HT::_SineColor, d);
   QColor c(d);
 
   _sineColor = new ColorButton(this, c);
@@ -238,7 +237,7 @@ void HTDialog::createSinePage ()
   label = new QLabel(tr("Lead Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(HT::LeadColor, d);
+  _settings.getData(HT::_LeadColor, d);
   c.setNamedColor(d);
 
   _leadColor = new ColorButton(this, c);
@@ -254,7 +253,7 @@ void HTDialog::createSinePage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(HT::SinePlot, d);
+  _settings.getData(HT::_SinePlot, d);
 
   _sinePlotStyle = new QComboBox;
   _sinePlotStyle->addItems(l);
@@ -266,7 +265,7 @@ void HTDialog::createSinePage ()
   label = new QLabel(tr("Lead Plot"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(HT::LeadPlot, d);
+  _settings.getData(HT::_LeadPlot, d);
 
   _leadPlotStyle = new QComboBox;
   _leadPlotStyle->addItems(l);
@@ -278,7 +277,7 @@ void HTDialog::createSinePage ()
   label = new QLabel(tr("Sine Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(HT::SineLabel, d);
+  _settings.getData(HT::_SineLabel, d);
 
   _sineLabel = new QLineEdit(d);
   grid->addWidget(_sineLabel, row++, col--);
@@ -288,7 +287,7 @@ void HTDialog::createSinePage ()
   label = new QLabel(tr("Lead Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(HT::LeadLabel, d);
+  _settings.getData(HT::_LeadLabel, d);
 
   _leadLabel = new QLineEdit(d);
   grid->addWidget(_leadLabel, row++, col--);
@@ -301,23 +300,23 @@ void HTDialog::createSinePage ()
 
 void HTDialog::done ()
 {
-  _settings.setData(HT::Method, _method->currentText());
-  _settings.setData(HT::Color, _color->color().name());
-  _settings.setData(HT::PhaseColor, _phaseColor->color().name());
-  _settings.setData(HT::QuadColor, _quadColor->color().name());
-  _settings.setData(HT::SineColor, _sineColor->color().name());
-  _settings.setData(HT::LeadColor, _leadColor->color().name());
-  _settings.setData(HT::Plot, _plotStyle->currentText());
-  _settings.setData(HT::PhasePlot, _phasePlotStyle->currentText());
-  _settings.setData(HT::QuadPlot, _quadPlotStyle->currentText());
-  _settings.setData(HT::SinePlot, _sinePlotStyle->currentText());
-  _settings.setData(HT::LeadPlot, _leadPlotStyle->currentText());
-  _settings.setData(HT::Label, _label->text());
-  _settings.setData(HT::PhaseLabel, _phaseLabel->text());
-  _settings.setData(HT::QuadLabel, _quadLabel->text());
-  _settings.setData(HT::SineLabel, _sineLabel->text());
-  _settings.setData(HT::LeadLabel, _leadLabel->text());
-  _settings.setData(HT::Input, _input->currentText());
+  _settings.setData(HT::_Method, _method->currentText());
+  _settings.setData(HT::_Color, _color->color().name());
+  _settings.setData(HT::_PhaseColor, _phaseColor->color().name());
+  _settings.setData(HT::_QuadColor, _quadColor->color().name());
+  _settings.setData(HT::_SineColor, _sineColor->color().name());
+  _settings.setData(HT::_LeadColor, _leadColor->color().name());
+  _settings.setData(HT::_Plot, _plotStyle->currentText());
+  _settings.setData(HT::_PhasePlot, _phasePlotStyle->currentText());
+  _settings.setData(HT::_QuadPlot, _quadPlotStyle->currentText());
+  _settings.setData(HT::_SinePlot, _sinePlotStyle->currentText());
+  _settings.setData(HT::_LeadPlot, _leadPlotStyle->currentText());
+  _settings.setData(HT::_Label, _label->text());
+  _settings.setData(HT::_PhaseLabel, _phaseLabel->text());
+  _settings.setData(HT::_QuadLabel, _quadLabel->text());
+  _settings.setData(HT::_SineLabel, _sineLabel->text());
+  _settings.setData(HT::_LeadLabel, _leadLabel->text());
+  _settings.setData(HT::_Input, _input->currentText());
 
   _indicator.setSettings(_settings);
 

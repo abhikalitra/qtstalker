@@ -31,11 +31,11 @@ class CMO : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      Input = 40,
-      Period = 50
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _Input = 40,
+      _Period = 50
     };
 
     CMO ();
@@ -44,6 +44,7 @@ class CMO : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (Curve *in, int period);
 };
 
 extern "C"

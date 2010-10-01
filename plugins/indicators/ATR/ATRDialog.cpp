@@ -20,7 +20,6 @@
  */
 
 #include "ATRDialog.h"
-#include "FunctionATR.h"
 #include "ATR.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -51,11 +50,11 @@ void ATRDialog::createGeneralPage ()
   QLabel *label = new QLabel(tr("Method"));
   grid->addWidget(label, row, col++);
 
-  FunctionATR f;
+  ATR f;
   QStringList l = f.list();
 
   QString d;
-  _settings.getData(ATR::Method, d);
+  _settings.getData(ATR::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
@@ -69,7 +68,7 @@ void ATRDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(ATR::Period));
+  _period->setValue(_settings.getInt(ATR::_Period));
   grid->addWidget(_period, row++, col--);
 
 
@@ -77,7 +76,7 @@ void ATRDialog::createGeneralPage ()
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(ATR::Color, d);
+  _settings.getData(ATR::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -92,7 +91,7 @@ void ATRDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(ATR::Plot, d);
+  _settings.getData(ATR::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -104,7 +103,7 @@ void ATRDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(ATR::Label, d);
+  _settings.getData(ATR::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -117,11 +116,11 @@ void ATRDialog::createGeneralPage ()
 
 void ATRDialog::done ()
 {
-  _settings.setData(ATR::Method, _method->currentText());
-  _settings.setData(ATR::Period, _period->value());
-  _settings.setData(ATR::Color, _color->color().name());
-  _settings.setData(ATR::Plot, _plotStyle->currentText());
-  _settings.setData(ATR::Label, _label->text());
+  _settings.setData(ATR::_Method, _method->currentText());
+  _settings.setData(ATR::_Period, _period->value());
+  _settings.setData(ATR::_Color, _color->color().name());
+  _settings.setData(ATR::_Plot, _plotStyle->currentText());
+  _settings.setData(ATR::_Label, _label->text());
 
   _indicator.setSettings(_settings);
 

@@ -20,7 +20,6 @@
  */
 
 #include "STOCHDialog.h"
-#include "FunctionSTOCH.h"
 #include "FunctionMA.h"
 #include "STOCH.h"
 #include "Curve.h"
@@ -57,7 +56,7 @@ void STOCHDialog::createKPage ()
 
   _kperiod = new QSpinBox;
   _kperiod->setRange(1, 100000);
-  _kperiod->setValue(_settings.getInt(STOCH::FastKPeriod));
+  _kperiod->setValue(_settings.getInt(STOCH::_FastKPeriod));
   grid->addWidget(_kperiod, row++, col--);
 
   // color
@@ -65,7 +64,7 @@ void STOCHDialog::createKPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(STOCH::FastKColor, d);
+  _settings.getData(STOCH::_FastKColor, d);
   QColor c(d);
 
   _kcolor = new ColorButton(this, c);
@@ -80,7 +79,7 @@ void STOCHDialog::createKPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(STOCH::FastKPlot, d);
+  _settings.getData(STOCH::_FastKPlot, d);
 
   _kplotStyle = new QComboBox;
   _kplotStyle->addItems(l);
@@ -91,7 +90,7 @@ void STOCHDialog::createKPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(STOCH::FastKLabel, d);
+  _settings.getData(STOCH::_FastKLabel, d);
 
   _klabel = new QLineEdit(d);
   grid->addWidget(_klabel, row++, col--);
@@ -121,7 +120,7 @@ void STOCHDialog::createDPage ()
   QStringList l = mau.list();
 
   QString d;
-  _settings.getData(STOCH::FastDMA, d);
+  _settings.getData(STOCH::_FastDMA, d);
 
   _maType = new QComboBox;
   _maType->addItems(l);
@@ -134,14 +133,14 @@ void STOCHDialog::createDPage ()
 
   _dperiod = new QSpinBox;
   _dperiod->setRange(1, 100000);
-  _dperiod->setValue(_settings.getInt(STOCH::FastDPeriod));
+  _dperiod->setValue(_settings.getInt(STOCH::_FastDPeriod));
   grid->addWidget(_dperiod, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(STOCH::FastDColor, d);
+  _settings.getData(STOCH::_FastDColor, d);
   QColor c(d);
 
   _dcolor = new ColorButton(this, c);
@@ -155,7 +154,7 @@ void STOCHDialog::createDPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(STOCH::FastDPlot, d);
+  _settings.getData(STOCH::_FastDPlot, d);
 
   _dplotStyle = new QComboBox;
   _dplotStyle->addItems(l);
@@ -166,7 +165,7 @@ void STOCHDialog::createDPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(STOCH::FastDLabel, d);
+  _settings.getData(STOCH::_FastDLabel, d);
 
   _dlabel = new QLineEdit(d);
   grid->addWidget(_dlabel, row++, col--);
@@ -193,7 +192,7 @@ void STOCHDialog::createRefPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(STOCH::Ref1Color, d);
+  _settings.getData(STOCH::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
@@ -206,7 +205,7 @@ void STOCHDialog::createRefPage ()
 
   _ref = new QDoubleSpinBox;
   _ref->setRange(-100000, 100000);
-  _ref->setValue(_settings.getDouble(STOCH::Ref1));
+  _ref->setValue(_settings.getDouble(STOCH::_Ref1));
   grid->addWidget(_ref, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -231,7 +230,7 @@ void STOCHDialog::createRef2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(STOCH::Ref2Color, d);
+  _settings.getData(STOCH::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
@@ -244,7 +243,7 @@ void STOCHDialog::createRef2Page ()
 
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(-100000, 100000);
-  _ref2->setValue(_settings.getDouble(STOCH::Ref2));
+  _ref2->setValue(_settings.getDouble(STOCH::_Ref2));
   grid->addWidget(_ref2, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -254,19 +253,19 @@ void STOCHDialog::createRef2Page ()
 
 void STOCHDialog::done ()
 {
-  _settings.setData(STOCH::FastKColor, _kcolor->color().name());
-  _settings.setData(STOCH::FastDColor, _dcolor->color().name());
-  _settings.setData(STOCH::FastKPlot, _kplotStyle->currentText());
-  _settings.setData(STOCH::FastDPlot, _dplotStyle->currentText());
-  _settings.setData(STOCH::FastKLabel, _klabel->text());
-  _settings.setData(STOCH::FastDLabel, _dlabel->text());
-  _settings.setData(STOCH::FastDPeriod, _dperiod->value());
-  _settings.setData(STOCH::FastKPeriod, _kperiod->value());
-  _settings.setData(STOCH::FastDMA, _maType->currentText());
-  _settings.setData(STOCH::Ref1, _ref->value());
-  _settings.setData(STOCH::Ref2, _ref2->value());
-  _settings.setData(STOCH::Ref1Color, _refColor->color().name());
-  _settings.setData(STOCH::Ref2Color, _ref2Color->color().name());
+  _settings.setData(STOCH::_FastKColor, _kcolor->color().name());
+  _settings.setData(STOCH::_FastDColor, _dcolor->color().name());
+  _settings.setData(STOCH::_FastKPlot, _kplotStyle->currentText());
+  _settings.setData(STOCH::_FastDPlot, _dplotStyle->currentText());
+  _settings.setData(STOCH::_FastKLabel, _klabel->text());
+  _settings.setData(STOCH::_FastDLabel, _dlabel->text());
+  _settings.setData(STOCH::_FastDPeriod, _dperiod->value());
+  _settings.setData(STOCH::_FastKPeriod, _kperiod->value());
+  _settings.setData(STOCH::_FastDMA, _maType->currentText());
+  _settings.setData(STOCH::_Ref1, _ref->value());
+  _settings.setData(STOCH::_Ref2, _ref2->value());
+  _settings.setData(STOCH::_Ref1Color, _refColor->color().name());
+  _settings.setData(STOCH::_Ref2Color, _ref2Color->color().name());
 
   _indicator.setSettings(_settings);
 

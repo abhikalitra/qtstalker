@@ -28,6 +28,7 @@
 #include "ScriptDeleteDialog.h"
 #include "ScriptSearchDialog.h"
 #include "Globals.h"
+#include "ScriptLaunchButtonsDialog.h"
 
 #include "../pics/asterisk.xpm"
 #include "../pics/search.xpm"
@@ -36,6 +37,7 @@
 #include "../pics/newchart.xpm"
 #include "../pics/ok.xpm"
 #include "../pics/script.xpm"
+#include "../pics/configure.xpm"
 
 #include <QCursor>
 #include <QPixmap>
@@ -77,65 +79,36 @@ ScriptPage::ScriptPage ()
   grid->setSpacing(0);
   vbox->addLayout(grid);
 
+  Config config;
+  int rows = config.getInt(Config::ScriptLaunchButtonRows);
+  if (! rows)
+  {
+    rows = 1;
+    config.setData(Config::ScriptLaunchButtonRows, rows);
+  }
+  
+  int cols = config.getInt(Config::ScriptLaunchButtonCols);
+  if (! cols)
+  {
+    cols = 4;
+    config.setData(Config::ScriptLaunchButtonCols, cols);
+  }
 
-  int row = 0;
-  int col = 0;
-  ScriptLaunchButton *b = new ScriptLaunchButton(Config::ScriptLaunchButton1, 1);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton2, 2);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton3, 3);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton4, 4);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  row++;
-  col = 0;
+  int count = 1;
+  int loop = 0;
+  for (; loop < rows; loop++)
+  {
+    int loop2 = 0;
+    for (; loop2 < cols; loop2++)
+    {
+      QString k = "ScriptLaunchButton" + QString::number(count);
+      ScriptLaunchButton *b = new ScriptLaunchButton(k, count);
+      connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
+      grid->addWidget(b, loop, loop2);
+      count++;
+    }
+  }
 
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton5, 5);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton6, 6);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton7, 7);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton8, 8);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  row++;
-  col = 0;
-
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton9, 9);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton10, 10);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton11, 11);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-  
-  b = new ScriptLaunchButton(Config::ScriptLaunchButton12, 12);
-  connect(b, SIGNAL(signalButtonClicked(Script *)), this, SLOT(runScript(Script *)));
-  grid->addWidget(b, row, col++);
-
-
-  
   vbox->addSpacing(5);
   
   QLabel *label = new QLabel(tr("Active Scripts"));
@@ -149,7 +122,6 @@ ScriptPage::ScriptPage ()
   connect(_queList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(queRightClick(const QPoint &)));
   vbox->addWidget(_queList);
 
-  Config config;
   config.transaction();
 
   config.getData(Config::LastScriptSearch, _searchString);
@@ -216,6 +188,12 @@ void ScriptPage::createActions ()
   action->setToolTip(tr("Run script"));
   connect(action, SIGNAL(activated()), this, SLOT(runScriptDialog()));
   _actions.insert(RunScript, action);
+  
+  action = new QAction(QIcon(configure_xpm), tr("Configure &Launch Buttons..."), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
+  action->setToolTip(tr("Configure Launch Buttons..."));
+  connect(action, SIGNAL(activated()), this, SLOT(configureLaunchButtons()));
+  _actions.insert(ConfigureLaunchButtons, action);
 }
 
 void ScriptPage::createButtonMenu (QToolBar *tb)
@@ -236,6 +214,8 @@ void ScriptPage::createButtonMenu (QToolBar *tb)
   _listMenu->addSeparator();
   _listMenu->addAction(_actions.value(ShowAllScripts));
   _listMenu->addAction(_actions.value(SearchScript));
+  _listMenu->addSeparator();
+  _listMenu->addAction(_actions.value(ConfigureLaunchButtons));
 
   _queMenu = new QMenu(this);
   _queMenu->addAction(_actions.value(CancelScript));
@@ -450,5 +430,12 @@ void ScriptPage::queStatus ()
 {
   int status = _queList->count();
   _actions.value(CancelScript)->setEnabled(status); 
+}
+
+void ScriptPage::configureLaunchButtons ()
+{
+  ScriptLaunchButtonsDialog *dialog = new ScriptLaunchButtonsDialog;
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  dialog->show();
 }
 

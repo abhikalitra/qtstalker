@@ -20,16 +20,17 @@
  */
 
 #include "LINEARREG.h"
-#include "FunctionLINEARREG.h"
 #include "FunctionBARS.h"
 #include "LINEARREGDialog.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 LINEARREG::LINEARREG ()
 {
   _indicator = "LINEARREG";
+  _methodList << "LINEARREG" << "ANGLE" << "INTERCEPT" "SLOPE" << "TSF";
 }
 
 int LINEARREG::getIndicator (Indicator &ind, BarData &data)
@@ -37,7 +38,7 @@ int LINEARREG::getIndicator (Indicator &ind, BarData &data)
   Setting settings = ind.settings();
 
   QString s;
-  settings.getData(Input, s);
+  settings.getData(_Input, s);
   Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
@@ -45,25 +46,22 @@ int LINEARREG::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  int period = settings.getInt(Period);
+  int period = settings.getInt(_Period);
 
-  FunctionLINEARREG f;
-  QStringList methodList = f.list();
-  
-  settings.getData(Method, s);
-  int method = methodList.indexOf(s);
+  settings.getData(_Method, s);
+  int method = _methodList.indexOf(s);
 
-  Curve *line = f.calculate(in, period, method);
+  Curve *line = calculate(in, period, method);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  switch ((FunctionLINEARREG::Method) method)
+  switch ((Method) method)
   {
-    case FunctionLINEARREG::_LINEARREG:
-    case FunctionLINEARREG::_INTERCEPT:
+    case _LINEARREG:
+    case _INTERCEPT:
     {
       QColor up("green");
       QColor down("red");
@@ -81,14 +79,14 @@ int LINEARREG::getIndicator (Indicator &ind, BarData &data)
       break;
   }
 
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(1);
@@ -101,8 +99,59 @@ int LINEARREG::getIndicator (Indicator &ind, BarData &data)
 
 int LINEARREG::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionLINEARREG f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,LINEARREG,<METHOD>,<NAME>,<INPUT>,<PERIOD>
+  //     0       1        2        3       4       5        6
+
+  if (set.count() != 7)
+  {
+    qDebug() << "LINEARREG::getCUS: invalid parm count" << set.count();
+    return 1;
+  }
+
+  int method = _methodList.indexOf(set[3]);
+  if (method == -1)
+  {
+    qDebug() << "LINEARREG::getCUS: invalid method" << set[3];
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[4]);
+  if (tl)
+  {
+    qDebug() << "LINEARREG::getCUS: duplicate name" << set[4];
+    return 1;
+  }
+
+  Curve *in = ind.line(set[5]);
+  if (! in)
+  {
+    in = data.getInput(data.getInputType(set[5]));
+    if (! in)
+    {
+      qDebug() << "LINEARREG::getCUS: input not found" << set[5];
+      return 1;
+    }
+
+    ind.setLine(set[5], in);
+  }
+
+  bool ok;
+  int period = set[6].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "LINEARREG::getCUS: invalid period" << set[6];
+    return 1;
+  }
+
+  Curve *line = calculate(in, period, method);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[4]);
+
+  ind.setLine(set[4], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * LINEARREG::dialog (Indicator &i)
@@ -113,12 +162,12 @@ IndicatorPluginDialog * LINEARREG::dialog (Indicator &i)
 void LINEARREG::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Method, "LINEARREG");
-  set.setData(Color, "red");
-  set.setData(Plot, "Line");
-  set.setData(Label, _indicator);
-  set.setData(Input, "Close");
-  set.setData(Period, 14);
+  set.setData(_Method, "LINEARREG");
+  set.setData(_Color, "red");
+  set.setData(_Plot, "Line");
+  set.setData(_Label, _indicator);
+  set.setData(_Input, "Close");
+  set.setData(_Period, 14);
   i.setSettings(set);
 }
 
@@ -128,8 +177,76 @@ void LINEARREG::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
+}
+
+Curve * LINEARREG::calculate (Curve *in, int period, int method)
+{
+  if (in->count() < period)
+    return 0;
+
+  int size = in->count();
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_SUCCESS;
+  switch ((Method) method)
+  {
+    case _LINEARREG:
+      rc = TA_LINEARREG(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case _ANGLE:
+      rc = TA_LINEARREG_ANGLE(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case _INTERCEPT:
+      rc = TA_LINEARREG_INTERCEPT(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case _SLOPE:
+      rc = TA_LINEARREG_SLOPE(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case _TSF:
+      rc = TA_TSF(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "LINEARREG::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  return line;
+}
+
+QStringList & LINEARREG::list ()
+{
+  return _methodList;
 }
 
 //*************************************************************

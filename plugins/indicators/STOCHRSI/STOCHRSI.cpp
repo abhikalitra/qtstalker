@@ -21,9 +21,9 @@
 
 #include "STOCHRSI.h"
 #include "FunctionMA.h"
-#include "FunctionSTOCHRSI.h"
 #include "STOCHRSIDialog.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -41,10 +41,10 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
   Curve *line = new Curve;
   line->setType(Curve::Horizontal);
 
-  settings.getData(Ref1Color, s);
+  settings.getData(_Ref1Color, s);
   QColor color(s);
 
-  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref1)));
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(_Ref1)));
   
   line->setZ(0);
   ind.setLine(0, line);
@@ -53,15 +53,15 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
   line = new Curve;
   line->setType(Curve::Horizontal);
 
-  settings.getData(Ref2Color, s);
+  settings.getData(_Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref2)));
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(_Ref2)));
   
   line->setZ(1);
   ind.setLine(1, line);
 
-  settings.getData(Input, s);
+  settings.getData(_Input, s);
   Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
@@ -69,24 +69,23 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  int period = settings.getInt(Period);
+  int period = settings.getInt(_Period);
 
-  FunctionSTOCHRSI f;
-  line = f.calculate(in, period);
+  line = calculate(in, period);
   if (! line)
   {
     delete in;
     return 1;
   }
   
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   color.setNamedColor(s);
   line->setColor(color);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(2);
@@ -99,8 +98,52 @@ int STOCHRSI::getIndicator (Indicator &ind, BarData &data)
 
 int STOCHRSI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionSTOCHRSI f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,STOCHRSI,<NAME>,<INPUT>,<PERIOD>
+  //    0        1       2       3       4       5
+
+  if (set.count() != 6)
+  {
+    qDebug() << "STOCHRSI::getCUS: invalid settings count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "STOCHRSI::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  Curve *in = ind.line(set[4]);
+  if (! in)
+  {
+    in = data.getInput(data.getInputType(set[4]));
+    if (! in)
+    {
+      qDebug() << "STOCHRSI::getCUS: input not found" << set[4];
+      return 1;
+    }
+
+    ind.setLine(set[4], in);
+  }
+
+  bool ok;
+  int period = set[5].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "STOCHRSI::getCUS: invalid period" << set[5];
+    return 1;
+  }
+
+  Curve *line = calculate(in, period);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * STOCHRSI::dialog (Indicator &i)
@@ -111,15 +154,15 @@ IndicatorPluginDialog * STOCHRSI::dialog (Indicator &i)
 void STOCHRSI::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Color, "red");
-  set.setData(Ref1Color, "white");
-  set.setData(Ref2Color, "white");
-  set.setData(Plot, "Line");
-  set.setData(Label, "STOCHRSI");
-  set.setData(Ref1, 0.2);
-  set.setData(Ref2, 0.8);
-  set.setData(Input, "Close");
-  set.setData(Period, 14);
+  set.setData(_Color, "red");
+  set.setData(_Ref1Color, "white");
+  set.setData(_Ref2Color, "white");
+  set.setData(_Plot, "Line");
+  set.setData(_Label, "STOCHRSI");
+  set.setData(_Ref1, 0.2);
+  set.setData(_Ref2, 0.8);
+  set.setData(_Input, "Close");
+  set.setData(_Period, 14);
   i.setSettings(set);
 }
 
@@ -129,10 +172,62 @@ void STOCHRSI::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
 }
 
+Curve * STOCHRSI::calculate (Curve *in, int period)
+{
+  if (in->count() < period)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_STOCHRSI(0,
+                              size - 1,
+                              &input[0],
+                              period,
+                              period,
+                              1,
+                              (TA_MAType) 0,
+                              &outBeg,
+                              &outNb,
+                              &out[0],
+                              &out2[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "STOCHRSI::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  return line;
+}
 
 //*************************************************************
 //*************************************************************

@@ -20,7 +20,6 @@
  */
 
 #include "ROCDialog.h"
-#include "FunctionROC.h"
 #include "FunctionMA.h"
 #include "ROC.h"
 #include "Curve.h"
@@ -53,11 +52,11 @@ void ROCDialog::createGeneralPage ()
   QLabel *label = new QLabel(tr("Method"));
   grid->addWidget(label, row, col++);
 
-  FunctionROC f;
+  ROC f;
   QStringList l = f.list();
 
   QString d;
-  _settings.getData(ROC::Method, d);
+  _settings.getData(ROC::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
@@ -71,7 +70,7 @@ void ROCDialog::createGeneralPage ()
   BarData bd;
   bd.getInputFields(l);
 
-  _settings.getData(ROC::Input, d);
+  _settings.getData(ROC::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -84,14 +83,14 @@ void ROCDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(ROC::Period));
+  _period->setValue(_settings.getInt(ROC::_Period));
   grid->addWidget(_period, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(ROC::Color, d);
+  _settings.getData(ROC::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -105,7 +104,7 @@ void ROCDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(ROC::Plot, d);
+  _settings.getData(ROC::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -116,7 +115,7 @@ void ROCDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(ROC::Label, d);
+  _settings.getData(ROC::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -127,7 +126,7 @@ void ROCDialog::createGeneralPage ()
 
   _smoothing = new QSpinBox;
   _smoothing->setRange(1, 100000);
-  _smoothing->setValue(_settings.getInt(ROC::Smoothing));
+  _smoothing->setValue(_settings.getInt(ROC::_Smoothing));
   grid->addWidget(_smoothing, row++, col--);
 
   // smoothing type
@@ -137,7 +136,7 @@ void ROCDialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(ROC::SmoothingType, d);
+  _settings.getData(ROC::_SmoothingType, d);
 
   _smoothingType = new QComboBox;
   _smoothingType->addItems(l);
@@ -151,14 +150,14 @@ void ROCDialog::createGeneralPage ()
 
 void ROCDialog::done ()
 {
-  _settings.setData(ROC::Method, _method->currentText());
-  _settings.setData(ROC::Input, _input->currentText());
-  _settings.setData(ROC::Color, _color->color().name());
-  _settings.setData(ROC::Plot, _plotStyle->currentText());
-  _settings.setData(ROC::Label, _label->text());
-  _settings.setData(ROC::Smoothing, _smoothing->value());
-  _settings.setData(ROC::SmoothingType, _smoothingType->currentText());
-  _settings.setData(ROC::Period, _period->value());
+  _settings.setData(ROC::_Method, _method->currentText());
+  _settings.setData(ROC::_Input, _input->currentText());
+  _settings.setData(ROC::_Color, _color->color().name());
+  _settings.setData(ROC::_Plot, _plotStyle->currentText());
+  _settings.setData(ROC::_Label, _label->text());
+  _settings.setData(ROC::_Smoothing, _smoothing->value());
+  _settings.setData(ROC::_SmoothingType, _smoothingType->currentText());
+  _settings.setData(ROC::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

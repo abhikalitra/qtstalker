@@ -20,7 +20,6 @@
  */
 
 #include "SZDialog.h"
-#include "FunctionSZ.h"
 #include "FunctionMA.h"
 #include "SZ.h"
 #include "Curve.h"
@@ -52,11 +51,11 @@ void SZDialog::createGeneralPage ()
   QLabel *label = new QLabel(tr("Method"));
   grid->addWidget(label, row, col++);
 
-  FunctionSZ f;
+  SZ f;
   QStringList l = f.list();
 
   QString d;
-  _settings.getData(SZ::Method, d);
+  _settings.getData(SZ::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
@@ -69,14 +68,14 @@ void SZDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(SZ::Period));
+  _period->setValue(_settings.getInt(SZ::_Period));
   grid->addWidget(_period, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(SZ::Color, d);
+  _settings.getData(SZ::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -90,7 +89,7 @@ void SZDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(SZ::Plot, d);
+  _settings.getData(SZ::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -101,7 +100,7 @@ void SZDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(SZ::Label, d);
+  _settings.getData(SZ::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -112,7 +111,7 @@ void SZDialog::createGeneralPage ()
 
   _ndperiod = new QSpinBox;
   _ndperiod->setRange(1, 100000);
-  _ndperiod->setValue(_settings.getInt(SZ::NoDeclinePeriod));
+  _ndperiod->setValue(_settings.getInt(SZ::_NoDeclinePeriod));
   grid->addWidget(_ndperiod, row++, col--);
 
   // coefficient
@@ -121,7 +120,7 @@ void SZDialog::createGeneralPage ()
 
   _coeff = new QDoubleSpinBox;
   _coeff->setRange(0, 100000);
-  _coeff->setValue(_settings.getDouble(SZ::Coefficient));
+  _coeff->setValue(_settings.getDouble(SZ::_Coefficient));
   grid->addWidget(_coeff, row++, col--);
   
   grid->setRowStretch(row, 1);
@@ -131,13 +130,13 @@ void SZDialog::createGeneralPage ()
 
 void SZDialog::done ()
 {
-  _settings.setData(SZ::Method, _method->currentText());
-  _settings.setData(SZ::Color, _color->color().name());
-  _settings.setData(SZ::Plot, _plotStyle->currentText());
-  _settings.setData(SZ::Label, _label->text());
-  _settings.setData(SZ::NoDeclinePeriod, _ndperiod->value());
-  _settings.setData(SZ::Coefficient, _coeff->value());
-  _settings.setData(SZ::Period, _period->value());
+  _settings.setData(SZ::_Method, _method->currentText());
+  _settings.setData(SZ::_Color, _color->color().name());
+  _settings.setData(SZ::_Plot, _plotStyle->currentText());
+  _settings.setData(SZ::_Label, _label->text());
+  _settings.setData(SZ::_NoDeclinePeriod, _ndperiod->value());
+  _settings.setData(SZ::_Coefficient, _coeff->value());
+  _settings.setData(SZ::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

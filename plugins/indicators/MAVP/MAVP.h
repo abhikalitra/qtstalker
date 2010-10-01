@@ -31,14 +31,14 @@ class MAVP : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      Input = 40,
-      Input2 = 50,
-      Min = 60,
-      Max = 70,
-      MAType = 80
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _Input = 40,
+      _Input2 = 50,
+      _Min = 60,
+      _Max = 70,
+      _MAType = 80
     };
 
     MAVP ();
@@ -47,6 +47,7 @@ class MAVP : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (Curve *in, Curve *in2, int min, int max, int ma);
 };
 
 extern "C"

@@ -31,22 +31,22 @@ class MACD : public IndicatorPlugin
   public:
     enum Parm
     {
-      MACDColor = 10,
-      SignalColor = 20,
-      HistColor = 30,
-      MACDPlot = 40,
-      SignalPlot = 50,
-      HistPlot = 60,
-      MACDLabel = 70,
-      SignalLabel = 80,
-      HistLabel = 90,
-      FastPeriod = 100,
-      SlowPeriod = 110,
-      SignalPeriod = 120,
-      FastMA = 130,
-      SlowMA = 140,
-      SignalMA = 150,
-      Input = 160
+      _MACDColor = 10,
+      _SignalColor = 20,
+      _HistColor = 30,
+      _MACDPlot = 40,
+      _SignalPlot = 50,
+      _HistPlot = 60,
+      _MACDLabel = 70,
+      _SignalLabel = 80,
+      _HistLabel = 90,
+      _FastPeriod = 100,
+      _SlowPeriod = 110,
+      _SignalPeriod = 120,
+      _FastMA = 130,
+      _SlowMA = 140,
+      _SignalMA = 150,
+      _Input = 160
     };
 
     MACD ();
@@ -55,6 +55,8 @@ class MACD : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    int calculate (Curve *, int fastPeriod, int fastMA, int slowPeriod, int slowMA, int signalPeriod,
+                   int signalMA, QList<Curve *> &pl);
 };
 
 extern "C"

@@ -20,7 +20,6 @@
  */
 
 #include "CORRELDialog.h"
-#include "FunctionCORREL.h"
 #include "CORREL.h"
 #include "Curve.h"
 #include "ExchangeDataBase.h"
@@ -57,7 +56,7 @@ void CORRELDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CORREL::Color, d);
+  _settings.getData(CORREL::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -72,7 +71,7 @@ void CORRELDialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(CORREL::Plot, d);
+  _settings.getData(CORREL::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -83,7 +82,7 @@ void CORRELDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(CORREL::Label, d);
+  _settings.getData(CORREL::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -94,7 +93,7 @@ void CORRELDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(CORREL::Period));
+  _period->setValue(_settings.getInt(CORREL::_Period));
   grid->addWidget(_period, row++, col--);
 
   // input
@@ -104,7 +103,7 @@ void CORRELDialog::createGeneralPage ()
   BarData bd;
   bd.getInputFields(l);
 
-  _settings.getData(CORREL::Input, d);
+  _settings.getData(CORREL::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -118,7 +117,7 @@ void CORRELDialog::createGeneralPage ()
   ExchangeDataBase db;
   db.getExchanges(l);
 
-  _settings.getData(CORREL::Exchange, d);
+  _settings.getData(CORREL::_Exchange, d);
 
   _exchange = new QComboBox;
   _exchange->addItems(l);
@@ -129,7 +128,7 @@ void CORRELDialog::createGeneralPage ()
   label = new QLabel(tr("Index Symbol"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(CORREL::Input2, d);
+  _settings.getData(CORREL::_Input2, d);
 
   _input2 = new QLineEdit(d);
   _input2->setToolTip(tr("Index symbol used for comparison eg. SP500"));
@@ -157,7 +156,7 @@ void CORRELDialog::createRefPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CORREL::Ref1Color, d);
+  _settings.getData(CORREL::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
@@ -170,7 +169,7 @@ void CORRELDialog::createRefPage ()
 
   _ref = new QDoubleSpinBox;
   _ref->setRange(-100000, 100000);
-  _ref->setValue(_settings.getDouble(CORREL::Ref1));
+  _ref->setValue(_settings.getDouble(CORREL::_Ref1));
   grid->addWidget(_ref, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -195,7 +194,7 @@ void CORRELDialog::createRef2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CORREL::Ref2Color, d);
+  _settings.getData(CORREL::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
@@ -208,7 +207,7 @@ void CORRELDialog::createRef2Page ()
 
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(-100000, 100000);
-  _ref2->setValue(_settings.getDouble(CORREL::Ref2));
+  _ref2->setValue(_settings.getDouble(CORREL::_Ref2));
   grid->addWidget(_ref2, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -233,7 +232,7 @@ void CORRELDialog::createRef3Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CORREL::Ref3Color, d);
+  _settings.getData(CORREL::_Ref3Color, d);
   QColor c(d);
 
   _ref3Color = new ColorButton(this, c);
@@ -246,7 +245,7 @@ void CORRELDialog::createRef3Page ()
 
   _ref3 = new QDoubleSpinBox;
   _ref3->setRange(-100000, 100000);
-  _ref3->setValue(_settings.getDouble(CORREL::Ref3));
+  _ref3->setValue(_settings.getDouble(CORREL::_Ref3));
   grid->addWidget(_ref3, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -256,19 +255,19 @@ void CORRELDialog::createRef3Page ()
 
 void CORRELDialog::done ()
 {
-  _settings.setData(CORREL::Input2, _input2->text());
-  _settings.setData(CORREL::Exchange, _exchange->currentText());
-  _settings.setData(CORREL::Color, _color->color().name());
-  _settings.setData(CORREL::Plot, _plotStyle->currentText());
-  _settings.setData(CORREL::Label, _label->text());
-  _settings.setData(CORREL::Input, _input->currentText());
-  _settings.setData(CORREL::Period, _period->value());
-  _settings.setData(CORREL::Ref1, _ref->value());
-  _settings.setData(CORREL::Ref2, _ref2->value());
-  _settings.setData(CORREL::Ref3, _ref3->value());
-  _settings.setData(CORREL::Ref1Color, _refColor->color().name());
-  _settings.setData(CORREL::Ref2Color, _ref2Color->color().name());
-  _settings.setData(CORREL::Ref3Color, _ref3Color->color().name());
+  _settings.setData(CORREL::_Input2, _input2->text());
+  _settings.setData(CORREL::_Exchange, _exchange->currentText());
+  _settings.setData(CORREL::_Color, _color->color().name());
+  _settings.setData(CORREL::_Plot, _plotStyle->currentText());
+  _settings.setData(CORREL::_Label, _label->text());
+  _settings.setData(CORREL::_Input, _input->currentText());
+  _settings.setData(CORREL::_Period, _period->value());
+  _settings.setData(CORREL::_Ref1, _ref->value());
+  _settings.setData(CORREL::_Ref2, _ref2->value());
+  _settings.setData(CORREL::_Ref3, _ref3->value());
+  _settings.setData(CORREL::_Ref1Color, _refColor->color().name());
+  _settings.setData(CORREL::_Ref2Color, _ref2Color->color().name());
+  _settings.setData(CORREL::_Ref3Color, _ref3Color->color().name());
 
   _indicator.setSettings(_settings);
 

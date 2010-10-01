@@ -19,21 +19,28 @@
  *  USA.
  */
 
-#ifndef FUNCTION_MOM_HPP
-#define FUNCTION_MOM_HPP
+#ifndef SCRIPT_LAUNCH_BUTTONS_DIALOG_HPP
+#define SCRIPT_LAUNCH_BUTTONS_DIALOG_HPP
 
-#include <QStringList>
+#include <QSpinBox>
 
-#include "Indicator.h"
-#include "Curve.h"
-#include "BarData.h"
+#include "Dialog.h"
 
-class FunctionMOM
+class ScriptLaunchButtonsDialog : public Dialog
 {
+  Q_OBJECT
+
   public:
-    FunctionMOM ();
-    int script (QStringList &, Indicator &, BarData &);
-    Curve * calculate (Curve *in, int period, int smoothing, int type);
+    ScriptLaunchButtonsDialog ();
+    void createMainPage ();
+    void loadSettings ();
+
+  public slots:
+    void done ();
+
+  private:
+    QSpinBox *_rows;
+    QSpinBox *_cols;
 };
 
 #endif

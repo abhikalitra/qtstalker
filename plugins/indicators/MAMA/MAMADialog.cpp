@@ -20,7 +20,6 @@
  */
 
 #include "MAMADialog.h"
-#include "FunctionMAMA.h"
 #include "MAMA.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -60,7 +59,7 @@ void MAMADialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(MAMA::Input, d);
+  _settings.getData(MAMA::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -73,7 +72,7 @@ void MAMADialog::createGeneralPage ()
 
   _fast = new QDoubleSpinBox;
   _fast->setRange(0.01, 0.99);
-  _fast->setValue(_settings.getDouble(MAMA::FastLimit));
+  _fast->setValue(_settings.getDouble(MAMA::_FastLimit));
   grid->addWidget(_fast, row++, col--);
 
   // slow limit
@@ -82,12 +81,12 @@ void MAMADialog::createGeneralPage ()
 
   _slow = new QDoubleSpinBox;
   _slow->setRange(0.01, 0.99);
-  _slow->setValue(_settings.getDouble(MAMA::SlowLimit));
+  _slow->setValue(_settings.getDouble(MAMA::_SlowLimit));
   grid->addWidget(_slow, row++, col--);
 
   // osc check
   _check = new QCheckBox(tr("Oscillator"));
-  _check->setChecked(_settings.getInt(MAMA::OSC));
+  _check->setChecked(_settings.getInt(MAMA::_OSC));
   grid->addWidget(_check, row++, col);
   
 
@@ -113,7 +112,7 @@ void MAMADialog::createMAMAPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(MAMA::MAMAColor, d);
+  _settings.getData(MAMA::_MAMAColor, d);
   QColor c(d);
 
   _mamaColor = new ColorButton(this, c);
@@ -129,7 +128,7 @@ void MAMADialog::createMAMAPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(MAMA::MAMAPlot, d);
+  _settings.getData(MAMA::_MAMAPlot, d);
 
   _mamaPlotStyle = new QComboBox;
   _mamaPlotStyle->addItems(l);
@@ -141,7 +140,7 @@ void MAMADialog::createMAMAPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MAMA::MAMALabel, d);
+  _settings.getData(MAMA::_MAMALabel, d);
 
   _mamaLabel = new QLineEdit(d);
   grid->addWidget(_mamaLabel, row++, col--);
@@ -169,7 +168,7 @@ void MAMADialog::createFAMAPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(MAMA::FAMAColor, d);
+  _settings.getData(MAMA::_FAMAColor, d);
   QColor c(d);
 
   _famaColor = new ColorButton(this, c);
@@ -185,7 +184,7 @@ void MAMADialog::createFAMAPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(MAMA::FAMAPlot, d);
+  _settings.getData(MAMA::_FAMAPlot, d);
 
   _famaPlotStyle = new QComboBox;
   _famaPlotStyle->addItems(l);
@@ -197,7 +196,7 @@ void MAMADialog::createFAMAPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MAMA::FAMALabel, d);
+  _settings.getData(MAMA::_FAMALabel, d);
 
   _famaLabel = new QLineEdit(d);
   grid->addWidget(_famaLabel, row++, col--);
@@ -224,7 +223,7 @@ void MAMADialog::createOSCPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(MAMA::OSCColor, d);
+  _settings.getData(MAMA::_OSCColor, d);
   QColor c(d);
 
   _oscColor = new ColorButton(this, c);
@@ -240,7 +239,7 @@ void MAMADialog::createOSCPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(MAMA::OSCPlot, d);
+  _settings.getData(MAMA::_OSCPlot, d);
 
   _oscPlotStyle = new QComboBox;
   _oscPlotStyle->addItems(l);
@@ -252,7 +251,7 @@ void MAMADialog::createOSCPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MAMA::OSCLabel, d);
+  _settings.getData(MAMA::_OSCLabel, d);
 
   _oscLabel = new QLineEdit(d);
   grid->addWidget(_oscLabel, row++, col--);
@@ -264,19 +263,19 @@ void MAMADialog::createOSCPage ()
 
 void MAMADialog::done ()
 {
-  _settings.setData(MAMA::OSC, 1);
-  _settings.setData(MAMA::OSCColor, _oscColor->color().name());
-  _settings.setData(MAMA::MAMAColor, _mamaColor->color().name());
-  _settings.setData(MAMA::FAMAColor, _famaColor->color().name());
-  _settings.setData(MAMA::MAMAPlot, _mamaPlotStyle->currentText());
-  _settings.setData(MAMA::FAMAPlot, _famaPlotStyle->currentText());
-  _settings.setData(MAMA::OSCPlot, _oscPlotStyle->currentText());
-  _settings.setData(MAMA::MAMALabel, _mamaLabel->text());
-  _settings.setData(MAMA::FAMALabel, _famaLabel->text());
-  _settings.setData(MAMA::OSCLabel, _oscLabel->text());
-  _settings.setData(MAMA::FastLimit, _fast->value());
-  _settings.setData(MAMA::SlowLimit, _slow->value());
-  _settings.setData(MAMA::Input, _input->currentText());
+  _settings.setData(MAMA::_OSC, 1);
+  _settings.setData(MAMA::_OSCColor, _oscColor->color().name());
+  _settings.setData(MAMA::_MAMAColor, _mamaColor->color().name());
+  _settings.setData(MAMA::_FAMAColor, _famaColor->color().name());
+  _settings.setData(MAMA::_MAMAPlot, _mamaPlotStyle->currentText());
+  _settings.setData(MAMA::_FAMAPlot, _famaPlotStyle->currentText());
+  _settings.setData(MAMA::_OSCPlot, _oscPlotStyle->currentText());
+  _settings.setData(MAMA::_MAMALabel, _mamaLabel->text());
+  _settings.setData(MAMA::_FAMALabel, _famaLabel->text());
+  _settings.setData(MAMA::_OSCLabel, _oscLabel->text());
+  _settings.setData(MAMA::_FastLimit, _fast->value());
+  _settings.setData(MAMA::_SlowLimit, _slow->value());
+  _settings.setData(MAMA::_Input, _input->currentText());
 
   _indicator.setSettings(_settings);
 

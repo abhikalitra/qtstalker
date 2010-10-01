@@ -1304,19 +1304,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure Quote Server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbol &amp;Search...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Add To &amp;Group...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Configure Quote Server...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2675,15 +2667,22 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New &amp;Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add a new indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New &amp;Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add a new indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QuoteServerButton</name>
+    <message>
+        <source>Configure Quote Server...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3284,6 +3283,29 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>ScriptLaunchButtonsDialog</name>
+    <message>
+        <source>Configure Script Panel Launch Buttons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Changes effective next startup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ScriptNewDialog</name>
     <message>
         <source>A script with this name already exists.</source>
@@ -3362,6 +3384,14 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>&amp;Run Script...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure &amp;Launch Buttons...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure Launch Buttons...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4033,10 +4063,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Message Log</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Download historical quotes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4074,6 +4100,10 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

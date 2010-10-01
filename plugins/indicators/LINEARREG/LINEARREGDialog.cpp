@@ -20,7 +20,6 @@
  */
 
 #include "LINEARREGDialog.h"
-#include "FunctionLINEARREG.h"
 #include "LINEARREG.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -52,11 +51,11 @@ void LINEARREGDialog::createGeneralPage ()
   QLabel *label = new QLabel(tr("Method"));
   grid->addWidget(label, row, col++);
 
-  FunctionLINEARREG f;
+  LINEARREG f;
   QStringList l = f.list();
 
   QString d;
-  _settings.getData(LINEARREG::Method, d);
+  _settings.getData(LINEARREG::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
@@ -71,7 +70,7 @@ void LINEARREGDialog::createGeneralPage ()
   BarData bd;
   bd.getInputFields(l);
 
-  _settings.getData(LINEARREG::Input, d);
+  _settings.getData(LINEARREG::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -84,7 +83,7 @@ void LINEARREGDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings.getInt(LINEARREG::Period));
+  _period->setValue(_settings.getInt(LINEARREG::_Period));
   grid->addWidget(_period, row++, col--);
 
 
@@ -92,7 +91,7 @@ void LINEARREGDialog::createGeneralPage ()
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(LINEARREG::Color, d);
+  _settings.getData(LINEARREG::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -107,7 +106,7 @@ void LINEARREGDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(LINEARREG::Plot, d);
+  _settings.getData(LINEARREG::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -119,7 +118,7 @@ void LINEARREGDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(LINEARREG::Label, d);
+  _settings.getData(LINEARREG::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -132,12 +131,12 @@ void LINEARREGDialog::createGeneralPage ()
 
 void LINEARREGDialog::done ()
 {
-  _settings.setData(LINEARREG::Method, _method->currentText());
-  _settings.setData(LINEARREG::Period, _period->value());
-  _settings.setData(LINEARREG::Color, _color->color().name());
-  _settings.setData(LINEARREG::Plot, _plotStyle->currentText());
-  _settings.setData(LINEARREG::Label, _label->text());
-  _settings.setData(LINEARREG::Input, _input->currentText());
+  _settings.setData(LINEARREG::_Method, _method->currentText());
+  _settings.setData(LINEARREG::_Period, _period->value());
+  _settings.setData(LINEARREG::_Color, _color->color().name());
+  _settings.setData(LINEARREG::_Plot, _plotStyle->currentText());
+  _settings.setData(LINEARREG::_Label, _label->text());
+  _settings.setData(LINEARREG::_Input, _input->currentText());
 
   _indicator.setSettings(_settings);
 

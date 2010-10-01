@@ -20,7 +20,6 @@
  */
 
 #include "CMODialog.h"
-#include "FunctionCMO.h"
 #include "CMO.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -53,7 +52,7 @@ void CMODialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CMO::Color, d);
+  _settings.getData(CMO::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -68,7 +67,7 @@ void CMODialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(CMO::Plot, d);
+  _settings.getData(CMO::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -79,7 +78,7 @@ void CMODialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(CMO::Label, d);
+  _settings.getData(CMO::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -90,7 +89,7 @@ void CMODialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings.getInt(CMO::Period));
+  _period->setValue(_settings.getInt(CMO::_Period));
   grid->addWidget(_period, row++, col--);
 
   // input
@@ -100,7 +99,7 @@ void CMODialog::createGeneralPage ()
   BarData bd;
   bd.getInputFields(l);
 
-  _settings.getData(CMO::Input, d);
+  _settings.getData(CMO::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -114,11 +113,11 @@ void CMODialog::createGeneralPage ()
 
 void CMODialog::done ()
 {
-  _settings.setData(CMO::Input, _input->currentText());
-  _settings.setData(CMO::Period, _period->value());
-  _settings.setData(CMO::Color, _color->color().name());
-  _settings.setData(CMO::Plot, _plotStyle->currentText());
-  _settings.setData(CMO::Label, _label->text());
+  _settings.setData(CMO::_Input, _input->currentText());
+  _settings.setData(CMO::_Period, _period->value());
+  _settings.setData(CMO::_Color, _color->color().name());
+  _settings.setData(CMO::_Plot, _plotStyle->currentText());
+  _settings.setData(CMO::_Label, _label->text());
 
   _indicator.setSettings(_settings);
 

@@ -20,7 +20,6 @@
  */
 
 #include "Setup.h"
-#include "qtstalker_defines.h"
 #include "IndicatorDataBase.h"
 #include "Indicator.h"
 #include "IndicatorPluginFactory.h"
@@ -28,7 +27,6 @@
 #include "ExchangeDataBase.h"
 #include "FuturesDataBase.h"
 #include "MiscPluginFactory.h"
-#include "QuoteServerRequest.h"
 #include "Globals.h"
 #include "ChartObjectDataBase.h"
 #include "ScriptDataBase.h"
@@ -37,7 +35,6 @@
 #include <QtDebug>
 #include <QDir>
 #include <QStringList>
-#include <QProcess>
 
 Setup::Setup ()
 {
@@ -56,8 +53,6 @@ void Setup::setup (Config &config, QString session)
   config.create(session);
   
   config.init(); // initialize config db
-
-  setupConfigDefaults(config); // initialize config defaults
 
   // initialize data tables
   setupExchanges();
@@ -169,69 +164,5 @@ void Setup::setupFutures ()
   db.transaction();
   db.createFutures();  
   db.commit();
-}
-
-void Setup::setupConfigDefaults (Config &config)
-{
-  config.transaction();
-
-  // this has to be set before app starts so we know beforehand how many
-  // tab rows to construct
-  QString d;
-  config.getData(Config::IndicatorTabRows, d);
-  if (d.isEmpty())
-  {
-    d = "2";
-    config.setData(Config::IndicatorTabRows, d);
-  }
-
-  // set the quote server hostname
-  config.getData(Config::QuoteServerName, d);
-  if (d.isEmpty())
-  {
-    d = "127.0.0.1";
-    config.setData(Config::QuoteServerName, d);
-  }
-
-  // set the quote server port number
-  config.getData(Config::QuoteServerPort, d);
-  if (d.isEmpty())
-  {
-    d = "5000";
-    config.setData(Config::QuoteServerPort, d);
-  }
-
-  // clear current chart to empty
-  d = "";
-  config.setData(Config::CurrentChart, d);
-
-  config.commit();
-}
-
-void Setup::setupQuoteServer (Config &config)
-{
-  // create malformed command to get ERROR response
-  QStringList tl;
-  tl << "Quotes" << "blah";
-  QString command = tl.join(",") + "\n";
-
-  QuoteServerRequest qsr;
-  qsr.run(command);
-  if (qsr.data() == "ERROR")
-    return;
-
-  QString serverName;
-  config.getData(Config::QuoteServerName, serverName);
-  int serverPort = config.getInt(Config::QuoteServerPort);
-
-  command.clear();
-  command.append("QuoteServer");
-  command.append(" -p ");
-  command.append(QString::number(serverPort));
-  int rc = QProcess::startDetached(command);
-  if (! rc)
-  {
-    qDebug() << "Setup::setupQuoteServer: error starting the server";
-  }
 }
 

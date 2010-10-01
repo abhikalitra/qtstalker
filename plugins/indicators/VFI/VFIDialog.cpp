@@ -20,7 +20,6 @@
  */
 
 #include "VFIDialog.h"
-#include "FunctionVFI.h"
 #include "VFI.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -53,7 +52,7 @@ void VFIDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(VFI::Period));
+  _period->setValue(_settings.getInt(VFI::_Period));
   grid->addWidget(_period, row++, col--);
 
   // color
@@ -61,7 +60,7 @@ void VFIDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(VFI::Color, d);
+  _settings.getData(VFI::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -76,7 +75,7 @@ void VFIDialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(VFI::Plot, d);
+  _settings.getData(VFI::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -87,7 +86,7 @@ void VFIDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(VFI::Label, d);
+  _settings.getData(VFI::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -99,10 +98,10 @@ void VFIDialog::createGeneralPage ()
 
 void VFIDialog::done ()
 {
-  _settings.setData(VFI::Color, _color->color().name());
-  _settings.setData(VFI::Plot, _plotStyle->currentText());
-  _settings.setData(VFI::Label, _label->text());
-  _settings.setData(VFI::Period, _period->value());
+  _settings.setData(VFI::_Color, _color->color().name());
+  _settings.setData(VFI::_Plot, _plotStyle->currentText());
+  _settings.setData(VFI::_Label, _label->text());
+  _settings.setData(VFI::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

@@ -20,7 +20,6 @@
  */
 
 #include "ADDialog.h"
-#include "FunctionAD.h"
 #include "AD.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -52,11 +51,11 @@ void ADDialog::createGeneralPage ()
   QLabel *label = new QLabel(tr("Method"));
   grid->addWidget(label, row, col++);
 
-  FunctionAD f;
+  AD f;
   QStringList l = f.list();
 
   QString d;
-  _settings.getData(AD::Method, d);
+  _settings.getData(AD::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
@@ -85,7 +84,7 @@ void ADDialog::createADPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(AD::ADColor, d);
+  _settings.getData(AD::_ADColor, d);
   QColor c(d);
 
   _adColor = new ColorButton(this, c);
@@ -101,7 +100,7 @@ void ADDialog::createADPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(AD::ADPlot, d);
+  _settings.getData(AD::_ADPlot, d);
 
   _adPlotStyle = new QComboBox;
   _adPlotStyle->addItems(l);
@@ -113,7 +112,7 @@ void ADDialog::createADPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(AD::ADLabel, d);
+  _settings.getData(AD::_ADLabel, d);
 
   _adLabel = new QLineEdit(d);
   grid->addWidget(_adLabel, row++, col--);
@@ -141,7 +140,7 @@ void ADDialog::createOSCPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(AD::OSCColor, d);
+  _settings.getData(AD::_OSCColor, d);
   QColor c(d);
 
   _oscColor = new ColorButton(this, c);
@@ -157,7 +156,7 @@ void ADDialog::createOSCPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(AD::OSCPlot, d);
+  _settings.getData(AD::_OSCPlot, d);
 
   _oscPlotStyle = new QComboBox;
   _oscPlotStyle->addItems(l);
@@ -169,7 +168,7 @@ void ADDialog::createOSCPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(AD::OSCLabel, d);
+  _settings.getData(AD::_OSCLabel, d);
 
   _oscLabel = new QLineEdit(d);
   grid->addWidget(_oscLabel, row++, col--);
@@ -181,7 +180,7 @@ void ADDialog::createOSCPage ()
 
   _fast = new QSpinBox;
   _fast->setRange(1, 100000);
-  _fast->setValue(_settings.getInt(AD::FastPeriod));
+  _fast->setValue(_settings.getInt(AD::_FastPeriod));
   grid->addWidget(_fast, row++, col--);
   
 
@@ -191,7 +190,7 @@ void ADDialog::createOSCPage ()
 
   _slow = new QSpinBox;
   _slow->setRange(1, 100000);
-  _slow->setValue(_settings.getInt(AD::SlowPeriod));
+  _slow->setValue(_settings.getInt(AD::_SlowPeriod));
   grid->addWidget(_slow, row++, col--);
 
 
@@ -202,15 +201,15 @@ void ADDialog::createOSCPage ()
 
 void ADDialog::done ()
 {
-  _settings.setData(AD::Method, _method->currentText());
-  _settings.setData(AD::ADColor, _adColor->color().name());
-  _settings.setData(AD::ADPlot, _adPlotStyle->currentText());
-  _settings.setData(AD::ADLabel, _adLabel->text());
-  _settings.setData(AD::FastPeriod, _fast->value());
-  _settings.setData(AD::SlowPeriod, _slow->value());
-  _settings.setData(AD::OSCColor, _oscColor->color().name());
-  _settings.setData(AD::OSCPlot, _oscPlotStyle->currentText());
-  _settings.setData(AD::OSCLabel, _oscLabel->text());
+  _settings.setData(AD::_Method, _method->currentText());
+  _settings.setData(AD::_ADColor, _adColor->color().name());
+  _settings.setData(AD::_ADPlot, _adPlotStyle->currentText());
+  _settings.setData(AD::_ADLabel, _adLabel->text());
+  _settings.setData(AD::_FastPeriod, _fast->value());
+  _settings.setData(AD::_SlowPeriod, _slow->value());
+  _settings.setData(AD::_OSCColor, _oscColor->color().name());
+  _settings.setData(AD::_OSCPlot, _oscPlotStyle->currentText());
+  _settings.setData(AD::_OSCLabel, _oscLabel->text());
 
   _indicator.setSettings(_settings);
 

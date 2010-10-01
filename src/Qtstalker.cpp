@@ -37,6 +37,7 @@
 #include "QuoteServerRequestThread.h"
 #include "DocsAction.h"
 #include "Globals.h"
+#include "QuoteServerButton.h"
 
 #include "../pics/done.xpm"
 #include "../pics/datawindow.xpm"
@@ -53,7 +54,7 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   setup.setup(config, session);
 
   // start the quote server
-  setup.setupQuoteServer(config);
+//  setup.setupQuoteServer(config);
   
   createToolBars();
 
@@ -85,8 +86,6 @@ void QtstalkerApp::createGUI (Config &)
   hbox->setSpacing(0);
   _baseWidget->setLayout(hbox);
 
-  // add the side toolBar first
-//  hbox->addWidget(_toolBar2);
 
   _navSplitter = new Splitter((int) Config::NavAreaSize);
   connect(this, SIGNAL(signalLoadSettings()), _navSplitter, SLOT(load()));
@@ -184,20 +183,27 @@ void QtstalkerApp::createToolBars ()
   connect(a, SIGNAL(activated()), this, SLOT(dataWindow()));
   toolbar->addAction(a);
 
-  _newIndicatorAction = new QAction(QIcon(indicator_xpm), tr("New &Indicator"), this);
+  _newIndicatorAction = new QAction(QIcon(indicator_xpm), tr("New &Indicator..."), this);
   _newIndicatorAction->setShortcut(QKeySequence(Qt::ALT+Qt::Key_I));
-  _newIndicatorAction->setStatusTip(tr("Add a new indicator"));
-  _newIndicatorAction->setToolTip(tr("Add a new indicator"));
+  _newIndicatorAction->setStatusTip(tr("Add a new indicator..."));
+  _newIndicatorAction->setToolTip(tr("Add a new indicator..."));
   toolbar->addAction(_newIndicatorAction);
 
   // docs button
   DocsAction *da = new DocsAction;
   toolbar->addWidget(da);
-  
+
+  QuoteServerButton *qsb = new QuoteServerButton;
+  toolbar->addWidget(qsb);
+
   toolbar->addSeparator();
 
   // create the zoom button box on the main toolbar
   _zoomButtons = new ZoomButtons(toolbar);
+
+  // create 2nd tool bar
+//  toolbar = addToolBar("buttonToolBar2");
+//  toolbar->setIconSize(QSize(18, 18));
 
   toolbar->addSeparator();
   

@@ -20,7 +20,6 @@
  */
 
 #include "T3Dialog.h"
-#include "FunctionT3.h"
 #include "FunctionMA.h"
 #include "T3.h"
 #include "Curve.h"
@@ -58,7 +57,7 @@ void T3Dialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(T3::Input, d);
+  _settings.getData(T3::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -71,7 +70,7 @@ void T3Dialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(T3::Period));
+  _period->setValue(_settings.getInt(T3::_Period));
   grid->addWidget(_period, row++, col--);
 
   // v factor
@@ -80,14 +79,14 @@ void T3Dialog::createGeneralPage ()
 
   _vfactor = new QDoubleSpinBox;
   _vfactor->setRange(0, 1);
-  _vfactor->setValue(_settings.getDouble(T3::VFactor));
+  _vfactor->setValue(_settings.getDouble(T3::_VFactor));
   grid->addWidget(_vfactor, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(T3::Color, d);
+  _settings.getData(T3::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -101,7 +100,7 @@ void T3Dialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(T3::Plot, d);
+  _settings.getData(T3::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -112,7 +111,7 @@ void T3Dialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(T3::Label, d);
+  _settings.getData(T3::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -124,12 +123,12 @@ void T3Dialog::createGeneralPage ()
 
 void T3Dialog::done ()
 {
-  _settings.setData(T3::Input, _input->currentText());
-  _settings.setData(T3::Color, _color->color().name());
-  _settings.setData(T3::Plot, _plotStyle->currentText());
-  _settings.setData(T3::Label, _label->text());
-  _settings.setData(T3::VFactor, _vfactor->value());
-  _settings.setData(T3::Period, _period->value());
+  _settings.setData(T3::_Input, _input->currentText());
+  _settings.setData(T3::_Color, _color->color().name());
+  _settings.setData(T3::_Plot, _plotStyle->currentText());
+  _settings.setData(T3::_Label, _label->text());
+  _settings.setData(T3::_VFactor, _vfactor->value());
+  _settings.setData(T3::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

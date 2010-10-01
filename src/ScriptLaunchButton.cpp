@@ -29,15 +29,15 @@
 #include <QCursor>
 #include <QInputDialog>
 
-ScriptLaunchButton::ScriptLaunchButton (int pos, int label)
+ScriptLaunchButton::ScriptLaunchButton (QString key, int label)
 {
   setContextMenuPolicy(Qt::CustomContextMenu);
-  _position = pos;
+  _key = key;
   setMinimumWidth(32);
   setText(QString::number(label));
 
   Config config;
-  config.getData((Config::Parm) _position, _scriptName);
+  config.getData(_key, _scriptName);
 
   Script script;
   script.setName(_scriptName);
@@ -94,7 +94,7 @@ void ScriptLaunchButton::configure2 (QString s)
 
   Config config;
   config.transaction();
-  config.setData((Config::Parm) _position, _scriptName);
+  config.setData(_key, _scriptName);
   config.commit();
 
   setToolTip(_scriptName);

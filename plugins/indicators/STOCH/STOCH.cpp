@@ -21,9 +21,9 @@
 
 #include "STOCH.h"
 #include "FunctionMA.h"
-#include "FunctionSTOCH.h"
 #include "STOCHDialog.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -41,10 +41,10 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
   Curve *line = new Curve;
   line->setType(Curve::Horizontal);
 
-  settings.getData(Ref1Color, s);
+  settings.getData(_Ref1Color, s);
   QColor color(s);
 
-  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref1)));
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(_Ref1)));
   
   line->setZ(0);
   ind.setLine(0, line);
@@ -53,37 +53,36 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
   line = new Curve;
   line->setType(Curve::Horizontal);
 
-  settings.getData(Ref2Color, s);
+  settings.getData(_Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref2)));
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(_Ref2)));
   
   line->setZ(1);
   ind.setLine(1, line);
 
   // create the fastk line
-  int kperiod = settings.getInt(FastKPeriod);
-  int dperiod = settings.getInt(FastDPeriod);
+  int kperiod = settings.getInt(_FastKPeriod);
+  int dperiod = settings.getInt(_FastDPeriod);
 
   FunctionMA mau;
-  settings.getData(FastDMA, s);
+  settings.getData(_FastDMA, s);
   int maType = mau.typeFromString(s);
 
-  FunctionSTOCH f;
   QList<Curve *> pl;
-  if (f.calculate(kperiod, dperiod, maType, pl, data))
+  if (calculate(kperiod, dperiod, maType, pl, data))
     return 1;
 
   line = pl.at(0);
 
-  settings.getData(FastKPlot, s);
+  settings.getData(_FastKPlot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(FastKColor, s);
+  settings.getData(_FastKColor, s);
   color.setNamedColor(s);
   line->setColor(color);
 
-  settings.getData(FastKLabel, s);
+  settings.getData(_FastKLabel, s);
   line->setLabel(s);
   
   line->setZ(2);
@@ -91,14 +90,14 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
   
   line = pl.at(1);
 
-  settings.getData(FastDPlot, s);
+  settings.getData(_FastDPlot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(FastDColor, s);
+  settings.getData(_FastDColor, s);
   color.setNamedColor(s);
   line->setColor(color);
 
-  settings.getData(FastDLabel, s);
+  settings.getData(_FastDLabel, s);
   line->setLabel(s);
   
   line->setZ(3);
@@ -109,8 +108,65 @@ int STOCH::getIndicator (Indicator &ind, BarData &data)
 
 int STOCH::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionSTOCH f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,STOCH,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>
+  //     0        1    2         3            4              5             6              7
+
+  if (set.count() != 8)
+  {
+    qDebug() << "STOCH::script: invalid settings count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "STOCH::script: duplicate fastk name" << set[3];
+    return 1;
+  }
+
+  tl = ind.line(set[4]);
+  if (tl)
+  {
+    qDebug() << "STOCH::script: duplicate fastd name" << set[4];
+    return 1;
+  }
+
+  bool ok;
+  int fkp = set[5].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "STOCH::script: invalid fastk period" << set[5];
+    return 1;
+  }
+
+  int fdp = set[6].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "STOCH::script: invalid fastd period" << set[6];
+    return 1;
+  }
+
+  FunctionMA mau;
+  int ma = mau.typeFromString(set[7]);
+  if (ma == -1)
+  {
+    qDebug() << "STOCH::script: invalid fastd ma" << set[7];
+    return 1;
+  }
+
+  QList<Curve *> pl;
+  if (calculate(fkp, fdp, ma, pl, data))
+    return 1;
+
+  Curve *line = pl.at(0);
+  line->setLabel(set[3]);
+  ind.setLine(set[3], line);
+
+  line = pl.at(1);
+  line->setLabel(set[4]);
+  ind.setLine(set[4], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * STOCH::dialog (Indicator &i)
@@ -121,19 +177,19 @@ IndicatorPluginDialog * STOCH::dialog (Indicator &i)
 void STOCH::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(FastKColor, "red");
-  set.setData(FastDColor, "yellow");
-  set.setData(Ref1Color, "white");
-  set.setData(Ref2Color, "white");
-  set.setData(FastKPlot, "Line");
-  set.setData(FastDPlot, "Dash");
-  set.setData(FastKLabel, "FASTK");
-  set.setData(FastDLabel, "FASTD");
-  set.setData(FastKPeriod, 5);
-  set.setData(FastDPeriod, 3);
-  set.setData(FastDMA, "SMA");
-  set.setData(Ref1, 20);
-  set.setData(Ref2, 80);
+  set.setData(_FastKColor, "red");
+  set.setData(_FastDColor, "yellow");
+  set.setData(_Ref1Color, "white");
+  set.setData(_Ref2Color, "white");
+  set.setData(_FastKPlot, "Line");
+  set.setData(_FastDPlot, "Dash");
+  set.setData(_FastKLabel, "FASTK");
+  set.setData(_FastDLabel, "FASTD");
+  set.setData(_FastKPeriod, 5);
+  set.setData(_FastDPeriod, 3);
+  set.setData(_FastDMA, "SMA");
+  set.setData(_Ref1, 20);
+  set.setData(_Ref2, 80);
   i.setSettings(set);
 }
 
@@ -144,11 +200,61 @@ void STOCH::plotNames (Indicator &i, QStringList &l)
   Setting settings = i.settings();
   QString s;
   
-  settings.getData(FastKLabel, s);
+  settings.getData(_FastKLabel, s);
   l.append(s);
 
-  settings.getData(FastDLabel, s);
+  settings.getData(_FastDLabel, s);
   l.append(s);
+}
+
+int STOCH::calculate (int kperiod, int dperiod, int ma, QList<Curve *> &pl, BarData &data)
+{
+  int size = data.count();
+
+  if (size < kperiod || size < dperiod)
+    return 1;
+
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  TA_RetCode rc = TA_STOCHF(0,
+                            size - 1,
+                            data.getTAData(BarData::High),
+                            data.getTAData(BarData::Low),
+                            data.getTAData(BarData::Close),
+                            kperiod,
+                            dperiod,
+                            (TA_MAType) ma,
+                            &outBeg,
+                            &outNb,
+                            &out[0],
+                            &out2[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "STOCH::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *kline = new Curve;
+  Curve *dline = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    kline->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dline->setBar(dataLoop, new CurveBar(out2[outLoop]));
+
+    dataLoop--;
+    outLoop--;
+  }
+
+  pl.append(kline);
+  pl.append(dline);
+
+  return 0;
 }
 
 //*************************************************************

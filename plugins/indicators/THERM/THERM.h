@@ -31,18 +31,18 @@ class THERM : public IndicatorPlugin
   public:
     enum Parm
     {
-      UpColor = 10,
-      DownColor = 20,
-      ThreshColor = 30,
-      MAColor = 40,
-      MAPlot = 50,
-      Label = 60,
-      MALabel = 70,
-      Threshold = 80,
-      Smoothing = 90,
-      SmoothingType = 100,
-      MAPeriod = 110,
-      MAType = 120
+      _UpColor = 10,
+      _DownColor = 20,
+      _ThreshColor = 30,
+      _MAColor = 40,
+      _MAPlot = 50,
+      _Label = 60,
+      _MALabel = 70,
+      _Threshold = 80,
+      _Smoothing = 90,
+      _SmoothingType = 100,
+      _MAPeriod = 110,
+      _MAType = 120
     };
 
     THERM ();
@@ -51,6 +51,7 @@ class THERM : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (int smoothing, int type, BarData &);
 };
 
 extern "C"

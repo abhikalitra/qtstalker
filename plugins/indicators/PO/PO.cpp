@@ -22,14 +22,15 @@
 #include "PO.h"
 #include "FunctionMA.h"
 #include "PODialog.h"
-#include "FunctionPO.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 PO::PO ()
 {
   _indicator = "PO";
+  _methodList << "APO" << "PPO";
 }
 
 int PO::getIndicator (Indicator &ind, BarData &data)
@@ -37,7 +38,7 @@ int PO::getIndicator (Indicator &ind, BarData &data)
   Setting settings = ind.settings();
 
   QString s;
-  settings.getData(Input, s);
+  settings.getData(_Input, s);
   Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
@@ -45,34 +46,31 @@ int PO::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  int fast = settings.getInt(FastPeriod);
-  int slow = settings.getInt(SlowPeriod);
+  int fast = settings.getInt(_FastPeriod);
+  int slow = settings.getInt(_SlowPeriod);
 
   FunctionMA mau;
-  settings.getData(MAType, s);
+  settings.getData(_MAType, s);
   int ma = mau.typeFromString(s);
 
-  FunctionPO f;
-  QStringList methodList = f.list();
-  
-  settings.getData(Method, s);
-  int method = methodList.indexOf(s);
+  settings.getData(_Method, s);
+  int method = _methodList.indexOf(s);
 
-  Curve *line = f.calculate(in, fast, slow, ma, method);
+  Curve *line = calculate(in, fast, slow, ma, method);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(0);
@@ -85,8 +83,74 @@ int PO::getIndicator (Indicator &ind, BarData &data)
 
 int PO::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionPO f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,PO,<METHOD>,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>
+  //     0       1     2    3       4       5         6             7           8
+
+  if (set.count() != 9)
+  {
+    qDebug() << "PO::getCUS: invalid parm count" << set.count();
+    return 1;
+  }
+
+  int method = _methodList.indexOf(set[3]);
+  if (method == -1)
+  {
+    qDebug() << "PO::getCUS: invalid method" << set[3];
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[4]);
+  if (tl)
+  {
+    qDebug() << "PO::getCUS: duplicate name" << set[4];
+    return 1;
+  }
+
+  Curve *in = ind.line(set[5]);
+  if (! in)
+  {
+    in = data.getInput(data.getInputType(set[5]));
+    if (! in)
+    {
+      qDebug() << "PO::getCUS: input not found" << set[5];
+      return 1;
+    }
+
+    ind.setLine(set[5], in);
+  }
+
+  bool ok;
+  int fast = set[6].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "PO::getCUS: invalid fast period" << set[6];
+    return 1;
+  }
+
+  int slow = set[7].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "PO::getCUS: invalid slow period" << set[7];
+    return 1;
+  }
+
+  FunctionMA mau;
+  int ma = mau.typeFromString(set[8]);
+  if (ma == -1)
+  {
+    qDebug() << "PO::getCUS: invalid ma" << set[8];
+    return 1;
+  }
+
+  Curve *line = calculate(in, fast, slow, ma, method);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[4]);
+
+  ind.setLine(set[4], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * PO::dialog (Indicator &i)
@@ -97,14 +161,14 @@ IndicatorPluginDialog * PO::dialog (Indicator &i)
 void PO::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Color, "red");
-  set.setData(Plot, "Histogram Bar");
-  set.setData(Label, _indicator);
-  set.setData(Input, "Close");
-  set.setData(FastPeriod, 12);
-  set.setData(SlowPeriod, 26);
-  set.setData(MAType, "SMA");
-  set.setData(Method, "APO");
+  set.setData(_Color, "red");
+  set.setData(_Plot, "Histogram Bar");
+  set.setData(_Label, _indicator);
+  set.setData(_Input, "Close");
+  set.setData(_FastPeriod, 12);
+  set.setData(_SlowPeriod, 26);
+  set.setData(_MAType, "SMA");
+  set.setData(_Method, "APO");
   i.setSettings(set);
 }
 
@@ -114,8 +178,68 @@ void PO::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
+}
+
+Curve * PO::calculate (Curve *in, int fast, int slow, int ma, int method)
+{
+  if (in->count() < fast || in->count() < slow)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_SUCCESS;
+
+  switch ((Method) method)
+  {
+    case _APO:
+      rc = TA_APO(0, size - 1, &input[0], fast, slow, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
+      break;
+    case _PPO:
+      rc = TA_PPO(0, size - 1, &input[0], fast, slow, (TA_MAType) ma, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "PO::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  return line;
+}
+
+QStringList & PO::list ()
+{
+  return _methodList;
 }
 
 //*************************************************************

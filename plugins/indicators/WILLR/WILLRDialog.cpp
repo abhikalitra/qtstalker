@@ -20,7 +20,6 @@
  */
 
 #include "WILLRDialog.h"
-#include "FunctionWILLR.h"
 #include "WILLR.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -53,7 +52,7 @@ void WILLRDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(WILLR::Period));
+  _period->setValue(_settings.getInt(WILLR::_Period));
   grid->addWidget(_period, row++, col--);
 
   // color
@@ -61,7 +60,7 @@ void WILLRDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(WILLR::Color, d);
+  _settings.getData(WILLR::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -76,7 +75,7 @@ void WILLRDialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(WILLR::Plot, d);
+  _settings.getData(WILLR::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -87,7 +86,7 @@ void WILLRDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(WILLR::Label, d);
+  _settings.getData(WILLR::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -99,10 +98,10 @@ void WILLRDialog::createGeneralPage ()
 
 void WILLRDialog::done ()
 {
-  _settings.setData(WILLR::Color, _color->color().name());
-  _settings.setData(WILLR::Plot, _plotStyle->currentText());
-  _settings.setData(WILLR::Label, _label->text());
-  _settings.setData(WILLR::Period, _period->value());
+  _settings.setData(WILLR::_Color, _color->color().name());
+  _settings.setData(WILLR::_Plot, _plotStyle->currentText());
+  _settings.setData(WILLR::_Label, _label->text());
+  _settings.setData(WILLR::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

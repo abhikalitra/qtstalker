@@ -31,16 +31,16 @@ class MFI : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      Period = 40,
-      Smoothing = 50,
-      SmoothingType = 60,
-      Ref1 = 70,
-      Ref2 = 80,
-      Ref1Color = 90,
-      Ref2Color = 100
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _Period = 40,
+      _Smoothing = 50,
+      _SmoothingType = 60,
+      _Ref1 = 70,
+      _Ref2 = 80,
+      _Ref1Color = 90,
+      _Ref2Color = 100
     };
 
     MFI ();
@@ -49,6 +49,7 @@ class MFI : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (int period, int smoothing, int type, BarData &);
 };
 
 extern "C"

@@ -20,7 +20,6 @@
  */
 
 #include "MOMDialog.h"
-#include "FunctionMOM.h"
 #include "FunctionMA.h"
 #include "MOM.h"
 #include "Curve.h"
@@ -58,7 +57,7 @@ void MOMDialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(MOM::Input, d);
+  _settings.getData(MOM::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -71,14 +70,14 @@ void MOMDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(MOM::Period));
+  _period->setValue(_settings.getInt(MOM::_Period));
   grid->addWidget(_period, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MOM::Color, d);
+  _settings.getData(MOM::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -92,7 +91,7 @@ void MOMDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(MOM::Plot, d);
+  _settings.getData(MOM::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -103,7 +102,7 @@ void MOMDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MOM::Label, d);
+  _settings.getData(MOM::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -114,7 +113,7 @@ void MOMDialog::createGeneralPage ()
 
   _smoothing = new QSpinBox;
   _smoothing->setRange(1, 100000);
-  _smoothing->setValue(_settings.getInt(MOM::Smoothing));
+  _smoothing->setValue(_settings.getInt(MOM::_Smoothing));
   grid->addWidget(_smoothing, row++, col--);
 
   // smoothing type
@@ -124,7 +123,7 @@ void MOMDialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(MOM::SmoothingType, d);
+  _settings.getData(MOM::_SmoothingType, d);
 
   _smoothingType = new QComboBox;
   _smoothingType->addItems(l);
@@ -138,13 +137,13 @@ void MOMDialog::createGeneralPage ()
 
 void MOMDialog::done ()
 {
-  _settings.setData(MOM::Input, _input->currentText());
-  _settings.setData(MOM::Color, _color->color().name());
-  _settings.setData(MOM::Plot, _plotStyle->currentText());
-  _settings.setData(MOM::Label, _label->text());
-  _settings.setData(MOM::Smoothing, _smoothing->value());
-  _settings.setData(MOM::SmoothingType, _smoothingType->currentText());
-  _settings.setData(MOM::Period, _period->value());
+  _settings.setData(MOM::_Input, _input->currentText());
+  _settings.setData(MOM::_Color, _color->color().name());
+  _settings.setData(MOM::_Plot, _plotStyle->currentText());
+  _settings.setData(MOM::_Label, _label->text());
+  _settings.setData(MOM::_Smoothing, _smoothing->value());
+  _settings.setData(MOM::_SmoothingType, _smoothingType->currentText());
+  _settings.setData(MOM::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

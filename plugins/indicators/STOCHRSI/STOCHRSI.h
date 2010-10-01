@@ -31,15 +31,15 @@ class STOCHRSI : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Ref1Color = 20,
-      Ref2Color = 30,
-      Plot = 40,
-      Label = 50,
-      Ref1 = 60,
-      Ref2 = 70,
-      Input = 80,
-      Period = 90
+      _Color = 10,
+      _Ref1Color = 20,
+      _Ref2Color = 30,
+      _Plot = 40,
+      _Label = 50,
+      _Ref1 = 60,
+      _Ref2 = 70,
+      _Input = 80,
+      _Period = 90
     };
 
     STOCHRSI ();
@@ -48,6 +48,7 @@ class STOCHRSI : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (Curve *in, int period);
 };
 
 extern "C"

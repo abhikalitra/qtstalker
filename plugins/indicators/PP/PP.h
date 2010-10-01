@@ -31,24 +31,24 @@ class PP : public IndicatorPlugin
   public:
     enum Parm
     {
-      R1Color = 10,
-      R2Color = 20,
-      R3Color = 30,
-      S1Color = 40,
-      S2Color = 50,
-      S3Color = 60,
-      R1Label = 70,
-      R2Label = 80,
-      R3Label = 90,
-      S1Label = 100,
-      S2Label = 110,
-      S3Label = 120,
-      R1Show = 130,
-      R2Show = 140,
-      R3Show = 150,
-      S1Show = 160,
-      S2Show = 170,
-      S3Show = 180
+      _R1Color = 10,
+      _R2Color = 20,
+      _R3Color = 30,
+      _S1Color = 40,
+      _S2Color = 50,
+      _S3Color = 60,
+      _R1Label = 70,
+      _R2Label = 80,
+      _R3Label = 90,
+      _S1Label = 100,
+      _S2Label = 110,
+      _S3Label = 120,
+      _R1Show = 130,
+      _R2Show = 140,
+      _R3Show = 150,
+      _S1Show = 160,
+      _S2Show = 170,
+      _S3Show = 180
     };
 
     PP ();
@@ -57,6 +57,7 @@ class PP : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (int point, BarData &);
 };
 
 extern "C"

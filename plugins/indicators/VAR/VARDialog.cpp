@@ -20,7 +20,6 @@
  */
 
 #include "VARDialog.h"
-#include "FunctionVAR.h"
 #include "VAR.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -57,7 +56,7 @@ void VARDialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(VAR::Input, d);
+  _settings.getData(VAR::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -70,14 +69,14 @@ void VARDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(VAR::Period));
+  _period->setValue(_settings.getInt(VAR::_Period));
   grid->addWidget(_period, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(VAR::Color, d);
+  _settings.getData(VAR::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -91,7 +90,7 @@ void VARDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(VAR::Plot, d);
+  _settings.getData(VAR::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -102,7 +101,7 @@ void VARDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(VAR::Label, d);
+  _settings.getData(VAR::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -114,11 +113,11 @@ void VARDialog::createGeneralPage ()
 
 void VARDialog::done ()
 {
-  _settings.setData(VAR::Input, _input->currentText());
-  _settings.setData(VAR::Color, _color->color().name());
-  _settings.setData(VAR::Plot, _plotStyle->currentText());
-  _settings.setData(VAR::Label, _label->text());
-  _settings.setData(VAR::Period, _period->value());
+  _settings.setData(VAR::_Input, _input->currentText());
+  _settings.setData(VAR::_Color, _color->color().name());
+  _settings.setData(VAR::_Plot, _plotStyle->currentText());
+  _settings.setData(VAR::_Label, _label->text());
+  _settings.setData(VAR::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

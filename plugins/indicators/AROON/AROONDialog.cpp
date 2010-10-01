@@ -20,7 +20,6 @@
  */
 
 #include "AROONDialog.h"
-#include "FunctionAROON.h"
 #include "AROON.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -53,11 +52,11 @@ void AROONDialog::createGeneralPage ()
   QLabel *label = new QLabel(tr("Method"));
   grid->addWidget(label, row, col++);
 
-  FunctionAROON f;
+  AROON f;
   QStringList l = f.list();
 
   QString d;
-  _settings.getData(AROON::Method, d);
+  _settings.getData(AROON::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
@@ -70,7 +69,7 @@ void AROONDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings.getInt(AROON::Period));
+  _period->setValue(_settings.getInt(AROON::_Period));
   grid->addWidget(_period, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -95,7 +94,7 @@ void AROONDialog::createAROONPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(AROON::UpColor, d);
+  _settings.getData(AROON::_UpColor, d);
   QColor c(d);
 
   _upColor = new ColorButton(this, c);
@@ -107,7 +106,7 @@ void AROONDialog::createAROONPage ()
   label = new QLabel(tr("Down Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(AROON::DownColor, d);
+  _settings.getData(AROON::_DownColor, d);
   c.setNamedColor(d);
 
   _downColor = new ColorButton(this, c);
@@ -123,7 +122,7 @@ void AROONDialog::createAROONPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(AROON::UpPlot, d);
+  _settings.getData(AROON::_UpPlot, d);
 
   _upPlotStyle = new QComboBox;
   _upPlotStyle->addItems(l);
@@ -135,7 +134,7 @@ void AROONDialog::createAROONPage ()
   label = new QLabel(tr("Down Plot"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(AROON::DownPlot, d);
+  _settings.getData(AROON::_DownPlot, d);
 
   _downPlotStyle = new QComboBox;
   _downPlotStyle->addItems(l);
@@ -147,7 +146,7 @@ void AROONDialog::createAROONPage ()
   label = new QLabel(tr("Up Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(AROON::UpLabel, d);
+  _settings.getData(AROON::_UpLabel, d);
 
   _upLabel = new QLineEdit(d);
   grid->addWidget(_upLabel, row++, col--);
@@ -157,7 +156,7 @@ void AROONDialog::createAROONPage ()
   label = new QLabel(tr("Down Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(AROON::DownLabel, d);
+  _settings.getData(AROON::_DownLabel, d);
 
   _downLabel = new QLineEdit(d);
   grid->addWidget(_downLabel, row++, col--);
@@ -185,7 +184,7 @@ void AROONDialog::createOSCPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(AROON::OSCColor, d);
+  _settings.getData(AROON::_OSCColor, d);
   QColor c(d);
 
   _oscColor = new ColorButton(this, c);
@@ -201,7 +200,7 @@ void AROONDialog::createOSCPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(AROON::OSCPlot, d);
+  _settings.getData(AROON::_OSCPlot, d);
 
   _oscPlotStyle = new QComboBox;
   _oscPlotStyle->addItems(l);
@@ -213,7 +212,7 @@ void AROONDialog::createOSCPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(AROON::OSCLabel, d);
+  _settings.getData(AROON::_OSCLabel, d);
 
   _oscLabel = new QLineEdit(d);
   grid->addWidget(_oscLabel, row++, col--);
@@ -226,17 +225,17 @@ void AROONDialog::createOSCPage ()
 
 void AROONDialog::done ()
 {
-  _settings.setData(AROON::Method, _method->currentText());
-  _settings.setData(AROON::DownColor, _downColor->color().name());
-  _settings.setData(AROON::UpColor, _upColor->color().name());
-  _settings.setData(AROON::DownPlot, _downPlotStyle->currentText());
-  _settings.setData(AROON::UpPlot, _upPlotStyle->currentText());
-  _settings.setData(AROON::DownLabel, _downLabel->text());
-  _settings.setData(AROON::UpLabel, _upLabel->text());
-  _settings.setData(AROON::OSCColor, _oscColor->color().name());
-  _settings.setData(AROON::OSCPlot, _oscPlotStyle->currentText());
-  _settings.setData(AROON::OSCLabel, _oscLabel->text());
-  _settings.setData(AROON::Period, _period->value());
+  _settings.setData(AROON::_Method, _method->currentText());
+  _settings.setData(AROON::_DownColor, _downColor->color().name());
+  _settings.setData(AROON::_UpColor, _upColor->color().name());
+  _settings.setData(AROON::_DownPlot, _downPlotStyle->currentText());
+  _settings.setData(AROON::_UpPlot, _upPlotStyle->currentText());
+  _settings.setData(AROON::_DownLabel, _downLabel->text());
+  _settings.setData(AROON::_UpLabel, _upLabel->text());
+  _settings.setData(AROON::_OSCColor, _oscColor->color().name());
+  _settings.setData(AROON::_OSCPlot, _oscPlotStyle->currentText());
+  _settings.setData(AROON::_OSCLabel, _oscLabel->text());
+  _settings.setData(AROON::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

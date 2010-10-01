@@ -20,7 +20,6 @@
  */
 
 #include "VFI.h"
-#include "FunctionVFI.h"
 #include "VFIDialog.h"
 #include "Curve.h"
 
@@ -36,22 +35,21 @@ int VFI::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
-  int period = settings.getInt(Period);
+  int period = settings.getInt(_Period);
 
-  FunctionVFI f;
-  Curve *line = f.calculate(period, data);
+  Curve *line = calculate(period, data);
   if (! line)
     return 1;
 
   QString s;
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(0);
@@ -62,8 +60,39 @@ int VFI::getIndicator (Indicator &ind, BarData &data)
 
 int VFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionVFI f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,VFI,<NAME>,<PERIOD>
+  //     0       1     2    3        4
+
+  if (set.count() != 5)
+  {
+    qDebug() << "VFI::getCUS: invalid parm count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "VFI::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  bool ok;
+  int period = set[4].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "VFI::getCUS: invalid period" << set[4];
+    return 1;
+  }
+
+  Curve *line = calculate(period, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * VFI::dialog (Indicator &i)
@@ -74,10 +103,10 @@ IndicatorPluginDialog * VFI::dialog (Indicator &i)
 void VFI::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Color, "red");
-  set.setData(Plot, "Line");
-  set.setData(Label, _indicator);
-  set.setData(Period, 100);
+  set.setData(_Color, "red");
+  set.setData(_Plot, "Line");
+  set.setData(_Label, _indicator);
+  set.setData(_Period, 100);
   i.setSettings(set);
 }
 
@@ -87,8 +116,74 @@ void VFI::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
+}
+
+Curve * VFI::calculate (int period, BarData &data)
+{
+  int size = data.count();
+
+  if (size < period)
+    return 0;
+
+  Curve *vfi = new Curve;
+
+  int loop = period;
+  for (; loop < size; loop++)
+  {
+    double inter = 0.0;
+    double sma_vol = 0.0;
+    int i;
+    Bar bar = data.getBar(loop - period);
+    double close = bar.getClose();
+    double high = bar.getHigh();
+    double low = bar.getLow();
+    double typical = (high + low + close) / 3.0;
+    for (i = loop - period + 1; i <= loop; i++)
+    {
+      bar = data.getBar(i);
+      double ytypical = typical;
+      close = bar.getClose();
+      high = bar.getHigh();
+      low = bar.getLow();
+      typical = (high + low + close) / 3.0;
+      double delta = (log(typical) - log(ytypical));
+      inter += delta * delta;
+      sma_vol += bar.getVolume();
+    }
+    inter = 0.2 * sqrt(inter / (double) period) * typical;
+    sma_vol /= (double) period;
+
+    bar = data.getBar(loop - period);
+    close = bar.getClose();
+    high = bar.getHigh();
+    low = bar.getLow();
+    typical = (high + low + close) / 3.0;
+    double t = 0;
+    for (i = loop - period + 1; i <= loop; i++)
+    {
+      bar = data.getBar(i);
+      double ytypical = typical;
+      double volume = bar.getVolume();
+      close = bar.getClose();
+      high = bar.getHigh();
+      low = bar.getLow();
+      typical = (high + low + close) / 3.0;
+
+      if (typical > ytypical + inter)
+        t = t + log (1.0 + volume / sma_vol);
+      else
+      {
+        if (typical < ytypical - inter)
+          t = t - log (1.0 + volume / sma_vol);
+      }
+    }
+
+    vfi->setBar(loop, new CurveBar(t));
+  }
+
+  return vfi;
 }
 
 //*************************************************************

@@ -20,7 +20,6 @@
  */
 
 #include "PODialog.h"
-#include "FunctionPO.h"
 #include "FunctionMA.h"
 #include "PO.h"
 #include "Curve.h"
@@ -53,11 +52,11 @@ void PODialog::createGeneralPage ()
   QLabel *label = new QLabel(tr("Method"));
   grid->addWidget(label, row, col++);
 
-  FunctionPO f;
+  PO f;
   QStringList l = f.list();
 
   QString d;
-  _settings.getData(PO::Method, d);
+  _settings.getData(PO::_Method, d);
   
   _method = new QComboBox;
   _method->addItems(l);
@@ -71,7 +70,7 @@ void PODialog::createGeneralPage ()
   BarData bd;
   bd.getInputFields(l);
 
-  _settings.getData(PO::Input, d);
+  _settings.getData(PO::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -84,7 +83,7 @@ void PODialog::createGeneralPage ()
 
   _fast = new QSpinBox;
   _fast->setRange(2, 100000);
-  _fast->setValue(_settings.getInt(PO::FastPeriod));
+  _fast->setValue(_settings.getInt(PO::_FastPeriod));
   grid->addWidget(_fast, row++, col--);
 
   // slow
@@ -93,7 +92,7 @@ void PODialog::createGeneralPage ()
 
   _slow = new QSpinBox;
   _slow->setRange(2, 100000);
-  _slow->setValue(_settings.getInt(PO::SlowPeriod));
+  _slow->setValue(_settings.getInt(PO::_SlowPeriod));
   grid->addWidget(_slow, row++, col--);
 
   // ma type
@@ -103,7 +102,7 @@ void PODialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(PO::MAType, d);
+  _settings.getData(PO::_MAType, d);
 
   _maType = new QComboBox;
   _maType->addItems(l);
@@ -114,7 +113,7 @@ void PODialog::createGeneralPage ()
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(PO::Color, d);
+  _settings.getData(PO::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -128,7 +127,7 @@ void PODialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(PO::Plot, d);
+  _settings.getData(PO::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -139,7 +138,7 @@ void PODialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(PO::Label, d);
+  _settings.getData(PO::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -151,14 +150,14 @@ void PODialog::createGeneralPage ()
 
 void PODialog::done ()
 {
-  _settings.setData(PO::Method, _method->currentText());
-  _settings.setData(PO::Input, _input->currentText());
-  _settings.setData(PO::Color, _color->color().name());
-  _settings.setData(PO::Plot, _plotStyle->currentText());
-  _settings.setData(PO::Label, _label->text());
-  _settings.setData(PO::MAType, _maType->currentText());
-  _settings.setData(PO::FastPeriod, _fast->value());
-  _settings.setData(PO::SlowPeriod, _slow->value());
+  _settings.setData(PO::_Method, _method->currentText());
+  _settings.setData(PO::_Input, _input->currentText());
+  _settings.setData(PO::_Color, _color->color().name());
+  _settings.setData(PO::_Plot, _plotStyle->currentText());
+  _settings.setData(PO::_Label, _label->text());
+  _settings.setData(PO::_MAType, _maType->currentText());
+  _settings.setData(PO::_FastPeriod, _fast->value());
+  _settings.setData(PO::_SlowPeriod, _slow->value());
 
   _indicator.setSettings(_settings);
 

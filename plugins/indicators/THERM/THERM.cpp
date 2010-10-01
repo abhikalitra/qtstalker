@@ -31,7 +31,6 @@
 #include "THERM.h"
 #include "FunctionMA.h"
 #include "THERMDialog.h"
-#include "FunctionTHERM.h"
 #include "Curve.h"
 
 #include <QtDebug>
@@ -47,30 +46,29 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
   Setting settings = ind.settings();
 
   QString s;
-  int smoothing = settings.getInt(Smoothing);
+  int smoothing = settings.getInt(_Smoothing);
 
   FunctionMA mau;
-  settings.getData(SmoothingType, s);
+  settings.getData(_SmoothingType, s);
   int type = mau.typeFromString(s);
 
-  FunctionTHERM f;
-  Curve *line = f.calculate(smoothing, type, data);
+  Curve *line = calculate(smoothing, type, data);
   if (! line)
     return 1;
 
   line->setType(Curve::HistogramBar);
 
-  settings.getData(MAColor, s);
+  settings.getData(_MAColor, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
 
   // therm ma
-  int maPeriod = settings.getInt(MAPeriod);
+  int maPeriod = settings.getInt(_MAPeriod);
 
-  settings.getData(MAType, s);
+  settings.getData(_MAType, s);
   int maType = mau.typeFromString(s);
 
   Curve *ma = mau.calculate(line, maPeriod, maType);
@@ -80,24 +78,26 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  settings.getData(MAPlot, s);
+  settings.getData(_MAPlot, s);
   ma->setType((Curve::Type) ma->typeFromString(s));
 
-  settings.getData(MAColor, s);
+  settings.getData(_MAColor, s);
   c.setNamedColor(s);
   ma->setColor(c);
 
-  settings.getData(MALabel, s);
+  settings.getData(_MALabel, s);
   ma->setLabel(s);
 
   // assign therm colors
-  double threshold = settings.getDouble(Threshold);
+  double threshold = settings.getDouble(_Threshold);
 
-  settings.getData(ThreshColor, s);
+  settings.getData(_ThreshColor, s);
   QColor threshColor(s);
-  settings.getData(UpColor, s);
+  
+  settings.getData(_UpColor, s);
   QColor upColor(s);
-  settings.getData(DownColor, s);
+  
+  settings.getData(_DownColor, s);
   QColor downColor(s);
 
   QList<int> keys;
@@ -139,8 +139,47 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
 
 int THERM::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionTHERM f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,THERM,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
+  //     0       1     2      3             4               5
+
+  if (set.count() != 6)
+  {
+    qDebug() << "THERM::getCUS: invalid parm count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "THERM::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  bool ok;
+  int smoothing = set[4].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "THERM::getCUS: invalid smoothing" << set[4];
+    return 1;
+  }
+
+  FunctionMA mau;
+  int type = mau.typeFromString(set[5]);
+  if (type == -1)
+  {
+    qDebug() << "THERM::getCUS: invalid smoothing type" << set[5];
+    return 1;
+  }
+
+  Curve *line = calculate(smoothing, type, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * THERM::dialog (Indicator &i)
@@ -151,18 +190,18 @@ IndicatorPluginDialog * THERM::dialog (Indicator &i)
 void THERM::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(DownColor, "green");
-  set.setData(UpColor, "magenta");
-  set.setData(ThreshColor, "red");
-  set.setData(MAColor, "yellow");
-  set.setData(MAPlot, "Line");
-  set.setData(Label, _indicator);
-  set.setData(MALabel, "THERM_MA");
-  set.setData(Threshold, 3);
-  set.setData(Smoothing, 2);
-  set.setData(MAPeriod, 22);
-  set.setData(MAType, "SMA");
-  set.setData(SmoothingType, "SMA");
+  set.setData(_DownColor, "green");
+  set.setData(_UpColor, "magenta");
+  set.setData(_ThreshColor, "red");
+  set.setData(_MAColor, "yellow");
+  set.setData(_MAPlot, "Line");
+  set.setData(_Label, _indicator);
+  set.setData(_MALabel, "THERM_MA");
+  set.setData(_Threshold, 3);
+  set.setData(_Smoothing, 2);
+  set.setData(_MAPeriod, 22);
+  set.setData(_MAType, "SMA");
+  set.setData(_SmoothingType, "SMA");
   i.setSettings(set);
 }
 
@@ -173,11 +212,52 @@ void THERM::plotNames (Indicator &i, QStringList &l)
   Setting settings = i.settings();
   QString s;
   
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
 
-  settings.getData(MALabel, s);
+  settings.getData(_MALabel, s);
   l.append(s);
+}
+
+Curve * THERM::calculate (int smoothing, int type, BarData &data)
+{
+  if (data.count() < smoothing || data.count() < 2)
+    return 0;
+
+  Curve *line = new Curve;
+
+  int loop = 1;
+  double thermometer = 0;
+  for (; loop < (int) data.count(); loop++)
+  {
+    Bar bar = data.getBar(loop);
+    Bar pbar = data.getBar(loop - 1);
+    double high = fabs(bar.getHigh() - pbar.getHigh());
+    double lo = fabs(pbar.getLow() - bar.getLow());
+
+    if (high > lo)
+      thermometer = high;
+    else
+      thermometer = lo;
+
+    line->setBar(loop, new CurveBar(thermometer));
+  }
+
+  if (smoothing > 1)
+  {
+    FunctionMA mau;
+    Curve *ma = mau.calculate(line, smoothing, type);
+    if (! ma)
+    {
+      delete line;
+      return 0;
+    }
+
+    delete line;
+    line = ma;
+  }
+
+  return line;
 }
 
 //*************************************************************

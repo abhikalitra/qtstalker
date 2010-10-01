@@ -61,7 +61,7 @@ void BBANDSDialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(BBANDS::Input, d);
+  _settings.getData(BBANDS::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -74,7 +74,7 @@ void BBANDSDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings.getInt(BBANDS::Period));
+  _period->setValue(_settings.getInt(BBANDS::_Period));
   grid->addWidget(_period, row++, col--);
 
   // up deviation
@@ -83,7 +83,7 @@ void BBANDSDialog::createGeneralPage ()
 
   _upDev = new QDoubleSpinBox;
   _upDev->setRange(-100000, 100000);
-  _upDev->setValue(_settings.getDouble(BBANDS::UpDeviation));
+  _upDev->setValue(_settings.getDouble(BBANDS::_UpDeviation));
   grid->addWidget(_upDev, row++, col--);
 
   // low deviation
@@ -92,7 +92,7 @@ void BBANDSDialog::createGeneralPage ()
 
   _lowDev = new QDoubleSpinBox;
   _lowDev->setRange(-100000, 100000);
-  _lowDev->setValue(_settings.getDouble(BBANDS::DownDeviation));
+  _lowDev->setValue(_settings.getDouble(BBANDS::_DownDeviation));
   grid->addWidget(_lowDev, row++, col--);
 
   // ma type
@@ -102,7 +102,7 @@ void BBANDSDialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(BBANDS::MAType, d);
+  _settings.getData(BBANDS::_MAType, d);
 
   _maType = new QComboBox;
   _maType->addItems(l);
@@ -131,7 +131,7 @@ void BBANDSDialog::createUpperPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BBANDS::UpColor, d);
+  _settings.getData(BBANDS::_UpColor, d);
   QColor c(d);
 
   _upperColor = new ColorButton(this, c);
@@ -147,7 +147,7 @@ void BBANDSDialog::createUpperPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(BBANDS::UpPlot, d);
+  _settings.getData(BBANDS::_UpPlot, d);
 
   _upperPlotStyle = new QComboBox;
   _upperPlotStyle->addItems(l);
@@ -159,7 +159,7 @@ void BBANDSDialog::createUpperPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BBANDS::UpLabel, d);
+  _settings.getData(BBANDS::_UpLabel, d);
 
   _upperLabel = new QLineEdit(d);
   grid->addWidget(_upperLabel, row++, col--);
@@ -187,7 +187,7 @@ void BBANDSDialog::createMiddlePage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BBANDS::MidColor, d);
+  _settings.getData(BBANDS::_MidColor, d);
   QColor c(d);
 
   _midColor = new ColorButton(this, c);
@@ -203,7 +203,7 @@ void BBANDSDialog::createMiddlePage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(BBANDS::MidPlot, d);
+  _settings.getData(BBANDS::_MidPlot, d);
 
   _midPlotStyle = new QComboBox;
   _midPlotStyle->addItems(l);
@@ -215,7 +215,7 @@ void BBANDSDialog::createMiddlePage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BBANDS::MidLabel, d);
+  _settings.getData(BBANDS::_MidLabel, d);
 
   _midLabel = new QLineEdit(d);
   grid->addWidget(_midLabel, row++, col--);
@@ -243,7 +243,7 @@ void BBANDSDialog::createLowerPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BBANDS::DownColor, d);
+  _settings.getData(BBANDS::_DownColor, d);
   QColor c(d);
 
   _lowerColor = new ColorButton(this, c);
@@ -259,7 +259,7 @@ void BBANDSDialog::createLowerPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(BBANDS::DownPlot, d);
+  _settings.getData(BBANDS::_DownPlot, d);
 
   _lowerPlotStyle = new QComboBox;
   _lowerPlotStyle->addItems(l);
@@ -271,7 +271,7 @@ void BBANDSDialog::createLowerPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BBANDS::DownLabel, d);
+  _settings.getData(BBANDS::_DownLabel, d);
 
   _lowerLabel = new QLineEdit(d);
   grid->addWidget(_lowerLabel, row++, col--);
@@ -299,7 +299,7 @@ void BBANDSDialog::createBarsPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BBANDS::UpColor, d);
+  _settings.getData(BBANDS::_UpColor, d);
   QColor c(d);
 
   _upColor = new ColorButton(this, c);
@@ -311,7 +311,7 @@ void BBANDSDialog::createBarsPage ()
   label = new QLabel(tr("Down Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BBANDS::DownColor, d);
+  _settings.getData(BBANDS::_DownColor, d);
   c.setNamedColor(d);
 
   _downColor = new ColorButton(this, c);
@@ -323,7 +323,7 @@ void BBANDSDialog::createBarsPage ()
   label = new QLabel(tr("Neutral Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BBANDS::BarsNeutralColor, d);
+  _settings.getData(BBANDS::_BarsNeutralColor, d);
   c.setNamedColor(d);
 
   _neutralColor = new ColorButton(this, c);
@@ -335,7 +335,7 @@ void BBANDSDialog::createBarsPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BBANDS::BarsLabel, d);
+  _settings.getData(BBANDS::_BarsLabel, d);
 
   _barsLabel = new QLineEdit(d);
   grid->addWidget(_barsLabel, row++, col--);
@@ -348,20 +348,20 @@ void BBANDSDialog::createBarsPage ()
 
 void BBANDSDialog::done ()
 {
-  _settings.setData(BBANDS::UpColor, _upperColor->color().name());
-  _settings.setData(BBANDS::MidColor, _midColor->color().name());
-  _settings.setData(BBANDS::DownColor, _lowerColor->color().name());
-  _settings.setData(BBANDS::UpPlot, _upperPlotStyle->currentText());
-  _settings.setData(BBANDS::MidPlot, _midPlotStyle->currentText());
-  _settings.setData(BBANDS::DownPlot, _lowerPlotStyle->currentText());
-  _settings.setData(BBANDS::UpLabel, _upperLabel->text());
-  _settings.setData(BBANDS::MidLabel, _midLabel->text());
-  _settings.setData(BBANDS::DownLabel, _lowerLabel->text());
-  _settings.setData(BBANDS::UpDeviation, _upDev->value());
-  _settings.setData(BBANDS::DownDeviation, _lowDev->value());
-  _settings.setData(BBANDS::Input, _input->currentText());
-  _settings.setData(BBANDS::Period, _period->value());
-  _settings.setData(BBANDS::MAType, _maType->currentText());
+  _settings.setData(BBANDS::_UpColor, _upperColor->color().name());
+  _settings.setData(BBANDS::_MidColor, _midColor->color().name());
+  _settings.setData(BBANDS::_DownColor, _lowerColor->color().name());
+  _settings.setData(BBANDS::_UpPlot, _upperPlotStyle->currentText());
+  _settings.setData(BBANDS::_MidPlot, _midPlotStyle->currentText());
+  _settings.setData(BBANDS::_DownPlot, _lowerPlotStyle->currentText());
+  _settings.setData(BBANDS::_UpLabel, _upperLabel->text());
+  _settings.setData(BBANDS::_MidLabel, _midLabel->text());
+  _settings.setData(BBANDS::_DownLabel, _lowerLabel->text());
+  _settings.setData(BBANDS::_UpDeviation, _upDev->value());
+  _settings.setData(BBANDS::_DownDeviation, _lowDev->value());
+  _settings.setData(BBANDS::_Input, _input->currentText());
+  _settings.setData(BBANDS::_Period, _period->value());
+  _settings.setData(BBANDS::_MAType, _maType->currentText());
 
   _indicator.setSettings(_settings);
 

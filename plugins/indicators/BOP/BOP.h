@@ -31,11 +31,11 @@ class BOP : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      Smoothing = 40,
-      SmoothingType = 50
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _Smoothing = 40,
+      _SmoothingType = 50
     };
 
     BOP ();
@@ -44,6 +44,7 @@ class BOP : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (int smoothing, int type, BarData &);
 };
 
 extern "C"

@@ -21,10 +21,10 @@
 
 #include "MADialog.h"
 #include "FunctionMA.h"
-#include "MA.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
 #include "BarData.h"
+#include "MA.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -56,7 +56,7 @@ void MADialog::createGeneralPage ()
   QStringList l = f.list();
 
   QString d;
-  _settings.getData(MA::Method, d);
+  _settings.getData(MA::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
@@ -71,7 +71,7 @@ void MADialog::createGeneralPage ()
   BarData bd;
   bd.getInputFields(l);
 
-  _settings.getData(MA::Input, d);
+  _settings.getData(MA::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -84,7 +84,7 @@ void MADialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings.getInt(MA::Period));
+  _period->setValue(_settings.getInt(MA::_Period));
   grid->addWidget(_period, row++, col--);
 
 
@@ -92,7 +92,7 @@ void MADialog::createGeneralPage ()
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MA::Color, d);
+  _settings.getData(MA::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -107,7 +107,7 @@ void MADialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(MA::Plot, d);
+  _settings.getData(MA::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -119,7 +119,7 @@ void MADialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MA::Label, d);
+  _settings.getData(MA::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -132,12 +132,12 @@ void MADialog::createGeneralPage ()
 
 void MADialog::done ()
 {
-  _settings.setData(MA::Method, _method->currentText());
-  _settings.setData(MA::Period, _period->value());
-  _settings.setData(MA::Color, _color->color().name());
-  _settings.setData(MA::Plot, _plotStyle->currentText());
-  _settings.setData(MA::Label, _label->text());
-  _settings.setData(MA::Input, _input->currentText());
+  _settings.setData(MA::_Method, _method->currentText());
+  _settings.setData(MA::_Period, _period->value());
+  _settings.setData(MA::_Color, _color->color().name());
+  _settings.setData(MA::_Plot, _plotStyle->currentText());
+  _settings.setData(MA::_Label, _label->text());
+  _settings.setData(MA::_Input, _input->currentText());
 
   _indicator.setSettings(_settings);
 

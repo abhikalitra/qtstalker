@@ -1,8 +1,8 @@
 /*
  *  Qtstalker stock charter
- *
+ * 
  *  Copyright (C) 2001-2010 Stefan S. Stratigakos
- *
+ * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,25 +15,27 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
  *  USA.
  */
 
-#ifndef FUNCTION_PP_HPP
-#define FUNCTION_PP_HPP
+#ifndef QUOTE_SERVER_BUTTON_HPP
+#define QUOTE_SERVER_BUTTON_HPP
 
-#include <QStringList>
+#include <QToolButton>
 
-#include "Indicator.h"
-#include "Curve.h"
-#include "BarData.h"
-
-class FunctionPP
+class QuoteServerButton : public QToolButton
 {
+  Q_OBJECT
+  
   public:
-    FunctionPP ();
-    int script (QStringList &, Indicator &, BarData &);
-    Curve * calculate (int point, BarData &);
+    QuoteServerButton ();
+    void setupServer (QString &name, QString &port);
+    
+  public slots:
+    void dialog ();
 };
 
 #endif
+
+

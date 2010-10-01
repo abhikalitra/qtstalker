@@ -21,9 +21,9 @@
 
 #include "BOP.h"
 #include "FunctionMA.h"
-#include "FunctionBOP.h"
 #include "BOPDialog.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -37,25 +37,24 @@ int BOP::getIndicator (Indicator &ind, BarData &data)
   Setting settings = ind.settings();
 
   QString s;
-  int smoothing = settings.getInt(Smoothing);
+  int smoothing = settings.getInt(_Smoothing);
 
   FunctionMA mau;
-  settings.getData(SmoothingType, s);
+  settings.getData(_SmoothingType, s);
   int type = mau.typeFromString(s);
 
-  FunctionBOP f;
-  Curve *line = f.calculate(smoothing, type, data);
+  Curve *line = calculate(smoothing, type, data);
   if (! line)
     return 1;
 
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(0);
@@ -66,8 +65,47 @@ int BOP::getIndicator (Indicator &ind, BarData &data)
 
 int BOP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionBOP f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,BOP,<NAME>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
+  //     0       1     2    3             4                 5
+
+  if (set.count() != 6)
+  {
+    qDebug() << "BOP::getCUS: invalid parm count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "BOP::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  bool ok;
+  int smoothing = set[4].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "BOP::getCUS: invalid smoothing period" << set[4];
+    return 1;
+  }
+
+  FunctionMA mau;
+  int ma = mau.typeFromString(set[5]);
+  if (ma == -1)
+  {
+    qDebug() << "BOP::getCUS: invalid smoothing type" << set[5];
+    return 1;
+  }
+
+  Curve *line = calculate(smoothing, ma, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * BOP::dialog (Indicator &i)
@@ -78,11 +116,11 @@ IndicatorPluginDialog * BOP::dialog (Indicator &i)
 void BOP::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Color, "red");
-  set.setData(Plot, "Histogram Bar");
-  set.setData(Label, _indicator);
-  set.setData(Smoothing, 10);
-  set.setData(SmoothingType, "SMA");
+  set.setData(_Color, "red");
+  set.setData(_Plot, "Histogram Bar");
+  set.setData(_Label, _indicator);
+  set.setData(_Smoothing, 10);
+  set.setData(_SmoothingType, "SMA");
   i.setSettings(set);
 }
 
@@ -92,10 +130,52 @@ void BOP::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
 }
 
+Curve * BOP::calculate (int smoothing, int type, BarData &data)
+{
+  int size = data.count();
+
+  if (size < 1 || size < smoothing)
+    return 0;
+
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  TA_RetCode rc = TA_BOP(0,
+                         size - 1,
+                         data.getTAData(BarData::Open),
+                         data.getTAData(BarData::High),
+                         data.getTAData(BarData::Low),
+                         data.getTAData(BarData::Close),
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "BOP::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+    line->setBar(loop, new CurveBar(out[loop]));
+
+  if (smoothing > 1)
+  {
+    FunctionMA mau;
+    Curve *ma = mau.calculate(line, smoothing, type);
+    delete line;
+    line = ma;
+  }
+
+  return line;
+}
 
 //*************************************************************
 //*************************************************************

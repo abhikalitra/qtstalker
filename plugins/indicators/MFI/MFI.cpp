@@ -22,8 +22,8 @@
 #include "MFI.h"
 #include "FunctionMA.h"
 #include "MFIDialog.h"
-#include "FunctionMFI.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -41,10 +41,10 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
   Curve *line = new Curve;
   line->setType(Curve::Horizontal);
 
-  settings.getData(Ref1Color, s);
+  settings.getData(_Ref1Color, s);
   QColor color(s);
   
-  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref1)));
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(_Ref1)));
   
   line->setZ(0);
   ind.setLine(0, line);
@@ -53,35 +53,34 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
   line = new Curve;
   line->setType(Curve::Horizontal);
 
-  settings.getData(Ref2Color, s);
+  settings.getData(_Ref2Color, s);
   color.setNamedColor(s);
 
-  line->setBar(0, new CurveBar(color, (double) settings.getInt(Ref2)));
+  line->setBar(0, new CurveBar(color, (double) settings.getInt(_Ref2)));
   
   line->setZ(1);
   ind.setLine(1, line);
 
   // mfi plot
-  int period = settings.getInt(Period);
-  int smoothing = settings.getInt(Smoothing);
+  int period = settings.getInt(_Period);
+  int smoothing = settings.getInt(_Smoothing);
 
   FunctionMA mau;
-  settings.getData(SmoothingType, s);
+  settings.getData(_SmoothingType, s);
   int type = mau.typeFromString(s);
 
-  FunctionMFI f;
-  line = f.calculate(period, smoothing, type, data);
+  line = calculate(period, smoothing, type, data);
   if (! line)
     return 1;
 
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   color.setNamedColor(s);
   line->setColor(color);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(2);
@@ -92,8 +91,54 @@ int MFI::getIndicator (Indicator &ind, BarData &data)
 
 int MFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionMFI f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,MFI,<NAME>,<PERIOD>,<SMOOTHING_PERIOD>,<SMOOTHING_TYPE>
+  //     0       1     2    3       4             5                 6
+
+  if (set.count() != 7)
+  {
+    qDebug() << "MFI::getCUS: invalid settings count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "MFI::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  bool ok;
+  int period = set[4].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "MFI::getCUS: invalid period settings" << set[4];
+    return 1;
+  }
+
+  int smoothing = set[5].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "MFI::getCUS: invalid smoothing period" << set[5];
+    return 1;
+  }
+
+  FunctionMA mau;
+  int ma = mau.typeFromString(set[6]);
+  if (ma == -1)
+  {
+    qDebug() << "MFI::getCUS: invalid smoothing type" << set[6];
+    return 1;
+  }
+
+  Curve *line = calculate(period, smoothing, ma, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * MFI::dialog (Indicator &i)
@@ -104,16 +149,16 @@ IndicatorPluginDialog * MFI::dialog (Indicator &i)
 void MFI::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Color, "red");
-  set.setData(Plot, "Line");
-  set.setData(Label, _indicator);
-  set.setData(Period, 14);
-  set.setData(Smoothing, 10);
-  set.setData(SmoothingType, "SMA");
-  set.setData(Ref1Color, "white");
-  set.setData(Ref2Color, "white");
-  set.setData(Ref1, 20);
-  set.setData(Ref2, 80);
+  set.setData(_Color, "red");
+  set.setData(_Plot, "Line");
+  set.setData(_Label, _indicator);
+  set.setData(_Period, 14);
+  set.setData(_Smoothing, 10);
+  set.setData(_SmoothingType, "SMA");
+  set.setData(_Ref1Color, "white");
+  set.setData(_Ref2Color, "white");
+  set.setData(_Ref1, 20);
+  set.setData(_Ref2, 80);
   i.setSettings(set);
 }
 
@@ -123,8 +168,58 @@ void MFI::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
+}
+
+Curve * MFI::calculate (int period, int smoothing, int type, BarData &data)
+{
+  int size = data.count();
+
+  if (size < period || size < smoothing)
+    return 0;
+
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  TA_RetCode rc = TA_MFI(0,
+                         size - 1,
+                         data.getTAData(BarData::High),
+                         data.getTAData(BarData::Low),
+                         data.getTAData(BarData::Close),
+                         data.getTAData(BarData::Volume),
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "MFI::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  if (smoothing > 1)
+  {
+    FunctionMA mau;
+    Curve *ma = mau.calculate(line, smoothing, type);
+    delete line;
+    line = ma;
+  }
+
+  return line;
 }
 
 //*************************************************************

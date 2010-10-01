@@ -28,7 +28,7 @@
 
 #include <QLayout>
 #include <QLabel>
-#include <QGroupBox>
+#include <QTabWidget>
 #include <QDebug>
 
 YahooDialog::YahooDialog ()
@@ -99,18 +99,22 @@ void YahooDialog::createMainPage ()
 
   
   // message log
-  QGroupBox *gbox = new QGroupBox;
-  gbox->setTitle(tr("Message Log"));
-  vbox->addWidget(gbox);
+  QTabWidget *tab = new QTabWidget;
+  vbox->addWidget(tab);
 
+  QWidget *w = new QWidget;
+  
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
-  gbox->setLayout(hbox);
+  w->setLayout(hbox);
 
   _log = new QTextEdit;
   _log->setReadOnly(TRUE);
   hbox->addWidget(_log);
 
+  tab->addTab(w, tr("Log"));
+
+  // button box
   _buttonBox = new QDialogButtonBox;
   vbox->addWidget(_buttonBox);
 

@@ -20,7 +20,6 @@
  */
 
 #include "FIDialog.h"
-#include "FunctionFI.h"
 #include "FunctionMA.h"
 #include "FI.h"
 #include "Curve.h"
@@ -53,7 +52,7 @@ void FIDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(FI::Color, d);
+  _settings.getData(FI::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -68,7 +67,7 @@ void FIDialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(FI::Plot, d);
+  _settings.getData(FI::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -79,7 +78,7 @@ void FIDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(FI::Label, d);
+  _settings.getData(FI::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -90,7 +89,7 @@ void FIDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(FI::Period));
+  _period->setValue(_settings.getInt(FI::_Period));
   grid->addWidget(_period, row++, col--);
 
   // ma type
@@ -100,7 +99,7 @@ void FIDialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(FI::MAType, d);
+  _settings.getData(FI::_MAType, d);
 
   _maType = new QComboBox;
   _maType->addItems(l);
@@ -114,11 +113,11 @@ void FIDialog::createGeneralPage ()
 
 void FIDialog::done ()
 {
-  _settings.setData(FI::MAType, _maType->currentText());
-  _settings.setData(FI::Period, _period->value());
-  _settings.setData(FI::Color, _color->color().name());
-  _settings.setData(FI::Plot, _plotStyle->currentText());
-  _settings.setData(FI::Label, _label->text());
+  _settings.setData(FI::_MAType, _maType->currentText());
+  _settings.setData(FI::_Period, _period->value());
+  _settings.setData(FI::_Color, _color->color().name());
+  _settings.setData(FI::_Plot, _plotStyle->currentText());
+  _settings.setData(FI::_Label, _label->text());
 
   _indicator.setSettings(_settings);
 

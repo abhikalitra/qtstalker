@@ -20,7 +20,6 @@
  */
 
 #include "VIDYADialog.h"
-#include "FunctionVIDYA.h"
 #include "VIDYA.h"
 #include "Curve.h"
 #include "IndicatorDataBase.h"
@@ -57,7 +56,7 @@ void VIDYADialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(VIDYA::Input, d);
+  _settings.getData(VIDYA::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -70,7 +69,7 @@ void VIDYADialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(VIDYA::Period));
+  _period->setValue(_settings.getInt(VIDYA::_Period));
   grid->addWidget(_period, row++, col--);
 
   // vperiod
@@ -79,14 +78,14 @@ void VIDYADialog::createGeneralPage ()
 
   _vperiod = new QSpinBox;
   _vperiod->setRange(1, 100000);
-  _vperiod->setValue(_settings.getInt(VIDYA::VPeriod));
+  _vperiod->setValue(_settings.getInt(VIDYA::_VPeriod));
   grid->addWidget(_vperiod, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(VIDYA::Color, d);
+  _settings.getData(VIDYA::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -100,7 +99,7 @@ void VIDYADialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(VIDYA::Plot, d);
+  _settings.getData(VIDYA::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -111,7 +110,7 @@ void VIDYADialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(VIDYA::Label, d);
+  _settings.getData(VIDYA::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -123,12 +122,12 @@ void VIDYADialog::createGeneralPage ()
 
 void VIDYADialog::done ()
 {
-  _settings.setData(VIDYA::Input, _input->currentText());
-  _settings.setData(VIDYA::Color, _color->color().name());
-  _settings.setData(VIDYA::Plot, _plotStyle->currentText());
-  _settings.setData(VIDYA::Label, _label->text());
-  _settings.setData(VIDYA::Period, _period->value());
-  _settings.setData(VIDYA::VPeriod, _vperiod->value());
+  _settings.setData(VIDYA::_Input, _input->currentText());
+  _settings.setData(VIDYA::_Color, _color->color().name());
+  _settings.setData(VIDYA::_Plot, _plotStyle->currentText());
+  _settings.setData(VIDYA::_Label, _label->text());
+  _settings.setData(VIDYA::_Period, _period->value());
+  _settings.setData(VIDYA::_VPeriod, _vperiod->value());
 
   _indicator.setSettings(_settings);
 

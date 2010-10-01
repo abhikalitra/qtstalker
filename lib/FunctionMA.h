@@ -44,7 +44,6 @@ class FunctionMA
     };
 
     FunctionMA ();
-    int script (QStringList &, Indicator &, BarData &);
     Curve * calculate (Curve *, int period, int method);
     QStringList & list ();
     int typeFromString (QString &);

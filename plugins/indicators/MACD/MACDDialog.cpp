@@ -60,7 +60,7 @@ void MACDDialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(MACD::Input, d);
+  _settings.getData(MACD::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -73,7 +73,7 @@ void MACDDialog::createGeneralPage ()
 
   _fast = new QSpinBox;
   _fast->setRange(2, 100000);
-  _fast->setValue(_settings.getInt(MACD::FastPeriod));
+  _fast->setValue(_settings.getInt(MACD::_FastPeriod));
   grid->addWidget(_fast, row++, col--);
 
   // slow
@@ -82,7 +82,7 @@ void MACDDialog::createGeneralPage ()
 
   _slow = new QSpinBox;
   _slow->setRange(2, 100000);
-  _slow->setValue(_settings.getInt(MACD::SlowPeriod));
+  _slow->setValue(_settings.getInt(MACD::_SlowPeriod));
   grid->addWidget(_slow, row++, col--);
 
   // fast ma
@@ -92,7 +92,7 @@ void MACDDialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(MACD::FastMA, d);
+  _settings.getData(MACD::_FastMA, d);
 
   _fastMAType = new QComboBox;
   _fastMAType->addItems(l);
@@ -103,7 +103,7 @@ void MACDDialog::createGeneralPage ()
   label = new QLabel(tr("Slow MA"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MACD::SlowMA, d);
+  _settings.getData(MACD::_SlowMA, d);
 
   _slowMAType = new QComboBox;
   _slowMAType->addItems(l);
@@ -132,7 +132,7 @@ void MACDDialog::createMACDPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(MACD::MACDColor, d);
+  _settings.getData(MACD::_MACDColor, d);
   QColor c(d);
 
   _macdColor = new ColorButton(this, c);
@@ -148,7 +148,7 @@ void MACDDialog::createMACDPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(MACD::MACDPlot, d);
+  _settings.getData(MACD::_MACDPlot, d);
 
   _macdPlotStyle = new QComboBox;
   _macdPlotStyle->addItems(l);
@@ -160,7 +160,7 @@ void MACDDialog::createMACDPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MACD::MACDLabel, d);
+  _settings.getData(MACD::_MACDLabel, d);
 
   _macdLabel = new QLineEdit(d);
   grid->addWidget(_macdLabel, row++, col--);
@@ -190,7 +190,7 @@ void MACDDialog::createSignalPage ()
   QStringList l = f.list();
 
   QString d;
-  _settings.getData(MACD::SignalMA, d);
+  _settings.getData(MACD::_SignalMA, d);
 
   _signalMAType = new QComboBox;
   _signalMAType->addItems(l);
@@ -203,14 +203,14 @@ void MACDDialog::createSignalPage ()
 
   _signalPeriod = new QSpinBox;
   _signalPeriod->setRange(1, 100000);
-  _signalPeriod->setValue(_settings.getInt(MACD::SignalPeriod));
+  _signalPeriod->setValue(_settings.getInt(MACD::_SignalPeriod));
   grid->addWidget(_signalPeriod, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MACD::SignalColor, d);
+  _settings.getData(MACD::_SignalColor, d);
   QColor c(d);
 
   _signalColor = new ColorButton(this, c);
@@ -225,7 +225,7 @@ void MACDDialog::createSignalPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(MACD::SignalPlot, d);
+  _settings.getData(MACD::_SignalPlot, d);
 
   _signalPlotStyle = new QComboBox;
   _signalPlotStyle->addItems(l);
@@ -237,7 +237,7 @@ void MACDDialog::createSignalPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MACD::SignalLabel, d);
+  _settings.getData(MACD::_SignalLabel, d);
 
   _signalLabel = new QLineEdit(d);
   grid->addWidget(_signalLabel, row++, col--);
@@ -265,7 +265,7 @@ void MACDDialog::createHistPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(MACD::HistColor, d);
+  _settings.getData(MACD::_HistColor, d);
   QColor c(d);
 
   _histColor = new ColorButton(this, c);
@@ -281,7 +281,7 @@ void MACDDialog::createHistPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(MACD::HistPlot, d);
+  _settings.getData(MACD::_HistPlot, d);
 
   _histPlotStyle = new QComboBox;
   _histPlotStyle->addItems(l);
@@ -293,7 +293,7 @@ void MACDDialog::createHistPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(MACD::HistLabel, d);
+  _settings.getData(MACD::_HistLabel, d);
 
   _histLabel = new QLineEdit(d);
   grid->addWidget(_histLabel, row++, col--);
@@ -306,22 +306,22 @@ void MACDDialog::createHistPage ()
 
 void MACDDialog::done ()
 {
-  _settings.setData(MACD::MACDColor, _macdColor->color().name());
-  _settings.setData(MACD::SignalColor, _signalColor->color().name());
-  _settings.setData(MACD::HistColor, _histColor->color().name());
-  _settings.setData(MACD::MACDPlot, _macdPlotStyle->currentText());
-  _settings.setData(MACD::SignalPlot, _signalPlotStyle->currentText());
-  _settings.setData(MACD::HistPlot, _histPlotStyle->currentText());
-  _settings.setData(MACD::MACDLabel, _macdLabel->text());
-  _settings.setData(MACD::SignalLabel, _signalLabel->text());
-  _settings.setData(MACD::HistLabel, _histLabel->text());
-  _settings.setData(MACD::FastPeriod, _fast->value());
-  _settings.setData(MACD::SlowPeriod, _slow->value());
-  _settings.setData(MACD::SignalPeriod, _signalPeriod->value());
-  _settings.setData(MACD::FastMA, _fastMAType->currentText());
-  _settings.setData(MACD::SlowMA, _slowMAType->currentText());
-  _settings.setData(MACD::SignalMA, _signalMAType->currentText());
-  _settings.setData(MACD::Input, _input->currentText());
+  _settings.setData(MACD::_MACDColor, _macdColor->color().name());
+  _settings.setData(MACD::_SignalColor, _signalColor->color().name());
+  _settings.setData(MACD::_HistColor, _histColor->color().name());
+  _settings.setData(MACD::_MACDPlot, _macdPlotStyle->currentText());
+  _settings.setData(MACD::_SignalPlot, _signalPlotStyle->currentText());
+  _settings.setData(MACD::_HistPlot, _histPlotStyle->currentText());
+  _settings.setData(MACD::_MACDLabel, _macdLabel->text());
+  _settings.setData(MACD::_SignalLabel, _signalLabel->text());
+  _settings.setData(MACD::_HistLabel, _histLabel->text());
+  _settings.setData(MACD::_FastPeriod, _fast->value());
+  _settings.setData(MACD::_SlowPeriod, _slow->value());
+  _settings.setData(MACD::_SignalPeriod, _signalPeriod->value());
+  _settings.setData(MACD::_FastMA, _fastMAType->currentText());
+  _settings.setData(MACD::_SlowMA, _slowMAType->currentText());
+  _settings.setData(MACD::_SignalMA, _signalMAType->currentText());
+  _settings.setData(MACD::_Input, _input->currentText());
 
   _indicator.setSettings(_settings);
 

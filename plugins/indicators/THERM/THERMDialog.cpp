@@ -53,7 +53,7 @@ void THERMDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(THERM::UpColor, d);
+  _settings.getData(THERM::_UpColor, d);
   QColor c(d);
 
   _upColor = new ColorButton(this, c);
@@ -65,7 +65,7 @@ void THERMDialog::createGeneralPage ()
   label = new QLabel(tr("Down Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(THERM::DownColor, d);
+  _settings.getData(THERM::_DownColor, d);
   c.setNamedColor(d);
 
   _downColor = new ColorButton(this, c);
@@ -77,7 +77,7 @@ void THERMDialog::createGeneralPage ()
   label = new QLabel(tr("Threshold Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(THERM::ThreshColor, d);
+  _settings.getData(THERM::_ThreshColor, d);
   c.setNamedColor(d);
 
   _threshColor = new ColorButton(this, c);
@@ -89,7 +89,7 @@ void THERMDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(THERM::Label, d);
+  _settings.getData(THERM::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -100,7 +100,7 @@ void THERMDialog::createGeneralPage ()
 
   _threshold = new QDoubleSpinBox;
   _threshold->setRange(0, 100000);
-  _threshold->setValue(_settings.getDouble(THERM::Threshold));
+  _threshold->setValue(_settings.getDouble(THERM::_Threshold));
   grid->addWidget(_threshold, row++, col--);
 
   // smoothing
@@ -109,7 +109,7 @@ void THERMDialog::createGeneralPage ()
 
   _smoothing = new QSpinBox;
   _smoothing->setRange(1, 100000);
-  _smoothing->setValue(_settings.getInt(THERM::Smoothing));
+  _smoothing->setValue(_settings.getInt(THERM::_Smoothing));
   grid->addWidget(_smoothing, row++, col--);
 
   // smoothing type
@@ -119,7 +119,7 @@ void THERMDialog::createGeneralPage ()
   FunctionMA mau;
   QStringList l = mau.list();
 
-  _settings.getData(THERM::SmoothingType, d);
+  _settings.getData(THERM::_SmoothingType, d);
 
   _smoothingType = new QComboBox;
   _smoothingType->addItems(l);
@@ -148,7 +148,7 @@ void THERMDialog::createMAPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(THERM::MAColor, d);
+  _settings.getData(THERM::_MAColor, d);
   QColor c(d);
 
   _maColor = new ColorButton(this, c);
@@ -163,7 +163,7 @@ void THERMDialog::createMAPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(THERM::MAPlot, d);
+  _settings.getData(THERM::_MAPlot, d);
 
   _maPlotStyle = new QComboBox;
   _maPlotStyle->addItems(l);
@@ -174,7 +174,7 @@ void THERMDialog::createMAPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(THERM::MALabel, d);
+  _settings.getData(THERM::_MALabel, d);
 
   _maLabel = new QLineEdit(d);
   grid->addWidget(_maLabel, row++, col--);
@@ -185,7 +185,7 @@ void THERMDialog::createMAPage ()
 
   _maPeriod = new QSpinBox;
   _maPeriod->setRange(1, 100000);
-  _maPeriod->setValue(_settings.getInt(THERM::MAPeriod));
+  _maPeriod->setValue(_settings.getInt(THERM::_MAPeriod));
   grid->addWidget(_maPeriod, row++, col--);
 
   // ma type
@@ -195,7 +195,7 @@ void THERMDialog::createMAPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(THERM::MAType, d);
+  _settings.getData(THERM::_MAType, d);
 
   _maType = new QComboBox;
   _maType->addItems(l);
@@ -209,18 +209,18 @@ void THERMDialog::createMAPage ()
 
 void THERMDialog::done ()
 {
-  _settings.setData(THERM::UpColor, _upColor->color().name());
-  _settings.setData(THERM::DownColor, _downColor->color().name());
-  _settings.setData(THERM::ThreshColor, _threshColor->color().name());
-  _settings.setData(THERM::Label, _label->text());
-  _settings.setData(THERM::MAColor, _maColor->color().name());
-  _settings.setData(THERM::MAPlot, _maPlotStyle->currentText());
-  _settings.setData(THERM::MALabel, _maLabel->text());
-  _settings.setData(THERM::MAPeriod, _maPeriod->value());
-  _settings.setData(THERM::MAType, _maType->currentText());
-  _settings.setData(THERM::Threshold, _threshold->value());
-  _settings.setData(THERM::Smoothing, _smoothing->value());
-  _settings.setData(THERM::SmoothingType, _smoothingType->currentText());
+  _settings.setData(THERM::_UpColor, _upColor->color().name());
+  _settings.setData(THERM::_DownColor, _downColor->color().name());
+  _settings.setData(THERM::_ThreshColor, _threshColor->color().name());
+  _settings.setData(THERM::_Label, _label->text());
+  _settings.setData(THERM::_MAColor, _maColor->color().name());
+  _settings.setData(THERM::_MAPlot, _maPlotStyle->currentText());
+  _settings.setData(THERM::_MALabel, _maLabel->text());
+  _settings.setData(THERM::_MAPeriod, _maPeriod->value());
+  _settings.setData(THERM::_MAType, _maType->currentText());
+  _settings.setData(THERM::_Threshold, _threshold->value());
+  _settings.setData(THERM::_Smoothing, _smoothing->value());
+  _settings.setData(THERM::_SmoothingType, _smoothingType->currentText());
 
   _indicator.setSettings(_settings);
 

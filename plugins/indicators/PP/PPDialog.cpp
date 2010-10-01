@@ -20,7 +20,6 @@
  */
 
 #include "PPDialog.h"
-#include "FunctionPP.h"
 #include "PP.h"
 #include "IndicatorDataBase.h"
 
@@ -56,7 +55,7 @@ void PPDialog::createR1Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(PP::R1Color, d);
+  _settings.getData(PP::_R1Color, d);
   QColor c(d);
 
   _r1Color = new ColorButton(this, c);
@@ -67,14 +66,14 @@ void PPDialog::createR1Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(PP::R1Label, d);
+  _settings.getData(PP::_R1Label, d);
 
   _r1Label = new QLineEdit(d);
   grid->addWidget(_r1Label, row++, col--);
 
   // check
   _r1Check = new QCheckBox(tr("Show"));
-  _r1Check->setChecked(_settings.getInt(PP::R1Show));
+  _r1Check->setChecked(_settings.getInt(PP::_R1Show));
   grid->addWidget(_r1Check, row++, col);
 
   grid->setRowStretch(row, 1);
@@ -99,7 +98,7 @@ void PPDialog::createR2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(PP::R2Color, d);
+  _settings.getData(PP::_R2Color, d);
   QColor c(d);
 
   _r2Color = new ColorButton(this, c);
@@ -110,14 +109,14 @@ void PPDialog::createR2Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(PP::R2Label, d);
+  _settings.getData(PP::_R2Label, d);
 
   _r2Label = new QLineEdit(d);
   grid->addWidget(_r2Label, row++, col--);
 
   // check
   _r2Check = new QCheckBox(tr("Show"));
-  _r2Check->setChecked(_settings.getInt(PP::R2Show));
+  _r2Check->setChecked(_settings.getInt(PP::_R2Show));
   grid->addWidget(_r2Check, row++, col);
 
   grid->setRowStretch(row, 1);
@@ -142,7 +141,7 @@ void PPDialog::createR3Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(PP::R3Color, d);
+  _settings.getData(PP::_R3Color, d);
   QColor c(d);
 
   _r3Color = new ColorButton(this, c);
@@ -153,14 +152,14 @@ void PPDialog::createR3Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(PP::R3Label, d);
+  _settings.getData(PP::_R3Label, d);
 
   _r3Label = new QLineEdit(d);
   grid->addWidget(_r3Label, row++, col--);
 
   // check
   _r3Check = new QCheckBox(tr("Show"));
-  _r3Check->setChecked(_settings.getInt(PP::R3Show));
+  _r3Check->setChecked(_settings.getInt(PP::_R3Show));
   grid->addWidget(_r3Check, row++, col);
 
   grid->setRowStretch(row, 1);
@@ -185,7 +184,7 @@ void PPDialog::createS1Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(PP::S1Color, d);
+  _settings.getData(PP::_S1Color, d);
   QColor c(d);
 
   _s1Color = new ColorButton(this, c);
@@ -196,14 +195,14 @@ void PPDialog::createS1Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(PP::S1Label, d);
+  _settings.getData(PP::_S1Label, d);
 
   _s1Label = new QLineEdit(d);
   grid->addWidget(_s1Label, row++, col--);
 
   // check
   _s1Check = new QCheckBox(tr("Show"));
-  _s1Check->setChecked(_settings.getInt(PP::S1Show));
+  _s1Check->setChecked(_settings.getInt(PP::_S1Show));
   grid->addWidget(_s1Check, row++, col);
 
   grid->setRowStretch(row, 1);
@@ -228,7 +227,7 @@ void PPDialog::createS2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(PP::S2Color, d);
+  _settings.getData(PP::_S2Color, d);
   QColor c(d);
 
   _s2Color = new ColorButton(this, c);
@@ -239,14 +238,14 @@ void PPDialog::createS2Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(PP::S2Label, d);
+  _settings.getData(PP::_S2Label, d);
 
   _s2Label = new QLineEdit(d);
   grid->addWidget(_s2Label, row++, col--);
 
   // check
   _s2Check = new QCheckBox(tr("Show"));
-  _s2Check->setChecked(_settings.getInt(PP::S2Show));
+  _s2Check->setChecked(_settings.getInt(PP::_S2Show));
   grid->addWidget(_s2Check, row++, col);
 
   grid->setRowStretch(row, 1);
@@ -271,7 +270,7 @@ void PPDialog::createS3Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(PP::S3Color, d);
+  _settings.getData(PP::_S3Color, d);
   QColor c(d);
 
   _s3Color = new ColorButton(this, c);
@@ -282,14 +281,14 @@ void PPDialog::createS3Page ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(PP::S3Label, d);
+  _settings.getData(PP::_S3Label, d);
 
   _s3Label = new QLineEdit(d);
   grid->addWidget(_s3Label, row++, col--);
 
   // check
   _s3Check = new QCheckBox(tr("Show"));
-  _s3Check->setChecked(_settings.getInt(PP::S3Show));
+  _s3Check->setChecked(_settings.getInt(PP::_S3Show));
   grid->addWidget(_s3Check, row++, col);
 
   grid->setRowStretch(row, 1);
@@ -299,24 +298,24 @@ void PPDialog::createS3Page ()
 
 void PPDialog::done ()
 {
-  _settings.setData(PP::R1Color, _r1Color->color().name());
-  _settings.setData(PP::R2Color, _r2Color->color().name());
-  _settings.setData(PP::R3Color, _r3Color->color().name());
-  _settings.setData(PP::S1Color, _s1Color->color().name());
-  _settings.setData(PP::S2Color, _s2Color->color().name());
-  _settings.setData(PP::S3Color, _s3Color->color().name());
-  _settings.setData(PP::R1Label, _r1Label->text());
-  _settings.setData(PP::R2Label, _r2Label->text());
-  _settings.setData(PP::R3Label, _r3Label->text());
-  _settings.setData(PP::S1Label, _s1Label->text());
-  _settings.setData(PP::S2Label, _s2Label->text());
-  _settings.setData(PP::S3Label, _s3Label->text());
-  _settings.setData(PP::R1Show, (int) _r1Check->isChecked());
-  _settings.setData(PP::R2Show, (int) _r2Check->isChecked());
-  _settings.setData(PP::R3Show, (int) _r3Check->isChecked());
-  _settings.setData(PP::S1Show, (int) _s1Check->isChecked());
-  _settings.setData(PP::S2Show, (int) _s2Check->isChecked());
-  _settings.setData(PP::S3Show, (int) _s3Check->isChecked());
+  _settings.setData(PP::_R1Color, _r1Color->color().name());
+  _settings.setData(PP::_R2Color, _r2Color->color().name());
+  _settings.setData(PP::_R3Color, _r3Color->color().name());
+  _settings.setData(PP::_S1Color, _s1Color->color().name());
+  _settings.setData(PP::_S2Color, _s2Color->color().name());
+  _settings.setData(PP::_S3Color, _s3Color->color().name());
+  _settings.setData(PP::_R1Label, _r1Label->text());
+  _settings.setData(PP::_R2Label, _r2Label->text());
+  _settings.setData(PP::_R3Label, _r3Label->text());
+  _settings.setData(PP::_S1Label, _s1Label->text());
+  _settings.setData(PP::_S2Label, _s2Label->text());
+  _settings.setData(PP::_S3Label, _s3Label->text());
+  _settings.setData(PP::_R1Show, (int) _r1Check->isChecked());
+  _settings.setData(PP::_R2Show, (int) _r2Check->isChecked());
+  _settings.setData(PP::_R3Show, (int) _r3Check->isChecked());
+  _settings.setData(PP::_S1Show, (int) _s1Check->isChecked());
+  _settings.setData(PP::_S2Show, (int) _s2Check->isChecked());
+  _settings.setData(PP::_S3Show, (int) _s3Check->isChecked());
 
   _indicator.setSettings(_settings);
 

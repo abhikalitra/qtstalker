@@ -31,10 +31,10 @@ class SAR : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Label = 20,
-      Init = 30,
-      Max = 40
+      _Color = 10,
+      _Label = 20,
+      _Init = 30,
+      _Max = 40
     };
 
     SAR ();
@@ -43,6 +43,7 @@ class SAR : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (double, double, BarData &);
 };
 
 extern "C"

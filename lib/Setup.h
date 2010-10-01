@@ -36,8 +36,6 @@ class Setup
     void setupDefaultIndicators (Config &);
     void setupExchanges ();
     void setupFutures ();
-    void setupConfigDefaults (Config &);
-    void setupQuoteServer (Config &);
 };
 
 #endif

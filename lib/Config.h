@@ -52,7 +52,7 @@ class Config : public ConfigDataBase
       DateRangeButtonStatus, // status of the date range button on/off (int)
       DateRangeStart, // the start date range
       DataPanelSize, // size of the data panel
-      ScriptLaunchButton1, // script panel launch button 1
+      ScriptLaunchButtonRows, // the number of script launch button rows on the script panel
       PlotFont, // chart plot font
       DateRangeEnd, // the end of the date range
       NavAreaSize, // navigator panel size
@@ -74,7 +74,7 @@ class Config : public ConfigDataBase
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
-      ScriptLaunchButton2, // script panel launch button 2
+      ScriptLaunchButtonCols, // the number of script launch button cols on the script panel
       CrossHairs, // crosshairs status
       ExchangeFileDate,  // the last modification date of /docs/exchanges.csv
       LastScriptPath, // the dir of the last script run from a dialog
@@ -83,16 +83,16 @@ class Config : public ConfigDataBase
       SidePanelLastPage, // the last side panel page displayed
       LastScriptSearch, // the last used script search string
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel
-      ScriptLaunchButton3, // script panel launch button 3
-      ScriptLaunchButton4, // script panel launch button 4
-      ScriptLaunchButton5, // script panel launch button 5
-      ScriptLaunchButton6, // script panel launch button 6
-      ScriptLaunchButton7, // script panel launch button 7
-      ScriptLaunchButton8, // script panel launch button 8
-      ScriptLaunchButton9, // script panel launch button 9
-      ScriptLaunchButton10, // script panel launch button 10
-      ScriptLaunchButton11, // script panel launch button 11
-      ScriptLaunchButton12, // script panel launch button 12
+      ScriptLaunchButton3, // ********* UNUSED ***************
+      ScriptLaunchButton4, // ********* UNUSED ***************
+      ScriptLaunchButton5, // ********* UNUSED ***************
+      ScriptLaunchButton6, // ********* UNUSED ***************
+      ScriptLaunchButton7, // ********* UNUSED ***************
+      ScriptLaunchButton8, // ********* UNUSED ***************
+      ScriptLaunchButton9, // ********* UNUSED ***************
+      ScriptLaunchButton10, // ********* UNUSED ***************
+      ScriptLaunchButton11, // ********* UNUSED ***************
+      ScriptLaunchButton12, // ********* UNUSED ***************
       DefaultSymbol, // default symbol flag used in Setup::
       MiscPluginPath, // path to the misc plugins
       MiscPluginList,  // csv list of current misc plugins from startup inventory

@@ -20,7 +20,6 @@
  */
 
 #include "ULTOSCDialog.h"
-#include "FunctionULTOSC.h"
 #include "FunctionMA.h"
 #include "ULTOSC.h"
 #include "Curve.h"
@@ -56,7 +55,7 @@ void ULTOSCDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(ULTOSC::Color, d);
+  _settings.getData(ULTOSC::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -71,7 +70,7 @@ void ULTOSCDialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(ULTOSC::Plot, d);
+  _settings.getData(ULTOSC::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -82,7 +81,7 @@ void ULTOSCDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(ULTOSC::Label, d);
+  _settings.getData(ULTOSC::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -93,7 +92,7 @@ void ULTOSCDialog::createGeneralPage ()
 
   _speriod = new QSpinBox;
   _speriod->setRange(1, 100000);
-  _speriod->setValue(_settings.getInt(ULTOSC::ShortPeriod));
+  _speriod->setValue(_settings.getInt(ULTOSC::_ShortPeriod));
   grid->addWidget(_speriod, row++, col--);
 
   // med period
@@ -102,7 +101,7 @@ void ULTOSCDialog::createGeneralPage ()
 
   _mperiod = new QSpinBox;
   _mperiod->setRange(1, 100000);
-  _mperiod->setValue(_settings.getInt(ULTOSC::MidPeriod));
+  _mperiod->setValue(_settings.getInt(ULTOSC::_MidPeriod));
   grid->addWidget(_mperiod, row++, col--);
 
   // long period
@@ -111,7 +110,7 @@ void ULTOSCDialog::createGeneralPage ()
 
   _lperiod = new QSpinBox;
   _lperiod->setRange(1, 100000);
-  _lperiod->setValue(_settings.getInt(ULTOSC::LongPeriod));
+  _lperiod->setValue(_settings.getInt(ULTOSC::_LongPeriod));
   grid->addWidget(_lperiod, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -136,7 +135,7 @@ void ULTOSCDialog::createRefPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(ULTOSC::Ref1Color, d);
+  _settings.getData(ULTOSC::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
@@ -149,7 +148,7 @@ void ULTOSCDialog::createRefPage ()
 
   _ref = new QDoubleSpinBox;
   _ref->setRange(0, 100);
-  _ref->setValue(_settings.getDouble(ULTOSC::Ref1));
+  _ref->setValue(_settings.getDouble(ULTOSC::_Ref1));
   grid->addWidget(_ref, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -174,7 +173,7 @@ void ULTOSCDialog::createRef2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(ULTOSC::Ref2Color, d);
+  _settings.getData(ULTOSC::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
@@ -187,7 +186,7 @@ void ULTOSCDialog::createRef2Page ()
 
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(0, 100);
-  _ref2->setValue(_settings.getDouble(ULTOSC::Ref2));
+  _ref2->setValue(_settings.getDouble(ULTOSC::_Ref2));
   grid->addWidget(_ref2, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -212,7 +211,7 @@ void ULTOSCDialog::createRef3Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(ULTOSC::Ref3Color, d);
+  _settings.getData(ULTOSC::_Ref3Color, d);
   QColor c(d);
 
   _ref3Color = new ColorButton(this, c);
@@ -225,7 +224,7 @@ void ULTOSCDialog::createRef3Page ()
 
   _ref3 = new QDoubleSpinBox;
   _ref3->setRange(0, 100);
-  _ref3->setValue(_settings.getDouble(ULTOSC::Ref3));
+  _ref3->setValue(_settings.getDouble(ULTOSC::_Ref3));
   grid->addWidget(_ref3, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -235,18 +234,18 @@ void ULTOSCDialog::createRef3Page ()
 
 void ULTOSCDialog::done ()
 {
-  _settings.setData(ULTOSC::Color, _color->color().name());
-  _settings.setData(ULTOSC::Plot, _plotStyle->currentText());
-  _settings.setData(ULTOSC::Label, _label->text());
-  _settings.setData(ULTOSC::ShortPeriod, _speriod->value());
-  _settings.setData(ULTOSC::MidPeriod, _mperiod->value());
-  _settings.setData(ULTOSC::LongPeriod, _lperiod->value());
-  _settings.setData(ULTOSC::Ref1, _ref->value());
-  _settings.setData(ULTOSC::Ref2, _ref2->value());
-  _settings.setData(ULTOSC::Ref3, _ref3->value());
-  _settings.setData(ULTOSC::Ref1Color, _refColor->color().name());
-  _settings.setData(ULTOSC::Ref2Color, _ref2Color->color().name());
-  _settings.setData(ULTOSC::Ref3Color, _ref3Color->color().name());
+  _settings.setData(ULTOSC::_Color, _color->color().name());
+  _settings.setData(ULTOSC::_Plot, _plotStyle->currentText());
+  _settings.setData(ULTOSC::_Label, _label->text());
+  _settings.setData(ULTOSC::_ShortPeriod, _speriod->value());
+  _settings.setData(ULTOSC::_MidPeriod, _mperiod->value());
+  _settings.setData(ULTOSC::_LongPeriod, _lperiod->value());
+  _settings.setData(ULTOSC::_Ref1, _ref->value());
+  _settings.setData(ULTOSC::_Ref2, _ref2->value());
+  _settings.setData(ULTOSC::_Ref3, _ref3->value());
+  _settings.setData(ULTOSC::_Ref1Color, _refColor->color().name());
+  _settings.setData(ULTOSC::_Ref2Color, _ref2Color->color().name());
+  _settings.setData(ULTOSC::_Ref3Color, _ref3Color->color().name());
 
   _indicator.setSettings(_settings);
 

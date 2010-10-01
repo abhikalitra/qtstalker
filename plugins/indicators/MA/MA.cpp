@@ -20,10 +20,11 @@
  */
 
 #include "MA.h"
-#include "FunctionMA.h"
 #include "FunctionBARS.h"
+#include "FunctionMA.h"
 #include "MADialog.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -49,7 +50,7 @@ int MA::getIndicator (Indicator &ind, BarData &data)
   }
 
   QString s;
-  settings.getData(Input, s);
+  settings.getData(_Input, s);
   Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
@@ -57,28 +58,27 @@ int MA::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  int period = settings.getInt(Period);
+  int period = settings.getInt(_Period);
 
-  FunctionMA f;
-  settings.getData(Method, s);
-  FunctionMA mau;
-  int method = f.typeFromString(s);
+  FunctionMA fma;
+  settings.getData(_Method, s);
+  int method = fma.typeFromString(s);
 
-  Curve *line = f.calculate(in, period, method);
+  Curve *line = fma.calculate(in, period, method);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(1);
@@ -91,8 +91,60 @@ int MA::getIndicator (Indicator &ind, BarData &data)
 
 int MA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionMA f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,MA,<METHOD>,<NAME>,<INPUT>,<PERIOD>
+  //     0       1    2     3       4       5       6
+
+  if (set.count() != 7)
+  {
+    qDebug() << "MA::getCUS: invalid parm count" << set.count();
+    return 1;
+  }
+
+  FunctionMA fma;
+  int method = fma.typeFromString(set[3]);
+  if (method == -1)
+  {
+    qDebug() << "MA::getCUS: invalid method" << set[3];
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[4]);
+  if (tl)
+  {
+    qDebug() << "MA::getCUS: duplicate name" << set[4];
+    return 1;
+  }
+
+  Curve *in = ind.line(set[5]);
+  if (! in)
+  {
+    in = data.getInput(data.getInputType(set[5]));
+    if (! in)
+    {
+      qDebug() << "MA::getCUS: input not found" << set[5];
+      return 1;
+    }
+
+    ind.setLine(set[5], in);
+  }
+
+  bool ok;
+  int period = set[6].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "MA::getCUS: invalid period" << set[6];
+    return 1;
+  }
+
+  Curve *line = fma.calculate(in, period, method);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[4]);
+
+  ind.setLine(set[4], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * MA::dialog (Indicator &i)
@@ -103,12 +155,12 @@ IndicatorPluginDialog * MA::dialog (Indicator &i)
 void MA::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Color, "red");
-  set.setData(Plot, "Line");
-  set.setData(Label, _indicator);
-  set.setData(Input, "Close");
-  set.setData(Period, 14);
-  set.setData(Method, "SMA");
+  set.setData(_Color, "red");
+  set.setData(_Plot, "Line");
+  set.setData(_Label, _indicator);
+  set.setData(_Input, "Close");
+  set.setData(_Period, 14);
+  set.setData(_Method, "SMA");
   i.setSettings(set);
 }
 
@@ -118,7 +170,7 @@ void MA::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
 }
 

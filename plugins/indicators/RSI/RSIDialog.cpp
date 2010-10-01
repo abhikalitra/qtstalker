@@ -20,7 +20,6 @@
  */
 
 #include "RSIDialog.h"
-#include "FunctionRSI.h"
 #include "FunctionMA.h"
 #include "RSI.h"
 #include "Curve.h"
@@ -60,7 +59,7 @@ void RSIDialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(RSI::Input, d);
+  _settings.getData(RSI::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -73,7 +72,7 @@ void RSIDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings.getInt(RSI::Period));
+  _period->setValue(_settings.getInt(RSI::_Period));
   grid->addWidget(_period, row++, col--);
 
   // smoothing
@@ -82,7 +81,7 @@ void RSIDialog::createGeneralPage ()
 
   _smoothing = new QSpinBox;
   _smoothing->setRange(1, 100000);
-  _smoothing->setValue(_settings.getInt(RSI::Smoothing));
+  _smoothing->setValue(_settings.getInt(RSI::_Smoothing));
   grid->addWidget(_smoothing, row++, col--);
 
   // smoothing type
@@ -92,7 +91,7 @@ void RSIDialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(RSI::SmoothingType, d);
+  _settings.getData(RSI::_SmoothingType, d);
 
   _smoothingType = new QComboBox;
   _smoothingType->addItems(l);
@@ -103,7 +102,7 @@ void RSIDialog::createGeneralPage ()
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(RSI::Color, d);
+  _settings.getData(RSI::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -117,7 +116,7 @@ void RSIDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(RSI::Plot, d);
+  _settings.getData(RSI::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -128,7 +127,7 @@ void RSIDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(RSI::Label, d);
+  _settings.getData(RSI::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -155,7 +154,7 @@ void RSIDialog::createRefPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(RSI::Ref1Color, d);
+  _settings.getData(RSI::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
@@ -168,7 +167,7 @@ void RSIDialog::createRefPage ()
 
   _ref = new QDoubleSpinBox;
   _ref->setRange(-100000, 100000);
-  _ref->setValue(_settings.getDouble(RSI::Ref1));
+  _ref->setValue(_settings.getDouble(RSI::_Ref1));
   grid->addWidget(_ref, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -193,7 +192,7 @@ void RSIDialog::createRef2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(RSI::Ref2Color, d);
+  _settings.getData(RSI::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
@@ -206,7 +205,7 @@ void RSIDialog::createRef2Page ()
 
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(-100000, 100000);
-  _ref2->setValue(_settings.getDouble(RSI::Ref2));
+  _ref2->setValue(_settings.getDouble(RSI::_Ref2));
   grid->addWidget(_ref2, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -216,17 +215,17 @@ void RSIDialog::createRef2Page ()
 
 void RSIDialog::done ()
 {
-  _settings.setData(RSI::Input, _input->currentText());
-  _settings.setData(RSI::Color, _color->color().name());
-  _settings.setData(RSI::Plot, _plotStyle->currentText());
-  _settings.setData(RSI::Label, _label->text());
-  _settings.setData(RSI::Smoothing, _smoothing->value());
-  _settings.setData(RSI::SmoothingType, _smoothingType->currentText());
-  _settings.setData(RSI::Period, _period->value());
-  _settings.setData(RSI::Ref1, _ref->value());
-  _settings.setData(RSI::Ref2, _ref2->value());
-  _settings.setData(RSI::Ref1Color, _refColor->color().name());
-  _settings.setData(RSI::Ref2Color, _ref2Color->color().name());
+  _settings.setData(RSI::_Input, _input->currentText());
+  _settings.setData(RSI::_Color, _color->color().name());
+  _settings.setData(RSI::_Plot, _plotStyle->currentText());
+  _settings.setData(RSI::_Label, _label->text());
+  _settings.setData(RSI::_Smoothing, _smoothing->value());
+  _settings.setData(RSI::_SmoothingType, _smoothingType->currentText());
+  _settings.setData(RSI::_Period, _period->value());
+  _settings.setData(RSI::_Ref1, _ref->value());
+  _settings.setData(RSI::_Ref2, _ref2->value());
+  _settings.setData(RSI::_Ref1Color, _refColor->color().name());
+  _settings.setData(RSI::_Ref2Color, _ref2Color->color().name());
 
   _indicator.setSettings(_settings);
 

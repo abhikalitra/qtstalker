@@ -29,25 +29,35 @@ class HT : public IndicatorPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _DCPERIOD,
+      _DCPHASE,
+      _TRENDLINE,
+      _TRENDMODE,
+      _PHASOR,
+      _SINE
+    };
+
     enum Parm
     {
-      Method = 10,
-      Input = 20,
-      Color = 30,
-      PhaseColor = 40,
-      QuadColor = 50,
-      SineColor = 60,
-      LeadColor = 70,
-      Plot = 80,
-      PhasePlot = 90,
-      QuadPlot = 100,
-      SinePlot = 110,
-      LeadPlot = 120,
-      Label = 130,
-      PhaseLabel = 140,
-      QuadLabel = 150,
-      SineLabel = 160,
-      LeadLabel = 170
+      _Method = 10,
+      _Input = 20,
+      _Color = 30,
+      _PhaseColor = 40,
+      _QuadColor = 50,
+      _SineColor = 60,
+      _LeadColor = 70,
+      _Plot = 80,
+      _PhasePlot = 90,
+      _QuadPlot = 100,
+      _SinePlot = 110,
+      _LeadPlot = 120,
+      _Label = 130,
+      _PhaseLabel = 140,
+      _QuadLabel = 150,
+      _SineLabel = 160,
+      _LeadLabel = 170
     };
 
     HT ();
@@ -56,6 +66,17 @@ class HT : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    
+    int scriptPHASE (QStringList &set, Indicator &, BarData &);
+    int scriptSINE (QStringList &set, Indicator &, BarData &);
+    int scriptHT (QStringList &set, Indicator &, BarData &);
+    Curve * getHT (Curve *in, int method);
+    int getPHASE (Curve *in, QList<Curve *> &pl);
+    int getSINE (Curve *in, QList<Curve *> &pl);
+    QStringList & list ();
+
+  protected:
+    QStringList _methodList;
 };
 
 extern "C"

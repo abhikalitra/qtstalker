@@ -29,15 +29,21 @@ class SZ : public IndicatorPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _Long,
+      _Short
+    };
+
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      Period = 40,
-      Method = 50,
-      NoDeclinePeriod = 60,
-      Coefficient = 70
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _Period = 40,
+      _Method = 50,
+      _NoDeclinePeriod = 60,
+      _Coefficient = 70
     };
 
     SZ ();
@@ -46,6 +52,12 @@ class SZ : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    
+    Curve * calculate (int method, int period, int no_decline_period, double coefficient, BarData &);
+    QStringList & list ();
+
+  protected:
+    QStringList _methodList;
 };
 
 extern "C"

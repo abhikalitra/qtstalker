@@ -20,7 +20,6 @@
  */
 
 #include "PP.h"
-#include "FunctionPP.h"
 #include "FunctionBARS.h"
 #include "PPDialog.h"
 #include "Curve.h"
@@ -47,19 +46,18 @@ int PP::getIndicator (Indicator &ind, BarData &data)
     ind.setLine(0, bars);
   }
 
-  FunctionPP f;
   QString s;
   // 1R line
-  if (settings.getInt(R1Show))
+  if (settings.getInt(_R1Show))
   {
-    Curve *line = f.calculate(0, data);
+    Curve *line = calculate(0, data);
     if (line)
     {
-      settings.getData(R1Color, s);
+      settings.getData(_R1Color, s);
       QColor c(s);
       line->setColor(c);
 
-      settings.getData(R1Label, s);
+      settings.getData(_R1Label, s);
       line->setLabel(s);
       
       line->setZ(1);
@@ -68,16 +66,16 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   }
 
   // 2R line
-  if (settings.getInt(R2Show))
+  if (settings.getInt(_R2Show))
   {
-    Curve *line = f.calculate(1, data);
+    Curve *line = calculate(1, data);
     if (line)
     {
-      settings.getData(R2Color, s);
+      settings.getData(_R2Color, s);
       QColor c(s);
       line->setColor(c);
 
-      settings.getData(R2Label, s);
+      settings.getData(_R2Label, s);
       line->setLabel(s);
       
       line->setZ(2);
@@ -86,16 +84,16 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   }
 
   // 3R line
-  if (settings.getInt(R3Show))
+  if (settings.getInt(_R3Show))
   {
-    Curve *line = f.calculate(2, data);
+    Curve *line = calculate(2, data);
     if (line)
     {
-      settings.getData(R3Color, s);
+      settings.getData(_R3Color, s);
       QColor c(s);
       line->setColor(c);
 
-      settings.getData(R3Label, s);
+      settings.getData(_R3Label, s);
       line->setLabel(s);
       
       line->setZ(3);
@@ -104,16 +102,16 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   }
 
   // 1S line
-  if (settings.getInt(S1Show))
+  if (settings.getInt(_S1Show))
   {
-    Curve *line = f.calculate(3, data);
+    Curve *line = calculate(3, data);
     if (line)
     {
-      settings.getData(S1Color, s);
+      settings.getData(_S1Color, s);
       QColor c(s);
       line->setColor(c);
 
-      settings.getData(S1Label, s);
+      settings.getData(_S1Label, s);
       line->setLabel(s);
       
       line->setZ(4);
@@ -122,16 +120,16 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   }
 
   // 2S line
-  if (settings.getInt(S2Show))
+  if (settings.getInt(_S2Show))
   {
-    Curve *line = f.calculate(4, data);
+    Curve *line = calculate(4, data);
     if (line)
     {
-      settings.getData(S2Color, s);
+      settings.getData(_S2Color, s);
       QColor c(s);
       line->setColor(c);
 
-      settings.getData(S2Label, s);
+      settings.getData(_S2Label, s);
       line->setLabel(s);
       
       line->setZ(5);
@@ -140,16 +138,16 @@ int PP::getIndicator (Indicator &ind, BarData &data)
   }
 
   // 3S line
-  if (settings.getInt(S3Show))
+  if (settings.getInt(_S3Show))
   {
-    Curve *line = f.calculate(5, data);
+    Curve *line = calculate(5, data);
     if (line)
     {
-      settings.getData(S3Color, s);
+      settings.getData(_S3Color, s);
       QColor c(s);
       line->setColor(c);
 
-      settings.getData(S3Label, s);
+      settings.getData(_S3Label, s);
       line->setLabel(s);
       
       line->setZ(6);
@@ -162,8 +160,47 @@ int PP::getIndicator (Indicator &ind, BarData &data)
 
 int PP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionPP f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,PP,<NAME>,<POINT>
+  //     0       1     2    3      4
+
+  if (set.count() != 5)
+  {
+    qDebug() << "PP::getCUS: invalid settings count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "PP::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  bool ok;
+  int point = set[4].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "PP::getCUS: invalid point" << set[4];
+    return 1;
+  }
+  else
+  {
+    if (point < 0 || point > 5)
+    {
+      qDebug() << "PP::getCUS: invalid point" << set[4];
+      return 1;
+    }
+  }
+
+  Curve *line = calculate(point, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * PP::dialog (Indicator &i)
@@ -174,24 +211,24 @@ IndicatorPluginDialog * PP::dialog (Indicator &i)
 void PP::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(R1Color, "red");
-  set.setData(R2Color, "red");
-  set.setData(R3Color, "red");
-  set.setData(S1Color, "red");
-  set.setData(S2Color, "red");
-  set.setData(S3Color, "red");
-  set.setData(R1Label, "1R");
-  set.setData(R2Label, "2R");
-  set.setData(R3Label, "3R");
-  set.setData(S1Label, "1S");
-  set.setData(S2Label, "2S");
-  set.setData(S3Label, "3S");
-  set.setData(R1Show, 1);
-  set.setData(R2Show, 1);
-  set.setData(R3Show, 1);
-  set.setData(S1Show, 1);
-  set.setData(S2Show, 1);
-  set.setData(S3Show, 1);
+  set.setData(_R1Color, "red");
+  set.setData(_R2Color, "red");
+  set.setData(_R3Color, "red");
+  set.setData(_S1Color, "red");
+  set.setData(_S2Color, "red");
+  set.setData(_S3Color, "red");
+  set.setData(_R1Label, "1R");
+  set.setData(_R2Label, "2R");
+  set.setData(_R3Label, "3R");
+  set.setData(_S1Label, "1S");
+  set.setData(_S2Label, "2S");
+  set.setData(_S3Label, "3S");
+  set.setData(_R1Show, 1);
+  set.setData(_R2Show, 1);
+  set.setData(_R3Show, 1);
+  set.setData(_S1Show, 1);
+  set.setData(_S2Show, 1);
+  set.setData(_S3Show, 1);
   i.setSettings(set);
 }
 
@@ -202,23 +239,88 @@ void PP::plotNames (Indicator &i, QStringList &l)
   Setting settings = i.settings();
   QString s;
   
-  settings.getData(R1Label, s);
+  settings.getData(_R1Label, s);
   l.append(s);
 
-  settings.getData(R2Label, s);
+  settings.getData(_R2Label, s);
   l.append(s);
 
-  settings.getData(R3Label, s);
+  settings.getData(_R3Label, s);
   l.append(s);
 
-  settings.getData(S1Label, s);
+  settings.getData(_S1Label, s);
   l.append(s);
   
-  settings.getData(S2Label, s);
+  settings.getData(_S2Label, s);
   l.append(s);
 
-  settings.getData(S3Label, s);
+  settings.getData(_S3Label, s);
   l.append(s);
+}
+
+Curve * PP::calculate (int point, BarData &data)
+{
+  if (data.count() < 1)
+    return 0;
+
+  Curve *output = new Curve(Curve::Horizontal);
+
+  Bar bar = data.getBar(data.count() - 1);
+  double high = bar.getHigh();
+  double low = bar.getLow();
+  double close = bar.getClose();
+  double pp = 0;
+  double t = 0;
+
+  switch (point)
+  {
+    case 0: // first resistance
+    {
+      pp = (high + low + close) / 3;
+      t = (2 * pp) - low;
+      output->setBar(0, new CurveBar(t));
+      break;
+    }
+    case 1: // second resistance
+    {
+      pp = (high + low + close) / 3;
+      t = pp + (high - low);
+      output->setBar(0, new CurveBar(t));
+      break;
+    }
+    case 2: // third resistance
+    {
+      pp = (high + low + close) / 3;
+      t = (2 * pp) + (high - (2 * low));
+      output->setBar(0, new CurveBar(t));
+      break;
+    }
+    case 3: // first support
+    {
+      pp = (high + low + close) / 3;
+      t = (2 * pp) - high;
+      output->setBar(0, new CurveBar(t));
+      break;
+    }
+    case 4: // second support
+    {
+      pp = (high + low + close) / 3;
+      t = pp - (high - low);
+      output->setBar(0, new CurveBar(t));
+      break;
+    }
+    case 5: // third support
+    {
+      pp = (high + low + close) / 3;
+      t = (2 * pp) - ((2 * high) - low);
+      output->setBar(0, new CurveBar(t));
+      break;
+    }
+    default:
+      break;
+  }
+
+  return output;
 }
 
 //*************************************************************

@@ -20,7 +20,6 @@
  */
 
 #include "CCIDialog.h"
-#include "FunctionCCI.h"
 #include "FunctionMA.h"
 #include "CCI.h"
 #include "Curve.h"
@@ -55,7 +54,7 @@ void CCIDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CCI::Color, d);
+  _settings.getData(CCI::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -70,7 +69,7 @@ void CCIDialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(CCI::Plot, d);
+  _settings.getData(CCI::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -81,7 +80,7 @@ void CCIDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(CCI::Label, d);
+  _settings.getData(CCI::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -92,7 +91,7 @@ void CCIDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings.getInt(CCI::Period));
+  _period->setValue(_settings.getInt(CCI::_Period));
   grid->addWidget(_period, row++, col--);
 
   // smoothing
@@ -101,7 +100,7 @@ void CCIDialog::createGeneralPage ()
 
   _smoothing = new QSpinBox;
   _smoothing->setRange(1, 100000);
-  _smoothing->setValue(_settings.getInt(CCI::Smoothing));
+  _smoothing->setValue(_settings.getInt(CCI::_Smoothing));
   grid->addWidget(_smoothing, row++, col--);
 
   // smoothing type
@@ -111,7 +110,7 @@ void CCIDialog::createGeneralPage ()
   FunctionMA mau;
   l = mau.list();
 
-  _settings.getData(CCI::SmoothingType, d);
+  _settings.getData(CCI::_SmoothingType, d);
 
   _smoothingType = new QComboBox;
   _smoothingType->addItems(l);
@@ -140,7 +139,7 @@ void CCIDialog::createRefPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CCI::Ref1Color, d);
+  _settings.getData(CCI::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
@@ -153,7 +152,7 @@ void CCIDialog::createRefPage ()
 
   _ref = new QDoubleSpinBox;
   _ref->setRange(-100000, 100000);
-  _ref->setValue(_settings.getDouble(CCI::Ref1));
+  _ref->setValue(_settings.getDouble(CCI::_Ref1));
   grid->addWidget(_ref, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -178,7 +177,7 @@ void CCIDialog::createRef2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(CCI::Ref2Color, d);
+  _settings.getData(CCI::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
@@ -191,7 +190,7 @@ void CCIDialog::createRef2Page ()
 
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(-100000, 100000);
-  _ref2->setValue(_settings.getDouble(CCI::Ref2));
+  _ref2->setValue(_settings.getDouble(CCI::_Ref2));
   grid->addWidget(_ref2, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -201,16 +200,16 @@ void CCIDialog::createRef2Page ()
 
 void CCIDialog::done ()
 {
-  _settings.setData(CCI::Color, _color->color().name());
-  _settings.setData(CCI::Plot, _plotStyle->currentText());
-  _settings.setData(CCI::Label, _label->text());
-  _settings.setData(CCI::Smoothing, _smoothing->value());
-  _settings.setData(CCI::SmoothingType, _smoothingType->currentText());
-  _settings.setData(CCI::Period, _period->value());
-  _settings.setData(CCI::Ref1, _ref->value());
-  _settings.setData(CCI::Ref2, _ref2->value());
-  _settings.setData(CCI::Ref1Color, _refColor->color().name());
-  _settings.setData(CCI::Ref2Color, _ref2Color->color().name());
+  _settings.setData(CCI::_Color, _color->color().name());
+  _settings.setData(CCI::_Plot, _plotStyle->currentText());
+  _settings.setData(CCI::_Label, _label->text());
+  _settings.setData(CCI::_Smoothing, _smoothing->value());
+  _settings.setData(CCI::_SmoothingType, _smoothingType->currentText());
+  _settings.setData(CCI::_Period, _period->value());
+  _settings.setData(CCI::_Ref1, _ref->value());
+  _settings.setData(CCI::_Ref2, _ref2->value());
+  _settings.setData(CCI::_Ref1Color, _refColor->color().name());
+  _settings.setData(CCI::_Ref2Color, _ref2Color->color().name());
 
   _indicator.setSettings(_settings);
 

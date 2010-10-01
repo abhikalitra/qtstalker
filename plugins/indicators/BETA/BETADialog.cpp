@@ -20,7 +20,6 @@
  */
 
 #include "BETADialog.h"
-#include "FunctionBETA.h"
 #include "BETA.h"
 #include "Curve.h"
 #include "ExchangeDataBase.h"
@@ -54,7 +53,7 @@ void BETADialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(BETA::Color, d);
+  _settings.getData(BETA::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -69,7 +68,7 @@ void BETADialog::createGeneralPage ()
   QStringList l;
   fac.list(l, TRUE);
 
-  _settings.getData(BETA::Plot, d);
+  _settings.getData(BETA::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -80,7 +79,7 @@ void BETADialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BETA::Label, d);
+  _settings.getData(BETA::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -91,7 +90,7 @@ void BETADialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings.getInt(BETA::Period));
+  _period->setValue(_settings.getInt(BETA::_Period));
   grid->addWidget(_period, row++, col--);
 
   // input
@@ -101,7 +100,7 @@ void BETADialog::createGeneralPage ()
   BarData bd;
   bd.getInputFields(l);
 
-  _settings.getData(BETA::Input, d);
+  _settings.getData(BETA::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -115,7 +114,7 @@ void BETADialog::createGeneralPage ()
   ExchangeDataBase db;
   db.getExchanges(l);
 
-  _settings.getData(BETA::Exchange, d);
+  _settings.getData(BETA::_Exchange, d);
 
   _exchange = new QComboBox;
   _exchange->addItems(l);
@@ -126,7 +125,7 @@ void BETADialog::createGeneralPage ()
   label = new QLabel(tr("Index Symbol"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(BETA::Index, d);
+  _settings.getData(BETA::_Index, d);
 
   _input2 = new QLineEdit(d);
   _input2->setToolTip(tr("Index symbol used for comparison eg. SP500"));
@@ -140,13 +139,13 @@ void BETADialog::createGeneralPage ()
 
 void BETADialog::done ()
 {
-  _settings.setData(BETA::Index, _input2->text());
-  _settings.setData(BETA::Exchange, _exchange->currentText());
-  _settings.setData(BETA::Color, _color->color().name());
-  _settings.setData(BETA::Plot, _plotStyle->currentText());
-  _settings.setData(BETA::Label, _label->text());
-  _settings.setData(BETA::Input, _input->currentText());
-  _settings.setData(BETA::Period, _period->value());
+  _settings.setData(BETA::_Index, _input2->text());
+  _settings.setData(BETA::_Exchange, _exchange->currentText());
+  _settings.setData(BETA::_Color, _color->color().name());
+  _settings.setData(BETA::_Plot, _plotStyle->currentText());
+  _settings.setData(BETA::_Label, _label->text());
+  _settings.setData(BETA::_Input, _input->currentText());
+  _settings.setData(BETA::_Period, _period->value());
 
   _indicator.setSettings(_settings);
 

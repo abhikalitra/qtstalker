@@ -54,8 +54,7 @@ class ChartPage : public QWidget
       ShowAll,
       Search,
       AddGroup,
-      Delete,
-      Server
+      Delete
     };
 
     ChartPage ();
@@ -74,7 +73,6 @@ class ChartPage : public QWidget
     void buttonStatus ();
     void deleteSymbol ();
     void requestDone ();
-    void serverDialog ();
 
   protected:
     QString _searchString;

@@ -29,13 +29,19 @@ class ATR : public IndicatorPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _ATR,
+      _NATR
+    };
+
     enum Parm
     {
-      Method = 10,
-      Period = 20,
-      Color = 30,
-      Plot = 40,
-      Label = 50
+      _Method = 10,
+      _Period = 20,
+      _Color = 30,
+      _Plot = 40,
+      _Label = 50
     };
 
     ATR ();
@@ -44,6 +50,12 @@ class ATR : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    
+    Curve * calculate (int period, int method, BarData &);
+    QStringList & list ();
+
+  private:
+    QStringList _methodList;
 };
 
 extern "C"

@@ -31,10 +31,10 @@ class WILLR : public IndicatorPlugin
   public:
     enum Parm
     {
-      Color = 10,
-      Plot = 20,
-      Label = 30,
-      Period = 40
+      _Color = 10,
+      _Plot = 20,
+      _Label = 30,
+      _Period = 40
     };
 
     WILLR ();
@@ -43,6 +43,7 @@ class WILLR : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (int period, BarData &);
 };
 
 extern "C"

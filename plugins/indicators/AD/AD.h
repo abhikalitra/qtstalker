@@ -29,17 +29,23 @@ class AD : public IndicatorPlugin
   Q_OBJECT
   
   public:
+    enum Method
+    {
+      _AD,
+      _ADOSC
+    };
+
     enum Parm
     {
-      Method = 10,
-      FastPeriod = 20,
-      SlowPeriod = 30,
-      ADColor = 40,
-      ADPlot = 50,
-      ADLabel = 60,
-      OSCColor = 70,
-      OSCPlot = 80,
-      OSCLabel = 90
+      _Method = 10,
+      _FastPeriod = 20,
+      _SlowPeriod = 30,
+      _ADColor = 40,
+      _ADPlot = 50,
+      _ADLabel = 60,
+      _OSCColor = 70,
+      _OSCPlot = 80,
+      _OSCLabel = 90
     };
 
     AD ();
@@ -48,6 +54,15 @@ class AD : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    int CUSAD (QStringList &, Indicator &, BarData &);
+    int CUSADOSC (QStringList &, Indicator &, BarData &);
+    Curve * getAD (BarData &);
+    Curve * getADOSC (int fast, int slow, BarData &);
+
+    QStringList & list();
+
+  private:
+    QStringList _methodList;
 };
 
 extern "C"

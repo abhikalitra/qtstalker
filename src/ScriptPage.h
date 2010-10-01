@@ -51,7 +51,8 @@ class ScriptPage : public QWidget
       NewScript,
       EditScript,
       DeleteScript,
-      CancelScript
+      CancelScript,
+      ConfigureLaunchButtons
     };
 
     ScriptPage ();
@@ -80,6 +81,7 @@ class ScriptPage : public QWidget
     void runScriptDialog2 (QString command, QString file);
     void listStatus ();
     void queStatus ();
+    void configureLaunchButtons ();
 
   protected:
     QListWidget *_list;

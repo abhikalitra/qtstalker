@@ -21,8 +21,8 @@
 
 #include "WILLR.h"
 #include "WILLRDialog.h"
-#include "FunctionWILLR.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -35,22 +35,21 @@ int WILLR::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
-  int period = settings.getInt(Period);
+  int period = settings.getInt(_Period);
 
-  FunctionWILLR f;
-  Curve *line = f.calculate(period, data);
+  Curve *line = calculate(period, data);
   if (! line)
     return 1;
 
   QString s;
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(0);
@@ -61,8 +60,39 @@ int WILLR::getIndicator (Indicator &ind, BarData &data)
 
 int WILLR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionWILLR f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,WILLR,<NAME>,<PERIOD>
+  //     0       1      2     3       4
+
+  if (set.count() != 5)
+  {
+    qDebug() << "WILLR::getCUS: invalid settings count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "WILLR::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  bool ok;
+  int period = set[4].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "WILLR::getCUS: invalid period settings" << set[4];
+    return 1;
+  }
+
+  Curve *line = calculate(period, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * WILLR::dialog (Indicator &i)
@@ -73,10 +103,10 @@ IndicatorPluginDialog * WILLR::dialog (Indicator &i)
 void WILLR::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Color, "red");
-  set.setData(Plot, "Line");
-  set.setData(Label, _indicator);
-  set.setData(Period, 14);
+  set.setData(_Color, "red");
+  set.setData(_Plot, "Line");
+  set.setData(_Label, _indicator);
+  set.setData(_Period, 14);
   i.setSettings(set);
 }
 
@@ -86,8 +116,48 @@ void WILLR::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
+}
+
+Curve * WILLR::calculate (int period, BarData &data)
+{
+  int size = data.count();
+
+  if (size < period)
+    return 0;
+
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  TA_RetCode rc = TA_WILLR(0,
+                           size - 1,
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
+                           data.getTAData(BarData::Close),
+                           period,
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "WILLR::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  return line;
 }
 
 //*************************************************************

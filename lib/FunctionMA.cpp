@@ -29,63 +29,6 @@ FunctionMA::FunctionMA ()
   _maList << "EMA" << "DEMA" << "KAMA" << "SMA" << "TEMA" << "TRIMA" << "Wilder" << "WMA";
 }
 
-int FunctionMA::script (QStringList &set, Indicator &ind, BarData &data)
-{
-  // INDICATOR,PLUGIN,MA,<METHOD>,<NAME>,<INPUT>,<PERIOD>
-  //     0       1    2     3       4       5       6
-
-  if (set.count() != 7)
-  {
-    qDebug() << "FunctionMA::script: invalid parm count" << set.count();
-    return 1;
-  }
-
-  int method = typeFromString(set[3]);
-  if (method == -1)
-  {
-    qDebug() << "FunctionMA::script: invalid method" << set[3];
-    return 1;
-  }
-
-  Curve *tl = ind.line(set[4]);
-  if (tl)
-  {
-    qDebug() << "FunctionMA::script: duplicate name" << set[4];
-    return 1;
-  }
-
-  Curve *in = ind.line(set[5]);
-  if (! in)
-  {
-    in = data.getInput(data.getInputType(set[5]));
-    if (! in)
-    {
-      qDebug() << "FunctionMA::script: input not found" << set[5];
-      return 1;
-    }
-
-    ind.setLine(set[5], in);
-  }
-
-  bool ok;
-  int period = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "FunctionMA::script: invalid period" << set[6];
-    return 1;
-  }
-
-  Curve *line = calculate(in, period, method);
-  if (! line)
-    return 1;
-
-  line->setLabel(set[4]);
-
-  ind.setLine(set[4], line);
-
-  return 0;
-}
-
 Curve * FunctionMA::calculate (Curve *in, int period, int method)
 {
   if (in->count() < period)

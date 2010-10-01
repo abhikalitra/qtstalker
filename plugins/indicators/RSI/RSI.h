@@ -31,17 +31,17 @@ class RSI : public IndicatorPlugin
   public:
     enum Parm
     {
-      Input = 10,
-      Color = 20,
-      Plot = 30,
-      Label = 40,
-      Period = 50,
-      Smoothing = 60,
-      SmoothingType = 70,
-      Ref1 = 80,
-      Ref2 = 90,
-      Ref1Color = 100,
-      Ref2Color = 110
+      _Input = 10,
+      _Color = 20,
+      _Plot = 30,
+      _Label = 40,
+      _Period = 50,
+      _Smoothing = 60,
+      _SmoothingType = 70,
+      _Ref1 = 80,
+      _Ref2 = 90,
+      _Ref1Color = 100,
+      _Ref2Color = 110
     };
 
     RSI ();
@@ -50,6 +50,7 @@ class RSI : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (Curve *in, int period, int smoothing, int type);
 };
 
 extern "C"

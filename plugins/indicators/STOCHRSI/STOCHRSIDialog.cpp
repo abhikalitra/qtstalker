@@ -20,7 +20,6 @@
  */
 
 #include "STOCHRSIDialog.h"
-#include "FunctionSTOCHRSI.h"
 #include "FunctionMA.h"
 #include "STOCHRSI.h"
 #include "Curve.h"
@@ -60,7 +59,7 @@ void STOCHRSIDialog::createGeneralPage ()
   bd.getInputFields(l);
 
   QString d;
-  _settings.getData(STOCHRSI::Input, d);
+  _settings.getData(STOCHRSI::_Input, d);
 
   _input = new QComboBox;
   _input->addItems(l);
@@ -73,14 +72,14 @@ void STOCHRSIDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings.getInt(STOCHRSI::Period));
+  _period->setValue(_settings.getInt(STOCHRSI::_Period));
   grid->addWidget(_period, row++, col--);
 
   // color
   label = new QLabel(tr("Color"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(STOCHRSI::Color, d);
+  _settings.getData(STOCHRSI::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -94,7 +93,7 @@ void STOCHRSIDialog::createGeneralPage ()
   Curve fac;
   fac.list(l, TRUE);
 
-  _settings.getData(STOCHRSI::Plot, d);
+  _settings.getData(STOCHRSI::_Plot, d);
 
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
@@ -105,7 +104,7 @@ void STOCHRSIDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(STOCHRSI::Label, d);
+  _settings.getData(STOCHRSI::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -132,7 +131,7 @@ void STOCHRSIDialog::createRefPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(STOCHRSI::Ref1Color, d);
+  _settings.getData(STOCHRSI::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
@@ -145,7 +144,7 @@ void STOCHRSIDialog::createRefPage ()
 
   _ref = new QDoubleSpinBox;
   _ref->setRange(0, 1);
-  _ref->setValue(_settings.getDouble(STOCHRSI::Ref1));
+  _ref->setValue(_settings.getDouble(STOCHRSI::_Ref1));
   grid->addWidget(_ref, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -170,7 +169,7 @@ void STOCHRSIDialog::createRef2Page ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(STOCHRSI::Ref2Color, d);
+  _settings.getData(STOCHRSI::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
@@ -183,7 +182,7 @@ void STOCHRSIDialog::createRef2Page ()
 
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(0, 1);
-  _ref2->setValue(_settings.getDouble(STOCHRSI::Ref2));
+  _ref2->setValue(_settings.getDouble(STOCHRSI::_Ref2));
   grid->addWidget(_ref2, row++, col--);
 
   grid->setRowStretch(row, 1);
@@ -193,15 +192,15 @@ void STOCHRSIDialog::createRef2Page ()
 
 void STOCHRSIDialog::done ()
 {
-  _settings.setData(STOCHRSI::Input, _input->currentText());
-  _settings.setData(STOCHRSI::Color, _color->color().name());
-  _settings.setData(STOCHRSI::Plot, _plotStyle->currentText());
-  _settings.setData(STOCHRSI::Label, _label->text());
-  _settings.setData(STOCHRSI::Period, _period->value());
-  _settings.setData(STOCHRSI::Ref1, _ref->value());
-  _settings.setData(STOCHRSI::Ref2, _ref2->value());
-  _settings.setData(STOCHRSI::Ref1Color, _refColor->color().name());
-  _settings.setData(STOCHRSI::Ref2Color, _ref2Color->color().name());
+  _settings.setData(STOCHRSI::_Input, _input->currentText());
+  _settings.setData(STOCHRSI::_Color, _color->color().name());
+  _settings.setData(STOCHRSI::_Plot, _plotStyle->currentText());
+  _settings.setData(STOCHRSI::_Label, _label->text());
+  _settings.setData(STOCHRSI::_Period, _period->value());
+  _settings.setData(STOCHRSI::_Ref1, _ref->value());
+  _settings.setData(STOCHRSI::_Ref2, _ref2->value());
+  _settings.setData(STOCHRSI::_Ref1Color, _refColor->color().name());
+  _settings.setData(STOCHRSI::_Ref2Color, _ref2Color->color().name());
 
   _indicator.setSettings(_settings);
 

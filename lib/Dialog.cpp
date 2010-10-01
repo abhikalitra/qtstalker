@@ -31,9 +31,9 @@ Dialog::Dialog ()
   
   createGUI();
 
-  QFont f = messageFont();
-  f.setBold(TRUE);
-  setMessageFont(f);
+//  QFont f = messageFont();
+//  f.setBold(TRUE);
+//  setMessageFont(f);
 
   QMessageBox tbox;
   tbox.setIcon(QMessageBox::Warning);

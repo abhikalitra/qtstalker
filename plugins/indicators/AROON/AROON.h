@@ -31,19 +31,25 @@ class AROON : public IndicatorPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _AROON,
+      _AROONOSC
+    };
+
     enum Parm
     {
-      Method = 10,
-      DownColor = 20,
-      UpColor = 30,
-      OSCColor = 40,
-      DownPlot = 50,
-      UpPlot = 60,
-      OSCPlot = 70,
-      DownLabel = 80,
-      UpLabel = 90,
-      OSCLabel = 100,
-      Period = 110
+      _Method = 10,
+      _DownColor = 20,
+      _UpColor = 30,
+      _OSCColor = 40,
+      _DownPlot = 50,
+      _UpPlot = 60,
+      _OSCPlot = 70,
+      _DownLabel = 80,
+      _UpLabel = 90,
+      _OSCLabel = 100,
+      _Period = 110
     };
 
     AROON ();
@@ -52,6 +58,15 @@ class AROON : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    
+    int scriptAROON (QStringList &, Indicator &, BarData &);
+    int scriptAROONOSC (QStringList &, Indicator &, BarData &);
+    int getAROON (int period, QList<Curve *> &, BarData &);
+    Curve * getAROONOSC (int period, BarData &);
+    QStringList & list ();
+
+  protected:
+    QStringList _methodList;
 };
 
 extern "C"

@@ -35,5 +35,17 @@ void Config::init ()
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "Config::Config: " << q.lastError().text();
+
+  QString d;
+  getData(Config::IndicatorTabRows, d);
+  if (d.isEmpty())
+  {
+    d = "2";
+    setData(Config::IndicatorTabRows, d);
+  }
+
+  // clear current chart to empty
+  d = "";
+  setData(Config::CurrentChart, d);
 }
 

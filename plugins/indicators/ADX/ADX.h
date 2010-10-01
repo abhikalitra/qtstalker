@@ -29,25 +29,34 @@ class ADX : public IndicatorPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _ADX,
+      _ADXR,
+      _PDI,
+      _MDI,
+      _DX
+    };
+
     enum Parm
     {
-      ADXColor = 10,
-      ADXRColor = 20,
-      PDIColor = 30,
-      MDIColor = 40,
-      ADXPlot = 50,
-      ADXRPlot = 60,
-      PDIPlot = 70,
-      MDIPlot = 80,
-      ADXLabel = 90,
-      ADXRLabel = 100,
-      PDILabel = 110,
-      MDILabel = 120,
-      ADXCheck = 130,
-      ADXRCheck = 140,
-      PDICheck = 150,
-      MDICheck = 160,
-      Period = 170
+      _ADXColor = 10,
+      _ADXRColor = 20,
+      _PDIColor = 30,
+      _MDIColor = 40,
+      _ADXPlot = 50,
+      _ADXRPlot = 60,
+      _PDIPlot = 70,
+      _MDIPlot = 80,
+      _ADXLabel = 90,
+      _ADXRLabel = 100,
+      _PDILabel = 110,
+      _MDILabel = 120,
+      _ADXCheck = 130,
+      _ADXRCheck = 140,
+      _PDICheck = 150,
+      _MDICheck = 160,
+      _Period = 170
     };
 
     ADX ();
@@ -56,6 +65,10 @@ class ADX : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (int period, int method, BarData &);
+
+  protected:
+    QStringList _methodList;
 };
 
 extern "C"

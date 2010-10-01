@@ -29,16 +29,24 @@ class ROC : public IndicatorPlugin
   Q_OBJECT
 
   public:
+    enum Method
+    {
+      _ROCN,
+      _ROCP,
+      _ROCR,
+      _ROCR100
+    };
+
     enum Parm
     {
-      Method = 10,
-      Input = 20,
-      Color = 30,
-      Plot = 40,
-      Label = 50,
-      Period = 60,
-      Smoothing = 70,
-      SmoothingType = 80
+      _Method = 10,
+      _Input = 20,
+      _Color = 30,
+      _Plot = 40,
+      _Label = 50,
+      _Period = 60,
+      _Smoothing = 70,
+      _SmoothingType = 80
     };
 
     ROC ();
@@ -47,6 +55,12 @@ class ROC : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    
+    Curve * calculate (Curve *in, int period, int method, int smoothing, int type);
+    QStringList & list ();
+
+  protected:
+    QStringList _methodList;
 };
 
 extern "C"

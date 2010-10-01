@@ -36,7 +36,7 @@ class ScriptLaunchButton : public QToolButton
     void signalButtonClicked (Script *);
 
   public:
-    ScriptLaunchButton (int, int);
+    ScriptLaunchButton (QString key, int label);
     
   public slots:
     void buttonClicked ();
@@ -45,7 +45,7 @@ class ScriptLaunchButton : public QToolButton
     void contextMenu ();
 
   private:
-    int _position;
+    QString _key;
     QString _scriptName;
     QMenu *_menu;
 };

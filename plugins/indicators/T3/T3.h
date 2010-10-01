@@ -31,12 +31,12 @@ class T3 : public IndicatorPlugin
   public:
     enum Parm
     {
-      Input = 10,
-      Color = 20,
-      Plot = 30,
-      Label = 40,
-      Period = 50,
-      VFactor = 60
+      _Input = 10,
+      _Color = 20,
+      _Plot = 30,
+      _Label = 40,
+      _Period = 50,
+      _VFactor = 60
     };
 
     T3 ();
@@ -45,6 +45,7 @@ class T3 : public IndicatorPlugin
     IndicatorPluginDialog * dialog (Indicator &);
     void defaults (Indicator &);
     void plotNames (Indicator &, QStringList &);
+    Curve * calculate (Curve *in, int period, double vfactor);
 };
 
 extern "C"

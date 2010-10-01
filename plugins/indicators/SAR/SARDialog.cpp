@@ -20,7 +20,6 @@
  */
 
 #include "SARDialog.h"
-#include "FunctionSAR.h"
 #include "FunctionMA.h"
 #include "SAR.h"
 #include "IndicatorDataBase.h"
@@ -52,7 +51,7 @@ void SARDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   QString d;
-  _settings.getData(SAR::Color, d);
+  _settings.getData(SAR::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
@@ -63,7 +62,7 @@ void SARDialog::createGeneralPage ()
   label = new QLabel(tr("Label"));
   grid->addWidget(label, row, col++);
 
-  _settings.getData(SAR::Label, d);
+  _settings.getData(SAR::_Label, d);
 
   _label = new QLineEdit(d);
   grid->addWidget(_label, row++, col--);
@@ -74,7 +73,7 @@ void SARDialog::createGeneralPage ()
 
   _init = new QDoubleSpinBox;
   _init->setRange(0, 0.2);
-  _init->setValue(_settings.getDouble(SAR::Init));
+  _init->setValue(_settings.getDouble(SAR::_Init));
   grid->addWidget(_init, row++, col--);
 
   // max
@@ -83,7 +82,7 @@ void SARDialog::createGeneralPage ()
 
   _max = new QDoubleSpinBox;
   _max->setRange(0, 0.2);
-  _max->setValue(_settings.getDouble(SAR::Max));
+  _max->setValue(_settings.getDouble(SAR::_Max));
   grid->addWidget(_max, row++, col--);
  
   grid->setRowStretch(row, 1);
@@ -93,10 +92,10 @@ void SARDialog::createGeneralPage ()
 
 void SARDialog::done ()
 {
-  _settings.setData(SAR::Color, _color->color().name());
-  _settings.setData(SAR::Label, _label->text());
-  _settings.setData(SAR::Init, _init->value());
-  _settings.setData(SAR::Max, _max->value());
+  _settings.setData(SAR::_Color, _color->color().name());
+  _settings.setData(SAR::_Label, _label->text());
+  _settings.setData(SAR::_Init, _init->value());
+  _settings.setData(SAR::_Max, _max->value());
 
   _indicator.setSettings(_settings);
 

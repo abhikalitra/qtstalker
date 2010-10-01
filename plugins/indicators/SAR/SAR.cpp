@@ -20,10 +20,10 @@
  */
 
 #include "SAR.h"
-#include "FunctionSAR.h"
 #include "FunctionBARS.h"
 #include "SARDialog.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -36,8 +36,8 @@ int SAR::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
-  double tinit = settings.getDouble(Init);
-  double tmax = settings.getDouble(Max);
+  double tinit = settings.getDouble(_Init);
+  double tmax = settings.getDouble(_Max);
 
   QColor up("green");
   QColor down("red");
@@ -50,19 +50,18 @@ int SAR::getIndicator (Indicator &ind, BarData &data)
     ind.setLine(0, bars);
   }
 
-  FunctionSAR f;
-  Curve *line = f.calculate(tinit, tmax, data);
+  Curve *line = calculate(tinit, tmax, data);
   if (! line)
     return 1;
 
   line->setType((Curve::Dot));
   
   QString s;
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(1);
@@ -73,8 +72,46 @@ int SAR::getIndicator (Indicator &ind, BarData &data)
 
 int SAR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionSAR f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>
+  //      0       1    2     3         4            5
+
+  if (set.count() != 8)
+  {
+    qDebug() << "SAR::getCUS: invalid settings count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "SAR::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  bool ok;
+  double init = set[4].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << "SAR::getCUS: invalid init" << set[4];
+    return 1;
+  }
+
+  double max = set[5].toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << "SAR::getCUS: invalid max" << set[5];
+    return 1;
+  }
+
+  Curve *line = calculate(init, max, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * SAR::dialog (Indicator &i)
@@ -85,10 +122,10 @@ IndicatorPluginDialog * SAR::dialog (Indicator &i)
 void SAR::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(SAR::Color, "yellow");
-  set.setData(SAR::Label, _indicator);
-  set.setData(SAR::Init, 0.02);
-  set.setData(SAR::Max, 0.2);
+  set.setData(SAR::_Color, "yellow");
+  set.setData(SAR::_Label, _indicator);
+  set.setData(SAR::_Init, 0.02);
+  set.setData(SAR::_Max, 0.2);
   i.setSettings(set);
 }
 
@@ -98,8 +135,43 @@ void SAR::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
+}
+
+Curve * SAR::calculate (double _init, double _max, BarData &data)
+{
+  int size = data.count();
+
+  if (size < 1)
+    return 0;
+
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_RetCode rc = TA_SAR(0,
+                         size - 1,
+                         data.getTAData(BarData::High),
+                         data.getTAData(BarData::Low),
+                         _init,
+                         _max,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "SAR::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve(Curve::Dot);
+
+  int loop = 0;
+  for (; loop < outNb; loop++)
+    line->setBar(loop + 1, new CurveBar(out[loop]));
+
+  return line;
 }
 
 //*************************************************************

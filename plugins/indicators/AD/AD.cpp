@@ -20,47 +20,46 @@
  */
 
 #include "AD.h"
-#include "FunctionAD.h"
 #include "ADDialog.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
 AD::AD ()
 {
   _indicator = "AD";
+  
+  _methodList << "AD" << "ADOSC";
 }
 
 int AD::getIndicator (Indicator &ind, BarData &data)
 {
   Setting settings = ind.settings();
 
-  FunctionAD f;
-  QStringList methodList = f.list();
-  
   QString s;
-  settings.getData(Method, s);
-  int method = methodList.indexOf(s);
+  settings.getData(_Method, s);
+  int method = _methodList.indexOf(s);
 
-  switch ((FunctionAD::Method) method)
+  switch ((AD::Method) method)
   {
-    case FunctionAD::_ADOSC:
+    case AD::_ADOSC:
     {
-      int fp = settings.getInt(FastPeriod);
-      int sp = settings.getInt(SlowPeriod);
+      int fp = settings.getInt(_FastPeriod);
+      int sp = settings.getInt(_SlowPeriod);
 
-      Curve *line = f.getADOSC(fp, sp, data);
+      Curve *line = getADOSC(fp, sp, data);
       if (! line)
 	return 1;
 
-      settings.getData(OSCPlot, s);
+      settings.getData(_OSCPlot, s);
       line->setType((Curve::Type) line->typeFromString(s));
       
-      settings.getData(OSCColor, s);
+      settings.getData(_OSCColor, s);
       QColor c(s);
       line->setColor(c);
       
-      settings.getData(OSCLabel, s);
+      settings.getData(_OSCLabel, s);
       line->setLabel(s);
 
       line->setZ(0);
@@ -69,18 +68,18 @@ int AD::getIndicator (Indicator &ind, BarData &data)
     }
     default:
     {
-      Curve *line = f.getAD(data);
+      Curve *line = getAD(data);
       if (! line)
 	return 1;
       
-      settings.getData(ADPlot, s);
+      settings.getData(_ADPlot, s);
       line->setType((Curve::Type) line->typeFromString(s));
 
-      settings.getData(ADColor, s);
+      settings.getData(_ADColor, s);
       QColor c(s);
       line->setColor(c);
 
-      settings.getData(ADLabel, s);
+      settings.getData(_ADLabel, s);
       line->setLabel(s);
 
       line->setZ(0);
@@ -94,8 +93,25 @@ int AD::getIndicator (Indicator &ind, BarData &data)
 
 int AD::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionAD f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,AD,<METHOD>,*
+  //      0      1     2    3
+
+  int method = _methodList.indexOf(set[3]);
+
+  int rc = 1;
+  switch ((Method) method)
+  {
+    case _AD:
+      rc = CUSAD(set, ind, data);
+      break;
+    case _ADOSC:
+      rc = CUSADOSC(set, ind, data);
+      break;
+    default:
+      break;
+  }
+
+  return rc;
 }
 
 IndicatorPluginDialog * AD::dialog (Indicator &i)
@@ -106,15 +122,15 @@ IndicatorPluginDialog * AD::dialog (Indicator &i)
 void AD::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(AD::Method, QString("AD"));
-  set.setData(AD::ADColor, QString("red"));
-  set.setData(AD::ADPlot, QString("Line"));
-  set.setData(AD::ADLabel, QString("AD"));
-  set.setData(AD::FastPeriod, 3);
-  set.setData(AD::SlowPeriod, 10);
-  set.setData(AD::OSCColor, QString("red"));
-  set.setData(AD::OSCPlot, QString("Histogram Bar"));
-  set.setData(AD::OSCLabel, QString("ADOSC"));
+  set.setData(_Method, QString("AD"));
+  set.setData(_ADColor, QString("red"));
+  set.setData(_ADPlot, QString("Line"));
+  set.setData(_ADLabel, QString("AD"));
+  set.setData(_FastPeriod, 3);
+  set.setData(_SlowPeriod, 10);
+  set.setData(_OSCColor, QString("red"));
+  set.setData(_OSCPlot, QString("Histogram Bar"));
+  set.setData(_OSCLabel, QString("ADOSC"));
   i.setSettings(set);
 }
 
@@ -124,28 +140,181 @@ void AD::plotNames (Indicator &i, QStringList &l)
   
   Setting settings = i.settings();
 
-  FunctionAD f;
-  QStringList methodList = f.list();
-
   QString s;
-  settings.getData(Method, s);
-  int method = methodList.indexOf(s);
+  settings.getData(_Method, s);
+  int method = _methodList.indexOf(s);
 
-  switch ((FunctionAD::Method) method)
+  switch ((AD::Method) method)
   {
-    case FunctionAD::_ADOSC:
+    case AD::_ADOSC:
     {
-      settings.getData(OSCLabel, s);
+      settings.getData(_OSCLabel, s);
       l.append(s);
       break;
     }
     default:
     {
-      settings.getData(ADLabel, s);
+      settings.getData(_ADLabel, s);
       l.append(s);
       break;
     }
   }
+}
+
+int AD::CUSAD (QStringList &set, Indicator &ind, BarData &data)
+{
+  // INDICATOR,PLUGIN,AD,AD,<NAME>
+  //      0      1    2  3    4
+
+  if (set.count() != 5)
+  {
+    qDebug() << "AD::CUSAD: invalid parm count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set.at(4));
+  if (tl)
+  {
+    qDebug() << "AD::CUSAD: duplicate name" << set.at(4);
+    return 1;
+  }
+
+  Curve *line = getAD(data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[4]);
+
+  ind.setLine(set.at(4), line);
+
+  return 0;
+}
+
+int AD::CUSADOSC (QStringList &set, Indicator &ind, BarData &data)
+{
+  // INDICATOR,PLUGIN,AD,ADOSC,<NAME>,<FAST_PERIOD>,<SLOW_PERIOD>
+  //      0      1    2    3      4        5             6
+
+  if (set.count() != 7)
+  {
+    qDebug() <<  "AD::CUSADOSC: invalid settings count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set.at(4));
+  if (tl)
+  {
+    qDebug() << "AD::CUSADOSC: duplicate name" << set.at(4);
+    return 1;
+  }
+
+  bool ok;
+  int fast = set[5].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "AD::CUSADOSC: invalid fast period" << set[5];
+    return 1;
+  }
+
+  int slow = set[6].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "AD::CUSADOSC: invalid slow period" << set[6];
+    return 1;
+  }
+
+  Curve *line = getADOSC(fast, slow, data);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[4]);
+
+  ind.setLine(set.at(4), line);
+
+  return 0;
+}
+
+Curve * AD::getAD (BarData &data)
+{
+  if (data.count() < 1)
+    return 0;
+
+  TA_Real out[data.count()];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  TA_RetCode rc = TA_AD(0,
+                        data.count() - 1,
+                        data.getTAData(BarData::High),
+                        data.getTAData(BarData::Low),
+                        data.getTAData(BarData::Close),
+                        data.getTAData(BarData::Volume),
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "FunctionAD::getAD: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int dataLoop = data.count() - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  return line;
+}
+
+Curve * AD::getADOSC (int fast, int slow, BarData &data)
+{
+  if (data.count() < 1)
+    return 0;
+
+  TA_Real out[data.count()];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  TA_RetCode rc = TA_ADOSC(0,
+                           data.count() - 1,
+                           data.getTAData(BarData::High),
+                           data.getTAData(BarData::Low),
+                           data.getTAData(BarData::Close),
+                           data.getTAData(BarData::Volume),
+                           fast,
+                           slow,
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "FunctionAD::getADOSC: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int dataLoop = data.count() - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  return line;
+}
+
+QStringList & AD::list ()
+{
+  return _methodList;
 }
 
 //*************************************************************

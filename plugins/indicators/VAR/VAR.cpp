@@ -21,8 +21,8 @@
 
 #include "VAR.h"
 #include "VARDialog.h"
-#include "FunctionVAR.h"
 #include "Curve.h"
+#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -36,7 +36,7 @@ int VAR::getIndicator (Indicator &ind, BarData &data)
   Setting settings = ind.settings();
 
   QString s;
-  settings.getData(Input, s);
+  settings.getData(_Input, s);
   Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
@@ -44,24 +44,23 @@ int VAR::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  int period = settings.getInt(Period);
+  int period = settings.getInt(_Period);
 
-  FunctionVAR f;
-  Curve *line = f.calculate(in, period);
+  Curve *line = calculate(in, period);
   if (! line)
   {
     delete in;
     return 1;
   }
 
-  settings.getData(Plot, s);
+  settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  settings.getData(Color, s);
+  settings.getData(_Color, s);
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   line->setLabel(s);
   
   line->setZ(0);
@@ -74,8 +73,52 @@ int VAR::getIndicator (Indicator &ind, BarData &data)
 
 int VAR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 {
-  FunctionVAR f;
-  return f.script(set, ind, data);
+  // INDICATOR,PLUGIN,VAR,<NAME>,<INPUT>,<PERIOD>
+  //     0       1    2     3       4        5
+
+  if (set.count() != 5)
+  {
+    qDebug() << "VAR::getCUS: invalid settings count" << set.count();
+    return 1;
+  }
+
+  Curve *tl = ind.line(set[3]);
+  if (tl)
+  {
+    qDebug() << "VAR::getCUS: duplicate name" << set[3];
+    return 1;
+  }
+
+  Curve *in = ind.line(set[4]);
+  if (! in)
+  {
+    in = data.getInput(data.getInputType(set[4]));
+    if (! in)
+    {
+      qDebug() << "VAR::getCUS: input not found" << set[4];
+      return 1;
+    }
+
+    ind.setLine(set[4], in);
+  }
+
+  bool ok;
+  int period = set[5].toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "VAR::getCUS: invalid period settings" << set[5];
+    return 1;
+  }
+
+  Curve *line = calculate(in, period);
+  if (! line)
+    return 1;
+
+  line->setLabel(set[3]);
+
+  ind.setLine(set[3], line);
+
+  return 0;
 }
 
 IndicatorPluginDialog * VAR::dialog (Indicator &i)
@@ -86,11 +129,11 @@ IndicatorPluginDialog * VAR::dialog (Indicator &i)
 void VAR::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Color, "red");
-  set.setData(Plot, "Line");
-  set.setData(Label, _indicator);
-  set.setData(Period, 5);
-  set.setData(Input, "Close");
+  set.setData(_Color, "red");
+  set.setData(_Plot, "Line");
+  set.setData(_Label, _indicator);
+  set.setData(_Period, 5);
+  set.setData(_Input, "Close");
   i.setSettings(set);
 }
 
@@ -100,8 +143,57 @@ void VAR::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
+}
+
+Curve * VAR::calculate (Curve *in, int period)
+{
+  if (in->count() < period)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_VAR(0,
+                         size - 1,
+                         &input[0],
+                         period,
+                         0,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "VAR::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  return line;
 }
 
 //*************************************************************
