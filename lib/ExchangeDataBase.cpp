@@ -22,6 +22,7 @@
 #include "ExchangeDataBase.h"
 #include "Config.h"
 #include "Globals.h"
+#include "qtstalker_defines.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -50,7 +51,8 @@ int ExchangeDataBase::verifyExchangeName (QString &exchange)
 
 int ExchangeDataBase::createExchanges ()
 {
-  QFile file("/usr/local/share/qtstalker/db/exchanges.csv");
+  QString inputFile = QString("%1/qtstalker/db/exchanges.csv").arg(INSTALL_DATA_DIR);
+  QFile file(inputFile);
   if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
     return 1;
 

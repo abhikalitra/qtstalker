@@ -22,6 +22,7 @@
 #include "CUS.h"
 #include "ExScript.h"
 #include "CUSDialog.h"
+#include "../../../lib/qtstalker_defines.h"
 
 #include <QtDebug>
 #include <QList>
@@ -58,7 +59,8 @@ void CUS::defaults (Indicator &i)
 {
   Setting set;
   set.setData(Command, "perl");
-  set.setData(Script, "/usr/local/share/qtstalker/indicator/");
+  QString inputDir = QString("%1/qtstalker/indicator/").arg(INSTALL_DATA_DIR);
+  set.setData(Script, inputDir);
   i.setSettings(set);
 }
 

@@ -20,6 +20,7 @@
  */
 
 #include "QSPluginFactory.h"
+#include "../../lib/qtstalker_defines.h"
 
 #include <QDir>
 #include <QDebug>
@@ -27,7 +28,7 @@
 
 QSPluginFactory::QSPluginFactory ()
 {
-  _path = "/usr/local/lib/QuoteServer/plugins";
+  _path = QString("%1/QuoteServer/plugins").arg(INSTALL_LIB_DIR);
 }
 
 QSPluginFactory::~QSPluginFactory ()

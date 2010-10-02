@@ -20,6 +20,7 @@
  */
 
 #include "TestConfig.h"
+#include "../lib/qtstalker_defines.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -101,14 +102,14 @@ void TestConfig::setDefaults ()
   getData(IndicatorPluginPath, d);
   if (d.isEmpty())
   {
-    d = "/usr/local/lib/qtstalker/plugins/indicator";
+    d = QString("%1/qtstalker/plugins/indicator").arg(INSTALL_LIB_DIR);
     setData(IndicatorPluginPath, d);
   }
 
   getData(DBPluginPath, d);
   if (d.isEmpty())
   {
-    d = "/usr/local/lib/qtstalker/plugins/database";
+    d = QString("%1/qtstalker/plugins/database").arg(INSTALL_LIB_DIR);
     setData(DBPluginPath, d);
   }
 

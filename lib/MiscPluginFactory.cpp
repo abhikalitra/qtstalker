@@ -21,6 +21,7 @@
 
 #include "MiscPluginFactory.h"
 #include "Config.h"
+#include "qtstalker_defines.h"
 
 #include <QDebug>
 
@@ -30,7 +31,7 @@ MiscPluginFactory::MiscPluginFactory ()
   config.getData(Config::MiscPluginPath, _path);
   if (_path.isEmpty())
   {
-    _path = "/usr/local/lib/qtstalker/plugins/misc";
+    _path = QString("%1/qtstalker/plugins/misc").arg(INSTALL_LIB_DIR);
     
     config.transaction();
     config.setData(Config::MiscPluginPath, _path);

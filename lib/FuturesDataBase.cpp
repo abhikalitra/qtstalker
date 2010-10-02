@@ -22,6 +22,7 @@
 #include "FuturesDataBase.h"
 #include "Config.h"
 #include "Globals.h"
+#include "qtstalker_defines.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -36,7 +37,8 @@ FuturesDataBase::FuturesDataBase ()
 
 int FuturesDataBase::createFutures ()
 {
-  QFile file("/usr/local/share/qtstalker/db/futures.csv");
+  QString inputFile = QString("%1/qtstalker/db/futures.csv").arg(INSTALL_DATA_DIR);
+  QFile file(inputFile);
   if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
     return 1;
 

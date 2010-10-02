@@ -21,6 +21,7 @@
 
 #include "IndicatorPluginFactory.h"
 #include "Config.h"
+#include "qtstalker_defines.h"
 
 #include <QDebug>
 
@@ -30,7 +31,7 @@ IndicatorPluginFactory::IndicatorPluginFactory ()
   config.getData(Config::IndicatorPluginPath, _path);
   if (_path.isEmpty())
   {
-    _path = "/usr/local/lib/qtstalker/plugins/indicator";
+    _path = QString("%1/qtstalker/plugins/indicator").arg(INSTALL_LIB_DIR);
     
     config.transaction();
     config.setData(Config::IndicatorPluginPath, _path);
