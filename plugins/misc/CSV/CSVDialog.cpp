@@ -32,6 +32,8 @@
 
 #include "../pics/edit.xpm"
 #include "../pics/newchart.xpm"
+#include "../pics/delete.xpm"
+#include "../pics/disable.xpm"
 
 #include <QLayout>
 #include <QDialogButtonBox>
@@ -56,7 +58,7 @@ CSVDialog::CSVDialog ()
   vbox->addWidget(bbox);
 
   createMainPage();
-  createMonitorPage();
+  createLogPage();
 
   loadSettings();
 
@@ -67,70 +69,81 @@ void CSVDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
   
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(0);
-  hbox->setSpacing(5);
-  w->setLayout(hbox);
-
-  // message log
-  _log = new QTextEdit;
-  _log->setReadOnly(TRUE);
-  hbox->addWidget(_log);
-
-  // create button box
-  QDialogButtonBox *bbox = new QDialogButtonBox;
-  bbox->setOrientation(Qt::Vertical);
-  hbox->addWidget(bbox);
-
-  QPushButton *b = bbox->addButton(QDialogButtonBox::Ok);
-  b->setText(tr("&Run"));
-  b->setToolTip(tr("Run CSV rules"));
-  connect(b, SIGNAL(clicked()), this, SLOT(run()));
-
-  b = bbox->addButton(QDialogButtonBox::Open);
-  b->setText(tr("&New"));
-  b->setIcon(QPixmap(newchart_xpm));
-  b->setToolTip(tr("Create a new CSV rule"));
-  connect(b, SIGNAL(clicked()), this, SLOT(newRule()));
-
-  b = bbox->addButton(QDialogButtonBox::Ok);
-  b->setText(tr("&Edit"));
-  b->setIcon(QPixmap(edit_xpm));
-  b->setToolTip(tr("Edit CSV rule"));
-  connect(b, SIGNAL(clicked()), this, SLOT(editRule()));
-
-  b = bbox->addButton(QDialogButtonBox::Discard);
-  b->setText(tr("&Delete"));
-  b->setToolTip(tr("Delete CSV rules"));
-  connect(b, SIGNAL(clicked()), this, SLOT(deleteRule()));
-
-  _tabs->addTab(w, tr("Log"));
-}
-
-void CSVDialog::createMonitorPage ()
-{
-  QWidget *w = new QWidget;
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(10);
+  vbox->setMargin(0);
+  w->setLayout(vbox);
 
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setMargin(0);
-  hbox->setSpacing(5);
-  w->setLayout(hbox);
+  hbox->setSpacing(2);
+  vbox->addLayout(hbox);
 
   _rules = new QListWidget;
   _rules->setSelectionMode(QAbstractItemView::ExtendedSelection);
   connect(_rules, SIGNAL(itemSelectionChanged()), this, SLOT(rulesSelectionChanged()));
   hbox->addWidget(_rules);
-  
-  // create button box
-  QDialogButtonBox *bbox = new QDialogButtonBox;
-  bbox->setOrientation(Qt::Vertical);
-  hbox->addWidget(bbox);
 
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-  _cancelButton->setToolTip(tr("Cancel running CSV rules"));
+  // create button box
+  QVBoxLayout *bbox = new QVBoxLayout;
+  bbox->setMargin(0);
+  bbox->setSpacing(2);
+  hbox->addLayout(bbox);
+
+  QPushButton *b = new QPushButton;
+  b->setText(tr("&Run"));
+  b->setToolTip(tr("Run CSV rules"));
+  connect(b, SIGNAL(clicked()), this, SLOT(run()));
+  bbox->addWidget(b);
+
+  b = new QPushButton;
+  b->setText(tr("&New"));
+  b->setIcon(QPixmap(newchart_xpm));
+  b->setToolTip(tr("Create a new CSV rule"));
+  connect(b, SIGNAL(clicked()), this, SLOT(newRule()));
+  bbox->addWidget(b);
+
+  b = new QPushButton;
+  b->setText(tr("&Edit"));
+  b->setIcon(QPixmap(edit_xpm));
+  b->setToolTip(tr("Edit CSV rule"));
+  connect(b, SIGNAL(clicked()), this, SLOT(editRule()));
+  bbox->addWidget(b);
+
+  b = new QPushButton;
+  b->setText(tr("&Delete"));
+  b->setToolTip(tr("Delete CSV rules"));
+  b->setIcon(QPixmap(delete_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(deleteRule()));
+  bbox->addWidget(b);
+
+  _cancelButton = new QPushButton;
+  _cancelButton->setText(tr("&Cancel"));
+  _cancelButton->setToolTip(tr("Cancel running CSV rule"));
+  _cancelButton->setIcon(QPixmap(disable_xpm));
   connect(_cancelButton, SIGNAL(clicked()), this, SLOT(stop()));
+  bbox->addWidget(_cancelButton);
+
+  bbox->addStretch();
 
   _tabs->addTab(w, tr("Monitor"));
+}
+
+void CSVDialog::createLogPage ()
+{
+  QWidget *w = new QWidget;
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(0);
+  vbox->setMargin(0);
+  w->setLayout(vbox);
+
+  // message log
+  _log = new QTextEdit;
+  _log->setReadOnly(TRUE);
+  vbox->addWidget(_log);
+
+  _tabs->addTab(w, tr("Log"));
 }
 
 void CSVDialog::loadSettings ()

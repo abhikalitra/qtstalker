@@ -25,17 +25,35 @@
 #include "YahooConfig.h"
 #include "YahooThread.h"
 #include "Globals.h"
+#include "../pics/disable.xpm"
+#include "../pics/quotes.xpm"
 
 #include <QLayout>
 #include <QLabel>
-#include <QTabWidget>
+#include <QDialogButtonBox>
 #include <QDebug>
 
 YahooDialog::YahooDialog ()
 {
   _runningFlag = 0;
+  
   setWindowTitle("QtStalker" + g_session + ": Yahoo ");
   
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(5);
+  vbox->setMargin(5);
+  setLayout(vbox);
+
+  _tabs = new QTabWidget;
+  vbox->addWidget(_tabs);
+
+  // buttonbox
+  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
+
+  QPushButton *b = bbox->addButton(QDialogButtonBox::Close);
+  connect(b, SIGNAL(clicked()), this, SLOT(closeDialog()));
+  vbox->addWidget(bbox);
+
   createMainPage();
   
   loadSettings();
@@ -43,14 +61,16 @@ YahooDialog::YahooDialog ()
 
 void YahooDialog::createMainPage ()
 {
+  QWidget *w = new QWidget;
+
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
   vbox->setSpacing(2);
-  setLayout(vbox);
+  w->setLayout(vbox);
 
   QGridLayout *grid = new QGridLayout;
   grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
+  grid->setColumnStretch(2, 1);
   vbox->addLayout(grid);
 
   int row = 0;
@@ -66,7 +86,6 @@ void YahooDialog::createMainPage ()
   _sdate->setDisplayFormat("yyyy.MM.dd");
   grid->addWidget(_sdate, row++, col--);
 
-
   // end date parm
   label = new QLabel(tr("End Date"));
   grid->addWidget(label, row, col++);
@@ -76,7 +95,6 @@ void YahooDialog::createMainPage ()
   _edate->setMaximumDate(QDate::currentDate());
   _edate->setDisplayFormat("yyyy.MM.dd");
   grid->addWidget(_edate, row++, col--);
-
 
   // symbols selection area
   _allSymbols = new QCheckBox;
@@ -89,61 +107,70 @@ void YahooDialog::createMainPage ()
   connect(_selectSymbolsButton, SIGNAL(clicked()), this, SLOT(selectSymbolsDialog()));
   grid->addWidget(_selectSymbolsButton, row++, col--);
 
-
   // adjustment
   _adjustment = new QCheckBox;
   _adjustment->setText(tr("Adjust for splits"));
   _adjustment->setToolTip(tr("Uses the yahoo adjusted close instead of the actual close"));
   grid->addWidget(_adjustment, row++, col);
 
-
-  
   // message log
   QTabWidget *tab = new QTabWidget;
   vbox->addWidget(tab);
 
-  QWidget *w = new QWidget;
-  
+  QWidget *w2 = new QWidget;
+
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
-  w->setLayout(hbox);
+  w2->setLayout(hbox);
 
   _log = new QTextEdit;
   _log->setReadOnly(TRUE);
   hbox->addWidget(_log);
 
-  tab->addTab(w, tr("Log"));
+  QVBoxLayout *bbox = new QVBoxLayout;
+  bbox->setMargin(0);
+  bbox->setSpacing(2);
+  hbox->addLayout(bbox);
 
-  // button box
-  _buttonBox = new QDialogButtonBox;
-  vbox->addWidget(_buttonBox);
-
-  _histButton = _buttonBox->addButton(QDialogButtonBox::Apply);
+  _histButton = new QPushButton;
   _histButton->setToolTip(tr("Download historical quotes"));
-  _histButton->setText(tr("History"));
+  _histButton->setText(tr("&History"));
+  _histButton->setIcon(QIcon(quotes_xpm));
   connect(_histButton, SIGNAL(clicked()), this, SLOT(startHistory()));
+  bbox->addWidget(_histButton);
 
-  _detailsButton = _buttonBox->addButton(QDialogButtonBox::Apply);
+  _detailsButton = new QPushButton;
   _detailsButton->setToolTip(tr("Download symbol details"));
-  _detailsButton->setText(tr("Details"));
+  _detailsButton->setText(tr("&Details"));
+  _detailsButton->setIcon(QIcon(quotes_xpm));
   connect(_detailsButton, SIGNAL(clicked()), this, SLOT(startDetails()));
+  bbox->addWidget(_detailsButton);
 
-  _cancelButton = _buttonBox->addButton(QDialogButtonBox::Cancel);
+  _cancelButton = new QPushButton;
+  _cancelButton->setToolTip(tr("Cancel download"));
+  _cancelButton->setText(tr("&Cancel"));
+  _cancelButton->setIcon(QIcon(disable_xpm));
   connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancelButton()));
+  _cancelButton->setEnabled(FALSE);
+  bbox->addWidget(_cancelButton);
+
+  bbox->addStretch();
+
+  tab->addTab(w2, tr("Log"));
+
+  _tabs->addTab(w, tr("Yahoo"));
 }
 
 void YahooDialog::cancelButton ()
 {
-  if (_runningFlag)
-  {
-    emit signalStop();
-    _runningFlag = 0;
-  }
-  else
-  {
-    saveSettings();
-    hide();
-  }
+  emit signalStop();
+  _runningFlag = 0;
+}
+
+void YahooDialog::closeDialog ()
+{
+  saveSettings();
+  hide();
 }
 
 void YahooDialog::loadSettings ()
@@ -192,6 +219,8 @@ void YahooDialog::downloadDone ()
 
   _histButton->setEnabled(TRUE);
   _detailsButton->setEnabled(TRUE);
+  _cancelButton->setEnabled(FALSE);
+  
   _runningFlag = 0;
 
   emit signalChartRefresh();
@@ -201,6 +230,7 @@ void YahooDialog::startHistory ()
 {
   _histButton->setEnabled(FALSE);
   _detailsButton->setEnabled(FALSE);
+  _cancelButton->setEnabled(TRUE);
 
   _log->append("\n*** " + tr("Starting history download") + " ***");
 
@@ -229,6 +259,7 @@ void YahooDialog::startDetails ()
 {
   _histButton->setEnabled(FALSE);
   _detailsButton->setEnabled(FALSE);
+  _cancelButton->setEnabled(TRUE);
 
   _log->append("\n*** " + tr("Starting details download") + " ***");
 

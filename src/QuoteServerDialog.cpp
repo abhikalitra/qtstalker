@@ -161,4 +161,6 @@ void QuoteServerDialog::refreshServer ()
     setMessage(tr("Error starting the server"));
     return;
   }
+
+  setMessage(tr("Quote server restarted successfully"));
 }

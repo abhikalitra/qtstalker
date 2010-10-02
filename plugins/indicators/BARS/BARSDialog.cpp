@@ -378,4 +378,3 @@ void BARSDialog::done ()
 
   accept();
 }
-

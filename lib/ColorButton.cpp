@@ -26,10 +26,9 @@
 ColorButton::ColorButton (QWidget *w, QColor &c) : QPushButton (w)
 {
   _color = c;
-  QObject::connect(this, SIGNAL(clicked()), this, SLOT(colorDialog()));
-  setMaximumHeight(25);
-  _pix = QPixmap(50, 15);
-  _readonly = FALSE;
+  
+  connect(this, SIGNAL(clicked()), this, SLOT(colorDialog()));
+
   _changed = FALSE;
   
   setColorButton();
@@ -37,8 +36,12 @@ ColorButton::ColorButton (QWidget *w, QColor &c) : QPushButton (w)
 
 void ColorButton::setColorButton ()
 {
-  _pix.fill(_color);
-  setIcon(QIcon(_pix));
+  QString s = "* { background-color: rgb(";
+  s.append(QString::number(_color.red()));
+  s.append("," + QString::number(_color.green()));
+  s.append("," + QString::number(_color.blue()));
+  s.append(") }");
+  this->setStyleSheet(s);
 }
 
 QColor & ColorButton::color ()
@@ -48,34 +51,30 @@ QColor & ColorButton::color ()
 
 void ColorButton::colorDialog ()
 {
-  if (_readonly)
-    emit robPressed(_color);
-  else
-  {
-    QColor c = QColorDialog::getColor(_color, this, 0);
-    if (c.isValid())
-    {
-      if (_color != c)
-      {
-        _color = c;
-        setColorButton();
-        _changed = TRUE;
-        emit valueChanged();
-      }
-    }
-  }
+  QColorDialog *dialog = new QColorDialog(_color, 0);
+  connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(colorDialog2(QColor)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+  
+void ColorButton::colorDialog2 (QColor color)
+{
+  if (! color.isValid())
+    return;
+  
+  _color = color;
+  
+  setColorButton();
+  
+  _changed = TRUE;
+  
+  emit valueChanged();
 }
 
 void ColorButton::setColor (QColor c)
 {
   _color = c;
-  _pix.fill(_color);
-  setIcon(QIcon(_pix));
-}
-
-void ColorButton::setDialogOff ()
-{
-  _readonly = TRUE;
+  setColorButton();
 }
 
 int ColorButton::isChanged()

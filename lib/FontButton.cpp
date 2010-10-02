@@ -45,18 +45,18 @@ QFont & FontButton::font ()
 
 void FontButton::fontDialog ()
 {
-  bool ok;
-  QFont f = QFontDialog::getFont(&ok, _font, this);
-  if (ok)
-  {
-    if (_font != f)
-    {
-      _font = f;
-      setFontButton();
-      _changed = TRUE;
-      emit valueChanged();
-    }
-  }
+  QFontDialog *dialog = new QFontDialog(_font, 0);
+  connect(dialog, SIGNAL(fontSelected(const QFont &)), this, SLOT(fontDialog2(QFont)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void FontButton::fontDialog2 (QFont font)
+{
+  _font = font;
+  setFontButton();
+  _changed = TRUE;
+  emit valueChanged();
 }
 
 int FontButton::isChanged()

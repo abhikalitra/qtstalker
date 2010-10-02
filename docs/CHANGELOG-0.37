@@ -805,9 +805,25 @@
 
            Alert plugin now working but also not tested much.
 
-20100930:  Streamlined the qmake configuration process. For non-standard locations of libraries and
+           Moved QuoteServer configure button from chart panel to the main toolbar.
+
+           Script panel launch buttons are now configurable by rows and columns. Added a context menu option.
+
+           Streamlined the qmake configuration process. For non-standard locations of libraries and
            installation, utilise the qtstalker.config file. See docs/install.html
            Note that CVS users will need to do 'make distclean'.
            Thanks to xley.
+
+20101001:  Starting to polish the dialogs up. We are very close to a stable CVS version now. Need some good
+           testing for scripting and workloads.
+
+20101002:  Updated color and font buttons to non blocking dialogs. Color button now uses entire surface to
+           display color.
+
+           Cleaned up yahoo dialog to be more consistant with the other plugin dialogs.
+
+
+
+
 
 

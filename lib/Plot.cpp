@@ -44,6 +44,8 @@
 #include "../pics/text.xpm"
 #include "../pics/trend.xpm"
 #include "../pics/vertical.xpm"
+#include "../pics/color.xpm"
+#include "../pics/font.xpm"
 
 #include <QtDebug>
 #include <QCursor>
@@ -137,8 +139,8 @@ Plot::Plot ()
   _logAction = _chartMenu->addAction(QPixmap(loggridicon), tr("Log &Scaling"), this, SLOT(toggleLog()), Qt::ALT+Qt::Key_S);
   _logAction->setCheckable(TRUE);
   _chartMenu->addSeparator ();
-  _chartMenu->addAction(tr("&Background Color..."), this, SLOT(editBackgroundColor()), Qt::ALT+Qt::Key_B);
-  _chartMenu->addAction(tr("&Font..."), this, SLOT(editFont()), Qt::ALT+Qt::Key_F);
+  _chartMenu->addAction(QPixmap(color_xpm), tr("&Background Color..."), this, SLOT(editBackgroundColor()), Qt::ALT+Qt::Key_B);
+  _chartMenu->addAction(QPixmap(font_xpm), tr("&Font..."), this, SLOT(editFont()), Qt::ALT+Qt::Key_F);
 }
 
 Plot::~Plot ()

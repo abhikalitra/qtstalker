@@ -786,10 +786,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cancel running CSV rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Monitor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -799,6 +795,14 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel running CSV rule</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4095,15 +4099,27 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>History</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yahoo</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

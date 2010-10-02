@@ -24,12 +24,12 @@
 
 #include <QDialog>
 #include <QTextEdit>
-#include <QDialogButtonBox>
 #include <QPushButton>
 #include <QDateTimeEdit>
 #include <QCheckBox>
 #include <QToolButton>
 #include <QStringList>
+#include <QTabWidget>
 
 class YahooDialog : public QDialog
 {
@@ -53,10 +53,11 @@ class YahooDialog : public QDialog
     void allSymbolsToggled (bool);
     void selectSymbolsDialog ();
     void setSymbols (QStringList);
+    void closeDialog ();
 
   private:
     QTextEdit *_log;
-    QDialogButtonBox *_buttonBox;
+    QTabWidget *_tabs;
     QPushButton *_histButton;
     QPushButton *_cancelButton;
     QPushButton *_detailsButton;

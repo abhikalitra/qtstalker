@@ -43,7 +43,7 @@ class CSVDialog : public QDialog
   public:
     CSVDialog ();
     void createMainPage ();
-    void createMonitorPage ();
+    void createLogPage ();
     void loadSettings ();
     void saveSettings ();
     void updateRules ();

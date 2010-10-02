@@ -29,7 +29,6 @@
 #define COLORBUTTON_HPP
 
 #include <QPushButton>
-#include <QPixmap>
 #include <QColor>
 #include <QWidget>
 
@@ -38,24 +37,21 @@ class ColorButton : public QPushButton
   Q_OBJECT
 
   signals:
-    void robPressed(QColor); // read only button pressed
     void valueChanged();
 
   public:
     ColorButton (QWidget *, QColor &);
     QColor & color ();
     void setColorButton ();
-    void setDialogOff();
     int isChanged();
     
   public slots:
     void colorDialog ();
+    void colorDialog2 (QColor);
     void setColor (QColor);
     
   private:
-    QPixmap _pix;
     QColor _color;
-    int _readonly;
     int _changed;
 };
 

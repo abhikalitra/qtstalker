@@ -29,7 +29,6 @@
 
 #include <QWidget>
 #include <QPushButton>
-#include <QPixmap>
 #include <QFont>
 
 class FontButton : public QPushButton
@@ -47,6 +46,7 @@ class FontButton : public QPushButton
     
   public slots:
     void fontDialog ();
+    void fontDialog2 (QFont);
       
   private:
     QFont _font;
