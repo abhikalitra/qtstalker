@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,26 +19,28 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLUGIN_FACTORY_HPP
-#define INDICATOR_PLUGIN_FACTORY_HPP
+#ifndef TESTER_HPP
+#define TESTER_HPP
 
-#include "IndicatorPlugin.h"
-#include "PluginFactory.h"
+#include "MiscPlugin.h"
+#include "TesterDialog.h"
 
-#include <QStringList>
-
-class IndicatorPluginFactory : public PluginFactory
+class Tester : public MiscPlugin
 {
+  Q_OBJECT
+
   public:
-    IndicatorPluginFactory ();
-    ~IndicatorPluginFactory ();
-    IndicatorPlugin * plugin (QString plugin);
-    void setPluginList ();
-    
-  protected:
-    QString _path;
-    QStringList _notPluginList;
-    QHash<QString, IndicatorPlugin *> _plugins;
+    Tester ();
+    ~Tester ();
+    int configureDialog ();
+
+  private:
+    TesterDialog *_dialog;
 };
+
+extern "C"
+{
+  MiscPlugin * createMiscPlugin ();
+}
 
 #endif

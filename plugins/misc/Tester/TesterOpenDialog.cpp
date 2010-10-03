@@ -1,5 +1,5 @@
 /*
- *  TestChart
+ *  Qtstalker stock charter
  *
  *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
@@ -19,32 +19,36 @@
  *  USA.
  */
 
+#include "TesterOpenDialog.h"
+#include "TesterDataBase.h"
+#include "Globals.h"
+#include "TesterSettingsDialog.h"
 
+#include <QtDebug>
 
-#ifndef TEST_CHART_HPP
-#define TEST_CHART_HPP
-
-#include <QWidget>
-#include <QSlider>
-#include <QList>
-#include <QString>
-
-#include "Plot.h"
-#include "BarData.h"
-#include "TestTrade.h"
-
-class TestChart : public QWidget
+TesterOpenDialog::TesterOpenDialog ()
 {
-  Q_OBJECT
+  setWindowTitle("QtStalker" + g_session + ": Tester " + tr("Open Back Tester"));
 
-  public:
-    TestChart ();
-    void update (BarData &, QList<TestTrade *> &);
+  _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-  private:
-    Plot *plot;
-    QSlider *slider;
-};
+  TesterDataBase db;
+  QStringList l;
+  db.getRules(l);
+  _list->addItems(l);
+}
 
-#endif
+void TesterOpenDialog::done ()
+{
+  QList<QListWidgetItem *> sl = _list->selectedItems();
+
+  int loop = 0;
+  for (; loop < sl.count(); loop++)
+  {
+    TesterSettingsDialog *dialog = new TesterSettingsDialog(sl.at(loop)->text());
+    dialog->show();
+  }
+  
+  accept();
+}
 

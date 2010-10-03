@@ -1,5 +1,5 @@
 /*
- *  QtStalkerTester
+ *  Qtstalker stock charter
  *
  *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
@@ -19,32 +19,21 @@
  *  USA.
  */
 
-#include <QApplication>
-#include <QTranslator>
-#include <QString>
-#include <QLocale>
-#include <QtDebug>
+#ifndef TESTER_DELETE_DIALOG_HPP
+#define TESTER_DELETE_DIALOG_HPP
 
-#include "QtStalkerTester.h"
-#include "../lib/qtstalker_defines.h"
+#include "ListDialog.h"
 
-
-int main(int argc, char *argv[])
+class TesterDeleteDialog : public ListDialog
 {
-  QApplication a(argc, argv);
-  QCoreApplication::setOrganizationName("QtStalkerTester");
-  QCoreApplication::setApplicationName("QtStalkerTester");
-  QTranslator tor( 0 );
+  Q_OBJECT
 
-  QString i18nDir = QString("%1/qtstalker/i18n").arg(INSTALL_DATA_DIR);
-  QString i18nFilename = QString("qtstalker_%1").arg(QLocale::system().name());
-  tor.load(i18nFilename, i18nDir);
-  a.installTranslator( &tor );
+  public:
+    TesterDeleteDialog ();
 
-  QtStalkerTester *app = new QtStalkerTester;
+  public slots:
+    void done ();
+    void deleteRules ();
+};
 
-  app->show();
-
-  return a.exec();
-}
-
+#endif

@@ -19,26 +19,22 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLUGIN_FACTORY_HPP
-#define INDICATOR_PLUGIN_FACTORY_HPP
+#ifndef TESTER_CONFIG_HPP
+#define TESTER_CONFIG_HPP
 
-#include "IndicatorPlugin.h"
-#include "PluginFactory.h"
+#include "ConfigDataBase.h"
 
-#include <QStringList>
-
-class IndicatorPluginFactory : public PluginFactory
+class TesterConfig : public ConfigDataBase
 {
   public:
-    IndicatorPluginFactory ();
-    ~IndicatorPluginFactory ();
-    IndicatorPlugin * plugin (QString plugin);
-    void setPluginList ();
-    
-  protected:
-    QString _path;
-    QStringList _notPluginList;
-    QHash<QString, IndicatorPlugin *> _plugins;
+    enum Parm
+    {
+      Size, // window size
+      Pos // position
+    };
+
+    TesterConfig ();
 };
 
 #endif
+

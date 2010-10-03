@@ -19,26 +19,25 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLUGIN_FACTORY_HPP
-#define INDICATOR_PLUGIN_FACTORY_HPP
-
-#include "IndicatorPlugin.h"
-#include "PluginFactory.h"
+#ifndef TESTER_NEW_DIALOG_HPP
+#define TESTER_NEW_DIALOG_HPP
 
 #include <QStringList>
 
-class IndicatorPluginFactory : public PluginFactory
+#include "NewDialog.h"
+
+class TesterNewDialog : public NewDialog
 {
+  Q_OBJECT
+
   public:
-    IndicatorPluginFactory ();
-    ~IndicatorPluginFactory ();
-    IndicatorPlugin * plugin (QString plugin);
-    void setPluginList ();
-    
-  protected:
-    QString _path;
-    QStringList _notPluginList;
-    QHash<QString, IndicatorPlugin *> _plugins;
+    TesterNewDialog ();
+
+  public slots:
+    void done ();
+
+  private:
+    QStringList _rules;
 };
 
 #endif

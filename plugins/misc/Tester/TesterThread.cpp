@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,26 +19,26 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLUGIN_FACTORY_HPP
-#define INDICATOR_PLUGIN_FACTORY_HPP
+#include "TesterThread.h"
+#include "QuoteServerRequest.h"
 
-#include "IndicatorPlugin.h"
-#include "PluginFactory.h"
+#include <QDebug>
 
-#include <QStringList>
-
-class IndicatorPluginFactory : public PluginFactory
+TesterThread::TesterThread (QObject *p, Indicator &i) : QThread (p)
 {
-  public:
-    IndicatorPluginFactory ();
-    ~IndicatorPluginFactory ();
-    IndicatorPlugin * plugin (QString plugin);
-    void setPluginList ();
-    
-  protected:
-    QString _path;
-    QStringList _notPluginList;
-    QHash<QString, IndicatorPlugin *> _plugins;
-};
+  _indicator = i;
+}
 
-#endif
+void TesterThread::run ()
+{
+
+  emit signalDone(QString());
+  
+  quit();
+}
+
+void TesterThread::stop ()
+{
+  _stopFlag = 1;
+}
+

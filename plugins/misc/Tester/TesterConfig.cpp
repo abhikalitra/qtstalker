@@ -19,26 +19,23 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLUGIN_FACTORY_HPP
-#define INDICATOR_PLUGIN_FACTORY_HPP
+#include "TesterConfig.h"
 
-#include "IndicatorPlugin.h"
-#include "PluginFactory.h"
+#include <QtDebug>
 
-#include <QStringList>
-
-class IndicatorPluginFactory : public PluginFactory
+TesterConfig::TesterConfig ()
 {
-  public:
-    IndicatorPluginFactory ();
-    ~IndicatorPluginFactory ();
-    IndicatorPlugin * plugin (QString plugin);
-    void setPluginList ();
-    
-  protected:
-    QString _path;
-    QStringList _notPluginList;
-    QHash<QString, IndicatorPlugin *> _plugins;
-};
+  _dbName = "data";
+  _tableName = "TesterPluginConfig";
 
-#endif
+  QSqlDatabase db = QSqlDatabase::database(_dbName);
+  QSqlQuery q(db);
+  QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
+  s.append("key INT PRIMARY KEY UNIQUE");
+  s.append(", setting TEXT");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "TesterConfig::TesterConfig: " << q.lastError().text();
+}
+

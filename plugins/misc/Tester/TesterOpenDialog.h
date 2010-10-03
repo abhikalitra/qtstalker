@@ -1,5 +1,5 @@
 /*
- *  TestRankings
+ *  Qtstalker stock charter
  *
  *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
@@ -19,25 +19,20 @@
  *  USA.
  */
 
+#ifndef CSV_OPEN_DIALOG_HPP
+#define CSV_OPEN_DIALOG_HPP
 
+#include "ListDialog.h"
 
-#ifndef TESTRANKINGS_H
-#define TESTRANKINGS_H
-
-#include <QTreeWidget>
-#include <QWidget>
-
-class TestRankings : public QWidget
+class TesterOpenDialog : public ListDialog
 {
   Q_OBJECT
 
   public:
-    TestRankings ();
-    void update ();
+    TesterOpenDialog ();
 
-  private:
-    QTreeWidget *rankTree;
+  public slots:
+    void done ();
 };
 
 #endif
-

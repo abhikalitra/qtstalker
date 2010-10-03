@@ -35,7 +35,10 @@ BETA::BETA ()
 int BETA::getIndicator (Indicator &ind, BarData &data)
 {
   if (! data.count())
+  {
+    qDebug() << _indicator << "::getIndicator: no bars";
     return 1;
+  }
   
   Setting settings = ind.settings();
 
@@ -44,7 +47,7 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
   Curve *in = data.getInput(data.getInputType(s));
   if (! in)
   {
-    qDebug() << _indicator << "::calculate: input not found" << s;
+    qDebug() << _indicator << "::getIndicator: input not found" << s;
     return 1;
   }
 
@@ -56,7 +59,7 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
   bd.setBarLength(data.getBarLength());
 
   QStringList l;
-  l << "GetQuotes" << bd.getExchange() << bd.getSymbol();
+  l << "Quotes" << "Date" << bd.getExchange() << bd.getSymbol();
   bd.barLengthText(bd.getBarLength(), s);
   l << s;
   Bar bar = data.getBar(0);
@@ -69,14 +72,17 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
 
   QuoteServerRequest qsr;
   if (qsr.run(command))
+  {
+    qDebug() << _indicator << "::getIndicator: quote server error" << command;
     return 1;
+  }
 
   bd.setBars(qsr.data());
 
   Curve *in2 = bd.getInput(BarData::Close);
   if (! in2)
   {
-    qDebug() << _indicator << "::calculate: index not found";
+    qDebug() << _indicator << "::getIndicator: no input2 returned";
     delete in;
     return 1;
   }
@@ -86,11 +92,12 @@ int BETA::getIndicator (Indicator &ind, BarData &data)
   Curve *line = calculate(in, in2, period);
   if (! line)
   {
+    qDebug() << _indicator << "::getIndicator: no BETA returned";
     delete in;
     delete in2;
     return 1;
   }
-
+  
   settings.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 

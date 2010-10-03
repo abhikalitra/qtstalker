@@ -157,13 +157,11 @@ SUBDIRS += plugins/indicators/WILLR
 SUBDIRS += plugins/misc/Alert
 SUBDIRS += plugins/misc/CSV
 SUBDIRS += plugins/misc/Scanner
+SUBDIRS += plugins/misc/Tester
 SUBDIRS += plugins/misc/Yahoo
 
 # compile QuoteServer
 SUBDIRS += QuoteServer
-
-# compile tester
-#SUBDIRS += tester
 
 # install docs and i18n
 SUBDIRS += docs

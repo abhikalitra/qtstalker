@@ -56,7 +56,7 @@ int CORREL::getIndicator (Indicator &ind, BarData &data)
   bd.setBarLength(data.getBarLength());
 
   QStringList l;
-  l << "GetQuotes" << bd.getExchange() << bd.getSymbol();
+  l << "Quotes" << "Date" << bd.getExchange() << bd.getSymbol();
   bd.barLengthText(bd.getBarLength(), s);
   l << s;
   Bar tbar = data.getBar(0);

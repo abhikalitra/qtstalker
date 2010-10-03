@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,25 +19,33 @@
  *  USA.
  */
 
-#ifndef TESTDATABASE_HPP
-#define TESTDATABASE_HPP
+#ifndef TESTER_DIALOG_HPP
+#define TESTER_DIALOG_HPP
 
-#include <QString>
-#include <QStringList>
-#include <QSqlQuery>
+#include <QDialog>
+#include <QTabWidget>
 
-class TestDataBase
+class TesterDialog : public QDialog
 {
+  Q_OBJECT
+
+  signals:
+    void signalMessage (QString);
+  
   public:
-    TestDataBase ();
-    void init (); // called only at qtstalker startup, initializes database tables
-    void transaction ();
-    void commit ();
-    void getTests (QStringList &);
-    void getTest (QString &name, QSqlQuery &q);
-    void setTest (QString &d);
-    void deleteTest (QString &name);
-    void getRankings (QSqlQuery &rq);
+    TesterDialog ();
+    void createMainPage ();
+    void loadSettings ();
+    void saveSettings ();
+    
+  public slots:
+    void newTest ();
+    void openTest ();
+    void deleteTest ();
+    void closeDialog ();
+          
+  private:
+    QTabWidget *_tabs;
 };
 
 #endif

@@ -44,7 +44,7 @@ IndicatorPluginFactory::~IndicatorPluginFactory ()
   qDeleteAll(_plugins);
 }
 
-IndicatorPlugin * IndicatorPluginFactory::plugin (QString &plugin)
+IndicatorPlugin * IndicatorPluginFactory::plugin (QString plugin)
 {
   IndicatorPlugin *plug = _plugins.value(plugin);
   if (plug)

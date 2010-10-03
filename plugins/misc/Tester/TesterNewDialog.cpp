@@ -19,26 +19,40 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLUGIN_FACTORY_HPP
-#define INDICATOR_PLUGIN_FACTORY_HPP
+#include "TesterNewDialog.h"
+#include "Globals.h"
+#include "TesterDataBase.h"
+#include "TesterSettingsDialog.h"
 
-#include "IndicatorPlugin.h"
-#include "PluginFactory.h"
+#include <QtDebug>
+#include <QLineEdit>
 
-#include <QStringList>
-
-class IndicatorPluginFactory : public PluginFactory
+TesterNewDialog::TesterNewDialog ()
 {
-  public:
-    IndicatorPluginFactory ();
-    ~IndicatorPluginFactory ();
-    IndicatorPlugin * plugin (QString plugin);
-    void setPluginList ();
-    
-  protected:
-    QString _path;
-    QStringList _notPluginList;
-    QHash<QString, IndicatorPlugin *> _plugins;
-};
+  setWindowTitle("QtStalker" + g_session + ": Tester " + tr("New Back Tester"));
 
-#endif
+  TesterDataBase db;
+  db.getRules(_rules);
+  setList(_rules);
+}
+
+void TesterNewDialog::done ()
+{
+  QString name = _name->lineEdit()->text();
+
+  // remove any forbidden sql characters
+  name = name.remove(QString("'"), Qt::CaseSensitive);
+
+  if (_rules.contains(name))
+  {
+    setMessage(tr("Duplicate rule name. Enter a unique name."));
+    _name->lineEdit()->selectAll();
+    _name->setFocus();
+    return;
+  }
+
+  TesterSettingsDialog *dialog = new TesterSettingsDialog(name);
+  dialog->show();
+  
+  accept();
+}

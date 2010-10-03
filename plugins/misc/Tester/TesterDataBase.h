@@ -19,24 +19,28 @@
  *  USA.
  */
 
-#ifndef TESTSIGNAL_HPP
-#define TESTSIGNAL_HPP
+#ifndef TESTER_DATA_BASE_HPP
+#define TESTER_DATA_BASE_HPP
 
-#include "BarData.h"
-#include "PlotLine.h"
+#include <QString>
+#include <QStringList>
 
-#include <QHash>
+#include "DataBase.h"
+#include "Setting.h"
 
-class TestSignal
+class TesterDataBase : public DataBase
 {
   public:
-    TestSignal ();
-    int createSignals (BarData *data, PlotLine *line);
-    int getBar (int);
-
-  protected:
-    QHash<int, int> sigs;
+    enum Parm
+    {
+      _Name
+    };
+    
+    TesterDataBase ();
+    void getRules (QStringList &);
+    int getRule (Setting &);
+    void setRule (Setting &);
+    void deleteRule (QString &);
 };
 
 #endif
-

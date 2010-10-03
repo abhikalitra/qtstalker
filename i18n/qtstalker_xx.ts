@@ -2736,6 +2736,10 @@ eg. perl -l -T</source>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Quote server restarted successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ROCDialog</name>
@@ -3835,6 +3839,221 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TesterDeleteDialog</name>
+    <message>
+        <source>Delete Back Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Delete:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yes. Delete selected back testers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rules deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TesterDialog</name>
+    <message>
+        <source>&amp;New</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create a new back tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open back tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete back tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TesterNewDialog</name>
+    <message>
+        <source>New Back Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate rule name. Enter a unique name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TesterOpenDialog</name>
+    <message>
+        <source>Open Back Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TesterSettingsDialog</name>
+    <message>
+        <source>Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Initial Equity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Positions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long/Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The amount of bars to use for the indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Commission</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Percent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>$ Per Trade</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>$ Per Share</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Futures Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit Target</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trailing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stops</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Settings...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Report</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
