@@ -38,15 +38,17 @@ class SymbolButton : public QPushButton
     void setSymbols (QString &ex, QString &ss);
     void setSymbols (Group &);
     void updateButtonText ();
+    void symbolList (QStringList &);
+    void setSymbolList (QStringList &);
     
   public slots:
     void symbolDialog ();
     void symbolDialog2 (Group);
       
   private:
-    QString exchangeSearch;
-    QString symbolSearch;
-    Group symbols;
+    QString _exchangeSearch;
+    QString _symbolSearch;
+    Group _symbols;
     
 };
 

@@ -39,7 +39,7 @@ TesterSettingsDialog::TesterSettingsDialog (QString name)
   _saveFlag = FALSE;
   _thread = 0;
   _runningFlag = 0;
-  _settings.setData(TesterDataBase::_Name, name);
+  _name = name;
 
   QString s = "Qtstalker: " + tr("Tester") + " - " + name;
   setWindowTitle(s);
@@ -50,7 +50,9 @@ TesterSettingsDialog::TesterSettingsDialog (QString name)
   b = _buttonBox->button(QDialogButtonBox::Ok);
   _buttonBox->removeButton(b);
 
-  _saveButton = _buttonBox->addButton(QDialogButtonBox::Save);
+  _saveButton = new QPushButton;
+  _buttonBox->addButton(_saveButton, QDialogButtonBox::ActionRole);
+  _saveButton->setText(tr("Save"));
   connect(_saveButton, SIGNAL(clicked()), this, SLOT(saveSettings()));
   _saveButton->setEnabled(FALSE);
 
@@ -76,6 +78,7 @@ TesterSettingsDialog::TesterSettingsDialog (QString name)
   profitTargetStopChanged (0);
   trailingStopChanged (0);
   barsStopChanged (0);
+  indicatorChanged(0);
 }
 
 void TesterSettingsDialog::createGeneralPage ()
@@ -144,7 +147,6 @@ void TesterSettingsDialog::createGeneralPage ()
   _dateRange->setToolTip(tr("The amount of bars to use for the indicator"));
   connect(_dateRange, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   grid->addWidget(_dateRange, row++, col--);
-
   
 
   // position size
@@ -522,27 +524,200 @@ void TesterSettingsDialog::createReportPage ()
   _report->setReadOnly(TRUE);
   vbox->addWidget(_report);
 
-//  vbox->addStretch();
-
   _tabs->addTab(w, tr("Report"));
 }
 
 void TesterSettingsDialog::loadSettings ()
 {
+  _settings.clear();
+  _settings.setData(TesterDataBase::_Name, _name);
+  
   TesterDataBase db;
   if (db.getRule(_settings))
     return;
+
+  _equity->setValue(_settings.getDouble(TesterDataBase::_Equity));
+  _position->setCurrentIndex(_settings.getInt(TesterDataBase::_Position));
+  _period->setCurrentIndex(_settings.getInt(TesterDataBase::_Period));
+  _dateRange->setCurrentIndex(_settings.getInt(TesterDataBase::_DateRange));
+  _positionSize->setValue(_settings.getDouble(TesterDataBase::_PositionSize));
+  _futuresMode->setChecked(_settings.getInt(TesterDataBase::_FuturesMode));
+  _commission->setCurrentIndex(_settings.getInt(TesterDataBase::_Commission));
+  _commissionValue->setValue(_settings.getDouble(TesterDataBase::_CommissionValue));
+  _long->setChecked(_settings.getInt(TesterDataBase::_Long));
+  _longBuyPrice->setCurrentIndex(_settings.getInt(TesterDataBase::_LongBuyPrice));
+  _longSellPrice->setCurrentIndex(_settings.getInt(TesterDataBase::_LongSellPrice));
+  _short->setChecked(_settings.getInt(TesterDataBase::_Short));
+  _shortBuyPrice->setCurrentIndex(_settings.getInt(TesterDataBase::_ShortBuyPrice));
+  _shortSellPrice->setCurrentIndex(_settings.getInt(TesterDataBase::_ShortSellPrice));
+  _maximumLossStop->setChecked(_settings.getInt(TesterDataBase::_MaximumLossStop));
+  _maximumLossType->setCurrentIndex(_settings.getInt(TesterDataBase::_MaximumLossType));
+  _maximumLossValue->setValue(_settings.getDouble(TesterDataBase::_MaximumLossValue));
+  _maximumLossExit->setCurrentIndex(_settings.getInt(TesterDataBase::_MaximumLossExit));
+  _profitTargetStop->setChecked(_settings.getInt(TesterDataBase::_ProfitTargetStop));
+  _profitTargetType->setCurrentIndex(_settings.getInt(TesterDataBase::_ProfitTargetType));
+  _profitTargetValue->setValue(_settings.getDouble(TesterDataBase::_ProfitTargetValue));
+  _profitTargetExit->setCurrentIndex(_settings.getInt(TesterDataBase::_ProfitTargetExit));
+  _trailingStop->setChecked(_settings.getInt(TesterDataBase::_TrailingStop));
+  _trailingType->setCurrentIndex(_settings.getInt(TesterDataBase::_TrailingType));
+  _trailingValue->setValue(_settings.getDouble(TesterDataBase::_TrailingValue));
+  _trailingExit->setCurrentIndex(_settings.getInt(TesterDataBase::_TrailingExit));
+  _barsStop->setChecked(_settings.getInt(TesterDataBase::_BarsStop));
+  _barsStopValue->setValue(_settings.getDouble(TesterDataBase::_BarsStopValue));
+  _barsStopExit->setCurrentIndex(_settings.getInt(TesterDataBase::_BarsStopExit));
+
+  QString d;
+  _settings.getData(TesterDataBase::_Report, d);
+  _report->clear();
+  _report->append(d);
+  
+  _settings.getData(TesterDataBase::_Indicator, d);
+  _indicator->setCurrentIndex(_indicator->findText(d));
+
+  _settings.getData(TesterDataBase::_PlotNames, d);
+  QStringList plotNames = d.split(",");
+
+  _enterLong->clear();
+  _settings.getData(TesterDataBase::_EnterLong, d);
+  QStringList l = d.split(":");
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QStringList l2 = l.at(loop).split(",");
+    addPlotItem(_enterLong, plotNames, l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+  }
+  
+  _exitLong->clear();
+  _settings.getData(TesterDataBase::_ExitLong, d);
+  l = d.split(":");
+  loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QStringList l2 = l.at(loop).split(",");
+    addPlotItem(_exitLong, plotNames, l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+  }
+
+  _enterShort->clear();
+  _settings.getData(TesterDataBase::_EnterShort, d);
+  l = d.split(":");
+  loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QStringList l2 = l.at(loop).split(",");
+    addPlotItem(_enterShort, plotNames, l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+  }
+
+  _exitShort->clear();
+  _settings.getData(TesterDataBase::_ExitShort, d);
+  l = d.split(":");
+  loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QStringList l2 = l.at(loop).split(",");
+    addPlotItem(_exitShort, plotNames, l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+  }
+
+  _settings.getData(TesterDataBase::_IndicatorSettings, d);
+  _indicatorSettings.clear();
+  _indicatorSettings.parse(d);
+
+  _settings.getData(TesterDataBase::_Symbols, d);
+  l = d.split(",");
+  _symbols->setSymbolList(l);
 }
 
 void TesterSettingsDialog::saveSettings ()
 {
   if (! _saveFlag)
     return;
+  
+  _settings.setData(TesterDataBase::_Name, _name);
+  _settings.setData(TesterDataBase::_Equity, _equity->value());
+  _settings.setData(TesterDataBase::_Position, _position->currentIndex());
+  _settings.setData(TesterDataBase::_Period, _period->currentIndex());
+  _settings.setData(TesterDataBase::_DateRange, _dateRange->currentIndex());
+  _settings.setData(TesterDataBase::_PositionSize, _positionSize->value());
+  _settings.setData(TesterDataBase::_FuturesMode, _futuresMode->isChecked());
+  _settings.setData(TesterDataBase::_Commission, _commission->currentIndex());
+  _settings.setData(TesterDataBase::_CommissionValue, _commissionValue->value());
+  _settings.setData(TesterDataBase::_Long, _long->isChecked());
+  _settings.setData(TesterDataBase::_LongBuyPrice, _longBuyPrice->currentIndex());
+  _settings.setData(TesterDataBase::_LongSellPrice, _longSellPrice->currentIndex());
+  _settings.setData(TesterDataBase::_Short, _short->isChecked());
+  _settings.setData(TesterDataBase::_ShortBuyPrice, _shortBuyPrice->currentIndex());
+  _settings.setData(TesterDataBase::_ShortSellPrice, _shortSellPrice->currentIndex());
+  _settings.setData(TesterDataBase::_MaximumLossStop, _maximumLossStop->isChecked());
+  _settings.setData(TesterDataBase::_MaximumLossType, _maximumLossType->currentIndex());
+  _settings.setData(TesterDataBase::_MaximumLossValue, _maximumLossValue->value());
+  _settings.setData(TesterDataBase::_MaximumLossExit, _maximumLossExit->currentIndex());
+  _settings.setData(TesterDataBase::_ProfitTargetStop, _profitTargetStop->isChecked());
+  _settings.setData(TesterDataBase::_ProfitTargetType, _profitTargetType->currentIndex());
+  _settings.setData(TesterDataBase::_ProfitTargetValue, _profitTargetValue->value());
+  _settings.setData(TesterDataBase::_ProfitTargetExit, _profitTargetExit->currentIndex());
+  _settings.setData(TesterDataBase::_TrailingStop, _trailingStop->isChecked());
+  _settings.setData(TesterDataBase::_TrailingType, _trailingType->currentIndex());
+  _settings.setData(TesterDataBase::_TrailingValue, _trailingValue->value());
+  _settings.setData(TesterDataBase::_TrailingExit, _trailingExit->currentIndex());
+  _settings.setData(TesterDataBase::_BarsStop, _barsStop->isChecked());
+  _settings.setData(TesterDataBase::_BarsStopValue, _barsStopValue->value());
+  _settings.setData(TesterDataBase::_BarsStopExit, _barsStopExit->currentIndex());
+  _settings.setData(TesterDataBase::_Report, _report->toPlainText());
+  _settings.setData(TesterDataBase::_Indicator, _indicator->currentText());
+
+  QStringList plotNames, l;
+  getPlotItems(_enterLong, plotNames, l);
+  _settings.setData(TesterDataBase::_PlotNames, plotNames.join(","));
+  _settings.setData(TesterDataBase::_EnterLong, l.join(":"));
+
+  getPlotItems(_exitLong, plotNames, l);
+  _settings.setData(TesterDataBase::_ExitLong, l.join(":"));
+
+  getPlotItems(_enterShort, plotNames, l);
+  _settings.setData(TesterDataBase::_EnterShort, l.join(":"));
+
+  getPlotItems(_exitShort, plotNames, l);
+  _settings.setData(TesterDataBase::_ExitShort, l.join(":"));
+
+  QString d;
+  _indicatorSettings.getString(d);
+  _settings.setData(TesterDataBase::_IndicatorSettings, d);
+
+  _symbols->symbolList(l);
+  _settings.setData(TesterDataBase::_Symbols, l.join(","));
 
   TesterDataBase db;
   db.transaction();
   db.setRule(_settings);
   db.commit();
+
+  _saveFlag = 0;
+  _saveButton->setEnabled(FALSE);
+}
+
+void TesterSettingsDialog::getPlotItems (QTreeWidget *tree, QStringList &plotNames, QStringList &items)
+{
+  plotNames.clear();
+  items.clear();
+  
+  int loop = 0;
+  for (; loop < tree->topLevelItemCount(); loop++)
+  {
+    QTreeWidgetItem *item = tree->topLevelItem(loop);
+
+    QStringList l;
+    l << QString::number(item->checkState(0));
+
+    l << item->text(1);
+    plotNames.append(item->text(1));
+
+    QComboBox *cb = (QComboBox *) tree->itemWidget(item, 2);
+    l << cb->currentText();
+
+    cb = (QComboBox *) tree->itemWidget(item, 3);
+    l << cb->currentText();
+
+    items << l.join(",");
+  }
 }
 
 void TesterSettingsDialog::ruleChanged ()
@@ -601,49 +776,56 @@ void TesterSettingsDialog::indicatorChanged (int)
   }
 
   Indicator i;
-  if (! _indicatorSettings.count())
-  {
-    plugin->defaults(i);
-    _indicatorSettings = i.settings();
-  }
-  i.setSettings(_indicatorSettings);
+  plugin->defaults(i);
+  _indicatorSettings = i.settings();
   
   QStringList plotNames;
   plugin->plotNames(i, plotNames);
 
-  setIndicatorPlots(plotNames, _enterLong);
-  setIndicatorPlots(plotNames, _exitLong);
-  setIndicatorPlots(plotNames, _enterShort);
-  setIndicatorPlots(plotNames, _exitShort);
-}
-
-void TesterSettingsDialog::setIndicatorPlots (QStringList plotNames, QTreeWidget *tree)
-{
-  tree->clear();
+  _enterLong->clear();
+  _exitLong->clear();
+  _enterShort->clear();
+  _exitShort->clear();
 
   int loop = 0;
   for (; loop < plotNames.count(); loop++)
   {
-    QTreeWidgetItem *item = new QTreeWidgetItem(tree);
-
-    item->setCheckState(0, (Qt::CheckState) 0);
-
-    item->setText(1, plotNames.at(loop));
-
-    QComboBox *cb = new QComboBox;
-    Operator op;
-    cb->addItems(op.list());
-    cb->setCurrentIndex(0);
-    tree->setItemWidget(item, 2, cb);
-
-    QComboBox *vc = new QComboBox;
-    vc->setEditable(TRUE);
-    vc->addItems(plotNames);
-    vc->clearEditText();
-    tree->setItemWidget(item, 3, vc);
+    addPlotItem(_enterLong, plotNames, QString("0"), plotNames.at(loop), QString("<"), QString("Close"));
+    addPlotItem(_exitLong, plotNames, QString("0"), plotNames.at(loop), QString("<"), QString("Close"));
+    addPlotItem(_enterShort, plotNames, QString("0"), plotNames.at(loop), QString("<"), QString("Close"));
+    addPlotItem(_exitShort, plotNames, QString("0"), plotNames.at(loop), QString("<"), QString("Close"));
   }
+}
 
-  for (loop = 0; loop < tree->topLevelItemCount(); loop++)
+void TesterSettingsDialog::addPlotItem (QTreeWidget *tree, QStringList &plotNames, QString enable,
+                                        QString pn, QString oper, QString val)
+{
+  QTreeWidgetItem *item = new QTreeWidgetItem(tree);
+
+  item->setCheckState(0, (Qt::CheckState) enable.toInt());
+
+  item->setText(1, pn);
+
+  QComboBox *cb = new QComboBox;
+  Operator op;
+  cb->addItems(op.list());
+  cb->setCurrentIndex(cb->findText(oper));
+  tree->setItemWidget(item, 2, cb);
+
+  QComboBox *vc = new QComboBox;
+  vc->setEditable(TRUE);
+  vc->addItems(plotNames);
+  
+  QStringList l;
+  l << "Open" << "High" << "Low" << "Close" << "Volume" << "OI";
+  vc->addItems(l);
+
+  vc->clearEditText();
+  vc->setCurrentIndex(vc->findText(val));
+  tree->setItemWidget(item, 3, vc);
+
+  int loop = 0;
+  for (; loop < tree->topLevelItemCount(); loop++)
     tree->resizeColumnToContents(loop);
 }
 
@@ -663,7 +845,8 @@ void TesterSettingsDialog::editIndicator ()
     plug->defaults(i);
     _indicatorSettings = i.settings();
   }
-  i.setSettings(_indicatorSettings);
+  else
+    i.setSettings(_indicatorSettings);
 
   IndicatorPluginDialog *dialog = plug->dialog(i);
   if (! dialog)
@@ -712,8 +895,11 @@ void TesterSettingsDialog::run ()
 
   Indicator i;
   i.setSettings(_indicatorSettings);
+
+  QStringList l;
+  _symbols->symbolList(l);
   
-  _thread = new TesterThread(this, i);
+  _thread = new TesterThread(this, i, l, _settings);
   connect(_thread, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
   _thread->start();
 

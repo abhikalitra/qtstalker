@@ -21,17 +21,135 @@
 
 #include "TesterThread.h"
 #include "QuoteServerRequest.h"
+#include "BarData.h"
+#include "IndicatorPluginFactory.h"
+#include "TesterDataBase.h"
 
 #include <QDebug>
 
-TesterThread::TesterThread (QObject *p, Indicator &i) : QThread (p)
+TesterThread::TesterThread (QObject *p, Indicator &i, QStringList &l, Setting &set) : QThread (p)
 {
   _indicator = i;
+  _symbols = l;
+  _settings = set;
+  _stopFlag = 0;
 }
 
 void TesterThread::run ()
 {
+  _stopFlag = 0;
 
+  int loop = 0;
+  for (; loop < _symbols.count(); loop++)
+  {
+    if (_stopFlag)
+    {
+      qDebug() << "TesterThread::run: stopped";
+//      emit signalStopped();
+      quit();
+      return;
+    }
+
+    BarData bd;
+    bd.setKey(_symbols.at(loop));
+
+    QStringList tl;
+    tl << "Quotes" << "Date" << bd.getExchange() << bd.getSymbol();
+    QString s;
+    bd.barLengthText((BarData::BarLength) _settings.getInt(TesterDataBase::_Period), s);
+    tl << s << "0" << "0" << QString::number(_settings.getInt(TesterDataBase::_DateRange));
+    QString command = tl.join(",") + "\n";
+
+    QuoteServerRequest qsr;
+    if (qsr.run(command))
+    {
+      qDebug() << "TesterThread::run: qsr error";
+      continue;
+    }
+
+    bd.setBarLength((BarData::BarLength) _settings.getInt(TesterDataBase::_Period));
+    bd.setBars(qsr.data());
+
+    IndicatorPluginFactory fac;
+    _settings.getData(TesterDataBase::_Indicator, s);
+    IndicatorPlugin *plug = fac.plugin(s);
+    if (! plug)
+    {
+      qDebug() << "TesterThread::run: no plugin" << s;
+      continue;
+    }
+
+    if (plug->getIndicator(_indicator, bd))
+    {
+      qDebug() << "TesterThread::run: indicator error" << s;
+      continue;
+    }
+
+    QStringList plotNames;
+    plug->plotNames(_indicator, plotNames);
+
+    int loop = 0;
+    int count = 0;
+    int total = 0;
+/*    
+    for (; loop < plotNames.count(); loop++)
+    {
+      if (! _scanner.enable(plotNames.at(loop)))
+        continue;
+
+      Curve *curve = i.line(plotNames.at(loop));
+      if (! curve)
+        continue;
+
+      total++;
+
+      switch ((Operator::Type) _scanner.op(plotNames.at(loop)))
+      {
+        case Operator::_LessThan:
+        {
+          CurveBar *bar = curve->bar(curve->count() - 1);
+          if (bar->data() < _scanner.value(plotNames.at(loop)))
+            count++;
+          break;
+        }
+        case Operator::_LessThanEqual:
+        {
+          CurveBar *bar = curve->bar(curve->count() - 1);
+          if (bar->data() <= _scanner.value(plotNames.at(loop)))
+            count++;
+          break;
+        }
+        case Operator::_Equal:
+        {
+          CurveBar *bar = curve->bar(curve->count() - 1);
+          if (bar->data() == _scanner.value(plotNames.at(loop)))
+            count++;
+          break;
+        }
+        case Operator::_GreaterThanEqual:
+        {
+          CurveBar *bar = curve->bar(curve->count() - 1);
+          if (bar->data() >= _scanner.value(plotNames.at(loop)))
+            count++;
+          break;
+        }
+        case Operator::_GreaterThan:
+        {
+          CurveBar *bar = curve->bar(curve->count() - 1);
+          if (bar->data() > _scanner.value(plotNames.at(loop)))
+            count++;
+          break;
+        }
+        default:
+          break;
+      }
+    }
+*/
+    if (count == total && total != 0)
+    {
+    }
+  }
+  
   emit signalDone(QString());
   
   quit();
@@ -41,4 +159,12 @@ void TesterThread::stop ()
 {
   _stopFlag = 1;
 }
+
+/*
+void TesterThread::stop ()
+{
+  int loop = 0;
+  
+}
+*/
 

@@ -30,38 +30,50 @@ SymbolButton::SymbolButton (QWidget *w) : QPushButton (w)
 
 Group & SymbolButton::getSymbols ()
 {
-  return symbols;
+  return _symbols;
 }
 
 void SymbolButton::setSymbols (QString &ex, QString &ss)
 {
-  exchangeSearch = ex;
-  symbolSearch = ss;
+  _exchangeSearch = ex;
+  _symbolSearch = ss;
   updateButtonText();
 }
 
 void SymbolButton::setSymbols (Group &d)
 {
-  symbols = d;
+  _symbols = d;
   updateButtonText();
 }
 
 void SymbolButton::symbolDialog ()
 {
   SymbolDialog *dialog = new SymbolDialog;
-  dialog->setSymbols(exchangeSearch, symbolSearch);
+  dialog->setSymbols(_exchangeSearch, _symbolSearch);
   connect(dialog, SIGNAL(signalSymbols(Group)), this, SLOT(symbolDialog2(Group)));
   dialog->show();
 }
 
 void SymbolButton::symbolDialog2 (Group g)
 {
-  symbols = g;
+  _symbols = g;
   updateButtonText();
 }
 
 void SymbolButton::updateButtonText ()
 {
-  setText(QString::number(symbols.count()) + " " + tr("Symbols"));
+  setText(QString::number(_symbols.count()) + " " + tr("Symbols"));
+}
+
+void SymbolButton::symbolList (QStringList &l)
+{
+  l.clear();
+  _symbols.getStringList(l);
+}
+
+void SymbolButton::setSymbolList (QStringList &l)
+{
+  _symbols.setStringList(l);
+  updateButtonText();
 }
 

@@ -23,9 +23,10 @@
 #define TESTER_THREAD_HPP
 
 #include <QThread>
-#include <QString>
+#include <QStringList>
 
 #include "Indicator.h"
+#include "Setting.h"
 
 class TesterThread : public QThread
 {
@@ -36,7 +37,7 @@ class TesterThread : public QThread
     void signalDone (QString);
     
   public:
-    TesterThread (QObject *, Indicator &);
+    TesterThread (QObject *, Indicator &, QStringList &, Setting &);
     void stop ();
 
   protected:
@@ -44,6 +45,8 @@ class TesterThread : public QThread
 
   private:
     Indicator _indicator;
+    QStringList _symbols;
+    Setting _settings;
     int _stopFlag;
 };
 

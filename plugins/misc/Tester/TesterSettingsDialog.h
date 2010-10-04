@@ -61,13 +61,15 @@ class TesterSettingsDialog : public Dialog
     void trailingStopChanged (int);
     void barsStopChanged (int);
     void indicatorChanged (int);
-    void setIndicatorPlots (QStringList plotNames, QTreeWidget *tree);
+    void addPlotItem (QTreeWidget *, QStringList &, QString enable, QString pn, QString oper, QString val);
+    void getPlotItems (QTreeWidget *, QStringList &plotNames, QStringList &items);
     void editIndicator ();
     void editIndicator2 (Indicator);
     void closeDialog ();
     void run ();
           
   private:
+    QString _name;
     int _saveFlag;
     int _runningFlag;
     TesterThread *_thread;
