@@ -53,6 +53,13 @@ font-size: 1em;
 font-size: 0.9em;
 }
 
+.api {
+font-family: monospace;
+font-weight: bold;
+font-size: 1.1em;
+padding: .5em;
+}
+
 #rightPanel {
 float: right;
 margin: 0 0 0 1em;

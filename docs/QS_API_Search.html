@@ -1,56 +1,66 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
   <title>QuoteServer API - Search</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">QuoteServer API - Search<br>
-</h3>
-<br>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>QuoteServer API - Search</h1>
+<p>
 These script commands searches the database using the exchange and
-symbol fields on partial and/or full matches. <br>
-<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<p style="font-weight: bold;">Search,S,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;\n<br>
+symbol fields on partial and/or full matches.
+</p>
+<hr>
+<h2 id="S">S</h2>
+<p class="api">
+Search,S,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;\n
 </p>
 <p>Searches the database on provided &lt;EXCHANGE&gt; and
 &lt;SYMBOL&gt;
-fields and returns the symbols that match.<br>
+fields and returns the symbols that match.
 </p>
 <ul>
   <li>&lt;EXCHANGE&gt; is the exchange the
 quote originates from. eg.
-'XNYS' or for partial matches use % eg. '%NYS' or '%NY%'<br>
+'XNYS' or for partial matches use % eg. '%NYS' or '%NY%'
   </li>
   <li>&lt;SYMBOL&gt; is the symbol eg. 'GOOG' or for partial matches
-use % eg. '%OOG' or '%OO%'<a href="PlotTypes.html"> </a></li>
+use % eg. '%OOG' or '%OO%'</li>
 </ul>
+<p>
 Success returns a string of '&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;' pairs.
 Each pair is delimited by a colon. End of data is delimited by a \n.
-Failure returns 'ERROR\n'.<br>
-<br>
+Failure returns 'ERROR\n'.
+</p>
+<p>
 A full example would be to return any exchange,symbol pairs that end in
-NYS,OOG '<span style="font-weight: bold;">Search,S,%NYS,%OOG\n</span>'<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><span
- style="font-weight: bold;"></span></span><br>
-<br>
-<p style="font-weight: bold;">Search,E\n<br>
+NYS,OOG '<span style="font-weight: bold;">Search,S,%NYS,%OOG\n</span>'
+</p>
+<hr>
+<h2 id="E">E</h2>
+<p class="api">
+Search,E\n
 </p>
 <p>Searches the database and returns all exchange names found. No
-duplicates are returned.<br>
+duplicates are returned.
 </p>
+<p>
 Success returns a string of exchanges delimited by a colon. End of data
-is delimited by a \n. Failure
-returns 'ERROR\n'.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><span
- style="font-weight: bold;"></span></span><br>
+is delimited by a \n. Failure returns 'ERROR\n'.
+</p>
+    </div>
 </body>
 </html>

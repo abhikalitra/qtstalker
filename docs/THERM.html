@@ -1,35 +1,37 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
   <title>THERM - Market Thermometer</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">THERM - <span
- style="font-weight: bold;"></span>Market Thermometer<br>
-</h3>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>THERM - Market Thermometer</h1>
 <p>The "Market Thermometer" indicator is described in Dr. Alexander
-Elder's book _Come Into My Trading Room_, p.162<br>
+Elder's book _Come Into My Trading Room_, p.162
 </p>
-<br>
-<br>
-<span style="font-weight: bold; text-decoration: underline;">Script API</span><br>
-<br>
-<span style="text-decoration: underline;"></span><span
- style="font-weight: bold;"><br>
-</span>
-<p style="font-weight: bold;">INDICATOR,PLUGIN,THERM,&lt;NAME&gt;,&lt;SMOOTHING
-PERIOD&gt;,&lt;SMOOTHING
-TYPE&gt;<span style="font-weight: bold;"><br>
-</span></p>
+<hr>
+<h2 id="THERM">THERM</h2>
+<p class="api">
+INDICATOR,PLUGIN,THERM,&lt;NAME&gt;,&lt;SMOOTHING PERIOD&gt;,&lt;SMOOTHING TYPE&gt;
+</p>
 <ul>
-  <li>&lt;NAME&gt; is the variable name given to the array<br>
-  </li>
-  <li>&lt;SMOOTHING PERIOD&gt; is an integer<br>
-  </li>
+  <li>&lt;NAME&gt; is the variable name given to the array </li>
+  <li>&lt;SMOOTHING PERIOD&gt; is an integer</li>
   <li>&lt;SMOOTHING TYPE&gt; <a href="MATypes.html">MA type</a></li>
 </ul>
-<br>
+    </div>
 </body>
 </html>

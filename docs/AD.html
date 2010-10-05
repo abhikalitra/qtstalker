@@ -1,41 +1,46 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
   <title>AD - Chaikin Accumulation Distribution</title>
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">AD - Chaikin Accumulation
-Distribution</h3>
-There are 2 versions of this indicator available:<br>
-<br>
-<a href="http://www.tadoc.org/indicator/AD.htm">AD</a> - is the
-standard version.<br>
-<a href="http://www.tadoc.org/indicator/ADOSC.htm">ADOSC</a> - is an
-oscillator version.<br>
-<br>
-<br>
-<br>
-<span style="font-weight: bold; text-decoration: underline;">Script API</span><br>
-<br>
-<span style="text-decoration: underline;"><br>
-</span>AD format:<span style="text-decoration: underline;"><br>
-<br>
-</span><span style="font-weight: bold;">INDICATOR,PLUGIN,AD,AD,&lt;NAME&gt;</span><br>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>AD - Chaikin Accumulation Distribution</h1>
+<p>
+There are 2 versions of this indicator available:
+</p>
+<ul>
+<li><a href="http://www.tadoc.org/indicator/AD.htm">AD</a> - is the
+standard version.</li>
+<li><a href="http://www.tadoc.org/indicator/ADOSC.htm">ADOSC</a> - is an
+oscillator version.</li>
+</ul>
+<hr>
+<h2 id="AD">AD</h2>
+<p class="api">
+INDICATOR,PLUGIN,AD,AD,&lt;NAME&gt;
+</p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the AD plot</li>
 </ul>
-<span style="font-weight: bold;"></span>
-<p><span style="font-weight: bold;"></span><br>
+<hr>
+<h2 id="ADOSC">ADOSC</h2>
+<p class="api">
+INDICATOR,PLUGIN,AD,ADOSC,&lt;NAME&gt;,&lt;FAST PERIOD&gt;,&lt;SLOW PERIOD&gt;
 </p>
-<p>ADOSC format:<span style="font-weight: bold;"><br>
-</span></p>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,AD,ADOSC,&lt;NAME&gt;,&lt;FAST
-PERIOD&gt;,&lt;SLOW
-PERIOD&gt;</span><span style="font-weight: bold;"></span><br>
-</p>
-<p></p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the ADOSC plot</li>
   <li>&lt;FAST PERIOD&gt; is an integer for the fast value of the
@@ -44,8 +49,6 @@ oscillator. Usually less than the &lt;SLOW PERIOD&gt;.<br>
   <li>&lt;SLOW PERIOD&gt; is an integer for the slow value of the
 oscillator. Usually greater than the &lt;FAST PERIOD&gt;.</li>
 </ul>
-<br>
-<h3><br>
-</h3>
+    </div>
 </body>
 </html>

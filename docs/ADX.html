@@ -1,80 +1,79 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
   <title>ADX - Average Directional Index</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">ADX - Average Directional Index<br>
-</h3>
-<br>
-The qtstalker version of <a
- href="http://www.tadoc.org/indicator/AD.htm">ADX</a> allows the user
-to plot any number of the 5 ADX components. The <a
- href="http://www.tadoc.org/indicator/PLUS_DI.htm">+DI</a>, <a
- href="http://www.tadoc.org/indicator/MINUS_DI.htm">-DI</a>, <a
- href="http://www.tadoc.org/indicator/DX.htm">DX</a>, <a
- href="http://www.tadoc.org/indicator/ADX.htm">ADX</a> and the <a
- href="http://www.tadoc.org/indicator/ADXR.htm">ADXR</a>.<br>
-<br>
-<br>
-<br>
-<br>
-<span style="font-weight: bold; text-decoration: underline;">Script API</span><br>
-<br>
-<span style="text-decoration: underline;"></span><br>
-ADX format:<br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,ADX,ADX,&lt;NAME&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>ADX - Average Directional Index</h1>
+<p>
+The qtstalker version of
+<a href="http://www.tadoc.org/indicator/AD.htm">ADX</a> allows the user
+to plot any number of the 5 ADX components. The
+<a href="http://www.tadoc.org/indicator/PLUS_DI.htm">+DI</a>,
+<a href="http://www.tadoc.org/indicator/MINUS_DI.htm">-DI</a>,
+<a href="http://www.tadoc.org/indicator/DX.htm">DX</a>,
+<a href="http://www.tadoc.org/indicator/ADX.htm">ADX</a> and the
+<a href="http://www.tadoc.org/indicator/ADXR.htm">ADXR</a>.
+</p>
+<hr>
+<h2 id="ADX">ADX</h2>
+<p class="api">
+INDICATOR,PLUGIN,ADX,ADX,&lt;NAME&gt;,&lt;PERIOD&gt;
+</p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the ADX plot</li>
   <li>&lt;PERIOD&gt; is the ADX period</li>
 </ul>
-<br>
-<br>
-ADXR format:<br>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,ADX,ADXR,&lt;NAME&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span>
+<hr>
+<h2 id="ADXR">ADXR</h2>
+<p class="api">
+INDICATOR,PLUGIN,ADX,ADXR,&lt;NAME&gt;,&lt;PERIOD&gt;
 </p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the ADXR plot</li>
   <li>&lt;PERIOD&gt; is the ADXR period</li>
 </ul>
-<br>
-<br>
-DX format:<br>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,ADX,DX,&lt;NAME&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span>
+<hr>
+<h2 id="DX">DX</h2>
+<p class="api">
+INDICATOR,PLUGIN,ADX,DX,&lt;NAME&gt;,&lt;PERIOD&gt;
 </p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the DX plot</li>
   <li>&lt;PERIOD&gt; is the DX period</li>
 </ul>
-<br>
-<br>
--DI format:<br>
-<p>
-</p>
-<p style="font-weight: bold;">INDICATOR,PLUGIN,ADX,-DI,&lt;NAME&gt;,&lt;PERIOD&gt;<span
- style="font-weight: bold;"></span>
+<hr>
+<h2 id="MINUS_DI">-DI</h2>
+<p class="api">
+INDICATOR,PLUGIN,ADX,-DI,&lt;NAME&gt;,&lt;PERIOD&gt;
 </p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the -DI plot</li>
   <li>&lt;PERIOD&gt; is the -DI period</li>
 </ul>
-<br>
-<br>
-+DI format:<br>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,ADX,+DI,&lt;NAME&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span>
+<hr>
+<h2 id="PLUS_DI">+DI</h2>
+<p class="api">
+INDICATOR,PLUGIN,ADX,+DI,&lt;NAME&gt;,&lt;PERIOD&gt;
 </p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the +DI plot</li>
   <li>&lt;PERIOD&gt; is the +DI period</li>
 </ul>
-<br>
-<br>
+    </div>
 </body>
 </html>

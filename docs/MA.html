@@ -1,56 +1,108 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
   <title>MA - Moving Average</title>
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">MA - Moving Average<br>
-</h3>
-<br>
-<a href="MATypes.html"><span style="text-decoration: underline;">Available
-Types</span></a><br>
-<a href="http://www.tadoc.org/indicator/BOP.htm"><span
- style="text-decoration: underline;"></span></a><br>
-<br>
-<br>
-<br>
-<span style="font-weight: bold; text-decoration: underline;">Script API</span><br>
-<br>
-<span style="text-decoration: underline;"><br>
-</span>Format:<span style="text-decoration: underline;"></span><br>
-<span style="font-weight: bold;"><br>
-INDICATOR,PLUGIN,MA,EMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span><br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,MA,DEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span><br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,MA,KAMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span><br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,MA,SMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span><br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,MA,TEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span><br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,MA,TRIMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span><br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,MA,Wilder,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span><br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,MA,WMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;</span><span
- style="font-weight: bold;"></span>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>MA - Moving Average</h1>
+<p>
+See 
+<a href="MATypes.html">Available Types</a>
+</p>
+<hr>
+<h2 id="EMA">EMA</h2>
+<p class="api">
+INDICATOR,PLUGIN,MA,EMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;
+</p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the plot</li>
-  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a><br>
-  </li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
   <li>&lt;PERIOD&gt; an integer value used for the period</li>
 </ul>
-<br>
-<span style="font-weight: bold;"></span>
+<hr>
+<h2 id="DEMA">DEMA</h2>
+<p class="api">
+INDICATOR,PLUGIN,MA,DEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
+  <li>&lt;PERIOD&gt; an integer value used for the period</li>
+</ul>
+<hr>
+<h2 id="KEMA">KEMA</h2>
+<p class="api">
+INDICATOR,PLUGIN,MA,KAMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
+  <li>&lt;PERIOD&gt; an integer value used for the period</li>
+</ul>
+<hr>
+<h2 id="SMA">SMA</h2>
+<p class="api">
+INDICATOR,PLUGIN,MA,SMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
+  <li>&lt;PERIOD&gt; an integer value used for the period</li>
+</ul>
+<hr>
+<h2 id="TEMA">TEMA</h2>
+<p class="api">
+INDICATOR,PLUGIN,MA,TEMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
+  <li>&lt;PERIOD&gt; an integer value used for the period</li>
+</ul>
+<hr>
+<h2 id="TRIMA">TRIMA</h2>
+<p class="api">
+INDICATOR,PLUGIN,MA,TRIMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
+  <li>&lt;PERIOD&gt; an integer value used for the period</li>
+</ul>
+<hr>
+<h2 id="Wilder">Wilder</h2>
+<p class="api">
+INDICATOR,PLUGIN,MA,Wilder,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
+  <li>&lt;PERIOD&gt; an integer value used for the period</li>
+</ul>
+<hr>
+<h2 id="WMA">WMA</h2>
+<p class="api">
+INDICATOR,PLUGIN,MA,WMA,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;PERIOD&gt;
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
+  <li>&lt;PERIOD&gt; an integer value used for the period</li>
+</ul>
+    </div>
 </body>
 </html>

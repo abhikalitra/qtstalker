@@ -1,58 +1,64 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
   <title>Script API - Chart Objects</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">Script API - Chart Objects<br>
-</h3>
-<br>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>Script API - Chart Objects</h1>
+<p>
 These CUS commands allow creation and manipulation of chart objects
-applied to scripted indicators.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<p style="font-weight: bold;">CO,Buy,&lt;DATE&gt;,&lt;PRICE&gt;,&lt;COLOR&gt;<br>
+applied to scripted indicators.
 </p>
-<p>Create a new <a href="chartobjects.html">Buy chart object</a>.<br>
+<hr>
+<p class="api" id="Buy">
+CO,Buy,&lt;DATE&gt;,&lt;PRICE&gt;,&lt;COLOR&gt;
+</p>
+<p>
+Create a new <a href="chartobjects.html#Buy">Buy chart object</a>.
 </p>
 <ul>
   <li>&lt;DATE&gt; is the Qt::ISODate format to position the chart
-object on the indicator<br>
-  </li>
-  <li>&lt;PRICE&gt; is the price position on the indicator<a
- href="PlotTypes.html"><br>
-    </a></li>
-  <li>&lt;COLOR&gt; is the chart object color<br>
-  </li>
+object on the indicator.</li>
+  <li>&lt;PRICE&gt; is the price position on the indicator</li>
+  <li>&lt;COLOR&gt; is the chart object color</li>
 </ul>
-On success, a '0' is returned. Failure returns 'ERROR'.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><br>
-<br>
-CO,HLine,&lt;PRICE&gt;,&lt;COLOR&gt;</span><br
- style="font-weight: bold;">
-<p>Create a new <a href="chartobjects.html">HLine chart object</a>.<br>
+<p>
+On success, a '0' is returned. Failure returns 'ERROR'.
+</p>
+<hr>
+<p class="api" id="HLine">
+CO,HLine,&lt;PRICE&gt;,&lt;COLOR&gt;
+</p>
+<p>
+Create a new <a href="chartobjects.html#HLine">HLine chart object</a>.
 </p>
 <ul>
-  <li>&lt;PRICE&gt; is the price position on the indicator<a
- href="PlotTypes.html"><br>
-    </a></li>
-  <li>&lt;COLOR&gt; is the chart object color<br>
-  </li>
+  <li>&lt;PRICE&gt; is the price position on the indicator</li>
+  <li>&lt;COLOR&gt; is the chart object color</li>
 </ul>
-On success, a '0' is returned. Failure returns 'ERROR'.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;">
-<br>
-<p style="font-weight: bold;">CO,Retracement,&lt;START DATE&gt;,&lt;END
-DATE&gt;,&lt;HIGH&gt;,&lt;LOW&gt;,&lt;PERCENTAGE&gt;,&lt;COLOR&gt;<br>
+<p>
+On success, a '0' is returned. Failure returns 'ERROR'.
 </p>
-<p>Create a new <a href="chartobjects.html">Retracement chart object</a>.<br>
+<hr>
+<p class="api" id="Retracement">
+CO,Retracement,&lt;START DATE&gt;,&lt;END DATE&gt;,&lt;HIGH&gt;,&lt;LOW&gt;,&lt;PERCENTAGE&gt;,&lt;COLOR&gt;
+</p>
+<p>
+Create a new <a href="chartobjects.html#Retracement">Retracement chart object</a>.
 </p>
 <ul>
   <li>&lt;START DATE&gt; is the Qt::ISODate format to position the
@@ -62,89 +68,79 @@ object on the indicator</li>
   <li>&lt;HIGH&gt; is the high price position on the indicator</li>
   <li>&lt;LOW&gt; is the low price position on the indicator</li>
   <li>&lt;PERCENTAGE&gt; is the percentage retracement eg. 0.5 would be
-a 50% retracement, 1.0 would be 100% retracement<br>
-  </li>
-  <li>&lt;COLOR&gt; is the chart object color<br>
-  </li>
+a 50% retracement, 1.0 would be 100% retracement</li>
+  <li>&lt;COLOR&gt; is the chart object color</li>
 </ul>
-On success, a '0' is returned. Failure returns 'ERROR'.<br>
-<p><span style="font-weight: bold;"><br>
-</span></p>
-<p><span style="font-weight: bold;"></span></p>
-<hr style="width: 100%; height: 2px;">
-<p><span style="font-weight: bold;"></span></p>
-<br>
-<p style="font-weight: bold;">CO,Sell,&lt;DATE&gt;,&lt;PRICE&gt;,&lt;COLOR&gt;<br>
+<p>
+On success, a '0' is returned. Failure returns 'ERROR'.
 </p>
-<p>Create a new <a href="chartobjects.html">Sell chart object</a>.<br>
+<hr>
+<p class="api" id="Sell">
+CO,Sell,&lt;DATE&gt;,&lt;PRICE&gt;,&lt;COLOR&gt;
+</p>
+<p>
+Create a new <a href="chartobjects.html#Sell">Sell chart object</a>.
 </p>
 <ul>
   <li>&lt;DATE&gt; is the Qt::ISODate format to position the chart
-object on the indicator<br>
-  </li>
-  <li>&lt;PRICE&gt; is the price position on the indicator<a
- href="PlotTypes.html"><br>
-    </a></li>
-  <li>&lt;COLOR&gt; is the chart object color<br>
-  </li>
-</ul>
-On success, a '0' is returned. Failure returns 'ERROR'.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<p style="font-weight: bold;">CO,Text,&lt;DATE&gt;,&lt;PRICE&gt;,&lt;TEXT&gt;,&lt;COLOR&gt;<br>
-</p>
-<p>Create a new <a href="chartobjects.html">Text chart object</a>.<br>
-</p>
-<ul>
-  <li>&lt;DATE&gt; is the Qt::ISODate format to position the chart
-object on the indicator<br>
-  </li>
+object on the indicator</li>
   <li>&lt;PRICE&gt; is the price position on the indicator</li>
-  <li>&lt;TEXT&gt; is the text to appear on the indicator<br>
-  </li>
-  <li>&lt;COLOR&gt; is the chart object color<br>
-  </li>
+  <li>&lt;COLOR&gt; is the chart object color</li>
 </ul>
-On success, a '0' is returned. Failure returns 'ERROR'.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<br>
-<p style="font-weight: bold;">CO,TLine,&lt;START DATE&gt;,&lt;START
-PRICE&gt;,&lt;END DATE&gt;,&lt;END PRICE&gt;,&lt;COLOR&gt;<br>
+<p>
+On success, a '0' is returned. Failure returns 'ERROR'.
 </p>
-<p>Create a new <a href="chartobjects.html">TLine chart object</a>.<br>
+<hr>
+<p class="api" id="Text">
+CO,Text,&lt;DATE&gt;,&lt;PRICE&gt;,&lt;TEXT&gt;,&lt;COLOR&gt;
+</p>
+<p>
+Create a new <a href="chartobjects.html#Text">Text chart object</a>.
+</p>
+<ul>
+  <li>&lt;DATE&gt; is the Qt::ISODate format to position the chart
+object on the indicator</li>
+  <li>&lt;PRICE&gt; is the price position on the indicator</li>
+  <li>&lt;TEXT&gt; is the text to appear on the indicator</li>
+  <li>&lt;COLOR&gt; is the chart object color</li>
+</ul>
+<p>
+On success, a '0' is returned. Failure returns 'ERROR'.
+</p>
+<hr>
+<p class="api" id="TLine">
+CO,TLine,&lt;START DATE&gt;,&lt;START PRICE&gt;,&lt;END DATE&gt;,&lt;END PRICE&gt;,&lt;COLOR&gt;
+</p>
+<p>
+Create a new <a href="chartobjects.html#TLine">TLine chart object</a>.
 </p>
 <ul>
   <li>&lt;START DATE&gt; is the Qt::ISODate format to position the
-chart object on the indicator<br>
-  </li>
+chart object on the indicator</li>
   <li>&lt;START PRICE&gt; is the start price position on the indicator</li>
   <li>&lt;END DATE&gt; is the Qt::ISODate format to position the chart
-object on the indicator<br>
-  </li>
+object on the indicator</li>
   <li>&lt;END PRICE&gt; is the end price position on the indicator</li>
-  <li>&lt;COLOR&gt; is the chart object color<br>
-  </li>
+  <li>&lt;COLOR&gt; is the chart object color</li>
 </ul>
-On success, a '0' is returned. Failure returns 'ERROR'.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<p style="font-weight: bold;">CO,VLine,&lt;DATE&gt;,&lt;COLOR&gt;<br>
+<p>
+On success, a '0' is returned. Failure returns 'ERROR'.
 </p>
-<p>Create a new <a href="chartobjects.html">VLine chart object</a>.<br>
+<hr>
+<p class="api" id="VLine">
+CO,VLine,&lt;DATE&gt;,&lt;COLOR&gt;
+</p>
+<p>
+Create a new <a href="chartobjects.html#VLine">VLine chart object</a>.
 </p>
 <ul>
   <li>&lt;DATE&gt; is the Qt::ISODate format to position the chart
-object on the indicator<br>
-  </li>
-  <li>&lt;COLOR&gt; is the chart object color<br>
-  </li>
+object on the indicator</li>
+  <li>&lt;COLOR&gt; is the chart object color</li>
 </ul>
-On success, a '0' is returned. Failure returns 'ERROR'.<br>
-<br>
-<br>
+<p>
+On success, a '0' is returned. Failure returns 'ERROR'.
+</p>
+    </div>
 </body>
 </html>

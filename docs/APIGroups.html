@@ -1,59 +1,71 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
   <title>Scripting API - Groups</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">Scripting API - Groups<br>
-</h3>
-<br>
-<span style="font-weight: bold;">GROUP,ADD,&lt;GROUP
-NAME&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;</span><br>
-<br>
-This function will add an a security symbol
-item to a Qtstalker
-group. If
-&lt;GROUP NAME&gt; does not exist, it will be created and the symbol
-added.<br>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>Scripting API - Groups</h1>
+<h2 id="ADD">ADD</h2>
+<p class="api">
+GROUP,ADD,&lt;GROUP NAME&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;
+</p>
+<p>
+This function will add an a security symbol item to a Qtstalker group. If
+&lt;GROUP NAME&gt; does not exist, it will be created and the symbol added.
+</p>
 <ul>
   <li>&lt;GROUP NAME&gt; is the name of the group to add items to.</li>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
-symbol trades on.<br>
-  </li>
+symbol trades on.</li>
   <li>&lt;SYMBOL&gt; is the symbol of the item we want to add to the
-group.<br>
-  </li>
+group.</li>
 </ul>
-On success a '0' is returned. On failure, a
-'ERROR' is returned.<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<span style="font-weight: bold;"><br>
-GROUP,DELETE,&lt;GROUP NAME&gt;</span><br>
-<br>
-This function will delete a Qtstalker group
-and all of its contents.<br>
+<p>
+On success a '0' is returned. On failure, a 'ERROR' is returned.
+</p>
+<hr>
+<h2 id="DELETE">DELETE</h2>
+<p class="api">
+GROUP,DELETE,&lt;GROUP NAME&gt;
+</p>
+<p>
+This function will delete a Qtstalker group and all of its contents.
+</p>
 <ul>
-  <li>&lt;GROUPNAME&gt; is the name of the group to delete.<br>
-  </li>
+  <li>&lt;GROUPNAME&gt; is the name of the group to delete.</li>
 </ul>
-On success a '0' is returned. On failure, a
-'ERROR' is returned.<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<br>
-<span style="font-weight: bold;">GROUP,GET,&lt;GROUP NAME&gt;</span><br>
-<br>
-This function will return a csv list of
-&lt;GROUP NAME&gt; contents.<br>
+<p>
+On success a '0' is returned. On failure, a 'ERROR' is returned.
+</p>
+<hr>
+<h2 id="GET">GET</h2>
+<p class="api">
+GROUP,GET,&lt;GROUP NAME&gt;
+</p>
+<p>
+This function will return a csv list of &lt;GROUP NAME&gt; contents.
+</p>
 <ul>
   <li>&lt;GROUP NAME&gt; is the name of the group.</li>
 </ul>
+<p>
 On success a csv string is made up of exchange,symbol pairs is
-returned. On failure, the string "ERROR" is returned.<br>
-<br>
-<br>
+returned. On failure, the string "ERROR" is returned.
+</p>
+    </div>
 </body>
 </html>

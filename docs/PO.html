@@ -1,41 +1,55 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
   <title>PO - Price Oscillator</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">PO - Price Oscillator<br>
-</h3>
-There are 2 methods:<br>
-<a href="http://www.tadoc.org/indicator/APO.htm">APO description</a><br>
-<a href="http://www.tadoc.org/indicator/PPO.htm">PPO description</a><br>
-<br>
-<br>
-<br>
-<span style="font-weight: bold; text-decoration: underline;">Script API</span><br>
-<br>
-<br>
-<p style="font-weight: bold;">INDICATOR,PLUGIN,PO,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST
-PERIOD&gt;,&lt;SLOW
-PERIOD&gt;,&lt;MA
-TYPE&gt;<span style="font-weight: bold;"><br>
-</span></p>
-<p style="font-weight: bold;">INDICATOR,PLUGIN,PO,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST
-PERIOD&gt;,&lt;SLOW
-PERIOD&gt;,&lt;MA
-TYPE&gt;<span style="font-weight: bold;"></span>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>PO - Price Oscillator</h1>
+<p>
+There are 2 methods:
 </p>
-<span style="font-weight: bold;"></span>
+<ul>
+ <li><a href="http://www.tadoc.org/indicator/APO.htm">APO</a> - Absolute Price Oscillator</li>
+ <li><a href="http://www.tadoc.org/indicator/PPO.htm">PPO</a>- Percentage Price Oscillator</li>
+</ul>
+<hr>
+<h2 id="APO">APO</h2>
+<p class="api">
+INDICATOR,PLUGIN,PO,APO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST PERIOD&gt;,&lt;SLOW PERIOD&gt;,&lt;MA TYPE&gt;
+</p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the plot</li>
-  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a><br>
-  </li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
   <li>&lt;FAST PERIOD&gt; is an integer</li>
   <li>&lt;SLOW PERIOD&gt; is an integer</li>
   <li>&lt;MA TYPE&gt; <a href="MATypes.html">MA type</a></li>
 </ul>
-<br>
+<hr>
+<h2 id="PPO">PPO</h2>
+<p class="api">
+INDICATOR,PLUGIN,PO,PPO,&lt;NAME&gt;,&lt;INPUT&gt;,&lt;FAST PERIOD&gt;,&lt;SLOW PERIOD&gt;,&lt;MA TYPE&gt;
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a></li>
+  <li>&lt;FAST PERIOD&gt; is an integer</li>
+  <li>&lt;SLOW PERIOD&gt; is an integer</li>
+  <li>&lt;MA TYPE&gt; <a href="MATypes.html">MA type</a></li>
+</ul>
+    </div>
 </body>
 </html>

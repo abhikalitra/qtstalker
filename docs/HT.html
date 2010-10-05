@@ -1,97 +1,95 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
   <title>HT - Hilbert Transform</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">HT - Hilbert Transform<br>
-</h3>
-<br>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>HT - Hilbert Transform</h1>
+<p>
 There are 6 different HT methods:<br>
-<br>
-<a href="http://www.tadoc.org/indicator/HT_DCPERIOD.htm">HT DCPERIOD</a><br>
-<a href="http://www.tadoc.org/indicator/HT_DCPHASE.htm">HT DCPHASE</a><br>
-<a href="http://www.tadoc.org/indicator/HT_PHASOR.htm">HT PHASOR</a><br>
-<a href="http://www.tadoc.org/indicator/HT_SINE.htm">HT SINE</a><br>
-<a href="http://www.tadoc.org/indicator/HT_TRENDLINE.htm">HT TRENDLINE</a><br>
-<a href="http://www.tadoc.org/indicator/HT_TRENDMODE.htm">HT TRENDMODE</a><br>
-<br>
-<br>
-<br>
-<span style="font-weight: bold; text-decoration: underline;">Script API</span><br>
-<br>
-There are 6 different methods.<br>
-<span style="text-decoration: underline;"><br>
-</span><br>
-Format:<br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,HT,DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;</span><span
- style="font-weight: bold;"></span><br>
-<ul>
-  <li>&lt;NAME&gt; is the variable name given to the plot</li>
-  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
-array</li>
-</ul>
-<p><span style="font-weight: bold;"><br>
-</span></p>
-<p><span style="font-weight: bold;">INDICATOR,PLUGIN,HT,DCPHASE,&lt;NAME&gt;,&lt;INPUT&gt;</span><span
- style="font-weight: bold;"></span><br>
+<a href="http://www.tadoc.org/indicator/HT_DCPERIOD.htm">HT DCPERIOD</a>,
+<a href="http://www.tadoc.org/indicator/HT_DCPHASE.htm">HT DCPHASE</a>,
+<a href="http://www.tadoc.org/indicator/HT_PHASOR.htm">HT PHASOR</a>,
+<a href="http://www.tadoc.org/indicator/HT_SINE.htm">HT SINE</a>,
+<a href="http://www.tadoc.org/indicator/HT_TRENDLINE.htm">HT TRENDLINE</a>,
+<a href="http://www.tadoc.org/indicator/HT_TRENDMODE.htm">HT TRENDMODE</a>
+</p>
+<hr>
+<h2 id="DCPERIOD">DCPERIOD</h2>
+<p class="api">
+INDICATOR,PLUGIN,HT,DCPERIOD,&lt;NAME&gt;,&lt;INPUT&gt;</span><span
 </p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the plot</li>
   <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
 array</li>
 </ul>
-<span style="font-weight: bold;"><br>
-<br>
-INDICATOR,PLUGIN,HT,TRENDLINE,&lt;NAME&gt;,&lt;INPUT&gt;</span><span
- style="font-weight: bold;"></span><br>
+<hr>
+<h2 id="DCPHASE">DCPHASE</h2>
+<p class="api">
+INDICATOR,PLUGIN,HT,DCPHASE,&lt;NAME&gt;,&lt;INPUT&gt;
+</p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the plot</li>
   <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
 array</li>
 </ul>
-<span style="font-weight: bold;"><br>
-<br>
-INDICATOR,PLUGIN,HT,TRENDMODE,&lt;NAME&gt;,&lt;INPUT&gt;<br>
-</span>
+<hr>
+<h2 id="TRENDLINE">TRENDLINE</h2>
+<p class="api">
+INDICATOR,PLUGIN,HT,TRENDLINE,&lt;NAME&gt;,&lt;INPUT&gt;
+</p>
 <ul>
   <li>&lt;NAME&gt; is the variable name given to the plot</li>
   <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
 array</li>
 </ul>
-<br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,HT,PHASE,&lt;INPUT&gt;,&lt;PHASE
-NAME&gt;,&lt;QUAD
-NAME&gt;</span><span style="font-weight: bold;"></span><span
- style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
- style="font-weight: bold;"><br>
-</span>
+<hr>
+<h2 id="TRENDMODE">TRENDMODE</h2>
+<p class="api">
+INDICATOR,PLUGIN,HT,TRENDMODE,&lt;NAME&gt;,&lt;INPUT&gt;
+</p>
+<ul>
+  <li>&lt;NAME&gt; is the variable name given to the plot</li>
+  <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
+array</li>
+</ul>
+<hr>
+<h2 id="PHASE">PHASE</h2>
+<p class="api">
+INDICATOR,PLUGIN,HT,PHASE,&lt;INPUT&gt;,&lt;PHASE NAME&gt;,&lt;QUAD NAME&gt;
+</p>
 <ul>
   <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
 array</li>
   <li>&lt;PHASE NAME&gt; is the variable name given to the phase plot</li>
   <li>&lt;QUAD NAME&gt; is the variable name given to the quad plot</li>
 </ul>
-<br>
-<br>
-<span style="font-weight: bold;">INDICATOR,PLUGIN,HT,SINE,&lt;INPUT&gt;,&lt;SINE
-NAME&gt;,&lt;LEAD
-NAME&gt;</span><span style="font-weight: bold;"></span><span
- style="font-weight: bold;"></span><span style="font-weight: bold;"></span>
-<p></p>
+<hr>
+<h2 id="SINE">SINE</h2>
+<p class="api">
+INDICATOR,PLUGIN,HT,SINE,&lt;INPUT&gt;,&lt;SINE NAME&gt;,&lt;LEAD NAME&gt;
+</p>
 <ul>
   <li>&lt;INPUT&gt; is an <a href="InputTypes.html">input type</a>
 array</li>
   <li>&lt;SINE NAME&gt; is the variable name given to the sine plot</li>
   <li>&lt;LEAD NAME&gt; is the variable name given to the lead plot</li>
 </ul>
-<br>
-<h3><br>
-</h3>
-<span style="font-weight: bold;"></span>
+    </div>
 </body>
 </html>

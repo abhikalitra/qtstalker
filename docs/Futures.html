@@ -1,31 +1,37 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="Content-Type">
   <title>Script API - Futures Quotes</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen" />
+  <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-<h3 style="text-decoration: underline;">Script API - Futures Quotes<br>
-</h3>
-<br>
-<span style="font-weight: bold;">QUOTE,Futures,SET_QUOTE,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;DATE
-FORMAT&gt;,&lt;DATE&gt;,&lt;OPEN&gt;,&lt;HIGH&gt;,&lt;LOW&gt;,&lt;CLOSE&gt;,&lt;VOLUME&gt;,&lt;OPEN
-INTEREST&gt;</span><br>
-<br>
-This script command is used to
-save futures quotes into the database.<br>
+    <div id="content">
+      <div id="rightPanel">
+        <div id="version"></div>
+        <div id="toc">
+          <hr />
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toc.html">Table of Contents</a></li>
+        </div>
+      </div>
+<!-- Content -->
+<h1>Script API - Futures Quotes</h1>
+<h2 id="SET_QUOTE">SET_QUOTE</h2>
+<p class="api">
+QUOTE,Futures,SET_QUOTE,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;DATE FORMAT&gt;,&lt;DATE&gt;,&lt;OPEN&gt;,&lt;HIGH&gt;,&lt;LOW&gt;,&lt;CLOSE&gt;,&lt;VOLUME&gt;,&lt;OPEN INTEREST&gt;
+</p>
+<p>
+This script command is used to save futures quotes into the database.
+</p>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
-quote originates from. ie.
-'FCBT'<a
- href="file:///media/data/mystuff/prog/qtstalker/docs/exchanges.csv"><br>
-    </a></li>
+quote originates from. ie.  'FCBT'</li>
   <li>&lt;SYMBOL&gt; is the futures symbol ie. 'C_2010_Z'</li>
   <li>&lt;DATE FORMAT&gt; is the <a href="APIDateFormat.html">date
-format</a>.<a
- href="http://doc.qtsoftware.com/qdatetime.html#fromString-2"><br>
-    </a></li>
+format</a>.</li>
   <li>&lt;DATE&gt; this is the date value that conforms to the &lt;DATE
 FORMAT&gt; format</li>
   <li>&lt;OPEN&gt; open value</li>
@@ -33,26 +39,25 @@ FORMAT&gt; format</li>
   <li>&lt;LOW&gt; low value</li>
   <li>&lt;CLOSE&gt; close value</li>
   <li>&lt;VOLUME&gt; volume value</li>
-  <li>&lt;OPEN INTEREST&gt; open interest value<br>
-  </li>
+  <li>&lt;OPEN INTEREST&gt; open interest value</li>
 </ul>
-<br>
-For example. If we wanted to save a futures quote, the text would
-be:<br>
-<br>
+<p>
+For example. If we wanted to save a futures quote, the text would be:
+</p>
+<p>
 "QUOTE,Futures,SET_QUOTE,FCBT,C_2010_Z,yyyy-MM-dd
 HH:mm:ss,2010-03-09
-13:24:00,25.50,27.25,23.75,26.25,123456789,123456"<br>
-<br>
-On success a '0' is returned. On failure, 'ERROR' is
-returned.<br>
-<br>
-<span style="font-weight: bold;"></span><span style="font-weight: bold;"><br>
-</span>
-<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;"><br>
-</span><span style="font-weight: bold;"><br>
-QUOTE,Futures,SAVE_QUOTES</span><br>
-<br>
+13:24:00,25.50,27.25,23.75,26.25,123456789,123456"
+</p>
+<p>
+On success a '0' is returned. On failure, 'ERROR' is returned.
+</p>
+<hr>
+<h2 id="SAVE_QUOTES">SAVE_QUOTES</h2>
+<p class="api">
+QUOTE,Futures,SAVE_QUOTES
+</p>
+<p>
 This function will save quotes to the database after "SET_QUOTE"
 commands have been previously run in the script. If this command is not
 used after quote data has been "SET_QUOTE", then the quote data will be
@@ -60,63 +65,53 @@ used after quote data has been "SET_QUOTE", then the quote data will be
  style="font-style: italic; font-weight: bold; text-decoration: underline;">lost</span>
 and <span
  style="font-weight: bold; font-style: italic; text-decoration: underline;">NOT</span>
-saved to the database when the script completes.<br>
-<br>
+saved to the database when the script completes.
+</p>
+<p>
 <span style="font-weight: bold; font-style: italic;">Tip: </span>This
 command should be used once after all quotes within a running script
-have been added. You will get a 1000% speed increase.<br>
-<span style="font-weight: bold;"></span><br>
-On success a '0' is returned. On failure, 'ERROR' is
-returned.<br>
-<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<br>
-<span style="font-weight: bold;">QUOTE,Futures,DELETE,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;</span><br>
-<br>
-This function will permanently delete the symbol from the quotes
-database.<br>
+have been added. You will get a 1000% speed increase.
+</p>
+<p>
+On success a '0' is returned. On failure, 'ERROR' is returned.
+</p>
+<hr>
+<h2 id="DELETE">DELETE</h2>
+<p class="api">
+QUOTE,Futures,DELETE,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;
+</p>
+<p>
+This function will permanently delete the symbol from the quotes database.
+</p>
 <ul>
   <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> the
 symbol trades on. ie.
-'FCME'<br>
-  </li>
-  <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'SP_2010_Z'<br>
-  </li>
+'FCME'</li>
+  <li>&lt;SYMBOL&gt; is the futures symbol. ie. 'SP_2010_Z'</li>
 </ul>
-<br>
-For example. Deleting the 'SP_2010_Z'
-would be:<br>
-<br>
-"QUOTE,Futures,DELETE,FCME,SP_2010_Z"<br>
-<br>
-On success a '0' is returned. On failure, 'ERROR' is
-returned.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<p style="font-weight: bold;">QUOTE,Futures,GET_QUOTES,&lt;NAME&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;BAR
-FIELD&gt;,&lt;BAR
-LENGTH&gt;,&lt;DATE
-RANGE&gt;<br>
+<p>
+For example. Deleting the 'SP_2010_Z' would be:
+</p>
+<p>
+"QUOTE,Futures,DELETE,FCME,SP_2010_Z"
+</p>
+<p>
+On success a '0' is returned. On failure, 'ERROR' is returned.
+</p>
+<hr>
+<h2 id="GET_QUOTES">GET_QUOTES</h2>
+<p class="api">
+QUOTE,Futures,GET_QUOTES,&lt;NAME&gt;,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;BAR FIELD&gt;,&lt;BAR LENGTH&gt;,&lt;DATE RANGE&gt;
 </p>
 <p>This function will create an array of values using the bar field of
 the symbol requested. These values can be manipulated by the various
-INDICATOR group of script commands.<br>
+INDICATOR group of script commands.
 </p>
-<p style="font-weight: bold;">
-</p>
-<p>
-</p>
-<p style="font-weight: bold;"></p>
 <ul>
-  <li>&lt;NAME&gt; is the variable given to the array to create<br>
-  </li>
+  <li>&lt;NAME&gt; is the variable given to the array to create</li>
   <li>&lt;EXCHANGE&gt; is an <a href="exchanges.csv">exchange</a></li>
   <li>&lt;SYMBOL&gt; is the quote symbol name</li>
-  <li>&lt;BAR FIELD&gt; is the bar field:<br>
-  </li>
+  <li>&lt;BAR FIELD&gt; is the bar field:</li>
   <ul>
     <li>Open</li>
     <li>High</li>
@@ -150,50 +145,47 @@ INDICATOR group of script commands.<br>
     <li>10 Years</li>
     <li>25 Years</li>
     <li>50 Years</li>
-    <li>All<br>
-    </li>
+    <li>All</li>
   </ul>
 </ul>
-<br>
+<p>
 For example, if we wanted to create an array of daily close values from
-the SP_2010_Z symbol, we would issue the command:<br>
-<br>
-"QUOTE,Futures,GET_QUOTES,close_array,FCME,SP_2010_Z,Close,Daily,1 Year"<br>
-<br>
-On success a "0" is returned. On failure, "ERROR" is
-returned.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<span style="font-weight: bold;"><br>
-QUOTE,Futures,RENAME,&lt;OLD
-EXCHANGE&gt;,&lt;OLD SYMBOL&gt;,&lt;NEW EXCHANGE&gt;,&lt;NEW SYMBOL&gt;</span><br>
-<br>
-This function will rename an existing symbol in the quotes
-database.<br>
+the SP_2010_Z symbol, we would issue the command:
+</p>
+<p>
+"QUOTE,Futures,GET_QUOTES,close_array,FCME,SP_2010_Z,Close,Daily,1 Year"
+</p>
+<p>
+On success a "0" is returned. On failure, "ERROR" is returned.
+</p>
+<hr>
+<h2 id="RENAME">RENAME</h2>
+<p class="api">
+QUOTE,Futures,RENAME,&lt;OLD EXCHANGE&gt;,&lt;OLD SYMBOL&gt;,&lt;NEW EXCHANGE&gt;,&lt;NEW SYMBOL&gt;
+</p>
+<p>
+This function will rename an existing symbol in the quotes database.
+</p>
 <ul>
   <li>&lt;OLD EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a>
-of the
-symbol to be renamed e.g.
-'FCME'<br>
-  </li>
+of the symbol to be renamed e.g. 'FCME'</li>
   <li>&lt;OLD SYMBOL&gt; is the futures symbol to be renamed. e.g.
 'SP_2010_Z'</li>
   <li>&lt;NEW EXCHANGE&gt; is the new <a href="exchanges.csv">exchange</a>
-    <br>
   </li>
   <li>&lt;NEW SYMBOL&gt; is the new symbol</li>
 </ul>
-<br>
-On success a '0' is returned. On failure, 'ERROR' is
-returned.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<span style="font-weight: bold;"><br>
-QUOTE,Futures,SET_DETAIL,&lt;DETAIL&gt;,&lt;SYMBOL&gt;,&lt;EXCHANGE&gt;,&lt;VALUE&gt;</span><br>
-<br>
-This function will set individual details for a futures security.<br>
+<p>
+On success a '0' is returned. On failure, 'ERROR' is returned.
+</p>
+<hr>
+<h2 id="SET_DETAIL">SET_DETAIL</h2>
+<p class="api">
+QUOTE,Futures,SET_DETAIL,&lt;DETAIL&gt;,&lt;SYMBOL&gt;,&lt;EXCHANGE&gt;,&lt;VALUE&gt;
+</p>
+<p>
+This function will set individual details for a futures security.
+</p>
 <ul>
   <li>&lt;DETAIL&gt; the available details are:</li>
   <ul>
@@ -226,21 +218,20 @@ ie.
   </ul>
   <li>&lt;SYMBOL&gt; is the futures symbol e.g.
 'SP_2010_Z'</li>
-  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> <br>
-  </li>
-  <li>&lt;VALUE&gt; is the value to set<br>
-  </li>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a></li>
+  <li>&lt;VALUE&gt; is the value to set</li>
 </ul>
-<br>
-On success a '0' is returned. On failure, 'ERROR' is
-returned.<br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;"><br>
-<br>
-<span style="font-weight: bold;">QUOTE,Futures,GET_DETAIL,&lt;DETAIL&gt;,&lt;SYMBOL&gt;,&lt;EXCHANGE&gt;</span><br>
-<br>
-This function will return individual details for a futures security.<br>
+<p>
+On success a '0' is returned. On failure, 'ERROR' is returned.
+</p>
+<hr>
+<h2 id="GET_DETAIL">GET_DETAIL</h2>
+<p class="api">
+QUOTE,Futures,GET_DETAIL,&lt;DETAIL&gt;,&lt;SYMBOL&gt;,&lt;EXCHANGE&gt;
+</p>
+<p>
+This function will return individual details for a futures security.D<br>
+</p>
 <ul>
   <li>&lt;DETAIL&gt; the available details are:</li>
   <ul>
@@ -273,15 +264,13 @@ ie.
   </ul>
   <li>&lt;SYMBOL&gt; is the futures symbol e.g.
 'SP_2010_Z'</li>
-  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a> <br>
+  <li>&lt;EXCHANGE&gt; is the <a href="exchanges.csv">exchange</a>
   </li>
 </ul>
-<br>
+<p>
 On success the detail string requested is returned. On failure, 'ERROR'
-is
-returned.<br>
-<br>
-<br>
-<br>
+is returned.
+</p>
+    </div>
 </body>
 </html>
