@@ -32,7 +32,6 @@ TesterDataBase::TesterDataBase ()
   QString s = "CREATE TABLE IF NOT EXISTS TesterPlugin (";
   s.append("name TEXT PRIMARY KEY UNIQUE");
   s.append(", equity REAL");
-  s.append(", position INT");
   s.append(", period INT");
   s.append(", dateRange INT");
   s.append(", positionSize REAL");
@@ -69,6 +68,7 @@ TesterDataBase::TesterDataBase ()
   s.append(", exitShort TEXT");
   s.append(", indicatorSettings TEXT");
   s.append(", symbols TEXT");
+  s.append(", tradeList TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -92,22 +92,20 @@ void TesterDataBase::getRules (QStringList &l)
     l.append(q.value(0).toString());
 }
 
-int TesterDataBase::getRule (Setting &rule)
+int TesterDataBase::getRule (TesterSettings &rule)
 {
-  QString name;
-  rule.getData(_Name, name);
-  if (name.isEmpty())
+  if (rule.name().isEmpty())
     return 1;
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString k = "SELECT ";
-  k.append("equity,position,period,dateRange,positionSize,futuresMode,commission,commissionValue");
+  k.append("equity,period,dateRange,positionSize,futuresMode,commission,commissionValue");
   k.append(",long,longBuyPrice,longSellPrice,short,shortBuyPrice,shortSellPrice,maximumLossStop");
   k.append(",maximumLossType,maximumLossValue,maximumLossExit,profitTargetStop,profitTargetType");
   k.append(",profitTargetValue,profitTargetExit,trailingStop,trailingType,trailingValue,trailingExit");
   k.append(",barsStop,barsStopValue,barsStopExit,report,indicator,plotNames");
-  k.append(",enterLong,exitLong,enterShort,exitShort,indicatorSettings,symbols");
-  k.append(" FROM TesterPlugin WHERE name='" + name + "'");
+  k.append(",enterLong,exitLong,enterShort,exitShort,indicatorSettings,symbols,tradeList");
+  k.append(" FROM TesterPlugin WHERE name='" + rule.name() + "'");
   q.exec(k);
   if (q.lastError().isValid())
   {
@@ -119,53 +117,54 @@ int TesterDataBase::getRule (Setting &rule)
     return 1;
   
   int pos = 0;
-  rule.setData(_Equity, q.value(pos++).toDouble());
-  rule.setData(_Position, q.value(pos++).toInt());
-  rule.setData(_Period, q.value(pos++).toInt());
-  rule.setData(_DateRange, q.value(pos++).toInt());
-  rule.setData(_PositionSize, q.value(pos++).toDouble());
-  rule.setData(_FuturesMode, q.value(pos++).toInt());
-  rule.setData(_Commission, q.value(pos++).toInt());
-  rule.setData(_CommissionValue, q.value(pos++).toDouble());
-  rule.setData(_Long, q.value(pos++).toInt());
-  rule.setData(_LongBuyPrice, q.value(pos++).toInt());
-  rule.setData(_LongSellPrice, q.value(pos++).toInt());
-  rule.setData(_Short, q.value(pos++).toInt());
-  rule.setData(_ShortBuyPrice, q.value(pos++).toInt());
-  rule.setData(_ShortSellPrice, q.value(pos++).toInt());
-  rule.setData(_MaximumLossStop, q.value(pos++).toInt());
-  rule.setData(_MaximumLossType, q.value(pos++).toInt());
-  rule.setData(_MaximumLossValue, q.value(pos++).toDouble());
-  rule.setData(_MaximumLossExit, q.value(pos++).toInt());
-  rule.setData(_ProfitTargetStop, q.value(pos++).toInt());
-  rule.setData(_ProfitTargetType, q.value(pos++).toInt());
-  rule.setData(_ProfitTargetValue, q.value(pos++).toDouble());
-  rule.setData(_ProfitTargetExit, q.value(pos++).toInt());
-  rule.setData(_TrailingStop, q.value(pos++).toInt());
-  rule.setData(_TrailingType, q.value(pos++).toInt());
-  rule.setData(_TrailingValue, q.value(pos++).toDouble());
-  rule.setData(_TrailingExit, q.value(pos++).toInt());
-  rule.setData(_BarsStop, q.value(pos++).toInt());
-  rule.setData(_BarsStopValue, q.value(pos++).toDouble());
-  rule.setData(_BarsStopExit, q.value(pos++).toInt());
-  rule.setData(_Report, q.value(pos++).toString());
-  rule.setData(_Indicator, q.value(pos++).toString());
-  rule.setData(_PlotNames, q.value(pos++).toString());
-  rule.setData(_EnterLong, q.value(pos++).toString());
-  rule.setData(_ExitLong, q.value(pos++).toString());
-  rule.setData(_EnterShort, q.value(pos++).toString());
-  rule.setData(_ExitShort, q.value(pos++).toString());
-  rule.setData(_IndicatorSettings, q.value(pos++).toString());
-  rule.setData(_Symbols, q.value(pos++).toString());
+  rule.setEquity(q.value(pos++).toDouble());
+  rule.setPeriod(q.value(pos++).toInt());
+  rule.setDateRange(q.value(pos++).toInt());
+  rule.setPositionSize(q.value(pos++).toDouble());
+  rule.setFuturesMode(q.value(pos++).toInt());
+  rule.setCommission(q.value(pos++).toInt());
+  rule.setCommissionValue(q.value(pos++).toDouble());
+  rule.setLong(q.value(pos++).toInt());
+  rule.setLongBuyPrice(q.value(pos++).toInt());
+  rule.setLongSellPrice(q.value(pos++).toInt());
+  rule.setShort(q.value(pos++).toInt());
+  rule.setShortBuyPrice(q.value(pos++).toInt());
+  rule.setShortSellPrice(q.value(pos++).toInt());
+  rule.setMaximumLossStop(q.value(pos++).toInt());
+  rule.setMaximumLossType(q.value(pos++).toInt());
+  rule.setMaximumLossValue(q.value(pos++).toDouble());
+  rule.setMaximumLossExit(q.value(pos++).toInt());
+  rule.setProfitTargetStop(q.value(pos++).toInt());
+  rule.setProfitTargetType(q.value(pos++).toInt());
+  rule.setProfitTargetValue(q.value(pos++).toDouble());
+  rule.setProfitTargetExit(q.value(pos++).toInt());
+  rule.setTrailingStop(q.value(pos++).toInt());
+  rule.setTrailingType(q.value(pos++).toInt());
+  rule.setTrailingValue(q.value(pos++).toDouble());
+  rule.setTrailingExit(q.value(pos++).toInt());
+  rule.setBarsStop(q.value(pos++).toInt());
+  rule.setBarsStopValue(q.value(pos++).toDouble());
+  rule.setBarsStopExit(q.value(pos++).toInt());
+  rule.setReport(q.value(pos++).toString());
+  rule.setIndicator(q.value(pos++).toString());
+  rule.setPlotNames(q.value(pos++).toString().split(","));
+  rule.setEnterLong(q.value(pos++).toString().split(":"));
+  rule.setExitLong(q.value(pos++).toString().split(":"));
+  rule.setEnterShort(q.value(pos++).toString().split(":"));
+  rule.setExitShort(q.value(pos++).toString().split(":"));
+  QString d = q.value(pos++).toString();
+  Setting set;
+  set.parse(d);
+  rule.setIndicatorSettings(set);
+  rule.setSymbols(q.value(pos++).toString().split(","));
+  rule.setTrades(q.value(pos++).toString().split("|"));
   
   return 0;
 }
 
-void TesterDataBase::setRule (Setting &rule)
+void TesterDataBase::setRule (TesterSettings &rule)
 {
-  QString name;
-  rule.getData(_Name, name);
-  if (name.isEmpty())
+  if (rule.name().isEmpty())
   {
     qDebug() << "TesterDataBase::setRule: no name";
     return;
@@ -173,72 +172,55 @@ void TesterDataBase::setRule (Setting &rule)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO TesterPlugin (";
-  s.append("name,equity,position,period,dateRange,positionSize,futuresMode,commission,commissionValue");
+  s.append("name,equity,period,dateRange,positionSize,futuresMode,commission,commissionValue");
   s.append(",long,longBuyPrice,longSellPrice,short,shortBuyPrice,shortSellPrice,maximumLossStop");
   s.append(",maximumLossType,maximumLossValue,maximumLossExit,profitTargetStop,profitTargetType");
   s.append(",profitTargetValue,profitTargetExit,trailingStop,trailingType,trailingValue,trailingExit");
   s.append(",barsStop,barsStopValue,barsStopExit,report,indicator,plotNames");
-  s.append(",enterLong,exitLong,enterShort,exitShort,indicatorSettings,symbols");
+  s.append(",enterLong,exitLong,enterShort,exitShort,indicatorSettings,symbols,tradeList");
   s.append(") VALUES (");
-  s.append("'" + name + "'");
-  s.append("," + QString::number(rule.getDouble(_Equity)));
-  s.append("," + QString::number(rule.getInt(_Position)));
-  s.append("," + QString::number(rule.getInt(_Period)));
-  s.append("," + QString::number(rule.getInt(_DateRange)));
-  s.append("," + QString::number(rule.getDouble(_PositionSize)));
-  s.append("," + QString::number(rule.getInt(_FuturesMode)));
-  s.append("," + QString::number(rule.getInt(_Commission)));
-  s.append("," + QString::number(rule.getDouble(_CommissionValue)));
-  s.append("," + QString::number(rule.getInt(_Long)));
-  s.append("," + QString::number(rule.getInt(_LongBuyPrice)));
-  s.append("," + QString::number(rule.getInt(_LongSellPrice)));
-  s.append("," + QString::number(rule.getInt(_Short)));
-  s.append("," + QString::number(rule.getInt(_ShortBuyPrice)));
-  s.append("," + QString::number(rule.getInt(_ShortSellPrice)));
-  s.append("," + QString::number(rule.getInt(_MaximumLossStop)));
-  s.append("," + QString::number(rule.getInt(_MaximumLossType)));
-  s.append("," + QString::number(rule.getDouble(_MaximumLossValue)));
-  s.append("," + QString::number(rule.getInt(_MaximumLossExit)));
-  s.append("," + QString::number(rule.getInt(_ProfitTargetStop)));
-  s.append("," + QString::number(rule.getInt(_ProfitTargetType)));
-  s.append("," + QString::number(rule.getDouble(_ProfitTargetValue)));
-  s.append("," + QString::number(rule.getInt(_ProfitTargetExit)));
-  s.append("," + QString::number(rule.getInt(_TrailingStop)));
-  s.append("," + QString::number(rule.getInt(_TrailingType)));
-  s.append("," + QString::number(rule.getDouble(_TrailingValue)));
-  s.append("," + QString::number(rule.getInt(_TrailingExit)));
-  s.append("," + QString::number(rule.getInt(_BarsStop)));
-  s.append("," + QString::number(rule.getDouble(_BarsStopValue)));
-  s.append("," + QString::number(rule.getInt(_BarsStopExit)));
-
+  s.append("'" + rule.name() + "'");
+  s.append("," + QString::number(rule.equity()));
+  s.append("," + QString::number(rule.period()));
+  s.append("," + QString::number(rule.dateRange()));
+  s.append("," + QString::number(rule.positionSize()));
+  s.append("," + QString::number(rule.futuresMode()));
+  s.append("," + QString::number(rule.commission()));
+  s.append("," + QString::number(rule.commissionValue()));
+  s.append("," + QString::number(rule.getLong()));
+  s.append("," + QString::number(rule.longBuyPrice()));
+  s.append("," + QString::number(rule.longSellPrice()));
+  s.append("," + QString::number(rule.getShort()));
+  s.append("," + QString::number(rule.shortBuyPrice()));
+  s.append("," + QString::number(rule.shortSellPrice()));
+  s.append("," + QString::number(rule.maximumLossStop()));
+  s.append("," + QString::number(rule.maximumLossType()));
+  s.append("," + QString::number(rule.maximumLossValue()));
+  s.append("," + QString::number(rule.maximumLossExit()));
+  s.append("," + QString::number(rule.profitTargetStop()));
+  s.append("," + QString::number(rule.profitTargetType()));
+  s.append("," + QString::number(rule.profitTargetValue()));
+  s.append("," + QString::number(rule.profitTargetExit()));
+  s.append("," + QString::number(rule.trailingStop()));
+  s.append("," + QString::number(rule.trailingType()));
+  s.append("," + QString::number(rule.trailingValue()));
+  s.append("," + QString::number(rule.trailingExit()));
+  s.append("," + QString::number(rule.barsStop()));
+  s.append("," + QString::number(rule.barsStopValue()));
+  s.append("," + QString::number(rule.barsStopExit()));
+  s.append(",'" + rule.report() + "'");
+  s.append(",'" + rule.indicator() + "'");
+  s.append(",'" + rule.plotNames().join(",") + "'");
+  s.append(",'" + rule.enterLong().join(":") + "'");
+  s.append(",'" + rule.exitLong().join(":") + "'");
+  s.append(",'" + rule.enterShort().join(":") + "'");
+  s.append(",'" + rule.exitShort().join(":") + "'");
+  Setting set = rule.indicatorSettings();
   QString d;
-  rule.getData(_Report, d);
+  set.getString(d);
   s.append(",'" + d + "'");
-  
-  rule.getData(_Indicator, d);
-  s.append(",'" + d + "'");
-  
-  rule.getData(_PlotNames, d);
-  s.append(",'" + d + "'");
-  
-  rule.getData(_EnterLong, d);
-  s.append(",'" + d + "'");
-  
-  rule.getData(_ExitLong, d);
-  s.append(",'" + d + "'");
-  
-  rule.getData(_EnterShort, d);
-  s.append(",'" + d + "'");
-  
-  rule.getData(_ExitShort, d);
-  s.append(",'" + d + "'");
-  
-  rule.getData(_IndicatorSettings, d);
-  s.append(",'" + d + "'");
-
-  rule.getData(_Symbols, d);
-  s.append(",'" + d + "'");
-
+  s.append(",'" + rule.symbols().join(",") + "'");
+  s.append(",'" + rule.trades().join("|") + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

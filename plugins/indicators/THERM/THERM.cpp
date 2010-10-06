@@ -62,9 +62,6 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
   QColor c(s);
   line->setColor(c);
 
-  settings.getData(_Label, s);
-  line->setLabel(s);
-
   // therm ma
   int maPeriod = settings.getInt(_MAPeriod);
 
@@ -84,9 +81,6 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
   settings.getData(_MAColor, s);
   c.setNamedColor(s);
   ma->setColor(c);
-
-  settings.getData(_MALabel, s);
-  ma->setLabel(s);
 
   // assign therm colors
   double threshold = settings.getDouble(_Threshold);
@@ -128,11 +122,17 @@ int THERM::getIndicator (Indicator &ind, BarData &data)
     }
   }
 
+  settings.getData(_Label, s);
+  line->setLabel(s);
+
   line->setZ(0);
-  ind.setLine(0, line);
+  ind.setLine(s, line);
+
+  settings.getData(_MALabel, s);
+  ma->setLabel(s);
 
   ma->setZ(1);
-  ind.setLine(1, ma);
+  ind.setLine(s, ma);
 
   return 0;
 }

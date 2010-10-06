@@ -62,7 +62,7 @@ int AROON::getIndicator (Indicator &ind, BarData &data)
       line->setLabel(s);
 
       line->setZ(0);
-      ind.setLine(0, line);
+      ind.setLine(s, line);
       break;
     }
     default:
@@ -84,7 +84,7 @@ int AROON::getIndicator (Indicator &ind, BarData &data)
       line->setLabel(s);
       
       line->setZ(1);
-      ind.setLine(1, line);
+      ind.setLine(s, line);
 
       line = pl.at(1);
 
@@ -99,7 +99,7 @@ int AROON::getIndicator (Indicator &ind, BarData &data)
       line->setLabel(s);
       
       line->setZ(2);
-      ind.setLine(2, line);
+      ind.setLine(s, line);
       break;
     }
   }

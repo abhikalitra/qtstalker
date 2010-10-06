@@ -94,7 +94,7 @@ int RSI::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
 
   line->setZ(2);
-  ind.setLine(2, line);
+  ind.setLine(s, line);
 
   delete in;
 

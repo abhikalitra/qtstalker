@@ -108,9 +108,6 @@ int CANDLES::getIndicator (Indicator &ind, BarData &data)
   QColor c(s);
   line->setAllColor(c);
 
-  settings.getData(_Label, s);
-  line->setLabel(s);
-
   settings.getData(_Method, s);
   int method = _methodList.indexOf(s);
   if (method != _NONE)
@@ -138,9 +135,11 @@ int CANDLES::getIndicator (Indicator &ind, BarData &data)
     }
   }
 
+  settings.getData(_Label, s);
+  line->setLabel(s);
+  
   line->setZ(0);
-
-  ind.setLine(0, line);
+  ind.setLine(s, line);
 
   int period = settings.getInt(_MAPeriod);
   if (period > 1)
@@ -162,7 +161,7 @@ int CANDLES::getIndicator (Indicator &ind, BarData &data)
       settings.getData(_MALabel, s);
       ma->setLabel(s);
       
-      ind.setLine(1, ma);
+      ind.setLine(s, ma);
 
       ma->setZ(1);
     }
@@ -188,7 +187,7 @@ int CANDLES::getIndicator (Indicator &ind, BarData &data)
       settings.getData(_MA2Label, s);
       ma->setLabel(s);
       
-      ind.setLine(2, ma);
+      ind.setLine(s, ma);
       
       ma->setZ(2);
     }
@@ -214,7 +213,7 @@ int CANDLES::getIndicator (Indicator &ind, BarData &data)
       settings.getData(_MA3Label, s);
       ma->setLabel(s);
       
-      ind.setLine(3, ma);
+      ind.setLine(s, ma);
       
       ma->setZ(3);
     }
@@ -286,7 +285,17 @@ void CANDLES::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
+  
   settings.getData(_Label, s);
+  l.append(s);
+
+  settings.getData(_MALabel, s);
+  l.append(s);
+
+  settings.getData(_MA2Label, s);
+  l.append(s);
+
+  settings.getData(_MA3Label, s);
   l.append(s);
 }
 

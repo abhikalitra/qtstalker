@@ -53,7 +53,7 @@ int VFI::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
   
   line->setZ(0);
-  ind.setLine(0, line);
+  ind.setLine(s, line);
 
   return 0;
 }

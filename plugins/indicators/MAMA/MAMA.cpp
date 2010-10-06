@@ -64,9 +64,6 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
     Curve *line = new Curve;
     line->setType(Curve::HistogramBar);
 
-    settings.getData(_OSCLabel, s);
-    line->setLabel(s);
-
     QList<int> keys;
     mama->keys(keys);
 
@@ -88,8 +85,11 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
     QColor c(s);
     line->setColor(c);
 
+    settings.getData(_OSCLabel, s);
+    line->setLabel(s);
+
     line->setZ(0);
-    ind.setLine(0, line);
+    ind.setLine(s, line);
   }
   else
   {
@@ -115,7 +115,7 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
     mama->setLabel(s);
     
     mama->setZ(2);
-    ind.setLine(2, mama);
+    ind.setLine(s, mama);
 
     // fama line
     settings.getData(_FAMAPlot, s);
@@ -129,7 +129,7 @@ int MAMA::getIndicator (Indicator &ind, BarData &data)
     fama->setLabel(s);
     
     fama->setZ(3);
-    ind.setLine(3, fama);
+    ind.setLine(s, fama);
   }
 
   delete in;

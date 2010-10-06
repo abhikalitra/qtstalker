@@ -61,7 +61,7 @@ int PP::getIndicator (Indicator &ind, BarData &data)
       line->setLabel(s);
       
       line->setZ(1);
-      ind.setLine(1, line);
+      ind.setLine(s, line);
     }
   }
 
@@ -79,7 +79,7 @@ int PP::getIndicator (Indicator &ind, BarData &data)
       line->setLabel(s);
       
       line->setZ(2);
-      ind.setLine(2, line);
+      ind.setLine(s, line);
     }
   }
 
@@ -97,7 +97,7 @@ int PP::getIndicator (Indicator &ind, BarData &data)
       line->setLabel(s);
       
       line->setZ(3);
-      ind.setLine(3, line);
+      ind.setLine(s, line);
     }
   }
 
@@ -115,7 +115,7 @@ int PP::getIndicator (Indicator &ind, BarData &data)
       line->setLabel(s);
       
       line->setZ(4);
-      ind.setLine(4, line);
+      ind.setLine(s, line);
     }
   }
 
@@ -133,7 +133,7 @@ int PP::getIndicator (Indicator &ind, BarData &data)
       line->setLabel(s);
       
       line->setZ(5);
-      ind.setLine(5, line);
+      ind.setLine(s, line);
     }
   }
 
@@ -151,7 +151,7 @@ int PP::getIndicator (Indicator &ind, BarData &data)
       line->setLabel(s);
       
       line->setZ(6);
-      ind.setLine(6, line);
+      ind.setLine(s, line);
     }
   }
 

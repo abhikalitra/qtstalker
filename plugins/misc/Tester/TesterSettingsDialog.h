@@ -36,6 +36,7 @@
 #include "SymbolButton.h"
 #include "Indicator.h"
 #include "TesterThread.h"
+#include "TesterSettings.h"
 
 class TesterSettingsDialog : public Dialog
 {
@@ -49,11 +50,36 @@ class TesterSettingsDialog : public Dialog
     void createIndicatorPage ();
     void createReportPage ();
     void loadSettings ();
+    void updateTradeList ();
     
   public slots:
     void saveSettings ();
+    void equityChanged ();
+    void periodChanged ();
+    void dateRangeChanged ();
+    void positionSizeChanged ();
+    void commissionChanged ();
+    void commissionValueChanged ();
+    void symbolsChanged ();
+    void futuresModeChanged ();
+    void longBuyPriceChanged ();
+    void longSellPriceChanged ();
+    void shortBuyPriceChanged ();
+    void shortSellPriceChanged ();
+    void maximumLossTypeChanged ();
+    void maximumLossValueChanged ();
+    void maximumLossExitChanged ();
+    void profitTargetTypeChanged ();
+    void profitTargetValueChanged ();
+    void profitTargetExitChanged ();
+    void trailingTypeChanged ();
+    void trailingValueChanged ();
+    void trailingExitChanged ();
+    void barsStopValueChanged ();
+    void barsStopExitChanged ();
+    void plotItemChanged ();
     void ruleChanged ();
-    void done (QString);
+    void done (QString, QStringList);
     void longChanged (int);
     void shortChanged (int);
     void maximumLossStopChanged (int);
@@ -69,18 +95,16 @@ class TesterSettingsDialog : public Dialog
     void run ();
           
   private:
-    QString _name;
     int _saveFlag;
     int _runningFlag;
     TesterThread *_thread;
-    Setting _settings;
-    Setting _indicatorSettings;
+    TesterSettings _settings;
+    QTreeWidget *_tradeList;
     QPushButton *_saveButton;
     QPushButton *_runButton;
     QPushButton *_closeButton;
     SymbolButton *_symbols;
     QDoubleSpinBox *_equity;
-    QComboBox *_position;
     QComboBox *_period;
     QComboBox *_dateRange;
     QDoubleSpinBox *_positionSize;

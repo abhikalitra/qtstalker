@@ -58,6 +58,7 @@ void SymbolButton::symbolDialog2 (Group g)
 {
   _symbols = g;
   updateButtonText();
+  emit signalChanged();
 }
 
 void SymbolButton::updateButtonText ()

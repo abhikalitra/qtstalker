@@ -56,7 +56,7 @@ int BARS::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
 
   line->setZ(0);
-  ind.setLine(0, line);
+  ind.setLine(s, line);
 
   FunctionMA fma;
   
@@ -80,7 +80,7 @@ int BARS::getIndicator (Indicator &ind, BarData &data)
       ma->setLabel(s);
       
       ma->setZ(1);
-      ind.setLine(1, ma);
+      ind.setLine(s, ma);
     }
   }
 
@@ -104,7 +104,7 @@ int BARS::getIndicator (Indicator &ind, BarData &data)
       ma->setLabel(s);
       
       ma->setZ(2);
-      ind.setLine(2, ma);
+      ind.setLine(s, ma);
     }
   }
 
@@ -128,7 +128,7 @@ int BARS::getIndicator (Indicator &ind, BarData &data)
       ma->setLabel(s);
       
       ma->setZ(3);
-      ind.setLine(3, ma);
+      ind.setLine(s, ma);
     }
   }
   
@@ -220,7 +220,17 @@ void BARS::plotNames (Indicator &i, QStringList &l)
 
   Setting settings = i.settings();
   QString s;
+  
   settings.getData(_BarsLabel, s);
+  l.append(s);
+
+  settings.getData(_MALabel, s);
+  l.append(s);
+  
+  settings.getData(_MA2Label, s);
+  l.append(s);
+
+  settings.getData(_MA3Label, s);
   l.append(s);
 }
 

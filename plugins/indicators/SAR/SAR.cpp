@@ -65,7 +65,7 @@ int SAR::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
   
   line->setZ(1);
-  ind.setLine(1, line);
+  ind.setLine(s, line);
 
   return 0;
 }

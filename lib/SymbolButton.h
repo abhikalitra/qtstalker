@@ -32,6 +32,9 @@ class SymbolButton : public QPushButton
 {
   Q_OBJECT
 
+  signals:
+    void signalChanged ();
+
   public:
     SymbolButton (QWidget *);
     Group & getSymbols ();

@@ -102,7 +102,7 @@ int CORREL::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
 
   line->setZ(3);
-  ind.setLine(3, line);
+  ind.setLine(s, line);
 
   // 1 reference line
   Curve *hline = new Curve;

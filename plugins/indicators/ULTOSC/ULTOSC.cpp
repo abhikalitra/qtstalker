@@ -92,7 +92,7 @@ int ULTOSC::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
   
   line->setZ(3);
-  ind.setLine(3, line);
+  ind.setLine(s, line);
 
   return 0;
 }

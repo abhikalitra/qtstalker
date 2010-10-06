@@ -90,7 +90,7 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
   
   line->setZ(2);
-  ind.setLine(2, line);
+  ind.setLine(s, line);
 
   line = pl.at(1);
 
@@ -105,7 +105,7 @@ int STOCHS::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
   
   line->setZ(3);
-  ind.setLine(3, line);
+  ind.setLine(s, line);
 
   return 0;
 }

@@ -3589,19 +3589,11 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Positions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Long</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Long/Short</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3726,6 +3718,29 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TesterThread</name>
+    <message>
+        <source>Total Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Winning Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Losing Trades</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

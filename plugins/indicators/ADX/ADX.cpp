@@ -57,7 +57,7 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
     line->setLabel(s);
 
     line->setZ(0);
-    ind.setLine(0, line);
+    ind.setLine(s, line);
   }
 
   if (settings.getInt(_PDICheck))
@@ -78,7 +78,7 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
     line->setLabel(s);
     
     line->setZ(1);
-    ind.setLine(1, line);
+    ind.setLine(s, line);
   }
 
   if (settings.getInt(_ADXCheck))
@@ -99,7 +99,7 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
     line->setLabel(s);
     
     line->setZ(2);
-    ind.setLine(2, line);
+    ind.setLine(s, line);
   }
 
   if (settings.getInt(_ADXRCheck))
@@ -120,7 +120,7 @@ int ADX::getIndicator (Indicator &ind, BarData &data)
     line->setLabel(s);
     
     line->setZ(3);
-    ind.setLine(3, line);
+    ind.setLine(s, line);
   }
 
   return 0;

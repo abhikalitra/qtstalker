@@ -26,58 +26,15 @@
 #include <QStringList>
 
 #include "DataBase.h"
-#include "Setting.h"
+#include "TesterSettings.h"
 
 class TesterDataBase : public DataBase
 {
   public:
-    enum Parm
-    {
-      _Name,
-      _Equity,
-      _Position,
-      _Period,
-      _DateRange,
-      _PositionSize,
-      _FuturesMode,
-      _Commission,
-      _CommissionValue,
-      _Long,
-      _LongBuyPrice,
-      _LongSellPrice,
-      _Short,
-      _ShortBuyPrice,
-      _ShortSellPrice,
-      _MaximumLossStop,
-      _MaximumLossType,
-      _MaximumLossValue,
-      _MaximumLossExit,
-      _ProfitTargetStop,
-      _ProfitTargetType,
-      _ProfitTargetValue,
-      _ProfitTargetExit,
-      _TrailingStop,
-      _TrailingType,
-      _TrailingValue,
-      _TrailingExit,
-      _BarsStop,
-      _BarsStopValue,
-      _BarsStopExit,
-      _Report,
-      _Indicator,
-      _PlotNames,
-      _EnterLong,
-      _ExitLong,
-      _EnterShort,
-      _ExitShort,
-      _IndicatorSettings,
-      _Symbols
-    };
-    
     TesterDataBase ();
     void getRules (QStringList &);
-    int getRule (Setting &);
-    void setRule (Setting &);
+    int getRule (TesterSettings &);
+    void setRule (TesterSettings &);
     void deleteRule (QString &);
 };
 

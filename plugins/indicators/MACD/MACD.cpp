@@ -80,7 +80,7 @@ int MACD::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
   
   line->setZ(0);
-  ind.setLine(0, line);
+  ind.setLine(s, line);
 
   // plot macd
   line = pl.at(0);
@@ -96,7 +96,7 @@ int MACD::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
 
   line->setZ(1);
-  ind.setLine(1, line);
+  ind.setLine(s, line);
 
   // plot signal
   line = pl.at(1);
@@ -112,7 +112,7 @@ int MACD::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
   
   line->setZ(2);
-  ind.setLine(2, line);
+  ind.setLine(s, line);
 
   delete in;
 

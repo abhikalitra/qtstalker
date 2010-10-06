@@ -24,9 +24,20 @@
 
 #include <QThread>
 #include <QStringList>
+#include <QList>
 
 #include "Indicator.h"
-#include "Setting.h"
+#include "TesterSettings.h"
+#include "BarData.h"
+#include "TesterTrade.h"
+
+struct PlotRule
+{
+  int enable;
+  QString name;
+  int op;
+  QString value;
+};
 
 class TesterThread : public QThread
 {
@@ -34,19 +45,36 @@ class TesterThread : public QThread
 
   signals:
     void signalMessage (QString);
-    void signalDone (QString);
+    void signalDone (QString, QStringList);
     
   public:
-    TesterThread (QObject *, Indicator &, QStringList &, Setting &);
+    enum Status
+    {
+      _None,
+      _Long,
+      _Short,
+      _EnterLong,
+      _EnterShort,
+      _ExitTrade
+    };
+    
+    TesterThread (QObject *, TesterSettings &);
     void stop ();
+    int getBars (BarData &);
+    int getIndicator (BarData &, QStringList &);
+    int getRules (QStringList &, BarData &, QList<PlotRule> &);
+    int enterTradeCheck (QList<PlotRule> &, int index);
+    int enterTrade (QList<TesterTrade> &, BarData &, int index, int status);
+    void exitTrade (QList<TesterTrade> &, BarData &, int index);
+    double getCommission (TesterTrade &, int flag);
+    void getReport (QList<TesterTrade> &, QString &, QStringList &);
 
   protected:
     void run();
 
   private:
     Indicator _indicator;
-    QStringList _symbols;
-    Setting _settings;
+    TesterSettings _settings;
     int _stopFlag;
 };
 

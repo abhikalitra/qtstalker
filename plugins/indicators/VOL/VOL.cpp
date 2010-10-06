@@ -57,8 +57,7 @@ int VOL::getIndicator (Indicator &ind, BarData &data)
   line->setLabel(s);
 
   line->setZ(0);
-  
-  ind.setLine(0, line);
+  ind.setLine(s, line);
 
   // vol ma
   int period = set.getInt(MAPeriod);
@@ -81,8 +80,7 @@ int VOL::getIndicator (Indicator &ind, BarData &data)
     ma->setLabel(s);
     
     ma->setZ(1);
-    
-    ind.setLine(1, ma);
+    ind.setLine(s, ma);
   }
 
   return 0;

@@ -37,9 +37,9 @@
 TesterSettingsDialog::TesterSettingsDialog (QString name)
 {
   _saveFlag = FALSE;
-  _thread = 0;
   _runningFlag = 0;
-  _name = name;
+  _thread = 0;
+  _settings.setName(name);
 
   QString s = "Qtstalker: " + tr("Tester") + " - " + name;
   setWindowTitle(s);
@@ -71,14 +71,6 @@ TesterSettingsDialog::TesterSettingsDialog (QString name)
   createReportPage ();
 
   loadSettings();
-
-  longChanged (0);
-  shortChanged (0);
-  maximumLossStopChanged (0);
-  profitTargetStopChanged (0);
-  trailingStopChanged (0);
-  barsStopChanged (0);
-  indicatorChanged(0);
 }
 
 void TesterSettingsDialog::createGeneralPage ()
@@ -104,34 +96,20 @@ void TesterSettingsDialog::createGeneralPage ()
 
   _equity = new QDoubleSpinBox;
   _equity->setRange(0, 999999999);
-  _equity->setValue(10000);
-  connect(_equity, SIGNAL(valueChanged(double)), this, SLOT(ruleChanged()));
+  connect(_equity, SIGNAL(valueChanged(double)), this, SLOT(equityChanged()));
   grid->addWidget(_equity, row++, col--);
   
-  // positions
-  label = new QLabel(tr("Positions"));
-  grid->addWidget(label, row, col++);
-
-  QStringList l;
-  l << tr("Long") << tr("Short") << tr("Long/Short");
-  
-  _position = new QComboBox;
-  _position->addItems(l);
-  connect(_position, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
-  grid->addWidget(_position, row++, col--);
-
   // period
   label = new QLabel(tr("Period"));
   grid->addWidget(label, row, col++);
 
-  l.clear();
+  QStringList l;
   BarData bd;
   bd.getBarLengthList(l);
 
   _period = new QComboBox;
   _period->addItems(l);
-  _period->setCurrentIndex(6);
-  connect(_period, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_period, SIGNAL(activated(int)), this, SLOT(periodChanged()));
   grid->addWidget(_period, row++, col--);
 
   // bar range
@@ -145,7 +123,7 @@ void TesterSettingsDialog::createGeneralPage ()
   _dateRange = new QComboBox;
   _dateRange->addItems(l);
   _dateRange->setToolTip(tr("The amount of bars to use for the indicator"));
-  connect(_dateRange, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_dateRange, SIGNAL(activated(int)), this, SLOT(dateRangeChanged()));
   grid->addWidget(_dateRange, row++, col--);
   
 
@@ -155,8 +133,7 @@ void TesterSettingsDialog::createGeneralPage ()
 
   _positionSize = new QDoubleSpinBox;
   _positionSize->setRange(0.01, 1.0);
-  _positionSize->setValue(0.1);
-  connect(_positionSize, SIGNAL(valueChanged(double)), this, SLOT(ruleChanged()));
+  connect(_positionSize, SIGNAL(valueChanged(double)), this, SLOT(positionSizeChanged()));
   grid->addWidget(_positionSize, row++, col--);
 
   // commission
@@ -168,14 +145,12 @@ void TesterSettingsDialog::createGeneralPage ()
   
   _commission = new QComboBox;
   _commission->addItems(l);
-  _commission->setCurrentIndex(1);
-  connect(_commission, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_commission, SIGNAL(activated(int)), this, SLOT(commissionChanged()));
   grid->addWidget(_commission, row, col++);
 
   _commissionValue = new QDoubleSpinBox;
   _commissionValue->setRange(0.01, 9999);
-  _commissionValue->setValue(10);
-  connect(_commissionValue, SIGNAL(valueChanged(double)), this, SLOT(ruleChanged()));
+  connect(_commissionValue, SIGNAL(valueChanged(double)), this, SLOT(commissionValueChanged()));
   grid->addWidget(_commissionValue, row++, col);
   col -= 2;
 
@@ -184,6 +159,7 @@ void TesterSettingsDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   _symbols = new SymbolButton(w);
+  connect(_symbols, SIGNAL(signalChanged()), this, SLOT(symbolsChanged()));
   grid->addWidget(_symbols, row++, col--);
   
   // futures mode
@@ -191,7 +167,7 @@ void TesterSettingsDialog::createGeneralPage ()
   grid->addWidget(label, row, col++);
 
   _futuresMode = new QCheckBox;
-  connect(_futuresMode, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
+  connect(_futuresMode, SIGNAL(stateChanged(int)), this, SLOT(futuresModeChanged()));
   grid->addWidget(_futuresMode, row++, col--);
 
 
@@ -219,7 +195,6 @@ void TesterSettingsDialog::createTradesPage ()
 
   // long trades
   _long = new QCheckBox(tr("Long"));
-  connect(_long, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   connect(_long, SIGNAL(stateChanged(int)), this, SLOT(longChanged(int)));
   grid->addWidget(_long, row, col++);
   
@@ -229,35 +204,35 @@ void TesterSettingsDialog::createTradesPage ()
 
   _longBuyPrice = new QComboBox;
   _longBuyPrice->addItems(l);
-  connect(_longBuyPrice, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_longBuyPrice, SIGNAL(activated(int)), this, SLOT(longBuyPriceChanged()));
   grid->addWidget(_longBuyPrice, row, col++);
 
   _longSellPrice = new QComboBox;
   _longSellPrice->addItems(l);
-  _longSellPrice->setCurrentIndex(3);
-  connect(_longSellPrice, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_longSellPrice, SIGNAL(activated(int)), this, SLOT(longSellPriceChanged()));
   grid->addWidget(_longSellPrice, row++, col);
   col -= 2;
 
   // short trades
   _short = new QCheckBox(tr("Short"));
-  connect(_short, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   connect(_short, SIGNAL(stateChanged(int)), this, SLOT(shortChanged(int)));
   grid->addWidget(_short, row, col++);
 
   _shortBuyPrice = new QComboBox;
   _shortBuyPrice->addItems(l);
-  connect(_shortBuyPrice, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_shortBuyPrice, SIGNAL(activated(int)), this, SLOT(shortBuyPriceChanged()));
   grid->addWidget(_shortBuyPrice, row, col++);
 
   _shortSellPrice = new QComboBox;
   _shortSellPrice->addItems(l);
-  _shortSellPrice->setCurrentIndex(3);
-  connect(_shortSellPrice, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_shortSellPrice, SIGNAL(activated(int)), this, SLOT(shortSellPriceChanged()));
   grid->addWidget(_shortSellPrice, row++, col);
   col -= 2;
 
   vbox->addStretch();
+
+  longChanged(0);
+  shortChanged(0);
 
   _tabs->addTab(w, tr("Trades"));
 }
@@ -281,7 +256,6 @@ void TesterSettingsDialog::createStopsPage ()
 
   // maximum loss
   _maximumLossStop = new QCheckBox(tr("Maximum Loss"));
-  connect(_maximumLossStop, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   connect(_maximumLossStop, SIGNAL(stateChanged(int)), this, SLOT(maximumLossStopChanged(int)));
   grid->addWidget(_maximumLossStop, row, col++);
 
@@ -290,13 +264,12 @@ void TesterSettingsDialog::createStopsPage ()
 
   _maximumLossType = new QComboBox;
   _maximumLossType->addItems(l);
-  connect(_maximumLossType, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_maximumLossType, SIGNAL(activated(int)), this, SLOT(maximumLossTypeChanged()));
   grid->addWidget(_maximumLossType, row, col++);
 
   _maximumLossValue = new QDoubleSpinBox;
   _maximumLossValue->setRange(0.01, 99999999);
-  _maximumLossValue->setValue(0.1);
-  connect(_maximumLossValue, SIGNAL(valueChanged(double)), this, SLOT(ruleChanged()));
+  connect(_maximumLossValue, SIGNAL(valueChanged(double)), this, SLOT(maximumLossValueChanged()));
   grid->addWidget(_maximumLossValue, row, col++);
 
   QStringList l2;
@@ -305,80 +278,75 @@ void TesterSettingsDialog::createStopsPage ()
 
   _maximumLossExit = new QComboBox;
   _maximumLossExit->addItems(l2);
-  _maximumLossExit->setCurrentIndex(3);
-  connect(_maximumLossExit, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_maximumLossExit, SIGNAL(activated(int)), this, SLOT(maximumLossExitChanged()));
   grid->addWidget(_maximumLossExit, row++, col);
   col -= 3;
 
   // profit target
   _profitTargetStop = new QCheckBox(tr("Profit Target"));
-  connect(_profitTargetStop, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   connect(_profitTargetStop, SIGNAL(stateChanged(int)), this, SLOT(profitTargetStopChanged(int)));
   grid->addWidget(_profitTargetStop, row, col++);
 
   _profitTargetType = new QComboBox;
   _profitTargetType->addItems(l);
-  connect(_profitTargetType, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_profitTargetType, SIGNAL(activated(int)), this, SLOT(profitTargetTypeChanged()));
   grid->addWidget(_profitTargetType, row, col++);
 
   _profitTargetValue = new QDoubleSpinBox;
   _profitTargetValue->setRange(0.01, 99999999);
-  _profitTargetValue->setValue(0.1);
-  connect(_profitTargetValue, SIGNAL(valueChanged(double)), this, SLOT(ruleChanged()));
+  connect(_profitTargetValue, SIGNAL(valueChanged(double)), this, SLOT(profitTargetValueChanged()));
   grid->addWidget(_profitTargetValue, row, col++);
 
   _profitTargetExit = new QComboBox;
   _profitTargetExit->addItems(l2);
-  _profitTargetExit->setCurrentIndex(3);
-  connect(_profitTargetExit, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_profitTargetExit, SIGNAL(activated(int)), this, SLOT(profitTargetExitChanged()));
   grid->addWidget(_profitTargetExit, row++, col);
   col -= 3;
 
   // trailing stop
   _trailingStop = new QCheckBox(tr("Trailing"));
-  connect(_trailingStop, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   connect(_trailingStop, SIGNAL(stateChanged(int)), this, SLOT(trailingStopChanged(int)));
   grid->addWidget(_trailingStop, row, col++);
 
   _trailingType = new QComboBox;
   _trailingType->addItems(l);
-  connect(_trailingType, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_trailingType, SIGNAL(activated(int)), this, SLOT(trailingTypeChanged()));
   grid->addWidget(_trailingType, row, col++);
 
   _trailingValue = new QDoubleSpinBox;
   _trailingValue->setRange(0.01, 99999999);
-  _trailingValue->setValue(0.1);
-  connect(_trailingValue, SIGNAL(valueChanged(double)), this, SLOT(ruleChanged()));
+  connect(_trailingValue, SIGNAL(valueChanged(double)), this, SLOT(trailingValueChanged()));
   grid->addWidget(_trailingValue, row, col++);
 
   _trailingExit = new QComboBox;
   _trailingExit->addItems(l2);
-  _trailingExit->setCurrentIndex(3);
-  connect(_trailingExit, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_trailingExit, SIGNAL(activated(int)), this, SLOT(trailingExitChanged()));
   grid->addWidget(_trailingExit, row++, col);
   col -= 3;
 
   // bars stop
   _barsStop = new QCheckBox(tr("Bars"));
-  connect(_barsStop, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   connect(_barsStop, SIGNAL(stateChanged(int)), this, SLOT(barsStopChanged(int)));
   grid->addWidget(_barsStop, row, col++);
 
   _barsStopValue = new QSpinBox;
   _barsStopValue->setRange(1, 99999999);
-  _barsStopValue->setValue(50);
-  connect(_barsStopValue, SIGNAL(valueChanged(int)), this, SLOT(ruleChanged()));
+  connect(_barsStopValue, SIGNAL(valueChanged(int)), this, SLOT(barsStopValueChanged()));
   grid->addWidget(_barsStopValue, row, col++);
 
   _barsStopExit = new QComboBox;
   _barsStopExit->addItems(l2);
-  _barsStopExit->setCurrentIndex(3);
-  connect(_barsStopExit, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
+  connect(_barsStopExit, SIGNAL(activated(int)), this, SLOT(barsStopExitChanged()));
   grid->addWidget(_barsStopExit, row++, col);
   col -= 2;
 
   vbox->addStretch();
 
+  maximumLossStopChanged(0);
+  profitTargetStopChanged(0);
+  trailingStopChanged(0);
+  barsStopChanged(0);
+  
   _tabs->addTab(w, tr("Stops"));
 }
 
@@ -393,7 +361,7 @@ void TesterSettingsDialog::createIndicatorPage ()
 
   QGridLayout *grid = new QGridLayout;
   grid->setMargin(0);
-  grid->setSpacing(2);
+  grid->setSpacing(10);
   grid->setColumnStretch(3, 1);
   vbox->addLayout(grid);
 
@@ -410,7 +378,7 @@ void TesterSettingsDialog::createIndicatorPage ()
 
   _indicator = new QComboBox;
   _indicator->addItems(l);
-  _indicator->setCurrentIndex(0);
+  _indicator->setCurrentIndex(-1);
   connect(_indicator, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   connect(_indicator, SIGNAL(activated(int)), this, SLOT(indicatorChanged(int)));
   grid->addWidget(_indicator, row, col++);
@@ -520,6 +488,17 @@ void TesterSettingsDialog::createReportPage ()
   vbox->setSpacing(2);
   w->setLayout(vbox);
 
+  QStringList l;
+  l << tr("Type") << tr("Volume") << tr("Enter Date") << tr("Enter Price") << tr("Exit Date");
+  l << tr("Exit Price") << tr("Profit") << tr("Signal");
+  
+  _tradeList = new QTreeWidget;
+  _tradeList->setSortingEnabled(FALSE);
+  _tradeList->setRootIsDecorated(FALSE);
+  _tradeList->setHeaderLabels(l);
+  _tradeList->setSelectionMode(QAbstractItemView::SingleSelection);
+  vbox->addWidget(_tradeList);
+
   _report = new QTextEdit;
   _report->setReadOnly(TRUE);
   vbox->addWidget(_report);
@@ -529,161 +508,106 @@ void TesterSettingsDialog::createReportPage ()
 
 void TesterSettingsDialog::loadSettings ()
 {
-  _settings.clear();
-  _settings.setData(TesterDataBase::_Name, _name);
-  
   TesterDataBase db;
-  if (db.getRule(_settings))
-    return;
+  db.getRule(_settings);
 
-  _equity->setValue(_settings.getDouble(TesterDataBase::_Equity));
-  _position->setCurrentIndex(_settings.getInt(TesterDataBase::_Position));
-  _period->setCurrentIndex(_settings.getInt(TesterDataBase::_Period));
-  _dateRange->setCurrentIndex(_settings.getInt(TesterDataBase::_DateRange));
-  _positionSize->setValue(_settings.getDouble(TesterDataBase::_PositionSize));
-  _futuresMode->setChecked(_settings.getInt(TesterDataBase::_FuturesMode));
-  _commission->setCurrentIndex(_settings.getInt(TesterDataBase::_Commission));
-  _commissionValue->setValue(_settings.getDouble(TesterDataBase::_CommissionValue));
-  _long->setChecked(_settings.getInt(TesterDataBase::_Long));
-  _longBuyPrice->setCurrentIndex(_settings.getInt(TesterDataBase::_LongBuyPrice));
-  _longSellPrice->setCurrentIndex(_settings.getInt(TesterDataBase::_LongSellPrice));
-  _short->setChecked(_settings.getInt(TesterDataBase::_Short));
-  _shortBuyPrice->setCurrentIndex(_settings.getInt(TesterDataBase::_ShortBuyPrice));
-  _shortSellPrice->setCurrentIndex(_settings.getInt(TesterDataBase::_ShortSellPrice));
-  _maximumLossStop->setChecked(_settings.getInt(TesterDataBase::_MaximumLossStop));
-  _maximumLossType->setCurrentIndex(_settings.getInt(TesterDataBase::_MaximumLossType));
-  _maximumLossValue->setValue(_settings.getDouble(TesterDataBase::_MaximumLossValue));
-  _maximumLossExit->setCurrentIndex(_settings.getInt(TesterDataBase::_MaximumLossExit));
-  _profitTargetStop->setChecked(_settings.getInt(TesterDataBase::_ProfitTargetStop));
-  _profitTargetType->setCurrentIndex(_settings.getInt(TesterDataBase::_ProfitTargetType));
-  _profitTargetValue->setValue(_settings.getDouble(TesterDataBase::_ProfitTargetValue));
-  _profitTargetExit->setCurrentIndex(_settings.getInt(TesterDataBase::_ProfitTargetExit));
-  _trailingStop->setChecked(_settings.getInt(TesterDataBase::_TrailingStop));
-  _trailingType->setCurrentIndex(_settings.getInt(TesterDataBase::_TrailingType));
-  _trailingValue->setValue(_settings.getDouble(TesterDataBase::_TrailingValue));
-  _trailingExit->setCurrentIndex(_settings.getInt(TesterDataBase::_TrailingExit));
-  _barsStop->setChecked(_settings.getInt(TesterDataBase::_BarsStop));
-  _barsStopValue->setValue(_settings.getDouble(TesterDataBase::_BarsStopValue));
-  _barsStopExit->setCurrentIndex(_settings.getInt(TesterDataBase::_BarsStopExit));
+  _equity->setValue(_settings.equity());
+  _period->setCurrentIndex(_settings.period());
+  _dateRange->setCurrentIndex(_settings.dateRange());
+  _positionSize->setValue(_settings.positionSize());
+  _futuresMode->setChecked(_settings.futuresMode());
+  _commission->setCurrentIndex(_settings.commission());
+  _commissionValue->setValue(_settings.commissionValue());
+  _long->setCheckState((Qt::CheckState) _settings.getLong());
+  _longBuyPrice->setCurrentIndex(_settings.longBuyPrice());
+  _longSellPrice->setCurrentIndex(_settings.longSellPrice());
+  _short->setCheckState((Qt::CheckState) _settings.getShort());
+  _shortBuyPrice->setCurrentIndex(_settings.shortBuyPrice());
+  _shortSellPrice->setCurrentIndex(_settings.shortSellPrice());
+  _maximumLossStop->setCheckState((Qt::CheckState) _settings.maximumLossStop());
+  _maximumLossType->setCurrentIndex(_settings.maximumLossType());
+  _maximumLossValue->setValue(_settings.maximumLossValue());
+  _maximumLossExit->setCurrentIndex(_settings.maximumLossExit());
+  _profitTargetStop->setCheckState((Qt::CheckState) _settings.profitTargetStop());
+  _profitTargetType->setCurrentIndex(_settings.profitTargetType());
+  _profitTargetValue->setValue(_settings.profitTargetValue());
+  _profitTargetExit->setCurrentIndex(_settings.profitTargetExit());
+  _trailingStop->setCheckState((Qt::CheckState) _settings.trailingStop());
+  _trailingType->setCurrentIndex(_settings.trailingType());
+  _trailingValue->setValue(_settings.trailingValue());
+  _trailingExit->setCurrentIndex(_settings.trailingExit());
+  _barsStop->setCheckState((Qt::CheckState) _settings.barsStop());
+  _barsStopValue->setValue(_settings.barsStopValue());
+  _barsStopExit->setCurrentIndex(_settings.barsStopExit());
+  _indicator->setCurrentIndex(_indicator->findText(_settings.indicator()));
 
-  QString d;
-  _settings.getData(TesterDataBase::_Report, d);
   _report->clear();
-  _report->append(d);
-  
-  _settings.getData(TesterDataBase::_Indicator, d);
-  _indicator->setCurrentIndex(_indicator->findText(d));
+  _report->append(_settings.report());
 
-  _settings.getData(TesterDataBase::_PlotNames, d);
-  QStringList plotNames = d.split(",");
-
-  _enterLong->clear();
-  _settings.getData(TesterDataBase::_EnterLong, d);
-  QStringList l = d.split(":");
-  int loop = 0;
-  for (; loop < l.count(); loop++)
+  QStringList l = _settings.enterLong();
+  if (l.count())
   {
-    QStringList l2 = l.at(loop).split(",");
-    addPlotItem(_enterLong, plotNames, l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+    _enterLong->clear();
+    
+    int loop = 0;
+    for (; loop < l.count(); loop++)
+    {
+      QStringList l2 = l.at(loop).split(",");
+      addPlotItem(_enterLong, _settings.plotNames(), l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+    }
   }
   
-  _exitLong->clear();
-  _settings.getData(TesterDataBase::_ExitLong, d);
-  l = d.split(":");
-  loop = 0;
-  for (; loop < l.count(); loop++)
+  l = _settings.exitLong();
+  if (l.count())
   {
-    QStringList l2 = l.at(loop).split(",");
-    addPlotItem(_exitLong, plotNames, l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+    _exitLong->clear();
+    
+    int loop = 0;
+    for (; loop < l.count(); loop++)
+    {
+      QStringList l2 = l.at(loop).split(",");
+      addPlotItem(_exitLong, _settings.plotNames(), l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+    }
   }
 
-  _enterShort->clear();
-  _settings.getData(TesterDataBase::_EnterShort, d);
-  l = d.split(":");
-  loop = 0;
-  for (; loop < l.count(); loop++)
+  l = _settings.enterShort();
+  if (l.count())
   {
-    QStringList l2 = l.at(loop).split(",");
-    addPlotItem(_enterShort, plotNames, l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+    _enterShort->clear();
+    
+    int loop = 0;
+    for (; loop < l.count(); loop++)
+    {
+      QStringList l2 = l.at(loop).split(",");
+      addPlotItem(_enterShort, _settings.plotNames(), l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+    }
   }
 
-  _exitShort->clear();
-  _settings.getData(TesterDataBase::_ExitShort, d);
-  l = d.split(":");
-  loop = 0;
-  for (; loop < l.count(); loop++)
+  l = _settings.exitShort();
+  if (l.count())
   {
-    QStringList l2 = l.at(loop).split(",");
-    addPlotItem(_exitShort, plotNames, l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+    _exitShort->clear();
+    
+    int loop = 0;
+    for (; loop < l.count(); loop++)
+    {
+      QStringList l2 = l.at(loop).split(",");
+      addPlotItem(_exitShort, _settings.plotNames(), l2.at(0), l2.at(1), l2.at(2), l2.at(3));
+    }
   }
 
-  _settings.getData(TesterDataBase::_IndicatorSettings, d);
-  _indicatorSettings.clear();
-  _indicatorSettings.parse(d);
+  _symbols->setSymbolList(_settings.symbols());
 
-  _settings.getData(TesterDataBase::_Symbols, d);
-  l = d.split(",");
-  _symbols->setSymbolList(l);
+  updateTradeList();
+
+  _saveFlag = 0;
+  _saveButton->setEnabled(FALSE);
 }
 
 void TesterSettingsDialog::saveSettings ()
 {
   if (! _saveFlag)
     return;
-  
-  _settings.setData(TesterDataBase::_Name, _name);
-  _settings.setData(TesterDataBase::_Equity, _equity->value());
-  _settings.setData(TesterDataBase::_Position, _position->currentIndex());
-  _settings.setData(TesterDataBase::_Period, _period->currentIndex());
-  _settings.setData(TesterDataBase::_DateRange, _dateRange->currentIndex());
-  _settings.setData(TesterDataBase::_PositionSize, _positionSize->value());
-  _settings.setData(TesterDataBase::_FuturesMode, _futuresMode->isChecked());
-  _settings.setData(TesterDataBase::_Commission, _commission->currentIndex());
-  _settings.setData(TesterDataBase::_CommissionValue, _commissionValue->value());
-  _settings.setData(TesterDataBase::_Long, _long->isChecked());
-  _settings.setData(TesterDataBase::_LongBuyPrice, _longBuyPrice->currentIndex());
-  _settings.setData(TesterDataBase::_LongSellPrice, _longSellPrice->currentIndex());
-  _settings.setData(TesterDataBase::_Short, _short->isChecked());
-  _settings.setData(TesterDataBase::_ShortBuyPrice, _shortBuyPrice->currentIndex());
-  _settings.setData(TesterDataBase::_ShortSellPrice, _shortSellPrice->currentIndex());
-  _settings.setData(TesterDataBase::_MaximumLossStop, _maximumLossStop->isChecked());
-  _settings.setData(TesterDataBase::_MaximumLossType, _maximumLossType->currentIndex());
-  _settings.setData(TesterDataBase::_MaximumLossValue, _maximumLossValue->value());
-  _settings.setData(TesterDataBase::_MaximumLossExit, _maximumLossExit->currentIndex());
-  _settings.setData(TesterDataBase::_ProfitTargetStop, _profitTargetStop->isChecked());
-  _settings.setData(TesterDataBase::_ProfitTargetType, _profitTargetType->currentIndex());
-  _settings.setData(TesterDataBase::_ProfitTargetValue, _profitTargetValue->value());
-  _settings.setData(TesterDataBase::_ProfitTargetExit, _profitTargetExit->currentIndex());
-  _settings.setData(TesterDataBase::_TrailingStop, _trailingStop->isChecked());
-  _settings.setData(TesterDataBase::_TrailingType, _trailingType->currentIndex());
-  _settings.setData(TesterDataBase::_TrailingValue, _trailingValue->value());
-  _settings.setData(TesterDataBase::_TrailingExit, _trailingExit->currentIndex());
-  _settings.setData(TesterDataBase::_BarsStop, _barsStop->isChecked());
-  _settings.setData(TesterDataBase::_BarsStopValue, _barsStopValue->value());
-  _settings.setData(TesterDataBase::_BarsStopExit, _barsStopExit->currentIndex());
-  _settings.setData(TesterDataBase::_Report, _report->toPlainText());
-  _settings.setData(TesterDataBase::_Indicator, _indicator->currentText());
-
-  QStringList plotNames, l;
-  getPlotItems(_enterLong, plotNames, l);
-  _settings.setData(TesterDataBase::_PlotNames, plotNames.join(","));
-  _settings.setData(TesterDataBase::_EnterLong, l.join(":"));
-
-  getPlotItems(_exitLong, plotNames, l);
-  _settings.setData(TesterDataBase::_ExitLong, l.join(":"));
-
-  getPlotItems(_enterShort, plotNames, l);
-  _settings.setData(TesterDataBase::_EnterShort, l.join(":"));
-
-  getPlotItems(_exitShort, plotNames, l);
-  _settings.setData(TesterDataBase::_ExitShort, l.join(":"));
-
-  QString d;
-  _indicatorSettings.getString(d);
-  _settings.setData(TesterDataBase::_IndicatorSettings, d);
-
-  _symbols->symbolList(l);
-  _settings.setData(TesterDataBase::_Symbols, l.join(","));
 
   TesterDataBase db;
   db.transaction();
@@ -705,19 +629,158 @@ void TesterSettingsDialog::getPlotItems (QTreeWidget *tree, QStringList &plotNam
     QTreeWidgetItem *item = tree->topLevelItem(loop);
 
     QStringList l;
-    l << QString::number(item->checkState(0));
+    QCheckBox *check = (QCheckBox *) tree->itemWidget(item, 0);
+    l << QString::number(check->checkState());
 
     l << item->text(1);
     plotNames.append(item->text(1));
 
     QComboBox *cb = (QComboBox *) tree->itemWidget(item, 2);
-    l << cb->currentText();
+    l << QString::number(cb->currentIndex());
 
     cb = (QComboBox *) tree->itemWidget(item, 3);
     l << cb->currentText();
 
     items << l.join(",");
   }
+}
+
+void TesterSettingsDialog::barsStopExitChanged ()
+{
+  _settings.setBarsStopExit(_barsStopExit->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::barsStopValueChanged ()
+{
+  _settings.setBarsStopValue(_barsStopValue->value());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::trailingExitChanged ()
+{
+  _settings.setTrailingExit(_trailingExit->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::trailingValueChanged ()
+{
+  _settings.setTrailingValue(_trailingValue->value());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::trailingTypeChanged ()
+{
+  _settings.setTrailingType(_trailingType->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::profitTargetExitChanged ()
+{
+  _settings.setProfitTargetExit(_profitTargetExit->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::profitTargetValueChanged ()
+{
+  _settings.setProfitTargetValue(_profitTargetValue->value());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::profitTargetTypeChanged ()
+{
+  _settings.setProfitTargetType(_profitTargetType->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::maximumLossExitChanged ()
+{
+  _settings.setMaximumLossExit(_maximumLossExit->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::maximumLossValueChanged ()
+{
+  _settings.setMaximumLossValue(_maximumLossValue->value());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::maximumLossTypeChanged ()
+{
+  _settings.setMaximumLossType(_maximumLossType->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::shortSellPriceChanged ()
+{
+  _settings.setShortSellPrice(_shortSellPrice->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::shortBuyPriceChanged ()
+{
+  _settings.setShortBuyPrice(_shortBuyPrice->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::longSellPriceChanged ()
+{
+  _settings.setLongSellPrice(_longSellPrice->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::longBuyPriceChanged ()
+{
+  _settings.setLongBuyPrice(_longBuyPrice->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::futuresModeChanged ()
+{
+  _settings.setFuturesMode(_futuresMode->isChecked());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::symbolsChanged ()
+{
+  _symbols->symbolList(_settings.symbols());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::commissionValueChanged ()
+{
+  _settings.setCommissionValue(_commissionValue->value());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::commissionChanged ()
+{
+  _settings.setCommission(_commission->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::positionSizeChanged ()
+{
+  _settings.setPositionSize(_positionSize->value());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::dateRangeChanged ()
+{
+  _settings.setDateRange(_dateRange->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::periodChanged ()
+{
+  _settings.setPeriod(_period->currentIndex());
+  ruleChanged();
+}
+
+void TesterSettingsDialog::equityChanged ()
+{
+  _settings.setEquity(_equity->value());
+  ruleChanged();
 }
 
 void TesterSettingsDialog::ruleChanged ()
@@ -728,41 +791,63 @@ void TesterSettingsDialog::ruleChanged ()
 
 void TesterSettingsDialog::longChanged (int state)
 {
+  _settings.setLong(state);
   _longBuyPrice->setEnabled(state);
   _longSellPrice->setEnabled(state);
+  ruleChanged();
 }
 
 void TesterSettingsDialog::shortChanged (int state)
 {
+  _settings.setShort(state);
   _shortBuyPrice->setEnabled(state);
   _shortSellPrice->setEnabled(state);
+  ruleChanged();
 }
 
 void TesterSettingsDialog::maximumLossStopChanged (int state)
 {
+  _settings.setMaximumLossStop(state);
   _maximumLossType->setEnabled(state);
   _maximumLossValue->setEnabled(state);
   _maximumLossExit->setEnabled(state);
+  ruleChanged();
 }
 
 void TesterSettingsDialog::profitTargetStopChanged (int state)
 {
+  _settings.setProfitTargetStop(state);
   _profitTargetType->setEnabled(state);
   _profitTargetValue->setEnabled(state);
   _profitTargetExit->setEnabled(state);
+  ruleChanged();
 }
 
 void TesterSettingsDialog::trailingStopChanged (int state)
 {
+  _settings.setTrailingStop(state);
   _trailingType->setEnabled(state);
   _trailingValue->setEnabled(state);
   _trailingExit->setEnabled(state);
+  ruleChanged();
 }
 
 void TesterSettingsDialog::barsStopChanged (int state)
 {
+  _settings.setBarsStop(state);
   _barsStopValue->setEnabled(state);
   _barsStopExit->setEnabled(state);
+  ruleChanged();
+}
+
+void TesterSettingsDialog::plotItemChanged ()
+{
+  getPlotItems(_enterLong, _settings.plotNames(), _settings.enterLong());
+  getPlotItems(_exitLong, _settings.plotNames(), _settings.exitLong());
+  getPlotItems(_enterShort, _settings.plotNames(), _settings.enterShort());
+  getPlotItems(_exitShort, _settings.plotNames(), _settings.exitShort());
+
+  ruleChanged();
 }
 
 void TesterSettingsDialog::indicatorChanged (int)
@@ -775,9 +860,11 @@ void TesterSettingsDialog::indicatorChanged (int)
     return;
   }
 
+  _settings.setIndicator(_indicator->currentText());
+
   Indicator i;
   plugin->defaults(i);
-  _indicatorSettings = i.settings();
+  _settings.setIndicatorSettings(i.settings());
   
   QStringList plotNames;
   plugin->plotNames(i, plotNames);
@@ -790,11 +877,13 @@ void TesterSettingsDialog::indicatorChanged (int)
   int loop = 0;
   for (; loop < plotNames.count(); loop++)
   {
-    addPlotItem(_enterLong, plotNames, QString("0"), plotNames.at(loop), QString("<"), QString("Close"));
-    addPlotItem(_exitLong, plotNames, QString("0"), plotNames.at(loop), QString("<"), QString("Close"));
-    addPlotItem(_enterShort, plotNames, QString("0"), plotNames.at(loop), QString("<"), QString("Close"));
-    addPlotItem(_exitShort, plotNames, QString("0"), plotNames.at(loop), QString("<"), QString("Close"));
+    addPlotItem(_enterLong, plotNames, QString("0"), plotNames.at(loop), QString("0"), QString("Close"));
+    addPlotItem(_exitLong, plotNames, QString("0"), plotNames.at(loop), QString("0"), QString("Close"));
+    addPlotItem(_enterShort, plotNames, QString("0"), plotNames.at(loop), QString("0"), QString("Close"));
+    addPlotItem(_exitShort, plotNames, QString("0"), plotNames.at(loop), QString("0"), QString("Close"));
   }
+
+  plotItemChanged();
 }
 
 void TesterSettingsDialog::addPlotItem (QTreeWidget *tree, QStringList &plotNames, QString enable,
@@ -802,15 +891,19 @@ void TesterSettingsDialog::addPlotItem (QTreeWidget *tree, QStringList &plotName
 {
   QTreeWidgetItem *item = new QTreeWidgetItem(tree);
 
-  item->setCheckState(0, (Qt::CheckState) enable.toInt());
-
+  QCheckBox *check = new QCheckBox;
+  check->setCheckState((Qt::CheckState) enable.toInt());
+  tree->setItemWidget(item, 0, check);
+  connect(check, SIGNAL(stateChanged(int)), this, SLOT(plotItemChanged()));
+  
   item->setText(1, pn);
 
   QComboBox *cb = new QComboBox;
   Operator op;
   cb->addItems(op.list());
-  cb->setCurrentIndex(cb->findText(oper));
+  cb->setCurrentIndex(oper.toInt());
   tree->setItemWidget(item, 2, cb);
+  connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(plotItemChanged()));
 
   QComboBox *vc = new QComboBox;
   vc->setEditable(TRUE);
@@ -823,9 +916,10 @@ void TesterSettingsDialog::addPlotItem (QTreeWidget *tree, QStringList &plotName
   vc->clearEditText();
   vc->setCurrentIndex(vc->findText(val));
   tree->setItemWidget(item, 3, vc);
+  connect(vc, SIGNAL(currentIndexChanged(int)), this, SLOT(plotItemChanged()));
 
   int loop = 0;
-  for (; loop < tree->topLevelItemCount(); loop++)
+  for (; loop < tree->columnCount(); loop++)
     tree->resizeColumnToContents(loop);
 }
 
@@ -840,13 +934,13 @@ void TesterSettingsDialog::editIndicator ()
   }
 
   Indicator i;
-  if (! _indicatorSettings.count())
+  if (! _settings.indicatorSettings().count())
   {
     plug->defaults(i);
-    _indicatorSettings = i.settings();
+    _settings.setIndicatorSettings(i.settings());
   }
   else
-    i.setSettings(_indicatorSettings);
+    i.setSettings(_settings.indicatorSettings());
 
   IndicatorPluginDialog *dialog = plug->dialog(i);
   if (! dialog)
@@ -862,7 +956,7 @@ void TesterSettingsDialog::editIndicator ()
 
 void TesterSettingsDialog::editIndicator2 (Indicator i)
 {
-  _indicatorSettings = i.settings();
+  _settings.setIndicatorSettings(i.settings());
 }
 
 void TesterSettingsDialog::closeDialog ()
@@ -876,31 +970,46 @@ void TesterSettingsDialog::closeDialog ()
   }
 }
 
-void TesterSettingsDialog::done (QString report)
+void TesterSettingsDialog::done (QString report, QStringList trades)
 {
   _runningFlag = 0;
-  this->setEnabled(FALSE);
+  this->setEnabled(TRUE);
 
   _closeButton->setText(tr("Close"));
 
   _report->clear();
   _report->append(report);
+  _settings.setReport(report);
+
+  _settings.setTrades(trades);
+  updateTradeList();
+
   ruleChanged();
+}
+
+void TesterSettingsDialog::updateTradeList ()
+{
+  _tradeList->clear();
+
+  int loop = 0;
+  QStringList trades = _settings.trades();
+  for (; loop < trades.count(); loop++)
+  {
+    QStringList l = trades.at(loop).split(",");
+    if (l.count() != _tradeList->columnCount())
+      continue;
+
+    new QTreeWidgetItem(_tradeList, l);
+  }
+
+  for (loop = 0; loop < _tradeList->columnCount(); loop++)
+    _tradeList->resizeColumnToContents(loop);
 }
 
 void TesterSettingsDialog::run ()
 {
-  if (_thread)
-    delete _thread;
-
-  Indicator i;
-  i.setSettings(_indicatorSettings);
-
-  QStringList l;
-  _symbols->symbolList(l);
-  
-  _thread = new TesterThread(this, i, l, _settings);
-  connect(_thread, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
+  _thread = new TesterThread(this, _settings);
+  connect(_thread, SIGNAL(signalDone(QString, QStringList)), this, SLOT(done(QString, QStringList)));
   _thread->start();
 
   _runningFlag = 1;

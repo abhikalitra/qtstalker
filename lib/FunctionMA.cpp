@@ -27,6 +27,10 @@
 FunctionMA::FunctionMA ()
 {
   _maList << "EMA" << "DEMA" << "KAMA" << "SMA" << "TEMA" << "TRIMA" << "Wilder" << "WMA";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("FunctionMA::FunctionMA: error on TA_Initialize");
 }
 
 Curve * FunctionMA::calculate (Curve *in, int period, int method)

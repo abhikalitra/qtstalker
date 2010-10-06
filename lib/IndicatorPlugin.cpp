@@ -20,12 +20,17 @@
  */
 
 #include "IndicatorPlugin.h"
+#include "ta_libc.h"
 
 #include <QDebug>
 
 IndicatorPlugin::IndicatorPlugin ()
 {
   _deleteFlag = 0;
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("IndicatorPlugin::IndicatorPlugin: error on TA_Initialize");
 }
 
 IndicatorPlugin::~IndicatorPlugin ()
