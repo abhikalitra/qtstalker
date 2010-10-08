@@ -37,6 +37,8 @@ TesterTrade::TesterTrade ()
   _exitCommission = 0;
   _profit = 0;
   _signal = _None;
+  _low = 0;
+  _high = 0;
 }
 
 QDateTime & TesterTrade::enterDate ()
@@ -110,9 +112,14 @@ void TesterTrade::enterTrade (int type, double equity, QDateTime date, double pr
   _enterIndex = index;
   _enterCommission = commission;
 
-  _equity -= _volume * _enterPrice;
+  double value = _volume * _enterPrice;
+  
+  _equity -= value;
 
   _equity -= _enterCommission;
+
+  _low = value;
+  _high = value;
 }
 
 void TesterTrade::exitTrade (QDateTime date, double price, int index, double commission, int signal)
@@ -128,9 +135,11 @@ void TesterTrade::exitTrade (QDateTime date, double price, int index, double com
   else
     _profit = _volume * (_enterPrice - _exitPrice);
 
-  _equity += _profit;
+  _equity += _volume * _exitPrice;
 
   _equity -= _exitCommission;
+
+  update(price);
 }
 
 void TesterTrade::tradeString (QString &s)
@@ -182,5 +191,31 @@ int TesterTrade::isOpenTrade ()
     rc = 1;
   
   return rc;
+}
+
+void TesterTrade::update (double price)
+{
+  double t = _volume * price;
+  
+  if (t < _low)
+    _low = t;
+  
+  if (t > _high)
+    _high = t;
+}
+
+double TesterTrade::drawDown ()
+{
+  return _low;
+}
+
+int TesterTrade::barsHeld ()
+{
+  return _exitIndex - _enterIndex;
+}
+
+double TesterTrade::commissions ()
+{
+  return _exitCommission + _enterCommission;
 }
 

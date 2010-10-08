@@ -63,11 +63,11 @@ class TesterThread : public QThread
     int getBars (BarData &);
     int getIndicator (BarData &, QStringList &);
     int getRules (QStringList &, BarData &, QList<PlotRule> &);
-    int enterTradeCheck (QList<PlotRule> &, int index);
-    int enterTrade (QList<TesterTrade> &, BarData &, int index, int status);
-    void exitTrade (QList<TesterTrade> &, BarData &, int index);
-    double getCommission (TesterTrade &, int flag);
-    void getReport (QList<TesterTrade> &, QString &, QStringList &);
+    int enterTradeCheck (QList<PlotRule> &, int index, QList<TesterTrade *> &, BarData &);
+    int enterTrade (QList<TesterTrade *> &, BarData &, int index, int status);
+    void exitTrade (QList<TesterTrade *> &, BarData &, int index);
+    double getCommission (TesterTrade *, int flag);
+    void getReport (QList<TesterTrade *> &, QString &, QStringList &);
 
   protected:
     void run();

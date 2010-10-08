@@ -50,8 +50,12 @@ class TesterTrade
     double profit ();
     void enterTrade (int type, double equity, QDateTime date, double price, int volume, int index, double commission);
     void exitTrade (QDateTime date, double price, int index, double commission, int signal);
+    void update (double price);
     void tradeString (QString &);
     int isOpenTrade ();
+    double drawDown ();
+    int barsHeld ();
+    double commissions ();
 
   private:
     QDateTime _enterDate;
@@ -66,6 +70,8 @@ class TesterTrade
     double _enterCommission;
     double _exitCommission;
     double _profit;
+    double _low;
+    double _high;
     Signal _signal;
 };
 
