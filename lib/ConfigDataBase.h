@@ -67,11 +67,15 @@ class ConfigDataBase : public DataBase
     void setData (int, QFont);
     void getData (int, QFont &);
     
+    void setData (QString, QPoint);
     void setData (int, QPoint);
     void getData (int, QPoint &);
+    void getData (QString, QPoint &);
     
+    void setData (QString, QSize);
     void setData (int, QSize);
     void getData (int, QSize &);
+    void getData (QString, QSize &);
     
     void setData (int, QStringList &);
     void getData (int, QStringList &);

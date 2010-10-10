@@ -34,25 +34,25 @@ TesterSettings::TesterSettings ()
   _commissionValue = 10;
   _long = 0;
   _longBuyPrice = 0;
-  _longSellPrice = 3;
+  _longSellPrice = 0;
   _short = 0;
   _shortBuyPrice = 0;
-  _shortSellPrice = 3;
+  _shortSellPrice = 0;
   _maximumLossStop = 0;
   _maximumLossType = 0;
   _maximumLossValue = 0.1;
-  _maximumLossExit = 3;
+  _maximumLossExit = 0;
   _profitTargetStop = 0;
   _profitTargetType = 0;
   _profitTargetValue = 0.1;
-  _profitTargetExit = 3;
+  _profitTargetExit = 0;
   _trailingStop = 0;
   _trailingType = 0;
   _trailingValue = 0.1;
-  _trailingExit = 3;
+  _trailingExit = 0;
   _barsStop = 0;
   _barsStopValue = 50;
-  _barsStopExit = 3;
+  _barsStopExit = 0;
 }
 
 void TesterSettings::setName (QString d)

@@ -30,6 +30,7 @@
 #include "TesterSettings.h"
 #include "BarData.h"
 #include "TesterTrade.h"
+#include "TesterStops.h"
 
 struct PlotRule
 {
@@ -55,17 +56,18 @@ class TesterThread : public QThread
       _Short,
       _EnterLong,
       _EnterShort,
-      _ExitTrade
+      _ExitTrade,
+      _ExitStop
     };
     
     TesterThread (QObject *, TesterSettings &);
     void stop ();
     int getBars (BarData &);
     int getIndicator (BarData &, QStringList &);
-    int getRules (QStringList &, BarData &, QList<PlotRule> &);
-    int enterTradeCheck (QList<PlotRule> &, int index, QList<TesterTrade *> &, BarData &);
-    int enterTrade (QList<TesterTrade *> &, BarData &, int index, int status);
-    void exitTrade (QList<TesterTrade *> &, BarData &, int index);
+    int getRules (QStringList &, BarData &, QList<PlotRule *> &);
+    int enterTradeCheck (QList<PlotRule *> &, int index, QList<TesterTrade *> &, BarData &);
+    int enterTrade (QString symbol, QList<TesterTrade *> &, BarData &, int index, int status);
+    void exitTrade (QList<TesterTrade *> &, BarData &, int index, int signal);
     double getCommission (TesterTrade *, int flag);
     void getReport (QList<TesterTrade *> &, QString &, QStringList &);
 
@@ -76,6 +78,7 @@ class TesterThread : public QThread
     Indicator _indicator;
     TesterSettings _settings;
     int _stopFlag;
+    TesterStops _stops;
 };
 
 #endif

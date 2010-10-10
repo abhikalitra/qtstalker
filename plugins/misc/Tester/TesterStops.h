@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,23 +19,31 @@
  *  USA.
  */
 
-#include "TesterConfig.h"
+#ifndef TESTER_STOPS_HPP
+#define TESTER_STOPS_HPP
 
-#include <QtDebug>
+#include <QStringList>
+#include <QList>
 
-TesterConfig::TesterConfig ()
+#include "TesterSettings.h"
+#include "BarData.h"
+#include "TesterTrade.h"
+
+class TesterStops
 {
-  _dbName = "data";
-  _tableName = "TesterPluginConfig";
+  public:
+    TesterStops ();
+    void setSettings (TesterSettings &);
+    int checkStops (QList<TesterTrade *> &, BarData &, int);
+    int maximumLossStop (QList<TesterTrade *> &, BarData &, int index);
+    int profitTargetStop (QList<TesterTrade *> &, BarData &, int index);
+    int trailingStop (QList<TesterTrade *> &, BarData &, int index);
+    int barsStop (QList<TesterTrade *> &, int index);
+    int triggered ();
 
-  QSqlDatabase db = QSqlDatabase::database(_dbName);
-  QSqlQuery q(db);
-  QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
-  s.append("key TEXT PRIMARY KEY UNIQUE");
-  s.append(", setting TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "TesterConfig::TesterConfig: " << q.lastError().text();
-}
+  private:
+    TesterSettings _settings;
+    int _triggered;
+};
 
+#endif

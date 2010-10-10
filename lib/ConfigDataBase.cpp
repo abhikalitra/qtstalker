@@ -150,10 +150,10 @@ void ConfigDataBase::setData (int name, QFont font)
   setData(name, f);
 }
 
-void ConfigDataBase::getData (int name, QPoint &p)
+void ConfigDataBase::getData (QString k, QPoint &p)
 {
   QString s;
-  getData(name, s);
+  getData(k, s);
   if (! s.length())
     return;
 
@@ -162,16 +162,28 @@ void ConfigDataBase::getData (int name, QPoint &p)
   p.setY(l[1].toInt());
 }
 
-void ConfigDataBase::setData (int name, QPoint p)
+void ConfigDataBase::getData (int name, QPoint &p)
 {
-  QString s = QString::number(p.x()) + "," + QString::number(p.y());
-  setData(name, s);
+  QString k = QString::number(name);
+  getData(k, p);
 }
 
-void ConfigDataBase::getData (int name, QSize &sz)
+void ConfigDataBase::setData (QString k, QPoint p)
+{
+  QString s = QString::number(p.x()) + "," + QString::number(p.y());
+  setData(k, s);
+}
+
+void ConfigDataBase::setData (int name, QPoint p)
+{
+  QString k = QString::number(name);
+  setData(k, p);
+}
+
+void ConfigDataBase::getData (QString k, QSize &sz)
 {
   QString s;
-  getData(name, s);
+  getData(k, s);
   if (! s.length())
     return;
 
@@ -180,10 +192,22 @@ void ConfigDataBase::getData (int name, QSize &sz)
   sz.setHeight(l[1].toInt());
 }
 
-void ConfigDataBase::setData (int name, QSize sz)
+void ConfigDataBase::getData (int name, QSize &sz)
+{
+  QString k = QString::number(name);
+  getData(k, sz);
+}
+
+void ConfigDataBase::setData (QString k, QSize sz)
 {
   QString s = QString::number(sz.width()) + "," + QString::number(sz.height());
-  setData(name, s);
+  setData(k, s);
+}
+
+void ConfigDataBase::setData (int name, QSize sz)
+{
+  QString k = QString::number(name);
+  setData(k, sz);
 }
 
 bool ConfigDataBase::getBool (int name)

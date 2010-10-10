@@ -20,6 +20,7 @@
  */
 
 #include "TesterTrade.h"
+#include "TesterSignals.h"
 
 #include <QtDebug>
 #include <QStringList>
@@ -36,9 +37,11 @@ TesterTrade::TesterTrade ()
   _enterCommission = 0;
   _exitCommission = 0;
   _profit = 0;
-  _signal = _None;
+  _signal = TesterSignals::_None;
   _low = 0;
   _high = 0;
+  _priceHigh = 0;  
+  _priceLow = 0;
 }
 
 QDateTime & TesterTrade::enterDate ()
@@ -101,13 +104,16 @@ double TesterTrade::profit ()
   return _profit;
 }
 
-void TesterTrade::enterTrade (int type, double equity, QDateTime date, double price, int volume, int index,
-                              double commission)
+void TesterTrade::enterTrade (QString symbol, int type, double equity, QDateTime date, double price,
+                              int volume, int index, double commission)
 {
+  _symbol = symbol;
   _type = type;
   _equity = equity;
   _enterDate = date;
   _enterPrice = price;
+  _priceHigh = price;
+  _priceLow = price;
   _volume = volume;
   _enterIndex = index;
   _enterCommission = commission;
@@ -128,23 +134,24 @@ void TesterTrade::exitTrade (QDateTime date, double price, int index, double com
   _exitPrice = price;
   _exitIndex = index;
   _exitCommission = commission;
-  _signal = (Signal) signal;
+  _signal = signal;
   
   if (! _type)
     _profit = _volume * (_exitPrice - _enterPrice);
   else
     _profit = _volume * (_enterPrice - _exitPrice);
 
-  _equity += _volume * _exitPrice;
+  _equity += _volume * _enterPrice;
+  _equity += _profit;
 
   _equity -= _exitCommission;
-
-  update(price);
 }
 
 void TesterTrade::tradeString (QString &s)
 {
   QStringList l;
+
+  l << _symbol;
   
   if (! _type)
     l << "L";
@@ -163,24 +170,12 @@ void TesterTrade::tradeString (QString &s)
   
   l << QString::number(_profit);
 
-  switch (_signal)
-  {
-    case _None:
-      l << "None";
-      break;
-    case _ExitLong:
-      l << "Exit Long";
-      break;
-    case _ExitShort:
-      l << "Exit Short";
-      break;
-    case _TestEnd:
-      l << "Test End";
-      break;
-    default:
-      break;
-  }
+  TesterSignals sig;
+  QString s2;
+  sig.signalText((TesterSignals::Signal) _signal, s2);
+  l << s2;
 
+  l << QString::number(_equity);
   s = l.join(",");
 }
 
@@ -195,13 +190,22 @@ int TesterTrade::isOpenTrade ()
 
 void TesterTrade::update (double price)
 {
-  double t = _volume * price;
+  if (! _type)
+    _profit = _volume * (price - _enterPrice);
+  else
+    _profit = _volume * (_enterPrice - price);
+
+  if (_profit < _low)
+    _low = _profit;
   
-  if (t < _low)
-    _low = t;
-  
-  if (t > _high)
-    _high = t;
+  if (_profit > _high)
+    _high = _profit;
+
+  if (price > _priceHigh)
+    _priceHigh = price;
+
+  if (price < _priceLow)
+    _priceLow = price;
 }
 
 double TesterTrade::drawDown ()
@@ -217,5 +221,20 @@ int TesterTrade::barsHeld ()
 double TesterTrade::commissions ()
 {
   return _exitCommission + _enterCommission;
+}
+
+QString & TesterTrade::symbol ()
+{
+  return _symbol;
+}
+
+double TesterTrade::priceHigh ()
+{
+  return _priceHigh;
+}
+
+double TesterTrade::priceLow ()
+{
+  return _priceLow;
 }
 

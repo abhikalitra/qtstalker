@@ -27,14 +27,6 @@
 class TesterTrade
 {
   public:
-    enum Signal
-    {
-      _None,
-      _ExitLong,
-      _ExitShort,
-      _TestEnd
-    };
-
     TesterTrade ();
     QDateTime & enterDate ();
     QDateTime & exitDate ();
@@ -48,7 +40,8 @@ class TesterTrade
     double enterCommission ();
     double exitCommission ();
     double profit ();
-    void enterTrade (int type, double equity, QDateTime date, double price, int volume, int index, double commission);
+    void enterTrade (QString symbol, int type, double equity, QDateTime date, double price,
+                     int volume, int index, double commission);
     void exitTrade (QDateTime date, double price, int index, double commission, int signal);
     void update (double price);
     void tradeString (QString &);
@@ -56,6 +49,9 @@ class TesterTrade
     double drawDown ();
     int barsHeld ();
     double commissions ();
+    QString & symbol ();
+    double priceHigh ();
+    double priceLow ();
 
   private:
     QDateTime _enterDate;
@@ -72,7 +68,10 @@ class TesterTrade
     double _profit;
     double _low;
     double _high;
-    Signal _signal;
+    int _signal;
+    QString _symbol;
+    double _priceHigh;
+    double _priceLow;
 };
 
 #endif

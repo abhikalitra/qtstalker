@@ -27,6 +27,7 @@
 #include "IndicatorPluginDialog.h"
 #include "Config.h"
 #include "Operator.h"
+#include "TesterConfig.h"
 #include "../../../pics/indicator.xpm"
 
 #include <QLayout>
@@ -489,8 +490,8 @@ void TesterSettingsDialog::createReportPage ()
   w->setLayout(vbox);
 
   QStringList l;
-  l << tr("Type") << tr("Volume") << tr("Enter Date") << tr("Enter Price") << tr("Exit Date");
-  l << tr("Exit Price") << tr("Profit") << tr("Signal");
+  l << tr("Symbol") << tr("Type") << tr("Volume") << tr("Enter Date") << tr("Enter Price") << tr("Exit Date");
+  l << tr("Exit Price") << tr("Profit") << tr("Signal") << tr("Equity");
   
   _tradeList = new QTreeWidget;
   _tradeList->setSortingEnabled(FALSE);
@@ -508,6 +509,23 @@ void TesterSettingsDialog::createReportPage ()
 
 void TesterSettingsDialog::loadSettings ()
 {
+  TesterConfig config;
+  
+  // restore the size of the window
+  QString k = "size" + _settings.name();
+  QSize sz;
+  config.getData(k, sz);
+  if (! sz.isNull())
+    resize(sz);
+
+  // restore the position of the window
+  k = "position" + _settings.name();
+  QPoint p;
+  config.getData(k, p);
+  if (! p.isNull())
+    move(p);
+  
+  
   TesterDataBase db;
   db.getRule(_settings);
 
@@ -606,6 +624,20 @@ void TesterSettingsDialog::loadSettings ()
 
 void TesterSettingsDialog::saveSettings ()
 {
+  TesterConfig config;
+  config.transaction();
+
+  // save app size and position
+  QString k = "size" + _settings.name();
+  QSize sz = size();
+  config.setData(k, sz);
+
+  k = "position" + _settings.name();
+  QPoint pt = pos();
+  config.setData(k, pt);
+
+  config.commit();
+  
   if (! _saveFlag)
     return;
 
@@ -672,6 +704,12 @@ void TesterSettingsDialog::trailingValueChanged ()
 void TesterSettingsDialog::trailingTypeChanged ()
 {
   _settings.setTrailingType(_trailingType->currentIndex());
+
+  if (_trailingType->currentIndex() == 0)
+    _trailingValue->setRange(0, 100);
+  else
+    _trailingValue->setRange(0, 99999999);
+
   ruleChanged();
 }
 
@@ -690,6 +728,12 @@ void TesterSettingsDialog::profitTargetValueChanged ()
 void TesterSettingsDialog::profitTargetTypeChanged ()
 {
   _settings.setProfitTargetType(_profitTargetType->currentIndex());
+
+  if (_profitTargetType->currentIndex() == 0)
+    _profitTargetValue->setRange(0, 100);
+  else
+    _profitTargetValue->setRange(0, 99999999);
+
   ruleChanged();
 }
 
@@ -708,6 +752,12 @@ void TesterSettingsDialog::maximumLossValueChanged ()
 void TesterSettingsDialog::maximumLossTypeChanged ()
 {
   _settings.setMaximumLossType(_maximumLossType->currentIndex());
+
+  if (_maximumLossType->currentIndex() == 0)
+    _maximumLossValue->setRange(0, 100);
+  else
+    _maximumLossValue->setRange(0, 99999999);
+  
   ruleChanged();
 }
 

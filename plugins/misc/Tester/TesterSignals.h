@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,23 +19,28 @@
  *  USA.
  */
 
-#include "TesterConfig.h"
+#ifndef TESTER_SIGNALS_HPP
+#define TESTER_SIGNALS_HPP
 
-#include <QtDebug>
+#include <QString>
 
-TesterConfig::TesterConfig ()
+class TesterSignals
 {
-  _dbName = "data";
-  _tableName = "TesterPluginConfig";
+  public:
+    enum Signal
+    {
+      _None,
+      _ExitLong,
+      _ExitShort,
+      _TestEnd,
+      _MaximumLossStop,
+      _ProfitTargetStop,
+      _TrailingStop,
+      _BarsStop
+    };
+    
+    TesterSignals ();
+    void signalText (TesterSignals::Signal, QString &);
+};
 
-  QSqlDatabase db = QSqlDatabase::database(_dbName);
-  QSqlQuery q(db);
-  QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
-  s.append("key TEXT PRIMARY KEY UNIQUE");
-  s.append(", setting TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "TesterConfig::TesterConfig: " << q.lastError().text();
-}
-
+#endif
