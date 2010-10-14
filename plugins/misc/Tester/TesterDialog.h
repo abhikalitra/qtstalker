@@ -24,6 +24,12 @@
 
 #include <QDialog>
 #include <QTabWidget>
+#include <QListWidget>
+#include <QPushButton>
+#include <QTreeWidget>
+#include <QHash>
+
+#include "TesterThread.h"
 
 class TesterDialog : public QDialog
 {
@@ -34,18 +40,34 @@ class TesterDialog : public QDialog
   
   public:
     TesterDialog ();
-    void createMainPage ();
+    void createTesterPage ();
+    void createReportPage ();
     void loadSettings ();
     void saveSettings ();
     
   public slots:
+    void runTest ();
+    void runTest2 (QStringList);
     void newTest ();
-    void openTest ();
+    void editTest ();
     void deleteTest ();
     void closeDialog ();
+    void done (QString);
+    void stopTest ();
+    void testStopped (QString);
+    void updateReports ();
+    void reportView ();
+    void testSelectionChanged ();
+    void reportSelectionChanged ();
           
   private:
     QTabWidget *_tabs;
+    QListWidget *_testers;
+    QPushButton *_stopButton;
+    QPushButton *_viewButton;
+    QTreeWidget *_reports;
+    QHash<QString, QListWidgetItem *> _runningList;
+    QHash<QString, TesterThread *> _threadList;
 };
 
 #endif

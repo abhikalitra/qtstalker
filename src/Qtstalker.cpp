@@ -279,6 +279,8 @@ void QtstalkerApp::quit()
   config.setData((int) Config::MainWindowPos, pt);
 
   config.commit();
+
+  g_barData.clear();
 }
 
 void QtstalkerApp::loadChart (BarData symbol)

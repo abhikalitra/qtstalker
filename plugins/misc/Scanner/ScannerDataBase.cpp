@@ -34,9 +34,8 @@ ScannerDataBase::ScannerDataBase ()
   s.append(", symbols TEXT");
   s.append(", settings TEXT");
   s.append(", indicator TEXT");
-  s.append(", enable TEXT");
-  s.append(", op TEXT");
-  s.append(", value TEXT");
+  s.append(", plotNames TEXT");
+  s.append(", plots TEXT");
   s.append(", barLength INT");
   s.append(", dateRange INT");
   s.append(", groupName TEXT");
@@ -72,7 +71,7 @@ int ScannerDataBase::getScanner (ScannerItem &scanner)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString k = "SELECT";
-  k.append(" symbols,settings,indicator,enable,op,value,barLength,dateRange,groupName");
+  k.append(" symbols,settings,indicator,plotNames,plots,barLength,dateRange,groupName");
   k.append(" FROM ScannerPlugin WHERE name='" + scanner.name() + "'");
   q.exec(k);
   if (q.lastError().isValid())
@@ -90,12 +89,15 @@ int ScannerDataBase::getScanner (ScannerItem &scanner)
   Group g;
   g.setStringList(l);
   scanner.setGroup(g);
+
+  QString d = q.value(pos++).toString();
+  Setting set;
+  set.parse(d);
+  scanner.setSettings(set);
   
-  scanner.setSettings(q.value(pos++).toString());
   scanner.setIndicator(q.value(pos++).toString());
-  scanner.setEnableString(q.value(pos++).toString());
-  scanner.setOpString(q.value(pos++).toString());
-  scanner.setValueString(q.value(pos++).toString());
+  scanner.setPlotNames(q.value(pos++).toString().split(","));
+  scanner.setPlots(q.value(pos++).toString().split(":"));
   scanner.setBarLength(q.value(pos++).toInt());
   scanner.setDateRange(q.value(pos++).toInt());
   scanner.setGroupName(q.value(pos++).toString());
@@ -113,7 +115,7 @@ int ScannerDataBase::setScanner (ScannerItem &scanner)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO ScannerPlugin (";
-  s.append("name,symbols,settings,indicator,enable,op,value,barLength,dateRange,groupName");
+  s.append("name,symbols,settings,indicator,plotNames,plots,barLength,dateRange,groupName");
   s.append(") VALUES (");
   s.append("'" + scanner.name() + "'");
 
@@ -122,12 +124,15 @@ int ScannerDataBase::setScanner (ScannerItem &scanner)
   QStringList l;
   g.getStringList(l);
   s.append(",'" + l.join(",") + "'");
-  
-  s.append(",'" + scanner.settings() + "'");
+
+  Setting set = scanner.settings();
+  QString d;
+  set.getString(d);
+  s.append(",'" + d + "'");
+
   s.append(",'" + scanner.indicator() + "'");
-  s.append(",'" + scanner.enableString() + "'");
-  s.append(",'" + scanner.opString() + "'");
-  s.append(",'" + scanner.valueString() + "'");
+  s.append(",'" + scanner.plotNames().join(",") + "'");
+  s.append(",'" + scanner.plots().join(":") + "'");
   s.append("," + QString::number(scanner.barLength()));
   s.append("," + QString::number(scanner.dateRange()));
   s.append(",'" + scanner.groupName() + "'");

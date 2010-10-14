@@ -19,43 +19,33 @@
  *  USA.
  */
 
-#ifndef SCANNER_EDIT_DIALOG_HPP
-#define SCANNER_EDIT_DIALOG_HPP
+#include "TesterRunDialog.h"
+#include "TesterDataBase.h"
+#include "Globals.h"
 
-#include <QComboBox>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QSpinBox>
+#include <QtDebug>
 
-#include "Dialog.h"
-#include "Indicator.h"
-#include "ScannerItem.h"
-#include "Group.h"
-#include "SymbolButton.h"
-#include "IndicatorPlotList.h"
-
-class ScannerEditDialog : public Dialog
+TesterRunDialog::TesterRunDialog ()
 {
-  Q_OBJECT
+  setWindowTitle("QtStalker" + g_session + ": " + tr("Run Back Tester"));
 
-  signals:
-    void signalEdit (ScannerItem);
+  TesterDataBase db;
+  QStringList l;
+  db.getRules(l);
+  _list->addItems(l);
+}
 
-  public:
-    ScannerEditDialog (ScannerItem);
-    void createMainPage ();
-    void setSettings ();
+void TesterRunDialog::done ()
+{
+  QList<QListWidgetItem *> sl = _list->selectedItems();
 
-  public slots:
-    void done ();
+  QStringList l;
+  int loop = 0;
+  for (; loop < sl.count(); loop++)
+    l.append(sl.at(loop)->text());
+  
+  emit signalSelect(l);
+  
+  accept();
+}
 
-  private:
-    ScannerItem _scanner;
-    SymbolButton *_symbols;
-    IndicatorPlotList *_list;
-    QLineEdit *_groupName;
-    QComboBox *_barLength;
-    QComboBox *_dateRange;
-};
-
-#endif

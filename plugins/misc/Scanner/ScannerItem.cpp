@@ -49,16 +49,6 @@ Group & ScannerItem::group ()
   return _group;
 }
 
-void ScannerItem::setSettings (QString d)
-{
-  _settings = d;
-}
-
-QString & ScannerItem::settings ()
-{
-  return _settings;
-}
-
 void ScannerItem::setIndicator (QString d)
 {
   _indicator = d;
@@ -67,120 +57,6 @@ void ScannerItem::setIndicator (QString d)
 QString & ScannerItem::indicator ()
 {
   return _indicator;
-}
-
-void ScannerItem::setEnable (QString k, int d)
-{
-  _enable.insert(k, d);
-}
-
-int ScannerItem::enable (QString k)
-{
-  return _enable.value(k);
-}
-
-QString ScannerItem::enableString ()
-{
-  QStringList l;
-  QHashIterator<QString, int> it(_enable);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key());
-    l.append(QString::number(it.value()));
-  }
-
-  return l.join(",");
-}
-
-void ScannerItem::setEnableString (QString d)
-{
-  _enable.clear();
-
-  if (d.isEmpty())
-    return;
-  
-  QStringList l = d.split(",");
-
-  int loop = 0;
-  for (; loop < l.count(); loop += 2)
-    _enable.insert(l.at(loop), l.at(loop + 1).toInt());
-}
-
-void ScannerItem::setOp (QString k, int d)
-{
-  _op.insert(k, d);
-}
-
-int ScannerItem::op (QString k)
-{
-  return _op.value(k);
-}
-
-QString ScannerItem::opString ()
-{
-  QStringList l;
-  QHashIterator<QString, int> it(_op);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key());
-    l.append(QString::number(it.value()));
-  }
-
-  return l.join(",");
-}
-
-void ScannerItem::setOpString (QString d)
-{
-  _op.clear();
-
-  if (d.isEmpty())
-    return;
-
-  QStringList l = d.split(",");
-
-  int loop = 0;
-  for (; loop < l.count(); loop += 2)
-    _op.insert(l.at(loop), l.at(loop + 1).toInt());
-}
-
-void ScannerItem::setValue (QString k, double d)
-{
-  _value.insert(k, d);
-}
-
-double ScannerItem::value (QString k)
-{
-  return _value.value(k);
-}
-
-QString ScannerItem::valueString ()
-{
-  QStringList l;
-  QHashIterator<QString, double> it(_value);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key());
-    l.append(QString::number(it.value()));
-  }
-
-  return l.join(",");
-}
-
-void ScannerItem::setValueString (QString d)
-{
-  _value.clear();
-
-  if (d.isEmpty())
-    return;
-
-  QStringList l = d.split(",");
-
-  int loop = 0;
-  for (; loop < l.count(); loop += 2)
-    _value.insert(l.at(loop), l.at(loop + 1).toDouble());
 }
 
 void ScannerItem::setBarLength (int d)
@@ -203,23 +79,6 @@ int ScannerItem::dateRange ()
   return _dateRange;
 }
 
-int ScannerItem::count ()
-{
-  return _enable.count();
-}
-
-void ScannerItem::keys (QStringList &l)
-{
-  l.clear();
-  
-  QHashIterator<QString, int> it(_enable);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key());
-  }
-}
-
 void ScannerItem::setGroupName (QString d)
 {
   _groupName = d;
@@ -228,5 +87,35 @@ void ScannerItem::setGroupName (QString d)
 QString & ScannerItem::groupName ()
 {
   return _groupName;
+}
+
+void ScannerItem::setSettings (Setting d)
+{
+  _settings = d;
+}
+
+Setting & ScannerItem::settings ()
+{
+  return _settings;
+}
+
+QStringList & ScannerItem::plots ()
+{
+  return _plots;
+}
+
+void ScannerItem::setPlots (QStringList d)
+{
+  _plots = d;
+}
+
+void ScannerItem::setPlotNames (QStringList d)
+{
+  _plotNames = d;
+}
+
+QStringList & ScannerItem::plotNames ()
+{
+  return _plotNames;
 }
 

@@ -24,6 +24,8 @@
 #include "IndicatorPluginFactory.h"
 #include "Operator.h"
 #include "TesterSignals.h"
+#include "TesterReport.h"
+#include "TesterReportDataBase.h"
 
 #include <QDebug>
 
@@ -38,7 +40,10 @@ TesterThread::TesterThread (QObject *p, TesterSettings &set) : QThread (p)
 
 void TesterThread::run ()
 {
-  _indicator.setSettings(_settings.indicatorSettings());
+  _elIndicator.setSettings(_settings.eLSettings());
+  _xlIndicator.setSettings(_settings.xLSettings());
+  _esIndicator.setSettings(_settings.eSSettings());
+  _xsIndicator.setSettings(_settings.xSSettings());
 
   QList<TesterTrade *> trades;
   _stopFlag = 0;
@@ -52,6 +57,7 @@ void TesterThread::run ()
     {
       qDebug() << "TesterThread::run: stopped";
       qDeleteAll(trades);
+      emit signalStopped(_settings.name());
       quit();
       return;
     }
@@ -62,52 +68,74 @@ void TesterThread::run ()
     if (getBars(bars))
       continue;
 
-    QList<PlotRule *> enterLongRules;
-    if (getRules(_settings.enterLong(), bars, enterLongRules))
+    IndicatorPlotRules enterLongRules;
+    if (enterLongRules.createRules(_elIndicator, _settings.enterLong(), bars))
     {
       qDeleteAll(trades);
+      bars.clear();
       quit();
       return;
     }
 
-    QList<PlotRule *> exitLongRules;
-    if (getRules(_settings.exitLong(), bars, exitLongRules))
+    IndicatorPlotRules exitLongRules;
+    if (exitLongRules.createRules(_xlIndicator, _settings.exitLong(), bars))
     {
       qDeleteAll(trades);
-      qDeleteAll(enterLongRules);
+      bars.clear();
       quit();
       return;
     }
 
-    QList<PlotRule *> enterShortRules;
-    if (getRules(_settings.enterShort(), bars, enterShortRules))
+    IndicatorPlotRules enterShortRules;
+    if (enterShortRules.createRules(_esIndicator, _settings.enterShort(), bars))
     {
       qDeleteAll(trades);
-      qDeleteAll(enterLongRules);
-      qDeleteAll(exitLongRules);
+      bars.clear();
       quit();
       return;
     }
 
-    QList<PlotRule *> exitShortRules;
-    if (getRules(_settings.exitShort(), bars, exitShortRules))
+    IndicatorPlotRules exitShortRules;
+    if (exitShortRules.createRules(_xsIndicator, _settings.exitShort(), bars))
     {
       qDeleteAll(trades);
-      qDeleteAll(enterLongRules);
-      qDeleteAll(exitLongRules);
-      qDeleteAll(enterShortRules);
+      bars.clear();
       quit();
       return;
     }
     
-    // get indicator data
+    // get enter long indicator data
     QStringList plotNames;
-    if (getIndicator(bars, plotNames))
+    if (getIndicator(bars, plotNames, _elIndicator, _settings.eLIndicator()))
     {
-      qDeleteAll(enterLongRules);
-      qDeleteAll(exitLongRules);
-      qDeleteAll(enterShortRules);
-      qDeleteAll(exitShortRules);
+      bars.clear();
+      continue;
+    }
+
+    // get exit long indicator data
+    if (getIndicator(bars, plotNames, _xlIndicator, _settings.xLIndicator()))
+    {
+      _elIndicator.clear();
+      bars.clear();
+      continue;
+    }
+
+    // get enter short indicator data
+    if (getIndicator(bars, plotNames, _esIndicator, _settings.eSIndicator()))
+    {
+      _elIndicator.clear();
+      _xlIndicator.clear();
+      bars.clear();
+      continue;
+    }
+
+    // get exit short indicator data
+    if (getIndicator(bars, plotNames, _xsIndicator, _settings.xSIndicator()))
+    {
+      _elIndicator.clear();
+      _xlIndicator.clear();
+      _esIndicator.clear();
+      bars.clear();
       continue;
     }
 
@@ -120,7 +148,7 @@ void TesterThread::run ()
         case _None:
           if (_settings.getLong())
           {
-            if (enterTradeCheck(enterLongRules, barLoop, trades, bars))
+            if (enterTradeCheck(enterLongRules, barLoop, trades, bars, _elIndicator))
             {
               status = _EnterLong;
               break;
@@ -129,7 +157,7 @@ void TesterThread::run ()
           
           if (_settings.getShort())
           {
-            if (enterTradeCheck(enterShortRules, barLoop, trades, bars))
+            if (enterTradeCheck(enterShortRules, barLoop, trades, bars, _esIndicator))
               status = _EnterShort;
           }
           break;
@@ -144,7 +172,7 @@ void TesterThread::run ()
             status = _None;
           break;
         case _Long:
-          if (enterTradeCheck(exitLongRules, barLoop, trades, bars))
+          if (enterTradeCheck(exitLongRules, barLoop, trades, bars, _xlIndicator))
           {
             status = _ExitTrade;
             break;
@@ -154,7 +182,7 @@ void TesterThread::run ()
             status = _ExitStop;
           break;
         case _Short:
-          if (enterTradeCheck(exitShortRules, barLoop, trades, bars))
+          if (enterTradeCheck(exitShortRules, barLoop, trades, bars, _xsIndicator))
           {
             status = _ExitTrade;
             break;
@@ -191,19 +219,22 @@ void TesterThread::run ()
         exitTrade(trades, bars, bars.count() - 1, TesterSignals::_TestEnd);
     }
 
-    qDeleteAll(enterLongRules);
-    qDeleteAll(exitLongRules);
-    qDeleteAll(enterShortRules);
-    qDeleteAll(exitShortRules);
+    _elIndicator.clear();
+    _xlIndicator.clear();
+    _esIndicator.clear();
+    _xsIndicator.clear();
+    
+    bars.clear();
   }
 
-  QString report;
-  QStringList tradeList;
-  getReport(trades, report, tradeList);
+  getReport(trades);
 
-  _indicator.clear();
+  _elIndicator.clear();
+  _xlIndicator.clear();
+  _esIndicator.clear();
+  _xsIndicator.clear();
   
-  emit signalDone(report, tradeList);
+  emit signalDone(_settings.name());
 
   qDeleteAll(trades);
   
@@ -213,41 +244,6 @@ void TesterThread::run ()
 void TesterThread::stop ()
 {
   _stopFlag = 1;
-}
-
-int TesterThread::getRules (QStringList &l, BarData &bars, QList<PlotRule *> &rules)
-{
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    QStringList l2 = l.at(loop).split(",");
-    if (l2.count() != 4)
-      return 1;
-
-    PlotRule *r = new PlotRule;
-    r->enable = l2.at(0).toInt();
-    if (! r->enable)
-      continue;
-    
-    r->name = l2.at(1);
-    r->op = l2.at(2).toInt();
-    r->value = l2.at(3);
-    rules.append(r);
-
-    // add any OHLC inputs to indicator for later usage
-    bars.getInputFields(l2);
-    if (l2.indexOf(r->value) != -1)
-    {
-      Curve *curve = _indicator.line(r->value);
-      if (! curve)
-      {
-        curve = bars.getInput(bars.getInputType(r->value));
-        _indicator.setLine(r->value, curve);
-      }
-    }
-  }
-
-  return 0;
 }
 
 int TesterThread::getBars (BarData &bd)
@@ -272,29 +268,29 @@ int TesterThread::getBars (BarData &bd)
   return 0;
 }
 
-int TesterThread::getIndicator (BarData &bd, QStringList &plotNames)
+int TesterThread::getIndicator (BarData &bd, QStringList &plotNames, Indicator &indicator, QString name)
 {
   IndicatorPluginFactory fac;
-  IndicatorPlugin *plug = fac.plugin(_settings.indicator());
+  IndicatorPlugin *plug = fac.plugin(name);
   if (! plug)
   {
-    qDebug() << "TesterThread::getIndicator: no plugin" << _settings.indicator();
+    qDebug() << "TesterThread::getIndicator: no plugin" << name;
     return 1;
   }
 
-  if (plug->getIndicator(_indicator, bd))
+  if (plug->getIndicator(indicator, bd))
   {
-    qDebug() << "TesterThread::getIndicator: indicator error" << _settings.indicator();
+    qDebug() << "TesterThread::getIndicator: indicator error" << name;
     return 1;
   }
 
-  plug->plotNames(_indicator, plotNames);
+  plug->plotNames(indicator, plotNames);
 
   return 0;
 }
 
-int TesterThread::enterTradeCheck (QList<PlotRule *> &rules, int index, QList<TesterTrade *> &trades,
-                                   BarData &bars)
+int TesterThread::enterTradeCheck (IndicatorPlotRules &rules, int index, QList<TesterTrade *> &trades,
+                                   BarData &bars, Indicator &indicator)
 {
   if (! rules.count())
     return 0;
@@ -303,9 +299,9 @@ int TesterThread::enterTradeCheck (QList<PlotRule *> &rules, int index, QList<Te
   int count = 0;
   for (; loop < rules.count(); loop++)
   {
-    PlotRule *rule = rules.at(loop);
+    IndicatorPlotRule *rule = rules.getRule(loop);
     
-    Curve *curve = _indicator.line(rule->name);
+    Curve *curve = indicator.line(rule->name());
     if (! curve)
       return 0;
 
@@ -316,7 +312,7 @@ int TesterThread::enterTradeCheck (QList<PlotRule *> &rules, int index, QList<Te
     value = bar->data();
 
     double value2 = 0;
-    curve = _indicator.line(rule->value);
+    curve = indicator.line(rule->value());
     if (curve)
     {
       bar = curve->bar(index);
@@ -327,12 +323,12 @@ int TesterThread::enterTradeCheck (QList<PlotRule *> &rules, int index, QList<Te
     else
     {
       bool ok;
-      value2 = rule->value.toDouble(&ok);
+      value2 = rule->value().toDouble(&ok);
       if (! ok)
         return 0;
     }
 
-    switch ((Operator::Type) rule->op)
+    switch ((Operator::Type) rule->op())
     {
       case Operator::_LessThan:
         if (value < value2)
@@ -459,11 +455,8 @@ double TesterThread::getCommission (TesterTrade *trade, int flag)
   return commission;
 }
 
-void TesterThread::getReport (QList<TesterTrade *> &trades, QString &report, QStringList &list)
+void TesterThread::getReport (QList<TesterTrade *> &trades)
 {
-  report.clear();
-  list.clear();
-
   int win = 0;
   int loss = 0;
   double winTotal = 0;
@@ -475,7 +468,7 @@ void TesterThread::getReport (QList<TesterTrade *> &trades, QString &report, QSt
   int minBars = 99999999;
   int totalBars = 0;
   double commissions = 0;
-  
+  QStringList list;
   int loop = 0;
   for (; loop < trades.count(); loop++)
   {
@@ -513,22 +506,39 @@ void TesterThread::getReport (QList<TesterTrade *> &trades, QString &report, QSt
     list.append(s);
   }
 
-  report.append(tr("Profit Factor") + ": \t" + QString::number(winTotal / lossTotal, 'f', 2) + "\n");
-  report.append(tr("Payoff Ratio") + ": \t" + QString::number((winTotal / (double) win) / (lossTotal / (double) loss), 'f', 2) + "\n");
-  report.append(tr("% Equity Gain") + ": \t" + QString::number((profit / _settings.equity()) * 100, 'f', 2) + "\n");
-  report.append(tr("Equity") + ": \t\t" + QString::number(equity, 'f', 2) + "\n");
-  report.append(tr("Total Profit") + ": \t" + QString::number(profit, 'f', 2) + "\n");
-  report.append(tr("% Profitable Trades") + ": \t" + QString::number(((double) win / (double) trades.count()) * 100, 'f', 2) + "\n");
-  report.append(tr("Total Trades") + ": \t" + QString::number(trades.count()) + "\n");
-  report.append(tr("Winning Trades") + ": \t" + QString::number(win) + "\n");
-  report.append(tr("Losing Trades") + ": \t" + QString::number(loss) + "\n");
-  report.append(tr("Maximum Drawdown") + ": \t" + QString::number(drawDown, 'f', 2) + "\n");
-  report.append(tr("Avg Profit/Loss") + ": \t" + QString::number(profit / (double) trades.count(), 'f', 2) + "\n");
-  report.append(tr("Total Winning Trades") + ": \t" + QString::number(winTotal, 'f', 2) + "\n");
-  report.append(tr("Total Losing Trades") + ": \t" + QString::number(lossTotal, 'f', 2) + "\n");
-  report.append(tr("Avg Bars Held") + ": \t" + QString::number(totalBars / trades.count(), 'f', 2) + "\n");
-  report.append(tr("Min Bars Held") + ": \t" + QString::number(minBars) + "\n");
-  report.append(tr("Max Bars Held") + ": \t" + QString::number(maxBars) + "\n");
-  report.append(tr("Total Commissions") + ": \t" + QString::number(commissions, 'f', 2) + "\n");
+  TesterReport report;
+  report.setName(_settings.name());
+  report.setTrades(list);
+
+  if (winTotal == 0 || lossTotal == 0)
+    report.setProfitFactor(0);
+  else
+    report.setProfitFactor((double) winTotal / lossTotal);
+
+  if (winTotal == 0 || lossTotal == 0)
+    report.setPayoffRatio(0);
+  else
+    report.setPayoffRatio((double) ((winTotal / (double) win) / (lossTotal / (double) loss)));
+  
+  report.setEquityGain((double) ((profit / _settings.equity()) * 100));
+  report.setEquity(equity);
+  report.setTotalProfit(profit);
+  report.setProfitableTrades((double) (((double) win / (double) trades.count()) * 100));
+  report.setTotalTrades(trades.count());
+  report.setWinTrades(win);
+  report.setLoseTrades(loss);
+  report.setMaxDrawdown(drawDown);
+  report.setAvgProfitLoss((double) (profit / (double) trades.count()));
+  report.setTotalWinTrades(winTotal);
+  report.setTotalLoseTrades(lossTotal);
+  report.setAvgBarsHeld((int) totalBars / trades.count());
+  report.setMinBarsHeld(minBars);
+  report.setMaxBarsHeld(maxBars);
+  report.setTotalCommissions(commissions);
+
+  TesterReportDataBase db;
+  db.transaction();
+  db.setReport(report);
+  db.commit();
 }
 

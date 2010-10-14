@@ -59,16 +59,23 @@ TesterDataBase::TesterDataBase ()
   s.append(", barsStop INT");
   s.append(", barsStopValue REAL");
   s.append(", barsStopExit INT");
-  s.append(", report TEXT");
-  s.append(", indicator TEXT");
-  s.append(", plotNames TEXT");
+  s.append(", elIndicator TEXT");
+  s.append(", xlIndicator TEXT");
+  s.append(", esIndicator TEXT");
+  s.append(", xsIndicator TEXT");
+  s.append(", elPlotNames TEXT");
+  s.append(", xlPlotNames TEXT");
+  s.append(", esPlotNames TEXT");
+  s.append(", xsPlotNames TEXT");
   s.append(", enterLong TEXT");
   s.append(", exitLong TEXT");
   s.append(", enterShort TEXT");
   s.append(", exitShort TEXT");
-  s.append(", indicatorSettings TEXT");
+  s.append(", elSettings TEXT");
+  s.append(", xlSettings TEXT");
+  s.append(", esSettings TEXT");
+  s.append(", xsSettings TEXT");
   s.append(", symbols TEXT");
-  s.append(", tradeList TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -103,8 +110,11 @@ int TesterDataBase::getRule (TesterSettings &rule)
   k.append(",long,longBuyPrice,longSellPrice,short,shortBuyPrice,shortSellPrice,maximumLossStop");
   k.append(",maximumLossType,maximumLossValue,maximumLossExit,profitTargetStop,profitTargetType");
   k.append(",profitTargetValue,profitTargetExit,trailingStop,trailingType,trailingValue,trailingExit");
-  k.append(",barsStop,barsStopValue,barsStopExit,report,indicator,plotNames");
-  k.append(",enterLong,exitLong,enterShort,exitShort,indicatorSettings,symbols,tradeList");
+  k.append(",barsStop,barsStopValue,barsStopExit,elIndicator,xlIndicator,esIndicator,xsIndicator");
+  k.append(",elPlotNames,xlPlotNames,esPlotNames,xsPlotNames");
+  k.append(",enterLong,exitLong,enterShort,exitShort");
+  k.append(",elSettings,xlSettings,esSettings,xsSettings");
+  k.append(",symbols");
   k.append(" FROM TesterPlugin WHERE name='" + rule.name() + "'");
   q.exec(k);
   if (q.lastError().isValid())
@@ -145,19 +155,37 @@ int TesterDataBase::getRule (TesterSettings &rule)
   rule.setBarsStop(q.value(pos++).toInt());
   rule.setBarsStopValue(q.value(pos++).toDouble());
   rule.setBarsStopExit(q.value(pos++).toInt());
-  rule.setReport(q.value(pos++).toString());
-  rule.setIndicator(q.value(pos++).toString());
-  rule.setPlotNames(q.value(pos++).toString().split(","));
+  rule.setELIndicator(q.value(pos++).toString());
+  rule.setXLIndicator(q.value(pos++).toString());
+  rule.setESIndicator(q.value(pos++).toString());
+  rule.setXSIndicator(q.value(pos++).toString());
+  rule.setELPlotNames(q.value(pos++).toString().split(","));
+  rule.setXLPlotNames(q.value(pos++).toString().split(","));
+  rule.setESPlotNames(q.value(pos++).toString().split(","));
+  rule.setXSPlotNames(q.value(pos++).toString().split(","));
   rule.setEnterLong(q.value(pos++).toString().split(":"));
   rule.setExitLong(q.value(pos++).toString().split(":"));
   rule.setEnterShort(q.value(pos++).toString().split(":"));
   rule.setExitShort(q.value(pos++).toString().split(":"));
+  
   QString d = q.value(pos++).toString();
   Setting set;
   set.parse(d);
-  rule.setIndicatorSettings(set);
+  rule.setELSettings(set);
+  
+  d = q.value(pos++).toString();
+  set.parse(d);
+  rule.setXLSettings(set);
+
+  d = q.value(pos++).toString();
+  set.parse(d);
+  rule.setESSettings(set);
+
+  d = q.value(pos++).toString();
+  set.parse(d);
+  rule.setXSSettings(set);
+
   rule.setSymbols(q.value(pos++).toString().split(","));
-  rule.setTrades(q.value(pos++).toString().split("|"));
   
   return 0;
 }
@@ -176,8 +204,11 @@ void TesterDataBase::setRule (TesterSettings &rule)
   s.append(",long,longBuyPrice,longSellPrice,short,shortBuyPrice,shortSellPrice,maximumLossStop");
   s.append(",maximumLossType,maximumLossValue,maximumLossExit,profitTargetStop,profitTargetType");
   s.append(",profitTargetValue,profitTargetExit,trailingStop,trailingType,trailingValue,trailingExit");
-  s.append(",barsStop,barsStopValue,barsStopExit,report,indicator,plotNames");
-  s.append(",enterLong,exitLong,enterShort,exitShort,indicatorSettings,symbols,tradeList");
+  s.append(",barsStop,barsStopValue,barsStopExit,elIndicator,xlIndicator,esIndicator,xsIndicator");
+  s.append(",elPlotNames,xlPlotNames,esPlotNames,xsPlotNames");
+  s.append(",enterLong,exitLong,enterShort,exitShort");
+  s.append(",elSettings,xlSettings,esSettings,xsSettings");
+  s.append(",symbols");
   s.append(") VALUES (");
   s.append("'" + rule.name() + "'");
   s.append("," + QString::number(rule.equity()));
@@ -208,19 +239,37 @@ void TesterDataBase::setRule (TesterSettings &rule)
   s.append("," + QString::number(rule.barsStop()));
   s.append("," + QString::number(rule.barsStopValue()));
   s.append("," + QString::number(rule.barsStopExit()));
-  s.append(",'" + rule.report() + "'");
-  s.append(",'" + rule.indicator() + "'");
-  s.append(",'" + rule.plotNames().join(",") + "'");
+  s.append(",'" + rule.eLIndicator() + "'");
+  s.append(",'" + rule.xLIndicator() + "'");
+  s.append(",'" + rule.eSIndicator() + "'");
+  s.append(",'" + rule.xSIndicator() + "'");
+  s.append(",'" + rule.eLPlotNames().join(",") + "'");
+  s.append(",'" + rule.xLPlotNames().join(",") + "'");
+  s.append(",'" + rule.eSPlotNames().join(",") + "'");
+  s.append(",'" + rule.xSPlotNames().join(",") + "'");
   s.append(",'" + rule.enterLong().join(":") + "'");
   s.append(",'" + rule.exitLong().join(":") + "'");
   s.append(",'" + rule.enterShort().join(":") + "'");
   s.append(",'" + rule.exitShort().join(":") + "'");
-  Setting set = rule.indicatorSettings();
+  
+  Setting set = rule.eLSettings();
   QString d;
   set.getString(d);
   s.append(",'" + d + "'");
+  
+  set = rule.xLSettings();
+  set.getString(d);
+  s.append(",'" + d + "'");
+
+  set = rule.eSSettings();
+  set.getString(d);
+  s.append(",'" + d + "'");
+
+  set = rule.xSSettings();
+  set.getString(d);
+  s.append(",'" + d + "'");
+
   s.append(",'" + rule.symbols().join(",") + "'");
-  s.append(",'" + rule.trades().join("|") + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

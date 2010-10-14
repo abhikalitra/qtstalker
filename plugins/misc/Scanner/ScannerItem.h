@@ -23,10 +23,10 @@
 #define SCANNER_ITEM_HPP
 
 #include <QStringList>
-#include <QHash>
 #include <QMetaType>
 
 #include "Group.h"
+#include "Setting.h"
 
 class ScannerItem
 {
@@ -36,42 +36,31 @@ class ScannerItem
     QString & name ();
     void setGroup (Group &);
     Group & group ();
-    void setSettings (QString);
-    QString & settings ();
     void setIndicator (QString);
     QString & indicator ();
-    void setEnable (QString, int);
-    int enable (QString);
-    QString enableString ();
-    void setEnableString (QString);
-    void setOp (QString, int);
-    int op (QString);
-    QString opString ();
-    void setOpString (QString);
-    void setValue (QString, double);
-    double value (QString);
-    QString valueString ();
-    void setValueString (QString);
     void setBarLength (int);
     int barLength ();
     void setDateRange (int);
     int dateRange ();
-    int count ();
-    void keys (QStringList &);
     void setGroupName (QString);
     QString & groupName ();
+    void setSettings (Setting);
+    Setting & settings ();
+    void setPlots (QStringList);
+    QStringList & plots ();
+    void setPlotNames (QStringList);
+    QStringList & plotNames ();
 
   private:
     QString _name;
     Group _group;
-    QString _settings;
+    Setting _settings;
     QString _indicator;
-    QHash<QString, int> _enable;
-    QHash<QString, int> _op;
-    QHash<QString, double> _value;
     int _barLength;
     int _dateRange;
     QString _groupName;
+    QStringList _plotNames;
+    QStringList _plots;
 };
 
 // this is for passing Indicator data between threads

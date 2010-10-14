@@ -1791,6 +1791,81 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>IndicatorPlotList</name>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Settings...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit indicator settings...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Plot...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add plot...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Plot...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete plot...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Plot Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter required CUS variables seperated by a space</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Plot Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IndicatorPluginDialog</name>
     <message>
         <source>Edit</source>
@@ -2498,6 +2573,38 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Hit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test End</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit Target</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trailing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bars</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3589,14 +3696,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Long</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3610,10 +3709,6 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Position Size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Commission</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3673,22 +3768,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indicator Settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3724,6 +3803,74 @@ a partial match like %Script or %Scr%</source>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Commission Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Commission Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buy Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Equity</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TesterThread</name>
@@ -3741,6 +3888,58 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Losing Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit Factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Payoff Ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% Equity Gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Equity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% Profitable Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Drawdown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Avg Profit/Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Winning Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Losing Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Avg Bars Held</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min Bars Held</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Bars Held</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Commissions</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

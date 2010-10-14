@@ -87,14 +87,22 @@ class TesterSettings
     double barsStopValue ();
     void setBarsStopExit (int);
     int barsStopExit ();
-    void setReport (QString);
-    QString & report ();
-    void setTrades (QStringList);
-    QStringList & trades ();
-    void setIndicator (QString);
-    QString & indicator ();
-    void setPlotNames (QStringList);
-    QStringList & plotNames ();
+    void setELIndicator (QString);
+    QString & eLIndicator ();
+    void setXLIndicator (QString);
+    QString & xLIndicator ();
+    void setESIndicator (QString);
+    QString & eSIndicator ();
+    void setXSIndicator (QString);
+    QString & xSIndicator ();
+    void setELPlotNames (QStringList);
+    QStringList & eLPlotNames ();
+    void setXLPlotNames (QStringList);
+    QStringList & xLPlotNames ();
+    void setESPlotNames (QStringList);
+    QStringList & eSPlotNames ();
+    void setXSPlotNames (QStringList);
+    QStringList & xSPlotNames ();
     void setEnterLong (QStringList);
     QStringList & enterLong ();
     void setExitLong (QStringList);
@@ -105,8 +113,14 @@ class TesterSettings
     QStringList & exitShort ();
     void setSymbols (QStringList);
     QStringList & symbols ();
-    void setIndicatorSettings (Setting);
-    Setting & indicatorSettings ();
+    void setELSettings (Setting);
+    Setting & eLSettings ();
+    void setXLSettings (Setting);
+    Setting & xLSettings ();
+    void setESSettings (Setting);
+    Setting & eSSettings ();
+    void setXSSettings (Setting);
+    Setting & xSSettings ();
 
   private:
     QString _name;
@@ -138,16 +152,23 @@ class TesterSettings
     int _barsStop;
     double _barsStopValue;
     int _barsStopExit;
-    QString _report;
-    QStringList _trades;
-    QString _indicator;
-    QStringList _plotNames;
+    QString _elIndicator;
+    QString _xlIndicator;
+    QString _esIndicator;
+    QString _xsIndicator;
+    QStringList _elPlotNames;
+    QStringList _xlPlotNames;
+    QStringList _esPlotNames;
+    QStringList _xsPlotNames;
     QStringList _enterLong;
     QStringList _exitLong;
     QStringList _enterShort;
     QStringList _exitShort;
     QStringList _symbols;
-    Setting _indicatorSettings;
+    Setting _elSettings;
+    Setting _xlSettings;
+    Setting _esSettings;
+    Setting _xsSettings;
 };
 
 #endif

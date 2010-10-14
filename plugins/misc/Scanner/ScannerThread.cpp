@@ -27,6 +27,7 @@
 #include "IndicatorPlugin.h"
 #include "Operator.h"
 #include "GroupDataBase.h"
+#include "IndicatorPlotRules.h"
 
 #include <QDebug>
 
@@ -78,11 +79,8 @@ void ScannerThread::run ()
     bd.setBarLength((BarData::BarLength) _scanner.barLength());
     bd.setBars(qsr.data());
   
-    Setting settings;
-    settings.parse(_scanner.settings());
-
     Indicator i;
-    i.setSettings(settings);
+    i.setSettings(_scanner.settings());
 
     IndicatorPluginFactory fac;
     IndicatorPlugin *plug = fac.plugin(_scanner.indicator());
@@ -98,66 +96,89 @@ void ScannerThread::run ()
       continue;
     }
 
-    QStringList plotNames;
-    plug->plotNames(i, plotNames);
-  
+    IndicatorPlotRules rules;
+    if (rules.createRules(i, _scanner.plots(), bd))
+      continue;
+
+    if (! rules.count())
+      continue;
+
     int loop = 0;
     int count = 0;
-    int total = 0;
-    for (; loop < plotNames.count(); loop++)
+    for (; loop < rules.count(); loop++)
     {
-      if (! _scanner.enable(plotNames.at(loop)))
-        continue;
+      IndicatorPlotRule *rule = rules.getRule(loop);
 
-      Curve *curve = i.line(plotNames.at(loop));
+      Curve *curve = i.line(rule->name());
       if (! curve)
+      {
+        qDebug() << "ScannerThread::run: no" << rule->name();
         continue;
+      }
 
-      total++;
-    
-      switch ((Operator::Type) _scanner.op(plotNames.at(loop)))
+      double value = 0;
+      int sindex, eindex;
+      curve->keyRange(sindex, eindex);
+      CurveBar *bar = curve->bar(eindex);
+      if (! bar)
+      {
+        qDebug() << "ScannerThread::run: no bar" << rule->name();
+        continue;
+      }
+      value = bar->data();
+
+      double value2 = 0;
+      curve = i.line(rule->value());
+      if (curve)
+      {
+        curve->keyRange(sindex, eindex);
+        bar = curve->bar(eindex);
+        if (! bar)
+        {
+          qDebug() << "ScannerThread::run: no bar" << rule->value();
+          continue;
+        }
+        value2 = bar->data();
+      }
+      else
+      {
+        bool ok;
+        value2 = rule->value().toDouble(&ok);
+        if (! ok)
+        {
+          qDebug() << "ScannerThread::run: invalid value" << rule->name();
+          continue;
+        }
+      }
+
+      switch ((Operator::Type) rule->op())
       {
         case Operator::_LessThan:
-        {
-          CurveBar *bar = curve->bar(curve->count() - 1);
-          if (bar->data() < _scanner.value(plotNames.at(loop)))
+          if (value < value2)
             count++;
           break;
-        }
         case Operator::_LessThanEqual:
-        {
-          CurveBar *bar = curve->bar(curve->count() - 1);
-          if (bar->data() <= _scanner.value(plotNames.at(loop)))
+          if (value <= value2)
             count++;
           break;
-        }
         case Operator::_Equal:
-        {
-          CurveBar *bar = curve->bar(curve->count() - 1);
-          if (bar->data() == _scanner.value(plotNames.at(loop)))
+          if (value == value2)
             count++;
           break;
-        }
         case Operator::_GreaterThanEqual:
-        {
-          CurveBar *bar = curve->bar(curve->count() - 1);
-          if (bar->data() >= _scanner.value(plotNames.at(loop)))
+          if (value >= value2)
             count++;
           break;
-        }
         case Operator::_GreaterThan:
-        {
-          CurveBar *bar = curve->bar(curve->count() - 1);
-          if (bar->data() > _scanner.value(plotNames.at(loop)))
+          if (value > value2)
             count++;
           break;
-        }
         default:
           break;
       }
     }
 
-    if (count == total && total != 0)
+    if (count == rules.count())
     {
       BarData tbd;
       tbd.setExchange(bd.getExchange());

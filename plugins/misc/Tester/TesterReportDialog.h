@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,43 +19,31 @@
  *  USA.
  */
 
-#ifndef SCANNER_EDIT_DIALOG_HPP
-#define SCANNER_EDIT_DIALOG_HPP
+#ifndef TESTER_REPORT_DIALOG_HPP
+#define TESTER_REPORT_DIALOG_HPP
 
-#include <QComboBox>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QSpinBox>
+#include <QDialog>
+#include <QStringList>
+#include <QTextEdit>
+#include <QTreeWidget>
 
-#include "Dialog.h"
-#include "Indicator.h"
-#include "ScannerItem.h"
-#include "Group.h"
-#include "SymbolButton.h"
-#include "IndicatorPlotList.h"
+#include "TesterReport.h"
 
-class ScannerEditDialog : public Dialog
+class TesterReportDialog : public QDialog
 {
   Q_OBJECT
-
-  signals:
-    void signalEdit (ScannerItem);
-
+  
   public:
-    ScannerEditDialog (ScannerItem);
-    void createMainPage ();
-    void setSettings ();
-
-  public slots:
-    void done ();
-
+    TesterReportDialog (QString);
+    void loadSettings ();
+    void updateTrades (TesterReport &);
+    void updateReport (TesterReport &);
+          
   private:
-    ScannerItem _scanner;
-    SymbolButton *_symbols;
-    IndicatorPlotList *_list;
-    QLineEdit *_groupName;
-    QComboBox *_barLength;
-    QComboBox *_dateRange;
+    QString _name;
+    QTreeWidget *_tradeList;
+    QTextEdit *_report;
 };
 
 #endif
+

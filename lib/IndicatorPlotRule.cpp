@@ -19,43 +19,53 @@
  *  USA.
  */
 
-#ifndef SCANNER_EDIT_DIALOG_HPP
-#define SCANNER_EDIT_DIALOG_HPP
+#include "IndicatorPlotRule.h"
 
-#include <QComboBox>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QSpinBox>
+#include <QtDebug>
 
-#include "Dialog.h"
-#include "Indicator.h"
-#include "ScannerItem.h"
-#include "Group.h"
-#include "SymbolButton.h"
-#include "IndicatorPlotList.h"
-
-class ScannerEditDialog : public Dialog
+IndicatorPlotRule::IndicatorPlotRule ()
 {
-  Q_OBJECT
+  _enable = 0;
+  _op = 0;
+}
 
-  signals:
-    void signalEdit (ScannerItem);
+void IndicatorPlotRule::setEnable (int d)
+{
+  _enable = d;
+}
 
-  public:
-    ScannerEditDialog (ScannerItem);
-    void createMainPage ();
-    void setSettings ();
+int IndicatorPlotRule::enable ()
+{
+  return _enable;
+}
 
-  public slots:
-    void done ();
+void IndicatorPlotRule::setOp (int d)
+{
+  _op = d;
+}
 
-  private:
-    ScannerItem _scanner;
-    SymbolButton *_symbols;
-    IndicatorPlotList *_list;
-    QLineEdit *_groupName;
-    QComboBox *_barLength;
-    QComboBox *_dateRange;
-};
+int IndicatorPlotRule::op ()
+{
+  return _op;
+}
 
-#endif
+void IndicatorPlotRule::setName (QString d)
+{
+  _name = d;
+}
+
+QString & IndicatorPlotRule::name ()
+{
+  return _name;
+}
+
+void IndicatorPlotRule::setValue (QString d)
+{
+  _value = d;
+}
+
+QString & IndicatorPlotRule::value ()
+{
+  return _value;
+}
+

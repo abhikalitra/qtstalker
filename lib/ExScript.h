@@ -28,6 +28,7 @@
 #define EXSCRIPT_HPP
 
 #include "Indicator.h"
+#include "BarData.h"
 
 #include <QProcess>
 #include <QList>
@@ -62,6 +63,7 @@ class ExScript : public QObject
     Indicator & indicator ();
     int getState ();
     void stop ();
+    void setBarData (BarData &);
 
   public slots:
     void readFromStdout ();
@@ -73,6 +75,7 @@ class ExScript : public QObject
     QStringList _functionList;
     int _killFlag;
     Indicator _indicator;
+    BarData _barData;
 };
 
 #endif

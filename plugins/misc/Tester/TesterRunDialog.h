@@ -19,43 +19,20 @@
  *  USA.
  */
 
-#ifndef SCANNER_EDIT_DIALOG_HPP
-#define SCANNER_EDIT_DIALOG_HPP
+#ifndef TESTER_RUN_DIALOG_HPP
+#define TESTER_RUN_DIALOG_HPP
 
-#include <QComboBox>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QSpinBox>
+#include "ListDialog.h"
 
-#include "Dialog.h"
-#include "Indicator.h"
-#include "ScannerItem.h"
-#include "Group.h"
-#include "SymbolButton.h"
-#include "IndicatorPlotList.h"
-
-class ScannerEditDialog : public Dialog
+class TesterRunDialog : public ListDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalEdit (ScannerItem);
-
   public:
-    ScannerEditDialog (ScannerItem);
-    void createMainPage ();
-    void setSettings ();
+    TesterRunDialog ();
 
   public slots:
     void done ();
-
-  private:
-    ScannerItem _scanner;
-    SymbolButton *_symbols;
-    IndicatorPlotList *_list;
-    QLineEdit *_groupName;
-    QComboBox *_barLength;
-    QComboBox *_dateRange;
 };
 
 #endif

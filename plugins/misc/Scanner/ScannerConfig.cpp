@@ -31,7 +31,7 @@ ScannerConfig::ScannerConfig ()
   QSqlDatabase db = QSqlDatabase::database(_dbName);
   QSqlQuery q(db);
   QString s = "CREATE TABLE IF NOT EXISTS " + _tableName + " (";
-  s.append("key INT PRIMARY KEY UNIQUE");
+  s.append("key TEXT PRIMARY KEY UNIQUE");
   s.append(", setting TEXT");
   s.append(")");
   q.exec(s);

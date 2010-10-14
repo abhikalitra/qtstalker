@@ -19,43 +19,30 @@
  *  USA.
  */
 
-#ifndef SCANNER_EDIT_DIALOG_HPP
-#define SCANNER_EDIT_DIALOG_HPP
+// ******************************************************
+// ******************************************************
 
-#include <QComboBox>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QSpinBox>
+#ifndef INDICATOR_PLOT_RULES_HPP
+#define INDICATOR_PLOT_RULES_HPP
 
-#include "Dialog.h"
+#include <QString>
+#include <QStringList>
+
 #include "Indicator.h"
-#include "ScannerItem.h"
-#include "Group.h"
-#include "SymbolButton.h"
-#include "IndicatorPlotList.h"
+#include "BarData.h"
+#include "IndicatorPlotRule.h"
 
-class ScannerEditDialog : public Dialog
+class IndicatorPlotRules
 {
-  Q_OBJECT
-
-  signals:
-    void signalEdit (ScannerItem);
-
   public:
-    ScannerEditDialog (ScannerItem);
-    void createMainPage ();
-    void setSettings ();
-
-  public slots:
-    void done ();
+    IndicatorPlotRules ();
+    ~IndicatorPlotRules ();
+    int createRules (Indicator &indicator, QStringList &l, BarData &bars);
+    int count ();
+    IndicatorPlotRule * getRule (int);
 
   private:
-    ScannerItem _scanner;
-    SymbolButton *_symbols;
-    IndicatorPlotList *_list;
-    QLineEdit *_groupName;
-    QComboBox *_barLength;
-    QComboBox *_dateRange;
+    QList<IndicatorPlotRule *> _rules;
 };
 
 #endif

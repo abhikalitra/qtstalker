@@ -345,44 +345,84 @@ int TesterSettings::barsStopExit ()
   return _barsStopExit;
 }
 
-void TesterSettings::setReport (QString d)
+void TesterSettings::setELIndicator (QString d)
 {
-  _report = d;
+  _elIndicator = d;
 }
 
-QString & TesterSettings::report ()
+QString & TesterSettings::eLIndicator ()
 {
-  return _report;
+  return _elIndicator;
 }
 
-void TesterSettings::setTrades (QStringList d)
+void TesterSettings::setXLIndicator (QString d)
 {
-  _trades = d;
+  _xlIndicator = d;
 }
 
-QStringList & TesterSettings::trades ()
+QString & TesterSettings::xLIndicator ()
 {
-  return _trades;
+  return _xlIndicator;
 }
 
-void TesterSettings::setIndicator (QString d)
+void TesterSettings::setESIndicator (QString d)
 {
-  _indicator = d;
+  _esIndicator = d;
 }
 
-QString & TesterSettings::indicator ()
+QString & TesterSettings::eSIndicator ()
 {
-  return _indicator;
+  return _esIndicator;
 }
 
-void TesterSettings::setPlotNames (QStringList d)
+void TesterSettings::setXSIndicator (QString d)
 {
-  _plotNames = d;
+  _xsIndicator = d;
 }
 
-QStringList & TesterSettings::plotNames ()
+QString & TesterSettings::xSIndicator ()
 {
-  return _plotNames;
+  return _xsIndicator;
+}
+
+void TesterSettings::setELPlotNames (QStringList d)
+{
+  _elPlotNames = d;
+}
+
+QStringList & TesterSettings::eLPlotNames ()
+{
+  return _elPlotNames;
+}
+
+void TesterSettings::setXLPlotNames (QStringList d)
+{
+  _xlPlotNames = d;
+}
+
+QStringList & TesterSettings::xLPlotNames ()
+{
+  return _xlPlotNames;
+}
+
+void TesterSettings::setESPlotNames (QStringList d)
+{
+  _esPlotNames = d;
+}
+
+QStringList & TesterSettings::eSPlotNames ()
+{
+  return _esPlotNames;
+}
+
+void TesterSettings::setXSPlotNames (QStringList d)
+{
+  _xsPlotNames = d;
+}
+
+QStringList & TesterSettings::xSPlotNames ()
+{
+  return _xsPlotNames;
 }
 
 void TesterSettings::setEnterLong (QStringList d)
@@ -435,13 +475,43 @@ QStringList & TesterSettings::symbols ()
   return _symbols;
 }
 
-void TesterSettings::setIndicatorSettings (Setting d)
+void TesterSettings::setELSettings (Setting d)
 {
-  _indicatorSettings = d;
+  _elSettings = d;
 }
 
-Setting & TesterSettings::indicatorSettings ()
+Setting & TesterSettings::eLSettings ()
 {
-  return _indicatorSettings;
+  return _elSettings;
+}
+
+void TesterSettings::setXLSettings (Setting d)
+{
+  _xlSettings = d;
+}
+
+Setting & TesterSettings::xLSettings ()
+{
+  return _xlSettings;
+}
+
+void TesterSettings::setESSettings (Setting d)
+{
+  _esSettings = d;
+}
+
+Setting & TesterSettings::eSSettings ()
+{
+  return _esSettings;
+}
+
+void TesterSettings::setXSSettings (Setting d)
+{
+  _xsSettings = d;
+}
+
+Setting & TesterSettings::xSSettings ()
+{
+  return _xsSettings;
 }
 

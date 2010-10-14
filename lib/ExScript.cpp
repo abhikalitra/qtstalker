@@ -25,7 +25,7 @@
 #include "SCSymbol.h"
 #include "SCChartObject.h"
 #include "SCProcess.h"
-#include "Globals.h"
+//#include "Globals.h"
 
 #include <QByteArray>
 #include <QtDebug>
@@ -147,7 +147,8 @@ void ExScript::readFromStdout ()
     case _INDICATOR:
     {
       SCIndicator sc;
-      sc.calculate(l, ba, _indicator, g_barData);
+//      sc.calculate(l, ba, _indicator, g_barData);
+      sc.calculate(l, ba, _indicator, _barData);
       _proc->write(ba);
       break;
     }
@@ -225,5 +226,10 @@ void ExScript::stop ()
   _killFlag = TRUE;
 
   clear();
+}
+
+void ExScript::setBarData (BarData &d)
+{
+  _barData = d;
 }
 

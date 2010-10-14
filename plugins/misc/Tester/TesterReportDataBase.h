@@ -19,43 +19,24 @@
  *  USA.
  */
 
-#ifndef SCANNER_EDIT_DIALOG_HPP
-#define SCANNER_EDIT_DIALOG_HPP
+#ifndef TESTER_REPORT_DATA_BASE_HPP
+#define TESTER_REPORT_DATA_BASE_HPP
 
-#include <QComboBox>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QSpinBox>
+#include <QString>
+#include <QStringList>
 
-#include "Dialog.h"
-#include "Indicator.h"
-#include "ScannerItem.h"
-#include "Group.h"
-#include "SymbolButton.h"
-#include "IndicatorPlotList.h"
+#include "DataBase.h"
+#include "TesterReport.h"
 
-class ScannerEditDialog : public Dialog
+class TesterReportDataBase : public DataBase
 {
-  Q_OBJECT
-
-  signals:
-    void signalEdit (ScannerItem);
-
   public:
-    ScannerEditDialog (ScannerItem);
-    void createMainPage ();
-    void setSettings ();
-
-  public slots:
-    void done ();
-
-  private:
-    ScannerItem _scanner;
-    SymbolButton *_symbols;
-    IndicatorPlotList *_list;
-    QLineEdit *_groupName;
-    QComboBox *_barLength;
-    QComboBox *_dateRange;
+    TesterReportDataBase ();
+    void getReports (QStringList &);
+    int getReport (TesterReport &);
+    void setReport (TesterReport &);
+    void deleteReport (QString &);
+    void reportRatings (QList<TesterReport> &l);
 };
 
 #endif

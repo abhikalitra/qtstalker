@@ -22,18 +22,15 @@
 #include "ScannerEditDialog.h"
 #include "Globals.h"
 #include "ScannerDataBase.h"
-#include "IndicatorPluginFactory.h"
-#include "IndicatorPlugin.h"
-#include "Setting.h"
-#include "../../../pics/indicator.xpm"
-#include "Operator.h"
 #include "DateRange.h"
+#include "ScannerConfig.h"
 
 #include <QtDebug>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QToolButton>
 #include <QIcon>
+#include <QFormLayout>
 
 ScannerEditDialog::ScannerEditDialog (ScannerItem scanner)
 {
@@ -53,53 +50,25 @@ void ScannerEditDialog::createMainPage ()
   vbox->setSpacing(2);
   w->setLayout(vbox);
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setMargin(0);
-  grid->setSpacing(2);
-  grid->setColumnStretch(3, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setMargin(0);
+  form->setSpacing(2);
+  vbox->addLayout(form);
 
   // symbol
-  QLabel *label = new QLabel(tr("Symbols"));
-  grid->addWidget(label, row, col++);
-
   _symbols = new SymbolButton(w);
-  grid->addWidget(_symbols, row++, col--);
-
-  // indicator
-  label = new QLabel(tr("Indicator"));
-  grid->addWidget(label, row, col++);
-
-  _indicator = new QLineEdit;
-  _indicator->setReadOnly(TRUE);
-  grid->addWidget(_indicator, row, col++);
-
-  QToolButton *tb = new QToolButton;
-  tb->setIcon(QIcon(indicator_xpm));
-  tb->setToolTip(tr("Indicator settings..."));
-  connect(tb, SIGNAL(clicked()), this, SLOT(indicatorSettings()));
-  grid->addWidget(tb, row++, col);
-  col -= 2;
+  form->addRow(tr("Symbols"), _symbols);
 
   // bar length
-  label = new QLabel(tr("Bar Length"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   QStringList l;
   bd.getBarLengthList(l);
   
   _barLength = new QComboBox;
   _barLength->addItems(l);
-  grid->addWidget(_barLength, row++, col--);
+  form->addRow(tr("Bar Length"), _barLength);
 
-  // bar range
-  label = new QLabel(tr("Date Range"));
-  grid->addWidget(label, row, col++);
-
+  // date range
   DateRange dr;
   l.clear();
   dr.list(l);
@@ -107,67 +76,41 @@ void ScannerEditDialog::createMainPage ()
   _dateRange = new QComboBox;
   _dateRange->addItems(l);
   _dateRange->setToolTip(tr("The amount of bars to use for the indicator"));
-  grid->addWidget(_dateRange, row++, col--);
+  form->addRow(tr("Date Range"), _dateRange);
 
   // group name
-  label = new QLabel(tr("Group Name"));
-  grid->addWidget(label, row, col++);
-
   _groupName = new QLineEdit;
   _groupName->setToolTip(tr("Scan results group name"));
-  grid->addWidget(_groupName, row++, col--);
+  form->addRow(tr("Group Name"), _groupName);
 
-  // alert list
-  l.clear();
-  l << tr("Enable") << tr("Plot") << tr("Operator") << tr("Value");
-  
-  _list = new QTreeWidget;
-  _list->setSortingEnabled(FALSE);
-  _list->setRootIsDecorated(FALSE);
-  _list->setHeaderLabels(l);
-  _list->setSelectionMode(QAbstractItemView::SingleSelection);
+  // plot list
+  _list = new IndicatorPlotList;
   vbox->addWidget(_list);
   
   _tabs->addTab(w, tr("Settings"));
 }
 
-void ScannerEditDialog::indicatorSettings ()
-{
-  QString s = _indicator->text();
-
-  IndicatorPluginFactory fac;
-  IndicatorPlugin *plugin = fac.plugin(s);
-  if (! plugin)
-    return;
-
-  Setting set;
-  set.parse(_scanner.settings());
-  
-  Indicator i;
-  i.setSettings(set);
-  
-  IndicatorPluginDialog *dialog = plugin->dialog(i);
-  if (! dialog)
-  {
-    qDebug() << "ScannerEditDialog::indicatorSettings: no dialog";
-    return;
-  }
-
-  connect(dialog, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorSettings2(Indicator)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-}
-
-void ScannerEditDialog::indicatorSettings2 (Indicator i)
-{
-  QString s;
-  i.settings().getString(s);
-  _scanner.setSettings(s);
-}
-
 void ScannerEditDialog::setSettings ()
 {
-  _indicator->setText(_scanner.indicator());
+  ScannerConfig config;
+
+  // restore the size of the window
+  QString k = "size" + _scanner.name();
+  QSize sz;
+  config.getData(k, sz);
+  if (! sz.isNull())
+    resize(sz);
+
+  // restore the position of the window
+  k = "position" + _scanner.name();
+  QPoint p;
+  config.getData(k, p);
+  if (! p.isNull())
+    move(p);
+
+  _list->setIndicator(_scanner.indicator());
+  _list->setSettings(_scanner.settings());
+  _list->setList(_scanner.plotNames(), _scanner.plots());
 
   _barLength->setCurrentIndex(_scanner.barLength());
   
@@ -176,60 +119,24 @@ void ScannerEditDialog::setSettings ()
   _groupName->setText(_scanner.groupName());
 
   _symbols->setSymbols(_scanner.group());
-  
-  _list->clear();
-
-  QString s = _indicator->text();
-
-  IndicatorPluginFactory fac;
-  IndicatorPlugin *plugin = fac.plugin(s);
-  if (! plugin)
-    return;
-
-  Indicator i;
-  if (! _scanner.settings().length())
-    plugin->defaults(i);
-  else
-  {
-    Setting set;
-    set.parse(_scanner.settings());
-    i.setSettings(set);
-  }
-
-  Setting set = i.settings();
-  set.getString(s);
-  _scanner.setSettings(s);
-
-  QStringList plotNames;
-  plugin->plotNames(i, plotNames);
-
-  int loop = 0;
-  for (; loop < plotNames.count(); loop++)
-  {
-    QTreeWidgetItem *item = new QTreeWidgetItem(_list);
-
-    item->setCheckState(0, (Qt::CheckState) _scanner.enable(plotNames.at(loop)));
-
-    item->setText(1, plotNames.at(loop));
-
-    QComboBox *cb = new QComboBox;
-    Operator op;
-    cb->addItems(op.list());
-    cb->setCurrentIndex(_scanner.op(plotNames.at(loop)));
-    _list->setItemWidget(item, 2, cb);
-
-    QDoubleSpinBox *sb = new QDoubleSpinBox;
-    sb->setRange(-99999999, 99999999);
-    sb->setValue(_scanner.value(plotNames.at(loop)));
-    _list->setItemWidget(item, 3, sb);
-  }
-
-  for (loop = 0; loop < _list->topLevelItemCount(); loop++)
-    _list->resizeColumnToContents(loop);
 }
 
 void ScannerEditDialog::done ()
 {
+  ScannerConfig config;
+  config.transaction();
+
+  // save app size and position
+  QString k = "size" + _scanner.name();
+  QSize sz = size();
+  config.setData(k, sz);
+
+  k = "position" + _scanner.name();
+  QPoint pt = pos();
+  config.setData(k, pt);
+
+  config.commit();
+  
   // remove any forbidden sql characters
   QString gn = _groupName->text();
   gn = gn.remove(QString("'"), Qt::CaseSensitive);
@@ -248,19 +155,9 @@ void ScannerEditDialog::done ()
 
   _scanner.setDateRange(_dateRange->currentIndex());
 
-  int loop = 0;
-  for (; loop < _list->topLevelItemCount(); loop++)
-  {
-    QTreeWidgetItem *item = _list->topLevelItem(loop);
-
-    _scanner.setEnable(item->text(1), item->checkState(0));
-
-    QComboBox *cb = (QComboBox *) _list->itemWidget(item, 2);
-    _scanner.setOp(item->text(1), cb->currentIndex());
-
-    QDoubleSpinBox *sb = (QDoubleSpinBox *) _list->itemWidget(item, 3);
-    _scanner.setValue(item->text(1), sb->value());
-  }
+  _scanner.setIndicator(_list->indicator());
+  _list->list(_scanner.plotNames(), _scanner.plots());
+  _scanner.setSettings(_list->settings());
 
   ScannerDataBase db;
   db.transaction();

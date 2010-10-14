@@ -22,6 +22,7 @@
 #ifndef TESTER_SETTINGS_DIALOG_HPP
 #define TESTER_SETTINGS_DIALOG_HPP
 
+#include <QDialog>
 #include <QComboBox>
 #include <QStringList>
 #include <QDoubleSpinBox>
@@ -29,16 +30,15 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QTextEdit>
-#include <QTreeWidget>
+#include <QTabWidget>
+#include <QGroupBox>
 
-#include "Setting.h"
-#include "Dialog.h"
 #include "SymbolButton.h"
 #include "Indicator.h"
-#include "TesterThread.h"
 #include "TesterSettings.h"
+#include "IndicatorPlotList.h"
 
-class TesterSettingsDialog : public Dialog
+class TesterSettingsDialog : public QDialog
 {
   Q_OBJECT
   
@@ -48,60 +48,21 @@ class TesterSettingsDialog : public Dialog
     void createTradesPage ();
     void createStopsPage ();
     void createIndicatorPage ();
-    void createReportPage ();
     void loadSettings ();
-    void updateTradeList ();
     
   public slots:
     void saveSettings ();
-    void equityChanged ();
-    void periodChanged ();
-    void dateRangeChanged ();
-    void positionSizeChanged ();
-    void commissionChanged ();
-    void commissionValueChanged ();
-    void symbolsChanged ();
-    void futuresModeChanged ();
-    void longBuyPriceChanged ();
-    void longSellPriceChanged ();
-    void shortBuyPriceChanged ();
-    void shortSellPriceChanged ();
-    void maximumLossTypeChanged ();
-    void maximumLossValueChanged ();
-    void maximumLossExitChanged ();
-    void profitTargetTypeChanged ();
-    void profitTargetValueChanged ();
-    void profitTargetExitChanged ();
-    void trailingTypeChanged ();
-    void trailingValueChanged ();
-    void trailingExitChanged ();
-    void barsStopValueChanged ();
-    void barsStopExitChanged ();
-    void plotItemChanged ();
     void ruleChanged ();
-    void done (QString, QStringList);
-    void longChanged (int);
-    void shortChanged (int);
-    void maximumLossStopChanged (int);
-    void profitTargetStopChanged (int);
-    void trailingStopChanged (int);
-    void barsStopChanged (int);
-    void indicatorChanged (int);
-    void addPlotItem (QTreeWidget *, QStringList &, QString enable, QString pn, QString oper, QString val);
-    void getPlotItems (QTreeWidget *, QStringList &plotNames, QStringList &items);
-    void editIndicator ();
-    void editIndicator2 (Indicator);
+    void trailingTypeChanged ();
+    void profitTargetTypeChanged ();
+    void maximumLossTypeChanged ();
     void closeDialog ();
-    void run ();
           
   private:
+    QTabWidget *_tabs;
     int _saveFlag;
-    int _runningFlag;
-    TesterThread *_thread;
     TesterSettings _settings;
-    QTreeWidget *_tradeList;
     QPushButton *_saveButton;
-    QPushButton *_runButton;
     QPushButton *_closeButton;
     SymbolButton *_symbols;
     QDoubleSpinBox *_equity;
@@ -111,33 +72,32 @@ class TesterSettingsDialog : public Dialog
     QCheckBox *_futuresMode;
     QComboBox *_commission;
     QDoubleSpinBox *_commissionValue;
-    QCheckBox *_long;
+    QGroupBox *_long;
     QComboBox *_longBuyPrice;
     QComboBox *_longSellPrice;
-    QCheckBox *_short;
+    QGroupBox *_short;
     QComboBox *_shortBuyPrice;
     QComboBox *_shortSellPrice;
-    QCheckBox *_maximumLossStop;
+    QGroupBox *_maximumLossStop;
     QComboBox *_maximumLossType;
     QDoubleSpinBox *_maximumLossValue;
     QComboBox *_maximumLossExit;
-    QCheckBox *_profitTargetStop;
+    QGroupBox *_profitTargetStop;
     QComboBox *_profitTargetType;
     QDoubleSpinBox *_profitTargetValue;
     QComboBox *_profitTargetExit;
-    QCheckBox *_trailingStop;
+    QGroupBox *_trailingStop;
     QComboBox *_trailingType;
     QDoubleSpinBox *_trailingValue;
     QComboBox *_trailingExit;
-    QCheckBox *_barsStop;
+    QGroupBox *_barsStop;
     QSpinBox *_barsStopValue;
     QComboBox *_barsStopExit;
-    QTextEdit *_report;
     QComboBox *_indicator;
-    QTreeWidget *_enterLong;
-    QTreeWidget *_exitLong;
-    QTreeWidget *_enterShort;
-    QTreeWidget *_exitShort;
+    IndicatorPlotList *_enterLong;
+    IndicatorPlotList *_exitLong;
+    IndicatorPlotList *_enterShort;
+    IndicatorPlotList *_exitShort;
 };
 
 #endif

@@ -37,7 +37,7 @@ BarData::BarData ()
 
 BarData::~BarData ()
 {
-  clear();
+//  clear();
 }
 
 void BarData::clear ()

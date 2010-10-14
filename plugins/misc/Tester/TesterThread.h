@@ -31,14 +31,7 @@
 #include "BarData.h"
 #include "TesterTrade.h"
 #include "TesterStops.h"
-
-struct PlotRule
-{
-  int enable;
-  QString name;
-  int op;
-  QString value;
-};
+#include "IndicatorPlotRules.h"
 
 class TesterThread : public QThread
 {
@@ -46,7 +39,8 @@ class TesterThread : public QThread
 
   signals:
     void signalMessage (QString);
-    void signalDone (QString, QStringList);
+    void signalDone (QString);
+    void signalStopped (QString);
     
   public:
     enum Status
@@ -63,19 +57,21 @@ class TesterThread : public QThread
     TesterThread (QObject *, TesterSettings &);
     void stop ();
     int getBars (BarData &);
-    int getIndicator (BarData &, QStringList &);
-    int getRules (QStringList &, BarData &, QList<PlotRule *> &);
-    int enterTradeCheck (QList<PlotRule *> &, int index, QList<TesterTrade *> &, BarData &);
+    int getIndicator (BarData &, QStringList &, Indicator &, QString name);
+    int enterTradeCheck (IndicatorPlotRules &, int index, QList<TesterTrade *> &, BarData &, Indicator &);
     int enterTrade (QString symbol, QList<TesterTrade *> &, BarData &, int index, int status);
     void exitTrade (QList<TesterTrade *> &, BarData &, int index, int signal);
     double getCommission (TesterTrade *, int flag);
-    void getReport (QList<TesterTrade *> &, QString &, QStringList &);
+    void getReport (QList<TesterTrade *> &);
 
   protected:
     void run();
 
   private:
-    Indicator _indicator;
+    Indicator _elIndicator;
+    Indicator _xlIndicator;
+    Indicator _esIndicator;
+    Indicator _xsIndicator;
     TesterSettings _settings;
     int _stopFlag;
     TesterStops _stops;
