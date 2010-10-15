@@ -279,8 +279,6 @@ void QtstalkerApp::quit()
   config.setData((int) Config::MainWindowPos, pt);
 
   config.commit();
-
-  g_barData.clear();
 }
 
 void QtstalkerApp::loadChart (BarData symbol)
@@ -290,6 +288,14 @@ void QtstalkerApp::loadChart (BarData symbol)
     return;
 
   _currentChart = symbol;
+
+  QStringList c;
+  c <<  _currentChart.getExchange() << _currentChart.getSymbol();
+  QString chart = c.join(",");
+  Config config;
+  config.transaction();
+  config.setData((int) Config::CurrentChart, chart);
+  config.commit();
 
   // construct a QuoteServer command to get the quotes
   QStringList l;
