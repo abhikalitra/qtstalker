@@ -27,6 +27,7 @@
       <file>qtstalker.png</file>
       <file>screen-1.png</file>
       <file>screen-2.png</file>
+      <file>*.csv</file>
 <!-- Note that no files are yet excluded, so wildcard will suffice. -->
       <file>*.html</file>
     </files>
