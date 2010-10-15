@@ -48,8 +48,6 @@ class ScannerItem
     Setting & settings ();
     void setPlots (QStringList);
     QStringList & plots ();
-    void setPlotNames (QStringList);
-    QStringList & plotNames ();
 
   private:
     QString _name;
@@ -59,7 +57,6 @@ class ScannerItem
     int _barLength;
     int _dateRange;
     QString _groupName;
-    QStringList _plotNames;
     QStringList _plots;
 };
 

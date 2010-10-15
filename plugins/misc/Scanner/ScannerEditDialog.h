@@ -22,6 +22,7 @@
 #ifndef SCANNER_EDIT_DIALOG_HPP
 #define SCANNER_EDIT_DIALOG_HPP
 
+#include <QString>
 #include <QComboBox>
 #include <QCheckBox>
 #include <QLineEdit>
@@ -38,11 +39,8 @@ class ScannerEditDialog : public Dialog
 {
   Q_OBJECT
 
-  signals:
-    void signalEdit (ScannerItem);
-
   public:
-    ScannerEditDialog (ScannerItem);
+    ScannerEditDialog (QString name);
     void createMainPage ();
     void setSettings ();
 

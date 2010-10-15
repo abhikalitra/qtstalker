@@ -25,18 +25,7 @@
 
 IndicatorPlotRule::IndicatorPlotRule ()
 {
-  _enable = 0;
   _op = 0;
-}
-
-void IndicatorPlotRule::setEnable (int d)
-{
-  _enable = d;
-}
-
-int IndicatorPlotRule::enable ()
-{
-  return _enable;
 }
 
 void IndicatorPlotRule::setOp (int d)

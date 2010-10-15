@@ -22,29 +22,22 @@
 #ifndef SCANNER_NEW_DIALOG_HPP
 #define SCANNER_NEW_DIALOG_HPP
 
-#include <QComboBox>
 #include <QStringList>
 
-#include "Dialog.h"
+#include "NewDialog.h"
 
-class ScannerNewDialog : public Dialog
+class ScannerNewDialog : public NewDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalNew (QString);
-  
   public:
     ScannerNewDialog ();
-    void createMainPage ();
 
   public slots:
     void done ();
-    void buttonStatus (QString);
 
   private:
-    QComboBox *_indicator;
-    QComboBox *_name;
+    QStringList _list;
 };
 
 #endif

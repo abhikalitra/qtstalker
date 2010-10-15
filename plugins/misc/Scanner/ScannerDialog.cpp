@@ -167,47 +167,12 @@ void ScannerDialog::newScanner ()
 {
   ScannerNewDialog *dialog = new ScannerNewDialog;
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalNew(QString)), this, SLOT(newScanner2(QString)));
-  dialog->show();
-}
-
-void ScannerDialog::newScanner2 (QString name)
-{
-  if (! name.length())
-    return;
-  
-  ScannerItem scanner;
-  scanner.setName(name);
-
-  ScannerDataBase db;
-  if (db.getScanner(scanner))
-  {
-    qDebug() << "ScannerDialog::newScanner2: no scanner found";
-    return;
-  }
-  
-  ScannerEditDialog *dialog = new ScannerEditDialog(scanner);
-  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   dialog->show();
 }
 
 void ScannerDialog::editScanner ()
 {
   ScannerSelectEditDialog *dialog = new ScannerSelectEditDialog;
-  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalSelect(QStringList)), this, SLOT(editScanner2(QStringList)));
-  dialog->show();
-}
-
-void ScannerDialog::editScanner2 (QStringList l)
-{
-  ScannerItem scanner;
-  scanner.setName(l.at(0));
-
-  ScannerDataBase db;
-  db.getScanner(scanner);
-
-  ScannerEditDialog *dialog = new ScannerEditDialog(scanner);
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   dialog->show();
 }

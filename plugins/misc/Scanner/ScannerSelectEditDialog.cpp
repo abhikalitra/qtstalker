@@ -22,6 +22,7 @@
 #include "ScannerSelectEditDialog.h"
 #include "ScannerDataBase.h"
 #include "Globals.h"
+#include "ScannerEditDialog.h"
 
 #include <QtDebug>
 
@@ -41,9 +42,12 @@ void ScannerSelectEditDialog::done ()
 {
   QList<QListWidgetItem *> sl = _list->selectedItems();
 
-  QStringList l;
-  l << sl.at(0)->text();
-  emit signalSelect(l);
+  int loop = 0;
+  for (; loop < sl.count(); loop++)
+  {
+    ScannerEditDialog *dialog = new ScannerEditDialog(sl.at(loop)->text());
+    dialog->show();
+  }
   
   accept();
 }

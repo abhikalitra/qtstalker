@@ -52,8 +52,7 @@ class AlertDialog : public QDialog
   public slots:
     void run ();
     void newAlert ();
-    void newAlert2 (QString);
-    void newAlert3 (AlertItem);
+    void newAlert2 (AlertItem);
     void editAlert ();
     void editAlert2 (AlertItem);
     void deleteAlert ();

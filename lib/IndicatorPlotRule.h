@@ -31,8 +31,6 @@ class IndicatorPlotRule
 {
   public:
     IndicatorPlotRule ();
-    void setEnable (int);
-    int enable ();
     void setOp (int);
     int op ();
     void setName (QString);
@@ -41,7 +39,6 @@ class IndicatorPlotRule
     QString & value ();
     
   private:
-    int _enable;
     int _op;
     QString _name;
     QString _value;

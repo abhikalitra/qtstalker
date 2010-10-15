@@ -38,17 +38,13 @@ int IndicatorPlotRules::createRules (Indicator &indicator, QStringList &l, BarDa
   for (; loop < l.count(); loop++)
   {
     QStringList l2 = l.at(loop).split(",");
-    if (l2.count() != 4)
+    if (l2.count() != 3)
       return 1;
 
     IndicatorPlotRule *r = new IndicatorPlotRule;
-    r->setEnable(l2.at(0).toInt());
-    if (! r->enable())
-      continue;
-
-    r->setName(l2.at(1));
-    r->setOp(l2.at(2).toInt());
-    r->setValue(l2.at(3));
+    r->setName(l2.at(0));
+    r->setOp(l2.at(1).toInt());
+    r->setValue(l2.at(2));
     _rules.append(r);
 
     // add any OHLC inputs to indicator for later usage

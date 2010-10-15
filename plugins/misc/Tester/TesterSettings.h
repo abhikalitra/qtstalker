@@ -95,14 +95,6 @@ class TesterSettings
     QString & eSIndicator ();
     void setXSIndicator (QString);
     QString & xSIndicator ();
-    void setELPlotNames (QStringList);
-    QStringList & eLPlotNames ();
-    void setXLPlotNames (QStringList);
-    QStringList & xLPlotNames ();
-    void setESPlotNames (QStringList);
-    QStringList & eSPlotNames ();
-    void setXSPlotNames (QStringList);
-    QStringList & xSPlotNames ();
     void setEnterLong (QStringList);
     QStringList & enterLong ();
     void setExitLong (QStringList);
@@ -156,10 +148,6 @@ class TesterSettings
     QString _xlIndicator;
     QString _esIndicator;
     QString _xsIndicator;
-    QStringList _elPlotNames;
-    QStringList _xlPlotNames;
-    QStringList _esPlotNames;
-    QStringList _xsPlotNames;
     QStringList _enterLong;
     QStringList _exitLong;
     QStringList _enterShort;

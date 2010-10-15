@@ -476,10 +476,10 @@ void TesterSettingsDialog::loadSettings ()
   _enterShort->setIndicator(_settings.eSIndicator());
   _exitShort->setIndicator(_settings.xSIndicator());
 
-  _enterLong->setList(_settings.eLPlotNames(), _settings.enterLong());
-  _exitLong->setList(_settings.xLPlotNames(), _settings.exitLong());
-  _enterShort->setList(_settings.eSPlotNames(), _settings.enterShort());
-  _exitShort->setList(_settings.xSPlotNames(), _settings.exitShort());
+  _enterLong->setList(_settings.enterLong());
+  _exitLong->setList(_settings.exitLong());
+  _enterShort->setList(_settings.enterShort());
+  _exitShort->setList(_settings.exitShort());
   
   _enterLong->setSettings(_settings.eLSettings());
   _exitLong->setSettings(_settings.xLSettings());
@@ -540,25 +540,21 @@ void TesterSettingsDialog::saveSettings ()
   _settings.setProfitTargetStop((int) _profitTargetStop->isChecked());
   _settings.setTrailingStop((int) _trailingStop->isChecked());
   _settings.setBarsStop((int) _barsStop->isChecked());
-  _enterLong->list(_settings.eLPlotNames(), _settings.enterLong());
-  _exitLong->list(_settings.xLPlotNames(), _settings.exitLong());
-  _enterShort->list(_settings.eSPlotNames(), _settings.enterShort());
-  _exitShort->list(_settings.xSPlotNames(), _settings.exitShort());
 
   _settings.setELIndicator(_enterLong->indicator());
-  _enterLong->list(_settings.eLPlotNames(), _settings.enterLong());
+  _enterLong->list(_settings.enterLong());
   _settings.setELSettings(_enterLong->settings());
 
   _settings.setXLIndicator(_exitLong->indicator());
-  _exitLong->list(_settings.xLPlotNames(), _settings.exitLong());
+  _exitLong->list(_settings.exitLong());
   _settings.setXLSettings(_exitLong->settings());
 
   _settings.setESIndicator(_enterShort->indicator());
-  _enterShort->list(_settings.eSPlotNames(), _settings.enterShort());
+  _enterShort->list(_settings.enterShort());
   _settings.setESSettings(_enterShort->settings());
 
   _settings.setXSIndicator(_exitLong->indicator());
-  _exitShort->list(_settings.xSPlotNames(), _settings.exitShort());
+  _exitShort->list(_settings.exitShort());
   _settings.setXSSettings(_exitShort->settings());
 
   TesterDataBase db;

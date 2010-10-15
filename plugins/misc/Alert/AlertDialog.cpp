@@ -83,7 +83,7 @@ void AlertDialog::createMainPage ()
   vbox->addLayout(hbox);
 
   QStringList l;
-  l << tr("ID") << tr("Symbol") << tr("Indicator") << tr("Status");
+  l << tr("ID") << tr("Indicator") << tr("Status");
   
   _alerts = new QTreeWidget;
   _alerts->setSortingEnabled(TRUE);
@@ -183,45 +183,24 @@ void AlertDialog::saveSettings ()
 
 void AlertDialog::newAlert ()
 {
-  Config config;
-  QStringList l;
-  config.getData(Config::IndicatorPluginList, l);
-  
-  QInputDialog *dialog = new QInputDialog;
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("New Alert Indicator"));
-  dialog->setLabelText(tr("Select indicator for alert"));
-  dialog->setComboBoxEditable(FALSE);
-  dialog->setComboBoxItems(l);
-  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(newAlert2(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-}
-
-void AlertDialog::newAlert2 (QString indicator)
-{
   AlertItem item;
-  item.setIndicator(indicator);
-  
   AlertEditDialog *dialog = new AlertEditDialog(item);
   dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("New Alert"));
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalEdit(AlertItem)), this, SLOT(newAlert3(AlertItem)));
+  connect(dialog, SIGNAL(signalEdit(AlertItem)), this, SLOT(newAlert2(AlertItem)));
   dialog->show();
 }
 
-void AlertDialog::newAlert3 (AlertItem alert)
+void AlertDialog::newAlert2 (AlertItem alert)
 {
   QTreeWidgetItem *item = new QTreeWidgetItem(_alerts);
   _treeItems.insert(alert.id(), item);
 
   item->setText(0, QString::number(alert.id()));
   
-  QString symbol = alert.exchange() + ":" + alert.symbol();
-  item->setText(1, symbol);
+  item->setText(1, alert.indicator());
   
-  item->setText(2, alert.indicator());
-  
-  item->setText(3, alert.statusToString(alert.status()));
+  item->setText(2, alert.statusToString(alert.status()));
 
   resizeColumns();
 }
@@ -249,10 +228,7 @@ void AlertDialog::editAlert2 (AlertItem alert)
   if (! item)
     return;
   
-  QString s = alert.exchange() + ":" + alert.symbol();
-  item->setText(1, s);
-
-  item->setText(2, alert.indicator());
+  item->setText(1, alert.indicator());
 
   resizeColumns();
 }
@@ -304,7 +280,7 @@ void AlertDialog::done (AlertItem alert)
 
   alert.setStatus(AlertItem::_Hit);
 
-  item->setText(3, alert.statusToString(alert.status()));
+  item->setText(2, alert.statusToString(alert.status()));
 
   AlertDataBase db;
   db.transaction();
@@ -317,7 +293,12 @@ void AlertDialog::done (AlertItem alert)
     dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Alert Triggered"));
     QStringList l;
     l << tr("ID")  + ": " + QString::number(alert.id());
-    l << tr("Symbol") + ": " + alert.exchange() + ":" + alert.symbol();
+
+    QStringList l2 = alert.symbolHits();
+    int loop = 0;
+    for (; loop < l2.count(); loop++)
+      l << tr("Symbol") + ": " + l2.at(loop);
+    
     l << tr("Indicator")  + ": " + alert.indicator();
     l << tr("Time")  + ": " + QDateTime::currentDateTime().toString(Qt::ISODate);
     dialog->setMessage(l.join("\n"));
@@ -383,7 +364,7 @@ void AlertDialog::loadAlerts ()
   for (; loop < l.count(); loop++)
   {
     AlertItem alert = l.at(loop);
-    newAlert3(alert);
+    newAlert2(alert);
   }
 
   selectionChanged();
@@ -405,7 +386,7 @@ void AlertDialog::resetAlert ()
   db.setAlert(alert);
   db.commit();
 
-  l.at(0)->setText(3, alert.statusToString(AlertItem::_Waiting));
+  l.at(0)->setText(2, alert.statusToString(AlertItem::_Waiting));
 }
 
 void AlertDialog::configureDialog ()

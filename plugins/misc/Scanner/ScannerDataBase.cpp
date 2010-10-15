@@ -34,7 +34,6 @@ ScannerDataBase::ScannerDataBase ()
   s.append(", symbols TEXT");
   s.append(", settings TEXT");
   s.append(", indicator TEXT");
-  s.append(", plotNames TEXT");
   s.append(", plots TEXT");
   s.append(", barLength INT");
   s.append(", dateRange INT");
@@ -71,7 +70,7 @@ int ScannerDataBase::getScanner (ScannerItem &scanner)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString k = "SELECT";
-  k.append(" symbols,settings,indicator,plotNames,plots,barLength,dateRange,groupName");
+  k.append(" symbols,settings,indicator,plots,barLength,dateRange,groupName");
   k.append(" FROM ScannerPlugin WHERE name='" + scanner.name() + "'");
   q.exec(k);
   if (q.lastError().isValid())
@@ -96,7 +95,6 @@ int ScannerDataBase::getScanner (ScannerItem &scanner)
   scanner.setSettings(set);
   
   scanner.setIndicator(q.value(pos++).toString());
-  scanner.setPlotNames(q.value(pos++).toString().split(","));
   scanner.setPlots(q.value(pos++).toString().split(":"));
   scanner.setBarLength(q.value(pos++).toInt());
   scanner.setDateRange(q.value(pos++).toInt());
@@ -115,7 +113,7 @@ int ScannerDataBase::setScanner (ScannerItem &scanner)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO ScannerPlugin (";
-  s.append("name,symbols,settings,indicator,plotNames,plots,barLength,dateRange,groupName");
+  s.append("name,symbols,settings,indicator,plots,barLength,dateRange,groupName");
   s.append(") VALUES (");
   s.append("'" + scanner.name() + "'");
 
@@ -131,7 +129,6 @@ int ScannerDataBase::setScanner (ScannerItem &scanner)
   s.append(",'" + d + "'");
 
   s.append(",'" + scanner.indicator() + "'");
-  s.append(",'" + scanner.plotNames().join(",") + "'");
   s.append(",'" + scanner.plots().join(":") + "'");
   s.append("," + QString::number(scanner.barLength()));
   s.append("," + QString::number(scanner.dateRange()));

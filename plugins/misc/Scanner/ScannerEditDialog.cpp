@@ -32,9 +32,9 @@
 #include <QIcon>
 #include <QFormLayout>
 
-ScannerEditDialog::ScannerEditDialog (ScannerItem scanner)
+ScannerEditDialog::ScannerEditDialog (QString name)
 {
-  _scanner = scanner;
+  _scanner.setName(name);
 
   createMainPage();
 
@@ -108,9 +108,12 @@ void ScannerEditDialog::setSettings ()
   if (! p.isNull())
     move(p);
 
+  ScannerDataBase db;
+  db.getScanner(_scanner);
+
   _list->setIndicator(_scanner.indicator());
   _list->setSettings(_scanner.settings());
-  _list->setList(_scanner.plotNames(), _scanner.plots());
+  _list->setList(_scanner.plots());
 
   _barLength->setCurrentIndex(_scanner.barLength());
   
@@ -156,7 +159,7 @@ void ScannerEditDialog::done ()
   _scanner.setDateRange(_dateRange->currentIndex());
 
   _scanner.setIndicator(_list->indicator());
-  _list->list(_scanner.plotNames(), _scanner.plots());
+  _list->list(_scanner.plots());
   _scanner.setSettings(_list->settings());
 
   ScannerDataBase db;
@@ -164,8 +167,6 @@ void ScannerEditDialog::done ()
   db.setScanner(_scanner);
   db.commit();
   
-  emit signalEdit(_scanner);
-
   accept();
 }
 

@@ -53,11 +53,11 @@ class IndicatorPlotList : public QWidget
     void deletePlot ();
     void deletePlot2 (QString);
     void indicatorChanged ();
-    void addPlotItem (QStringList &plotNames, QString enable, QString pn, QString oper, QString val);
+    void addPlotItem (QString pn, QString oper, QString val);
     void setIndicator (QString);
     QString indicator ();
-    void setList (QStringList plotNames, QStringList l);
-    void list (QStringList &plotNames, QStringList &items);
+    void setList (QStringList l);
+    void list (QStringList &items);
     void setSettings (Setting);
     Setting settings ();
 
@@ -69,6 +69,7 @@ class IndicatorPlotList : public QWidget
     QAction *_addAction;
     QAction *_deleteAction;
     Setting _settings;
+    QStringList _plotNames;
 };
 
 #endif

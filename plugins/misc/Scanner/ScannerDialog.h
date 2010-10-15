@@ -50,9 +50,7 @@ class ScannerDialog : public QDialog
     void runScanner ();
     void runScanner2 (QStringList);
     void newScanner ();
-    void newScanner2 (QString);
     void editScanner ();
-    void editScanner2 (QStringList);
     void deleteScanner ();
     void done (QString);
     void closeDialog ();

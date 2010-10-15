@@ -22,16 +22,13 @@
 #ifndef ALERT_EDIT_DIALOG_HPP
 #define ALERT_EDIT_DIALOG_HPP
 
-#include <QTreeWidget>
 #include <QComboBox>
 #include <QCheckBox>
-#include <QLineEdit>
-#include <QSpinBox>
 
 #include "Dialog.h"
-#include "Indicator.h"
+#include "SymbolButton.h"
 #include "AlertItem.h"
-#include "Group.h"
+#include "IndicatorPlotList.h"
 
 class AlertEditDialog : public Dialog
 {
@@ -47,16 +44,11 @@ class AlertEditDialog : public Dialog
 
   public slots:
     void done ();
-    void indicatorSettings ();
-    void indicatorSettings2 (Indicator);
-    void symbolSearch ();
-    void symbolSearch2 (Group);
 
   private:
     AlertItem _item;
-    QLineEdit *_symbol;
-    QTreeWidget *_alertList;
-    QLineEdit *_indicator;
+    SymbolButton *_symbols;
+    IndicatorPlotList *_alertList;
     QCheckBox *_mailNotify;
     QCheckBox *_soundNotify;
     QCheckBox *_popupNotify;

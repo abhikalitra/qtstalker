@@ -32,37 +32,37 @@ AlertItem::AlertItem ()
   _popup = 0;
   _id = -1;
   _status = AlertItem::_Waiting;
-  _barLength = 0;
-  _dateRange = 0;
+  _barLength = 6;
+  _dateRange = 5;
   _bars = 0;
 }
 
-void AlertItem::setExchange (QString d)
+void AlertItem::setSymbols (QStringList d)
 {
-  _exchange = d;
+  _symbols = d;
 }
 
-QString & AlertItem::exchange ()
+QStringList & AlertItem::symbols ()
 {
-  return _exchange;
+  return _symbols;
 }
 
-void AlertItem::setSymbol (QString d)
+void AlertItem::setSymbolHits (QStringList d)
 {
-  _symbol = d;
+  _symbolHits = d;
 }
 
-QString & AlertItem::symbol ()
+QStringList & AlertItem::symbolHits ()
 {
-  return _symbol;
+  return _symbolHits;
 }
 
-void AlertItem::setSettings (QString d)
+void AlertItem::setSettings (Setting d)
 {
   _settings = d;
 }
 
-QString & AlertItem::settings ()
+Setting & AlertItem::settings ()
 {
   return _settings;
 }
@@ -107,118 +107,14 @@ int AlertItem::popup ()
   return _popup;
 }
 
-void AlertItem::setEnable (QString k, int d)
+void AlertItem::setPlots (QStringList d)
 {
-  _enable.insert(k, d);
+  _plots = d;
 }
 
-int AlertItem::enable (QString k)
+QStringList & AlertItem::plots ()
 {
-  return _enable.value(k);
-}
-
-QString AlertItem::enableString ()
-{
-  QStringList l;
-  QHashIterator<QString, int> it(_enable);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key());
-    l.append(QString::number(it.value()));
-  }
-
-  return l.join(",");
-}
-
-void AlertItem::setEnableString (QString d)
-{
-  _enable.clear();
-  
-  if (d.isEmpty())
-    return;
-
-  QStringList l = d.split(",");
-
-  int loop = 0;
-  for (; loop < l.count(); loop += 2)
-    _enable.insert(l.at(loop), l.at(loop + 1).toInt());
-}
-
-void AlertItem::setOp (QString k, int d)
-{
-  _op.insert(k, d);
-}
-
-int AlertItem::op (QString k)
-{
-  return _op.value(k);
-}
-
-QString AlertItem::opString ()
-{
-  QStringList l;
-  QHashIterator<QString, int> it(_op);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key());
-    l.append(QString::number(it.value()));
-  }
-
-  return l.join(",");
-}
-
-void AlertItem::setOpString (QString d)
-{
-  _op.clear();
-
-  if (d.isEmpty())
-    return;
-
-  QStringList l = d.split(",");
-
-  int loop = 0;
-  for (; loop < l.count(); loop += 2)
-    _op.insert(l.at(loop), l.at(loop + 1).toInt());
-}
-
-void AlertItem::setValue (QString k, double d)
-{
-  _value.insert(k, d);
-}
-
-double AlertItem::value (QString k)
-{
-  return _value.value(k);
-}
-
-QString AlertItem::valueString ()
-{
-  QStringList l;
-  QHashIterator<QString, double> it(_value);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key());
-    l.append(QString::number(it.value()));
-  }
-
-  return l.join(",");
-}
-
-void AlertItem::setValueString (QString d)
-{
-  _value.clear();
-
-  if (d.isEmpty())
-    return;
-
-  QStringList l = d.split(",");
-
-  int loop = 0;
-  for (; loop < l.count(); loop += 2)
-    _value.insert(l.at(loop), l.at(loop + 1).toDouble());
+  return _plots;
 }
 
 void AlertItem::setId (int d)
@@ -264,23 +160,6 @@ void AlertItem::setDateRange (int d)
 int AlertItem::dateRange ()
 {
   return _dateRange;
-}
-
-int AlertItem::count ()
-{
-  return _enable.count();
-}
-
-void AlertItem::keys (QStringList &l)
-{
-  l.clear();
-  
-  QHashIterator<QString, int> it(_enable);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key());
-  }
 }
 
 void AlertItem::setBars (int d)

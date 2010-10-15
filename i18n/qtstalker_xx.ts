@@ -1829,10 +1829,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1854,14 +1850,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Enter required CUS variables seperated by a space</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Plot Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3069,14 +3057,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Bar Length</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3094,22 +3074,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Scan results group name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3643,14 +3607,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open back tester</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Delete</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3660,6 +3616,50 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Run</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run back test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit back tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop back test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View back test report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Report</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3682,13 +3682,135 @@ a partial match like %Script or %Scr%</source>
     </message>
 </context>
 <context>
-    <name>TesterSettingsDialog</name>
+    <name>TesterReportDialog</name>
     <message>
-        <source>Tester</source>
+        <source>Tester Report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Run</source>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Equity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit Factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Payoff Ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% Equity Gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% Profitable Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Winning Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Losing Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Drawdown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Avg Profit/Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Winning Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Losing Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Avg Bars Held</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min Bars Held</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Bars Held</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Commissions</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TesterRunDialog</name>
+    <message>
+        <source>Run Back Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TesterSettingsDialog</name>
+    <message>
+        <source>Tester</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3788,18 +3910,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Report</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3833,113 +3943,6 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Exit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Profit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Equity</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TesterThread</name>
-    <message>
-        <source>Total Profit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Total Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Winning Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Losing Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Profit Factor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Payoff Ratio</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>% Equity Gain</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Equity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>% Profitable Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum Drawdown</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Avg Profit/Loss</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Total Winning Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Total Losing Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Avg Bars Held</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min Bars Held</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Bars Held</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Total Commissions</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

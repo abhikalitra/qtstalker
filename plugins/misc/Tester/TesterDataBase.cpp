@@ -63,10 +63,6 @@ TesterDataBase::TesterDataBase ()
   s.append(", xlIndicator TEXT");
   s.append(", esIndicator TEXT");
   s.append(", xsIndicator TEXT");
-  s.append(", elPlotNames TEXT");
-  s.append(", xlPlotNames TEXT");
-  s.append(", esPlotNames TEXT");
-  s.append(", xsPlotNames TEXT");
   s.append(", enterLong TEXT");
   s.append(", exitLong TEXT");
   s.append(", enterShort TEXT");
@@ -111,7 +107,6 @@ int TesterDataBase::getRule (TesterSettings &rule)
   k.append(",maximumLossType,maximumLossValue,maximumLossExit,profitTargetStop,profitTargetType");
   k.append(",profitTargetValue,profitTargetExit,trailingStop,trailingType,trailingValue,trailingExit");
   k.append(",barsStop,barsStopValue,barsStopExit,elIndicator,xlIndicator,esIndicator,xsIndicator");
-  k.append(",elPlotNames,xlPlotNames,esPlotNames,xsPlotNames");
   k.append(",enterLong,exitLong,enterShort,exitShort");
   k.append(",elSettings,xlSettings,esSettings,xsSettings");
   k.append(",symbols");
@@ -159,10 +154,6 @@ int TesterDataBase::getRule (TesterSettings &rule)
   rule.setXLIndicator(q.value(pos++).toString());
   rule.setESIndicator(q.value(pos++).toString());
   rule.setXSIndicator(q.value(pos++).toString());
-  rule.setELPlotNames(q.value(pos++).toString().split(","));
-  rule.setXLPlotNames(q.value(pos++).toString().split(","));
-  rule.setESPlotNames(q.value(pos++).toString().split(","));
-  rule.setXSPlotNames(q.value(pos++).toString().split(","));
   rule.setEnterLong(q.value(pos++).toString().split(":"));
   rule.setExitLong(q.value(pos++).toString().split(":"));
   rule.setEnterShort(q.value(pos++).toString().split(":"));
@@ -205,7 +196,6 @@ void TesterDataBase::setRule (TesterSettings &rule)
   s.append(",maximumLossType,maximumLossValue,maximumLossExit,profitTargetStop,profitTargetType");
   s.append(",profitTargetValue,profitTargetExit,trailingStop,trailingType,trailingValue,trailingExit");
   s.append(",barsStop,barsStopValue,barsStopExit,elIndicator,xlIndicator,esIndicator,xsIndicator");
-  s.append(",elPlotNames,xlPlotNames,esPlotNames,xsPlotNames");
   s.append(",enterLong,exitLong,enterShort,exitShort");
   s.append(",elSettings,xlSettings,esSettings,xsSettings");
   s.append(",symbols");
@@ -243,10 +233,6 @@ void TesterDataBase::setRule (TesterSettings &rule)
   s.append(",'" + rule.xLIndicator() + "'");
   s.append(",'" + rule.eSIndicator() + "'");
   s.append(",'" + rule.xSIndicator() + "'");
-  s.append(",'" + rule.eLPlotNames().join(",") + "'");
-  s.append(",'" + rule.xLPlotNames().join(",") + "'");
-  s.append(",'" + rule.eSPlotNames().join(",") + "'");
-  s.append(",'" + rule.xSPlotNames().join(",") + "'");
   s.append(",'" + rule.enterLong().join(":") + "'");
   s.append(",'" + rule.exitLong().join(":") + "'");
   s.append(",'" + rule.enterShort().join(":") + "'");

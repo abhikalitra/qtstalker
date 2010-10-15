@@ -26,6 +26,8 @@
 #include <QHash>
 #include <QMetaType>
 
+#include "Setting.h"
+
 class AlertItem
 {
   public:
@@ -37,12 +39,12 @@ class AlertItem
     };
     
     AlertItem ();
-    void setExchange (QString);
-    QString & exchange ();
-    void setSymbol (QString);
-    QString & symbol ();
-    void setSettings (QString);
-    QString & settings ();
+    void setSymbols (QStringList);
+    QStringList & symbols ();
+    void setSymbolHits (QStringList);
+    QStringList & symbolHits ();
+    void setSettings (Setting);
+    Setting & settings ();
     void setIndicator (QString);
     QString & indicator ();
     void setMail (int);
@@ -51,18 +53,8 @@ class AlertItem
     int sound ();
     void setPopup (int);
     int popup ();
-    void setEnable (QString, int);
-    int enable (QString);
-    QString enableString ();
-    void setEnableString (QString);
-    void setOp (QString, int);
-    int op (QString);
-    QString opString ();
-    void setOpString (QString);
-    void setValue (QString, double);
-    double value (QString);
-    QString valueString ();
-    void setValueString (QString);
+    void setPlots (QStringList);
+    QStringList & plots ();
     void setId (int);
     int id ();
     void setStatus (AlertItem::Status);
@@ -72,22 +64,18 @@ class AlertItem
     int barLength ();
     void setDateRange (int);
     int dateRange ();
-    int count ();
-    void keys (QStringList &);
     void setBars (int);
     int bars ();
 
   private:
-    QString _exchange;
-    QString _symbol;
-    QString _settings;
+    QStringList _symbols;
+    QStringList _symbolHits;
+    Setting _settings;
     QString _indicator;
     int _mail;
     int _sound;
     int _popup;
-    QHash<QString, int> _enable;
-    QHash<QString, int> _op;
-    QHash<QString, double> _value;
+    QStringList _plots;
     int _id;
     Status _status;
     QStringList _statusList;

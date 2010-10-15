@@ -25,8 +25,8 @@
 
 ScannerItem::ScannerItem ()
 {
-  _barLength = 0;
-  _dateRange = 0;
+  _barLength = 6;
+  _dateRange = 5;
 }
 
 void ScannerItem::setName (QString d)
@@ -107,15 +107,5 @@ QStringList & ScannerItem::plots ()
 void ScannerItem::setPlots (QStringList d)
 {
   _plots = d;
-}
-
-void ScannerItem::setPlotNames (QStringList d)
-{
-  _plotNames = d;
-}
-
-QStringList & ScannerItem::plotNames ()
-{
-  return _plotNames;
 }
 

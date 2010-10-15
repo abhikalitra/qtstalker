@@ -105,15 +105,14 @@ void TesterThread::run ()
     }
     
     // get enter long indicator data
-    QStringList plotNames;
-    if (getIndicator(bars, plotNames, _elIndicator, _settings.eLIndicator()))
+    if (getIndicator(bars, _elIndicator, _settings.eLIndicator()))
     {
       bars.clear();
       continue;
     }
 
     // get exit long indicator data
-    if (getIndicator(bars, plotNames, _xlIndicator, _settings.xLIndicator()))
+    if (getIndicator(bars, _xlIndicator, _settings.xLIndicator()))
     {
       _elIndicator.clear();
       bars.clear();
@@ -121,7 +120,7 @@ void TesterThread::run ()
     }
 
     // get enter short indicator data
-    if (getIndicator(bars, plotNames, _esIndicator, _settings.eSIndicator()))
+    if (getIndicator(bars, _esIndicator, _settings.eSIndicator()))
     {
       _elIndicator.clear();
       _xlIndicator.clear();
@@ -130,7 +129,7 @@ void TesterThread::run ()
     }
 
     // get exit short indicator data
-    if (getIndicator(bars, plotNames, _xsIndicator, _settings.xSIndicator()))
+    if (getIndicator(bars, _xsIndicator, _settings.xSIndicator()))
     {
       _elIndicator.clear();
       _xlIndicator.clear();
@@ -268,7 +267,7 @@ int TesterThread::getBars (BarData &bd)
   return 0;
 }
 
-int TesterThread::getIndicator (BarData &bd, QStringList &plotNames, Indicator &indicator, QString name)
+int TesterThread::getIndicator (BarData &bd, Indicator &indicator, QString name)
 {
   IndicatorPluginFactory fac;
   IndicatorPlugin *plug = fac.plugin(name);
@@ -283,8 +282,6 @@ int TesterThread::getIndicator (BarData &bd, QStringList &plotNames, Indicator &
     qDebug() << "TesterThread::getIndicator: indicator error" << name;
     return 1;
   }
-
-  plug->plotNames(indicator, plotNames);
 
   return 0;
 }
@@ -430,7 +427,6 @@ void TesterThread::exitTrade (QList<TesterTrade *> &trades, BarData &bars, int i
 
 double TesterThread::getCommission (TesterTrade *trade, int flag)
 {
-//  l << tr("Percent") << tr("$ Per Trade") << tr("$ Per Share");
   double commission = 0;
   double value = _settings.commissionValue();
   

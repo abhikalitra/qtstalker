@@ -31,16 +31,14 @@ AlertDataBase::AlertDataBase ()
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "CREATE TABLE IF NOT EXISTS AlertPlugin (";
   s.append("id INT PRIMARY KEY UNIQUE");
-  s.append(", exchange TEXT");
-  s.append(", symbol TEXT");
+  s.append(", symbols TEXT");
+  s.append(", symbolsHit TEXT");
   s.append(", settings TEXT");
   s.append(", indicator TEXT");
+  s.append(", plots TEXT");
   s.append(", mail INT");
   s.append(", sound INT");
   s.append(", popup INT");
-  s.append(", enable TEXT");
-  s.append(", op TEXT");
-  s.append(", value TEXT");
   s.append(", status INT");
   s.append(", barLength INT");
   s.append(", bars INT");
@@ -56,7 +54,7 @@ int AlertDataBase::getAlerts (QList<AlertItem> &l)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "SELECT ";
-  s.append("id,exchange,symbol,settings,indicator,mail,sound,popup,enable,op,value,status,barLength,bars");
+  s.append("id,symbols,symbolsHit,settings,indicator,plots,mail,sound,popup,status,barLength,bars");
   s.append(" FROM AlertPlugin");
   q.exec(s);
   if (q.lastError().isValid())
@@ -71,16 +69,19 @@ int AlertDataBase::getAlerts (QList<AlertItem> &l)
     int pos = 0;
     
     item.setId(q.value(pos++).toInt());
-    item.setExchange(q.value(pos++).toString());
-    item.setSymbol(q.value(pos++).toString());
-    item.setSettings(q.value(pos++).toString());
+    item.setSymbols(q.value(pos++).toString().split(","));
+    item.setSymbolHits(q.value(pos++).toString().split(","));
+
+    QString d = q.value(pos++).toString();
+    Setting set;
+    set.parse(d);
+    item.setSettings(set);
+    
     item.setIndicator(q.value(pos++).toString());
+    item.setPlots(q.value(pos++).toString().split(":"));
     item.setMail(q.value(pos++).toInt());
     item.setSound(q.value(pos++).toInt());
     item.setPopup(q.value(pos++).toInt());
-    item.setEnableString(q.value(pos++).toString());
-    item.setOpString(q.value(pos++).toString());
-    item.setValueString(q.value(pos++).toString());
     item.setStatus((AlertItem::Status) q.value(pos++).toInt());
     item.setBarLength(q.value(pos++).toInt());
     item.setBars(q.value(pos++).toInt());
@@ -98,7 +99,7 @@ int AlertDataBase::getAlert (AlertItem &item)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString k = "SELECT";
-  k.append(" id,exchange,symbol,settings,indicator,mail,sound,popup,enable,op,value,status,barLength,bars");
+  k.append(" id,symbols,symbolsHit,settings,indicator,plots,mail,sound,popup,status,barLength,bars");
   k.append(" FROM AlertPlugin WHERE id=" + QString::number(item.id()));
   q.exec(k);
   if (q.lastError().isValid())
@@ -113,16 +114,19 @@ int AlertDataBase::getAlert (AlertItem &item)
   int pos = 0;
   
   item.setId(q.value(pos++).toInt());
-  item.setExchange(q.value(pos++).toString());
-  item.setSymbol(q.value(pos++).toString());
-  item.setSettings(q.value(pos++).toString());
+  item.setSymbols(q.value(pos++).toString().split(","));
+  item.setSymbolHits(q.value(pos++).toString().split(","));
+  
+  QString d = q.value(pos++).toString();
+  Setting set;
+  set.parse(d);
+  item.setSettings(set);
+
   item.setIndicator(q.value(pos++).toString());
+  item.setPlots(q.value(pos++).toString().split(":"));
   item.setMail(q.value(pos++).toInt());
   item.setSound(q.value(pos++).toInt());
   item.setPopup(q.value(pos++).toInt());
-  item.setEnableString(q.value(pos++).toString());
-  item.setOpString(q.value(pos++).toString());
-  item.setValueString(q.value(pos++).toString());
   item.setStatus((AlertItem::Status) q.value(pos++).toInt());
   item.setBarLength(q.value(pos++).toInt());
   item.setBars(q.value(pos++).toInt());
@@ -140,19 +144,22 @@ int AlertDataBase::setAlert (AlertItem &item)
   
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "INSERT OR REPLACE INTO AlertPlugin (";
-  s.append("id,exchange,symbol,settings,indicator,mail,sound,popup,enable,op,value,status,barLength,bars");
+  s.append("id,symbols,symbolsHit,settings,indicator,plots,mail,sound,popup,status,barLength,bars");
   s.append(") VALUES (");
   s.append(QString::number(item.id()));
-  s.append(",'" + item.exchange() + "'");
-  s.append(",'" + item.symbol() + "'");
-  s.append(",'" + item.settings() + "'");
+  s.append(",'" + item.symbols().join(",") + "'");
+  s.append(",'" + item.symbolHits().join(",") + "'");
+
+  Setting set = item.settings();
+  QString d;
+  set.getString(d);
+  s.append(",'" + d + "'");
+
   s.append(",'" + item.indicator() + "'");
+  s.append(",'" + item.plots().join(":") + "'");
   s.append("," + QString::number(item.mail()));
   s.append("," + QString::number(item.sound()));
   s.append("," + QString::number(item.popup()));
-  s.append(",'" + item.enableString() + "'");
-  s.append(",'" + item.opString() + "'");
-  s.append(",'" + item.valueString() + "'");
   s.append("," + QString::number(item.status()));
   s.append("," + QString::number(item.barLength()));
   s.append("," + QString::number(item.bars()));

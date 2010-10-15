@@ -24,6 +24,7 @@
 #include "AlertConfig.h"
 
 #include <QtDebug>
+#include <QFormLayout>
 
 AlertConfigureDialog::AlertConfigureDialog ()
 {
@@ -43,46 +44,25 @@ void AlertConfigureDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(5);
-  vbox->setSpacing(2);
-  w->setLayout(vbox);
-
-  QGridLayout *grid = new QGridLayout;
-  grid->setMargin(0);
-  grid->setSpacing(2);
-  grid->setColumnStretch(3, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setMargin(5);
+  form->setSpacing(2);
+  w->setLayout(form);
 
   // enable/disable
-  QLabel *label = new QLabel(tr("Enable Alerts"));
-  grid->addWidget(label, row, col++);
-
   _enable = new QCheckBox;
-  _enable->setToolTip(tr("Enable / disable alerts"));
-  grid->addWidget(_enable, row++, col--);
+  form->addRow(tr("Enable Alerts"), _enable);
 
   // timer
-  label = new QLabel(tr("Interval"));
-  grid->addWidget(label, row, col++);
-  
   _interval = new QSpinBox;
   _interval->setRange(0, 9999);
   _interval->setToolTip(tr("Scan interval in minutes"));
-  grid->addWidget(_interval, row++, col--);
+  form->addRow(tr("Interval"), _interval);
 
   // sound
-  label = new QLabel(tr("Alert Sound"));
-  grid->addWidget(label, row, col++);
-
   _sound = new FileButton(w, QString());
   _sound->setToolTip(tr("Sound file to play for notification"));
-  grid->addWidget(_sound, row++, col--);
-
-  vbox->addStretch();
+  form->addRow(tr("Alert Sound"), _sound);
 
   _tabs->addTab(w, tr("Settings"));
 }
@@ -91,45 +71,25 @@ void AlertConfigureDialog::createMailPage ()
 {
   QWidget *w = new QWidget;
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(5);
-  vbox->setSpacing(2);
-  w->setLayout(vbox);
-
-  QGridLayout *grid = new QGridLayout;
-  grid->setMargin(0);
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setMargin(5);
+  form->setSpacing(2);
+  w->setLayout(form);
 
   // mail address
-  QLabel *label = new QLabel(tr("Address"));
-  grid->addWidget(label, row, col++);
-
   _address = new QLineEdit;
   _address->setToolTip(tr("Address to receive mail\ne.g yourname@youraddress.com"));
-  grid->addWidget(_address, row++, col--);
+  form->addRow(tr("Address"), _address);
 
   // mail subject
-  label = new QLabel(tr("Subject"));
-  grid->addWidget(label, row, col++);
-
   _subject = new QLineEdit;
   _subject->setToolTip(tr("Subject header of mail\ne.g. Qtstalker Alert"));
-  grid->addWidget(_subject, row++, col--);
+  form->addRow(tr("Subject"), _subject);
 
   // mail text
-  label = new QLabel(tr("Message"));
-  grid->addWidget(label, row, col++);
-
   _text = new QTextEdit;
   _text->setToolTip(tr("Message body of mail\ne.g. Qtstalker alert was triggered."));
-  grid->addWidget(_text, row++, col--);
-
-  vbox->addStretch();
+  form->addRow(tr("Message"), _text);
 
   _tabs->addTab(w, tr("Email"));
 }

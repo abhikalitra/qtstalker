@@ -385,46 +385,6 @@ QString & TesterSettings::xSIndicator ()
   return _xsIndicator;
 }
 
-void TesterSettings::setELPlotNames (QStringList d)
-{
-  _elPlotNames = d;
-}
-
-QStringList & TesterSettings::eLPlotNames ()
-{
-  return _elPlotNames;
-}
-
-void TesterSettings::setXLPlotNames (QStringList d)
-{
-  _xlPlotNames = d;
-}
-
-QStringList & TesterSettings::xLPlotNames ()
-{
-  return _xlPlotNames;
-}
-
-void TesterSettings::setESPlotNames (QStringList d)
-{
-  _esPlotNames = d;
-}
-
-QStringList & TesterSettings::eSPlotNames ()
-{
-  return _esPlotNames;
-}
-
-void TesterSettings::setXSPlotNames (QStringList d)
-{
-  _xsPlotNames = d;
-}
-
-QStringList & TesterSettings::xSPlotNames ()
-{
-  return _xsPlotNames;
-}
-
 void TesterSettings::setEnterLong (QStringList d)
 {
   _enterLong = d;

@@ -57,7 +57,7 @@ class TesterThread : public QThread
     TesterThread (QObject *, TesterSettings &);
     void stop ();
     int getBars (BarData &);
-    int getIndicator (BarData &, QStringList &, Indicator &, QString name);
+    int getIndicator (BarData &, Indicator &, QString name);
     int enterTradeCheck (IndicatorPlotRules &, int index, QList<TesterTrade *> &, BarData &, Indicator &);
     int enterTrade (QString symbol, QList<TesterTrade *> &, BarData &, int index, int status);
     void exitTrade (QList<TesterTrade *> &, BarData &, int index, int signal);

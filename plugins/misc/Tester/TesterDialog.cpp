@@ -64,6 +64,9 @@ TesterDialog::TesterDialog ()
   loadSettings();
 
   updateReports();
+
+  testSelectionChanged();
+  reportSelectionChanged();
 }
 
 void TesterDialog::createTesterPage ()
