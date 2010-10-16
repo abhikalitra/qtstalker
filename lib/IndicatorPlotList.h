@@ -51,7 +51,7 @@ class IndicatorPlotList : public QWidget
     void addPlot ();
     void addPlot2 (QString);
     void deletePlot ();
-    void deletePlot2 (QString);
+//    void deletePlot2 (QString);
     void indicatorChanged ();
     void addPlotItem (QString pn, QString oper, QString val);
     void setIndicator (QString);

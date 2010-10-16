@@ -25,6 +25,7 @@
 #include <QStringList>
 #include <QHash>
 #include <QMetaType>
+#include <QDateTime>
 
 #include "Setting.h"
 
@@ -39,10 +40,8 @@ class AlertItem
     };
     
     AlertItem ();
-    void setSymbols (QStringList);
-    QStringList & symbols ();
-    void setSymbolHits (QStringList);
-    QStringList & symbolHits ();
+    void setSymbol (QString);
+    QString & symbol ();
     void setSettings (Setting);
     Setting & settings ();
     void setIndicator (QString);
@@ -66,10 +65,13 @@ class AlertItem
     int dateRange ();
     void setBars (int);
     int bars ();
+    void setLastUpdate (QDateTime);
+    QDateTime lastUpdate ();
+    void setHitDate (QDateTime);
+    QDateTime hitDate ();
 
   private:
-    QStringList _symbols;
-    QStringList _symbolHits;
+    QString _symbol;
     Setting _settings;
     QString _indicator;
     int _mail;
@@ -82,6 +84,8 @@ class AlertItem
     int _barLength;
     int _dateRange;
     int _bars;
+    QDateTime _lastDate;
+    QDateTime _hitDate;
 };
 
 // this is for passing Indicator data between threads

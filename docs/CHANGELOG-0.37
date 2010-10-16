@@ -826,3 +826,11 @@
 
 20101005:  Commenced tidy of documentation to utilise plain html/css again. Thanks to xley.
 
+20101016:  ******************************** ATTENTION ****************************************************
+
+           OK! All the major pieces are complete. I would like to just focus on bug fixes and gui polishing now.
+           CVS is almost stable now. Except for the occassional database change I would appreciate those of you
+           familiar with CVS to start testing stuff so we can find the bugs and release 0.37.
+
+           ***********************************************************************************************
+

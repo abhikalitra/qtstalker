@@ -27,8 +27,7 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 IndicatorDialog::IndicatorDialog ()
@@ -42,22 +41,10 @@ void IndicatorDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
   
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(10);
-  vbox->setMargin(5);
-  w->setLayout(vbox);
-
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
-
-  // name
-  QLabel *label = new QLabel(tr("Method"));
-  grid->addWidget(label, row, col++);
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // create a unique default name
   IndicatorDataBase db;
@@ -74,12 +61,9 @@ void IndicatorDialog::createMainPage ()
 
   _name = new QLineEdit(d);
   _name->setToolTip(tr("Indicator name"));
-  grid->addWidget(_name, row++, col--);
+  form->addRow(tr("Name"), _name);
 
   // indicator
-  label = new QLabel(tr("Indicator"));
-  grid->addWidget(label, row, col++);
-
   Config config;
   config.getData(Config::IndicatorPluginList, l);
   config.getData(Config::LastNewIndicator, d);
@@ -87,25 +71,19 @@ void IndicatorDialog::createMainPage ()
   _indicator = new QComboBox;
   _indicator->addItems(l);
   _indicator->setCurrentIndex(_indicator->findText(d));
-  grid->addWidget(_indicator, row++, col--);
+  form->addRow(tr("Indicator"), _indicator);
   
   // tab row
-  label = new QLabel(tr("Tab Row"));
-  grid->addWidget(label, row, col++);
-
   _row = new QSpinBox;
   _row->setRange(1, 3);
-  grid->addWidget(_row, row++, col--);
+  form->addRow(tr("Tab Row"), _row);
   
   // tab column
-  label = new QLabel(tr("Tab Column"));
-  grid->addWidget(label, row, col++);
-
   _col = new QSpinBox;
   _col->setRange(1, 3);
-  grid->addWidget(_col, row++, col--);
+  form->addRow(tr("Tab Column"), _col);
 
-  _tabs->addTab(w, tr("Settings"));
+  _tabs->addTab(w, tr("New Indicator"));
 }
 
 void IndicatorDialog::done ()

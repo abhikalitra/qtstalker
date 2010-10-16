@@ -26,8 +26,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 FIDialog::FIDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -39,30 +38,21 @@ void FIDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(FI::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -72,30 +62,21 @@ void FIDialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(FI::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
+  form->addRow(tr("Label"), _label);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _period = new QSpinBox;
   _period->setRange(1, 100000);
   _period->setValue(_settings.getInt(FI::_Period));
-  grid->addWidget(_period, row++, col--);
+  form->addRow(tr("Period"), _period);
 
   // ma type
-  label = new QLabel(tr("MA Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   l = mau.list();
 
@@ -104,9 +85,7 @@ void FIDialog::createGeneralPage ()
   _maType = new QComboBox;
   _maType->addItems(l);
   _maType->setCurrentIndex(_maType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_maType, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("MA Type"), _maType);
 
   _tabs->addTab(w, tr("General"));
 }

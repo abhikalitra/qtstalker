@@ -38,7 +38,6 @@
 #include <QDialogButtonBox>
 #include <QToolButton>
 #include <QInputDialog>
-//#include <QSound>
 #include <QProcess>
 #include <phonon/mediaobject.h>
 
@@ -72,18 +71,13 @@ void AlertDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
   
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(5);
-  vbox->setSpacing(5);
-  w->setLayout(vbox);
-
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setMargin(0);
   hbox->setSpacing(5);
-  vbox->addLayout(hbox);
+  w->setLayout(hbox);
 
   QStringList l;
-  l << tr("ID") << tr("Indicator") << tr("Status");
+  l << tr("ID") << tr("Symbol") << tr("Indicator") << tr("Status") << tr("Last Update");
   
   _alerts = new QTreeWidget;
   _alerts->setSortingEnabled(TRUE);
@@ -197,10 +191,10 @@ void AlertDialog::newAlert2 (AlertItem alert)
   _treeItems.insert(alert.id(), item);
 
   item->setText(0, QString::number(alert.id()));
-  
-  item->setText(1, alert.indicator());
-  
-  item->setText(2, alert.statusToString(alert.status()));
+  item->setText(1, alert.symbol());
+  item->setText(2, alert.indicator());
+  item->setText(3, alert.statusToString(alert.status()));
+  item->setText(4, alert.lastUpdate().toString(Qt::ISODate));
 
   resizeColumns();
 }
@@ -228,7 +222,8 @@ void AlertDialog::editAlert2 (AlertItem alert)
   if (! item)
     return;
   
-  item->setText(1, alert.indicator());
+  item->setText(1, alert.symbol());
+  item->setText(2, alert.indicator());
 
   resizeColumns();
 }
@@ -280,7 +275,8 @@ void AlertDialog::done (AlertItem alert)
 
   alert.setStatus(AlertItem::_Hit);
 
-  item->setText(2, alert.statusToString(alert.status()));
+  item->setText(3, alert.statusToString(alert.status()));
+  item->setText(4, alert.lastUpdate().toString(Qt::ISODate));
 
   AlertDataBase db;
   db.transaction();
@@ -291,17 +287,15 @@ void AlertDialog::done (AlertItem alert)
   {
     Dialog *dialog = new Dialog;
     dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Alert Triggered"));
+    
     QStringList l;
     l << tr("ID")  + ": " + QString::number(alert.id());
-
-    QStringList l2 = alert.symbolHits();
-    int loop = 0;
-    for (; loop < l2.count(); loop++)
-      l << tr("Symbol") + ": " + l2.at(loop);
-    
+    l << tr("Symbol") + ": " + alert.symbol();
     l << tr("Indicator")  + ": " + alert.indicator();
-    l << tr("Time")  + ": " + QDateTime::currentDateTime().toString(Qt::ISODate);
+    l << tr("Time")  + ": " + alert.hitDate().toString(Qt::ISODate);
+    
     dialog->setMessage(l.join("\n"));
+    
     QFont f = dialog->messageFont();
     f.setBold(FALSE);
     dialog->setMessageFont(f);
@@ -381,12 +375,13 @@ void AlertDialog::resetAlert ()
   db.getAlert(alert);
 
   alert.setStatus(AlertItem::_Waiting);
+  alert.setHitDate(QDateTime());
 
   db.transaction();
   db.setAlert(alert);
   db.commit();
 
-  l.at(0)->setText(2, alert.statusToString(AlertItem::_Waiting));
+  l.at(0)->setText(3, alert.statusToString(AlertItem::_Waiting));
 }
 
 void AlertDialog::configureDialog ()

@@ -139,10 +139,10 @@ void TesterDialog::createReportPage ()
   w->setLayout(hbox);
 
   QStringList l;
-  l << tr("Name") << tr("Profit %");
+  l << tr("Name") << tr("Net Profit %") << tr("Profit Factor") << tr("Payoff Ratio");
 
   _reports = new QTreeWidget;
-  _reports->setSortingEnabled(FALSE);
+  _reports->setSortingEnabled(TRUE);
   _reports->setRootIsDecorated(FALSE);
   _reports->setHeaderLabels(l);
   _reports->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -327,7 +327,10 @@ void TesterDialog::updateReports ()
     TesterReport report = rl.at(loop);
 
     QStringList l;
-    l << report.name() << QString::number(report.equityGain());
+    l << report.name();
+    l << QString::number(report.equityGain());
+    l << QString::number(report.profitFactor());
+    l << QString::number(report.payoffRatio());
 
     new QTreeWidgetItem(_reports, l);
   }

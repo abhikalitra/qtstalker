@@ -25,8 +25,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 AROONDialog::AROONDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -40,18 +39,12 @@ void AROONDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // method
-  QLabel *label = new QLabel(tr("Method"));
-  grid->addWidget(label, row, col++);
-
   AROON f;
   QStringList l = f.list();
 
@@ -61,18 +54,13 @@ void AROONDialog::createGeneralPage ()
   _method = new QComboBox;
   _method->addItems(l);
   _method->setCurrentIndex(_method->findText(d, Qt::MatchExactly));
-  grid->addWidget(_method, row++, col--);
+  form->addRow(tr("Method"), _method);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _period = new QSpinBox;
   _period->setRange(2, 100000);
   _period->setValue(_settings.getInt(AROON::_Period));
-  grid->addWidget(_period, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Period"), _period);
   
   _tabs->addTab(w, tr("General"));  
 }
@@ -81,43 +69,29 @@ void AROONDialog::createAROONPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // up color
-  QLabel *label = new QLabel(tr("Up Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(AROON::_UpColor, d);
   QColor c(d);
 
   _upColor = new ColorButton(this, c);
   _upColor->setColorButton();
-  grid->addWidget(_upColor, row++, col--);
-
+  form->addRow(tr("Up Color"), _upColor);
 
   // down color
-  label = new QLabel(tr("Down Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(AROON::_DownColor, d);
   c.setNamedColor(d);
 
   _downColor = new ColorButton(this, c);
   _downColor->setColorButton();
-  grid->addWidget(_downColor, row++, col--);
-
+  form->addRow(tr("Down Color"), _downColor);
 
   // up plot style
-  label = new QLabel(tr("Up Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -127,42 +101,27 @@ void AROONDialog::createAROONPage ()
   _upPlotStyle = new QComboBox;
   _upPlotStyle->addItems(l);
   _upPlotStyle->setCurrentIndex(_upPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_upPlotStyle, row++, col--);
-
+  form->addRow(tr("Up Plot"), _upPlotStyle);
   
   // down plot style
-  label = new QLabel(tr("Down Plot"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(AROON::_DownPlot, d);
 
   _downPlotStyle = new QComboBox;
   _downPlotStyle->addItems(l);
   _downPlotStyle->setCurrentIndex(_downPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_downPlotStyle, row++, col--);
-
+  form->addRow(tr("Down Plot"), _downPlotStyle);
 
   // up label
-  label = new QLabel(tr("Up Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(AROON::_UpLabel, d);
 
   _upLabel = new QLineEdit(d);
-  grid->addWidget(_upLabel, row++, col--);
-
+  form->addRow(tr("Up Label"), _upLabel);
 
   // down label
-  label = new QLabel(tr("Down Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(AROON::_DownLabel, d);
 
   _downLabel = new QLineEdit(d);
-  grid->addWidget(_downLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Down Label"), _downLabel);
 
   _tabs->addTab(w, "AROON");
 }
@@ -171,31 +130,21 @@ void AROONDialog::createOSCPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // osc color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(AROON::_OSCColor, d);
   QColor c(d);
 
   _oscColor = new ColorButton(this, c);
   _oscColor->setColorButton();
-  grid->addWidget(_oscColor, row++, col--);
-
+  form->addRow(tr("Color"), _oscColor);
 
   // up plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -205,20 +154,13 @@ void AROONDialog::createOSCPage ()
   _oscPlotStyle = new QComboBox;
   _oscPlotStyle->addItems(l);
   _oscPlotStyle->setCurrentIndex(_oscPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_oscPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _oscPlotStyle);
 
   // up label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(AROON::_OSCLabel, d);
 
   _oscLabel = new QLineEdit(d);
-  grid->addWidget(_oscLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _oscLabel);
 
   _tabs->addTab(w, "OSC");
 }

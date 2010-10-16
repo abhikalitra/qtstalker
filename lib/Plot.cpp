@@ -317,6 +317,10 @@ void Plot::dates (QList<QDateTime> &d)
 void Plot::setBackgroundColor (QColor d)
 {
   setCanvasBackground(d);
+
+//  QPalette palette;
+//  palette.setColor(QPalette::Background, d);
+//  axisWidget(QwtPlot::yRight)->setPalette(palette);
 }
 
 void Plot::setGridColor (QColor d)
@@ -428,6 +432,8 @@ void Plot::setStartIndex (int index)
   setHighLow();
 
   setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
+
+//  setYPoints();
   
   replot();
 }
@@ -563,6 +569,46 @@ void Plot::mouseMove (QPoint p)
 
   emit signalInfoMessage(set);
 }
+
+/*
+void Plot::setYPoints ()
+{
+  _plotScaleDraw->clearPoints();
+
+  int page = width() / _spacing;
+  int index = _startPos + page;
+  if (index > _dateScaleDraw->count())
+    index = _dateScaleDraw->count() - 1;
+
+  QHashIterator<QString, Curve *> it(_curves);
+  while (it.hasNext())
+  {
+    it.next();
+    Curve *curve = it.value();
+
+    CurveBar *bar = curve->bar(index);
+    if (! bar)
+      continue;
+
+    QColor color = bar->color();
+    
+    switch ((Curve::Type) curve->type())
+    {
+      case Curve::Dot:
+      case Curve::Histogram:
+      case Curve::Line:
+        color = curve->color();
+        break;
+      default:
+        break;
+    }
+    
+    _plotScaleDraw->addPoint(color, bar->data());
+  }
+
+  _plotScaleDraw->drawPoints(axisWidget(QwtPlot::yRight));
+}
+*/
 
 //********************************************************************
 //***************** CHART OBJECT FUNCTIONS ***************************

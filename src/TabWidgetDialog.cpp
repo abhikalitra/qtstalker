@@ -24,36 +24,28 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 
-TabWidgetDialog::TabWidgetDialog (QString id) : QDialog (0, 0)
+TabWidgetDialog::TabWidgetDialog (QString id)
 {
+  _id = id;
   _posList << tr("North") << tr("South") << tr("West") << tr("East");
 
-  _id = id;
-  
-  setAttribute(Qt::WA_DeleteOnClose);
-  
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Chart Tab Settings"));
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(10);
-  vbox->setMargin(5);
-  setLayout(vbox);
+  createMainPage();
+}
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+void TabWidgetDialog::createMainPage ()
+{
+  QWidget *w = new QWidget;
+  
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // position
-  QLabel *label = new QLabel(tr("Position"));
-  grid->addWidget(label, row, col++);
-
   Config config;
   QString s;
   config.getData(_id, s);
@@ -62,13 +54,9 @@ TabWidgetDialog::TabWidgetDialog (QString id) : QDialog (0, 0)
   _position = new QComboBox;
   _position->addItems(_posList);
   _position->setCurrentIndex(_ttp);
-  grid->addWidget(_position, row++, col--);
-
+  form->addRow(tr("Position"), _position);
   
   // north south height
-  label = new QLabel(tr("North / South Height"));
-  grid->addWidget(label, row, col++);
-
   QString key = _id + "NSH";
   QString d;
   config.getData(key, d);
@@ -77,12 +65,9 @@ TabWidgetDialog::TabWidgetDialog (QString id) : QDialog (0, 0)
   _nsh = new QSpinBox;
   _nsh->setRange(1, 100);
   _nsh->setValue(_tnsh);
-  grid->addWidget(_nsh, row++, col--);
+  form->addRow(tr("North / South Height"), _nsh);
 
   // north south width
-  label = new QLabel(tr("North / South Width"));
-  grid->addWidget(label, row, col++);
-
   key = _id + "NSW";
   config.getData(key, d);
   _tnsw = d.toInt();
@@ -90,12 +75,9 @@ TabWidgetDialog::TabWidgetDialog (QString id) : QDialog (0, 0)
   _nsw = new QSpinBox;
   _nsw->setRange(1, 100);
   _nsw->setValue(_tnsw);
-  grid->addWidget(_nsw, row++, col--);
+  form->addRow(tr("North / South Width"), _nsw);
 
   // east west height
-  label = new QLabel(tr("East / West Height"));
-  grid->addWidget(label, row, col++);
-
   key = _id + "EWH";
   config.getData(key, d);
   _tewh = d.toInt();
@@ -103,12 +85,9 @@ TabWidgetDialog::TabWidgetDialog (QString id) : QDialog (0, 0)
   _ewh = new QSpinBox;
   _ewh->setRange(1, 100);
   _ewh->setValue(_tewh);
-  grid->addWidget(_ewh, row++, col--);
+  form->addRow(tr("East / West Height"), _ewh);
 
   // east west width
-  label = new QLabel(tr("East / West Width"));
-  grid->addWidget(label, row, col++);
-
   key = _id + "EWW";
   config.getData(key, d);
   _teww = d.toInt();
@@ -116,15 +95,9 @@ TabWidgetDialog::TabWidgetDialog (QString id) : QDialog (0, 0)
   _eww = new QSpinBox;
   _eww->setRange(1, 100);
   _eww->setValue(_teww);
-  grid->addWidget(_eww, row++, col--);
+  form->addRow(tr("East / West Width"), _eww);
 
-  // buttonbox
-  _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  vbox->addWidget(_buttonBox);
-
-  vbox->addStretch(1);
+  _tabs->addTab(w, tr("Tab Settings"));
 }
 
 void TabWidgetDialog::done ()

@@ -172,7 +172,9 @@ void TesterReportDataBase::reportRatings (QList<TesterReport> &l)
   l.clear();
 
   QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "SELECT name,equityGain FROM TesterPluginReport ORDER BY equityGain DESC";
+  QString s = "SELECT ";
+  s.append("name,equityGain,profitFactor,payoffRatio");
+  s.append(" FROM TesterPluginReport ORDER BY equityGain DESC");
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -186,6 +188,8 @@ void TesterReportDataBase::reportRatings (QList<TesterReport> &l)
     TesterReport report;
     report.setName(q.value(pos++).toString());
     report.setEquityGain(q.value(pos++).toDouble());
+    report.setProfitFactor(q.value(pos++).toDouble());
+    report.setPayoffRatio(q.value(pos++).toDouble());
 
     l.append(report);
   }

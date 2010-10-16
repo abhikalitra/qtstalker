@@ -24,6 +24,11 @@
 
 #include <QString>
 #include <QDebug>
+#include <QPolygon>
+#include <QFontMetrics>
+#include <QRect>
+#include <QBrush>
+#include <qwt_scale_map.h>
 
 PlotScaleDraw::PlotScaleDraw ()
 {
@@ -82,3 +87,119 @@ QwtText PlotScaleDraw::label (double v) const
   return s;
 }
 
+/*
+void PlotScaleDraw::draw (QPainter *p, const QPalette &pal) const
+{
+  // first draw the original label
+  QwtAbstractScaleDraw::draw(p, pal);
+
+  // now we overwrite with our own color version
+  QFontMetrics fm = p->fontMetrics();
+
+  Strip strip;
+  int offset = 8;
+  int loop = 0;
+  int x = 0;
+  for (; loop < _colors.count(); loop++)
+  {
+    QColor color = _colors.at(loop);
+    
+    double v = _values.at(loop);
+    QString s;
+    strip.strip(v, 2, s);
+    
+    int y = map().transform(v);
+
+    QRect rc = p->boundingRect(x + offset,
+                               y - (fm.height() / 2),
+                               0,
+                               0,
+                               0,
+                               s);
+
+    // draw the left arrow portion of the box shape
+    QPolygon arrow(4);
+    arrow.setPoint(0, x, y);
+    arrow.setPoint(1, x + offset, rc.top() - 1);
+    arrow.setPoint(2, x + offset, rc.bottom() + 1);
+    arrow.setPoint(3, x, y);
+    
+    p->setBrush(color);
+    p->drawPolygon(arrow, Qt::OddEvenFill);
+
+    p->fillRect(rc, color);
+
+    QBrush bbrush = p->background();
+    color.setRed(color.red() || bbrush.color().red());
+    color.setGreen(color.green() || bbrush.color().green());
+    color.setBlue(color.blue() || bbrush.color().blue());
+    p->setPen(color);
+    p->drawText(rc, s);
+  }
+}
+*/
+
+/*
+void PlotScaleDraw::drawPoints (QwtScaleWidget *w)
+{
+  QPainter p;
+  p.begin(w);
+
+  // now we overwrite with our own color version
+  QFontMetrics fm = p.fontMetrics();
+
+  Strip strip;
+  int offset = 8;
+  int loop = 0;
+  int x = 0;
+  for (; loop < _colors.count(); loop++)
+  {
+    QColor color = _colors.at(loop);
+
+    double v = _values.at(loop);
+    QString s;
+    strip.strip(v, 2, s);
+
+    int y = map().transform(v);
+
+    QRect rc = p.boundingRect(x + offset,
+                               y - (fm.height() / 2),
+                               0,
+                               0,
+                               0,
+                               s);
+
+    // draw the left arrow portion of the box shape
+    QPolygon arrow(4);
+    arrow.setPoint(0, x, y);
+    arrow.setPoint(1, x + offset, rc.top() - 1);
+    arrow.setPoint(2, x + offset, rc.bottom() + 1);
+    arrow.setPoint(3, x, y);
+
+    p.setBrush(color);
+    p.drawPolygon(arrow, Qt::OddEvenFill);
+
+    p.fillRect(rc, color);
+
+    QBrush bbrush = p.background();
+    color.setRed(color.red() || bbrush.color().red());
+    color.setGreen(color.green() || bbrush.color().green());
+    color.setBlue(color.blue() || bbrush.color().blue());
+    p.setPen(color);
+    p.drawText(rc, s);
+  }
+}
+*/
+
+void PlotScaleDraw::clearPoints ()
+{
+  _colors.clear();
+  _values.clear();
+//  invalidateCache();
+}
+
+void PlotScaleDraw::addPoint (QColor c, double v)
+{
+  _colors.append(c);
+  _values.append(v);
+}

@@ -22,13 +22,13 @@
 #ifndef TAB_WIDGET_DIALOG_HPP
 #define TAB_WIDGET_DIALOG_HPP
 
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QSpinBox>
 #include <QComboBox>
 #include <QStringList>
 
-class TabWidgetDialog : public QDialog
+#include "Dialog.h"
+
+class TabWidgetDialog : public Dialog
 {
   Q_OBJECT
 
@@ -37,6 +37,7 @@ class TabWidgetDialog : public QDialog
   
   public:
     TabWidgetDialog (QString id);
+    void createMainPage ();
 
   public slots:
     void done ();
@@ -49,7 +50,6 @@ class TabWidgetDialog : public QDialog
     int _tnsw;
     int _tewh;
     int _teww;
-    QDialogButtonBox *_buttonBox;
     QComboBox *_position;
     QSpinBox *_nsh;
     QSpinBox *_nsw;

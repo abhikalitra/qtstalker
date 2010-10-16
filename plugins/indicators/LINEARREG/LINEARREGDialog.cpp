@@ -26,8 +26,7 @@
 #include "BarData.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 LINEARREGDialog::LINEARREGDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -39,34 +38,50 @@ void LINEARREGDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
-  int row = 0;
-  int col = 0;
+  // color
+  QString d;
+  _settings.getData(LINEARREG::_Color, d);
+  QColor c(d);
+
+  _color = new ColorButton(this, c);
+  _color->setColorButton();
+  form->addRow(tr("Color"), _color);
+
+  // plot style
+  Curve fac;
+  QStringList l;
+  fac.list(l, TRUE);
+
+  _settings.getData(LINEARREG::_Plot, d);
+
+  _plotStyle = new QComboBox;
+  _plotStyle->addItems(l);
+  _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
+  form->addRow(tr("Plot"), _plotStyle);
+
+  // label
+  _settings.getData(LINEARREG::_Label, d);
+
+  _label = new QLineEdit(d);
+  form->addRow(tr("Label"), _label);
 
   // method
-  QLabel *label = new QLabel(tr("Method"));
-  grid->addWidget(label, row, col++);
-
   LINEARREG f;
-  QStringList l = f.list();
+  l = f.list();
 
-  QString d;
   _settings.getData(LINEARREG::_Method, d);
 
   _method = new QComboBox;
   _method->addItems(l);
   _method->setCurrentIndex(_method->findText(d, Qt::MatchExactly));
-  grid->addWidget(_method, row++, col--);
-
+  form->addRow(tr("Method"), _method);
 
   // input
-  label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   bd.getInputFields(l);
 
@@ -75,56 +90,13 @@ void LINEARREGDialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _period = new QSpinBox;
   _period->setRange(2, 100000);
   _period->setValue(_settings.getInt(LINEARREG::_Period));
-  grid->addWidget(_period, row++, col--);
-
-
-  // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
-  _settings.getData(LINEARREG::_Color, d);
-  QColor c(d);
-
-  _color = new ColorButton(this, c);
-  _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
-
-
-  // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
-  Curve fac;
-  fac.list(l, TRUE);
-
-  _settings.getData(LINEARREG::_Plot, d);
-
-  _plotStyle = new QComboBox;
-  _plotStyle->addItems(l);
-  _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
-
-
-  // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
-  _settings.getData(LINEARREG::_Label, d);
-
-  _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Period"), _period);
 
   _tabs->addTab(w, tr("General"));
 }

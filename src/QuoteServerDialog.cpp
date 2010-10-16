@@ -26,8 +26,7 @@
 
 #include <QtDebug>
 #include <QProcess>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 
 QuoteServerDialog::QuoteServerDialog ()
 {
@@ -41,48 +40,36 @@ void QuoteServerDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  w->setLayout(vbox);
-
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // hostname
-  QLabel *label = new QLabel(tr("Quote server hostname"));
-  grid->addWidget(label, row, col++);
-  
   Config config;
   config.getData(Config::QuoteServerName, _ohostName);
 
   _hostName = new QLineEdit;
   _hostName->setText(_ohostName);
   _hostName->setToolTip(tr("Default: 127.0.0.1"));
-  grid->addWidget(_hostName, row++, col--);
-  
+  form->addRow(tr("Hostname"), _hostName);
 
   // port
-  label = new QLabel(tr("Quote server port #"));
-  grid->addWidget(label, row, col++);
-
   _oport = config.getInt(Config::QuoteServerPort);
 
   _port = new QSpinBox;
   _port->setRange(5000, 99999);
   _port->setValue(_oport);
   _port->setToolTip(tr("Default: 5000"));
-  grid->addWidget(_port, row++, col--);
-
+  form->addRow(tr("Port #"), _port);
 
   // refresh button
-  _refreshButton = _buttonBox->addButton(tr("Refresh"), QDialogButtonBox::ActionRole);
+  _refreshButton = new QPushButton;
   _refreshButton->setToolTip(tr("Restarts the server"));
   _refreshButton->setIcon(QIcon(refresh_xpm));
+  _refreshButton->setText(tr("Restart"));
   connect(_refreshButton, SIGNAL(clicked()), this, SLOT(refreshServer()));
+  form->addRow(tr("Restart"), _refreshButton);
 
   _tabs->addTab(w, tr("Settings"));
 }

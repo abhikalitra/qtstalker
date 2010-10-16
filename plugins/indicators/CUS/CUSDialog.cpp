@@ -24,8 +24,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 CUSDialog::CUSDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -37,36 +36,25 @@ void CUSDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // method
-  QLabel *label = new QLabel(tr("Command"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(CUS::Command, d);
 
   _command = new QLineEdit(d);
   _command->setToolTip(tr("The interpreter command line and any switches required.\neg. perl -l -T"));
-  grid->addWidget(_command, row++, col--);
+  form->addRow(tr("Command"), _command);
 
   // file
-  label = new QLabel(tr("Script"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(CUS::Script, d);
 
   _file = new FileButton(this, d);
   _file->setToolTip(tr("The script location"));
-  grid->addWidget(_file, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Script"), _file);
 
   _tabs->addTab(w, tr("General"));
 }

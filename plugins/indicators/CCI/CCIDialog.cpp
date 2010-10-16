@@ -26,8 +26,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 CCIDialog::CCIDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -41,30 +40,21 @@ void CCIDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(CCI::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -74,39 +64,27 @@ void CCIDialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(CCI::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
+  form->addRow(tr("Label"), _label);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _period = new QSpinBox;
   _period->setRange(2, 100000);
   _period->setValue(_settings.getInt(CCI::_Period));
-  grid->addWidget(_period, row++, col--);
+  form->addRow(tr("Period"), _period);
 
   // smoothing
-  label = new QLabel(tr("Smoothing"));
-  grid->addWidget(label, row, col++);
-
   _smoothing = new QSpinBox;
   _smoothing->setRange(1, 100000);
   _smoothing->setValue(_settings.getInt(CCI::_Smoothing));
-  grid->addWidget(_smoothing, row++, col--);
+  form->addRow(tr("Smoothing"), _smoothing);
 
   // smoothing type
-  label = new QLabel(tr("Smoothing Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   l = mau.list();
 
@@ -115,9 +93,7 @@ void CCIDialog::createGeneralPage ()
   _smoothingType = new QComboBox;
   _smoothingType->addItems(l);
   _smoothingType->setCurrentIndex(_smoothingType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_smoothingType, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Smoothing Type"), _smoothingType);
 
   _tabs->addTab(w, tr("General"));
 }
@@ -126,36 +102,25 @@ void CCIDialog::createRefPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(CCI::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
   _refColor->setColorButton();
-  grid->addWidget(_refColor, row++, col--);
+  form->addRow(tr("Color"), _refColor);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref = new QDoubleSpinBox;
   _ref->setRange(-100000, 100000);
   _ref->setValue(_settings.getDouble(CCI::_Ref1));
-  grid->addWidget(_ref, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref);
 
   _tabs->addTab(w, tr("Ref 1"));
 }
@@ -164,36 +129,25 @@ void CCIDialog::createRef2Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(CCI::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
   _ref2Color->setColorButton();
-  grid->addWidget(_ref2Color, row++, col--);
+  form->addRow(tr("Color"), _ref2Color);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(-100000, 100000);
   _ref2->setValue(_settings.getDouble(CCI::_Ref2));
-  grid->addWidget(_ref2, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref2);
 
   _tabs->addTab(w, tr("Ref 2"));
 }

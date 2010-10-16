@@ -27,8 +27,7 @@
 #include "MA.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 MADialog::MADialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -40,18 +39,12 @@ void MADialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // method
-  QLabel *label = new QLabel(tr("Method"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA f;
   QStringList l = f.list();
 
@@ -61,13 +54,9 @@ void MADialog::createGeneralPage ()
   _method = new QComboBox;
   _method->addItems(l);
   _method->setCurrentIndex(_method->findText(d, Qt::MatchExactly));
-  grid->addWidget(_method, row++, col--);
-
+  form->addRow(tr("Method"), _method);
 
   // input
-  label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   bd.getInputFields(l);
 
@@ -76,34 +65,23 @@ void MADialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _period = new QSpinBox;
   _period->setRange(2, 100000);
   _period->setValue(_settings.getInt(MA::_Period));
-  grid->addWidget(_period, row++, col--);
-
+  form->addRow(tr("Period"), _period);
 
   // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MA::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
-
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   fac.list(l, TRUE);
 
@@ -112,20 +90,13 @@ void MADialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MA::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _label);
 
   _tabs->addTab(w, tr("General"));
 }

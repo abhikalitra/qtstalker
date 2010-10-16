@@ -27,7 +27,7 @@
 #include "../pics/search.xpm"
 
 #include <QtDebug>
-#include <QLabel>
+#include <QFormLayout>
 #include <QString>
 #include <QToolButton>
 #include <QIcon>
@@ -47,33 +47,35 @@ void GroupAddDialog::createMainPage ()
   QWidget *w = new QWidget;
 
   QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(5);
+  vbox->setSpacing(10);
   w->setLayout(vbox);
   
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(0);
+  vbox->addLayout(form);
 
-  int row = 0;
-  int col = 0;
-
-  // name
-  QLabel *label = new QLabel(tr("Groups"));
-  grid->addWidget(label, row, col++);
-
+  // groups
   QStringList gl;
   _db.getAllGroupsList(gl);
   
   _groups = new QComboBox;
   _groups->addItems(gl);
-  grid->addWidget(_groups, row, col++);
+  form->addRow(tr("Groups"), _groups);
 
-  QToolButton *_newButton = new QToolButton;
-  _newButton->setIcon(QIcon(newchart_xpm));
-  _newButton->setText("...");
-  _newButton->setToolTip(tr("New Group"));
-  connect(_newButton, SIGNAL(clicked()), this, SLOT(newGroup()));
-  grid->addWidget(_newButton, row++, col--);
+  // new group
+  QPushButton *b = new QPushButton;
+  b->setIcon(QIcon(newchart_xpm));
+  b->setText("...");
+  connect(b, SIGNAL(clicked()), this, SLOT(newGroup()));
+  form->addRow(tr("New Group"), b);
+
+  // search
+  b = new QPushButton;
+  b->setIcon(QIcon(search_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(search()));
+  form->addRow(tr("Search"), b);
 
   // list
   QStringList l;
@@ -82,15 +84,10 @@ void GroupAddDialog::createMainPage ()
   _list = new QListWidget;
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   _list->setSortingEnabled(TRUE);
-  vbox->addWidget(_list);
   _list->addItems(l);
+  vbox->addWidget(_list);
 
-  QPushButton *b = _buttonBox->addButton(tr("Search..."), QDialogButtonBox::ActionRole);
-  b->setIcon(QIcon(search_xpm));
-  b->setToolTip(tr("Search symbols"));
-  connect(b, SIGNAL(clicked()), this, SLOT(search()));
-
-  _tabs->addTab(w, QString());
+  _tabs->addTab(w, tr("Add To Group"));
 }
 
 void GroupAddDialog::done ()

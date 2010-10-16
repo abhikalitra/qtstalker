@@ -26,8 +26,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 BOPDialog::BOPDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -39,30 +38,21 @@ void BOPDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(BOP::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -72,30 +62,21 @@ void BOPDialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(BOP::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
+  form->addRow(tr("Label"), _label);
 
   // smoothing
-  label = new QLabel(tr("Smoothing"));
-  grid->addWidget(label, row, col++);
-
   _smoothing = new QSpinBox;
   _smoothing->setRange(1, 100000);
   _smoothing->setValue(_settings.getInt(BOP::_Smoothing));
-  grid->addWidget(_smoothing, row++, col--);
+  form->addRow(tr("Smoothing"), _smoothing);
 
   // smoothing type
-  label = new QLabel(tr("Smoothing Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   l = mau.list();
 
@@ -104,9 +85,7 @@ void BOPDialog::createGeneralPage ()
   _smoothingType = new QComboBox;
   _smoothingType->addItems(l);
   _smoothingType->setCurrentIndex(_smoothingType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_smoothingType, row++, col--);
-  
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Smoothing Type"), _smoothingType);
 
   _tabs->addTab(w, tr("General"));
 }

@@ -120,7 +120,11 @@ void AlertEditDialog::createMainPage ()
 
 void AlertEditDialog::setSettings ()
 {
-  _symbols->setSymbolList(_item.symbols());
+  QStringList l;
+  QString s = _item.symbol();
+  if (! s.isEmpty())
+    l << s;
+  _symbols->setSymbolList(l);
   
   _barLength->setCurrentIndex(_item.barLength());
   
@@ -151,7 +155,12 @@ void AlertEditDialog::done ()
     db.commit();
   }
 
-  _symbols->symbolList(_item.symbols());
+  QStringList l;
+  _symbols->symbolList(l);
+  if (l.count())
+    _item.setSymbol(l.at(0));
+  else
+    _item.setSymbol(QString());
 
   _item.setBarLength(_barLength->currentIndex());
 

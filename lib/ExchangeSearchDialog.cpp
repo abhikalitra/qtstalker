@@ -23,11 +23,14 @@
 #include "ExchangeDataBase.h"
 #include "Globals.h"
 
+#include "../pics/search.xpm"
+
 #include <QtDebug>
 #include <QLayout>
 #include <QLabel>
 #include <QStringList>
 #include <QPushButton>
+#include <QFormLayout>
 
 ExchangeSearchDialog::ExchangeSearchDialog ()
 {
@@ -38,23 +41,19 @@ ExchangeSearchDialog::ExchangeSearchDialog ()
 
 void ExchangeSearchDialog::createMainPage ()
 {
+  QWidget *w = new QWidget;
+  
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(10);
   vbox->setMargin(5);
-  setLayout(vbox);
+  w->setLayout(vbox);
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(0);
+  vbox->addLayout(form);
 
   // country
-  QLabel *label = new QLabel(tr("Country"));
-  grid->addWidget(label, row, col++);
-
   ExchangeDataBase db;
   QStringList countryList;
   QString k = "countryName";
@@ -63,12 +62,9 @@ void ExchangeSearchDialog::createMainPage ()
   
   _country = new QComboBox;
   _country->addItems(countryList);
-  grid->addWidget(_country, row++, col--);
+  form->addRow(tr("Country"), _country);
   
   // city
-  label = new QLabel(tr("City"));
-  grid->addWidget(label, row, col++);
-
   QStringList cityList;
   k = "city";
   db.getFieldList(k, cityList);
@@ -76,25 +72,25 @@ void ExchangeSearchDialog::createMainPage ()
   
   _city = new QComboBox;
   _city->addItems(cityList);
-  grid->addWidget(_city, row++, col--);
+  form->addRow(tr("City"), _city);
 
   // exchange name
-  label = new QLabel(tr("Exchange"));
-  grid->addWidget(label, row, col++);
-
   _exchange = new QLineEdit;
-  grid->addWidget(_exchange, row++, col--);
+  form->addRow(tr("Exchange"), _exchange);
 
   QPushButton *b = new QPushButton;
-  b->setText(tr("Search"));
+  b->setText("...");
+  b->setIcon(QIcon(search_xpm));
   connect(b, SIGNAL(clicked()), this, SLOT(search()));
-  vbox->addWidget(b);
+  form->addRow(tr("Perform Search"), b);
 
   _list = new QListWidget;
   _list->setSelectionMode(QAbstractItemView::SingleSelection);
   connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   connect(_list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(done()));
   vbox->addWidget(_list);
+
+  _tabs->addTab(w, tr("Search"));
 }
 
 void ExchangeSearchDialog::search ()
@@ -142,6 +138,8 @@ void ExchangeSearchDialog::done ()
     return;
 
   emit signalExchangeCode(code);
+
+  accept();
 }
 
 void ExchangeSearchDialog::selectionChanged ()

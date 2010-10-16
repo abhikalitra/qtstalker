@@ -23,55 +23,38 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
-#include <QStringList>
+#include <QFormLayout>
 
-DateRangeDialog::DateRangeDialog (QDateTime &sd, QDateTime &ed) : QDialog (0, 0)
+DateRangeDialog::DateRangeDialog (QDateTime &sd, QDateTime &ed)
 {
   _sd = sd;
   _ed = ed;
   
-  setAttribute(Qt::WA_DeleteOnClose);
-  
   setWindowTitle("Qtstalker" + g_session + ": " +  tr("Set Date Range"));
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(10);
-  vbox->setMargin(5);
-  setLayout(vbox);
+  createMainPage();
+}
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+void DateRangeDialog::createMainPage ()
+{
+  QWidget *w = new QWidget;
+  
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // first date
-  QLabel *label = new QLabel(tr("First Date"));
-  grid->addWidget(label, row, col++);
-
-  _start = new QDateTimeEdit(sd);
+  _start = new QDateTimeEdit(_sd);
   _start->setCalendarPopup(TRUE);
-  grid->addWidget(_start, row++, col--);
+  form->addRow(tr("First Date"), _start);
   
   // last date
-  label = new QLabel(tr("Last Date"));
-  grid->addWidget(label, row, col++);
-
-  _end = new QDateTimeEdit(ed);
+  _end = new QDateTimeEdit(_ed);
   _end->setCalendarPopup(TRUE);
-  grid->addWidget(_end, row++, col--);
+  form->addRow(tr("Last Date"), _end);
 
-  // buttonbox
-  _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  vbox->addWidget(_buttonBox);
-
-  vbox->addStretch(1);
+  _tabs->addTab(w, tr("Date Range"));
 }
 
 void DateRangeDialog::done ()

@@ -24,7 +24,11 @@
 Alert::Alert ()
 {
   _name = "Alert";
-  _dialog = 0;
+
+  _dialog = new AlertDialog;
+  connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
+  connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  _dialog->activateWindow();
 }
 
 Alert::~Alert ()
@@ -35,13 +39,6 @@ Alert::~Alert ()
 
 int Alert::configureDialog ()
 {
-  if (! _dialog)
-  {
-    _dialog = new AlertDialog;
-    connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
-    connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  }
-  
   _dialog->show();
   _dialog->raise();
   _dialog->activateWindow();

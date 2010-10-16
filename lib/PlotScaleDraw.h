@@ -27,14 +27,24 @@
 #define PLOT_SCALE_DRAW_HPP
 
 #include <qwt_scale_draw.h>
+#include <qwt_scale_widget.h>
+#include <QList>
+#include <QColor>
+#include <QPainter>
 
 class PlotScaleDraw : public QwtScaleDraw
 {
   public:
     PlotScaleDraw ();
-    virtual QwtText label (double v) const;
-
+    QwtText label (double v) const;
+//    void draw (QPainter *, const QPalette &) const;
+//    void drawPoints (QwtScaleWidget *);
+    void clearPoints ();
+    void addPoint (QColor, double);
+    
   private:
+    QList<QColor> _colors;
+    QList<double> _values;
 };
 
 #endif

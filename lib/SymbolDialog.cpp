@@ -23,12 +23,14 @@
 #include "BarData.h"
 #include "QuoteServerRequestThread.h"
 #include "Globals.h"
+
 #include "../pics/search.xpm"
 
 #include <QLabel>
 #include <QLayout>
 #include <QtDebug>
 #include <QTreeWidgetItem>
+#include <QFormLayout>
 
 SymbolDialog::SymbolDialog ()
 {
@@ -44,24 +46,21 @@ void SymbolDialog::createMainPage ()
   QVBoxLayout *vbox = new QVBoxLayout;
   w->setLayout(vbox);
 
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(0);
-  hbox->setSpacing(5);
-  vbox->addLayout(hbox);
+  QFormLayout *form = new QFormLayout;
+  form->setMargin(0);
+  form->setSpacing(2);
+  vbox->addLayout(form);
   
   _exchanges = new QComboBox;
-  _exchanges->setToolTip(QString(tr("Exchange")));
-  hbox->addWidget(_exchanges);
+  form->addRow(tr("Exchange"), _exchanges);
   
   _search = new QLineEdit("*");
-  _search->setToolTip(QString(tr("Symbol pattern")));
-  hbox->addWidget(_search);
+  form->addRow(tr("Symbol pattern"), _search);
   
-  _searchButton = new QToolButton;
+  _searchButton = new QPushButton;
   _searchButton->setIcon(QIcon(search_xpm));
-  _searchButton->setToolTip(QString(tr("Search")));
   connect(_searchButton, SIGNAL(clicked()), this, SLOT(searchButtonPressed()));
-  hbox->addWidget(_searchButton);
+  form->addRow(tr("Search"), _searchButton);
 
   QStringList l;
   l << tr("Symbol") << tr("Name") << tr("Exchange");

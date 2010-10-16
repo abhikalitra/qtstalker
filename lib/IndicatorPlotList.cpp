@@ -86,7 +86,7 @@ IndicatorPlotList::IndicatorPlotList ()
   tb->addAction(_deleteAction);
 
   QStringList l;
-  l << tr("Plot") << tr("Operator") << tr("Value");
+  l << "#" << tr("Plot") << tr("Operator") << tr("Value");
 
   _list = new QTreeWidget;
   _list->setSortingEnabled(FALSE);
@@ -161,46 +161,21 @@ void IndicatorPlotList::addPlot2 (QString d)
 
 void IndicatorPlotList::deletePlot ()
 {
-/*  
-  QStringList l;
+  QList<QTreeWidgetItem *> l = _list->selectedItems();
+  if (! l.count())
+    return;
+
+  delete l.at(0);
+  
   int loop = 0;
   for (; loop < _list->topLevelItemCount(); loop++)
   {
     QTreeWidgetItem *item = _list->topLevelItem(loop);
-    l << item->text(1);
+    item->setText(0, QString::number(loop + 1));
   }
 
-  QInputDialog *dialog = new QInputDialog;
-  QString s = "Qtstalker: " + tr("Delete Plot Item");
-  dialog->setWindowTitle(s);
-  dialog->setLabelText(tr("Plot Item"));
-  dialog->setInputMode(QInputDialog::TextInput);
-  dialog->setComboBoxEditable(FALSE);
-  dialog->setComboBoxItems(l);
-  dialog->setTextValue(_indicator->text());
-  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(deletePlot2(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-*/
-}
-
-void IndicatorPlotList::deletePlot2 (QString d)
-{
-/*  
-  int loop = 0;
-  for (; loop < _list->topLevelItemCount(); loop++)
-  {
-    QTreeWidgetItem *item = _list->topLevelItem(loop);
-
-    if (item->text(1) == d)
-    {
-      delete item;
-      buttonStatus();
-      emit signalItemChanged();
-      break;
-    }
-  }
-*/
+  buttonStatus();
+  emit signalItemChanged();
 }
 
 void IndicatorPlotList::indicatorChanged ()
@@ -230,11 +205,14 @@ void IndicatorPlotList::addPlotItem (QString pn, QString oper, QString val)
 {
   QTreeWidgetItem *item = new QTreeWidgetItem(_list);
 
+  QString s = QString::number(_list->topLevelItemCount());
+  item->setText(0, s);
+
   QComboBox *cb = new QComboBox;
   cb->setEditable(FALSE);
   cb->addItems(_plotNames);
   cb->setCurrentIndex(cb->findText(pn));
-  _list->setItemWidget(item, 0, cb);
+  _list->setItemWidget(item, 1, cb);
   connect(cb, SIGNAL(currentIndexChanged(int)), this, SIGNAL(signalItemChanged()));
 
   cb = new QComboBox;
@@ -242,7 +220,7 @@ void IndicatorPlotList::addPlotItem (QString pn, QString oper, QString val)
   Operator op;
   cb->addItems(op.list());
   cb->setCurrentIndex(oper.toInt());
-  _list->setItemWidget(item, 1, cb);
+  _list->setItemWidget(item, 2, cb);
   connect(cb, SIGNAL(currentIndexChanged(int)), this, SIGNAL(signalItemChanged()));
 
   QStringList l = _plotNames;
@@ -255,7 +233,7 @@ void IndicatorPlotList::addPlotItem (QString pn, QString oper, QString val)
   cb->addItems(l);
   cb->clearEditText();
   cb->setCurrentIndex(cb->findText(val));
-  _list->setItemWidget(item, 2, cb);
+  _list->setItemWidget(item, 3, cb);
   connect(cb, SIGNAL(currentIndexChanged(int)), this, SIGNAL(signalItemChanged()));
   connect(cb, SIGNAL(editTextChanged(const QString &)), this, SIGNAL(signalItemChanged()));
 
@@ -338,7 +316,7 @@ void IndicatorPlotList::setList (QStringList l)
   for (; loop < l.count(); loop++)
   {
     QStringList l2 = l.at(loop).split(",");
-    if (l2.count() != _list->columnCount())
+    if (l2.count() != 3)
       continue;
     
     addPlotItem(l2.at(0), l2.at(1), l2.at(2));
@@ -357,13 +335,13 @@ void IndicatorPlotList::list (QStringList &items)
     QTreeWidgetItem *item = _list->topLevelItem(loop);
 
     QStringList l;
-    QComboBox *cb = (QComboBox *) _list->itemWidget(item, 0);
+    QComboBox *cb = (QComboBox *) _list->itemWidget(item, 1);
     l << cb->currentText();
 
-    cb = (QComboBox *) _list->itemWidget(item, 1);
+    cb = (QComboBox *) _list->itemWidget(item, 2);
     l << QString::number(cb->currentIndex());
 
-    cb = (QComboBox *) _list->itemWidget(item, 2);
+    cb = (QComboBox *) _list->itemWidget(item, 3);
     l << cb->currentText();
 
     items << l.join(",");

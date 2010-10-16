@@ -52,6 +52,7 @@ class CSVDialog : public QDialog
     void run ();
     void run2 (QStringList);
     void newRule ();
+    void newRule2 (QString);
     void editRule ();
     void editRule2 (QStringList);
     void deleteRule ();

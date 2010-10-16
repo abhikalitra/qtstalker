@@ -27,8 +27,7 @@
 #include "BarData.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 BBANDSDialog::BBANDSDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -44,18 +43,12 @@ void BBANDSDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // input
-  QLabel *label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   QStringList l;
   bd.getInputFields(l);
@@ -66,39 +59,27 @@ void BBANDSDialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _period = new QSpinBox;
   _period->setRange(2, 100000);
   _period->setValue(_settings.getInt(BBANDS::_Period));
-  grid->addWidget(_period, row++, col--);
+  form->addRow(tr("Period"), _period);
 
   // up deviation
-  label = new QLabel(tr("Upper Deviation"));
-  grid->addWidget(label, row, col++);
-
   _upDev = new QDoubleSpinBox;
   _upDev->setRange(-100000, 100000);
   _upDev->setValue(_settings.getDouble(BBANDS::_UpDeviation));
-  grid->addWidget(_upDev, row++, col--);
+  form->addRow(tr("Upper Deviation"), _upDev);
 
   // low deviation
-  label = new QLabel(tr("Lower Deviation"));
-  grid->addWidget(label, row, col++);
-
   _lowDev = new QDoubleSpinBox;
   _lowDev->setRange(-100000, 100000);
   _lowDev->setValue(_settings.getDouble(BBANDS::_DownDeviation));
-  grid->addWidget(_lowDev, row++, col--);
+  form->addRow(tr("Lower Deviation"), _lowDev);
 
   // ma type
-  label = new QLabel(tr("MA Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   l = mau.list();
 
@@ -107,9 +88,7 @@ void BBANDSDialog::createGeneralPage ()
   _maType = new QComboBox;
   _maType->addItems(l);
   _maType->setCurrentIndex(_maType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_maType, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("MA Type"), _maType);
 
   _tabs->addTab(w, tr("General"));
 }
@@ -118,31 +97,21 @@ void BBANDSDialog::createUpperPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(BBANDS::_UpColor, d);
   QColor c(d);
 
   _upperColor = new ColorButton(this, c);
   _upperColor->setColorButton();
-  grid->addWidget(_upperColor, row++, col--);
-
+  form->addRow(tr("Color"), _upperColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -152,20 +121,13 @@ void BBANDSDialog::createUpperPage ()
   _upperPlotStyle = new QComboBox;
   _upperPlotStyle->addItems(l);
   _upperPlotStyle->setCurrentIndex(_upperPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_upperPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _upperPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(BBANDS::_UpLabel, d);
 
   _upperLabel = new QLineEdit(d);
-  grid->addWidget(_upperLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _upperLabel);
 
   _tabs->addTab(w, tr("Upper"));
 }
@@ -174,31 +136,21 @@ void BBANDSDialog::createMiddlePage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(BBANDS::_MidColor, d);
   QColor c(d);
 
   _midColor = new ColorButton(this, c);
   _midColor->setColorButton();
-  grid->addWidget(_midColor, row++, col--);
-
+  form->addRow(tr("Color"), _midColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -208,20 +160,13 @@ void BBANDSDialog::createMiddlePage ()
   _midPlotStyle = new QComboBox;
   _midPlotStyle->addItems(l);
   _midPlotStyle->setCurrentIndex(_midPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_midPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _midPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(BBANDS::_MidLabel, d);
 
   _midLabel = new QLineEdit(d);
-  grid->addWidget(_midLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _midLabel);
 
   _tabs->addTab(w, tr("Middle"));
 }
@@ -230,31 +175,21 @@ void BBANDSDialog::createLowerPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(BBANDS::_DownColor, d);
   QColor c(d);
 
   _lowerColor = new ColorButton(this, c);
   _lowerColor->setColorButton();
-  grid->addWidget(_lowerColor, row++, col--);
-
+  form->addRow(tr("Color"), _lowerColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -264,20 +199,13 @@ void BBANDSDialog::createLowerPage ()
   _lowerPlotStyle = new QComboBox;
   _lowerPlotStyle->addItems(l);
   _lowerPlotStyle->setCurrentIndex(_lowerPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_lowerPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _lowerPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(BBANDS::_DownLabel, d);
 
   _lowerLabel = new QLineEdit(d);
-  grid->addWidget(_lowerLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Color"), _lowerLabel);
 
   _tabs->addTab(w, tr("Lower"));
 }
@@ -286,62 +214,41 @@ void BBANDSDialog::createBarsPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // up color
-  QLabel *label = new QLabel(tr("Up Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(BBANDS::_UpColor, d);
   QColor c(d);
 
   _upColor = new ColorButton(this, c);
   _upColor->setColorButton();
-  grid->addWidget(_upColor, row++, col--);
-
+  form->addRow(tr("Up Color"), _upColor);
 
   // down color
-  label = new QLabel(tr("Down Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(BBANDS::_DownColor, d);
   c.setNamedColor(d);
 
   _downColor = new ColorButton(this, c);
   _downColor->setColorButton();
-  grid->addWidget(_downColor, row++, col--);
-
+  form->addRow(tr("Down Color"), _downColor);
 
   // neutral color
-  label = new QLabel(tr("Neutral Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(BBANDS::_BarsNeutralColor, d);
   c.setNamedColor(d);
 
   _neutralColor = new ColorButton(this, c);
   _neutralColor->setColorButton();
-  grid->addWidget(_neutralColor, row++, col--);
-
+  form->addRow(tr("Neutral Color"), _neutralColor);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(BBANDS::_BarsLabel, d);
 
   _barsLabel = new QLineEdit(d);
-  grid->addWidget(_barsLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _barsLabel);
 
   _tabs->addTab(w, tr("BARS"));
 }

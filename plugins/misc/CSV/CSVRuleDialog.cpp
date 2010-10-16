@@ -26,13 +26,16 @@
 #include "CSVRule.h"
 #include "ExchangeSearchDialog.h"
 
+#include "../pics/delete.xpm"
+#include "../pics/search.xpm"
+
 #include <QLayout>
 #include <QLabel>
 #include <QInputDialog>
 #include <QDir>
 #include <QList>
 #include <QDebug>
-#include <QToolButton>
+#include <QFormLayout>
 
 CSVRuleDialog::CSVRuleDialog (QString name)
 {
@@ -58,23 +61,12 @@ void CSVRuleDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setMargin(5);
-  vbox->setSpacing(2);
-  w->setLayout(vbox);
-  
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // type parm
-  QLabel *label = new QLabel(tr("Type"));
-  grid->addWidget(label, row, col++);
-
   Config config;
   QStringList l;
   l << "S" << "F";
@@ -83,31 +75,22 @@ void CSVRuleDialog::createMainPage ()
   _type->addItems(l);
   _type->setToolTip(tr("S = Stock, F = Futures"));
   connect(_type, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
-  grid->addWidget(_type, row++, col--);
+  form->addRow(tr("Type"), _type);
 
   // delimiter parm
-  label = new QLabel(tr("Delimiter"));
-  grid->addWidget(label, row, col++);
-  
   _delimeter = new QComboBox;
   _delimeter->addItem(QString(","));
   _delimeter->addItem(QString(";"));
   connect(_delimeter, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
-  grid->addWidget(_delimeter, row++, col--);
+  form->addRow(tr("Delimiter"), _delimeter);
 
   // CSV file parm
-  label = new QLabel(tr("CSV File"));
-  grid->addWidget(label, row, col++);
-
   QString s = QDir::homePath();
   _file = new FileButton(this, s);
   connect(_file, SIGNAL(signalFileChanged()), this, SLOT(ruleChanged()));
-  grid->addWidget(_file, row++, col--);
+  form->addRow(tr("CSV File"), _file);
 
   // exchange parm
-  label = new QLabel(tr("Exchange Code"));
-  grid->addWidget(label, row, col++);
-
   ExchangeDataBase edb;
   l.clear();
   edb.getExchanges(l);
@@ -115,22 +98,26 @@ void CSVRuleDialog::createMainPage ()
   _exchange = new QComboBox;
   _exchange->addItems(l);
   connect(_exchange, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
-  grid->addWidget(_exchange, row, col++);
+  form->addRow(tr("Exchange Code"), _exchange);
 
-  QToolButton *tb = new QToolButton;
-  tb->setText(QString("..."));
-  tb->setToolTip(tr("Search for exchange code"));
-  connect(tb, SIGNAL(clicked()), this, SLOT(searchExchange()));
-  grid->addWidget(tb, row++, col);
+  // exchange search
+  QPushButton *b = new QPushButton;
+  b->setText(QString("..."));
+  b->setToolTip(tr("Search for exchange code"));
+  b->setIcon(QIcon(search_xpm));
+  connect(b, SIGNAL(clicked()), this, SLOT(searchExchange()));
+  form->addRow(tr("Exchange Search"), b);
 
   // filename parm
-  _fileSymbol = new QCheckBox(tr("Use filename as symbol"));
+  _fileSymbol = new QCheckBox;
+  _fileSymbol->setToolTip(tr("Use filename as symbol"));
   connect(_fileSymbol, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
-  vbox->addWidget(_fileSymbol);
+  form->addRow(tr("Filename As Symbol"), _fileSymbol);
 
   // remove suffix
-  _removeSuffix = new QCheckBox(tr("Try to remove suffix from file name"));
-  vbox->addWidget(_removeSuffix);
+  _removeSuffix = new QCheckBox;
+  _removeSuffix->setToolTip(tr("Try to remove suffix from file name"));
+  form->addRow(tr("Remove Suffix"), _removeSuffix);
 
   _tabs->addTab(w, tr("Settings"));
 }
@@ -149,25 +136,33 @@ void CSVRuleDialog::createRulePage ()
   connect(_ruleList, SIGNAL(itemSelectionChanged()), this, SLOT(ruleSelectionChanged()));
   hbox->addWidget(_ruleList);
 
-  QDialogButtonBox *bbox = new QDialogButtonBox;
-  bbox->setOrientation(Qt::Vertical);
-  hbox->addWidget(bbox);
+  QVBoxLayout *bbox = new QVBoxLayout;
+  bbox->setMargin(0);
+  bbox->setSpacing(2);
+  hbox->addLayout(bbox);
 
-  _insertButton = bbox->addButton(QDialogButtonBox::Apply);
+  _insertButton = new QPushButton;
   connect(_insertButton, SIGNAL(clicked()), this, SLOT(insertClicked()));
   _insertButton->setText(tr("Insert"));
+  bbox->addWidget(_insertButton);
 
-  _insertDateButton = bbox->addButton(QDialogButtonBox::Apply);
+  _insertDateButton = new QPushButton;
   connect(_insertDateButton, SIGNAL(clicked()), this, SLOT(dateDialog()));
   _insertDateButton->setText(tr("Insert Date"));
+  bbox->addWidget(_insertDateButton);
 
-  _insertTimeButton = bbox->addButton(QDialogButtonBox::Apply);
+  _insertTimeButton = new QPushButton;
   connect(_insertTimeButton, SIGNAL(clicked()), this, SLOT(timeDialog()));
   _insertTimeButton->setText(tr("Insert Time"));
+  bbox->addWidget(_insertTimeButton);
 
-  _deleteButton = bbox->addButton(QDialogButtonBox::Discard);
+  _deleteButton = new QPushButton;
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteClicked()));
   _deleteButton->setText(tr("Delete"));
+  _deleteButton->setIcon(QIcon(delete_xpm));
+  bbox->addWidget(_deleteButton);
+
+  bbox->addStretch();
 
   _fieldList = new QListWidget;
   _fieldList->addItems(_fields);
@@ -214,7 +209,10 @@ void CSVRuleDialog::loadRule ()
   
   CSVDataBase db;
   if (db.getRule(rule))
+  {
+    ruleChanged();
     return;
+  }
 
   _type->setCurrentIndex(_type->findText(rule.type(), Qt::MatchExactly));
   _delimeter->setCurrentIndex(_delimeter->findText(rule.delimiter(), Qt::MatchExactly));
@@ -329,7 +327,6 @@ void CSVRuleDialog::searchExchange ()
 {
   ExchangeSearchDialog *dialog = new ExchangeSearchDialog;
   connect(dialog, SIGNAL(signalExchangeCode(QString)), this, SLOT(setExchangeCode(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
 }
 

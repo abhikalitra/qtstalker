@@ -21,6 +21,7 @@ To Do:
 - review make files to use .qmake.cache
 - chart zooming
 - add script API for notifications for alerts.
+- add save/restore to all dialogs
 
 
 Priority

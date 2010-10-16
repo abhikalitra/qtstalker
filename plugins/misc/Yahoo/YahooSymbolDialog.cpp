@@ -24,9 +24,12 @@
 #include "Globals.h"
 #include "YahooAddSymbolDialog.h"
 
+#include "../pics/add.xpm"
+#include "../pics/delete.xpm"
+
 #include <QLayout>
-#include <QLabel>
 #include <QDebug>
+#include <QIcon>
 
 YahooSymbolDialog::YahooSymbolDialog ()
 {
@@ -45,7 +48,7 @@ void YahooSymbolDialog::createMainPage ()
 
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
-  hbox->setMargin(0);
+  hbox->setMargin(5);
   w->setLayout(hbox);
 
   _list = new QListWidget;
@@ -53,18 +56,24 @@ void YahooSymbolDialog::createMainPage ()
   connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   hbox->addWidget(_list);
 
-  QDialogButtonBox *bbox = new QDialogButtonBox;
-  bbox->setOrientation(Qt::Vertical);
-  hbox->addWidget(bbox);
-  
-  QPushButton *b = bbox->addButton(QDialogButtonBox::Apply);
+  QVBoxLayout *bbox = new QVBoxLayout;
+  bbox->setSpacing(2);
+  bbox->setMargin(0);
+  hbox->addLayout(bbox);
+
+  QPushButton *b = new QPushButton;
   connect(b, SIGNAL(clicked()), this, SLOT(addSymbol()));
   b->setText(tr("Add..."));
+  b->setIcon(QIcon(add_xpm));
+  bbox->addWidget(b);
   
-  _deleteButton = bbox->addButton(QDialogButtonBox::Discard);
+  _deleteButton = new QPushButton;
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteSymbol()));
   _deleteButton->setText(tr("Delete"));
+  _deleteButton->setIcon(QIcon(delete_xpm));
   
+  bbox->addStretch();
+
   _tabs->addTab(w, tr("Yahoo Symbols"));
 }
 

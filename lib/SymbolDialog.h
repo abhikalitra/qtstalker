@@ -24,7 +24,7 @@
 
 #include <QStringList>
 #include <QTreeWidget>
-#include <QToolButton>
+#include <QPushButton>
 #include <QComboBox>
 #include <QLineEdit>
 
@@ -57,7 +57,7 @@ class SymbolDialog : public Dialog
     QTreeWidget *_leftSymbols;
     QComboBox *_exchanges;
     QLineEdit *_search;
-    QToolButton *_searchButton;
+    QPushButton *_searchButton;
 };
 
 #endif

@@ -27,8 +27,7 @@
 #include "BarData.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 MAVPDialog::MAVPDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -40,18 +39,12 @@ void MAVPDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // input
-  QLabel *label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   QStringList l;
   bd.getInputFields(l);
@@ -62,23 +55,17 @@ void MAVPDialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // input2
-  label = new QLabel(tr("Input 2"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MAVP::_Input2, d);
 
   _input2 = new QComboBox;
   _input2->addItems(l);
   _input2->setCurrentIndex(_input2->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input2, row++, col--);
+  form->addRow(tr("Input 2"), _input2);
 
   // ma type
-  label = new QLabel(tr("MA Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   l = mau.list();
 
@@ -87,41 +74,29 @@ void MAVPDialog::createGeneralPage ()
   _maType = new QComboBox;
   _maType->addItems(l);
   _maType->setCurrentIndex(_maType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_maType, row++, col--);
+  form->addRow(tr("MA Type"), _maType);
 
   // min
-  label = new QLabel(tr("Min"));
-  grid->addWidget(label, row, col++);
-
   _min = new QSpinBox;
   _min->setRange(2, 100000);
   _min->setValue(_settings.getInt(MAVP::_Min));
-  grid->addWidget(_min, row++, col--);
+  form->addRow(tr("Min"), _min);
 
   // max
-  label = new QLabel(tr("Max"));
-  grid->addWidget(label, row, col++);
-
   _max = new QSpinBox;
   _max->setRange(2, 100000);
   _max->setValue(_settings.getInt(MAVP::_Max));
-  grid->addWidget(_max, row++, col--);
+  form->addRow(tr("Max"), _max);
 
   // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MAVP::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   fac.list(l, TRUE);
 
@@ -130,18 +105,13 @@ void MAVPDialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MAVP::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _label);
 
   _tabs->addTab(w, tr("General"));
 }

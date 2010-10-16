@@ -26,8 +26,7 @@
 #include "BarData.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 MAMADialog::MAMADialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -42,18 +41,12 @@ void MAMADialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // input
-  QLabel *label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   QStringList l;
   bd.getInputFields(l);
@@ -64,33 +57,24 @@ void MAMADialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // fast limit
-  label = new QLabel(tr("Fast Limit"));
-  grid->addWidget(label, row, col++);
-
   _fast = new QDoubleSpinBox;
   _fast->setRange(0.01, 0.99);
   _fast->setValue(_settings.getDouble(MAMA::_FastLimit));
-  grid->addWidget(_fast, row++, col--);
+  form->addRow(tr("Fast Limit"), _fast);
 
   // slow limit
-  label = new QLabel(tr("Slow Limit"));
-  grid->addWidget(label, row, col++);
-
   _slow = new QDoubleSpinBox;
   _slow->setRange(0.01, 0.99);
   _slow->setValue(_settings.getDouble(MAMA::_SlowLimit));
-  grid->addWidget(_slow, row++, col--);
+  form->addRow(tr("Slow Limit"), _slow);
 
   // osc check
-  _check = new QCheckBox(tr("Oscillator"));
+  _check = new QCheckBox;
   _check->setChecked(_settings.getInt(MAMA::_OSC));
-  grid->addWidget(_check, row++, col);
-  
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Oscillator"), _check);
   
   _tabs->addTab(w, tr("General"));  
 }
@@ -99,31 +83,21 @@ void MAMADialog::createMAMAPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(MAMA::_MAMAColor, d);
   QColor c(d);
 
   _mamaColor = new ColorButton(this, c);
   _mamaColor->setColorButton();
-  grid->addWidget(_mamaColor, row++, col--);
-
+  form->addRow(tr("Color"), _mamaColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -133,20 +107,13 @@ void MAMADialog::createMAMAPage ()
   _mamaPlotStyle = new QComboBox;
   _mamaPlotStyle->addItems(l);
   _mamaPlotStyle->setCurrentIndex(_mamaPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_mamaPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _mamaPlotStyle);
   
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MAMA::_MAMALabel, d);
 
   _mamaLabel = new QLineEdit(d);
-  grid->addWidget(_mamaLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _mamaLabel);
 
   _tabs->addTab(w, "MAMA");
 }
@@ -155,31 +122,21 @@ void MAMADialog::createFAMAPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(MAMA::_FAMAColor, d);
   QColor c(d);
 
   _famaColor = new ColorButton(this, c);
   _famaColor->setColorButton();
-  grid->addWidget(_famaColor, row++, col--);
-
+  form->addRow(tr("Color"), _famaColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -189,19 +146,13 @@ void MAMADialog::createFAMAPage ()
   _famaPlotStyle = new QComboBox;
   _famaPlotStyle->addItems(l);
   _famaPlotStyle->setCurrentIndex(_famaPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_famaPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _famaPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MAMA::_FAMALabel, d);
 
   _famaLabel = new QLineEdit(d);
-  grid->addWidget(_famaLabel, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _famaLabel);
 
   _tabs->addTab(w, "FAMA");
 }
@@ -210,31 +161,21 @@ void MAMADialog::createOSCPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(MAMA::_OSCColor, d);
   QColor c(d);
 
   _oscColor = new ColorButton(this, c);
   _oscColor->setColorButton();
-  grid->addWidget(_oscColor, row++, col--);
-
+  form->addRow(tr("Color"), _oscColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -244,19 +185,13 @@ void MAMADialog::createOSCPage ()
   _oscPlotStyle = new QComboBox;
   _oscPlotStyle->addItems(l);
   _oscPlotStyle->setCurrentIndex(_oscPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_oscPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _oscPlotStyle);
 
   // up label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MAMA::_OSCLabel, d);
 
   _oscLabel = new QLineEdit(d);
-  grid->addWidget(_oscLabel, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _oscLabel);
 
   _tabs->addTab(w, "OSC");
 }

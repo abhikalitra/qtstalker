@@ -24,8 +24,7 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QDir>
 
 ScriptDialog::ScriptDialog (QString name)
@@ -53,30 +52,21 @@ void ScriptDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // command
-  QLabel *label = new QLabel(tr("Command"));
-  grid->addWidget(label, row, col++);
-
   QString s = _script.getCommand();
   if (s.isEmpty())
     s = "perl";
 
   _command = new QLineEdit(s);
   _command->setToolTip(tr("Interpreter command and switches eg. perl -l -T"));
-  grid->addWidget(_command, row++, col--);
+  form->addRow(tr("Command"), _command);
   
   // file
-  label = new QLabel(tr("Script File"));
-  grid->addWidget(label, row, col++);
-
   s = _script.getFile();
   if (s.isEmpty())
   {
@@ -88,23 +78,18 @@ void ScriptDialog::createMainPage ()
 
   _file = new FileButton(this, s);
   _file->setToolTip(tr("The script location"));
-  grid->addWidget(_file, row++, col--);
+  form->addRow(tr("Script File"), _file);
 
   // check if run dialog format
   s = _script.getName();
   if (! s.isEmpty())
   {
     // comment
-    label = new QLabel(tr("Comment"));
-    grid->addWidget(label, row, col++);
-
     s = _script.getComment();
-
+    
     _comment = new QLineEdit(s);
-    grid->addWidget(_comment, row++, col--);
+    form->addRow(tr("Comment"), _comment);
   }
-
-  grid->setRowStretch(row, 1);
 
   _tabs->addTab(w, tr("Settings"));
 }

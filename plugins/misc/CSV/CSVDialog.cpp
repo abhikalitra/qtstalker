@@ -69,15 +69,10 @@ void CSVDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
   
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(10);
-  vbox->setMargin(0);
-  w->setLayout(vbox);
-
   QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(0);
+  hbox->setMargin(5);
   hbox->setSpacing(2);
-  vbox->addLayout(hbox);
+  w->setLayout(hbox);
 
   _rules = new QListWidget;
   _rules->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -181,6 +176,14 @@ void CSVDialog::saveSettings ()
 void CSVDialog::newRule ()
 {
   CSVNewDialog *dialog = new CSVNewDialog;
+  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  connect(dialog, SIGNAL(signalNew(QString)), this, SLOT(newRule2(QString)));
+  dialog->show();
+}
+
+void CSVDialog::newRule2 (QString rule)
+{
+  CSVRuleDialog *dialog = new CSVRuleDialog(rule);
   connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   dialog->show();
 }

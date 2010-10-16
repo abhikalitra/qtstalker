@@ -75,6 +75,7 @@ class Plot : public QwtPlot
     void curves (QHash<QString, Curve *> &);
     void dates (QList<QDateTime> &);
     int index ();
+//    void setYPoints ();
 
   public slots:
     virtual void clear ();

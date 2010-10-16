@@ -50,7 +50,6 @@ class YahooDialog : public QDialog
     void downloadDone ();
     void startHistory ();
     void startDetails ();
-    void allSymbolsToggled (bool);
     void selectSymbolsDialog ();
     void setSymbols (QStringList);
     void closeDialog ();

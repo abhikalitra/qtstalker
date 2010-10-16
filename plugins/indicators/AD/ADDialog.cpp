@@ -25,8 +25,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 ADDialog::ADDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -40,16 +39,10 @@ void ADDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
-
-  QLabel *label = new QLabel(tr("Method"));
-  grid->addWidget(label, row, col++);
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   AD f;
   QStringList l = f.list();
@@ -60,10 +53,8 @@ void ADDialog::createGeneralPage ()
   _method = new QComboBox;
   _method->addItems(l);
   _method->setCurrentIndex(_method->findText(d, Qt::MatchExactly));
-  grid->addWidget(_method, row++, col--);
+  form->addRow(tr("Method"), _method);
 
-  grid->setRowStretch(row, 1);
-  
   _tabs->addTab(w, tr("General"));  
 }
 
@@ -71,31 +62,21 @@ void ADDialog::createADPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(AD::_ADColor, d);
   QColor c(d);
 
   _adColor = new ColorButton(this, c);
   _adColor->setColorButton();
-  grid->addWidget(_adColor, row++, col--);
-
+  form->addRow(tr("Color"), _adColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -105,20 +86,13 @@ void ADDialog::createADPage ()
   _adPlotStyle = new QComboBox;
   _adPlotStyle->addItems(l);
   _adPlotStyle->setCurrentIndex(_adPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_adPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _adPlotStyle);
   
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(AD::_ADLabel, d);
 
   _adLabel = new QLineEdit(d);
-  grid->addWidget(_adLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _adLabel);
 
   _tabs->addTab(w, tr("AD"));
 }
@@ -127,74 +101,47 @@ void ADDialog::createOSCPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(AD::_OSCColor, d);
   QColor c(d);
 
   _oscColor = new ColorButton(this, c);
   _oscColor->setColorButton();
-  grid->addWidget(_oscColor, row++, col--);
-
+  form->addRow(tr("Color"), _oscColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
 
   _settings.getData(AD::_OSCPlot, d);
-
   _oscPlotStyle = new QComboBox;
   _oscPlotStyle->addItems(l);
   _oscPlotStyle->setCurrentIndex(_oscPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_oscPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _oscPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(AD::_OSCLabel, d);
-
   _oscLabel = new QLineEdit(d);
-  grid->addWidget(_oscLabel, row++, col--);
-
+  form->addRow(tr("Label"), _oscLabel);
 
   // fast
-  label = new QLabel(tr("Fast Period"));
-  grid->addWidget(label, row, col++);
-
   _fast = new QSpinBox;
   _fast->setRange(1, 100000);
   _fast->setValue(_settings.getInt(AD::_FastPeriod));
-  grid->addWidget(_fast, row++, col--);
-  
+  form->addRow(tr("Fast Period"), _fast);
 
   // slow
-  label = new QLabel(tr("Slow Period"));
-  grid->addWidget(label, row, col++);
-
   _slow = new QSpinBox;
   _slow->setRange(1, 100000);
   _slow->setValue(_settings.getInt(AD::_SlowPeriod));
-  grid->addWidget(_slow, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Slow Period"), _slow);
 
   _tabs->addTab(w, tr("OSC"));
 }

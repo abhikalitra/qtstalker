@@ -25,8 +25,7 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QString>
 
 ChartObjectRetracementDialog::ChartObjectRetracementDialog ()
@@ -41,77 +40,46 @@ void ChartObjectRetracementDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QColor c(Qt::red);
   _color = new ColorButton(this, c);
-  grid->addWidget(_color, row++, col--);
   _color->setColorButton();
-
+  form->addRow(tr("Color"), _color);
   
   // date
-  label = new QLabel(tr("Start Date"));
-  grid->addWidget(label, row, col++);
-
   _date = new QDateTimeEdit;
   _date->setCalendarPopup(TRUE);
-  grid->addWidget(_date, row++, col--);
+  form->addRow(tr("Start Date"), _date);
 
   // date2
-  label = new QLabel(tr("End Date"));
-  grid->addWidget(label, row, col++);
-
   _date2 = new QDateTimeEdit;
   _date2->setCalendarPopup(TRUE);
-  grid->addWidget(_date2, row++, col--);
-
+  form->addRow(tr("End Date"), _date2);
   
   // high
-  label = new QLabel(tr("High"));
-  grid->addWidget(label, row, col++);
-
   _high = new QDoubleSpinBox;
   _high->setRange(0.0, 99999999.0);
   _high->setValue(0);
-  grid->addWidget(_high, row++, col--);
-
+  form->addRow(tr("High"), _high);
 
   // low
-  label = new QLabel(tr("Low"));
-  grid->addWidget(label, row, col++);
-
   _low = new QDoubleSpinBox;
   _low->setRange(0.0, 99999999.0);
   _low->setValue(0);
-  grid->addWidget(_low, row++, col--);
-
+  form->addRow(tr("Low"), _low);
 
   // extend
-  label = new QLabel(tr("Extend"));
-  grid->addWidget(label, row, col++);
-
   _extend = new QCheckBox;
-  grid->addWidget(_extend, row++, col--);
-
+  form->addRow(tr("Extend"), _extend);
 
   // default
-  label = new QLabel(tr("Set as default"));
-  grid->addWidget(label, row, col++);
-
   _default = new QCheckBox;
-  grid->addWidget(_default, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Set as default"), _default);
 
   _tabs->addTab(w, tr("Settings"));
 }
@@ -120,68 +88,40 @@ void ChartObjectRetracementDialog::createLinePage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // line1
-  QLabel *label = new QLabel(tr("Line 1"));
-  grid->addWidget(label, row, col++);
-
   _line1 = new QDoubleSpinBox;
   _line1->setRange(0.0, 99999999.0);
-  grid->addWidget(_line1, row++, col--);
-
+  form->addRow(tr("Line 1"), _line1);
 
   // line2
-  label = new QLabel(tr("Line 2"));
-  grid->addWidget(label, row, col++);
-
   _line2 = new QDoubleSpinBox;
   _line2->setRange(0.0, 99999999.0);
-  grid->addWidget(_line2, row++, col--);
-
+  form->addRow(tr("Line 2"), _line2);
 
   // line3
-  label = new QLabel(tr("Line 3"));
-  grid->addWidget(label, row, col++);
-
   _line3 = new QDoubleSpinBox;
   _line3->setRange(0.0, 99999999.0);
-  grid->addWidget(_line3, row++, col--);
-
+  form->addRow(tr("Line 3"), _line3);
 
   // line4
-  label = new QLabel(tr("Line 4"));
-  grid->addWidget(label, row, col++);
-
   _line4 = new QDoubleSpinBox;
   _line4->setRange(0.0, 99999999.0);
-  grid->addWidget(_line4, row++, col--);
-
+  form->addRow(tr("Line 4"), _line4);
 
   // line5
-  label = new QLabel(tr("Line 5"));
-  grid->addWidget(label, row, col++);
-
   _line5 = new QDoubleSpinBox;
   _line5->setRange(0.0, 99999999.0);
-  grid->addWidget(_line5, row++, col--);
-
+  form->addRow(tr("Line 5"), _line5);
 
   // line6
-  label = new QLabel(tr("Line 6"));
-  grid->addWidget(label, row, col++);
-
   _line6 = new QDoubleSpinBox;
   _line6->setRange(0.0, 99999999.0);
-  grid->addWidget(_line6, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Line 6"), _line6);
 
   _tabs->addTab(w, tr("Levels"));
 }

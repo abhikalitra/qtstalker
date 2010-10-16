@@ -27,8 +27,7 @@
 #include "BarData.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 CORRELDialog::CORRELDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -43,30 +42,21 @@ void CORRELDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(CORREL::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -76,30 +66,21 @@ void CORRELDialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(CORREL::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
+  form->addRow(tr("Label"), _label);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _period = new QSpinBox;
   _period->setRange(1, 100000);
   _period->setValue(_settings.getInt(CORREL::_Period));
-  grid->addWidget(_period, row++, col--);
+  form->addRow(tr("Period"), _period);
 
   // input
-  label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   bd.getInputFields(l);
 
@@ -108,12 +89,9 @@ void CORRELDialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // exchange
-  label = new QLabel(tr("Index Exchange"));
-  grid->addWidget(label, row, col++);
-
   ExchangeDataBase db;
   db.getExchanges(l);
 
@@ -122,19 +100,14 @@ void CORRELDialog::createGeneralPage ()
   _exchange = new QComboBox;
   _exchange->addItems(l);
   _exchange->setCurrentIndex(_exchange->findText(d, Qt::MatchExactly));
-  grid->addWidget(_exchange, row++, col--);
+  form->addRow(tr("Index Exchange"), _exchange);
 
   // input2
-  label = new QLabel(tr("Index Symbol"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(CORREL::_Input2, d);
 
   _input2 = new QLineEdit(d);
   _input2->setToolTip(tr("Index symbol used for comparison eg. SP500"));
-  grid->addWidget(_input2, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Index Symbol"), _input2);
 
   _tabs->addTab(w, tr("General"));
 }
@@ -143,36 +116,25 @@ void CORRELDialog::createRefPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(CORREL::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
   _refColor->setColorButton();
-  grid->addWidget(_refColor, row++, col--);
+  form->addRow(tr("Color"), _refColor);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref = new QDoubleSpinBox;
   _ref->setRange(-100000, 100000);
   _ref->setValue(_settings.getDouble(CORREL::_Ref1));
-  grid->addWidget(_ref, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref);
 
   _tabs->addTab(w, tr("Ref 1"));
 }
@@ -181,36 +143,25 @@ void CORRELDialog::createRef2Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(CORREL::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
   _ref2Color->setColorButton();
-  grid->addWidget(_ref2Color, row++, col--);
+  form->addRow(tr("Color"), _ref2Color);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(-100000, 100000);
   _ref2->setValue(_settings.getDouble(CORREL::_Ref2));
-  grid->addWidget(_ref2, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref2);
 
   _tabs->addTab(w, tr("Ref 2"));
 }
@@ -219,36 +170,25 @@ void CORRELDialog::createRef3Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(CORREL::_Ref3Color, d);
   QColor c(d);
 
   _ref3Color = new ColorButton(this, c);
   _ref3Color->setColorButton();
-  grid->addWidget(_ref3Color, row++, col--);
+  form->addRow(tr("Color"), _ref3Color);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref3 = new QDoubleSpinBox;
   _ref3->setRange(-100000, 100000);
   _ref3->setValue(_settings.getDouble(CORREL::_Ref3));
-  grid->addWidget(_ref3, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref3);
 
   _tabs->addTab(w, tr("Ref 3"));
 }

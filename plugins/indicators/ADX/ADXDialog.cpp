@@ -25,8 +25,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 ADXDialog::ADXDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -42,23 +41,15 @@ void ADXDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
-
-  QLabel *label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
   _period->setValue(_settings.getInt(ADX::_Period));
-  grid->addWidget(_period, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Period"), _period);
   
   _tabs->addTab(w, tr("General"));  
 }
@@ -67,63 +58,42 @@ void ADXDialog::createMDIPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(ADX::_MDIColor, d);
   QColor c(d);
 
   _mdiColor = new ColorButton(this, c);
   _mdiColor->setColorButton();
-  grid->addWidget(_mdiColor, row++, col--);
-
+  form->addRow(tr("Color"), _mdiColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
 
   _settings.getData(ADX::_MDIPlot, d);
-
+  
   _mdiPlotStyle = new QComboBox;
   _mdiPlotStyle->addItems(l);
   _mdiPlotStyle->setCurrentIndex(_mdiPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_mdiPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _mdiPlotStyle);
   
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(ADX::_MDILabel, d);
 
   _mdiLabel = new QLineEdit(d);
-  grid->addWidget(_mdiLabel, row++, col--);
-
+  form->addRow(tr("Label"), _mdiLabel);
 
   // check
-  label = new QLabel(tr("Show"));
-  grid->addWidget(label, row, col++);
-
   _mdiShow = new QCheckBox;
   _mdiShow->setChecked(_settings.getInt(ADX::_MDICheck));
-  grid->addWidget(_mdiShow, row++, col--);
-  
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _mdiShow);
 
   _tabs->addTab(w, "-DI");
 }
@@ -132,31 +102,21 @@ void ADXDialog::createPDIPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(ADX::_PDIColor, d);
   QColor c(d);
 
   _pdiColor = new ColorButton(this, c);
   _pdiColor->setColorButton();
-  grid->addWidget(_pdiColor, row++, col--);
-
+  form->addRow(tr("Color"), _pdiColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -166,28 +126,18 @@ void ADXDialog::createPDIPage ()
   _pdiPlotStyle = new QComboBox;
   _pdiPlotStyle->addItems(l);
   _pdiPlotStyle->setCurrentIndex(_pdiPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_pdiPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _pdiPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(ADX::_PDILabel, d);
 
   _pdiLabel = new QLineEdit(d);
-  grid->addWidget(_pdiLabel, row++, col--);
-
+  form->addRow(tr("Label"), _pdiLabel);
 
   // check
-  label = new QLabel(tr("Show"));
-  grid->addWidget(label, row, col++);
-
   _pdiShow = new QCheckBox;
   _pdiShow->setChecked(_settings.getInt(ADX::_PDICheck));
-  grid->addWidget(_pdiShow, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _pdiShow);
 
   _tabs->addTab(w, "+DI");
 }
@@ -196,31 +146,21 @@ void ADXDialog::createADXPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(ADX::_ADXColor, d);
   QColor c(d);
 
   _adxColor = new ColorButton(this, c);
   _adxColor->setColorButton();
-  grid->addWidget(_adxColor, row++, col--);
-
+  form->addRow(tr("Color"), _adxColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -230,29 +170,18 @@ void ADXDialog::createADXPage ()
   _adxPlotStyle = new QComboBox;
   _adxPlotStyle->addItems(l);
   _adxPlotStyle->setCurrentIndex(_adxPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_adxPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _adxPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(ADX::_ADXLabel, d);
 
   _adxLabel = new QLineEdit(d);
-  grid->addWidget(_adxLabel, row++, col--);
-
+  form->addRow(tr("Label"), _adxLabel);
 
   // check
-  label = new QLabel(tr("Show"));
-  grid->addWidget(label, row, col++);
-
   _adxShow = new QCheckBox;
   _adxShow->setChecked(_settings.getInt(ADX::_ADXCheck));
-  grid->addWidget(_adxShow, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _adxShow);
 
   _tabs->addTab(w, "ADX");
 }
@@ -261,31 +190,21 @@ void ADXDialog::createADXRPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(ADX::_ADXRColor, d);
   QColor c(d);
 
   _adxrColor = new ColorButton(this, c);
   _adxrColor->setColorButton();
-  grid->addWidget(_adxrColor, row++, col--);
-
+  form->addRow(tr("Color"), _adxrColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -295,29 +214,18 @@ void ADXDialog::createADXRPage ()
   _adxrPlotStyle = new QComboBox;
   _adxrPlotStyle->addItems(l);
   _adxrPlotStyle->setCurrentIndex(_adxrPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_adxrPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _adxrPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(ADX::_ADXRLabel, d);
 
   _adxrLabel = new QLineEdit(d);
-  grid->addWidget(_adxrLabel, row++, col--);
-
+  form->addRow(tr("Label"), _adxrLabel);
 
   // check
-  label = new QLabel(tr("Show"));
-  grid->addWidget(label, row, col++);
-
   _adxrShow = new QCheckBox;
   _adxrShow->setChecked(_settings.getInt(ADX::_ADXRCheck));
-  grid->addWidget(_adxrShow, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _adxrShow);
 
   _tabs->addTab(w, "ADXR");
 }

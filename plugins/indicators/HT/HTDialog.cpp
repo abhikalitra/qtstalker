@@ -26,8 +26,7 @@
 #include "BarData.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 HTDialog::HTDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -41,30 +40,21 @@ void HTDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(HT::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -74,21 +64,15 @@ void HTDialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(HT::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
+  form->addRow(tr("Label"), _label);
   
   // input
-  label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   bd.getInputFields(l);
 
@@ -97,12 +81,9 @@ void HTDialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // method
-  label = new QLabel(tr("Method"));
-  grid->addWidget(label, row, col++);
-
   HT f;
   l = f.list();
 
@@ -111,9 +92,7 @@ void HTDialog::createGeneralPage ()
   _method = new QComboBox;
   _method->addItems(l);
   _method->setCurrentIndex(_method->findText(d, Qt::MatchExactly));
-  grid->addWidget(_method, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Method"), _method);
   
   _tabs->addTab(w, tr("General"));  
 }
@@ -122,43 +101,29 @@ void HTDialog::createPhasorPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // phase color
-  QLabel *label = new QLabel(tr("Phase Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(HT::_PhaseColor, d);
   QColor c(d);
 
   _phaseColor = new ColorButton(this, c);
   _phaseColor->setColorButton();
-  grid->addWidget(_phaseColor, row++, col--);
-
+  form->addRow(tr("Phase Color"), _phaseColor);
 
   // down color
-  label = new QLabel(tr("Quad Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(HT::_QuadColor, d);
   c.setNamedColor(d);
 
   _quadColor = new ColorButton(this, c);
   _quadColor->setColorButton();
-  grid->addWidget(_quadColor, row++, col--);
-
+  form->addRow(tr("Quad Color"), _quadColor);
 
   // phase plot style
-  label = new QLabel(tr("Phase Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -168,42 +133,27 @@ void HTDialog::createPhasorPage ()
   _phasePlotStyle = new QComboBox;
   _phasePlotStyle->addItems(l);
   _phasePlotStyle->setCurrentIndex(_phasePlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_phasePlotStyle, row++, col--);
-
+  form->addRow(tr("Phase Plot"), _phasePlotStyle);
   
   // quad plot style
-  label = new QLabel(tr("Quad Plot"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(HT::_QuadPlot, d);
 
   _quadPlotStyle = new QComboBox;
   _quadPlotStyle->addItems(l);
   _quadPlotStyle->setCurrentIndex(_quadPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_quadPlotStyle, row++, col--);
-
+  form->addRow(tr("Quad Plot"), _quadPlotStyle);
 
   // phase label
-  label = new QLabel(tr("Phase Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(HT::_PhaseLabel, d);
 
   _phaseLabel = new QLineEdit(d);
-  grid->addWidget(_phaseLabel, row++, col--);
-
+  form->addRow(tr("Phase Label"), _phaseLabel);
 
   // quad label
-  label = new QLabel(tr("Quad Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(HT::_QuadLabel, d);
 
   _quadLabel = new QLineEdit(d);
-  grid->addWidget(_quadLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Quad Label"), _quadLabel);
 
   _tabs->addTab(w, tr("Phasor"));
 }
@@ -212,43 +162,29 @@ void HTDialog::createSinePage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // sine color
-  QLabel *label = new QLabel(tr("Sine Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(HT::_SineColor, d);
   QColor c(d);
 
   _sineColor = new ColorButton(this, c);
   _sineColor->setColorButton();
-  grid->addWidget(_sineColor, row++, col--);
-
+  form->addRow(tr("Sine Color"), _sineColor);
 
   // lead color
-  label = new QLabel(tr("Lead Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(HT::_LeadColor, d);
   c.setNamedColor(d);
 
   _leadColor = new ColorButton(this, c);
   _leadColor->setColorButton();
-  grid->addWidget(_leadColor, row++, col--);
-
+  form->addRow(tr("Lead Color"), _leadColor);
 
   // sine plot style
-  label = new QLabel(tr("Sine Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -258,42 +194,27 @@ void HTDialog::createSinePage ()
   _sinePlotStyle = new QComboBox;
   _sinePlotStyle->addItems(l);
   _sinePlotStyle->setCurrentIndex(_sinePlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_sinePlotStyle, row++, col--);
-
+  form->addRow(tr("Sine Plot"), _sinePlotStyle);
 
   // lead plot style
-  label = new QLabel(tr("Lead Plot"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(HT::_LeadPlot, d);
 
   _leadPlotStyle = new QComboBox;
   _leadPlotStyle->addItems(l);
   _leadPlotStyle->setCurrentIndex(_leadPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_leadPlotStyle, row++, col--);
-
+  form->addRow(tr("Lead Plot"), _leadPlotStyle);
 
   // sine label
-  label = new QLabel(tr("Sine Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(HT::_SineLabel, d);
 
   _sineLabel = new QLineEdit(d);
-  grid->addWidget(_sineLabel, row++, col--);
-
+  form->addRow(tr("Sine Label"), _sineLabel);
 
   // lead label
-  label = new QLabel(tr("Lead Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(HT::_LeadLabel, d);
 
   _leadLabel = new QLineEdit(d);
-  grid->addWidget(_leadLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Lead Label"), _leadLabel);
 
   _tabs->addTab(w, tr("Sine"));
 }

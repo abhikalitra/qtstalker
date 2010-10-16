@@ -24,7 +24,7 @@
 #include "Config.h"
 
 #include <QtDebug>
-#include <QLabel>
+#include <QFormLayout>
 #include <QString>
 #include <QIcon>
 
@@ -41,35 +41,20 @@ void ScriptLaunchButtonsDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  w->setLayout(vbox);
-  
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(2, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // rows
-  QLabel *label = new QLabel(tr("Rows"));
-  grid->addWidget(label, row, col++);
-
   _rows = new QSpinBox;
   _rows->setRange(1, 5);
-  grid->addWidget(_rows, row++, col--);
+  form->addRow(tr("Rows"), _rows);
 
   // cols
-  label = new QLabel(tr("Cols"));
-  grid->addWidget(label, row, col++);
-
   _cols = new QSpinBox;
   _cols->setRange(1, 10);
-  grid->addWidget(_cols, row++, col--);
-
-  label = new QLabel(tr("Changes effective next startup"));
-  vbox->addWidget(label);
+  form->addRow(tr("Cols"), _cols);
 
   _tabs->addTab(w, tr("Settings"));
 }

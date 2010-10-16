@@ -25,8 +25,7 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QString>
 
 ChartObjectTLineDialog::ChartObjectTLineDialog ()
@@ -40,76 +39,44 @@ void ChartObjectTLineDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // date
-  QLabel *label = new QLabel(tr("Start Date"));
-  grid->addWidget(label, row, col++);
-
   _date = new QDateTimeEdit;
   _date->setCalendarPopup(TRUE);
-  grid->addWidget(_date, row++, col--);
-
+  form->addRow(tr("Start Date"), _date);
 
   // date2
-  label = new QLabel(tr("End Date"));
-  grid->addWidget(label, row, col++);
-
   _date2 = new QDateTimeEdit;
   _date2->setCalendarPopup(TRUE);
-  grid->addWidget(_date2, row++, col--);
-
+  form->addRow(tr("End Date"), _date2);
 
   // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QColor c(Qt::red);
   _color = new ColorButton(this, c);
-  grid->addWidget(_color, row++, col--);
   _color->setColorButton();
-
+  form->addRow(tr("Color"), _color);
   
   // price
-  label = new QLabel(tr("Start Price"));
-  grid->addWidget(label, row, col++);
-
   _price = new QDoubleSpinBox;
   _price->setRange(0.0, 99999999.0);
-  grid->addWidget(_price, row++, col--);
-
+  form->addRow(tr("Start Price"), _price);
 
   // price2
-  label = new QLabel(tr("End Price"));
-  grid->addWidget(label, row, col++);
-
   _price2 = new QDoubleSpinBox;
   _price2->setRange(0.0, 99999999.0);
-  grid->addWidget(_price2, row++, col--);
-
+  form->addRow(tr("End Price"), _price2);
 
   // extend
-  label = new QLabel(tr("Extend"));
-  grid->addWidget(label, row, col++);
-
   _extend = new QCheckBox;
-  grid->addWidget(_extend, row++, col--);
-
+  form->addRow(tr("Extend"), _extend);
 
   // default
-  label = new QLabel(tr("Set as default"));
-  grid->addWidget(label, row, col++);
-
   _default = new QCheckBox;
-  grid->addWidget(_default, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Set as default"), _default);
 
   _tabs->addTab(w, tr("Settings"));
 }

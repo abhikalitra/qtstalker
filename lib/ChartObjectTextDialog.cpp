@@ -25,8 +25,7 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QString>
 
 ChartObjectTextDialog::ChartObjectTextDialog ()
@@ -40,68 +39,40 @@ void ChartObjectTextDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // date
-  QLabel *label = new QLabel(tr("Date"));
-  grid->addWidget(label, row, col++);
-
   _date = new QDateTimeEdit;
   _date->setCalendarPopup(TRUE);
-  grid->addWidget(_date, row++, col--);
-
+  form->addRow(tr("Date"), _date);
 
   // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QColor c(Qt::red);
   _color = new ColorButton(this, c);
-  grid->addWidget(_color, row++, col--);
   _color->setColorButton();
-
+  form->addRow(tr("Color"), _color);
 
   // font
-  label = new QLabel(tr("Font"));
-  grid->addWidget(label, row, col++);
-
   QFont f;
   _font = new FontButton(this, f);
-  grid->addWidget(_font, row++, col--);
   _font->setFontButton();
-
+  form->addRow(tr("Font"), _font);
   
   // price
-  label = new QLabel(tr("Price"));
-  grid->addWidget(label, row, col++);
-
   _price = new QDoubleSpinBox;
   _price->setRange(0.0, 99999999.0);
-  grid->addWidget(_price, row++, col--);
-
+  form->addRow(tr("Price"), _price);
 
   // label
-  label = new QLabel(tr("Text"));
-  grid->addWidget(label, row, col++);
-
   _label = new QLineEdit;
-  grid->addWidget(_label, row++, col--);
-
+  form->addRow(tr("Text"), _label);
 
   // default
-  label = new QLabel(tr("Set as default"));
-  grid->addWidget(label, row, col++);
-
   _default = new QCheckBox;
-  grid->addWidget(_default, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Set as default"), _default);
 
   _tabs->addTab(w, tr("Settings"));
 }

@@ -27,8 +27,7 @@
 #include "BarData.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 MACDDialog::MACDDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -43,18 +42,12 @@ void MACDDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // input
-  QLabel *label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   QStringList l;
   bd.getInputFields(l);
@@ -65,30 +58,21 @@ void MACDDialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // fast
-  label = new QLabel(tr("Fast Period"));
-  grid->addWidget(label, row, col++);
-
   _fast = new QSpinBox;
   _fast->setRange(2, 100000);
   _fast->setValue(_settings.getInt(MACD::_FastPeriod));
-  grid->addWidget(_fast, row++, col--);
+  form->addRow(tr("Fast Period"), _fast);
 
   // slow
-  label = new QLabel(tr("Slow Period"));
-  grid->addWidget(label, row, col++);
-
   _slow = new QSpinBox;
   _slow->setRange(2, 100000);
   _slow->setValue(_settings.getInt(MACD::_SlowPeriod));
-  grid->addWidget(_slow, row++, col--);
+  form->addRow(tr("Slow Period"), _slow);
 
   // fast ma
-  label = new QLabel(tr("Fast MA"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   l = mau.list();
 
@@ -97,20 +81,15 @@ void MACDDialog::createGeneralPage ()
   _fastMAType = new QComboBox;
   _fastMAType->addItems(l);
   _fastMAType->setCurrentIndex(_fastMAType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_fastMAType, row++, col--);
+  form->addRow(tr("Fast MA"), _fastMAType);
 
   // slow ma
-  label = new QLabel(tr("Slow MA"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MACD::_SlowMA, d);
 
   _slowMAType = new QComboBox;
   _slowMAType->addItems(l);
   _slowMAType->setCurrentIndex(_slowMAType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_slowMAType, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Slow MA"), _slowMAType);
 
   _tabs->addTab(w, tr("General"));
 }
@@ -119,31 +98,21 @@ void MACDDialog::createMACDPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(MACD::_MACDColor, d);
   QColor c(d);
 
   _macdColor = new ColorButton(this, c);
   _macdColor->setColorButton();
-  grid->addWidget(_macdColor, row++, col--);
-
+  form->addRow(tr("Color"), _macdColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -153,19 +122,13 @@ void MACDDialog::createMACDPage ()
   _macdPlotStyle = new QComboBox;
   _macdPlotStyle->addItems(l);
   _macdPlotStyle->setCurrentIndex(_macdPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_macdPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _macdPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MACD::_MACDLabel, d);
 
   _macdLabel = new QLineEdit(d);
-  grid->addWidget(_macdLabel, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _macdLabel);
 
   _tabs->addTab(w, tr("MACD"));
 }
@@ -174,18 +137,12 @@ void MACDDialog::createSignalPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // ma type
-  QLabel *label = new QLabel(tr("MA Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA f;
   QStringList l = f.list();
 
@@ -195,33 +152,23 @@ void MACDDialog::createSignalPage ()
   _signalMAType = new QComboBox;
   _signalMAType->addItems(l);
   _signalMAType->setCurrentIndex(_signalMAType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_signalMAType, row++, col--);
+  form->addRow(tr("MA Type"), _signalMAType);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _signalPeriod = new QSpinBox;
   _signalPeriod->setRange(1, 100000);
   _signalPeriod->setValue(_settings.getInt(MACD::_SignalPeriod));
-  grid->addWidget(_signalPeriod, row++, col--);
+  form->addRow(tr("Period"), _signalPeriod);
 
   // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MACD::_SignalColor, d);
   QColor c(d);
 
   _signalColor = new ColorButton(this, c);
   _signalColor->setColorButton();
-  grid->addWidget(_signalColor, row++, col--);
-
+  form->addRow(tr("Color"), _signalColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   fac.list(l, TRUE);
 
@@ -230,20 +177,13 @@ void MACDDialog::createSignalPage ()
   _signalPlotStyle = new QComboBox;
   _signalPlotStyle->addItems(l);
   _signalPlotStyle->setCurrentIndex(_signalPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_signalPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _signalPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MACD::_SignalLabel, d);
 
   _signalLabel = new QLineEdit(d);
-  grid->addWidget(_signalLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _signalLabel);
 
   _tabs->addTab(w, tr("Signal"));
 }
@@ -252,31 +192,21 @@ void MACDDialog::createHistPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(MACD::_HistColor, d);
   QColor c(d);
 
   _histColor = new ColorButton(this, c);
   _histColor->setColorButton();
-  grid->addWidget(_histColor, row++, col--);
-
+  form->addRow(tr("Color"), _histColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -286,20 +216,13 @@ void MACDDialog::createHistPage ()
   _histPlotStyle = new QComboBox;
   _histPlotStyle->addItems(l);
   _histPlotStyle->setCurrentIndex(_histPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_histPlotStyle, row++, col--);
-
+  form->addRow(tr("Plot"), _histPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(MACD::_HistLabel, d);
 
   _histLabel = new QLineEdit(d);
-  grid->addWidget(_histLabel, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _histLabel);
 
   _tabs->addTab(w, tr("Histogram"));
 }

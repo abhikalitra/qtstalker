@@ -39,140 +39,141 @@ AlertThread::AlertThread (QObject *p, AlertItem alert) : QThread (p)
 
 void AlertThread::run ()
 {
-  QStringList symbols = _alert.symbols();
-
-  QStringList symbolHits;
-  int symbolLoop = 0;
-  for (; symbolLoop < symbols.count(); symbolLoop++)
-  {
-    BarData bd;
-    bd.setKey(symbols.at(symbolLoop));
+  BarData bd;
+  bd.setKey(_alert.symbol());
     
-    QStringList tl;
-    tl << "Quotes" << "Date" << bd.getExchange() << bd.getSymbol();
-    QString s;
-    bd.barLengthText((BarData::BarLength) _alert.barLength(), s);
-    tl << s << "0" << "0" << QString::number(_alert.bars());
-    QString command = tl.join(",") + "\n";
+  QStringList tl;
+  tl << "Quotes" << "Date" << bd.getExchange() << bd.getSymbol();
+  QString s;
+  bd.barLengthText((BarData::BarLength) _alert.barLength(), s);
+  tl << s << "0" << "0" << QString::number(_alert.bars());
+  QString command = tl.join(",") + "\n";
       
-    QuoteServerRequest qsr;
-    if (qsr.run(command))
+  QuoteServerRequest qsr;
+  if (qsr.run(command))
+  {
+    qDebug() << "AlertThread::run: qsr error" << _alert.indicator();
+    quit();
+    return;
+  }
+
+  bd.setBarLength((BarData::BarLength) _alert.barLength());
+  bd.setBars(qsr.data());
+ 
+  Indicator i;
+  i.setSettings(_alert.settings());
+
+  IndicatorPluginFactory fac;
+  IndicatorPlugin *plug = fac.plugin(_alert.indicator());
+  if (! plug)
+  {
+    qDebug() << "AlertThread::run: no plugin" << _alert.indicator();
+    quit();
+    return;
+  }
+
+  if (plug->getIndicator(i, bd))
+  {
+    qDebug() << "AlertThread::run: indicator error" << _alert.indicator();
+    quit();
+    return;
+  }
+
+  IndicatorPlotRules rules;
+  if (rules.createRules(i, _alert.plots(), bd))
+  {
+    quit();
+    return;
+  }
+
+  if (! rules.count())
+  {
+    quit();
+    return;
+  }
+
+  int loop = 0;
+  int count = 0;
+  for (; loop < rules.count(); loop++)
+  {
+    IndicatorPlotRule *rule = rules.getRule(loop);
+    Curve *curve = i.line(rule->name());
+    if (! curve)
     {
-      qDebug() << "AlertThread::run: qsr error" << _alert.indicator();
+      qDebug() << "AlertThread::run: no" << rule->name();
       continue;
     }
 
-    bd.setBarLength((BarData::BarLength) _alert.barLength());
-    bd.setBars(qsr.data());
-  
-    Indicator i;
-    i.setSettings(_alert.settings());
-
-    IndicatorPluginFactory fac;
-    IndicatorPlugin *plug = fac.plugin(_alert.indicator());
-    if (! plug)
+    double value = 0;
+    int sindex, eindex;
+    curve->keyRange(sindex, eindex);
+    CurveBar *bar = curve->bar(eindex);
+    if (! bar)
     {
-      qDebug() << "AlertThread::run: no plugin" << _alert.indicator();
+      qDebug() << "AlertThread::run: no bar" << rule->name();
       continue;
     }
+    value = bar->data();
 
-    if (plug->getIndicator(i, bd))
+    double value2 = 0;
+    curve = i.line(rule->value());
+    if (curve)
     {
-      qDebug() << "AlertThread::run: indicator error" << _alert.indicator();
-      continue;
-    }
-
-    IndicatorPlotRules rules;
-    if (rules.createRules(i, _alert.plots(), bd))
-      continue;
-
-    if (! rules.count())
-      continue;
-
-    int loop = 0;
-    int count = 0;
-    for (; loop < rules.count(); loop++)
-    {
-      IndicatorPlotRule *rule = rules.getRule(loop);
-
-      Curve *curve = i.line(rule->name());
-      if (! curve)
-      {
-        qDebug() << "AlertThread::run: no" << rule->name();
-        continue;
-      }
-
-      double value = 0;
-      int sindex, eindex;
       curve->keyRange(sindex, eindex);
-      CurveBar *bar = curve->bar(eindex);
+      bar = curve->bar(eindex);
       if (! bar)
       {
-        qDebug() << "AlertThread::run: no bar" << rule->name();
+        qDebug() << "AlertThread::run: no bar" << rule->value();
         continue;
       }
-      value = bar->data();
-
-      double value2 = 0;
-      curve = i.line(rule->value());
-      if (curve)
+      value2 = bar->data();
+    }
+    else
+    {
+      bool ok;
+      value2 = rule->value().toDouble(&ok);
+      if (! ok)
       {
-        curve->keyRange(sindex, eindex);
-        bar = curve->bar(eindex);
-        if (! bar)
-        {
-          qDebug() << "AlertThread::run: no bar" << rule->value();
-          continue;
-        }
-        value2 = bar->data();
-      }
-      else
-      {
-        bool ok;
-        value2 = rule->value().toDouble(&ok);
-        if (! ok)
-        {
-          qDebug() << "AlertThread::run: invalid value" << rule->name();
-          continue;
-        }
-      }
-
-      switch ((Operator::Type) rule->op())
-      {
-        case Operator::_LessThan:
-          if (value < value2)
-            count++;
-          break;
-        case Operator::_LessThanEqual:
-          if (value <= value2)
-            count++;
-          break;
-        case Operator::_Equal:
-          if (value == value2)
-            count++;
-          break;
-        case Operator::_GreaterThanEqual:
-          if (value >= value2)
-            count++;
-          break;
-        case Operator::_GreaterThan:
-          if (value > value2)
-            count++;
-          break;
-        default:
-          break;
+        qDebug() << "AlertThread::run: invalid value" << rule->name();
+        continue;
       }
     }
 
-    if (count == rules.count())
+    switch ((Operator::Type) rule->op())
     {
-      _alert.setStatus(AlertItem::_Notify);
-      symbolHits << symbols.at(symbolLoop);
+      case Operator::_LessThan:
+        if (value < value2)
+          count++;
+        break;
+      case Operator::_LessThanEqual:
+        if (value <= value2)
+          count++;
+        break;
+      case Operator::_Equal:
+        if (value == value2)
+          count++;
+        break;
+      case Operator::_GreaterThanEqual:
+        if (value >= value2)
+          count++;
+        break;
+      case Operator::_GreaterThan:
+        if (value > value2)
+          count++;
+        break;
+      default:
+        break;
     }
   }
 
-  _alert.setSymbolHits(symbolHits);
-  
+  _alert.setLastUpdate(QDateTime::currentDateTime());
+
+  if (count == rules.count())
+  {
+    _alert.setStatus(AlertItem::_Notify);
+    _alert.setHitDate(QDateTime::currentDateTime());
+  }
+
   emit signalDone(_alert);
 }
 

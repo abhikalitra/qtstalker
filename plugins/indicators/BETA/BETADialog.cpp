@@ -27,8 +27,7 @@
 #include "BarData.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 BETADialog::BETADialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -40,30 +39,21 @@ void BETADialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(BETA::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -73,30 +63,21 @@ void BETADialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(BETA::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
+  form->addRow(tr("Label"), _label);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _period = new QSpinBox;
   _period->setRange(1, 100000);
   _period->setValue(_settings.getInt(BETA::_Period));
-  grid->addWidget(_period, row++, col--);
+  form->addRow(tr("Period"), _period);
 
   // input
-  label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   bd.getInputFields(l);
 
@@ -105,12 +86,9 @@ void BETADialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // exchange
-  label = new QLabel(tr("Index Exchange"));
-  grid->addWidget(label, row, col++);
-
   ExchangeDataBase db;
   db.getExchanges(l);
 
@@ -119,20 +97,14 @@ void BETADialog::createGeneralPage ()
   _exchange = new QComboBox;
   _exchange->addItems(l);
   _exchange->setCurrentIndex(_exchange->findText(d, Qt::MatchExactly));
-  grid->addWidget(_exchange, row++, col--);
+  form->addRow(tr("Index Exchange"), _exchange);
 
   // input2
-  label = new QLabel(tr("Index Symbol"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(BETA::_Index, d);
 
   _input2 = new QLineEdit(d);
   _input2->setToolTip(tr("Index symbol used for comparison eg. SP500"));
-  grid->addWidget(_input2, row++, col--);
-
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Index Symbol"), _input2);
 
   _tabs->addTab(w, tr("General"));
 }

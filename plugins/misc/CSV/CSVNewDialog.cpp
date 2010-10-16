@@ -22,7 +22,6 @@
 #include "CSVNewDialog.h"
 #include "Globals.h"
 #include "CSVDataBase.h"
-#include "CSVRule.h"
 
 #include <QtDebug>
 #include <QLineEdit>
@@ -51,19 +50,11 @@ void CSVNewDialog::done ()
     return;
   }
 
-  CSVDataBase db;
-  CSVRule rule;
-  rule.setName(name);
-
-  db.transaction();
-  db.setRule(rule);
-  db.commit();
-  
-  emit signalNew();
-
   QStringList ml;
   ml << name << tr("rule created");
   emit signalMessage(ml.join(" "));
   
+  emit signalNew(name);
+
   accept();
 }

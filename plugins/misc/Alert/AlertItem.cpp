@@ -37,24 +37,14 @@ AlertItem::AlertItem ()
   _bars = 0;
 }
 
-void AlertItem::setSymbols (QStringList d)
+void AlertItem::setSymbol (QString d)
 {
-  _symbols = d;
+  _symbol = d;
 }
 
-QStringList & AlertItem::symbols ()
+QString & AlertItem::symbol ()
 {
-  return _symbols;
-}
-
-void AlertItem::setSymbolHits (QStringList d)
-{
-  _symbolHits = d;
-}
-
-QStringList & AlertItem::symbolHits ()
-{
-  return _symbolHits;
+  return _symbol;
 }
 
 void AlertItem::setSettings (Setting d)
@@ -170,5 +160,25 @@ void AlertItem::setBars (int d)
 int AlertItem::bars ()
 {
   return _bars;
+}
+
+void AlertItem::setLastUpdate (QDateTime d)
+{
+  _lastDate = d;
+}
+
+QDateTime AlertItem::lastUpdate ()
+{
+  return _lastDate;
+}
+
+void AlertItem::setHitDate (QDateTime d)
+{
+  _hitDate = d;
+}
+
+QDateTime AlertItem::hitDate ()
+{
+  return _hitDate;
 }
 

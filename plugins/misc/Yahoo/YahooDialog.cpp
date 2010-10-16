@@ -29,9 +29,10 @@
 #include "../pics/quotes.xpm"
 
 #include <QLayout>
-#include <QLabel>
 #include <QDialogButtonBox>
 #include <QDebug>
+#include <QFormLayout>
+#include <QGroupBox>
 
 YahooDialog::YahooDialog ()
 {
@@ -65,63 +66,52 @@ void YahooDialog::createMainPage ()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(5);
-  vbox->setSpacing(2);
+  vbox->setSpacing(10);
   w->setLayout(vbox);
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(2, 1);
-  vbox->addLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setMargin(0);
+  form->setSpacing(2);
+  vbox->addLayout(form);
 
   // start date parm
-  QLabel *label = new QLabel(tr("Start Date"));
-  grid->addWidget(label, row, col++);
-
   _sdate = new QDateTimeEdit(QDate::currentDate().addDays(-1));
   _sdate->setCalendarPopup(TRUE);
   _sdate->setMaximumDate(QDate::currentDate());
   _sdate->setDisplayFormat("yyyy.MM.dd");
-  grid->addWidget(_sdate, row++, col--);
+  form->addRow(tr("Start Date"), _sdate);
 
   // end date parm
-  label = new QLabel(tr("End Date"));
-  grid->addWidget(label, row, col++);
-  
   _edate = new QDateTimeEdit(QDate::currentDate());
   _edate->setCalendarPopup(TRUE);
   _edate->setMaximumDate(QDate::currentDate());
   _edate->setDisplayFormat("yyyy.MM.dd");
-  grid->addWidget(_edate, row++, col--);
+  form->addRow(tr("End Date"), _edate);
 
-  // symbols selection area
-  _allSymbols = new QCheckBox;
-  _allSymbols->setText(tr("Select All Symbols"));
-  connect(_allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
-  grid->addWidget(_allSymbols, row, col++);
-
+  // symbols select
   _selectSymbolsButton = new QPushButton;
   _selectSymbolsButton->setText(tr("Symbols..."));
   connect(_selectSymbolsButton, SIGNAL(clicked()), this, SLOT(selectSymbolsDialog()));
-  grid->addWidget(_selectSymbolsButton, row++, col--);
+  form->addRow(tr("Select Symbols"), _selectSymbolsButton);
+
+  // all symbols
+  _allSymbols = new QCheckBox;
+  form->addRow(tr("Select All Symbols"), _allSymbols);
 
   // adjustment
   _adjustment = new QCheckBox;
-  _adjustment->setText(tr("Adjust for splits"));
   _adjustment->setToolTip(tr("Uses the yahoo adjusted close instead of the actual close"));
-  grid->addWidget(_adjustment, row++, col);
+  form->addRow(tr("Adjust for splits"), _adjustment);
 
   // message log
-  QTabWidget *tab = new QTabWidget;
-  vbox->addWidget(tab);
-
-  QWidget *w2 = new QWidget;
+  QGroupBox *gbox = new QGroupBox;
+  gbox->setTitle(tr("Log"));
+  vbox->addWidget(gbox);
 
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
-  w2->setLayout(hbox);
+  hbox->setMargin(5);
+  gbox->setLayout(hbox);
 
   _log = new QTextEdit;
   _log->setReadOnly(TRUE);
@@ -155,8 +145,6 @@ void YahooDialog::createMainPage ()
   bbox->addWidget(_cancelButton);
 
   bbox->addStretch();
-
-  tab->addTab(w2, tr("Log"));
 
   _tabs->addTab(w, tr("Yahoo"));
 }
@@ -282,14 +270,6 @@ void YahooDialog::startDetails ()
   connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
   connect(this, SIGNAL(signalStop()), thread, SLOT(stop()));
   thread->start();
-}
-
-void YahooDialog::allSymbolsToggled (bool status)
-{
-  if (status)
-    _selectSymbolsButton->setEnabled(FALSE);
-  else
-    _selectSymbolsButton->setEnabled(TRUE);
 }
 
 void YahooDialog::selectSymbolsDialog ()
