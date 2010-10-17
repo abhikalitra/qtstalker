@@ -26,8 +26,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 ULTOSCDialog::ULTOSCDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -42,30 +41,21 @@ void ULTOSCDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(ULTOSC::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -75,45 +65,31 @@ void ULTOSCDialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(ULTOSC::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
+  form->addRow(tr("Label"), _label);
 
   // short period
-  label = new QLabel(tr("Short Period"));
-  grid->addWidget(label, row, col++);
-
   _speriod = new QSpinBox;
   _speriod->setRange(1, 100000);
   _speriod->setValue(_settings.getInt(ULTOSC::_ShortPeriod));
-  grid->addWidget(_speriod, row++, col--);
+  form->addRow(tr("Short Period"), _speriod);
 
   // med period
-  label = new QLabel(tr("Medium Period"));
-  grid->addWidget(label, row, col++);
-
   _mperiod = new QSpinBox;
   _mperiod->setRange(1, 100000);
   _mperiod->setValue(_settings.getInt(ULTOSC::_MidPeriod));
-  grid->addWidget(_mperiod, row++, col--);
+  form->addRow(tr("Medium Period"), _mperiod);
 
   // long period
-  label = new QLabel(tr("Long Period"));
-  grid->addWidget(label, row, col++);
-
   _lperiod = new QSpinBox;
   _lperiod->setRange(1, 100000);
   _lperiod->setValue(_settings.getInt(ULTOSC::_LongPeriod));
-  grid->addWidget(_lperiod, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Long Period"), _lperiod);
 
   _tabs->addTab(w, tr("General"));
 }
@@ -122,36 +98,25 @@ void ULTOSCDialog::createRefPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(ULTOSC::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
   _refColor->setColorButton();
-  grid->addWidget(_refColor, row++, col--);
+  form->addRow(tr("Color"), _refColor);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref = new QDoubleSpinBox;
   _ref->setRange(0, 100);
   _ref->setValue(_settings.getDouble(ULTOSC::_Ref1));
-  grid->addWidget(_ref, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref);
 
   _tabs->addTab(w, tr("Ref 1"));
 }
@@ -160,36 +125,25 @@ void ULTOSCDialog::createRef2Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(ULTOSC::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
   _ref2Color->setColorButton();
-  grid->addWidget(_ref2Color, row++, col--);
+  form->addRow(tr("Color"), _ref2Color);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(0, 100);
   _ref2->setValue(_settings.getDouble(ULTOSC::_Ref2));
-  grid->addWidget(_ref2, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref2);
 
   _tabs->addTab(w, tr("Ref 2"));
 }
@@ -198,36 +152,25 @@ void ULTOSCDialog::createRef3Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(ULTOSC::_Ref3Color, d);
   QColor c(d);
 
   _ref3Color = new ColorButton(this, c);
   _ref3Color->setColorButton();
-  grid->addWidget(_ref3Color, row++, col--);
+  form->addRow(tr("Color"), _ref3Color);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref3 = new QDoubleSpinBox;
   _ref3->setRange(0, 100);
   _ref3->setValue(_settings.getDouble(ULTOSC::_Ref3));
-  grid->addWidget(_ref3, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref3);
 
   _tabs->addTab(w, tr("Ref 3"));
 }

@@ -34,30 +34,30 @@ void TesterStops::setSettings (TesterSettings &set)
   _settings = set;
 }
 
-int TesterStops::checkStops (QList<TesterTrade *> &trades, BarData &bars, int index)
+int TesterStops::checkStops (QList<TesterTrade *> &trades, int tindex, BarData &bars, int index)
 {
   _triggered = 0;
   
-  _triggered = maximumLossStop(trades, bars, index);
+  _triggered = maximumLossStop(trades, tindex, bars, index);
   if (_triggered)
     return _triggered;
 
-  _triggered = profitTargetStop(trades, bars, index);
+  _triggered = profitTargetStop(trades, tindex, bars, index);
   if (_triggered)
     return _triggered;
 
-  _triggered = trailingStop(trades, bars, index);
+  _triggered = trailingStop(trades, tindex, bars, index);
   if (_triggered)
     return _triggered;
 
-  _triggered = barsStop(trades, index);
+  _triggered = barsStop(trades, tindex, index);
   if (_triggered)
     return _triggered;
 
   return _triggered;
 }
 
-int TesterStops::maximumLossStop (QList<TesterTrade *> &trades, BarData &bars, int index)
+int TesterStops::maximumLossStop (QList<TesterTrade *> &trades, int tindex, BarData &bars, int index)
 {
   if (! _settings.maximumLossStop())
     return TesterSignals::_None;
@@ -65,7 +65,7 @@ int TesterStops::maximumLossStop (QList<TesterTrade *> &trades, BarData &bars, i
   if (! trades.count())
     return TesterSignals::_None;
   
-  TesterTrade *t = trades.at(trades.count() - 1);
+  TesterTrade *t = trades.at(tindex);
 
   Bar bar = bars.getBar(index);
   double price = bar.getData((Bar::BarField) _settings.maximumLossExit());
@@ -104,7 +104,7 @@ int TesterStops::maximumLossStop (QList<TesterTrade *> &trades, BarData &bars, i
   return TesterSignals::_None;
 }
 
-int TesterStops::profitTargetStop (QList<TesterTrade *> &trades, BarData &bars, int index)
+int TesterStops::profitTargetStop (QList<TesterTrade *> &trades, int tindex, BarData &bars, int index)
 {
   if (! _settings.profitTargetStop())
     return TesterSignals::_None;
@@ -112,7 +112,7 @@ int TesterStops::profitTargetStop (QList<TesterTrade *> &trades, BarData &bars, 
   if (! trades.count())
     return TesterSignals::_None;
 
-  TesterTrade *t = trades.at(trades.count() - 1);
+  TesterTrade *t = trades.at(tindex);
   
   Bar bar = bars.getBar(index);
   double price = bar.getData((Bar::BarField) _settings.profitTargetExit());
@@ -151,7 +151,7 @@ int TesterStops::profitTargetStop (QList<TesterTrade *> &trades, BarData &bars, 
   return TesterSignals::_None;
 }
 
-int TesterStops::trailingStop (QList<TesterTrade *> &trades, BarData &bars, int index)
+int TesterStops::trailingStop (QList<TesterTrade *> &trades, int tindex, BarData &bars, int index)
 {
   if (! _settings.trailingStop())
     return TesterSignals::_None;
@@ -159,7 +159,7 @@ int TesterStops::trailingStop (QList<TesterTrade *> &trades, BarData &bars, int 
   if (! trades.count())
     return TesterSignals::_None;
 
-  TesterTrade *t = trades.at(trades.count() - 1);
+  TesterTrade *t = trades.at(tindex);
 
   Bar bar = bars.getBar(index);
   double price = bar.getData((Bar::BarField) _settings.trailingExit());
@@ -198,7 +198,7 @@ int TesterStops::trailingStop (QList<TesterTrade *> &trades, BarData &bars, int 
   return TesterSignals::_None;
 }
 
-int TesterStops::barsStop (QList<TesterTrade *> &trades, int index)
+int TesterStops::barsStop (QList<TesterTrade *> &trades, int tindex, int index)
 {
   if (! _settings.barsStop())
     return TesterSignals::_None;
@@ -206,7 +206,7 @@ int TesterStops::barsStop (QList<TesterTrade *> &trades, int index)
   if (! trades.count())
     return TesterSignals::_None;
 
-  TesterTrade *t = trades.at(trades.count() - 1);
+  TesterTrade *t = trades.at(tindex);
   int bars = index - t->enterIndex();
   if (bars >= _settings.barsStopValue())
     return TesterSignals::_BarsStop;

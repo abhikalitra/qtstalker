@@ -27,8 +27,7 @@
 #include "BarData.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 PODialog::PODialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -40,18 +39,12 @@ void PODialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // method
-  QLabel *label = new QLabel(tr("Method"));
-  grid->addWidget(label, row, col++);
-
   PO f;
   QStringList l = f.list();
 
@@ -61,12 +54,9 @@ void PODialog::createGeneralPage ()
   _method = new QComboBox;
   _method->addItems(l);
   _method->setCurrentIndex(_method->findText(d, Qt::MatchExactly));
-  grid->addWidget(_method, row++, col--);
+  form->addRow(tr("Method"), _method);
   
   // input
-  label = new QLabel(tr("Input"));
-  grid->addWidget(label, row, col++);
-
   BarData bd;
   bd.getInputFields(l);
 
@@ -75,30 +65,21 @@ void PODialog::createGeneralPage ()
   _input = new QComboBox;
   _input->addItems(l);
   _input->setCurrentIndex(_input->findText(d, Qt::MatchExactly));
-  grid->addWidget(_input, row++, col--);
+  form->addRow(tr("Input"), _input);
 
   // fast
-  label = new QLabel(tr("Fast Period"));
-  grid->addWidget(label, row, col++);
-
   _fast = new QSpinBox;
   _fast->setRange(2, 100000);
   _fast->setValue(_settings.getInt(PO::_FastPeriod));
-  grid->addWidget(_fast, row++, col--);
+  form->addRow(tr("Fast Period"), _fast);
 
   // slow
-  label = new QLabel(tr("Slow Period"));
-  grid->addWidget(label, row, col++);
-
   _slow = new QSpinBox;
   _slow->setRange(2, 100000);
   _slow->setValue(_settings.getInt(PO::_SlowPeriod));
-  grid->addWidget(_slow, row++, col--);
+  form->addRow(tr("Slow Period"), _slow);
 
   // ma type
-  label = new QLabel(tr("MA Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   l = mau.list();
 
@@ -107,23 +88,17 @@ void PODialog::createGeneralPage ()
   _maType = new QComboBox;
   _maType->addItems(l);
   _maType->setCurrentIndex(_maType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_maType, row++, col--);
+  form->addRow(tr("MA Type"), _maType);
 
   // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(PO::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   fac.list(l, TRUE);
 
@@ -132,18 +107,13 @@ void PODialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(PO::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _label);
 
   _tabs->addTab(w, tr("General"));
 }

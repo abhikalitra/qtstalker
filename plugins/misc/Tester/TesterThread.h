@@ -26,12 +26,8 @@
 #include <QStringList>
 #include <QList>
 
-#include "Indicator.h"
 #include "TesterSettings.h"
-#include "BarData.h"
 #include "TesterTrade.h"
-#include "TesterStops.h"
-#include "IndicatorPlotRules.h"
 
 class TesterThread : public QThread
 {
@@ -43,38 +39,16 @@ class TesterThread : public QThread
     void signalStopped (QString);
     
   public:
-    enum Status
-    {
-      _None,
-      _Long,
-      _Short,
-      _EnterLong,
-      _EnterShort,
-      _ExitTrade,
-      _ExitStop
-    };
-    
     TesterThread (QObject *, TesterSettings &);
     void stop ();
-    int getBars (BarData &);
-    int getIndicator (BarData &, Indicator &, QString name);
-    int enterTradeCheck (IndicatorPlotRules &, int index, QList<TesterTrade *> &, BarData &, Indicator &);
-    int enterTrade (QString symbol, QList<TesterTrade *> &, BarData &, int index, int status);
-    void exitTrade (QList<TesterTrade *> &, BarData &, int index, int signal);
-    double getCommission (TesterTrade *, int flag);
-    void getReport (QList<TesterTrade *> &);
+    void getReport (QList<TesterTrade *> &, double equity);
 
   protected:
     void run();
 
   private:
-    Indicator _elIndicator;
-    Indicator _xlIndicator;
-    Indicator _esIndicator;
-    Indicator _xsIndicator;
     TesterSettings _settings;
     int _stopFlag;
-    TesterStops _stops;
 };
 
 #endif

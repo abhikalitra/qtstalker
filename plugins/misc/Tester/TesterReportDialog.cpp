@@ -126,8 +126,8 @@ void TesterReportDialog::updateTrades (TesterReport &report)
   for (; loop < trades.count(); loop++)
   {
     QStringList l = trades.at(loop).split(",");
-    if (l.count() != _tradeList->columnCount())
-      continue;
+//    if (l.count() != _tradeList->columnCount())
+//      continue;
 
     new QTreeWidgetItem(_tradeList, l);
   }

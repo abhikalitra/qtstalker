@@ -34,11 +34,11 @@ class TesterStops
   public:
     TesterStops ();
     void setSettings (TesterSettings &);
-    int checkStops (QList<TesterTrade *> &, BarData &, int);
-    int maximumLossStop (QList<TesterTrade *> &, BarData &, int index);
-    int profitTargetStop (QList<TesterTrade *> &, BarData &, int index);
-    int trailingStop (QList<TesterTrade *> &, BarData &, int index);
-    int barsStop (QList<TesterTrade *> &, int index);
+    int checkStops (QList<TesterTrade *> &, int tindex, BarData &, int);
+    int maximumLossStop (QList<TesterTrade *> &, int tindex, BarData &, int index);
+    int profitTargetStop (QList<TesterTrade *> &, int tindex, BarData &, int index);
+    int trailingStop (QList<TesterTrade *> &, int tindex, BarData &, int index);
+    int barsStop (QList<TesterTrade *> &, int tindex, int index);
     int triggered ();
 
   private:

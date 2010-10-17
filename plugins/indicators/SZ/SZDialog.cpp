@@ -26,8 +26,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 SZDialog::SZDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -39,18 +38,12 @@ void SZDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // method
-  QLabel *label = new QLabel(tr("Method"));
-  grid->addWidget(label, row, col++);
-
   SZ f;
   QStringList l = f.list();
 
@@ -60,32 +53,23 @@ void SZDialog::createGeneralPage ()
   _method = new QComboBox;
   _method->addItems(l);
   _method->setCurrentIndex(_method->findText(d, Qt::MatchExactly));
-  grid->addWidget(_method, row++, col--);
+  form->addRow(tr("Method"), _method);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _period = new QSpinBox;
   _period->setRange(1, 100000);
   _period->setValue(_settings.getInt(SZ::_Period));
-  grid->addWidget(_period, row++, col--);
+  form->addRow(tr("Period"), _period);
 
   // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(SZ::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   fac.list(l, TRUE);
 
@@ -94,36 +78,25 @@ void SZDialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(SZ::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
+  form->addRow(tr("Label"), _label);
 
   // no decline period
-  label = new QLabel(tr("No Decline Period"));
-  grid->addWidget(label, row, col++);
-
   _ndperiod = new QSpinBox;
   _ndperiod->setRange(1, 100000);
   _ndperiod->setValue(_settings.getInt(SZ::_NoDeclinePeriod));
-  grid->addWidget(_ndperiod, row++, col--);
+  form->addRow(tr("No Decline Period"), _ndperiod);
 
   // coefficient
-  label = new QLabel(tr("Coefficient"));
-  grid->addWidget(label, row, col++);
-
   _coeff = new QDoubleSpinBox;
   _coeff->setRange(0, 100000);
   _coeff->setValue(_settings.getDouble(SZ::_Coefficient));
-  grid->addWidget(_coeff, row++, col--);
-  
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Coefficient"), _coeff);
 
   _tabs->addTab(w, tr("General"));
 }

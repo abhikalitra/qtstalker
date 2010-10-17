@@ -26,8 +26,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 STOCHSDialog::STOCHSDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -42,18 +41,12 @@ void STOCHSDialog::createKPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // ma type
-  QLabel *label = new QLabel(tr("MA Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   QStringList l = mau.list();
 
@@ -63,41 +56,29 @@ void STOCHSDialog::createKPage ()
   _kmaType = new QComboBox;
   _kmaType->addItems(l);
   _kmaType->setCurrentIndex(_kmaType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_kmaType, row++, col--);
+  form->addRow(tr("MA Type"), _kmaType);
 
   // fast k period
-  label = new QLabel(tr("Fast K Period"));
-  grid->addWidget(label, row, col++);
-
   _fkperiod = new QSpinBox;
   _fkperiod->setRange(1, 100000);
   _fkperiod->setValue(_settings.getInt(STOCHS::_FastKPeriod));
-  grid->addWidget(_fkperiod, row++, col--);
+  form->addRow(tr("Fast K Period"), _fkperiod);
 
   // slow k period
-  label = new QLabel(tr("Slow K Period"));
-  grid->addWidget(label, row, col++);
-
   _kperiod = new QSpinBox;
   _kperiod->setRange(1, 100000);
   _kperiod->setValue(_settings.getInt(STOCHS::_SlowKPeriod));
-  grid->addWidget(_kperiod, row++, col--);
+  form->addRow(tr("Slow K Period"), _kperiod);
 
   // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(STOCHS::_SlowKColor, d);
   QColor c(d);
 
   _kcolor = new ColorButton(this, c);
   _kcolor->setColorButton();
-  grid->addWidget(_kcolor, row++, col--);
+  form->addRow(tr("Color"), _kcolor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   fac.list(l, TRUE);
 
@@ -106,18 +87,13 @@ void STOCHSDialog::createKPage ()
   _kplotStyle = new QComboBox;
   _kplotStyle->addItems(l);
   _kplotStyle->setCurrentIndex(_kplotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_kplotStyle, row++, col--);
+  form->addRow(tr("Plot"), _kplotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(STOCHS::_SlowKLabel, d);
 
   _klabel = new QLineEdit(d);
-  grid->addWidget(_klabel, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _klabel);
 
   _tabs->addTab(w, "%K");
 }
@@ -126,18 +102,12 @@ void STOCHSDialog::createDPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // ma type
-  QLabel *label = new QLabel(tr("MA Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   QStringList l = mau.list();
 
@@ -147,32 +117,23 @@ void STOCHSDialog::createDPage ()
   _dmaType = new QComboBox;
   _dmaType->addItems(l);
   _dmaType->setCurrentIndex(_dmaType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_dmaType, row++, col--);
+  form->addRow(tr("MA Type"), _dmaType);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _dperiod = new QSpinBox;
   _dperiod->setRange(1, 100000);
   _dperiod->setValue(_settings.getInt(STOCHS::_SlowDPeriod));
-  grid->addWidget(_dperiod, row++, col--);
+  form->addRow(tr("Period"), _dperiod);
 
   // color
-  label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(STOCHS::_SlowDColor, d);
   QColor c(d);
 
   _dcolor = new ColorButton(this, c);
   _dcolor->setColorButton();
-  grid->addWidget(_dcolor, row++, col--);
+  form->addRow(tr("Color"), _dcolor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   fac.list(l, TRUE);
 
@@ -181,18 +142,13 @@ void STOCHSDialog::createDPage ()
   _dplotStyle = new QComboBox;
   _dplotStyle->addItems(l);
   _dplotStyle->setCurrentIndex(_dplotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_dplotStyle, row++, col--);
+  form->addRow(tr("Plot"), _dplotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(STOCHS::_SlowDLabel, d);
 
   _dlabel = new QLineEdit(d);
-  grid->addWidget(_dlabel, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _dlabel);
 
   _tabs->addTab(w, "%D");
 }
@@ -201,36 +157,25 @@ void STOCHSDialog::createRefPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(STOCHS::_Ref1Color, d);
   QColor c(d);
 
   _refColor = new ColorButton(this, c);
   _refColor->setColorButton();
-  grid->addWidget(_refColor, row++, col--);
+  form->addRow(tr("Color"), _refColor);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref = new QDoubleSpinBox;
   _ref->setRange(-100000, 100000);
   _ref->setValue(_settings.getDouble(STOCHS::_Ref1));
-  grid->addWidget(_ref, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref);
 
   _tabs->addTab(w, tr("Ref 1"));
 }
@@ -239,36 +184,25 @@ void STOCHSDialog::createRef2Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(STOCHS::_Ref2Color, d);
   QColor c(d);
 
   _ref2Color = new ColorButton(this, c);
   _ref2Color->setColorButton();
-  grid->addWidget(_ref2Color, row++, col--);
+  form->addRow(tr("Color"), _ref2Color);
 
   // ref
-  label = new QLabel(tr("Value"));
-  grid->addWidget(label, row, col++);
-
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(-100000, 100000);
   _ref2->setValue(_settings.getDouble(STOCHS::_Ref2));
-  grid->addWidget(_ref2, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Value"), _ref2);
 
   _tabs->addTab(w, tr("Ref 2"));
 }

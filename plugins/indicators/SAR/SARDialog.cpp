@@ -25,8 +25,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 SARDialog::SARDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -38,54 +37,37 @@ void SARDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(SAR::_Color, d);
   QColor c(d);
 
   _color = new ColorButton(this, c);
   _color->setColorButton();
-  grid->addWidget(_color, row++, col--);
+  form->addRow(tr("Color"), _color);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(SAR::_Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
+  form->addRow(tr("Label"), _label);
 
   // init
-  label = new QLabel(tr("Initial"));
-  grid->addWidget(label, row, col++);
-
   _init = new QDoubleSpinBox;
   _init->setRange(0, 0.2);
   _init->setValue(_settings.getDouble(SAR::_Init));
-  grid->addWidget(_init, row++, col--);
+  form->addRow(tr("Initial"), _init);
 
   // max
-  label = new QLabel(tr("Max"));
-  grid->addWidget(label, row, col++);
-
   _max = new QDoubleSpinBox;
   _max->setRange(0, 0.2);
   _max->setValue(_settings.getDouble(SAR::_Max));
-  grid->addWidget(_max, row++, col--);
- 
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Max"), _max);
 
   _tabs->addTab(w, tr("SAR"));
 }

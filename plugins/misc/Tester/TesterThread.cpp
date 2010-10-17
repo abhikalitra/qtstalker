@@ -20,19 +20,15 @@
  */
 
 #include "TesterThread.h"
-#include "QuoteServerRequest.h"
-#include "IndicatorPluginFactory.h"
-#include "Operator.h"
-#include "TesterSignals.h"
 #include "TesterReport.h"
 #include "TesterReportDataBase.h"
+#include "TesterThreadTrade.h"
 
 #include <QDebug>
 
 TesterThread::TesterThread (QObject *p, TesterSettings &set) : QThread (p)
 {
   _settings = set;
-  _stops.setSettings(set);
   _stopFlag = 0;
 
   connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
@@ -40,203 +36,77 @@ TesterThread::TesterThread (QObject *p, TesterSettings &set) : QThread (p)
 
 void TesterThread::run ()
 {
-  _elIndicator.setSettings(_settings.eLSettings());
-  _xlIndicator.setSettings(_settings.xLSettings());
-  _esIndicator.setSettings(_settings.eSSettings());
-  _xsIndicator.setSettings(_settings.xSSettings());
+  QList<TesterThreadTrade *> threadTrades;
+  _stopFlag = 0;
+  QStringList symbols = _settings.symbols();
+  int loop = 0;
+  for (; loop < symbols.count(); loop++)
+  {
+    TesterThreadTrade *t = new TesterThreadTrade(_settings);
+    
+    if (t->getBars(symbols.at(loop)))
+    {
+      delete t;
+      continue;
+    }
+    
+    if (t->getIndicator())
+    {
+      delete t;
+      continue;
+    }
+
+    if (t->getRules())
+    {
+      delete t;
+      continue;
+    }
+
+    threadTrades.append(t);
+  }
 
   QList<TesterTrade *> trades;
-  _stopFlag = 0;
+  double equity = _settings.equity();
 
-  QStringList symbols = _settings.symbols();
-  
-  int symbolLoop = 0;
-  for (; symbolLoop < symbols.count(); symbolLoop++)
+  while (threadTrades.count())
   {
     if (_stopFlag)
     {
       qDebug() << "TesterThread::run: stopped";
       qDeleteAll(trades);
+      qDeleteAll(threadTrades);
       emit signalStopped(_settings.name());
       quit();
       return;
     }
 
-    // get bar data
-    BarData bars;
-    bars.setKey(symbols.at(symbolLoop));
-    if (getBars(bars))
-      continue;
-
-    IndicatorPlotRules enterLongRules;
-    if (enterLongRules.createRules(_elIndicator, _settings.enterLong(), bars))
+    for (loop = 0; loop < threadTrades.count(); loop++)
     {
-      qDeleteAll(trades);
-      bars.clear();
-      quit();
-      return;
-    }
-
-    IndicatorPlotRules exitLongRules;
-    if (exitLongRules.createRules(_xlIndicator, _settings.exitLong(), bars))
-    {
-      qDeleteAll(trades);
-      bars.clear();
-      quit();
-      return;
-    }
-
-    IndicatorPlotRules enterShortRules;
-    if (enterShortRules.createRules(_esIndicator, _settings.enterShort(), bars))
-    {
-      qDeleteAll(trades);
-      bars.clear();
-      quit();
-      return;
-    }
-
-    IndicatorPlotRules exitShortRules;
-    if (exitShortRules.createRules(_xsIndicator, _settings.exitShort(), bars))
-    {
-      qDeleteAll(trades);
-      bars.clear();
-      quit();
-      return;
-    }
-    
-    // get enter long indicator data
-    if (getIndicator(bars, _elIndicator, _settings.eLIndicator()))
-    {
-      bars.clear();
-      continue;
-    }
-
-    // get exit long indicator data
-    if (getIndicator(bars, _xlIndicator, _settings.xLIndicator()))
-    {
-      _elIndicator.clear();
-      bars.clear();
-      continue;
-    }
-
-    // get enter short indicator data
-    if (getIndicator(bars, _esIndicator, _settings.eSIndicator()))
-    {
-      _elIndicator.clear();
-      _xlIndicator.clear();
-      bars.clear();
-      continue;
-    }
-
-    // get exit short indicator data
-    if (getIndicator(bars, _xsIndicator, _settings.xSIndicator()))
-    {
-      _elIndicator.clear();
-      _xlIndicator.clear();
-      _esIndicator.clear();
-      bars.clear();
-      continue;
-    }
-
-    Status status = _None;
-    int barLoop = 0;
-    for (; barLoop < bars.count(); barLoop++)
-    {
-      switch(status)
+      if (_stopFlag)
       {
-        case _None:
-          if (_settings.getLong())
-          {
-            if (enterTradeCheck(enterLongRules, barLoop, trades, bars, _elIndicator))
-            {
-              status = _EnterLong;
-              break;
-            }
-          }
-          
-          if (_settings.getShort())
-          {
-            if (enterTradeCheck(enterShortRules, barLoop, trades, bars, _esIndicator))
-              status = _EnterShort;
-          }
-          break;
-        case _EnterLong:
-          status = _Long;
-          if (enterTrade(symbols.at(symbolLoop), trades, bars, barLoop, status))
-            status = _None;
-          break;
-        case _EnterShort:
-          status = _Short;
-          if (enterTrade(symbols.at(symbolLoop), trades, bars, barLoop, status))
-            status = _None;
-          break;
-        case _Long:
-          if (enterTradeCheck(exitLongRules, barLoop, trades, bars, _xlIndicator))
-          {
-            status = _ExitTrade;
-            break;
-          }
+        qDebug() << "TesterThread::run: stopped";
+        qDeleteAll(trades);
+        qDeleteAll(threadTrades);
+        emit signalStopped(_settings.name());
+        quit();
+        return;
+      }
 
-          if (_stops.checkStops(trades, bars, barLoop))
-            status = _ExitStop;
-          break;
-        case _Short:
-          if (enterTradeCheck(exitShortRules, barLoop, trades, bars, _xsIndicator))
-          {
-            status = _ExitTrade;
-            break;
-          }
-          
-          if (_stops.checkStops(trades, bars, barLoop))
-            status = _ExitStop;
-          break;
-        case _ExitTrade:
-        {
-          TesterTrade *trade = trades.at(trades.count() - 1);
-          int signal = TesterSignals::_ExitLong;
-          if (trade->type())
-            signal = TesterSignals::_ExitShort;
-          
-          exitTrade(trades, bars, barLoop, signal);
-          status = _None;
-          break;
-        }
-        case _ExitStop:
-          exitTrade(trades, bars, barLoop, _stops.triggered());
-          status = _None;
-          break;
-        default:
-          break;
+      TesterThreadTrade *t = threadTrades.at(loop);
+      if (t->next(trades, equity))
+      {
+        delete t;
+        threadTrades.removeAt(loop);
       }
     }
-
-    // check if we have an open trade
-    if (trades.count())
-    {
-      TesterTrade *t = trades.at(trades.count() - 1);
-      if (t->isOpenTrade())
-        exitTrade(trades, bars, bars.count() - 1, TesterSignals::_TestEnd);
-    }
-
-    _elIndicator.clear();
-    _xlIndicator.clear();
-    _esIndicator.clear();
-    _xsIndicator.clear();
-    
-    bars.clear();
   }
 
-  getReport(trades);
+  getReport(trades, equity);
 
-  _elIndicator.clear();
-  _xlIndicator.clear();
-  _esIndicator.clear();
-  _xsIndicator.clear();
-  
   emit signalDone(_settings.name());
 
   qDeleteAll(trades);
-  
+
   quit();
 }
 
@@ -245,220 +115,13 @@ void TesterThread::stop ()
   _stopFlag = 1;
 }
 
-int TesterThread::getBars (BarData &bd)
-{
-  QStringList tl;
-  tl << "Quotes" << "Date" << bd.getExchange() << bd.getSymbol();
-  QString s;
-  bd.barLengthText((BarData::BarLength) _settings.period(), s);
-  tl << s << "0" << "0" << QString::number(_settings.dateRange());
-  QString command = tl.join(",") + "\n";
-
-  QuoteServerRequest qsr;
-  if (qsr.run(command))
-  {
-    qDebug() << "TesterThread::getBars: qsr error";
-    return 1;
-  }
-
-  bd.setBarLength((BarData::BarLength) _settings.period());
-  bd.setBars(qsr.data());
-
-  return 0;
-}
-
-int TesterThread::getIndicator (BarData &bd, Indicator &indicator, QString name)
-{
-  IndicatorPluginFactory fac;
-  IndicatorPlugin *plug = fac.plugin(name);
-  if (! plug)
-  {
-    qDebug() << "TesterThread::getIndicator: no plugin" << name;
-    return 1;
-  }
-
-  if (plug->getIndicator(indicator, bd))
-  {
-    qDebug() << "TesterThread::getIndicator: indicator error" << name;
-    return 1;
-  }
-
-  return 0;
-}
-
-int TesterThread::enterTradeCheck (IndicatorPlotRules &rules, int index, QList<TesterTrade *> &trades,
-                                   BarData &bars, Indicator &indicator)
-{
-  if (! rules.count())
-    return 0;
-  
-  int loop = 0;
-  int count = 0;
-  for (; loop < rules.count(); loop++)
-  {
-    IndicatorPlotRule *rule = rules.getRule(loop);
-    
-    Curve *curve = indicator.line(rule->name());
-    if (! curve)
-      return 0;
-
-    double value = 0;
-    CurveBar *bar = curve->bar(index);
-    if (! bar)
-      return 0;
-    value = bar->data();
-
-    double value2 = 0;
-    curve = indicator.line(rule->value());
-    if (curve)
-    {
-      bar = curve->bar(index);
-      if (! bar)
-        return 0;
-      value2 = bar->data();
-    }
-    else
-    {
-      bool ok;
-      value2 = rule->value().toDouble(&ok);
-      if (! ok)
-        return 0;
-    }
-
-    switch ((Operator::Type) rule->op())
-    {
-      case Operator::_LessThan:
-        if (value < value2)
-          count++;
-        break;
-      case Operator::_LessThanEqual:
-        if (value <= value2)
-          count++;
-        break;
-      case Operator::_Equal:
-        if (value == value2)
-          count++;
-        break;
-      case Operator::_GreaterThanEqual:
-        if (value >= value2)
-          count++;
-        break;
-      case Operator::_GreaterThan:
-        if (value > value2)
-          count++;
-        break;
-      default:
-        break;
-    }
-  }
-
-  // update current trade
-  if (trades.count())
-  {
-    TesterTrade *t = trades.at(trades.count() - 1);
-    Bar bar = bars.getBar(index);
-    double price = bar.getData((Bar::BarField) _settings.longSellPrice());
-    if (t->type())
-      price = bar.getData((Bar::BarField) _settings.shortSellPrice());
-    t->update(price);
-  }
-  
-  if (count == rules.count())
-    return 1;
-
-  return 0;
-}
-
-int TesterThread::enterTrade (QString symbol, QList<TesterTrade *> &trades, BarData &bars, int index, int status)
-{
-  TesterTrade *t = new TesterTrade;
-
-  // type 0 == long, 1 == short
-  int type = 0;
-  if ((Status) status == _Short)
-    type = 1;
-
-  Bar bar = bars.getBar(index);
-
-  // enter price
-  double price = bar.getData((Bar::BarField) _settings.longBuyPrice());
-  if (type)
-    price = bar.getData((Bar::BarField) _settings.shortBuyPrice());
-
-  // equity
-  double equity = _settings.equity();
-  if (trades.count())
-  {
-    TesterTrade *tt = trades.at(trades.count() - 1);
-    equity = tt->equity();
-  }
-
-  // figure out volume
-  int volume = (equity * _settings.positionSize()) / price;
-  if (volume < 1)
-  {
-//qDebug() << volume << equity << _settings.positionSize() << price;    
-    return 1;
-  }
-
-  double comm = getCommission(t, 0);
-  
-  t->enterTrade(symbol, type, equity, bar.date(), price, volume, index, comm);
-
-  trades.append(t);
-
-  return 0;
-}
-
-void TesterThread::exitTrade (QList<TesterTrade *> &trades, BarData &bars, int index, int signal)
-{
-  TesterTrade *t = trades.at(trades.count() - 1);
-
-  Bar bar = bars.getBar(index);
-  
-  double price = bar.getData((Bar::BarField) _settings.longSellPrice());
-  if (t->type())
-    price = bar.getData((Bar::BarField) _settings.shortSellPrice());
-
-  double comm = getCommission(t, 1);
-
-  t->exitTrade(bar.date(), price, index, comm, signal);
-}
-
-double TesterThread::getCommission (TesterTrade *trade, int flag)
-{
-  double commission = 0;
-  double value = _settings.commissionValue();
-  
-  switch (_settings.commission())
-  {
-    case 0:
-      if (! flag)
-        commission = (trade->volume() * trade->enterPrice()) * value;
-      else
-        commission = (trade->volume() * trade->exitPrice()) * value;
-      break;
-    case 1:
-      commission = value;
-      break;
-    case 2:
-      commission = value * trade->volume();
-      break;
-    default:
-      break;
-  }
-
-  return commission;
-}
-
-void TesterThread::getReport (QList<TesterTrade *> &trades)
+void TesterThread::getReport (QList<TesterTrade *> &trades, double equity)
 {
   int win = 0;
   int loss = 0;
   double winTotal = 0;
   double lossTotal = 0;
   double profit = 0;
-  double equity = _settings.equity();
   double drawDown = 0;
   int maxBars = 0;
   int minBars = 99999999;
@@ -482,8 +145,6 @@ void TesterThread::getReport (QList<TesterTrade *> &trades)
     }
 
     profit += t->profit();
-
-    equity = t->equity();
 
     int bars = t->barsHeld();
     totalBars += bars;

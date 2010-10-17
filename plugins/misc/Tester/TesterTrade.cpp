@@ -33,7 +33,6 @@ TesterTrade::TesterTrade ()
   _volume = 0;
   _enterIndex = -1;
   _exitIndex = -1;
-  _equity = 0;
   _enterCommission = 0;
   _exitCommission = 0;
   _profit = 0;
@@ -42,6 +41,7 @@ TesterTrade::TesterTrade ()
   _high = 0;
   _priceHigh = 0;  
   _priceLow = 0;
+  _equity = 0;
 }
 
 QDateTime & TesterTrade::enterDate ()
@@ -84,11 +84,6 @@ int TesterTrade::exitIndex ()
   return _exitIndex;
 }
 
-double TesterTrade::equity ()
-{
-  return _equity;
-}
-
 double TesterTrade::enterCommission ()
 {
   return _enterCommission;
@@ -104,12 +99,16 @@ double TesterTrade::profit ()
   return _profit;
 }
 
-void TesterTrade::enterTrade (QString symbol, int type, double equity, QDateTime date, double price,
+double TesterTrade::equity ()
+{
+  return _equity;
+}
+
+void TesterTrade::enterTrade (QString symbol, int type, double &equity, QDateTime date, double price,
                               int volume, int index, double commission)
 {
   _symbol = symbol;
   _type = type;
-  _equity = equity;
   _enterDate = date;
   _enterPrice = price;
   _priceHigh = price;
@@ -120,15 +119,15 @@ void TesterTrade::enterTrade (QString symbol, int type, double equity, QDateTime
 
   double value = _volume * _enterPrice;
   
-  _equity -= value;
+  equity -= value;
 
-  _equity -= _enterCommission;
+  equity -= _enterCommission;
 
   _low = value;
   _high = value;
 }
 
-void TesterTrade::exitTrade (QDateTime date, double price, int index, double commission, int signal)
+void TesterTrade::exitTrade (QDateTime date, double price, int index, double commission, int signal, double &equity)
 {
   _exitDate = date;
   _exitPrice = price;
@@ -141,10 +140,12 @@ void TesterTrade::exitTrade (QDateTime date, double price, int index, double com
   else
     _profit = _volume * (_enterPrice - _exitPrice);
 
-  _equity += _volume * _enterPrice;
-  _equity += _profit;
+  equity += _volume * _enterPrice;
+  equity += _profit;
 
-  _equity -= _exitCommission;
+  equity -= _exitCommission;
+
+  _equity = equity;
 }
 
 void TesterTrade::tradeString (QString &s)
@@ -176,6 +177,7 @@ void TesterTrade::tradeString (QString &s)
   l << s2;
 
   l << QString::number(_equity);
+  
   s = l.join(",");
 }
 

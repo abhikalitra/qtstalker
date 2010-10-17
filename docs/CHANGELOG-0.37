@@ -834,3 +834,8 @@
 
            ***********************************************************************************************
 
+20101017:  Tester now trades multiple symbols concurrently rather than consecutively. The amount of trades depends
+           on how much equity is available when a trade is entered. Tester tries to simulate real trading
+           rather than the pervasive curve fitting logic.
+
+

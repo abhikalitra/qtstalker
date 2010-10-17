@@ -32,12 +32,12 @@ class MOM : public IndicatorPlugin
     enum Parm
     {
       _Input = 10,
-      _Color = 10,
-      _Plot = 10,
-      _Label = 10,
-      _Period = 10,
-      _Smoothing = 10,
-      _SmoothingType = 10
+      _Color = 20,
+      _Plot = 30,
+      _Label = 40,
+      _Period = 50,
+      _Smoothing = 60,
+      _SmoothingType = 70
     };
 
     MOM ();

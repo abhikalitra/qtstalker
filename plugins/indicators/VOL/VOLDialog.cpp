@@ -26,8 +26,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 VOLDialog::VOLDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -40,52 +39,37 @@ void VOLDialog::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // up color
-  QLabel *label = new QLabel(tr("Up Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(VOL::UpColor, d);
   QColor c(d);
 
   _upColor = new ColorButton(this, c);
   _upColor->setColorButton();
-  grid->addWidget(_upColor, row++, col--);
+  form->addRow(tr("Up Color"), _upColor);
 
   // down color
-  label = new QLabel(tr("Down Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(VOL::DownColor, d);
   c.setNamedColor(d);
 
   _downColor = new ColorButton(this, c);
   _downColor->setColorButton();
-  grid->addWidget(_downColor, row++, col--);
+  form->addRow(tr("Down Color"), _downColor);
 
   // neutral color
-  label = new QLabel(tr("Neutral Color"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(VOL::NeutralColor, d);
   c.setNamedColor(d);
 
   _neutralColor = new ColorButton(this, c);
   _neutralColor->setColorButton();
-  grid->addWidget(_neutralColor, row++, col--);
+  form->addRow(tr("Neutral Color"), _neutralColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -95,18 +79,13 @@ void VOLDialog::createGeneralPage ()
   _plotStyle = new QComboBox;
   _plotStyle->addItems(l);
   _plotStyle->setCurrentIndex(_plotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_plotStyle, row++, col--);
+  form->addRow(tr("Plot"), _plotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(VOL::Label, d);
 
   _label = new QLineEdit(d);
-  grid->addWidget(_label, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Label"), _label);
 
   _tabs->addTab(w, tr("General"));
 }
@@ -115,30 +94,21 @@ void VOLDialog::createMAPage ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(VOL::MAColor, d);
   QColor c(d);
 
   _maColor = new ColorButton(this, c);
   _maColor->setColorButton();
-  grid->addWidget(_maColor, row++, col--);
+  form->addRow(tr("Color"), _maColor);
 
   // plot style
-  label = new QLabel(tr("Plot"));
-  grid->addWidget(label, row, col++);
-
   Curve fac;
   QStringList l;
   fac.list(l, TRUE);
@@ -148,30 +118,21 @@ void VOLDialog::createMAPage ()
   _maPlotStyle = new QComboBox;
   _maPlotStyle->addItems(l);
   _maPlotStyle->setCurrentIndex(_maPlotStyle->findText(d, Qt::MatchExactly));
-  grid->addWidget(_maPlotStyle, row++, col--);
+  form->addRow(tr("Plot"), _maPlotStyle);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(VOL::MALabel, d);
 
   _maLabel = new QLineEdit(d);
-  grid->addWidget(_maLabel, row++, col--);
+  form->addRow(tr("Label"), _maLabel);
 
   // period
-  label = new QLabel(tr("Period"));
-  grid->addWidget(label, row, col++);
-
   _maPeriod = new QSpinBox;
   _maPeriod->setRange(1, 100000);
   _maPeriod->setValue(_settings.getInt(VOL::MAPeriod));
-  grid->addWidget(_maPeriod, row++, col--);
+  form->addRow(tr("Period"), _maPeriod);
 
   // ma type
-  label = new QLabel(tr("Type"));
-  grid->addWidget(label, row, col++);
-
   FunctionMA mau;
   l = mau.list();
 
@@ -180,9 +141,7 @@ void VOLDialog::createMAPage ()
   _maType = new QComboBox;
   _maType->addItems(l);
   _maType->setCurrentIndex(_maType->findText(d, Qt::MatchExactly));
-  grid->addWidget(_maType, row++, col--);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Type"), _maType);
 
   _tabs->addTab(w, tr("MA"));
 }

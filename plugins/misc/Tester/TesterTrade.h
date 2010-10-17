@@ -36,13 +36,13 @@ class TesterTrade
     int volume ();
     int enterIndex ();
     int exitIndex ();
-    double equity ();
     double enterCommission ();
     double exitCommission ();
     double profit ();
-    void enterTrade (QString symbol, int type, double equity, QDateTime date, double price,
+    double equity ();
+    void enterTrade (QString symbol, int type, double &equity, QDateTime date, double price,
                      int volume, int index, double commission);
-    void exitTrade (QDateTime date, double price, int index, double commission, int signal);
+    void exitTrade (QDateTime date, double price, int index, double commission, int signal, double &equity);
     void update (double price);
     void tradeString (QString &);
     int isOpenTrade ();
@@ -62,7 +62,6 @@ class TesterTrade
     int _volume;
     int _enterIndex;
     int _exitIndex;
-    double _equity;
     double _enterCommission;
     double _exitCommission;
     double _profit;
@@ -72,6 +71,7 @@ class TesterTrade
     QString _symbol;
     double _priceHigh;
     double _priceLow;
+    double _equity;
 };
 
 #endif

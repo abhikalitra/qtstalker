@@ -24,8 +24,7 @@
 #include "IndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QLayout>
-#include <QLabel>
+#include <QFormLayout>
 #include <QStringList>
 
 PPDialog::PPDialog (Indicator &i) : IndicatorPluginDialog (i)
@@ -42,41 +41,30 @@ void PPDialog::createR1Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(PP::_R1Color, d);
   QColor c(d);
 
   _r1Color = new ColorButton(this, c);
   _r1Color->setColorButton();
-  grid->addWidget(_r1Color, row++, col--);
+  form->addRow(tr("Color"), _r1Color);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(PP::_R1Label, d);
 
   _r1Label = new QLineEdit(d);
-  grid->addWidget(_r1Label, row++, col--);
+  form->addRow(tr("Label"), _r1Label);
 
   // check
-  _r1Check = new QCheckBox(tr("Show"));
+  _r1Check = new QCheckBox;
   _r1Check->setChecked(_settings.getInt(PP::_R1Show));
-  grid->addWidget(_r1Check, row++, col);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _r1Check);
 
   _tabs->addTab(w, tr("R1"));
 }
@@ -85,41 +73,30 @@ void PPDialog::createR2Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(PP::_R2Color, d);
   QColor c(d);
 
   _r2Color = new ColorButton(this, c);
   _r2Color->setColorButton();
-  grid->addWidget(_r2Color, row++, col--);
+  form->addRow(tr("Color"), _r2Color);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(PP::_R2Label, d);
 
   _r2Label = new QLineEdit(d);
-  grid->addWidget(_r2Label, row++, col--);
+  form->addRow(tr("Label"), _r2Label);
 
   // check
-  _r2Check = new QCheckBox(tr("Show"));
+  _r2Check = new QCheckBox;
   _r2Check->setChecked(_settings.getInt(PP::_R2Show));
-  grid->addWidget(_r2Check, row++, col);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _r2Check);
 
   _tabs->addTab(w, tr("R2"));
 }
@@ -128,41 +105,30 @@ void PPDialog::createR3Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(PP::_R3Color, d);
   QColor c(d);
 
   _r3Color = new ColorButton(this, c);
   _r3Color->setColorButton();
-  grid->addWidget(_r3Color, row++, col--);
+  form->addRow(tr("Color"), _r3Color);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(PP::_R3Label, d);
 
   _r3Label = new QLineEdit(d);
-  grid->addWidget(_r3Label, row++, col--);
+  form->addRow(tr("Label"), _r3Label);
 
   // check
-  _r3Check = new QCheckBox(tr("Show"));
+  _r3Check = new QCheckBox;
   _r3Check->setChecked(_settings.getInt(PP::_R3Show));
-  grid->addWidget(_r3Check, row++, col);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _r3Check);
 
   _tabs->addTab(w, tr("R3"));
 }
@@ -171,41 +137,30 @@ void PPDialog::createS1Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(PP::_S1Color, d);
   QColor c(d);
 
   _s1Color = new ColorButton(this, c);
   _s1Color->setColorButton();
-  grid->addWidget(_s1Color, row++, col--);
+  form->addRow(tr("Color"), _s1Color);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(PP::_S1Label, d);
 
   _s1Label = new QLineEdit(d);
-  grid->addWidget(_s1Label, row++, col--);
+  form->addRow(tr("Label"), _s1Label);
 
   // check
-  _s1Check = new QCheckBox(tr("Show"));
+  _s1Check = new QCheckBox;
   _s1Check->setChecked(_settings.getInt(PP::_S1Show));
-  grid->addWidget(_s1Check, row++, col);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _s1Check);
 
   _tabs->addTab(w, tr("S1"));
 }
@@ -214,41 +169,30 @@ void PPDialog::createS2Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(PP::_S2Color, d);
   QColor c(d);
 
   _s2Color = new ColorButton(this, c);
   _s2Color->setColorButton();
-  grid->addWidget(_s2Color, row++, col--);
+  form->addRow(tr("Color"), _s2Color);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(PP::_S2Label, d);
 
   _s2Label = new QLineEdit(d);
-  grid->addWidget(_s2Label, row++, col--);
+  form->addRow(tr("Label"), _s2Label);
 
   // check
-  _s2Check = new QCheckBox(tr("Show"));
+  _s2Check = new QCheckBox;
   _s2Check->setChecked(_settings.getInt(PP::_S2Show));
-  grid->addWidget(_s2Check, row++, col);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _s2Check);
 
   _tabs->addTab(w, tr("S2"));
 }
@@ -257,41 +201,30 @@ void PPDialog::createS3Page ()
 {
   QWidget *w = new QWidget;
 
-  QGridLayout *grid = new QGridLayout;
-  grid->setSpacing(2);
-  grid->setColumnStretch(1, 1);
-  w->setLayout(grid);
-
-  int row = 0;
-  int col = 0;
+  QFormLayout *form = new QFormLayout;
+  form->setSpacing(2);
+  form->setMargin(5);
+  w->setLayout(form);
 
   // color
-  QLabel *label = new QLabel(tr("Color"));
-  grid->addWidget(label, row, col++);
-
   QString d;
   _settings.getData(PP::_S3Color, d);
   QColor c(d);
 
   _s3Color = new ColorButton(this, c);
   _s3Color->setColorButton();
-  grid->addWidget(_s3Color, row++, col--);
+  form->addRow(tr("Color"), _s3Color);
 
   // label
-  label = new QLabel(tr("Label"));
-  grid->addWidget(label, row, col++);
-
   _settings.getData(PP::_S3Label, d);
 
   _s3Label = new QLineEdit(d);
-  grid->addWidget(_s3Label, row++, col--);
+  form->addRow(tr("Label"), _s3Label);
 
   // check
-  _s3Check = new QCheckBox(tr("Show"));
+  _s3Check = new QCheckBox;
   _s3Check->setChecked(_settings.getInt(PP::_S3Show));
-  grid->addWidget(_s3Check, row++, col);
-
-  grid->setRowStretch(row, 1);
+  form->addRow(tr("Show"), _s3Check);
 
   _tabs->addTab(w, tr("S3"));
 }

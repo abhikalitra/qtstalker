@@ -18,6 +18,7 @@ HEADERS += TesterSettingsDialog.h
 HEADERS += TesterSignals.h
 HEADERS += TesterStops.h
 HEADERS += TesterThread.h
+HEADERS += TesterThreadTrade.h
 HEADERS += TesterTrade.h
 
 SOURCES += Tester.cpp
@@ -36,4 +37,6 @@ SOURCES += TesterSettingsDialog.cpp
 SOURCES += TesterSignals.cpp
 SOURCES += TesterStops.cpp
 SOURCES += TesterThread.cpp
+SOURCES += TesterThreadTrade.cpp
 SOURCES += TesterTrade.cpp
+
