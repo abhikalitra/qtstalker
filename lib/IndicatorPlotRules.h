@@ -40,6 +40,7 @@ class IndicatorPlotRules
     int createRules (Indicator &indicator, QStringList &l, BarData &bars);
     int count ();
     IndicatorPlotRule * getRule (int);
+    int test (Indicator &, int index);
 
   private:
     QList<IndicatorPlotRule *> _rules;

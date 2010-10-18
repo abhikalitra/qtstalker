@@ -173,6 +173,7 @@ int Details::set (QStringList &input, QString &dbPath, QString &output, QSLog &l
   if (ddb.setDetails(detail))
   {
     log.message(QSLog::Error, QString(" Details::set: error getting detail"));
+    g_mutex.unlock();
     return 1;
   }
   ddb.commit();
@@ -218,6 +219,7 @@ int Details::remove (QStringList &input, QString &dbPath, QString &output, QSLog
   if (ddb.remove(detail))
   {
     log.message(QSLog::Error, QString(" Details::remove: error getting detail"));
+    g_mutex.unlock();
     return 1;
   }
   ddb.commit();

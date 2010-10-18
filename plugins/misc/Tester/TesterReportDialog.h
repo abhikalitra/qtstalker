@@ -35,9 +35,11 @@ class TesterReportDialog : public QDialog
   
   public:
     TesterReportDialog (QString);
+    ~TesterReportDialog ();
     void loadSettings ();
     void updateTrades (TesterReport &);
     void updateReport (TesterReport &);
+    void saveSettings ();
           
   private:
     QString _name;

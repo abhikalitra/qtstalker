@@ -153,27 +153,27 @@ void ScriptPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(showAllScripts()));
   _actions.insert(ShowAllScripts, action);
 
-  action = new QAction(QIcon(search_xpm), tr("&Search..."), this);
+  action = new QAction(QIcon(search_xpm), tr("&Search") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
-  action->setToolTip(tr("Search"));
+  action->setToolTip(tr("Search") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(search()));
   _actions.insert(SearchScript, action);
 
-  action = new QAction(QIcon(newchart_xpm), tr("&New Script..."), this);
+  action = new QAction(QIcon(newchart_xpm), tr("&New Script") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
-  action->setToolTip(tr("New Script"));
+  action->setToolTip(tr("New Script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(newScript()));
   _actions.insert(NewScript, action);
 
-  action = new QAction(QIcon(edit_xpm), tr("&Edit Script..."), this);
+  action = new QAction(QIcon(edit_xpm), tr("&Edit Script") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
-  action->setToolTip(tr("Edit Script"));
+  action->setToolTip(tr("Edit Script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(editScript()));
   _actions.insert(EditScript, action);
 
-  action = new QAction(QIcon(delete_xpm), tr("&Delete Script..."), this);
+  action = new QAction(QIcon(delete_xpm), tr("&Delete Script") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
-  action->setToolTip(tr("Delete Script"));
+  action->setToolTip(tr("Delete Script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(deleteScript()));
   _actions.insert(DeleteScript, action);
 
@@ -183,15 +183,15 @@ void ScriptPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(removeScriptQueue()));
   _actions.insert(CancelScript, action);
 
-  action = new QAction(QIcon(script_xpm), tr("&Run Script..."), this);
+  action = new QAction(QIcon(script_xpm), tr("&Run Script") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
-  action->setToolTip(tr("Run script"));
+  action->setToolTip(tr("Run script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(runScriptDialog()));
   _actions.insert(RunScript, action);
   
-  action = new QAction(QIcon(configure_xpm), tr("Configure &Launch Buttons..."), this);
+  action = new QAction(QIcon(configure_xpm), tr("Configure &Launch Buttons") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
-  action->setToolTip(tr("Configure Launch Buttons..."));
+  action->setToolTip(tr("Configure Launch Buttons") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(configureLaunchButtons()));
   _actions.insert(ConfigureLaunchButtons, action);
 }
@@ -333,7 +333,7 @@ void ScriptPage::updateQueList ()
 
     QString name = script->getName();
     
-    QListWidgetItem *item = new QListWidgetItem(QIcon(ok), name, _queList);
+    QListWidgetItem *item = new QListWidgetItem(QIcon(ok_xpm), name, _queList);
     item->setToolTip(QString(tr("Running...")));
   }
 }

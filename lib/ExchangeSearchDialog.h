@@ -37,6 +37,7 @@ class ExchangeSearchDialog : public Dialog
   
   public:
     ExchangeSearchDialog ();
+    ~ExchangeSearchDialog ();
     void createMainPage ();
 
   public slots:

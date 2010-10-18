@@ -62,9 +62,9 @@ PluginPage::PluginPage ()
 
 void PluginPage::createActions ()
 {
-  QAction *action  = new QAction(QIcon(configure_xpm), tr("&Configure Plugin..."), this);
+  QAction *action  = new QAction(QIcon(configure_xpm), tr("&Configure Plugin") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
-  action->setToolTip(tr("Configure plugin"));
+  action->setToolTip(tr("Configure plugin") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(configure()));
   _actions.insert(Configure, action);
 }

@@ -40,9 +40,11 @@ class AlertConfigureDialog : public Dialog
     
   public:
     AlertConfigureDialog ();
+    ~AlertConfigureDialog ();
     void createMainPage ();
     void createMailPage ();
     void loadSettings ();
+    void saveSettings ();
 
   public slots:
     void done ();

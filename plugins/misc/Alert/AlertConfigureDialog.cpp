@@ -40,6 +40,11 @@ AlertConfigureDialog::AlertConfigureDialog ()
   loadSettings();
 }
 
+AlertConfigureDialog::~AlertConfigureDialog ()
+{
+  saveSettings();
+}
+
 void AlertConfigureDialog::createMainPage ()
 {
   QWidget *w = new QWidget;
@@ -98,6 +103,18 @@ void AlertConfigureDialog::loadSettings ()
 {
   AlertConfig config;
 
+  // restore the size of the window
+  QSize sz;
+  config.getData(AlertConfig::_ConfigureDialogSize, sz);
+  if (! sz.isNull())
+    resize(sz);
+
+  // restore the position of the window
+  QPoint p;
+  config.getData(AlertConfig::_ConfigureDialogPos, p);
+  if (! p.isNull())
+    move(p);
+
   _enable->setChecked(config.getInt(AlertConfig::_AlertsEnable));
   connect(_enable, SIGNAL(stateChanged(int)), this, SLOT(enableChanged(int)));
 
@@ -116,6 +133,21 @@ void AlertConfigureDialog::loadSettings ()
 
   config.getData(AlertConfig::_MailBody, s);
   _text->setText(s);
+}
+
+void AlertConfigureDialog::saveSettings ()
+{
+  AlertConfig config;
+  config.transaction();
+
+  // save app size and position
+  QSize sz = size();
+  config.setData(AlertConfig::_ConfigureDialogSize, sz);
+
+  QPoint pt = pos();
+  config.setData(AlertConfig::_ConfigureDialogPos, pt);
+
+  config.commit();
 }
 
 void AlertConfigureDialog::intervalChanged (int d)

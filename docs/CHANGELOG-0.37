@@ -838,4 +838,18 @@
            on how much equity is available when a trade is entered. Tester tries to simulate real trading
            rather than the pervasive curve fitting logic.
 
+           Fixed bug in SymbolDialog that did not pass search selections in signals emitted.
+
+           Fixed QuoteServer Yahoo details download error. SQL error with symbol names with a ' included. We remove
+           them now.
+
+           Fixed QuoteServer mutex lock error when a Details error occurs.
+
+           Fixed chart context menu bug that allowed chart object creation on an empty chart.
+
+20101018:  Added a new syntax format to the Tester plugin. When constructing an indicator rule list, you may have
+           access to previous bars like this: MA.1 for MA previous bar, MA.2, MA.3 and so on. This syntax only works
+           for the GUI plugin and not for scripts. Scripts have the GET_INDEX functions that allow more precision.
+           This is to help give more flexibility to the GUI plugin.
+
 

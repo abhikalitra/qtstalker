@@ -39,7 +39,11 @@ class AlertConfig : public ConfigDataBase
       _SoundFile, // path to sound file to play on notification
       _MailAddress, // email address to send notifications
       _MailSubject, // subject header text for notifications
-      _MailBody // text body for notifications
+      _MailBody, // text body for notifications
+      _EditDialogSize, // last edit dialog window size
+      _EditDialogPos, // last edit dialog window position
+      _ConfigureDialogSize, // last Configure dialog window size
+      _ConfigureDialogPos // last Configure dialog window position
     };
 
     AlertConfig ();

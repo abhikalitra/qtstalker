@@ -36,9 +36,34 @@ ScannerEditDialog::ScannerEditDialog (QString name)
 {
   _scanner.setName(name);
 
+  QString s = "Qtstalker" + g_session + ": " + tr("Scanner") + " - " + name;
+  setWindowTitle(s);
+  
   createMainPage();
 
   setSettings();
+}
+
+ScannerEditDialog::~ScannerEditDialog ()
+{
+  saveSettings();
+}
+
+void ScannerEditDialog::saveSettings ()
+{
+  ScannerConfig config;
+  config.transaction();
+
+  // save app size and position
+  QString k = "size" + _scanner.name();
+  QSize sz = size();
+  config.setData(k, sz);
+
+  k = "position" + _scanner.name();
+  QPoint pt = pos();
+  config.setData(k, pt);
+
+  config.commit();
 }
 
 void ScannerEditDialog::createMainPage ()

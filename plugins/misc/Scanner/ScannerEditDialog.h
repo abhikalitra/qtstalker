@@ -41,8 +41,10 @@ class ScannerEditDialog : public Dialog
 
   public:
     ScannerEditDialog (QString name);
+    ~ScannerEditDialog ();
     void createMainPage ();
     void setSettings ();
+    void saveSettings ();
 
   public slots:
     void done ();

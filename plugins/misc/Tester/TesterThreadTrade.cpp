@@ -22,7 +22,6 @@
 #include "TesterThreadTrade.h"
 #include "QuoteServerRequest.h"
 #include "IndicatorPluginFactory.h"
-#include "Operator.h"
 #include "TesterSignals.h"
 
 #include <QDebug>
@@ -215,69 +214,6 @@ int TesterThreadTrade::next (QList<TesterTrade *> &trades, double &equity)
 
 int TesterThreadTrade::enterTradeCheck (QList<TesterTrade *> &trades, IndicatorPlotRules &rules, Indicator &indicator)
 {
-  if (! rules.count())
-    return 0;
-  
-  int loop = 0;
-  int count = 0;
-  for (; loop < rules.count(); loop++)
-  {
-    IndicatorPlotRule *rule = rules.getRule(loop);
-    
-    Curve *curve = indicator.line(rule->name());
-    if (! curve)
-      return 0;
-
-    double value = 0;
-    CurveBar *bar = curve->bar(_barLoop);
-    if (! bar)
-      return 0;
-    value = bar->data();
-
-    double value2 = 0;
-    curve = indicator.line(rule->value());
-    if (curve)
-    {
-      bar = curve->bar(_barLoop);
-      if (! bar)
-        return 0;
-      value2 = bar->data();
-    }
-    else
-    {
-      bool ok;
-      value2 = rule->value().toDouble(&ok);
-      if (! ok)
-        return 0;
-    }
-
-    switch ((Operator::Type) rule->op())
-    {
-      case Operator::_LessThan:
-        if (value < value2)
-          count++;
-        break;
-      case Operator::_LessThanEqual:
-        if (value <= value2)
-          count++;
-        break;
-      case Operator::_Equal:
-        if (value == value2)
-          count++;
-        break;
-      case Operator::_GreaterThanEqual:
-        if (value >= value2)
-          count++;
-        break;
-      case Operator::_GreaterThan:
-        if (value > value2)
-          count++;
-        break;
-      default:
-        break;
-    }
-  }
-
   // update current trade
   if (trades.count())
   {
@@ -288,11 +224,8 @@ int TesterThreadTrade::enterTradeCheck (QList<TesterTrade *> &trades, IndicatorP
       price = bar.getData((Bar::BarField) _settings.shortSellPrice());
     t->update(price);
   }
-  
-  if (count == rules.count())
-    return 1;
 
-  return 0;
+  return rules.test(indicator, _barLoop);
 }
 
 int TesterThreadTrade::enterTrade (QList<TesterTrade *> &trades, QString symbol, double &equity)

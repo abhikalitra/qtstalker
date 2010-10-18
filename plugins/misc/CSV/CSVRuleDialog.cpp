@@ -25,6 +25,8 @@
 #include "Config.h"
 #include "CSVRule.h"
 #include "ExchangeSearchDialog.h"
+#include "CSVConfig.h"
+#include "Globals.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/search.xpm"
@@ -45,7 +47,7 @@ CSVRuleDialog::CSVRuleDialog (QString name)
   _fields << "Exchange" << "Symbol" << "Open" << "High" << "Low" << "Close";
   _fields << "Volume" << "OI" << "Name" << "Ignore";
   
-  QString s = tr("Qtstalker: CSV Editing Rule ") + _name;
+  QString s = "Qtstalker" + g_session + ": CSV " + tr("Rule") + " - " + _name;
   setWindowTitle(s);
 
   createMainPage();
@@ -55,6 +57,45 @@ CSVRuleDialog::CSVRuleDialog (QString name)
 
   ruleSelectionChanged();
   fieldSelectionChanged();
+
+  loadSettings();
+}
+
+CSVRuleDialog::~CSVRuleDialog ()
+{
+  saveSettings();
+}
+
+void CSVRuleDialog::loadSettings ()
+{
+  CSVConfig config;
+
+  // restore the size of the window
+  QSize sz;
+  config.getData(CSVConfig::RuleDialogSize, sz);
+  if (! sz.isNull())
+    resize(sz);
+
+  // restore the position of the window
+  QPoint p;
+  config.getData(CSVConfig::RuleDialogPosition, p);
+  if (! p.isNull())
+    move(p);
+}
+
+void CSVRuleDialog::saveSettings ()
+{
+  CSVConfig config;
+  config.transaction();
+
+  // save app size and position
+  QSize sz = size();
+  config.setData(CSVConfig::RuleDialogSize, sz);
+
+  QPoint pt = pos();
+  config.setData(CSVConfig::RuleDialogPosition, pt);
+
+  config.commit();
 }
 
 void CSVRuleDialog::createMainPage ()

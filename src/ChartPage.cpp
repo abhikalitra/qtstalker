@@ -60,8 +60,6 @@ ChartPage::ChartPage ()
 
   // update to last symbol search before displaying
   Config config;
-  config.transaction();
-  
   config.getData(Config::LastChartPanelExchangeSearch, _searchExchange);
   if (_searchExchange.isEmpty())
   {
@@ -76,8 +74,6 @@ ChartPage::ChartPage ()
     config.setData(Config::LastChartPanelSymbolSearch, _searchString);
   }
 
-  config.commit();
-
   updateList();
 }
 
@@ -89,15 +85,15 @@ void ChartPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(allButtonPressed()));
   _actions.insert(ShowAll, action);
 
-  action  = new QAction(QIcon(search_xpm), tr("Symbol &Search..."), this);
+  action  = new QAction(QIcon(search_xpm), tr("Symbol &Search") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
-  action->setToolTip(tr("Symbol Search"));
+  action->setToolTip(tr("Symbol Search") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(symbolSearch()));
   _actions.insert(Search, action);
 
-  action  = new QAction(QIcon(add_xpm), tr("Add To &Group..."), this);
+  action  = new QAction(QIcon(add_xpm), tr("Add To &Group") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_G));
-  action->setToolTip(tr("Add symbol to group"));
+  action->setToolTip(tr("Add symbol to group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
   _actions.insert(AddGroup, action);
 
@@ -179,7 +175,6 @@ void ChartPage::updateList ()
   UpdateChartPageThread *r = new UpdateChartPageThread(this, _searchExchange, _searchString);
   connect(r, SIGNAL(signalSymbol(BarData)), _nav, SLOT(addSymbol(BarData)), Qt::QueuedConnection);
   connect(r, SIGNAL(signalDone()), this, SLOT(requestDone()), Qt::QueuedConnection);
-  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
   r->start();
 }
 
@@ -195,7 +190,6 @@ void ChartPage::symbolSearch ()
   SymbolDialog *dialog = new SymbolDialog;
   dialog->setSymbols(_searchExchange, _searchString);
   connect(dialog, SIGNAL(signalResults(QString, QString)), this, SLOT(symbolSearch2(QString, QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
 }
 
@@ -205,10 +199,8 @@ void ChartPage::symbolSearch2 (QString ex, QString ss)
   _searchString = ss;
   
   Config config;
-  config.transaction();
   config.setData(Config::LastChartPanelSymbolSearch, _searchString);
   config.setData(Config::LastChartPanelExchangeSearch, _searchExchange);
-  config.commit();
   
   updateList();
 }

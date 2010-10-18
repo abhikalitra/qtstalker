@@ -39,7 +39,14 @@ AlertEditDialog::AlertEditDialog (AlertItem item)
   
   createMainPage();
 
+  loadSettings();
+  
   setSettings();
+}
+
+AlertEditDialog::~AlertEditDialog ()
+{
+  saveSettings();
 }
 
 void AlertEditDialog::createMainPage ()
@@ -118,6 +125,38 @@ void AlertEditDialog::createMainPage ()
   _tabs->addTab(w, tr("Settings"));
 }
 
+void AlertEditDialog::loadSettings ()
+{
+  AlertConfig config;
+
+  // restore the size of the window
+  QSize sz;
+  config.getData(AlertConfig::_EditDialogSize, sz);
+  if (! sz.isNull())
+    resize(sz);
+
+  // restore the position of the window
+  QPoint p;
+  config.getData(AlertConfig::_EditDialogPos, p);
+  if (! p.isNull())
+    move(p);
+}
+
+void AlertEditDialog::saveSettings ()
+{
+  AlertConfig config;
+  config.transaction();
+
+  // save app size and position
+  QSize sz = size();
+  config.setData(AlertConfig::_EditDialogSize, sz);
+
+  QPoint pt = pos();
+  config.setData(AlertConfig::_EditDialogPos, pt);
+
+  config.commit();
+}
+
 void AlertEditDialog::setSettings ()
 {
   QStringList l;
@@ -143,6 +182,35 @@ void AlertEditDialog::setSettings ()
 
 void AlertEditDialog::done ()
 {
+  // verify symbol
+  QStringList l;
+  _symbols->symbolList(l);
+  if (! l.count())
+  {
+    setMessage(tr("Symbol missing."));
+    return;
+  }
+  _item.setSymbol(l.at(0));
+
+  // verify indicator
+  QString s = _alertList->indicator();
+  if (s.isEmpty())
+  {
+    setMessage(tr("Indicator missing."));
+    return;
+  }
+
+  _alertList->list(l);
+  if (! l.count())
+  {
+    setMessage(tr("Indicator logic missing."));
+    return;
+  }
+  
+  _item.setIndicator(_alertList->indicator());
+  _alertList->list(_item.plots());
+  _item.setSettings(_alertList->settings());
+
   if (_item.id() == -1)
   {
     AlertConfig db;
@@ -155,13 +223,6 @@ void AlertEditDialog::done ()
     db.commit();
   }
 
-  QStringList l;
-  _symbols->symbolList(l);
-  if (l.count())
-    _item.setSymbol(l.at(0));
-  else
-    _item.setSymbol(QString());
-
   _item.setBarLength(_barLength->currentIndex());
 
   _item.setBars(_bars->currentIndex());
@@ -172,16 +233,14 @@ void AlertEditDialog::done ()
 
   _item.setPopup(_popupNotify->isChecked());
 
-  _item.setIndicator(_alertList->indicator());
-  _alertList->list(_item.plots());
-  _item.setSettings(_alertList->settings());
-
   AlertDataBase db;
   db.transaction();
   db.setAlert(_item);
   db.commit();
 
   emit signalEdit(_item);
+
+//  saveSettings();
   
   accept();
 }

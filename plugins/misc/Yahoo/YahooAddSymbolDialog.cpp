@@ -28,7 +28,7 @@
 
 YahooAddSymbolDialog::YahooAddSymbolDialog ()
 {
-  _yexchange << "NYSE" << "AX" << "SA" << "TO" << "BO" << "NS" << "L";
+  _yexchange << "NYSE" << "AX" << "SA" << "TO" << "BO" << "NS" << "L" << "B";
 
   setWindowTitle("QtStalker" + g_session + ": Yahoo " + tr("Add Symbols"));
 
@@ -110,6 +110,10 @@ int YahooAddSymbolDialog::getSymbolExchange (QString &ysymbol, QString &symbol, 
     case 6: // L
       symbol = l[0];
       exchange = "XLON";
+      break;
+    case 7: // B, some XNYS symbols use .B eg BRK.B
+      symbol = l[0] + ".B"; // we keep the .B
+      exchange = "XNYS";
       break;
     default: // error
       rc = 1;

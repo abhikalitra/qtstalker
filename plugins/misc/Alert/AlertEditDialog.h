@@ -39,8 +39,11 @@ class AlertEditDialog : public Dialog
 
   public:
     AlertEditDialog (AlertItem);
+    ~AlertEditDialog ();
     void createMainPage ();
     void setSettings ();
+    void loadSettings ();
+    void saveSettings ();
 
   public slots:
     void done ();

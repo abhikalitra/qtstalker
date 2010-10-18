@@ -34,7 +34,7 @@ AlertItem::AlertItem ()
   _status = AlertItem::_Waiting;
   _barLength = 6;
   _dateRange = 5;
-  _bars = 0;
+  _bars = 5;
 }
 
 void AlertItem::setSymbol (QString d)

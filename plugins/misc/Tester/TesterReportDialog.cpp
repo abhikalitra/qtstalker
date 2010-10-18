@@ -87,25 +87,28 @@ TesterReportDialog::TesterReportDialog (QString name)
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
+TesterReportDialog::~TesterReportDialog ()
+{
+  saveSettings();
+}
+
 void TesterReportDialog::loadSettings ()
 {
-/*  
   TesterConfig config;
   
   // restore the size of the window
-  QString k = "size" + _settings.name();
+  QString k = "size" + _name;
   QSize sz;
   config.getData(k, sz);
   if (! sz.isNull())
     resize(sz);
 
   // restore the position of the window
-  k = "position" + _settings.name();
+  k = "position" + _name;
   QPoint p;
   config.getData(k, p);
   if (! p.isNull())
     move(p);
-*/
 
   TesterReportDataBase db;
   TesterReport report;
@@ -115,6 +118,24 @@ void TesterReportDialog::loadSettings ()
   updateTrades(report);
 
   updateReport(report);
+}
+
+void TesterReportDialog::saveSettings ()
+{
+  TesterConfig config;
+  config.transaction();
+
+  // restore the size of the window
+  QString k = "size" + _name;
+  QSize sz = size();
+  config.setData(k, sz);
+
+  // restore the position of the window
+  k = "position" + _name;
+  QPoint pt = pos();
+  config.setData(k, pt);
+
+  config.commit();
 }
 
 void TesterReportDialog::updateTrades (TesterReport &report)

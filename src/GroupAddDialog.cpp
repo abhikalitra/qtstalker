@@ -23,6 +23,8 @@
 #include "GroupNewDialog.h"
 #include "SymbolDialog.h"
 #include "Globals.h"
+#include "Config.h"
+
 #include "../pics/newchart.xpm"
 #include "../pics/search.xpm"
 
@@ -36,10 +38,14 @@
 GroupAddDialog::GroupAddDialog (Group group)
 {
   _group = group;
+  _configSizeParm = Config::GroupAddDialogSize;
+  _configPosParm = Config::GroupAddDialogPosition;
   
   setWindowTitle("QtStalker" + g_session + ": " + tr("Add To Group"));
 
   createMainPage();
+
+  loadSettings();
 }
 
 void GroupAddDialog::createMainPage ()
@@ -92,6 +98,8 @@ void GroupAddDialog::createMainPage ()
 
 void GroupAddDialog::done ()
 {
+  saveSettings();
+  
   QList<QListWidgetItem *> sl = _list->selectedItems();
   if (! sl.count())
   {

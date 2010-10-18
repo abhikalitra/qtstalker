@@ -41,8 +41,9 @@ class SymbolDialog : public Dialog
 
   public:
     SymbolDialog ();
+    ~SymbolDialog ();
     void createMainPage ();
-    void setSymbols (QString &ex, QString &ss);
+    void setSymbols (QString exchange, QString symbol);
     void getSymbols (Group &);
     void getSymbolSearch (QString &ex, QString &ss);
     void loadExchanges ();

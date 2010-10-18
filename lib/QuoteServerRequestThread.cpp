@@ -28,6 +28,8 @@
 QuoteServerRequestThread::QuoteServerRequestThread (QObject *p, QString &request) : QThread(p)
 {
   _request = request;
+  
+  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void QuoteServerRequestThread::run()

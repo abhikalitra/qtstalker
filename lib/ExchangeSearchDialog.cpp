@@ -22,6 +22,7 @@
 #include "ExchangeSearchDialog.h"
 #include "ExchangeDataBase.h"
 #include "Globals.h"
+#include "Config.h"
 
 #include "../pics/search.xpm"
 
@@ -34,9 +35,18 @@
 
 ExchangeSearchDialog::ExchangeSearchDialog ()
 {
+  _configSizeParm = Config::ExchangeSearchDialogSize;
+  _configPosParm = Config::ExchangeSearchDialogPosition;
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Search For Exchange"));
 
   createMainPage();
+
+  loadSettings();
+}
+
+ExchangeSearchDialog::~ExchangeSearchDialog ()
+{
+  saveSettings();
 }
 
 void ExchangeSearchDialog::createMainPage ()

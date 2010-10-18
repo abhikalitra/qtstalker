@@ -54,6 +54,8 @@ class Dialog : public QDialog
     void setIcon (QPixmap);
     QFont messageFont ();
     void setMessageFont (QFont);
+    void loadSettings ();
+    void saveSettings ();
 
   public slots:
     virtual void done ();
@@ -67,6 +69,8 @@ class Dialog : public QDialog
     QLabel *_icon;
     QCheckBox *_confirm;
     ConfirmStatus _confirmFlag;
+    int _configSizeParm;
+    int _configPosParm;
 };
 
 #endif

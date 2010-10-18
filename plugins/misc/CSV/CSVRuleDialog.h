@@ -39,11 +39,14 @@ class CSVRuleDialog : public Dialog
   
   public:
     CSVRuleDialog (QString);
+    ~CSVRuleDialog ();
     void createMainPage ();
     void createRulePage ();
     void loadRule ();
     void saveRule ();
     void clear ();
+    void loadSettings ();
+    void saveSettings ();
     
   public slots:
     void ruleChanged ();

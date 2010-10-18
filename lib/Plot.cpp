@@ -440,6 +440,11 @@ void Plot::setStartIndex (int index)
 
 void Plot::showContextMenu ()
 {
+  if (_curves.count())
+    _coListMenu->setEnabled(TRUE);
+  else
+    _coListMenu->setEnabled(FALSE);
+  
   _chartMenu->exec(QCursor::pos());
 }
 
@@ -605,8 +610,6 @@ void Plot::setYPoints ()
     
     _plotScaleDraw->addPoint(color, bar->data());
   }
-
-  _plotScaleDraw->drawPoints(axisWidget(QwtPlot::yRight));
 }
 */
 

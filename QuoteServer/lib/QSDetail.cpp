@@ -54,7 +54,9 @@ int QSDetail::addKey (QString &d)
 
 void QSDetail::addData (QString &d)
 {
-  _data.append(d);
+  QString s = d;
+  s = s.remove(QString("'"), Qt::CaseSensitive);
+  _data.append(s);
 }
 
 void QSDetail::string (QString &d)

@@ -20,6 +20,7 @@
  */
 
 #include "Dialog.h"
+#include "Config.h"
 
 #include <QtDebug>
 #include <QPushButton>
@@ -28,6 +29,8 @@
 Dialog::Dialog ()
 {
   _confirmFlag = _ConfirmNone;
+  _configSizeParm = -1;
+  _configPosParm = -1;
   
   createGUI();
 
@@ -171,5 +174,34 @@ QFont Dialog::messageFont ()
 void Dialog::setMessageFont (QFont font)
 {
   _message->setFont(font);
+}
+
+void Dialog::loadSettings ()
+{
+  Config config;
+
+  // restore the size of the window
+  QSize sz;
+  config.getData((Config::Parm) _configSizeParm, sz);
+  if (! sz.isNull())
+    resize(sz);
+
+  // restore the position of the window
+  QPoint p;
+  config.getData((Config::Parm) _configPosParm, p);
+  if (! p.isNull())
+    move(p);
+}
+
+void Dialog::saveSettings ()
+{
+  Config config;
+
+  // save app size and position
+  QSize sz = size();
+  config.setData((Config::Parm) _configSizeParm, sz);
+
+  QPoint pt = pos();
+  config.setData((Config::Parm) _configPosParm, pt);
 }
 

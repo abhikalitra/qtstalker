@@ -137,9 +137,7 @@ void PlotScaleDraw::draw (QPainter *p, const QPalette &pal) const
     p->drawText(rc, s);
   }
 }
-*/
 
-/*
 void PlotScaleDraw::drawPoints (QwtScaleWidget *w)
 {
   QPainter p;
@@ -189,13 +187,11 @@ void PlotScaleDraw::drawPoints (QwtScaleWidget *w)
     p.drawText(rc, s);
   }
 }
-*/
 
 void PlotScaleDraw::clearPoints ()
 {
   _colors.clear();
   _values.clear();
-//  invalidateCache();
 }
 
 void PlotScaleDraw::addPoint (QColor c, double v)
@@ -203,3 +199,4 @@ void PlotScaleDraw::addPoint (QColor c, double v)
   _colors.append(c);
   _values.append(v);
 }
+*/

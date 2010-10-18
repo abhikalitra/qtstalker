@@ -33,6 +33,8 @@
 #include "../pics/delete.xpm"
 #include "../pics/refresh.xpm"
 #include "../pics/configure.xpm"
+#include "../pics/ok.xpm"
+#include "../pics/que.xpm"
 
 #include <QLayout>
 #include <QDialogButtonBox>
@@ -196,6 +198,11 @@ void AlertDialog::newAlert2 (AlertItem alert)
   item->setText(3, alert.statusToString(alert.status()));
   item->setText(4, alert.lastUpdate().toString(Qt::ISODate));
 
+  if (alert.status() == AlertItem::_Waiting)
+    item->setIcon(3, QIcon(que_xpm));
+  else
+    item->setIcon(3, QIcon(ok_xpm));
+  
   resizeColumns();
 }
 
@@ -221,7 +228,7 @@ void AlertDialog::editAlert2 (AlertItem alert)
   QTreeWidgetItem *item = _treeItems.value(alert.id());
   if (! item)
     return;
-  
+
   item->setText(1, alert.symbol());
   item->setText(2, alert.indicator());
 
@@ -275,6 +282,7 @@ void AlertDialog::done (AlertItem alert)
 
   alert.setStatus(AlertItem::_Hit);
 
+  item->setIcon(3, QIcon(ok_xpm));
   item->setText(3, alert.statusToString(alert.status()));
   item->setText(4, alert.lastUpdate().toString(Qt::ISODate));
 
@@ -382,6 +390,7 @@ void AlertDialog::resetAlert ()
   db.commit();
 
   l.at(0)->setText(3, alert.statusToString(AlertItem::_Waiting));
+  l.at(0)->setIcon(3, QIcon(que_xpm));
 }
 
 void AlertDialog::configureDialog ()

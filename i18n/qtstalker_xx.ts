@@ -156,10 +156,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable / disable alerts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Alert Sound</source>
         <translation type="unfinished"></translation>
     </message>
@@ -262,14 +258,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New Alert Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select indicator for alert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Configure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -297,43 +285,15 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Last Update</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AlertEditDialog</name>
     <message>
-        <source>Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol search...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -349,27 +309,35 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mail</source>
+        <source>Symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Notify by mail</source>
+        <source>Mail Notify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sound</source>
+        <source>Sound Notify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Notify by playing a sound file</source>
+        <source>Popup Notify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Popup</source>
+        <source>Rule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Notify by popup message</source>
+        <source>Symbol missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator logic missing.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -875,10 +843,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qtstalker: CSV Editing Rule </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>S = Stock, F = Futures</source>
         <translation type="unfinished"></translation>
     </message>
@@ -904,6 +868,22 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Rule Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filename As Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Suffix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rule</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1308,11 +1288,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbol &amp;Search...</source>
+        <source>Symbol &amp;Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add To &amp;Group...</source>
+        <source>Add To &amp;Group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1398,6 +1378,10 @@ eg. perl -l -T</source>
         <source>Set Date Range</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DocsAction</name>
@@ -1455,6 +1439,10 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>No items found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform Search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1537,11 +1525,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Search...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search symbols</source>
+        <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1629,19 +1613,19 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;New Group...</source>
+        <source>&amp;New Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Add To Group...</source>
+        <source>&amp;Add To Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Delete Group Items...</source>
+        <source>&amp;Delete Group Items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>De&amp;lete Group...</source>
+        <source>De&amp;lete Group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1754,10 +1738,6 @@ eg. perl -l -T</source>
 <context>
     <name>IndicatorDialog</name>
     <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1786,7 +1766,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings</source>
+        <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2373,7 +2353,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Configure Plugin...</source>
+        <source>&amp;Configure Plugin</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2645,19 +2625,7 @@ eg. perl -l -T</source>
 <context>
     <name>QuoteServerDialog</name>
     <message>
-        <source>Quote server hostname</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quote server port #</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Configure Quote Server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2690,6 +2658,18 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Quote server restarted successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hostname</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Port #</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restart</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3084,6 +3064,10 @@ eg. perl -l -T</source>
         <source>Group name empty or invalid</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Scanner</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScannerNewDialog</name>
@@ -3092,15 +3076,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A scanner with this name already exists.</source>
+        <source>Duplicate scanner name. Enter a unique name.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3233,10 +3209,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Changes effective next startup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3303,31 +3275,31 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Search...</source>
+        <source>&amp;Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;New Script...</source>
+        <source>&amp;New Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Edit Script...</source>
+        <source>&amp;Edit Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Delete Script...</source>
+        <source>&amp;Delete Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Run Script...</source>
+        <source>&amp;Run Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure &amp;Launch Buttons...</source>
+        <source>Configure &amp;Launch Buttons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure Launch Buttons...</source>
+        <source>Configure Launch Buttons</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3480,10 +3452,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3576,6 +3544,10 @@ a partial match like %Script or %Scr%</source>
         <source>Chart Tab Settings</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Tab Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TesterDeleteDialog</name>
@@ -3647,10 +3619,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Profit %</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;View</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3660,6 +3628,18 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Net Profit %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit Factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Payoff Ratio</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4228,6 +4208,10 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Yahoo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

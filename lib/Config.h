@@ -83,12 +83,12 @@ class Config : public ConfigDataBase
       SidePanelLastPage, // the last side panel page displayed
       LastScriptSearch, // the last used script search string
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel
-      ScriptLaunchButton3, // ********* UNUSED ***************
-      ScriptLaunchButton4, // ********* UNUSED ***************
-      ScriptLaunchButton5, // ********* UNUSED ***************
-      ScriptLaunchButton6, // ********* UNUSED ***************
-      ScriptLaunchButton7, // ********* UNUSED ***************
-      ScriptLaunchButton8, // ********* UNUSED ***************
+      SymbolDialogSize, // symbol dialog window size last used
+      SymbolDialogPosition, // symbol dialog window position last used
+      GroupAddDialogSize, // group add dialog window size last used
+      GroupAddDialogPosition, // group add dialog window position last used
+      ExchangeSearchDialogSize, // Exchange search dialog window size last used
+      ExchangeSearchDialogPosition, // Exchange search dialog window position last used
       ScriptLaunchButton9, // ********* UNUSED ***************
       ScriptLaunchButton10, // ********* UNUSED ***************
       ScriptLaunchButton11, // ********* UNUSED ***************

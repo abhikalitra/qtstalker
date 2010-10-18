@@ -20,6 +20,7 @@
  */
 
 #include "IndicatorPlotRules.h"
+#include "Operator.h"
 
 #include <QtDebug>
 
@@ -71,5 +72,171 @@ int IndicatorPlotRules::count ()
 IndicatorPlotRule * IndicatorPlotRules::getRule (int index)
 {
   return _rules.at(index);
+}
+
+int IndicatorPlotRules::test (Indicator &indicator, int index)
+{
+  if (! _rules.count())
+    return 0;
+
+  int loop = 0;
+  int count = 0;
+  for (; loop < _rules.count(); loop++)
+  {
+    IndicatorPlotRule *rule = _rules.at(loop);
+
+    int offset = 0;
+    Curve *curve = indicator.line(rule->name());
+    if (! curve)
+    {
+      // check for a lookback syntax
+      if (rule->name().contains("."))
+      {
+        QStringList l = rule->name().split(".");
+        if (l.count() != 2)
+        {
+          qDebug() << "IndicatorPlotRules::test: invalid syntax" << rule->name();
+          return 0;
+        }
+
+        // get the curve portion
+        curve = indicator.line(l.at(0));
+        if (! curve)
+        {
+          qDebug() << "IndicatorPlotRules::test: invalid syntax" << rule->name();
+          return 0;
+        }
+
+        // get the offset portion
+        bool ok;
+        offset = l.at(1).toInt(&ok);
+        if (! ok)
+        {
+          qDebug() << "IndicatorPlotRules::test: invalid syntax" << rule->name();
+          return 0;
+        }
+      }
+      else
+      {
+        qDebug() << "IndicatorPlotRules::test: invalid syntax" << rule->name();
+        return 0;
+      }
+    }
+
+    // get the value
+    double value = 0;
+    if (index == -1)
+    {
+      int sindex, eindex;
+      curve->keyRange(sindex, eindex);
+      CurveBar *bar = curve->bar(eindex - offset);
+      if (! bar)
+        return 0;
+      value = bar->data();
+    }
+    else
+    {
+      CurveBar *bar = curve->bar(index - offset);
+      if (! bar)
+        return 0;
+      value = bar->data();
+    }
+
+    // now get the second curve
+    int offset2 = 0;
+    double value2 = 0;
+    curve = indicator.line(rule->value());
+    if (! curve)
+    {
+      // check for a lookback syntax
+      if (rule->value().contains("."))
+      {
+        QStringList l = rule->value().split(".");
+        if (l.count() != 2)
+        {
+          qDebug() << "IndicatorPlotRules::test: invalid syntax" << rule->value();
+          return 0;
+        }
+
+        // get the curve portion
+        curve = indicator.line(l.at(0));
+        if (! curve)
+        {
+          qDebug() << "IndicatorPlotRules::test: invalid syntax" << rule->value();
+          return 0;
+        }
+
+        // get the offset portion
+        bool ok;
+        offset2 = l.at(1).toInt(&ok);
+        if (! ok)
+        {
+          qDebug() << "IndicatorPlotRules::test: invalid syntax" << rule->value();
+          return 0;
+        }
+      }
+      else
+      {
+        // check if its a value
+        bool ok;
+        value2 = rule->value().toDouble(&ok);
+        if (! ok)
+        {
+          qDebug() << "IndicatorPlotRules::test: invalid syntax" << rule->value();
+          return 0;
+        }
+      }
+    }
+
+    // get the value2
+    if (index == -1)
+    {
+      int sindex, eindex;
+      curve->keyRange(sindex, eindex);
+      CurveBar *bar = curve->bar(eindex - offset2);
+      if (! bar)
+        return 0;
+      value2 = bar->data();
+    }
+    else
+    {
+      CurveBar *bar = curve->bar(index - offset2);
+      if (! bar)
+        return 0;
+      value2 = bar->data();
+    }
+
+    // now compare the values
+    switch ((Operator::Type) rule->op())
+    {
+      case Operator::_LessThan:
+        if (value < value2)
+          count++;
+        break;
+      case Operator::_LessThanEqual:
+        if (value <= value2)
+          count++;
+        break;
+      case Operator::_Equal:
+        if (value == value2)
+          count++;
+        break;
+      case Operator::_GreaterThanEqual:
+        if (value >= value2)
+          count++;
+        break;
+      case Operator::_GreaterThan:
+        if (value > value2)
+          count++;
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (count == _rules.count())
+    return 1; // all rules are true
+
+  return 0; // one or more rules are false
 }
 

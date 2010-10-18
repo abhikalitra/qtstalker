@@ -25,7 +25,6 @@
 #include "BarData.h"
 #include "IndicatorPluginFactory.h"
 #include "IndicatorPlugin.h"
-#include "Operator.h"
 #include "GroupDataBase.h"
 #include "IndicatorPlotRules.h"
 
@@ -100,85 +99,7 @@ void ScannerThread::run ()
     if (rules.createRules(i, _scanner.plots(), bd))
       continue;
 
-    if (! rules.count())
-      continue;
-
-    int loop = 0;
-    int count = 0;
-    for (; loop < rules.count(); loop++)
-    {
-      IndicatorPlotRule *rule = rules.getRule(loop);
-
-      Curve *curve = i.line(rule->name());
-      if (! curve)
-      {
-        qDebug() << "ScannerThread::run: no" << rule->name();
-        continue;
-      }
-
-      double value = 0;
-      int sindex, eindex;
-      curve->keyRange(sindex, eindex);
-      CurveBar *bar = curve->bar(eindex);
-      if (! bar)
-      {
-        qDebug() << "ScannerThread::run: no bar" << rule->name();
-        continue;
-      }
-      value = bar->data();
-
-      double value2 = 0;
-      curve = i.line(rule->value());
-      if (curve)
-      {
-        curve->keyRange(sindex, eindex);
-        bar = curve->bar(eindex);
-        if (! bar)
-        {
-          qDebug() << "ScannerThread::run: no bar" << rule->value();
-          continue;
-        }
-        value2 = bar->data();
-      }
-      else
-      {
-        bool ok;
-        value2 = rule->value().toDouble(&ok);
-        if (! ok)
-        {
-          qDebug() << "ScannerThread::run: invalid value" << rule->name();
-          continue;
-        }
-      }
-
-      switch ((Operator::Type) rule->op())
-      {
-        case Operator::_LessThan:
-          if (value < value2)
-            count++;
-          break;
-        case Operator::_LessThanEqual:
-          if (value <= value2)
-            count++;
-          break;
-        case Operator::_Equal:
-          if (value == value2)
-            count++;
-          break;
-        case Operator::_GreaterThanEqual:
-          if (value >= value2)
-            count++;
-          break;
-        case Operator::_GreaterThan:
-          if (value > value2)
-            count++;
-          break;
-        default:
-          break;
-      }
-    }
-
-    if (count == rules.count())
+    if (rules.test(i, -1))
     {
       BarData tbd;
       tbd.setExchange(bd.getExchange());

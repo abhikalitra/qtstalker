@@ -30,6 +30,8 @@ UpdateChartPageThread::UpdateChartPageThread (QObject *p, QString &exchange, QSt
 {
   _searchExchange = exchange;
   _searchSymbol = symbol;
+
+  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void UpdateChartPageThread::run()

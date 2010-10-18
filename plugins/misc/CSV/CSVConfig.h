@@ -33,7 +33,9 @@ class CSVConfig : public ConfigDataBase
     {
       LastRule, // last used rule
       Size, // window size
-      Pos // position
+      Pos, // position
+      RuleDialogSize,
+      RuleDialogPosition
     };
 
     CSVConfig ();

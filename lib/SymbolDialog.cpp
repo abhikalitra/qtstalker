@@ -23,6 +23,7 @@
 #include "BarData.h"
 #include "QuoteServerRequestThread.h"
 #include "Globals.h"
+#include "Config.h"
 
 #include "../pics/search.xpm"
 
@@ -34,9 +35,20 @@
 
 SymbolDialog::SymbolDialog ()
 {
+  _configSizeParm = Config::SymbolDialogSize;
+  _configPosParm = Config::SymbolDialogPosition;
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Select Symbols"));
 
   createMainPage();
+
+  loadExchanges();
+
+  loadSettings();
+}
+
+SymbolDialog::~SymbolDialog ()
+{
+  saveSettings();
 }
 
 void SymbolDialog::createMainPage ()
@@ -66,21 +78,19 @@ void SymbolDialog::createMainPage ()
   l << tr("Symbol") << tr("Name") << tr("Exchange");
 
   _leftSymbols = new QTreeWidget;
-  _leftSymbols->setSortingEnabled(TRUE);
+  _leftSymbols->setSortingEnabled(FALSE);
   _leftSymbols->setRootIsDecorated(FALSE);
   _leftSymbols->setHeaderLabels(l);
   _leftSymbols->setSelectionMode(QAbstractItemView::ExtendedSelection);
   vbox->addWidget(_leftSymbols);
   
   _tabs->addTab(w, tr("Search"));
-
-  loadExchanges();
 }
 
-void SymbolDialog::setSymbols (QString &ex, QString &ss)
+void SymbolDialog::setSymbols (QString exchange, QString symbol)
 {
-  _exchanges->setCurrentIndex(_exchanges->findText(ex, Qt::MatchExactly));
-  _search->setText(ss);
+  _exchanges->setCurrentIndex(_exchanges->findText(exchange, Qt::MatchExactly));
+  _search->setText(symbol);
 }
 
 void SymbolDialog::getSymbols (Group &l)
@@ -163,7 +173,6 @@ void SymbolDialog::loadExchanges ()
 
   QuoteServerRequestThread *r = new QuoteServerRequestThread(this, command);
   connect(r, SIGNAL(signalDone(QString)), this, SLOT(exchangeRequestDone(QString)), Qt::QueuedConnection);
-  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
   r->start();
 }
 
@@ -180,29 +189,29 @@ void SymbolDialog::exchangeRequestDone (QString data)
 void SymbolDialog::done ()
 {
   QList<QTreeWidgetItem *> sel = _leftSymbols->selectedItems();
-  if (! sel.count())
-    return;
-   
-  Group g;
-  int loop = 0;
-  for (; loop < sel.count(); loop++)
+  if (sel.count())
   {
-    QTreeWidgetItem *item = sel.at(loop);
+    Group g;
+    int loop = 0;
+    for (; loop < sel.count(); loop++)
+    {
+      QTreeWidgetItem *item = sel.at(loop);
 
-    BarData bd;
-    QString s = item->text(0);
-    bd.setSymbol(s);
+      BarData bd;
+      QString s = item->text(0);
+      bd.setSymbol(s);
 
-    s = item->text(1);
-    bd.setName(s);
+      s = item->text(1);
+      bd.setName(s);
 
-    s = item->text(2);
-    bd.setExchange(s);
+      s = item->text(2);
+      bd.setExchange(s);
 
-    g.setSymbol(bd);
-  }
+      g.setSymbol(bd);
+    }
   
-  emit signalSymbols(g);
+    emit signalSymbols(g);
+  }
   
   emit signalResults(_exchanges->currentText(), _search->text());
   
