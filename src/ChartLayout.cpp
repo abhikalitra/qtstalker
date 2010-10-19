@@ -255,7 +255,6 @@ void ChartLayout::loadPlots (int index)
     qRegisterMetaType<Indicator>("Indicator");
     IndicatorThread *r = new IndicatorThread(this, i);
     connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
-    connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
     r->start();
   }
 }

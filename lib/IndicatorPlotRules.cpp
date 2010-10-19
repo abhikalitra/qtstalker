@@ -84,6 +84,8 @@ int IndicatorPlotRules::test (Indicator &indicator, int index)
   for (; loop < _rules.count(); loop++)
   {
     IndicatorPlotRule *rule = _rules.at(loop);
+    if (! rule)
+      continue;
 
     int offset = 0;
     Curve *curve = indicator.line(rule->name());
@@ -189,21 +191,24 @@ int IndicatorPlotRules::test (Indicator &indicator, int index)
     }
 
     // get the value2
-    if (index == -1)
+    if (curve)
     {
-      int sindex, eindex;
-      curve->keyRange(sindex, eindex);
-      CurveBar *bar = curve->bar(eindex - offset2);
-      if (! bar)
-        return 0;
-      value2 = bar->data();
-    }
-    else
-    {
-      CurveBar *bar = curve->bar(index - offset2);
-      if (! bar)
-        return 0;
-      value2 = bar->data();
+      if (index == -1)
+      {
+        int sindex, eindex;
+        curve->keyRange(sindex, eindex);
+        CurveBar *bar = curve->bar(eindex - offset2);
+        if (! bar)
+          return 0;
+        value2 = bar->data();
+      }
+      else
+      {
+        CurveBar *bar = curve->bar(index - offset2);
+        if (! bar)
+          return 0;
+        value2 = bar->data();
+      }
     }
 
     // now compare the values

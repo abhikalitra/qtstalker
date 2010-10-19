@@ -152,14 +152,13 @@ void SymbolDialog::searchRequestDone (QString data)
   for (; loop < l.count(); loop++)
   {
     QStringList l2 = l.at(loop).split(",");
-    if (l2.count() != 2)
+    if (l2.count() != 3)
       continue;
 
     QTreeWidgetItem *item = new QTreeWidgetItem(_leftSymbols);
     
-    QString name;
     item->setText(0, l2.at(1));
-    item->setText(1, name);
+    item->setText(1, l2.at(2));
     item->setText(2, l2.at(0));
   }
   

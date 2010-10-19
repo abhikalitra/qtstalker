@@ -1,23 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
   <title>Qtstalker: QuoteServer API - Search</title>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
-  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen">
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css"
+ media="screen">
   <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-    <div id="content">
-      <div id="rightPanel">
-        <div id="version"></div>
-        <div id="toc">
-          <hr>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="toc.html">Table of Contents</a></li>
-          </ul>
-        </div>
-      </div>
+<div id="content">
+<div id="rightPanel">
+<div id="version"></div>
+<div id="toc">
+<hr>
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="toc.html">Table of Contents</a></li>
+</ul>
+</div>
+</div>
 <!-- Content -->
 <h1>QuoteServer API - Search</h1>
 <p>
@@ -29,25 +31,26 @@ symbol fields on partial and/or full matches.
 <p class="api">
 Search,S,&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;\n
 </p>
-<p>Searches the database on provided &lt;EXCHANGE&gt; and
+<p>Searches the database with provided &lt;EXCHANGE&gt; and
 &lt;SYMBOL&gt;
 fields and returns the symbols that match.
 </p>
 <ul>
   <li>&lt;EXCHANGE&gt; is the exchange the
 quote originates from. eg.
-'XNYS' or for partial matches use % eg. '%NYS' or '%NY%'
-  </li>
+'XNYS' or for partial matches use % eg. '%NYS' or '%NY%' </li>
   <li>&lt;SYMBOL&gt; is the symbol eg. 'GOOG' or for partial matches
 use % eg. '%OOG' or '%OO%'</li>
 </ul>
 <p>
-Success returns a string of '&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;' pairs.
-Each pair is delimited by a colon. End of data is delimited by a \n.
+Success returns a string of
+'&lt;EXCHANGE&gt;,&lt;SYMBOL&gt;,&lt;NAME&gt;' tuples.
+Each tuple is delimited by a colon. End of data is delimited by a \n.
 Failure returns 'ERROR\n'.
 </p>
 <p>
-A full example would be to return any exchange,symbol pairs that end in
+A full example would be to return any exchange,symbol,name tuples that
+end in
 NYS,OOG '<span style="font-weight: bold;">Search,S,%NYS,%OOG\n</span>'
 </p>
 <hr>
@@ -62,6 +65,6 @@ duplicates are returned.
 Success returns a string of exchanges delimited by a colon. End of data
 is delimited by a \n. Failure returns 'ERROR\n'.
 </p>
-    </div>
+</div>
 </body>
 </html>

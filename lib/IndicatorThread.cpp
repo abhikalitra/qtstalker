@@ -28,6 +28,8 @@
 IndicatorThread::IndicatorThread (QObject *p, Indicator &ind) : QThread (p)
 {
   _indicator = ind;
+
+  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void IndicatorThread::run ()

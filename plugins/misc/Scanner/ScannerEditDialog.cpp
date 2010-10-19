@@ -31,6 +31,7 @@
 #include <QToolButton>
 #include <QIcon>
 #include <QFormLayout>
+#include <QGroupBox>
 
 ScannerEditDialog::ScannerEditDialog (QString name)
 {
@@ -109,8 +110,17 @@ void ScannerEditDialog::createMainPage ()
   form->addRow(tr("Group Name"), _groupName);
 
   // plot list
+  QGroupBox *gbox = new QGroupBox;
+  gbox->setTitle(tr("Rule"));
+  vbox->addWidget(gbox);
+  
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  tvbox->setMargin(0);
+  tvbox->setSpacing(0);
+  gbox->setLayout(tvbox);
+  
   _list = new IndicatorPlotList;
-  vbox->addWidget(_list);
+  tvbox->addWidget(_list);
   
   _tabs->addTab(w, tr("Settings"));
 }

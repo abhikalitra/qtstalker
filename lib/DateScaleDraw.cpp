@@ -46,6 +46,7 @@ void DateScaleDraw::setDates ()
 
     QString s;
     bar.getRangeKey(s);
+
     _data.insert(s, loop);
 
     _dateList.append(bar.date());

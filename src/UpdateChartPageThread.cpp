@@ -50,25 +50,13 @@ void UpdateChartPageThread::run()
   for (; loop < l.count(); loop++)
   {
     QStringList l2 = l.at(loop).split(",");
-    if (l2.count() != 2)
+    if (l2.count() != 3)
       continue;
 
     BarData bd;
     bd.setExchange(l2[0]);
     bd.setSymbol(l2[1]);
-
-    tl.clear();
-    tl << "Details" << "G" << bd.getExchange() << bd.getSymbol() << "Name";
-    _request = tl.join(",") + "\n";
-
-    if (qsr.run(_request))
-    {
-      emit signalSymbol(bd);
-      continue;
-    }
-
-    bd.setName(qsr.data());
-  
+    bd.setName(l2[2]);
     emit signalSymbol(bd);
   }
 

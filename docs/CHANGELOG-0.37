@@ -852,4 +852,8 @@
            for the GUI plugin and not for scripts. Scripts have the GET_INDEX functions that allow more precision.
            This is to help give more flexibility to the GUI plugin.
 
+           Thanks to 'stressedpiper' for a patch that greatly speeds up QuoteServer Search command results by
+           including the name field in the search rather than conducting an additional details search.
+           Updated the QuoteServer Search command docs to reflect the new returned format.
+
 

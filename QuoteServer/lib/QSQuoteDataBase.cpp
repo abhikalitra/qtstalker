@@ -145,42 +145,39 @@ int QSQuoteDataBase::search (QString &exchange, QString &symbol, QString &output
 //  time.start();
 
   // if exchange and pat is empty then get all symbols from all exchanges will be returned
-  QString s = ("SELECT exchange,symbol FROM symbolIndex");
+  QString s = "SELECT symbolIndex.exchange,symbolIndex.symbol,detailsIndex.Name FROM symbolIndex";
+  s.append(" LEFT OUTER JOIN detailsIndex ON symbolIndex.tableName=detailsIndex.tableName");
 
   int whereFlag = 0;
-  if (exchange == "*")
-    ;
-  else
+  if (exchange != "*")
   {
     whereFlag = 1;
     
     if (exchange.contains("%"))
-      s.append(" WHERE exchange LIKE '" + exchange + "'");
+      s.append(" WHERE symbolIndex.exchange LIKE '" + exchange + "'");
     else
-      s.append(" WHERE exchange='" + exchange + "'");
+      s.append(" WHERE symbolIndex.exchange='" + exchange + "'");
   }
   
-  if (symbol == "*")
-    ;
-  else
+  if (symbol != "*")
   {
     if (symbol.contains("%"))
     {
       if (whereFlag)
-        s.append(" AND symbol LIKE '" + symbol + "'");
+        s.append(" AND symbolIndex.symbol LIKE '" + symbol + "'");
       else
-        s.append(" WHERE symbol LIKE '" + symbol + "'");
+        s.append(" WHERE symbolIndex.symbol LIKE '" + symbol + "'");
     }
     else
     {
       if (whereFlag)
-        s.append(" AND symbol='" + symbol + "'");
+        s.append(" AND symbolIndex.symbol='" + symbol + "'");
       else
-        s.append(" WHERE symbol='" + symbol + "'");
+        s.append(" WHERE symbolIndex.symbol='" + symbol + "'");
     }
   }
 
-  s.append(" ORDER BY exchange,symbol ASC");
+  s.append(" ORDER BY symbolIndex.exchange,symbolIndex.symbol ASC");
 
   QSLog log;
   QSqlQuery q(QSqlDatabase::database(_dbName));
@@ -193,16 +190,17 @@ int QSQuoteDataBase::search (QString &exchange, QString &symbol, QString &output
 
   QStringList l;
 
-  // we create exchange,symbol pairs comma delimiter
+  // we create exchange,symbol,name tuples comma delimiter
   while (q.next())
   {
     int pos = 0;
     QString s = q.value(pos++).toString();
     s.append("," + q.value(pos++).toString());
+    s.append("," + q.value(pos++).toString());
     l.append(s);
   }
 
-  // now delimit each pair with a semicolon
+  // now delimit each tuple with a colon
   output = l.join(":");
 
 //qDebug("Search: elapsed: %d ms", time.elapsed());
@@ -469,7 +467,7 @@ int QSQuoteDataBase::getBars (QSSymbol &output)
   }
 
   // bar fields use comma delimiter
-  // bars use semicolon delimiter
+  // bars separated with colon delimiter
   output.bars = dateList.count(); // set # of bars
   output.data = l.join(":");
 

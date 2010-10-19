@@ -293,9 +293,9 @@ void QtstalkerApp::loadChart (BarData symbol)
   c <<  _currentChart.getExchange() << _currentChart.getSymbol();
   QString chart = c.join(",");
   Config config;
-  config.transaction();
+//  config.transaction();
   config.setData((int) Config::CurrentChart, chart);
-  config.commit();
+//  config.commit();
 
   // construct a QuoteServer command to get the quotes
   QStringList l;

@@ -209,11 +209,16 @@ void IndicatorPlotList::addPlotItem (QString pn, QString oper, QString val)
   item->setText(0, s);
 
   QComboBox *cb = new QComboBox;
-  cb->setEditable(FALSE);
+  cb->setEditable(TRUE);
   cb->addItems(_plotNames);
-  cb->setCurrentIndex(cb->findText(pn));
+  cb->clearEditText();
+  if (_indicator->text() == "CUS")
+    cb->setEditText(pn);
+  else    
+    cb->setCurrentIndex(cb->findText(pn));
   _list->setItemWidget(item, 1, cb);
   connect(cb, SIGNAL(currentIndexChanged(int)), this, SIGNAL(signalItemChanged()));
+  connect(cb, SIGNAL(editTextChanged(const QString &)), this, SIGNAL(signalItemChanged()));
 
   cb = new QComboBox;
   cb->setEditable(FALSE);
@@ -232,7 +237,10 @@ void IndicatorPlotList::addPlotItem (QString pn, QString oper, QString val)
   cb->setEditable(TRUE);
   cb->addItems(l);
   cb->clearEditText();
-  cb->setCurrentIndex(cb->findText(val));
+  if (_indicator->text() == "CUS")
+    cb->setEditText(val);
+  else
+    cb->setCurrentIndex(cb->findText(val));
   _list->setItemWidget(item, 3, cb);
   connect(cb, SIGNAL(currentIndexChanged(int)), this, SIGNAL(signalItemChanged()));
   connect(cb, SIGNAL(editTextChanged(const QString &)), this, SIGNAL(signalItemChanged()));
