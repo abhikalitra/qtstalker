@@ -131,6 +131,8 @@ void ExchangeSearchDialog::search ()
     return;
   }
 
+  hideMessage();
+  
   _list->addItems(sl);
 }
 

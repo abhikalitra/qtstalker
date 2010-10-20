@@ -36,6 +36,8 @@ class GroupDeleteItemsDialog : public ListDialog
   public slots:
     void done ();
     void deleteItems ();
+    void confirmYes ();
+    void confirmNo ();
 
   private:
     GroupDataBase _db;

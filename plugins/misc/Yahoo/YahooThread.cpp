@@ -33,6 +33,8 @@ YahooThread::YahooThread (QObject *p, QString &type, QStringList &symbols, QDate
   _symbols = symbols;
   _startDate = sd;
   _endDate = ed;
+
+  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void YahooThread::run ()

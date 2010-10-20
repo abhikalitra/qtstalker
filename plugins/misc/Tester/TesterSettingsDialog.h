@@ -22,7 +22,6 @@
 #ifndef TESTER_SETTINGS_DIALOG_HPP
 #define TESTER_SETTINGS_DIALOG_HPP
 
-#include <QDialog>
 #include <QComboBox>
 #include <QStringList>
 #include <QDoubleSpinBox>
@@ -30,15 +29,15 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QTextEdit>
-#include <QTabWidget>
 #include <QGroupBox>
 
 #include "SymbolButton.h"
 #include "Indicator.h"
 #include "TesterSettings.h"
 #include "IndicatorPlotList.h"
+#include "Dialog.h"
 
-class TesterSettingsDialog : public QDialog
+class TesterSettingsDialog : public Dialog
 {
   Q_OBJECT
   
@@ -56,10 +55,11 @@ class TesterSettingsDialog : public QDialog
     void trailingTypeChanged ();
     void profitTargetTypeChanged ();
     void maximumLossTypeChanged ();
-    void closeDialog ();
+    void done ();
+    void cancel ();
+    void confirmYes ();
           
   private:
-    QTabWidget *_tabs;
     int _saveFlag;
     TesterSettings _settings;
     QPushButton *_saveButton;

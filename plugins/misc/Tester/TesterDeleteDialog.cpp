@@ -42,22 +42,18 @@ TesterDeleteDialog::TesterDeleteDialog ()
 
 void TesterDeleteDialog::done ()
 {
-  switch (_confirmFlag)
-  {
-    case _ConfirmNone:
-      setMessage(tr("Confirm Delete:"));
-      setConfirm(tr("Yes. Delete selected back testers."));
-      break;
-    case _ConfirmNo:
-      unsetConfirm();
-      return;
-    case _ConfirmYes:
-      deleteRules();
-      return;
-      break;
-    default:
-      break;
-  }
+  setMessage(tr("Delete selected back testers?"));
+  setConfirm();
+}
+
+void TesterDeleteDialog::confirmYes ()
+{
+  deleteRules();
+}
+
+void TesterDeleteDialog::confirmNo ()
+{
+  unsetConfirm();
 }
 
 void TesterDeleteDialog::deleteRules ()

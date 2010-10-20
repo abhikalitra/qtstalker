@@ -40,6 +40,8 @@ YahooSymbolDialog::YahooSymbolDialog ()
   loadSettings();
   
   selectionChanged();
+
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void YahooSymbolDialog::createMainPage ()

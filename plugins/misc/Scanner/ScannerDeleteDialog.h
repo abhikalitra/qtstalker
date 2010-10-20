@@ -34,8 +34,8 @@ class ScannerDeleteDialog : public ListDialog
   public slots:
     void done ();
     void deleteScanners ();
-
-  private:
+    void confirmYes ();
+    void confirmNo ();
 };
 
 #endif

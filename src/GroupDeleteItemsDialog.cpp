@@ -38,24 +38,20 @@ GroupDeleteItemsDialog::GroupDeleteItemsDialog (QString name)
   _tabs->setTabText(0, tr("Group Contents"));
 }
 
+void GroupDeleteItemsDialog::confirmYes ()
+{
+  deleteItems();
+}
+
+void GroupDeleteItemsDialog::confirmNo ()
+{
+  unsetConfirm();
+}
+
 void GroupDeleteItemsDialog::done ()
 {
-  switch (_confirmFlag)
-  {
-    case _ConfirmNone:
-      setMessage(tr("Confirm Delete:"));
-      setConfirm(tr("Delete selected group contents."));
-      break;
-    case _ConfirmNo:
-      unsetConfirm();
-      return;
-    case _ConfirmYes:
-      deleteItems();
-      return;
-      break;
-    default:
-      break;
-  }
+  setMessage(tr("Delete selected group items?"));
+  setConfirm();
 }
 
 void GroupDeleteItemsDialog::deleteItems ()

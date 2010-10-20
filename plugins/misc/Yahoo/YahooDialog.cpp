@@ -205,8 +205,7 @@ void YahooDialog::downloadDone ()
 {
   _log->append("*** " + tr("Download finished") + " ***");
 
-  _histButton->setEnabled(TRUE);
-  _detailsButton->setEnabled(TRUE);
+  setDialogEnable(TRUE);
   _cancelButton->setEnabled(FALSE);
   
   _runningFlag = 0;
@@ -216,8 +215,7 @@ void YahooDialog::downloadDone ()
 
 void YahooDialog::startHistory ()
 {
-  _histButton->setEnabled(FALSE);
-  _detailsButton->setEnabled(FALSE);
+  setDialogEnable(FALSE);
   _cancelButton->setEnabled(TRUE);
 
   _log->append("\n*** " + tr("Starting history download") + " ***");
@@ -238,15 +236,13 @@ void YahooDialog::startHistory ()
   YahooThread *thread = new YahooThread(this, type, sl, _sdate->dateTime(), _edate->dateTime());
   connect(thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
   connect(thread, SIGNAL(finished()), this, SLOT(downloadDone()));
-  connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
   connect(this, SIGNAL(signalStop()), thread, SLOT(stop()));
   thread->start();
 }
 
 void YahooDialog::startDetails ()
 {
-  _histButton->setEnabled(FALSE);
-  _detailsButton->setEnabled(FALSE);
+  setDialogEnable(FALSE);
   _cancelButton->setEnabled(TRUE);
 
   _log->append("\n*** " + tr("Starting details download") + " ***");
@@ -267,7 +263,6 @@ void YahooDialog::startDetails ()
   YahooThread *thread = new YahooThread(this, type, sl, _sdate->dateTime(), _edate->dateTime());
   connect(thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
   connect(thread, SIGNAL(finished()), this, SLOT(downloadDone()));
-  connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
   connect(this, SIGNAL(signalStop()), thread, SLOT(stop()));
   thread->start();
 }
@@ -276,7 +271,6 @@ void YahooDialog::selectSymbolsDialog ()
 {
   YahooSymbolDialog *sdialog = new YahooSymbolDialog;
   connect(sdialog, SIGNAL(signalSymbols(QStringList)), this, SLOT(setSymbols(QStringList)));
-  connect(sdialog, SIGNAL(finished(int)), sdialog, SLOT(deleteLater()));
   sdialog->show();
 }
 
@@ -285,5 +279,14 @@ void YahooDialog::setSymbols (QStringList list)
   _symbolList = list;
 }
 
-
+void YahooDialog::setDialogEnable (bool status)
+{
+  _histButton->setEnabled(status);
+  _detailsButton->setEnabled(status);
+  _sdate->setEnabled(status);
+  _edate->setEnabled(status);
+  _adjustment->setEnabled(status);
+  _allSymbols->setEnabled(status);
+  _selectSymbolsButton->setEnabled(status);
+}
 

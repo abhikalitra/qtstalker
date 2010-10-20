@@ -621,8 +621,7 @@ void Plot::deleteAllChartObjects ()
 {
   Dialog *dialog = new Dialog;
   dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete All Chart Objects"));
-  dialog->setMessage(tr("Confirm Delete"));
-  dialog->setConfirm(tr("Delete all chart objects from this indicator"));
+  dialog->setMessage(tr("Delete all chart objects from this indicator?"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
   dialog->show();
 }

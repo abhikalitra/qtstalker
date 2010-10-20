@@ -45,26 +45,17 @@ TesterSettingsDialog::TesterSettingsDialog (QString name)
   QString s = "Qtstalker" + g_session + ": " + tr("Tester") + " - " + name;
   setWindowTitle(s);
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(5);
-  vbox->setMargin(5);
-  setLayout(vbox);
-
-  _tabs = new QTabWidget;
-  vbox->addWidget(_tabs);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  vbox->addWidget(bbox);
-
+  _buttonBox->removeButton(_buttonBox->button(QDialogButtonBox::Ok));
+  _buttonBox->removeButton(_buttonBox->button(QDialogButtonBox::Cancel));
+  
   _saveButton = new QPushButton;
-  bbox->addButton(_saveButton, QDialogButtonBox::ActionRole);
-  _saveButton->setText(tr("Save"));
+  _buttonBox->addButton(_saveButton, QDialogButtonBox::ActionRole);
+  _saveButton->setText(tr("Apply"));
   connect(_saveButton, SIGNAL(clicked()), this, SLOT(saveSettings()));
   _saveButton->setEnabled(FALSE);
 
-  _closeButton = bbox->addButton(QDialogButtonBox::Close);
-  connect(_closeButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
+  _closeButton = _buttonBox->addButton(QDialogButtonBox::Close);
+  connect(_closeButton, SIGNAL(clicked()), this, SLOT(cancel()));
 
   createGeneralPage ();
   createTradesPage ();
@@ -566,10 +557,30 @@ void TesterSettingsDialog::saveSettings ()
   _saveButton->setEnabled(FALSE);
 }
 
-void TesterSettingsDialog::closeDialog ()
+void TesterSettingsDialog::done ()
 {
-  saveSettings();
+  if (_saveFlag)
+    saveSettings();
+  
   accept();
+}
+
+void TesterSettingsDialog::confirmYes ()
+{
+  done();
+}
+
+void TesterSettingsDialog::cancel ()
+{
+  if (_saveFlag)
+  {
+    setMessage(tr("Settings modified. Save changes?"));
+    setConfirm();
+    _saveButton->setEnabled(FALSE);
+    _closeButton->setEnabled(FALSE);
+  }
+  else
+    reject();
 }
 
 void TesterSettingsDialog::trailingTypeChanged ()
@@ -607,4 +618,3 @@ void TesterSettingsDialog::ruleChanged ()
   _saveFlag = TRUE;
   _saveButton->setEnabled(_saveFlag);
 }
-

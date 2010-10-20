@@ -29,6 +29,7 @@
 #include <QString>
 #include <QLabel>
 #include <QCheckBox>
+#include <QPushButton>
 
 class Dialog : public QDialog
 {
@@ -38,28 +39,24 @@ class Dialog : public QDialog
     void signalMessage (QString);
 
   public:
-    enum ConfirmStatus
-    {
-      _ConfirmNone = -1,
-      _ConfirmNo = 0,
-      _ConfirmYes = 2
-    };
-    
     Dialog ();
     Dialog (QWidget *parent);
     void createGUI ();
     void setMessage (QString);
-    void setConfirm (QString);
+    void setConfirm ();
     void unsetConfirm ();
     void setIcon (QPixmap);
     QFont messageFont ();
     void setMessageFont (QFont);
     void loadSettings ();
     void saveSettings ();
+    void hideMessage ();
 
   public slots:
     virtual void done ();
-    void confirmChanged (int);
+    virtual void cancel ();
+    virtual void confirmYes ();
+    virtual void confirmNo ();
 
   protected:
     QTabWidget *_tabs;
@@ -67,10 +64,13 @@ class Dialog : public QDialog
     QVBoxLayout *_vbox;
     QLabel *_message;
     QLabel *_icon;
-    QCheckBox *_confirm;
-    ConfirmStatus _confirmFlag;
     int _configSizeParm;
     int _configPosParm;
+    QWidget *_messageWidget;
+    QPushButton *_yesButton;
+    QPushButton *_noButton;
+    QPushButton *_okButton;
+    QPushButton *_cancelButton;
 };
 
 #endif

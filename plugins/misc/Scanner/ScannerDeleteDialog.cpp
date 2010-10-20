@@ -37,22 +37,18 @@ ScannerDeleteDialog::ScannerDeleteDialog ()
 
 void ScannerDeleteDialog::done ()
 {
-  switch (_confirmFlag)
-  {
-    case _ConfirmNone:
-      setMessage(tr("Confirm Delete:"));
-      setConfirm(tr("Delete selected scanners."));
-      break;
-    case _ConfirmNo:
-      unsetConfirm();
-      return;
-    case _ConfirmYes:
-      deleteScanners();
-      return;
-      break;
-    default:
-      break;
-  }
+  setMessage(tr("Delete selected scanners?"));
+  setConfirm();
+}
+
+void ScannerDeleteDialog::confirmYes ()
+{
+  deleteScanners();
+}
+
+void ScannerDeleteDialog::confirmNo ()
+{
+  unsetConfirm();
 }
 
 void ScannerDeleteDialog::deleteScanners ()

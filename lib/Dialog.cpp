@@ -22,21 +22,18 @@
 #include "Dialog.h"
 #include "Config.h"
 
+#include "../pics/ok.xpm"
+#include "../pics/disable.xpm"
+
 #include <QtDebug>
-#include <QPushButton>
 #include <QMessageBox>
 
 Dialog::Dialog ()
 {
-  _confirmFlag = _ConfirmNone;
   _configSizeParm = -1;
   _configPosParm = -1;
   
   createGUI();
-
-//  QFont f = messageFont();
-//  f.setBold(TRUE);
-//  setMessageFont(f);
 
   QMessageBox tbox;
   tbox.setIcon(QMessageBox::Warning);
@@ -60,10 +57,14 @@ void Dialog::createGUI ()
   _tabs = new QTabWidget;
   _vbox->addWidget(_tabs);
 
+  // message widget
+  _messageWidget = new QWidget;
+  _vbox->addWidget(_messageWidget);
+  
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(5);
   hbox->setMargin(0);
-  _vbox->addLayout(hbox);
+  _messageWidget->setLayout(hbox);
 
   QVBoxLayout *tvbox = new QVBoxLayout;
   tvbox->setSpacing(0);
@@ -72,7 +73,6 @@ void Dialog::createGUI ()
 
   _icon = new QLabel;
   tvbox->addWidget(_icon);
-  _icon->hide();
 
   tvbox->addStretch(1);
   
@@ -83,82 +83,90 @@ void Dialog::createGUI ()
 
   _message = new QLabel;
   tvbox->addWidget(_message);
-  _message->hide();
 
-  _confirm = new QCheckBox;
-  connect(_confirm, SIGNAL(stateChanged(int)), this, SLOT(confirmChanged(int)));
-  tvbox->addWidget(_confirm);
-  _confirm->hide();
+  QHBoxLayout *thbox = new QHBoxLayout;
+  thbox->setSpacing(5);
+  thbox->setMargin(0);
+  tvbox->addLayout(thbox);
+  
+  _yesButton = new QPushButton;
+  _yesButton->setText(tr("Yes"));
+  _yesButton->setIcon(QIcon(ok_xpm));
+  connect(_yesButton, SIGNAL(clicked()), this, SLOT(confirmYes()));
+  thbox->addWidget(_yesButton);
+  _yesButton->hide();
+
+  _noButton = new QPushButton;
+  _noButton->setText(tr("No"));
+  _noButton->setIcon(QIcon(disable_xpm));
+  connect(_noButton, SIGNAL(clicked()), this, SLOT(confirmNo()));
+  thbox->addWidget(_noButton);
 
   tvbox->addStretch(1);
 
   hbox->addStretch(1);
   
   // buttonbox
-  _buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Help);
+  _buttonBox = new QDialogButtonBox(QDialogButtonBox::Help);
   connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(cancel()));
   _vbox->addWidget(_buttonBox);
 
-  // set the default button
-  QPushButton *b = _buttonBox->button(QDialogButtonBox::Ok);
-  b->setDefault(TRUE);
+  // ok button
+  _okButton = _buttonBox->addButton(QDialogButtonBox::Ok);
+  _okButton->setDefault(TRUE);
+
+  // cancel button
+  _cancelButton = _buttonBox->addButton(QDialogButtonBox::Cancel);
 
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
+
+  _messageWidget->hide();
 }
 
 void Dialog::done ()
 {
-  switch (_confirmFlag)
-  {
-    case _ConfirmNo:
-      reject();
-      break;
-    case _ConfirmYes:
-      accept();
-      break;
-    default:
-      accept();
-      break;
-  }
+  accept();
+}
+
+void Dialog::cancel ()
+{
+  reject();
+}
+
+void Dialog::confirmYes ()
+{
+  accept();
+}
+
+void Dialog::confirmNo ()
+{
+  reject();
 }
 
 void Dialog::setMessage (QString message)
 {
   _message->setText(message);
-  _message->show();
-
-  _icon->show();
+  _messageWidget->show();
+  _yesButton->hide();
+  _noButton->hide();
 }
 
-void Dialog::setConfirm (QString check)
+void Dialog::setConfirm ()
 {
-  _confirm->setText(check);
-  _confirm->show();
+  _yesButton->show();
+  _noButton->show();
   
-  _confirmFlag = _ConfirmNo;
-
   QMessageBox tbox;
   tbox.setIcon(QMessageBox::Question);
   _icon->setPixmap(tbox.iconPixmap());
-  _icon->show();
 }
 
 void Dialog::unsetConfirm ()
 {
-  _message->hide();
-  
-  _confirm->hide();
-  _confirm->setChecked(FALSE);
-
-  _confirmFlag = _ConfirmNone;
-
-  _icon->hide();
-}
-
-void Dialog::confirmChanged (int state)
-{
-  _confirmFlag = (ConfirmStatus) state;
+  _messageWidget->hide();
+  _yesButton->hide();
+  _noButton->hide();
 }
 
 void Dialog::setIcon (QPixmap pic)
@@ -203,5 +211,10 @@ void Dialog::saveSettings ()
 
   QPoint pt = pos();
   config.setData((Config::Parm) _configPosParm, pt);
+}
+
+void Dialog::hideMessage ()
+{
+  _messageWidget->hide();
 }
 

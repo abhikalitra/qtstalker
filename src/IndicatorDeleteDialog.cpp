@@ -37,22 +37,18 @@ IndicatorDeleteDialog::IndicatorDeleteDialog ()
 
 void IndicatorDeleteDialog::done ()
 {
-  switch (_confirmFlag)
-  {
-    case _ConfirmNone:
-      setMessage(tr("Confirm Delete:"));
-      setConfirm(tr("Delete selected indicators."));
-      break;
-    case _ConfirmNo:
-      unsetConfirm();
-      return;
-    case _ConfirmYes:
-      deleteIndicators();
-      return;
-      break;
-    default:
-      break;
-  }
+  setMessage(tr("Delete selected indicators?"));
+  setConfirm();
+}
+
+void IndicatorDeleteDialog::confirmYes ()
+{
+  deleteIndicators();
+}
+
+void IndicatorDeleteDialog::confirmNo ()
+{
+  unsetConfirm();
 }
 
 void IndicatorDeleteDialog::deleteIndicators ()

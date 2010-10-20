@@ -35,6 +35,8 @@ class ScriptDeleteDialog : public ListDialog
   public slots:
     void done ();
     void deleteScripts ();
+    void confirmYes ();
+    void confirmNo ();
 
   private:
     ScriptDataBase _db;

@@ -35,6 +35,8 @@ class IndicatorDeleteDialog : public ListDialog
   public slots:
     void done ();
     void deleteIndicators ();
+    void confirmYes ();
+    void confirmNo ();
 
   private:
     IndicatorDataBase _db;

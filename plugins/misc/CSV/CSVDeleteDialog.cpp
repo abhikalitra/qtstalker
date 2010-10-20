@@ -40,24 +40,20 @@ CSVDeleteDialog::CSVDeleteDialog ()
   b->setDefault(TRUE);
 }
 
+void CSVDeleteDialog::confirmYes ()
+{
+  deleteRules();
+}
+
+void CSVDeleteDialog::confirmNo ()
+{
+  unsetConfirm();
+}
+
 void CSVDeleteDialog::done ()
 {
-  switch (_confirmFlag)
-  {
-    case _ConfirmNone:
-      setMessage(tr("Confirm Delete:"));
-      setConfirm(tr("Yes. Delete selected rules."));
-      break;
-    case _ConfirmNo:
-      unsetConfirm();
-      return;
-    case _ConfirmYes:
-      deleteRules();
-      return;
-      break;
-    default:
-      break;
-  }
+  setMessage(tr("Delete selected rules?"));
+  setConfirm();
 }
 
 void CSVDeleteDialog::deleteRules ()

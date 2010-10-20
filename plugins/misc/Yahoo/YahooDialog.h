@@ -44,6 +44,7 @@ class YahooDialog : public QDialog
     void createMainPage ();
     void loadSettings ();
     void saveSettings ();
+    void setDialogEnable (bool);
       
   public slots:
     void cancelButton ();

@@ -1384,6 +1384,17 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>Dialog</name>
+    <message>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DocsAction</name>
     <message>
         <source>&amp;Documentation</source>
@@ -2307,11 +2318,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Confirm Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete all chart objects from this indicator</source>
+        <source>Delete all chart objects from this indicator?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3066,6 +3073,10 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Scanner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rule</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3890,10 +3901,6 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Save</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Commission Type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3923,6 +3930,18 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings modified.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm Save</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

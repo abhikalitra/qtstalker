@@ -18,7 +18,6 @@ To Do:
 - add some qtstalker plugins to display details data from QuoteServer
 - add search method to quoteserver details plugin
 - add some example rules to the CSV plugin so noobs have an idea of construction (wait till release)
-- review make files to use .qmake.cache
 - chart zooming
 - add script API for notifications for alerts.
 

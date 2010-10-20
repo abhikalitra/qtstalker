@@ -37,22 +37,18 @@ ScriptDeleteDialog::ScriptDeleteDialog ()
 
 void ScriptDeleteDialog::done ()
 {
-  switch (_confirmFlag)
-  {
-    case _ConfirmNone:
-      setMessage(tr("Confirm Delete:"));
-      setConfirm(tr("Delete selected scripts. Not the actual scripts, just the database records."));
-      break;
-    case _ConfirmNo:
-      unsetConfirm();
-      return;
-    case _ConfirmYes:
-      deleteScripts();
-      return;
-      break;
-    default:
-      break;
-  }
+  setMessage(tr("Delete selected scripts. Not the actual scripts, just the database records."));
+  setConfirm();
+}
+
+void ScriptDeleteDialog::confirmYes ()
+{
+  deleteScripts();
+}
+
+void ScriptDeleteDialog::confirmNo ()
+{
+  unsetConfirm();
 }
 
 void ScriptDeleteDialog::deleteScripts ()

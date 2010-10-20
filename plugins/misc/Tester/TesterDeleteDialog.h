@@ -34,6 +34,8 @@ class TesterDeleteDialog : public ListDialog
   public slots:
     void done ();
     void deleteRules ();
+    void confirmYes ();
+    void confirmNo ();
 };
 
 #endif

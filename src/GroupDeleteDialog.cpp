@@ -35,22 +35,18 @@ GroupDeleteDialog::GroupDeleteDialog ()
 
 void GroupDeleteDialog::done ()
 {
-  switch (_confirmFlag)
-  {
-    case _ConfirmNone:
-      setMessage(tr("Confirm Delete:"));
-      setConfirm(tr("Delete selected groups."));
-      break;
-    case _ConfirmNo:
-      unsetConfirm();
-      return;
-    case _ConfirmYes:
-      deleteGroups();
-      return;
-      break;
-    default:
-      break;
-  }
+  setMessage(tr("Delete selected groups?"));
+  setConfirm();
+}
+
+void GroupDeleteDialog::confirmYes ()
+{
+  deleteGroups();
+}
+
+void GroupDeleteDialog::confirmNo ()
+{
+  unsetConfirm();
 }
 
 void GroupDeleteDialog::deleteGroups ()

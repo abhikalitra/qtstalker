@@ -34,8 +34,8 @@ class CSVDeleteDialog : public ListDialog
   public slots:
     void done ();
     void deleteRules ();
-
-  private:
+    void confirmYes ();
+    void confirmNo ();
 };
 
 #endif
