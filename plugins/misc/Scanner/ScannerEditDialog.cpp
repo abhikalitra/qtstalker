@@ -43,6 +43,9 @@ ScannerEditDialog::ScannerEditDialog (QString name)
   createMainPage();
 
   setSettings();
+
+  _saveFlag = FALSE;
+  _okButton->setEnabled(FALSE);
 }
 
 ScannerEditDialog::~ScannerEditDialog ()
@@ -83,6 +86,7 @@ void ScannerEditDialog::createMainPage ()
 
   // symbol
   _symbols = new SymbolButton(w);
+  connect(_symbols, SIGNAL(signalChanged()), this, SLOT(ruleChanged()));
   form->addRow(tr("Symbols"), _symbols);
 
   // bar length
@@ -92,6 +96,7 @@ void ScannerEditDialog::createMainPage ()
   
   _barLength = new QComboBox;
   _barLength->addItems(l);
+  connect(_barLength, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   form->addRow(tr("Bar Length"), _barLength);
 
   // date range
@@ -102,11 +107,13 @@ void ScannerEditDialog::createMainPage ()
   _dateRange = new QComboBox;
   _dateRange->addItems(l);
   _dateRange->setToolTip(tr("The amount of bars to use for the indicator"));
+  connect(_dateRange, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   form->addRow(tr("Date Range"), _dateRange);
 
   // group name
   _groupName = new QLineEdit;
   _groupName->setToolTip(tr("Scan results group name"));
+  connect(_groupName, SIGNAL(textEdited(const QString &)), this, SLOT(ruleChanged()));
   form->addRow(tr("Group Name"), _groupName);
 
   // plot list
@@ -120,6 +127,8 @@ void ScannerEditDialog::createMainPage ()
   gbox->setLayout(tvbox);
   
   _list = new IndicatorPlotList;
+  connect(_list, SIGNAL(signalIndicatorChanged()), this, SLOT(ruleChanged()));
+  connect(_list, SIGNAL(signalItemChanged()), this, SLOT(ruleChanged()));
   tvbox->addWidget(_list);
   
   _tabs->addTab(w, tr("Settings"));
@@ -159,22 +168,35 @@ void ScannerEditDialog::setSettings ()
   _symbols->setSymbols(_scanner.group());
 }
 
+void ScannerEditDialog::ruleChanged ()
+{
+  _saveFlag = TRUE;
+  _okButton->setEnabled(_saveFlag);
+}
+
+void ScannerEditDialog::confirmYes ()
+{
+  _okButton->setEnabled(TRUE);
+  _cancelButton->setEnabled(TRUE);
+
+  done();
+}
+
+void ScannerEditDialog::cancel ()
+{
+  if (_saveFlag)
+  {
+    setMessage(tr("Settings modified. Save changes?"));
+    setConfirm();
+    _okButton->setEnabled(FALSE);
+    _cancelButton->setEnabled(FALSE);
+  }
+  else
+    reject();
+}
+
 void ScannerEditDialog::done ()
 {
-  ScannerConfig config;
-  config.transaction();
-
-  // save app size and position
-  QString k = "size" + _scanner.name();
-  QSize sz = size();
-  config.setData(k, sz);
-
-  k = "position" + _scanner.name();
-  QPoint pt = pos();
-  config.setData(k, pt);
-
-  config.commit();
-  
   // remove any forbidden sql characters
   QString gn = _groupName->text();
   gn = gn.remove(QString("'"), Qt::CaseSensitive);

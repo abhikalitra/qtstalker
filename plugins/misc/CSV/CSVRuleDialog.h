@@ -61,6 +61,8 @@ class CSVRuleDialog : public Dialog
     void fieldSelectionChanged ();
     void dateDialog ();
     void timeDialog ();
+    void confirmYes ();
+    void cancel ();
           
   private:
     QListWidget *_ruleList;

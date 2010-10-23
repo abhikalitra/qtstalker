@@ -24,6 +24,7 @@
 
 #include <QString>
 #include <QLineEdit>
+#include <QTextEdit>
 
 #include "Script.h"
 #include "FileButton.h"
@@ -43,13 +44,18 @@ class ScriptDialog : public Dialog
 
   public slots:
     void done ();
+    void buttonStatus ();
+    void confirmYes ();
+    void cancel ();
 
   private:
     Script _script;
     QLineEdit *_command;
-    QLineEdit *_comment;
+    QTextEdit *_comment;
     FileButton *_file;
     ScriptDataBase _db;
+    int _saveFlag;
+    int _editFlag;
 };
 
 #endif

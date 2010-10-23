@@ -28,7 +28,6 @@
 #include <QtDebug>
 #include <QComboBox>
 #include <QDoubleSpinBox>
-#include <QToolButton>
 #include <QIcon>
 #include <QFormLayout>
 #include <QGroupBox>
@@ -36,12 +35,17 @@
 AlertEditDialog::AlertEditDialog (AlertItem item)
 {
   _item = item;
+
+  setWindowTitle("QtStalker" + g_session + ": " + tr("Edit Alert") + " - " + QString::number(_item.id()));
   
   createMainPage();
 
   loadSettings();
   
   setSettings();
+
+  _okButton->setEnabled(FALSE);
+  _saveFlag = 0;
 }
 
 AlertEditDialog::~AlertEditDialog ()
@@ -70,6 +74,7 @@ void AlertEditDialog::createMainPage ()
 
   // symbol
   _symbols = new SymbolButton(w);
+  connect(_symbols, SIGNAL(signalChanged()), this, SLOT(ruleChanged()));
   form->addRow(tr("Symbols"), _symbols);
 
   // bar length
@@ -79,6 +84,7 @@ void AlertEditDialog::createMainPage ()
   
   _barLength = new QComboBox;
   _barLength->addItems(l);
+  connect(_barLength, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   form->addRow(tr("Bar Length"), _barLength);
 
   // bar range
@@ -89,6 +95,7 @@ void AlertEditDialog::createMainPage ()
   _bars = new QComboBox;
   _bars->addItems(l);
   _bars->setToolTip(tr("The amount of bars to use for the indicator"));
+  connect(_bars, SIGNAL(activated(int)), this, SLOT(ruleChanged()));
   form->addRow(tr("Bars"), _bars);
 
   form = new QFormLayout;
@@ -98,18 +105,20 @@ void AlertEditDialog::createMainPage ()
 
   // mail notify
   _mailNotify = new QCheckBox;
+  connect(_mailNotify, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   form->addRow(tr("Mail Notify"), _mailNotify);
   
   // sound notify
   _soundNotify = new QCheckBox;
+  connect(_soundNotify, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   form->addRow(tr("Sound Notify"), _soundNotify);
 
   // popup notify
   _popupNotify = new QCheckBox;
+  connect(_popupNotify, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   form->addRow(tr("Popup Notify"), _popupNotify);
 
   // alert list
-
   QGroupBox *box = new QGroupBox;
   box->setTitle(tr("Rule"));
   vbox->addWidget(box);
@@ -120,9 +129,17 @@ void AlertEditDialog::createMainPage ()
   box->setLayout(tvbox);
   
   _alertList = new IndicatorPlotList;
+  connect(_alertList, SIGNAL(signalIndicatorChanged()), this, SLOT(ruleChanged()));
+  connect(_alertList, SIGNAL(signalItemChanged()), this, SLOT(ruleChanged()));
   tvbox->addWidget(_alertList);
-  
+
   _tabs->addTab(w, tr("Settings"));
+}
+
+void AlertEditDialog::ruleChanged ()
+{
+  _saveFlag = TRUE;
+  _okButton->setEnabled(_saveFlag);
 }
 
 void AlertEditDialog::loadSettings ()
@@ -178,6 +195,27 @@ void AlertEditDialog::setSettings ()
   _alertList->setIndicator(_item.indicator());
   _alertList->setList(_item.plots());
   _alertList->setSettings(_item.settings());
+}
+
+void AlertEditDialog::confirmYes ()
+{
+  _okButton->setEnabled(TRUE);
+  _cancelButton->setEnabled(TRUE);
+  
+  done();
+}
+
+void AlertEditDialog::cancel ()
+{
+  if (_saveFlag)
+  {
+    setMessage(tr("Settings modified. Save changes?"));
+    setConfirm();
+    _okButton->setEnabled(FALSE);
+    _cancelButton->setEnabled(FALSE);
+  }
+  else
+    reject();
 }
 
 void AlertEditDialog::done ()
@@ -240,8 +278,6 @@ void AlertEditDialog::done ()
 
   emit signalEdit(_item);
 
-//  saveSettings();
-  
   accept();
 }
 

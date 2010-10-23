@@ -37,3 +37,9 @@ void Strip::strip (double d, int p, QString &s)
   s = ts;
 }
 
+void Strip::verifyText (QString &d)
+{
+  // remove any forbidden sql characters
+  d = d.remove(QString("'"), Qt::CaseSensitive);
+}
+

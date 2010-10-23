@@ -46,6 +46,8 @@ GroupAddDialog::GroupAddDialog (Group group)
   createMainPage();
 
   loadSettings();
+
+  selectionChanged();
 }
 
 void GroupAddDialog::createMainPage ()
@@ -68,18 +70,21 @@ void GroupAddDialog::createMainPage ()
   
   _groups = new QComboBox;
   _groups->addItems(gl);
+  _groups->setToolTip(tr("Current groups"));
   form->addRow(tr("Groups"), _groups);
 
   // new group
   QPushButton *b = new QPushButton;
   b->setIcon(QIcon(newchart_xpm));
   b->setText("...");
+  b->setToolTip(tr("Create a new group"));
   connect(b, SIGNAL(clicked()), this, SLOT(newGroup()));
   form->addRow(tr("New Group"), b);
 
   // search
   b = new QPushButton;
   b->setIcon(QIcon(search_xpm));
+  b->setToolTip(tr("Perform symbol search"));
   connect(b, SIGNAL(clicked()), this, SLOT(search()));
   form->addRow(tr("Search"), b);
 
@@ -91,6 +96,7 @@ void GroupAddDialog::createMainPage ()
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   _list->setSortingEnabled(TRUE);
   _list->addItems(l);
+  connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   vbox->addWidget(_list);
 
   _tabs->addTab(w, tr("Add To Group"));
@@ -163,5 +169,16 @@ void GroupAddDialog::updateList (Group g)
 
   _list->clear();
   _list->addItems(l);
+}
+
+void GroupAddDialog::selectionChanged ()
+{
+  int status = 0;
+  QList<QListWidgetItem *> sl = _list->selectedItems();
+  if (sl.count())
+    status = 1;
+
+  QPushButton *b = _buttonBox->button(QDialogButtonBox::Ok);
+  b->setEnabled(status);
 }
 

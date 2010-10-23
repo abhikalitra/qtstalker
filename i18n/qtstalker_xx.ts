@@ -206,6 +206,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Message</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Settings modified. Save changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AlertDialog</name>
@@ -266,15 +270,7 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reset alert back to waiting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>New Alert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Alert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -287,6 +283,14 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Last Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset alert back to waiting status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected alerts?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -338,6 +342,14 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Indicator logic missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings modified. Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -703,15 +715,11 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Confirm Delete:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Yes. Delete selected rules.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Rules deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected rules?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -884,6 +892,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings modified. Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1551,11 +1563,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Confirm Delete:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete selected groups.</source>
+        <source>Delete selected groups?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1574,11 +1582,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Confirm Delete:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete selected group contents.</source>
+        <source>Delete selected group items?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1738,11 +1742,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Confirm Delete:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete selected indicators.</source>
+        <source>Delete selected indicators?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2978,15 +2978,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Confirm Delete:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete selected scanners.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Scanner(s) deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected scanners?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3079,6 +3075,10 @@ eg. perl -l -T</source>
         <source>Rule</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Settings modified. Save changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScannerNewDialog</name>
@@ -3139,10 +3139,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Confirm Delete:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Delete selected scripts. Not the actual scripts, just the database records.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3187,6 +3183,10 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings modified. Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3567,15 +3567,11 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Confirm Delete:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Yes. Delete selected back testers.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Rules deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected back testers?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3937,11 +3933,7 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings modified.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm Save</source>
+        <source>Settings modified. Save changes?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

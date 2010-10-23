@@ -48,6 +48,9 @@ class ScannerEditDialog : public Dialog
 
   public slots:
     void done ();
+    void confirmYes ();
+    void cancel ();
+    void ruleChanged ();
 
   private:
     ScannerItem _scanner;
@@ -56,6 +59,7 @@ class ScannerEditDialog : public Dialog
     QLineEdit *_groupName;
     QComboBox *_barLength;
     QComboBox *_dateRange;
+    int _saveFlag;
 };
 
 #endif

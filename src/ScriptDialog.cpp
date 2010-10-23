@@ -22,6 +22,7 @@
 #include "ScriptDialog.h"
 #include "Config.h"
 #include "Globals.h"
+#include "Strip.h"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -29,6 +30,8 @@
 
 ScriptDialog::ScriptDialog (QString name)
 {
+  _editFlag = 0;
+  
   QString cap = "Qtstalker" + g_session + ": ";
   
   if (! name.isEmpty())
@@ -38,6 +41,8 @@ ScriptDialog::ScriptDialog (QString name)
 
     cap.append(tr("Edit Script") + " " + name);
     setWindowTitle(cap);
+
+    _editFlag = 1;
   }
   else
   {
@@ -46,6 +51,9 @@ ScriptDialog::ScriptDialog (QString name)
   }
 
   createMainPage();
+
+  _saveFlag = 0;
+  buttonStatus();
 }
 
 void ScriptDialog::createMainPage ()
@@ -64,6 +72,7 @@ void ScriptDialog::createMainPage ()
 
   _command = new QLineEdit(s);
   _command->setToolTip(tr("Interpreter command and switches eg. perl -l -T"));
+  connect(_command, SIGNAL(textEdited(const QString &)), this, SLOT(buttonStatus()));
   form->addRow(tr("Command"), _command);
   
   // file
@@ -78,6 +87,7 @@ void ScriptDialog::createMainPage ()
 
   _file = new FileButton(this, s);
   _file->setToolTip(tr("The script location"));
+  connect(_file, SIGNAL(signalFileChanged()), this, SLOT(buttonStatus()));
   form->addRow(tr("Script File"), _file);
 
   // check if run dialog format
@@ -87,11 +97,44 @@ void ScriptDialog::createMainPage ()
     // comment
     s = _script.getComment();
     
-    _comment = new QLineEdit(s);
+    _comment = new QTextEdit;
+    _comment->append(s);
+    connect(_comment, SIGNAL(textChanged()), this, SLOT(buttonStatus()));
     form->addRow(tr("Comment"), _comment);
   }
 
   _tabs->addTab(w, tr("Settings"));
+}
+
+void ScriptDialog::buttonStatus ()
+{
+  if (_editFlag)
+    _saveFlag = 1;
+  
+  bool status = TRUE;
+  if (_command->text().isEmpty())
+    status = FALSE;
+  if (_file->getFile().isEmpty())
+    status = FALSE;
+  _okButton->setEnabled(status);
+}
+
+void ScriptDialog::confirmYes ()
+{
+  done();
+}
+
+void ScriptDialog::cancel ()
+{
+  if (_saveFlag == 1 && _editFlag ==  1)
+  {
+    setMessage(tr("Settings modified. Save changes?"));
+    setConfirm();
+    _okButton->setEnabled(FALSE);
+    _cancelButton->setEnabled(FALSE);
+  }
+  else
+    reject();
 }
 
 void ScriptDialog::done ()
@@ -100,7 +143,10 @@ void ScriptDialog::done ()
     emit signalRunScript(_command->text(), _file->getFile());
   else
   {
+    Strip strip;
+    
     QString s = _command->text();
+    strip.verifyText(s);
     _script.setCommand(s);
 
     s = _file->getFile();
@@ -111,7 +157,8 @@ void ScriptDialog::done ()
     config.setData(Config::LastScriptPath, s);
     config.commit();
 
-    s = _comment->text();
+    s = _comment->toPlainText();
+    strip.verifyText(s);
     _script.setComment(s);
   
     _db.transaction();

@@ -50,6 +50,9 @@ class AlertConfigureDialog : public Dialog
     void done ();
     void intervalChanged (int);
     void enableChanged (int);
+    void confirmYes ();
+    void cancel ();
+    void ruleChanged ();
 
   private:
     QCheckBox *_enable;
@@ -60,6 +63,7 @@ class AlertConfigureDialog : public Dialog
     QTextEdit *_text;
     int _intervalFlag;
     int _enableFlag;
+    int _saveFlag;
 };
 
 #endif

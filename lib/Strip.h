@@ -29,6 +29,7 @@ class Strip
   public:
     Strip ();
     void strip (double, int, QString &);
+    void verifyText (QString &);
 };
 
 #endif

@@ -25,9 +25,11 @@ To Do:
 Priority
 ========
 
-BUG: gnome ubuntu has issues with qtstalker indicator tab resizing displays tiny tabs with misplaced text.
-     kde systems work.
+BUG: some gnome ubuntu themes have issues with qtstalker indicator tab resizing. displays tiny tabs with misplaced text.
+     the only workarounds are avoiding use of east/west tabs or experimenting with different themes. default gnome
+     theme we know does not work. kubuntu and Qt based themes work.
 
+BUG: check all input dialogs for forbidden sql chars in text inputs
 
 
 

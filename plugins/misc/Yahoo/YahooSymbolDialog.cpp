@@ -41,7 +41,11 @@ YahooSymbolDialog::YahooSymbolDialog ()
   
   selectionChanged();
 
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
+  // buttons
+  _buttonBox->removeButton(_okButton);
+  _buttonBox->removeButton(_cancelButton);
+
+  _buttonBox->addButton(QDialogButtonBox::Close);
 }
 
 void YahooSymbolDialog::createMainPage ()
@@ -73,6 +77,7 @@ void YahooSymbolDialog::createMainPage ()
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteSymbol()));
   _deleteButton->setText(tr("Delete"));
   _deleteButton->setIcon(QIcon(delete_xpm));
+  bbox->addWidget(_deleteButton);
   
   bbox->addStretch();
 

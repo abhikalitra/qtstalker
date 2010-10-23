@@ -41,7 +41,6 @@
 
 CSVRuleDialog::CSVRuleDialog (QString name)
 {
-  _saveFlag = FALSE;
   _name = name;
 
   _fields << "Exchange" << "Symbol" << "Open" << "High" << "Low" << "Close";
@@ -59,6 +58,9 @@ CSVRuleDialog::CSVRuleDialog (QString name)
   fieldSelectionChanged();
 
   loadSettings();
+
+  _saveFlag = FALSE;
+  _okButton->setEnabled(FALSE);
 }
 
 CSVRuleDialog::~CSVRuleDialog ()
@@ -158,6 +160,7 @@ void CSVRuleDialog::createMainPage ()
   // remove suffix
   _removeSuffix = new QCheckBox;
   _removeSuffix->setToolTip(tr("Try to remove suffix from file name"));
+  connect(_removeSuffix, SIGNAL(stateChanged(int)), this, SLOT(ruleChanged()));
   form->addRow(tr("Remove Suffix"), _removeSuffix);
 
   _tabs->addTab(w, tr("Settings"));
@@ -285,6 +288,7 @@ void CSVRuleDialog::deleteClicked ()
 void CSVRuleDialog::ruleChanged ()
 {
   _saveFlag = TRUE;
+  _okButton->setEnabled(_saveFlag);
 }
 
 void CSVRuleDialog::insertClicked ()
@@ -352,9 +356,28 @@ void CSVRuleDialog::timeDialog2 (QString item)
   ruleChanged();
 }
 
+void CSVRuleDialog::confirmYes ()
+{
+  done();
+}
+
+void CSVRuleDialog::cancel ()
+{
+  if (_saveFlag)
+  {
+    setMessage(tr("Settings modified. Save changes?"));
+    setConfirm();
+    _okButton->setEnabled(FALSE);
+    _cancelButton->setEnabled(FALSE);
+  }
+  else
+    reject();
+}
+
 void CSVRuleDialog::done ()
 {
-  saveRule();
+  if (_saveFlag)
+    saveRule();
 
   accept();
 }
@@ -374,6 +397,8 @@ void CSVRuleDialog::searchExchange ()
 void CSVRuleDialog::setExchangeCode (QString d)
 {
   _exchange->setCurrentIndex(_exchange->findText(d, Qt::MatchExactly));
+  
+  ruleChanged();
 }
 
 void CSVRuleDialog::ruleSelectionChanged ()
@@ -395,4 +420,3 @@ void CSVRuleDialog::fieldSelectionChanged ()
 
   _insertButton->setEnabled(status);
 }
-

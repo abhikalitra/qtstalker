@@ -47,8 +47,12 @@ class AlertEditDialog : public Dialog
 
   public slots:
     void done ();
+    void confirmYes ();
+    void cancel ();
+    void ruleChanged ();
 
   private:
+    int _saveFlag;
     AlertItem _item;
     SymbolButton *_symbols;
     IndicatorPlotList *_alertList;

@@ -45,22 +45,14 @@
 
 AlertDialog::AlertDialog ()
 {
-  setWindowTitle("QtStalker" + g_session + ": Alerts ");
+  setWindowTitle("QtStalker" + g_session + ": " + tr("Alerts"));
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(5);
-  vbox->setMargin(5);
-  setLayout(vbox);
+  // buttons
+  _buttonBox->removeButton(_okButton);
+  _buttonBox->removeButton(_cancelButton);
 
-  _tabs = new QTabWidget;
-  vbox->addWidget(_tabs);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-
-  QPushButton *b = bbox->addButton(QDialogButtonBox::Close);
-  connect(b, SIGNAL(clicked()), this, SLOT(closeDialog()));
-  vbox->addWidget(bbox);
+  _buttonBox->addButton(QDialogButtonBox::Close);
+//  connect(_closeButton, SIGNAL(clicked()), this, SLOT(reject()));
 
   connect(&_timer, SIGNAL(timeout()), this, SLOT(run()));
   
@@ -85,8 +77,9 @@ void AlertDialog::createMainPage ()
   _alerts->setSortingEnabled(TRUE);
   _alerts->setRootIsDecorated(FALSE);
   _alerts->setHeaderLabels(l);
-  _alerts->setSelectionMode(QAbstractItemView::SingleSelection);
+  _alerts->setSelectionMode(QAbstractItemView::ExtendedSelection);
   connect(_alerts, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
+  connect(_alerts, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(editAlert()));
   hbox->addWidget(_alerts);
 
   // create button box
@@ -118,7 +111,7 @@ void AlertDialog::createMainPage ()
 
   _resetButton = new QPushButton;
   _resetButton->setText(tr("&Reset"));
-  _resetButton->setToolTip(tr("Reset alert back to waiting"));
+  _resetButton->setToolTip(tr("Reset alert back to waiting status"));
   _resetButton->setIcon(QPixmap(refresh_xpm));
   connect(_resetButton, SIGNAL(clicked()), this, SLOT(resetAlert()));
   bbox->addWidget(_resetButton);
@@ -209,18 +202,21 @@ void AlertDialog::newAlert2 (AlertItem alert)
 void AlertDialog::editAlert ()
 {
   QList<QTreeWidgetItem *> l = _alerts->selectedItems();
-  
-  AlertItem alert;
-  alert.setId(l.at(0)->text(0).toInt());
 
-  AlertDataBase db;
-  db.getAlert(alert);
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    AlertItem alert;
+    alert.setId(l.at(0)->text(0).toInt());
+
+    AlertDataBase db;
+    db.getAlert(alert);
   
-  AlertEditDialog *dialog = new AlertEditDialog(alert);
-  dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Edit Alert"));
-  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalEdit(AlertItem)), this, SLOT(editAlert2(AlertItem)));
-  dialog->show();
+    AlertEditDialog *dialog = new AlertEditDialog(alert);
+    connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+    connect(dialog, SIGNAL(signalEdit(AlertItem)), this, SLOT(editAlert2(AlertItem)));
+    dialog->show();
+  }
 }
 
 void AlertDialog::editAlert2 (AlertItem alert)
@@ -237,20 +233,38 @@ void AlertDialog::editAlert2 (AlertItem alert)
 
 void AlertDialog::deleteAlert ()
 {
+  setMessage(tr("Delete selected alerts?"));
+  setConfirm();
+}
+
+void AlertDialog::confirmYes ()
+{
   QList<QTreeWidgetItem *> l = _alerts->selectedItems();
-  QTreeWidgetItem *item = l.at(0);
 
-  AlertItem alert;
-  alert.setId(item->text(0).toInt());
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QTreeWidgetItem *item = l.at(loop);
 
-  AlertDataBase db;
-  db.transaction();
-  db.deleteAlert(alert);
-  db.commit();
+    AlertItem alert;
+    alert.setId(item->text(0).toInt());
+
+    AlertDataBase db;
+    db.transaction();
+    db.deleteAlert(alert);
+    db.commit();
   
-  delete item;
+    delete item;
+  }
 
   resizeColumns();
+
+  unsetConfirm();
+}
+
+void AlertDialog::confirmNo ()
+{
+  unsetConfirm();
 }
 
 void AlertDialog::run ()

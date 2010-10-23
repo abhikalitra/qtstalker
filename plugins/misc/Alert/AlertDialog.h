@@ -22,9 +22,7 @@
 #ifndef ALERT_DIALOG_HPP
 #define ALERT_DIALOG_HPP
 
-#include <QDialog>
 #include <QStringList>
-#include <QTabWidget>
 #include <QTreeWidget>
 #include <QPushButton>
 #include <QHash>
@@ -32,8 +30,9 @@
 #include <QLabel>
 
 #include "AlertItem.h"
+#include "Dialog.h"
 
-class AlertDialog : public QDialog
+class AlertDialog : public Dialog
 {
   Q_OBJECT
 
@@ -63,9 +62,10 @@ class AlertDialog : public QDialog
     void configureDialog ();
     void enableChanged (int);
     void intervalChanged (int);
+    void confirmYes ();
+    void confirmNo ();
           
   private:
-    QTabWidget *_tabs;
     QTreeWidget *_alerts;
     QPushButton *_editButton;
     QPushButton *_deleteButton;

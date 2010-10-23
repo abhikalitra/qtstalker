@@ -38,6 +38,9 @@ AlertConfigureDialog::AlertConfigureDialog ()
   createMailPage();
 
   loadSettings();
+
+  _okButton->setEnabled(FALSE);
+  _saveFlag = 0;
 }
 
 AlertConfigureDialog::~AlertConfigureDialog ()
@@ -67,6 +70,7 @@ void AlertConfigureDialog::createMainPage ()
   // sound
   _sound = new FileButton(w, QString());
   _sound->setToolTip(tr("Sound file to play for notification"));
+  connect(_sound, SIGNAL(signalFileChanged()), this, SLOT(ruleChanged()));
   form->addRow(tr("Alert Sound"), _sound);
 
   _tabs->addTab(w, tr("Settings"));
@@ -84,19 +88,28 @@ void AlertConfigureDialog::createMailPage ()
   // mail address
   _address = new QLineEdit;
   _address->setToolTip(tr("Address to receive mail\ne.g yourname@youraddress.com"));
+  connect(_address, SIGNAL(textEdited(const QString &)), this, SLOT(ruleChanged()));
   form->addRow(tr("Address"), _address);
 
   // mail subject
   _subject = new QLineEdit;
   _subject->setToolTip(tr("Subject header of mail\ne.g. Qtstalker Alert"));
+  connect(_subject, SIGNAL(textEdited(const QString &)), this, SLOT(ruleChanged()));
   form->addRow(tr("Subject"), _subject);
 
   // mail text
   _text = new QTextEdit;
   _text->setToolTip(tr("Message body of mail\ne.g. Qtstalker alert was triggered."));
+  connect(_text, SIGNAL(textChanged()), this, SLOT(ruleChanged()));
   form->addRow(tr("Message"), _text);
 
   _tabs->addTab(w, tr("Email"));
+}
+
+void AlertConfigureDialog::ruleChanged ()
+{
+  _saveFlag = TRUE;
+  _okButton->setEnabled(_saveFlag);
 }
 
 void AlertConfigureDialog::loadSettings ()
@@ -154,12 +167,34 @@ void AlertConfigureDialog::intervalChanged (int d)
 {
   if (d != _interval->value())
     _intervalFlag = 1;
+  
+  ruleChanged();
 }
 
 void AlertConfigureDialog::enableChanged (int d)
 {
   if ((Qt::CheckState) d != _enable->checkState())
     _enableFlag = 1;
+  
+  ruleChanged();
+}
+
+void AlertConfigureDialog::confirmYes ()
+{
+  done();
+}
+
+void AlertConfigureDialog::cancel ()
+{
+  if (_saveFlag)
+  {
+    setMessage(tr("Settings modified. Save changes?"));
+    setConfirm();
+    _okButton->setEnabled(FALSE);
+    _cancelButton->setEnabled(FALSE);
+  }
+  else
+    reject();
 }
 
 void AlertConfigureDialog::done ()
