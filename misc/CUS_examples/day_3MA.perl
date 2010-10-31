@@ -36,7 +36,7 @@ print STDOUT "INDICATOR,SET_PLOT,200MA,0";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set 50MA plot style
-print STDOUT "INDICATOR,SET_PLOT_STYLE,50MA,Dash";
+print STDOUT "INDICATOR,SET_PLOT_STYLE,50MA,Line";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set 50MA color
@@ -48,7 +48,7 @@ print STDOUT "INDICATOR,SET_PLOT,50MA,1";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 #set 20MA plot style
-print STDOUT "INDICATOR,SET_PLOT_STYLE,20MA,Dash";
+print STDOUT "INDICATOR,SET_PLOT_STYLE,20MA,Line";
 $a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
 
 # set 20MA color

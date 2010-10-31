@@ -182,7 +182,7 @@ void STOCH::defaults (Indicator &i)
   set.setData(_Ref1Color, "white");
   set.setData(_Ref2Color, "white");
   set.setData(_FastKPlot, "Line");
-  set.setData(_FastDPlot, "Dash");
+  set.setData(_FastDPlot, "Line");
   set.setData(_FastKLabel, "FASTK");
   set.setData(_FastDLabel, "FASTD");
   set.setData(_FastKPeriod, 5);

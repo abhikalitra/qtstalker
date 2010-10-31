@@ -200,7 +200,7 @@ void STOCHS::defaults (Indicator &i)
   set.setData(_Ref1Color, "white");
   set.setData(_Ref2Color, "white");
   set.setData(_SlowKPlot, "Line");
-  set.setData(_SlowDPlot, "Dash");
+  set.setData(_SlowDPlot, "Line");
   set.setData(_SlowKLabel, "SLOWK");
   set.setData(_SlowDLabel, "SLOWD");
   set.setData(_FastKPeriod, 5);
