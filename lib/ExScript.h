@@ -29,6 +29,7 @@
 
 #include "Indicator.h"
 #include "BarData.h"
+#include "ScriptPluginFactory.h"
 
 #include <QProcess>
 #include <QList>
@@ -44,16 +45,6 @@ class ExScript : public QObject
     void signalDone ();
 
   public:
-    enum Function
-    {
-      _CO, // chart object functions
-      _INDICATOR, // indicator functions
-      _GROUP, // group database functions
-      _PROCESS, // start a detached system process
-      _SYMBOL, // symbol functions
-      _TEST // tester functions
-    };
-
     ExScript ();
     ~ExScript ();
     void clear ();
@@ -72,10 +63,10 @@ class ExScript : public QObject
 
   private:
     QProcess *_proc;
-    QStringList _functionList;
     int _killFlag;
     Indicator _indicator;
     BarData _barData;
+    ScriptPluginFactory _factory;
 };
 
 #endif

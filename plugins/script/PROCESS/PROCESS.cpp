@@ -19,64 +19,48 @@
  *  USA.
  */
 
-#include "SCSymbol.h"
-#include "Group.h"
-#include "Config.h"
+#include "PROCESS.h"
 
 #include <QtDebug>
-#include <QList>
+#include <QProcess>
 
-SCSymbol::SCSymbol ()
+PROCESS::PROCESS ()
 {
-  methodList << "CURRENT";
 }
 
-int SCSymbol::calculate (QStringList &l, QByteArray &ba)
+int PROCESS::command (QStringList &l, Indicator &, BarData &, QByteArray &ba)
 {
-  // format = SYMBOL,METHOD,*
+  // format = PROCESS,COMMAND
+  //             0      1
 
-  int rc = 1;
   ba.clear();
   ba.append("ERROR\n");
 
-  if (l.count() < 2)
-  {
-    qDebug() << "SCSymbol::calculate: invalid parm count" << l.count();
-    return rc;
-  }
-  
-  switch ((Method) methodList.indexOf(l[1]))
-  {
-    case CURRENT:
-      rc = getCurrent(l, ba);
-      break;
-    default:
-      break;
-  }
-  
-  return rc;
-}
-
-int SCSymbol::getCurrent (QStringList &l, QByteArray &ba)
-{
-  // format = SYMBOL,CURRENT
-
   if (l.count() != 2)
   {
-    qDebug() << "SCSymbol::getCurrent: invalid parm count" << l.count();
+    qDebug() << "PROCESS::command: invalid parm count" << l.count();
     return 1;
   }
 
-  Config config;
-  QStringList l2;
-  config.getData(Config::CurrentChart, l2);
-  QString s = "NONE";
-  if (l2.count() == 2)
-    s = l2.join(",");
+  int rc = QProcess::startDetached(l.at(1));
+  if (! rc)
+  {
+    qDebug() << "PROCESS::command: error starting the process";
+    return 1;
+  }
 
   ba.clear();
-  ba.append(s + '\n');
-  
+  ba.append("0\n");
+
   return 0;
 }
 
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  PROCESS *o = new PROCESS;
+  return ((ScriptPlugin *) o);
+}

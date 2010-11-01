@@ -19,39 +19,26 @@
  *  USA.
  */
 
-#include "SCProcess.h"
+#ifndef SCCHART_OBJECT_HPP
+#define SCCHART_OBJECT_HPP
 
-#include <QtDebug>
-#include <QProcess>
+#include "ScriptPlugin.h"
 
-SCProcess::SCProcess ()
+class CO : public ScriptPlugin
 {
+  public:
+    enum Method
+    {
+      _NEW //
+    };
+    
+    CO ();
+    int command (QStringList &, Indicator &, BarData &, QByteArray &);
+};
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
 }
 
-int SCProcess::calculate (QStringList &l, QByteArray &ba)
-{
-  // format = PROCESS,COMMAND
-  //             0      1
-  
-  ba.clear();
-  ba.append("ERROR\n");
-
-  if (l.count() != 2)
-  {
-    qDebug() << "SCProcess::calculate: invalid parm count" << l.count();
-    return 1;
-  }
-
-  int rc = QProcess::startDetached(l.at(1));
-  if (! rc)
-  {
-    qDebug() << "SCProcess::calculate: error starting the process";
-    return 1;
-  }
-
-  ba.clear();
-  ba.append("0\n");
-
-  return 0;
-}
-
+#endif

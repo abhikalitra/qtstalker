@@ -1,0 +1,8 @@
+!include( ../../../script.plugin.config ){
+  message( "Oops -- No custom build options specified" )
+}
+
+HEADERS += CO.h
+
+SOURCES += CO.cpp
+

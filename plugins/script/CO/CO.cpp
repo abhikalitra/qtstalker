@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "SCChartObject.h"
+#include "CO.h"
 #include "ChartObjectSettings.h"
 #include "ChartObjectFactory.h"
 #include "ChartObject.h"
@@ -27,11 +27,11 @@
 
 #include <QtDebug>
 
-SCChartObject::SCChartObject ()
+CO::CO ()
 {
 }
 
-int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind)
+int CO::command (QStringList &l, Indicator &ind, BarData &, QByteArray &ba)
 {
   // CO,<TYPE>,*
   // 0    1
@@ -42,13 +42,13 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind)
 
   if (l.count() < 2)
   {
-    qDebug() << "SCChartObject::calculate: invalid parm count" << l.count();
+    qDebug() << "CO::command: invalid parm count" << l.count();
     return rc;
   }
 
   if (! g_barData.count())
   {
-    qDebug() << "SCChartObject::calculate: no bars available";
+    qDebug() << "CO::command: no bars available";
     return rc;
   }
 
@@ -56,7 +56,7 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind)
   ChartObject *co = fac.chartObject(l[1]);
   if (! co)
   {
-    qDebug() << "SCChartObject::calculate: invalid type" << l.count();
+    qDebug() << "CO::command: invalid type" << l.count();
     return rc;
   }
 
@@ -93,5 +93,15 @@ int SCChartObject::calculate (QStringList &l, QByteArray &ba, Indicator &ind)
   ba.append("0\n");
 
   return 0;
+}
+
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  CO *o = new CO;
+  return ((ScriptPlugin *) o);
 }
 

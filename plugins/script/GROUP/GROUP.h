@@ -19,24 +19,34 @@
  *  USA.
  */
 
-#ifndef SC_CHART_OBJECT_HPP
-#define SC_CHART_OBJECT_HPP
+#ifndef SCGROUP_HPP
+#define SCGROUP_HPP
 
-#include <QStringList>
-#include <QByteArray>
+#include "ScriptPlugin.h"
 
-#include "Indicator.h"
-
-class SCChartObject
+class GROUP : public ScriptPlugin
 {
   public:
     enum Method
     {
-      NEW //
+      _ADD,  // add a group item to a group
+      _DELETE,  // deletes a group and contents
+      _GET  // returns a csv list of the group contents
     };
     
-    SCChartObject ();
-    int calculate (QStringList &, QByteArray &, Indicator &);
+    GROUP ();
+    int command (QStringList &, Indicator &, BarData &, QByteArray &);
+    int addGroup (QStringList &l, QByteArray &ba);
+    int deleteGroup (QStringList &l, QByteArray &ba);
+    int getGroup (QStringList &l, QByteArray &ba);
+
+  protected:
+    QStringList _methodList;
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

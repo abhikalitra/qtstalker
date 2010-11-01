@@ -19,26 +19,21 @@
  *  USA.
  */
 
-#ifndef SC_SYMBOL_HPP
-#define SC_SYMBOL_HPP
+#ifndef SCPROCESS_HPP
+#define SCPROCESS_HPP
 
-#include <QStringList>
-#include <QByteArray>
+#include "ScriptPlugin.h"
 
-class SCSymbol
+class PROCESS : public ScriptPlugin
 {
   public:
-    enum Method
-    {
-      CURRENT  // get the current symbol
-    };
-    
-    SCSymbol ();
-    int calculate (QStringList &, QByteArray &);
-    int getCurrent (QStringList &, QByteArray &);
-
-  protected:
-    QStringList methodList;
+    PROCESS ();
+    int command (QStringList &, Indicator &, BarData &, QByteArray &);
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

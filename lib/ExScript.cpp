@@ -20,12 +20,7 @@
  */
 
 #include "ExScript.h"
-#include "SCIndicator.h"
-#include "SCGroup.h"
-#include "SCSymbol.h"
-#include "SCChartObject.h"
-#include "SCProcess.h"
-//#include "Globals.h"
+#include "ScriptPlugin.h"
 
 #include <QByteArray>
 #include <QtDebug>
@@ -34,13 +29,6 @@ ExScript::ExScript ()
 {
   _killFlag = 0;
 
-  _functionList << "CO";
-  _functionList << "INDICATOR";
-  _functionList << "GROUP";
-  _functionList << "PROCESS";
-  _functionList << "SYMBOL";
-  _functionList << "TEST";
-  
   _proc = new QProcess(this);
   connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
   connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
@@ -134,60 +122,17 @@ void ExScript::readFromStdout ()
     return;
   }
 
-  int i = _functionList.indexOf(l[0]);
-  switch ((Function) i)
+  ScriptPlugin *plug = _factory.plugin(l[0]);
+  if (! plug)
   {
-    case _CO:
-    {
-      SCChartObject sc;
-      sc.calculate(l, ba, _indicator);
-      _proc->write(ba);
-      break;
-    }
-    case _INDICATOR:
-    {
-      SCIndicator sc;
-//      sc.calculate(l, ba, _indicator, g_barData);
-      sc.calculate(l, ba, _indicator, _barData);
-      _proc->write(ba);
-      break;
-    }
-    case _GROUP:
-    {
-      SCGroup sc;
-      sc.calculate(l, ba);
-      _proc->write(ba);
-      break;
-    }
-    case _PROCESS:
-    {
-      SCProcess sc;
-      sc.calculate(l, ba);
-      _proc->write(ba);
-      break;
-    }
-    case _SYMBOL:
-    {
-      SCSymbol sc;
-      sc.calculate(l, ba);
-      _proc->write(ba);
-      break;
-    }
-    case _TEST:
-    {
-//      SCTest sc;
-//      sc.calculate(l, ba, _tlines);
-//      _proc->write(ba);
-      break;
-    }
-    default:
-    {
-      // if we are here it means there was a command syntax error, abort script
-      clear();
-      qDebug() << "ExScript::readFromStdout: syntax error, script abend" << l;
-      break;
-    }
+    qDebug() << "ExScript::readFromStdout: syntax error, script abend" << l;
+    clear();
+    return;
   }
+  
+  plug->command(l, _indicator, _barData, ba);
+  
+  _proc->write(ba);
 }
 
 void ExScript::readFromStderr ()
@@ -232,4 +177,3 @@ void ExScript::setBarData (BarData &d)
 {
   _barData = d;
 }
-

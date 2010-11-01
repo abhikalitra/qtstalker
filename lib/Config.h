@@ -89,8 +89,8 @@ class Config : public ConfigDataBase
       GroupAddDialogPosition, // group add dialog window position last used
       ExchangeSearchDialogSize, // Exchange search dialog window size last used
       ExchangeSearchDialogPosition, // Exchange search dialog window position last used
-      ScriptLaunchButton9, // ********* UNUSED ***************
-      ScriptLaunchButton10, // ********* UNUSED ***************
+      ScriptPluginPath, // path to the indicator plugins
+      ScriptPluginList,  // csv list of current indicator plugins from startup inventory
       ScriptLaunchButton11, // ********* UNUSED ***************
       ScriptLaunchButton12, // ********* UNUSED ***************
       DefaultSymbol, // default symbol flag used in Setup::

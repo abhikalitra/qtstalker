@@ -31,6 +31,7 @@
 #include "ChartObjectDataBase.h"
 #include "ScriptDataBase.h"
 #include "GroupDataBase.h"
+#include "ScriptPluginFactory.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -77,6 +78,9 @@ void Setup::setup (Config &config, QString session)
 
   MiscPluginFactory mfac;
   mfac.setPluginList();
+
+  ScriptPluginFactory sfac;
+  sfac.setPluginList();
 
   setupDefaultIndicators(config);
 }

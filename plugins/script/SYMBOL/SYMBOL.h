@@ -19,32 +19,30 @@
  *  USA.
  */
 
-#ifndef SCGROUP_HPP
-#define SCGROUP_HPP
+#ifndef SCSYMBOL_HPP
+#define SCSYMBOL_HPP
 
+#include "ScriptPlugin.h"
 
-#include <QStringList>
-#include <QByteArray>
-
-
-class SCGroup
+class SYMBOL : public ScriptPlugin
 {
   public:
     enum Method
     {
-      ADD,  // add a group item to a group
-      DELETE,  // deletes a group and contents
-      GET  // returns a csv list of the group contents
+      _CURRENT  // get the current symbol
     };
     
-    SCGroup ();
-    int calculate (QStringList &l, QByteArray &ba);
-    int addGroup (QStringList &l, QByteArray &ba);
-    int deleteGroup (QStringList &l, QByteArray &ba);
-    int getGroup (QStringList &l, QByteArray &ba);
+    SYMBOL ();
+    int command (QStringList &, Indicator &, BarData &, QByteArray &);
+    int getCurrent (QStringList &, QByteArray &);
 
   protected:
-    QStringList methodList;
+    QStringList _methodList;
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

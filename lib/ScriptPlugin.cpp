@@ -19,17 +19,20 @@
  *  USA.
  */
 
-#ifndef SCPROCESS_HPP
-#define SCPROCESS_HPP
+#include "ScriptPlugin.h"
 
-#include <QStringList>
-#include <QByteArray>
+#include <QDebug>
 
-class SCProcess
+ScriptPlugin::ScriptPlugin ()
 {
-  public:
-    SCProcess ();
-    int calculate (QStringList &l, QByteArray &ba);
-};
+}
 
-#endif
+ScriptPlugin::~ScriptPlugin ()
+{
+}
+
+// virtual function
+int ScriptPlugin::command (QStringList &, Indicator &, BarData &, QByteArray &)
+{
+  return 0;
+}

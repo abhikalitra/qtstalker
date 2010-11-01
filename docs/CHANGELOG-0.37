@@ -861,4 +861,6 @@
 
 20101031:  BUG ID #3095457 - Group panel list now sorts properly.
 
+20101101:  Created a new plugin branch for script commands. More flexibility for future expansion.
+
 

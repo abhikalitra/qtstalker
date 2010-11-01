@@ -22,47 +22,47 @@
 #ifndef SCINDICATOR_HPP
 #define SCINDICATOR_HPP
 
-#include <QStringList>
-#include <QByteArray>
-#include <QHash>
+#include "ScriptPlugin.h"
 
-#include "Indicator.h"
-#include "BarData.h"
-
-class SCIndicator
+class INDICATOR : public ScriptPlugin
 {
   public:
     enum Method
     {
-      NEW, // create a new plotline to be filled later by the script
-      GET_INDEX, // pass a single indicator value to the calling script
-      GET_INDEX_DATE, // pass a single date value to the calling script
-      GET_RANGE, // returns the start and end index values
-      PLUGIN, // get a plugin indicator
-      SET_INDEX, // pass a single indicator value from script to qtstalker
-      SET_COLOR, // set the color of the bar at index pos
-      DELETE,  // delete an indicator
-      SET_COLOR_ALL, // set all bars to color
-      SET_PLOT_STYLE, // set the plot style
-      SET_PLOT // plot this indicator
+      __NEW, // create a new plotline to be filled later by the script
+      _GET_INDEX, // pass a single indicator value to the calling script
+      _GET_INDEX_DATE, // pass a single date value to the calling script
+      _GET_RANGE, // returns the start and end index values
+      _PLUGIN, // get a plugin indicator
+      _SET_INDEX, // pass a single indicator value from script to qtstalker
+      _DELETE,  // delete an indicator
+      _SET_COLOR, // set the color of the bar at index pos
+      _SET_COLOR_ALL, // set all bars to color
+      _SET_PLOT_STYLE, // set the plot style
+      _SET_PLOT // plot this indicator
     };
     
-    SCIndicator ();
-    int calculate (QStringList &, QByteArray &, Indicator &, BarData &);
+    INDICATOR ();
+    int command (QStringList &, Indicator &, BarData &, QByteArray &);
     int getIndex (QStringList &, QByteArray &, Indicator &);
     int getIndexDate (QStringList &, QByteArray &, BarData &);
     int setIndex (QStringList &, QByteArray &, Indicator &);
     int getRange (QStringList &, QByteArray &, Indicator &);
-    int setColor (QStringList &, QByteArray &, Indicator &);
     int getPlugin (QStringList &, QByteArray &, Indicator &, BarData &);
     int getNew (QStringList &, QByteArray &, Indicator &, BarData &);
     int setDelete (QStringList &, QByteArray &, Indicator &);
+    int setColor (QStringList &, QByteArray &, Indicator &);
     int setColorAll (QStringList &, QByteArray &, Indicator &);
     int setPlotStyle (QStringList &, QByteArray &, Indicator &);
     int setPlot (QStringList &, QByteArray &, Indicator &);
 
   protected:
-    QStringList methodList;
+    QStringList _methodList;
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

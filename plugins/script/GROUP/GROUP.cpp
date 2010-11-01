@@ -19,57 +19,59 @@
  *  USA.
  */
 
-#include "SCGroup.h"
+#include "GROUP.h"
 #include "GroupDataBase.h"
-#include "BarData.h"
 #include "Group.h"
 
 #include <QtDebug>
 
-SCGroup::SCGroup ()
+GROUP::GROUP ()
 {
-  methodList << "ADD" << "DELETE" << "GET";
+  _methodList << "ADD" << "DELETE" << "GET";
 }
 
-int SCGroup::calculate (QStringList &l, QByteArray &ba)
+int GROUP::command (QStringList &l, Indicator &, BarData &, QByteArray &ba)
 {
-  // format = GROUP,METHOD,*
+  // GROUP,METHOD,*
+  //   0     1
+  
   int rc = 1;
   ba.clear();
   ba.append("ERROR\n");
 
   if (l.count() < 2)
   {
-    qDebug() << "SCGroup::calculate: invalid parm count" << l.count();
+    qDebug() << "GROUP::command: invalid parm count" << l.count();
     return rc;
   }
   
-  switch ((Method) methodList.indexOf(l[1]))
+  switch ((Method) _methodList.indexOf(l[1]))
   {
-    case ADD:
+    case _ADD:
       rc = addGroup(l, ba);
       break;
-    case DELETE:
+    case _DELETE:
       rc = deleteGroup(l, ba);
       break;
-    case GET:
+    case _GET:
       rc = getGroup(l, ba);
       break;
     default:
-      qDebug() << "SCGroup::calculate: invalid method" << l[1];
+      qDebug() << "GROUP::command: invalid method" << l[1];
       break;
   }
   
   return rc;
 }
 
-int SCGroup::addGroup (QStringList &l, QByteArray &ba)
+int GROUP::addGroup (QStringList &l, QByteArray &ba)
 {
-  // format = GROUP,ADD,GROUP,EXCHANGE,SYMBOL
+  // GROUP,ADD,GROUP,EXCHANGE,SYMBOL
+  //    0   1    2      3       4
 
   if (l.count() != 5)
   {
-    qDebug() << "SCGroup::addGroup: invalid parm count" << l.count();
+    qDebug() << "GROUP::addGroup: invalid parm count" << l.count();
     return 1;
   }
 
@@ -93,13 +95,14 @@ int SCGroup::addGroup (QStringList &l, QByteArray &ba)
   return 0;
 }
 
-int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
+int GROUP::deleteGroup (QStringList &l, QByteArray &ba)
 {
-  // format = GROUP,DELETE,GROUP
+  // GROUP,DELETE,GROUP
+  //   0     1     2
 
   if (l.count() != 3)
   {
-    qDebug() << "SCGroup::addGroup: invalid parm count" << l.count();
+    qDebug() << "GROUP::addGroup: invalid parm count" << l.count();
     return 1;
   }
 
@@ -114,13 +117,14 @@ int SCGroup::deleteGroup (QStringList &l, QByteArray &ba)
   return 0;
 }
 
-int SCGroup::getGroup (QStringList &l, QByteArray &ba)
+int GROUP::getGroup (QStringList &l, QByteArray &ba)
 {
-  // format = GROUP,GET,GROUP
+  // GROUP,GET,GROUP
+  //   0    1    2
 
   if (l.count() != 3)
   {
-    qDebug() << "SCGroup::getGroup: invalid parm count" << l.count();
+    qDebug() << "GROUP::getGroup: invalid parm count" << l.count();
     return 1;
   }
 
@@ -136,5 +140,15 @@ int SCGroup::getGroup (QStringList &l, QByteArray &ba)
   ba.append(rl.join(",") + "\n");
 
   return 0;
+}
+
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  GROUP *o = new GROUP;
+  return ((ScriptPlugin *) o);
 }
 

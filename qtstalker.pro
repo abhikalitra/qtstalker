@@ -160,6 +160,13 @@ SUBDIRS += plugins/misc/Scanner
 SUBDIRS += plugins/misc/Tester
 SUBDIRS += plugins/misc/Yahoo
 
+# compile script plugins
+SUBDIRS += plugins/script/CO
+SUBDIRS += plugins/script/GROUP
+SUBDIRS += plugins/script/INDICATOR
+SUBDIRS += plugins/script/PROCESS
+SUBDIRS += plugins/script/SYMBOL
+
 # compile QuoteServer
 SUBDIRS += QuoteServer
 
