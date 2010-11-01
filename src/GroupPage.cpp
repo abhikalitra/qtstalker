@@ -26,8 +26,8 @@
 #include "Group.h"
 #include "GroupNewDialog.h"
 #include "GroupDeleteDialog.h"
-#include "GroupAddDialog.h"
 #include "GroupDeleteItemsDialog.h"
+#include "SymbolDialog.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/delgroup.xpm"
@@ -237,9 +237,35 @@ void GroupPage::updateGroups ()
 
 void GroupPage::addToGroup ()
 {
-  GroupAddDialog *dialog = new GroupAddDialog(_nav->symbols());
-  connect(dialog, SIGNAL(signalGroupChanged()), this, SLOT(updateGroups()));
+  SymbolDialog *dialog = new SymbolDialog;
+  connect(dialog, SIGNAL(signalSymbols(Group)), this, SLOT(addToGroup2(Group)));
   dialog->show();
+}
+
+void GroupPage::addToGroup2 (Group tg)
+{
+  Group g;
+  QString s = _groups->currentText();
+  g.setName(s);
+  GroupDataBase db;
+  db.getGroup(g);
+
+  QStringList l;
+  tg.getStringList(l);
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    BarData bd;
+    bd.setKey(l.at(loop));
+    g.setSymbol(bd);
+  }
+
+  db.transaction();
+  db.setGroup(g);
+  db.commit();
+
+  updateList();
 }
 
 void GroupPage::updateList ()
@@ -254,8 +280,8 @@ void GroupPage::updateList ()
 
   setEnabled(FALSE);
 
-  _nav->setSortingEnabled(FALSE);
-
+//  _nav->setSortingEnabled(FALSE);
+  
   qRegisterMetaType<BarData>("BarData");
   UpdateGroupPageThread *r = new UpdateGroupPageThread(this, g);
   connect(r, SIGNAL(signalSymbol(BarData)), _nav, SLOT(addSymbol(BarData)), Qt::QueuedConnection);
@@ -266,7 +292,7 @@ void GroupPage::updateList ()
 
 void GroupPage::requestDone ()
 {
-  _nav->setSortingEnabled(TRUE);
+//  _nav->setSortingEnabled(TRUE);
   setEnabled(TRUE);
   buttonStatus();
 }

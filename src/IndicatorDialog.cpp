@@ -25,6 +25,7 @@
 #include "IndicatorPluginFactory.h"
 #include "IndicatorPlugin.h"
 #include "Globals.h"
+#include "Strip.h"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -88,7 +89,12 @@ void IndicatorDialog::createMainPage ()
 
 void IndicatorDialog::done ()
 {
-  if (_name->text().isEmpty())
+  QString name = _name->text();
+
+  Strip strip;
+  strip.verifyText(name);
+
+  if (name.isEmpty())
   {
     setMessage(tr("Name missing."));
     return;
@@ -98,7 +104,7 @@ void IndicatorDialog::done ()
   IndicatorDataBase db;
   QStringList l;
   db.getIndicatorList(l);
-  if (l.indexOf(_name->text()) != -1)
+  if (l.indexOf(name) != -1)
   {
     setMessage(tr("This indicator already exists."));
     return;
@@ -114,9 +120,7 @@ void IndicatorDialog::done ()
   i.setEnable(1);
   i.setTabRow(_row->value());
   i.setColumn(_col->value());
-
-  s = _name->text();
-  i.setName(s);
+  i.setName(name);
 
   s = _indicator->currentText();
   i.setIndicator(s);
@@ -125,4 +129,3 @@ void IndicatorDialog::done ()
 
   accept();
 }
-

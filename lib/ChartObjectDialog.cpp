@@ -20,41 +20,8 @@
  */
 
 #include "ChartObjectDialog.h"
-#include "ChartObject.h"
 
-#include <QtDebug>
-#include <QLayout>
-
-ChartObjectDialog::ChartObjectDialog () : QDialog (0, 0)
-{
-  setAttribute(Qt::WA_DeleteOnClose);
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(10);
-  vbox->setMargin(5);
-  setLayout(vbox);
-
-  _tabs = new QTabWidget;
-  vbox->addWidget(_tabs);
-
-  // buttonbox
-  _buttonBox = new QDialogButtonBox;
-  _buttonBox->addButton(QDialogButtonBox::Help);
-  _buttonBox->addButton(QDialogButtonBox::Ok);
-  _buttonBox->addButton(QDialogButtonBox::Cancel);
-  connect(_buttonBox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  vbox->addWidget(_buttonBox);
-
-  vbox->addStretch(1);
-}
-
-ChartObjectDialog::~ChartObjectDialog ()
-{
-}
-
-// virtual
-void ChartObjectDialog::done ()
+ChartObjectDialog::ChartObjectDialog ()
 {
 }
 

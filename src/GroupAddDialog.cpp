@@ -24,9 +24,9 @@
 #include "SymbolDialog.h"
 #include "Globals.h"
 #include "Config.h"
+#include "GroupDataBase.h"
 
 #include "../pics/newchart.xpm"
-#include "../pics/search.xpm"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -66,7 +66,8 @@ void GroupAddDialog::createMainPage ()
 
   // groups
   QStringList gl;
-  _db.getAllGroupsList(gl);
+  GroupDataBase db;
+  db.getAllGroupsList(gl);
   
   _groups = new QComboBox;
   _groups->addItems(gl);
@@ -80,13 +81,6 @@ void GroupAddDialog::createMainPage ()
   b->setToolTip(tr("Create a new group"));
   connect(b, SIGNAL(clicked()), this, SLOT(newGroup()));
   form->addRow(tr("New Group"), b);
-
-  // search
-  b = new QPushButton;
-  b->setIcon(QIcon(search_xpm));
-  b->setToolTip(tr("Perform symbol search"));
-  connect(b, SIGNAL(clicked()), this, SLOT(search()));
-  form->addRow(tr("Search"), b);
 
   // list
   QStringList l;
@@ -116,7 +110,9 @@ void GroupAddDialog::done ()
   Group g;
   QString s = _groups->currentText();
   g.setName(s);
-  _db.getGroup(g);
+  
+  GroupDataBase db;
+  db.getGroup(g);
 
   int loop;
   for (loop = 0; loop < sl.count(); loop++)
@@ -126,9 +122,9 @@ void GroupAddDialog::done ()
     g.setSymbol(bd);
   }
     
-  _db.transaction();
-  _db.setGroup(g);
-  _db.commit();
+  db.transaction();
+  db.setGroup(g);
+  db.commit();
 
   emit signalMessage(QString(tr("Symbol(s) added.")));
   
@@ -147,17 +143,11 @@ void GroupAddDialog::newGroup ()
 void GroupAddDialog::updateGroups ()
 {
   QStringList l;
-  _db.getAllGroupsList(l);
+  GroupDataBase db;
+  db.getAllGroupsList(l);
 
   _groups->clear();
   _groups->addItems(l);
-}
-
-void GroupAddDialog::search ()
-{
-  SymbolDialog *dialog = new SymbolDialog;
-  connect(dialog, SIGNAL(signalSymbols(Group)), this, SLOT(updateList(Group)));
-  dialog->show();
 }
 
 void GroupAddDialog::updateList (Group g)

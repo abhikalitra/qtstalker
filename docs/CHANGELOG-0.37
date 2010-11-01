@@ -859,4 +859,6 @@
 20101020:  Updating the dialogs to use a slightly different approach to popup confirm dialogs. Using yes/no buttons
            instead of the checkbox. Looks cleaner and less mouse interaction.
 
+20101031:  BUG ID #3095457 - Group panel list now sorts properly.
+
 

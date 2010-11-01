@@ -28,7 +28,7 @@ SymbolListWidget::SymbolListWidget ()
   setFocusPolicy(Qt::StrongFocus);
   setContextMenuPolicy(Qt::CustomContextMenu);
   setSelectionMode(QAbstractItemView::ExtendedSelection);
-  setSortingEnabled(FALSE);
+  setSortingEnabled(TRUE);
 
   connect(this, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(itemClicked(QListWidgetItem *)));
 }

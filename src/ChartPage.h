@@ -25,7 +25,6 @@
 #include <QString>
 #include <QWidget>
 #include <QMenu>
-#include <QLineEdit>
 #include <QKeyEvent>
 #include <QPoint>
 #include <QComboBox>

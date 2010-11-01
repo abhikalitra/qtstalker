@@ -26,7 +26,7 @@
 #include <QListWidget>
 
 #include "Dialog.h"
-#include "GroupDataBase.h"
+#include "Group.h"
 
 class GroupAddDialog : public Dialog
 {
@@ -43,15 +43,13 @@ class GroupAddDialog : public Dialog
     void done ();
     void newGroup ();
     void updateGroups ();
-    void search ();
     void updateList (Group);
     void selectionChanged ();
 
   private:
     QComboBox *_groups;
-    GroupDataBase _db;
     QListWidget *_list;
-    Group _group;    
+    Group _group;
 };
 
 #endif

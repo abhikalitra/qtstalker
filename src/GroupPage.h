@@ -25,7 +25,6 @@
 #include <QString>
 #include <QWidget>
 #include <QMenu>
-#include <QLineEdit>
 #include <QKeyEvent>
 #include <QList>
 #include <QAction>
@@ -69,6 +68,7 @@ class GroupPage : public QWidget
     void chartOpened (BarData);
     void updateGroups ();
     void addToGroup ();
+    void addToGroup2 (Group);
     void loadGroups ();
     void buttonStatus ();
     void requestDone ();

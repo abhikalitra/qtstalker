@@ -23,6 +23,7 @@
 #include "Config.h"
 #include "ChartObject.h"
 #include "Globals.h"
+#include "Strip.h"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -79,6 +80,18 @@ void ChartObjectTextDialog::createMainPage ()
 
 void ChartObjectTextDialog::done ()
 {
+  QString label = _label->text();
+
+  Strip strip;
+  strip.verifyText(label);
+
+  if (label.isEmpty())
+  {
+    setMessage(tr("Invalid label characters"));
+    _label->setFocus();
+    return;
+  }
+
   if (_default->isChecked())
   {
     Config config;

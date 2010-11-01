@@ -22,6 +22,7 @@
 #include "ScriptNewDialog.h"
 #include "ScriptDataBase.h"
 #include "Globals.h"
+#include "Strip.h"
 
 #include <QtDebug>
 #include <QLineEdit>
@@ -38,8 +39,15 @@ void ScriptNewDialog::done ()
 {
   QString name = _name->lineEdit()->text();
 
-  // remove any forbidden sql characters
-  name = name.remove(QString("'"), Qt::CaseSensitive);
+  Strip strip;
+  strip.verifyText(name);
+
+  if (name.isEmpty())
+  {
+    setMessage(tr("Name missing."));
+    _name->setFocus();
+    return;
+  }
 
   // check is name already exists
   if (_scripts.contains(name))

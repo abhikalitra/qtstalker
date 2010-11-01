@@ -22,6 +22,7 @@
 #include "GroupNewDialog.h"
 #include "GroupDataBase.h"
 #include "Globals.h"
+#include "Strip.h"
 
 #include <QtDebug>
 #include <QLineEdit>
@@ -39,8 +40,8 @@ void GroupNewDialog::done ()
 {
   QString name = _name->lineEdit()->text();
 
-  // remove any forbidden sql characters
-  name = name.remove(QString("'"), Qt::CaseSensitive);
+  Strip strip;
+  strip.verifyText(name);
 
   if (_groups.contains(name))
   {

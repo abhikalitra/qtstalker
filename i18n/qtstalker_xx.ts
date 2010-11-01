@@ -803,6 +803,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>rule created</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CSVRuleDialog</name>
@@ -1257,6 +1261,10 @@ eg. perl -l -T</source>
         <source>Edit Text Chart Object</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Invalid label characters</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObjectVLineDialog</name>
@@ -1548,7 +1556,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Search</source>
+        <source>Current groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create a new group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3090,6 +3102,10 @@ eg. perl -l -T</source>
         <source>Duplicate scanner name. Enter a unique name.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScannerRunDialog</name>
@@ -3389,6 +3405,18 @@ a partial match like %Script or %Scr%</source>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select a specific exchange or * for all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a partial search like %OOG% or * for all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform search</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SymbolListWidget</name>
@@ -3658,6 +3686,10 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Duplicate rule name. Enter a unique name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name missing.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

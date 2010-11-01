@@ -23,6 +23,7 @@
 #include "Globals.h"
 #include "TesterDataBase.h"
 #include "TesterSettingsDialog.h"
+#include "Strip.h"
 
 #include <QtDebug>
 #include <QLineEdit>
@@ -40,8 +41,15 @@ void TesterNewDialog::done ()
 {
   QString name = _name->lineEdit()->text();
 
-  // remove any forbidden sql characters
-  name = name.remove(QString("'"), Qt::CaseSensitive);
+  Strip strip;
+  strip.verifyText(name);
+
+  if (name.isEmpty())
+  {
+    setMessage(tr("Name missing."));
+    _name->setFocus();
+    return;
+  }
 
   if (_rules.contains(name))
   {

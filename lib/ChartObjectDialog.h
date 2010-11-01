@@ -22,15 +22,12 @@
 #ifndef CHART_OBJECT_DIALOG_HPP
 #define CHART_OBJECT_DIALOG_HPP
 
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QTabWidget>
 #include <QString>
-#include <QPushButton>
 
 #include "ChartObjectSettings.h"
+#include "Dialog.h"
 
-class ChartObjectDialog : public QDialog
+class ChartObjectDialog : public Dialog
 {
   Q_OBJECT
 
@@ -39,15 +36,9 @@ class ChartObjectDialog : public QDialog
 
   public:
     ChartObjectDialog ();
-    virtual ~ChartObjectDialog ();
     virtual void setSettings (ChartObjectSettings &);
 
-  public slots:
-    virtual void done ();
-
   protected:
-    QTabWidget *_tabs;
-    QDialogButtonBox *_buttonBox;
     ChartObjectSettings _settings;
 };
 
