@@ -63,7 +63,7 @@ int ExScript::calculate (QString &command)
   // make sure process starts error free
   if (! _proc->waitForStarted())
   {
-    qDebug() << "ExScript::calculate: error starting script...timed out";
+    qDebug("ExScript::calculate: %s : error starting script...timed out", qPrintable(command));
     clear();
     return 1;
   }
@@ -71,7 +71,7 @@ int ExScript::calculate (QString &command)
   // wait until script is finished, this will block gui until done.
   if (! _proc->waitForFinished())
   {
-    qDebug() << "ExScript::calculate: script error, timed out";
+    qDebug("ExScript::calculate: %s : script error, timed out", qPrintable(command));
     clear();
     return 1;
   }
@@ -90,7 +90,7 @@ int ExScript::calculate2 (QString &command)
   // make sure process starts error free
   if (! _proc->waitForStarted())
   {
-    qDebug() << "ExScript::calculate: error starting script...timed out";
+    qDebug("ExScript::calculate2: %s : error starting script...timed out", qPrintable(command));
     clear();
     return 1;
   }
