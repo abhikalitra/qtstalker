@@ -23,7 +23,6 @@
 #include "Config.h"
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
-#include "../pics/script.xpm"
 #include "../pics/plugin.xpm"
 
 #include <QDebug>
@@ -69,14 +68,6 @@ void SidePanel::createTabs ()
   connect(_groupTab, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
   _tabs->addTab(_groupTab, QIcon(dirclosed), QString());
   _tabs->setTabToolTip(1, tr("Groups"));
-
-  // script tab
-  _scriptTab = new ScriptPage;
-  connect(_scriptTab, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
-  connect(_scriptTab, SIGNAL(signalScriptDone()), _chartTab, SLOT(updateList()));
-  connect(_scriptTab, SIGNAL(signalScriptDone()), _groupTab, SLOT(updateList()));
-  _tabs->addTab(_scriptTab, QIcon(script_xpm), QString());
-  _tabs->setTabToolTip(2, tr("Scripts"));
 
   // plugin tab
   _pluginTab = new PluginPage;

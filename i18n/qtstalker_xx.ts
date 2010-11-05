@@ -3122,25 +3122,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>Script</name>
-    <message>
-        <source>Script </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> cancelled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> completed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ScriptDeleteDialog</name>
     <message>
         <source>Script Name</source>
@@ -3162,7 +3143,66 @@ eg. perl -l -T</source>
 <context>
     <name>ScriptDialog</name>
     <message>
-        <source>Command</source>
+        <source>Script Manager</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Run...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run script...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create a new script...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit script...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete script...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel script...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScriptEditDialog</name>
+    <message>
+        <source>Edit Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3170,7 +3210,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script File</source>
+        <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3178,23 +3218,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Script File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>saved</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3207,36 +3235,21 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ScriptLaunchButton</name>
+    <name>ScriptItem</name>
     <message>
-        <source>&amp;Configure</source>
+        <source>Script </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script</source>
+        <source> started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure Script Launcher</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ScriptLaunchButtonsDialog</name>
-    <message>
-        <source>Configure Script Panel Launch Buttons</source>
+        <source> cancelled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Rows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
+        <source> completed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3358,10 +3371,6 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scripts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

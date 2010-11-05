@@ -29,7 +29,6 @@
 #include "InfoPanel.h"
 #include "ChartPage.h"
 #include "GroupPage.h"
-#include "ScriptPage.h"
 #include "PluginPage.h"
 #include "BarData.h"
 
@@ -62,7 +61,6 @@ class SidePanel : public QSplitter
     InfoPanel *_info;
     ChartPage *_chartTab;
     GroupPage *_groupTab;
-    ScriptPage *_scriptTab;
     PluginPage *_pluginTab;
 };
 

@@ -52,7 +52,7 @@ class Config : public ConfigDataBase
       DateRangeButtonStatus, // status of the date range button on/off (int)
       DateRangeStart, // the start date range
       DataPanelSize, // size of the data panel
-      ScriptLaunchButtonRows, // the number of script launch button rows on the script panel
+      ScriptLaunchButtonRows, // ********** UNUSED ***********************
       PlotFont, // chart plot font
       DateRangeEnd, // the end of the date range
       NavAreaSize, // navigator panel size
@@ -74,14 +74,14 @@ class Config : public ConfigDataBase
       PSButton1, // toolbar bar spacing button 1
       PSButton2, // toolbar bar spacing button 2
       Refresh, // refreshes chart every x minutes
-      ScriptLaunchButtonCols, // the number of script launch button cols on the script panel
+      ScriptLaunchButtonCols, // ************* UNUSED **************************
       CrossHairs, // crosshairs status
       ExchangeFileDate,  // the last modification date of /docs/exchanges.csv
-      LastScriptPath, // the dir of the last script run from a dialog
+      LastScriptPath, // ********** UNUSED ***********************
       FuturesFileDate,   // the file size of /docs/futures.csv
       CrossHairsColor, // crosshairs color
       SidePanelLastPage, // the last side panel page displayed
-      LastScriptSearch, // the last used script search string
+      LastScriptSearch, // ************ UNUSED *********************
       LastChartPanelExchangeSearch, // last exchange search used on the chart panel
       SymbolDialogSize, // symbol dialog window size last used
       SymbolDialogPosition, // symbol dialog window position last used

@@ -29,7 +29,6 @@
 #include "MiscPluginFactory.h"
 #include "Globals.h"
 #include "ChartObjectDataBase.h"
-#include "ScriptDataBase.h"
 #include "GroupDataBase.h"
 #include "ScriptPluginFactory.h"
 
@@ -68,10 +67,6 @@ void Setup::setup (Config &config, QString session)
   GroupDataBase gdb;
   gdb.init();
   
-  // initialize script tables
-  ScriptDataBase sdb;
-  sdb.init();
-
   // get complete plugin inventory
   IndicatorPluginFactory ifac;
   ifac.setPluginList();

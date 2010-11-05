@@ -157,6 +157,7 @@ SUBDIRS += plugins/indicators/WILLR
 SUBDIRS += plugins/misc/Alert
 SUBDIRS += plugins/misc/CSV
 SUBDIRS += plugins/misc/Scanner
+SUBDIRS += plugins/misc/Script
 SUBDIRS += plugins/misc/Tester
 SUBDIRS += plugins/misc/Yahoo
 

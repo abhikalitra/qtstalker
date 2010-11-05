@@ -863,4 +863,9 @@
 
 20101101:  Created a new plugin branch for script commands. More flexibility for future expansion.
 
+20101104:  Moved the Script panel into a new Misc plugin called Script. The panel size was becoming a limitation
+           to future expansion.
+
+
+
 
