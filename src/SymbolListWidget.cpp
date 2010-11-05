@@ -30,7 +30,8 @@ SymbolListWidget::SymbolListWidget ()
   setSelectionMode(QAbstractItemView::ExtendedSelection);
   setSortingEnabled(TRUE);
 
-  connect(this, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(itemClicked(QListWidgetItem *)));
+//  connect(this, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(itemClicked(QListWidgetItem *)));
+  connect(this, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(itemClicked(QListWidgetItem *)));
 }
 
 void SymbolListWidget::clearSymbols ()

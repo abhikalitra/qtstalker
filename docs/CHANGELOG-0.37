@@ -866,6 +866,10 @@
 20101104:  Moved the Script panel into a new Misc plugin called Script. The panel size was becoming a limitation
            to future expansion.
 
+20101105:  Changed the chart/group panel chart loading to a double click. The single click was getting in the way
+           of right clicking the list and forcing an unwanted load. Unfortunately, I have not found a way
+           to do both currently. Pressing enter key will also load the chart.
+
 
 
 
