@@ -20,7 +20,6 @@
  */
 
 #include "AD.h"
-#include "ADDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -116,7 +115,46 @@ int AD::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * AD::dialog (Indicator &i)
 {
-  return new ADDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general page
+  int tab = dialog->addTab(tr("General"));
+  
+  QString d;
+  _settings.getData(_Method, d);
+  dialog->addCombo(tab, _Method, tr("Method"), list(), d);
+
+  // AD page
+  tab = dialog->addTab("AD");
+  
+  _settings.getData(_ADColor, d);
+  dialog->addColor(tab, _ADColor, tr("Color"), d);
+
+  _settings.getData(_ADPlot, d);
+  dialog->addPlot(tab, _ADPlot, tr("Plot"), d);
+
+  _settings.getData(_ADLabel, d);
+  dialog->addText(tab, _ADLabel, tr("Label"), d);
+  
+  // OSC page
+  tab = dialog->addTab("OSC");
+
+  _settings.getData(AD::_OSCColor, d);
+  dialog->addColor(tab, _OSCColor, tr("Color"), d);
+
+  _settings.getData(_OSCPlot, d);
+  dialog->addPlot(tab, _OSCPlot, tr("Plot"), d);
+
+  _settings.getData(_OSCLabel, d);
+  dialog->addText(tab, _OSCLabel, tr("Label"), d);
+
+  dialog->addInt(tab, _FastPeriod, tr("Fast Period"), _settings.getInt(_FastPeriod), 100000, 1);
+
+  dialog->addInt(tab, _SlowPeriod, tr("Slow Period"), _settings.getInt(_SlowPeriod), 100000, 1);
+  
+  return dialog;
 }
 
 void AD::defaults (Indicator &i)

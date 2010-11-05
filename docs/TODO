@@ -30,7 +30,7 @@ BUG: some gnome ubuntu themes have issues with qtstalker indicator tab resizing.
      theme we know does not work. kubuntu and Qt based themes work.
 
 BUG: check indicator dialog input dialogs for forbidden sql chars in text inputs
-
+- add help to dialogs
 
 
 Maybe some day:

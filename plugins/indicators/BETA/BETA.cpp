@@ -21,9 +21,9 @@
 
 #include "BETA.h"
 #include "QuoteServerRequest.h"
-#include "BETADialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "ExchangeDataBase.h"
 
 #include <QtDebug>
 
@@ -182,7 +182,39 @@ int BETA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * BETA::dialog (Indicator &i)
 {
-  return new BETADialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 1);
+
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  ExchangeDataBase db;
+  QStringList l;
+  db.getExchanges(l);
+
+  _settings.getData(_Exchange, d);
+  dialog->addCombo(tab, _Exchange, tr("Index Exchange"), l, d);
+
+  _settings.getData(_Index, d);
+  dialog->addInput(tab, _Index, tr("Index Symbol"), d);
+
+  return dialog;
 }
 
 void BETA::defaults (Indicator &i)

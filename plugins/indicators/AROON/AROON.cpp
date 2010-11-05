@@ -21,7 +21,6 @@
 
 #include "AROON.h"
 #include "Curve.h"
-#include "AROONDialog.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -132,7 +131,56 @@ int AROON::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * AROON::dialog (Indicator &i)
 {
-  return new AROONDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Method, d);
+  dialog->addCombo(tab, _Method, tr("Method"), list(), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 2);
+
+  // up tab
+  tab = dialog->addTab(tr("Up"));
+
+  _settings.getData(_UpColor, d);
+  dialog->addColor(tab, _UpColor, tr("Color"), d);
+
+  _settings.getData(_UpPlot, d);
+  dialog->addPlot(tab, _UpPlot, tr("Plot"), d);
+
+  _settings.getData(_UpLabel, d);
+  dialog->addText(tab, _UpLabel, tr("Label"), d);
+
+  // down tab
+  tab = dialog->addTab(tr("Down"));
+
+  _settings.getData(_DownColor, d);
+  dialog->addColor(tab, _DownColor, tr("Color"), d);
+
+  _settings.getData(_DownPlot, d);
+  dialog->addPlot(tab, _DownPlot, tr("Plot"), d);
+
+  _settings.getData(_DownLabel, d);
+  dialog->addText(tab, _DownLabel, tr("Label"), d);
+
+  // osc tab
+  tab = dialog->addTab(tr("OSC"));
+
+  _settings.getData(_OSCColor, d);
+  dialog->addColor(tab, _OSCColor, tr("Color"), d);
+
+  _settings.getData(_OSCPlot, d);
+  dialog->addPlot(tab, _OSCPlot, tr("Plot"), d);
+
+  _settings.getData(_OSCLabel, d);
+  dialog->addText(tab, _OSCLabel, tr("Label"), d);
+
+  return dialog;
 }
 
 void AROON::defaults (Indicator &i)

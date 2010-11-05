@@ -23,7 +23,6 @@
 #include "FunctionMA.h"
 #include "FunctionBARS.h"
 #include "Curve.h"
-#include "BBANDSDialog.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -221,7 +220,66 @@ int BBANDS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * BBANDS::dialog (Indicator &i)
 {
-  return new BBANDSDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 2);
+
+  dialog->addDouble(tab, _UpDeviation, tr("Upper Deviation"), _settings.getDouble(_UpDeviation), 100000, -100000);
+
+  dialog->addDouble(tab, _DownDeviation, tr("Lower Deviation"), _settings.getDouble(_DownDeviation), 100000, -100000);
+
+  FunctionMA mau;
+  QStringList l = mau.list();
+
+  _settings.getData(_MAType, d);
+  dialog->addCombo(tab, _MAType, tr("Type"), l, d);
+
+  // upper tab
+  tab = dialog->addTab(tr("Upper"));
+
+  _settings.getData(_UpColor, d);
+  dialog->addColor(tab, _UpColor, tr("Color"), d);
+
+  _settings.getData(_UpPlot, d);
+  dialog->addPlot(tab, _UpPlot, tr("Plot"), d);
+
+  _settings.getData(_UpLabel, d);
+  dialog->addText(tab, _UpLabel, tr("Label"), d);
+
+  // middle tab
+  tab = dialog->addTab(tr("Middle"));
+
+  _settings.getData(_MidColor, d);
+  dialog->addColor(tab, _MidColor, tr("Color"), d);
+
+  _settings.getData(_MidPlot, d);
+  dialog->addPlot(tab, _MidPlot, tr("Plot"), d);
+
+  _settings.getData(_MidLabel, d);
+  dialog->addText(tab, _MidLabel, tr("Label"), d);
+
+  // lower tab
+  tab = dialog->addTab(tr("Lower"));
+
+  _settings.getData(_DownColor, d);
+  dialog->addColor(tab, _DownColor, tr("Color"), d);
+
+  _settings.getData(_DownPlot, d);
+  dialog->addPlot(tab, _DownPlot, tr("Plot"), d);
+
+  _settings.getData(_DownLabel, d);
+  dialog->addText(tab, _DownLabel, tr("Label"), d);
+
+  return dialog;
 }
 
 void BBANDS::defaults (Indicator &i)

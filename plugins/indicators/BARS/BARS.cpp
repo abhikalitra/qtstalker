@@ -20,7 +20,6 @@
  */
 
 #include "BARS.h"
-#include "BARSDialog.h"
 #include "Curve.h"
 #include "FunctionBARS.h"
 #include "FunctionMA.h"
@@ -186,7 +185,81 @@ int BARS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * BARS::dialog (Indicator &i)
 {
-  return new BARSDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_UpColor, d);
+  dialog->addColor(tab, _UpColor, tr("Up Color"), d);
+
+  _settings.getData(_DownColor, d);
+  dialog->addColor(tab, _DownColor, tr("Down Color"), d);
+
+  _settings.getData(_NeutralColor, d);
+  dialog->addColor(tab, _NeutralColor, tr("Neutral Color"), d);
+
+  _settings.getData(_BarsLabel, d);
+  dialog->addText(tab, _BarsLabel, tr("Label"), d);
+
+  // MA1 tab
+  tab = dialog->addTab("MA 1");
+
+  _settings.getData(_MAColor, d);
+  dialog->addColor(tab, _MAColor, tr("Color"), d);
+
+  _settings.getData(_MAPlot, d);
+  dialog->addPlot(tab, _MAPlot, tr("Plot"), d);
+
+  _settings.getData(_MALabel, d);
+  dialog->addText(tab, _MALabel, tr("Label"), d);
+
+  dialog->addInt(tab, _MAPeriod, tr("Period"), _settings.getInt(_MAPeriod), 100000, 1);
+
+  FunctionMA mau;
+  QStringList l = mau.list();
+
+  _settings.getData(_MAType, d);
+  dialog->addCombo(tab, _MAType, tr("Type"), l, d);
+
+  // MA2 tab
+  tab = dialog->addTab("MA 2");
+
+  _settings.getData(_MA2Color, d);
+  dialog->addColor(tab, _MA2Color, tr("Color"), d);
+
+  _settings.getData(_MA2Plot, d);
+  dialog->addPlot(tab, _MA2Plot, tr("Plot"), d);
+
+  _settings.getData(_MA2Label, d);
+  dialog->addText(tab, _MA2Label, tr("Label"), d);
+
+  dialog->addInt(tab, _MA2Period, tr("Period"), _settings.getInt(_MA2Period), 100000, 1);
+
+  _settings.getData(_MA2Type, d);
+  dialog->addCombo(tab, _MA2Type, tr("Type"), l, d);
+
+  // MA3 tab
+  tab = dialog->addTab("MA 3");
+
+  _settings.getData(_MA3Color, d);
+  dialog->addColor(tab, _MA3Color, tr("Color"), d);
+
+  _settings.getData(_MA3Plot, d);
+  dialog->addPlot(tab, _MA3Plot, tr("Plot"), d);
+
+  _settings.getData(_MA3Label, d);
+  dialog->addText(tab, _MA3Label, tr("Label"), d);
+
+  dialog->addInt(tab, _MA3Period, tr("Period"), _settings.getInt(_MA3Period), 100000, 1);
+
+  _settings.getData(_MA3Type, d);
+  dialog->addCombo(tab, _MA3Type, tr("Type"), l, d);
+
+  return dialog;
 }
 
 void BARS::defaults (Indicator &i)

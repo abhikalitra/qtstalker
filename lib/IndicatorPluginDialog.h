@@ -22,15 +22,14 @@
 #ifndef INDICATOR_PLUGIN_DIALOG_HPP
 #define INDICATOR_PLUGIN_DIALOG_HPP
 
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QTabWidget>
 #include <QString>
+#include <QHash>
+#include <QFormLayout>
 
 #include "Indicator.h"
-#include "Setting.h"
+#include "Dialog.h"
 
-class IndicatorPluginDialog : public QDialog
+class IndicatorPluginDialog : public Dialog
 {
   Q_OBJECT
 
@@ -38,17 +37,38 @@ class IndicatorPluginDialog : public QDialog
     void signalDone (Indicator);
 
   public:
+    enum Type
+    {
+      _Color,
+      _Plot,
+      _Text,
+      _Int,
+      _Double,
+      _Combo,
+      _Input,
+      _Check
+    };
+    
     IndicatorPluginDialog (Indicator &);
     virtual ~IndicatorPluginDialog ();
+    int addTab (QString);
+    void addColor (int tab, int id, QString label, QString color);
+    void addPlot (int tab, int id, QString label, QString item);
+    void addText (int tab, int id, QString label, QString item);
+    void addInt (int tab, int id, QString label, int value, int high, int low);
+    void addDouble (int tab, int id, QString label, double value, double high, double low);
+    void addCombo (int tab, int id, QString label, QStringList list, QString item);
+    void addInput (int tab, int id, QString label, QString item);
+    void addCheck (int tab, int id, QString label, int value);
 
   public slots:
     virtual void done ();
 
   protected:
     Indicator _indicator;
-    Setting _settings;
-    QTabWidget *_tabs;
-    QDialogButtonBox *_buttonBox;
+    QHash<int, QFormLayout *> _forms;
+    QHash<int, QWidget *> _widgets;
+    QHash<int, Type> _types;
 };
 
 #endif

@@ -21,7 +21,6 @@
 
 #include "ADX.h"
 #include "Curve.h"
-#include "ADXDialog.h"
 #include "ta_libc.h"
 
 #include <QtDebug>
@@ -172,7 +171,73 @@ int ADX::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * ADX::dialog (Indicator &i)
 {
-  return new ADXDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 2);
+
+  // MDI tab
+  tab = dialog->addTab("-DI");
+
+  QString d;
+  _settings.getData(_MDIColor, d);
+  dialog->addColor(tab, _MDIColor, tr("Color"), d);
+
+  _settings.getData(_MDIPlot, d);
+  dialog->addPlot(tab, _MDIPlot, tr("Plot"), d);
+
+  _settings.getData(_MDILabel, d);
+  dialog->addText(tab, _MDILabel, tr("Label"), d);
+
+  dialog->addCheck(tab, _MDICheck, tr("Show"), _settings.getInt(_MDICheck));
+
+  // PDI tab
+  tab = dialog->addTab("+DI");
+
+  _settings.getData(_PDIColor, d);
+  dialog->addColor(tab, _PDIColor, tr("Color"), d);
+
+  _settings.getData(_PDIPlot, d);
+  dialog->addPlot(tab, _PDIPlot, tr("Plot"), d);
+
+  _settings.getData(_PDILabel, d);
+  dialog->addText(tab, _PDILabel, tr("Label"), d);
+
+  dialog->addCheck(tab, _PDICheck, tr("Show"), _settings.getInt(_PDICheck));
+
+  // ADX tab
+  tab = dialog->addTab("ADX");
+
+  _settings.getData(_ADXColor, d);
+  dialog->addColor(tab, _ADXColor, tr("Color"), d);
+
+  _settings.getData(_ADXPlot, d);
+  dialog->addPlot(tab, _ADXPlot, tr("Plot"), d);
+
+  _settings.getData(_ADXLabel, d);
+  dialog->addText(tab, _ADXLabel, tr("Label"), d);
+
+  dialog->addCheck(tab, _ADXCheck, tr("Show"), _settings.getInt(_ADXCheck));
+
+  // ADXR tab
+  tab = dialog->addTab("ADXR");
+
+  _settings.getData(_ADXRColor, d);
+  dialog->addColor(tab, _ADXRColor, tr("Color"), d);
+
+  _settings.getData(_ADXRPlot, d);
+  dialog->addPlot(tab, _ADXRPlot, tr("Plot"), d);
+
+  _settings.getData(_ADXRLabel, d);
+  dialog->addText(tab, _ADXRLabel, tr("Label"), d);
+
+  dialog->addCheck(tab, _ADXRCheck, tr("Show"), _settings.getInt(_ADXRCheck));
+
+  return dialog;
 }
 
 void ADX::defaults (Indicator &i)

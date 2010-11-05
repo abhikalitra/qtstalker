@@ -3,8 +3,6 @@
 } 
 
 HEADERS += BETA.h
-HEADERS += BETADialog.h
 
 SOURCES += BETA.cpp
-SOURCES += BETADialog.cpp
 

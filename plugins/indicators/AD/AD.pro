@@ -3,7 +3,5 @@
 } 
 
 HEADERS += AD.h
-HEADERS += ADDialog.h
 
 SOURCES += AD.cpp
-SOURCES += ADDialog.cpp
