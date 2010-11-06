@@ -21,7 +21,6 @@
 
 #include "CUS.h"
 #include "ExScript.h"
-#include "CUSDialog.h"
 #include "../../../lib/qtstalker_defines.h"
 
 #include <QtDebug>
@@ -37,8 +36,8 @@ int CUS::getIndicator (Indicator &ind, BarData &data)
   Setting settings = ind.settings();
 
   QString s, s2;
-  settings.getData(Command, s);
-  settings.getData(Script, s2);
+  settings.getData(_Command, s);
+  settings.getData(_Script, s2);
   s.append(" " + s2);
 
   ExScript script;
@@ -53,15 +52,31 @@ int CUS::getIndicator (Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * CUS::dialog (Indicator &i)
 {
-  return new CUSDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Command, d);
+  dialog->addText(tab, _Command, tr("Command"), d);
+
+  _settings.getData(_Script, d);
+  dialog->addFile(tab, _Script, tr("Script"), d);
+
+  return dialog;
 }
 
 void CUS::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(Command, "perl");
+  set.setData(_Command, "perl");
+  
   QString inputDir = QString("%1/qtstalker/indicator/").arg(INSTALL_DATA_DIR);
-  set.setData(Script, inputDir);
+  set.setData(_Script, inputDir);
+  
   i.setSettings(set);
 }
 

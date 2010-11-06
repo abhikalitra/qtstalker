@@ -3,8 +3,6 @@
 } 
 
 HEADERS += MFI.h
-HEADERS += MFIDialog.h
 
 SOURCES += MFI.cpp
-SOURCES += MFIDialog.cpp
 

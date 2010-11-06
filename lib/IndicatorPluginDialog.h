@@ -46,7 +46,9 @@ class IndicatorPluginDialog : public Dialog
       _Double,
       _Combo,
       _Input,
-      _Check
+      _Check,
+      _File,
+      _MA
     };
     
     IndicatorPluginDialog (Indicator &);
@@ -60,6 +62,8 @@ class IndicatorPluginDialog : public Dialog
     void addCombo (int tab, int id, QString label, QStringList list, QString item);
     void addInput (int tab, int id, QString label, QString item);
     void addCheck (int tab, int id, QString label, int value);
+    void addFile (int tab, int id, QString label, QString file);
+    void addMA (int tab, int id, QString label, QString type);
 
   public slots:
     virtual void done ();

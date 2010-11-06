@@ -3,8 +3,6 @@
 } 
 
 HEADERS += CUS.h
-HEADERS += CUSDialog.h
 
 SOURCES += CUS.cpp
-SOURCES += CUSDialog.cpp
 

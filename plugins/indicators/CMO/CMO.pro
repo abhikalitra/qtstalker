@@ -3,8 +3,6 @@
 } 
 
 HEADERS += CMO.h
-HEADERS += CMODialog.h
 
 SOURCES += CMO.cpp
-SOURCES += CMODialog.cpp
 

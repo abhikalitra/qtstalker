@@ -21,7 +21,6 @@
 
 #include "HT.h"
 #include "FunctionBARS.h"
-#include "HTDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -208,7 +207,72 @@ int HT::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * HT::dialog (Indicator &i)
 {
-  return new HTDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  _settings.getData(_Method, d);
+  dialog->addCombo(tab, _Method, tr("Method"), list(), d);
+
+  // phasor tab
+  tab = dialog->addTab(tr("Phasor"));
+
+  _settings.getData(_PhaseColor, d);
+  dialog->addColor(tab, _PhaseColor, tr("Phase Color"), d);
+
+  _settings.getData(_QuadColor, d);
+  dialog->addColor(tab, _QuadColor, tr("Quad Color"), d);
+
+  _settings.getData(_PhasePlot, d);
+  dialog->addPlot(tab, _PhasePlot, tr("Phase Plot"), d);
+
+  _settings.getData(_QuadPlot, d);
+  dialog->addPlot(tab, _QuadPlot, tr("Quad Plot"), d);
+
+  _settings.getData(_PhaseLabel, d);
+  dialog->addText(tab, _PhaseLabel, tr("Phase Label"), d);
+
+  _settings.getData(_QuadLabel, d);
+  dialog->addText(tab, _QuadLabel, tr("Quad Label"), d);
+
+  // sine tab
+  tab = dialog->addTab(tr("Sine"));
+
+  _settings.getData(_SineColor, d);
+  dialog->addColor(tab, _SineColor, tr("Sine Color"), d);
+
+  _settings.getData(_LeadColor, d);
+  dialog->addColor(tab, _LeadColor, tr("Lead Color"), d);
+
+  _settings.getData(_SinePlot, d);
+  dialog->addPlot(tab, _SinePlot, tr("Sine Plot"), d);
+
+  _settings.getData(_LeadPlot, d);
+  dialog->addPlot(tab, _LeadPlot, tr("Lead Plot"), d);
+
+  _settings.getData(_SineLabel, d);
+  dialog->addText(tab, _SineLabel, tr("Sine Label"), d);
+
+  _settings.getData(_LeadLabel, d);
+  dialog->addText(tab, _LeadLabel, tr("Lead Label"), d);
+  
+  return dialog;
 }
 
 void HT::defaults (Indicator &i)

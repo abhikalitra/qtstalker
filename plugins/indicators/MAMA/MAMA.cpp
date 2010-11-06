@@ -21,7 +21,6 @@
 
 #include "MAMA.h"
 #include "FunctionBARS.h"
-#include "MAMADialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -205,7 +204,60 @@ int MAMA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * MAMA::dialog (Indicator &i)
 {
-  return new MAMADialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  dialog->addDouble(tab, _FastLimit, tr("Fast Limit"), _settings.getDouble(_FastLimit), 0.99, 0.01);
+
+  dialog->addDouble(tab, _SlowLimit, tr("Slow Limit"), _settings.getDouble(_SlowLimit), 0.99, 0.01);
+
+  dialog->addCheck(tab, _OSC, tr("Oscillator"), _settings.getInt(_OSC));
+  
+  // mama tab
+  tab = dialog->addTab(tr("MAMA"));
+
+  _settings.getData(_MAMAColor, d);
+  dialog->addColor(tab, _MAMAColor, tr("Color"), d);
+
+  _settings.getData(_MAMAPlot, d);
+  dialog->addPlot(tab, _MAMAPlot, tr("Plot"), d);
+
+  _settings.getData(_MAMALabel, d);
+  dialog->addText(tab, _MAMALabel, tr("Label"), d);
+
+  // fama tab
+  tab = dialog->addTab(tr("FAMA"));
+
+  _settings.getData(_FAMAColor, d);
+  dialog->addColor(tab, _FAMAColor, tr("Color"), d);
+
+  _settings.getData(_FAMAPlot, d);
+  dialog->addPlot(tab, _FAMAPlot, tr("Plot"), d);
+
+  _settings.getData(_FAMALabel, d);
+  dialog->addText(tab, _FAMALabel, tr("Label"), d);
+
+  // osc tab
+  tab = dialog->addTab(tr("OSC"));
+
+  _settings.getData(_OSCColor, d);
+  dialog->addColor(tab, _OSCColor, tr("Color"), d);
+
+  _settings.getData(_OSCPlot, d);
+  dialog->addPlot(tab, _OSCPlot, tr("Plot"), d);
+
+  _settings.getData(_OSCLabel, d);
+  dialog->addText(tab, _OSCLabel, tr("Label"), d);
+
+  return dialog;
 }
 
 void MAMA::defaults (Indicator &i)

@@ -21,7 +21,6 @@
 
 #include "LINEARREG.h"
 #include "FunctionBARS.h"
-#include "LINEARREGDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -156,7 +155,32 @@ int LINEARREG::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * LINEARREG::dialog (Indicator &i)
 {
-  return new LINEARREGDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  _settings.getData(_Method, d);
+  dialog->addCombo(tab, _Method, tr("Method"), list(), d);
+
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 2);
+
+  return dialog;
 }
 
 void LINEARREG::defaults (Indicator &i)

@@ -21,7 +21,6 @@
 
 #include "CCI.h"
 #include "FunctionMA.h"
-#include "CCIDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -144,7 +143,47 @@ int CCI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * CCI::dialog (Indicator &i)
 {
-  return new CCIDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 2);
+
+  dialog->addInt(tab, _Smoothing, tr("Smoothing"), _settings.getInt(_Smoothing), 100000, 1);
+
+  _settings.getData(_SmoothingType, d);
+  dialog->addMA(tab, _SmoothingType, tr("Smoothing Type"), d);
+
+  // ref1 tab
+  tab = dialog->addTab("Ref 1");
+
+  _settings.getData(_Ref1Color, d);
+  dialog->addColor(tab, _Ref1Color, tr("Color"), d);
+
+  dialog->addDouble(tab, _Ref1, tr("Value"), _settings.getDouble(_Ref1), 100000, -100000);
+  
+  // ref2 tab
+  tab = dialog->addTab("Ref 2");
+
+  _settings.getData(_Ref2Color, d);
+  dialog->addColor(tab, _Ref2Color, tr("Color"), d);
+
+  dialog->addDouble(tab, _Ref2, tr("Value"), _settings.getDouble(_Ref2), 100000, -100000);
+
+  return dialog;
 }
 
 void CCI::defaults (Indicator &i)

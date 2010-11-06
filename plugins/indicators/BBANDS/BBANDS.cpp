@@ -237,11 +237,8 @@ IndicatorPluginDialog * BBANDS::dialog (Indicator &i)
 
   dialog->addDouble(tab, _DownDeviation, tr("Lower Deviation"), _settings.getDouble(_DownDeviation), 100000, -100000);
 
-  FunctionMA mau;
-  QStringList l = mau.list();
-
   _settings.getData(_MAType, d);
-  dialog->addCombo(tab, _MAType, tr("Type"), l, d);
+  dialog->addMA(tab, _MAType, tr("Type"), d);
 
   // upper tab
   tab = dialog->addTab(tr("Upper"));

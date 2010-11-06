@@ -3,8 +3,6 @@
 } 
 
 HEADERS += CANDLES.h
-HEADERS += CANDLESDialog.h
 
 SOURCES += CANDLES.cpp
-SOURCES += CANDLESDialog.cpp
 

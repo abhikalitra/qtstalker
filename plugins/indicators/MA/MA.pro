@@ -3,8 +3,6 @@
 } 
 
 HEADERS += MA.h
-HEADERS += MADialog.h
 
 SOURCES += MA.cpp
-SOURCES += MADialog.cpp
 

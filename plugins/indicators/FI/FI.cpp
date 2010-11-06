@@ -21,7 +21,6 @@
 
 #include "FI.h"
 #include "FunctionMA.h"
-#include "FIDialog.h"
 #include "Curve.h"
 
 #include <QtDebug>
@@ -109,7 +108,29 @@ int FI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * FI::dialog (Indicator &i)
 {
-  return new FIDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 1);
+  
+  _settings.getData(_MAType, d);
+  dialog->addMA(tab, _MAType, tr("MA Type"), d);
+
+  return dialog;
 }
 
 void FI::defaults (Indicator &i)

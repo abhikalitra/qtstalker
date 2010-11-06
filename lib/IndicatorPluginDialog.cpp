@@ -26,6 +26,8 @@
 #include "Setting.h"
 #include "Curve.h"
 #include "BarData.h"
+#include "FileButton.h"
+#include "FunctionMA.h"
 
 #include <QtDebug>
 #include <QLayout>
@@ -72,6 +74,7 @@ void IndicatorPluginDialog::done ()
       case _Plot:
       case _Combo:
       case _Input:
+      case _MA:
       {
         QComboBox *cb = (QComboBox *) _widgets.value(it.key());
         _settings.setData(it.key(), cb->currentText());
@@ -99,6 +102,12 @@ void IndicatorPluginDialog::done ()
       {
         QCheckBox *cb = (QCheckBox *) _widgets.value(it.key());
         _settings.setData(it.key(), (int) cb->isChecked());
+        break;
+      }
+      case _File:
+      {
+        FileButton *fb = (FileButton *) _widgets.value(it.key());
+        _settings.setData(it.key(), fb->getFile());
         break;
       }
       default:
@@ -273,5 +282,40 @@ void IndicatorPluginDialog::addCheck (int tab, int id, QString label, int value)
   _widgets.insert(id, (QWidget *) cb);
 
   _types.insert(id, _Check);
+}
+
+void IndicatorPluginDialog::addFile (int tab, int id, QString label, QString file)
+{
+  QFormLayout *form = _forms.value(tab);
+  if (! form)
+    return;
+
+  FileButton *fb = new FileButton(this, file);
+
+  form->addRow(label, fb);
+
+  _widgets.insert(id, (QWidget *) fb);
+
+  _types.insert(id, _File);
+}
+
+void IndicatorPluginDialog::addMA (int tab, int id, QString label, QString type)
+{
+  QFormLayout *form = _forms.value(tab);
+  if (! form)
+    return;
+
+  FunctionMA mau;
+  QStringList l = mau.list();
+
+  QComboBox *cb = new QComboBox;
+  cb->addItems(l);
+  cb->setCurrentIndex(cb->findText(type, Qt::MatchExactly));
+
+  form->addRow(label, cb);
+
+  _widgets.insert(id, (QWidget *) cb);
+
+  _types.insert(id, _MA);
 }
 

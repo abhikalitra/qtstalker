@@ -3,8 +3,6 @@
 } 
 
 HEADERS += CORREL.h
-HEADERS += CORRELDialog.h
 
 SOURCES += CORREL.cpp
-SOURCES += CORRELDialog.cpp
 

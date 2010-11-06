@@ -21,7 +21,6 @@
 
 #include "MACD.h"
 #include "FunctionMA.h"
-#include "MACDDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -229,7 +228,69 @@ int MACD::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * MACD::dialog (Indicator &i)
 {
-  return new MACDDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  dialog->addInt(tab, _FastPeriod, tr("Fast Period"), _settings.getInt(_FastPeriod), 100000, 2);
+
+  dialog->addInt(tab, _SlowPeriod, tr("Slow Period"), _settings.getInt(_SlowPeriod), 100000, 2);
+
+  _settings.getData(_FastMA, d);
+  dialog->addMA(tab, _FastMA, tr("Fast MA"), d);
+
+  _settings.getData(_SlowMA, d);
+  dialog->addMA(tab, _SlowMA, tr("Slow MA"), d);
+
+  // macd tab
+  tab = dialog->addTab(tr("MACD"));
+
+  _settings.getData(_MACDColor, d);
+  dialog->addColor(tab, _MACDColor, tr("Color"), d);
+
+  _settings.getData(_MACDPlot, d);
+  dialog->addPlot(tab, _MACDPlot, tr("Plot"), d);
+
+  _settings.getData(_MACDLabel, d);
+  dialog->addText(tab, _MACDLabel, tr("Label"), d);
+
+  // signal tab
+  tab = dialog->addTab(tr("Signal"));
+
+  _settings.getData(_SignalMA, d);
+  dialog->addMA(tab, _SignalMA, tr("MA Type"), d);
+
+  dialog->addInt(tab, _SignalPeriod, tr("Period"), _settings.getInt(_SignalPeriod), 100000, 1);
+
+  _settings.getData(_SignalColor, d);
+  dialog->addColor(tab, _SignalColor, tr("Color"), d);
+
+  _settings.getData(_SignalPlot, d);
+  dialog->addPlot(tab, _SignalPlot, tr("Plot"), d);
+
+  _settings.getData(_SignalLabel, d);
+  dialog->addText(tab, _SignalLabel, tr("Label"), d);
+
+  // hist tab
+  tab = dialog->addTab(tr("Histogram"));
+
+  _settings.getData(_HistColor, d);
+  dialog->addColor(tab, _HistColor, tr("Color"), d);
+
+  _settings.getData(_HistPlot, d);
+  dialog->addPlot(tab, _HistPlot, tr("Plot"), d);
+
+  _settings.getData(_HistLabel, d);
+  dialog->addText(tab, _HistLabel, tr("Label"), d);
+
+  return dialog;
 }
 
 void MACD::defaults (Indicator &i)

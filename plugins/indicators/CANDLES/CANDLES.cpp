@@ -21,7 +21,6 @@
 
 #include "CANDLES.h"
 #include "FunctionMA.h"
-#include "CANDLESDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -250,7 +249,80 @@ int CANDLES::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * CANDLES::dialog (Indicator &i)
 {
-  return new CANDLESDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Candle Color"), d);
+
+  _settings.getData(_MethodColor, d);
+  dialog->addColor(tab, _MethodColor, tr("Method Color"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  _settings.getData(_Method, d);
+  dialog->addCombo(tab, _Method, tr("Method"), list(), d);
+
+  dialog->addDouble(tab, _Penetration, tr("Penetration"), _settings.getDouble(_Penetration), 100, 0);
+
+  // MA1 tab
+  tab = dialog->addTab("MA 1");
+
+  _settings.getData(_MAColor, d);
+  dialog->addColor(tab, _MAColor, tr("Color"), d);
+
+  _settings.getData(_MAPlot, d);
+  dialog->addPlot(tab, _MAPlot, tr("Plot"), d);
+
+  _settings.getData(_MALabel, d);
+  dialog->addText(tab, _MALabel, tr("Label"), d);
+
+  dialog->addInt(tab, _MAPeriod, tr("Period"), _settings.getInt(_MAPeriod), 100000, 1);
+
+  _settings.getData(_MAType, d);
+  dialog->addMA(tab, _MAType, tr("Type"), d);
+
+  // MA2 tab
+  tab = dialog->addTab("MA 2");
+
+  _settings.getData(_MA2Color, d);
+  dialog->addColor(tab, _MA2Color, tr("Color"), d);
+
+  _settings.getData(_MA2Plot, d);
+  dialog->addPlot(tab, _MA2Plot, tr("Plot"), d);
+
+  _settings.getData(_MA2Label, d);
+  dialog->addText(tab, _MA2Label, tr("Label"), d);
+
+  dialog->addInt(tab, _MA2Period, tr("Period"), _settings.getInt(_MA2Period), 100000, 1);
+
+  _settings.getData(_MA2Type, d);
+  dialog->addMA(tab, _MA2Type, tr("Type"), d);
+
+  // MA3 tab
+  tab = dialog->addTab("MA 3");
+
+  _settings.getData(_MA3Color, d);
+  dialog->addColor(tab, _MA3Color, tr("Color"), d);
+
+  _settings.getData(_MA3Plot, d);
+  dialog->addPlot(tab, _MA3Plot, tr("Plot"), d);
+
+  _settings.getData(_MA3Label, d);
+  dialog->addText(tab, _MA3Label, tr("Label"), d);
+
+  dialog->addInt(tab, _MA3Period, tr("Period"), _settings.getInt(_MA3Period), 100000, 1);
+
+  _settings.getData(_MA3Type, d);
+  dialog->addMA(tab, _MA3Type, tr("Type"), d);
+
+  return dialog;
 }
 
 void CANDLES::defaults (Indicator &i)

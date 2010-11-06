@@ -3,8 +3,6 @@
 } 
 
 HEADERS += MOM.h
-HEADERS += MOMDialog.h
 
 SOURCES += MOM.cpp
-SOURCES += MOMDialog.cpp
 

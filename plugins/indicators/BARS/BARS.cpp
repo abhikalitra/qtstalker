@@ -219,11 +219,8 @@ IndicatorPluginDialog * BARS::dialog (Indicator &i)
 
   dialog->addInt(tab, _MAPeriod, tr("Period"), _settings.getInt(_MAPeriod), 100000, 1);
 
-  FunctionMA mau;
-  QStringList l = mau.list();
-
   _settings.getData(_MAType, d);
-  dialog->addCombo(tab, _MAType, tr("Type"), l, d);
+  dialog->addMA(tab, _MAType, tr("Type"), d);
 
   // MA2 tab
   tab = dialog->addTab("MA 2");
@@ -240,7 +237,7 @@ IndicatorPluginDialog * BARS::dialog (Indicator &i)
   dialog->addInt(tab, _MA2Period, tr("Period"), _settings.getInt(_MA2Period), 100000, 1);
 
   _settings.getData(_MA2Type, d);
-  dialog->addCombo(tab, _MA2Type, tr("Type"), l, d);
+  dialog->addMA(tab, _MA2Type, tr("Type"), d);
 
   // MA3 tab
   tab = dialog->addTab("MA 3");
@@ -257,7 +254,7 @@ IndicatorPluginDialog * BARS::dialog (Indicator &i)
   dialog->addInt(tab, _MA3Period, tr("Period"), _settings.getInt(_MA3Period), 100000, 1);
 
   _settings.getData(_MA3Type, d);
-  dialog->addCombo(tab, _MA3Type, tr("Type"), l, d);
+  dialog->addMA(tab, _MA3Type, tr("Type"), d);
 
   return dialog;
 }

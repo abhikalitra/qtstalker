@@ -22,7 +22,6 @@
 #include "MA.h"
 #include "FunctionBARS.h"
 #include "FunctionMA.h"
-#include "MADialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -149,7 +148,32 @@ int MA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * MA::dialog (Indicator &i)
 {
-  return new MADialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Method, d);
+  dialog->addMA(tab, _Method, tr("Type"), d);
+
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 2);
+
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  return dialog;
 }
 
 void MA::defaults (Indicator &i)
