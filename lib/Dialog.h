@@ -57,6 +57,7 @@ class Dialog : public QDialog
     virtual void cancel ();
     virtual void confirmYes ();
     virtual void confirmNo ();
+    virtual void help ();
 
   protected:
     QTabWidget *_tabs;
@@ -71,6 +72,7 @@ class Dialog : public QDialog
     QPushButton *_noButton;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
+    QString _helpFile;
 };
 
 #endif

@@ -41,32 +41,83 @@
 
 /*
 This file is from Qt4.5.2:
-http://qt.nokia.com/doc/4.5/help-simpletextviewer-assistant-h.html
+http://qt.nokia.com/doc/4.5/help-simpletextviewer-assistant-cpp.html
 
 Qtstalker changes are minor configuration and are noted below, and also in the
 project's revision control system.
-CVS $Revision: 1.2 $ $Date: 2009/10/20 04:22:06 $
+CVS $Revision: 1.1 $ $Date: 2010/11/07 23:25:04 $
 */
 
-#ifndef ASSISTANT_H
-#define ASSISTANT_H
+#include <QByteArray>
+#include <QDir>
+#include <QLibraryInfo>
+#include <QDebug>
 
-#include <QtCore/QString>
+#include "Doc.h"
+#include "qtstalker_defines.h"
+#include "Globals.h"
 
-QT_BEGIN_NAMESPACE
-class QProcess;
-QT_END_NAMESPACE
-
-class Assistant
+Doc::Doc ()
 {
-public:
-    Assistant();
-    ~Assistant();
-    void showDocumentation(const QString &file);
-    
-private:
-    bool startAssistant();
-    QProcess *proc;
-};
+  _proc = 0;
+}
 
+Doc::~Doc ()
+{
+  if (_proc && _proc->state() == QProcess::Running)
+  {
+    _proc->terminate();
+    _proc->waitForFinished(3000);
+  }
+    
+  delete _proc;
+}
+
+void Doc::showDocumentation (QString page)
+{
+  if (! startAssistant())
+    return;
+
+  QByteArray ba("SetSource ");
+//  ba.append("qthelp://com.trolltech.examples.simpletextviewer/doc/");
+  ba.append("qthelp://qtstalker/doc/");
+    
+  _proc->write(ba + page.toLocal8Bit() + '\0');
+}
+
+bool Doc::startAssistant ()
+{
+  if (! _proc)
+    _proc = new QProcess();
+
+  if (_proc->state() != QProcess::Running)
+  {
+    QString app = QLibraryInfo::location(QLibraryInfo::BinariesPath) + QDir::separator();
+#if !defined(Q_OS_MAC)
+    app += QLatin1String("assistant");
+#else
+    app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");
 #endif
+
+    QStringList args;
+/*
+   args << QLatin1String("-collectionFile")
+        << QLibraryInfo::location(QLibraryInfo::ExamplesPath)
+        + QLatin1String("/help/simpletextviewer/documentation/simpletextviewer.qhc")
+        << QLatin1String("-enableRemoteControl");
+*/
+    QString collectionFile = QString("%1/qtstalker/html/doc.qhc").arg(INSTALL_DOCS_DIR);
+    
+    args << QLatin1String("-collectionFile") << collectionFile << QLatin1String("-enableRemoteControl");
+
+    _proc->start(app, args);
+
+    if (! _proc->waitForStarted())
+    {
+      qDebug() << QObject::tr("Unable to launch Qt Assistant (%1)").arg(app);
+      return false;
+    }    
+  }
+  
+  return true;
+}

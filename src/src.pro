@@ -5,7 +5,6 @@ CONFIG += qt thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math
 
-HEADERS += assistant.h
 HEADERS += BarLengthButtons.h
 HEADERS += ChartLayout.h
 HEADERS += ChartPage.h
@@ -44,7 +43,6 @@ HEADERS += UpdateGroupPageThread.h
 HEADERS += ZoomButtons.h
 
 
-SOURCES += assistant.cpp
 SOURCES += BarLengthButtons.cpp
 SOURCES += ChartLayout.cpp
 SOURCES += ChartPage.cpp

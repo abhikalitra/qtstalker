@@ -21,6 +21,7 @@
 
 #include "Dialog.h"
 #include "Config.h"
+#include "Doc.h"
 
 #include "../pics/ok.xpm"
 #include "../pics/disable.xpm"
@@ -32,6 +33,7 @@ Dialog::Dialog ()
 {
   _configSizeParm = -1;
   _configPosParm = -1;
+  _helpFile = "index.html";
   
   createGUI();
 
@@ -118,6 +120,10 @@ void Dialog::createGUI ()
 
   // cancel button
   _cancelButton = _buttonBox->addButton(QDialogButtonBox::Cancel);
+
+  // help button
+  QPushButton *b = _buttonBox->button(QDialogButtonBox::Help);
+  connect(b, SIGNAL(clicked()), this, SLOT(help()));
 
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
@@ -216,5 +222,11 @@ void Dialog::saveSettings ()
 void Dialog::hideMessage ()
 {
   _messageWidget->hide();
+}
+
+void Dialog::help ()
+{
+  Doc *doc = new Doc;
+  doc->showDocumentation(_helpFile);
 }
 

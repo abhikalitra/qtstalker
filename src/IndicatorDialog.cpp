@@ -35,6 +35,8 @@ IndicatorDialog::IndicatorDialog ()
 {
   setWindowTitle("QtStalker" + g_session + ": " + tr("New Indicator"));
 
+  _helpFile = "indicatorreference.html";
+
   createMainPage();
 }
 

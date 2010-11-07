@@ -870,6 +870,10 @@
            of right clicking the list and forcing an unwanted load. Unfortunately, I have not found a way
            to do both currently. Pressing enter key will also load the chart.
 
+20101107:  Removed all of the dialogs for the indicator plugins and replaced with a common class. Less code
+           and faster compile times as a result.
 
-
+           Moved src/assistant class into lib and renamed to Doc. Help system can now be spawned from any dialog
+           class that inherits lib/Dialog. All one needs to do is in each dialog constructor, set the html file
+           to the _helpFile variable. xley: see the example in src/IndicatorDialog.cpp.
 

@@ -24,6 +24,7 @@
 #include "../pics/qtstalker.xpm"
 #include "Dialog.h"
 #include "Globals.h"
+#include "Doc.h"
 
 #include <QApplication>
 #include <QDesktopServices>
@@ -37,18 +38,11 @@ DocsAction::DocsAction ()
   _menu->addAction(QPixmap(help), tr("&Documentation"), this, SLOT(startDocumentation()), Qt::ALT+Qt::Key_D);
   _menu->addAction(QPixmap(qtstalker), tr("&About QtStalker"), this, SLOT(about()), Qt::ALT+Qt::Key_A);
   
-  _assistant = new Assistant;
-
   setIcon(QIcon(help));
   setText(tr("&Help"));
   setStatusTip(tr("Show documentation. Right click mouse for options."));
   setToolTip(tr("Show documentation."));
   connect(this, SIGNAL(clicked()), this, SLOT(startDocumentation()));
-}
-
-DocsAction::~DocsAction ()
-{
-  delete _assistant;
 }
 
 void DocsAction::startDocumentation ()
@@ -68,7 +62,8 @@ raise the minimum Qt version.
 #endif
   qDebug("DocsAction::startDocumentation: Documentation cache: %s/", qPrintable(location));
 
-  _assistant->showDocumentation("index.html");
+  Doc *doc = new Doc;  
+  doc->showDocumentation("index.html");
 }
 
 void DocsAction::about ()

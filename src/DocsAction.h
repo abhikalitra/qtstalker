@@ -25,8 +25,6 @@
 #include <QToolButton>
 #include <QMenu>
 
-#include "assistant.h"
-
 class DocsAction : public QToolButton
 {
   Q_OBJECT
@@ -36,7 +34,6 @@ class DocsAction : public QToolButton
 
   public:
     DocsAction ();
-    ~DocsAction ();
 
   public slots:
     void startDocumentation ();
@@ -46,7 +43,6 @@ class DocsAction : public QToolButton
     virtual void contextMenuEvent (QContextMenuEvent *);
     
   private:
-    Assistant *_assistant;
     QMenu *_menu;
 };
 
