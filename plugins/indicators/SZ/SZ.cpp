@@ -24,7 +24,6 @@
 
 #include "SZ.h"
 #include "FunctionBARS.h"
-#include "SZDialog.h"
 #include "Curve.h"
 
 #include <QtDebug>
@@ -142,7 +141,33 @@ int SZ::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * SZ::dialog (Indicator &i)
 {
-  return new SZDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Method, d);
+  dialog->addCombo(tab, _Method, tr("Method"), list(), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 1);
+
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  dialog->addInt(tab, _NoDeclinePeriod, tr("No Decline Period"), _settings.getInt(_NoDeclinePeriod), 100000, 1);
+
+  dialog->addDouble(tab, _Coefficient, tr("Coefficient"), _settings.getDouble(_Coefficient), 100000, 0);
+
+  return dialog;
 }
 
 void SZ::defaults (Indicator &i)

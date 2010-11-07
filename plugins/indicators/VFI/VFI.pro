@@ -3,8 +3,6 @@
 } 
 
 HEADERS += VFI.h
-HEADERS += VFIDialog.h
 
 SOURCES += VFI.cpp
-SOURCES += VFIDialog.cpp
 

@@ -32,16 +32,16 @@ class VOL : public IndicatorPlugin
   public:
     enum Parm
     {
-      UpColor = 10,
-      DownColor = 20,
-      NeutralColor = 30,
-      MAColor = 40,
-      Plot = 50,
-      MAPlot = 60,
-      Label = 70,
-      MALabel = 80,
-      MAPeriod = 90,
-      MAType = 100
+      _UpColor = 10,
+      _DownColor = 20,
+      _NeutralColor = 30,
+      _MAColor = 40,
+      _Plot = 50,
+      _MAPlot = 60,
+      _Label = 70,
+      _MALabel = 80,
+      _MAPeriod = 90,
+      _MAType = 100
     };
 
     VOL ();

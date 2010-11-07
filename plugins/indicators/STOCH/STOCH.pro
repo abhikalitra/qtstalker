@@ -3,8 +3,6 @@
 } 
 
 HEADERS += STOCH.h
-HEADERS += STOCHDialog.h
 
 SOURCES += STOCH.cpp
-SOURCES += STOCHDialog.cpp
 

@@ -21,7 +21,6 @@
 
 #include "PP.h"
 #include "FunctionBARS.h"
-#include "PPDialog.h"
 #include "Curve.h"
 
 #include <QtDebug>
@@ -205,7 +204,78 @@ int PP::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * PP::dialog (Indicator &i)
 {
-  return new PPDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // r1 tab
+  int tab = dialog->addTab(tr("R1"));
+
+  QString d;
+  _settings.getData(_R1Color, d);
+  dialog->addColor(tab, _R1Color, tr("Color"), d);
+
+  _settings.getData(_R1Label, d);
+  dialog->addText(tab, _R1Label, tr("Label"), d);
+
+  dialog->addCheck(tab, _R1Show, tr("Show"), _settings.getInt(_R1Show));
+
+  // r2 tab
+  tab = dialog->addTab(tr("R2"));
+
+  _settings.getData(_R2Color, d);
+  dialog->addColor(tab, _R2Color, tr("Color"), d);
+
+  _settings.getData(_R2Label, d);
+  dialog->addText(tab, _R2Label, tr("Label"), d);
+
+  dialog->addCheck(tab, _R2Show, tr("Show"), _settings.getInt(_R2Show));
+
+  // r3 tab
+  tab = dialog->addTab(tr("R3"));
+
+  _settings.getData(_R3Color, d);
+  dialog->addColor(tab, _R3Color, tr("Color"), d);
+
+  _settings.getData(_R3Label, d);
+  dialog->addText(tab, _R3Label, tr("Label"), d);
+
+  dialog->addCheck(tab, _R3Show, tr("Show"), _settings.getInt(_R3Show));
+
+  // s1 tab
+  tab = dialog->addTab(tr("S1"));
+
+  _settings.getData(_S1Color, d);
+  dialog->addColor(tab, _S1Color, tr("Color"), d);
+
+  _settings.getData(_S1Label, d);
+  dialog->addText(tab, _S1Label, tr("Label"), d);
+
+  dialog->addCheck(tab, _S1Show, tr("Show"), _settings.getInt(_S1Show));
+
+  // s2 tab
+  tab = dialog->addTab(tr("S2"));
+
+  _settings.getData(_S2Color, d);
+  dialog->addColor(tab, _S2Color, tr("Color"), d);
+
+  _settings.getData(_S2Label, d);
+  dialog->addText(tab, _S2Label, tr("Label"), d);
+
+  dialog->addCheck(tab, _S2Show, tr("Show"), _settings.getInt(_S2Show));
+
+  // s3 tab
+  tab = dialog->addTab(tr("S3"));
+
+  _settings.getData(_S3Color, d);
+  dialog->addColor(tab, _S3Color, tr("Color"), d);
+
+  _settings.getData(_S3Label, d);
+  dialog->addText(tab, _S3Label, tr("Label"), d);
+
+  dialog->addCheck(tab, _S3Show, tr("Show"), _settings.getInt(_S3Show));
+
+  return dialog;
 }
 
 void PP::defaults (Indicator &i)

@@ -21,7 +21,6 @@
 
 #include "VOL.h"
 #include "FunctionMA.h"
-#include "VOLDialog.h"
 #include "PlotOHLC.h"
 #include "Curve.h"
 
@@ -37,46 +36,46 @@ int VOL::getIndicator (Indicator &ind, BarData &data)
   Setting set = ind.settings();
   
   QString s;
-  set.getData(UpColor, s);
+  set.getData(_UpColor, s);
   QColor up(s);
 
-  set.getData(DownColor, s);
+  set.getData(_DownColor, s);
   QColor down(s);
 
-  set.getData(NeutralColor, s);
+  set.getData(_NeutralColor, s);
   QColor neutral(s);
 
   Curve *line = getVOL(up, down, neutral, data);
   if (! line)
     return 1;
 
-  set.getData(Plot, s);
+  set.getData(_Plot, s);
   line->setType((Curve::Type) line->typeFromString(s));
 
-  set.getData(Label, s);
+  set.getData(_Label, s);
   line->setLabel(s);
 
   line->setZ(0);
   ind.setLine(s, line);
 
   // vol ma
-  int period = set.getInt(MAPeriod);
+  int period = set.getInt(_MAPeriod);
 
-  set.getData(MAType, s);
+  set.getData(_MAType, s);
   FunctionMA mau;
   int type = mau.typeFromString(s);
 
   Curve *ma = mau.calculate(line, period, type);
   if (ma)
   {
-    set.getData(MAPlot, s);
+    set.getData(_MAPlot, s);
     ma->setType((Curve::Type) ma->typeFromString(s));
 
-    set.getData(MAColor, s);
+    set.getData(_MAColor, s);
     QColor c(s);
     ma->setColor(c);
 
-    set.getData(MALabel, s);
+    set.getData(_MALabel, s);
     ma->setLabel(s);
     
     ma->setZ(1);
@@ -121,22 +120,62 @@ Curve * VOL::getVOL (QColor &up, QColor &down, QColor &neutral, BarData &data)
 
 IndicatorPluginDialog * VOL::dialog (Indicator &i)
 {
-  return new VOLDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_UpColor, d);
+  dialog->addColor(tab, _UpColor, tr("Up Color"), d);
+
+  _settings.getData(_DownColor, d);
+  dialog->addColor(tab, _DownColor, tr("Down Color"), d);
+
+  _settings.getData(_NeutralColor, d);
+  dialog->addColor(tab, _NeutralColor, tr("Neutral Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  // MA tab
+  tab = dialog->addTab("MA");
+
+  _settings.getData(_MAColor, d);
+  dialog->addColor(tab, _MAColor, tr("Color"), d);
+
+  _settings.getData(_MAPlot, d);
+  dialog->addPlot(tab, _MAPlot, tr("Plot"), d);
+
+  _settings.getData(_MALabel, d);
+  dialog->addText(tab, _MALabel, tr("Label"), d);
+
+  dialog->addInt(tab, _MAPeriod, tr("Period"), _settings.getInt(_MAPeriod), 100000, 1);
+
+  _settings.getData(_MAType, d);
+  dialog->addMA(tab, _MAType, tr("Type"), d);
+
+  return dialog;
 }
 
 void VOL::defaults (Indicator &i)
 {
   Setting set;
-  set.setData(UpColor, "green");
-  set.setData(DownColor, "red");
-  set.setData(NeutralColor, "blue");
-  set.setData(Plot, "Histogram Bar");
-  set.setData(Label, _indicator);
-  set.setData(MAColor, "yellow");
-  set.setData(MAPlot, "Line");
-  set.setData(MALabel, "VOLMA");
-  set.setData(MAPeriod, 10);
-  set.setData(MAType, "SMA");
+  set.setData(_UpColor, "green");
+  set.setData(_DownColor, "red");
+  set.setData(_NeutralColor, "blue");
+  set.setData(_Plot, "Histogram Bar");
+  set.setData(_Label, _indicator);
+  set.setData(_MAColor, "yellow");
+  set.setData(_MAPlot, "Line");
+  set.setData(_MALabel, "VOLMA");
+  set.setData(_MAPeriod, 10);
+  set.setData(_MAType, "SMA");
   i.setSettings(set);
 }
 
@@ -147,10 +186,10 @@ void VOL::plotNames (Indicator &i, QStringList &l)
   Setting settings = i.settings();
   QString s;
   
-  settings.getData(Label, s);
+  settings.getData(_Label, s);
   l.append(s);
 
-  settings.getData(MALabel, s);
+  settings.getData(_MALabel, s);
   l.append(s);
 }
 

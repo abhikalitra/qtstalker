@@ -3,8 +3,6 @@
 } 
 
 HEADERS += STOCHRSI.h
-HEADERS += STOCHRSIDialog.h
 
 SOURCES += STOCHRSI.cpp
-SOURCES += STOCHRSIDialog.cpp
 

@@ -21,7 +21,6 @@
 
 #include "STOCH.h"
 #include "FunctionMA.h"
-#include "STOCHDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -171,7 +170,59 @@ int STOCH::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * STOCH::dialog (Indicator &i)
 {
-  return new STOCHDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // %K tab
+  int tab = dialog->addTab(tr("%K"));
+
+  QString d;
+  dialog->addInt(tab, _FastKPeriod, tr("Period"), _settings.getInt(_FastKPeriod), 100000, 1);
+
+  _settings.getData(_FastKColor, d);
+  dialog->addColor(tab, _FastKColor, tr("Color"), d);
+
+  _settings.getData(_FastKPlot, d);
+  dialog->addPlot(tab, _FastKPlot, tr("Plot"), d);
+
+  _settings.getData(_FastKLabel, d);
+  dialog->addText(tab, _FastKLabel, tr("Label"), d);
+
+  // %D tab
+  tab = dialog->addTab(tr("%D"));
+
+  _settings.getData(_FastDMA, d);
+  dialog->addMA(tab, _FastDMA, tr("MA Type"), d);
+
+  dialog->addInt(tab, _FastDPeriod, tr("Period"), _settings.getInt(_FastDPeriod), 100000, 1);
+
+  _settings.getData(_FastDColor, d);
+  dialog->addColor(tab, _FastDColor, tr("Color"), d);
+
+  _settings.getData(_FastDPlot, d);
+  dialog->addPlot(tab, _FastDPlot, tr("Plot"), d);
+
+  _settings.getData(_FastDLabel, d);
+  dialog->addText(tab, _FastDLabel, tr("Label"), d);
+
+  // ref1 tab
+  tab = dialog->addTab("Ref 1");
+
+  _settings.getData(_Ref1Color, d);
+  dialog->addColor(tab, _Ref1Color, tr("Color"), d);
+
+  dialog->addDouble(tab, _Ref1, tr("Value"), _settings.getDouble(_Ref1), 100000, -100000);
+
+  // ref2 tab
+  tab = dialog->addTab("Ref 2");
+
+  _settings.getData(_Ref2Color, d);
+  dialog->addColor(tab, _Ref2Color, tr("Color"), d);
+
+  dialog->addDouble(tab, _Ref2, tr("Value"), _settings.getDouble(_Ref2), 100000, -100000);
+
+  return dialog;
 }
 
 void STOCH::defaults (Indicator &i)

@@ -20,7 +20,6 @@
  */
 
 #include "ULTOSC.h"
-#include "ULTOSCDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -150,7 +149,54 @@ int ULTOSC::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * ULTOSC::dialog (Indicator &i)
 {
-  return new ULTOSCDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  dialog->addInt(tab, _ShortPeriod, tr("Short Period"), _settings.getInt(_ShortPeriod), 100000, 1);
+
+  dialog->addInt(tab, _MidPeriod, tr("Medium Period"), _settings.getInt(_MidPeriod), 100000, 1);
+
+  dialog->addInt(tab, _LongPeriod, tr("Long Period"), _settings.getInt(_LongPeriod), 100000, 1);
+
+  // ref1 tab
+  tab = dialog->addTab("Ref 1");
+
+  _settings.getData(_Ref1Color, d);
+  dialog->addColor(tab, _Ref1Color, tr("Color"), d);
+
+  dialog->addDouble(tab, _Ref1, tr("Value"), _settings.getDouble(_Ref1), 100, 0);
+
+  // ref2 tab
+  tab = dialog->addTab("Ref 2");
+
+  _settings.getData(_Ref2Color, d);
+  dialog->addColor(tab, _Ref2Color, tr("Color"), d);
+
+  dialog->addDouble(tab, _Ref2, tr("Value"), _settings.getDouble(_Ref2), 100, 0);
+
+  // ref3 tab
+  tab = dialog->addTab("Ref 3");
+
+  _settings.getData(_Ref3Color, d);
+  dialog->addColor(tab, _Ref3Color, tr("Color"), d);
+
+  dialog->addDouble(tab, _Ref3, tr("Value"), _settings.getDouble(_Ref3), 100, 0);
+
+  return dialog;
 }
 
 void ULTOSC::defaults (Indicator &i)

@@ -3,8 +3,6 @@
 } 
 
 HEADERS += PP.h
-HEADERS += PPDialog.h
 
 SOURCES += PP.cpp
-SOURCES += PPDialog.cpp
 

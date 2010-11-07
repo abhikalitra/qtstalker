@@ -20,7 +20,6 @@
  */
 
 #include "VFI.h"
-#include "VFIDialog.h"
 #include "Curve.h"
 
 #include <QtDebug>
@@ -97,7 +96,26 @@ int VFI::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * VFI::dialog (Indicator &i)
 {
-  return new VFIDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 1);
+
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  return dialog;
 }
 
 void VFI::defaults (Indicator &i)

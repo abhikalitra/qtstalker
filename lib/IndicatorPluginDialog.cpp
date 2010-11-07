@@ -23,11 +23,11 @@
 #include "Globals.h"
 #include "ColorButton.h"
 #include "IndicatorDataBase.h"
-#include "Setting.h"
 #include "Curve.h"
 #include "BarData.h"
 #include "FileButton.h"
 #include "FunctionMA.h"
+#include "Setting.h"
 
 #include <QtDebug>
 #include <QLayout>

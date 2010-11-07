@@ -21,7 +21,6 @@
 
 #include "T3.h"
 #include "FunctionBARS.h"
-#include "T3Dialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -143,7 +142,31 @@ int T3::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * T3::dialog (Indicator &i)
 {
-  return new T3Dialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 1);
+
+  dialog->addDouble(tab, _VFactor, tr("V Factor"), _settings.getDouble(_VFactor), 1, 0);
+
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  return dialog;
 }
 
 void T3::defaults (Indicator &i)

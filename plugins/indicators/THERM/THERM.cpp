@@ -30,7 +30,6 @@
 
 #include "THERM.h"
 #include "FunctionMA.h"
-#include "THERMDialog.h"
 #include "Curve.h"
 
 #include <QtDebug>
@@ -184,7 +183,51 @@ int THERM::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * THERM::dialog (Indicator &i)
 {
-  return new THERMDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_UpColor, d);
+  dialog->addColor(tab, _UpColor, tr("Up Color"), d);
+
+  _settings.getData(_DownColor, d);
+  dialog->addColor(tab, _DownColor, tr("Down Color"), d);
+
+  _settings.getData(_ThreshColor, d);
+  dialog->addColor(tab, _ThreshColor, tr("Threshold Color"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  dialog->addDouble(tab, _Threshold, tr("Threshold"), _settings.getDouble(_Threshold), 100000, 0);
+
+  dialog->addInt(tab, _Smoothing, tr("Smoothing"), _settings.getInt(_Smoothing), 100000, 1);
+
+  _settings.getData(_SmoothingType, d);
+  dialog->addMA(tab, _SmoothingType, tr("Smoothing Type"), d);
+
+  // MA tab
+  tab = dialog->addTab("MA");
+
+  _settings.getData(_MAColor, d);
+  dialog->addColor(tab, _MAColor, tr("Color"), d);
+
+  _settings.getData(_MAPlot, d);
+  dialog->addPlot(tab, _MAPlot, tr("Plot"), d);
+
+  _settings.getData(_MALabel, d);
+  dialog->addText(tab, _MALabel, tr("Label"), d);
+
+  dialog->addInt(tab, _MAPeriod, tr("Period"), _settings.getInt(_MAPeriod), 100000, 1);
+
+  _settings.getData(_MAType, d);
+  dialog->addMA(tab, _MAType, tr("MA Type"), d);
+
+  return dialog;
 }
 
 void THERM::defaults (Indicator &i)

@@ -2,13 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>ADDialog</name>
+    <name>AD</name>
     <message>
-        <source>Method</source>
+        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
+        <source>Method</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -24,10 +24,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>AD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Fast Period</source>
         <translation type="unfinished"></translation>
     </message>
@@ -35,19 +31,15 @@
         <source>Slow Period</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>OSC</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>ADXDialog</name>
+    <name>ADX</name>
     <message>
-        <source>Period</source>
+        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
+        <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -68,7 +60,11 @@
     </message>
 </context>
 <context>
-    <name>AROONDialog</name>
+    <name>AROON</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Method</source>
         <translation type="unfinished"></translation>
@@ -78,31 +74,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Label</source>
+        <source>Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -115,11 +87,23 @@
     </message>
     <message>
         <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ATRDialog</name>
+    <name>ATR</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Method</source>
         <translation type="unfinished"></translation>
@@ -138,10 +122,6 @@
     </message>
     <message>
         <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -354,7 +334,11 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>BARSDialog</name>
+    <name>BARS</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Up Color</source>
         <translation type="unfinished"></translation>
@@ -369,10 +353,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BARS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -393,7 +373,11 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>BBANDSDialog</name>
+    <name>BBANDS</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -411,11 +395,11 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA Type</source>
+        <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
+        <source>Upper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -431,10 +415,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Upper</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Middle</source>
         <translation type="unfinished"></translation>
     </message>
@@ -442,25 +422,13 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Lower</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Up Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Neutral Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>BARS</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>BETADialog</name>
+    <name>BETA</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -489,17 +457,13 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Index Symbol</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Index symbol used for comparison eg. SP500</source>
-        <translation type="unfinished"></translation>
-    </message>
+</context>
+<context>
+    <name>BOP</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>BOPDialog</name>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -520,10 +484,6 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Smoothing Type</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>BarLengthButtons</name>
@@ -541,7 +501,11 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>CANDLESDialog</name>
+    <name>CANDLES</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Candle Color</source>
         <translation type="unfinished"></translation>
@@ -563,10 +527,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
@@ -584,7 +544,11 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>CCIDialog</name>
+    <name>CCI</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -610,24 +574,16 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>CMODialog</name>
+    <name>CMO</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -648,13 +604,13 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>CORREL</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>CORRELDialog</name>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -684,27 +640,7 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Index symbol used for comparison eg. SP500</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 3</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1010,26 +946,17 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>CUSDialog</name>
+    <name>CUS</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The interpreter command line and any switches required.
-eg. perl -l -T</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The script location</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1478,7 +1405,11 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>FIDialog</name>
+    <name>FI</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -1497,10 +1428,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>MA Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1657,7 +1584,11 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>HTDialog</name>
+    <name>HT</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -1679,7 +1610,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
+        <source>Phasor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1707,7 +1638,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Phasor</source>
+        <source>Sine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1732,10 +1663,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Lead Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1868,9 +1795,51 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>LINEARREGDialog</name>
+    <name>LINEARREG</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ListDialog</name>
+    <message>
+        <source>Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MA</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1893,20 +1862,13 @@ eg. perl -l -T</source>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>MACD</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>ListDialog</name>
-    <message>
-        <source>Items</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MACDDialog</name>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -1928,7 +1890,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
+        <source>MACD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1944,7 +1906,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MACD</source>
+        <source>Signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1956,47 +1918,16 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Signal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Histogram</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MADialog</name>
-    <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <name>MAMA</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>MAMADialog</name>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -2014,7 +1945,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
+        <source>MAMA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2029,9 +1960,21 @@ eg. perl -l -T</source>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>FAMA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSC</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
-    <name>MAVPDialog</name>
+    <name>MAVP</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -2064,13 +2007,13 @@ eg. perl -l -T</source>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>MFI</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>MFIDialog</name>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -2096,24 +2039,16 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MOMDialog</name>
+    <name>MOM</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -2142,10 +2077,6 @@ eg. perl -l -T</source>
         <source>Smoothing Type</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>NewDialog</name>
@@ -2155,7 +2086,11 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>PODialog</name>
+    <name>PO</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Method</source>
         <translation type="unfinished"></translation>
@@ -2188,13 +2123,13 @@ eg. perl -l -T</source>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>PPDialog</name>
+    <name>PP</name>
+    <message>
+        <source>R1</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -2205,10 +2140,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Show</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>R1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2693,7 +2624,11 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ROCDialog</name>
+    <name>ROC</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Method</source>
         <translation type="unfinished"></translation>
@@ -2726,27 +2661,19 @@ eg. perl -l -T</source>
         <source>Smoothing Type</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>RSI</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>RSIDialog</name>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Smoothing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Smoothing Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2762,19 +2689,15 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2809,7 +2732,11 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>SARDialog</name>
+    <name>SAR</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -2823,16 +2750,16 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Max</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SAR</source>
+        <source>Maximum</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>STOCHDialog</name>
+    <name>STOCH</name>
+    <message>
+        <source>%K</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Period</source>
         <translation type="unfinished"></translation>
@@ -2850,6 +2777,10 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>%D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>MA Type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2857,17 +2788,13 @@ eg. perl -l -T</source>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>STOCHRSIDialog</name>
+    <name>STOCHRSI</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -2889,24 +2816,16 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>STOCHSDialog</name>
+    <name>STOCHS</name>
+    <message>
+        <source>%K</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>MA Type</source>
         <translation type="unfinished"></translation>
@@ -2932,6 +2851,10 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>%D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2939,17 +2862,13 @@ eg. perl -l -T</source>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>SZDialog</name>
+    <name>SZ</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Method</source>
         <translation type="unfinished"></translation>
@@ -2976,10 +2895,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Coefficient</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3122,25 +3037,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ScriptDeleteDialog</name>
-    <message>
-        <source>Script Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scripts deleted.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete selected scripts. Not the actual scripts, just the database records.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ScriptDialog</name>
     <message>
         <source>Script Manager</source>
@@ -3237,19 +3133,19 @@ eg. perl -l -T</source>
 <context>
     <name>ScriptItem</name>
     <message>
-        <source>Script </source>
+        <source>Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> started.</source>
+        <source>started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> cancelled.</source>
+        <source>cancelled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> completed.</source>
+        <source>completed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3269,97 +3165,29 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ScriptPage</name>
-    <message>
-        <source>Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script removed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Active Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Running...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show &amp;All Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show All Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Cancel Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;New Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Run Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Configure &amp;Launch Buttons</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Configure Launch Buttons</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ScriptSearchDialog</name>
     <message>
-        <source>Script Name</source>
+        <source>Select Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter either a specific name like MyScript or
-a partial match like %Script or %Scr%</source>
+        <source>Enter a partial search like %import% or * for all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Search Script</source>
+        <source>Search For</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Items</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3439,7 +3267,11 @@ a partial match like %Script or %Scr%</source>
     </message>
 </context>
 <context>
-    <name>T3Dialog</name>
+    <name>T3</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -3464,13 +3296,13 @@ a partial match like %Script or %Scr%</source>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>THERM</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>THERMDialog</name>
     <message>
         <source>Up Color</source>
         <translation type="unfinished"></translation>
@@ -3500,7 +3332,7 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>THERM</source>
+        <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3512,16 +3344,16 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA</source>
+        <source>MA Type</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>TRIXDialog</name>
+    <name>TRIX</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -3540,10 +3372,6 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3983,7 +3811,11 @@ a partial match like %Script or %Scr%</source>
     </message>
 </context>
 <context>
-    <name>ULTOSCDialog</name>
+    <name>ULTOSC</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -4009,28 +3841,16 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 3</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>VARDialog</name>
+    <name>VAR</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -4051,13 +3871,13 @@ a partial match like %Script or %Scr%</source>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>VFI</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>VFIDialog</name>
     <message>
         <source>Period</source>
         <translation type="unfinished"></translation>
@@ -4074,13 +3894,13 @@ a partial match like %Script or %Scr%</source>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>VIDYA</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>VIDYADialog</name>
     <message>
         <source>Input</source>
         <translation type="unfinished"></translation>
@@ -4105,13 +3925,13 @@ a partial match like %Script or %Scr%</source>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>VOL</name>
     <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>VOLDialog</name>
     <message>
         <source>Up Color</source>
         <translation type="unfinished"></translation>
@@ -4125,19 +3945,15 @@ a partial match like %Script or %Scr%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4148,13 +3964,13 @@ a partial match like %Script or %Scr%</source>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>MA</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>WILLRDialog</name>
+    <name>WILLR</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Period</source>
         <translation type="unfinished"></translation>
@@ -4169,10 +3985,6 @@ a partial match like %Script or %Scr%</source>
     </message>
     <message>
         <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

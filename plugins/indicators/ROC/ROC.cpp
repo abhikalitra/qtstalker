@@ -21,7 +21,6 @@
 
 #include "ROC.h"
 #include "FunctionMA.h"
-#include "ROCDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -155,7 +154,37 @@ int ROC::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * ROC::dialog (Indicator &i)
 {
-  return new ROCDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Method, d);
+  dialog->addCombo(tab, _Method, tr("Method"), list(), d);
+
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 2);
+
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  dialog->addInt(tab, _Smoothing, tr("Smoothing"), _settings.getInt(_Smoothing), 100000, 1);
+
+  _settings.getData(_SmoothingType, d);
+  dialog->addMA(tab, _SmoothingType, tr("Smoothing Type"), d);
+
+  return dialog;
 }
 
 void ROC::defaults (Indicator &i)

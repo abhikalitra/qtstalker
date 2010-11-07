@@ -21,7 +21,6 @@
 
 #include "SAR.h"
 #include "FunctionBARS.h"
-#include "SARDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -116,7 +115,25 @@ int SAR::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * SAR::dialog (Indicator &i)
 {
-  return new SARDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  dialog->addDouble(tab, _Init, tr("Initial"), _settings.getDouble(_Init), 0.2, 0);
+
+  dialog->addDouble(tab, _Max, tr("Maximum"), _settings.getDouble(_Max), 0.2, 0);
+
+  return dialog;
 }
 
 void SAR::defaults (Indicator &i)

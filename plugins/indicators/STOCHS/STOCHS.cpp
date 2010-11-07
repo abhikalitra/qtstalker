@@ -21,7 +21,6 @@
 
 #include "STOCHS.h"
 #include "FunctionMA.h"
-#include "STOCHSDialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -189,7 +188,64 @@ int STOCHS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * STOCHS::dialog (Indicator &i)
 {
-  return new STOCHSDialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // %K tab
+  int tab = dialog->addTab(tr("%K"));
+
+  QString d;
+  _settings.getData(_SlowKMA, d);
+  dialog->addMA(tab, _SlowKMA, tr("MA Type"), d);
+
+  dialog->addInt(tab, _FastKPeriod, tr("Fast K Period"), _settings.getInt(_FastKPeriod), 100000, 1);
+
+  dialog->addInt(tab, _SlowKPeriod, tr("Slow K Period"), _settings.getInt(_SlowKPeriod), 100000, 1);
+
+  _settings.getData(_SlowKColor, d);
+  dialog->addColor(tab, _SlowKColor, tr("Color"), d);
+
+  _settings.getData(_SlowKPlot, d);
+  dialog->addPlot(tab, _SlowKPlot, tr("Plot"), d);
+
+  _settings.getData(_SlowKLabel, d);
+  dialog->addText(tab, _SlowKLabel, tr("Label"), d);
+
+  // %D tab
+  tab = dialog->addTab(tr("%D"));
+
+  _settings.getData(_SlowDMA, d);
+  dialog->addMA(tab, _SlowDMA, tr("MA Type"), d);
+
+  dialog->addInt(tab, _SlowDPeriod, tr("Period"), _settings.getInt(_SlowDPeriod), 100000, 1);
+
+  _settings.getData(_SlowDColor, d);
+  dialog->addColor(tab, _SlowDColor, tr("Color"), d);
+
+  _settings.getData(_SlowDPlot, d);
+  dialog->addPlot(tab, _SlowDPlot, tr("Plot"), d);
+
+  _settings.getData(_SlowDLabel, d);
+  dialog->addText(tab, _SlowDLabel, tr("Label"), d);
+
+  // ref1 tab
+  tab = dialog->addTab("Ref 1");
+
+  _settings.getData(_Ref1Color, d);
+  dialog->addColor(tab, _Ref1Color, tr("Color"), d);
+
+  dialog->addDouble(tab, _Ref1, tr("Value"), _settings.getDouble(_Ref1), 100000, -100000);
+
+  // ref2 tab
+  tab = dialog->addTab("Ref 2");
+
+  _settings.getData(_Ref2Color, d);
+  dialog->addColor(tab, _Ref2Color, tr("Color"), d);
+
+  dialog->addDouble(tab, _Ref2, tr("Value"), _settings.getDouble(_Ref2), 100000, -100000);
+
+  return dialog;
 }
 
 void STOCHS::defaults (Indicator &i)

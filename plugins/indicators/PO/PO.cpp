@@ -21,7 +21,6 @@
 
 #include "PO.h"
 #include "FunctionMA.h"
-#include "PODialog.h"
 #include "Curve.h"
 #include "ta_libc.h"
 
@@ -155,7 +154,37 @@ int PO::getCUS (QStringList &set, Indicator &ind, BarData &data)
 
 IndicatorPluginDialog * PO::dialog (Indicator &i)
 {
-  return new PODialog(i);
+  IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
+
+  Setting _settings = i.settings();
+
+  // general tab
+  int tab = dialog->addTab(tr("General"));
+
+  QString d;
+  _settings.getData(_Method, d);
+  dialog->addCombo(tab, _Method, tr("Method"), list(), d);
+
+  _settings.getData(_Input, d);
+  dialog->addInput(tab, _Input, tr("Input"), d);
+
+  dialog->addInt(tab, _FastPeriod, tr("Fast Period"), _settings.getInt(_FastPeriod), 100000, 2);
+
+  dialog->addInt(tab, _SlowPeriod, tr("Slow Period"), _settings.getInt(_SlowPeriod), 100000, 2);
+
+  _settings.getData(_MAType, d);
+  dialog->addMA(tab, _MAType, tr("MA Type"), d);
+
+  _settings.getData(_Color, d);
+  dialog->addColor(tab, _Color, tr("Color"), d);
+
+  _settings.getData(_Plot, d);
+  dialog->addPlot(tab, _Plot, tr("Plot"), d);
+
+  _settings.getData(_Label, d);
+  dialog->addText(tab, _Label, tr("Label"), d);
+
+  return dialog;
 }
 
 void PO::defaults (Indicator &i)
