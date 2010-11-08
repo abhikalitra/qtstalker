@@ -22,16 +22,15 @@
 #ifndef SCRIPT_DIALOG_HPP
 #define SCRIPT_DIALOG_HPP
 
-#include <QDialog>
 #include <QStringList>
 #include <QTreeWidget>
 #include <QHash>
 #include <QTextEdit>
-#include <QTabWidget>
 
 #include "ScriptItem.h"
+#include "Dialog.h"
 
-class ScriptDialog : public QDialog
+class ScriptDialog : public Dialog
 {
   Q_OBJECT
 
@@ -61,7 +60,6 @@ class ScriptDialog : public QDialog
     void cancelScript2 (QStringList);
           
   private:
-    QTabWidget *_tabs;
     QTextEdit *_log;
     QTreeWidget *_list;
     QHash<QString, QTreeWidgetItem *> _running;

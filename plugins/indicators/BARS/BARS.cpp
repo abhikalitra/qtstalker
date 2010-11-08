@@ -187,6 +187,8 @@ IndicatorPluginDialog * BARS::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("BARS.html");
+
   Setting _settings = i.settings();
 
   // general tab

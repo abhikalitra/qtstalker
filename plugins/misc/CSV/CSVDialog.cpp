@@ -40,24 +40,22 @@
 
 CSVDialog::CSVDialog ()
 {
+  _helpFile = "CSV.html";
+  
   setWindowTitle("QtStalker" + g_session + ": CSV ");
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(5);
-  vbox->setMargin(5);
-  setLayout(vbox);
+  // buttons
+  _buttonBox->removeButton(_okButton);
+  _buttonBox->removeButton(_cancelButton);
 
-  _tabs = new QTabWidget;
-  vbox->addWidget(_tabs);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-
-  QPushButton *b = bbox->addButton(QDialogButtonBox::Close);
+  QPushButton *b = new QPushButton;
+  b->setText(tr("Close"));
+  b->setIcon(QIcon(disable_xpm));
   connect(b, SIGNAL(clicked()), this, SLOT(closeDialog()));
-  vbox->addWidget(bbox);
+  _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
 
   createMainPage();
+  
   createLogPage();
 
   loadSettings();
@@ -112,12 +110,12 @@ void CSVDialog::createMainPage ()
   connect(b, SIGNAL(clicked()), this, SLOT(deleteRule()));
   bbox->addWidget(b);
 
-  _cancelButton = new QPushButton;
-  _cancelButton->setText(tr("&Cancel"));
-  _cancelButton->setToolTip(tr("Cancel running CSV rule"));
-  _cancelButton->setIcon(QPixmap(disable_xpm));
-  connect(_cancelButton, SIGNAL(clicked()), this, SLOT(stop()));
-  bbox->addWidget(_cancelButton);
+  _cancel2Button = new QPushButton;
+  _cancel2Button->setText(tr("&Cancel"));
+  _cancel2Button->setToolTip(tr("Cancel running CSV rule"));
+  _cancel2Button->setIcon(QPixmap(disable_xpm));
+  connect(_cancel2Button, SIGNAL(clicked()), this, SLOT(stop()));
+  bbox->addWidget(_cancel2Button);
 
   bbox->addStretch();
 
@@ -286,7 +284,7 @@ void CSVDialog::rulesSelectionChanged ()
   if (l.count())
     status = 1;
 
-  _cancelButton->setEnabled(status);
+  _cancel2Button->setEnabled(status);
 }
 
 void CSVDialog::updateRules ()

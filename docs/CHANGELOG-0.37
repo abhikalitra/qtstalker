@@ -877,3 +877,5 @@
            class that inherits lib/Dialog. All one needs to do is in each dialog constructor, set the html file
            to the _helpFile variable. xley: see the example in src/IndicatorDialog.cpp.
 
+20101108:  Modified misc plugin dialog to inherit Dialog. Also fixed the misc plugin close button crash.
+

@@ -48,8 +48,20 @@ int IndicatorPlotRules::createRules (Indicator &indicator, QStringList &l, BarDa
     r->setValue(l2.at(2));
     _rules.append(r);
 
-    // add any OHLC inputs to indicator for later usage
+    // add any OHLCVI inputs to indicator for later usage
     bars.getInputFields(l2);
+
+    // scan name field
+    if (l2.indexOf(r->name()) != -1)
+    {
+      Curve *curve = indicator.line(r->name());
+      if (! curve)
+      {
+        curve = bars.getInput(bars.getInputType(r->name()));
+        indicator.setLine(r->name(), curve);
+      }
+    }
+    
     if (l2.indexOf(r->value()) != -1)
     {
       Curve *curve = indicator.line(r->value());

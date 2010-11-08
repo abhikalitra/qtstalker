@@ -25,8 +25,9 @@
 #include "YahooConfig.h"
 #include "YahooThread.h"
 #include "Globals.h"
-#include "../pics/disable.xpm"
+
 #include "../pics/quotes.xpm"
+#include "../pics/disable.xpm"
 
 #include <QLayout>
 #include <QDialogButtonBox>
@@ -37,23 +38,19 @@
 YahooDialog::YahooDialog ()
 {
   _runningFlag = 0;
+  _helpFile = "Yahoo.html";
   
   setWindowTitle("QtStalker" + g_session + ": Yahoo ");
-  
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(5);
-  vbox->setMargin(5);
-  setLayout(vbox);
 
-  _tabs = new QTabWidget;
-  vbox->addWidget(_tabs);
+  // buttons
+  _buttonBox->removeButton(_okButton);
+  _buttonBox->removeButton(_cancelButton);
 
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-
-  QPushButton *b = bbox->addButton(QDialogButtonBox::Close);
+  QPushButton *b = new QPushButton;
+  b->setText(tr("Close"));
+  b->setIcon(QIcon(disable_xpm));
   connect(b, SIGNAL(clicked()), this, SLOT(closeDialog()));
-  vbox->addWidget(bbox);
+  _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
 
   createMainPage();
   
@@ -136,13 +133,13 @@ void YahooDialog::createMainPage ()
   connect(_detailsButton, SIGNAL(clicked()), this, SLOT(startDetails()));
   bbox->addWidget(_detailsButton);
 
-  _cancelButton = new QPushButton;
-  _cancelButton->setToolTip(tr("Cancel download"));
-  _cancelButton->setText(tr("&Cancel"));
-  _cancelButton->setIcon(QIcon(disable_xpm));
-  connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancelButton()));
-  _cancelButton->setEnabled(FALSE);
-  bbox->addWidget(_cancelButton);
+  _cancel2Button = new QPushButton;
+  _cancel2Button->setToolTip(tr("Cancel download"));
+  _cancel2Button->setText(tr("&Cancel"));
+  _cancel2Button->setIcon(QIcon(disable_xpm));
+  connect(_cancel2Button, SIGNAL(clicked()), this, SLOT(cancelButton()));
+  _cancel2Button->setEnabled(FALSE);
+  bbox->addWidget(_cancel2Button);
 
   bbox->addStretch();
 
@@ -206,7 +203,7 @@ void YahooDialog::downloadDone ()
   _log->append("*** " + tr("Download finished") + " ***");
 
   setDialogEnable(TRUE);
-  _cancelButton->setEnabled(FALSE);
+  _cancel2Button->setEnabled(FALSE);
   
   _runningFlag = 0;
 
@@ -216,7 +213,7 @@ void YahooDialog::downloadDone ()
 void YahooDialog::startHistory ()
 {
   setDialogEnable(FALSE);
-  _cancelButton->setEnabled(TRUE);
+  _cancel2Button->setEnabled(TRUE);
 
   _log->append("\n*** " + tr("Starting history download") + " ***");
 
@@ -243,7 +240,7 @@ void YahooDialog::startHistory ()
 void YahooDialog::startDetails ()
 {
   setDialogEnable(FALSE);
-  _cancelButton->setEnabled(TRUE);
+  _cancel2Button->setEnabled(TRUE);
 
   _log->append("\n*** " + tr("Starting details download") + " ***");
 

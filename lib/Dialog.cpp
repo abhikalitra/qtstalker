@@ -230,3 +230,8 @@ void Dialog::help ()
   doc->showDocumentation(_helpFile);
 }
 
+void Dialog::setHelpFile (QString d)
+{
+  _helpFile = d;
+}
+

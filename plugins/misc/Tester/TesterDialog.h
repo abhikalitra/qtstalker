@@ -22,16 +22,15 @@
 #ifndef TESTER_DIALOG_HPP
 #define TESTER_DIALOG_HPP
 
-#include <QDialog>
-#include <QTabWidget>
 #include <QListWidget>
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QHash>
 
 #include "TesterThread.h"
+#include "Dialog.h"
 
-class TesterDialog : public QDialog
+class TesterDialog : public Dialog
 {
   Q_OBJECT
 
@@ -61,7 +60,6 @@ class TesterDialog : public QDialog
     void reportSelectionChanged ();
           
   private:
-    QTabWidget *_tabs;
     QListWidget *_testers;
     QPushButton *_stopButton;
     QPushButton *_viewButton;

@@ -36,29 +36,25 @@
 #include "../../../pics/disable.xpm"
 
 #include <QLayout>
-#include <QDialogButtonBox>
-#include <QPushButton>
 
 TesterDialog::TesterDialog ()
 {
+//  _helpFile = "Tester.html";
+  
   setWindowTitle("QtStalker" + g_session + ": Tester ");
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(5);
-  vbox->setMargin(5);
-  setLayout(vbox);
+  // buttons
+  _buttonBox->removeButton(_okButton);
+  _buttonBox->removeButton(_cancelButton);
 
-  _tabs = new QTabWidget;
-  vbox->addWidget(_tabs);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-
-  QPushButton *b = bbox->addButton(QDialogButtonBox::Close);
+  QPushButton *b = new QPushButton;
+  b->setText(tr("Close"));
+  b->setIcon(QIcon(disable_xpm));
   connect(b, SIGNAL(clicked()), this, SLOT(closeDialog()));
-  vbox->addWidget(bbox);
+  _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
 
   createTesterPage();
+  
   createReportPage();
 
   loadSettings();
@@ -66,6 +62,7 @@ TesterDialog::TesterDialog ()
   updateReports();
 
   testSelectionChanged();
+  
   reportSelectionChanged();
 }
 

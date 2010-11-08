@@ -88,6 +88,7 @@ void AlertThread::run ()
   if (! rules.test(i, -1))
   {
     _alert.setLastUpdate(QDateTime::currentDateTime());
+    emit signalDone(_alert);
     quit();
     return;
   }

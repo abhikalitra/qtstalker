@@ -22,17 +22,16 @@
 #ifndef CSV_DIALOG_HPP
 #define CSV_DIALOG_HPP
 
-#include <QDialog>
 #include <QTextEdit>
 #include <QStringList>
-#include <QTabWidget>
 #include <QListWidget>
 #include <QPushButton>
 #include <QHash>
 
 #include "CSVThread.h"
+#include "Dialog.h"
 
-class CSVDialog : public QDialog
+class CSVDialog : public Dialog
 {
   Q_OBJECT
 
@@ -63,9 +62,8 @@ class CSVDialog : public QDialog
           
   private:
     QTextEdit *_log;
-    QTabWidget *_tabs;
     QListWidget *_rules;
-    QPushButton *_cancelButton;
+    QPushButton *_cancel2Button;
     QHash<QString, CSVThread *> _threads;
 };
 

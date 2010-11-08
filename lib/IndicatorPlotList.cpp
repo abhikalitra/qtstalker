@@ -208,9 +208,14 @@ void IndicatorPlotList::addPlotItem (QString pn, QString oper, QString val)
   QString s = QString::number(_list->topLevelItemCount());
   item->setText(0, s);
 
+  QStringList l = _plotNames;
+  l << "Open" << "High" << "Low" << "Close" << "Volume" << "OI";
+  if (l.indexOf(val) == -1)
+    l << val;
+
   QComboBox *cb = new QComboBox;
   cb->setEditable(TRUE);
-  cb->addItems(_plotNames);
+  cb->addItems(l);
   cb->clearEditText();
   if (_indicator->text() == "CUS")
     cb->setEditText(pn);
@@ -228,11 +233,6 @@ void IndicatorPlotList::addPlotItem (QString pn, QString oper, QString val)
   _list->setItemWidget(item, 2, cb);
   connect(cb, SIGNAL(currentIndexChanged(int)), this, SIGNAL(signalItemChanged()));
 
-  QStringList l = _plotNames;
-  l << "Open" << "High" << "Low" << "Close" << "Volume" << "OI";
-  if (l.indexOf(val) == -1)
-    l << val;
-  
   cb = new QComboBox;
   cb->setEditable(TRUE);
   cb->addItems(l);

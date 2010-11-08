@@ -22,16 +22,16 @@
 #ifndef YAHOO_DIALOG_HPP
 #define YAHOO_DIALOG_HPP
 
-#include <QDialog>
 #include <QTextEdit>
 #include <QPushButton>
 #include <QDateTimeEdit>
 #include <QCheckBox>
 #include <QToolButton>
 #include <QStringList>
-#include <QTabWidget>
 
-class YahooDialog : public QDialog
+#include "Dialog.h"
+
+class YahooDialog : public Dialog
 {
   Q_OBJECT
 
@@ -57,9 +57,8 @@ class YahooDialog : public QDialog
 
   private:
     QTextEdit *_log;
-    QTabWidget *_tabs;
     QPushButton *_histButton;
-    QPushButton *_cancelButton;
+    QPushButton *_cancel2Button;
     QPushButton *_detailsButton;
     QDateTimeEdit *_sdate;
     QDateTimeEdit *_edate;

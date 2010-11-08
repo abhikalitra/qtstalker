@@ -35,6 +35,7 @@
 #include "../pics/configure.xpm"
 #include "../pics/ok.xpm"
 #include "../pics/que.xpm"
+#include "../pics/disable.xpm"
 
 #include <QLayout>
 #include <QDialogButtonBox>
@@ -45,14 +46,19 @@
 
 AlertDialog::AlertDialog ()
 {
+//  _helpFile = "Alert.html";
+  
   setWindowTitle("QtStalker" + g_session + ": " + tr("Alerts"));
 
   // buttons
   _buttonBox->removeButton(_okButton);
   _buttonBox->removeButton(_cancelButton);
 
-  _buttonBox->addButton(QDialogButtonBox::Close);
-//  connect(_closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+  QPushButton *b = new QPushButton;
+  b->setText(tr("Close"));
+  b->setIcon(QIcon(disable_xpm));
+  _buttonBox->addButton(b, QDialogButtonBox::ActionRole);
+  connect(b, SIGNAL(clicked()), this, SLOT(closeDialog()));
 
   connect(&_timer, SIGNAL(timeout()), this, SLOT(run()));
   
@@ -294,11 +300,15 @@ void AlertDialog::done (AlertItem alert)
   if (! item)
     return;
 
+  item->setText(4, alert.lastUpdate().toString(Qt::ISODate));
+  
+  if (alert.status() == AlertItem::_Waiting)
+    return;
+  
   alert.setStatus(AlertItem::_Hit);
 
   item->setIcon(3, QIcon(ok_xpm));
   item->setText(3, alert.statusToString(alert.status()));
-  item->setText(4, alert.lastUpdate().toString(Qt::ISODate));
 
   AlertDataBase db;
   db.transaction();

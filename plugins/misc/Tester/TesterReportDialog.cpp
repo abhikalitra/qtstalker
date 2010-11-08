@@ -56,7 +56,7 @@ TesterReportDialog::TesterReportDialog (QString name)
   gbox->setLayout(tvbox);
 
   _tradeList = new QTreeWidget;
-  _tradeList->setSortingEnabled(FALSE);
+  _tradeList->setSortingEnabled(TRUE);
   _tradeList->setRootIsDecorated(FALSE);
   _tradeList->setHeaderLabels(l);
   _tradeList->setSelectionMode(QAbstractItemView::SingleSelection);

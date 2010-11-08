@@ -51,6 +51,7 @@ class Dialog : public QDialog
     void loadSettings ();
     void saveSettings ();
     void hideMessage ();
+    void setHelpFile (QString);
 
   public slots:
     virtual void done ();

@@ -22,17 +22,16 @@
 #ifndef SCANNER_DIALOG_HPP
 #define SCANNER_DIALOG_HPP
 
-#include <QDialog>
 #include <QStringList>
-#include <QTabWidget>
 #include <QListWidget>
 #include <QPushButton>
 #include <QHash>
 
 #include "ScannerItem.h"
 #include "ScannerThread.h"
+#include "Dialog.h"
 
-class ScannerDialog : public QDialog
+class ScannerDialog : public Dialog
 {
   Q_OBJECT
 
@@ -59,7 +58,6 @@ class ScannerDialog : public QDialog
     void scannerStopped (QString);
           
   private:
-    QTabWidget *_tabs;
     QListWidget *_scanners;
     QPushButton *_stopButton;
     QHash<QString, QListWidgetItem *> _runningList;
