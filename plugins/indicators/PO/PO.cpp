@@ -156,6 +156,8 @@ IndicatorPluginDialog * PO::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("PO.html");
+
   Setting _settings = i.settings();
 
   // general tab

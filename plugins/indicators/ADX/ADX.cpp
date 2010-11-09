@@ -173,6 +173,8 @@ IndicatorPluginDialog * ADX::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("ADX.html");
+
   Setting _settings = i.settings();
 
   // general tab

@@ -222,6 +222,8 @@ IndicatorPluginDialog * BBANDS::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("BBANDS.html");
+
   Setting _settings = i.settings();
 
   // general tab

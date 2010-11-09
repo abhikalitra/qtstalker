@@ -230,6 +230,8 @@ IndicatorPluginDialog * MACD::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("MACD.html");
+
   Setting _settings = i.settings();
 
   // general tab

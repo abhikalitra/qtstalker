@@ -151,6 +151,8 @@ IndicatorPluginDialog * ULTOSC::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("ULTOSC.html");
+
   Setting _settings = i.settings();
 
   // general tab

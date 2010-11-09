@@ -122,6 +122,8 @@ IndicatorPluginDialog * VOL::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("VOL.html");
+
   Setting _settings = i.settings();
 
   // general tab

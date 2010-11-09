@@ -111,6 +111,8 @@ IndicatorPluginDialog * BOP::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("BOP.html");
+
   Setting _settings = i.settings();
 
   // general tab

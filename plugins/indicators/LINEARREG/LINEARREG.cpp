@@ -157,6 +157,8 @@ IndicatorPluginDialog * LINEARREG::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("LINEARREG.html");
+
   Setting _settings = i.settings();
 
   // general tab

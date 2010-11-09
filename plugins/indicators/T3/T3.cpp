@@ -144,6 +144,8 @@ IndicatorPluginDialog * T3::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("T3.html");
+
   Setting _settings = i.settings();
 
   // general tab

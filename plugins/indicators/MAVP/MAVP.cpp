@@ -181,6 +181,8 @@ IndicatorPluginDialog * MAVP::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("MAVP.html");
+
   Setting _settings = i.settings();
 
   // general tab

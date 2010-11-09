@@ -149,6 +149,8 @@ IndicatorPluginDialog * STOCHRSI::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("STOCHRSI.html");
+
   Setting _settings = i.settings();
 
   // general tab

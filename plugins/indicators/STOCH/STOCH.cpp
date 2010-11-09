@@ -172,6 +172,8 @@ IndicatorPluginDialog * STOCH::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("STOCH.html");
+
   Setting _settings = i.settings();
 
   // %K tab

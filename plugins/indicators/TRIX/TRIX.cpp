@@ -124,6 +124,8 @@ IndicatorPluginDialog * TRIX::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("TRIX.html");
+
   Setting _settings = i.settings();
 
   // general tab

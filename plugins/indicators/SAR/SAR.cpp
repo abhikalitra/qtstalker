@@ -117,6 +117,8 @@ IndicatorPluginDialog * SAR::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("SAR.html");
+
   Setting _settings = i.settings();
 
   // general tab

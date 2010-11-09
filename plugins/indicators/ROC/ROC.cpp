@@ -156,6 +156,8 @@ IndicatorPluginDialog * ROC::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("ROC.html");
+
   Setting _settings = i.settings();
 
   // general tab

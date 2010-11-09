@@ -124,6 +124,8 @@ IndicatorPluginDialog * VAR::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("VAR.html");
+
   Setting _settings = i.settings();
 
   // general tab

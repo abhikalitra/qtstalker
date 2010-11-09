@@ -206,6 +206,8 @@ IndicatorPluginDialog * PP::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("PP.html");
+
   Setting _settings = i.settings();
 
   // r1 tab

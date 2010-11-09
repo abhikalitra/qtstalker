@@ -209,6 +209,8 @@ IndicatorPluginDialog * HT::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("HT.html");
+
   Setting _settings = i.settings();
 
   // general tab

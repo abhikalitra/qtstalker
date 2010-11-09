@@ -206,6 +206,8 @@ IndicatorPluginDialog * MAMA::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("MAMA.html");
+
   Setting _settings = i.settings();
 
   // general tab

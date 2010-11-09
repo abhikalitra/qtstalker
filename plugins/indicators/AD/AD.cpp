@@ -117,6 +117,8 @@ IndicatorPluginDialog * AD::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("AD.html");
+
   Setting _settings = i.settings();
 
   // general page

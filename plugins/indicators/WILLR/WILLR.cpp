@@ -98,6 +98,8 @@ IndicatorPluginDialog * WILLR::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("WILLR.html");
+
   Setting _settings = i.settings();
 
   // general tab

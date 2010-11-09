@@ -251,6 +251,8 @@ IndicatorPluginDialog * CANDLES::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("CANDLES.html");
+
   Setting _settings = i.settings();
 
   // general tab

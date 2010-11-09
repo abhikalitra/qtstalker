@@ -169,6 +169,8 @@ IndicatorPluginDialog * RSI::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("RSI.html");
+
   Setting _settings = i.settings();
 
   // general tab

@@ -124,6 +124,8 @@ IndicatorPluginDialog * CMO::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("CMO.html");
+
   Setting _settings = i.settings();
 
   // general tab

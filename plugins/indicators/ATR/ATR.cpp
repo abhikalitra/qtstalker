@@ -110,6 +110,8 @@ IndicatorPluginDialog * ATR::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("ATR.html");
+
   Setting _settings = i.settings();
 
   // general tab

@@ -133,6 +133,8 @@ IndicatorPluginDialog * AROON::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("AROON.html");
+
   Setting _settings = i.settings();
 
   // general tab

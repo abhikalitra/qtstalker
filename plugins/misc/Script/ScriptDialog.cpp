@@ -37,7 +37,7 @@
 
 ScriptDialog::ScriptDialog ()
 {
-//  _helpFile = "Script.html";
+  _helpFile = "cus.html";
   
   setWindowTitle("QtStalker" + g_session + ": " + tr("Script Manager"));
 

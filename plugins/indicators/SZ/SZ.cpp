@@ -143,6 +143,8 @@ IndicatorPluginDialog * SZ::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("SZ.html");
+
   Setting _settings = i.settings();
 
   // general tab

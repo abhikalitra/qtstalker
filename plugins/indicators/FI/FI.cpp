@@ -110,6 +110,8 @@ IndicatorPluginDialog * FI::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("FI.html");
+
   Setting _settings = i.settings();
 
   // general tab

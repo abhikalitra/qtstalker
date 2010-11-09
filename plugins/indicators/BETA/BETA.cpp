@@ -184,6 +184,8 @@ IndicatorPluginDialog * BETA::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("BETA.html");
+
   Setting _settings = i.settings();
 
   // general tab

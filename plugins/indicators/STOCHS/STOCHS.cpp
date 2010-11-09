@@ -190,6 +190,8 @@ IndicatorPluginDialog * STOCHS::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("STOCHS.html");
+
   Setting _settings = i.settings();
 
   // %K tab

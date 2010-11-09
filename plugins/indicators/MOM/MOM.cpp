@@ -145,6 +145,8 @@ IndicatorPluginDialog * MOM::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("MOM.html");
+
   Setting _settings = i.settings();
 
   // general tab

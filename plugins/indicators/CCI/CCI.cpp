@@ -145,6 +145,8 @@ IndicatorPluginDialog * CCI::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("CCI.html");
+
   Setting _settings = i.settings();
 
   // general tab

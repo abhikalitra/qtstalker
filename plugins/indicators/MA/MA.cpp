@@ -150,6 +150,8 @@ IndicatorPluginDialog * MA::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
+  dialog->setHelpFile("MA.html");
+
   Setting _settings = i.settings();
 
   // general tab
