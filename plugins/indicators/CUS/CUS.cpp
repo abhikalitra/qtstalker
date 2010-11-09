@@ -54,7 +54,7 @@ IndicatorPluginDialog * CUS::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
 
-  dialog->setHelpFile("CUS.html");
+  dialog->setHelpFile("cus.html");
 
   Setting _settings = i.settings();
 
