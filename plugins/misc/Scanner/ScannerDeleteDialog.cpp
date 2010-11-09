@@ -27,6 +27,7 @@
 
 ScannerDeleteDialog::ScannerDeleteDialog ()
 {
+//  _helpFile = "Scanner.html";
   setWindowTitle("QtStalker" + g_session + ": " + tr("Delete Scanners"));
 
   QStringList l;

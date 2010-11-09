@@ -27,6 +27,7 @@
 
 CSVEditDialog::CSVEditDialog ()
 {
+  _helpFile = "CSV.html";
   setWindowTitle("QtStalker" + g_session + ": CSV " + tr("Edit Rule"));
 
   _list->setSelectionMode(QAbstractItemView::SingleSelection);

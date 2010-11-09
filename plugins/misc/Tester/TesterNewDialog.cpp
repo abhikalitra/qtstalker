@@ -30,6 +30,7 @@
 
 TesterNewDialog::TesterNewDialog ()
 {
+//  _helpFile = "Tester.html";
   setWindowTitle("QtStalker" + g_session + ": Tester " + tr("New Back Tester"));
 
   TesterDataBase db;

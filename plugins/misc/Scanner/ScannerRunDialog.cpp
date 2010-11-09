@@ -27,6 +27,7 @@
 
 ScannerRunDialog::ScannerRunDialog ()
 {
+//  _helpFile = "Scanner.html";
   setWindowTitle("QtStalker" + g_session + ": " + tr("Run Scanners"));
 
   ScannerDataBase db;

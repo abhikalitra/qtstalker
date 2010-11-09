@@ -29,6 +29,7 @@
 
 CSVNewDialog::CSVNewDialog ()
 {
+  _helpFile = "CSV.html";
   setWindowTitle("QtStalker" + g_session + ": CSV " + tr("New Rule"));
 
   CSVDataBase db;

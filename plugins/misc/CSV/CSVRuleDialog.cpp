@@ -45,6 +45,7 @@ CSVRuleDialog::CSVRuleDialog (QString name)
 
   _fields << "Exchange" << "Symbol" << "Open" << "High" << "Low" << "Close";
   _fields << "Volume" << "OI" << "Name" << "Ignore";
+  _helpFile = "CSV.html";
   
   QString s = "Qtstalker" + g_session + ": CSV " + tr("Rule") + " - " + _name;
   setWindowTitle(s);

@@ -30,6 +30,7 @@ AlertConfigureDialog::AlertConfigureDialog ()
 {
   _intervalFlag = 0;
   _enableFlag = 0;
+//  _helpFile = "Alert.html";
   
   setWindowTitle("QtStalker" + g_session + ": " + tr("Configure Alert"));
 

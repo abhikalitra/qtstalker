@@ -28,6 +28,7 @@
 
 CSVDeleteDialog::CSVDeleteDialog ()
 {
+  _helpFile = "CSV.html";
   setWindowTitle("QtStalker" + g_session + ": CSV " + tr("Delete Rules"));
 
   CSVDataBase db;

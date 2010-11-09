@@ -41,6 +41,7 @@ TesterSettingsDialog::TesterSettingsDialog (QString name)
 {
   _saveFlag = FALSE;
   _settings.setName(name);
+//  _helpFile = "Tester.html";
 
   QString s = "Qtstalker" + g_session + ": " + tr("Tester") + " - " + name;
   setWindowTitle(s);

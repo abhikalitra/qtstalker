@@ -31,6 +31,8 @@
 
 ScriptSearchDialog::ScriptSearchDialog ()
 {
+  //_helpFile = "Script.html";
+  _helpFile = "cus.html";
   QString s = "Qtstalker" + g_session + ": " + tr("Select Script");
   setWindowTitle(s);
 

@@ -29,6 +29,7 @@
 YahooAddSymbolDialog::YahooAddSymbolDialog ()
 {
   _yexchange << "NYSE" << "AX" << "SA" << "TO" << "BO" << "NS" << "L" << "B";
+  _helpFile = "Yahoo.html";
 
   setWindowTitle("QtStalker" + g_session + ": Yahoo " + tr("Add Symbols"));
 

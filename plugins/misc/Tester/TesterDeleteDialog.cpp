@@ -28,6 +28,7 @@
 
 TesterDeleteDialog::TesterDeleteDialog ()
 {
+//  _helpFile = "Tester.html";
   setWindowTitle("QtStalker" + g_session + ": Tester " + tr("Delete Back Tester"));
 
   TesterDataBase db;

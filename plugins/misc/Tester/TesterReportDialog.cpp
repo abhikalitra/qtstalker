@@ -33,6 +33,7 @@
 TesterReportDialog::TesterReportDialog (QString name)
 {
   _name = name;
+//  _helpFile = "Tester.html";
   
   QString s = "Qtstalker" + g_session + ": " + tr("Tester Report") + " - " + name;
   setWindowTitle(s);

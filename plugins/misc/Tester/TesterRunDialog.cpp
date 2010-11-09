@@ -27,6 +27,7 @@
 
 TesterRunDialog::TesterRunDialog ()
 {
+//  _helpFile = "Tester.html";
   setWindowTitle("QtStalker" + g_session + ": " + tr("Run Back Tester"));
 
   TesterDataBase db;

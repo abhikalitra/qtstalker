@@ -33,6 +33,7 @@
 
 YahooSymbolDialog::YahooSymbolDialog ()
 {
+  _helpFile = "Yahoo.html";
   setWindowTitle("QtStalker" + g_session + ": Yahoo " + tr("Edit Symbols"));
   
   createMainPage();

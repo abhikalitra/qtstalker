@@ -34,6 +34,8 @@ ScriptEditDialog::ScriptEditDialog (QString name)
 {
   _saveFlag = 0;
   _name = name;
+  //_helpFile = "Script.html";
+  _helpFile = "cus.html";
   
   QString s = "Qtstalker" + g_session + ": " + tr("Edit Script") + " " + _name;
   setWindowTitle(s);

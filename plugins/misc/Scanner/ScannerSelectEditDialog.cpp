@@ -28,6 +28,7 @@
 
 ScannerSelectEditDialog::ScannerSelectEditDialog ()
 {
+//  _helpFile = "Scanner.html";
   setWindowTitle("QtStalker" + g_session + ": " + tr("Edit Scanner"));
 
   _list->setSelectionMode(QAbstractItemView::SingleSelection);

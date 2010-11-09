@@ -28,6 +28,7 @@
 
 TesterOpenDialog::TesterOpenDialog ()
 {
+//  _helpFile = "Tester.html";
   setWindowTitle("QtStalker" + g_session + ": Tester " + tr("Open Back Tester"));
 
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);

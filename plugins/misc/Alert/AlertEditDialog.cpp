@@ -35,6 +35,7 @@
 AlertEditDialog::AlertEditDialog (AlertItem item)
 {
   _item = item;
+//  _helpFile = "Alert.html";
 
   setWindowTitle("QtStalker" + g_session + ": " + tr("Edit Alert") + " - " + QString::number(_item.id()));
   

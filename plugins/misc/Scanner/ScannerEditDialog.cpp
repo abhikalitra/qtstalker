@@ -36,6 +36,7 @@
 ScannerEditDialog::ScannerEditDialog (QString name)
 {
   _scanner.setName(name);
+//  _helpFile = "Scanner.html";
 
   QString s = "Qtstalker" + g_session + ": " + tr("Scanner") + " - " + name;
   setWindowTitle(s);

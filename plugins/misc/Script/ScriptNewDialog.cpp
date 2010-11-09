@@ -30,6 +30,8 @@
 
 ScriptNewDialog::ScriptNewDialog ()
 {
+  //_helpFile = "Script.html";
+  _helpFile = "cus.html";
   setWindowTitle("QtStalker" + g_session + ": " + tr("New Script"));
 
   ScriptDataBase db;
