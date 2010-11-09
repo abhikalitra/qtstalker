@@ -31,6 +31,8 @@
 QuoteServerDialog::QuoteServerDialog ()
 {
   _oport = 5000;
+  _helpFile = "QuoteServer.html";
+
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Configure Quote Server"));
 
   createMainPage();

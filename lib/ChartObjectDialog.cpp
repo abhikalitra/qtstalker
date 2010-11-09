@@ -23,6 +23,7 @@
 
 ChartObjectDialog::ChartObjectDialog ()
 {
+  _helpFile = "chartobjects.html";
 }
 
 void ChartObjectDialog::setSettings (ChartObjectSettings &)
