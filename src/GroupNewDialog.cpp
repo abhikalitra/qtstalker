@@ -29,6 +29,7 @@
 
 GroupNewDialog::GroupNewDialog ()
 {
+  _helpFile = "main.html";
   setWindowTitle("QtStalker" + g_session + ": " + tr("New Group"));
 
   GroupDataBase db;

@@ -40,6 +40,7 @@ GroupAddDialog::GroupAddDialog (Group group)
   _group = group;
   _configSizeParm = Config::GroupAddDialogSize;
   _configPosParm = Config::GroupAddDialogPosition;
+  _helpFile = "main.html";
   
   setWindowTitle("QtStalker" + g_session + ": " + tr("Add To Group"));
 

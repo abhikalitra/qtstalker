@@ -30,6 +30,7 @@ TabWidgetDialog::TabWidgetDialog (QString id)
 {
   _id = id;
   _posList << tr("North") << tr("South") << tr("West") << tr("East");
+  _helpFile = "main.html";
 
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Chart Tab Settings"));
 

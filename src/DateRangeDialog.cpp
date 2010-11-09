@@ -29,6 +29,7 @@ DateRangeDialog::DateRangeDialog (QDateTime &sd, QDateTime &ed)
 {
   _sd = sd;
   _ed = ed;
+  _helpFile = "main.html";
   
   setWindowTitle("Qtstalker" + g_session + ": " +  tr("Set Date Range"));
 

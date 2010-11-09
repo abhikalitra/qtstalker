@@ -26,6 +26,7 @@
 
 GroupDeleteDialog::GroupDeleteDialog ()
 {
+  _helpFile = "main.html";
   setWindowTitle("QtStalker" + g_session + ": " + tr("Delete Groups"));
 
   QStringList l;

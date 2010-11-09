@@ -28,6 +28,7 @@ GroupDeleteItemsDialog::GroupDeleteItemsDialog (QString name)
 {
   _group.setName(name);
   _db.getGroup(_group);
+  _helpFile = "main.html";
 
   QStringList l;
   _group.getStringList(l);
