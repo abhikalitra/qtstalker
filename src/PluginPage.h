@@ -52,13 +52,13 @@ class PluginPage : public QWidget
     PluginPage ();
     void createActions ();
     void createButtonMenu (QToolBar *);
+    void initPlugins ();
 
   public slots:
     void doubleClick (QListWidgetItem *);
     void rightClick (const QPoint &);
     void configure ();
-    void configure (QString &);
-    void updateList ();
+    void configure (QString);
     void listStatus ();
 
   protected:

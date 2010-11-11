@@ -55,7 +55,7 @@ PluginPage::PluginPage ()
   connect(_list, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   vbox->addWidget(_list);
 
-  updateList();
+  initPlugins();
 
   listStatus();
 }
@@ -83,25 +83,14 @@ void PluginPage::configure ()
   if (! item)
     return;
 
-  QString s = item->text();
-  configure(s);
+  configure(item->text());
 }
 
-void PluginPage::configure (QString &name)
+void PluginPage::configure (QString name)
 {
   MiscPlugin *plug = _fac.plugin(name);
   if (! plug)
     return;
-
-  // check if we have already connected the signals
-  // we do this because signals stack and dont replace 
-  // so we could end up generating tons of signals
-  if (! plug->connected())
-  {
-    connect(plug, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
-    connect(plug, SIGNAL(signalGroupRefresh()), this, SIGNAL(signalGroupRefresh()));
-    plug->setConnected(1);
-  }
 
   plug->configureDialog();
 }
@@ -111,8 +100,7 @@ void PluginPage::doubleClick (QListWidgetItem *item)
   if (! item)
     return;
 
-  QString s = item->text();
-  configure(s);
+  configure(item->text());
 }
 
 void PluginPage::rightClick (const QPoint &)
@@ -120,7 +108,7 @@ void PluginPage::rightClick (const QPoint &)
   _menu->exec(QCursor::pos());
 }
 
-void PluginPage::updateList ()
+void PluginPage::initPlugins ()
 {
   _list->clear();
 
@@ -135,11 +123,16 @@ void PluginPage::updateList ()
     if (! plug)
       return;
 
+    connect(plug, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
+    connect(plug, SIGNAL(signalGroupRefresh()), this, SIGNAL(signalGroupRefresh()));
+
     QString s = plug->name();
     QString s2 = plug->description();
     
     QListWidgetItem *item = new QListWidgetItem(s, _list, 0);
     item->setToolTip(s2);
+
+    plug->initDialog();
   }
 }
 

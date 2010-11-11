@@ -33,6 +33,7 @@ class Script : public MiscPlugin
     Script ();
     ~Script ();
     int configureDialog ();
+    void initDialog ();
 
   private:
     ScriptDialog *_dialog;

@@ -36,16 +36,20 @@ Yahoo::~Yahoo ()
 int Yahoo::configureDialog ()
 {
   if (! _dialog)
-  {
-    _dialog = new YahooDialog;
-    connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
-  }
+    return 0;
 
   _dialog->show();
   _dialog->raise();
   _dialog->activateWindow();
 
   return 0;
+}
+
+void Yahoo::initDialog ()
+{
+  _dialog = new YahooDialog;
+  connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
+  _dialog->activateWindow();
 }
 
 //**********************************************************

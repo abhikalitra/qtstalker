@@ -879,3 +879,5 @@
 
 20101108:  Modified misc plugin dialog to inherit Dialog. Also fixed the misc plugin close button crash.
 
+20101111:  Added new script command PLUGIN. This script command allows script commands to be forwarded to
+           the Misc plugins.

@@ -165,6 +165,7 @@ SUBDIRS += plugins/misc/Yahoo
 SUBDIRS += plugins/script/CO
 SUBDIRS += plugins/script/GROUP
 SUBDIRS += plugins/script/INDICATOR
+SUBDIRS += plugins/script/PLUGIN
 SUBDIRS += plugins/script/PROCESS
 SUBDIRS += plugins/script/SYMBOL
 

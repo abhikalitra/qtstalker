@@ -33,6 +33,7 @@ class Yahoo : public MiscPlugin
     Yahoo ();
     ~Yahoo ();
     int configureDialog ();
+    void initDialog ();
 
   private:
     YahooDialog *_dialog;

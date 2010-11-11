@@ -33,6 +33,7 @@ class Tester : public MiscPlugin
     Tester ();
     ~Tester ();
     int configureDialog ();
+    void initDialog ();
 
   private:
     TesterDialog *_dialog;

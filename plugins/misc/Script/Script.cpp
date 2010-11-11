@@ -36,17 +36,20 @@ Script::~Script ()
 int Script::configureDialog ()
 {
   if (! _dialog)
-  {
-    _dialog = new ScriptDialog;
-    connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
-//    connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  }
-
+    return 0;
+  
   _dialog->show();
   _dialog->raise();
   _dialog->activateWindow();
   
   return 0;
+}
+
+void Script::initDialog ()
+{
+  _dialog = new ScriptDialog;
+  connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
+  _dialog->activateWindow();
 }
 
 //**********************************************************

@@ -36,17 +36,21 @@ CSV::~CSV ()
 int CSV::configureDialog ()
 {
   if (! _dialog)
-  {
-    _dialog = new CSVDialog;
-    connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
-    connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  }
+    return 0;
   
   _dialog->show();
   _dialog->raise();
   _dialog->activateWindow();
   
   return 0;
+}
+
+void CSV::initDialog ()
+{
+  _dialog = new CSVDialog;
+  connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
+  connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  _dialog->activateWindow();
 }
 
 //**********************************************************

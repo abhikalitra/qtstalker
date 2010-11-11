@@ -33,6 +33,7 @@ class CSV : public MiscPlugin
     CSV ();
     ~CSV ();
     int configureDialog ();
+    void initDialog ();
 
   private:
     CSVDialog *_dialog;

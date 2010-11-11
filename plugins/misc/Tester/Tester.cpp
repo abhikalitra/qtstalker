@@ -36,16 +36,20 @@ Tester::~Tester ()
 int Tester::configureDialog ()
 {
   if (! _dialog)
-  {
-    _dialog = new TesterDialog;
-    connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  }
+    return 0;
   
   _dialog->show();
   _dialog->raise();
   _dialog->activateWindow();
   
   return 0;
+}
+
+void Tester::initDialog ()
+{
+  _dialog = new TesterDialog;
+  connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  _dialog->activateWindow();
 }
 
 //**********************************************************

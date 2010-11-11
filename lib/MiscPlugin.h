@@ -23,7 +23,7 @@
 #define MISC_PLUGIN_HPP
 
 #include <QObject>
-#include <QString>
+#include <QStringList>
 
 class MiscPlugin : public QObject
 {
@@ -38,16 +38,15 @@ class MiscPlugin : public QObject
     MiscPlugin ();
     virtual ~MiscPlugin ();
     virtual int configureDialog ();
+    virtual int script (QStringList &);
+    virtual void initDialog ();
 
     QString & name ();
     QString & description ();
-    void setConnected (int);
-    int connected ();
 
   protected:
     QString _name;
     QString _description;
-    int _connected;
 };
 
 #endif

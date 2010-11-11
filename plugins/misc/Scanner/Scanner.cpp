@@ -36,17 +36,21 @@ Scanner::~Scanner ()
 int Scanner::configureDialog ()
 {
   if (! _dialog)
-  {
-    _dialog = new ScannerDialog;
-    connect(_dialog, SIGNAL(signalGroupRefresh()), this, SIGNAL(signalGroupRefresh()));
-    connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  }
-  
+    return 0;
+
   _dialog->show();
   _dialog->raise();
   _dialog->activateWindow();
   
   return 0;
+}
+
+void Scanner::initDialog ()
+{
+  _dialog = new ScannerDialog;
+  connect(_dialog, SIGNAL(signalGroupRefresh()), this, SIGNAL(signalGroupRefresh()));
+  connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
+  _dialog->activateWindow();
 }
 
 //**********************************************************

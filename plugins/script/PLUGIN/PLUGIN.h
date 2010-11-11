@@ -19,44 +19,26 @@
  *  USA.
  */
 
-#include "MiscPlugin.h"
+#ifndef SCPLUGIN_HPP
+#define SCPLUGIN_HPP
 
-MiscPlugin::MiscPlugin ()
+#include "ScriptPlugin.h"
+
+class PLUGIN : public ScriptPlugin
 {
+  public:
+    enum Method
+    {
+      _NEW //
+    };
+    
+    PLUGIN ();
+    int command (QStringList &, Indicator &, BarData &, QByteArray &);
+};
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
 }
 
-MiscPlugin::~MiscPlugin ()
-{
-}
-
-// virtual function
-int MiscPlugin::configureDialog ()
-{
-  return 0;
-}
-
-// virtual function
-int MiscPlugin::script (QStringList &)
-{
-  return 0;
-}
-
-// virtual function
-void MiscPlugin::initDialog ()
-{
-}
-
-//****************************************************
-//*************** NON VIRTUAL FUNCTIONS **************
-//****************************************************
-
-QString & MiscPlugin::name ()
-{
-  return _name;
-}
-
-QString & MiscPlugin::description ()
-{
-  return _description;
-}
-
+#endif

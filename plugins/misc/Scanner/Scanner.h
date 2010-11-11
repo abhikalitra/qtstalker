@@ -33,6 +33,7 @@ class Scanner : public MiscPlugin
     Scanner ();
     ~Scanner ();
     int configureDialog ();
+    void initDialog ();
 
   private:
     ScannerDialog *_dialog;

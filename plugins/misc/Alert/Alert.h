@@ -33,6 +33,7 @@ class Alert : public MiscPlugin
     Alert ();
     ~Alert ();
     int configureDialog ();
+    void initDialog ();
 
   private:
     AlertDialog *_dialog;

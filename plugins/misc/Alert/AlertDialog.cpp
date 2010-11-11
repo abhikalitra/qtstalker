@@ -301,16 +301,22 @@ void AlertDialog::done (AlertItem alert)
     return;
 
   item->setText(4, alert.lastUpdate().toString(Qt::ISODate));
+
+  AlertDataBase db;
   
   if (alert.status() == AlertItem::_Waiting)
+  {
+    db.transaction();
+    db.setAlert(alert);
+    db.commit();
     return;
+  }
   
   alert.setStatus(AlertItem::_Hit);
 
   item->setIcon(3, QIcon(ok_xpm));
   item->setText(3, alert.statusToString(alert.status()));
 
-  AlertDataBase db;
   db.transaction();
   db.setAlert(alert);
   db.commit();
