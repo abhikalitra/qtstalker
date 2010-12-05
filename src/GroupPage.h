@@ -34,6 +34,8 @@
 #include <QToolBar>
 
 #include "SymbolListWidget.h"
+#include "ScriptPluginFactory.h"
+#include "Script.h"
 
 class GroupPage : public QWidget
 {
@@ -56,6 +58,7 @@ class GroupPage : public QWidget
     GroupPage ();
     void createActions ();
     void createButtonMenu (QToolBar *);
+    void prepareScript (Script *script, QString name, QString command, QString file);
 
   public slots:
     void updateList ();
@@ -68,17 +71,15 @@ class GroupPage : public QWidget
     void chartOpened (BarData);
     void updateGroups ();
     void addToGroup ();
-    void addToGroup2 (Group);
     void loadGroups ();
     void buttonStatus ();
-    void requestDone ();
 
   protected:
     SymbolListWidget *_nav;
     QMenu *_menu;
     QComboBox *_groups;
     QHash<int, QAction *> _actions;
+    ScriptPluginFactory _factory;
 };
 
 #endif
-

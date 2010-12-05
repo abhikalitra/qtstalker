@@ -20,39 +20,61 @@
  */
 
 #include "Splitter.h"
-#include "Config.h"
+#include "Globals.h"
 
 #include <QDebug>
+#include <QSettings>
 
-Splitter::Splitter (int d)
+Splitter::Splitter (QString d)
 {
-  _parm = d;
+  _key = d;
 }
 
 void Splitter::load ()
 {
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
-  QString s;
-  config.getData((Config::Parm) _parm, s);
-  if (s.isEmpty())
+  QStringList l = settings.value(_key).toStringList();
+  if (! l.count())
   {
-    QList<int> l;
-    l << 437 << 20 << 200;
-    
-    setSizes(l);
-    config.setData((Config::Parm) _parm, (QSplitter *) this);
+    QList<int> l2;
+    l2 << 437 << 20 << 200;
+    setSizes(l2);
   }
   else
-    config.getData((Config::Parm) _parm, (QSplitter *) this);
+  {
+    QList<int> sizeList = sizes();
 
-  config.commit();
+    int loop = 0;
+    for (; loop < l.count(); loop++)
+    {
+      if (loop >= sizeList.count())
+        break;
+
+      if (l[loop].toInt() < 25)
+        sizeList[loop] = 25;
+      else
+        sizeList[loop] = l[loop].toInt();
+    }
+
+    setSizes(sizeList);
+  }
 }
 
 void Splitter::save ()
 {
-  Config config;
-  config.setData((Config::Parm) _parm, (QSplitter *) this);
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+
+  QStringList l;
+  QList<int> sizeList = sizes();
+
+  int loop;
+  for (loop = 0; loop < (int) sizeList.count(); loop++)
+    l.append(QString::number(sizeList[loop]));
+
+  settings.setValue(_key, l);
+  settings.sync();
 }
 

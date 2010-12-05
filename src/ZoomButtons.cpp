@@ -20,27 +20,21 @@
  */
 
 #include "ZoomButtons.h"
-#include "Config.h"
+#include "Globals.h"
 #include "../pics/zoomin.xpm"
 #include "../pics/zoomout.xpm"
 
 #include <QDebug>
 #include <QString>
 #include <QIcon>
+#include <QSettings>
 
 ZoomButtons::ZoomButtons (QToolBar *tb) : QObject (tb)
 {
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
-  _pixelSpace = config.getInt(Config::Pixelspace);
-  if (! _pixelSpace)
-  {
-    _pixelSpace = 6;
-    config.setData(Config::Pixelspace, _pixelSpace);
-  }
-
-  config.commit();
+  _pixelSpace = settings.value("pixelspace", 6).toInt();
   
   createButtons(tb);
 }
@@ -66,12 +60,12 @@ void ZoomButtons::createButtons (QToolBar *tb)
   tb->addWidget(_zoomOutButton);
 
   // PS1 button
-  _ps1Button = new PixelSpaceButton((int) Config::PSButton1);
+  _ps1Button = new PixelSpaceButton("ps_button_1");
   connect(_ps1Button, SIGNAL(signalPixelSpaceChanged(int)), this, SLOT(psButtonClicked(int)));
   tb->addWidget(_ps1Button);
 
   // PS2 button
-  _ps2Button = new PixelSpaceButton((int) Config::PSButton2);
+  _ps2Button = new PixelSpaceButton("ps_button_2");
   connect(_ps2Button, SIGNAL(signalPixelSpaceChanged(int)), this, SLOT(psButtonClicked(int)));
   tb->addWidget(_ps2Button);
 }
@@ -113,9 +107,8 @@ int ZoomButtons::getPixelSpace ()
 
 void ZoomButtons::savePixelSpace ()
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::Pixelspace, _pixelSpace);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("pixelspace", _pixelSpace);
+  settings.sync();
 }
-

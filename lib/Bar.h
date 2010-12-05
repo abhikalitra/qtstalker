@@ -29,42 +29,69 @@
 #include <QString>
 #include <QStringList>
 #include <QDateTime>
-#include <QHash>
 
 class Bar
 {
   public:
-    enum BarField
+    enum BarLength
     {
-      BarFieldOpen,
-      BarFieldHigh,
-      BarFieldLow,
-      BarFieldClose,
-      BarFieldVolume,
-      BarFieldOI
+      Minute1,
+      Minute5,
+      Minute10,
+      Minute15,
+      Minute30,
+      Minute60,
+      DailyBar,
+      WeeklyBar,
+      MonthlyBar
     };
 
     Bar ();
-    int setDates (QString &start, QString &end);
-    int setData (BarField, QString &);
-    double getData (BarField);
-    void getDateString (QString &);
-    void getDateTimeString (QString &);
-    void getTimeString (QString &);
-    int count ();
-    void getRangeKey (QString &);
+    void setDateRange (QDateTime, Bar::BarLength);
+    int setDates (QString start, QString end);
+    int setDates (QDateTime, QDateTime);
+    void dateString (QString &);
+    void dateTimeString (QString &);
+    void timeString (QString &);
+    void rangeKey (QString &);
     QDateTime & date ();
+    void lengthList (QStringList &);
+    QString string ();
 
-    double getOpen ();
-    double getHigh ();
-    double getLow ();
-    double getClose ();
-    double getVolume ();
+    int setOpen (QString);
+    void setOpen (double);
+    double open ();
+    
+    int setHigh (QString);
+    void setHigh (double);
+    double high ();
+    
+    int setLow (QString);
+    void setLow (double);
+    double low ();
+    
+    int setClose (QString);
+    void setClose (double);
+    double close ();
+    
+    int setVolume (QString);
+    void setVolume (double);
+    double volume ();
+
+    int setOI (QString);
+    void setOI (double);
+    double oi ();
 
   protected:
-    QHash<int, double> _data;
+    double _open;
+    double _high;
+    double _low;
+    double _close;
+    double _volume;
+    double _oi;
     QDateTime _startDate;
     QDateTime _endDate;
+    BarLength _length;
 };
 
 #endif

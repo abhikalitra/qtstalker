@@ -25,30 +25,29 @@
 #include <QString>
 #include <QStringList>
 #include <QHash>
+#include <QDateTime>
+#include <QColor>
 
 class Setting
 {
   public:
     Setting ();
     void setData (QString, QString);
-    void setData (int, QString);
-    void setData (int, int);
-    void setData (int, double);
     void setData (QString, int);
     void setData (QString, double);
+    void setData (QString, QColor);
+    void setData (QString, QDateTime);
     
-    void getData (QString &, QString &);
-    void getData (int, QString &);
-
-    double getDouble (QString &);
-    double getDouble (int);
-    int getInt (QString &);
-    int getInt (int);
+    QString data (QString);
+    double getDouble (QString);
+    int getInt (QString);
+    QDateTime dateTime (QString);
+    QColor color (QString);
     
-    void getKeyList (QStringList &);
-    void remove (QString &);
-    void getString (QString &);
-    void parse (QString &);
+    void keyList (QStringList &);
+    void remove (QString);
+    void string (QString &);
+    void parse (QString);
     void clear ();
     int count ();
     void strip (QString &);

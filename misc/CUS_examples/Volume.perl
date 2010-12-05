@@ -3,62 +3,56 @@
 $|++;
 
 # get the volume data
-print STDOUT "INDICATOR,NEW,Volume,Volume";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "BARS,Volume,Volume";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # get close data
-print STDOUT "INDICATOR,NEW,Close,cl";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "BARS,Close,cl";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# get the index range of the close bars
-print STDOUT "INDICATOR,GET_RANGE,cl";
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+# color volume bars red if close < previous close
+$command = "INDICATOR_PLOT_COLOR,COMPARE_INDEX_ALL,cl.0,<,cl.1,Volume.0,red";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# split the start and end values
-my @range = split(',', $rc);
+# color volume bars blue if close == previous close
+$command = "INDICATOR_PLOT_COLOR,COMPARE_INDEX_ALL,cl.0,=,cl.1,Volume.0,blue";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$count = $range[0];
-$pcount = $range[0];
-$pcount--;
-
-for (; $count <= $range[1]; $count++, $pcount++)
-{
-  # get the current close value
-  print STDOUT "INDICATOR,GET_INDEX,cl,$count";
-  $close = <STDIN>; chomp($close); if ($close eq "ERROR") { next; } # empty index position, continue
-
-  # get the yesterdays close value
-  print STDOUT "INDICATOR,GET_INDEX,cl,$pcount";
-  $yclose = <STDIN>; chomp($yclose); if ($yclose eq "ERROR") { next; } # empty index position, continue
-
-  if ($close > $yclose)
-  {
-    # set the current volume bar color to green
-    print STDOUT "INDICATOR,SET_COLOR,Volume,$count,green";
-    $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
-  }
-  else
-  {
-    if ($close < $yclose)
-    {
-      # set the current bar color to red
-      print STDOUT "INDICATOR,SET_COLOR,Volume,$count,red";
-      $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
-    }
-    else
-    {
-      # set the current bar color to blue
-      print STDOUT "INDICATOR,SET_COLOR,Volume,$count,blue";
-      $rc = <STDIN>; chomp($rc); if ($rc ne "0") { next; }
-    }
-  }
-}
+# color volume bars green if close > previous close
+$command = "INDICATOR_PLOT_COLOR,COMPARE_INDEX_ALL,cl.0,>,cl.1,Volume.0,green";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # set the plot style to Histogram Bar
-print STDOUT "INDICATOR,SET_PLOT_STYLE,Volume,Histogram Bar";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_STYLE,Volume,Histogram Bar";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot the Volume indicator
-print STDOUT "INDICATOR,SET_PLOT,Volume,0";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT,Volume,0";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
+# create the 10 EMA indicator
+$command = "MA,EMA,10MA,Volume,10";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+# set 10MA plot style
+$command = "INDICATOR_PLOT_STYLE,10MA,Line";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+# set 10MA color
+$command = "INDICATOR_PLOT_COLOR,ALL,10MA,yellow";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+# plot the 10MA
+$command = "INDICATOR_PLOT,10MA,1";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

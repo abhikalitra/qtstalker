@@ -20,37 +20,21 @@
  */
 
 #include "PixelSpaceButton.h"
-#include "Config.h"
 #include "Globals.h"
 
 #include <QDebug>
 #include <QString>
 #include <QInputDialog>
+#include <QSettings>
 
-PixelSpaceButton::PixelSpaceButton (int d)
+PixelSpaceButton::PixelSpaceButton (QString d)
 {
   _key = d;
 
-  Config config;
-  _pixelSpace = config.getInt((Config::Parm) _key);
-  if (! _pixelSpace)
-  {
-    switch ((Config::Parm) _key)
-    {
-      case Config::PSButton1:
-        _pixelSpace = 6;
-        break;
-      case Config::PSButton2:
-        _pixelSpace = 8;
-        break;
-      default:
-        break;
-    }
-
-    config.transaction();
-    config.setData((Config::Parm) _key, _pixelSpace);
-    config.commit();
-  }
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  
+  _pixelSpace = settings.value(_key, 6).toInt();
 
   setCheckable(FALSE);
 
@@ -75,10 +59,10 @@ void PixelSpaceButton::setPixelSpace (int d)
 
   changeText();
 
-  Config config;
-  config.transaction();
-  config.setData((Config::Parm) _key, _pixelSpace);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue(_key, _pixelSpace);
+  settings.sync();
 }
 
 void PixelSpaceButton::dialog ()

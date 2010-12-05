@@ -4,14 +4,16 @@
 $|++;
 
 # get the Candle indicator
-print STDOUT "INDICATOR,PLUGIN,CANDLES,NONE,candles";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "BARS,CANDLES,candles";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # set the color
-print STDOUT "INDICATOR,SET_COLOR_ALL,candles,green";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_COLOR,ALL,candles,green";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot it
-print STDOUT "INDICATOR,SET_PLOT,candles,0";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
+$command = "INDICATOR_PLOT,candles,0";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

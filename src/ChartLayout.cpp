@@ -20,22 +20,17 @@
  */
 
 #include "ChartLayout.h"
-#include "Config.h"
-#include "IndicatorDataBase.h"
-#include "IndicatorDialog.h"
-#include "IndicatorPluginFactory.h"
-#include "IndicatorPluginDialog.h"
-#include "IndicatorThread.h"
-#include "ChartObjectDataBase.h"
 #include "Plot.h"
-#include "IndicatorDeleteDialog.h"
 #include "Globals.h"
+#include "Command.h"
+#include "Script.h"
 
 #include <QDebug>
 #include <QCursor>
 #include <QLabel>
 #include <QTabBar>
 #include <qwt_plot.h>
+#include <QSettings>
 
 ChartLayout::ChartLayout ()
 {
@@ -59,27 +54,25 @@ ChartLayout::ChartLayout ()
     addWidget(w);
     w->hide();
     
-    int loop2 = 1;
-    for (; loop2 < 3; loop2++)
-    {
-      QString key = QString::number(loop) + ":" + QString::number(loop2);
-      TabWidget *tab = new TabWidget(key);
-      _tabs.insert(key, tab);
-      hbox->addWidget(tab);
-      tab->hide();
-    }
+    QString key = QString::number(loop);
+    TabWidget *tab = new TabWidget(key);
+    _tabs.insert(key, tab);
+    hbox->addWidget(tab);
+    tab->hide();
   }
-}
-
-ChartLayout::~ChartLayout ()
-{
 }
 
 void ChartLayout::save ()
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::ChartLayoutSizes, (QSplitter *) this);
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+
+  QStringList l;
+  QList<int> sizeList = sizes();
+  int loop;
+  for (loop = 0; loop < (int) sizeList.count(); loop++)
+    l.append(QString::number(sizeList[loop]));
+  settings.setValue("chart_layout_sizes", l);
 
   QHashIterator<QString, TabWidget *> it(_tabs);
   while (it.hasNext())
@@ -87,14 +80,10 @@ void ChartLayout::save ()
     it.next();
     Plot *p = (Plot *) it.value()->currentWidget();
     if (p)
-    {
-      QString k = "ChartLayout" + it.key();
-      QString d = QString::number(it.value()->currentIndex());
-      config.setData(k, d);
-    }
+      settings.setValue("chart_layout_" + it.key(), it.value()->currentIndex());
   }
 
-  config.commit();
+  settings.sync();
 
   // save any chart object changes
   emit signalSaveSettings();
@@ -103,20 +92,93 @@ void ChartLayout::save ()
 void ChartLayout::load ()
 {
   // we need to load our splitter sizes
-  Config config;
-  config.getData(Config::ChartLayoutSizes, (QSplitter *) this);
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+
+  QStringList l = settings.value("chart_layout_sizes").toStringList();
+  if (! l.count())
+  {
+    QList<int> l2;
+    l2 << 437 << 20 << 200;
+    setSizes(l2);
+  }
+  else
+  {
+    QList<int> sizeList = sizes();
+
+    int loop = 0;
+    for (; loop < l.count(); loop++)
+    {
+      if (loop >= sizeList.count())
+        break;
+
+      if (l[loop].toInt() < 25)
+        sizeList[loop] = 25;
+      else
+        sizeList[loop] = l[loop].toInt();
+    }
+
+    setSizes(sizeList);
+  }
 
   // setup the initial indicators
-  IndicatorDataBase idb;
-  QStringList l;
-  idb.getActiveIndicatorList(l);
+  l.clear();
+  l << "INDICATOR_DATABASE" << "INDICATORS";
 
+  Command command(l.join(","));
+
+  ScriptPlugin *plug = _factory.plugin(command.plugin());
+  if (! plug)
+  {
+    qDebug() << "ChartLayout::load: no plugin" << command.plugin();
+    return;
+  }
+
+  if (plug->command(command))
+  {
+    delete plug;
+    qDebug() << "ChartLayout::load: command failed";
+    return;
+  }
+
+  l = command.stringData().split(",", QString::SkipEmptyParts);
+  
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    Indicator i;
-    i.setName(l[loop]);
-    idb.getIndicator(i);
+    QStringList cl;
+    cl << "INDICATOR_DATABASE" << "LOAD" << l.at(loop);
+
+    command.parse(cl.join(","));
+
+    plug = _factory.plugin(command.plugin());
+    if (! plug)
+    {
+      qDebug() << "ChartLayout::load: no plugin" << command.plugin();
+      continue;
+    }
+
+    if (plug->command(command))
+    {
+      qDebug() << "ChartLayout::load: command failed";
+      continue;
+    }
+
+    cl = command.stringData().split(",", QString::SkipEmptyParts);
+    if (cl.count() != 5)
+    {
+      qDebug() << "ChartLayout::load: field # error" << cl.count();
+      continue;
+    }
+
+    Indicator *i = new Indicator;
+    i->setName(l.at(loop));
+    i->setScript(cl.at(0));
+    i->setCommand(cl.at(1));
+    i->setTabRow(cl.at(2).toInt());
+    i->setLog(cl.at(3).toInt());
+    i->setDate(cl.at(4).toInt());
+    g_indicators.insert(i->name(), i);
     addTab(i);
   }
 
@@ -127,26 +189,32 @@ void ChartLayout::load ()
     Plot *p = (Plot *) it.value()->currentWidget();
     if (p)
     {
-      QString k = "ChartLayout" + it.key();
-      QString d;
-      config.getData(k, d);
-      it.value()->setCurrentIndex(d.toInt());
+      QString k = "chart_layout_" + it.key();
+      it.value()->setCurrentIndex(settings.value(k).toInt());
     }
   }
 
   // set plot settings from config
-  QColor color;
-  config.getData(Config::BackgroundColor, color);
+  QString s = settings.value("background_color").toString();
+  QColor color(s);
   emit signalBackgroundColor(color);
-  
-  QFont font;
-  config.getData(Config::PlotFont, font);
-  emit signalFont(font);
 
-  int tint = config.getInt(Config::CrossHairs);
-  emit signalCrossHairs(tint);
+  l = settings.value("plot_font").toStringList();
+  if (l.count())
+  {
+    QFont font;
+    font.setFamily(l[0]);
+    font.setPointSize(l[1].toInt());
+    font.setWeight(l[2].toInt());
+    font.setItalic(l[3].toInt());
+    font.setBold(l[4].toInt());
+    emit signalFont(font);
+  }
 
-  config.getData(Config::CrossHairsColor, color);
+  emit signalCrossHairs(settings.value("crosshairs").toInt());
+
+  s = settings.value("crosshairs_color").toString();
+  color.setNamedColor(s);
   emit signalCrossHairsColor(color);
 
   emit signalIndex(0);
@@ -154,58 +222,74 @@ void ChartLayout::load ()
 
 void ChartLayout::addTab (QString &name)
 {
-  IndicatorDataBase idb;
-  Indicator i;
-  i.setName(name);
-  idb.getIndicator(i);
+  QStringList cl;
+  cl << "INDICATOR_DATABASE" << "LOAD" << name;
+
+  Command command(cl.join(","));
+
+  ScriptPlugin *plug = _factory.plugin(command.plugin());
+  if (! plug)
+  {
+    qDebug() << "ChartLayout::addTab: no plugin" << command.plugin();
+    return;
+  }
+
+  if (plug->command(command))
+  {
+    delete plug;
+    return;
+  }
+
+  cl = command.stringData().split(",", QString::SkipEmptyParts);
+  delete plug;
+  if (cl.count() != 5)
+  {
+    qDebug() << "ChartLayout::addTab: field # error" << cl.count();
+    return;
+  }
+
+  Indicator *i = new Indicator;
+  i->setName(name);
+  i->setScript(cl.at(0));
+  i->setCommand(cl.at(1));
+  i->setTabRow(cl.at(2).toInt());
+  i->setLog(cl.at(3).toInt());
+  i->setDate(cl.at(4).toInt());
+  g_indicators.insert(name, i);
   addTab(i);
 }
 
-void ChartLayout::addTab (Indicator &i)
+void ChartLayout::addTab (Indicator *i)
 {
-  if (! i.enable())
-    return;
-
-  QWidget *w = _holders.value(i.tabRow());
+  QWidget *w = _holders.value(i->tabRow());
   if (! w)
     return;
   
   w->show();
 
-  QString key = QString::number(i.tabRow()) + ":" + QString::number(i.column());
+  QString key = QString::number(i->tabRow());
   TabWidget *tab = _tabs.value(key);
   tab->show();
-
-//  if (! tab)
-//  {
-//    tab = new TabWidget(key);
-//    connect(tab, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged()));
-//    _tabs.insert(key, tab);
-//    grid->addWidget(tab, 0, i.column() - 1);
-//    w->show();
-//  }
 
   PlotSettings settings;
   settings.plot = new Plot;
 
-  settings.name = i.name();
-  settings.plot->setIndicator(i.name());
+  settings.name = i->name();
+  settings.plot->setIndicator(i->name());
   int pos = tab->addTab(settings.plot, QString());
-  tab->setTabButton(pos, i.name());
+  tab->setTabButton(pos, i->name());
 
-  settings.row = i.tabRow();
-  settings.col = i.column();
-  _plots.insert(i.name(), settings);
+  settings.row = i->tabRow();
+  _plots.insert(i->name(), settings);
 
-  settings.plot->showDate(i.date());
-  settings.plot->setLogScaling(i.getLog());
+  settings.plot->showDate(i->date());
+  settings.plot->setLogScaling(i->getLog());
 
   settings.plot->setBarSpacing(_barSpacing);
 
   connect(this, SIGNAL(signalBackgroundColor(QColor)), settings.plot, SLOT(setBackgroundColor(QColor)));
   connect(this, SIGNAL(signalFont(QFont)), settings.plot, SLOT(setFont(QFont)));
   connect(this, SIGNAL(signalGridColor(QColor)), settings.plot, SLOT(setGridColor(QColor)));
-//  connect(plot, SIGNAL(signalPixelSpaceChanged(int, int)), this, SIGNAL(signalZoom(int, int)));
   connect(settings.plot, SIGNAL(signalInfoMessage(Setting)), this, SIGNAL(signalInfo(Setting)));
   connect(settings.plot, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   connect(this, SIGNAL(signalBarSpacing(int)), settings.plot, SLOT(setBarSpacing(int)));
@@ -214,7 +298,7 @@ void ChartLayout::addTab (Indicator &i)
   connect(this, SIGNAL(signalDraw()), settings.plot, SLOT(replot()));
   connect(this, SIGNAL(signalIndex(int)), settings.plot, SLOT(setStartIndex(int)));
   connect(settings.plot, SIGNAL(signalNewIndicator()), this, SLOT(newIndicator()));
-  connect(settings.plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(editIndicator(QString)));
+//  connect(settings.plot, SIGNAL(signalEditIndicator(QString)), this, SLOT(editIndicator(QString)));
   connect(settings.plot, SIGNAL(signalDeleteIndicator(QString)), this, SLOT(deleteIndicator()));
   connect(settings.plot, SIGNAL(signalBackgroundColorChanged(QColor)), this, SLOT(backgroundColorChanged(QColor)));
   connect(settings.plot, SIGNAL(signalFontChanged(QFont)), this, SLOT(fontChanged(QFont)));
@@ -229,46 +313,68 @@ void ChartLayout::addTab (Indicator &i)
 
 void ChartLayout::loadPlots (int index)
 {
-  if (! g_barData.count())
+  if (! g_barData->count())
     return;
 
   _startIndex = index;
 
-  IndicatorDataBase db;
-  QStringList indicatorList;
-  db.getActiveIndicatorList(indicatorList);
+  QStringList l;
+  QHashIterator<QString, Indicator *> it(g_indicators);
+  while (it.hasNext())
+  {
+    it.next();
+    l.append(it.key());
+  }
 
   int loop = 0;
-  for (; loop < indicatorList.count(); loop++)
+  for (; loop < l.count(); loop++)
   {
-    if (! _plots.contains(indicatorList[loop]))
+    if (! _plots.contains(l.at(loop)))
       continue;
     
-    PlotSettings ps = _plots.value(indicatorList[loop]);
+    PlotSettings ps = _plots.value(l.at(loop));
 
     ps.plot->setDates();
-    
-    Indicator i;
-    i.setName(indicatorList[loop]);
-    db.getIndicator(i);
 
-    qRegisterMetaType<Indicator>("Indicator");
-    IndicatorThread *r = new IndicatorThread(this, i);
-    connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
-    r->start();
+    Indicator *i = g_indicators.value(l.at(loop));
+    if (! i)
+      continue;
+
+    Script *script = new Script;
+    script->setName(i->name());
+    script->setFile(i->script());
+    script->setCommand(i->command());
+    connect(script, SIGNAL(signalDone(QString)), this, SLOT(indicatorScriptFinished(QString)));
+    script->setBarData(g_barData);
+    script->setIndicator(i);
+    script->startScript();
   }
 }
 
-void ChartLayout::indicatorThreadFinished (Indicator i)
+void ChartLayout::indicatorScriptFinished (QString name)
 {
-  // add plots to the plot
-  if (! _plots.contains(i.name()))
+  Indicator *i = g_indicators.value(name);
+  if (! i)
+  {
+    qDebug() << "ChartLayout::indicatorScriptFinished: no indicator for" << name;
     return;
+  }
+
+  // add plots to the plot
+  if (! _plots.contains(name))
+  {
+    qDebug() << "ChartLayout::indicatorScriptFinished: no plot for" << name;
+    return;
+  }
   
-  PlotSettings settings = _plots.value(i.name());
-  
+  PlotSettings settings = _plots.value(name);
+
   settings.plot->clear();
-  settings.plot->addCurves(i.curves());
+  
+  i->weedPlots();
+  settings.plot->addCurves(i->curves());
+  i->clearLines();
+  
   settings.plot->loadChartObjects();
   settings.plot->setStartIndex(_startIndex);
 }
@@ -329,10 +435,10 @@ void ChartLayout::setZoom (int pixelSpace, int index)
 
 void ChartLayout::backgroundColorChanged (QColor c)
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::BackgroundColor, c);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("background_color", c.name());
+  settings.sync();
   
   emit signalBackgroundColor(c);
   emit signalDraw();
@@ -340,10 +446,14 @@ void ChartLayout::backgroundColorChanged (QColor c)
 
 void ChartLayout::fontChanged (QFont f)
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::PlotFont, f);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+
+  QStringList l;
+  l << f.family() << QString::number(f.pointSize()) << QString::number(f.weight());
+  l << QString::number(f.italic ()) << QString::number(f.bold ());
+  settings.setValue("plot_font", l);
+  settings.sync();
 
   emit signalFont(f);
   emit signalDraw();
@@ -353,86 +463,75 @@ int ChartLayout::plotWidth ()
 {
   // find the best plot width for either < 1 column or > 1 column
   int maxWidth = 0;
-  int minWidth = 999999;
-  int cols = 1;
   QHashIterator<QString, PlotSettings> it(_plots);
   while (it.hasNext())
   {
      it.next();
      PlotSettings settings = it.value();
 
-     if (settings.col > cols)
-       cols = settings.col;
-
      int width = settings.plot->width();
      
      if (width > maxWidth)
        maxWidth = width;
-
-     if (width < minWidth)
-       minWidth = width;
   }
 
-  if (cols > 1)
-    return minWidth;
-  else
-    return maxWidth;
+  return maxWidth;
 }
 
 void ChartLayout::newIndicator ()
 {
-  IndicatorDialog *dialog = new IndicatorDialog;
-  connect(dialog, SIGNAL(signalDone(Indicator)), this, SLOT(newIndicator2(Indicator)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-}
+  Command command("INDICATOR_NEW_DIALOG");
 
-void ChartLayout::newIndicator2 (Indicator i)
-{
-  IndicatorPluginFactory fac;
-  IndicatorPlugin *ip = fac.plugin(i.indicator());
-  if (! ip)
+  ScriptPlugin *plug = _factory.plugin(command.plugin());
+  if (! plug)
   {
-    qDebug() << "ChartLayout::newIndicator2: plugin error" << i.indicator();
+    qDebug() << "ChartLayout::newIndicator: no plugin" << command.plugin();
     return;
   }
 
-  ip->defaults(i);
-  
-  IndicatorPluginDialog *dialog = ip->dialog(i);
-  if (! dialog)
-  {
-    qDebug() << "ChartLayout::newIndicator2: no dialog";
-    return;
-  }
+  connect(plug, SIGNAL(signalDone(QStringList)), this, SLOT(newIndicator2(QStringList)));
 
-  connect(dialog, SIGNAL(signalDone(Indicator)), this, SLOT(newIndicator3(Indicator)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
+  plug->command(command);
 }
 
-void ChartLayout::newIndicator3 (Indicator i)
+void ChartLayout::newIndicator2 (QStringList l)
 {
-  addTab(i.name());
-
-  if (! g_barData.count())
+  if (l.count() != 6)
     return;
 
-  PlotSettings ps = _plots.value(i.name());
+  Indicator *i = new Indicator;
+  i->setName(l.at(0));
+  i->setScript(l.at(1));
+  i->setCommand(l.at(2));
+  i->setTabRow(l.at(3).toInt());
+  i->setLog(l.at(4).toInt());
+  i->setDate(l.at(5).toInt());
+  g_indicators.insert(i->name(), i);
+  addTab(i->name());
+
+  if (! g_barData->count())
+    return;
+
+  PlotSettings ps = _plots.value(i->name());
 
   ps.plot->setDates();
-  
-  qRegisterMetaType<Indicator>("Indicator");
-  IndicatorThread *r = new IndicatorThread(this, i);
-  connect(r, SIGNAL(signalDone(Indicator)), this, SLOT(indicatorThreadFinished(Indicator)), Qt::QueuedConnection);
-  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
-  r->start();
+
+  Script *script = new Script;
+  script->setIndicator(i);
+  script->setBarData(g_barData);
+  script->setName(i->name());
+  script->setFile(i->script());
+  script->setCommand(i->command());
+  connect(script, SIGNAL(signalDone(QString)), this, SLOT(indicatorScriptFinished(QString)), Qt::QueuedConnection);
+  script->startScript();
 }
 
+/*
 void ChartLayout::editIndicator (QString name)
 {
   Indicator i;
   i.setName(name);
+  
   IndicatorDataBase db;
   db.getIndicator(i);
   
@@ -455,8 +554,9 @@ void ChartLayout::editIndicator (QString name)
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
 }
-
-void ChartLayout::editIndicator2 (Indicator i)
+*/
+/*
+void ChartLayout::editIndicator2 (Indicator)
 {
   if (! g_barData.count())
     return;
@@ -467,13 +567,22 @@ void ChartLayout::editIndicator2 (Indicator i)
   connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
   r->start();
 }
+*/
 
 void ChartLayout::deleteIndicator ()
 {
-  IndicatorDeleteDialog *dialog = new IndicatorDeleteDialog;
-  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalSelect(QStringList)), this, SLOT(removeTab(QStringList)));
-  dialog->show();
+  Command command("INDICATOR_DELETE_DIALOG");
+
+  ScriptPlugin *plug = _factory.plugin(command.plugin());
+  if (! plug)
+  {
+    qDebug() << "ChartLayout::deleteIndicator: no plugin" << command.plugin();
+    return;
+  }
+
+  connect(plug, SIGNAL(signalDone(QStringList)), this, SLOT(removeTab(QStringList)));
+
+  plug->command(command);
 }
 
 void ChartLayout::removeTab (QStringList l)
@@ -486,9 +595,8 @@ void ChartLayout::removeTab (QStringList l)
 
     PlotSettings settings = _plots.value(l.at(loop));
     int row = settings.row;
-    int col = settings.col;
 
-    QString key = QString::number(row) + ":" + QString::number(col);
+    QString key = QString::number(row);
     TabWidget *tab = _tabs.value(key);
     if (! tab)
       continue;
@@ -512,7 +620,7 @@ void ChartLayout::removeTab (QStringList l)
     int flag = 0;
     for (; loop < 3; loop++)
     {
-      key = QString::number(row) + ":" + QString::number(loop);
+      key = QString::number(row);
       tab = _tabs.value(key);
       if (tab->count())
       {
@@ -533,4 +641,3 @@ QHash<QString, PlotSettings> & ChartLayout::plots ()
 {
   return _plots;
 }
-

@@ -24,9 +24,9 @@
 
 #include <QComboBox>
 #include <QToolBar>
+#include <QHash>
 
 #include "BarData.h"
-#include "Group.h"
 
 class RecentCharts : public QComboBox
 {
@@ -45,7 +45,7 @@ class RecentCharts : public QComboBox
     void load ();
 
   protected:
-    Group _group;
+    QHash<QString, BarData> _symbols;
 };
 
 #endif

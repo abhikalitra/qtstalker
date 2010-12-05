@@ -20,8 +20,8 @@
  */
 
 #include "BarLengthButtons.h"
-#include "Config.h"
 #include "BarData.h"
+#include "Globals.h"
 
 #include "../pics/prev.xpm"
 #include "../pics/next.xpm"
@@ -30,6 +30,7 @@
 #include <QString>
 #include <QStringList>
 #include <QIcon>
+#include <QSettings>
 
 BarLengthButtons::BarLengthButtons (QToolBar *tb) : QObject (tb)
 {
@@ -49,24 +50,16 @@ void BarLengthButtons::createButtons (QToolBar *tb)
 
   QStringList l;
   BarData bd;
-  bd.getBarLengthList(l);
+  bd.barLengthList(l);
   _lengths = new QComboBox;
   _lengths->setToolTip(QString(tr("Bar Length")));
   _lengths->setStatusTip(QString(tr("Bar Length")));
   _lengths->addItems(l);
-  _lengths->setCurrentIndex(6); // daily default
-  
-  QString s;
-  Config config;
-  config.getData(Config::BarLength, s);
-  if (s.isEmpty())
-  {
-    config.transaction();
-    config.setData(Config::BarLength, _lengths->currentIndex());
-    config.commit();
-  }
-  else
-    _lengths->setCurrentIndex(s.toInt());
+
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  int ti = settings.value("bar_length", 6).toInt();
+  _lengths->setCurrentIndex(ti);
   
   _lengths->setMaxVisibleItems(l.count());
   connect(_lengths, SIGNAL(currentIndexChanged(int)), this, SLOT(lengthChanged(int)));
@@ -112,10 +105,10 @@ void BarLengthButtons::nextLength ()
 
 void BarLengthButtons::lengthChanged (int d)
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::BarLength, d);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("bar_length", d);
+  settings.sync();
   
   buttonStatus();
 

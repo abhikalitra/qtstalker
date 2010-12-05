@@ -29,8 +29,8 @@
 #include "InfoPanel.h"
 #include "ChartPage.h"
 #include "GroupPage.h"
-#include "PluginPage.h"
 #include "BarData.h"
+#include "ScriptPage.h"
 
 class SidePanel : public QSplitter
 {
@@ -48,7 +48,9 @@ class SidePanel : public QSplitter
     void createTabs ();
     PlotSlider * slider ();
     InfoPanel * info ();
-    void updateChartTab ();
+    ChartPage * chartPanel ();
+    GroupPage * groupPanel ();
+    ScriptPage * scriptPanel ();
 
   public slots:
     void save ();
@@ -61,7 +63,7 @@ class SidePanel : public QSplitter
     InfoPanel *_info;
     ChartPage *_chartTab;
     GroupPage *_groupTab;
-    PluginPage *_pluginTab;
+    ScriptPage *_scriptTab;
 };
 
 #endif

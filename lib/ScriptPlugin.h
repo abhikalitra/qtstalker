@@ -24,16 +24,29 @@
 
 #include <QStringList>
 #include <QByteArray>
+#include <QObject>
 
-#include "Indicator.h"
-#include "BarData.h"
+#include "Command.h"
 
-class ScriptPlugin
+class ScriptPlugin : public QObject
 {
+  Q_OBJECT
+
+  signals:
+    void signalDone ();
+    void signalDone (QString);
+    void signalDone (QStringList);
+    void signalMessage (QString);
+    void signalResume ();
+  
   public:
     ScriptPlugin ();
     virtual ~ScriptPlugin ();
-    virtual int command (QStringList &, Indicator &, BarData &, QByteArray &);
+    virtual int command (Command &);
+    int isThreadSafe ();
+
+  protected:
+    int _threadSafe;
 };
 
 #endif

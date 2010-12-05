@@ -42,11 +42,13 @@ void SymbolListWidget::clearSymbols ()
 
 void SymbolListWidget::addSymbol (BarData bd)
 {
-  _symbols.setSymbol(bd);
-
+  QString key = bd.key();
+  
+  _symbols.insert(key, bd);
+  
   QListWidgetItem *item = new QListWidgetItem;
-  item->setText(bd.getKey());
-  item->setToolTip(QString(tr("Name: ") + bd.getName()));
+  item->setText(key);
+  item->setToolTip(QString(tr("Name: ") + bd.name()));
   addItem(item);
 }
 
@@ -60,21 +62,19 @@ void SymbolListWidget::deleteSymbol ()
   for (; loop < sl.count(); loop++)
   {
     QListWidgetItem *item = sl.at(loop);
-    _symbols.deleteSymbol(item->text());
+    _symbols.remove(item->text());
     delete item;
   }
 }
 
-Group & SymbolListWidget::symbols ()
+QHash<QString, BarData> & SymbolListWidget::symbols ()
 {
   return _symbols;
 }
 
 BarData SymbolListWidget::symbol (QString k)
 {
-  BarData bd;
-  _symbols.getSymbol(k, bd);
-  return bd;
+  return _symbols.value(k);
 }
 
 void SymbolListWidget::itemClicked (QListWidgetItem *item)
@@ -82,11 +82,7 @@ void SymbolListWidget::itemClicked (QListWidgetItem *item)
   if (! item)
     return;
 
-  BarData bd;
-  if (_symbols.getSymbol(item->text(), bd))
-    return;
-
-  emit signalSymbolSelected(bd);
+  emit signalSymbolSelected(_symbols.value(item->text()));
 }
 
 void SymbolListWidget::keyPressEvent (QKeyEvent *e)

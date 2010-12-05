@@ -20,8 +20,10 @@
  */
 
 #include "SidePanelButton.h"
-#include "Config.h"
+#include "Globals.h"
 #include "../pics/nav.xpm"
+
+#include <QSettings>
 
 SidePanelButton::SidePanelButton ()
 {
@@ -31,31 +33,20 @@ SidePanelButton::SidePanelButton ()
   setToolTip(tr("Show / Hide Side Panel"));
   setCheckable(TRUE);
 
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
-  QString s;
-  config.getData(Config::SidePanelStatus, s);
-
-  bool ok;
-  int status = s.toInt(&ok);
-  if (ok)
-    setChecked(status);
-  else
-  {
-    setChecked(TRUE);
-    config.setData(Config::SidePanelStatus, 1);
-  }
-
-  config.commit();
+  setChecked(settings.value("side_panel_status", 1).toInt());
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }
 
 void SidePanelButton::changed (bool status)
 {
-  Config config;
-  config.setData(Config::SidePanelStatus, status);
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("side_panel_status", status);
+  settings.sync();
 
   emit signalChanged(status);
 }

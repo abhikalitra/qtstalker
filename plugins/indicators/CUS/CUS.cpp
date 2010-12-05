@@ -22,6 +22,7 @@
 #include "CUS.h"
 #include "ExScript.h"
 #include "../../../lib/qtstalker_defines.h"
+#include "IndicatorSettings.h"
 
 #include <QtDebug>
 #include <QList>
@@ -33,11 +34,14 @@ CUS::CUS ()
 
 int CUS::getIndicator (Indicator &ind, BarData &data)
 {
-  Setting settings = ind.settings();
+  IndicatorSettings settings = ind.settings();
 
-  QString s, s2;
-  settings.getData(_Command, s);
-  settings.getData(_Script, s2);
+  IndicatorSetting set = settings.setting(_Command);
+  QString s = set.value();
+  
+  set = settings.setting(_Script);
+  QString s2 = set.value();
+  
   s.append(" " + s2);
 
   ExScript script;
@@ -53,32 +57,24 @@ int CUS::getIndicator (Indicator &ind, BarData &data)
 IndicatorPluginDialog * CUS::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
-
   dialog->setHelpFile("cus.html");
-
-  Setting _settings = i.settings();
-
-  // general tab
-  int tab = dialog->addTab(tr("General"));
-
-  QString d;
-  _settings.getData(_Command, d);
-  dialog->addText(tab, _Command, tr("Command"), d);
-
-  _settings.getData(_Script, d);
-  dialog->addFile(tab, _Script, tr("Script"), d);
-
   return dialog;
 }
 
 void CUS::defaults (Indicator &i)
 {
-  Setting set;
-  set.setData(_Command, "perl");
-  
+  IndicatorSettings set;
+
+  QStringList l;
+  l << tr("General");
+  set.setTabs(l);
+
+  int page = 0;
+  set.setText(_Command, page, tr("Command"), QString("perl"));
+
   QString inputDir = QString("%1/qtstalker/indicator/").arg(INSTALL_DATA_DIR);
-  set.setData(_Script, inputDir);
-  
+  set.setFile(_Script, page, tr("Script"), inputDir);
+
   i.setSettings(set);
 }
 

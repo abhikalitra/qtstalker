@@ -33,8 +33,8 @@
 #include <QToolBar>
 
 #include "BarData.h"
-#include "Group.h"
 #include "SymbolListWidget.h"
+#include "ScriptPluginFactory.h"
 
 class ChartPage : public QWidget
 {
@@ -65,13 +65,12 @@ class ChartPage : public QWidget
     void doKeyPress (QKeyEvent *);
     void chartOpened (BarData);
     void addToGroup ();
+    void addToGroup2 (QString);
     void updateList ();
     void symbolSearch ();
-    void symbolSearch2 (QString, QString);
+    void symbolSearch2 (QString);
     void allButtonPressed ();
     void buttonStatus ();
-    void deleteSymbol ();
-    void requestDone ();
 
   protected:
     QString _searchString;
@@ -79,6 +78,7 @@ class ChartPage : public QWidget
     SymbolListWidget *_nav;
     QMenu *_menu;
     QHash<int, QAction *> _actions;
+    ScriptPluginFactory _factory;
 };
 
 #endif

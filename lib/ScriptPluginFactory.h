@@ -23,21 +23,24 @@
 #define SCRIPT_PLUGIN_FACTORY_HPP
 
 #include "ScriptPlugin.h"
-#include "PluginFactory.h"
 
+#include <QHash>
+#include <QLibrary>
 #include <QStringList>
 
-class ScriptPluginFactory : public PluginFactory
+class ScriptPluginFactory
 {
   public:
     ScriptPluginFactory ();
     ~ScriptPluginFactory ();
     ScriptPlugin * plugin (QString plugin);
     void setPluginList ();
+    void getPluginList (QString &path, QStringList &list);
     
   protected:
     QString _path;
     QHash<QString, ScriptPlugin *> _plugins;
+    QHash<QString, QLibrary *> _libs;
 };
 
 #endif

@@ -3,62 +3,86 @@
 $|++;
 
 # create the BARS indicator
-print STDOUT "INDICATOR,PLUGIN,BARS,Bars,green,red,blue";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "BARS,BARS,Bars";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# get some close bars
-print STDOUT "INDICATOR,NEW,Close,cl";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+# color bars red if Bars close < previous Bars close
+$command = "INDICATOR_PLOT_COLOR,COMPARE_INDEX_ALL,Bars.0,<,Bars.1,Bars.0,red";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+# color bars blue if Bars close == previous Bars close
+$command = "INDICATOR_PLOT_COLOR,COMPARE_INDEX_ALL,Bars.0,=,Bars.1,Bars.0,blue";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+# color bars green if Bars close > previous Bars close
+$command = "INDICATOR_PLOT_COLOR,COMPARE_INDEX_ALL,Bars.0,>,Bars.1,Bars.0,green";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # create the 10 EMA indicator
-print STDOUT "INDICATOR,PLUGIN,MA,EMA,10MA,cl,10";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "MA,EMA,10MA,Bars,10";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # create the 20 EMA indicator
-print STDOUT "INDICATOR,PLUGIN,MA,EMA,20MA,cl,20";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "MA,EMA,20MA,Bars,20";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # create the 50 EMA indicator
-print STDOUT "INDICATOR,PLUGIN,MA,EMA,50MA,cl,50";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "MA,EMA,50MA,Bars,50";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot BARS
-print STDOUT "INDICATOR,SET_PLOT,Bars,0";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT,Bars,0";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # set 10MA plot style
-print STDOUT "INDICATOR,SET_PLOT_STYLE,10MA,Line";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_STYLE,10MA,Line";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # set 10MA color
-print STDOUT "INDICATOR,SET_COLOR_ALL,10MA,blue";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_COLOR,ALL,10MA,blue";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot the 10MA
-print STDOUT "INDICATOR,SET_PLOT,10MA,1";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT,10MA,1";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # set 20MA plot style
-print STDOUT "INDICATOR,SET_PLOT_STYLE,20MA,Line";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_STYLE,20MA,Line";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot 20MA color
-print STDOUT "INDICATOR,SET_COLOR_ALL,20MA,red";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_COLOR,ALL,20MA,red";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot 20MA
-print STDOUT "INDICATOR,SET_PLOT,20MA,2";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT,20MA,2";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # set 50MA plot style
-print STDOUT "INDICATOR,SET_PLOT_STYLE,50MA,Line";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_STYLE,50MA,Line";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # set 50MA color
-print STDOUT "INDICATOR,SET_COLOR_ALL,50MA,yellow";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_COLOR,ALL,50MA,yellow";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot the 50MA
-print STDOUT "INDICATOR,SET_PLOT,50MA,3";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
+$command = "INDICATOR_PLOT,50MA,3";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

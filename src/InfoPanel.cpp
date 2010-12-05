@@ -41,7 +41,7 @@ void InfoPanel::showInfo (Setting d)
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    d.getData(l[loop], s);
+    s = d.data(l.at(loop));
     if (s.length())
     {
       str.append(l[loop] + " " + s + "\n");
@@ -49,12 +49,12 @@ void InfoPanel::showInfo (Setting d)
     }
   }
 
-  d.getKeyList(l);
+  d.keyList(l);
   l.sort();
   
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    d.getData(l[loop], s);
+    s = d.data(l.at(loop));
     
     // If it is a big number, then use zero precision.
     bool ok;

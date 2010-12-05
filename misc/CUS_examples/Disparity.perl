@@ -4,20 +4,24 @@
 $|++;
 
 # Get today's close
-print STDOUT "INDICATOR,NEW,Close,cl";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+$command = "BARS,Close,cl";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # Get the 13-bar SMA
-print STDOUT "INDICATOR,PLUGIN,MA,SMA,sma_13,Close,13";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+$command = "MA,SMA,sma_13,cl,13";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # create the disparity indicator
-print STDOUT "INDICATOR,NEW,EMPTY,Disparity";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+$command = "INDICATOR_PLOT_NEW,Disparity";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# get the index range of the close
-print STDOUT "INDICATOR,GET_RANGE,cl";
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+# get the index range of the close bars
+$command = "INDICATOR_PLOT_INDEX,RANGE,cl";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # split the start and end values
 my @range = split(',', $rc);
@@ -25,29 +29,34 @@ my @range = split(',', $rc);
 for ($count = 12; $count <= $range[1]; $count++)
 {
   # get the current close value
-  print STDOUT "INDICATOR,GET_INDEX,cl,$count";
-  $close = <STDIN>; chomp($close); if ($close eq "ERROR") { next; } # empty index position, continue
+  $command = "INDICATOR_PLOT_INDEX,GET,cl,$count";
+  print STDOUT $command;
+  $close = <STDIN>; chomp($close); if ($close eq "ERROR") { print STDERR $command; next; } # empty index position, continue
 
   # get sma_13 value
-  print STDOUT "INDICATOR,GET_INDEX,sma_13,$count";
-  $ma = <STDIN>; chomp($ma); if ($ma eq "ERROR") { next; } # empty index position, continue
+  $command = "INDICATOR_PLOT_INDEX,GET,sma_13,$count";
+  print STDOUT $command;
+  $ma = <STDIN>; chomp($ma); if ($ma eq "ERROR") { print STDERR $command; next; } # empty index position, continue
 
   $disparity = sprintf("%.2f", ($close - $ma) / $ma * 100);
 
   # set the disparity indicator with value
-  print STDOUT "INDICATOR,SET_INDEX,Disparity,$count,$disparity,red";
-  $rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+  $command = "INDICATOR_PLOT_INDEX,SET,Disparity,$count,$disparity,red";
+  print STDOUT $command;
+  $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 }
 
 # set the plot style
-print STDOUT "INDICATOR,SET_PLOT_STYLE,Disparity,Histogram Bar";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+$command = "INDICATOR_PLOT_STYLE,Disparity,Histogram Bar";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 #set the color
-print STDOUT "INDICATOR,SET_COLOR_ALL,Disparity,yellow";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
+$command = "INDICATOR_PLOT_COLOR,ALL,Disparity,yellow";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 #plot the disparity
-print STDOUT "INDICATOR,SET_PLOT,Disparity,0";
-$rc = <STDIN>; chomp($rc); if ($rc ne "0") { exit; }
-
+$command = "INDICATOR_PLOT,Disparity,0";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

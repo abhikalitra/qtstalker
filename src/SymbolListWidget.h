@@ -25,8 +25,8 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QKeyEvent>
+#include <QHash>
 
-#include "Group.h"
 #include "BarData.h"
 
 class SymbolListWidget : public QListWidget
@@ -40,7 +40,7 @@ class SymbolListWidget : public QListWidget
     SymbolListWidget ();
     void clearSymbols ();
     void deleteSymbol ();
-    Group & symbols ();
+    QHash<QString, BarData> & symbols ();
     BarData symbol (QString);
 
   public slots:
@@ -51,7 +51,7 @@ class SymbolListWidget : public QListWidget
     void keyPressEvent (QKeyEvent *);
 
   private:
-    Group _symbols;
+    QHash<QString, BarData> _symbols;
 };
 
 #endif

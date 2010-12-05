@@ -26,49 +26,27 @@
 
 BarData::BarData ()
 {
-  taOpen = 0;
-  taHigh = 0;
-  taLow = 0;
-  taClose = 0;
-  taVolume = 0;
-  
   clear();
 }
 
 BarData::~BarData ()
 {
-//  clear();
+  if (_barList.count())
+    qDeleteAll(_barList);
 }
 
 void BarData::clear ()
 {
-  _barList.clear();
+  if (_barList.count())
+    qDeleteAll(_barList);
+  
   _high = -99999999;
   _low = 99999999;
   _length = DailyBar;
-
-  if (taOpen)
-    delete [] taOpen;
-  taOpen = 0;
-  
-  if (taHigh)
-    delete [] taHigh;
-  taHigh = 0;
-  
-  if (taLow)
-    delete [] taLow;
-  taLow = 0;
-  
-  if (taClose)
-    delete [] taClose;
-  taClose = 0;
-  
-  if (taVolume)
-    delete [] taVolume;
-  taVolume = 0;
+  _range = 6;
 }
 
-void BarData::getInputFields (QStringList &l)
+void BarData::inputFields (QStringList &l)
 {
   l.clear();
   l << QObject::tr("Open");
@@ -83,65 +61,65 @@ void BarData::getInputFields (QStringList &l)
   l << QObject::tr("WCPrice");
 }
 
-Curve * BarData::getInput (BarData::InputType field)
+Curve * BarData::input (BarData::InputType field)
 {
   Curve *line = new Curve;
 
   int loop;
   for (loop = 0; loop < count(); loop++)
   {
-    Bar bar = getBar(loop);
+    Bar *b = bar(loop);
     
     switch (field)
     {
       case Open:
       {
-        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldOpen)));
+        line->setBar(loop, new CurveBar(b->open()));
         break;
       }
       case High:
       {
-        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldHigh)));
+        line->setBar(loop, new CurveBar(b->high()));
         break;
       }
       case Low:
       {
-        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldLow)));
+        line->setBar(loop, new CurveBar(b->low()));
         break;
       }
       case Close:
       {
-        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldClose)));
+        line->setBar(loop, new CurveBar(b->close()));
         break;
       }
       case Volume:
       {
-        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldVolume)));
+        line->setBar(loop, new CurveBar(b->volume()));
         break;
       }
       case OI:
       {
-        line->setBar(loop, new CurveBar(bar.getData(Bar::BarFieldOI)));
+        line->setBar(loop, new CurveBar(b->oi()));
         break;
       }
       case AveragePrice:
       {
-        line->setBar(loop, new CurveBar(getAvgPrice(loop)));
+        line->setBar(loop, new CurveBar(avgPrice(loop)));
         break;
       }
       case MedianPrice:
       {
-        line->setBar(loop, new CurveBar(getMedianPrice(loop)));
+        line->setBar(loop, new CurveBar(medianPrice(loop)));
         break;
       }
       case TypicalPrice:
       {
-        line->setBar(loop, new CurveBar(getTypicalPrice(loop)));
+        line->setBar(loop, new CurveBar(typicalPrice(loop)));
         break;
       }
       case WeightedClosePrice:
       {
-        double t = (bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow) + (bar.getData(Bar::BarFieldClose) * 2)) / 4.0;
+        double t = (b->high() + b->low() + (b->close() * 2)) / 4.0;
         line->setBar(loop, new CurveBar(t));
         break;
       }
@@ -155,33 +133,33 @@ Curve * BarData::getInput (BarData::InputType field)
 
 int BarData::count ()
 {
-  return (int) _barList.count();
+  return _barList.count();
 }
 
-void BarData::prepend (Bar bar)
+void BarData::prepend (Bar *bar)
 {
   _barList.prepend(bar);
 }
 
-void BarData::append (Bar bar)
+void BarData::append (Bar *bar)
 {
   _barList.append(bar);
 }
 
-double BarData::getMax ()
+double BarData::max ()
 {
   return _high;
 }
 
-double BarData::getMin ()
+double BarData::min ()
 {
   return _low;
 }
 
-BarData::InputType BarData::getInputType (QString &d)
+BarData::InputType BarData::inputType (QString d)
 {
   QStringList l;
-  getInputFields(l);
+  inputFields(l);
   
   InputType rc = Close;
   int t = l.indexOf(d);
@@ -190,9 +168,9 @@ BarData::InputType BarData::getInputType (QString &d)
   return rc;
 }
 
-Bar & BarData::getBar (int d)
+Bar * BarData::bar (int d)
 {
-  return _barList[d];
+  return _barList.at(d);
 }
 
 void BarData::setMinMax ()
@@ -200,13 +178,13 @@ void BarData::setMinMax ()
   int loop;
   for (loop = 0; loop < (int) _barList.count(); loop++)
   {
-    Bar bar = _barList.at(loop);
+    Bar *bar = _barList.at(loop);
 
-    if (bar.getData(Bar::BarFieldHigh) > _high)
-      _high = bar.getData(Bar::BarFieldHigh);
+    if (bar->high() > _high)
+      _high = bar->high();
 
-    if (bar.getData(Bar::BarFieldLow) < _low)
-      _low = bar.getData(Bar::BarFieldLow);
+    if (bar->low() < _low)
+      _low = bar->low();
   }
 }
 
@@ -215,70 +193,70 @@ void BarData::setBarLength (BarLength d)
   _length = d;
 }
 
-void BarData::setBarLength (QString &d)
+void BarData::setBarLength (QString d)
 {
   QStringList l;
-  getBarLengthList(l);
+  barLengthList(l);
   _length = (BarLength) l.indexOf(d);
 }
 
-BarData::BarLength & BarData::getBarLength ()
+BarData::BarLength & BarData::barLength ()
 {
   return _length;
 }
 
-QString & BarData::getSymbol ()
+QString & BarData::symbol ()
 {
   return _symbol;
 }
 
-void BarData::setSymbol (QString &d)
+void BarData::setSymbol (QString d)
 {
   _symbol = d;
 }
 
-QString & BarData::getName ()
+QString & BarData::name ()
 {
   return _name;
 }
 
-void BarData::setName (QString &d)
+void BarData::setName (QString d)
 {
   _name = d;
 }
 
-double BarData::getAvgPrice (int d)
+double BarData::avgPrice (int d)
 {
-  Bar bar = getBar(d);
-  double t = (bar.getData(Bar::BarFieldOpen) + bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow) + bar.getData(Bar::BarFieldClose)) / 4.0;
+  Bar *b = bar(d);
+  double t = (b->open() + b->high() + b->low() + b->close()) / 4.0;
   return t;
 }
 
-double BarData::getMedianPrice (int d)
+double BarData::medianPrice (int d)
 {
-  Bar bar = getBar(d);
-  double t = (bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow)) / 2.0;
+  Bar *b = bar(d);
+  double t = (b->high() + b->low()) / 2.0;
   return t;
 }
 
-double BarData::getTypicalPrice (int d)
+double BarData::typicalPrice (int d)
 {
-  Bar bar = getBar(d);
-  double t = (bar.getData(Bar::BarFieldHigh) + bar.getData(Bar::BarFieldLow) + bar.getData(Bar::BarFieldClose)) / 3.0;
+  Bar *b = bar(d);
+  double t = (b->high() + b->low() + b->close()) / 3.0;
   return t;
 }
 
-QString & BarData::getExchange ()
+QString & BarData::exchange ()
 {
   return _exchange;
 }
 
-void BarData::setExchange (QString &d)
+void BarData::setExchange (QString d)
 {
   _exchange = d;
 }
 
-void BarData::getBarLengthList (QStringList &l)
+void BarData::barLengthList (QStringList &l)
 {
   l.clear();
   l << QObject::tr("1 Minute");
@@ -290,42 +268,6 @@ void BarData::getBarLengthList (QStringList &l)
   l << QObject::tr("Daily");
   l << QObject::tr("Weekly");
   l << QObject::tr("Monthly");
-}
-
-void BarData::setBars (QString &d)
-{
-  _barList.clear();
-
-  if (d.isEmpty())
-    return;
-
-  if (d == "ERROR")
-    return;
-  
-  QStringList l = d.split(":");
-
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    QStringList l2 = l.at(loop).split(",");
-    if (l2.count() < 7 && l2.count() > 8)
-      continue;
-
-    Bar bar;
-    bar.setDates(l2[0], l2[1]);
-    bar.setData(Bar::BarFieldOpen, l2[2]);
-    bar.setData(Bar::BarFieldHigh, l2[3]);
-    bar.setData(Bar::BarFieldLow, l2[4]);
-    bar.setData(Bar::BarFieldClose, l2[5]);
-    bar.setData(Bar::BarFieldVolume, l2[6]);
-
-    if (l2.count() == 8)
-      bar.setData(Bar::BarFieldOI, l2[7]);
-
-    append(bar);
-  }
-
-  setTAData();
 }
 
 void BarData::barLengthText (BarData::BarLength k, QString &d)
@@ -378,55 +320,69 @@ int BarData::setKey (QString d)
   return 0;
 }
 
-QString BarData::getKey ()
+QString BarData::key ()
 {
   QString s = _exchange + ":" + _symbol;
   return s;
 }
 
-void BarData::setTAData ()
+void BarData::parse (QString &d)
 {
-  taOpen = new TA_Real[_barList.count()];
-  taHigh = new TA_Real[_barList.count()];
-  taLow = new TA_Real[_barList.count()];
-  taClose = new TA_Real[_barList.count()];
-  taVolume = new TA_Real[_barList.count()];
+  QStringList l = d.split(";", QString::SkipEmptyParts);
 
   int loop = 0;
-  for (; loop < _barList.count(); loop++)
+  for (; loop < l.count(); loop++)
   {
-    Bar bar = getBar(loop);
-    taOpen[loop] = (TA_Real) bar.getOpen();
-    taHigh[loop] = (TA_Real) bar.getHigh();
-    taLow[loop] = (TA_Real) bar.getLow();
-    taClose[loop] = (TA_Real) bar.getClose();
-    taVolume[loop] = (TA_Real) bar.getVolume();
+    QStringList l2 = l.at(loop).split(",");
+    if (l2.count() != 8)
+      continue;
+    
+    int pos = 2;
+    Bar *bar = new Bar;
+    bar->setDates(l2.at(0), l2.at(1));
+    bar->setOpen(l2.at(pos++));
+    bar->setHigh(l2.at(pos++));
+    bar->setLow(l2.at(pos++));
+    bar->setClose(l2.at(pos++));
+    bar->setVolume(l2.at(pos++));
+    bar->setOI(l2.at(pos++));
+
+    append(bar);
   }
 }
 
-TA_Real * BarData::getTAData (BarData::InputType field)
+void BarData::stringSettings (QString &d)
 {
-  switch (field)
-  {
-    case Open:
-      return taOpen;
-      break;
-    case High:
-      return taHigh;
-      break;
-    case Low:
-      return taLow;
-      break;
-    case Close:
-      return taClose;
-      break;
-    case Volume:
-      return taVolume;
-      break;
-    default:
-      break;
-  }
+  QStringList l;
+  l << _exchange;
+  l << _symbol;
+  l << QString::number(_length);
+  l << QString::number (_range);
+  d = l.join(",");
+}
+
+int BarData::setStringSettings (QString &d)
+{
+  QStringList l = d.split(",", QString::SkipEmptyParts);
+  if (l.count() != 4)
+    return 1;
+
+  int pos = 0;
+  _exchange = l.at(pos++);
+  _symbol = l.at(pos++);
+  _length = (BarData::BarLength) l.at(pos++).toInt();
+  _range = l.at(pos++).toInt();
 
   return 0;
+}
+
+int BarData::range ()
+{
+  return _range;
+}
+
+void BarData::setRange (int d)
+{
+  _range = d;
 }
 

@@ -73,7 +73,7 @@ Curve::Type & Curve::type ()
   return _type;
 }
 
-void Curve::setLabel (QString &text)
+void Curve::setLabel (QString text)
 {
   _label = text;
 }
@@ -113,7 +113,7 @@ void Curve::keyRange (int &startIndex, int &endIndex)
   endIndex = it.key();
 }
 
-int Curve::setAllColor (QColor &color)
+int Curve::setAllColor (QColor color)
 {
   if (! color.isValid())
     return 1;
@@ -140,7 +140,7 @@ int Curve::z ()
   return _z;
 }
 
-void Curve::setColor (QColor &c)
+void Curve::setColor (QColor c)
 {
   _color = c;
 }
@@ -161,7 +161,7 @@ void Curve::list (QStringList &l, int flag)
   }
 }
 
-int Curve::typeFromString (QString &d)
+int Curve::typeFromString (QString d)
 {
   return _list.indexOf(d);
 }
@@ -260,4 +260,61 @@ int Curve::highLowRange (int start, int end, double &h, double &l)
   return 1;
 }
 
+void Curve::string (QString &d)
+{
+  d.clear();
+
+  QStringList l;
+  l << QString::number(_type);
+  l << _color.name();
+  l << _label;
+  l << QString::number(_z);
+
+  QMapIterator<int, CurveBar *> it(_data);
+  while (it.hasNext())
+  {
+    it.next();
+    CurveBar *b = it.value();
+
+    QStringList l2;
+    l2 << QString::number(it.key()) << b->color().name();
+
+    int loop = 0;
+    for (; loop < b->count(); loop++)
+      l2 << QString::number(b->data(loop));
+
+    l << l2.join(",");
+  }
+
+  d = l.join(";");  
+}
+
+void Curve::parse (QString &d)
+{
+  QStringList l = d.split(";", QString::SkipEmptyParts);
+  int loop = 0;
+
+  _type = (Curve::Type) l.at(loop++).toInt();
+  _color = QColor(l.at(loop++));
+  _label = l.at(loop++);
+  _z = l.at(loop++).toInt();
+  
+  for (; loop < l.count(); loop++)
+  {
+    QStringList l2 = l.at(loop).split(",", QString::SkipEmptyParts);
+
+    int loop2 = 0;
+    CurveBar *b = new CurveBar;
+
+    int index = l2.at(loop2++).toInt();
+    
+    b->setColor(QColor(l2.at(loop2++)));
+
+    int pos = 0;
+    for (; loop2 < l2.count(); loop2++, pos++)
+      b->setData(pos, l2.at(loop2).toDouble());
+
+    setBar(index, b);
+  }
+}
 

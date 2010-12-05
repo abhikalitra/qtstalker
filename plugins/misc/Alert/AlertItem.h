@@ -88,7 +88,7 @@ class AlertItem
     QDateTime _hitDate;
 };
 
-// this is for passing Indicator data between threads
+// this is for passing classes between threads
 Q_DECLARE_METATYPE(AlertItem)
 
 #endif

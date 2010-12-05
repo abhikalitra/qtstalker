@@ -114,7 +114,7 @@ QStringList & FunctionMA::list ()
   return _maList;
 }
 
-int FunctionMA::typeFromString (QString &d)
+int FunctionMA::typeFromString (QString d)
 {
   return _maList.indexOf(d);
 }

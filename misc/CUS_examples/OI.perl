@@ -3,19 +3,21 @@
 $|++;
 
 # create the OI line
-print STDOUT "INDICATOR,NEW,OI,oi";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "BARS,OI,oi";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # set plot style
-print STDOUT "INDICATOR,SET_PLOT_STYLE,oi,Line";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_STYLE,oi,Line";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # set the color
-print STDOUT "INDICATOR,SET_COLOR_ALL,oi,yellow";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
+$command = "INDICATOR_PLOT_COLOR,ALL,oi,yellow";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot the oi
-print STDOUT "INDICATOR,SET_PLOT,oi,0";
-$a = <STDIN>; chomp($a); if ($a ne "0") { exit; }
-
-
+$command = "INDICATOR_PLOT,oi,0";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

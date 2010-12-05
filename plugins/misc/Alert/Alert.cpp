@@ -20,6 +20,7 @@
  */
 
 #include "Alert.h"
+#include "AlertScript.h"
 
 Alert::Alert ()
 {
@@ -51,6 +52,12 @@ void Alert::initDialog ()
   connect(_dialog, SIGNAL(signalChartRefresh()), this, SIGNAL(signalChartRefresh()));
   connect(_dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
   _dialog->activateWindow();
+}
+
+int Alert::script (QStringList &l, QByteArray &ba)
+{
+  AlertScript script;
+  return script.command(l, ba);
 }
 
 //**********************************************************

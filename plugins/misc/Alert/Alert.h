@@ -34,6 +34,7 @@ class Alert : public MiscPlugin
     ~Alert ();
     int configureDialog ();
     void initDialog ();
+    int script (QStringList &, QByteArray &);
 
   private:
     AlertDialog *_dialog;

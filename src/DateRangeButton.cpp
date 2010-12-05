@@ -20,8 +20,8 @@
  */
 
 #include "DateRangeButton.h"
-#include "Config.h"
 #include "DateRangeDialog.h"
+#include "Globals.h"
 
 #include "../pics/date.xpm"
 #include "../pics/configure.xpm"
@@ -29,6 +29,7 @@
 #include <QString>
 #include <QDebug>
 #include <QCursor>
+#include <QSettings>
 
 DateRangeButton::DateRangeButton () 
 {
@@ -41,26 +42,24 @@ DateRangeButton::DateRangeButton ()
   setToolTip(tr("Date Range Override"));
   setCheckable(TRUE);
 
-  Config config;
-  setChecked(config.getInt(Config::DateRangeButtonStatus));
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+
+  setChecked(settings.value("date_range_button_status", 0).toInt());
+
+  _startDate = settings.value("date_range_start", QDateTime::currentDateTime()).toDateTime();
   
-  config.getData(Config::DateRangeStart, _startDate);
-  if (! _startDate.isValid())
-    _startDate = QDateTime::currentDateTime();
-  
-  config.getData(Config::DateRangeEnd, _endDate);
-  if (! _endDate.isValid())
-    _endDate = QDateTime::currentDateTime();
+  _endDate = settings.value("date_range_end", QDateTime::currentDateTime()).toDateTime();
 
   connect(this, SIGNAL(clicked(bool)), this, SLOT(buttonClicked(bool)));
 }
 
 void DateRangeButton::buttonClicked (bool status)
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::DateRangeButtonStatus, status);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("date_range_button_status", status);
+  settings.sync();
 
   emit signalDateRangeChanged();
 }
@@ -75,15 +74,13 @@ void DateRangeButton::dialog ()
 
 void DateRangeButton::dateChanged (QDateTime sd, QDateTime ed)
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::DateRangeStart, sd);
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("date_range_start", sd);
+  settings.setValue("date_range_end", ed);
+  settings.sync();
   
   _startDate = sd;
-  
-  config.setData(Config::DateRangeEnd, ed);
-  config.commit();
-  
   _endDate = ed;
 
   if (isChecked())

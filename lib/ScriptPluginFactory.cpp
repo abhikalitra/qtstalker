@@ -20,35 +20,39 @@
  */
 
 #include "ScriptPluginFactory.h"
-#include "Config.h"
 #include "qtstalker_defines.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QSettings>
 
 ScriptPluginFactory::ScriptPluginFactory ()
 {
-  Config config;
-  config.getData(Config::ScriptPluginPath, _path);
+  QSettings settings;
+  settings.beginGroup("main"); // global setting, no session id appended
+
+  _path = settings.value("script_plugin_path").toString();
   if (_path.isEmpty())
   {
     _path = QString("%1/qtstalker/plugins/script").arg(INSTALL_LIB_DIR);
-    
-    config.transaction();
-    config.setData(Config::ScriptPluginPath, _path);
-    config.commit();
+    settings.setValue("script_plugin_path", _path);
+    settings.sync();
   }
 }
 
 ScriptPluginFactory::~ScriptPluginFactory ()
 {
-  qDeleteAll(_plugins);
+//  qDeleteAll(_plugins);
+  qDeleteAll(_libs);
 }
 
 ScriptPlugin * ScriptPluginFactory::plugin (QString plugin)
 {
-  ScriptPlugin *plug = _plugins.value(plugin);
-  if (plug)
-    return plug;
+  ScriptPlugin *plug = 0;
+//  ScriptPlugin *plug = _plugins.value(plugin);
+//  if (plug)
+//    return plug;
 
   QString file = _path;
   file.append("/lib" + plugin);
@@ -60,7 +64,7 @@ ScriptPlugin * ScriptPluginFactory::plugin (QString plugin)
   {
     plug = (*so)();
     _libs.insert(plugin, lib);
-    _plugins.insert(plugin, plug);
+//    _plugins.insert(plugin, plug);
   }
   else
     delete lib;
@@ -73,8 +77,26 @@ void ScriptPluginFactory::setPluginList ()
   QStringList l;
   getPluginList(_path, l);
 
-  Config config;
-  config.transaction();
-  config.setData(Config::ScriptPluginList, l);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main"); // global setting, no session id appended
+  settings.setValue("script_plugin_list", l);
+  settings.sync();
 }
+
+void ScriptPluginFactory::getPluginList (QString &path, QStringList &list)
+{
+  list.clear();
+
+  QDir dir(path);
+  int loop;
+  for (loop = 2; loop < (int) dir.count(); loop++)
+  {
+    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
+    QString s = fi.baseName();
+    s.remove(0, 3);
+    list.append(s);
+  }
+
+  list.sort();
+}
+

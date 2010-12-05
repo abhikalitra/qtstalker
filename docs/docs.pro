@@ -40,4 +40,7 @@ dbUpdate.path = "$${INSTALL_DATA_DIR}/qtstalker/db"
 dbUpdate.files = *.csv
 INSTALLS += dbUpdate
 
-
+# install the system script files
+script.path = "$${INSTALL_DATA_DIR}/qtstalker/script"
+script.files = ../Scripts/*
+INSTALLS += script

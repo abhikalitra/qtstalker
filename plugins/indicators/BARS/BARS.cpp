@@ -23,9 +23,9 @@
 #include "Curve.h"
 #include "FunctionBARS.h"
 #include "FunctionMA.h"
+#include "IndicatorSettings.h"
 
 #include <QtDebug>
-#include <QObject>
 
 BARS::BARS ()
 {
@@ -34,151 +34,138 @@ BARS::BARS ()
 
 int BARS::getIndicator (Indicator &ind, BarData &data)
 {
-  Setting settings = ind.settings();
+  IndicatorSettings settings = ind.settings();
   
-  QString s;
-  settings.getData(_UpColor, s);
-  QColor up(s);
+  IndicatorSetting set = settings.setting(_UpColor);
+  QColor up(set.value());
 
-  settings.getData(_DownColor, s);
-  QColor down(s);
+  set = settings.setting(_DownColor);
+  QColor down(set.value());
 
-  settings.getData(_NeutralColor, s);
-  QColor neutral(s);
+  set = settings.setting(_NeutralColor);
+  QColor neutral(set.value());
 
   FunctionBARS fbars;
   Curve *line = fbars.getBARS(up, down, neutral, data);
   if (! line)
     return 1;
 
-  settings.getData(_BarsLabel, s);
-  line->setLabel(s);
+  set = settings.setting(_BarsLabel);
+  line->setLabel(set.value());
 
   line->setZ(0);
-  ind.setLine(s, line);
+  ind.setLine(set.value(), line);
 
   FunctionMA fma;
   
-  int period = settings.getInt(_MAPeriod);
+  set = settings.setting(_MAPeriod);
+  int period = set.value().toInt();
   if (period > 1)
   {
-    settings.getData(_MAType, s);
-    int type = fma.typeFromString(s);
+    set = settings.setting(_MAType);
+    int type = fma.typeFromString(set.value());
 
     Curve *ma = fma.calculate(line, period, type);
     if (ma)
     {
-      settings.getData(_MAPlot, s);
-      ma->setType((Curve::Type) ma->typeFromString(s));
+      set = settings.setting(_MAPlot);
+      ma->setType((Curve::Type) ma->typeFromString(set.value()));
 
-      settings.getData(_MAColor, s);
-      QColor c(s);
+      set = settings.setting(_MAColor);
+      QColor c(set.value());
       ma->setColor(c);
 
-      settings.getData(_MALabel, s);
-      ma->setLabel(s);
+      set = settings.setting(_MALabel);
+      ma->setLabel(set.value());
       
       ma->setZ(1);
-      ind.setLine(s, ma);
+      ind.setLine(set.value(), ma);
     }
   }
 
-  period = settings.getInt(_MA2Period);
+  set = settings.setting(_MA2Period);
+  period = set.value().toInt();
   if (period > 1)
   {
-    settings.getData(_MA2Type, s);
-    int type = fma.typeFromString(s);
+    set = settings.setting(_MA2Type);
+    int type = fma.typeFromString(set.value());
 
     Curve *ma = fma.calculate(line, period, type);
     if (ma)
     {
-      settings.getData(_MA2Plot, s);
-      ma->setType((Curve::Type) ma->typeFromString(s));
+      set = settings.setting(_MA2Plot);
+      ma->setType((Curve::Type) ma->typeFromString(set.value()));
 
-      settings.getData(_MA2Color, s);
-      QColor c(s);
+      set = settings.setting(_MA2Color);
+      QColor c(set.value());
       ma->setColor(c);
 
-      settings.getData(_MA2Label, s);
-      ma->setLabel(s);
+      set = settings.setting(_MA2Label);
+      ma->setLabel(set.value());
       
       ma->setZ(2);
-      ind.setLine(s, ma);
+      ind.setLine(set.value(), ma);
     }
   }
 
-  period = settings.getInt(_MA3Period);
+  set = settings.setting(_MA3Period);
+  period = set.value().toInt();
   if (period > 1)
   {
-    settings.getData(_MA3Type, s);
-    int type = fma.typeFromString(s);
+    set = settings.setting(_MA3Type);
+    int type = fma.typeFromString(set.value());
 
     Curve *ma = fma.calculate(line, period, type);
     if (ma)
     {
-      settings.getData(_MA3Plot, s);
-      ma->setType((Curve::Type) ma->typeFromString(s));
+      set = settings.setting(_MA3Plot);
+      ma->setType((Curve::Type) ma->typeFromString(set.value()));
 
-      settings.getData(_MA3Color, s);
-      QColor c(s);
+      set = settings.setting(_MA3Color);
+      QColor c(set.value());
       ma->setColor(c);
 
-      settings.getData(_MA3Label, s);
-      ma->setLabel(s);
+      set = settings.setting(_MA3Label);
+      ma->setLabel(set.value());
       
       ma->setZ(3);
-      ind.setLine(s, ma);
+      ind.setLine(set.value(), ma);
     }
   }
   
   return 0;
 }
 
-int BARS::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int BARS::getCUS (QStringList &l, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,BARS,<NAME>,<BAR_UP_COLOR>,<BAR_DOWN_COLOR>,<BAR_NEUTRAL_COLOR>
-  //     0       1     2     3          4              5                  6
-
-  if (set.count() != 7)
-  {
-    qDebug() << _indicator << "::getCUS: invalid parm count" << set.count();
+  IndicatorSettings settings = ind.settings();
+  if (settings.setCUS(l))
     return 1;
-  }
 
-  Curve *tl = ind.line(set[3]);
+  IndicatorSetting set = settings.setting(_BarsLabel);
+  QString name = set.value();
+  Curve *tl = ind.line(name);
   if (tl)
   {
-    qDebug() << _indicator << "::getCUS: duplicate name" << set[3];
+    qDebug() << _indicator << "::getCUS: duplicate name" << name;
     return 1;
   }
 
-  QColor barUpColor(set[4]);
-  if (! barUpColor.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid bar up color" << set[4];
-    return 1;
-  }
+  set = settings.setting(_UpColor);
+  QColor barUpColor(set.value());
 
-  QColor barDownColor(set[5]);
-  if (! barDownColor.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid bar down color" << set[5];
-    return 1;
-  }
+  set = settings.setting(_DownColor);
+  QColor barDownColor(set.value());
 
-  QColor barNeutralColor(set[6]);
-  if (! barNeutralColor.isValid())
-  {
-    qDebug() << _indicator << "::getCUS: invalid bar neutral color" << set[6];
-    return 1;
-  }
+  set = settings.setting(_NeutralColor);
+  QColor barNeutralColor(set.value());
 
   FunctionBARS fbars;
   Curve *line = fbars.getBARS(barUpColor, barDownColor, barNeutralColor, data);
 
-  line->setLabel(set[3]);
+  line->setLabel(name);
 
-  ind.setLine(set[3], line);
+  ind.setLine(name, line);
 
   return 0;
 }
@@ -186,103 +173,50 @@ int BARS::getCUS (QStringList &set, Indicator &ind, BarData &data)
 IndicatorPluginDialog * BARS::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
-
   dialog->setHelpFile("BARS.html");
-
-  Setting _settings = i.settings();
-
-  // general tab
-  int tab = dialog->addTab(tr("General"));
-
-  QString d;
-  _settings.getData(_UpColor, d);
-  dialog->addColor(tab, _UpColor, tr("Up Color"), d);
-
-  _settings.getData(_DownColor, d);
-  dialog->addColor(tab, _DownColor, tr("Down Color"), d);
-
-  _settings.getData(_NeutralColor, d);
-  dialog->addColor(tab, _NeutralColor, tr("Neutral Color"), d);
-
-  _settings.getData(_BarsLabel, d);
-  dialog->addText(tab, _BarsLabel, tr("Label"), d);
-
-  // MA1 tab
-  tab = dialog->addTab("MA 1");
-
-  _settings.getData(_MAColor, d);
-  dialog->addColor(tab, _MAColor, tr("Color"), d);
-
-  _settings.getData(_MAPlot, d);
-  dialog->addPlot(tab, _MAPlot, tr("Plot"), d);
-
-  _settings.getData(_MALabel, d);
-  dialog->addText(tab, _MALabel, tr("Label"), d);
-
-  dialog->addInt(tab, _MAPeriod, tr("Period"), _settings.getInt(_MAPeriod), 100000, 1);
-
-  _settings.getData(_MAType, d);
-  dialog->addMA(tab, _MAType, tr("Type"), d);
-
-  // MA2 tab
-  tab = dialog->addTab("MA 2");
-
-  _settings.getData(_MA2Color, d);
-  dialog->addColor(tab, _MA2Color, tr("Color"), d);
-
-  _settings.getData(_MA2Plot, d);
-  dialog->addPlot(tab, _MA2Plot, tr("Plot"), d);
-
-  _settings.getData(_MA2Label, d);
-  dialog->addText(tab, _MA2Label, tr("Label"), d);
-
-  dialog->addInt(tab, _MA2Period, tr("Period"), _settings.getInt(_MA2Period), 100000, 1);
-
-  _settings.getData(_MA2Type, d);
-  dialog->addMA(tab, _MA2Type, tr("Type"), d);
-
-  // MA3 tab
-  tab = dialog->addTab("MA 3");
-
-  _settings.getData(_MA3Color, d);
-  dialog->addColor(tab, _MA3Color, tr("Color"), d);
-
-  _settings.getData(_MA3Plot, d);
-  dialog->addPlot(tab, _MA3Plot, tr("Plot"), d);
-
-  _settings.getData(_MA3Label, d);
-  dialog->addText(tab, _MA3Label, tr("Label"), d);
-
-  dialog->addInt(tab, _MA3Period, tr("Period"), _settings.getInt(_MA3Period), 100000, 1);
-
-  _settings.getData(_MA3Type, d);
-  dialog->addMA(tab, _MA3Type, tr("Type"), d);
-
   return dialog;
 }
 
 void BARS::defaults (Indicator &i)
 {
-  Setting set;
-  set.setData(BARS::_UpColor, "green");
-  set.setData(BARS::_DownColor, "red");
-  set.setData(BARS::_NeutralColor, "blue");
-  set.setData(BARS::_BarsLabel, _indicator);
-  set.setData(BARS::_MAColor, "red");
-  set.setData(BARS::_MA2Color, "yellow");
-  set.setData(BARS::_MA3Color, "blue");
-  set.setData(BARS::_MAPlot, "Line");
-  set.setData(BARS::_MA2Plot, "Line");
-  set.setData(BARS::_MA3Plot, "Line");
-  set.setData(BARS::_MALabel, "MA1");
-  set.setData(BARS::_MA2Label, "MA2");
-  set.setData(BARS::_MA3Label, "MA3");
-  set.setData(BARS::_MAPeriod, 20);
-  set.setData(BARS::_MA2Period, 50);
-  set.setData(BARS::_MA3Period, 200);
-  set.setData(BARS::_MAType, "SMA");
-  set.setData(BARS::_MA2Type, "SMA");
-  set.setData(BARS::_MA3Type, "SMA");
+  IndicatorSettings set;
+
+  QStringList l;
+  l << tr("General") << "MA 1" << "MA 2" << "MA 3";
+  set.setTabs(l);
+
+  l.clear();
+  l << "INDICATOR" << "PLUGIN" << "BARS" << QString::number(_BarsLabel);
+  l << QString::number(_UpColor) << QString::number(_DownColor) << QString::number(_NeutralColor);
+  set.setCUSFormat(l);
+  
+  int page = 0;
+  set.setColor(_UpColor, page, tr("Up Color"), QString("green"));
+  set.setColor(_DownColor, page, tr("Down Color"), QString("red"));
+  set.setColor(_NeutralColor, page, tr("Neutral Color"), QString("blue"));
+  set.setText(_BarsLabel, page, tr("Label"), _indicator);
+
+  page++;
+  set.setColor(_MAColor, page, tr("Color"), QString("red"));
+  set.setPlot(_MAPlot, page, tr("Plot"), QString("Line"));
+  set.setText(_MALabel, page, tr("Label"), QString("MA1"));
+  set.setInteger(_MAPeriod, page, tr("Period"), QString("20"));
+  set.setMA(_MAType, page, tr("Type"), QString("SMA"));
+  
+  page++;
+  set.setColor(_MA2Color, page, tr("Color"), QString("yellow"));
+  set.setPlot(_MA2Plot, page, tr("Plot"), QString("Line"));
+  set.setText(_MA2Label, page, tr("Label"), QString("MA2"));
+  set.setInteger(_MA2Period, page, tr("Period"), QString("50"));
+  set.setMA(_MA2Type, page, tr("Type"), QString("SMA"));
+
+  page++;
+  set.setColor(_MA3Color, page, tr("Color"), QString("blue"));
+  set.setPlot(_MA3Plot, page, tr("Plot"), QString("Line"));
+  set.setText(_MA3Label, page, tr("Label"), QString("MA3"));
+  set.setInteger(_MA3Period, page, tr("Period"), QString("200"));
+  set.setMA(_MA3Type, page, tr("Type"), QString("SMA"));
+
   i.setSettings(set);
 }
 
@@ -290,20 +224,19 @@ void BARS::plotNames (Indicator &i, QStringList &l)
 {
   l.clear();
 
-  Setting settings = i.settings();
-  QString s;
+  IndicatorSettings settings = i.settings();
   
-  settings.getData(_BarsLabel, s);
-  l.append(s);
+  IndicatorSetting set = settings.setting(_BarsLabel);
+  l.append(set.value());
 
-  settings.getData(_MALabel, s);
-  l.append(s);
+  set = settings.setting(_MALabel);
+  l.append(set.value());
   
-  settings.getData(_MA2Label, s);
-  l.append(s);
+  set = settings.setting(_MA2Label);
+  l.append(set.value());
 
-  settings.getData(_MA3Label, s);
-  l.append(s);
+  set = settings.setting(_MA3Label);
+  l.append(set.value());
 }
 
 //*************************************************************
@@ -315,5 +248,3 @@ IndicatorPlugin * createIndicatorPlugin ()
   BARS *o = new BARS;
   return ((IndicatorPlugin *) o);
 }
-
-

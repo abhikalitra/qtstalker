@@ -30,13 +30,13 @@ class CurveBar
   public:
     CurveBar ();
     CurveBar (double);
-    CurveBar (QColor &, double);
+    CurveBar (QColor, double);
     double data (int);
     double data ();
     void setData (int, double);
     void setData (double);
-    void setColor (QColor &);
-    QColor & color ();
+    void setColor (QColor);
+    QColor color ();
     int count ();
     int highLow (double &, double &);
 

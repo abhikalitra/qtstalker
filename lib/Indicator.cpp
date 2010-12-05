@@ -28,7 +28,7 @@ Indicator::Indicator ()
   clear();
 }
 
-void Indicator::setName (QString &d)
+void Indicator::setName (QString d)
 {
   _name = d;
 }
@@ -36,16 +36,6 @@ void Indicator::setName (QString &d)
 QString & Indicator::name ()
 {
   return _name;
-}
-
-void Indicator::setEnable (int d)
-{
-  _enable = d;
-}
-
-int Indicator::enable ()
-{
-  return _enable;
 }
 
 void Indicator::setTabRow (int d)
@@ -58,16 +48,6 @@ int Indicator::tabRow ()
   return _tabRow;
 }
 
-void Indicator::setColumn (int d)
-{
-  _column = d;
-}
-
-int Indicator::column ()
-{
-  return _column;
-}
-
 void Indicator::setDate (int d)
 {
   _date = d;
@@ -76,16 +56,6 @@ void Indicator::setDate (int d)
 int Indicator::date ()
 {
   return _date;
-}
-
-void Indicator::setCUS (int d)
-{
-  _cus = d;
-}
-
-int Indicator::CUS ()
-{
-  return _cus;
 }
 
 void Indicator::setLog (int d)
@@ -98,14 +68,24 @@ int Indicator::getLog ()
   return _log;
 }
 
-void Indicator::setIndicator (QString &d)
+void Indicator::setScript (QString d)
 {
-  _indicator = d;
+  _script = d;
 }
 
-QString & Indicator::indicator ()
+QString & Indicator::script ()
 {
-  return _indicator;
+  return _script;
+}
+
+void Indicator::setCommand (QString d)
+{
+  _command = d;
+}
+
+QString & Indicator::command ()
+{
+  return _command;
 }
 
 void Indicator::setLine (QString k, Curve *d)
@@ -142,34 +122,21 @@ QHash<QString, Curve *> &  Indicator::curves ()
   return _lines;
 }
 
-void Indicator::setSettings (Setting &d)
-{
-  _settings = d;
-}
-
-Setting & Indicator::settings ()
-{
-  return _settings;
-}
-
 void Indicator::clear ()
 {
   init();
-
-  qDeleteAll(_lines);
-  _lines.clear();
-
+  deleteLines();
   clearChartObjects();
 }
 
-ChartObjectSettings Indicator::chartObject (int k)
+Setting Indicator::chartObject (int k)
 {
   return _chartObjects.value(k);
 }
 
-void Indicator::addChartObject (int id, ChartObjectSettings &co)
+void Indicator::addChartObject (Setting &co)
 {
-  _chartObjects.insert(id, co);
+  _chartObjects.insert(co.getInt("ID"), co);
 }
 
 void Indicator::clearChartObjects ()
@@ -184,18 +151,20 @@ void Indicator::deleteChartObject (int d)
 
 void Indicator::weedPlots ()
 {
-  QHashIterator<QString, Curve *> it(_lines);
-  while (it.hasNext())
+  QList<QString> keys = _lines.keys();
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    it.next();
-    Curve *curve = it.value();
-    
-    if (curve->z() == -1)
-      deleteLine(it.key());
+    Curve *curve = _lines.value(keys.at(loop));
+    if (curve->z() < 0)
+    {
+      delete curve;
+      _lines.remove(keys.at(loop));
+    }
   }
 }
 
-void Indicator::cleanClear ()
+void Indicator::clean ()
 {
   _lines.clear();
   _chartObjects.clear();
@@ -204,15 +173,9 @@ void Indicator::cleanClear ()
 
 void Indicator::init ()
 {
-  _enable = 0;
   _tabRow = 1;
   _date = 1;
   _log = 0;
-  _cus = 0;
-  _column = 1;
-//  _name.clear();
-  _indicator.clear();
-  _settings.clear();
 }
 
 void Indicator::coKeys (QList<int> &l)
@@ -225,12 +188,17 @@ int Indicator::coCount ()
   return _chartObjects.count();
 }
 
-void Indicator::clearLines ()
+void Indicator::deleteLines ()
 {
   if (_lines.count())
   {
     qDeleteAll(_lines);
     _lines.clear();
   }
+}
+
+void Indicator::clearLines ()
+{
+  _lines.clear();
 }
 

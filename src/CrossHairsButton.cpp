@@ -20,7 +20,6 @@
  */
 
 #include "CrossHairsButton.h"
-#include "Config.h"
 #include "../pics/crosshair.xpm"
 #include "Globals.h"
 
@@ -28,6 +27,7 @@
 #include <QDebug>
 #include <QIcon>
 #include <QColorDialog>
+#include <QSettings>
 
 CrossHairsButton::CrossHairsButton ()
 {
@@ -37,37 +37,23 @@ CrossHairsButton::CrossHairsButton ()
   setToolTip(tr("Toggle the cursor crosshairs"));
   setCheckable(TRUE);
 
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
-  QString s;
-  config.getData(Config::CrossHairs, s);
-  if (s.isEmpty())
-  {
-    setChecked(0);
-    config.setData(Config::CrossHairs, 0);
-  }
-  else
-    setChecked(s.toInt());
+  setChecked(settings.value("crosshairs", 0).toInt());
 
-  config.getData(Config::CrossHairsColor, _color);
-  if (! _color.isValid())
-  {
-    _color = QColor(Qt::white);
-    config.setData(Config::CrossHairsColor, _color);
-  }
-
-  config.commit();
+  QString s = settings.value("crosshairs_color", "white").toString();
+  _color.setNamedColor(s);
   
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }
 
 void CrossHairsButton::changed (bool status)
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::CrossHairs, status);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("crosshairs", status);
+  settings.sync();
 
   emit signalChanged(status);
 }
@@ -88,10 +74,10 @@ void CrossHairsButton::setColor (QColor c)
   
   _color = c;
 
-  Config config;
-  config.transaction();
-  config.setData(Config::CrossHairsColor, _color);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("crosshairs_color", _color.name());
+  settings.sync();
 
   emit signalColor(_color);
 }
@@ -100,4 +86,3 @@ void CrossHairsButton::contextMenuEvent (QContextMenuEvent *)
 {
   dialog();
 }
-

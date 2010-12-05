@@ -33,7 +33,7 @@ class PixelSpaceButton : public QToolButton
     void signalPixelSpaceChanged (int);
 
   public:
-    PixelSpaceButton (int);
+    PixelSpaceButton (QString);
     void changeText ();
     
   public slots:
@@ -46,7 +46,7 @@ class PixelSpaceButton : public QToolButton
     
   protected:
     int _pixelSpace;
-    int _key;
+    QString _key;
 };
 
 #endif

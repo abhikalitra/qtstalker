@@ -20,6 +20,7 @@
  */
 
 #include "Setting.h"
+
 #include <QObject>
 
 Setting::Setting ()
@@ -30,30 +31,10 @@ void Setting::setData (QString k, QString d)
 {
   QString s = k;
   strip(s);
+  
   QString s2 = d;
   strip(s2);
-  dict.insert(s, s2);
-}
-
-void Setting::setData (int k, QString d)
-{
-  QString s = QString::number(k);
-  QString s2 = d;
-  strip(s2);
-  dict.insert(s, s2);
-}
-
-void Setting::setData (int k, int d)
-{
-  QString s = QString::number(k);
-  QString s2 = QString::number(d);
-  dict.insert(s, s2);
-}
-
-void Setting::setData (int k, double d)
-{
-  QString s = QString::number(k);
-  QString s2 = QString::number(d);
+  
   dict.insert(s, s2);
 }
 
@@ -61,7 +42,9 @@ void Setting::setData (QString k, int d)
 {
   QString s = k;
   strip(s);
+  
   QString s2 = QString::number(d);
+  
   dict.insert(s, s2);
 }
 
@@ -69,26 +52,38 @@ void Setting::setData (QString k, double d)
 {
   QString s = k;
   strip(s);
+  
   QString s2 = QString::number(d);
+  
   dict.insert(s, s2);
 }
 
-void Setting::getData (QString &k, QString &d)
+void Setting::setData (QString k, QDateTime d)
 {
-  d.clear();
-  if (dict.contains(k))
-    d = dict.value(k);
+  QString s = k;
+  strip(s);
+
+  QString s2 = d.toString(Qt::ISODate);
+
+  dict.insert(s, s2);
 }
 
-void Setting::getData (int k, QString &d)
+void Setting::setData (QString k, QColor d)
 {
-  d.clear();
-  QString s = QString::number(k);
-  if (dict.contains(s))
-    d = dict.value(s);
+  QString s = k;
+  strip(s);
+
+  QString s2 = d.name();
+
+  dict.insert(s, s2);
 }
 
-double Setting::getDouble (QString &k)
+QString Setting::data (QString k)
+{
+  return dict.value(k);
+}
+
+double Setting::getDouble (QString k)
 {
   if (dict.contains(k))
     return dict.value(k).toDouble();
@@ -96,16 +91,7 @@ double Setting::getDouble (QString &k)
     return 0;
 }
 
-double Setting::getDouble (int k)
-{
-  QString s = QString::number(k);
-  if (dict.contains(s))
-    return dict.value(s).toDouble();
-  else
-    return 0;
-}
-
-int Setting::getInt (QString &k)
+int Setting::getInt (QString k)
 {
   if (dict.contains(k))
     return dict.value(k).toInt();
@@ -113,16 +99,17 @@ int Setting::getInt (QString &k)
     return 0;
 }
 
-int Setting::getInt (int k)
+QDateTime Setting::dateTime (QString k)
 {
-  QString s = QString::number(k);
-  if (dict.contains(s))
-    return dict.value(s).toInt();
-  else
-    return 0;
+  return QDateTime::fromString(dict.value(k));
 }
 
-void Setting::getKeyList (QStringList &l)
+QColor Setting::color (QString k)
+{
+  return QColor(dict.value(k));
+}
+
+void Setting::keyList (QStringList &l)
 {
   l.clear();
   QHashIterator<QString, QString> it(dict);
@@ -133,12 +120,12 @@ void Setting::getKeyList (QStringList &l)
   }
 }
 
-void Setting::remove (QString &k)
+void Setting::remove (QString k)
 {
   dict.remove(k);
 }
 
-void Setting::getString (QString &s)
+void Setting::string (QString &s)
 {
   s.clear();
   QStringList l;
@@ -151,18 +138,18 @@ void Setting::getString (QString &s)
   s = l.join("|");
 }
 
-void Setting::parse (QString &d)
+void Setting::parse (QString d)
 {
   dict.clear();
 
-  QStringList l = d.split("|");
+  QStringList l = d.split("|", QString::SkipEmptyParts);
 
   int loop;
-  for (loop = 0; loop < (int) l.count(); loop++)
+  for (loop = 0; loop < l.count(); loop++)
   {
-    QStringList l2 = l[loop].split("=");
+    QStringList l2 = l.at(loop).split("=", QString::SkipEmptyParts);
     if (l2.count() > 1)
-      dict.insert(l2[0], l2[1]);
+      dict.insert(l2.at(0), l2.at(1));
   }
 }
 
@@ -173,7 +160,7 @@ void Setting::clear ()
 
 int Setting::count ()
 {
-  return (int) dict.count();
+  return dict.count();
 }
 
 void Setting::strip (QString &d)
@@ -182,4 +169,3 @@ void Setting::strip (QString &d)
   d = d.remove(QString("|"), Qt::CaseSensitive);
   d = d.remove(QString("'"), Qt::CaseSensitive);
 }
-

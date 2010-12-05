@@ -28,29 +28,25 @@ PROCESS::PROCESS ()
 {
 }
 
-int PROCESS::command (QStringList &l, Indicator &, BarData &, QByteArray &ba)
+int PROCESS::command (Command &command)
 {
-  // format = PROCESS,COMMAND
-  //             0      1
+  // PROCESS,<COMMAND>
+  //    0       1
 
-  ba.clear();
-  ba.append("ERROR\n");
-
-  if (l.count() != 2)
+  if (command.count() != 2)
   {
-    qDebug() << "PROCESS::command: invalid parm count" << l.count();
+    qDebug() << "PROCESS::command: invalid parm count" << command.count();
     return 1;
   }
 
-  int rc = QProcess::startDetached(l.at(1));
+  int rc = QProcess::startDetached(command.parm(1));
   if (! rc)
   {
     qDebug() << "PROCESS::command: error starting the process";
     return 1;
   }
 
-  ba.clear();
-  ba.append("0\n");
+  command.setReturnData("0");
 
   return 0;
 }

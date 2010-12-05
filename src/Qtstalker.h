@@ -31,11 +31,9 @@
 #include <QAction>
 
 #include "Splitter.h"
-#include "Config.h"
 #include "InfoPanel.h"
 #include "RecentCharts.h"
 #include "BarLengthButtons.h"
-#include "BarData.h"
 #include "PlotSlider.h"
 #include "ZoomButtons.h"
 #include "GridAction.h"
@@ -46,6 +44,7 @@
 #include "ChartLayout.h"
 #include "SidePanelButton.h"
 #include "CrossHairsButton.h"
+#include "MessageServer.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -57,8 +56,8 @@ class QtstalkerApp : public QMainWindow
 
   public:
     QtstalkerApp (QString session, QString asset);
-    void createGUI (Config &);
-    void loadSettings (Config &);
+    void createGUI ();
+    void loadSettings ();
     void createToolBars ();
     QString getWindowCaption ();
     void setSliderStart (int);
@@ -82,7 +81,6 @@ class QtstalkerApp : public QMainWindow
     QStatusBar *_statusBar;
     RecentCharts *_recentCharts;
     BarLengthButtons *_barLengthButtons;
-    BarData _currentChart;
     PlotSlider *_plotSlider;
     ZoomButtons *_zoomButtons;
     QString _clAsset;
@@ -95,6 +93,7 @@ class QtstalkerApp : public QMainWindow
     QAction *_newIndicatorAction;
     SidePanelButton *_sidePanelButton;
     CrossHairsButton *_crossHairsButton;
+    MessageServer *_messageServer;
 };
 
 #endif

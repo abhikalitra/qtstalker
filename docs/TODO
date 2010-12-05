@@ -10,7 +10,6 @@ To Do:
 - update classes with a description of purpose, usage etc.
 - Round off values to lesser precision when displaying in data panel.
 - Improve source code documentation. Javadoc comments are utilised by Doxygen.
-- add tooltips
 - interactive scripting
 - complete backtesting module
 - add exchange checker to yahoo plugin symbols dialog
@@ -29,8 +28,9 @@ BUG: some gnome ubuntu themes have issues with qtstalker indicator tab resizing.
      the only workarounds are avoiding use of east/west tabs or experimenting with different themes. default gnome
      theme we know does not work. kubuntu and Qt based themes work.
 
-BUG: check indicator dialog input dialogs for forbidden sql chars in text inputs
 - add help to dialogs
+- add run file option to Script plugin
+
 
 
 Maybe some day:

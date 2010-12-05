@@ -20,11 +20,11 @@
  */
 
 #include "GridAction.h"
-#include "Config.h"
 #include "../pics/grid.xpm"
 #include "Globals.h"
 
 #include <QColorDialog>
+#include <QSettings>
 
 GridAction::GridAction ()
 {
@@ -34,37 +34,23 @@ GridAction::GridAction ()
   setToolTip(tr("Toggle the chart grid"));
   setCheckable(TRUE);
 
-  Config config;
-  config.transaction();
-  
-  config.getData(Config::GridColor, _color);
-  if (! _color.isValid())
-  {
-    _color = QColor("#626262");
-    config.setData(Config::GridColor, _color);
-  }
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
-  QString s;
-  config.getData(Config::Grid, s);
-  if (! s.isEmpty())
-    setChecked(s.toInt());
-  else
-  {
-    config.setData(Config::Grid, 1);
-    setChecked(TRUE);
-  }
+  QString s = settings.value("grid_color", "#626262").toString();
+  _color.setNamedColor(s);
 
-  config.commit();
+  setChecked(settings.value("grid", 1).toInt());
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }
 
 void GridAction::changed (bool status)
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::Grid, status);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("grid", status);
+  settings.sync();
 
   emit signalChanged(status);
 }
@@ -85,10 +71,10 @@ void GridAction::setColor (QColor c)
 
   _color = c;
 
-  Config config;
-  config.transaction();
-  config.setData(Config::GridColor, _color);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("grid_color", _color.name());
+  settings.sync();
 
   emit signalColorChanged(_color);
 }
@@ -97,5 +83,3 @@ void GridAction::contextMenuEvent (QContextMenuEvent *)
 {
   colorDialog();
 }
-
-

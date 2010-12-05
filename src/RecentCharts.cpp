@@ -20,11 +20,12 @@
  */
 
 #include "RecentCharts.h"
-#include "Config.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <QString>
 #include <QStringList>
+#include <QSettings>
 
 RecentCharts::RecentCharts (QToolBar *tb)
 {
@@ -38,15 +39,17 @@ RecentCharts::RecentCharts (QToolBar *tb)
 
 void RecentCharts::addRecentChart (BarData bd)
 {
-  if (_group.contains(bd))
+  QString key = bd.key();
+  
+  if (_symbols.contains(key))
     return;
 
   if (count() == maxCount())
-    _group.deleteSymbol(itemText(maxCount() - 1));
+    _symbols.remove(itemText(maxCount() - 1));
 
-  _group.setSymbol(bd);
+  _symbols.insert(key, bd);
 
-  insertItem(0, bd.getKey());
+  insertItem(0, key);
 }
 
 void RecentCharts::itemSelected (int row)
@@ -57,39 +60,39 @@ void RecentCharts::itemSelected (int row)
 
   setCurrentIndex(0);
 
-  BarData bd;
-  if (_group.getSymbol(s, bd))
-    return;
-
-  emit signalChartSelected(bd);
+  emit signalChartSelected(_symbols.value(s));
 }
 
 void RecentCharts::save ()
 {
   QStringList l;
-  _group.getStringList(l);
+  QHashIterator<QString, BarData> it(_symbols);
+  while (it.hasNext())
+  {
+    it.next();
+    BarData bd = it.value();
+    l << bd.key();
+  }
 
-  Config config;
-  config.transaction();
-  config.setData(Config::RecentChartsList, l);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("recent_charts_list", l);
+  settings.sync();
 }
 
 void RecentCharts::load ()
 {
-  QStringList l;
-  Config config;
-  config.getData(Config::RecentChartsList, l);
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  
+  QStringList l = settings.value("recent_charts_list").toStringList();
 
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
     BarData bd;
-    QStringList l2 = l.at(loop).split(":");
-    bd.setExchange(l2[0]);
-    bd.setSymbol(l2[1]);
-    _group.setSymbol(bd);
+    bd.setKey(l.at(loop));
+    _symbols.insert(l.at(loop), bd);
     addItem(l.at(loop));
   }
 }
-

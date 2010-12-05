@@ -20,14 +20,8 @@
  */
 
 #include "GroupPage.h"
-#include "GroupDataBase.h"
-#include "Config.h"
-#include "UpdateGroupPageThread.h"
-#include "Group.h"
-#include "GroupNewDialog.h"
-#include "GroupDeleteDialog.h"
-#include "GroupDeleteItemsDialog.h"
-#include "SymbolDialog.h"
+#include "Globals.h"
+#include "qtstalker_defines.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/delgroup.xpm"
@@ -39,6 +33,7 @@
 #include <QPixmap>
 #include <QLayout>
 #include <QDebug>
+#include <QSettings>
 
 GroupPage::GroupPage ()
 {
@@ -68,9 +63,9 @@ GroupPage::GroupPage ()
 
   loadGroups();
 
-  QString s;
-  Config config;
-  config.getData(Config::LastGroupUsed, s);
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  QString s = settings.value("last_group_used").toString();
   _groups->setCurrentIndex(_groups->findText(s, Qt::MatchExactly));
 
   buttonStatus();
@@ -120,31 +115,20 @@ void GroupPage::createButtonMenu (QToolBar *tb)
 
 void GroupPage::newGroup ()
 {
-  GroupNewDialog *dialog = new GroupNewDialog;
-  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalNew()), this, SLOT(updateGroups()));
-  dialog->show();
+  Script *script = new Script;
+  prepareScript(script, "GroupPanelNewGroupDialog", "perl", "GroupPanelNewGroupDialog.pl");
 }
 
 void GroupPage::deleteGroupItem ()
 {
-  if (! _nav->count())
-    return;
-
-  GroupDeleteItemsDialog *dialog = new GroupDeleteItemsDialog(_groups->currentText());
-  connect(dialog, SIGNAL(signalMessage(QString)), this, SIGNAL(signalMessage(QString)));
-  connect(dialog, SIGNAL(signalDelete()), this, SLOT(updateGroups()));
-  dialog->show();
+  Script *script = new Script;
+  prepareScript(script, "GroupPanelDeleteGroupItemsDialog", "perl", "GroupPanelDeleteGroupItemsDialog.pl");
 }
 
 void GroupPage::deleteGroup()
 {
-  if (! _groups->count())
-    return;
-
-  GroupDeleteDialog *dialog = new GroupDeleteDialog;
-  connect(dialog, SIGNAL(signalDelete()), this, SLOT(updateGroups()));
-  dialog->show();
+  Script *script = new Script;
+  prepareScript(script, "GroupPanelDeleteGroupDialog", "perl", "GroupPanelDeleteGroupDialog.pl");
 }
 
 void GroupPage::groupSelected (int i)
@@ -156,10 +140,10 @@ void GroupPage::groupSelected (int i)
 
   updateList();
   
-  Config config;
-  config.transaction();
-  config.setData(Config::LastGroupUsed, s);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("last_group_used", s);
+  settings.sync();
 }
 
 void GroupPage::chartOpened (BarData bd)
@@ -207,12 +191,28 @@ void GroupPage::doKeyPress (QKeyEvent *key)
 void GroupPage::loadGroups ()
 {
   _groups->clear();
-  
-  QStringList l;
-  GroupDataBase db;
-  db.getAllGroupsList(l);
-  
-  _groups->addItems(l);
+
+  QStringList cl;
+  cl << "GROUP_DATABASE" << "GROUPS";
+
+  Command command(cl.join(","));
+
+  ScriptPlugin *plug = _factory.plugin(command.plugin());
+  if (! plug)
+  {
+    qDebug() << "GroupPage::loadGroups: no plugin" << command.plugin();
+    return;
+  }
+
+  plug->command(command);
+  delete plug;
+
+  cl.clear();
+  cl = command.stringData().split(",", QString::SkipEmptyParts);
+  if (! cl.count())
+    return;
+
+  _groups->addItems(cl);
 }
 
 void GroupPage::updateGroups ()
@@ -237,63 +237,40 @@ void GroupPage::updateGroups ()
 
 void GroupPage::addToGroup ()
 {
-  SymbolDialog *dialog = new SymbolDialog;
-  connect(dialog, SIGNAL(signalSymbols(Group)), this, SLOT(addToGroup2(Group)));
-  dialog->show();
-}
-
-void GroupPage::addToGroup2 (Group tg)
-{
-  Group g;
-  QString s = _groups->currentText();
-  g.setName(s);
-  GroupDataBase db;
-  db.getGroup(g);
-
-  QStringList l;
-  tg.getStringList(l);
-
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    BarData bd;
-    bd.setKey(l.at(loop));
-    g.setSymbol(bd);
-  }
-
-  db.transaction();
-  db.setGroup(g);
-  db.commit();
-
-  updateList();
+  Script *script = new Script;
+  prepareScript(script, "GroupPanelAddToGroupDialog", "perl", "GroupPanelAddToGroupDialog.pl");
 }
 
 void GroupPage::updateList ()
 {
   _nav->clearSymbols();
 
-  GroupDataBase db;
-  Group g;
-  QString s = _groups->currentText();
-  g.setName(s);
-  db.getGroup(g);
+  QStringList cl;
+  cl << "GROUP_DATABASE" << "LOAD" << _groups->currentText();
 
-  setEnabled(FALSE);
+  Command command(cl.join(","));
 
-//  _nav->setSortingEnabled(FALSE);
-  
-  qRegisterMetaType<BarData>("BarData");
-  UpdateGroupPageThread *r = new UpdateGroupPageThread(this, g);
-  connect(r, SIGNAL(signalSymbol(BarData)), _nav, SLOT(addSymbol(BarData)), Qt::QueuedConnection);
-  connect(r, SIGNAL(signalDone()), this, SLOT(requestDone()), Qt::QueuedConnection);
-  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
-  r->start();
-}
+  ScriptPlugin *plug = _factory.plugin(command.plugin());
+  if (! plug)
+  {
+    qDebug() << "GroupPage::updateList: no plugin" << command.plugin();
+    return;
+  }
 
-void GroupPage::requestDone ()
-{
-//  _nav->setSortingEnabled(TRUE);
-  setEnabled(TRUE);
+  plug->command(command);
+  delete plug;
+
+  cl.clear();
+  cl = command.stringData().split(",", QString::SkipEmptyParts);
+
+  int loop = 0;
+  for (; loop < cl.count(); loop++)
+  {
+    BarData bd;
+    bd.setKey(cl.at(loop));
+    _nav->addSymbol(bd);
+  }
+
   buttonStatus();
 }
 
@@ -304,4 +281,20 @@ void GroupPage::buttonStatus ()
 
   status = _groups->count();
   _actions.value(DeleteGroup)->setEnabled(status);
+}
+
+void GroupPage::prepareScript (Script *script, QString name, QString command, QString file)
+{
+//  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
+//  connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
+
+  script->setName(name);
+
+  QString s = INSTALL_DATA_DIR;
+  s.append("/qtstalker/script/" + file);
+  script->setFile(s);
+
+  script->setCommand(command);
+
+  script->startScript();
 }

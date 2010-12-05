@@ -881,3 +881,9 @@
 
 20101111:  Added new script command PLUGIN. This script command allows script commands to be forwarded to
            the Misc plugins.
+
+           Modified the script CO commands to allow creation of objects to any symbol in the database. Previous
+           behaviour allowed only the currently viewable chart. The command syntax has changed, docs updated.
+
+
+

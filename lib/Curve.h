@@ -52,20 +52,22 @@ class Curve
     CurveBar * bar (int index);
     void setType (Curve::Type);
     Curve::Type & type ();
-    void setLabel (QString &text);
+    void setLabel (QString text);
     QString & label ();
     int count ();
-    int setAllColor (QColor &color);
+    int setAllColor (QColor color);
     void setZ (int);
     int z ();
     void keys (QList<int> &);
     void keyRange (int &startIndex, int &endIndex);
-    void setColor (QColor &);
+    void setColor (QColor);
     QColor & color ();
     void list (QStringList &, int);
-    int typeFromString (QString &);
+    int typeFromString (QString);
     void info (int, Setting &);
     int highLowRange (int start, int end, double &h, double &l);
+    void string (QString &);
+    void parse (QString &);
 
   protected:
     QStringList _list;

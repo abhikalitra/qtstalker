@@ -273,6 +273,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Delete selected alerts?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AlertEditDialog</name>
@@ -717,6 +721,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Cancel running CSV rule</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CSVEditDialog</name>
@@ -974,10 +982,6 @@ e.g. Qtstalker alert was triggered.</source>
 <context>
     <name>ChartObjectBuyDialog</name>
     <message>
-        <source>Edit Buy Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
@@ -987,23 +991,19 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Date</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Edit Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObjectHLineDialog</name>
-    <message>
-        <source>Edit HLine Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -1017,16 +1017,12 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings</source>
+        <source>Edit HLine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ChartObjectRetracementDialog</name>
-    <message>
-        <source>Edit Retracement Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -1087,13 +1083,13 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Levels</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Edit Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObjectSellDialog</name>
-    <message>
-        <source>Edit Sell Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -1111,7 +1107,7 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings</source>
+        <source>Edit Sell</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1149,10 +1145,6 @@ e.g. Qtstalker alert was triggered.</source>
         <source>End Date</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ChartObjectTextDialog</name>
@@ -1181,24 +1173,16 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Text Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Invalid label characters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Text</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ChartObjectVLineDialog</name>
-    <message>
-        <source>Edit VLine Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -1212,7 +1196,7 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings</source>
+        <source>Edit VLine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1432,13 +1416,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>FileButton</name>
-    <message>
-        <source>Select File</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>FontButton</name>
     <message>
         <source>Font</source>
@@ -1465,82 +1442,35 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>GroupAddDialog</name>
-    <message>
-        <source>Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol(s) added.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add To Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Current groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Create a new group</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>GroupDeleteDialog</name>
-    <message>
-        <source>Group(s) deleted.</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Delete Groups</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Delete selected groups?</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>GroupDeleteItemsDialog</name>
+    <name>GroupEditDialog</name>
     <message>
-        <source>Group Contents</source>
+        <source>Edit Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Group Item(s) deleted.</source>
+        <source>Add Symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Group Items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete selected group items?</source>
+        <source>Delete Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GroupNewDialog</name>
     <message>
-        <source>A group with this name already exists.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>created</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>New Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate group name entered.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1580,6 +1510,21 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>De&amp;lete Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GroupSelectDialog</name>
+    <message>
+        <source>Select Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Groups</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1669,26 +1614,14 @@ e.g. Qtstalker alert was triggered.</source>
 <context>
     <name>IndicatorDeleteDialog</name>
     <message>
-        <source>Indicator Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicators deleted.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Delete Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete selected indicators?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>IndicatorDialog</name>
+    <name>IndicatorNewDialog</name>
     <message>
-        <source>Indicator</source>
+        <source>New Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1696,101 +1629,47 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Tab Row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Tab Column</source>
+        <source>Invalid name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name missing.</source>
+        <source>Duplicate indicator name entered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>This indicator already exists.</source>
+        <source>Select Indicator Script File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New Indicator</source>
+        <source>Script command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>IndicatorPlotList</name>
-    <message>
-        <source>Indicator</source>
+        <source>Invalid script command.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indicator...</source>
+        <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select indicator...</source>
+        <source>Date Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indicator Settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit indicator settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Plot...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add plot...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Plot...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete plot...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Plot Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter required CUS variables seperated by a space</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>IndicatorPluginDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator</source>
+        <source>Log Scaling</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1826,20 +1705,9 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>ListDialog</name>
-    <message>
-        <source>Items</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>MA</name>
     <message>
         <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1860,6 +1728,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2079,13 +1951,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>NewDialog</name>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>PO</name>
     <message>
         <source>General</source>
@@ -2256,14 +2121,6 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Chart Font</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Delete All Chart Objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete all chart objects from this indicator?</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>PlotSlider</name>
@@ -2293,17 +2150,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Scroll Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PluginPage</name>
-    <message>
-        <source>Configure plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Configure Plugin</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2562,64 +2408,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Add a new indicator...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>QuoteServerButton</name>
-    <message>
-        <source>Configure Quote Server...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>QuoteServerDialog</name>
-    <message>
-        <source>Configure Quote Server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Restarts the server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hostname missing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error stopping the server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Error starting the server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Default: 127.0.0.1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Default: 5000</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quote server restarted successfully</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hostname</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Port #</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Restart</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2959,6 +2747,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Stop scanner</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScannerEditDialog</name>
@@ -3037,6 +2829,25 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>Script</name>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ScriptDialog</name>
     <message>
         <source>Script Manager</source>
@@ -3094,6 +2905,18 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Run File...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run file as script...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptEditDialog</name>
@@ -3118,41 +2941,48 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Comment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings modified. Save changes?</source>
+        <source>Invalid command.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ScriptItem</name>
+    <name>ScriptLaunchButton</name>
     <message>
-        <source>Script</source>
+        <source>&amp;Configure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>started</source>
+        <source>Select Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>cancelled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>completed</source>
+        <source>Configure Script Launcher</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ScriptNewDialog</name>
     <message>
-        <source>A script with this name already exists.</source>
+        <source>New Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate scripts name entered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter name of new script:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScriptPage</name>
+    <message>
+        <source>Active Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3160,34 +2990,89 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name missing.</source>
+        <source>&amp;Edit Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launch Button Rows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launch Button Columns</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure Launch Button Rows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Columns</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure Launch Button Columns</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ScriptSearchDialog</name>
+    <name>ScriptRunFileDialog</name>
     <message>
-        <source>Select Script</source>
+        <source>Run File as Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter a partial search like %import% or * for all</source>
+        <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Search For</source>
+        <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Perform search</source>
+        <source>Invalid command.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScriptSelectDialog</name>
+    <message>
+        <source>Select Scripts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Perform Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Items</source>
+        <source>Scripts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3202,7 +3087,7 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plugins</source>
+        <source>Scripts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3210,13 +3095,6 @@ e.g. Qtstalker alert was triggered.</source>
     <name>SidePanelButton</name>
     <message>
         <source>Show / Hide Side Panel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SymbolButton</name>
-    <message>
-        <source>Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3256,6 +3134,14 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Perform search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3516,6 +3402,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Payoff Ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3999,12 +3889,12 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbols</source>
+        <source>Invalid symbols found
+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invalid symbols found
-</source>
+        <source>Yahoo Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4075,20 +3965,12 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Yahoo</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>YahooSymbolDialog</name>
-    <message>
-        <source>Yahoo Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Delete</source>
         <translation type="unfinished"></translation>

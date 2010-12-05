@@ -26,8 +26,6 @@
 #include <QMenu>
 #include <QString>
 
-#include "Config.h"
-
 class TabWidget : public QTabWidget
 {
   Q_OBJECT

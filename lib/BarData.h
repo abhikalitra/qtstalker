@@ -28,13 +28,11 @@
 #define BAR_DATA_HPP
 
 #include <QList>
-#include <QHash>
 #include <QStringList>
 #include <QMetaType>
 
 #include "Bar.h"
 #include "Curve.h"
-#include "ta_libc.h"
 
 class BarData
 {
@@ -70,50 +68,46 @@ class BarData
     ~BarData ();
     void clear ();
     int count ();
-    void prepend (Bar bar);
-    void append (Bar bar);
-    double getMax ();
-    double getMin ();
-    void getInputFields (QStringList &);
-    Curve * getInput (BarData::InputType);
-    BarData::InputType getInputType (QString &);
-    Bar & getBar (int);
+    void prepend (Bar *bar);
+    void append (Bar *bar);
+    double max ();
+    double min ();
+    void inputFields (QStringList &);
+    Curve * input (BarData::InputType);
+    BarData::InputType inputType (QString);
+    Bar * bar (int);
     void setMinMax ();
     void setBarLength (BarLength);
-    void setBarLength (QString &);
-    BarData::BarLength & getBarLength ();
-    QString & getSymbol ();
-    void setSymbol (QString &);
-    QString & getName ();
-    void setName (QString &);
-    double getAvgPrice (int);
-    double getMedianPrice (int);
-    double getTypicalPrice (int);
-    QString & getExchange ();
-    void setExchange (QString &);
-    void getBarLengthList (QStringList &);
-    void setBars (QString &);
+    void setBarLength (QString);
+    BarData::BarLength & barLength ();
+    QString & symbol ();
+    void setSymbol (QString);
+    QString & name ();
+    void setName (QString);
+    double avgPrice (int);
+    double medianPrice (int);
+    double typicalPrice (int);
+    QString & exchange ();
+    void setExchange (QString);
+    void barLengthList (QStringList &);
     void barLengthText (BarData::BarLength, QString &);
     int setKey (QString);
-    QString getKey ();
-
-    void setTAData ();
-    TA_Real * getTAData (BarData::InputType);
+    QString key ();
+    void parse (QString &);
+    void stringSettings (QString &);
+    int setStringSettings (QString &);
+    int range ();
+    void setRange (int);
 
   protected:
-    QList<Bar> _barList;
+    QList<Bar *> _barList;
     double _high;
     double _low;
     BarLength _length;
     QString _symbol;
     QString _name;
     QString _exchange;
-    TA_Real *taOpen;
-    TA_Real *taHigh;
-    TA_Real *taLow;
-    TA_Real *taClose;
-    TA_Real *taVolume;
-    
+    int _range;
 };
 
 // this is for passing Indicator data between threads

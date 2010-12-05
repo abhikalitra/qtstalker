@@ -25,6 +25,7 @@
 
 ScriptPlugin::ScriptPlugin ()
 {
+  _threadSafe = 1;
 }
 
 ScriptPlugin::~ScriptPlugin ()
@@ -32,7 +33,12 @@ ScriptPlugin::~ScriptPlugin ()
 }
 
 // virtual function
-int ScriptPlugin::command (QStringList &, Indicator &, BarData &, QByteArray &)
+int ScriptPlugin::command (Command &)
 {
   return 0;
+}
+
+int ScriptPlugin::isThreadSafe ()
+{
+  return _threadSafe;
 }

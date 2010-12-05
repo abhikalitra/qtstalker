@@ -46,7 +46,7 @@ class FunctionMA
     FunctionMA ();
     Curve * calculate (Curve *, int period, int method);
     QStringList & list ();
-    int typeFromString (QString &);
+    int typeFromString (QString);
     Curve * getWilder (Curve *, int period);
     
   private:

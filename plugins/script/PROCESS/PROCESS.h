@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCPROCESS_HPP
-#define SCPROCESS_HPP
+#ifndef PROCESS_HPP
+#define PROCESS_HPP
 
 #include "ScriptPlugin.h"
 
@@ -28,7 +28,7 @@ class PROCESS : public ScriptPlugin
 {
   public:
     PROCESS ();
-    int command (QStringList &, Indicator &, BarData &, QByteArray &);
+    int command (Command &);
 };
 
 extern "C"

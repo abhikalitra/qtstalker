@@ -28,61 +28,52 @@
 #include <QHash>
 #include <QMetaType>
 
-#include "Setting.h"
 #include "Curve.h"
-#include "ChartObjectSettings.h"
+#include "Setting.h"
 
 class Indicator
 {
   public:
     Indicator ();
-    void setName (QString &);
+    void setName (QString);
     QString & name ();
-    void setEnable (int);
-    int enable ();
     void setTabRow (int);
     int tabRow ();
-    void setColumn (int);
-    int column ();
     void setDate (int);
     int date ();
     void setLog (int);
     int getLog ();
-    void setCUS (int);
-    int CUS ();
-    void setIndicator (QString &);
-    QString & indicator ();
+    void setScript (QString);
+    QString & script ();
+    void setCommand (QString);
+    QString & command ();
     void setLine (QString, Curve *);
     void setLine (int, Curve *);
     Curve * line (QString);
     QHash<QString, Curve *> & curves ();
     void clearLines ();
+    void deleteLines ();
     int deleteLine (QString);
-    void setSettings (Setting &);
-    Setting & settings ();
     void clear ();
-    ChartObjectSettings chartObject (int);
-    void addChartObject (int, ChartObjectSettings &);
+    Setting chartObject (int);
+    void addChartObject (Setting &);
     void clearChartObjects ();
     void deleteChartObject (int);
     void weedPlots ();
-    void cleanClear ();
+    void clean ();
     void init ();
     void coKeys (QList<int> &);
     int coCount ();
 
   protected:
     QHash<QString, Curve *> _lines;
-    QMap<int, ChartObjectSettings> _chartObjects;
-    Setting _settings;
+    QMap<int, Setting> _chartObjects;
     QString _name;
-    QString _indicator;
-    int _enable;
+    QString _script;
+    QString _command;
     int _tabRow;
     int _date;
     int _log;
-    int _cus;
-    int _column;
 };
 
 // this is for passing Indicator data between threads

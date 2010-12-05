@@ -20,11 +20,11 @@
  */
 
 #include "TabWidgetDialog.h"
-#include "Config.h"
 #include "Globals.h"
 
 #include <QtDebug>
 #include <QFormLayout>
+#include <QSettings>
 
 TabWidgetDialog::TabWidgetDialog (QString id)
 {
@@ -47,10 +47,10 @@ void TabWidgetDialog::createMainPage ()
   w->setLayout(form);
 
   // position
-  Config config;
-  QString s;
-  config.getData(_id, s);
-  _ttp = s.toInt();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+
+  _ttp = settings.value(_id).toInt();
 
   _position = new QComboBox;
   _position->addItems(_posList);
@@ -58,10 +58,8 @@ void TabWidgetDialog::createMainPage ()
   form->addRow(tr("Position"), _position);
   
   // north south height
-  QString key = _id + "NSH";
-  QString d;
-  config.getData(key, d);
-  _tnsh = d.toInt();
+  QString key = _id + "_NSH";
+  _tnsh = settings.value(key).toInt();
 
   _nsh = new QSpinBox;
   _nsh->setRange(1, 100);
@@ -69,9 +67,8 @@ void TabWidgetDialog::createMainPage ()
   form->addRow(tr("North / South Height"), _nsh);
 
   // north south width
-  key = _id + "NSW";
-  config.getData(key, d);
-  _tnsw = d.toInt();
+  key = _id + "_NSW";
+  _tnsw = settings.value(key).toInt();
 
   _nsw = new QSpinBox;
   _nsw->setRange(1, 100);
@@ -79,9 +76,8 @@ void TabWidgetDialog::createMainPage ()
   form->addRow(tr("North / South Width"), _nsw);
 
   // east west height
-  key = _id + "EWH";
-  config.getData(key, d);
-  _tewh = d.toInt();
+  key = _id + "_EWH";
+  _tewh = settings.value(key).toInt();
 
   _ewh = new QSpinBox;
   _ewh->setRange(1, 100);
@@ -89,9 +85,8 @@ void TabWidgetDialog::createMainPage ()
   form->addRow(tr("East / West Height"), _ewh);
 
   // east west width
-  key = _id + "EWW";
-  config.getData(key, d);
-  _teww = d.toInt();
+  key = _id + "_EWW";
+  _teww = settings.value(key).toInt();
 
   _eww = new QSpinBox;
   _eww->setRange(1, 100);
@@ -103,8 +98,8 @@ void TabWidgetDialog::createMainPage ()
 
 void TabWidgetDialog::done ()
 {
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
   int flag = 0;
   QString d, key;
@@ -112,48 +107,42 @@ void TabWidgetDialog::done ()
   int index = _position->currentIndex();
   if (index != _ttp)
   {
-    d = QString::number(index);
-    config.setData(_id, d);
+    settings.setValue(_id, index);
     flag = 1;
   }
 
   if (_tnsh != _nsh->value())
   {
-    key = _id + "NSH";
-    d = QString::number(_nsh->value());
-    config.setData(key, d);
+    key = _id + "_NSH";
+    settings.setValue(key, _nsh->value());
     flag = 1;
   }
 
   if (_tnsw != _nsw->value())
   {
-    key = _id + "NSW";
-    d = QString::number(_nsw->value());
-    config.setData(key, d);
+    key = _id + "_NSW";
+    settings.setValue(key, _nsw->value());
     flag = 1;
   }
 
   if (_tewh != _ewh->value())
   {
-    key = _id + "EWH";
-    d = QString::number(_ewh->value());
-    config.setData(key, d);
+    key = _id + "_EWH";
+    settings.setValue(key, _ewh->value());
     flag = 1;
   }
 
   if (_teww != _eww->value())
   {
-    key = _id + "EWW";
-    d = QString::number(_eww->value());
-    config.setData(key, d);
+    key = _id + "_EWW";
+    settings.setValue(key, _eww->value());
     flag = 1;
   }
 
-  config.commit();
+  settings.sync();
 
   if (flag)
     emit signalChanged();
 
   accept();
 }
-

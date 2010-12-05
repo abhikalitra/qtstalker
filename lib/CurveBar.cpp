@@ -32,7 +32,7 @@ CurveBar::CurveBar (double d)
   setData(0, d);
 }
 
-CurveBar::CurveBar (QColor &c, double d)
+CurveBar::CurveBar (QColor c, double d)
 {
   _color = c;
   setData(0, d);
@@ -64,12 +64,12 @@ void CurveBar::setData (double d)
     setData(0, d);
 }
 
-void CurveBar::setColor (QColor &d)
+void CurveBar::setColor (QColor d)
 {
   _color = d;
 }
 
-QColor & CurveBar::color ()
+QColor CurveBar::color ()
 {
   return _color;
 }

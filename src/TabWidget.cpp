@@ -22,13 +22,15 @@
 #include "TabWidget.h"
 #include "TabWidgetDialog.h"
 #include "Plot.h"
+#include "Globals.h"
 
 #include <QCursor>
 #include <QLabel>
+#include <QSettings>
 
 TabWidget::TabWidget (QString &id)
 {
-  _id = "TabWidget" + id;
+  _id = "tab_widget_" + id;
   
   _menu = new QMenu(this);
   _menu->addAction(tr("Tab &Settings"), this, SLOT(tabDialog()), Qt::ALT+Qt::Key_S);
@@ -36,21 +38,13 @@ TabWidget::TabWidget (QString &id)
   setDocumentMode(TRUE); // remove tab frame, get a few more pixels of space
   setContentsMargins(0, 0, 0, 0);
   
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
-  QString d;
-  config.getData(_id, d);
-  if (! d.isEmpty())
-    setTabPosition((QTabWidget::TabPosition) d.toInt());
-  else
-  {
-    setTabPosition(East);
-    d = QString::number(tabPosition());
-    config.setData(_id, d);
-  }
+  setTabPosition((QTabWidget::TabPosition) settings.value(_id, East).toInt());
 
-  QString key = _id + "NSW";
+/*  
+  QString key = _id + "_NSW";
   config.getData(key, d);
   if (d.isEmpty())
   {
@@ -58,7 +52,7 @@ TabWidget::TabWidget (QString &id)
     config.setData(key, d);
   }
 
-  key = _id + "NSH";
+  key = _id + "_NSH";
   config.getData(key, d);
   if (d.isEmpty())
   {
@@ -66,7 +60,7 @@ TabWidget::TabWidget (QString &id)
     config.setData(key, d);
   }
 
-  key = _id + "EWW";
+  key = _id + "_EWW";
   config.getData(key, d);
   if (d.isEmpty())
   {
@@ -74,15 +68,14 @@ TabWidget::TabWidget (QString &id)
     config.setData(key, d);
   }
 
-  key = _id + "EWH";
+  key = _id + "_EWH";
   config.getData(key, d);
   if (d.isEmpty())
   {
     d = "6";
     config.setData(key, d);
   }
-
-  config.commit();
+*/
 
   setTabSizes();
 
@@ -101,23 +94,25 @@ QTabBar * TabWidget::getTabBar ()
 
 void TabWidget::setTabSizes ()
 {
-  Config config;
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+
   QString key, w, h;
   if (tabPosition() == North || tabPosition() == South)
   {
-    key = _id + "NSW";
-    config.getData(key, w);
+    key = _id + "_NSW";
+    w = settings.value(key, "60").toString();
 
-    key = _id + "NSH";
-    config.getData(key, h);
+    key = _id + "_NSH";
+    h = settings.value(key, "14").toString();
   }
   else
   {
-    key = _id + "EWW";
-    config.getData(key, w);
+    key = _id + "_EWW";
+    w = settings.value(key, "60").toString();
 
-    key = _id + "EWH";
-    config.getData(key, h);
+    key = _id + "_EWH";
+    h = settings.value(key, "6").toString();
   }
     
   setStyleSheet("QTabBar::tab { width:" + w + "px; height:" + h + "px;}");
@@ -139,11 +134,10 @@ void TabWidget::tabDialog ()
 
 void TabWidget::tabDialog2 ()
 {
-  QString d;
-  Config config;
-  config.getData(_id, d);
-  if (! d.isEmpty())
-    setTabPosition((QTabWidget::TabPosition) d.toInt());
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  
+  setTabPosition((QTabWidget::TabPosition) settings.value(_id).toInt());
 
   setTabSizes();
 }
@@ -166,15 +160,15 @@ void TabWidget::setTabButton (int pos, QString text)
   QFontMetrics fm(f);
   int width = fm.width(s);
 
-  Config config;
-  QString key = _id + "EWW";
-  QString d;
-  config.getData(key, d);
-  int tabWidth = d.toInt();
-  if (width > tabWidth)
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  
+  QString key = _id + "_EWW";
+  QString tabWidth = settings.value(key, "60").toString();
+  if (width > tabWidth.toInt())
   {
     QString s2;
-    while (width > tabWidth)
+    while (width > tabWidth.toInt())
     {
       s2 = s;
       s2.remove(s2.length() / 2, 1);
@@ -195,6 +189,3 @@ void TabWidget::setTabButton (int pos, QString text)
   label->setText(s);
   tb->setTabButton(pos, QTabBar::LeftSide, label);
 }
-
-
-

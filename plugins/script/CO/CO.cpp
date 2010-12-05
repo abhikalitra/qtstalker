@@ -24,6 +24,8 @@
 #include "ChartObjectFactory.h"
 #include "ChartObject.h"
 #include "Globals.h"
+#include "Config.h"
+#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
 
@@ -31,7 +33,7 @@ CO::CO ()
 {
 }
 
-int CO::command (QStringList &l, Indicator &ind, BarData &, QByteArray &ba)
+int CO::command (QStringList &l, Indicator &, BarData &, QByteArray &ba)
 {
   // CO,<TYPE>,*
   // 0    1
@@ -46,17 +48,11 @@ int CO::command (QStringList &l, Indicator &ind, BarData &, QByteArray &ba)
     return rc;
   }
 
-  if (! g_barData.count())
-  {
-    qDebug() << "CO::command: no bars available";
-    return rc;
-  }
-
   ChartObjectFactory fac;
   ChartObject *co = fac.chartObject(l[1]);
   if (! co)
   {
-    qDebug() << "CO::command: invalid type" << l.count();
+    qDebug() << "CO::command: invalid type" << l.at(1);
     return rc;
   }
 
@@ -66,28 +62,23 @@ int CO::command (QStringList &l, Indicator &ind, BarData &, QByteArray &ba)
     return rc;
   }
 
+  Config config;
+  QString d = QString::number(config.getInt(Config::LastChartObjectID) + 1);
+  config.transaction();
+  config.setData(Config::LastChartObjectID, d);
+  config.commit();
+
   ChartObjectSettings set;
-  co->settings(set);
+  set.id = d.toInt();
+
+  co->setSettings(set);
+
+  ChartObjectDataBase db;
+  db.transaction();
+  db.setChartObject(set);
+  db.commit();
+
   delete co;
-  
-  set.symbol = g_barData.getSymbol();
-  set.exchange = g_barData.getExchange();
-  set.indicator = ind.name();
-
-  // we use < 0 id nums for script chart objects so there are no conflicts
-  // with permanent chart object id's that are >= 0
-  int id = -1;
-  QList<int> ids;
-  ind.coKeys(ids);
-  if (ids.count())
-  {
-    qSort(ids.begin(), ids.end());
-    id = ids.at(0);
-  }
-  id--;
-  set.id = id;
-
-  ind.addChartObject(id, set);
 
   ba.clear();
   ba.append("0\n");

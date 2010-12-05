@@ -29,14 +29,14 @@ class Splitter : public QSplitter
   Q_OBJECT
 
   public:
-    Splitter (int);
+    Splitter (QString);
 
   public slots:
     void save ();
     void load ();
 
   private:
-    int _parm;
+    QString _key;
 };
 
 #endif

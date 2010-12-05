@@ -20,12 +20,13 @@
  */
 
 #include "SidePanel.h"
-#include "Config.h"
+#include "Globals.h"
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
-#include "../pics/plugin.xpm"
+#include "../pics/script.xpm"
 
 #include <QDebug>
+#include <QSettings>
 
 SidePanel::SidePanel ()
 {
@@ -69,65 +70,72 @@ void SidePanel::createTabs ()
   _tabs->addTab(_groupTab, QIcon(dirclosed), QString());
   _tabs->setTabToolTip(1, tr("Groups"));
 
-  // plugin tab
-  _pluginTab = new PluginPage;
-  connect(_pluginTab, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
-  connect(_pluginTab, SIGNAL(signalChartRefresh()), this, SIGNAL(signalReloadChart()));
-  connect(_pluginTab, SIGNAL(signalGroupRefresh()), _groupTab, SLOT(updateGroups()));
-  _tabs->addTab(_pluginTab, QIcon(plugin_xpm), QString());
-  _tabs->setTabToolTip(3, tr("Plugins"));
+  // script tab
+  _scriptTab = new ScriptPage;
+//  connect(_scriptTab, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
+  _tabs->addTab(_scriptTab, QIcon(script_xpm), QString());
+  _tabs->setTabToolTip(2, tr("Scripts"));
 }
 
 void SidePanel::load ()
 {
   // we need to load our splitter sizes
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
-  QString s;
-  config.getData(Config::DataPanelSize, s);
-  if (s.isEmpty())
+  QStringList l = settings.value("data_panel_size").toStringList();
+  if (! l.count())
   {
-    QList<int> l;
-    l << 331 << 58 << 85;
-    
-    setSizes(l);
-    config.setData(Config::DataPanelSize, (QSplitter *) this);
+    QList<int> l2;
+    l2 << 331 << 58 << 85;
+    setSizes(l2);
   }
   else
-    config.getData(Config::DataPanelSize, (QSplitter *) this);
+  {
+    QList<int> sizeList = sizes();
+
+    int loop = 0;
+    for (; loop < l.count(); loop++)
+    {
+      if (loop >= sizeList.count())
+        break;
+
+      if (l[loop].toInt() < 25)
+        sizeList[loop] = 25;
+      else
+        sizeList[loop] = l[loop].toInt();
+    }
+ 
+    setSizes(sizeList);
+  }
 
   // set our width
   QSize size = _tabs->size();
-  int t = config.getInt(Config::SidePanelTabWidth);
-  if (! t)
-  {
-    t = 100;
-    config.setData(Config::SidePanelTabWidth, t);
-  }
-  size.setWidth(t);
+  size.setWidth(settings.value("side_panel_tab_width", 100).toInt());
   _tabs->resize(size);
 
   // set last displayed tab
-  int page = config.getInt(Config::SidePanelLastPage);
-  _tabs->setCurrentIndex(page);
-
-  config.commit();
+  _tabs->setCurrentIndex(settings.value("side_panel_last_page", 0).toInt());
 }
 
 void SidePanel::save ()
 {
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
-  config.setData(Config::DataPanelSize, (QSplitter *) this);
+  QStringList l;
+  QList<int> sizeList = sizes();
+  int loop;
+  for (loop = 0; loop < (int) sizeList.count(); loop++)
+    l.append(QString::number(sizeList[loop]));
+  settings.setValue("data_panel_size", l);
 
   QSize size = _tabs->size();
-  config.setData(Config::SidePanelTabWidth, size.width());
+  settings.setValue("side_panel_tab_width", size.width());
 
-  config.setData(Config::SidePanelLastPage, _tabs->currentIndex());
+  settings.setValue("side_panel_last_page", _tabs->currentIndex());
 
-  config.commit();
+  settings.sync();
 }
 
 PlotSlider * SidePanel::slider ()
@@ -140,11 +148,6 @@ InfoPanel * SidePanel::info ()
   return _info;
 }
 
-void SidePanel::updateChartTab ()
-{
-  _chartTab->updateList();
-}
-
 void SidePanel::toggleStatus (bool status)
 {
   if (status)
@@ -153,3 +156,17 @@ void SidePanel::toggleStatus (bool status)
     this->hide();
 }
 
+ChartPage * SidePanel::chartPanel ()
+{
+  return _chartTab;
+}
+
+GroupPage * SidePanel::groupPanel ()
+{
+  return _groupTab;
+}
+
+ScriptPage * SidePanel::scriptPanel ()
+{
+  return _scriptTab;
+}

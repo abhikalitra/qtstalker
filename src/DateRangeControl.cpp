@@ -20,7 +20,7 @@
  */
 
 #include "DateRangeControl.h"
-#include "Config.h"
+#include "Globals.h"
 #include "DateRange.h"
 #include "../pics/prev.xpm"
 #include "../pics/next.xpm"
@@ -29,6 +29,7 @@
 #include <QString>
 #include <QStringList>
 #include <QIcon>
+#include <QSettings>
 
 DateRangeControl::DateRangeControl (QToolBar *tb) : QObject (tb)
 {
@@ -37,7 +38,8 @@ DateRangeControl::DateRangeControl (QToolBar *tb) : QObject (tb)
 
 void DateRangeControl::createButtons (QToolBar *tb)
 {
-  Config config;
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
   // previous button
   _prevButton = new QToolButton;
@@ -51,22 +53,12 @@ void DateRangeControl::createButtons (QToolBar *tb)
   QStringList l;
   DateRange dr;
   dr.list(l);
+  
   _ranges = new QComboBox;
   _ranges->setToolTip(QString(tr("Date Range")));
   _ranges->setStatusTip(QString(tr("Date Range")));
   _ranges->addItems(l);
-  _ranges->setCurrentIndex(5); // 1 year default
-  
-  QString s;
-  config.getData(Config::LastDateRange, s);
-  if (s.isEmpty())
-  {
-    config.transaction();
-    config.setData(Config::LastDateRange, _ranges->currentIndex());
-    config.commit();
-  }
-  else
-    _ranges->setCurrentIndex(s.toInt());
+  _ranges->setCurrentIndex(settings.value("last_date_range", 5).toInt());
   
   _ranges->setMaxVisibleItems(l.count());
   connect(_ranges, SIGNAL(currentIndexChanged(int)), this, SLOT(rangeChanged(int)));
@@ -112,10 +104,10 @@ void DateRangeControl::nextRange ()
 
 void DateRangeControl::rangeChanged (int d)
 {
-  Config config;
-  config.transaction();
-  config.setData(Config::LastDateRange, d);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("last_date_range", d);
+  settings.sync();
   
   buttonStatus();
 

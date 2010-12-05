@@ -20,7 +20,6 @@
  */
 
 #include "RefreshAction.h"
-#include "Config.h"
 #include "../pics/refresh.xpm"
 #include "Globals.h"
 
@@ -28,37 +27,23 @@
 #include <QDebug>
 #include <QIcon>
 #include <QInputDialog>
+#include <QSettings>
 
 RefreshAction::RefreshAction ()
 {
   _timer = 0;
   
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
-  _minutes = config.getInt(Config::Refresh);
-  if (! _minutes)
-  {
-    _minutes = 1;
-    config.setData(Config::Refresh, _minutes);
-  }
+  _minutes = settings.value("refresh", 1).toInt();
 
   changeText();
   setIcon(QIcon(refresh_xpm));
   setCheckable(TRUE);
 
-  QString s;
-  config.getData(Config::RefreshStatus, s);
-  if (s.isEmpty())
-  {
-    setChecked(0);
-    config.setData(Config::RefreshStatus, 0);
-  }
-  else
-    setChecked(s.toInt());
+  setChecked(settings.value("refresh_status", 0).toInt());
 
-  config.commit();
-  
   connect(this, SIGNAL(toggled(bool)), this, SLOT(refreshChart(bool)));
 
   _timer = new QTimer(this);
@@ -75,10 +60,10 @@ void RefreshAction::refreshChart (bool status)
   else
     _timer->stop();
 
-  Config config;
-  config.transaction();
-  config.setData((int) Config::RefreshStatus, status);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("refresh_status", status);
+  settings.sync();
 }
 
 void RefreshAction::refreshUpdated (int minutes)
@@ -93,10 +78,10 @@ void RefreshAction::refreshUpdated (int minutes)
 
   changeText();
 
-  Config config;
-  config.transaction();
-  config.setData(Config::Refresh, _minutes);
-  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("refresh", _minutes);
+  settings.sync();
 }
 
 void RefreshAction::dialog ()

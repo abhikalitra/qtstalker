@@ -33,6 +33,7 @@
 #include "Setting.h"
 #include "TabWidget.h"
 #include "PlotSettings.h"
+#include "ScriptPluginFactory.h"
 
 class ChartLayout : public QSplitter
 {
@@ -58,8 +59,7 @@ class ChartLayout : public QSplitter
 
   public:
     ChartLayout ();
-    ~ChartLayout ();
-    void addTab (Indicator &);
+    void addTab (Indicator *);
     void addTab (QString &);
     void refresh (QString);
     void loadPlots (int index);
@@ -76,13 +76,12 @@ class ChartLayout : public QSplitter
     void saveSettings ();
     void setGrid (bool);
     void setZoom (int, int);
-    void newIndicator ();
-    void editIndicator (QString);
-    void editIndicator2 (Indicator);
+//    void editIndicator (QString);
+//    void editIndicator2 (Indicator);
     void deleteIndicator ();
-    void newIndicator2 (Indicator);
-    void newIndicator3 (Indicator);
-    void indicatorThreadFinished (Indicator i);
+    void newIndicator ();
+    void newIndicator2 (QStringList);
+    void indicatorScriptFinished (QString);
     void backgroundColorChanged (QColor);
     void fontChanged (QFont);
     void removeTab (QStringList);
@@ -96,6 +95,7 @@ class ChartLayout : public QSplitter
     QHash<int, QWidget *> _holders;
     int _startIndex;
     int _barSpacing;
+    ScriptPluginFactory _factory;
 };
 
 #endif

@@ -30,14 +30,15 @@
 #include <QtDebug>
 #include <QToolButton>
 #include <QApplication>
+#include <QSettings>
+#include <QCoreApplication>
 
 #include "Qtstalker.h"
 #include "DataWindow.h"
 #include "Setup.h"
-#include "QuoteServerRequestThread.h"
 #include "DocsAction.h"
 #include "Globals.h"
-#include "QuoteServerButton.h"
+#include "CommandThread.h"
 
 #include "../pics/done.xpm"
 #include "../pics/datawindow.xpm"
@@ -47,20 +48,19 @@
 QtstalkerApp::QtstalkerApp(QString session, QString asset)
 {
   setWindowIcon(QIcon(qtstalker));
-  QApplication::setOrganizationName("Qtstalker");
 
-  Config config;
+  QCoreApplication::setOrganizationName("QtStalker");
+  QCoreApplication::setOrganizationDomain("QtStalker.com");
+  QCoreApplication::setApplicationName("QtStalker");
+
   Setup setup;
-  setup.setup(config, session);
+  setup.setup(session);
 
-  // start the quote server
-//  setup.setupQuoteServer(config);
-  
   createToolBars();
 
-  createGUI(config);
+  createGUI();
 
-  loadSettings(config);
+  loadSettings();
 
   // check if we are going to display a chart from the command line
   if (asset.length())
@@ -72,9 +72,14 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   _statusBar->showMessage(tr("Ready"), 2000);
 
   setWindowTitle(getWindowCaption());
+
+  // start the message server
+  _messageServer = new MessageServer(this);
+  connect(_messageServer, SIGNAL(signalRefreshChartPanel()), _sidePanel->chartPanel(), SLOT(updateList()));
+  connect(_messageServer, SIGNAL(signalRefreshGroupPanel()), _sidePanel->groupPanel(), SLOT(updateGroups()));
 }
 
-void QtstalkerApp::createGUI (Config &)
+void QtstalkerApp::createGUI ()
 {
   _statusBar = statusBar();
 
@@ -86,8 +91,7 @@ void QtstalkerApp::createGUI (Config &)
   hbox->setSpacing(0);
   _baseWidget->setLayout(hbox);
 
-
-  _navSplitter = new Splitter((int) Config::NavAreaSize);
+  _navSplitter = new Splitter("nav_area_size");
   connect(this, SIGNAL(signalLoadSettings()), _navSplitter, SLOT(load()));
   connect(this, SIGNAL(signalSaveSettings()), _navSplitter, SLOT(save()));
   _navSplitter->setOrientation(Qt::Horizontal);
@@ -115,16 +119,12 @@ void QtstalkerApp::createGUI (Config &)
 //  connect(_chartLayout, SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
   connect(this, SIGNAL(signalSaveSettings()), _chartLayout, SLOT(save()));
   connect(this, SIGNAL(signalLoadSettings()), _chartLayout, SLOT(load()));
-//  connect(_chartLayout, SIGNAL(signalZoom(int, int)), _zoomButtons, SLOT(addZoom(int, int)));
   connect(_chartLayout, SIGNAL(signalInfo(Setting)), _infoPanel, SLOT(showInfo(Setting)));
   connect(_chartLayout, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalSaveSettings()), _chartLayout, SLOT(saveSettings()));
-//  connect(_chartLayout, SIGNAL(signalIndexChanged(int)), _plotSlider, SLOT(setValue(int)));
   connect(_sidePanel, SIGNAL(signalSliderChanged(int)), _chartLayout, SLOT(setIndex(int)));
-//  connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), _chartLayout, SLOT(setInterval(int)));
   connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
   connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), _chartLayout, SLOT(setBarSpacing(int)));
-//  connect(_zoomButtons, SIGNAL(signalZoom(int, int)), _chartLayout, SLOT(setZoom(int, int)));
   connect(_gridAction, SIGNAL(signalChanged(bool)), _chartLayout, SLOT(setGrid(bool)));
   connect(_gridAction, SIGNAL(signalColorChanged(QColor)), _chartLayout, SLOT(setGridColor(QColor)));
   connect(_newIndicatorAction, SIGNAL(activated()), _chartLayout, SLOT(newIndicator()));
@@ -193,9 +193,6 @@ void QtstalkerApp::createToolBars ()
   DocsAction *da = new DocsAction;
   toolbar->addWidget(da);
 
-  QuoteServerButton *qsb = new QuoteServerButton;
-  toolbar->addWidget(qsb);
-
   toolbar->addSeparator();
 
   // create the zoom button box on the main toolbar
@@ -230,32 +227,17 @@ void QtstalkerApp::createToolBars ()
   connect(this, SIGNAL(signalLoadSettings()), _recentCharts, SLOT(load()));
 }
 
-void QtstalkerApp::loadSettings (Config &config)
+void QtstalkerApp::loadSettings ()
 {
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  
   // restore the size of the app
-  QSize sz;
-  config.transaction();
-  
-  config.getData(Config::MainWindowSize, sz);
-  if (! sz.isValid())
-  {
-    sz = QSize(800, 600);
-    config.setData(Config::MainWindowSize, sz);
-  }
-  
+  QSize sz = settings.value("main_window_size", QSize(800,600)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p;
-  config.getData((int) Config::MainWindowPos, p);
-  if (p.isNull())
-  {
-    p = QPoint(0, 0); // 30,30 ?
-    config.setData(Config::MainWindowPos, p);
-  }
-
-  config.commit();
-
+  QPoint p = settings.value("main_window_position", QPoint(0,0)).toPoint();
   move(p);
 
   // load gui class settings that need to now
@@ -269,37 +251,39 @@ void QtstalkerApp::quit()
   // shutting down before the destructor is called
   emit signalSaveSettings();
   
-  Config config;
-  config.transaction();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
 
   // save app size and position
-  QSize sz = size();
-  config.setData((int) Config::MainWindowSize, sz);
-  QPoint pt = pos();
-  config.setData((int) Config::MainWindowPos, pt);
+  settings.setValue("main_window_size", size());
+  settings.setValue("main_window_position", pos());
+  settings.sync();
 
-  config.commit();
+  delete g_barData;
 }
 
 void QtstalkerApp::loadChart (BarData symbol)
 {
   // do all the stuff we need to do to load a chart
-  if (symbol.getSymbol().length() == 0)
+  if (symbol.symbol().length() == 0)
     return;
 
-  _currentChart = symbol;
+  delete g_barData;
+  g_barData = new BarData;
+  
+  g_barData->setExchange(symbol.exchange());
+  g_barData->setSymbol(symbol.symbol());
+  g_barData->setName(symbol.name());
+  g_barData->setBarLength((BarData::BarLength) _barLengthButtons->length());
 
-  QStringList c;
-  c <<  _currentChart.getExchange() << _currentChart.getSymbol();
-  QString chart = c.join(",");
-  Config config;
-//  config.transaction();
-  config.setData((int) Config::CurrentChart, chart);
-//  config.commit();
+  QSettings settings;
+  settings.beginGroup("main" + g_session);
+  settings.setValue("current_chart", g_barData->key());
+  settings.sync();
 
   // construct a QuoteServer command to get the quotes
   QStringList l;
-  l << "Quotes" << "Date" << _currentChart.getExchange() << _currentChart.getSymbol();
+  l << "QUOTE" << "GET" << g_barData->exchange() << g_barData->symbol();
   QString s;
   _barLengthButtons->getCurrentText(s);
   l << s;
@@ -311,30 +295,29 @@ void QtstalkerApp::loadChart (BarData symbol)
   }
   else
     l << "0" << "0" << QString::number(_dateRange->dateRange());
-  
-  QString command = l.join(",") + "\n";
 
-  // create a thread and not block until results are returned
-  QuoteServerRequestThread *r = new QuoteServerRequestThread(this, command);
-  connect(r, SIGNAL(signalDone(QString)), this, SLOT(loadChart2(QString)), Qt::QueuedConnection);
-  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
-  r->start();
+  Command command(l.join(","));
+  command.setBarData(g_barData);
+
+  CommandThread *thread = new CommandThread(this, command);
+  connect(thread, SIGNAL(signalDone(QString)), this, SLOT(loadChart2(QString)), Qt::QueuedConnection);
+  thread->start();
 }
 
-void QtstalkerApp::loadChart2 (QString data)
+void QtstalkerApp::loadChart2 (QString d)
 {
+  if (d == "ERROR")
+  {
+    qDebug() << "QtstalkerApp::loadChart2: command error" << d;
+    return;
+  }
+  
   // we got results from a QuoteServer thread command
   // set plots to empty
   _chartLayout->clearIndicator();
 
-  // create and populate the quote data
-  g_barData.clear();
-  g_barData = _currentChart;
-  g_barData.setBarLength((BarData::BarLength) _barLengthButtons->length());
-  g_barData.setBars(data);
-  
   // adjust the starting position of the displayed chart to show a full page of the most recent bars
-  setSliderStart(g_barData.count());
+  setSliderStart(g_barData->count());
 
   // set the window title to update what symbol we are displaying
   setWindowTitle(getWindowCaption());
@@ -352,12 +335,12 @@ QString QtstalkerApp::getWindowCaption ()
 
   QString caption = tr("Qtstalker");
   caption.append(g_session);
-  caption.append(": " + _currentChart.getSymbol());
-  if (! _currentChart.getName().isEmpty())
-    caption.append(" (" + _currentChart.getName() + ")");
+  caption.append(": " + g_barData->symbol());
+  if (! g_barData->name().isEmpty())
+    caption.append(" (" + g_barData->name() + ")");
 
   QStringList l;
-  _currentChart.getBarLengthList(l);
+  g_barData->barLengthList(l);
   caption.append(" " + l[_barLengthButtons->length()]);
 
   return caption;
@@ -365,7 +348,7 @@ QString QtstalkerApp::getWindowCaption ()
 
 void QtstalkerApp::dataWindow ()
 {
-  if (_currentChart.getSymbol().isEmpty())
+  if (g_barData->symbol().isEmpty())
     return;
   
   // show the datawindow dialog
@@ -380,12 +363,15 @@ void QtstalkerApp::dataWindow ()
 void QtstalkerApp::chartUpdated ()
 {
   // we are here because something wants us to reload the chart with fresh bars
-  _sidePanel->updateChartTab();
+//  _sidePanel->updateChartTab();
 
-  if (_currentChart.getSymbol().isEmpty())
+  if (g_barData->symbol().isEmpty())
     return;
 
-  loadChart(_currentChart);
+  BarData bd;
+  bd.setExchange(g_barData->exchange());
+  bd.setSymbol(g_barData->symbol());
+  loadChart(bd);
 }
 
 void QtstalkerApp::statusMessage (QString d)
@@ -415,7 +401,7 @@ void QtstalkerApp::appFont (QFont d)
 void QtstalkerApp::setSliderStart (int count)
 {
   // figure out a nice spot to show the most recent bars in the charts
-  if (_currentChart.getSymbol().isEmpty())
+  if (g_barData->symbol().isEmpty())
     return;
 
   int width = _chartLayout->plotWidth();

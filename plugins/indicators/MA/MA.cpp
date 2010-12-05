@@ -24,6 +24,7 @@
 #include "FunctionMA.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "IndicatorSettings.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -35,7 +36,7 @@ MA::MA ()
 
 int MA::getIndicator (Indicator &ind, BarData &data)
 {
-  Setting settings = ind.settings();
+  IndicatorSettings settings = ind.settings();
 
   QColor up("green");
   QColor down("red");
@@ -48,20 +49,20 @@ int MA::getIndicator (Indicator &ind, BarData &data)
     ind.setLine(0, bars);
   }
 
-  QString s;
-  settings.getData(_Input, s);
-  Curve *in = data.getInput(data.getInputType(s));
+  IndicatorSetting set = settings.setting(_Input);
+  Curve *in = data.getInput(data.getInputType(set.value()));
   if (! in)
   {
-    qDebug() << _indicator << "::getIndicator: input not found" << s;
+    qDebug() << _indicator << "::getIndicator: input not found" << set.value();
     return 1;
   }
 
-  int period = settings.getInt(_Period);
+  set = settings.setting(_Period);
+  int period = set.value().toInt();
 
   FunctionMA fma;
-  settings.getData(_Method, s);
-  int method = fma.typeFromString(s);
+  set = settings.setting(_Method);
+  int method = fma.typeFromString(set.value());
 
   Curve *line = fma.calculate(in, period, method);
   if (! line)
@@ -70,78 +71,67 @@ int MA::getIndicator (Indicator &ind, BarData &data)
     return 1;
   }
 
-  settings.getData(_Plot, s);
-  line->setType((Curve::Type) line->typeFromString(s));
+  set = settings.setting(_Plot);
+  line->setType((Curve::Type) line->typeFromString(set.value()));
 
-  settings.getData(_Color, s);
-  QColor c(s);
+  set = settings.setting(_Color);
+  QColor c(set.value());
   line->setColor(c);
 
-  settings.getData(_Label, s);
-  line->setLabel(s);
+  set = settings.setting(_Label);
+  line->setLabel(set.value());
   
   line->setZ(1);
-  ind.setLine(s, line);
+  ind.setLine(set.value(), line);
 
   delete in;
 
   return 0;
 }
 
-int MA::getCUS (QStringList &set, Indicator &ind, BarData &data)
+int MA::getCUS (QStringList &l, Indicator &ind, BarData &data)
 {
-  // INDICATOR,PLUGIN,MA,<METHOD>,<NAME>,<INPUT>,<PERIOD>
-  //     0       1    2     3       4       5       6
-
-  if (set.count() != 7)
-  {
-    qDebug() << "MA::getCUS: invalid parm count" << set.count();
+  IndicatorSettings settings = ind.settings();
+  if (settings.setCUS(l))
     return 1;
-  }
 
-  FunctionMA fma;
-  int method = fma.typeFromString(set[3]);
-  if (method == -1)
-  {
-    qDebug() << "MA::getCUS: invalid method" << set[3];
-    return 1;
-  }
-
-  Curve *tl = ind.line(set[4]);
+  IndicatorSetting set = settings.setting(_Label);
+  QString name = set.value();
+  Curve *tl = ind.line(name);
   if (tl)
   {
-    qDebug() << "MA::getCUS: duplicate name" << set[4];
+    qDebug() << "MA::getCUS: duplicate name" << set.value();
     return 1;
   }
 
-  Curve *in = ind.line(set[5]);
+  set = settings.setting(_Input);
+  Curve *in = ind.line(set.value());
   if (! in)
   {
-    in = data.getInput(data.getInputType(set[5]));
+    in = data.getInput(data.getInputType(set.value()));
     if (! in)
     {
-      qDebug() << "MA::getCUS: input not found" << set[5];
+      qDebug() << "MA::getCUS: input not found" << set.value();
       return 1;
     }
 
-    ind.setLine(set[5], in);
+    ind.setLine(set.value(), in);
   }
 
-  bool ok;
-  int period = set[6].toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "MA::getCUS: invalid period" << set[6];
-    return 1;
-  }
+  set = settings.setting(_Period);
+  int period = set.value().toInt();
+
+  set = settings.setting(_Method);
+  FunctionMA fma;
+  int method = fma.typeFromString(set.value());
 
   Curve *line = fma.calculate(in, period, method);
   if (! line)
     return 1;
 
-  line->setLabel(set[4]);
+  line->setLabel(name);
 
-  ind.setLine(set[4], line);
+  ind.setLine(name, line);
 
   return 0;
 }
@@ -149,44 +139,34 @@ int MA::getCUS (QStringList &set, Indicator &ind, BarData &data)
 IndicatorPluginDialog * MA::dialog (Indicator &i)
 {
   IndicatorPluginDialog *dialog = new IndicatorPluginDialog(i);
-
   dialog->setHelpFile("MA.html");
-
-  Setting _settings = i.settings();
-
-  // general tab
-  int tab = dialog->addTab(tr("General"));
-
-  QString d;
-  _settings.getData(_Method, d);
-  dialog->addMA(tab, _Method, tr("Type"), d);
-
-  _settings.getData(_Input, d);
-  dialog->addInput(tab, _Input, tr("Input"), d);
-
-  dialog->addInt(tab, _Period, tr("Period"), _settings.getInt(_Period), 100000, 2);
-
-  _settings.getData(_Color, d);
-  dialog->addColor(tab, _Color, tr("Color"), d);
-
-  _settings.getData(_Plot, d);
-  dialog->addPlot(tab, _Plot, tr("Plot"), d);
-
-  _settings.getData(_Label, d);
-  dialog->addText(tab, _Label, tr("Label"), d);
-
   return dialog;
 }
 
 void MA::defaults (Indicator &i)
 {
-  Setting set;
-  set.setData(_Color, "red");
-  set.setData(_Plot, "Line");
-  set.setData(_Label, _indicator);
-  set.setData(_Input, "Close");
-  set.setData(_Period, 14);
-  set.setData(_Method, "SMA");
+  IndicatorSettings set;
+
+  QStringList l;
+  l << tr("General");
+  set.setTabs(l);
+
+  // INDICATOR,PLUGIN,MA,<METHOD>,<NAME>,<INPUT>,<PERIOD>
+  //     0       1    2     3       4       5       6
+
+  l.clear();
+  l << "INDICATOR" << "PLUGIN" << "MA" << QString::number(_Method);
+  l << QString::number(_Label) << QString::number(_Input) << QString::number(_Period);
+  set.setCUSFormat(l);
+
+  int page = 0;
+  set.setColor(_Color, page, tr("Color"), QString("red"));
+  set.setPlot(_Plot, page, tr("Plot"), QString("Line"));
+  set.setText(_Label, page, tr("Label"), _indicator);
+  set.setMA(_Method, page, tr("Method"), QString("SMA"));
+  set.setInput(_Input, page, tr("Input"), QString("Close"));
+  set.setInteger(_Period, page, tr("Period"), QString("14"));
+
   i.setSettings(set);
 }
 
@@ -194,10 +174,10 @@ void MA::plotNames (Indicator &i, QStringList &l)
 {
   l.clear();
 
-  Setting settings = i.settings();
-  QString s;
-  settings.getData(_Label, s);
-  l.append(s);
+  IndicatorSettings settings = i.settings();
+
+  IndicatorSetting set = settings.setting(_Label);
+  l.append(set.value());
 }
 
 //*************************************************************
@@ -209,5 +189,3 @@ IndicatorPlugin * createIndicatorPlugin ()
   MA *o = new MA;
   return ((IndicatorPlugin *) o);
 }
-
-
