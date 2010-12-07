@@ -30,20 +30,18 @@ SCRIPT_EDIT_DIALOG::SCRIPT_EDIT_DIALOG ()
   _threadSafe = 0;
 }
 
-int SCRIPT_EDIT_DIALOG::command (Command &command)
+int SCRIPT_EDIT_DIALOG::command (Command *command)
 {
-  // SCRIPT_EDIT_DIALOG,<NAME>
-  //          0           1
+  // SCRIPT_EDIT_DIALOG,<NAME>,COMMAND,FILE
+  //          0           1       2     3
 
-  if (command.count() != 2)
+  if (command->count() < 2)
   {
-    qDebug() << "SCRIPT_EDIT_DIALOG::command: invalid parm count" << command.count();
+    qDebug() << "SCRIPT_EDIT_DIALOG::command: invalid parm count" << command->count();
     return 1;
   }
 
-  ScriptEditDialog *dialog = new ScriptEditDialog(command.parm(1));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  connect(dialog, SIGNAL(signalDone(QString)), this, SIGNAL(signalDone(QString)));
+  ScriptEditDialog *dialog = new ScriptEditDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   dialog->show();
 

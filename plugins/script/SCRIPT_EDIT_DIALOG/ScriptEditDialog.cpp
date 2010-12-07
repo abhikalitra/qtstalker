@@ -22,8 +22,6 @@
 #include "ScriptEditDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "Command.h"
-#include "ScriptPluginFactory.h"
 
 #include <QtDebug>
 #include <QDialogButtonBox>
@@ -32,21 +30,32 @@
 #include <QSettings>
 #include <QFileDialog>
 
-ScriptEditDialog::ScriptEditDialog (QString name)
+ScriptEditDialog::ScriptEditDialog (Command *c)
 {
-  _name = name;
+  _command = c;
   _helpFile = "cus.html";
-  
-  QString s = "Qtstalker" + g_session + ": " + tr("Edit Script") + " " + _name;
-  setWindowTitle(s);
+
+  _name = _command->parm(1);
+
+  QStringList l;
+  l << "Qtstalker" << g_session << ":" << tr("Edit Script") << _name;
+  setWindowTitle(l.join(" "));
   
   createGUI();
 
-  loadScript();
-
   loadSettings();
 
+  if (_command->count() > 2)
+  {
+    _file = _command->parm(2);
+    fileButtonPressed2(_file);
+
+    _com->setText(_command->parm(3));
+  }
+
   buttonStatus();
+
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ScriptEditDialog::createGUI ()
@@ -61,10 +70,10 @@ void ScriptEditDialog::createGUI ()
   vbox->addLayout(form);
 
   // command
-  _command = new QLineEdit("perl");
-  _command->setToolTip(tr("Interpreter command and switches eg. perl -l -T"));
-  connect(_command, SIGNAL(textEdited(const QString &)), this, SLOT(buttonStatus()));
-  form->addRow(tr("Command"), _command);
+  _com = new QLineEdit("perl");
+  _com->setToolTip(tr("Interpreter command and switches eg. perl -l -T"));
+  connect(_com, SIGNAL(textEdited(const QString &)), this, SLOT(buttonStatus()));
+  form->addRow(tr("Command"), _com);
   
   // file
   _fileButton = new QPushButton;
@@ -94,37 +103,10 @@ void ScriptEditDialog::createGUI ()
   connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 
-void ScriptEditDialog::loadScript ()
-{
-  QStringList cl;
-  cl << "SCRIPT_DATABASE" << "LOAD" << _name;
-  
-  Command command(cl.join(","));
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ScriptEditDialog::loadScript: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
-
-  cl = command.stringData().split(",");
-  if (cl.count() != 2)
-    return;
-
-  _file = cl.at(0);
-  fileButtonPressed2(_file);
-  
-  _command->setText(cl.at(1));
-}
-
 void ScriptEditDialog::buttonStatus ()
 {
   int status = -1;
-  if (_command->text().length())
+  if (_com->text().length())
     status++;
 
   if (! _file.isEmpty())
@@ -194,7 +176,7 @@ void ScriptEditDialog::fileButtonPressed2 (QString d)
 
 void ScriptEditDialog::done ()
 {
-  QString com = _command->text();
+  QString com = _com->text();
   com.remove(",");
   if (com.isEmpty())
   {
@@ -202,26 +184,12 @@ void ScriptEditDialog::done ()
     return;
   }
   
-  QStringList cl;
-  cl << "SCRIPT_DATABASE" << "SAVE" << _name << _file << com;
-qDebug() << "ScriptEditDialog::done:" << cl;
+  QStringList l;
+  l << _name << com << _file;
 
-  Command command(cl.join(","));
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ScriptEditDialog::done: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
-  delete plug;
+  _command->setReturnData(l.join(","));
 
   saveSettings();
-
-  emit signalDone("0");
 
   accept();
 }

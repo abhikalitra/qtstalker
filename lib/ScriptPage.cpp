@@ -170,24 +170,24 @@ void ScriptPage::newScript ()
 {
   Script *script = new Script;
   QString s = INSTALL_DATA_DIR;
-  s.append("/qtstalker/script/NewScriptDialog.pl");
-  prepareScript(script, "NewScriptDialog", "perl", s);
+  s.append("/qtstalker/script/ScriptPanelNewScript.pl");
+  prepareScript(script, "ScriptPanelNewScript", "perl", s);
 }
 
 void ScriptPage::editScript ()
 {
   Script *script = new Script;
   QString s = INSTALL_DATA_DIR;
-  s.append("/qtstalker/script/EditScriptDialog.pl");
-  prepareScript(script, "EditScriptDialog", "perl", s);
+  s.append("/qtstalker/script/ScriptPanelEditScript.pl");
+  prepareScript(script, "ScriptPanelEditScript", "perl", s);
 }
 
 void ScriptPage::deleteScript ()
 {
   Script *script = new Script;
   QString s = INSTALL_DATA_DIR;
-  s.append("/qtstalker/script/DeleteScriptDialog.pl");
-  prepareScript(script, "DeleteScriptDialog", "perl", s);
+  s.append("/qtstalker/script/ScriptPanelDeleteScript.pl");
+  prepareScript(script, "ScriptPanelDeleteScript", "perl", s);
 }
 
 void ScriptPage::queRightClick (const QPoint &)

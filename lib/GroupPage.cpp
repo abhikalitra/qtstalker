@@ -236,7 +236,7 @@ void GroupPage::updateGroups ()
 void GroupPage::addToGroup ()
 {
   Script *script = new Script;
-  prepareScript(script, "GroupPanelAddToGroupDialog", "perl", "GroupPanelAddToGroupDialog.pl");
+  prepareScript(script, "GroupPanelAddToGroup", "perl", "GroupPanelAddToGroup.pl");
 }
 
 void GroupPage::updateList ()

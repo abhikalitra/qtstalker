@@ -28,17 +28,15 @@
 #include <QPushButton>
 #include <QLabel>
 
+#include "Command.h"
+
 class ScriptEditDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalDone (QString);
-
   public:
-    ScriptEditDialog (QString);
+    ScriptEditDialog (Command *);
     void createGUI ();
-    void loadScript ();
     void loadSettings ();
     void saveSettings ();
 
@@ -51,15 +49,15 @@ class ScriptEditDialog : public QDialog
     void fileButtonPressed2 (QString);
 
   private:
-    QLineEdit *_command;
+    QLineEdit *_com;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
     QPushButton *_fileButton;
     QString _helpFile;
     QLabel *_message;
     QString _file;
-    QString _stringData;
     QString _name;
+    Command *_command;
 };
 
 #endif

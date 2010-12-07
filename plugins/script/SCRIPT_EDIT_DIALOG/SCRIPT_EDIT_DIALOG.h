@@ -28,7 +28,7 @@ class SCRIPT_EDIT_DIALOG : public ScriptPlugin
 {
   public:
     SCRIPT_EDIT_DIALOG ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"
