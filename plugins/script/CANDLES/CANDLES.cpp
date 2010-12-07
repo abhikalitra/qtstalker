@@ -90,7 +90,7 @@ CANDLES::CANDLES ()
   _method << "XSIDEGAP3METHODS";
 }
 
-int CANDLES::command (Command &command)
+int CANDLES::command (Command *command)
 {
   // CANDLES,<METHOD>,<NAME>
   //  0         1       2
@@ -98,13 +98,13 @@ int CANDLES::command (Command &command)
   // CANDLES,<METHOD>,<NAME>,<PENETRATION>
   //  0         1       2         3
 
-  if (command.count() < 3)
+  if (command->count() < 3)
   {
-    qDebug() << "CANDLES::command: invalid parm count" << command.count();
+    qDebug() << "CANDLES::command: invalid parm count" << command->count();
     return 1;
   }
 
-  switch ((Method) _method.indexOf(command.parm(1)))
+  switch ((Method) _method.indexOf(command->parm(1)))
   {
     case _2CROWS:
     case _3BLACKCROWS:
@@ -178,25 +178,25 @@ int CANDLES::command (Command &command)
   return 0;
 }
 
-int CANDLES::getCandles (Command &command)
+int CANDLES::getCandles (Command *command)
 {
   // CANDLES,<METHOD>,<NAME>
   //    0       1       2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "CANDLES::getCandles: invalid parm count" << command.count();
+    qDebug() << "CANDLES::getCandles: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "CANDLES::getCandles: no indicator";
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = command->barData();
   if (! data)
   {
     qDebug() << "CANDLES::getCandles: no bars";
@@ -206,7 +206,7 @@ int CANDLES::getCandles (Command &command)
   if (data->count() < 1)
     return 1;
 
-  QString name = command.parm(2);
+  QString name = command->parm(2);
 
   Curve *line = i->line(name);
   if (line)
@@ -236,7 +236,7 @@ int CANDLES::getCandles (Command &command)
 
   TA_RetCode rc = TA_SUCCESS;
 
-  switch ((Method) _method.indexOf(command.parm(1)))
+  switch ((Method) _method.indexOf(command->parm(1)))
   {
     case _2CROWS:
       rc = TA_CDL2CROWS(0,
@@ -857,32 +857,30 @@ int CANDLES::getCandles (Command &command)
 
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
 
-int CANDLES::getCandlesPen (Command &command)
+int CANDLES::getCandlesPen (Command *command)
 {
   // CANDLES,<METHOD>,<NAME>,<PENETRATION>
   //    0       1       2          3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "CANDLES::getCandlesPen: invalid parm count" << command.count();
+    qDebug() << "CANDLES::getCandlesPen: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "CANDLES::getCandlesPen: no indicator";
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = command->barData();
   if (! data)
   {
     qDebug() << "CANDLES::getCandlesPen: no bars";
@@ -893,7 +891,7 @@ int CANDLES::getCandlesPen (Command &command)
     return 1;
 
   int pos = 2;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -903,10 +901,10 @@ int CANDLES::getCandlesPen (Command &command)
 
   pos++;
   bool ok;
-  double pen = command.parm(pos).toDouble(&ok);
+  double pen = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "CANDLES::getCandlesPen: invalid penetration" << command.parm(pos);
+    qDebug() << "CANDLES::getCandlesPen: invalid penetration" << command->parm(pos);
     return 1;
   }
 
@@ -931,7 +929,7 @@ int CANDLES::getCandlesPen (Command &command)
 
   TA_RetCode rc = TA_SUCCESS;
 
-  switch ((Method) _method.indexOf(command.parm(1)))
+  switch ((Method) _method.indexOf(command->parm(1)))
   {
     case _ABANDONEDBABY:
       rc = TA_CDLABANDONEDBABY(0,
@@ -1018,9 +1016,7 @@ int CANDLES::getCandlesPen (Command &command)
 
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

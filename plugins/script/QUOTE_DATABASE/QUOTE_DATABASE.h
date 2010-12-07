@@ -44,17 +44,17 @@ class QUOTE_DATABASE : public ScriptPlugin
     
     QUOTE_DATABASE ();
     void init ();
-    int command (Command &);
-    int getBars (Command &);
-    int setBars (Command &);
+    int command (Command *);
+    int getBars (Command *);
+    int setBars (Command *);
     int newSymbol (Symbol *);
     int getSymbol (Symbol *);
-    int transaction (Command &);
-    int commit (Command &);
-    int deleteSymbol (Command &);
-    int getExchange (Command &);
-    int rename (Command &);
-    int search (Command &);
+    int transaction (Command *);
+    int commit (Command *);
+    int deleteSymbol (Command *);
+    int getExchange (Command *);
+    int rename (Command *);
+    int search (Command *);
 
   private:
     QStringList _method;

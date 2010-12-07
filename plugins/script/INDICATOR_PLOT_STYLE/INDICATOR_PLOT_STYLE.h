@@ -28,7 +28,7 @@ class INDICATOR_PLOT_STYLE : public ScriptPlugin
 {
   public:
     INDICATOR_PLOT_STYLE ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

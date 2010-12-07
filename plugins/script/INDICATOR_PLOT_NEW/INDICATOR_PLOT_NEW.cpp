@@ -27,18 +27,18 @@ INDICATOR_PLOT_NEW::INDICATOR_PLOT_NEW ()
 {
 }
 
-int INDICATOR_PLOT_NEW::command (Command &command)
+int INDICATOR_PLOT_NEW::command (Command *command)
 {
   // INDICATOR_PLOT_NEW,<NAME>
   //           0           1
 
-  if (command.count() != 2)
+  if (command->count() != 2)
   {
-    qDebug() << "INDICATOR_PLOT_NEW::command: invalid parm count " << command.count();
+    qDebug() << "INDICATOR_PLOT_NEW::command: invalid parm count " << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_NEW::command: no indicator";
@@ -46,7 +46,7 @@ int INDICATOR_PLOT_NEW::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -58,9 +58,7 @@ int INDICATOR_PLOT_NEW::command (Command &command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

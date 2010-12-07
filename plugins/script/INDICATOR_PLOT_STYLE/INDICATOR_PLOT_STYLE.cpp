@@ -27,18 +27,18 @@ INDICATOR_PLOT_STYLE::INDICATOR_PLOT_STYLE ()
 {
 }
 
-int INDICATOR_PLOT_STYLE::command (Command &command)
+int INDICATOR_PLOT_STYLE::command (Command *command)
 {
   // INDICATOR_PLOT_STYLE,<NAME>,<STYLE>
   //           0             1      2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "INDICATOR_PLOT_STYLE::command: invalid parm count " << command.count();
+    qDebug() << "INDICATOR_PLOT_STYLE::command: invalid parm count " << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_STYLE::command: no indicator";
@@ -46,7 +46,7 @@ int INDICATOR_PLOT_STYLE::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
 
   Curve *line = i->line(name);
   if (! line)
@@ -56,18 +56,16 @@ int INDICATOR_PLOT_STYLE::command (Command &command)
   }
 
   pos++;
-  int style = line->typeFromString(command.parm(pos));
+  int style = line->typeFromString(command->parm(pos));
   if (style == -1)
   {
-    qDebug() << "INDICATOR_PLOT_STYLE::command: invalid style" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_STYLE::command: invalid style" << command->parm(pos);
     return 1;
   }
 
   line->setType((Curve::Type) style);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

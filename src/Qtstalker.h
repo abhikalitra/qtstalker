@@ -44,7 +44,8 @@
 #include "ChartLayout.h"
 #include "SidePanelButton.h"
 #include "CrossHairsButton.h"
-#include "MessageServer.h"
+//#include "MessageServer.h"
+#include "Command.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -64,7 +65,7 @@ class QtstalkerApp : public QMainWindow
 
   public slots:
     void loadChart (BarData);
-    void loadChart2 (QString);
+    void loadChart2 (Command *);
     void quit();
     void dataWindow ();
     void chartUpdated ();
@@ -93,7 +94,7 @@ class QtstalkerApp : public QMainWindow
     QAction *_newIndicatorAction;
     SidePanelButton *_sidePanelButton;
     CrossHairsButton *_crossHairsButton;
-    MessageServer *_messageServer;
+//    MessageServer *_messageServer;
 };
 
 #endif

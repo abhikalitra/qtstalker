@@ -134,7 +134,7 @@ void ChartLayout::load ()
     return;
   }
 
-  if (plug->command(command))
+  if (plug->command(&command))
   {
     delete plug;
     qDebug() << "ChartLayout::load: command failed";
@@ -158,7 +158,7 @@ void ChartLayout::load ()
       continue;
     }
 
-    if (plug->command(command))
+    if (plug->command(&command))
     {
       qDebug() << "ChartLayout::load: command failed";
       continue;
@@ -234,7 +234,7 @@ void ChartLayout::addTab (QString &name)
     return;
   }
 
-  if (plug->command(command))
+  if (plug->command(&command))
   {
     delete plug;
     return;
@@ -491,7 +491,7 @@ void ChartLayout::newIndicator ()
 
   connect(plug, SIGNAL(signalDone(QStringList)), this, SLOT(newIndicator2(QStringList)));
 
-  plug->command(command);
+  plug->command(&command);
 }
 
 void ChartLayout::newIndicator2 (QStringList l)
@@ -582,7 +582,7 @@ void ChartLayout::deleteIndicator ()
 
   connect(plug, SIGNAL(signalDone(QStringList)), this, SLOT(removeTab(QStringList)));
 
-  plug->command(command);
+  plug->command(&command);
 }
 
 void ChartLayout::removeTab (QStringList l)

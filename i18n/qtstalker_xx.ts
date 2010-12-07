@@ -1447,6 +1447,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Delete Groups</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GroupEditDialog</name>
@@ -1462,6 +1466,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Delete Symbols</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Group Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GroupNewDialog</name>
@@ -1471,6 +1479,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Duplicate group name entered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter new group name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1489,10 +1501,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete group items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Delete group</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1505,11 +1513,15 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Delete Group Items</source>
+        <source>&amp;Edit Group Items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>De&amp;lete Group</source>
+        <source>Edit group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2909,14 +2921,6 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>&amp;Run File...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run file as script...</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ScriptEditDialog</name>
@@ -2942,6 +2946,37 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Invalid command.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings modified. Save changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScriptItem</name>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>completed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2972,6 +3007,14 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Enter name of new script:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name missing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A script with this name already exists.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3062,6 +3105,33 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Invalid command.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScriptSearchDialog</name>
+    <message>
+        <source>Select Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a partial search like %import% or * for all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search For</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Items</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3897,6 +3967,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Yahoo Symbols</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>YahooDialog</name>
@@ -3968,6 +4042,14 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Select Symbols</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yahoo</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>YahooSymbolDialog</name>
@@ -3981,6 +4063,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Edit Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yahoo Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

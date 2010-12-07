@@ -30,14 +30,28 @@ SYMBOL_DIALOG::SYMBOL_DIALOG ()
   _threadSafe = 0;
 }
 
-int SYMBOL_DIALOG::command (Command &)
+int SYMBOL_DIALOG::command (Command *command)
 {
-  // SYMBOL_DIALOG
-  //        0
+  // SYMBOL_DIALOG,FLAG
+  //        0        1
+  // FLAG = 1 will return only the exchange/search pattern
+  // FLAG = 0 will return symbols
 
-  SymbolDialog *dialog = new SymbolDialog;
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  connect(dialog, SIGNAL(signalDone(QString)), this, SIGNAL(signalDone(QString)));
+  if (command->count() != 2)
+  {
+    qDebug() << "SYMBOL_DIALOG::command: invalid parm count" << command->count();
+    return 1;
+  }
+
+  bool ok;
+  command->parm(1).toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "SYMBOL_DIALOG::command: invalid flag" << command->parm(1);
+    return 1;
+  }
+  
+  SymbolDialog *dialog = new SymbolDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   dialog->show();
 

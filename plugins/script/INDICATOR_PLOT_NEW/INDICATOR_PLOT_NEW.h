@@ -28,7 +28,7 @@ class INDICATOR_PLOT_NEW : public ScriptPlugin
 {
   public:
     INDICATOR_PLOT_NEW ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

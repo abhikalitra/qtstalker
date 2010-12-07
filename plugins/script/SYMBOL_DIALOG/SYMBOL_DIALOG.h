@@ -28,7 +28,7 @@ class SYMBOL_DIALOG : public ScriptPlugin
 {
   public:
     SYMBOL_DIALOG ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

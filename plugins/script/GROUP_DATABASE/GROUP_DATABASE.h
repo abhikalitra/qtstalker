@@ -33,17 +33,21 @@ class GROUP_DATABASE : public ScriptPlugin
     {
       _LOAD,
       _SAVE,
+      _SAVE_ALL,
       _DELETE,
       _GROUPS
     };
     
     GROUP_DATABASE ();
     void init ();
-    int command (Command &);
-    int load (Command &);
-    int save (Command &);
-    int deleteGroup (Command &);
-    int groups (Command &);
+    int command (Command *);
+    int load (Command *);
+    int save (Command *);
+    int saveAll (Command *);
+    int deleteGroup (Command *);
+    int groups (Command *);
+    int newGroup (QString &name, QString &table);
+    int getTable (QString &name, QString &table);
 
   private:
     QStringList _method;

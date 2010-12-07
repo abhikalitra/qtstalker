@@ -30,7 +30,7 @@ class MA : public ScriptPlugin
   
   public:
     MA ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

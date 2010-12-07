@@ -29,18 +29,18 @@ INDICATOR_PLOT_COLOR::INDICATOR_PLOT_COLOR ()
   _method << "SET" << "ALL" << "COMPARE_INDEX_ALL" << "COMPARE_VALUE_ALL";
 }
 
-int INDICATOR_PLOT_COLOR::command (Command &command)
+int INDICATOR_PLOT_COLOR::command (Command *command)
 {
   // INDICATOR_PLOT_COLOR,<METHOD>
   //            0            1
 
-  if (command.count() < 2)
+  if (command->count() < 2)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::command: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_COLOR::command: invalid parm count" << command->count();
     return 1;
   }
 
-  switch ((Method) _method.indexOf(command.parm(1)))
+  switch ((Method) _method.indexOf(command->parm(1)))
   {
     case _SET:
       return setColor(command);
@@ -61,18 +61,18 @@ int INDICATOR_PLOT_COLOR::command (Command &command)
   return 0;
 }
 
-int INDICATOR_PLOT_COLOR::setColor (Command &command)
+int INDICATOR_PLOT_COLOR::setColor (Command *command)
 {
   // INDICATOR_PLOT_COLOR,<METHOD>,<NAME>,<INDEX>,<COLOR>
   //           0             1       2       3       4
 
-  if (command.count() != 5)
+  if (command->count() != 5)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::setColor: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_COLOR::setColor: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_COLOR::setColor: no indicator";
@@ -80,7 +80,7 @@ int INDICATOR_PLOT_COLOR::setColor (Command &command)
   }
 
   int pos = 2;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
 
   Curve *line = i->line(name);
   if (! line)
@@ -91,49 +91,47 @@ int INDICATOR_PLOT_COLOR::setColor (Command &command)
 
   pos++;
   bool ok;
-  int index = command.parm(pos).toInt(&ok);
+  int index = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::setColor: invalid index value" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::setColor: invalid index value" << command->parm(pos);
     return 1;
   }
 
   CurveBar *bar = line->bar(index);
   if (! bar)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::setColor: bar not found" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::setColor: bar not found" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  QColor color(command.parm(pos));
+  QColor color(command->parm(pos));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::setColor: invalid color" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::setColor: invalid color" << command->parm(pos);
     return 1;
   }
 
   bar->setColor(color);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
 
-int INDICATOR_PLOT_COLOR::setColorAll (Command &command)
+int INDICATOR_PLOT_COLOR::setColorAll (Command *command)
 {
   // INDICATOR_PLOT_COLOR,<METHOD>,<NAME>,<COLOR>
   //           0             1       2       3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::setColorAll: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_COLOR::setColorAll: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_COLOR::setColorAll: no indicator";
@@ -141,7 +139,7 @@ int INDICATOR_PLOT_COLOR::setColorAll (Command &command)
   }
 
   int pos = 2;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
 
   Curve *line = i->line(name);
   if (! line)
@@ -151,18 +149,16 @@ int INDICATOR_PLOT_COLOR::setColorAll (Command &command)
   }
 
   pos++;
-  QColor color(command.parm(pos));
+  QColor color(command->parm(pos));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::setColorAll: invalid color" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::setColorAll: invalid color" << command->parm(pos);
     return 1;
   }
 
   line->setAllColor(color);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
@@ -176,13 +172,13 @@ int INDICATOR_PLOT_COLOR::compareAll (Command &command)
   // INDICATOR_PLOT_COLOR,<COMPARE>,<NAME>,<OP>,<NAME2>,<NAME3>,<COLOR>
   //           0             1        2      3     4       5       6
 
-  if (command.count() != 6)
+  if (command->count() != 6)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_COLOR::compareAll: no indicator";
@@ -190,7 +186,7 @@ int INDICATOR_PLOT_COLOR::compareAll (Command &command)
   }
 
   int pos = 2;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (! line)
   {
@@ -200,33 +196,33 @@ int INDICATOR_PLOT_COLOR::compareAll (Command &command)
 
   pos++;
   Operator top;
-  Operator::Type op = top.stringToOperator(command.parm(pos));
+  Operator::Type op = top.stringToOperator(command->parm(pos));
   if (op == -1)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid operator" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid operator" << command->parm(pos);
     return 1;
   }
 
   pos++;
   bool ok;
-  int offset = command.parm(pos).toInt(&ok);
+  int offset = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid offset value" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid offset value" << command->parm(pos);
     return 1;
   }
 
   if (offset < 0)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid offset value" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid offset value" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  QColor color(command.parm(pos));
+  QColor color(command->parm(pos));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid color" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::compareAll: invalid color" << command->parm(pos);
     return 1;
   }
 
@@ -268,7 +264,7 @@ int INDICATOR_PLOT_COLOR::compareAll (Command &command)
     }
   }
 
-  command.setReturnData("0");
+  command->setReturnData("0");
 
   emit signalDone();
 
@@ -276,18 +272,18 @@ int INDICATOR_PLOT_COLOR::compareAll (Command &command)
 }
 */
 
-int INDICATOR_PLOT_COLOR::compareIndexAll (Command &command)
+int INDICATOR_PLOT_COLOR::compareIndexAll (Command *command)
 {
   // INDICATOR_PLOT_COLOR,<COMPARE>,<NAME>,<OP>,<NAME2>,<NAME3>,<COLOR>
   //           0             1        2      3     4       5       6
 
-  if (command.count() != 7)
+  if (command->count() != 7)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: no indicator";
@@ -297,7 +293,7 @@ int INDICATOR_PLOT_COLOR::compareIndexAll (Command &command)
   // verify NAME
   int pos = 2;
   int offset = 0;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   QStringList l = name.split(".", QString::SkipEmptyParts);
   if (l.count() == 2)
   {
@@ -307,7 +303,7 @@ int INDICATOR_PLOT_COLOR::compareIndexAll (Command &command)
     offset = l.at(1).toInt(&ok);
     if (! ok)
     {
-      qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid name" << command.parm(pos);
+      qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid name" << command->parm(pos);
       return 1;
     }
   }
@@ -322,17 +318,17 @@ int INDICATOR_PLOT_COLOR::compareIndexAll (Command &command)
   // verify OP
   pos++;
   Operator top;
-  Operator::Type op = top.stringToOperator(command.parm(pos));
+  Operator::Type op = top.stringToOperator(command->parm(pos));
   if (op == -1)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid operator" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid operator" << command->parm(pos);
     return 1;
   }
 
   // verify NAME2
   pos++;
   int offset2 = 0;
-  QString name2 = command.parm(pos);
+  QString name2 = command->parm(pos);
   l = name2.split(".", QString::SkipEmptyParts);
   if (l.count() == 2)
   {
@@ -342,7 +338,7 @@ int INDICATOR_PLOT_COLOR::compareIndexAll (Command &command)
     offset2 = l.at(1).toInt(&ok);
     if (! ok)
     {
-      qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid name2" << command.parm(pos);
+      qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid name2" << command->parm(pos);
       return 1;
     }
   }
@@ -357,7 +353,7 @@ int INDICATOR_PLOT_COLOR::compareIndexAll (Command &command)
   // verify NAME3
   pos++;
   int offset3 = 0;
-  QString name3 = command.parm(pos);
+  QString name3 = command->parm(pos);
   l = name3.split(".", QString::SkipEmptyParts);
   if (l.count() == 2)
   {
@@ -367,7 +363,7 @@ int INDICATOR_PLOT_COLOR::compareIndexAll (Command &command)
     offset3 = l.at(1).toInt(&ok);
     if (! ok)
     {
-      qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid name3" << command.parm(pos);
+      qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid name3" << command->parm(pos);
       return 1;
     }
   }
@@ -380,10 +376,10 @@ int INDICATOR_PLOT_COLOR::compareIndexAll (Command &command)
   }
 
   pos++;
-  QColor color(command.parm(pos));
+  QColor color(command->parm(pos));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid color" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::compareIndexAll: invalid color" << command->parm(pos);
     return 1;
   }
 
@@ -442,25 +438,23 @@ int INDICATOR_PLOT_COLOR::compareIndexAll (Command &command)
     }
   }
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
 
-int INDICATOR_PLOT_COLOR::compareValueAll (Command &command)
+int INDICATOR_PLOT_COLOR::compareValueAll (Command *command)
 {
   // INDICATOR_PLOT_COLOR,<COMPARE>,<NAME>,<OP>,<VALUE>,<NAME2>,<COLOR>
   //           0             1        2      3     4       5       6
 
-  if (command.count() != 7)
+  if (command->count() != 7)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: no indicator";
@@ -469,7 +463,7 @@ int INDICATOR_PLOT_COLOR::compareValueAll (Command &command)
 
   // verify NAME
   int pos = 2;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (! line)
   {
@@ -480,27 +474,27 @@ int INDICATOR_PLOT_COLOR::compareValueAll (Command &command)
   // verify OP
   pos++;
   Operator top;
-  Operator::Type op = top.stringToOperator(command.parm(pos));
+  Operator::Type op = top.stringToOperator(command->parm(pos));
   if (op == -1)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid operator" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid operator" << command->parm(pos);
     return 1;
   }
 
   // verify VALUE
   pos++;
   bool ok;
-  double value = command.parm(pos).toDouble(&ok);
+  double value = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid value" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid value" << command->parm(pos);
     return 1;
   }
 
   // verify NAME2
   pos++;
   int offset2 = 0;
-  QString name2 = command.parm(pos);
+  QString name2 = command->parm(pos);
   QStringList l = name2.split(".", QString::SkipEmptyParts);
   if (l.count() == 2)
   {
@@ -510,7 +504,7 @@ int INDICATOR_PLOT_COLOR::compareValueAll (Command &command)
     offset2 = l.at(1).toInt(&ok);
     if (! ok)
     {
-      qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid name2" << command.parm(pos);
+      qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid name2" << command->parm(pos);
       return 1;
     }
   }
@@ -523,10 +517,10 @@ int INDICATOR_PLOT_COLOR::compareValueAll (Command &command)
   }
 
   pos++;
-  QColor color(command.parm(pos));
+  QColor color(command->parm(pos));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid color" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_COLOR::compareValueAll: invalid color" << command->parm(pos);
     return 1;
   }
 
@@ -573,9 +567,7 @@ int INDICATOR_PLOT_COLOR::compareValueAll (Command &command)
     }
   }
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

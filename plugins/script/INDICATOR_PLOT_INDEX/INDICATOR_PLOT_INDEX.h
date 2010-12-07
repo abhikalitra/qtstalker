@@ -35,10 +35,10 @@ class INDICATOR_PLOT_INDEX : public ScriptPlugin
     };
     
     INDICATOR_PLOT_INDEX ();
-    int command (Command &);
-    int getIndex (Command &);
-    int setIndex (Command &);
-    int getRange (Command &);
+    int command (Command *);
+    int getIndex (Command *);
+    int setIndex (Command *);
+    int getRange (Command *);
 
   private:
     QStringList _method;

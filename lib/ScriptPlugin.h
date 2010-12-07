@@ -22,8 +22,6 @@
 #ifndef SCRIPT_PLUGIN_HPP
 #define SCRIPT_PLUGIN_HPP
 
-#include <QStringList>
-#include <QByteArray>
 #include <QObject>
 
 #include "Command.h"
@@ -33,16 +31,12 @@ class ScriptPlugin : public QObject
   Q_OBJECT
 
   signals:
-    void signalDone ();
-    void signalDone (QString);
-    void signalDone (QStringList);
-    void signalMessage (QString);
     void signalResume ();
   
   public:
     ScriptPlugin ();
     virtual ~ScriptPlugin ();
-    virtual int command (Command &);
+    virtual int command (Command *);
     int isThreadSafe ();
 
   protected:

@@ -23,7 +23,6 @@
 #include "Globals.h"
 #include "Doc.h"
 #include "Command.h"
-#include "ScriptPluginFactory.h"
 
 #include "../pics/add.xpm"
 #include "../pics/delete.xpm"
@@ -33,19 +32,34 @@
 #include <QLayout>
 #include <QSettings>
 
-GroupEditDialog::GroupEditDialog (QString name)
+GroupEditDialog::GroupEditDialog (Command *command)
 {
-  _name = name;
+  _command = command;
+  _name = _command->parm(1);
   _helpFile = "main.html";
   setWindowTitle("QtStalker" + g_session + ": " + tr("Edit Group"));
 
   createGUI();
 
-  loadGroup();
+  QStringList l;
+  int loop = 2;
+  for (; loop < _command->count(); loop++)
+    l << _command->parm(loop);
+  _list->clear();
+  _list->addItems(l);
 
   loadSettings();
 
   selectionChanged();
+
+  _symbolDialogCommand = new Command("SYMBOL_DIALOG,0");
+
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
+}
+
+GroupEditDialog::~GroupEditDialog ()
+{
+  delete _symbolDialogCommand;
 }
 
 void GroupEditDialog::createGUI ()
@@ -53,6 +67,9 @@ void GroupEditDialog::createGUI ()
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(2);
   setLayout(vbox);
+
+  QLabel *label = new QLabel(tr("Group Symbols"));
+  vbox->addWidget(label);
 
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
@@ -81,22 +98,26 @@ void GroupEditDialog::createGUI ()
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteButtonPressed()));
   tvbox->addWidget(_deleteButton);
 
+  tvbox->addStretch(1);
+
   // status message
   _message = new QLabel;
   vbox->addWidget(_message);
 
   // buttonbox
   QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
+//  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
+//  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
   vbox->addWidget(bbox);
 
   // ok button
   _okButton = bbox->addButton(QDialogButtonBox::Ok);
+  connect(_okButton, SIGNAL(clicked()), this, SLOT(done()));
   _okButton->setDefault(TRUE);
 
   // cancel button
   _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
+  connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancel()));
   _cancelButton->setDefault(TRUE);
 
   // help button
@@ -122,31 +143,14 @@ void GroupEditDialog::help ()
 
 void GroupEditDialog::done ()
 {
-  QStringList cl;
-  cl << "GROUP_DATABASE" << "SAVE" << _name;
-
+  QStringList l;
   int loop = 0;
   for (; loop < _list->count(); loop++)
-  {
-    QListWidgetItem *item = _list->item(loop);
-    cl << item->text();
-  }
+    l << _list->item(loop)->text();
 
-  Command command(cl.join(","));
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "GroupEditDialog::done: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
+  _command->setReturnData(l.join(","));
 
   saveSettings();
-
-  emit signalDone("0");
 
   accept();
 }
@@ -157,45 +161,23 @@ void GroupEditDialog::cancel ()
   reject();
 }
 
-void GroupEditDialog::loadGroup ()
-{
-  Command command("GROUP_DATABASE,GROUPS");
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "GroupDeleteDialog::loadGroups: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
-
-  QStringList l = command.stringData().split(",");
-  _list->clear();
-  _list->addItems(l);
-}
-
 void GroupEditDialog::addButtonPressed ()
 {
-  Command command("SYMBOL_DIALOG");
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
+  ScriptPlugin *plug = _factory.plugin(_symbolDialogCommand->plugin());
   if (! plug)
   {
-    qDebug() << "GroupEditDialog::addButtonPressed: no plugin" << command.plugin();
+    qDebug() << "GroupEditDialog::addButtonPressed: no plugin" << _symbolDialogCommand->plugin();
     return;
   }
 
-  connect(plug, SIGNAL(signalDone(QStringList)), this, SLOT(addButtonPressed2(QStringList)));
+  connect(plug, SIGNAL(signalResume()), this, SLOT(addButtonPressed2()));
 
-  plug->command(command);
+  plug->command(_symbolDialogCommand);
 }
 
-void GroupEditDialog::addButtonPressed2 (QStringList l)
+void GroupEditDialog::addButtonPressed2 ()
 {
-  _list->addItems(l);
+  _list->addItems(_symbolDialogCommand->stringData().split(",", QString::SkipEmptyParts));
 }
 
 void GroupEditDialog::deleteButtonPressed ()

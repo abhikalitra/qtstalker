@@ -28,7 +28,7 @@ class GROUP_EDIT_DIALOG : public ScriptPlugin
 {
   public:
     GROUP_EDIT_DIALOG ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

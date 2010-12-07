@@ -36,11 +36,11 @@ class INDICATOR_PLOT_COLOR : public ScriptPlugin
     };
     
     INDICATOR_PLOT_COLOR ();
-    int command (Command &);
-    int setColor (Command &);
-    int setColorAll (Command &);
-    int compareIndexAll (Command &);
-    int compareValueAll (Command &);
+    int command (Command *);
+    int setColor (Command *);
+    int setColorAll (Command *);
+    int compareIndexAll (Command *);
+    int compareValueAll (Command *);
 
   private:
     QStringList _method;

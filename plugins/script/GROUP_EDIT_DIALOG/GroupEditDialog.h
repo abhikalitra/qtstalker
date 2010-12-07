@@ -28,17 +28,16 @@
 #include <QPushButton>
 #include <QLabel>
 
+#include "ScriptPluginFactory.h"
+
 class GroupEditDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalDone (QString);
-
   public:
-    GroupEditDialog (QString);
+    GroupEditDialog (Command *);
+    ~GroupEditDialog ();
     void createGUI ();
-    void loadGroup ();
     void loadSettings ();
     void saveSettings ();
 
@@ -48,7 +47,7 @@ class GroupEditDialog : public QDialog
     void selectionChanged ();
     void help ();
     void addButtonPressed ();
-    void addButtonPressed2 (QStringList);
+    void addButtonPressed2 ();
     void deleteButtonPressed ();
 
   private:
@@ -60,6 +59,9 @@ class GroupEditDialog : public QDialog
     QString _helpFile;
     QLabel *_message;
     QString _name;
+    ScriptPluginFactory _factory;
+    Command *_command;
+    Command *_symbolDialogCommand;
 };
 
 #endif

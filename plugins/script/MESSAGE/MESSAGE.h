@@ -28,7 +28,7 @@ class MESSAGE : public ScriptPlugin
 {
   public:
     MESSAGE ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

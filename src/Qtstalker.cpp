@@ -74,9 +74,9 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   setWindowTitle(getWindowCaption());
 
   // start the message server
-  _messageServer = new MessageServer(this);
-  connect(_messageServer, SIGNAL(signalRefreshChartPanel()), _sidePanel->chartPanel(), SLOT(updateList()));
-  connect(_messageServer, SIGNAL(signalRefreshGroupPanel()), _sidePanel->groupPanel(), SLOT(updateGroups()));
+//  _messageServer = new MessageServer(this);
+//  connect(_messageServer, SIGNAL(signalRefreshChartPanel()), _sidePanel->chartPanel(), SLOT(updateList()));
+//  connect(_messageServer, SIGNAL(signalRefreshGroupPanel()), _sidePanel->groupPanel(), SLOT(updateGroups()));
 }
 
 void QtstalkerApp::createGUI ()
@@ -296,19 +296,20 @@ void QtstalkerApp::loadChart (BarData symbol)
   else
     l << "0" << "0" << QString::number(_dateRange->dateRange());
 
-  Command command(l.join(","));
-  command.setBarData(g_barData);
+  Command *command = new Command(l.join(","));
+  command->setBarData(g_barData);
 
   CommandThread *thread = new CommandThread(this, command);
-  connect(thread, SIGNAL(signalDone(QString)), this, SLOT(loadChart2(QString)), Qt::QueuedConnection);
+  connect(thread, SIGNAL(signalDone(Command *)), this, SLOT(loadChart2(Command *)), Qt::QueuedConnection);
   thread->start();
 }
 
-void QtstalkerApp::loadChart2 (QString d)
+void QtstalkerApp::loadChart2 (Command *command)
 {
-  if (d == "ERROR")
+  if (command->stringData() == "ERROR")
   {
-    qDebug() << "QtstalkerApp::loadChart2: command error" << d;
+    qDebug() << "QtstalkerApp::loadChart2: command error";
+    delete command;
     return;
   }
   

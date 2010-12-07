@@ -32,18 +32,16 @@ class CommandThread : public QThread
   Q_OBJECT
 
   signals:
-    void signalDone (QString);
+    void signalDone (Command *);
 
   public:
-    CommandThread (QObject *, Command);
-    QString stringData ();
-    QByteArray arrayData ();
+    CommandThread (QObject *, Command *);
 
   protected:
     void run ();
 
   private:
-    Command _command;
+    Command *_command;
 };
 
 #endif

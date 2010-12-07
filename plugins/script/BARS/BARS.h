@@ -39,15 +39,13 @@ class BARS : public ScriptPlugin
       _CLOSE,
       _VOLUME,
       _OI
-//      _CURRENT
     };
 
     BARS ();
-    int command (Command &);
-    int getBars (Command &);
-    int getCandles (Command &);
-    int getBarField (Command &);
-//    int getCurrentBars (Command &);
+    int command (Command *);
+    int getBars (Command *);
+    int getCandles (Command *);
+    int getBarField (Command *);
 
   private:
     QStringList _method;

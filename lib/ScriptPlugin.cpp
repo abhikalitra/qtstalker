@@ -33,7 +33,7 @@ ScriptPlugin::~ScriptPlugin ()
 }
 
 // virtual function
-int ScriptPlugin::command (Command &)
+int ScriptPlugin::command (Command *)
 {
   return 0;
 }

@@ -56,18 +56,18 @@ void SCRIPT_DATABASE::init ()
     qDebug() << "SCRIPT_DATABASE::init:" << q.lastError().text();
 }
 
-int SCRIPT_DATABASE::command (Command &command)
+int SCRIPT_DATABASE::command (Command *command)
 {
   // SCRIPT_DATABASE,<METHOD>
   //         0          1
   
-  if (command.count() < 2)
+  if (command->count() < 2)
   {
-    qDebug() << "SCRIPT_DATABASE::command: invalid parm count" << command.count();
+    qDebug() << "SCRIPT_DATABASE::command: invalid parm count" << command->count();
     return 1;
   }
 
-  switch ((Method) _method.indexOf(command.parm(1)))
+  switch ((Method) _method.indexOf(command->parm(1)))
   {
     case _LOAD:
       return load(command);
@@ -88,18 +88,18 @@ int SCRIPT_DATABASE::command (Command &command)
   return 0;
 }
 
-int SCRIPT_DATABASE::load (Command &command)
+int SCRIPT_DATABASE::load (Command *command)
 {
   // SCRIPT_DATABASE,LOAD,<NAME>
   //       0          1      2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "SCRIPT_DATABASE::load: invalid parm count" << command.count();
+    qDebug() << "SCRIPT_DATABASE::load: invalid parm count" << command->count();
     return 1;
   }
 
-  QString name = command.parm(2);
+  QString name = command->parm(2);
 
   QSqlQuery q(_db);
   QString s = "SELECT command,script FROM script WHERE name='" + name + "'";
@@ -119,34 +119,32 @@ int SCRIPT_DATABASE::load (Command &command)
     l << q.value(pos++).toString();
   }
 
-  command.setReturnData(l.join(","));
-
-  emit signalDone(l.join(","));
+  command->setReturnData(l.join(","));
 
   return 0;
 }
 
-int SCRIPT_DATABASE::save (Command &command)
+int SCRIPT_DATABASE::save (Command *command)
 {
   // SCRIPT_DATABASE,SAVE,<NAME>,<FILE>,<COMMAND>
   //        0         1      2      3       4
 
-  if (command.count() != 5)
+  if (command->count() != 5)
   {
-    qDebug() << "SCRIPT_DATABASE::save: invalid parm count" << command.count();
+    qDebug() << "SCRIPT_DATABASE::save: invalid parm count" << command->count();
     return 1;
   }
 
   int pos = 2;
-  QString name = command.parm(pos++);
+  QString name = command->parm(pos++);
 
   QSqlQuery q(_db);
   _db.transaction();
   
   QString s = "INSERT OR REPLACE INTO script (name,command,script) VALUES (";
   s.append("'" + name + "'");
-  s.append(",'" + command.parm(pos++) + "'");
-  s.append(",'" + command.parm(pos++) + "'");
+  s.append(",'" + command->parm(pos++) + "'");
+  s.append(",'" + command->parm(pos++) + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -157,21 +155,19 @@ int SCRIPT_DATABASE::save (Command &command)
 
   _db.commit();
   
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
 
-int SCRIPT_DATABASE::deleteScript (Command &command)
+int SCRIPT_DATABASE::deleteScript (Command *command)
 {
   // SCRIPT_DATABASE,DELETE,<NAME>,*
   //        0           1      2    *
 
-  if (command.count() < 3)
+  if (command->count() < 3)
   {
-    qDebug() << "SCRIPT_DATABASE::deleteScript: invalid parm count" << command.count();
+    qDebug() << "SCRIPT_DATABASE::deleteScript: invalid parm count" << command->count();
     return 1;
   }
 
@@ -179,9 +175,9 @@ int SCRIPT_DATABASE::deleteScript (Command &command)
   _db.transaction();
 
   int loop = 2;
-  for (; loop < command.count(); loop++)
+  for (; loop < command->count(); loop++)
   {
-    QString s = "DELETE FROM script WHERE name='" + command.parm(loop) + "'";
+    QString s = "DELETE FROM script WHERE name='" + command->parm(loop) + "'";
     q.exec(s);
     if (q.lastError().isValid())
       qDebug() << "SCRIPT_DATABASE::deleteScript:" << q.lastError().text();
@@ -189,14 +185,12 @@ int SCRIPT_DATABASE::deleteScript (Command &command)
 
   _db.commit();
 
-  command.setReturnData("0");
-  
-  emit signalDone();
+  command->setReturnData("0");
   
   return 0;
 }
 
-int SCRIPT_DATABASE::scripts (Command &command)
+int SCRIPT_DATABASE::scripts (Command *command)
 {
   // SCRIPT_DATABASE,SCRIPTS
   //        0          1
@@ -214,9 +208,7 @@ int SCRIPT_DATABASE::scripts (Command &command)
   while (q.next())
     l << q.value(0).toString();
 
-  command.setReturnData(l.join(","));
-
-  emit signalDone(l.join(","));
+  command->setReturnData(l.join(","));
 
   return 0;
 }

@@ -98,7 +98,7 @@ void Setup::setupDefaultIndicators ()
     return;
   }
 
-  plug->command(command);
+  plug->command(&command);
   if (command.stringData() == "ERROR")
     qDebug() << "Setup::setupDefaultIndicators: error saving default Bars indicator";
 
@@ -108,7 +108,7 @@ void Setup::setupDefaultIndicators ()
 
   command.parse(cl.join(","));
 
-  plug->command(command);
+  plug->command(&command);
   
   if (command.stringData() == "ERROR")
     qDebug() << "Setup::setupDefaultIndicators: error saving default Volume indicator";

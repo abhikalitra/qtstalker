@@ -28,22 +28,21 @@
 
 BARS::BARS ()
 {
-//  _method << "BARS" << "CANDLES" << "Open" << "High" << "Low" << "Close" << "Volume" << "OI" << "CURRENT";
   _method << "BARS" << "CANDLES" << "Open" << "High" << "Low" << "Close" << "Volume" << "OI";
 }
 
-int BARS::command (Command &command)
+int BARS::command (Command *command)
 {
   // BARS,<METHOD>
   //  0      1
 
-  if (command.count() < 2)
+  if (command->count() < 2)
   {
-    qDebug() << "BARS::command: invalid parm count" << command.count();
+    qDebug() << "BARS::command: invalid parm count" << command->count();
     return 1;
   }
 
-  switch ((Method) _method.indexOf(command.parm(1)))
+  switch ((Method) _method.indexOf(command->parm(1)))
   {
     case _BARS:
       return getBars(command);
@@ -59,9 +58,6 @@ int BARS::command (Command &command)
     case _OI:
       return getBarField(command);
       break;
-//    case _CURRENT:
-//      return getCurrentBars(command);
-//      break;
     default:
       break;
   }
@@ -69,18 +65,18 @@ int BARS::command (Command &command)
   return 0;
 }
 
-int BARS::getBars (Command &command)
+int BARS::getBars (Command *command)
 {
   // BARS,<METHOD>,<NAME>
   //  0      1       2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "BARS::getBars: invalid parm count" << command.count();
+    qDebug() << "BARS::getBars: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "BARS::getBars: no indicator";
@@ -93,7 +89,7 @@ int BARS::getBars (Command &command)
     return 1;
   }
 
-  QString name = command.parm(2);
+  QString name = command->parm(2);
   Curve *line = i->line(name);
   if (line)
   {
@@ -124,23 +120,23 @@ int BARS::getBars (Command &command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command.setReturnData("0");
+  command->setReturnData("0");
 
   return 0;
 }
 
-int BARS::getCandles (Command &command)
+int BARS::getCandles (Command *command)
 {
   // BARS,<METHOD>,<NAME>
   //  0      1       2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "BARS::getCandles: invalid parm count" << command.count();
+    qDebug() << "BARS::getCandles: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "BARS::getCandles: no indicator";
@@ -153,7 +149,7 @@ int BARS::getCandles (Command &command)
     return 1;
   }
 
-  QString name = command.parm(2);
+  QString name = command->parm(2);
   Curve *line = i->line(name);
   if (line)
   {
@@ -184,23 +180,23 @@ int BARS::getCandles (Command &command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command.setReturnData("0");
+  command->setReturnData("0");
 
   return 0;
 }
 
-int BARS::getBarField (Command &command)
+int BARS::getBarField (Command *command)
 {
   // BARS,<METHOD>,<NAME>
   //  0      1       2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "BARS::getBarField: invalid parm count" << command.count();
+    qDebug() << "BARS::getBarField: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "BARS::getBarField: no indicator";
@@ -213,7 +209,7 @@ int BARS::getBarField (Command &command)
     return 1;
   }
 
-  QString name = command.parm(2);
+  QString name = command->parm(2);
   Curve *line = i->line(name);
   if (line)
   {
@@ -221,7 +217,7 @@ int BARS::getBarField (Command &command)
     return 1;
   }
 
-  line = g_barData->input(g_barData->inputType(command.parm(1)));
+  line = g_barData->input(g_barData->inputType(command->parm(1)));
   if (! line)
   {
     qDebug() << "BARS::getBarField: no input returned";
@@ -231,74 +227,10 @@ int BARS::getBarField (Command &command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command.setReturnData("0");
+  command->setReturnData("0");
 
   return 0;
 }
-
-/*
-int BARS::getCurrentBars (Command &command)
-{
-  // BARS,<METHOD>
-  //  0      1
-
-  MessageClient mc(this);
-  QLocalSocket *socket = new QLocalSocket(this);
-  if (mc.newConnection(socket, "QtStalkerMessageServer" + g_session))
-  {
-    qDebug() << "BARS::getCurrentBars:" << socket->errorString();
-    delete socket;
-    return 1;
-  }
-
-  QString message;
-  Message mess;
-  mess.message(Message::_BARS, message);
-  
-  mc.sendMessage(socket, message);
-  
-  mc.receiveMessage(socket, message);
-  if (message.isEmpty())
-  {
-    qDebug() << "BARS::getCurrentBars: empty bars message";
-    delete socket;
-    return 1;
-  }
-
-  delete socket;
-
-  g_barData->clear();
-  if (g_barData->setStringSettings(message))
-  {
-    qDebug() << "BARS::getCurrentBars: bars message fields error";
-    return 1;
-  }
-
-  QStringList l;
-  l << "QUOTE" << "GET" << g_barData->exchange() << g_barData->symbol() << QString::number(g_barData->barLength());
-  l << "0" << "0" << QString::number(g_barData->range());
-  
-  Command tcommand(l.join(","));
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(tcommand.plugin());
-  if (! plug)
-  {
-    qDebug() << "BARS::getCurrentBars: no plugin";
-    return 1;
-  }
-
-  plug->command(tcommand);
-
-  delete plug;
-
-  command.setReturnData("0");
-
-qDebug() << "BARS::getCurrentBars:" << g_barData->count();
-
-  return 0;
-}
-*/
 
 //*************************************************************
 //*************************************************************

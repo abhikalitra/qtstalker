@@ -28,18 +28,18 @@ INDICATOR_PLOT_INDEX::INDICATOR_PLOT_INDEX ()
   _method << "GET" << "SET" << "RANGE";
 }
 
-int INDICATOR_PLOT_INDEX::command (Command &command)
+int INDICATOR_PLOT_INDEX::command (Command *command)
 {
   // INDICATOR_PLOT_INDEX,<METHOD>
   //            0            1
 
-  if (command.count() < 2)
+  if (command->count() < 2)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX::command: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_INDEX::command: invalid parm count" << command->count();
     return 1;
   }
 
-  switch ((Method) _method.indexOf(command.parm(1)))
+  switch ((Method) _method.indexOf(command->parm(1)))
   {
     case _GET:
       return getIndex(command);
@@ -57,18 +57,18 @@ int INDICATOR_PLOT_INDEX::command (Command &command)
   return 0;
 }
 
-int INDICATOR_PLOT_INDEX::getIndex (Command &command)
+int INDICATOR_PLOT_INDEX::getIndex (Command *command)
 {
   // INDICATOR_PLOT_INDEX,<METHOD>,<NAME>,<INDEX>
   //           0             1       2       3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX::getIndex: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_INDEX::getIndex: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_INDEX::getIndex: no indicator";
@@ -76,7 +76,7 @@ int INDICATOR_PLOT_INDEX::getIndex (Command &command)
   }
 
   int pos = 2;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
 
   Curve *line = i->line(name);
   if (! line)
@@ -87,40 +87,38 @@ int INDICATOR_PLOT_INDEX::getIndex (Command &command)
 
   pos++;
   bool ok;
-  int index = command.parm(pos).toInt(&ok);
+  int index = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX::getIndex: invalid index value" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_INDEX::getIndex: invalid index value" << command->parm(pos);
     return 1;
   }
 
   CurveBar *bar = line->bar(index);
   if (! bar)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX::getIndex: bar not found" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_INDEX::getIndex: bar not found" << command->parm(pos);
     return 1;
   }
 
   QString s = QString::number(bar->data());
-  command.setReturnData(s);
-
-  emit signalDone(s);
+  command->setReturnData(s);
 
   return 0;
 }
 
-int INDICATOR_PLOT_INDEX::setIndex (Command &command)
+int INDICATOR_PLOT_INDEX::setIndex (Command *command)
 {
   // INDICATOR_PLOT_INDEX,<METHOD>,<NAME>,<INDEX>,<VALUE>,<COLOR>
   //           0             1       2       3       4       5
 
-  if (command.count() != 6)
+  if (command->count() != 6)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX::setIndex: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_INDEX::setIndex: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_INDEX::setIndex: no indicator";
@@ -128,7 +126,7 @@ int INDICATOR_PLOT_INDEX::setIndex (Command &command)
   }
 
   int pos = 2;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
 
   Curve *line = i->line(name);
   if (! line)
@@ -139,50 +137,48 @@ int INDICATOR_PLOT_INDEX::setIndex (Command &command)
 
   pos++;
   bool ok;
-  int index = command.parm(pos).toInt(&ok);
+  int index = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX::setIndex: invalid index value" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_INDEX::setIndex: invalid index value" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  double value = command.parm(pos).toDouble(&ok);
+  double value = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX::setIndex: invalid value" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_INDEX::setIndex: invalid value" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  QColor color(command.parm(pos));
+  QColor color(command->parm(pos));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_INDEX::setIndex: invalid color" << command.parm(pos);
+    qDebug() << "INDICATOR_PLOT_INDEX::setIndex: invalid color" << command->parm(pos);
     return 1;
   }
 
   line->setBar(index, new CurveBar(color, value));
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
 
-int INDICATOR_PLOT_INDEX::getRange (Command &command)
+int INDICATOR_PLOT_INDEX::getRange (Command *command)
 {
   // INDICATOR_PLOT_INDEX,<METHOD>,<NAME>
   //           0             1       2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX::getRange: invalid parm count" << command.count();
+    qDebug() << "INDICATOR_PLOT_INDEX::getRange: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "INDICATOR_PLOT_INDEX::getRange: no indicator";
@@ -190,7 +186,7 @@ int INDICATOR_PLOT_INDEX::getRange (Command &command)
   }
 
   int pos = 2;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
 
   Curve *line = i->line(name);
   if (! line)
@@ -205,9 +201,7 @@ int INDICATOR_PLOT_INDEX::getRange (Command &command)
 
   QStringList l;
   l << QString::number(start) << QString::number(end);
-  command.setReturnData(l.join(","));
-
-  emit signalDone(l);
+  command->setReturnData(l.join(","));
 
   return 0;
 }

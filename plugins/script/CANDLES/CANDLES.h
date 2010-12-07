@@ -95,9 +95,9 @@ class CANDLES : public ScriptPlugin
     };
 
     CANDLES ();
-    int command (Command &);
-    int getCandles (Command &);
-    int getCandlesPen (Command &);
+    int command (Command *);
+    int getCandles (Command *);
+    int getCandlesPen (Command *);
 
   private:
     QStringList _method;

@@ -39,11 +39,11 @@ class SCRIPT_DATABASE : public ScriptPlugin
     
     SCRIPT_DATABASE ();
     void init ();
-    int command (Command &);
-    int load (Command &);
-    int save (Command &);
-    int deleteScript (Command &);
-    int scripts (Command &);
+    int command (Command *);
+    int load (Command *);
+    int save (Command *);
+    int deleteScript (Command *);
+    int scripts (Command *);
 
   private:
     QStringList _method;

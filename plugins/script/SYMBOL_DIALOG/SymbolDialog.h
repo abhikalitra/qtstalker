@@ -30,15 +30,14 @@
 #include <QComboBox>
 #include <QLineEdit>
 
+#include "Command.h"
+
 class SymbolDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalDone (QString);
-
   public:
-    SymbolDialog ();
+    SymbolDialog (Command *);
     void createGUI ();
 //    void setSymbols (QString exchange, QString symbol);
 //    void getSymbols (Group &);
@@ -47,7 +46,6 @@ class SymbolDialog : public QDialog
     void loadSettings ();
     void saveSettings ();
     void symbols (QStringList &);
-    QString stringData ();
 
   public slots:
     void done ();
@@ -56,8 +54,6 @@ class SymbolDialog : public QDialog
     void symbolSelectionChanged ();
     void help ();
     void searchButtonPressed ();
-    void loadExchanges2 (QStringList);
-    void searchRequestDone (QStringList);
     void addButtonPressed ();
     void deleteButtonPressed ();
 
@@ -74,6 +70,8 @@ class SymbolDialog : public QDialog
     QString _helpFile;
     QLabel *_message;
     QStringList _groups;
+    Command *_command;
+    int _returnFlag;
 };
 
 #endif

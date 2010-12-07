@@ -24,30 +24,20 @@
 
 #include <QDebug>
 
-CommandThread::CommandThread (QObject *p, Command com) : QThread (p)
+CommandThread::CommandThread (QObject *p, Command *com) : QThread (p)
 {
   _command = com;
 
   connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
-QString CommandThread::stringData ()
-{
-  return _command.stringData();
-}
-
-QByteArray CommandThread::arrayData ()
-{
-  return _command.arrayData();
-}
-
 void CommandThread::run ()
 {
   ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(_command.plugin());
+  ScriptPlugin *plug = fac.plugin(_command->plugin());
   if (! plug)
   {
-    qDebug() << "CommandThread::run: no plugin" << _command.plugin();
+    qDebug() << "CommandThread::run: no plugin" << _command->plugin();
     return;
   }
   
@@ -55,5 +45,5 @@ void CommandThread::run ()
 
   delete plug;
 
-  emit signalDone(_command.stringData());
+  emit signalDone(_command);
 }

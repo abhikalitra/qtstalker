@@ -39,11 +39,11 @@ class INDICATOR_DATABASE : public ScriptPlugin
     
     INDICATOR_DATABASE ();
     void init ();
-    int command (Command &);
-    int load (Command &);
-    int save (Command &);
-    int deleteIndicator (Command &);
-    int indicators (Command &);
+    int command (Command *);
+    int load (Command *);
+    int save (Command *);
+    int deleteIndicator (Command *);
+    int indicators (Command *);
 
   private:
     QStringList _method;

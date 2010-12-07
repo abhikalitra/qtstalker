@@ -30,20 +30,18 @@ GROUP_EDIT_DIALOG::GROUP_EDIT_DIALOG ()
   _threadSafe = 0;
 }
 
-int GROUP_EDIT_DIALOG::command (Command &command)
+int GROUP_EDIT_DIALOG::command (Command *command)
 {
-  // GROUP_EDIT_DIALOG,<GROUP>
-  //        0             1
+  // GROUP_EDIT_DIALOG,NAME,ITEMS*
+  //        0           1     2
 
-  if (command.count() != 2)
+  if (command->count() < 2)
   {
-    qDebug() << "GROUP_EDIT_DIALOG::command: invalid parm count" << command.count();
+    qDebug() << "GROUP_EDIT_DIALOG::command: invalid parm count" << command->count();
     return 1;
   }
 
-  GroupEditDialog *dialog = new GroupEditDialog(command.parm(1));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  connect(dialog, SIGNAL(signalDone(QString)), this, SIGNAL(signalDone(QString)));
+  GroupEditDialog *dialog = new GroupEditDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   dialog->show();
 

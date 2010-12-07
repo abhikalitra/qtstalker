@@ -28,30 +28,28 @@ MESSAGE::MESSAGE ()
 {
 }
 
-int MESSAGE::command (Command &command)
+int MESSAGE::command (Command *command)
 {
   // MESSAGE,<TYPE>
   //    0       1
 
-  if (command.count() != 2)
+  if (command->count() != 2)
   {
-    qDebug() << "MESSAGE::command: invalid parm count " << command.count();
+    qDebug() << "MESSAGE::command: invalid parm count " << command->count();
     return 1;
   }
 
   Message mess;
-  int type = mess.stringToType(command.parm(1));
+  int type = mess.stringToType(command->parm(1));
   if (type == -1)
   {
-    qDebug() << "MESSAGE::command: invalid type" << command.parm(1);
+    qDebug() << "MESSAGE::command: invalid type" << command->parm(1);
     return 1;
   }
 
   mess.sendMessage((Message::Type) type);
   
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

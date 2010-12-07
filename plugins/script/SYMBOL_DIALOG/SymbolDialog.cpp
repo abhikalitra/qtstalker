@@ -22,7 +22,6 @@
 #include "SymbolDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "Command.h"
 #include "ScriptPluginFactory.h"
 
 #include "../pics/search.xpm"
@@ -35,12 +34,15 @@
 #include <QSettings>
 #include <QGroupBox>
 
-SymbolDialog::SymbolDialog ()
+SymbolDialog::SymbolDialog (Command *c)
 {
+  _command = c;
   _helpFile = "main.html";
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Select Symbols"));
 
   createGUI();
+
+  _returnFlag = _command->parm(1).toInt();
 
   loadExchanges();
 
@@ -48,6 +50,8 @@ SymbolDialog::SymbolDialog ()
 
   searchSelectionChanged();
   symbolSelectionChanged();
+  
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void SymbolDialog::createGUI ()
@@ -187,22 +191,22 @@ void SymbolDialog::help ()
 
 void SymbolDialog::done ()
 {
-  QStringList l;
-  symbols(l);
-  if (l.count())
-    emit signalDone(l.join(","));
-
   saveSettings();
 
-  l.clear();
-  l << _exchanges->currentText();
-  if (! _search->text().length())
-    l << "*";
+  QStringList l;
+  if (_returnFlag)
+  {
+    l << _exchanges->currentText();
+    if (_search->text().isEmpty())
+      l << "*";
+    else
+      l << _search->text();
+  }
   else
-    l << _search->text();
+    symbols(l);
   
-  emit signalDone(l.join(","));
-  
+  _command->setReturnData(l.join(","));
+
   accept();
 }
 
@@ -210,16 +214,6 @@ void SymbolDialog::cancel ()
 {
   saveSettings();
   reject();
-}
-
-QString SymbolDialog::stringData ()
-{
-  QString s = "0";
-  QStringList l;
-  symbols(l);
-  if (l.count())
-    s = l.join(",");
-  return s;
 }
 
 void SymbolDialog::addButtonPressed ()
@@ -260,7 +254,7 @@ void SymbolDialog::deleteButtonPressed ()
 void SymbolDialog::searchButtonPressed ()
 {
   QStringList l;
-  l << "QUOTE_SYMBOL_SEARCH" << _exchanges->currentText();
+  l << "QUOTE_DATABASE" << "SEARCH" << _exchanges->currentText();
   QString s = _search->text();
   if (s.isEmpty())
     s = "*";
@@ -276,44 +270,28 @@ void SymbolDialog::searchButtonPressed ()
     return;
   }
   
-  connect(plug, SIGNAL(signalDone(QStringList)), this, SLOT(searchRequestDone(QStringList)));
+  if (plug->command(&command))
+  {
+    delete plug;
+    return;
+  }
 
-  plug->command(command);
+  delete plug;
   
-/*
-  QStringList l;
-  l << "Search" << "S";
+  l = command.stringData().split(";", QString::SkipEmptyParts);
 
-  l << _exchanges->currentText();
-
-  QString s = _search->text();
-  if (s.isEmpty())
-    s = "*";
-  l << s;
-
-  QString command = l.join(",") + "\n";
-
-  QuoteServerRequestThread *r = new QuoteServerRequestThread(this, command);
-  connect(r, SIGNAL(signalDone(QString)), this, SLOT(searchRequestDone(QString)), Qt::QueuedConnection);
-  connect(r, SIGNAL(finished()), r, SLOT(deleteLater()));
-  r->start();
-*/
-}
-
-void SymbolDialog::searchRequestDone (QStringList data)
-{
   _searchList->clear();
 
   int loop = 0;
-  for (; loop < data.count(); loop++)
+  for (; loop < l.count(); loop++)
   {
-    QStringList l = data.at(loop).split(",");
-    if (l.count() != 2)
+    QStringList l2 = l.at(loop).split(",", QString::SkipEmptyParts);
+    if (l2.count() != 3)
       continue;
 
     QTreeWidgetItem *item = new QTreeWidgetItem(_searchList);
-    item->setText(0, l.at(0));
-    item->setText(1, l.at(1));
+    item->setText(0, l2.at(0) + ":" + l2.at(1));
+    item->setText(1, l2.at(2));
   }
 
   for (loop = 0; loop < _searchList->columnCount(); loop++)
@@ -322,7 +300,7 @@ void SymbolDialog::searchRequestDone (QStringList data)
 
 void SymbolDialog::loadExchanges ()
 {
-  Command command("QUOTE_EXCHANGE");
+  Command command("QUOTE_DATABASE,EXCHANGE");
 
   ScriptPluginFactory fac;
   ScriptPlugin *plug = fac.plugin(command.plugin());
@@ -332,21 +310,15 @@ void SymbolDialog::loadExchanges ()
     return;
   }
 
-  connect(plug, SIGNAL(signalDone(QStringList)), this, SLOT(loadExchanges2(QStringList)));
+  if (plug->command(&command))
+  {
+    delete plug;
+    return;
+  }
 
-  plug->command(command);
-
-/*  
-  QString command = "Search,E\n";
-
-  QuoteServerRequestThread *r = new QuoteServerRequestThread(this, command);
-  connect(r, SIGNAL(signalDone(QString)), this, SLOT(exchangeRequestDone(QString)), Qt::QueuedConnection);
-  r->start();
-*/
-}
-
-void SymbolDialog::loadExchanges2 (QStringList l)
-{
+  delete plug;
+  
+  QStringList l = command.stringData().split(",", QString::SkipEmptyParts);
   l.prepend("*");
 
   _exchanges->clear();
@@ -379,15 +351,8 @@ void SymbolDialog::saveSettings ()
 void SymbolDialog::symbols (QStringList &l)
 {
   l.clear();
-  
-  QList<QTreeWidgetItem *> sel = _symbolList->selectedItems();
-  if (sel.count())
-  {
-    int loop = 0;
-    for (; loop < sel.count(); loop++)
-    {
-      QTreeWidgetItem *item = sel.at(loop);
-      l.append(item->text(0));
-    }
-  }
+
+  int loop = 0;
+  for (; loop < _symbolList->topLevelItemCount(); loop++)
+    l << _symbolList->topLevelItem(loop)->text(0);
 }
