@@ -1,8 +1,0 @@
-!include( ../../../indicator.plugin.config ){
-  message( "Oops -- No custom build options specified" ) 
-} 
-
-HEADERS += PO.h
-
-SOURCES += PO.cpp
-
