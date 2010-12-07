@@ -1,0 +1,17 @@
+# deletes scripts from the database
+
+$|=1;
+
+# get current scripts from database
+$command = "SCRIPT_DATABASE,SCRIPTS";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# display the selection dialog
+$command = "SELECT_DIALOG,Script,$rc";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+$command = "SCRIPT_DATABASE,DELETE,$rc";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
