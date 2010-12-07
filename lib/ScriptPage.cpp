@@ -221,20 +221,10 @@ void ScriptPage::saveSettings ()
 
 void ScriptPage::runScript ()
 {
-/*  
-  Command command("SCRIPT_SELECT_DIALOG");
-
-  ScriptPlugin *plug = _factory.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ScriptDialog::runScript: no plugin" << command.plugin();
-    return;
-  }
-
-  connect(plug, SIGNAL(signalDone(QString)), this, SLOT(runScript(QString)));
-
-  plug->command(command);
-*/
+  Script *script = new Script;
+  QString s = INSTALL_DATA_DIR;
+  s.append("/qtstalker/script/ScriptPanelRunScript.pl");
+  prepareScript(script, "ScriptPanelRunScript", "perl", s);
 }
 
 void ScriptPage::runScript (QString d)

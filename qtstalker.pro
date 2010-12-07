@@ -169,6 +169,7 @@ SUBDIRS += plugins/script/QUOTE_DATABASE
 #SUBDIRS += plugins/script/SAR
 SUBDIRS += plugins/script/SCRIPT_DATABASE
 SUBDIRS += plugins/script/SCRIPT_EDIT_DIALOG
+SUBDIRS += plugins/script/SCRIPT_PANEL
 SUBDIRS += plugins/script/SELECT_DIALOG
 #SUBDIRS += plugins/script/STOCH_FAST
 #SUBDIRS += plugins/script/STOCH_RSI
