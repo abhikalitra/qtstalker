@@ -22,6 +22,7 @@
 #include "CANDLES.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -196,18 +197,13 @@ int CANDLES::getCandles (Command *command)
     return 1;
   }
 
-  BarData *data = command->barData();
-  if (! data)
+  if (g_barData->count() < 1)
   {
     qDebug() << "CANDLES::getCandles: no bars";
     return 1;
   }
 
-  if (data->count() < 1)
-    return 1;
-
   QString name = command->parm(2);
-
   Curve *line = i->line(name);
   if (line)
   {
@@ -215,7 +211,7 @@ int CANDLES::getCandles (Command *command)
     return 1;
   }
 
-  int size = data->count();
+  int size = g_barData->count();
   TA_Integer out[size];
   TA_Real open[size];
   TA_Real high[size];
@@ -227,7 +223,7 @@ int CANDLES::getCandles (Command *command)
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->bar(loop);
+    Bar *bar = g_barData->bar(loop);
     open[loop] = (TA_Real) bar->open();
     high[loop] = (TA_Real) bar->high();
     low[loop] = (TA_Real) bar->low();
@@ -854,7 +850,6 @@ int CANDLES::getCandles (Command *command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
   command->setReturnData("0");
@@ -880,15 +875,11 @@ int CANDLES::getCandlesPen (Command *command)
     return 1;
   }
 
-  BarData *data = command->barData();
-  if (! data)
+  if (g_barData->count() < 1)
   {
     qDebug() << "CANDLES::getCandlesPen: no bars";
     return 1;
   }
-
-  if (data->count() < 1)
-    return 1;
 
   int pos = 2;
   QString name = command->parm(pos);
@@ -908,7 +899,7 @@ int CANDLES::getCandlesPen (Command *command)
     return 1;
   }
 
-  int size = data->count();
+  int size = g_barData->count();
   TA_Integer out[size];
   TA_Real open[size];
   TA_Real high[size];
@@ -920,7 +911,7 @@ int CANDLES::getCandlesPen (Command *command)
   int loop = 0;
   for (; loop < size; loop++)
   {
-    Bar *bar = data->bar(loop);
+    Bar *bar = g_barData->bar(loop);
     open[loop] = (TA_Real) bar->open();
     high[loop] = (TA_Real) bar->high();
     low[loop] = (TA_Real) bar->low();
@@ -1013,7 +1004,6 @@ int CANDLES::getCandlesPen (Command *command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
   command->setReturnData("0");
