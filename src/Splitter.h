@@ -30,6 +30,7 @@ class Splitter : public QSplitter
 
   public:
     Splitter (QString);
+    ~Splitter ();
 
   public slots:
     void save ();

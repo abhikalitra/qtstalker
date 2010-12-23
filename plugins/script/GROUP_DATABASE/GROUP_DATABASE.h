@@ -25,6 +25,7 @@
 #include <QtSql>
 
 #include "ScriptPlugin.h"
+#include "GroupDataBase.h"
 
 class GROUP_DATABASE : public ScriptPlugin
 {
@@ -39,19 +40,16 @@ class GROUP_DATABASE : public ScriptPlugin
     };
     
     GROUP_DATABASE ();
-    void init ();
     int command (Command *);
     int load (Command *);
     int save (Command *);
     int saveAll (Command *);
     int deleteGroup (Command *);
     int groups (Command *);
-    int newGroup (QString &name, QString &table);
-    int getTable (QString &name, QString &table);
 
   private:
     QStringList _method;
-    QSqlDatabase _db;
+    GroupDataBase _db;
 };
 
 extern "C"

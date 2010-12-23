@@ -24,6 +24,7 @@
 #include "DateScaleDraw.h"
 #include "ChartObjectSellDraw.h"
 #include "Strip.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -31,24 +32,23 @@
 ChartObjectSell::ChartObjectSell ()
 {
   _draw = new ChartObjectSellDraw;
+  _draw->setSettings(_settings);
 
-  _settings.setData("Type", ChartObject::_Sell);
+  _settings->setData("Type", ChartObject::_Sell);
 
-  QSettings set;
-  set.beginGroup("main");
-
-  _settings.setData("Color", set.value("default_chart_object_sell_color", "red").toString());
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_sell_color", "red").toString());
 }
 
 void ChartObjectSell::info (Setting &info)
 {
   info.setData(QObject::tr("Type"), QObject::tr("Sell"));
 
-  QDateTime dt = _settings.dateTime("Date");
+  QDateTime dt = _settings->dateTime("Date");
   info.setData(QObject::tr("D"), dt.toString("yyyy-MM-dd"));
   info.setData(QObject::tr("T"), dt.toString("HH:mm:ss"));
 
-  info.setData(QObject::tr("Price"), _settings.data("Price"));
+  info.setData(QObject::tr("Price"), _settings->data("Price"));
 }
 
 /*
@@ -72,7 +72,7 @@ int ChartObjectSell::CUS (QStringList &l)
     qDebug() << "ChartObjectSell::CUS: invalid exchange" << l.at(2);
     return 1;
   }
-  _settings.exchange = s;
+  _settings->exchange = s;
 
   // verify symbol
   s = l.at(3);
@@ -82,7 +82,7 @@ int ChartObjectSell::CUS (QStringList &l)
     qDebug() << "ChartObjectSell::CUS: invalid symbol" << l.at(3);
     return 1;
   }
-  _settings.symbol = s;
+  _settings->symbol = s;
 
   // verify indicator
   s = l.at(4);
@@ -92,11 +92,11 @@ int ChartObjectSell::CUS (QStringList &l)
     qDebug() << "ChartObjectSell::CUS: invalid indicator" << l.at(4);
     return 1;
   }
-  _settings.indicator = s;
+  _settings->indicator = s;
 
   // verify date
-  _settings.date = QDateTime::fromString(l.at(5), Qt::ISODate);
-  if (! _settings.date.isValid())
+  _settings->date = QDateTime::fromString(l.at(5), Qt::ISODate);
+  if (! _settings->date.isValid())
   {
     qDebug() << "ChartObjectSell::CUS: invalid date" << l.at(5);
     return 1;
@@ -104,7 +104,7 @@ int ChartObjectSell::CUS (QStringList &l)
 
   // verify price
   bool ok;
-  _settings.price = l.at(6).toDouble(&ok);
+  _settings->price = l.at(6).toDouble(&ok);
   if (! ok)
   {
     qDebug() << "ChartObjectSell::CUS: invalid price" << l.at(6);
@@ -112,8 +112,8 @@ int ChartObjectSell::CUS (QStringList &l)
   }
 
   // verify color
-  _settings.color.setNamedColor(l.at(7));
-  if (! _settings.color.isValid())
+  _settings->color.setNamedColor(l.at(7));
+  if (! _settings->color.isValid())
   {
     qDebug() << "ChartObjectSell::CUS: invalid color" << l.at(7);
     return 1;
@@ -126,13 +126,13 @@ int ChartObjectSell::CUS (QStringList &l)
 int ChartObjectSell::highLow (int start, int end, double &h, double &l)
 {
   DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = dsd->x(_settings.dateTime("Date"));
+  int x = dsd->x(_settings->dateTime("Date"));
 
   if (x < start || x > end)
     return 0;
 
-  h = _settings.getDouble("Price");
-  l = _settings.getDouble("Price");
+  h = _settings->getDouble("Price");
+  l = _settings->getDouble("Price");
 
   return 1;
 }
@@ -149,13 +149,11 @@ void ChartObjectSell::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings.setData("Date", dt);
+      _settings->setData("Date", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings.setData("Price", map.invTransform((double) p.y()));
+      _settings->setData("Price", map.invTransform((double) p.y()));
       
-      _draw->setSettings(_settings);
-
       _draw->plot()->replot();
       break;
     }
@@ -176,7 +174,7 @@ void ChartObjectSell::click (int button, QPoint p)
           if (_draw->isGrabSelected(p))
           {
             _status = _Move;
-            emit signalMoveStart(_settings.getInt("ID"));
+            emit signalMoveStart(_settings->getInt("ID"));
             _modified = 1;
             return;
           }
@@ -185,7 +183,7 @@ void ChartObjectSell::click (int button, QPoint p)
           {
             _status = _None;
             _draw->setSelected(FALSE);
-            emit signalUnselected(_settings.getInt("ID"));
+            emit signalUnselected(_settings->getInt("ID"));
             _draw->plot()->replot();
             return;
           }
@@ -205,7 +203,7 @@ void ChartObjectSell::click (int button, QPoint p)
       {
         case Qt::LeftButton:
           _status = _Selected;
-          emit signalMoveEnd(_settings.getInt("ID"));
+          emit signalMoveEnd(_settings->getInt("ID"));
           return;
         default:
           break;
@@ -222,7 +220,7 @@ void ChartObjectSell::click (int button, QPoint p)
           {
             _status = _Selected;
             _draw->setSelected(TRUE);
-            emit signalSelected(_settings.getInt("ID"));
+            emit signalSelected(_settings->getInt("ID"));
             _draw->plot()->replot();
           }
           break;
@@ -246,10 +244,10 @@ void ChartObjectSell::dialog ()
 */
 }
 
-void ChartObjectSell::dialog2 (Setting set)
+void ChartObjectSell::dialog2 (Setting)
 {
   _modified = 1;
-  setSettings(set);
+//  setSettings(set);
   _draw->plot()->replot();
 }
 
@@ -258,6 +256,6 @@ void ChartObjectSell::create ()
   _modified = 1;
   _status = _Move;
   _draw->setSelected(TRUE);
-  emit signalSelected(_settings.getInt("ID"));
-  emit signalMoveStart(_settings.getInt("ID"));
+  emit signalSelected(_settings->getInt("ID"));
+  emit signalMoveStart(_settings->getInt("ID"));
 }

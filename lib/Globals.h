@@ -3,18 +3,15 @@
 
 #include <QString>
 #include <QHash>
+#include <QMutex>
 
 #include "BarData.h"
-#include "Indicator.h"
-#include "ChartPage.h"
-#include "GroupPage.h"
-#include "ScriptPage.h"
+#include "MiddleMan.h"
 
 extern QString g_session;
+extern QString g_settingsFile;
 extern BarData * g_barData;
-extern QHash<QString, Indicator *> g_indicators;
-extern ChartPage * g_chartPanel;
-extern GroupPage * g_groupPanel;
-extern ScriptPage * g_scriptPanel;
+extern MiddleMan * g_middleMan;
+extern QMutex g_middleManMutex;
 
 #endif

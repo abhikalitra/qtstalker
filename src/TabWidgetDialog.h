@@ -22,13 +22,13 @@
 #ifndef TAB_WIDGET_DIALOG_HPP
 #define TAB_WIDGET_DIALOG_HPP
 
+#include <QDialog>
 #include <QSpinBox>
 #include <QComboBox>
 #include <QStringList>
+#include <QLabel>
 
-#include "Dialog.h"
-
-class TabWidgetDialog : public Dialog
+class TabWidgetDialog : public QDialog
 {
   Q_OBJECT
 
@@ -37,12 +37,20 @@ class TabWidgetDialog : public Dialog
   
   public:
     TabWidgetDialog (QString id);
-    void createMainPage ();
+    void createGUI ();
+    void loadSettings ();
+    void saveSettings ();
 
   public slots:
     void done ();
+    void cancel ();
+    void help ();
 
   private:
+    QPushButton *_okButton;
+    QPushButton *_cancelButton;
+    QString _helpFile;
+    QLabel *_message;
     QStringList _posList;
     QString _id;
     int _ttp;

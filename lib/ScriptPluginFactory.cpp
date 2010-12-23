@@ -21,6 +21,7 @@
 
 #include "ScriptPluginFactory.h"
 #include "qtstalker_defines.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <QDir>
@@ -29,9 +30,7 @@
 
 ScriptPluginFactory::ScriptPluginFactory ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting, no session id appended
-
+  QSettings settings(g_settingsFile);
   _path = settings.value("script_plugin_path").toString();
   if (_path.isEmpty())
   {
@@ -77,8 +76,7 @@ void ScriptPluginFactory::setPluginList ()
   QStringList l;
   getPluginList(_path, l);
 
-  QSettings settings;
-  settings.beginGroup("main"); // global setting, no session id appended
+  QSettings settings(g_settingsFile);
   settings.setValue("script_plugin_list", l);
   settings.sync();
 }

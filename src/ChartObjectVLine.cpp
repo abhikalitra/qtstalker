@@ -24,6 +24,7 @@
 #include "DateScaleDraw.h"
 #include "ChartObjectVLineDraw.h"
 #include "Strip.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -32,20 +33,19 @@
 ChartObjectVLine::ChartObjectVLine ()
 {
   _draw = new ChartObjectVLineDraw;
+  _draw->setSettings(_settings);
 
-  _settings.setData("Type", ChartObject::_VLine);
+  _settings->setData("Type", ChartObject::_VLine);
 
-  QSettings set;
-  set.beginGroup("main");
-
-  _settings.setData("Color", set.value("default_chart_object_vline_color", "red").toString());
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_vline_color", "red").toString());
 }
 
 void ChartObjectVLine::info (Setting &info)
 {
   info.setData(QObject::tr("Type"), QObject::tr("VLine"));
   
-  QDateTime dt = _settings.dateTime("Date");
+  QDateTime dt = _settings->dateTime("Date");
   info.setData(QObject::tr("D"), dt.toString("yyyy-MM-dd"));
   info.setData(QObject::tr("T"), dt.toString("HH:mm:ss"));
 }
@@ -76,7 +76,7 @@ int ChartObjectVLine::CUS (QStringList &l)
     qDebug() << "ChartObjectVLine::CUS: invalid exchange" << l.at(2);
     return 1;
   }
-  _settings.exchange = s;
+  _settings->exchange = s;
 
   // verify symbol
   s = l.at(3);
@@ -86,7 +86,7 @@ int ChartObjectVLine::CUS (QStringList &l)
     qDebug() << "ChartObjectVLine::CUS: invalid symbol" << l.at(3);
     return 1;
   }
-  _settings.symbol = s;
+  _settings->symbol = s;
 
   // verify indicator
   s = l.at(4);
@@ -96,19 +96,19 @@ int ChartObjectVLine::CUS (QStringList &l)
     qDebug() << "ChartObjectVLine::CUS: invalid indicator" << l.at(4);
     return 1;
   }
-  _settings.indicator = s;
+  _settings->indicator = s;
 
   // verify date
-  _settings.date = QDateTime::fromString(l.at(5), Qt::ISODate);
-  if (! _settings.date.isValid())
+  _settings->date = QDateTime::fromString(l.at(5), Qt::ISODate);
+  if (! _settings->date.isValid())
   {
     qDebug() << "ChartObjectVLine::CUS: invalid date" << l.at(5);
     return 1;
   }
 
   // verify color
-  _settings.color.setNamedColor(l.at(6));
-  if (! _settings.color.isValid())
+  _settings->color.setNamedColor(l.at(6));
+  if (! _settings->color.isValid())
   {
     qDebug() << "ChartObjectVLine::CUS: invalid color" << l.at(6);
     return 1;
@@ -130,10 +130,8 @@ void ChartObjectVLine::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings.setData("Date", dt);
+      _settings->setData("Date", dt);
       
-      _draw->setSettings(_settings);
-
       _draw->plot()->replot();
       break;
     }
@@ -154,7 +152,7 @@ void ChartObjectVLine::click (int button, QPoint p)
           if (_draw->isGrabSelected(p))
           {
             _status = _Move;
-            emit signalMoveStart(_settings.getInt("ID"));
+            emit signalMoveStart(_settings->getInt("ID"));
             _modified = 1;
             return;
           }
@@ -163,7 +161,7 @@ void ChartObjectVLine::click (int button, QPoint p)
           {
             _status = _None;
             _draw->setSelected(FALSE);
-            emit signalUnselected(_settings.getInt("ID"));
+            emit signalUnselected(_settings->getInt("ID"));
             _draw->plot()->replot();
             return;
           }
@@ -183,7 +181,7 @@ void ChartObjectVLine::click (int button, QPoint p)
       {
         case Qt::LeftButton:
           _status = _Selected;
-          emit signalMoveEnd(_settings.getInt("ID"));
+          emit signalMoveEnd(_settings->getInt("ID"));
           return;
         default:
           break;
@@ -200,7 +198,7 @@ void ChartObjectVLine::click (int button, QPoint p)
           {
             _status = _Selected;
             _draw->setSelected(TRUE);
-            emit signalSelected(_settings.getInt("ID"));
+            emit signalSelected(_settings->getInt("ID"));
             _draw->plot()->replot();
           }
           break;
@@ -224,10 +222,10 @@ void ChartObjectVLine::dialog ()
 */
 }
 
-void ChartObjectVLine::dialog2 (Setting set)
+void ChartObjectVLine::dialog2 (Setting)
 {
   _modified = 1;
-  setSettings(set);
+//  setSettings(set);
   _draw->plot()->replot();
 }
 
@@ -236,6 +234,6 @@ void ChartObjectVLine::create ()
   _modified = 1;
   _status = _Move;
   _draw->setSelected(TRUE);
-  emit signalSelected(_settings.getInt("ID"));
-  emit signalMoveStart(_settings.getInt("ID"));
+  emit signalSelected(_settings->getInt("ID"));
+  emit signalMoveStart(_settings->getInt("ID"));
 }

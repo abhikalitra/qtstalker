@@ -33,12 +33,12 @@ ChartObjectHLineDraw::ChartObjectHLineDraw ()
 
 void ChartObjectHLineDraw::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &yMap, const QRect &) const
 {
-  p->setPen(_settings.color("Color"));
+  p->setPen(_settings->color("Color"));
 
-  int y = yMap.transform(_settings.getDouble("Price"));
+  int y = yMap.transform(_settings->getDouble("Price"));
 
   // test start
-  QString s = _settings.data("Price");
+  QString s = _settings->data("Price");
   QFontMetrics fm = p->fontMetrics();
   QRect rc = p->boundingRect(0, y - (fm.height() / 2), 1, 1, 0, s);
   p->fillRect(rc, plot()->canvasBackground()); // fill in behind text first
@@ -81,7 +81,7 @@ void ChartObjectHLineDraw::draw (QPainter *p, const QwtScaleMap &, const QwtScal
                   y - (_handleWidth / 2),
                   _handleWidth,
                   _handleWidth,
-                  _settings.color("Color"));
+                  _settings->color("Color"));
     }
   }
 }

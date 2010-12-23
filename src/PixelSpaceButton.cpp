@@ -31,9 +31,7 @@ PixelSpaceButton::PixelSpaceButton (QString d)
 {
   _key = d;
 
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-  
+  QSettings settings(g_settingsFile);
   _pixelSpace = settings.value(_key, 6).toInt();
 
   setCheckable(FALSE);
@@ -59,8 +57,7 @@ void PixelSpaceButton::setPixelSpace (int d)
 
   changeText();
 
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   settings.setValue(_key, _pixelSpace);
   settings.sync();
 }
@@ -86,4 +83,3 @@ void PixelSpaceButton::changeText ()
   setStatusTip(s + s2 + tr(" Right click mouse for options."));
   setText(s2);
 }
-

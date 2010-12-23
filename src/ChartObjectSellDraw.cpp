@@ -33,9 +33,9 @@ ChartObjectSellDraw::ChartObjectSellDraw ()
 void ChartObjectSellDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings.dateTime("Date")));
+  int x = xMap.transform(dsd->x(_settings->dateTime("Date")));
 
-  int y = yMap.transform(_settings.getDouble("Price"));
+  int y = yMap.transform(_settings->getDouble("Price"));
 
   QPolygon arrow;
   arrow.putPoints(0, 7, x, y,
@@ -46,7 +46,7 @@ void ChartObjectSellDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtS
                   x - 2, y - 5,
                   x - 5, y - 5);
   
-  p->setBrush(_settings.color("Color"));
+  p->setBrush(_settings->color("Color"));
 
   p->drawPolygon(arrow, Qt::OddEvenFill);
 
@@ -69,6 +69,6 @@ void ChartObjectSellDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtS
                 y + (_handleWidth / 2),
                 _handleWidth,
                 _handleWidth,
-                _settings.color("Color"));
+                _settings->color("Color"));
   }
 }

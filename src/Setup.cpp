@@ -24,6 +24,9 @@
 #include "Globals.h"
 #include "ScriptPluginFactory.h"
 #include "BarData.h"
+#include "MiddleMan.h"
+#include "IndicatorDataBase.h"
+#include "qtstalker_defines.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -43,6 +46,9 @@ void Setup::setup (QString session)
   // create a dummy barData
   g_barData = new BarData;
   
+  // create a dummy barData
+  g_middleMan = new MiddleMan(0);
+
   // setup the disk environment and init databases
   // order is critical here
   setupDirectories(); // initialize directory structure
@@ -73,47 +79,111 @@ void Setup::setupDirectories ()
     if (! dir.mkdir(home))
       qDebug() << "Unable to create" << home <<  "directory.";
   }
+
+  // setup the config defaults
+  g_settingsFile = home + "/qtstalkerrc" + g_session;
+
+  QSettings settings(g_settingsFile);
+
+  // set the indicator script directory
+  QString s = INSTALL_DATA_DIR;
+  s.append("/qtstalker/indicator/");
+  settings.setValue("indicator_script_directory", s);
+  
+  // set the system script directory
+  QString sysdir = INSTALL_DATA_DIR;
+  sysdir.append("/qtstalker/system/");
+  settings.setValue("system_script_directory", sysdir);
+
+  // set the default system scripts
+  s = sysdir + "ChartBackgroundColor.pl";
+  settings.setValue("chart_background_color_script", s);
+    
+  s = sysdir + "ChartFont.pl";
+  settings.setValue("chart_font_script", s);
+
+  s = sysdir + "ChartPanelAddGroup.pl";
+  settings.setValue("chart_panel_add_group_script", s);
+
+  s = sysdir + "ChartPanelSymbolSearch.pl";
+  settings.setValue("chart_panel_symbol_search_script", s);
+
+  s = sysdir + "CrosshairsStatusChanged.pl";
+  settings.setValue("crosshairs_status_changed_script", s);
+
+  s = sysdir + "CrosshairsColor.pl";
+  settings.setValue("crosshairs_color_script", s);
+
+  s = sysdir + "DataWindow.pl";
+  settings.setValue("data_window_script", s);
+
+  s = sysdir + "GridStatusChanged.pl";
+  settings.setValue("grid_status_changed_script", s);
+
+  s = sysdir + "GridColor.pl";
+  settings.setValue("grid_color_script", s);
+
+  s = sysdir + "GroupPanelNewGroup.pl";
+  settings.setValue("group_panel_new_group_script", s);
+
+  s = sysdir + "GroupPanelEditGroup.pl";
+  settings.setValue("group_panel_edit_group_script", s);
+
+  s = sysdir + "GroupPanelDeleteGroup.pl";
+  settings.setValue("group_panel_delete_group_script", s);
+
+  s = sysdir + "GroupPanelAddToGroup.pl";
+  settings.setValue("group_panel_add_to_group_script", s);
+
+  s = sysdir + "IndicatorNew.pl";
+  settings.setValue("indicator_new_script", s);
+
+  s = sysdir + "IndicatorDelete.pl";
+  settings.setValue("indicator_delete_script", s);
+
+  s = sysdir + "ScriptPanelNewScript.pl";
+  settings.setValue("script_panel_new_script_script", s);
+
+  s = sysdir + "ScriptPanelEditScript.pl";
+  settings.setValue("script_panel_edit_script_script", s);
+
+  s = sysdir + "ScriptPanelDeleteScript.pl";
+  settings.setValue("script_panel_delete_script_script", s);
+
+  s = sysdir + "ScriptPanelRunScript.pl";
+  settings.setValue("script_panel_run_script_script", s);
+
+  settings.sync();
 }
 
 void Setup::setupDefaultIndicators ()
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-  
+  QSettings settings(g_settingsFile);
   int ti = settings.value("default_indicators", 0).toInt();
   if (ti)
     return;
 
-  QStringList cl;
-  cl << "INDICATOR_DATABASE" << "SAVE" << "Bars" << "/usr/local/share/qtstalker/indicator/Bars.perl";
-  cl << "perl" << "1" << "0" << "1";
-
-  Command command(cl.join(","));
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
+  IndicatorDataBase db;
+  Indicator i;
+  i.setName("Bars");
+  i.setCommand("perl");
+  QString s = settings.value("indicator_script_directory").toString() + "Bars.pl";
+  i.setScript(s);
+  if (db.save(&i))
   {
-    qDebug() << "Setup::setupDefaultIndicators" << command.plugin();
+    qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
     return;
   }
 
-  plug->command(&command);
-  if (command.stringData() == "ERROR")
-    qDebug() << "Setup::setupDefaultIndicators: error saving default Bars indicator";
-
-  cl.clear();
-  cl << "INDICATOR_DATABASE" << "SAVE" << "VOL" << "/usr/local/share/qtstalker/indicator/Volume.perl";
-  cl << "perl" << "2" << "0" << "1";
-
-  command.parse(cl.join(","));
-
-  plug->command(&command);
-  
-  if (command.stringData() == "ERROR")
-    qDebug() << "Setup::setupDefaultIndicators: error saving default Volume indicator";
-  
-  delete plug;
+  i.setName("VOL");
+  s = settings.value("indicator_script_directory").toString() + "Volume.pl";
+  i.setScript(s);
+  i.setTabRow(2);
+  if (db.save(&i))
+  {
+    qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
+    return;
+  }
 
   settings.setValue("default_indicators", 1);
   settings.sync();
@@ -138,27 +208,3 @@ void Setup::setupFutures ()
   db.commit();
 */
 }
-
-/*
-void Setup::setupDataBase ()
-{
-  QString basePath = QDir::homePath() + "/.qtstalker/";
-  QString s = basePath + "quote.sqlite";
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "quote");
-  db.setHostName("QtStalker");
-  db.setDatabaseName(s);
-  db.setUserName("QtStalker");
-  db.setPassword("QtStalker");
-  if (! db.open())
-    qDebug() << "Setup::setupDataBase: quote database" << db.lastError().text();
-
-  s = basePath + "data.sqlite";
-  db = QSqlDatabase::addDatabase("QSQLITE", "data");
-  db.setHostName("QtStalker");
-  db.setDatabaseName(s);
-  db.setUserName("QtStalker");
-  db.setPassword("QtStalker");
-  if (! db.open())
-    qDebug() << "Setup::setupDataBase: data database" << db.lastError().text();
-}
-*/

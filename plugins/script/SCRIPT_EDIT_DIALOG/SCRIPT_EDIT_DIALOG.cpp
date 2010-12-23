@@ -27,7 +27,7 @@
 
 SCRIPT_EDIT_DIALOG::SCRIPT_EDIT_DIALOG ()
 {
-  _threadSafe = 0;
+  _type = _DIALOG;
 }
 
 int SCRIPT_EDIT_DIALOG::command (Command *command)

@@ -27,7 +27,7 @@
 
 SYMBOL_DIALOG::SYMBOL_DIALOG ()
 {
-  _threadSafe = 0;
+  _type = _DIALOG;
 }
 
 int SYMBOL_DIALOG::command (Command *command)

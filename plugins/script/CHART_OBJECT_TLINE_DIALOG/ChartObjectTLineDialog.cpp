@@ -117,8 +117,7 @@ void ChartObjectTLineDialog::done ()
 {
   if (_default->isChecked())
   {
-    QSettings settings;
-    settings.beginGroup("main");
+    QSettings settings(g_settingsFile);
     settings.setValue("default_chart_object_tline_color", _color->color().name());
     settings.setValue("default_chart_object_tline_extend", _extend->isChecked());
     settings.sync();
@@ -179,8 +178,7 @@ void ChartObjectTLineDialog::loadObject ()
 
 void ChartObjectTLineDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
+  QSettings settings(g_settingsFile);
 
   QSize sz = settings.value("chart_object_tline_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
@@ -197,8 +195,7 @@ void ChartObjectTLineDialog::loadSettings ()
 
 void ChartObjectTLineDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_settingsFile);
   settings.setValue("chart_object_tline_dialog_window_size", size());
   settings.setValue("chart_object_tline_dialog_window_position", pos());
   settings.sync();

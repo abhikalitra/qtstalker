@@ -57,6 +57,7 @@ class Bar
     QDateTime & date ();
     void lengthList (QStringList &);
     QString string ();
+    QDateTime startDate ();
 
     int setOpen (QString);
     void setOpen (double);

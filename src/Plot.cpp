@@ -27,12 +27,11 @@
 //#include "ChartObjectDialog.h"
 #include "ChartObjectFactory.h"
 #include "Globals.h"
+#include "Script.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
 #include "../pics/delete.xpm"
-#include "../pics/edit.xpm"
-#include "../pics/indicator.xpm"
 #include "../pics/buyarrow.xpm"
 #include "../pics/sellarrow.xpm"
 #include "../pics/fib.xpm"
@@ -40,14 +39,10 @@
 #include "../pics/text.xpm"
 #include "../pics/trend.xpm"
 #include "../pics/vertical.xpm"
-#include "../pics/color.xpm"
-#include "../pics/font.xpm"
 
 #include <QSettings>
 #include <QtDebug>
 #include <QCursor>
-#include <QColorDialog>
-#include <QFontDialog>
 #include <qwt_scale_div.h>
 #include <qwt_scale_widget.h>
 #include <qwt_plot_marker.h>
@@ -125,8 +120,8 @@ Plot::Plot ()
   connect(_coListMenu, SIGNAL(triggered(QAction *)), this, SLOT(chartObjectMenuSelected(QAction *)));
   
   _chartMenu = new QMenu(this);
-  _chartMenu->addAction(QPixmap(indicator_xpm), tr("&New Indicator..."), this, SIGNAL(signalNewIndicator()), Qt::ALT+Qt::Key_N);
-  _chartMenu->addAction(QPixmap(edit_xpm), tr("Edit &Indicator..."), this, SLOT(editIndicator()), Qt::ALT+Qt::Key_I);
+//  _chartMenu->addAction(QPixmap(indicator_xpm), tr("&New Indicator..."), this, SIGNAL(signalNewIndicator()), Qt::ALT+Qt::Key_N);
+//  _chartMenu->addAction(QPixmap(edit_xpm), tr("Edit &Indicator..."), this, SLOT(editIndicator()), Qt::ALT+Qt::Key_I);
   _chartMenu->addAction(QPixmap(delete_xpm), tr("De&lete Indicator..."), this, SLOT(deleteIndicator()), Qt::ALT+Qt::Key_L);
   _chartMenu->addSeparator ();
   _chartMenu->addMenu(_coListMenu);
@@ -136,9 +131,6 @@ Plot::Plot ()
   _dateAction->setCheckable(TRUE);
   _logAction = _chartMenu->addAction(QPixmap(loggridicon), tr("Log &Scaling"), this, SLOT(toggleLog()), Qt::ALT+Qt::Key_S);
   _logAction->setCheckable(TRUE);
-  _chartMenu->addSeparator ();
-  _chartMenu->addAction(QPixmap(color_xpm), tr("&Background Color..."), this, SLOT(editBackgroundColor()), Qt::ALT+Qt::Key_B);
-  _chartMenu->addAction(QPixmap(font_xpm), tr("&Font..."), this, SLOT(editFont()), Qt::ALT+Qt::Key_F);
 }
 
 Plot::~Plot ()
@@ -151,18 +143,33 @@ void Plot::clear ()
   if (_qwtCurves.count())
     qDeleteAll(_qwtCurves);
   _qwtCurves.clear();
+//qDebug() << "qwt delete";
+
+/*  
+  QHashIterator<QString, Curve *> it(_curves);
+  while (it.hasNext())
+  {
+    it.next();
+    qDebug() << it.key();
+    delete it.value();
+  }
+*/
 
   if (_curves.count())
     qDeleteAll(_curves);
   _curves.clear();
+//qDebug() << "curve delete";
 
   saveChartObjects();
+//qDebug() << "saveChartObjects";
 
   if (_chartObjects.count())
     qDeleteAll(_chartObjects);
   _chartObjects.clear();
+//qDebug() << "chartObjects delete";
 
   QwtPlot::clear();
+//qDebug() << "qwt clear";
 }
 
 void Plot::setDates ()
@@ -315,28 +322,33 @@ void Plot::dates (QList<QDateTime> &d)
 void Plot::setBackgroundColor (QColor d)
 {
   setCanvasBackground(d);
+  replot();
 }
 
 void Plot::setGridColor (QColor d)
 {
   _grid->setMajPen(QPen(d, 0, Qt::DotLine));
+  replot();
 }
 
 void Plot::setCrossHairsColor (QColor d)
 {
   _picker->setColor(d);
+  replot();
 }
 
 void Plot::setGrid (bool d)
 {
   _grid->enableX(d);
   _grid->enableY(d);
+  replot();
 }
 
 void Plot::setFont (QFont d)
 {
   setAxisFont(QwtPlot::yRight, d);
   setAxisFont(QwtPlot::xBottom, d);
+  replot();
 }
 
 void Plot::setLogScaling (bool d)
@@ -360,6 +372,7 @@ void Plot::showDate (bool d)
 void Plot::setCrossHairs (bool d)
 {
   _picker->setCrossHairs(d);
+  replot();
 }
 
 void Plot::setBarSpacing (int d)
@@ -442,14 +455,21 @@ void Plot::showContextMenu ()
   _chartMenu->exec(QCursor::pos());
 }
 
+/*
 void Plot::editIndicator ()
 {
   emit signalEditIndicator(_indicator);
 }
+*/
 
 void Plot::deleteIndicator ()
 {
-  emit signalDeleteIndicator(_indicator);
+  QSettings settings(g_settingsFile);
+  Script *script = new Script;
+  script->setName("IndicatorDelete");
+  script->setFile(settings.value("indicator_delete_script").toString());
+  script->setCommand("perl");
+  script->startScript();
 }
 
 int Plot::index ()
@@ -505,24 +525,6 @@ void Plot::toggleLog ()
 
   setLogScaling(status);
 */
-}
-
-void Plot::editBackgroundColor ()
-{
-  QColorDialog *dialog = new QColorDialog(canvasBackground(), this);
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Chart Background Color"));
-  connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SIGNAL(signalBackgroundColorChanged(QColor)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-}
-
-void Plot::editFont ()
-{
-  QFontDialog *dialog = new QFontDialog(axisFont(QwtPlot::xBottom), this);
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Chart Font"));
-  connect(dialog, SIGNAL(fontSelected(const QFont &)), this, SIGNAL(signalFontChanged(QFont)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
 }
 
 void Plot::mouseClick (int button, QPoint p)
@@ -653,21 +655,18 @@ void Plot::chartObjectMenuSelected (QAction *a)
   if (! co)
     return;
 
-  Setting set = co->settings();
+  Setting *set = co->settings();
 
-  QSettings settings;
-  settings.beginGroup("main"); // global variable
+  QSettings settings(g_settingsFile);
   int id = settings.value("chart_object_last_id", -1).toInt();
   id++;
   settings.setValue("chart_object_last_id", id);
   settings.sync();
   
-  set.setData("Exchange", g_barData->exchange());
-  set.setData("Symbol", g_barData->symbol());
-  set.setData("Indicator", _indicator);
-  set.setData("ID", id);
-
-  co->setSettings(set);
+  set->setData("Exchange", g_barData->exchange());
+  set->setData("Symbol", g_barData->symbol());
+  set->setData("Indicator", _indicator);
+  set->setData("ID", id);
 
   setupChartObject(co);
 
@@ -676,7 +675,7 @@ void Plot::chartObjectMenuSelected (QAction *a)
   co->create();
 }
 
-void Plot::deleteChartObject (int id)
+void Plot::deleteChartObject (int)
 {
 // FIXME
 /*

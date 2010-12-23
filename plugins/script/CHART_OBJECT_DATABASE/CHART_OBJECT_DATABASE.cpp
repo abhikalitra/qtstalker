@@ -46,18 +46,18 @@ CHART_OBJECT_DATABASE::CHART_OBJECT_DATABASE ()
     qDebug() << "CHART_OBJECT_DATABASE::CHART_OBJECT_DATABASE: " << q.lastError().text();
 }
 
-int CHART_OBJECT_DATABASE::command (Command &command)
+int CHART_OBJECT_DATABASE::command (Command *command)
 {
   // CHART_OBJECT_DATABASE,<METHOD>
-  //         0          1
+  //               0          1
   
-  if (command.count() < 2)
+  if (command->count() < 2)
   {
-    qDebug() << "CHART_OBJECT_DATABASE::command: invalid parm count" << command.count();
+    qDebug() << "CHART_OBJECT_DATABASE::command: invalid parm count" << command->count();
     return 1;
   }
 
-  switch ((Method) _method.indexOf(command.parm(1)))
+  switch ((Method) _method.indexOf(command->parm(1)))
   {
     case _GET:
       return get(command);
@@ -77,9 +77,6 @@ int CHART_OBJECT_DATABASE::command (Command &command)
     case _DELETE_INDICATOR:
       return deleteIndicator(command);
       break;
-    case _OBJECTS:
-      return objects(command);
-      break;
     case _RENAME:
       return rename(command);
       break;
@@ -96,24 +93,24 @@ int CHART_OBJECT_DATABASE::command (Command &command)
   return 0;
 }
 
-int CHART_OBJECT_DATABASE::get (Command &command)
+int CHART_OBJECT_DATABASE::get (Command *command)
 {
-  // CHART_OBJECT_DATABASE,<GET>,<ID>
-  //            0            1     2
+  // CHART_OBJECT_DATABASE,GET,<ID>
+  //            0           1    2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "CHART_OBJECT_DATABASE::get: invalid parm count" << command.count();
+    qDebug() << "CHART_OBJECT_DATABASE::get: invalid parm count" << command->count();
     return 1;
   }
 
   int pos = 2;
   bool ok;
-  QString id = command.parm();
+  QString id = command->parm(pos);
   id.toInt(&ok);
   if (! ok)
   {
-    qDebug() << "CHART_OBJECT_DATABASE::get: invalid id" << command.parm(pos);
+    qDebug() << "CHART_OBJECT_DATABASE::get: invalid id" << command->parm(pos);
     return 1;
   }
 
@@ -140,6 +137,11 @@ int CHART_OBJECT_DATABASE::get (Command &command)
     table = q.value(pos++).toString();
     co.setData("Table", table);
   }
+  else
+  {
+    qDebug() << "CHART_OBJECT_DATABASE::load: id not found";
+    return 1;
+  }
 
   s = "SELECT * FROM " + table;
   q.exec(s);
@@ -152,25 +154,23 @@ int CHART_OBJECT_DATABASE::get (Command &command)
   while (q.next())
     co.setData(q.value(0).toString(), q.value(1).toString());
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
 
-int CHART_OBJECT_DATABASE::load (Command &command)
+int CHART_OBJECT_DATABASE::load (Command *command)
 {
-  // CHART_OBJECT_DATABASE,<METHOD>,<ID>
-  //            0             1       2
+  // CHART_OBJECT_DATABASE,LOAD,<ID>
+  //            0            1    2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "CHART_OBJECT_DATABASE::load: invalid parm count" << command.count();
+    qDebug() << "CHART_OBJECT_DATABASE::load: invalid parm count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "CHART_OBJECT_DATABASE::loads: no indicator";
@@ -179,11 +179,11 @@ int CHART_OBJECT_DATABASE::load (Command &command)
 
   int pos = 2;
   bool ok;
-  QString id = command.parm();
+  QString id = command->parm(pos);
   id.toInt(&ok);
   if (! ok)
   {
-    qDebug() << "CHART_OBJECT_DATABASE::load: invalid id" << command.parm(pos);
+    qDebug() << "CHART_OBJECT_DATABASE::load: invalid id" << command->parm(pos);
     return 1;
   }
   
@@ -224,29 +224,27 @@ int CHART_OBJECT_DATABASE::load (Command &command)
 
   i->addChartObject(co);
   
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
 
-int CHART_OBJECT_DATABASE::save (Command &command)
+int CHART_OBJECT_DATABASE::save (Command *command)
 {
-  // CHART_OBJECT_DATABASE,<METHOD>,<DATA>
-  //           0              1        2
+  // CHART_OBJECT_DATABASE,SAVE,<DATA>
+  //           0             1     2
 
-  if (command.count() != 7)
+  if (command->count() != 7)
   {
-    qDebug() << "CHART_OBJECT_DATABASE::save: invalid parm count" << command.count();
+    qDebug() << "CHART_OBJECT_DATABASE::save: invalid parm count" << command->count();
     return 1;
   }
 
   int pos = 2;
-  QString exchange = command.parm(pos++);
-  QString symbol = command.parm(pos++);
-  QString indicator = command.parm(pos++);
-  QString data = command.parm(pos++);
+  QString exchange = command->parm(pos++);
+  QString symbol = command->parm(pos++);
+  QString indicator = command->parm(pos++);
+  QString data = command->parm(pos++);
 
   QSqlQuery q(_db);
   QString s = "INSERT OR REPLACE INTO chartObjectIndex (";
@@ -291,14 +289,14 @@ int CHART_OBJECT_DATABASE::save (Command &command)
   if (q.lastError().isValid())
     qDebug() << "ChartObjectDataBase::setChartObject: " << q.lastError().text();
 
-  command.setReturnData("0");
+  command->setReturnData("0");
 
   emit signalDone();
 
   return 0;
 }
 
-void ChartObjectDataBase::deleteChartObject (int id)
+void CHART_OBJECT_DATABASE::deleteChartObject (Command *command)
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM chartObjectIndex WHERE id=" + QString::number(id);
@@ -307,14 +305,14 @@ void ChartObjectDataBase::deleteChartObject (int id)
     qDebug() << "ChartObjectDataBase::deleteChartObject: " << q.lastError().text();
 }
 
-int CHART_OBJECT_DATABASE::deleteSymbol (Command &command)
+int CHART_OBJECT_DATABASE::deleteSymbol (Command *command)
 {
   // CHART_OBJECT_DATABASE,<METHOD>,<YSYMBOL>
   //        0           1        2    
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "CHART_OBJECT_DATABASE::deleteSymbol: invalid parm count" << command.count();
+    qDebug() << "CHART_OBJECT_DATABASE::deleteSymbol: invalid parm count" << command->count();
     return 1;
   }
 
@@ -331,14 +329,14 @@ int CHART_OBJECT_DATABASE::deleteSymbol (Command &command)
     return;
   }
 
-  command.setReturnData("0");
+  command->setReturnData("0");
   
   emit signalDone();
   
   return 0;
 }
 
-void ChartObjectDataBase::deleteChartObjectsIndicator (QString &indicator)
+void CHART_OBJECT_DATABASE::deleteChartObjectsIndicator (Command *command)
 {
   QSqlQuery q(QSqlDatabase::database(_dbName));
   QString s = "DELETE FROM chartObjectIndex";
@@ -352,7 +350,7 @@ void ChartObjectDataBase::deleteChartObjectsIndicator (QString &indicator)
 }
 
 
-int ChartObjectDataBase::renameSymbol (BarData *obd, BarData *nbd)
+int CHART_OBJECT_DATABASE::renameSymbol (Command *command)
 {
   // update any chart objects with new symbol name
   QString s = "UPDATE chartObjects";
@@ -368,40 +366,40 @@ int ChartObjectDataBase::renameSymbol (BarData *obd, BarData *nbd)
 }
 
 
-int CHART_OBJECT_DATABASE::transaction (Command &command)
+int CHART_OBJECT_DATABASE::transaction (Command *command)
 {
   // CHART_OBJECT_DATABASE,<METHOD>
   //        0          1
 
-  if (command.count() != 2)
+  if (command->count() != 2)
   {
-    qDebug() << "CHART_OBJECT_DATABASE::transaction: invalid parm count" << command.count();
+    qDebug() << "CHART_OBJECT_DATABASE::transaction: invalid parm count" << command->count();
     return 1;
   }
 
   _db.transaction();
   
-  command.setReturnData("0");
+  command->setReturnData("0");
 
   emit signalDone();
 
   return 0;
 }
 
-int CHART_OBJECT_DATABASE::commit (Command &command)
+int CHART_OBJECT_DATABASE::commit (Command *command)
 {
   // CHART_OBJECT_DATABASE,<METHOD>
   //        0          1
 
-  if (command.count() != 2)
+  if (command->count() != 2)
   {
-    qDebug() << "CHART_OBJECT_DATABASE::commit: invalid parm count" << command.count();
+    qDebug() << "CHART_OBJECT_DATABASE::commit: invalid parm count" << command->count();
     return 1;
   }
 
   _db.commit();
 
-  command.setReturnData("0");
+  command->setReturnData("0");
 
   emit signalDone();
 

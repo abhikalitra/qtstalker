@@ -27,7 +27,7 @@
 
 NEW_DIALOG::NEW_DIALOG ()
 {
-  _threadSafe = 0;
+  _type = _DIALOG;
 }
 
 int NEW_DIALOG::command (Command *command)

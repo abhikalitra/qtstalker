@@ -153,19 +153,26 @@ void Script::readFromStdout ()
     }
 
     _plugins.insert(_command->plugin(), plug);
+    connect(plug, SIGNAL(signalResume()), this, SLOT(resume()));
   }
 
-  if (! plug->isThreadSafe())
+  switch ((ScriptPlugin::Type) plug->type())
   {
-    connect(plug, SIGNAL(signalResume()), this, SLOT(resume()));
-    plug->command(_command);
-  }
-  else
-  {
-    CommandThread ct(this, _command);
-    ct.start();
-    ct.wait();
-    _proc.write(_command->arrayData());
+    case ScriptPlugin::_DIALOG:
+      plug->command(_command);
+      break;
+    case ScriptPlugin::_THREAD:
+    {
+      CommandThread ct(this, _command);
+      ct.start();
+      ct.wait();
+      _proc.write(_command->arrayData());
+      break;
+    }
+    default:
+      plug->command(_command);
+      _proc.write(_command->arrayData());
+      break;
   }
 }
 
@@ -225,3 +232,23 @@ void Script::resume ()
   _proc.write(_command->arrayData());
 }
 
+int Script::fromString (QString d)
+{
+  QStringList l = d.split(",", QString::SkipEmptyParts);
+  if (l.count() != 2)
+    return 1;
+
+  int pos = 0;
+  _com = l.at(pos++);
+  _file = l.at(pos++);
+
+  return 0;
+}
+
+QString Script::toString ()
+{
+  QStringList l;
+  l << _com << _file;
+
+  return l.join(",");
+}

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,35 +19,32 @@
  *  USA.
  */
 
-#ifndef QUOTEDATABASE_HPP
-#define QUOTEDATABASE_HPP
+#ifndef QUOTE_DATA_BASE_HPP
+#define QUOTE_DATA_BASE_HPP
 
-#include <QString>
+#include <QtSql>
 #include <QStringList>
-#include <QDateTime>
-#include <QHash>
-#include <QList>
 
 #include "BarData.h"
-#include "Bar.h"
-
 
 class QuoteDataBase
 {
   public:
     QuoteDataBase ();
-    void init (QString &dbFile);
-    void transaction ();
-    void commit ();
-    void getAllChartsList (QStringList &);
-    void getSearchList (QString &pat, QStringList &l);
-    void getChart (BarData *);
-    void getFirstDate (QString &table, QDateTime &date);
-    void getLastDate (QString &table, QDateTime &date);
-    void setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate,
-			   BarData::BarLength barLength);
-    int getIndexData (QString &symbol, QString &table, BarData *data);
-    void setChart (QList<Bar> *bars);
+    void init ();
+    int getBars (BarData *);
+    int setBars (BarData *);
+    int newSymbol (BarData *);
+    int getSymbol (BarData *);
+    int transaction ();
+    int commit ();
+    int deleteSymbol (BarData *);
+    int getExchange (QStringList &);
+    int rename (BarData *osymbol, BarData *nsymbol);
+    int search (BarData *bd, QStringList &l);
+
+  private:
+    QSqlDatabase _db;
 };
 
 #endif

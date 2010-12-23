@@ -34,13 +34,20 @@ class ScriptPlugin : public QObject
     void signalResume ();
   
   public:
+    enum Type
+    {
+      _DIALOG,
+      _THREAD,
+      _SERIAL
+    };
+    
     ScriptPlugin ();
     virtual ~ScriptPlugin ();
     virtual int command (Command *);
-    int isThreadSafe ();
+    int type ();
 
   protected:
-    int _threadSafe;
+    int _type;
 };
 
 #endif

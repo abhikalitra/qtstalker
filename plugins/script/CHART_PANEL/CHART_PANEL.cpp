@@ -26,7 +26,7 @@
 
 CHART_PANEL::CHART_PANEL ()
 {
-  _method << "REFRESH" << "SELECTED" << "SEARCH";
+  _method << "REFRESH" << "SEARCH";
 }
 
 int CHART_PANEL::command (Command *command)
@@ -45,9 +45,6 @@ int CHART_PANEL::command (Command *command)
     case _REFRESH:
       return refresh(command);
       break;
-    case _SELECTED:
-      return selected(command);
-      break;
     case _SEARCH:
       return search(command);
       break;
@@ -63,22 +60,9 @@ int CHART_PANEL::refresh (Command *command)
   // CHART_PANEL,REFRESH
   //      0         1
 
-  g_chartPanel->updateList();
+  g_middleMan->chartPanelRefresh();
   
   command->setReturnData("0");
-
-  return 0;
-}
-
-int CHART_PANEL::selected (Command *command)
-{
-  // CHART_PANEL,SELECTED
-  //      0         1
-
-  QStringList l;
-  g_chartPanel->selected(l);
-
-  command->setReturnData(l.join(","));
 
   return 0;
 }
@@ -94,7 +78,7 @@ int CHART_PANEL::search (Command *command)
     return 1;
   }
 
-  g_chartPanel->setSearch(command->parm(2), command->parm(3));
+  g_middleMan->chartPanelSearch(command->parm(2), command->parm(3));
 
   command->setReturnData("0");
 

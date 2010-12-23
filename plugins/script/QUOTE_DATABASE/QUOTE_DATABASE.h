@@ -25,7 +25,7 @@
 #include <QtSql>
 
 #include "ScriptPlugin.h"
-#include "Symbol.h"
+#include "QuoteDataBase.h"
 
 class QUOTE_DATABASE : public ScriptPlugin
 {
@@ -43,12 +43,9 @@ class QUOTE_DATABASE : public ScriptPlugin
     };
     
     QUOTE_DATABASE ();
-    void init ();
     int command (Command *);
     int getBars (Command *);
     int setBars (Command *);
-    int newSymbol (Symbol *);
-    int getSymbol (Symbol *);
     int transaction (Command *);
     int commit (Command *);
     int deleteSymbol (Command *);
@@ -58,7 +55,7 @@ class QUOTE_DATABASE : public ScriptPlugin
 
   private:
     QStringList _method;
-    QSqlDatabase _db;
+    QuoteDataBase _db;
 };
 
 extern "C"

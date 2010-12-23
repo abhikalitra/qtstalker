@@ -42,9 +42,7 @@ DateRangeButton::DateRangeButton ()
   setToolTip(tr("Date Range Override"));
   setCheckable(TRUE);
 
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-
+  QSettings settings(g_settingsFile);
   setChecked(settings.value("date_range_button_status", 0).toInt());
 
   _startDate = settings.value("date_range_start", QDateTime::currentDateTime()).toDateTime();
@@ -56,8 +54,7 @@ DateRangeButton::DateRangeButton ()
 
 void DateRangeButton::buttonClicked (bool status)
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   settings.setValue("date_range_button_status", status);
   settings.sync();
 
@@ -74,8 +71,7 @@ void DateRangeButton::dialog ()
 
 void DateRangeButton::dateChanged (QDateTime sd, QDateTime ed)
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   settings.setValue("date_range_start", sd);
   settings.setValue("date_range_end", ed);
   settings.sync();
@@ -101,4 +97,3 @@ QDateTime & DateRangeButton::endDate ()
 {
   return _endDate;
 }
-

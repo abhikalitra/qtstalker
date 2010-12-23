@@ -26,34 +26,6 @@
 SCRIPT_DATABASE::SCRIPT_DATABASE ()
 {
   _method << "LOAD" << "SAVE" << "DELETE" << "SCRIPTS";
-
-  init();
-}
-
-void SCRIPT_DATABASE::init ()
-{
-  _db = QSqlDatabase::database("data");
-  if (! _db.isOpen())
-  {
-    QString s = QDir::homePath() + "/.qtstalker/data.sqlite";
-    _db = QSqlDatabase::addDatabase("QSQLITE", "data");
-    _db.setHostName("QtStalker");
-    _db.setDatabaseName(s);
-    _db.setUserName("QtStalker");
-    _db.setPassword("QtStalker");
-    if (! _db.open())
-      qDebug() << "SCRIPT_DATABASE::init:" << _db.lastError().text();
-  }
-
-  QSqlQuery q(_db);
-  QString s = "CREATE TABLE IF NOT EXISTS script (";
-  s.append("name TEXT PRIMARY KEY UNIQUE");
-  s.append(", command TEXT");
-  s.append(", script TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "SCRIPT_DATABASE::init:" << q.lastError().text();
 }
 
 int SCRIPT_DATABASE::command (Command *command)
@@ -99,27 +71,16 @@ int SCRIPT_DATABASE::load (Command *command)
     return 1;
   }
 
-  QString name = command->parm(2);
+  Script script;
+  script.setName(command->parm(2));
 
-  QSqlQuery q(_db);
-  QString s = "SELECT command,script FROM script WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
+  if (_db.load(&script))
   {
-    qDebug() << "SCRIPT_DATABASE::load:" << q.lastError().text();
+    qDebug() << "SCRIPT_DATABASE::load: ScriptDataBase error";
     return 1;
   }
-
-  QStringList l;
-
-  if (q.next())
-  {
-    int pos = 0;
-    l << q.value(pos++).toString();
-    l << q.value(pos++).toString();
-  }
-
-  command->setReturnData(l.join(","));
+  
+  command->setReturnData(script.toString());
 
   return 0;
 }
@@ -136,25 +97,17 @@ int SCRIPT_DATABASE::save (Command *command)
   }
 
   int pos = 2;
-  QString name = command->parm(pos++);
+  Script script;
+  script.setName(command->parm(pos++));
+  script.setCommand(command->parm(pos++));
+  script.setFile(command->parm(pos++));
 
-  QSqlQuery q(_db);
-  _db.transaction();
-  
-  QString s = "INSERT OR REPLACE INTO script (name,command,script) VALUES (";
-  s.append("'" + name + "'");
-  s.append(",'" + command->parm(pos++) + "'");
-  s.append(",'" + command->parm(pos++) + "'");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
+  if (_db.save(&script))
   {
-    qDebug() << "SCRIPT_DATABASE::save:" << q.lastError().text();
+    qDebug() << "SCRIPT_DATABASE::save: ScriptDataBase error";
     return 1;
   }
 
-  _db.commit();
-  
   command->setReturnData("0");
 
   return 0;
@@ -171,19 +124,16 @@ int SCRIPT_DATABASE::deleteScript (Command *command)
     return 1;
   }
 
-  QSqlQuery q(_db);
-  _db.transaction();
-
+  QStringList l;
   int loop = 2;
   for (; loop < command->count(); loop++)
-  {
-    QString s = "DELETE FROM script WHERE name='" + command->parm(loop) + "'";
-    q.exec(s);
-    if (q.lastError().isValid())
-      qDebug() << "SCRIPT_DATABASE::deleteScript:" << q.lastError().text();
-  }
+    l << command->parm(loop);
 
-  _db.commit();
+  if (_db.deleteScript(l))
+  {
+    qDebug() << "SCRIPT_DATABASE::deleteScript: ScriptDataBase error";
+    return 1;
+  }
 
   command->setReturnData("0");
   
@@ -195,19 +145,13 @@ int SCRIPT_DATABASE::scripts (Command *command)
   // SCRIPT_DATABASE,SCRIPTS
   //        0          1
 
-  QSqlQuery q(_db);
-  QString s = "SELECT name FROM script";
-  q.exec(s);
-  if (q.lastError().isValid())
+  QStringList l;
+  if (_db.scripts(l))
   {
-    qDebug() << "SCRIPT_DATABASE::scripts:" << q.lastError().text();
+    qDebug() << "SCRIPT_DATABASE::scripts: ScriptDataBase error";
     return 1;
   }
-
-  QStringList l;
-  while (q.next())
-    l << q.value(0).toString();
-
+  
   command->setReturnData(l.join(","));
 
   return 0;

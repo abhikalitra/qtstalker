@@ -308,3 +308,8 @@ QString Bar::string ()
   return l.join(",");
 }
 
+QDateTime Bar::startDate ()
+{
+  return _startDate;
+}
+

@@ -35,6 +35,13 @@ RecentCharts::RecentCharts (QToolBar *tb)
   setToolTip(tr("Recent Charts"));
   connect(this, SIGNAL(activated(int)), this, SLOT(itemSelected(int)));
   tb->addWidget(this);
+
+  load();
+}
+
+RecentCharts::~RecentCharts ()
+{
+//  save();
 }
 
 void RecentCharts::addRecentChart (BarData bd)
@@ -74,17 +81,14 @@ void RecentCharts::save ()
     l << bd.key();
   }
 
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   settings.setValue("recent_charts_list", l);
   settings.sync();
 }
 
 void RecentCharts::load ()
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-  
+  QSettings settings(g_settingsFile);
   QStringList l = settings.value("recent_charts_list").toStringList();
 
   int loop = 0;

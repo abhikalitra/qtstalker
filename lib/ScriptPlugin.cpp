@@ -25,7 +25,7 @@
 
 ScriptPlugin::ScriptPlugin ()
 {
-  _threadSafe = 1;
+  _type = _THREAD;
 }
 
 ScriptPlugin::~ScriptPlugin ()
@@ -38,7 +38,7 @@ int ScriptPlugin::command (Command *)
   return 0;
 }
 
-int ScriptPlugin::isThreadSafe ()
+int ScriptPlugin::type ()
 {
-  return _threadSafe;
+  return _type;
 }

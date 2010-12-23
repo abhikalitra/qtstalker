@@ -38,8 +38,7 @@ DateRangeControl::DateRangeControl (QToolBar *tb) : QObject (tb)
 
 void DateRangeControl::createButtons (QToolBar *tb)
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
 
   // previous button
   _prevButton = new QToolButton;
@@ -104,8 +103,7 @@ void DateRangeControl::nextRange ()
 
 void DateRangeControl::rangeChanged (int d)
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   settings.setValue("last_date_range", d);
   settings.sync();
   
@@ -132,4 +130,3 @@ void DateRangeControl::buttonStatus ()
   _prevButton->setEnabled(left);
   _nextButton->setEnabled(right);
 }
-

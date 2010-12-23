@@ -30,17 +30,18 @@ i18n.path = "$${INSTALL_DATA_DIR}/qtstalker/i18n"
 i18n.files = ../i18n/*.qm
 INSTALLS += i18n
 
-# install the indicator files
-indicator.path = "$${INSTALL_DATA_DIR}/qtstalker/indicator"
-indicator.files = ../misc/CUS_examples/*.perl
-INSTALLS += indicator
-
 # install the db update files
 dbUpdate.path = "$${INSTALL_DATA_DIR}/qtstalker/db"
 dbUpdate.files = *.csv
 INSTALLS += dbUpdate
 
 # install the system script files
-script.path = "$${INSTALL_DATA_DIR}/qtstalker/script"
-script.files = ../Scripts/*.pl
+script.path = "$${INSTALL_DATA_DIR}/qtstalker/system"
+script.files = ../Scripts/system/*.pl
 INSTALLS += script
+
+# install the indicator files
+indicator.path = "$${INSTALL_DATA_DIR}/qtstalker/indicator"
+indicator.files = ../Scripts/indicator/*.pl
+INSTALLS += indicator
+

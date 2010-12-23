@@ -1,5 +1,5 @@
 /* XPM */
-static const char *help[]={
+static const char *help_xpm[]={
 "16 16 134 2",
 "Qt c None",
 "#8 c #1a64f9",

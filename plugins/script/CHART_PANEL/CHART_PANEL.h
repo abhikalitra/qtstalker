@@ -30,14 +30,12 @@ class CHART_PANEL : public ScriptPlugin
     enum Method
     {
       _REFRESH,
-      _SELECTED,
       _SEARCH
     };
     
     CHART_PANEL ();
     int command (Command *);
     int refresh (Command *);
-    int selected (Command *);
     int search (Command *);
 
   private:

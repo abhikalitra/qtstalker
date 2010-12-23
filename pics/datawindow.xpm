@@ -1,5 +1,5 @@
 /* XPM */
-static const char *datawindow[]={
+static const char *datawindow_xpm[]={
 "22 22 173 2",
 "Qt c None",
 "aD c #103b95",

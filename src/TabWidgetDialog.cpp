@@ -21,10 +21,14 @@
 
 #include "TabWidgetDialog.h"
 #include "Globals.h"
+#include "Doc.h"
 
 #include <QtDebug>
 #include <QFormLayout>
 #include <QSettings>
+#include <QDialogButtonBox>
+#include <QLayout>
+#include <QPushButton>
 
 TabWidgetDialog::TabWidgetDialog (QString id)
 {
@@ -34,21 +38,24 @@ TabWidgetDialog::TabWidgetDialog (QString id)
 
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Chart Tab Settings"));
 
-  createMainPage();
+  createGUI();
+
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
-void TabWidgetDialog::createMainPage ()
+void TabWidgetDialog::createGUI ()
 {
-  QWidget *w = new QWidget;
-  
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(2);
+  setLayout(vbox);
+
   QFormLayout *form = new QFormLayout;
   form->setSpacing(2);
   form->setMargin(5);
-  w->setLayout(form);
+  vbox->addLayout(form);
 
   // position
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
 
   _ttp = settings.value(_id).toInt();
 
@@ -93,13 +100,32 @@ void TabWidgetDialog::createMainPage ()
   _eww->setValue(_teww);
   form->addRow(tr("East / West Width"), _eww);
 
-  _tabs->addTab(w, tr("Tab Settings"));
+  // status message
+  _message = new QLabel;
+  vbox->addWidget(_message);
+
+  // buttonbox
+  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
+  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
+  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
+  vbox->addWidget(bbox);
+
+  // ok button
+  _okButton = bbox->addButton(QDialogButtonBox::Ok);
+  _okButton->setDefault(TRUE);
+
+  // cancel button
+  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
+  _cancelButton->setDefault(TRUE);
+
+  // help button
+  QPushButton *b = bbox->button(QDialogButtonBox::Help);
+  connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 
 void TabWidgetDialog::done ()
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
 
   int flag = 0;
   QString d, key;
@@ -145,4 +171,36 @@ void TabWidgetDialog::done ()
     emit signalChanged();
 
   accept();
+}
+
+void TabWidgetDialog::help ()
+{
+  Doc *doc = new Doc;
+  doc->showDocumentation(_helpFile);
+}
+
+void TabWidgetDialog::cancel ()
+{
+  saveSettings();
+  reject();
+}
+
+void TabWidgetDialog::loadSettings ()
+{
+  QSettings settings(g_settingsFile);
+
+  QSize sz = settings.value("tab_widget_dialog_window_size", QSize(200,150)).toSize();
+  resize(sz);
+
+  // restore the position of the app
+  QPoint p = settings.value("tab_widget_dialog_window_position", QPoint(0,0)).toPoint();
+  move(p);
+}
+
+void TabWidgetDialog::saveSettings ()
+{
+  QSettings settings(g_settingsFile);
+  settings.setValue("tab_widget_dialog_window_size", size());
+  settings.setValue("tab_widget_dialog_window_position", pos());
+  settings.sync();
 }

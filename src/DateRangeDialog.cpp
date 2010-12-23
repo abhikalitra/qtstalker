@@ -21,9 +21,14 @@
 
 #include "DateRangeDialog.h"
 #include "Globals.h"
+#include "Doc.h"
 
 #include <QtDebug>
 #include <QFormLayout>
+#include <QDialogButtonBox>
+#include <QLayout>
+#include <QSettings>
+#include <QPushButton>
 
 DateRangeDialog::DateRangeDialog (QDateTime &sd, QDateTime &ed)
 {
@@ -34,16 +39,23 @@ DateRangeDialog::DateRangeDialog (QDateTime &sd, QDateTime &ed)
   setWindowTitle("Qtstalker" + g_session + ": " +  tr("Set Date Range"));
 
   createMainPage();
+
+  loadSettings();
+
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void DateRangeDialog::createMainPage ()
 {
-  QWidget *w = new QWidget;
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(10);
+  vbox->setMargin(5);
+  setLayout(vbox);
   
   QFormLayout *form = new QFormLayout;
   form->setSpacing(2);
   form->setMargin(5);
-  w->setLayout(form);
+  vbox->addLayout(form);
 
   // first date
   _start = new QDateTimeEdit(_sd);
@@ -55,7 +67,27 @@ void DateRangeDialog::createMainPage ()
   _end->setCalendarPopup(TRUE);
   form->addRow(tr("Last Date"), _end);
 
-  _tabs->addTab(w, tr("Date Range"));
+  // status message
+  _message = new QLabel;
+  vbox->addWidget(_message);
+
+  // buttonbox
+  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
+  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
+  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
+  vbox->addWidget(bbox);
+
+  // ok button
+  _okButton = bbox->addButton(QDialogButtonBox::Ok);
+  _okButton->setDefault(TRUE);
+
+  // cancel button
+  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
+  _cancelButton->setDefault(TRUE);
+
+  // help button
+  QPushButton *b = bbox->button(QDialogButtonBox::Help);
+  connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 
 void DateRangeDialog::done ()
@@ -75,3 +107,33 @@ void DateRangeDialog::done ()
   accept();
 }
 
+void DateRangeDialog::help ()
+{
+  Doc *doc = new Doc;
+  doc->showDocumentation(_helpFile);
+}
+
+void DateRangeDialog::cancel ()
+{
+  saveSettings();
+  reject();
+}
+
+void DateRangeDialog::loadSettings ()
+{
+  QSettings settings(g_settingsFile);
+  QSize sz = settings.value("date_range_dialog_window_size", QSize(200,150)).toSize();
+  resize(sz);
+
+  // restore the position of the app
+  QPoint p = settings.value("date_range_dialog_window_position", QPoint(0,0)).toPoint();
+  move(p);
+}
+
+void DateRangeDialog::saveSettings ()
+{
+  QSettings settings(g_settingsFile);
+  settings.setValue("date_range_dialog_window_size", size());
+  settings.setValue("date_range_dialog_window_position", pos());
+  settings.sync();
+}

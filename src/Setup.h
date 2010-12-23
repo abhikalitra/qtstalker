@@ -34,8 +34,6 @@ class Setup
     void setupDefaultIndicators ();
     void setupExchanges ();
     void setupFutures ();
-//    void setupDataBase ();
-    void setupMessageServer ();
 };
 
 #endif

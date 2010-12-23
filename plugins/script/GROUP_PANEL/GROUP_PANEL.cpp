@@ -57,7 +57,7 @@ int GROUP_PANEL::refresh (Command *command)
   // GROUP_PANEL,REFRESH
   //      0         1
 
-  g_groupPanel->updateGroups();
+  g_middleMan->groupPanelRefresh();
   
   command->setReturnData("0");
 

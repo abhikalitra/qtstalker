@@ -61,6 +61,8 @@ class Script : public QObject
     QString & command ();
     void setFile (QString);
     QString & file ();
+    int fromString (QString);
+    QString toString ();
     
   public slots:
     void readFromStdout ();

@@ -34,13 +34,13 @@ class ChartObjectDraw : public QwtPlotItem
     ChartObjectDraw ();
     ~ChartObjectDraw ();
     int rtti () const;
-    void setSettings (Setting &);
+    void setSettings (Setting *);
     int isSelected (QPoint);
     int isGrabSelected (QPoint);
     void setSelected (int);
 
   protected:
-    mutable Setting _settings;
+    mutable Setting *_settings;
     int _selected;
     int _handleWidth;
     mutable QList<QRegion> _selectionArea;

@@ -31,9 +31,7 @@
 
 ZoomButtons::ZoomButtons (QToolBar *tb) : QObject (tb)
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-
+  QSettings settings(g_settingsFile);
   _pixelSpace = settings.value("pixelspace", 6).toInt();
   
   createButtons(tb);
@@ -107,8 +105,7 @@ int ZoomButtons::getPixelSpace ()
 
 void ZoomButtons::savePixelSpace ()
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   settings.setValue("pixelspace", _pixelSpace);
   settings.sync();
 }

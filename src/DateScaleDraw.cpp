@@ -20,7 +20,7 @@
  */
 
 #include "DateScaleDraw.h"
-#include "BarRange.h"
+#include "Bar.h"
 #include "Globals.h"
 
 #include <QString>
@@ -28,6 +28,7 @@
 
 DateScaleDraw::DateScaleDraw ()
 {
+  _barLength = -1;
 }
 
 void DateScaleDraw::setDates ()
@@ -102,11 +103,11 @@ void DateScaleDraw::date (int x, QDateTime &dt)
 int DateScaleDraw::x (QDateTime d)
 {
   int x = -1;
-  BarRange br;
-  br.setBarRange(d, (BarData::BarLength) _barLength);
+  Bar bar;
+  bar.setDateRange(d, (Bar::BarLength) _barLength);
 
   QString s;
-  br.key(s);
+  bar.rangeKey(s);
   if (_data.contains(s))
     x = _data.value(s);
 
@@ -128,4 +129,3 @@ QList<QDateTime> & DateScaleDraw::dates ()
 {
   return _dateList;
 }
-

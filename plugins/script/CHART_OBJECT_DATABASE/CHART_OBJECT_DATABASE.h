@@ -44,16 +44,16 @@ class CHART_OBJECT_DATABASE : public ScriptPlugin
     };
     
     CHART_OBJECT_DATABASE ();
-    int command (Command &);
-    int get (Command &);
-    int load (Command &);
-    int save (Command &);
-    int deleteObject (Command &);
-    int deleteSymbol (Command &);
-    int deleteIndicator (Command &);
-    int rename (Command &);
-    int transaction (Command &);
-    int commit (Command &);
+    int command (Command *);
+    int get (Command *);
+    int load (Command *);
+    int save (Command *);
+    int deleteObject (Command *);
+    int deleteSymbol (Command *);
+    int deleteIndicator (Command *);
+    int rename (Command *);
+    int transaction (Command *);
+    int commit (Command *);
     
   private:
     QStringList _method;

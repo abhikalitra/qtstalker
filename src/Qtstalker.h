@@ -28,7 +28,6 @@
 #include <QString>
 #include <QStatusBar>
 #include <QSplitter>
-#include <QAction>
 
 #include "Splitter.h"
 #include "InfoPanel.h"
@@ -36,42 +35,37 @@
 #include "BarLengthButtons.h"
 #include "PlotSlider.h"
 #include "ZoomButtons.h"
-#include "GridAction.h"
-#include "RefreshAction.h"
 #include "DateRangeControl.h"
 #include "DateRangeButton.h"
 #include "SidePanel.h"
-#include "ChartLayout.h"
 #include "SidePanelButton.h"
-#include "CrossHairsButton.h"
-//#include "MessageServer.h"
 #include "Command.h"
+#include "QuitButton.h"
+#include "ChartLayout.h"
 
 class QtstalkerApp : public QMainWindow
 {
   Q_OBJECT
 
   signals:
-    void signalSaveSettings ();
     void signalLoadSettings ();
 
   public:
     QtstalkerApp (QString session, QString asset);
+    ~QtstalkerApp ();
     void createGUI ();
     void loadSettings ();
-    void createToolBars ();
+    void createToolBar ();
+    void createStatusToolBar ();
     QString getWindowCaption ();
     void setSliderStart (int);
 
   public slots:
     void loadChart (BarData);
-    void loadChart2 (Command *);
-    void quit();
-    void dataWindow ();
+    void save ();
     void chartUpdated ();
     void statusMessage (QString);
     void wakeup ();
-    void appFont (QFont);
     void commandLineAsset ();
 
   protected:
@@ -85,16 +79,12 @@ class QtstalkerApp : public QMainWindow
     PlotSlider *_plotSlider;
     ZoomButtons *_zoomButtons;
     QString _clAsset;
-    GridAction *_gridAction;
-    RefreshAction *_refreshAction;
     DateRangeControl *_dateRange;
     DateRangeButton *_dateRangeButton;
     SidePanel *_sidePanel;
-    ChartLayout *_chartLayout;
-    QAction *_newIndicatorAction;
     SidePanelButton *_sidePanelButton;
-    CrossHairsButton *_crossHairsButton;
-//    MessageServer *_messageServer;
+    QuitButton *_quitButton;
+    ChartLayout *_chartLayout;
 };
 
 #endif

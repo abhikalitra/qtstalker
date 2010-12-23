@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,459 +20,741 @@
  */
 
 #include "QuoteDataBase.h"
+#include "Strip.h"
 #include "Bar.h"
-#include "Setting.h"
+#include "DateRange.h"
 
+#include <QDateTime>
 #include <QtDebug>
-#include <QtSql>
-#include <QVariant>
-
 
 QuoteDataBase::QuoteDataBase ()
 {
+  init();
 }
 
-void QuoteDataBase::init (QString &dbFile)
+void QuoteDataBase::init ()
 {
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "quotes");
-  db.setHostName("localhost");
-  db.setDatabaseName(dbFile);
-  db.setUserName("QtStalker");
-  db.setPassword("QtStalker");
-  if (! db.open())
-    qDebug() << "QuoteDataBase::init: quotes db open failed";
+  _db = QSqlDatabase::database("quote");
+  if (! _db.isOpen())
+  {
+    QString s = QDir::homePath() + "/.qtstalker/quote.sqlite";
+    _db = QSqlDatabase::addDatabase("QSQLITE", "quote");
+    _db.setHostName("QtStalker");
+    _db.setDatabaseName(s);
+    _db.setUserName("QtStalker");
+    _db.setPassword("QtStalker");
+    if (! _db.open())
+      qDebug() << "QuoteDataBase::init:" << _db.lastError().text();
+  }
 
-  QSqlQuery q(db);
+  QSqlQuery q(_db);
   QString s = "CREATE TABLE IF NOT EXISTS symbolIndex (";
-  s.append(" symbol TEXT PRIMARY KEY UNIQUE");
-  s.append(", tableName TEXT");
-  s.append(", name TEXT");
+  s.append(" record INTEGER PRIMARY KEY AUTOINCREMENT");
+  s.append(", symbol TEXT");
   s.append(", exchange TEXT");
+  s.append(", name TEXT");
+  s.append(", tableName TEXT");
   s.append(", type TEXT");
-  s.append(", sector TEXT");
-  s.append(", futuresSymbol TEXT");
-  s.append(", futuresMonth TEXT");
-  s.append(", futuresTick REAL");
-  s.append(", data TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "QuoteDataBase::init:createSymbolIndexTable: " << q.lastError().text();
+    qDebug() << "QuoteDataBase::init:" << _db.lastError().text();
 }
 
-void QuoteDataBase::transaction ()
+/*
+int QuoteDataBase::getBars (BarData *bd)
 {
-  QSqlDatabase db = QSqlDatabase::database("quotes");
-  db.transaction();
-}
+  QString exchange = bd->exchange();
+  if (exchange.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::getBars: invalid exchange";
+    return 1;
+  }
 
-void QuoteDataBase::commit ()
-{
-  QSqlDatabase db = QSqlDatabase::database("quotes");
-  db.commit();
-}
+  QString tsymbol = bd->symbol();
+  if (tsymbol.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::getBars: invalid symbol";
+    return 1;
+  }
 
-void QuoteDataBase::getAllChartsList (QStringList &l)
-{
-  l.clear();
+  int length = bd->barLength();
+  if (length == -1)
+  {
+    qDebug() << "QuoteDataBase::getBars: invalid length";
+    return 1;
+  }
 
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT symbol FROM symbolIndex";
+//  int dateRange = bd->range();
+  int maxBars = 250;
+
+  if (getSymbol(bd))
+    return 1;
+
+  QSqlQuery q(_db);
+
+  QString s = "SELECT min(date) FROM " + bd->table();
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "QuoteDataBase::getAllChartsList: " << q.lastError().text();
-    return;
+    qDebug() << "QuoteDataBase::getBars:" + q.lastError().text();
+    return 1;
   }
 
-  while (q.next())
-    l.append(q.value(0).toString());
+  QString startDate;
+  if (q.next())
+    startDate = q.value(0).toString();
+  else
+    return 1;
 
-  l.sort();
-}
-
-void QuoteDataBase::getSearchList (QString &pat, QStringList &l)
-{
-  l.clear();
-
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT symbol FROM symbolIndex WHERE symbol LIKE";
-  s.append(" '" + pat + "'"); // add the pattern to the end of the sql command
+  s = "SELECT max(date) FROM " + bd->table();
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "QuoteDataBase::getSearchList: " << q.lastError().text();
-    return;
+    qDebug() << "QuoteDataBase::getBars:" + q.lastError().text();
+    return 1;
   }
 
-  while (q.next())
-    l.append(q.value(0).toString());
-
-  l.sort();
-}
-
-void QuoteDataBase::getChart (BarData *data)
-{
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-
-  QString symbol, ts, ts2, s, table;
-  data->getSymbol(symbol);
-  if (getIndexData(symbol, table, data))
-    return;
-
-  QDateTime firstDate;
-  getFirstDate(table, firstDate);
-
-  QDateTime lastDate;
-  getLastDate(table, lastDate);
+  QString endDate;
+  if (q.next())
+    endDate = q.value(0).toString();
+  else
+    return 1;
 
   QHash<QString, Bar *> bars;
-  QStringList dateList;
+  QList<Bar *> dateList;
 
-  while (1)
+  while (bars.count() <= maxBars)
   {
-    QString sd = firstDate.toString(Qt::ISODate);
-    QString ed = lastDate.toString(Qt::ISODate);
-
-    s = "SELECT date,open,high,low,close,volume,oi FROM " + table;
-    s.append(" WHERE date >='" + sd + "' AND date <='" + ed + "'");
-    s.append(" ORDER BY date DESC");
-    s.append(" LIMIT " + QString::number(data->getBarsRequested()));
+    s = "SELECT date,open,high,low,close,volume,oi";
+    s.append(" FROM " + bd->table());
+    s.append(" WHERE date <=" + endDate);
+    s.append(" ORDER BY date DESC LIMIT " + QString::number(maxBars));
     q.exec(s);
     if (q.lastError().isValid())
     {
-      qDebug() << "QuoteDataBase::getChart:" << q.lastError().text();
-      break;
+      qDebug() << "QuoteDataBase::getBars:" + q.lastError().text();
+      qDebug() << s;
+      return 1;
     }
 
     while (q.next())
     {
-      QDateTime dt = q.value(0).toDateTime();
-      lastDate = dt;
-      QDateTime sd, ed;
-      setStartEndDates(dt, sd, ed, data->getBarLength());
-      s = sd.toString(Qt::ISODate) + ed.toString(Qt::ISODate);
-      Bar *bar = bars[s];
+      endDate = q.value(0).toString();
+      QDateTime lastDate = QDateTime::fromString(endDate, "yyyyMMddHHmmss");
+
+      Bar tbar;
+      tbar.setDateRange(lastDate, (Bar::BarLength) length);
+      tbar.rangeKey(s);
+
+      Bar *bar = bars.value(s);
       if (! bar)
       {
-	if (bars.count() == data->getBarsRequested())
-	  break;
+        bar = new Bar;
+        bar->setDateRange(lastDate, (Bar::BarLength) length);
+        bar->setOpen(q.value(1).toDouble());
+        bar->setHigh(q.value(2).toDouble());
+        bar->setLow(q.value(3).toDouble());
+        bar->setClose(q.value(4).toDouble());
+        bar->setVolume(q.value(5).toDouble());
+        bar->setOI(q.value(6).toDouble());
 
-	dateList.append(s); // save new dateList entry
-	bar = new Bar;
-        bar->setDate(dt); // save actual date
-
-	bars.insert(s, bar);
-
-        QVariant v = q.value(1);
-        if (v.isValid())
-	  bar->setOpen(v.toDouble());
-
-        v = q.value(2);
-        if (v.isValid())
-	  bar->setHigh(v.toDouble());
-
-        v = q.value(3);
-        if (v.isValid())
-	  bar->setLow(v.toDouble());
-
-        v = q.value(4);
-        if (v.isValid())
-	  bar->setClose(v.toDouble());
-
-        v = q.value(5);
-        if (v.isValid())
-	  bar->setVolume(v.toDouble());
-
-        v = q.value(6);
-        if (v.isValid())
-	  bar->setOI(v.toDouble());
-
-	continue;
+        bars.insert(s, bar);
+        dateList.append(bar);
       }
-
-      QVariant v = q.value(1);
-      if (v.isValid())
-        bar->setOpen(v.toDouble());
-
-      v = q.value(2);
-      if (v.isValid())
+      else
       {
-        double h = v.toDouble();
-        if (h > bar->getHigh())
-          bar->setHigh(h);
-      }
+        bar->setOpen(q.value(1).toDouble());
+ 
+        double v = q.value(2).toDouble();
+        double t = bar->high();
+        if (v > t)
+          bar->setHigh(q.value(2).toDouble());
 
-      v = q.value(3);
-      if (v.isValid())
-      {
-        double l = v.toDouble();
-        if (l < bar->getLow())
-          bar->setLow(l);
-      }
+        v = q.value(3).toDouble();
+        t = bar->low();
+        if (v < t)
+          bar->setLow(q.value(3).toDouble());
 
-      v = q.value(5);
-      if (v.isValid())
-      {
-        double v1 = v.toDouble();
-        double v2 = bar->getVolume();
-        bar->setVolume(v1 + v2);
+        v = q.value(5).toDouble();
+        v += bar->volume();
+        bar->setVolume(v);
+
+        bar->setOI(q.value(6).toDouble());
       }
     }
 
-    if (bars.count() == data->getBarsRequested())
-      break;
+qDebug() << startDate << endDate;
 
-    if (lastDate == firstDate)
+    if (endDate == startDate)
       break;
   }
 
-  // order the bars from most recent to first
+  // append bars in order
   int loop;
-  for (loop = 0; loop < dateList.count(); loop++)
-    data->prepend(bars[dateList[loop]]);
-
-//  data->createDateList();
-}
-
-void QuoteDataBase::getFirstDate (QString &table, QDateTime &date)
-{
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT min(date) FROM " + table;
-  q.exec(s);
-  if (q.lastError().isValid())
+  for (loop = dateList.count() - 1; loop > -1; loop--)
   {
-    qDebug() << "QuoteDataBase::getFirstDate:" << q.lastError().text();
-    return;
+    Bar *bar = dateList.at(loop);
+    if (! bar)
+      continue;
+
+    bd->append(bar);
   }
 
-  if (q.next())
-    date = q.value(0).toDateTime();
+  return 0;
 }
+*/
 
-void QuoteDataBase::getLastDate (QString &table, QDateTime &date)
+int QuoteDataBase::getBars (BarData *bd)
 {
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT max(date) FROM " + table;
-  q.exec(s);
-  if (q.lastError().isValid())
+  QString exchange = bd->exchange();
+  if (exchange.isEmpty())
   {
-    qDebug() << "QuoteDataBase::getLastDate:" << q.lastError().text();
-    return;
-  }
-
-  if (q.next())
-    date = q.value(0).toDateTime();
-}
-
-void QuoteDataBase::setStartEndDates (QDateTime &date, QDateTime &startDate, QDateTime &endDate,
-				      BarData::BarLength barLength)
-{
-  QString s, s2;
-  int tint = 0;
-  startDate = date;
-
-  switch (barLength)
-  {
-    case BarData::Minute1:
-      startDate.setTime(QTime(startDate.time().hour(), startDate.time().minute(), 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(60);
-      break;
-    case BarData::Minute5:
-      tint = startDate.time().minute() / 5;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 5, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(300);
-      break;
-    case BarData::Minute10:
-      tint = startDate.time().minute() / 10;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 10, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(600);
-      break;
-    case BarData::Minute15:
-      tint = startDate.time().minute() / 15;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 15, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(900);
-      break;
-    case BarData::Minute30:
-      tint = startDate.time().minute() / 30;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 30, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(1800);
-      break;
-    case BarData::Minute60:
-      startDate.setTime(QTime(startDate.time().hour(), 0, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(3600);
-      break;
-    case BarData::DailyBar:
-      startDate.setTime(QTime(0, 0, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addDays(1);
-      break;
-    case BarData::WeeklyBar:
-      startDate.setTime(QTime(0, 0, 0, 0));
-      startDate = startDate.addDays(- startDate.date().dayOfWeek());
-      endDate = startDate;
-      endDate = endDate.addDays(7);
-      break;
-    case BarData::MonthlyBar:
-      startDate.setTime(QTime(0, 0, 0, 0));
-      startDate = startDate.addDays(- (startDate.date().day() - 1));
-      endDate = startDate;
-      endDate = endDate.addDays(endDate.date().daysInMonth());
-      break;
-    default:
-      break;
-  }
-}
-
-int QuoteDataBase::getIndexData (QString &symbol, QString &table, BarData *data)
-{
-  table.clear();
-
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-  QString s = "SELECT name,tableName FROM symbolIndex WHERE symbol='" + symbol + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "QuoteDataBase::getTableName: " << q.lastError().text();
+    qDebug() << "QuoteDataBase::getBars: invalid exchange";
     return 1;
   }
 
-  if (q.next())
+  QString tsymbol = bd->symbol();
+  if (tsymbol.isEmpty())
   {
-    s = q.value(0).toString();
-    data->setName(s);
+    qDebug() << "QuoteDataBase::getBars: invalid symbol";
+    return 1;
+  }
 
-    table = q.value(1).toString();
+  int length = bd->barLength();
+  if (length == -1)
+  {
+    qDebug() << "QuoteDataBase::getBars: invalid length";
+    return 1;
+  }
+
+  QDateTime startDate = bd->startDate();
+  QDateTime endDate = bd->endDate();
+  
+  int dateRange = bd->range();
+
+  if (getSymbol(bd))
+    return 1;
+  
+  QSqlQuery q(_db);
+
+  // check if we want to return most recent bars
+  if (! startDate.isValid() && ! endDate.isValid())
+  {
+    QString s = "SELECT max(date) FROM " + bd->table();
+    q.exec(s);
+    if (q.lastError().isValid())
+    {
+      qDebug() << "QuoteDataBase::getBars:" + q.lastError().text();
+      return 1;
+    }
+
+    if (q.next())
+    {
+      endDate = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmss");
+      DateRange dr;
+      if (dr.dateRange((DateRange::Range) dateRange, endDate, startDate))
+      {
+        qDebug() << "QuoteDataBase::getBars: date range error" << dateRange;
+        return 1;
+      }
+    }
+    else
+      return 1;
+  }
+
+  QString s = "SELECT date,open,high,low,close,volume,oi";
+  s.append(" FROM " + bd->table());
+  s.append(" WHERE date >=" + startDate.toString("yyyyMMddHHmmss"));
+  s.append(" AND date <=" + endDate.toString("yyyyMMddHHmmss"));
+  s.append(" ORDER BY date DESC");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::getBars:" + q.lastError().text();
+    return 1;
+  }
+
+  QHash<QString, Bar *> bars;
+  QList<Bar *> dateList;
+
+  while (q.next())
+  {
+    QDateTime lastDate = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmss");
+
+    Bar tbar;
+    tbar.setDateRange(lastDate, (Bar::BarLength) length);
+    tbar.rangeKey(s);
+
+    Bar *bar = bars.value(s);
+    if (! bar)
+    {
+      bar = new Bar;
+      bar->setDateRange(lastDate, (Bar::BarLength) length);
+      bar->setOpen(q.value(1).toDouble());
+      bar->setHigh(q.value(2).toDouble());
+      bar->setLow(q.value(3).toDouble());
+      bar->setClose(q.value(4).toDouble());
+      bar->setVolume(q.value(5).toDouble());
+      bar->setOI(q.value(6).toDouble());
+
+      bars.insert(s, bar);
+      dateList.append(bar);
+    }
+    else
+    {
+      bar->setOpen(q.value(1).toDouble());
+
+      double v = q.value(2).toDouble();
+      double t = bar->high();
+      if (v > t)
+        bar->setHigh(q.value(2).toDouble());
+
+      v = q.value(3).toDouble();
+      t = bar->low();
+      if (v < t)
+        bar->setLow(q.value(3).toDouble());
+
+      v = q.value(5).toDouble();
+      v += bar->volume();
+      bar->setVolume(v);
+
+      bar->setOI(q.value(6).toDouble());
+    }
+  }
+
+  // append bars in order
+  int loop;
+  for (loop = dateList.count() - 1; loop > -1; loop--)
+  {
+    Bar *bar = dateList.at(loop);
+    if (! bar)
+      continue;
+
+    bd->append(bar);    
   }
 
   return 0;
 }
 
-void QuoteDataBase::setChart (QList<Bar> *bars)
+int QuoteDataBase::setBars (BarData *symbol)
 {
-  if (! bars->count())
-    return;
+  // save bars
+  QSqlQuery q(_db);
 
-  Bar bar = bars->at(0);
-  QString tsymbol, name, exchange, type;
-  bar.getSymbol(tsymbol);
-  bar.getName(name);
-  bar.getExchange(exchange);
-  bar.getType(type);
-
-  QSqlQuery q(QSqlDatabase::database("quotes"));
-
-  transaction();
-
-  QString table;
-  BarData data;
-  if (getIndexData(tsymbol, table, &data))
-    return;
-
-  if (table.isEmpty())
+  if (getSymbol(symbol))
   {
-    // create a unique table name from hash algo
-    uint hash = qHash(tsymbol);
-    table = "T" + QString::number(hash);
+    if (newSymbol(symbol))
+      return 1;
+  }
 
-    // add new symbol entry into the symbolIndex table
-    QString ts = "REPLACE INTO symbolIndex (symbol,name,tableName,exchange,type) VALUES(";
-    ts.append("'" + tsymbol + "'");
-    ts.append(",'" + name + "'");
-    ts.append(",'" + table + "'");
-    ts.append(",'" + exchange + "'");
-    ts.append(",'" + type + "'");
-    ts.append(")");
-    q.exec(ts);
+  int loop = 0;
+  for (; loop < symbol->count(); loop++)
+  {
+    Bar *bar = symbol->bar(loop);
+    if (! bar)
+      continue;
+    
+    QDateTime dt = bar->startDate();
+    QString date = dt.toString("yyyyMMddHHmmss");
+
+    // first check if record exists so we know to do an update or insert
+    QString s = "SELECT date FROM " + symbol->table() + " WHERE date =" + date;
+    q.exec(s);
     if (q.lastError().isValid())
     {
-      qDebug() << "QuoteDataBase::setChart:create new symbol index record: " << q.lastError().text();
-      qDebug() << ts;
-      return;
+      qDebug() << "QuoteDataBase::setBars:" << q.lastError().text();
+      qDebug() << s;
+      continue;
     }
 
-    // new symbol, create new table for it
-    ts = "CREATE TABLE IF NOT EXISTS " + table + " (";
-    ts.append("date DATETIME PRIMARY KEY UNIQUE");
-    ts.append(", open REAL");
-    ts.append(", high REAL");
-    ts.append(", low REAL");
-    ts.append(", close REAL");
-    ts.append(", volume INT");
-    ts.append(", oi INT");
-    ts.append(")");
-    q.exec(ts);
+    if (q.next()) // record exists, use update
+    {
+      s = "UPDATE " + symbol->table() + " SET ";
+      s.append("open=" + QString::number(bar->open()));
+      s.append(", high=" + QString::number(bar->high()));
+      s.append(", low=" + QString::number(bar->low()));
+      s.append(", close=" + QString::number(bar->close()));
+      s.append(", volume=" + QString::number(bar->volume()));
+      s.append(", oi=" + QString::number(bar->oi()));
+      s.append(" WHERE date=" + date);
+    }
+    else // new record, use insert
+    {
+      s = "INSERT INTO " + symbol->table() + " (date,open,high,low,close,volume,oi) VALUES(";
+      s.append(date);
+      s.append("," + QString::number(bar->open()));
+      s.append("," + QString::number(bar->high()));
+      s.append("," + QString::number(bar->low()));
+      s.append("," + QString::number(bar->close()));
+      s.append("," + QString::number(bar->volume()));
+      s.append("," + QString::number(bar->oi()));
+      s.append(")");
+    }
+
+    q.exec(s);
     if (q.lastError().isValid())
     {
-      qDebug() << "QuoteDataBase::setChart:create new symbol table: " << q.lastError().text();
-      qDebug() << ts;
-      return;
+      qDebug() << "QuoteDataBase::setBars:" << q.lastError().text();
+      qDebug() << s;
+      continue;    
     }
   }
 
-  int loop;
-  QString tdate;
-  for (loop = 0; loop < bars->count(); loop++)
-  {
-    Bar bar = bars->at(loop);
-    bar.getDateTimeString(tdate);
-
-    QString ts = "REPLACE INTO " + table + " VALUES('" + tdate + "'";
-
-    QString k = "Open";
-    QString d;
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "High";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "Low";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "Close";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "Volume";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0");
-    else
-      ts.append("," + d);
-
-    k = "OI";
-    bar.getData(k, d);
-    if (d.isEmpty())
-      ts.append(",0)");
-    else
-      ts.append("," + d + ")");
-
-    q.exec(ts);
-    if (q.lastError().isValid())
-      qDebug() << "QuoteDataBase::setChart:save quote in symbol table: " << q.lastError().text();
-  }
-
-  commit();
+  return 0;
 }
 
+//***************
+//***************
+//***************
+
+int QuoteDataBase::newSymbol (BarData *symbol)
+{
+  if (symbol->exchange().isEmpty() || symbol->symbol().isEmpty() || symbol->type().isEmpty())
+  {
+    qDebug() << "QuoteDataBase::newSymbol: exchange/symbol/type missing";
+    return 1;
+  }
+
+  if (! getSymbol(symbol))
+  {
+    qDebug() << "QuoteDataBase::newSymbol: duplicate symbol";
+    return 1;
+  }
+
+  QSqlQuery q(_db);
+
+  // create the symbol
+  // we use the maximum record column and add 1 to it to generate a new table name
+  QString s = "SELECT max(record) FROM symbolIndex";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::newSymbol: get record max " + q.lastError().text();
+    return 1;
+  }
+
+  symbol->setTable("Q1");
+  if (q.next())
+    symbol->setTable("Q" + QString::number(q.value(0).toInt() + 1));
+
+  // add new symbol entry into the symbolIndex table
+  s = "INSERT OR REPLACE INTO symbolIndex (symbol,tableName,exchange,name,type) VALUES(";
+  s.append("'" + symbol->symbol() + "'");
+  s.append(",'" + symbol->table() + "'");
+  s.append(",'" + symbol->exchange() + "'");
+  s.append(",'" + symbol->name() + "'");
+  s.append(",'" + symbol->type() + "'");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::newSymbol:" + q.lastError().text();
+    return 1;
+  }
+
+  s = "CREATE TABLE IF NOT EXISTS " + symbol->table() + " (";
+  s.append("date INT PRIMARY KEY UNIQUE");
+  s.append(", open REAL");
+  s.append(", high REAL");
+  s.append(", low REAL");
+  s.append(", close REAL");
+  s.append(", volume INT");
+  s.append(", oi INT");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::newSymbol:" + q.lastError().text();
+    return 1;
+  }
+
+  return 0;
+}
+
+int QuoteDataBase::getSymbol (BarData *symbol)
+{
+  if (symbol->exchange().isEmpty() || symbol->symbol().isEmpty())
+  {
+    qDebug() << "QuoteDataBase::symbol: exchange and/or symbol missing";
+    return 1;
+  }
+  
+  QSqlQuery q(_db);
+  QString s = "SELECT name,type,tableName FROM symbolIndex";
+  s.append(" WHERE symbol='" + symbol->symbol() + "'");
+  s.append(" AND exchange='" + symbol->exchange() + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::symbol:" + q.lastError().text();
+    return 1;
+  }
+
+  if (q.next())
+  {
+    int pos = 0;
+    symbol->setName(q.value(pos++).toString());
+    symbol->setType(q.value(pos++).toString());
+    symbol->setTable(q.value(pos++).toString());
+    return 0;
+  }
+
+  return 1;
+}
+
+int QuoteDataBase::deleteSymbol (BarData *bd)
+{
+  QString exchange = bd->exchange();
+  if (exchange.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::deleteSymbol: invalid exchange";
+    return 1;
+  }
+
+  QString symbol = bd->symbol();
+  if (symbol.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::deleteSymbol: invalid symbol";
+    return 1;
+  }
+
+  QSqlQuery q(_db);
+
+  // make sure old symbol exists
+  QString s = "SELECT tableName FROM symbolIndex";
+  s.append(" WHERE symbol='" + symbol + "'");
+  s.append(" AND exchange='" + exchange + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::deleteSymbol:" + q.lastError().text();
+    return 1;
+  }
+
+  QString table;
+  if (! q.next())
+  {
+    qDebug() << "QuoteDataBase::deleteSymbol: symbol not found";
+    return 1;
+  }
+  else
+    table = q.value(0).toString();
+
+  _db.transaction();
+  
+  // drop quote table
+  s = "DROP TABLE " + table;
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::deleteSymbol:" + q.lastError().text();
+    return 1;
+  }
+
+  // remove index record
+  s = "DELETE FROM symbolIndex";
+  s.append(" WHERE symbol='" + symbol + "'");
+  s.append(" AND exchange='" + exchange + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::deleteSymbol:" + q.lastError().text();
+    return 1;
+  }
+
+  _db.commit();
+  
+  return 0;
+}
+
+int QuoteDataBase::getExchange (QStringList &l)
+{
+  l.clear();
+  
+  QSqlQuery q(_db);
+  QString s = "SELECT DISTINCT exchange FROM symbolIndex ORDER BY exchange ASC";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::getExchange:" << q.lastError().text();
+    return 1;
+  }
+
+  while (q.next())
+    l << q.value(0).toString();
+
+  l.sort();
+
+  return 0;
+}
+
+int QuoteDataBase::rename (BarData *osymbol, BarData *nsymbol)
+{
+  QString s = osymbol->exchange();
+  if (s.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::rename: invalid old exchange";
+    return 1;
+  }
+
+  s = osymbol->symbol();
+  if (s.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::rename: invalid old symbol";
+    return 1;
+  }
+
+  s = nsymbol->exchange();
+  if (s.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::rename: invalid new exchange";
+    return 1;
+  }
+
+  s = nsymbol->symbol();
+  if (s.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::rename: invalid new symbol";
+    return 1;
+  }
+
+  QSqlQuery q(_db);
+
+  // make sure old symbol exists
+  s = "SELECT tableName FROM symbolIndex";
+  s.append(" WHERE symbol='" + osymbol->symbol() + "'");
+  s.append(" AND exchange='" + osymbol->exchange() + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::rename:" + q.lastError().text();
+    return 1;
+  }
+
+  if (! q.next())
+  {
+    qDebug() << "QuoteDataBase::rename: old exchange/symbol not found";
+    return 1;
+  }
+
+  // make sure new symbol does not exist
+  s = "SELECT tableName FROM symbolIndex";
+  s.append(" WHERE symbol='" + nsymbol->symbol() + "'");
+  s.append(" AND exchange='" + nsymbol->exchange() + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::rename:" + q.lastError().text();
+    return 1;
+  }
+
+  if (q.next())
+  {
+    qDebug() << "QuoteDataBase::rename: new exchange/symbol exists";
+    return 1;
+  }
+
+  _db.transaction();
+
+  s = "UPDATE symbolIndex";
+  s.append(" SET symbol='" + nsymbol->symbol() + "'");
+  s.append(", exchange='" + nsymbol->exchange() + "'");
+  s.append(" WHERE symbol='" + osymbol->symbol() + "'");
+  s.append(" AND exchange='" + osymbol->exchange() + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::rename:" + q.lastError().text();
+    return 1;
+  }
+
+  _db.commit();
+
+  return 0;
+}
+
+int QuoteDataBase::search (BarData *bd, QStringList &l)
+{
+  l.clear();
+  
+  QString exchange = bd->exchange();
+  if (exchange.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::search: invalid exchange";
+    return 1;
+  }
+
+  QString symbol = bd->symbol();
+  if (symbol.isEmpty())
+  {
+    qDebug() << "QuoteDataBase::search: invalid symbol";
+    return 1;
+  }
+
+  QSqlQuery q(_db);
+
+  QString s = "SELECT exchange,symbol,name FROM symbolIndex";
+
+  int whereFlag = 0;
+  if (exchange != "*")
+  {
+    whereFlag = 1;
+
+    if (exchange.contains("%"))
+      s.append(" WHERE exchange LIKE '" + exchange + "'");
+    else
+      s.append(" WHERE exchange='" + exchange + "'");
+  }
+
+  if (symbol != "*")
+  {
+    if (symbol.contains("%"))
+    {
+      if (whereFlag)
+        s.append(" AND symbol LIKE '" + symbol + "'");
+      else
+        s.append(" WHERE symbol LIKE '" + symbol + "'");
+    }
+    else
+    {
+      if (whereFlag)
+        s.append(" AND symbol='" + symbol + "'");
+      else
+        s.append(" WHERE symbol='" + symbol + "'");
+    }
+  }
+
+  s.append(" ORDER BY exchange,symbol ASC");
+
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::search:" + q.lastError().text();
+    return 1;
+  }
+
+  // we create exchange,symbol,name tuples comma delimiter
+  while (q.next())
+  {
+    QStringList tl;
+    int loop = 0;
+    for (; loop < 3; loop++)
+      tl << q.value(loop).toString();
+    l << tl.join(",");
+  }
+
+  return 0;
+}
+
+int QuoteDataBase::transaction ()
+{
+  _db.transaction();
+  return 0;
+}
+
+int QuoteDataBase::commit ()
+{
+  _db.commit();
+  return 0;
+}

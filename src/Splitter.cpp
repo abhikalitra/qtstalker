@@ -28,12 +28,18 @@
 Splitter::Splitter (QString d)
 {
   _key = d;
+
+//  load();
+}
+
+Splitter::~Splitter ()
+{
+//  save();
 }
 
 void Splitter::load ()
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
 
   QStringList l = settings.value(_key).toStringList();
   if (! l.count())
@@ -64,8 +70,7 @@ void Splitter::load ()
 
 void Splitter::save ()
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
 
   QStringList l;
   QList<int> sizeList = sizes();
@@ -77,4 +82,3 @@ void Splitter::save ()
   settings.setValue(_key, l);
   settings.sync();
 }
-

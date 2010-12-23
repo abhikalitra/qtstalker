@@ -56,8 +56,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
   _lengths->setStatusTip(QString(tr("Bar Length")));
   _lengths->addItems(l);
 
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   int ti = settings.value("bar_length", 6).toInt();
   _lengths->setCurrentIndex(ti);
   
@@ -105,8 +104,7 @@ void BarLengthButtons::nextLength ()
 
 void BarLengthButtons::lengthChanged (int d)
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   settings.setValue("bar_length", d);
   settings.sync();
   

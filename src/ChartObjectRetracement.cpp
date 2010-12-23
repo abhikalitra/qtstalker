@@ -24,6 +24,7 @@
 #include "DateScaleDraw.h"
 #include "ChartObjectRetracementDraw.h"
 #include "Strip.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -33,53 +34,53 @@ ChartObjectRetracement::ChartObjectRetracement ()
   _createFlag = 0;
   
   _draw = new ChartObjectRetracementDraw;
+  _draw->setSettings(_settings);
 
-  _settings.setData("Type", ChartObject::_Retracement);
+  _settings->setData("Type", ChartObject::_Retracement);
+  _settings->setData("Extend", 0);
 
-  QSettings set;
-  set.beginGroup("main");
-
-  _settings.setData("Color", set.value("default_chart_object_retracement_color", "red").toString());
-  _settings.setData("Line1", set.value("default_chart_object_retracement_line1", 0.382).toDouble());
-  _settings.setData("Line2", set.value("default_chart_object_retracement_line2", 0.5).toDouble());
-  _settings.setData("Line3", set.value("default_chart_object_retracement_line3", 0.618).toDouble());
-  _settings.setData("Line4", set.value("default_chart_object_retracement_line4", 0).toDouble());
-  _settings.setData("Line5", set.value("default_chart_object_retracement_line5", 0).toDouble());
-  _settings.setData("Line6", set.value("default_chart_object_retracement_line6", 0).toDouble());
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_retracement_color", "red").toString());
+  _settings->setData("Line1", set.value("default_chart_object_retracement_line1", 0.382).toDouble());
+  _settings->setData("Line2", set.value("default_chart_object_retracement_line2", 0.5).toDouble());
+  _settings->setData("Line3", set.value("default_chart_object_retracement_line3", 0.618).toDouble());
+  _settings->setData("Line4", set.value("default_chart_object_retracement_line4", 0).toDouble());
+  _settings->setData("Line5", set.value("default_chart_object_retracement_line5", 0).toDouble());
+  _settings->setData("Line6", set.value("default_chart_object_retracement_line6", 0).toDouble());
 }
 
 void ChartObjectRetracement::info (Setting &info)
 {
   info.setData(QObject::tr("Type"), QObject::tr("Retracement"));
   
-  QDateTime dt = _settings.dateTime("Date");
+  QDateTime dt = _settings->dateTime("Date");
   info.setData(QObject::tr("SD"), dt.toString("yyyy-MM-dd"));
   info.setData(QObject::tr("ST"), dt.toString("HH:mm:ss"));
   
-  dt = _settings.dateTime("Date2");
+  dt = _settings->dateTime("Date2");
   info.setData(QObject::tr("ED"), dt.toString("yyyy-MM-dd"));
   info.setData(QObject::tr("ET"), dt.toString("HH:mm:ss"));
   
-  info.setData(QObject::tr("High"), _settings.data("High"));
-  info.setData(QObject::tr("Low"), _settings.data("Low"));
-  info.setData(QObject::tr("Level 1"), _settings.data("Line1"));
-  info.setData(QObject::tr("Level 2"), _settings.data("Line2"));
-  info.setData(QObject::tr("Level 3"), _settings.data("Line3"));
-  info.setData(QObject::tr("Level 4"), _settings.data("Line4"));
-  info.setData(QObject::tr("Level 5"), _settings.data("Line5"));
-  info.setData(QObject::tr("Level 6"), _settings.data("Line6"));
+  info.setData(QObject::tr("High"), _settings->data("High"));
+  info.setData(QObject::tr("Low"), _settings->data("Low"));
+  info.setData(QObject::tr("Level 1"), _settings->data("Line1"));
+  info.setData(QObject::tr("Level 2"), _settings->data("Line2"));
+  info.setData(QObject::tr("Level 3"), _settings->data("Line3"));
+  info.setData(QObject::tr("Level 4"), _settings->data("Line4"));
+  info.setData(QObject::tr("Level 5"), _settings->data("Line5"));
+  info.setData(QObject::tr("Level 6"), _settings->data("Line6"));
 }
 
 int ChartObjectRetracement::highLow (int start, int end, double &h, double &l)
 {
   DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = dsd->x(_settings.dateTime("Date"));
-  int x2 = dsd->x(_settings.dateTime("Date2"));
+  int x = dsd->x(_settings->dateTime("Date"));
+  int x2 = dsd->x(_settings->dateTime("Date2"));
 
   if ((x >= start && x <= end) || ((x2 >= start && x2 <= end)))
   {
-    h = _settings.getDouble("High");
-    l = _settings.getDouble("Low");
+    h = _settings->getDouble("High");
+    l = _settings->getDouble("Low");
     return 1;
   }
 
@@ -107,7 +108,7 @@ int ChartObjectRetracement::CUS (QStringList &l)
     qDebug() << "ChartObjectRetracement::CUS: invalid exchange" << l.at(2);
     return 1;
   }
-  _settings.exchange = s;
+  _settings->exchange = s;
 
   // verify symbol
   s = l.at(3);
@@ -117,7 +118,7 @@ int ChartObjectRetracement::CUS (QStringList &l)
     qDebug() << "ChartObjectRetracement::CUS: invalid symbol" << l.at(3);
     return 1;
   }
-  _settings.symbol = s;
+  _settings->symbol = s;
 
   // verify indicator
   s = l.at(4);
@@ -127,19 +128,19 @@ int ChartObjectRetracement::CUS (QStringList &l)
     qDebug() << "ChartObjectRetracement::CUS: invalid indicator" << l.at(4);
     return 1;
   }
-  _settings.indicator = s;
+  _settings->indicator = s;
 
   // verify date
-  _settings.date = QDateTime::fromString(l.at(5), Qt::ISODate);
-  if (! _settings.date.isValid())
+  _settings->date = QDateTime::fromString(l.at(5), Qt::ISODate);
+  if (! _settings->date.isValid())
   {
     qDebug() << "ChartObjectRetracement::CUS: invalid start date" << l.at(5);
     return 1;
   }
 
   // verify date2
-  _settings.date2 = QDateTime::fromString(l.at(6), Qt::ISODate);
-  if (! _settings.date2.isValid())
+  _settings->date2 = QDateTime::fromString(l.at(6), Qt::ISODate);
+  if (! _settings->date2.isValid())
   {
     qDebug() << "ChartObjectRetracement::CUS: invalid end date" << l.at(6);
     return 1;
@@ -147,7 +148,7 @@ int ChartObjectRetracement::CUS (QStringList &l)
 
   // verify high
   bool ok;
-  _settings.high = l.at(7).toDouble(&ok);
+  _settings->high = l.at(7).toDouble(&ok);
   if (! ok)
   {
     qDebug() << "ChartObjectRetracement::CUS: invalid high" << l.at(7);
@@ -155,7 +156,7 @@ int ChartObjectRetracement::CUS (QStringList &l)
   }
 
   // verify low
-  _settings.low = l.at(8).toDouble(&ok);
+  _settings->low = l.at(8).toDouble(&ok);
   if (! ok)
   {
     qDebug() << "ChartObjectRetracement::CUS: invalid low" << l.at(8);
@@ -163,7 +164,7 @@ int ChartObjectRetracement::CUS (QStringList &l)
   }
 
   // verify retracement
-  _settings.line1 = l.at(9).toDouble(&ok);
+  _settings->line1 = l.at(9).toDouble(&ok);
   if (! ok)
   {
     qDebug() << "ChartObjectRetracement::CUS: invalid retracement" << l.at(9);
@@ -171,18 +172,18 @@ int ChartObjectRetracement::CUS (QStringList &l)
   }
 
   // verify color
-  _settings.color.setNamedColor(l.at(10));
-  if (! _settings.color.isValid())
+  _settings->color.setNamedColor(l.at(10));
+  if (! _settings->color.isValid())
   {
     qDebug() << "ChartObjectRetracement::CUS: invalid color" << l.at(10);
     return 1;
   }
 
-  _settings.line2 = 0;
-  _settings.line3 = 0;
-  _settings.line4 = 0;
-  _settings.line5 = 0;
-  _settings.line6 = 0;
+  _settings->line2 = 0;
+  _settings->line3 = 0;
+  _settings->line4 = 0;
+  _settings->line5 = 0;
+  _settings->line6 = 0;
 
   return 0;
 }
@@ -196,22 +197,24 @@ void ChartObjectRetracement::move (QPoint p)
     {
       QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
       int x = map.invTransform((double) p.x());
+      if (x < 0)
+        break;
 
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings.setData("Date", dt);
+      if (! dt.isValid())
+        break;
+      _settings->setData("Date", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings.setData("High", map.invTransform((double) p.y()));
+      _settings->setData("High", map.invTransform((double) p.y()));
       
       if (_createFlag)
       {
-        _settings.setData("Date2", dt);
-        _settings.setData("Low", _settings.data("High"));
+        _settings->setData("Date2", dt);
+        _settings->setData("Low", _settings->data("High"));
       }
-
-      _draw->setSettings(_settings);
 
       _draw->plot()->replot();
       break;
@@ -220,17 +223,19 @@ void ChartObjectRetracement::move (QPoint p)
     {
       QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
       int x = map.invTransform((double) p.x());
+      if (x < 0)
+        break;
 
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings.setData("Date2", dt);
+      if (! dt.isValid())
+        break;
+      _settings->setData("Date2", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings.setData("Low", map.invTransform((double) p.y()));
+      _settings->setData("Low", map.invTransform((double) p.y()));
       
-      _draw->setSettings(_settings);
-
       _draw->plot()->replot();
       break;
     }
@@ -255,7 +260,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
             _status = _Move;
             if (grab == 2)
               _status = _Move2;
-            emit signalMoveStart(_settings.getInt("ID"));
+            emit signalMoveStart(_settings->getInt("ID"));
             _modified = 1;
             return;
           }
@@ -264,7 +269,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
           {
             _status = _None;
             _draw->setSelected(FALSE);
-            emit signalUnselected(_settings.getInt("ID"));
+            emit signalUnselected(_settings->getInt("ID"));
             _draw->plot()->replot();
             return;
           }
@@ -291,7 +296,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
           }
 
           _status = _Selected;
-          emit signalMoveEnd(_settings.getInt("ID"));
+          emit signalMoveEnd(_settings->getInt("ID"));
           return;
         default:
           break;
@@ -306,7 +311,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           _createFlag = 0;
-          emit signalMoveEnd(_settings.getInt("ID"));
+          emit signalMoveEnd(_settings->getInt("ID"));
           return;
         default:
           break;
@@ -323,7 +328,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
           {
             _status = _Selected;
             _draw->setSelected(TRUE);
-            emit signalSelected(_settings.getInt("ID"));
+            emit signalSelected(_settings->getInt("ID"));
             _draw->plot()->replot();
           }
           break;
@@ -347,10 +352,10 @@ void ChartObjectRetracement::dialog ()
 */
 }
 
-void ChartObjectRetracement::dialog2 (Setting set)
+void ChartObjectRetracement::dialog2 (Setting)
 {
   _modified = 1;
-  setSettings(set);
+//  setSettings(set);
   _draw->plot()->replot();
 }
 
@@ -360,6 +365,6 @@ void ChartObjectRetracement::create ()
   _createFlag = 1;
   _status = _Move;
   _draw->setSelected(TRUE);
-  emit signalSelected(_settings.getInt("ID"));
-  emit signalMoveStart(_settings.getInt("ID"));
+  emit signalSelected(_settings->getInt("ID"));
+  emit signalMoveStart(_settings->getInt("ID"));
 }

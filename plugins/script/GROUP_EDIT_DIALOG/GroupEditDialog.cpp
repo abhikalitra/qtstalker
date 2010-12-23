@@ -194,8 +194,7 @@ void GroupEditDialog::deleteButtonPressed ()
 
 void GroupEditDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
+  QSettings settings(g_settingsFile);
 
   QSize sz = settings.value("group_edit_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
@@ -207,8 +206,7 @@ void GroupEditDialog::loadSettings ()
 
 void GroupEditDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_settingsFile);
   settings.setValue("group_edit_dialog_window_size", size());
   settings.setValue("group_edit_dialog_window_position", pos());
   settings.sync();

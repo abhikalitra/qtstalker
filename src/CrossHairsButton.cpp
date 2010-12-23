@@ -22,11 +22,11 @@
 #include "CrossHairsButton.h"
 #include "../pics/crosshair.xpm"
 #include "Globals.h"
+#include "Script.h"
 
 #include <QString>
 #include <QDebug>
 #include <QIcon>
-#include <QColorDialog>
 #include <QSettings>
 
 CrossHairsButton::CrossHairsButton ()
@@ -37,49 +37,30 @@ CrossHairsButton::CrossHairsButton ()
   setToolTip(tr("Toggle the cursor crosshairs"));
   setCheckable(TRUE);
 
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-
+  QSettings settings(g_settingsFile);
   setChecked(settings.value("crosshairs", 0).toInt());
 
-  QString s = settings.value("crosshairs_color", "white").toString();
-  _color.setNamedColor(s);
-  
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }
 
-void CrossHairsButton::changed (bool status)
+void CrossHairsButton::changed (bool)
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-  settings.setValue("crosshairs", status);
-  settings.sync();
-
-  emit signalChanged(status);
+  QSettings settings(g_settingsFile);
+  Script *script = new Script;
+  script->setName("CrosshairsStatusChanged");
+  script->setFile(settings.value("crosshairs_status_changed_script").toString());
+  script->setCommand("perl");
+  script->startScript();
 }
 
 void CrossHairsButton::dialog ()
 {
-  QColorDialog *dialog = new QColorDialog(_color, this);
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Crosshairs Color"));
-  connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(setColor(QColor)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-}
-
-void CrossHairsButton::setColor (QColor c)
-{
-  if (! c.isValid())
-    return;
-  
-  _color = c;
-
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-  settings.setValue("crosshairs_color", _color.name());
-  settings.sync();
-
-  emit signalColor(_color);
+  QSettings settings(g_settingsFile);
+  Script *script = new Script;
+  script->setName("CrosshairsColor");
+  script->setFile(settings.value("crosshairs_color_script").toString());
+  script->setCommand("perl");
+  script->startScript();
 }
 
 void CrossHairsButton::contextMenuEvent (QContextMenuEvent *)

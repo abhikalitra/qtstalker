@@ -24,6 +24,7 @@
 #include "DateScaleDraw.h"
 #include "ChartObjectHLineDraw.h"
 #include "Strip.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -31,26 +32,25 @@
 ChartObjectHLine::ChartObjectHLine ()
 {
   _draw = new ChartObjectHLineDraw;
+  _draw->setSettings(_settings);
 
-  _settings.setData("Type", ChartObject::_HLine);
+  _settings->setData("Type", ChartObject::_HLine);
 
-  QSettings set;
-  set.beginGroup("main");
-
+  QSettings set(g_settingsFile);
   QString s = set.value("default_chart_object_hline_color", "red").toString();
-  _settings.setData("Color", s);
+  _settings->setData("Color", s);
 }
 
 void ChartObjectHLine::info (Setting &info)
 {
   info.setData(QObject::tr("Type"), QObject::tr("HLine"));
-  info.setData(QObject::tr("Price"), _settings.data("Price"));
+  info.setData(QObject::tr("Price"), _settings->data("Price"));
 }
 
 int ChartObjectHLine::highLow (int, int, double &h, double &l)
 {
-  h = _settings.getDouble("Price");
-  l = _settings.getDouble("Price");
+  h = _settings->getDouble("Price");
+  l = _settings->getDouble("Price");
 
   return 1;
 }
@@ -76,7 +76,7 @@ int ChartObjectHLine::CUS (QStringList &l)
     qDebug() << "ChartObjectHLine::CUS: invalid exchange" << l.at(2);
     return 1;
   }
-  _settings.exchange = s;
+  _settings->exchange = s;
 
   // verify symbol
   s = l.at(3);
@@ -86,7 +86,7 @@ int ChartObjectHLine::CUS (QStringList &l)
     qDebug() << "ChartObjectHLine::CUS: invalid symbol" << l.at(3);
     return 1;
   }
-  _settings.symbol = s;
+  _settings->symbol = s;
 
   // verify indicator
   s = l.at(4);
@@ -96,11 +96,11 @@ int ChartObjectHLine::CUS (QStringList &l)
     qDebug() << "ChartObjectHLine::CUS: invalid indicator" << l.at(4);
     return 1;
   }
-  _settings.indicator = s;
+  _settings->indicator = s;
 
   // verify price
   bool ok;
-  _settings.price = l.at(5).toDouble(&ok);
+  _settings->price = l.at(5).toDouble(&ok);
   if (! ok)
   {
     qDebug() << "ChartObjectHLine::CUS: invalid price" << l.at(5);
@@ -108,8 +108,8 @@ int ChartObjectHLine::CUS (QStringList &l)
   }
 
   // verify color
-  _settings.color.setNamedColor(l.at(6));
-  if (! _settings.color.isValid())
+  _settings->color.setNamedColor(l.at(6));
+  if (! _settings->color.isValid())
   {
     qDebug() << "ChartObjectHLine::CUS: invalid color" << l.at(6);
     return 1;
@@ -126,10 +126,8 @@ void ChartObjectHLine::move (QPoint p)
     case _Move:
     {
       QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings.setData("Price", map.invTransform((double) p.y()));
+      _settings->setData("Price", map.invTransform((double) p.y()));
       
-      _draw->setSettings(_settings);
-
       _draw->plot()->replot();
       break;
     }
@@ -150,7 +148,7 @@ void ChartObjectHLine::click (int button, QPoint p)
           if (_draw->isGrabSelected(p))
           {
             _status = _Move;
-            emit signalMoveStart(_settings.getInt("ID"));
+            emit signalMoveStart(_settings->getInt("ID"));
             _modified = 1;
             return;
           }
@@ -159,7 +157,7 @@ void ChartObjectHLine::click (int button, QPoint p)
           {
             _status = _None;
             _draw->setSelected(FALSE);
-            emit signalUnselected(_settings.getInt("ID"));
+            emit signalUnselected(_settings->getInt("ID"));
             _draw->plot()->replot();
             return;
           }
@@ -179,7 +177,7 @@ void ChartObjectHLine::click (int button, QPoint p)
       {
         case Qt::LeftButton:
           _status = _Selected;
-          emit signalMoveEnd(_settings.getInt("ID"));
+          emit signalMoveEnd(_settings->getInt("ID"));
           return;
         default:
           break;
@@ -196,7 +194,7 @@ void ChartObjectHLine::click (int button, QPoint p)
           {
             _status = _Selected;
             _draw->setSelected(TRUE);
-            emit signalSelected(_settings.getInt("ID"));
+            emit signalSelected(_settings->getInt("ID"));
             _draw->plot()->replot();
           }
           break;
@@ -220,10 +218,10 @@ void ChartObjectHLine::dialog ()
 */
 }
 
-void ChartObjectHLine::dialog2 (Setting set)
+void ChartObjectHLine::dialog2 (Setting)
 {
   _modified = 1;
-  setSettings(set);
+//  setSettings(set);
   _draw->plot()->replot();
 }
 
@@ -232,6 +230,6 @@ void ChartObjectHLine::create ()
   _modified = 1;
   _status = _Move;
   _draw->setSelected(TRUE);
-  emit signalSelected(_settings.getInt("ID"));
-  emit signalMoveStart(_settings.getInt("ID"));
+  emit signalSelected(_settings->getInt("ID"));
+  emit signalMoveStart(_settings->getInt("ID"));
 }

@@ -101,7 +101,7 @@ int Setting::getInt (QString k)
 
 QDateTime Setting::dateTime (QString k)
 {
-  return QDateTime::fromString(dict.value(k));
+  return QDateTime::fromString(dict.value(k), Qt::ISODate);
 }
 
 QColor Setting::color (QString k)

@@ -175,8 +175,7 @@ void ChartObjectRetracementDialog::done ()
 {
   if (_default->isChecked())
   {
-    QSettings settings;
-    settings.beginGroup("main");
+    QSettings settings(g_settingsFile);
     settings.setValue("default_chart_object_retracement_color", _color->color().name());
     settings.setValue("default_chart_object_retracement_line1", _line1->value());
     settings.setValue("default_chart_object_retracement_line2", _line2->value());
@@ -254,8 +253,7 @@ void ChartObjectRetracementDialog::loadObject ()
 
 void ChartObjectRetracementDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
+  QSettings settings(g_settingsFile);
 
   QSize sz = settings.value("chart_object_retracement_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
@@ -277,8 +275,7 @@ void ChartObjectRetracementDialog::loadSettings ()
 
 void ChartObjectRetracementDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_settingsFile);
   settings.setValue("chart_object_retracement_dialog_window_size", size());
   settings.setValue("chart_object_retracement_dialog_window_position", pos());
   settings.sync();

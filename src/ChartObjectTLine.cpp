@@ -24,6 +24,7 @@
 #include "DateScaleDraw.h"
 #include "ChartObjectTLineDraw.h"
 #include "Strip.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -34,52 +35,51 @@ ChartObjectTLine::ChartObjectTLine ()
   _createFlag = 0;
   
   _draw = new ChartObjectTLineDraw;
+  _draw->setSettings(_settings);
 
-  _settings.setData("Type", ChartObject::_TLine);
+  _settings->setData("Type", ChartObject::_TLine);
 
-  QSettings set;
-  set.beginGroup("main");
-
-  _settings.setData("Color", set.value("default_chart_object_tline_color", "red").toString());
-  _settings.setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_tline_color", "red").toString());
+  _settings->setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
 }
 
 void ChartObjectTLine::info (Setting &info)
 {
   info.setData(QObject::tr("Type"), QObject::tr("TLine"));
 
-  QDateTime dt = _settings.dateTime("Date");
+  QDateTime dt = _settings->dateTime("Date");
   info.setData(QObject::tr("SD"), dt.toString("yyyy-MM-dd"));
   info.setData(QObject::tr("ST"), dt.toString("HH:mm:ss"));
 
-  dt = _settings.dateTime("Date2");
+  dt = _settings->dateTime("Date2");
   info.setData(QObject::tr("ED"), dt.toString("yyyy-MM-dd"));
   info.setData(QObject::tr("ET"), dt.toString("HH:mm:ss"));
   
-  info.setData(QObject::tr("SP"), _settings.data("Price"));
+  info.setData(QObject::tr("SP"), _settings->data("Price"));
   
-  info.setData(QObject::tr("EP"), _settings.data("Price2"));
+  info.setData(QObject::tr("EP"), _settings->data("Price2"));
 }
 
 int ChartObjectTLine::highLow (int start, int end, double &h, double &l)
 {
   DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = dsd->x(_settings.dateTime("Date"));
-  int x2 = dsd->x(_settings.dateTime("Date2"));
+  int x = dsd->x(_settings->dateTime("Date"));
+  int x2 = dsd->x(_settings->dateTime("Date2"));
 
   if ((x >= start && x <= end) || ((x2 >= start && x2 <= end)))
   {
     h = -99999999.0;
     l = 99999999.0;
 
-    double tp = _settings.getDouble("Price");
+    double tp = _settings->getDouble("Price");
     if (tp > h)
       h = tp;
 
     if (tp < l)
       l = tp;
 
-    tp = _settings.getDouble("Price2");
+    tp = _settings->getDouble("Price2");
     if (tp > h)
       h = tp;
 
@@ -113,7 +113,7 @@ int ChartObjectTLine::CUS (QStringList &l)
     qDebug() << "ChartObjectTLine::CUS: invalid exchange" << l.at(2);
     return 1;
   }
-  _settings.exchange = s;
+  _settings->exchange = s;
 
   // verify symbol
   s = l.at(3);
@@ -123,7 +123,7 @@ int ChartObjectTLine::CUS (QStringList &l)
     qDebug() << "ChartObjectTLine::CUS: invalid symbol" << l.at(3);
     return 1;
   }
-  _settings.symbol = s;
+  _settings->symbol = s;
 
   // verify indicator
   s = l.at(4);
@@ -133,11 +133,11 @@ int ChartObjectTLine::CUS (QStringList &l)
     qDebug() << "ChartObjectTLine::CUS: invalid indicator" << l.at(4);
     return 1;
   }
-  _settings.indicator = s;
+  _settings->indicator = s;
 
   // verify date
-  _settings.date = QDateTime::fromString(l.at(5), Qt::ISODate);
-  if (! _settings.date.isValid())
+  _settings->date = QDateTime::fromString(l.at(5), Qt::ISODate);
+  if (! _settings->date.isValid())
   {
     qDebug() << "ChartObjectTLine::CUS: invalid start date" << l.at(5);
     return 1;
@@ -145,7 +145,7 @@ int ChartObjectTLine::CUS (QStringList &l)
 
   // verify price
   bool ok;
-  _settings.price = l.at(6).toDouble(&ok);
+  _settings->price = l.at(6).toDouble(&ok);
   if (! ok)
   {
     qDebug() << "ChartObjectTLine::CUS: invalid start price" << l.at(6);
@@ -153,15 +153,15 @@ int ChartObjectTLine::CUS (QStringList &l)
   }
 
   // verify date2
-  _settings.date2 = QDateTime::fromString(l.at(7), Qt::ISODate);
-  if (! _settings.date2.isValid())
+  _settings->date2 = QDateTime::fromString(l.at(7), Qt::ISODate);
+  if (! _settings->date2.isValid())
   {
     qDebug() << "ChartObjectTLine::CUS: invalid end date" << l.at(7);
     return 1;
   }
 
   // verify price2
-  _settings.price2 = l.at(8).toDouble(&ok);
+  _settings->price2 = l.at(8).toDouble(&ok);
   if (! ok)
   {
     qDebug() << "ChartObjectTLine::CUS: invalid end price" << l.at(8);
@@ -169,8 +169,8 @@ int ChartObjectTLine::CUS (QStringList &l)
   }
 
   // verify color
-  _settings.color.setNamedColor(l.at(9));
-  if (! _settings.color.isValid())
+  _settings->color.setNamedColor(l.at(9));
+  if (! _settings->color.isValid())
   {
     qDebug() << "ChartObjectTLine::CUS: invalid color" << l.at(9);
     return 1;
@@ -192,19 +192,17 @@ void ChartObjectTLine::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings.setData("Date", dt);
+      _settings->setData("Date", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings.setData("Price", map.invTransform((double) p.y()));
+      _settings->setData("Price", map.invTransform((double) p.y()));
 
       if (_createFlag)
       {
-        _settings.setData("Date2", dt);
-        _settings.setData("Price2", _settings.data("Price"));
+        _settings->setData("Date2", dt);
+        _settings->setData("Price2", _settings->data("Price"));
       }
       
-      _draw->setSettings(_settings);
-
       _draw->plot()->replot();
       break;
     }
@@ -216,13 +214,11 @@ void ChartObjectTLine::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings.setData("Date2", dt);
+      _settings->setData("Date2", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings.setData("Price2", map.invTransform((double) p.y()));
+      _settings->setData("Price2", map.invTransform((double) p.y()));
       
-      _draw->setSettings(_settings);
-
       _draw->plot()->replot();
       break;
     }
@@ -247,7 +243,7 @@ void ChartObjectTLine::click (int button, QPoint p)
             _status = _Move;
             if (grab == 2)
               _status = _Move2;
-            emit signalMoveStart(_settings.getInt("ID"));
+            emit signalMoveStart(_settings->getInt("ID"));
             _modified = 1;
             return;
           }
@@ -256,7 +252,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           {
             _status = _None;
             _draw->setSelected(FALSE);
-            emit signalUnselected(_settings.getInt("ID"));
+            emit signalUnselected(_settings->getInt("ID"));
             _draw->plot()->replot();
             return;
           }
@@ -283,7 +279,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           }
           
           _status = _Selected;
-          emit signalMoveEnd(_settings.getInt("ID"));
+          emit signalMoveEnd(_settings->getInt("ID"));
           return;
         default:
           break;
@@ -298,7 +294,7 @@ void ChartObjectTLine::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           _createFlag = 0;
-          emit signalMoveEnd(_settings.getInt("ID"));
+          emit signalMoveEnd(_settings->getInt("ID"));
           return;
         default:
           break;
@@ -315,7 +311,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           {
             _status = _Selected;
             _draw->setSelected(TRUE);
-            emit signalSelected(_settings.getInt("ID"));
+            emit signalSelected(_settings->getInt("ID"));
             _draw->plot()->replot();
           }
           break;
@@ -339,10 +335,10 @@ void ChartObjectTLine::dialog ()
 */
 }
 
-void ChartObjectTLine::dialog2 (Setting set)
+void ChartObjectTLine::dialog2 (Setting)
 {
   _modified = 1;
-  setSettings(set);
+//  setSettings(set);
   _draw->plot()->replot();
 }
 
@@ -352,6 +348,6 @@ void ChartObjectTLine::create ()
   _createFlag = 1;
   _status = _Move;
   _draw->setSelected(TRUE);
-  emit signalSelected(_settings.getInt("ID"));
-  emit signalMoveStart(_settings.getInt("ID"));
+  emit signalSelected(_settings->getInt("ID"));
+  emit signalMoveStart(_settings->getInt("ID"));
 }

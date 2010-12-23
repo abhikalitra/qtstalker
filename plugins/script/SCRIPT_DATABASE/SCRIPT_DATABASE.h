@@ -22,9 +22,8 @@
 #ifndef SCRIPT_DATABASE_HPP
 #define SCRIPT_DATABASE_HPP
 
-#include <QtSql>
-
 #include "ScriptPlugin.h"
+#include "ScriptDataBase.h"
 
 class SCRIPT_DATABASE : public ScriptPlugin
 {
@@ -38,7 +37,6 @@ class SCRIPT_DATABASE : public ScriptPlugin
     };
     
     SCRIPT_DATABASE ();
-    void init ();
     int command (Command *);
     int load (Command *);
     int save (Command *);
@@ -47,7 +45,7 @@ class SCRIPT_DATABASE : public ScriptPlugin
 
   private:
     QStringList _method;
-    QSqlDatabase _db;
+    ScriptDataBase _db;
 };
 
 extern "C"

@@ -23,29 +23,20 @@
 #define CROSSHAIRS_BUTTON_HPP
 
 #include <QToolButton>
-#include <QColor>
 
 class CrossHairsButton : public QToolButton
 {
   Q_OBJECT
   
-  signals:
-    void signalChanged (bool);
-    void signalColor (QColor);
-
   public:
     CrossHairsButton ();
     
   public slots:
     void dialog ();
-    void setColor (QColor);
     void changed (bool);
 
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);
-    
-  private:
-    QColor _color;
 };
 
 #endif

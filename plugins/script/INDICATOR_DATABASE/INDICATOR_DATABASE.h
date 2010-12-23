@@ -22,9 +22,8 @@
 #ifndef INDICATOR_DATABASE_HPP
 #define INDICATOR_DATABASE_HPP
 
-#include <QtSql>
-
 #include "ScriptPlugin.h"
+#include "IndicatorDataBase.h"
 
 class INDICATOR_DATABASE : public ScriptPlugin
 {
@@ -38,7 +37,6 @@ class INDICATOR_DATABASE : public ScriptPlugin
     };
     
     INDICATOR_DATABASE ();
-    void init ();
     int command (Command *);
     int load (Command *);
     int save (Command *);
@@ -47,7 +45,7 @@ class INDICATOR_DATABASE : public ScriptPlugin
 
   private:
     QStringList _method;
-    QSqlDatabase _db;
+    IndicatorDataBase _db;
 };
 
 extern "C"

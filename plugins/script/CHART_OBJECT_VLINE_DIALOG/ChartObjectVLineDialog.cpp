@@ -98,8 +98,7 @@ void ChartObjectVLineDialog::done ()
 {
   if (_default->isChecked())
   {
-    QSettings settings;
-    settings.beginGroup("main");
+    QSettings settings(g_settingsFile);
     settings.setValue("default_chart_object_vline_color", _color->color().name());
     settings.sync();
   }
@@ -151,8 +150,7 @@ void ChartObjectVLineDialog::loadObject ()
 
 void ChartObjectVLineDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
+  QSettings settings(g_settingsFile);
 
   QSize sz = settings.value("chart_object_vline_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
@@ -167,8 +165,7 @@ void ChartObjectVLineDialog::loadSettings ()
 
 void ChartObjectVLineDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_settingsFile);
   settings.setValue("chart_object_vline_dialog_window_size", size());
   settings.setValue("chart_object_vline_dialog_window_position", pos());
   settings.sync();

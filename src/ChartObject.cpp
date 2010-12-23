@@ -29,9 +29,10 @@ ChartObject::ChartObject ()
 {
   _status = _None;
   _modified = 0;
-  
-  _settings.setData(QString("ID"), -1);
-  _settings.setData(QString("Type"),-1);
+
+  _settings = new Setting;
+  _settings->setData(QString("ID"), -1);
+  _settings->setData(QString("Type"),-1);
 
   _menu = new QMenu;
   _menu->addAction(QPixmap(edit_xpm), tr("&Edit"), this, SLOT(dialog()), Qt::ALT+Qt::Key_E);
@@ -42,6 +43,7 @@ ChartObject::~ChartObject ()
 {
   delete _menu;
   delete _draw;
+  delete _settings;
 }
 
 void ChartObject::info (Setting &)
@@ -66,7 +68,7 @@ void ChartObject::click (int, QPoint)
 {
 }
 
-Setting & ChartObject::settings ()
+Setting * ChartObject::settings ()
 {
   return _settings;
 }
@@ -111,10 +113,3 @@ void ChartObject::attach (QwtPlot *p)
 {
   _draw->attach(p);
 }
-
-void ChartObject::setSettings (Setting &d)
-{
-  _settings = d;
-  _draw->setSettings(d);
-}
-

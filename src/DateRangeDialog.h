@@ -23,10 +23,10 @@
 #define DATE_RANGE_DIALOG_HPP
 
 #include <QDateTimeEdit>
+#include <QDialog>
+#include <QLabel>
 
-#include "Dialog.h"
-
-class DateRangeDialog : public Dialog
+class DateRangeDialog : public QDialog
 {
   Q_OBJECT
 
@@ -36,11 +36,19 @@ class DateRangeDialog : public Dialog
   public:
     DateRangeDialog (QDateTime &sd, QDateTime &ed);
     void createMainPage ();
+    void loadSettings ();
+    void saveSettings ();
 
   public slots:
     void done ();
+    void cancel ();
+    void help ();
 
   private:
+    QPushButton *_okButton;
+    QPushButton *_cancelButton;
+    QString _helpFile;
+    QLabel *_message;
     QDateTimeEdit *_start;
     QDateTimeEdit *_end;
     QDateTime _sd;

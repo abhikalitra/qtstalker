@@ -65,6 +65,9 @@ class Indicator
     void coKeys (QList<int> &);
     int coCount ();
 
+    QString toString ();
+    int fromString (QString);
+
   protected:
     QHash<QString, Curve *> _lines;
     QMap<int, Setting> _chartObjects;

@@ -33,9 +33,7 @@ SidePanelButton::SidePanelButton ()
   setToolTip(tr("Show / Hide Side Panel"));
   setCheckable(TRUE);
 
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-
+  QSettings settings(g_settingsFile);
   setChecked(settings.value("side_panel_status", 1).toInt());
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
@@ -43,11 +41,9 @@ SidePanelButton::SidePanelButton ()
 
 void SidePanelButton::changed (bool status)
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   settings.setValue("side_panel_status", status);
   settings.sync();
 
   emit signalChanged(status);
 }
-

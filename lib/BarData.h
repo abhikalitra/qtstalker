@@ -96,6 +96,18 @@ class BarData
     void parse (QString &);
     void stringSettings (QString &);
     int setStringSettings (QString &);
+    int maxBars ();
+    void setMaxBars (int);
+    void setStartDate (QDateTime);
+    QDateTime startDate ();
+    QString startDateString ();
+    void setEndDate (QDateTime);
+    QDateTime endDate ();
+    QString endDateString ();
+    void setTable (QString);
+    QString table ();
+    void setType (QString);
+    QString type ();
     int range ();
     void setRange (int);
 
@@ -107,7 +119,12 @@ class BarData
     QString _symbol;
     QString _name;
     QString _exchange;
+    int _maxBars;
     int _range;
+    QDateTime _startDate;
+    QDateTime _endDate;
+    QString _table;
+    QString _type;
 };
 
 // this is for passing Indicator data between threads

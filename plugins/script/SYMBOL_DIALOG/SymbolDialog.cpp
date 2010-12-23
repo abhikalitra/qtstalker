@@ -328,8 +328,7 @@ void SymbolDialog::loadExchanges ()
 
 void SymbolDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
+  QSettings settings(g_settingsFile);
 
   QSize sz = settings.value("symbol_dialog_window_size", QSize(400,300)).toSize();
   resize(sz);
@@ -341,8 +340,7 @@ void SymbolDialog::loadSettings ()
 
 void SymbolDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_settingsFile);
   settings.setValue("symbol_dialog_window_size", size());
   settings.setValue("symbol_dialog_window_position", pos());
   settings.sync();

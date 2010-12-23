@@ -27,9 +27,6 @@
 
 ChartObjectDraw::ChartObjectDraw ()
 {
-  _settings.setData(QString("ID"), -1);
-  _settings.setData(QString("Type"),-1);
-
   _selected = 0;
   _handleWidth = 6;
 
@@ -46,7 +43,7 @@ int ChartObjectDraw::rtti () const
   return Rtti_PlotUserItem;
 }
 
-void ChartObjectDraw::setSettings (Setting &d)
+void ChartObjectDraw::setSettings (Setting *d)
 {
   _settings = d;
 }

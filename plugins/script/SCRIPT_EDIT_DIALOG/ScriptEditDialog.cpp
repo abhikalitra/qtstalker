@@ -129,8 +129,7 @@ void ScriptEditDialog::cancel ()
 
 void ScriptEditDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
+  QSettings settings(g_settingsFile);
 
   QSize sz = settings.value("script_edit_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
@@ -146,8 +145,7 @@ void ScriptEditDialog::loadSettings ()
 
 void ScriptEditDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_settingsFile);
   settings.setValue("script_edit_dialog_window_size", size());
   settings.setValue("script_edit_dialog_window_position", pos());
   settings.setValue("script_edit_dialog_last_file", _file);

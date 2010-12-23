@@ -32,8 +32,8 @@
 #include "Indicator.h"
 #include "Setting.h"
 #include "TabWidget.h"
-#include "PlotSettings.h"
 #include "ScriptPluginFactory.h"
+#include "Plot.h"
 
 class ChartLayout : public QSplitter
 {
@@ -44,55 +44,38 @@ class ChartLayout : public QSplitter
     void signalIndex (int);
     void signalClear ();
     void signalSaveSettings ();
-    void signalBackgroundColor (QColor);
-    void signalBorderColor (QColor);
-    void signalGridColor (QColor);
-    void signalFont (QFont);
     void signalMessage (QString);
-    void signalGrid (bool);
     void signalNewChartObject (int);
-//    void signalZoom (int, int);
     void signalInfo (Setting);
-    void signalCrossHairsColor (QColor);
-    void signalCrossHairs (bool);
     void signalBarSpacing (int);
 
   public:
     ChartLayout ();
     void addTab (Indicator *);
-    void addTab (QString &);
+    void addTab (QString);
     void refresh (QString);
     void loadPlots (int index);
     int plotWidth ();
-    QHash<QString, PlotSettings> & plots ();
+    void loadPlot (QString name);
 
   public slots:
     void save ();
     void load ();
-    void setGridColor (QColor);
     void setBarSpacing (int);
     void setIndex (int);
     void clearIndicator ();
     void saveSettings ();
-    void setGrid (bool);
     void setZoom (int, int);
-//    void editIndicator (QString);
-//    void editIndicator2 (Indicator);
-    void deleteIndicator ();
-    void newIndicator ();
-    void newIndicator2 (QStringList);
     void indicatorScriptFinished (QString);
-    void backgroundColorChanged (QColor);
-    void fontChanged (QFont);
     void removeTab (QStringList);
-    void setCrossHairs (bool);
-    void setCrossHairsColor (QColor);
+    void addNewTab (QString);
 
   private:
-    QHash<QString, PlotSettings> _plots;
     QHash<QString, TabWidget *> _tabs;
     QHash<int, QHBoxLayout *> _grids;
     QHash<int, QWidget *> _holders;
+    QHash<QString, Indicator *> _indicators;
+    QHash<QString, Plot *> _plots;
     int _startIndex;
     int _barSpacing;
     ScriptPluginFactory _factory;

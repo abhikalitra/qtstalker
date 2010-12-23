@@ -37,6 +37,7 @@ class RecentCharts : public QComboBox
 
   public:
     RecentCharts (QToolBar *);
+    ~RecentCharts ();
     
   public slots:
     void addRecentChart (BarData);

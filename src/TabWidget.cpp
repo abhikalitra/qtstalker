@@ -38,44 +38,8 @@ TabWidget::TabWidget (QString &id)
   setDocumentMode(TRUE); // remove tab frame, get a few more pixels of space
   setContentsMargins(0, 0, 0, 0);
   
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-
+  QSettings settings(g_settingsFile);
   setTabPosition((QTabWidget::TabPosition) settings.value(_id, East).toInt());
-
-/*  
-  QString key = _id + "_NSW";
-  config.getData(key, d);
-  if (d.isEmpty())
-  {
-    d = "60";
-    config.setData(key, d);
-  }
-
-  key = _id + "_NSH";
-  config.getData(key, d);
-  if (d.isEmpty())
-  {
-    d = "14";
-    config.setData(key, d);
-  }
-
-  key = _id + "_EWW";
-  config.getData(key, d);
-  if (d.isEmpty())
-  {
-    d = "60";
-    config.setData(key, d);
-  }
-
-  key = _id + "_EWH";
-  config.getData(key, d);
-  if (d.isEmpty())
-  {
-    d = "6";
-    config.setData(key, d);
-  }
-*/
 
   setTabSizes();
 
@@ -94,8 +58,7 @@ QTabBar * TabWidget::getTabBar ()
 
 void TabWidget::setTabSizes ()
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
 
   QString key, w, h;
   if (tabPosition() == North || tabPosition() == South)
@@ -134,9 +97,7 @@ void TabWidget::tabDialog ()
 
 void TabWidget::tabDialog2 ()
 {
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
-  
+  QSettings settings(g_settingsFile);
   setTabPosition((QTabWidget::TabPosition) settings.value(_id).toInt());
 
   setTabSizes();
@@ -160,8 +121,7 @@ void TabWidget::setTabButton (int pos, QString text)
   QFontMetrics fm(f);
   int width = fm.width(s);
 
-  QSettings settings;
-  settings.beginGroup("main" + g_session);
+  QSettings settings(g_settingsFile);
   
   QString key = _id + "_EWW";
   QString tabWidth = settings.value(key, "60").toString();

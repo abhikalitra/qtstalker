@@ -75,13 +75,12 @@ class ChartObject : public QObject
     virtual int highLow (int start, int end, double &high, double &low);
     virtual void create ();
 
-    Setting & settings ();
+    Setting * settings ();
     ChartObject::Status status ();
     int isModified ();
     void setZ (int);
     void attach (QwtPlot *);
     int isSelected (QPoint);
-    void setSettings (Setting &);
 
   public slots:
     virtual void move (QPoint);
@@ -92,7 +91,7 @@ class ChartObject : public QObject
 
   protected:
     Status _status;
-    Setting _settings;
+    Setting *_settings;
     int _modified;
     QMenu *_menu;
     ChartObjectDraw *_draw;

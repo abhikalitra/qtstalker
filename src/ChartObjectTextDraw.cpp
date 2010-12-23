@@ -33,13 +33,13 @@ ChartObjectTextDraw::ChartObjectTextDraw ()
 void ChartObjectTextDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings.dateTime("Date")));
+  int x = xMap.transform(dsd->x(_settings->dateTime("Date")));
 
-  int y = yMap.transform(_settings.getDouble("Price"));
+  int y = yMap.transform(_settings->getDouble("Price"));
 
-  p->setPen(_settings.color("Color"));
+  p->setPen(_settings->color("Color"));
 
-  p->drawText(x, y, _settings.data("Text"));
+  p->drawText(x, y, _settings->data("Text"));
 
   QFontMetrics fm = p->fontMetrics();
   
@@ -47,7 +47,7 @@ void ChartObjectTextDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtS
   
   _selectionArea.append(QRegion(x,
 		                y - fm.height(),
-		                fm.width(_settings.data("Text"), -1),
+		                fm.width(_settings->data("Text"), -1),
 		                fm.height(),
 		                QRegion::Rectangle));
 
@@ -65,6 +65,6 @@ void ChartObjectTextDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtS
 		y - (fm.height() / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings.color("Color"));
+		_settings->color("Color"));
   }
 }

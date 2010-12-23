@@ -47,11 +47,6 @@ class Plot : public QwtPlot
 
   signals:
     void signalMessage (QString);
-    void signalNewIndicator ();
-    void signalEditIndicator (QString);
-    void signalDeleteIndicator (QString);
-    void signalBackgroundColorChanged (QColor);
-    void signalFontChanged (QFont);
     void signalInfoMessage (Setting);
     void signalClick (int, QPoint);
     void signalMove (QPoint);
@@ -85,14 +80,11 @@ class Plot : public QwtPlot
     void showDate (bool);
     void setLogScaling (bool);
     void showContextMenu ();
-    void editIndicator ();
     void deleteIndicator ();
     void deleteAllChartObjects ();
     void deleteAllChartObjects2 ();
     void toggleDate ();
     void toggleLog ();
-    void editBackgroundColor ();
-    void editFont ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
     void deleteChartObject (int);

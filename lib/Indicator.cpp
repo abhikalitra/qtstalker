@@ -25,7 +25,7 @@
 
 Indicator::Indicator ()
 {
-  clear();
+  init();
 }
 
 void Indicator::setName (QString d)
@@ -202,3 +202,26 @@ void Indicator::clearLines ()
   _lines.clear();
 }
 
+QString Indicator::toString ()
+{
+  QStringList l;
+  l << _command << _script << QString::number(_tabRow) << QString::number(_log) << QString::number(_date);
+  
+  return l.join(",");
+}
+
+int Indicator::fromString (QString d)
+{
+  QStringList l = d.split(",", QString::SkipEmptyParts);
+  if (l.count() != 5)
+    return 1;
+
+  int pos = 0;
+  _command = l.at(pos++);
+  _script = l.at(pos++);
+  _tabRow = l.at(pos++).toInt();
+  _log = l.at(pos++).toInt();
+  _date = l.at(pos++).toInt();
+  
+  return 0;
+}

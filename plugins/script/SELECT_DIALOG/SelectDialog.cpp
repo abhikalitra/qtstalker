@@ -129,8 +129,7 @@ void SelectDialog::cancel ()
 
 void SelectDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
+  QSettings settings(g_settingsFile);
 
   QSize sz = settings.value("select_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
@@ -142,8 +141,7 @@ void SelectDialog::loadSettings ()
 
 void SelectDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_settingsFile);
   settings.setValue("select_dialog_window_size", size());
   settings.setValue("select_dialog_window_position", pos());
   settings.sync();

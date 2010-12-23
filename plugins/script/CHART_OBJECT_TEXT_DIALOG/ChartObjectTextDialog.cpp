@@ -126,8 +126,7 @@ void ChartObjectTextDialog::done ()
 
   if (_default->isChecked())
   {
-    QSettings settings;
-    settings.beginGroup("main");
+    QSettings settings(g_settingsFile);
     settings.setValue("default_chart_object_text_color", _color->color().name());
     settings.setValue("default_chart_object_text_font", _font->font());
     settings.sync();
@@ -186,8 +185,7 @@ void ChartObjectTextDialog::loadObject ()
 
 void ChartObjectTextDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
+  QSettings settings(g_settingsFile);
 
   QSize sz = settings.value("chart_object_text_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
@@ -206,8 +204,7 @@ void ChartObjectTextDialog::loadSettings ()
 
 void ChartObjectTextDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_settingsFile);
   settings.setValue("chart_object_text_dialog_window_size", size());
   settings.setValue("chart_object_text_dialog_window_position", pos());
   settings.sync();

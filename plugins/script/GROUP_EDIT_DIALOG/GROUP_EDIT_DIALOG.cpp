@@ -27,7 +27,7 @@
 
 GROUP_EDIT_DIALOG::GROUP_EDIT_DIALOG ()
 {
-  _threadSafe = 0;
+  _type = _DIALOG;
 }
 
 int GROUP_EDIT_DIALOG::command (Command *command)

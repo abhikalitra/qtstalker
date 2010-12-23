@@ -43,6 +43,7 @@ void BarData::clear ()
   _high = -99999999;
   _low = 99999999;
   _length = DailyBar;
+  _maxBars = 0;
   _range = 6;
 }
 
@@ -376,6 +377,66 @@ int BarData::setStringSettings (QString &d)
   return 0;
 }
 
+int BarData::maxBars ()
+{
+  return _maxBars;
+}
+
+void BarData::setMaxBars (int d)
+{
+  _maxBars = d;
+}
+
+QDateTime BarData::startDate ()
+{
+  return _startDate;
+}
+
+void BarData::setStartDate (QDateTime d)
+{
+  _startDate = d;
+}
+
+QString BarData::startDateString ()
+{
+  return _startDate.toString("yyyyMMddHHmmss");
+}
+
+QDateTime BarData::endDate ()
+{
+  return _endDate;
+}
+
+void BarData::setEndDate (QDateTime d)
+{
+  _endDate = d;
+}
+
+QString BarData::endDateString ()
+{
+  return _endDate.toString("yyyyMMddHHmmss");
+}
+
+QString BarData::table ()
+{
+  return _table;
+}
+
+void BarData::setTable (QString d)
+{
+  _table = d;
+}
+
+QString BarData::type ()
+{
+  return _type;
+}
+
+void BarData::setType (QString d)
+{
+  _type = d;
+}
+
 int BarData::range ()
 {
   return _range;
@@ -385,4 +446,3 @@ void BarData::setRange (int d)
 {
   _range = d;
 }
-

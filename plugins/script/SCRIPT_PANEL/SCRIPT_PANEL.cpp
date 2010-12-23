@@ -63,7 +63,7 @@ int SCRIPT_PANEL::run (Command *command)
     return 1;
   }
 
-  g_scriptPanel->runScript(command->parm(2));
+  g_middleMan->scriptRun(command->parm(2));
   
   command->setReturnData("0");
 

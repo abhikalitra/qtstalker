@@ -27,7 +27,7 @@
 
 SELECT_DIALOG::SELECT_DIALOG ()
 {
-  _threadSafe = 0;
+  _type = _DIALOG;
 }
 
 int SELECT_DIALOG::command (Command *command)
