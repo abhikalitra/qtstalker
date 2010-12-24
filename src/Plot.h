@@ -26,10 +26,8 @@
 #include <QHash>
 #include <QDateTime>
 #include <QMap>
-#include <QMenu>
 #include <QColor>
 #include <QFont>
-#include <QAction>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
@@ -40,6 +38,7 @@
 #include "PlotPicker.h"
 #include "Setting.h"
 #include "ChartObject.h"
+#include "PlotMenu.h"
 
 class Plot : public QwtPlot
 {
@@ -80,15 +79,12 @@ class Plot : public QwtPlot
     void showDate (bool);
     void setLogScaling (bool);
     void showContextMenu ();
-    void deleteIndicator ();
-    void deleteAllChartObjects ();
-    void deleteAllChartObjects2 ();
     void toggleDate ();
     void toggleLog ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
     void deleteChartObject (int);
-    void chartObjectMenuSelected (QAction *);
+    void chartObjectNew (int);
     void chartObjectSelected (int);
     void chartObjectUnselected (int);
     void chartObjectMoveStart (int);
@@ -98,8 +94,6 @@ class Plot : public QwtPlot
     void setBarSpacing (int);
 
   private:
-    QAction *_dateAction;
-    QAction *_logAction;
     int _spacing;
     QHash<QString, QwtPlotCurve *> _qwtCurves;
     QHash<QString, Curve *> _curves;
@@ -107,8 +101,6 @@ class Plot : public QwtPlot
     DateScaleDraw *_dateScaleDraw;
     PlotScaleDraw *_plotScaleDraw;
     QwtPlotGrid *_grid;
-    QMenu *_chartMenu;
-    QMenu *_coListMenu;
     PlotPicker *_picker;
     QString _indicator;
     double _high;
@@ -116,6 +108,7 @@ class Plot : public QwtPlot
     int _startPos;
     int _endPos;
     int _selected;
+    PlotMenu *_menu;
 };
 
 #endif

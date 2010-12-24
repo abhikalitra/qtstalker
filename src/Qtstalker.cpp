@@ -81,10 +81,6 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   setWindowTitle(getWindowCaption());
 }
 
-QtstalkerApp::~QtstalkerApp ()
-{
-}
-
 void QtstalkerApp::createGUI ()
 {
   _baseWidget = new QWidget;
@@ -95,17 +91,11 @@ void QtstalkerApp::createGUI ()
   hbox->setSpacing(0);
   _baseWidget->setLayout(hbox);
 
-  _navSplitter = new Splitter("nav_area_size");
-  connect(this, SIGNAL(signalLoadSettings()), _navSplitter, SLOT(load()));
-  connect(_quitButton, SIGNAL(signalShutdown()), _navSplitter, SLOT(save()));
-  _navSplitter->setOrientation(Qt::Horizontal);
-  hbox->addWidget(_navSplitter);
-
   _chartLayout = new ChartLayout;
   connect(_quitButton, SIGNAL(signalShutdown()), _chartLayout, SLOT(save()));
   connect(_quitButton, SIGNAL(signalShutdown()), _chartLayout, SLOT(saveSettings()));
   _chartLayout->setOrientation(Qt::Vertical);
-  _navSplitter->addWidget(_chartLayout);
+  hbox->addWidget(_chartLayout);
 
   _sidePanel = new SidePanel;
   _plotSlider = _sidePanel->slider();
@@ -114,13 +104,15 @@ void QtstalkerApp::createGUI ()
   connect(_sidePanel, SIGNAL(signalRecentChart(BarData)), _recentCharts, SLOT(addRecentChart(BarData)));
   connect(_sidePanel, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
   connect(_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
-  connect(_quitButton, SIGNAL(signalShutdown()), _sidePanel, SLOT(save()));
-  connect(this, SIGNAL(signalLoadSettings()), _sidePanel, SLOT(load()));
-  connect(_sidePanelButton, SIGNAL(signalChanged(bool)), _sidePanel, SLOT(toggleStatus(bool)));
-  _navSplitter->addWidget(_sidePanel);
-  _sidePanel->toggleStatus(_sidePanelButton->isChecked());
+  hbox->addWidget(_sidePanel);
 
-  
+  _sidePanelDock = new QDockWidget(this);
+  _sidePanelDock->setObjectName("sidePanelDock");
+  _sidePanelDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  _sidePanelDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+  _sidePanelDock->setWidget(_sidePanel);
+  addDockWidget(Qt::RightDockWidgetArea, _sidePanelDock);
+
   // delay chart layout signals until all objects are created
   
   connect(this, SIGNAL(signalLoadSettings()), _chartLayout, SLOT(load()));
@@ -129,7 +121,6 @@ void QtstalkerApp::createGUI ()
   connect(_sidePanel, SIGNAL(signalSliderChanged(int)), _chartLayout, SLOT(setIndex(int)));
   connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
   connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), _chartLayout, SLOT(setBarSpacing(int)));
-
   connect(g_middleMan, SIGNAL(signalIndicatorNew(QString)), _chartLayout, SLOT(addNewTab(QString)));
   connect(g_middleMan, SIGNAL(signalIndicatorDelete(QStringList)), _chartLayout, SLOT(removeTab(QStringList)));
   
@@ -142,6 +133,7 @@ void QtstalkerApp::createToolBar ()
 {
   //construct main toolbar
   QToolBar *toolbar = addToolBar("buttonToolBar");
+  toolbar->setObjectName("buttonToolBar");
   toolbar->setIconSize(QSize(16, 16));
 
   // add this to right justify everything after on the toolbar
@@ -181,65 +173,55 @@ void QtstalkerApp::createStatusToolBar ()
 {
   _statusBar = statusBar();
 
-  QToolBar *toolBar = addToolBar("statusToolBar");
-  toolBar->setIconSize(QSize(16, 16));
+  _statusToolBar = addToolBar("statusToolBar");
+  _statusToolBar->setIconSize(QSize(16, 16));
 
   // add the toolbar actions
   _quitButton = new QuitButton;
   connect(_quitButton, SIGNAL(signalShutdown()), this, SLOT(save()));
-  toolBar->addWidget(_quitButton);
+  _statusToolBar->addWidget(_quitButton);
 
   // grid button
   GridButton *gb = new GridButton;
-  toolBar->addWidget(gb);
+  _statusToolBar->addWidget(gb);
 
   // refresh button
   RefreshButton *rb = new RefreshButton;
   connect(rb, SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
-  toolBar->addWidget(rb);
-
-  // toggle side panel button
-  _sidePanelButton = new SidePanelButton;
-  toolBar->addWidget(_sidePanelButton);
+  _statusToolBar->addWidget(rb);
 
   // toggle crosshairs button
   CrossHairsButton *chb = new CrossHairsButton;
-  toolBar->addWidget(chb);
+  _statusToolBar->addWidget(chb);
 
   DataWindowButton *dwb = new DataWindowButton;
-  toolBar->addWidget(dwb);
+  _statusToolBar->addWidget(dwb);
 
   // new indicator button
   NewIndicatorButton *nib = new NewIndicatorButton;
-  toolBar->addWidget(nib);
+  _statusToolBar->addWidget(nib);
 
   // docs button
   HelpButton *hb = new HelpButton;
-  toolBar->addWidget(hb);
+  _statusToolBar->addWidget(hb);
 
   AboutButton *ab = new AboutButton;
-  toolBar->addWidget(ab);
+  _statusToolBar->addWidget(ab);
 
   ChartBackgroundColorButton *cbcb = new ChartBackgroundColorButton;
-  toolBar->addWidget(cbcb);
+  _statusToolBar->addWidget(cbcb);
   
   ChartFontButton *cfb= new ChartFontButton;
-  toolBar->addWidget(cfb);
+  _statusToolBar->addWidget(cfb);
 
-  _statusBar->addPermanentWidget(toolBar);
+  _statusBar->addPermanentWidget(_statusToolBar);
 }
 
 void QtstalkerApp::loadSettings ()
 {
   QSettings settings(g_settingsFile);
-  
-  // restore the size of the app
-  QSize sz = settings.value("main_window_size", QSize(800,600)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("main_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  restoreGeometry(settings.value("main_window_geometry").toByteArray());
+  restoreState(settings.value("main_window_state").toByteArray());
 
   // load gui class settings that need to now
   emit signalLoadSettings();
@@ -248,8 +230,8 @@ void QtstalkerApp::loadSettings ()
 void QtstalkerApp::save()
 {
   QSettings settings(g_settingsFile);
-  settings.setValue("main_window_size", size());
-  settings.setValue("main_window_position", pos());
+  settings.setValue("main_window_geometry", saveGeometry());
+  settings.setValue("main_window_state", saveState());
   settings.sync();
 }
 

@@ -138,6 +138,9 @@ void Setup::setupDirectories ()
   s = sysdir + "IndicatorNew.pl";
   settings.setValue("indicator_new_script", s);
 
+  s = sysdir + "IndicatorEdit.pl";
+  settings.setValue("indicator_edit_script", s);
+
   s = sysdir + "IndicatorDelete.pl";
   settings.setValue("indicator_delete_script", s);
 
@@ -152,6 +155,9 @@ void Setup::setupDirectories ()
 
   s = sysdir + "ScriptPanelRunScript.pl";
   settings.setValue("script_panel_run_script_script", s);
+
+  s = sysdir + "ChartObjectDeleteAll.pl";
+  settings.setValue("chart_object_delete_all_script", s);
 
   settings.sync();
 }

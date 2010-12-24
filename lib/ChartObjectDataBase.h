@@ -29,6 +29,7 @@
 #define CHART_OBJECT_DATA_BASE_HPP
 
 #include <QtSql>
+#include <QStringList>
 
 #include "BarData.h"
 #include "Setting.h"
@@ -37,6 +38,8 @@ class ChartObjectDataBase
 {
   public:
     ChartObjectDataBase ();
+    void init ();
+    void ids (BarData *bd, QString indicator, QStringList &l);
     void deleteChartObjects (BarData *);
     void deleteChartObjectsIndicator (QString indicator);
     void deleteChartObject (int);
@@ -46,6 +49,7 @@ class ChartObjectDataBase
 
   private:
     QSqlDatabase _db;
+    QString _table;
 };
 
 #endif

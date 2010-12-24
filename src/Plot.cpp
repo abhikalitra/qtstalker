@@ -28,17 +28,7 @@
 #include "ChartObjectFactory.h"
 #include "Globals.h"
 #include "Script.h"
-
-#include "../pics/loggrid.xpm"
-#include "../pics/date.xpm"
-#include "../pics/delete.xpm"
-#include "../pics/buyarrow.xpm"
-#include "../pics/sellarrow.xpm"
-#include "../pics/fib.xpm"
-#include "../pics/horizontal.xpm"
-#include "../pics/text.xpm"
-#include "../pics/trend.xpm"
-#include "../pics/vertical.xpm"
+#include "IndicatorDataBase.h"
 
 #include <QSettings>
 #include <QtDebug>
@@ -94,43 +84,10 @@ Plot::Plot ()
   // setup the context menu
   setContextMenuPolicy(Qt::CustomContextMenu);
 
-  _coListMenu = new QMenu(this);
-  _coListMenu->setTitle(tr("New Chart Object..."));
-  QAction *a = _coListMenu->addAction(QPixmap(buyarrow_xpm), tr("&Buy"));
-  a->setShortcut(Qt::ALT+Qt::Key_B);
-  a->setData(QVariant(ChartObject::_Buy));
-  a = _coListMenu->addAction(QPixmap(horizontal_xpm), tr("&HLine"));
-  a->setShortcut(Qt::ALT+Qt::Key_H);
-  a->setData(QVariant(ChartObject::_HLine));
-  a = _coListMenu->addAction(QPixmap(fib_xpm), tr("&Retracement"));
-  a->setShortcut(Qt::ALT+Qt::Key_R);
-  a->setData(QVariant(ChartObject::_Retracement));
-  a = _coListMenu->addAction(QPixmap(sellarrow_xpm), tr("&Sell"));
-  a->setShortcut(Qt::ALT+Qt::Key_S);
-  a->setData(QVariant(ChartObject::_Sell));
-  a = _coListMenu->addAction(QPixmap(text_xpm), tr("Te&xt"));
-  a->setShortcut(Qt::ALT+Qt::Key_X);
-  a->setData(QVariant(ChartObject::_Text));
-  a = _coListMenu->addAction(QPixmap(trend_xpm), tr("&TLine"));
-  a->setShortcut(Qt::ALT+Qt::Key_T);
-  a->setData(QVariant(ChartObject::_TLine));
-  a = _coListMenu->addAction(QPixmap(vertical_xpm), tr("&VLine"));
-  a->setShortcut(Qt::ALT+Qt::Key_V);
-  a->setData(QVariant(ChartObject::_VLine));
-  connect(_coListMenu, SIGNAL(triggered(QAction *)), this, SLOT(chartObjectMenuSelected(QAction *)));
-  
-  _chartMenu = new QMenu(this);
-//  _chartMenu->addAction(QPixmap(indicator_xpm), tr("&New Indicator..."), this, SIGNAL(signalNewIndicator()), Qt::ALT+Qt::Key_N);
-//  _chartMenu->addAction(QPixmap(edit_xpm), tr("Edit &Indicator..."), this, SLOT(editIndicator()), Qt::ALT+Qt::Key_I);
-  _chartMenu->addAction(QPixmap(delete_xpm), tr("De&lete Indicator..."), this, SLOT(deleteIndicator()), Qt::ALT+Qt::Key_L);
-  _chartMenu->addSeparator ();
-  _chartMenu->addMenu(_coListMenu);
-  _chartMenu->addAction(QPixmap(delete_xpm), tr("Delete &All Chart Objects"), this, SLOT(deleteAllChartObjects()), Qt::ALT+Qt::Key_A);
-  _chartMenu->addSeparator ();
-  _dateAction = _chartMenu->addAction(QPixmap(date), tr("&Date"), this, SLOT(toggleDate()), Qt::ALT+Qt::Key_D);
-  _dateAction->setCheckable(TRUE);
-  _logAction = _chartMenu->addAction(QPixmap(loggridicon), tr("Log &Scaling"), this, SLOT(toggleLog()), Qt::ALT+Qt::Key_S);
-  _logAction->setCheckable(TRUE);
+  _menu = new PlotMenu(this);
+  connect(_menu, SIGNAL(signalToggleDate()), this, SLOT(toggleDate()));
+  connect(_menu, SIGNAL(signalToggleLog()), this, SLOT(toggleLog()));
+  connect(_menu, SIGNAL(signalNewChartObject(int)), this, SLOT(chartObjectNew(int)));
 }
 
 Plot::~Plot ()
@@ -143,33 +100,18 @@ void Plot::clear ()
   if (_qwtCurves.count())
     qDeleteAll(_qwtCurves);
   _qwtCurves.clear();
-//qDebug() << "qwt delete";
-
-/*  
-  QHashIterator<QString, Curve *> it(_curves);
-  while (it.hasNext())
-  {
-    it.next();
-    qDebug() << it.key();
-    delete it.value();
-  }
-*/
 
   if (_curves.count())
     qDeleteAll(_curves);
   _curves.clear();
-//qDebug() << "curve delete";
 
   saveChartObjects();
-//qDebug() << "saveChartObjects";
 
   if (_chartObjects.count())
     qDeleteAll(_chartObjects);
   _chartObjects.clear();
-//qDebug() << "chartObjects delete";
 
   QwtPlot::clear();
-//qDebug() << "qwt clear";
 }
 
 void Plot::setDates ()
@@ -358,7 +300,7 @@ void Plot::setLogScaling (bool d)
   else
     setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
 
-  _logAction->setChecked(d);
+  _menu->setLogStatus(d);
 
   replot();
 }
@@ -366,7 +308,7 @@ void Plot::setLogScaling (bool d)
 void Plot::showDate (bool d)
 {
   enableAxis(QwtPlot::xBottom, d);
-  _dateAction->setChecked(d);
+  _menu->setDateStatus(d);
 }
 
 void Plot::setCrossHairs (bool d)
@@ -448,28 +390,11 @@ void Plot::setStartIndex (int index)
 void Plot::showContextMenu ()
 {
   if (_curves.count())
-    _coListMenu->setEnabled(TRUE);
+    _menu->setCOMenuStatus(TRUE);
   else
-    _coListMenu->setEnabled(FALSE);
+    _menu->setCOMenuStatus(FALSE);
   
-  _chartMenu->exec(QCursor::pos());
-}
-
-/*
-void Plot::editIndicator ()
-{
-  emit signalEditIndicator(_indicator);
-}
-*/
-
-void Plot::deleteIndicator ()
-{
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
-  script->setName("IndicatorDelete");
-  script->setFile(settings.value("indicator_delete_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  _menu->exec(QCursor::pos());
 }
 
 int Plot::index ()
@@ -479,12 +404,10 @@ int Plot::index ()
 
 void Plot::toggleDate ()
 {
-// FIXME
-/*
   IndicatorDataBase db;
   Indicator i;
   i.setName(_indicator);
-  db.getIndicator(i);
+  db.load(&i);
   
   int status = axisEnabled(QwtPlot::xBottom);
   if (status)
@@ -494,22 +417,17 @@ void Plot::toggleDate ()
 
   i.setDate(status);
 
-  db.transaction();
-  db.setIndicator(i);
-  db.commit();
+  db.save(&i);
 
   showDate(status);
-*/
 }
 
 void Plot::toggleLog ()
 {
-// FIXME
-/*
   IndicatorDataBase db;
   Indicator i;
   i.setName(_indicator);
-  db.getIndicator(i);
+  db.load(&i);
 
   int status = i.getLog();
   if (status)
@@ -519,12 +437,9 @@ void Plot::toggleLog ()
 
   i.setLog(status);
   
-  db.transaction();
-  db.setIndicator(i);
-  db.commit();
+  db.save(&i);
 
   setLogScaling(status);
-*/
 }
 
 void Plot::mouseClick (int button, QPoint p)
@@ -619,21 +534,19 @@ void Plot::setYPoints ()
 //***************** CHART OBJECT FUNCTIONS ***************************
 //********************************************************************
 
+/*
 void Plot::deleteAllChartObjects ()
 {
-/*
   Dialog *dialog = new Dialog;
   dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete All Chart Objects"));
   dialog->setMessage(tr("Delete all chart objects from this indicator?"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
   dialog->show();
-*/
 }
 
 void Plot::deleteAllChartObjects2 ()
 {
 // FIXME  
-/*  
   ChartObjectDataBase db;
   db.transaction();
   db.deleteChartObjectsIndicator(_indicator);
@@ -645,13 +558,13 @@ void Plot::deleteAllChartObjects2 ()
   _selected = 0;
 
   updatePlot();
-*/
 }
+*/
 
-void Plot::chartObjectMenuSelected (QAction *a)
+void Plot::chartObjectNew (int type)
 {
   ChartObjectFactory fac;
-  ChartObject *co = fac.chartObject(a->data().toInt());
+  ChartObject *co = fac.chartObject(type);
   if (! co)
     return;
 

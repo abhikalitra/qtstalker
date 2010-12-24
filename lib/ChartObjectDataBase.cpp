@@ -20,60 +20,91 @@
  */
 
 #include "ChartObjectDataBase.h"
-#include "ChartObjectFactory.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
 ChartObjectDataBase::ChartObjectDataBase ()
 {
-  _db = QSqlDatabase::database("data");
-  QSqlQuery q(_db);
+  init();
+}
 
-  // create index if needed
-  QString s = "CREATE TABLE IF NOT EXISTS chartObjectIndex (";
+void ChartObjectDataBase::init ()
+{
+  _db = QSqlDatabase::database("data");
+  if (! _db.isOpen())
+  {
+    QString s = QDir::homePath() + "/.qtstalker/data.sqlite";
+    _db = QSqlDatabase::addDatabase("QSQLITE", "data");
+    _db.setHostName("QtStalker");
+    _db.setDatabaseName(s);
+    _db.setUserName("QtStalker");
+    _db.setPassword("QtStalker");
+    if (! _db.open())
+      qDebug() << "ChartObjectDataBase::init:" << _db.lastError().text();
+  }
+
+  _table = "chartObjectIndex" + g_session;
+
+  QSqlQuery q(_db);
+  QString s = "CREATE TABLE IF NOT EXISTS " + _table + " (";
   s.append("id INT PRIMARY KEY");
-  s.append(", type INT");
+  s.append(", indicator TEXT");
   s.append(", exchange TEXT");
   s.append(", symbol TEXT");
-  s.append(", indicator TEXT");
-  s.append(", table TEXT");
+  s.append(", settings TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
-    qDebug() << "ChartObjectDataBase::ChartObjectDataBase: " << q.lastError().text();
+    qDebug() << "ChartObjectDataBase::init: " << q.lastError().text();
+}
+
+void ChartObjectDataBase::ids (BarData *bd, QString indicator, QStringList &l)
+{
+  QSqlQuery q(_db);
+
+  l.clear();
+  
+  QString s = "SELECT id FROM " + _table;
+  s.append(" WHERE exchange='" + bd->exchange() + "'");
+  s.append(" AND symbol='" + bd->symbol() + "'");
+  s.append(" AND indicator='" + indicator + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "ChartObjectDataBase::ids: " << q.lastError().text();
+
+  while (q.next())
+    l << q.value(0).toString();
 }
 
 void ChartObjectDataBase::deleteChartObjects (BarData *bd)
 {
   QSqlQuery q(_db);
+
   _db.transaction();
-  
-  QString s = "DELETE FROM chartObjectIndex";
-  s.append(" WHERE exchange='" + bd->getExchange() + "'");
-  s.append(" AND symbol='" + bd->getSymbol() + "'");
+
+  // delete index records
+  QString s = "DELETE FROM " + _table;
+  s.append(" WHERE exchange='" + bd->exchange() + "'");
+  s.append(" AND symbol='" + bd->symbol() + "'");
   q.exec(s);
   if (q.lastError().isValid())
-  {
     qDebug() << "ChartObjectDataBase::deleteChartObjects: " << q.lastError().text();
-    return;
-  }
 
   _db.commit();
 }
 
-void ChartObjectDataBase::deleteChartObjectsIndicator (QString &indicator)
+void ChartObjectDataBase::deleteChartObjectsIndicator (QString indicator)
 {
   QSqlQuery q(_db);
+
   _db.transaction();
 
-  QString s = "DELETE FROM chartObjectIndex";
+  QString s = "DELETE FROM " + _table;
   s.append(" WHERE indicator='" + indicator + "'");
   q.exec(s);
   if (q.lastError().isValid())
-  {
     qDebug() << "ChartObjectDataBase::deleteChartObjectsIndicator: " << q.lastError().text();
-    return;
-  }
 
   _db.commit();
 }
@@ -81,9 +112,10 @@ void ChartObjectDataBase::deleteChartObjectsIndicator (QString &indicator)
 void ChartObjectDataBase::deleteChartObject (int id)
 {
   QSqlQuery q(_db);
+
   _db.transaction();
   
-  QString s = "DELETE FROM chartObjectIndex WHERE id=" + QString::number(id);
+  QString s = "DELETE FROM " + _table + " WHERE id=" + QString::number(id);
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ChartObjectDataBase::deleteChartObject: " << q.lastError().text();
@@ -91,124 +123,72 @@ void ChartObjectDataBase::deleteChartObject (int id)
   _db.commit();
 }
 
-void ChartObjectDataBase::getChartObjects (QString &exchange, QString &symbol, QString &iname,
-                                           QMap<int, ChartObject *> &cos)
+void ChartObjectDataBase::getChartObject (Setting *co)
 {
   QSqlQuery q(_db);
-  QString s = "SELECT " + _fieldList.join(",") + " FROM chartObjectIndex";
-  s.append(" WHERE exchange='" + exchange + "'");
-  s.append(" AND symbol='" + symbol + "'");
-  s.append(" AND indicator='" + iname + "'");
+
+  QString s = "SELECT settings,exchange,symbol,indicator FROM " + _table;
+  s.append(" WHERE id=" + co->data("ID"));
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "ChartObjectDataBase::getChartObjects: " << q.lastError().text();
+    qDebug() << "ChartObjectDataBase::getChartObject: " << q.lastError().text();
     return;
   }
 
-  ChartObjectFactory fac;
-  
-  while (q.next())
-  {
-    ChartObject *co = fac.chartObject(q.value(1).toInt());
-    if (! co)
-      continue;
+  if (! q.next())
+    return;
 
-    int pos = 0;
-    ChartObjectSettings set;
-    set.id = q.value(pos++).toInt();
-    set.type = q.value(pos++).toInt();
-    set.exchange = q.value(pos++).toString();
-    set.symbol = q.value(pos++).toString();
-    set.indicator = q.value(pos++).toString();
-    set.color = QColor(q.value(pos++).toString());
-    set.date = q.value(pos++).toDateTime();
-    set.date2 = q.value(pos++).toDateTime();
-    set.price = q.value(pos++).toDouble();
-    set.price2 = q.value(pos++).toDouble();
-    set.text = q.value(pos++).toString();
-
-    QStringList l = q.value(pos++).toString().split(":");
-    set.font.setFamily(l[0]);
-    set.font.setPointSize(l[1].toInt());
-    set.font.setWeight(l[2].toInt());
-    set.font.setItalic(l[3].toInt());
-    set.font.setBold(l[4].toInt());
-    
-    set.extend = q.value(pos++).toInt();
-    set.high = q.value(pos++).toDouble();
-    set.low = q.value(pos++).toDouble();
-    set.line1 = q.value(pos++).toDouble();
-    set.line2 = q.value(pos++).toDouble();
-    set.line3 = q.value(pos++).toDouble();
-    set.line4 = q.value(pos++).toDouble();
-    set.line5 = q.value(pos++).toDouble();
-    set.line6 = q.value(pos++).toDouble();
-
-    co->setSettings(set);
-    
-    cos.insert(set.id, co);
-  }
+  int pos = 0;
+  co->parse(q.value(pos++).toString()); // order is critical (settings first)
+  co->setData("Exchange", q.value(pos++).toString());
+  co->setData("Symbol", q.value(pos++).toString());
+  co->setData("Indicator", q.value(pos++).toString());
 }
 
-void ChartObjectDataBase::setChartObject (ChartObjectSettings &d)
+void ChartObjectDataBase::setChartObject (Setting *co)
 {
   QSqlQuery q(_db);
-  QString s = "INSERT OR REPLACE INTO chartObjectIndex (";
-  s.append(_fieldList.join(","));
-  s.append(") VALUES (");
 
-  QStringList l;
-  l.append(QString::number(d.id));
-  l.append(QString::number(d.type));
-  l.append("'" + d.exchange + "'");
-  l.append("'" + d.symbol + "'");
-  l.append("'" + d.indicator + "'");
-  l.append("'" + d.color.name() + "'");
-  l.append("'" + d.date.toString(Qt::ISODate) + "'");
-  l.append("'" + d.date2.toString(Qt::ISODate) + "'");
-  l.append(QString::number(d.price));
-  l.append(QString::number(d.price2));
-  l.append("'" + d.text + "'");
+  _db.transaction();
 
-  QStringList l2;
-  l2.append(d.font.family());
-  l2.append(QString::number(d.font.pointSize()));
-  l2.append(QString::number(d.font.weight()));
-  l2.append(QString::number(d.font.italic()));
-  l2.append(QString::number(d.font.bold()));
-  l.append("'" + l2.join(":") + "'");
-  
-  l.append(QString::number(d.extend));
-  l.append(QString::number(d.high));
-  l.append(QString::number(d.low));
-  l.append(QString::number(d.line1));
-  l.append(QString::number(d.line2));
-  l.append(QString::number(d.line3));
-  l.append(QString::number(d.line4));
-  l.append(QString::number(d.line5));
-  l.append(QString::number(d.line6));
-
-  s.append(l.join(","));
+  QString s = "INSERT OR REPLACE INTO " + _table + " (id,settings,indicator,exchange,symbol)";
+  s.append(" VALUES (");
+  s.append(co->data("ID"));
+  QString ts;
+  co->string(ts);
+  s.append(",'" + ts + "'");
+  s.append(",'" + co->data("Indicator") + "'");
+  s.append(",'" + co->data("Exchange") + "'");
+  s.append(",'" + co->data("Symbol") + "'");
   s.append(")");
-  
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ChartObjectDataBase::setChartObject: " << q.lastError().text();
+
+  _db.commit();
 }
 
 int ChartObjectDataBase::renameSymbol (BarData *obd, BarData *nbd)
 {
   // update any chart objects with new symbol name
-  QString s = "UPDATE chartObjects";
-  s.append(" SET symbol='" + nbd->getSymbol() + "'");
-  s.append(", exchange='" + nbd->getExchange() + "'");
-  s.append(" WHERE symbol='" + obd->getSymbol() + "'");
-  s.append(" AND exchange='" + obd->getExchange() + "'");
+  QSqlQuery q(_db);
 
-  if (command(s, QString("ChartObjectDataBase::renameSymbol")))
+  _db.transaction();
+
+  QString s = "UPDATE " + _table;
+  s.append(" SET symbol='" + nbd->symbol() + "'");
+  s.append(", exchange='" + nbd->exchange() + "'");
+  s.append(" WHERE symbol='" + obd->symbol() + "'");
+  s.append(" AND exchange='" + obd->exchange() + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "ChartObjectDataBase::renameSymbol: " << q.lastError().text();
     return 1;
+  }
+
+  _db.commit();
   
   return 0;
 }
-

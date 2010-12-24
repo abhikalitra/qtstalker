@@ -7,6 +7,7 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 
 HEADERS += Bar.h
 HEADERS += BarData.h
+HEADERS += ChartObjectDataBase.h
 HEADERS += ColorButton.h
 HEADERS += Command.h
 HEADERS += CommandThread.h
@@ -33,6 +34,7 @@ HEADERS += Strip.h
 
 SOURCES += Bar.cpp
 SOURCES += BarData.cpp
+SOURCES += ChartObjectDataBase.cpp
 SOURCES += ColorButton.cpp
 SOURCES += Command.cpp
 SOURCES += CommandThread.cpp

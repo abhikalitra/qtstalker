@@ -8,7 +8,7 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # display the selection dialog
-$command = "SELECT_DIALOG,Script,$rc";
+$command = "SELECT_DIALOG,1,Script,$rc";
 print STDOUT $command;
 $script = <STDIN>; chomp($script); if ($script eq "ERROR") {print STDERR $command; exit; }
 

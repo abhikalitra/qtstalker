@@ -8,7 +8,7 @@ print STDOUT $command;
 $groups = <STDIN>; chomp($groups); if ($groups eq "ERROR") {print STDERR $command; exit; }
 
 # display the select group dialog
-$command = "SELECT_DIALOG,Group,$groups";
+$command = "SELECT_DIALOG,1,Group,$groups";
 print STDOUT $command;
 $group = <STDIN>; chomp($group); if ($group eq "ERROR") {print STDERR $command; exit; }
 

@@ -27,7 +27,7 @@
 #include <QToolBar>
 #include <QString>
 #include <QStatusBar>
-#include <QSplitter>
+#include <QDockWidget>
 
 #include "Splitter.h"
 #include "InfoPanel.h"
@@ -38,7 +38,6 @@
 #include "DateRangeControl.h"
 #include "DateRangeButton.h"
 #include "SidePanel.h"
-#include "SidePanelButton.h"
 #include "Command.h"
 #include "QuitButton.h"
 #include "ChartLayout.h"
@@ -52,7 +51,6 @@ class QtstalkerApp : public QMainWindow
 
   public:
     QtstalkerApp (QString session, QString asset);
-    ~QtstalkerApp ();
     void createGUI ();
     void loadSettings ();
     void createToolBar ();
@@ -69,8 +67,6 @@ class QtstalkerApp : public QMainWindow
     void commandLineAsset ();
 
   protected:
-    QSplitter *_split;
-    Splitter *_navSplitter;
     QWidget *_baseWidget;
     InfoPanel *_infoPanel;
     QStatusBar *_statusBar;
@@ -82,9 +78,10 @@ class QtstalkerApp : public QMainWindow
     DateRangeControl *_dateRange;
     DateRangeButton *_dateRangeButton;
     SidePanel *_sidePanel;
-    SidePanelButton *_sidePanelButton;
     QuitButton *_quitButton;
     ChartLayout *_chartLayout;
+    QDockWidget *_sidePanelDock;
+    QToolBar *_statusToolBar;
 };
 
 #endif

@@ -49,11 +49,6 @@ SidePanel::SidePanel ()
   createTabs();
 }
 
-SidePanel::~SidePanel ()
-{
-//  save();
-}
-
 // create the chart panel
 void SidePanel::createTabs ()
 {
@@ -86,64 +81,6 @@ void SidePanel::createTabs ()
   _tabs->setTabToolTip(2, tr("Scripts"));
 }
 
-void SidePanel::load ()
-{
-  // we need to load our splitter sizes
-  QSettings settings(g_settingsFile);
-  QStringList l = settings.value("data_panel_size").toStringList();
-  if (! l.count())
-  {
-    QList<int> l2;
-    l2 << 331 << 58 << 85;
-    setSizes(l2);
-  }
-  else
-  {
-    QList<int> sizeList = sizes();
-
-    int loop = 0;
-    for (; loop < l.count(); loop++)
-    {
-      if (loop >= sizeList.count())
-        break;
-
-      if (l[loop].toInt() < 25)
-        sizeList[loop] = 25;
-      else
-        sizeList[loop] = l[loop].toInt();
-    }
- 
-    setSizes(sizeList);
-  }
-
-  // set our width
-  QSize size = _tabs->size();
-  size.setWidth(settings.value("side_panel_tab_width", 100).toInt());
-  _tabs->resize(size);
-
-  // set last displayed tab
-  _tabs->setCurrentIndex(settings.value("side_panel_last_page", 0).toInt());
-}
-
-void SidePanel::save ()
-{
-  QSettings settings(g_settingsFile);
-
-  QStringList l;
-  QList<int> sizeList = sizes();
-  int loop;
-  for (loop = 0; loop < (int) sizeList.count(); loop++)
-    l.append(QString::number(sizeList[loop]));
-  settings.setValue("data_panel_size", l);
-
-  QSize size = _tabs->size();
-  settings.setValue("side_panel_tab_width", size.width());
-
-  settings.setValue("side_panel_last_page", _tabs->currentIndex());
-
-  settings.sync();
-}
-
 PlotSlider * SidePanel::slider ()
 {
   return _slider;
@@ -152,12 +89,4 @@ PlotSlider * SidePanel::slider ()
 InfoPanel * SidePanel::info ()
 {
   return _info;
-}
-
-void SidePanel::toggleStatus (bool status)
-{
-  if (status)
-    this->show();
-  else
-    this->hide();
 }

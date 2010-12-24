@@ -32,12 +32,20 @@ SELECT_DIALOG::SELECT_DIALOG ()
 
 int SELECT_DIALOG::command (Command *command)
 {
-  // SELECT_DIALOG,TITLE,ITEMS*
-  //       0         1     2
+  // SELECT_DIALOG,MODE,TITLE,ITEMS*
+  //       0         1    2    3*
 
-  if (command->count() < 2)
+  if (command->count() < 3)
   {
     qDebug() << "SELECT_DIALOG::command: invalid parm count" << command->count();
+    return 1;
+  }
+
+  bool ok;
+  command->parm(1).toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << "SELECT_DIALOG::command: invalid mode" << command->parm(1);
     return 1;
   }
 

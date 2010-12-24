@@ -1,5 +1,5 @@
 /* XPM */
-static const char *nav[]={
+static const char *nav_xpm[]={
 "22 22 58 1",
 ". c None",
 "S c #000000",

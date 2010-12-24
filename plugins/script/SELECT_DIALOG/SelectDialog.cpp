@@ -35,13 +35,16 @@ SelectDialog::SelectDialog (Command *c)
   _helpFile = "main.html";
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Select") << _command->parm(1);
+  l << "QtStalker" << g_session << ":" << tr("Select") << _command->parm(2);
   setWindowTitle(l.join(" "));
 
   createGUI();
 
+  if (_command->parm(1).toInt())
+    _list->setSelectionMode(QAbstractItemView::SingleSelection);
+
   l.clear();
-  int loop = 2;
+  int loop = 3;
   for (; loop < _command->count(); loop++)
     l << _command->parm(loop);
   _list->addItems(l);

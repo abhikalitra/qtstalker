@@ -1,8 +1,8 @@
 /*
  *  Qtstalker stock charter
- * 
+ *
  *  Copyright (C) 2001-2010 Stefan S. Stratigakos
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,29 +15,43 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
-#ifndef SIDE_PANEL_BUTTON_HPP
-#define SIDE_PANEL_BUTTON_HPP
+#ifndef PLOT_MENU_HPP
+#define PLOT_MENU_HPP
 
-#include <QToolButton>
+#include <QString>
+#include <QMenu>
+#include <QAction>
 
-class SidePanelButton : public QToolButton
+class PlotMenu : public QMenu
 {
   Q_OBJECT
-  
+
   signals:
-    void signalChanged (bool);
+    void signalToggleDate ();
+    void signalToggleLog ();
+    void signalNewChartObject (int);
 
   public:
-    SidePanelButton ();
-    
+    PlotMenu (QWidget *);
+    void init ();
+    void setCOMenuStatus (bool);
+    void setLogStatus (bool);
+    void setDateStatus (bool);
+
   public slots:
-    void changed (bool);
+    void chartObjectMenuSelected (QAction *);
+    void editIndicator ();
+    void deleteIndicator ();
+    void deleteAllChartObjects ();
+
+  private:
+    QAction *_dateAction;
+    QAction *_logAction;
+    QMenu *_coListMenu;
 };
 
 #endif
-
-

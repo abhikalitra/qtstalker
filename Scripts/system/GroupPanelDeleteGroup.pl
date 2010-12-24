@@ -8,7 +8,7 @@ print STDOUT $command;
 $groups = <STDIN>; chomp($groups); if ($groups eq "ERROR") {print STDERR $command; exit; }
 
 # display the group delete dialog
-$command = "SELECT_DIALOG,Group,$groups";
+$command = "SELECT_DIALOG,0,Group,$groups";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
