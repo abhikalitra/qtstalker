@@ -43,8 +43,8 @@ class ChartObjectDataBase
     void deleteChartObjects (BarData *);
     void deleteChartObjectsIndicator (QString indicator);
     void deleteChartObject (int);
-    void getChartObject (Setting *);
-    void setChartObject (Setting *);
+    void load (Setting *);
+    void save (Setting *);
     int renameSymbol (BarData *, BarData *);
 
   private:

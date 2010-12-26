@@ -34,14 +34,17 @@ class PlotSlider : public QWidget
   
   signals:
     void signalValueChanged(int);
+    void signalLockStatus (bool);
     
   public:
     PlotSlider ();
+    void createGUI ();
     void setStart (int, int, int);
     int getValue ();
     
   public slots:
     void setValue (int);
+    void setStartValue (int);
     void startButtonClicked ();
     void pPageButtonClicked ();
     void pBarButtonClicked ();
@@ -50,6 +53,9 @@ class PlotSlider : public QWidget
     void endButtonClicked ();
     void buttonStatus ();
     void sliderChanged (int);
+    void setLockStatus (bool);
+    void loadSettings ();
+    void saveSettings ();
     
   protected:
     QSlider *_slider;
@@ -59,6 +65,7 @@ class PlotSlider : public QWidget
     QToolButton *_nBarButton;
     QToolButton *_nPageButton;
     QToolButton *_endButton;
+    bool _lockStatus;
 };
 
 #endif

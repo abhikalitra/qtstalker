@@ -44,24 +44,9 @@ class MiddleMan: public QObject
     void signalIndicatorNew (QString);
     void signalIndicatorDelete (QStringList);
     void signalScriptRun (QString);
+    void signalPlotTabPosition (int);
 
   public:
-    enum Type
-    {
-      _CHART_PANEL_REFRESH,
-      _CHART_PANEL_SEARCH,
-      _GROUP_PANEL_REFRESH,
-      _PLOT_BACKGROUND_COLOR,
-      _PLOT_FONT,
-      _GRID_COLOR,
-      _GRID,
-      _CROSSHAIRS_COLOR,
-      _CROSSHAIRS,
-      _INDICATOR_NEW,
-      _INDICATOR_DELETE,
-      _SCRIPT_RUN
-    };
-    
     MiddleMan (QObject *);
     void chartPanelRefresh ();
     void chartPanelSearch (QString, QString);
@@ -75,6 +60,7 @@ class MiddleMan: public QObject
     void indicatorNew (QString);
     void indicatorDelete (QStringList);
     void scriptRun (QString);
+    void plotTabPosition (int);
 };
 
 #endif

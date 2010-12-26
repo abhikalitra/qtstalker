@@ -30,11 +30,20 @@ class InfoPanel : public QTextEdit
 {
   Q_OBJECT
 
+  signals:
+    void signalLockStatus (bool);
+
   public:
     InfoPanel ();
     
   public slots:
     void showInfo (Setting);
+    void setLockStatus (bool);
+    void loadSettings ();
+    void saveSettings ();
+
+  protected:
+    bool _lockStatus;
 };
 
 #endif

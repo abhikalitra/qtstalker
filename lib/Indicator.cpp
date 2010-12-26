@@ -20,12 +20,36 @@
  */
 
 #include "Indicator.h"
+#include "IndicatorDataBase.h"
+#include "Globals.h"
+#include "Script.h"
 
 #include <QDebug>
 
 Indicator::Indicator ()
 {
   init();
+}
+
+void Indicator::init ()
+{
+  _lock = FALSE;
+  _date = TRUE;
+  _log = FALSE;
+  _modified = 0;
+}
+
+void Indicator::setParms (QString name, QString command, QString script, bool lock, bool date, bool log)
+{
+  save();
+  
+  _name = name;
+  _command = command;
+  _script = script;
+  _lock = lock;
+  _date = date;
+  _log = log;
+  _modified = 0;
 }
 
 void Indicator::setName (QString d)
@@ -38,32 +62,35 @@ QString & Indicator::name ()
   return _name;
 }
 
-void Indicator::setTabRow (int d)
+void Indicator::setLock (bool d)
 {
-  _tabRow = d;
+  _lock = d;
+  _modified = 1;
 }
 
-int Indicator::tabRow ()
+bool Indicator::lock ()
 {
-  return _tabRow;
+  return _lock;
 }
 
-void Indicator::setDate (int d)
+void Indicator::setDate (bool d)
 {
   _date = d;
+  _modified = 1;
 }
 
-int Indicator::date ()
+bool Indicator::date ()
 {
   return _date;
 }
 
-void Indicator::setLog (int d)
+void Indicator::setLog (bool d)
 {
   _log = d;
+  _modified = 1;
 }
 
-int Indicator::getLog ()
+bool Indicator::log ()
 {
   return _log;
 }
@@ -71,6 +98,7 @@ int Indicator::getLog ()
 void Indicator::setScript (QString d)
 {
   _script = d;
+  _modified = 1;
 }
 
 QString & Indicator::script ()
@@ -81,6 +109,7 @@ QString & Indicator::script ()
 void Indicator::setCommand (QString d)
 {
   _command = d;
+  _modified = 1;
 }
 
 QString & Indicator::command ()
@@ -156,6 +185,9 @@ void Indicator::weedPlots ()
   for (; loop < keys.count(); loop++)
   {
     Curve *curve = _lines.value(keys.at(loop));
+    if (! curve)
+      continue;
+    
     if (curve->z() < 0)
     {
       delete curve;
@@ -169,13 +201,6 @@ void Indicator::clean ()
   _lines.clear();
   _chartObjects.clear();
   init();
-}
-
-void Indicator::init ()
-{
-  _tabRow = 1;
-  _date = 1;
-  _log = 0;
 }
 
 void Indicator::coKeys (QList<int> &l)
@@ -205,7 +230,7 @@ void Indicator::clearLines ()
 QString Indicator::toString ()
 {
   QStringList l;
-  l << _command << _script << QString::number(_tabRow) << QString::number(_log) << QString::number(_date);
+  l << _command << _script << QString::number(_lock) << QString::number(_log) << QString::number(_date);
   
   return l.join(",");
 }
@@ -219,9 +244,47 @@ int Indicator::fromString (QString d)
   int pos = 0;
   _command = l.at(pos++);
   _script = l.at(pos++);
-  _tabRow = l.at(pos++).toInt();
+  _lock = l.at(pos++).toInt();
   _log = l.at(pos++).toInt();
   _date = l.at(pos++).toInt();
   
   return 0;
+}
+
+int Indicator::save ()
+{
+  if (! _modified)
+    return 0;
+
+  IndicatorDataBase db;
+  int rc = db.save(this);
+  _modified = 0;
+
+  return rc;
+}
+
+int Indicator::load ()
+{
+  IndicatorDataBase db;
+  int rc = db.load(this);
+  _modified = 0;
+  return rc;
+}
+
+void Indicator::calculate ()
+{
+  Script *script = new Script;
+  script->setName(_name);
+  script->setFile(_script);
+  script->setCommand(_command);
+  connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptFinished()));
+  script->setBarData(g_barData);
+  script->setIndicator(this);
+  script->startScript();
+}
+
+void Indicator::scriptFinished ()
+{
+  weedPlots();
+  emit signalPlot();
 }

@@ -19,31 +19,21 @@
  *  USA.
  */
 
-#include "ChartBackgroundColorButton.h"
-#include "Globals.h"
-#include "Script.h"
+#ifndef CONFIGURE_DIALOG_HPP
+#define CONFIGURE_DIALOG_HPP
 
-#include "../pics/color.xpm"
+#include "ScriptPlugin.h"
 
-#include <QDebug>
-#include <QString>
-#include <QSettings>
-
-ChartBackgroundColorButton::ChartBackgroundColorButton ()
+class CONFIGURE_DIALOG : public ScriptPlugin
 {
-  setIcon(QIcon(color_xpm));
-  setStatusTip(tr("Chart Background Color"));
-  setToolTip(tr("Chart Background Color"));
-  
-  connect(this, SIGNAL(clicked()), this, SLOT(dialog()));
+  public:
+    CONFIGURE_DIALOG ();
+    int command (Command *);
+};
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
 }
 
-void ChartBackgroundColorButton::dialog ()
-{
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
-  script->setName("ChartBackgroundColor");
-  script->setFile(settings.value("chart_background_color_script").toString());
-  script->setCommand("perl");
-  script->startScript();
-}
+#endif

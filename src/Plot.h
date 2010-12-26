@@ -25,12 +25,12 @@
 #include <QString>
 #include <QHash>
 #include <QDateTime>
-#include <QMap>
 #include <QColor>
 #include <QFont>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
+#include <QMainWindow>
 
 #include "DateScaleDraw.h"
 #include "PlotScaleDraw.h"
@@ -39,6 +39,8 @@
 #include "Setting.h"
 #include "ChartObject.h"
 #include "PlotMenu.h"
+#include "Indicator.h"
+#include "DockWidget.h"
 
 class Plot : public QwtPlot
 {
@@ -49,28 +51,31 @@ class Plot : public QwtPlot
     void signalInfoMessage (Setting);
     void signalClick (int, QPoint);
     void signalMove (QPoint);
+    void signalIndex (int);
 
   public:
-    Plot ();
+    Plot (QString, QMainWindow *);
     ~Plot ();
-    void updatePlot ();
     void setDates ();
     void addCurve (QString id, Curve *);
     void addCurves (QHash<QString, Curve *> &);
-    void setIndicator (QString &);
+    void setIndicator ();
+    Indicator * indicator ();
     void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
     void addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve);
     void loadChartObjects ();
     void setHighLow ();
     void setupChartObject (ChartObject *);
     void saveChartObjects ();
-    void curves (QHash<QString, Curve *> &);
     void dates (QList<QDateTime> &);
     int index ();
+    PlotMenu * plotMenu ();
 //    void setYPoints ();
 
   public slots:
     virtual void clear ();
+    void updatePlot ();
+    void loadSettings ();
     void setStartIndex (int index);
     void setBackgroundColor (QColor);
     void setFont (QFont);
@@ -79,8 +84,6 @@ class Plot : public QwtPlot
     void showDate (bool);
     void setLogScaling (bool);
     void showContextMenu ();
-    void toggleDate ();
-    void toggleLog ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
     void deleteChartObject (int);
@@ -96,19 +99,19 @@ class Plot : public QwtPlot
   private:
     int _spacing;
     QHash<QString, QwtPlotCurve *> _qwtCurves;
-    QHash<QString, Curve *> _curves;
-    QMap<int, ChartObject *> _chartObjects;
+    QHash<int, ChartObject *> _chartObjects;
     DateScaleDraw *_dateScaleDraw;
     PlotScaleDraw *_plotScaleDraw;
     QwtPlotGrid *_grid;
     PlotPicker *_picker;
-    QString _indicator;
+    Indicator *_indicator;
     double _high;
     double _low;
     int _startPos;
     int _endPos;
     int _selected;
     PlotMenu *_menu;
+    DockWidget *_dock;
 };
 
 #endif

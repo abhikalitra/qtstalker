@@ -19,31 +19,41 @@
  *  USA.
  */
 
-#include "ChartFontButton.h"
-#include "Globals.h"
-#include "Script.h"
-
-#include "../pics/font.xpm"
+#include "DockWidget.h"
 
 #include <QDebug>
-#include <QString>
-#include <QSettings>
 
-ChartFontButton::ChartFontButton ()
+DockWidget::DockWidget (QString title, QWidget *p) : QDockWidget (title, p)
 {
-  setIcon(QIcon(font_xpm));
-  setStatusTip(tr("Chart Font"));
-  setToolTip(tr("Chart Font"));
-  
-  connect(this, SIGNAL(clicked()), this, SLOT(dialog()));
+  _menu = new QMenu(this);
+  _menu->addAction(tr("&Lock"), this, SLOT(lock()), Qt::ALT+Qt::Key_L);
+  _menu->addAction(tr("&Unlock"), this, SLOT(unlock()), Qt::ALT+Qt::Key_U);
+
+  _titleBar = titleBarWidget();
+  _noTitleBar = new QWidget(this);
 }
 
-void ChartFontButton::dialog ()
+void DockWidget::lock ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
-  script->setName("ChartFont");
-  script->setFile(settings.value("chart_font_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  setTitleBarWidget(_noTitleBar);
+  emit signalLockStatus(TRUE);
+}
+
+void DockWidget::unlock ()
+{
+  setTitleBarWidget(_titleBar);
+  emit signalLockStatus(FALSE);
+}
+
+void DockWidget::statusChanged (bool status)
+{
+  if (status)
+    lock();
+  else
+    unlock();
+}
+
+void DockWidget::contextMenuEvent (QContextMenuEvent *)
+{
+  _menu->exec(QCursor::pos());
 }

@@ -123,7 +123,7 @@ void ChartObjectDataBase::deleteChartObject (int id)
   _db.commit();
 }
 
-void ChartObjectDataBase::getChartObject (Setting *co)
+void ChartObjectDataBase::load (Setting *co)
 {
   QSqlQuery q(_db);
 
@@ -146,7 +146,7 @@ void ChartObjectDataBase::getChartObject (Setting *co)
   co->setData("Indicator", q.value(pos++).toString());
 }
 
-void ChartObjectDataBase::setChartObject (Setting *co)
+void ChartObjectDataBase::save (Setting *co)
 {
   QSqlQuery q(_db);
 

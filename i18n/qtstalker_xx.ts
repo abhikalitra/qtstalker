@@ -847,6 +847,52 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>ConfigureButton</name>
+    <message>
+        <source>Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConfigureDialog</name>
+    <message>
+        <source>Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Background</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>North</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>South</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>West</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>East</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CrossHairsButton</name>
     <message>
         <source>Cursor Crosshairs</source>
@@ -933,6 +979,17 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Set Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DockWidget</name>
+    <message>
+        <source>&amp;Lock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Unlock</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1082,10 +1139,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Tab Row</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Date Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1144,19 +1197,7 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>Plot</name>
-    <message>
-        <source>Delete &amp;All Chart Objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Log &amp;Scaling</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <name>PlotMenu</name>
     <message>
         <source>New Chart Object...</source>
         <translation type="unfinished"></translation>
@@ -1190,7 +1231,27 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Edit &amp;Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>De&amp;lete Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete &amp;All Chart Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log &amp;Scaling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Locked</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1921,13 +1982,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SidePanelButton</name>
-    <message>
-        <source>Show / Hide Side Panel</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -69,7 +69,7 @@ ChartObject * ChartObjectFactory::chartObject (int type)
   return co;
 }
 
-ChartObject * ChartObjectFactory::chartObject (QString &type)
+ChartObject * ChartObjectFactory::chartObject (QString type)
 {
   return chartObject(_types.indexOf(type));
 }

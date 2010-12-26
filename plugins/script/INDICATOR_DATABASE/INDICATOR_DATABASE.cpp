@@ -110,7 +110,7 @@ int INDICATOR_DATABASE::save (Command *command)
     qDebug() << "INDICATOR_DATABASE::save: invalid row" << t;
     return 1;
   }
-  i.setTabRow(t);
+  i.setLock(t);
   
   t = command->parm(pos++).toInt(&ok);
   if (! ok)

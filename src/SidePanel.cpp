@@ -21,6 +21,10 @@
 
 #include "SidePanel.h"
 #include "Globals.h"
+#include "ChartPage.h"
+#include "GroupPage.h"
+#include "ScriptPage.h"
+
 #include "../pics/dirclosed.xpm"
 #include "../pics/plainitem.xpm"
 #include "../pics/script.xpm"
@@ -30,63 +34,55 @@
 
 SidePanel::SidePanel ()
 {
-  setOrientation(Qt::Vertical);
-
-  // setup the panel tabs
-  _tabs = new QTabWidget;
-  addWidget(_tabs);
-
-  // setup the plot slider
-  _slider = new PlotSlider;
-  addWidget(_slider);
-  connect (_slider, SIGNAL(signalValueChanged(int)), this, SIGNAL(signalSliderChanged(int)));
-
-  // setup the info panel area
-  _info = new InfoPanel;
-  addWidget(_info);
-
-  // fill in the panel tabs
+  _lockStatus = TRUE;
   createTabs();
 }
 
-// create the chart panel
 void SidePanel::createTabs ()
 {
   // chart tab
-  _chartPanel = new ChartPage;
-  connect(_chartPanel, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
-  connect(_chartPanel, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
-  connect(_chartPanel, SIGNAL(signalReloadChart()), this, SIGNAL(signalReloadChart()));
-  connect(_chartPanel, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
-  connect(g_middleMan, SIGNAL(signalChartPanelRefresh()), _chartPanel, SLOT(updateList()));
-  connect(g_middleMan, SIGNAL(signalChartPanelSearch(QString, QString)), _chartPanel, SLOT(setSearch(QString, QString)));
-  _tabs->addTab(_chartPanel, QIcon(plainitem), QString());
-  _tabs->setTabToolTip(0, tr("Charts"));
+  ChartPage *cp = new ChartPage;
+  connect(cp, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
+  connect(cp, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
+  connect(cp, SIGNAL(signalReloadChart()), this, SIGNAL(signalReloadChart()));
+  connect(cp, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
+  connect(g_middleMan, SIGNAL(signalChartPanelRefresh()), cp, SLOT(updateList()));
+  connect(g_middleMan, SIGNAL(signalChartPanelSearch(QString, QString)), cp, SLOT(setSearch(QString, QString)));
+  addTab(cp, QIcon(plainitem), QString());
+  setTabToolTip(0, tr("Charts"));
 
   // group tab
-  _groupPanel = new GroupPage;
-  connect(_groupPanel, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
-  connect(_chartPanel, SIGNAL(signalAddToGroup()), _groupPanel, SLOT(updateGroups()));
-  connect(_groupPanel, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
-  connect(_groupPanel, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
-  connect(g_middleMan, SIGNAL(signalGroupPanelRefresh()), _groupPanel, SLOT(updateGroups()));
-  _tabs->addTab(_groupPanel, QIcon(dirclosed), QString());
-  _tabs->setTabToolTip(1, tr("Groups"));
+  GroupPage *gp = new GroupPage;
+  connect(gp, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
+  connect(cp, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
+  connect(gp, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
+  connect(gp, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
+  connect(g_middleMan, SIGNAL(signalGroupPanelRefresh()), gp, SLOT(updateGroups()));
+  addTab(gp, QIcon(dirclosed), QString());
+  setTabToolTip(1, tr("Groups"));
 
   // script tab
-  _scriptPanel = new ScriptPage;
+  ScriptPage *sp = new ScriptPage;
 //  connect(_scriptTab, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
-  connect(g_middleMan, SIGNAL(signalScriptRun(QString)), _scriptPanel, SLOT(runScript(QString)));
-  _tabs->addTab(_scriptPanel, QIcon(script_xpm), QString());
-  _tabs->setTabToolTip(2, tr("Scripts"));
+  connect(g_middleMan, SIGNAL(signalScriptRun(QString)), sp, SLOT(runScript(QString)));
+  addTab(sp, QIcon(script_xpm), QString());
+  setTabToolTip(2, tr("Scripts"));
 }
 
-PlotSlider * SidePanel::slider ()
+void SidePanel::loadSettings ()
 {
-  return _slider;
+  QSettings settings(g_settingsFile);
+  _lockStatus = settings.value("side_panel_lock_status", TRUE).toBool();
+  emit signalLockStatus(_lockStatus);
 }
 
-InfoPanel * SidePanel::info ()
+void SidePanel::saveSettings ()
 {
-  return _info;
+  QSettings settings(g_settingsFile);
+  settings.setValue("side_panel_lock_status", _lockStatus);
+}
+
+void SidePanel::setLockStatus (bool status)
+{
+  _lockStatus = status;
 }

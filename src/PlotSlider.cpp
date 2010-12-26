@@ -21,10 +21,7 @@
 
 #include "PlotSlider.h"
 #include "Setting.h"
-
-#include <QDebug>
-#include <QLayout>
-
+#include "Globals.h"
 #include "../pics/start.xpm"
 #include "../pics/end.xpm"
 #include "../pics/prev.xpm"
@@ -32,7 +29,17 @@
 #include "../pics/ppage.xpm"
 #include "../pics/npage.xpm"
 
+#include <QDebug>
+#include <QLayout>
+#include <QSettings>
+
 PlotSlider::PlotSlider ()
+{
+  _lockStatus = TRUE;
+  createGUI();
+}
+
+void PlotSlider::createGUI ()
 {
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(0);
@@ -163,6 +170,14 @@ void PlotSlider::setValue (int d)
   buttonStatus();
 }
 
+void PlotSlider::setStartValue (int d)
+{
+  _slider->blockSignals(TRUE);
+  _slider->setValue(d);
+  buttonStatus();
+  _slider->blockSignals(FALSE);
+}
+
 void PlotSlider::sliderChanged (int d)
 {
   emit signalValueChanged (d);
@@ -192,3 +207,20 @@ void PlotSlider::buttonStatus ()
   _nBarButton->setEnabled(right);
 }
 
+void PlotSlider::loadSettings ()
+{
+  QSettings settings(g_settingsFile);
+  _lockStatus = settings.value("plot_slider_lock_status", TRUE).toBool();
+  emit signalLockStatus(_lockStatus);
+}
+
+void PlotSlider::saveSettings ()
+{
+  QSettings settings(g_settingsFile);
+  settings.setValue("plot_slider_lock_status", _lockStatus);
+}
+
+void PlotSlider::setLockStatus (bool status)
+{
+  _lockStatus = status;
+}

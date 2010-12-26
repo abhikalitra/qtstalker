@@ -24,11 +24,10 @@
 #include "PlotOHLC.h"
 #include "PlotCandle.h"
 #include "Strip.h"
-//#include "ChartObjectDialog.h"
 #include "ChartObjectFactory.h"
 #include "Globals.h"
 #include "Script.h"
-#include "IndicatorDataBase.h"
+#include "ChartObjectDataBase.h"
 
 #include <QSettings>
 #include <QtDebug>
@@ -40,7 +39,7 @@
 #include <qwt_scale_engine.h>
 
 
-Plot::Plot ()
+Plot::Plot (QString name, QMainWindow *mw)
 {
   _spacing = 8;
   _high = 0;
@@ -84,14 +83,30 @@ Plot::Plot ()
   // setup the context menu
   setContextMenuPolicy(Qt::CustomContextMenu);
 
+  _indicator = new Indicator;
+  _indicator->setName(name);
+  connect(_indicator, SIGNAL(signalPlot()), this, SLOT(updatePlot()));
+
   _menu = new PlotMenu(this);
-  connect(_menu, SIGNAL(signalToggleDate()), this, SLOT(toggleDate()));
-  connect(_menu, SIGNAL(signalToggleLog()), this, SLOT(toggleLog()));
+  connect(_menu, SIGNAL(signalLockStatus(bool)), _indicator, SLOT(setLock(bool)));
+  connect(_menu, SIGNAL(signalDateStatus(bool)), this, SLOT(showDate(bool)));
+  connect(_menu, SIGNAL(signalDateStatus(bool)), _indicator, SLOT(setDate(bool)));
+  connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
+  connect(_menu, SIGNAL(signalLogStatus(bool)), _indicator, SLOT(setLog(bool)));
   connect(_menu, SIGNAL(signalNewChartObject(int)), this, SLOT(chartObjectNew(int)));
+
+  _dock = new DockWidget(name.left(4), mw);
+  _dock->setObjectName(name);
+  _dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+  _dock->setWidget(this);
+  mw->addDockWidget(Qt::LeftDockWidgetArea, _dock);
+  connect(_menu, SIGNAL(signalLockStatus(bool)), _dock, SLOT(statusChanged(bool)));
 }
 
 Plot::~Plot ()
 {
+  delete _indicator;
+  
   clear();
 }
 
@@ -101,9 +116,8 @@ void Plot::clear ()
     qDeleteAll(_qwtCurves);
   _qwtCurves.clear();
 
-  if (_curves.count())
-    qDeleteAll(_curves);
-  _curves.clear();
+  _indicator->save();
+  _indicator->clear();
 
   saveChartObjects();
 
@@ -119,15 +133,38 @@ void Plot::setDates ()
   _dateScaleDraw->setDates();
 }
 
-void Plot::setIndicator (QString &d)
+void Plot::setIndicator ()
 {
-  _indicator = d;
+  _indicator->load();
+  _menu->setLock(_indicator->lock());
+  _dock->statusChanged(_indicator->lock());
+  _menu->setDate(_indicator->date());
+  _menu->setLog(_indicator->log());
+}
+
+Indicator * Plot::indicator ()
+{
+  return _indicator;
 }
 
 void Plot::updatePlot ()
 {
-  setHighLow();
-  replot();
+//  clear();
+  setDates();
+  addCurves(_indicator->curves());
+  loadChartObjects();
+
+  // calculate end of chart pos
+  _endPos = _dateScaleDraw->count();
+  int page = width() / _spacing;
+  _startPos = _endPos - page;
+  if (_startPos < 0)
+    _startPos = 0;
+
+  setStartIndex(_startPos);
+
+  if (isVisible())
+    emit signalIndex(_startPos);
 }
 
 void Plot::addCurves (QHash<QString, Curve *> &curves)
@@ -186,8 +223,6 @@ void Plot::addCurve (QString id, Curve *curve)
       CurveBar *bar = curve->bar(0);
       if (! bar)
         break;
-
-      _curves.insert(id, curve);
 
       QwtPlotMarker *line = new QwtPlotMarker;
       line->setYValue(bar->data());
@@ -248,12 +283,6 @@ void Plot::addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve)
   qcurve->setYAxis(QwtPlot::yRight);
   qcurve->attach(this);
   _qwtCurves.insert(id, qcurve);
-  _curves.insert(id, curve);
-}
-
-void Plot::curves (QHash<QString, Curve *> &d)
-{
-  d = _curves;
 }
 
 void Plot::dates (QList<QDateTime> &d)
@@ -300,7 +329,7 @@ void Plot::setLogScaling (bool d)
   else
     setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
 
-  _menu->setLogStatus(d);
+//  _menu->setLogStatus(d);
 
   replot();
 }
@@ -308,7 +337,7 @@ void Plot::setLogScaling (bool d)
 void Plot::showDate (bool d)
 {
   enableAxis(QwtPlot::xBottom, d);
-  _menu->setDateStatus(d);
+//  _menu->setDateStatus(d);
 }
 
 void Plot::setCrossHairs (bool d)
@@ -325,7 +354,7 @@ void Plot::setBarSpacing (int d)
 
 void Plot::setHighLow ()
 {
-  if (! _curves.count())
+  if (! _qwtCurves.count())
   {
     _high = 0;
     _low = 0;
@@ -336,7 +365,7 @@ void Plot::setHighLow ()
     _low = 999999999.0;
   }
 
-  QHashIterator<QString, Curve *> it(_curves);
+  QHashIterator<QString, Curve *> it(_indicator->curves());
   while (it.hasNext())
   {
     it.next();
@@ -350,14 +379,12 @@ void Plot::setHighLow ()
       _low = l;
   }
 
-  QList<int> keys;
-  keys = _chartObjects.keys();
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  QHashIterator<int, ChartObject *> it2(_chartObjects);
+  while (it2.hasNext())
   {
+    it2.next();
     double h, l;
-    ChartObject *co = _chartObjects.value(keys.at(loop));
+    ChartObject *co = it2.value();
     if (! co->highLow(_startPos, _endPos, h, l))
       continue;
 
@@ -382,14 +409,12 @@ void Plot::setStartIndex (int index)
 
   setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
 
-//  setYPoints();
-  
   replot();
 }
 
 void Plot::showContextMenu ()
 {
-  if (_curves.count())
+  if (_qwtCurves.count())
     _menu->setCOMenuStatus(TRUE);
   else
     _menu->setCOMenuStatus(FALSE);
@@ -400,46 +425,6 @@ void Plot::showContextMenu ()
 int Plot::index ()
 {
   return _startPos;
-}
-
-void Plot::toggleDate ()
-{
-  IndicatorDataBase db;
-  Indicator i;
-  i.setName(_indicator);
-  db.load(&i);
-  
-  int status = axisEnabled(QwtPlot::xBottom);
-  if (status)
-    status = 0;
-  else
-    status = 1;
-
-  i.setDate(status);
-
-  db.save(&i);
-
-  showDate(status);
-}
-
-void Plot::toggleLog ()
-{
-  IndicatorDataBase db;
-  Indicator i;
-  i.setName(_indicator);
-  db.load(&i);
-
-  int status = i.getLog();
-  if (status)
-    status = 0;
-  else
-    status = 1;
-
-  i.setLog(status);
-  
-  db.save(&i);
-
-  setLogScaling(status);
 }
 
 void Plot::mouseClick (int button, QPoint p)
@@ -463,13 +448,11 @@ void Plot::mouseMove (QPoint p)
   Setting set;
   int index = (int) invTransform(QwtPlot::xBottom, p.x());
 
-  QList<int> keys;
-  keys = _chartObjects.keys();
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  QHashIterator<int, ChartObject *> it2(_chartObjects);
+  while (it2.hasNext())
   {
-    ChartObject *co = _chartObjects.value(keys.at(loop));
+    it2.next();
+    ChartObject *co = it2.value();
     if (co->isSelected(p))
     {
       co->info(set);
@@ -481,7 +464,7 @@ void Plot::mouseMove (QPoint p)
   _dateScaleDraw->info(index, set);
 
   Strip strip;
-  QHashIterator<QString, Curve *> it(_curves);
+  QHashIterator<QString, Curve *> it(_indicator->curves());
   while (it.hasNext())
   {
     it.next();
@@ -492,43 +475,32 @@ void Plot::mouseMove (QPoint p)
   emit signalInfoMessage(set);
 }
 
-/*
-void Plot::setYPoints ()
+PlotMenu * Plot::plotMenu ()
 {
-  _plotScaleDraw->clearPoints();
-
-  int page = width() / _spacing;
-  int index = _startPos + page;
-  if (index > _dateScaleDraw->count())
-    index = _dateScaleDraw->count() - 1;
-
-  QHashIterator<QString, Curve *> it(_curves);
-  while (it.hasNext())
-  {
-    it.next();
-    Curve *curve = it.value();
-
-    CurveBar *bar = curve->bar(index);
-    if (! bar)
-      continue;
-
-    QColor color = bar->color();
-    
-    switch ((Curve::Type) curve->type())
-    {
-      case Curve::Dot:
-      case Curve::Histogram:
-      case Curve::Line:
-        color = curve->color();
-        break;
-      default:
-        break;
-    }
-    
-    _plotScaleDraw->addPoint(color, bar->data());
-  }
+  return _menu;
 }
-*/
+
+void Plot::loadSettings ()
+{
+  QSettings settings(g_settingsFile);
+  QColor color(settings.value("plot_background_color", "black").toString());
+  setBackgroundColor(color);
+
+  QStringList l = settings.value("plot_font").toString().split(";", QString::SkipEmptyParts);
+  if (l.count())
+  {
+    QFont font;
+    font.fromString(l.join(","));
+    setFont(font);
+  }
+
+  // set crosshairs status
+  setCrossHairs(settings.value("crosshairs", 0).toInt());
+
+  // set crosshairs color
+  color.setNamedColor(settings.value("crosshairs_color", "white").toString());
+  setCrossHairsColor(color);
+}
 
 //********************************************************************
 //***************** CHART OBJECT FUNCTIONS ***************************
@@ -578,7 +550,7 @@ void Plot::chartObjectNew (int type)
   
   set->setData("Exchange", g_barData->exchange());
   set->setData("Symbol", g_barData->symbol());
-  set->setData("Indicator", _indicator);
+  set->setData("Indicator", _indicator->name());
   set->setData("ID", id);
 
   setupChartObject(co);
@@ -588,14 +560,15 @@ void Plot::chartObjectNew (int type)
   co->create();
 }
 
-void Plot::deleteChartObject (int)
+void Plot::deleteChartObject (int id)
 {
-// FIXME
-/*
   ChartObject *co = _chartObjects.value(id);
   if (! co)
     return;
 
+  ChartObjectDataBase db;
+  db.deleteChartObject(id);
+  
   delete co;
   
   _chartObjects.remove(id);
@@ -603,26 +576,34 @@ void Plot::deleteChartObject (int)
   _selected = 0;
 
   updatePlot();
-*/
 }
 
 void Plot::loadChartObjects ()
 {
-// FIXME
-/*
   ChartObjectDataBase db;
-  db.getChartObjects(g_barData.getExchange(), g_barData.getSymbol(), _indicator, _chartObjects);
+  QStringList l;
+  db.ids(g_barData, _indicator->name(), l);
 
-  QList<int> keys;
-  keys = _chartObjects.keys();
-  
+  ChartObjectFactory fac;
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < l.count(); loop++)
   {
-    ChartObject *co = _chartObjects.value(keys.at(loop));
+    Setting set;
+    set.setData("ID", l.at(loop));
+    db.load(&set);
+
+    ChartObject *co = fac.chartObject(set.data("Type"));
+    if (! co)
+      continue;
+
+    QString s;
+    set.string(s);
+    
+    Setting *settings = co->settings();
+    settings->parse(s);
+
     setupChartObject(co);
   }
-*/
 }
 
 void Plot::chartObjectSelected (int id)
@@ -676,26 +657,20 @@ void Plot::setupChartObject (ChartObject *co)
 
 void Plot::saveChartObjects ()
 {
-// FIXME
-/*
-  QList<int> keys;
-  keys = _chartObjects.keys();
-
   ChartObjectDataBase db;
-  db.transaction();
 
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  QHashIterator<int, ChartObject *> it(_chartObjects);
+  while (it.hasNext())
   {
-    ChartObject *co = _chartObjects.value(keys.at(loop));
+    it.next();
+    ChartObject *co = it.value();
     if (co->isModified())
     {
-      ChartObjectSettings set;
-      co->settings(set);
-      db.setChartObject(set);
+      Setting *set = co->settings();
+      if (! set)
+        continue;
+      
+      db.save(set);
     }
   }
-
-  db.commit();
-*/
 }

@@ -49,7 +49,6 @@ IndicatorEditDialog::IndicatorEditDialog (Command *c)
   {
     _com->setText(_command->parm(2));
     fileButtonPressed2(_command->parm(3));
-    _row->setValue(_command->parm(4).toInt());
     _log->setChecked(_command->parm(5).toInt());
     _date->setChecked(_command->parm(6).toInt());
   }
@@ -82,11 +81,6 @@ void IndicatorEditDialog::createGUI ()
   _fileButton = new QPushButton;
   connect(_fileButton, SIGNAL(clicked()), this, SLOT(fileButtonPressed()));
   form->addRow(tr("Script File"), _fileButton);
-
-  // tab row
-  _row = new QSpinBox;
-  _row->setRange(1, 3);
-  form->addRow(tr("Tab Row"), _row);
 
   // date check
   _date = new QCheckBox;
@@ -152,7 +146,7 @@ void IndicatorEditDialog::done ()
   }
 
   QStringList l;
-  l << _name << com << _file << _row->text();
+  l << _name << com << _file << "0";
   l << QString::number(_log->isChecked()) << QString::number(_date->isChecked());
 
   _command->setReturnData(l.join(","));

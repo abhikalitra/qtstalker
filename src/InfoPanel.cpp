@@ -20,14 +20,17 @@
  */
 
 #include "InfoPanel.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <QString>
 #include <QStringList>
 #include <cmath>
+#include <QSettings>
 
 InfoPanel::InfoPanel ()
 {
+  _lockStatus = TRUE;
   setReadOnly(TRUE);
 }
 
@@ -71,3 +74,20 @@ void InfoPanel::showInfo (Setting d)
   setText(str);
 }
 
+void InfoPanel::loadSettings ()
+{
+  QSettings settings(g_settingsFile);
+  _lockStatus = settings.value("info_panel_lock_status", TRUE).toBool();
+  emit signalLockStatus(_lockStatus);
+}
+
+void InfoPanel::saveSettings ()
+{
+  QSettings settings(g_settingsFile);
+  settings.setValue("info_panel_lock_status", _lockStatus);
+}
+
+void InfoPanel::setLockStatus (bool status)
+{
+  _lockStatus = status;
+}

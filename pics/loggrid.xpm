@@ -1,5 +1,5 @@
 /* XPM */
-static const char * loggridicon[] = {
+static const char * loggrid_xpm[] = {
 "16 16 2 1",
 " 	c None",
 ".	c #000000",

@@ -19,20 +19,35 @@
  *  USA.
  */
 
-#ifndef CHART_FONT_BUTTON_HPP
-#define CHART_FONT_BUTTON_HPP
+#ifndef DOCK_WIDGET_HPP
+#define DOCK_WIDGET_HPP
 
-#include <QToolButton>
+#include <QDockWidget>
+#include <QMenu>
+#include <QString>
 
-class ChartFontButton : public QToolButton
+class DockWidget : public QDockWidget
 {
   Q_OBJECT
+
+  signals:
+    void signalLockStatus (bool);
   
   public:
-    ChartFontButton ();
+    DockWidget (QString, QWidget *);
 
   public slots:
-    void dialog ();
+    void lock ();
+    void unlock ();
+    void statusChanged (bool);
+  
+  protected:
+    virtual void contextMenuEvent (QContextMenuEvent *);
+
+  private:
+    QMenu *_menu;
+    QWidget *_titleBar;
+    QWidget *_noTitleBar;
 };
 
 #endif

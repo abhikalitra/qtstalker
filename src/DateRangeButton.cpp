@@ -36,7 +36,7 @@ DateRangeButton::DateRangeButton ()
   _menu = new QMenu(this);
   _menu->addAction(QPixmap(configure_xpm), tr("&Configure"), this, SLOT(dialog()), Qt::ALT+Qt::Key_C);
   
-  setIcon(QIcon(date));
+  setIcon(QIcon(date_xpm));
   setText(tr("Date Range Override"));
   setStatusTip(tr("Date Range Override"));
   setToolTip(tr("Date Range Override"));

@@ -93,11 +93,20 @@ void PlotMenu::init ()
   
   addSeparator ();
   
-  _dateAction = addAction(QPixmap(date), tr("&Date"), this, SIGNAL(signalToggleDate()), Qt::ALT+Qt::Key_D);
+  _dateAction = addAction(QPixmap(date_xpm), tr("&Date"));
   _dateAction->setCheckable(TRUE);
+  connect(_dateAction, SIGNAL(toggled(bool)), this, SIGNAL(signalDateStatus(bool)));
   
-  _logAction = addAction(QPixmap(loggridicon), tr("Log &Scaling"), this, SIGNAL(signalToggleLog()), Qt::ALT+Qt::Key_S);
+  _logAction = addAction(QPixmap(loggrid_xpm), tr("Log &Scaling"));
   _logAction->setCheckable(TRUE);
+  connect(_logAction, SIGNAL(toggled(bool)), this, SIGNAL(signalLogStatus(bool)));
+
+  addSeparator ();
+
+  _lockAction = addAction(QPixmap(), tr("&Locked"));
+  _lockAction->setCheckable(TRUE);
+  _lockAction->setChecked(FALSE);
+  connect(_lockAction, SIGNAL(toggled(bool)), this, SIGNAL(signalLockStatus(bool)));
 }
 
 void PlotMenu::editIndicator ()
@@ -143,12 +152,32 @@ void PlotMenu::setCOMenuStatus (bool status)
   _coListMenu->setEnabled(status);
 }
 
-void PlotMenu::setLogStatus (bool status)
+void PlotMenu::setLog (bool status)
 {
   _logAction->setChecked(status);
 }
 
-void PlotMenu::setDateStatus (bool status)
+bool PlotMenu::log ()
+{
+  return _logAction->isChecked();
+}
+
+void PlotMenu::setDate (bool status)
 {
   _dateAction->setChecked(status);
+}
+
+bool PlotMenu::date ()
+{
+  return _dateAction->isChecked();
+}
+
+void PlotMenu::setLock (bool status)
+{
+  _lockAction->setChecked(status);
+}
+
+bool PlotMenu::lock ()
+{
+  return _lockAction->isChecked();
 }

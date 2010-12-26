@@ -22,40 +22,32 @@
 #ifndef SIDE_PANEL_HPP
 #define SIDE_PANEL_HPP
 
-#include <QSplitter>
 #include <QTabWidget>
 
-#include "PlotSlider.h"
-#include "InfoPanel.h"
 #include "BarData.h"
-#include "ChartPage.h"
-#include "GroupPage.h"
-#include "ScriptPage.h"
 
-class SidePanel : public QSplitter
+class SidePanel : public QTabWidget
 {
   Q_OBJECT
 
   signals:
-    void signalSliderChanged (int);
     void signalLoadChart (BarData);
     void signalReloadChart ();
     void signalStatusMessage (QString);
     void signalRecentChart (BarData);
+    void signalLockStatus (bool);
 
   public:
     SidePanel ();
     void createTabs ();
-    PlotSlider * slider ();
-    InfoPanel * info ();
+
+  public slots:
+    void setLockStatus (bool);
+    void loadSettings ();
+    void saveSettings ();
 
   private:
-    QTabWidget *_tabs;
-    PlotSlider *_slider;
-    InfoPanel *_info;
-    ChartPage *_chartPanel;
-    GroupPage *_groupPanel;
-    ScriptPage *_scriptPanel;
+    bool _lockStatus;
 };
 
 #endif

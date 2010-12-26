@@ -31,16 +31,21 @@ class PlotMenu : public QMenu
   Q_OBJECT
 
   signals:
-    void signalToggleDate ();
-    void signalToggleLog ();
     void signalNewChartObject (int);
+    void signalLockStatus (bool);
+    void signalDateStatus (bool);
+    void signalLogStatus (bool);
 
   public:
     PlotMenu (QWidget *);
     void init ();
     void setCOMenuStatus (bool);
-    void setLogStatus (bool);
-    void setDateStatus (bool);
+    void setLog (bool);
+    bool log ();
+    void setDate (bool);
+    bool date ();
+    void setLock (bool);
+    bool lock ();
 
   public slots:
     void chartObjectMenuSelected (QAction *);
@@ -51,6 +56,7 @@ class PlotMenu : public QMenu
   private:
     QAction *_dateAction;
     QAction *_logAction;
+    QAction *_lockAction;
     QMenu *_coListMenu;
 };
 

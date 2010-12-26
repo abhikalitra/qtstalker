@@ -27,9 +27,8 @@
 #include <QToolBar>
 #include <QString>
 #include <QStatusBar>
-#include <QDockWidget>
+#include <QHash>
 
-#include "Splitter.h"
 #include "InfoPanel.h"
 #include "RecentCharts.h"
 #include "BarLengthButtons.h"
@@ -40,7 +39,7 @@
 #include "SidePanel.h"
 #include "Command.h"
 #include "QuitButton.h"
-#include "ChartLayout.h"
+#include "Plot.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -48,6 +47,8 @@ class QtstalkerApp : public QMainWindow
 
   signals:
     void signalLoadSettings ();
+    void signalClearPlot ();
+    void signalPlot ();
 
   public:
     QtstalkerApp (QString session, QString asset);
@@ -57,6 +58,7 @@ class QtstalkerApp : public QMainWindow
     void createStatusToolBar ();
     QString getWindowCaption ();
     void setSliderStart (int);
+    void addPlot (QString);
 
   public slots:
     void loadChart (BarData);
@@ -65,9 +67,12 @@ class QtstalkerApp : public QMainWindow
     void statusMessage (QString);
     void wakeup ();
     void commandLineAsset ();
+    void addNewPlot (QString);
+    void deletePlot (QStringList);
+    void setPlotTabPosition (int);
 
   protected:
-    QWidget *_baseWidget;
+    QHash<QString, Plot *> _plots;
     InfoPanel *_infoPanel;
     QStatusBar *_statusBar;
     RecentCharts *_recentCharts;
@@ -79,10 +84,7 @@ class QtstalkerApp : public QMainWindow
     DateRangeButton *_dateRangeButton;
     SidePanel *_sidePanel;
     QuitButton *_quitButton;
-    ChartLayout *_chartLayout;
-    QDockWidget *_sidePanelDock;
     QToolBar *_statusToolBar;
 };
 
 #endif
-

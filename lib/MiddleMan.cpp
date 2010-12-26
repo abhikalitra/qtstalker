@@ -86,3 +86,8 @@ void MiddleMan::scriptRun (QString d)
 {
   emit signalScriptRun(d);
 }
+
+void MiddleMan::plotTabPosition (int d)
+{
+  emit signalPlotTabPosition(d);
+}

@@ -19,66 +19,30 @@
  *  USA.
  */
 
-#include "Splitter.h"
+#include "ConfigureButton.h"
 #include "Globals.h"
+#include "Script.h"
+
+#include "../pics/configure.xpm"
 
 #include <QDebug>
+#include <QString>
 #include <QSettings>
 
-Splitter::Splitter (QString d)
+ConfigureButton::ConfigureButton ()
 {
-  _key = d;
-
-//  load();
+  setIcon(QIcon(configure_xpm));
+  setStatusTip(tr("Configure"));
+  setToolTip(tr("Configure"));
+  connect(this, SIGNAL(clicked()), this, SLOT(dialog()));
 }
 
-Splitter::~Splitter ()
-{
-//  save();
-}
-
-void Splitter::load ()
+void ConfigureButton::dialog ()
 {
   QSettings settings(g_settingsFile);
-
-  QStringList l = settings.value(_key).toStringList();
-  if (! l.count())
-  {
-    QList<int> l2;
-    l2 << 437 << 20 << 200;
-    setSizes(l2);
-  }
-  else
-  {
-    QList<int> sizeList = sizes();
-
-    int loop = 0;
-    for (; loop < l.count(); loop++)
-    {
-      if (loop >= sizeList.count())
-        break;
-
-      if (l[loop].toInt() < 25)
-        sizeList[loop] = 25;
-      else
-        sizeList[loop] = l[loop].toInt();
-    }
-
-    setSizes(sizeList);
-  }
-}
-
-void Splitter::save ()
-{
-  QSettings settings(g_settingsFile);
-
-  QStringList l;
-  QList<int> sizeList = sizes();
-
-  int loop;
-  for (loop = 0; loop < (int) sizeList.count(); loop++)
-    l.append(QString::number(sizeList[loop]));
-
-  settings.setValue(_key, l);
-  settings.sync();
+  Script *script = new Script;
+  script->setName("Configure");
+  script->setFile(settings.value("configure_script").toString());
+  script->setCommand("perl");
+  script->startScript();
 }

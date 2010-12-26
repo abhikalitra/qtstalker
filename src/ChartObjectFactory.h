@@ -35,7 +35,7 @@ class ChartObjectFactory
   public:
     ChartObjectFactory ();
     ChartObject * chartObject (int);
-    ChartObject * chartObject (QString &);
+    ChartObject * chartObject (QString);
 
   private:
     QStringList _types;

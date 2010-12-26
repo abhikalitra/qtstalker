@@ -19,25 +19,34 @@
  *  USA.
  */
 
-#ifndef SPLITTER_HPP
-#define SPLITTER_HPP
+#include "CONFIGURE_DIALOG.h"
+#include "ConfigureDialog.h"
 
-#include <QSplitter>
+#include <QtDebug>
 
-class Splitter : public QSplitter
+CONFIGURE_DIALOG::CONFIGURE_DIALOG ()
 {
-  Q_OBJECT
+  _type = _DIALOG;
+}
 
-  public:
-    Splitter (QString);
-    ~Splitter ();
+int CONFIGURE_DIALOG::command (Command *command)
+{
+  // CONFIGURE_DIALOG
+  //        0
 
-  public slots:
-    void save ();
-    void load ();
+  ConfigureDialog *dialog = new ConfigureDialog(command);
+  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  dialog->show();
 
-  private:
-    QString _key;
-};
+  return 0;
+}
 
-#endif
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  CONFIGURE_DIALOG *o = new CONFIGURE_DIALOG;
+  return ((ScriptPlugin *) o);
+}

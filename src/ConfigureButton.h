@@ -19,17 +19,17 @@
  *  USA.
  */
 
-#ifndef CHART_BACKGROUND_COLOR_BUTTON_HPP
-#define CHART_BACKGROUND_COLOR_BUTTON_HPP
+#ifndef CONFIGURE_BUTTON_HPP
+#define CONFIGURE_BUTTON_HPP
 
 #include <QToolButton>
 
-class ChartBackgroundColorButton : public QToolButton
+class ConfigureButton : public QToolButton
 {
   Q_OBJECT
-  
+
   public:
-    ChartBackgroundColorButton ();
+    ConfigureButton ();
 
   public slots:
     void dialog ();

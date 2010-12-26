@@ -38,8 +38,6 @@
 #include "HelpButton.h"
 #include "Globals.h"
 #include "CommandThread.h"
-#include "ChartBackgroundColorButton.h"
-#include "ChartFontButton.h"
 #include "DataWindowButton.h"
 #include "GridButton.h"
 #include "CrossHairsButton.h"
@@ -47,6 +45,10 @@
 #include "NewIndicatorButton.h"
 #include "RefreshButton.h"
 #include "QuoteDataBase.h"
+#include "InfoPanel.h"
+#include "DockWidget.h"
+#include "IndicatorDataBase.h"
+#include "ConfigureButton.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -83,49 +85,70 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
 
 void QtstalkerApp::createGUI ()
 {
-  _baseWidget = new QWidget;
-  setCentralWidget (_baseWidget);
+  setDockNestingEnabled(TRUE);
+  setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::East);
+  
+  connect(g_middleMan, SIGNAL(signalIndicatorNew(QString)), this, SLOT(addNewPlot(QString)));
+  connect(g_middleMan, SIGNAL(signalIndicatorDelete(QStringList)), this, SLOT(deletePlot(QStringList)));
+  connect(g_middleMan, SIGNAL(signalPlotTabPosition(int)), this, SLOT(setPlotTabPosition(int)));
 
-  QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setMargin(0);
-  hbox->setSpacing(0);
-  _baseWidget->setLayout(hbox);
-
-  _chartLayout = new ChartLayout;
-  connect(_quitButton, SIGNAL(signalShutdown()), _chartLayout, SLOT(save()));
-  connect(_quitButton, SIGNAL(signalShutdown()), _chartLayout, SLOT(saveSettings()));
-  _chartLayout->setOrientation(Qt::Vertical);
-  hbox->addWidget(_chartLayout);
-
+  // side panel dock
   _sidePanel = new SidePanel;
-  _plotSlider = _sidePanel->slider();
-  _infoPanel = _sidePanel->info();
   connect(_sidePanel, SIGNAL(signalLoadChart(BarData)), this, SLOT(loadChart(BarData)));
   connect(_sidePanel, SIGNAL(signalRecentChart(BarData)), _recentCharts, SLOT(addRecentChart(BarData)));
   connect(_sidePanel, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
   connect(_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
-  hbox->addWidget(_sidePanel);
+  connect(this, SIGNAL(signalLoadSettings()), _sidePanel, SLOT(loadSettings()));
+  connect(_quitButton, SIGNAL(signalShutdown()), _sidePanel, SLOT(saveSettings()));
 
-  _sidePanelDock = new QDockWidget(this);
-  _sidePanelDock->setObjectName("sidePanelDock");
-  _sidePanelDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  _sidePanelDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-  _sidePanelDock->setWidget(_sidePanel);
-  addDockWidget(Qt::RightDockWidgetArea, _sidePanelDock);
+  DockWidget *dock = new DockWidget(QString(), this);
+  dock->setObjectName("sidePanelDock");
+  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+  dock->setWidget(_sidePanel);
+  addDockWidget(Qt::RightDockWidgetArea, dock);
+  connect(dock, SIGNAL(signalLockStatus(bool)), _sidePanel, SLOT(setLockStatus(bool)));
+  connect(_sidePanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
+
+  // plot slider dock
+  _plotSlider = new PlotSlider;
+  connect(this, SIGNAL(signalLoadSettings()), _plotSlider, SLOT(loadSettings()));
+  connect(_quitButton, SIGNAL(signalShutdown()), _plotSlider, SLOT(saveSettings()));
+  
+  dock = new DockWidget(QString(), this);
+  dock->setObjectName("plotSliderDock");
+  dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+  dock->setWidget(_plotSlider);
+  addDockWidget(Qt::RightDockWidgetArea, dock);
+  connect(dock, SIGNAL(signalLockStatus(bool)), _plotSlider, SLOT(setLockStatus(bool)));
+  connect(_plotSlider, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
+
+  // info panel dock
+  _infoPanel = new InfoPanel;
+  connect(this, SIGNAL(signalLoadSettings()), _infoPanel, SLOT(loadSettings()));
+  connect(_quitButton, SIGNAL(signalShutdown()), _infoPanel, SLOT(saveSettings()));
+  
+  dock = new DockWidget(QString(), this);
+  dock->setObjectName("infoPanelDock");
+  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+  dock->setWidget(_infoPanel);
+  addDockWidget(Qt::RightDockWidgetArea, dock);
+  connect(dock, SIGNAL(signalLockStatus(bool)), _infoPanel, SLOT(setLockStatus(bool)));
+  connect(_infoPanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
 
   // delay chart layout signals until all objects are created
-  
-  connect(this, SIGNAL(signalLoadSettings()), _chartLayout, SLOT(load()));
-  connect(_chartLayout, SIGNAL(signalInfo(Setting)), _infoPanel, SLOT(showInfo(Setting)));
-  connect(_chartLayout, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
-  connect(_sidePanel, SIGNAL(signalSliderChanged(int)), _chartLayout, SLOT(setIndex(int)));
   connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
-  connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), _chartLayout, SLOT(setBarSpacing(int)));
-  connect(g_middleMan, SIGNAL(signalIndicatorNew(QString)), _chartLayout, SLOT(addNewTab(QString)));
-  connect(g_middleMan, SIGNAL(signalIndicatorDelete(QStringList)), _chartLayout, SLOT(removeTab(QStringList)));
   
-  // end chart layout signals
-  
+  // we have to load the plots before app is shown otherwise
+  // dock widgets do not restore properly
+  IndicatorDataBase db;
+  QStringList l;
+  db.indicators(l);
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    addPlot(l.at(loop));
+
   setUnifiedTitleAndToolBarOnMac(TRUE);
 }
 
@@ -208,11 +231,8 @@ void QtstalkerApp::createStatusToolBar ()
   AboutButton *ab = new AboutButton;
   _statusToolBar->addWidget(ab);
 
-  ChartBackgroundColorButton *cbcb = new ChartBackgroundColorButton;
-  _statusToolBar->addWidget(cbcb);
-  
-  ChartFontButton *cfb= new ChartFontButton;
-  _statusToolBar->addWidget(cfb);
+  ConfigureButton *configb = new ConfigureButton;
+  _statusToolBar->addWidget(configb);
 
   _statusBar->addPermanentWidget(_statusToolBar);
 }
@@ -220,8 +240,17 @@ void QtstalkerApp::createStatusToolBar ()
 void QtstalkerApp::loadSettings ()
 {
   QSettings settings(g_settingsFile);
+  
   restoreGeometry(settings.value("main_window_geometry").toByteArray());
   restoreState(settings.value("main_window_state").toByteArray());
+
+  // restore the size of the app
+  QSize sz = settings.value("main_window_size", QSize(800,600)).toSize();
+  resize(sz);
+
+  // restore the position of the app
+  QPoint p = settings.value("main_window_position", QPoint(0,0)).toPoint();
+  move(p);
 
   // load gui class settings that need to now
   emit signalLoadSettings();
@@ -232,6 +261,8 @@ void QtstalkerApp::save()
   QSettings settings(g_settingsFile);
   settings.setValue("main_window_geometry", saveGeometry());
   settings.setValue("main_window_state", saveState());
+  settings.setValue("main_window_size", size());
+  settings.setValue("main_window_position", pos());
   settings.sync();
 }
 
@@ -270,10 +301,12 @@ void QtstalkerApp::loadChart (BarData symbol)
   db.getBars(g_barData);
 
 //  _chartLayout->clearIndicator();
+  emit signalClearPlot();
   setSliderStart(g_barData->count());
   setWindowTitle(getWindowCaption());
   statusMessage(QString());
-  _chartLayout->loadPlots(_plotSlider->getValue());
+//  _chartLayout->loadPlots(_plotSlider->getValue());
+  emit signalPlot();
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -330,9 +363,17 @@ void QtstalkerApp::setSliderStart (int count)
   if (g_barData->symbol().isEmpty())
     return;
 
-  int width = _chartLayout->plotWidth();
+  // find the best plot width for either < 1 column or > 1 column
+  int width = 0;
+  QHashIterator<QString, Plot *> it(_plots);
+  while (it.hasNext())
+  {
+     it.next();
+     int t = it.value()->width();
+     if (t > width)
+       width = t;
+  }
 
-//  _plotSlider->setStart(count, width, _zoomButtons->getPixelSpace());
   _plotSlider->setStart(count, width, 8);
 }
 
@@ -355,4 +396,58 @@ void QtstalkerApp::commandLineAsset ()
   bd.setExchange(l[0]);
   bd.setSymbol(l[1]);
   loadChart(bd);
+}
+
+void QtstalkerApp::addPlot (QString indicator)
+{
+  Plot *plot = new Plot(indicator, this);
+  plot->setIndicator();
+  plot->setBarSpacing(_zoomButtons->getPixelSpace());
+  plot->loadSettings();
+
+  connect(plot, SIGNAL(signalInfoMessage(Setting)), _infoPanel, SLOT(showInfo(Setting)));
+  connect(plot, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
+  connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
+  connect(_plotSlider, SIGNAL(signalValueChanged(int)), plot, SLOT(setStartIndex(int)));
+  connect(this, SIGNAL(signalClearPlot()), plot, SLOT(clear()));
+//  connect(this, SIGNAL(signalDraw()), plot, SLOT(replot()));
+  connect(_quitButton, SIGNAL(signalShutdown()), plot, SLOT(clear()));
+  connect(this, SIGNAL(signalPlot()), plot->indicator(), SLOT(calculate()));
+  connect(plot, SIGNAL(signalIndex(int)), _plotSlider, SLOT(setStartValue(int)));
+  
+  connect(g_middleMan, SIGNAL(signalPlotBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
+  connect(g_middleMan, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setFont(QFont)));
+  connect(g_middleMan, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
+  connect(g_middleMan, SIGNAL(signalGrid(bool)), plot, SLOT(setGrid(bool)));
+  connect(g_middleMan, SIGNAL(signalCrosshairsColor(QColor)), plot, SLOT(setCrossHairsColor(QColor)));
+  connect(g_middleMan, SIGNAL(signalCrosshairs(bool)), plot, SLOT(setCrossHairs(bool)));
+
+  _plots.insert(indicator, plot);
+}
+
+void QtstalkerApp::addNewPlot (QString indicator)
+{
+  addPlot(indicator);
+  Plot *p = _plots.value(indicator);
+  if (! p)
+    return;
+  p->indicator()->calculate();
+}
+
+void QtstalkerApp::deletePlot (QStringList l)
+{
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    if (! _plots.contains(l.at(loop)))
+      continue;
+    Plot *plot = _plots.value(l.at(loop));
+    delete plot;
+    _plots.remove(l.at(loop));
+  }
+}
+
+void QtstalkerApp::setPlotTabPosition (int position)
+{
+  setTabPosition(Qt::LeftDockWidgetArea, (QTabWidget::TabPosition) position);
 }

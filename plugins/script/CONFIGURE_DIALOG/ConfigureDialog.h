@@ -19,50 +19,54 @@
  *  USA.
  */
 
-#ifndef TAB_WIDGET_DIALOG_HPP
-#define TAB_WIDGET_DIALOG_HPP
+#ifndef CONFIGURE_DIALOG_DIALOG_HPP
+#define CONFIGURE_DIALOG_DIALOG_HPP
 
 #include <QDialog>
-#include <QSpinBox>
-#include <QComboBox>
 #include <QStringList>
+#include <QTabWidget>
+#include <QPushButton>
 #include <QLabel>
+#include <QHash>
+#include <QComboBox>
 
-class TabWidgetDialog : public QDialog
+#include "Command.h"
+#include "ColorButton.h"
+#include "FontButton.h"
+
+
+class ConfigureDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalChanged ();
-  
   public:
-    TabWidgetDialog (QString id);
+    ConfigureDialog (Command *);
     void createGUI ();
+    void createGeneralPage ();
     void loadSettings ();
     void saveSettings ();
 
   public slots:
     void done ();
     void cancel ();
+    void buttonStatus ();
     void help ();
+    void backgroundChanged ();
+    void plotFontChanged ();
+    void tabPositionChanged ();
 
   private:
+    QTabWidget *_tabs;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
     QString _helpFile;
     QLabel *_message;
-    QStringList _posList;
-    QString _id;
-    int _ttp;
-    int _tnsh;
-    int _tnsw;
-    int _tewh;
-    int _teww;
-    QComboBox *_position;
-    QSpinBox *_nsh;
-    QSpinBox *_nsw;
-    QSpinBox *_ewh;
-    QSpinBox *_eww;
+    Command *_command;
+    ColorButton *_background;
+    FontButton *_plotFont;
+    int _modified;
+    QHash<QString, int> _flags;
+    QComboBox *_tabPosition;
 };
 
 #endif

@@ -28,7 +28,6 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
-#include <QSpinBox>
 #include <QCheckBox>
 
 #include "Command.h"
@@ -58,7 +57,6 @@ class IndicatorEditDialog : public QDialog
     QString _helpFile;
     QLabel *_message;
     QPushButton *_fileButton;
-    QSpinBox *_row;
     QCheckBox *_date;
     QCheckBox *_log;
     QString _file;

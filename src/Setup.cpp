@@ -25,7 +25,6 @@
 #include "ScriptPluginFactory.h"
 #include "BarData.h"
 #include "MiddleMan.h"
-#include "IndicatorDataBase.h"
 #include "qtstalker_defines.h"
 
 #include <QtDebug>
@@ -96,11 +95,11 @@ void Setup::setupDirectories ()
   settings.setValue("system_script_directory", sysdir);
 
   // set the default system scripts
-  s = sysdir + "ChartBackgroundColor.pl";
-  settings.setValue("chart_background_color_script", s);
+//  s = sysdir + "ChartBackgroundColor.pl";
+//  settings.setValue("chart_background_color_script", s);
     
-  s = sysdir + "ChartFont.pl";
-  settings.setValue("chart_font_script", s);
+//  s = sysdir + "ChartFont.pl";
+//  settings.setValue("chart_font_script", s);
 
   s = sysdir + "ChartPanelAddGroup.pl";
   settings.setValue("chart_panel_add_group_script", s);
@@ -159,6 +158,9 @@ void Setup::setupDirectories ()
   s = sysdir + "ChartObjectDeleteAll.pl";
   settings.setValue("chart_object_delete_all_script", s);
 
+  s = sysdir + "Configure.pl";
+  settings.setValue("configure_script", s);
+
   settings.sync();
 }
 
@@ -169,13 +171,13 @@ void Setup::setupDefaultIndicators ()
   if (ti)
     return;
 
-  IndicatorDataBase db;
   Indicator i;
   i.setName("Bars");
   i.setCommand("perl");
   QString s = settings.value("indicator_script_directory").toString() + "Bars.pl";
   i.setScript(s);
-  if (db.save(&i))
+  i.setLock(TRUE);
+  if (i.save())
   {
     qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
     return;
@@ -184,8 +186,8 @@ void Setup::setupDefaultIndicators ()
   i.setName("VOL");
   s = settings.value("indicator_script_directory").toString() + "Volume.pl";
   i.setScript(s);
-  i.setTabRow(2);
-  if (db.save(&i))
+  i.setLock(TRUE);
+  if (i.save())
   {
     qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
     return;

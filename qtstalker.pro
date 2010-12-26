@@ -134,6 +134,7 @@ SUBDIRS += plugins/script/CANDLES
 SUBDIRS += plugins/script/CHART_PANEL
 #SUBDIRS += plugins/script/CMO
 SUBDIRS += plugins/script/COLOR_DIALOG
+SUBDIRS += plugins/script/CONFIGURE_DIALOG
 #SUBDIRS += plugins/script/CORREL
 #SUBDIRS += plugins/script/DATA_WINDOW
 #SUBDIRS += plugins/script/FI

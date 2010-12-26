@@ -26,26 +26,27 @@
 #include <QList>
 #include <QMap>
 #include <QHash>
-#include <QMetaType>
+#include <QObject>
+//#include <QMetaType>
 
 #include "Curve.h"
 #include "Setting.h"
 
-class Indicator
+class Indicator : public QObject
 {
+  Q_OBJECT
+
+  signals:
+    void signalPlot ();
+  
   public:
     Indicator ();
-    void setName (QString);
+    void setParms (QString name, QString command, QString script, bool lock, bool date, bool log);
     QString & name ();
-    void setTabRow (int);
-    int tabRow ();
-    void setDate (int);
-    int date ();
-    void setLog (int);
-    int getLog ();
-    void setScript (QString);
+    bool lock ();
+    bool date ();
+    bool log ();
     QString & script ();
-    void setCommand (QString);
     QString & command ();
     void setLine (QString, Curve *);
     void setLine (int, Curve *);
@@ -68,18 +69,31 @@ class Indicator
     QString toString ();
     int fromString (QString);
 
+  public slots:
+    int save ();
+    int load ();
+    void setName (QString);
+    void setLock (bool);
+    void setDate (bool);
+    void setLog (bool);
+    void setScript (QString);
+    void setCommand (QString);
+    void calculate ();
+    void scriptFinished ();
+
   protected:
     QHash<QString, Curve *> _lines;
     QMap<int, Setting> _chartObjects;
     QString _name;
     QString _script;
     QString _command;
-    int _tabRow;
-    int _date;
-    int _log;
+    bool _lock;
+    bool _date;
+    bool _log;
+    int _modified;
 };
 
 // this is for passing Indicator data between threads
-Q_DECLARE_METATYPE(Indicator)
+//Q_DECLARE_METATYPE(Indicator)
 
 #endif

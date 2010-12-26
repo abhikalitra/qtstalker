@@ -49,7 +49,7 @@ void IndicatorDataBase::init ()
   QSqlQuery q(_db);
   QString s = "CREATE TABLE IF NOT EXISTS " + _table + " (";
   s.append("name TEXT PRIMARY KEY UNIQUE");
-  s.append(", row INT");
+  s.append(", lock INT");
   s.append(", date INT");
   s.append(", log INT");
   s.append(", command TEXT");
@@ -70,7 +70,7 @@ int IndicatorDataBase::load (Indicator *i)
   }
 
   QSqlQuery q(_db);
-  QString s = "SELECT command,script,row,log,date FROM " + _table + " WHERE name='" + name + "'";
+  QString s = "SELECT command,script,lock,log,date FROM " + _table + " WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -84,7 +84,7 @@ int IndicatorDataBase::load (Indicator *i)
   int pos = 0;
   i->setCommand(q.value(pos++).toString());
   i->setScript(q.value(pos++).toString());
-  i->setTabRow(q.value(pos++).toInt());
+  i->setLock(q.value(pos++).toInt());
   i->setLog(q.value(pos++).toInt());
   i->setDate(q.value(pos++).toInt());
 
@@ -103,12 +103,12 @@ int IndicatorDataBase::save (Indicator *i)
   QSqlQuery q(_db);
   _db.transaction();
   
-  QString s = "INSERT OR REPLACE INTO " + _table + " (name,command,script,row,log,date) VALUES (";
+  QString s = "INSERT OR REPLACE INTO " + _table + " (name,command,script,lock,log,date) VALUES (";
   s.append("'" + name + "'");
   s.append(",'" + i->command() + "'");
   s.append(",'" + i->script() + "'");
-  s.append("," + QString::number(i->tabRow()));
-  s.append("," + QString::number(i->getLog()));
+  s.append("," + QString::number(i->lock()));
+  s.append("," + QString::number(i->log()));
   s.append("," + QString::number(i->date()));
   s.append(")");
   q.exec(s);
