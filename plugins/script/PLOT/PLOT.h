@@ -34,7 +34,10 @@ class PLOT : public ScriptPlugin
       _GRID_COLOR,
       _GRID,
       _CROSSHAIRS_COLOR,
-      _CROSSHAIRS
+      _CROSSHAIRS,
+      __NEW,
+      _DELETE,
+      _UPDATE
     };
     
     PLOT ();
@@ -45,6 +48,9 @@ class PLOT : public ScriptPlugin
     int grid (Command *);
     int crosshairsColor (Command *);
     int crosshairs (Command *);
+    int newPlot (Command *);
+    int deletePlot (Command *);
+    int update (Command *);
 
   private:
     QStringList _method;

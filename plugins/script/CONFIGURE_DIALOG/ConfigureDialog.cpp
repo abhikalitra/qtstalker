@@ -104,10 +104,8 @@ void ConfigureDialog::createGeneralPage ()
   QFont font;
   QStringList l = settings.value("plot_font").toString().split(",", QString::SkipEmptyParts);
   if (l.count())
-  {
     font.fromString(l.join(","));
-    setFont(font);
-  }
+  
   _plotFont = new FontButton(w, font);
   _plotFont->setToolTip(tr("Plot Font"));
   connect(_plotFont, SIGNAL(valueChanged()), this, SLOT(plotFontChanged()));

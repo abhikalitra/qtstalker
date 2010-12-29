@@ -139,8 +139,15 @@ void PlotSlider::endButtonClicked ()
   buttonStatus();
 }
 
-void PlotSlider::setStart (int count, int width, int pixelSpace)
+void PlotSlider::setStart (int count, int, int)
 {
+  _slider->blockSignals(TRUE);
+  _slider->setRange(0, count - 1);
+  _slider->blockSignals(FALSE);
+
+  buttonStatus();
+  
+/*  
   int page = width / pixelSpace;
   int max = count - page;
   if (max < 0)
@@ -157,6 +164,7 @@ void PlotSlider::setStart (int count, int width, int pixelSpace)
   _slider->blockSignals(FALSE);
 
   buttonStatus();
+*/
 }
 
 int PlotSlider::getValue ()

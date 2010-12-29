@@ -23,15 +23,13 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QMutexLocker>
-#include <QHashIterator>
-#include <QFont>
 
 PLOT::PLOT ()
 {
   _type = _SERIAL;
   
   _method << "BACKGROUND_COLOR" << "FONT" << "GRID_COLOR" << "GRID" << "CROSSHAIRS_COLOR" << "CROSSHAIRS";
+  _method << "NEW" << "DELETE" << "UPDATE";
 }
 
 int PLOT::command (Command *command)
@@ -64,6 +62,15 @@ int PLOT::command (Command *command)
       break;
     case _CROSSHAIRS:
       return crosshairs(command);
+      break;
+    case __NEW:
+      return newPlot(command);
+      break;
+    case _DELETE:
+      return deletePlot(command);
+      break;
+    case _UPDATE:
+      return update(command);
       break;
     default:
       break;
@@ -215,6 +222,65 @@ int PLOT::crosshairs (Command *command)
   }
 
   g_middleMan->crosshairs(status);
+
+  command->setReturnData("0");
+
+  return 0;
+}
+
+int PLOT::newPlot (Command *command)
+{
+  // PLOT,NEW,<NAME>
+  //   0   1    2
+
+  if (command->count() != 3)
+  {
+    qDebug() << "PLOT::newPlot: invalid parm count" << command->count();
+    return 1;
+  }
+
+  g_middleMan->indicatorNew(command->parm(2));
+
+  command->setReturnData("0");
+
+  return 0;
+}
+
+int PLOT::deletePlot (Command *command)
+{
+  // PLOT,DELETE,<NAME>,*
+  //   0    1      2
+
+  if (command->count() < 3)
+  {
+    qDebug() << "PLOT::deletePlot: invalid parm count" << command->count();
+    return 1;
+  }
+
+  QStringList l;
+  int pos = 2;
+  for (; pos < command->count(); pos++)
+    l << command->parm(pos);
+
+  g_middleMan->indicatorDelete(l);
+
+  command->setReturnData("0");
+
+  return 0;
+}
+
+int PLOT::update (Command *command)
+{
+  // PLOT,UPDATE,<NAME>
+  //   0     1     2
+
+  if (command->count() != 3)
+  {
+    qDebug() << "PLOT::update: invalid parm count" << command->count();
+    return 1;
+  }
+
+  g_middleMan->plotUpdate(command->parm(2));
 
   command->setReturnData("0");
 

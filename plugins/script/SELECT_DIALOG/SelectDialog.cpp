@@ -62,7 +62,7 @@ void SelectDialog::createGUI ()
   vbox->setSpacing(2);
   setLayout(vbox);
 
-  QLabel *label = new QLabel(_command->parm(1));
+  QLabel *label = new QLabel(_command->parm(2));
   vbox->addWidget(label);
 
   // list

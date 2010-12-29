@@ -32,13 +32,6 @@
 ChartObjectHLine::ChartObjectHLine ()
 {
   _draw = new ChartObjectHLineDraw;
-  _draw->setSettings(_settings);
-
-  _settings->setData("Type", ChartObject::_HLine);
-
-  QSettings set(g_settingsFile);
-  QString s = set.value("default_chart_object_hline_color", "red").toString();
-  _settings->setData("Color", s);
 }
 
 void ChartObjectHLine::info (Setting &info)
@@ -148,8 +141,8 @@ void ChartObjectHLine::click (int button, QPoint p)
           if (_draw->isGrabSelected(p))
           {
             _status = _Move;
-            emit signalMoveStart(_settings->getInt("ID"));
-            _modified = 1;
+            emit signalMoveStart(_settings->data("ID"));
+            _settings->setData("Modified", 1);
             return;
           }
 
@@ -157,7 +150,7 @@ void ChartObjectHLine::click (int button, QPoint p)
           {
             _status = _None;
             _draw->setSelected(FALSE);
-            emit signalUnselected(_settings->getInt("ID"));
+            emit signalUnselected(_settings->data("ID"));
             _draw->plot()->replot();
             return;
           }
@@ -177,7 +170,7 @@ void ChartObjectHLine::click (int button, QPoint p)
       {
         case Qt::LeftButton:
           _status = _Selected;
-          emit signalMoveEnd(_settings->getInt("ID"));
+          emit signalMoveEnd(_settings->data("ID"));
           return;
         default:
           break;
@@ -194,7 +187,7 @@ void ChartObjectHLine::click (int button, QPoint p)
           {
             _status = _Selected;
             _draw->setSelected(TRUE);
-            emit signalSelected(_settings->getInt("ID"));
+            emit signalSelected(_settings->data("ID"));
             _draw->plot()->replot();
           }
           break;
@@ -220,16 +213,21 @@ void ChartObjectHLine::dialog ()
 
 void ChartObjectHLine::dialog2 (Setting)
 {
-  _modified = 1;
+  _settings->setData("Modified", 1);
 //  setSettings(set);
   _draw->plot()->replot();
 }
 
 void ChartObjectHLine::create ()
 {
-  _modified = 1;
+  QSettings set(g_settingsFile);
+  QString s = set.value("default_chart_object_hline_color", "red").toString();
+  _settings->setData("Color", s);
+  _settings->setData("Type", ChartObject::_HLine);
+  _settings->setData("Modified", 1);
+
   _status = _Move;
   _draw->setSelected(TRUE);
-  emit signalSelected(_settings->getInt("ID"));
-  emit signalMoveStart(_settings->getInt("ID"));
+  emit signalSelected(_settings->data("ID"));
+  emit signalMoveStart(_settings->data("ID"));
 }

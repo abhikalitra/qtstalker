@@ -29,29 +29,29 @@
 #include <QLayout>
 #include <QSettings>
 #include <QFormLayout>
-#include <QFileInfo>
-#include <QFileDialog>
+#include <QDir>
 
 IndicatorEditDialog::IndicatorEditDialog (Command *c)
 {
   _command = c;
   _helpFile = "main.html";
 
+  _name = _command->parm(1);
+
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("New Indicator");
+  l << "QtStalker" << g_session << ":" << tr("Editing Indicator") << _name;
   setWindowTitle(l.join(" "));
 
   createGUI();
 
-  _name = _command->parm(1);
+  _indicator.setName(_name);
+  _indicator.load();
+    
+  _com->setText(_indicator.command());
 
-  if (_command->count() > 2)
-  {
-    _com->setText(_command->parm(2));
-    fileButtonPressed2(_command->parm(3));
-    _log->setChecked(_command->parm(5).toInt());
-    _date->setChecked(_command->parm(6).toInt());
-  }
+  QStringList tl;
+  tl << _indicator.script();
+  _fileButton->setFile(tl);
 
   loadSettings();
 
@@ -78,19 +78,11 @@ void IndicatorEditDialog::createGUI ()
   form->addRow(tr("Command"), _com);
 
   // file
-  _fileButton = new QPushButton;
-  connect(_fileButton, SIGNAL(clicked()), this, SLOT(fileButtonPressed()));
+  QStringList tl;
+  QString s;
+  _fileButton = new FileButton(this, tl, s);
+  connect(_fileButton, SIGNAL(signalSelectionChanged()), this, SLOT(buttonStatus()));
   form->addRow(tr("Script File"), _fileButton);
-
-  // date check
-  _date = new QCheckBox;
-  _date->setChecked(TRUE);
-  form->addRow(tr("Date Axis"), _date);
-
-  // log check
-  _log = new QCheckBox;
-  _log->setChecked(FALSE);
-  form->addRow(tr("Log Scaling"), _log);
 
   // status message
   _message = new QLabel;
@@ -117,8 +109,14 @@ void IndicatorEditDialog::createGUI ()
 void IndicatorEditDialog::buttonStatus ()
 {
   int status = 0;
-  if (_fileButton->text().length())
+
+  QStringList l;
+  _fileButton->getFile(l);
+  if (l.count())
+  {
+    _file = l.at(0);
     status++;
+  }
 
   if (_com->text().length())
     status++;
@@ -145,11 +143,11 @@ void IndicatorEditDialog::done ()
     return;
   }
 
-  QStringList l;
-  l << _name << com << _file << "0";
-  l << QString::number(_log->isChecked()) << QString::number(_date->isChecked());
+  _indicator.setCommand(com);
+  _indicator.setScript(_file);
+  _indicator.save();
 
-  _command->setReturnData(l.join(","));
+  _command->setReturnData("0");
 
   saveSettings();
 
@@ -183,24 +181,4 @@ void IndicatorEditDialog::saveSettings ()
   settings.setValue("indicator_new_dialog_window_position", pos());
   settings.setValue("indicator_new_dialog_last_file", _file);
   settings.sync();
-}
-
-void IndicatorEditDialog::fileButtonPressed ()
-{
-  QFileDialog *dialog = new QFileDialog(this);
-  dialog->setDirectory(_file);
-  dialog->setWindowTitle(tr("Select Indicator Script File"));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(fileButtonPressed2(QString)));
-  dialog->show();
-}
-
-void IndicatorEditDialog::fileButtonPressed2 (QString d)
-{
-  _file = d;
-  
-  QFileInfo fi(_file);
-  _fileButton->setText(fi.fileName());
-
-  buttonStatus();
 }

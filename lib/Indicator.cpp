@@ -23,6 +23,7 @@
 #include "IndicatorDataBase.h"
 #include "Globals.h"
 #include "Script.h"
+#include "ChartObjectDataBase.h"
 
 #include <QDebug>
 
@@ -154,28 +155,35 @@ QHash<QString, Curve *> &  Indicator::curves ()
 void Indicator::clear ()
 {
   init();
-  deleteLines();
+  clearLines();
   clearChartObjects();
 }
 
-Setting Indicator::chartObject (int k)
+Setting * Indicator::chartObject (QString k)
 {
   return _chartObjects.value(k);
 }
 
-void Indicator::addChartObject (Setting &co)
+void Indicator::addChartObject (Setting *co)
 {
-  _chartObjects.insert(co.getInt("ID"), co);
+  _chartObjects.insert(co->data("ID"), co);
 }
 
 void Indicator::clearChartObjects ()
 {
+  if (_chartObjects.count())
+    qDeleteAll(_chartObjects);
   _chartObjects.clear();
 }
 
-void Indicator::deleteChartObject (int d)
+void Indicator::deleteChartObject (QString k)
 {
-  _chartObjects.remove(d);
+  Setting *co = chartObject(k);
+  if (! co)
+    return;
+
+  delete co;
+  _chartObjects.remove(k);
 }
 
 void Indicator::weedPlots ()
@@ -196,14 +204,7 @@ void Indicator::weedPlots ()
   }
 }
 
-void Indicator::clean ()
-{
-  _lines.clear();
-  _chartObjects.clear();
-  init();
-}
-
-void Indicator::coKeys (QList<int> &l)
+void Indicator::coKeys (QList<QString> &l)
 {
   l = _chartObjects.keys();
 }
@@ -213,18 +214,13 @@ int Indicator::coCount ()
   return _chartObjects.count();
 }
 
-void Indicator::deleteLines ()
+void Indicator::clearLines ()
 {
   if (_lines.count())
   {
     qDeleteAll(_lines);
     _lines.clear();
   }
-}
-
-void Indicator::clearLines ()
-{
-  _lines.clear();
 }
 
 QString Indicator::toString ()
@@ -258,6 +254,9 @@ int Indicator::save ()
 
   IndicatorDataBase db;
   int rc = db.save(this);
+
+  saveChartObjects();
+  
   _modified = 0;
 
   return rc;
@@ -267,7 +266,11 @@ int Indicator::load ()
 {
   IndicatorDataBase db;
   int rc = db.load(this);
+
+  loadChartObjects();
+  
   _modified = 0;
+  
   return rc;
 }
 
@@ -287,4 +290,35 @@ void Indicator::scriptFinished ()
 {
   weedPlots();
   emit signalPlot();
+}
+
+void Indicator::loadChartObjects ()
+{
+  QList<Setting *> l;
+  ChartObjectDataBase db;
+  db.load(_name, g_barData, l);
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    addChartObject(l.at(loop));
+qDebug() << "Indicator::loadChartObjects" << l.count();  
+}
+
+void Indicator::saveChartObjects ()
+{
+  ChartObjectDataBase db;
+
+  QHashIterator<QString, Setting *> it(_chartObjects);
+  while (it.hasNext())
+  {
+    it.next();
+    Setting *co = it.value();
+    if (co->getInt("Modified"))
+      db.save(co);
+  }
+}
+
+QHash<QString, Setting *> &  Indicator::chartObjects ()
+{
+  return _chartObjects;
 }

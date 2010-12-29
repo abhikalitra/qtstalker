@@ -71,16 +71,19 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
 
   loadSettings();
 
+  _statusBar->showMessage(tr("Ready"), 2000);
+
+  setWindowTitle(getWindowCaption());
+
+  // expose hidden charts so they plot properly (simple hack)
+  QTimer::singleShot(500, this, SLOT(fixDockTabs()));
+
   // check if we are going to display a chart from the command line
   if (asset.length())
   {
     _clAsset = asset;
     QTimer::singleShot(500, this, SLOT(commandLineAsset()));
   }
-
-  _statusBar->showMessage(tr("Ready"), 2000);
-
-  setWindowTitle(getWindowCaption());
 }
 
 void QtstalkerApp::createGUI ()
@@ -91,6 +94,7 @@ void QtstalkerApp::createGUI ()
   connect(g_middleMan, SIGNAL(signalIndicatorNew(QString)), this, SLOT(addNewPlot(QString)));
   connect(g_middleMan, SIGNAL(signalIndicatorDelete(QStringList)), this, SLOT(deletePlot(QStringList)));
   connect(g_middleMan, SIGNAL(signalPlotTabPosition(int)), this, SLOT(setPlotTabPosition(int)));
+  connect(g_middleMan, SIGNAL(signalPlotUpdate(QString)), this, SLOT(updatePlot(QString)));
 
   // side panel dock
   _sidePanel = new SidePanel;
@@ -450,4 +454,41 @@ void QtstalkerApp::deletePlot (QStringList l)
 void QtstalkerApp::setPlotTabPosition (int position)
 {
   setTabPosition(Qt::LeftDockWidgetArea, (QTabWidget::TabPosition) position);
+}
+
+void QtstalkerApp::fixDockTabs ()
+{
+  // we have to expose the non-visible docked tabs before we can draw plots
+  // this is just a hack to expose each tab before user notices on startup
+  
+  int loop = 0;
+  QList<QTabBar *> tabList = findChildren<QTabBar *>();
+  for (; loop < tabList.count(); loop++)
+  {
+    QTabBar *tabBar = tabList.at(loop);
+
+    // ignore side panel tabs
+    if (! tabBar->objectName().isEmpty())
+      continue;
+
+    int currentIndex = tabBar->currentIndex();
+    int loop2 = 0;
+    for (; loop2 < tabBar->count(); loop2++)
+      tabBar->setCurrentIndex(loop2);
+    
+    tabBar->setCurrentIndex(currentIndex);
+  }
+}
+
+void QtstalkerApp::updatePlot (QString d)
+{
+  Plot *p = _plots.value(d);
+  if (! p)
+    return;
+
+  p->clear();
+  
+  Indicator *i = p->indicator();
+  i->load();
+  i->calculate();
 }

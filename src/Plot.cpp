@@ -119,8 +119,6 @@ void Plot::clear ()
   _indicator->save();
   _indicator->clear();
 
-  saveChartObjects();
-
   if (_chartObjects.count())
     qDeleteAll(_chartObjects);
   _chartObjects.clear();
@@ -152,7 +150,7 @@ void Plot::updatePlot ()
 //  clear();
   setDates();
   addCurves(_indicator->curves());
-  loadChartObjects();
+  addChartObjects(_indicator->chartObjects());
 
   // calculate end of chart pos
   _endPos = _dateScaleDraw->count();
@@ -379,7 +377,7 @@ void Plot::setHighLow ()
       _low = l;
   }
 
-  QHashIterator<int, ChartObject *> it2(_chartObjects);
+  QHashIterator<QString, ChartObject *> it2(_chartObjects);
   while (it2.hasNext())
   {
     it2.next();
@@ -448,7 +446,7 @@ void Plot::mouseMove (QPoint p)
   Setting set;
   int index = (int) invTransform(QwtPlot::xBottom, p.x());
 
-  QHashIterator<int, ChartObject *> it2(_chartObjects);
+  QHashIterator<QString, ChartObject *> it2(_chartObjects);
   while (it2.hasNext())
   {
     it2.next();
@@ -540,73 +538,42 @@ void Plot::chartObjectNew (int type)
   if (! co)
     return;
 
-  Setting *set = co->settings();
+  Setting *set = new Setting;
+  co->setSettings(set);
+  set->setData("Exchange", g_barData->exchange());
+  set->setData("Symbol", g_barData->symbol());
+  set->setData("Indicator", _indicator->name());
 
   QSettings settings(g_settingsFile);
   int id = settings.value("chart_object_last_id", -1).toInt();
   id++;
   settings.setValue("chart_object_last_id", id);
   settings.sync();
-  
-  set->setData("Exchange", g_barData->exchange());
-  set->setData("Symbol", g_barData->symbol());
-  set->setData("Indicator", _indicator->name());
   set->setData("ID", id);
-
+  
   setupChartObject(co);
 
-  _chartObjects.insert(id, co);
+  _chartObjects.insert(set->data("ID"), co);
 
   co->create();
 }
 
-void Plot::deleteChartObject (int id)
+void Plot::deleteChartObject (QString id)
 {
   ChartObject *co = _chartObjects.value(id);
   if (! co)
     return;
 
-  ChartObjectDataBase db;
-  db.deleteChartObject(id);
-  
   delete co;
-  
   _chartObjects.remove(id);
-
   _selected = 0;
+
+  _indicator->deleteChartObject(id);
 
   updatePlot();
 }
 
-void Plot::loadChartObjects ()
-{
-  ChartObjectDataBase db;
-  QStringList l;
-  db.ids(g_barData, _indicator->name(), l);
-
-  ChartObjectFactory fac;
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    Setting set;
-    set.setData("ID", l.at(loop));
-    db.load(&set);
-
-    ChartObject *co = fac.chartObject(set.data("Type"));
-    if (! co)
-      continue;
-
-    QString s;
-    set.string(s);
-    
-    Setting *settings = co->settings();
-    settings->parse(s);
-
-    setupChartObject(co);
-  }
-}
-
-void Plot::chartObjectSelected (int id)
+void Plot::chartObjectSelected (QString id)
 {
   ChartObject *co = _chartObjects.value(id);
   if (! co)
@@ -615,7 +582,7 @@ void Plot::chartObjectSelected (int id)
   _selected = 1;
 }
 
-void Plot::chartObjectUnselected (int id)
+void Plot::chartObjectUnselected (QString id)
 {
   ChartObject *co = _chartObjects.value(id);
   if (! co)
@@ -624,7 +591,7 @@ void Plot::chartObjectUnselected (int id)
   _selected = 0;
 }
 
-void Plot::chartObjectMoveStart (int id)
+void Plot::chartObjectMoveStart (QString id)
 {
   ChartObject *co = _chartObjects.value(id);
   if (! co)
@@ -633,7 +600,7 @@ void Plot::chartObjectMoveStart (int id)
   connect(this, SIGNAL(signalMove(QPoint)), co, SLOT(move(QPoint)));
 }
 
-void Plot::chartObjectMoveEnd (int id)
+void Plot::chartObjectMoveEnd (QString id)
 {
   ChartObject *co = _chartObjects.value(id);
   if (! co)
@@ -647,30 +614,30 @@ void Plot::setupChartObject (ChartObject *co)
   co->setZ(10);
   co->attach(this);
   
-  connect(co, SIGNAL(signalSelected(int)), this, SLOT(chartObjectSelected(int)));
-  connect(co, SIGNAL(signalUnselected(int)), this, SLOT(chartObjectUnselected(int)));
-  connect(co, SIGNAL(signalDelete(int)), this, SLOT(deleteChartObject(int)));
-  connect(co, SIGNAL(signalMoveStart(int)), this, SLOT(chartObjectMoveStart(int)));
-  connect(co, SIGNAL(signalMoveEnd(int)), this, SLOT(chartObjectMoveEnd(int)));
+  connect(co, SIGNAL(signalSelected(QString)), this, SLOT(chartObjectSelected(QString)));
+  connect(co, SIGNAL(signalUnselected(QString)), this, SLOT(chartObjectUnselected(QString)));
+  connect(co, SIGNAL(signalDelete(QString)), this, SLOT(deleteChartObject(QString)));
+  connect(co, SIGNAL(signalMoveStart(QString)), this, SLOT(chartObjectMoveStart(QString)));
+  connect(co, SIGNAL(signalMoveEnd(QString)), this, SLOT(chartObjectMoveEnd(QString)));
   connect(this, SIGNAL(signalClick(int, QPoint)), co, SLOT(click(int, QPoint)));
 }
 
-void Plot::saveChartObjects ()
+void Plot::addChartObjects (QHash<QString, Setting *> &l)
 {
-  ChartObjectDataBase db;
-
-  QHashIterator<int, ChartObject *> it(_chartObjects);
+  ChartObjectFactory fac;
+  QHashIterator<QString, Setting *> it(l);
   while (it.hasNext())
   {
     it.next();
-    ChartObject *co = it.value();
-    if (co->isModified())
-    {
-      Setting *set = co->settings();
-      if (! set)
-        continue;
-      
-      db.save(set);
-    }
+    Setting *set = it.value();
+    
+    ChartObject *co = fac.chartObject(set->getInt("Type"));
+    if (! co)
+      return;
+
+    co->setSettings(set);
+    setupChartObject(co);
+    _chartObjects.insert(set->data("ID"), co);
+qDebug() << "Plot::addChartObjects" << set->data("ID");
   }
 }

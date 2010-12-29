@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,32 +19,31 @@
  *  USA.
  */
 
-#ifndef PLOT_LAYOUT_HPP
-#define PLOT_LAYOUT_HPP
+#ifndef FILEBUTTON_HPP
+#define FILEBUTTON_HPP
 
-#include "ScriptPlugin.h"
+#include <QPushButton>
+#include <QStringList>
 
-class PLOT_LAYOUT : public ScriptPlugin
+class FileButton : public QPushButton
 {
+  Q_OBJECT
+
+  signals:
+    void signalSelectionChanged ();
+
   public:
-    enum Method
-    {
-      __NEW,
-      _DELETE
-    };
-    
-    PLOT_LAYOUT ();
-    int command (Command *);
-    int newPlot (Command *);
-    int deletePlot (Command *);
+    FileButton (QWidget *, QStringList, QString);
+    void getFile (QStringList &);
+    void updateButtonText ();
 
+  public slots:
+    void fileDialog ();
+    void setFile (QStringList);
+        
   private:
-    QStringList _method;
+    QStringList _files;
+    QString _path;
 };
-
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
-}
 
 #endif

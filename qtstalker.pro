@@ -165,7 +165,6 @@ SUBDIRS += plugins/script/NEW_DIALOG
 #SUBDIRS += plugins/script/NORMALIZE
 #SUBDIRS += plugins/script/PDI
 SUBDIRS += plugins/script/PLOT
-SUBDIRS += plugins/script/PLOT_LAYOUT
 #SUBDIRS += plugins/script/PO
 #SUBDIRS += plugins/script/PP
 #SUBDIRS += plugins/script/PROCESS

@@ -885,5 +885,15 @@
            Modified the script CO commands to allow creation of objects to any symbol in the database. Previous
            behaviour allowed only the currently viewable chart. The command syntax has changed, docs updated.
 
+20101226:  Many many many structural changes. Starting to come together now. The script/plugin conversion
+           still ongoing. Qtstalker is still unstable.
 
+           All main gui elements are now dockable widgets. So, they can be dragged and dropped where ever
+           you like. Just right click on the element to display the context menu and unlock the widget. The
+           titlebar will appear which you use to drag the widget and place it. When placement is decided,
+           you may lock the widget in place. You don't have to lock any of the widgets. However, the
+           titlebar will take up space. Same goes for indicators. Drag and drop them. Very cool.
+
+           NOTE: When a new indicator is created, it is unlocked and stacked at the bottom. You then drag and drop it
+           where you like. Dropping it on top of other indicators will create a tabbed group.
 

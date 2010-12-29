@@ -30,6 +30,7 @@
 
 #include <QtSql>
 #include <QStringList>
+#include <QList>
 
 #include "BarData.h"
 #include "Setting.h"
@@ -42,8 +43,8 @@ class ChartObjectDataBase
     void ids (BarData *bd, QString indicator, QStringList &l);
     void deleteChartObjects (BarData *);
     void deleteChartObjectsIndicator (QString indicator);
-    void deleteChartObject (int);
-    void load (Setting *);
+    void deleteChartObject (QString);
+    void load (QString indicator, BarData *, QList<Setting *> &);
     void save (Setting *);
     int renameSymbol (BarData *, BarData *);
 

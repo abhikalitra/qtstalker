@@ -24,7 +24,6 @@
 
 #include <QString>
 #include <QList>
-#include <QMap>
 #include <QHash>
 #include <QObject>
 //#include <QMetaType>
@@ -53,21 +52,21 @@ class Indicator : public QObject
     Curve * line (QString);
     QHash<QString, Curve *> & curves ();
     void clearLines ();
-    void deleteLines ();
     int deleteLine (QString);
     void clear ();
-    Setting chartObject (int);
-    void addChartObject (Setting &);
+    Setting * chartObject (QString);
+    void addChartObject (Setting *);
     void clearChartObjects ();
-    void deleteChartObject (int);
+    void deleteChartObject (QString);
     void weedPlots ();
-    void clean ();
     void init ();
-    void coKeys (QList<int> &);
+    void coKeys (QList<QString> &);
     int coCount ();
-
     QString toString ();
     int fromString (QString);
+    void loadChartObjects ();
+    void saveChartObjects ();
+    QHash<QString, Setting *> & chartObjects ();
 
   public slots:
     int save ();
@@ -83,7 +82,7 @@ class Indicator : public QObject
 
   protected:
     QHash<QString, Curve *> _lines;
-    QMap<int, Setting> _chartObjects;
+    QHash<QString, Setting *> _chartObjects;
     QString _name;
     QString _script;
     QString _command;

@@ -59,18 +59,17 @@ class Plot : public QwtPlot
     void setDates ();
     void addCurve (QString id, Curve *);
     void addCurves (QHash<QString, Curve *> &);
+    void addChartObjects (QHash<QString, Setting *> &);
     void setIndicator ();
     Indicator * indicator ();
     void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
     void addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve);
-    void loadChartObjects ();
     void setHighLow ();
     void setupChartObject (ChartObject *);
     void saveChartObjects ();
     void dates (QList<QDateTime> &);
     int index ();
     PlotMenu * plotMenu ();
-//    void setYPoints ();
 
   public slots:
     virtual void clear ();
@@ -86,12 +85,12 @@ class Plot : public QwtPlot
     void showContextMenu ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
-    void deleteChartObject (int);
+    void deleteChartObject (QString);
     void chartObjectNew (int);
-    void chartObjectSelected (int);
-    void chartObjectUnselected (int);
-    void chartObjectMoveStart (int);
-    void chartObjectMoveEnd (int);
+    void chartObjectSelected (QString);
+    void chartObjectUnselected (QString);
+    void chartObjectMoveStart (QString);
+    void chartObjectMoveEnd (QString);
     void setCrossHairs (bool);
     void setCrossHairsColor (QColor);
     void setBarSpacing (int);
@@ -99,7 +98,7 @@ class Plot : public QwtPlot
   private:
     int _spacing;
     QHash<QString, QwtPlotCurve *> _qwtCurves;
-    QHash<int, ChartObject *> _chartObjects;
+    QHash<QString, ChartObject *> _chartObjects;
     DateScaleDraw *_dateScaleDraw;
     PlotScaleDraw *_plotScaleDraw;
     QwtPlotGrid *_grid;

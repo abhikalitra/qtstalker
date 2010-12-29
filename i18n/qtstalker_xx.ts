@@ -574,20 +574,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>ChartBackgroundColorButton</name>
-    <message>
-        <source>Chart Background Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ChartFontButton</name>
-    <message>
-        <source>Chart Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ChartObject</name>
     <message>
         <source>&amp;Edit</source>
@@ -1030,6 +1016,17 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>FileButton</name>
+    <message>
+        <source>Select Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FontButton</name>
     <message>
         <source>Font</source>
@@ -1123,10 +1120,6 @@ e.g. Qtstalker alert was triggered.</source>
 <context>
     <name>IndicatorEditDialog</name>
     <message>
-        <source>New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script command</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1139,19 +1132,11 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Date Axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Log Scaling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Invalid script command.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select Indicator Script File</source>
+        <source>Editing Indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2036,56 +2021,6 @@ e.g. Qtstalker alert was triggered.</source>
     <name>SymbolListWidget</name>
     <message>
         <source>Name: </source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TabWidget</name>
-    <message>
-        <source>Tab &amp;Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TabWidgetDialog</name>
-    <message>
-        <source>North</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>South</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>West</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>East</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>North / South Height</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>North / South Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>East / West Height</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>East / West Width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chart Tab Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

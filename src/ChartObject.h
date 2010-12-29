@@ -41,11 +41,11 @@ class ChartObject : public QObject
   Q_OBJECT
 
   signals:
-    void signalSelected (int);
-    void signalUnselected (int);
-    void signalDelete (int);
-    void signalMoveStart (int);
-    void signalMoveEnd (int);
+    void signalSelected (QString);
+    void signalUnselected (QString);
+    void signalDelete (QString);
+    void signalMoveStart (QString);
+    void signalMoveEnd (QString);
   
   public:
     enum Type
@@ -70,14 +70,12 @@ class ChartObject : public QObject
     ChartObject ();
     ~ChartObject ();
     virtual void info (Setting &);
-//    virtual void load ();
-//    virtual int CUS (QStringList &);
     virtual int highLow (int start, int end, double &high, double &low);
     virtual void create ();
-
+    
     Setting * settings ();
+    void setSettings (Setting *);
     ChartObject::Status status ();
-    int isModified ();
     void setZ (int);
     void attach (QwtPlot *);
     int isSelected (QPoint);
@@ -92,7 +90,6 @@ class ChartObject : public QObject
   protected:
     Status _status;
     Setting *_settings;
-    int _modified;
     QMenu *_menu;
     ChartObjectDraw *_draw;
 };

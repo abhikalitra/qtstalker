@@ -109,13 +109,13 @@ void ChartObjectDataBase::deleteChartObjectsIndicator (QString indicator)
   _db.commit();
 }
 
-void ChartObjectDataBase::deleteChartObject (int id)
+void ChartObjectDataBase::deleteChartObject (QString id)
 {
   QSqlQuery q(_db);
 
   _db.transaction();
   
-  QString s = "DELETE FROM " + _table + " WHERE id=" + QString::number(id);
+  QString s = "DELETE FROM " + _table + " WHERE id=" + id;
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ChartObjectDataBase::deleteChartObject: " << q.lastError().text();
@@ -123,27 +123,27 @@ void ChartObjectDataBase::deleteChartObject (int id)
   _db.commit();
 }
 
-void ChartObjectDataBase::load (Setting *co)
+void ChartObjectDataBase::load (QString indicator, BarData *bd, QList<Setting *> &l)
 {
   QSqlQuery q(_db);
 
-  QString s = "SELECT settings,exchange,symbol,indicator FROM " + _table;
-  s.append(" WHERE id=" + co->data("ID"));
+  QString s = "SELECT settings FROM " + _table;
+  s.append(" WHERE exchange='" + bd->exchange() + "'");
+  s.append(" AND symbol='" + bd->symbol() + "'");
+  s.append(" AND indicator='" + indicator + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "ChartObjectDataBase::getChartObject: " << q.lastError().text();
+    qDebug() << "ChartObjectDataBase::load: " << q.lastError().text();
     return;
   }
 
-  if (! q.next())
-    return;
-
-  int pos = 0;
-  co->parse(q.value(pos++).toString()); // order is critical (settings first)
-  co->setData("Exchange", q.value(pos++).toString());
-  co->setData("Symbol", q.value(pos++).toString());
-  co->setData("Indicator", q.value(pos++).toString());
+  while (q.next())
+  {
+    Setting *co = new Setting;
+    co->parse(q.value(0).toString()); // order is critical (settings first)
+    l.append(co);
+  }
 }
 
 void ChartObjectDataBase::save (Setting *co)

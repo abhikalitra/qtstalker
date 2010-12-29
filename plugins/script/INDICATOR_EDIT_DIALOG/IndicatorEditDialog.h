@@ -24,13 +24,13 @@
 
 #include <QDialog>
 #include <QStringList>
-#include <QComboBox>
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
-#include <QCheckBox>
 
 #include "Command.h"
+#include "FileButton.h"
+#include "Indicator.h"
 
 class IndicatorEditDialog : public QDialog
 {
@@ -47,21 +47,18 @@ class IndicatorEditDialog : public QDialog
     void cancel ();
     void buttonStatus ();
     void help ();
-    void fileButtonPressed ();
-    void fileButtonPressed2 (QString);
 
   private:
+    Indicator _indicator;
     QLineEdit *_com;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
     QString _helpFile;
     QLabel *_message;
-    QPushButton *_fileButton;
-    QCheckBox *_date;
-    QCheckBox *_log;
-    QString _file;
+    FileButton *_fileButton;
     Command *_command;
     QString _name;
+    QString _file;
 };
 
 #endif

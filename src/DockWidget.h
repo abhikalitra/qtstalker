@@ -40,7 +40,7 @@ class DockWidget : public QDockWidget
     void lock ();
     void unlock ();
     void statusChanged (bool);
-  
+      
   protected:
     virtual void contextMenuEvent (QContextMenuEvent *);
 

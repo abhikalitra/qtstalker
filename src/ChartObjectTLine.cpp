@@ -33,15 +33,7 @@
 ChartObjectTLine::ChartObjectTLine ()
 {
   _createFlag = 0;
-  
   _draw = new ChartObjectTLineDraw;
-  _draw->setSettings(_settings);
-
-  _settings->setData("Type", ChartObject::_TLine);
-
-  QSettings set(g_settingsFile);
-  _settings->setData("Color", set.value("default_chart_object_tline_color", "red").toString());
-  _settings->setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
 }
 
 void ChartObjectTLine::info (Setting &info)
@@ -243,8 +235,8 @@ void ChartObjectTLine::click (int button, QPoint p)
             _status = _Move;
             if (grab == 2)
               _status = _Move2;
-            emit signalMoveStart(_settings->getInt("ID"));
-            _modified = 1;
+            emit signalMoveStart(_settings->data("ID"));
+            _settings->setData("Modified", 1);
             return;
           }
 
@@ -252,7 +244,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           {
             _status = _None;
             _draw->setSelected(FALSE);
-            emit signalUnselected(_settings->getInt("ID"));
+            emit signalUnselected(_settings->data("ID"));
             _draw->plot()->replot();
             return;
           }
@@ -279,7 +271,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           }
           
           _status = _Selected;
-          emit signalMoveEnd(_settings->getInt("ID"));
+          emit signalMoveEnd(_settings->data("ID"));
           return;
         default:
           break;
@@ -294,7 +286,7 @@ void ChartObjectTLine::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           _createFlag = 0;
-          emit signalMoveEnd(_settings->getInt("ID"));
+          emit signalMoveEnd(_settings->data("ID"));
           return;
         default:
           break;
@@ -311,7 +303,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           {
             _status = _Selected;
             _draw->setSelected(TRUE);
-            emit signalSelected(_settings->getInt("ID"));
+            emit signalSelected(_settings->data("ID"));
             _draw->plot()->replot();
           }
           break;
@@ -337,17 +329,22 @@ void ChartObjectTLine::dialog ()
 
 void ChartObjectTLine::dialog2 (Setting)
 {
-  _modified = 1;
+  _settings->setData("Modified", 1);
 //  setSettings(set);
   _draw->plot()->replot();
 }
 
 void ChartObjectTLine::create ()
 {
-  _modified = 1;
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_tline_color", "red").toString());
+  _settings->setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
+  _settings->setData("Modified", 1);
+  _settings->setData("Type", ChartObject::_TLine);
+
   _createFlag = 1;
   _status = _Move;
   _draw->setSelected(TRUE);
-  emit signalSelected(_settings->getInt("ID"));
-  emit signalMoveStart(_settings->getInt("ID"));
+  emit signalSelected(_settings->data("ID"));
+  emit signalMoveStart(_settings->data("ID"));
 }

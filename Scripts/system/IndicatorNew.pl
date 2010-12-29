@@ -17,12 +17,7 @@ $command = "INDICATOR_EDIT_DIALOG,$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# save the new indicator
-$command = "INDICATOR_DATABASE,SAVE,$rc";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
-
 # create the chart
-$command = "PLOT_LAYOUT,NEW,$name";
+$command = "PLOT,NEW,$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

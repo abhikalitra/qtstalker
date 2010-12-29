@@ -32,12 +32,6 @@
 ChartObjectSell::ChartObjectSell ()
 {
   _draw = new ChartObjectSellDraw;
-  _draw->setSettings(_settings);
-
-  _settings->setData("Type", ChartObject::_Sell);
-
-  QSettings set(g_settingsFile);
-  _settings->setData("Color", set.value("default_chart_object_sell_color", "red").toString());
 }
 
 void ChartObjectSell::info (Setting &info)
@@ -174,8 +168,8 @@ void ChartObjectSell::click (int button, QPoint p)
           if (_draw->isGrabSelected(p))
           {
             _status = _Move;
-            emit signalMoveStart(_settings->getInt("ID"));
-            _modified = 1;
+            emit signalMoveStart(_settings->data("ID"));
+            _settings->setData("Modified", 1);
             return;
           }
 
@@ -183,7 +177,7 @@ void ChartObjectSell::click (int button, QPoint p)
           {
             _status = _None;
             _draw->setSelected(FALSE);
-            emit signalUnselected(_settings->getInt("ID"));
+            emit signalUnselected(_settings->data("ID"));
             _draw->plot()->replot();
             return;
           }
@@ -203,7 +197,7 @@ void ChartObjectSell::click (int button, QPoint p)
       {
         case Qt::LeftButton:
           _status = _Selected;
-          emit signalMoveEnd(_settings->getInt("ID"));
+          emit signalMoveEnd(_settings->data("ID"));
           return;
         default:
           break;
@@ -220,7 +214,7 @@ void ChartObjectSell::click (int button, QPoint p)
           {
             _status = _Selected;
             _draw->setSelected(TRUE);
-            emit signalSelected(_settings->getInt("ID"));
+            emit signalSelected(_settings->data("ID"));
             _draw->plot()->replot();
           }
           break;
@@ -246,16 +240,20 @@ void ChartObjectSell::dialog ()
 
 void ChartObjectSell::dialog2 (Setting)
 {
-  _modified = 1;
+  _settings->setData("Modified", 1);
 //  setSettings(set);
   _draw->plot()->replot();
 }
 
 void ChartObjectSell::create ()
 {
-  _modified = 1;
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_sell_color", "red").toString());
+  _settings->setData("Type", ChartObject::_Sell);
+  _settings->setData("Modified", 1);
+
   _status = _Move;
   _draw->setSelected(TRUE);
-  emit signalSelected(_settings->getInt("ID"));
-  emit signalMoveStart(_settings->getInt("ID"));
+  emit signalSelected(_settings->data("ID"));
+  emit signalMoveStart(_settings->data("ID"));
 }

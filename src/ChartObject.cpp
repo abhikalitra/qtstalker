@@ -22,17 +22,14 @@
 #include "ChartObject.h"
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
+#include "Globals.h"
 
 #include <QDebug>
 
 ChartObject::ChartObject ()
 {
+  _settings = 0;
   _status = _None;
-  _modified = 0;
-
-  _settings = new Setting;
-  _settings->setData(QString("ID"), -1);
-  _settings->setData(QString("Type"),-1);
 
   _menu = new QMenu;
   _menu->addAction(QPixmap(edit_xpm), tr("&Edit"), this, SLOT(dialog()), Qt::ALT+Qt::Key_E);
@@ -43,7 +40,6 @@ ChartObject::~ChartObject ()
 {
   delete _menu;
   delete _draw;
-  delete _settings;
 }
 
 void ChartObject::info (Setting &)
@@ -68,19 +64,9 @@ void ChartObject::click (int, QPoint)
 {
 }
 
-Setting * ChartObject::settings ()
-{
-  return _settings;
-}
-
 ChartObject::Status ChartObject::status ()
 {
   return _status;
-}
-
-int ChartObject::isModified ()
-{
-  return _modified;
 }
 
 void ChartObject::create ()
@@ -93,15 +79,7 @@ void ChartObject::dialog ()
 
 void ChartObject::deleteChartObject ()
 {
-// FIXME  
-/*  
-  ChartObjectDataBase db;
-  db.transaction();
-  db.deleteChartObject(_settings.id);
-  db.commit();
-
-  emit signalDelete(_settings.id);
-*/
+  emit signalDelete(_settings->data("ID"));
 }
 
 void ChartObject::setZ (int d)
@@ -112,4 +90,15 @@ void ChartObject::setZ (int d)
 void ChartObject::attach (QwtPlot *p)
 {
   _draw->attach(p);
+}
+
+Setting * ChartObject::settings ()
+{
+  return _settings;
+}
+
+void ChartObject::setSettings (Setting *d)
+{
+  _settings = d;
+  _draw->setSettings(d);
 }

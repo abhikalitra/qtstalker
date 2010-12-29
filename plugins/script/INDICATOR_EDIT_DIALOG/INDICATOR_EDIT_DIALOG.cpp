@@ -32,10 +32,10 @@ INDICATOR_EDIT_DIALOG::INDICATOR_EDIT_DIALOG ()
 
 int INDICATOR_EDIT_DIALOG::command (Command *command)
 {
-  // INDICATOR_EDIT_DIALOG,NAME,COMMAND,FILE,ROW,LOG,DATE
-  //           0            1      2     3    4   5   6
+  // INDICATOR_EDIT_DIALOG,NAME
+  //           0            1 
 
-  if (command->count() < 2)
+  if (command->count() != 2)
   {
     qDebug() << "INDICATOR_EDIT_DIALOG::command: invalid parm count" << command->count();
     return 1;

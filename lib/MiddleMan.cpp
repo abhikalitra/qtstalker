@@ -91,3 +91,8 @@ void MiddleMan::plotTabPosition (int d)
 {
   emit signalPlotTabPosition(d);
 }
+
+void MiddleMan::plotUpdate (QString d)
+{
+  emit signalPlotUpdate(d);
+}

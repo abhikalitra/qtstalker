@@ -70,6 +70,8 @@ class QtstalkerApp : public QMainWindow
     void addNewPlot (QString);
     void deletePlot (QStringList);
     void setPlotTabPosition (int);
+    void fixDockTabs ();
+    void updatePlot (QString);
 
   protected:
     QHash<QString, Plot *> _plots;
