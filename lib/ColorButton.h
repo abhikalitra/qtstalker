@@ -40,7 +40,7 @@ class ColorButton : public QPushButton
     void valueChanged();
 
   public:
-    ColorButton (QWidget *, QColor &);
+    ColorButton (QWidget *, QColor);
     QColor & color ();
     void setColorButton ();
     int isChanged();

@@ -79,19 +79,23 @@ class ChartObject : public QObject
     void setZ (int);
     void attach (QwtPlot *);
     int isSelected (QPoint);
+    void load ();
 
   public slots:
     virtual void move (QPoint);
     virtual void click (int, QPoint);
-    virtual void dialog ();
-
+    
+    void dialog ();
     void deleteChartObject ();
+    void save ();
 
   protected:
     Status _status;
     Setting *_settings;
     QMenu *_menu;
     ChartObjectDraw *_draw;
+    QAction *_editAction;
+    QAction *_deleteAction;
 };
 
 #endif

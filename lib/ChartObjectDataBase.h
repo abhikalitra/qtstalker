@@ -44,7 +44,8 @@ class ChartObjectDataBase
     void deleteChartObjects (BarData *);
     void deleteChartObjectsIndicator (QString indicator);
     void deleteChartObject (QString);
-    void load (QString indicator, BarData *, QList<Setting *> &);
+    void load (Setting *);
+    void load (QString indicator, BarData *, QList<Setting> &);
     void save (Setting *);
     int renameSymbol (BarData *, BarData *);
 

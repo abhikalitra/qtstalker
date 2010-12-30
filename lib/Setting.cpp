@@ -78,6 +78,16 @@ void Setting::setData (QString k, QColor d)
   dict.insert(s, s2);
 }
 
+void Setting::setData (QString k, QFont d)
+{
+  QString s = k;
+  strip(s);
+
+  QString s2 = d.toString();
+
+  dict.insert(s, s2);
+}
+
 QString Setting::data (QString k)
 {
   return dict.value(k);
@@ -107,6 +117,13 @@ QDateTime Setting::dateTime (QString k)
 QColor Setting::color (QString k)
 {
   return QColor(dict.value(k));
+}
+
+QFont Setting::font (QString k)
+{
+  QFont font;
+  font.fromString(dict.value(k));
+  return font;
 }
 
 void Setting::keyList (QStringList &l)

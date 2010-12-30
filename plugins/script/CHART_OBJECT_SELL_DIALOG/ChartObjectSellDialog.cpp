@@ -22,8 +22,7 @@
 #include "ChartObjectSellDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "Command.h"
-#include "ScriptPluginFactory.h"
+#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -31,18 +30,22 @@
 #include <QLayout>
 #include <QSettings>
 
-ChartObjectSellDialog::ChartObjectSellDialog (QString id)
+ChartObjectSellDialog::ChartObjectSellDialog (Command *c)
 {
-  _id = id;
+  _command = c;
   _helpFile = "main.html";
-  
-  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit Sell"));
+
+  QStringList l;
+  l << "QtStalker" << g_session << ":" << tr("Edit Sell") << _command->parm(1);
+  setWindowTitle(l.join(" "));
 
   createGUI();
 
+  loadSettings();
+
   loadObject();
 
-  loadSettings();
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ChartObjectSellDialog::createGUI ()
@@ -62,9 +65,8 @@ void ChartObjectSellDialog::createGUI ()
   form->addRow(tr("Date"), _date);
 
   // color
-  QColor c(Qt::red);
-  _color = new ColorButton(this, c);
-  _color->setColorButton();
+  _color = new ColorButton(this, QColor(Qt::red));
+//  _color->setColorButton();
   form->addRow(tr("Color"), _color);
   
   // price
@@ -108,13 +110,16 @@ void ChartObjectSellDialog::done ()
     settings.sync();
   }
 
-//  _settings.color = _color->color();
-//  _settings.date = _date->dateTime();
-//  _settings.price = _price->value();
-  
-  emit signalDone(_id);
+  _co.setData("Color", _color->color());
+  _co.setData("Price", _price->value());
+  _co.setData("Date", _date->dateTime());
+
+  ChartObjectDataBase db;
+  db.save(&_co);
 
   saveSettings();
+
+  _command->setReturnData("0");
 
   accept();
 }
@@ -133,26 +138,14 @@ void ChartObjectSellDialog::cancel ()
 
 void ChartObjectSellDialog::loadObject ()
 {
-  QStringList l;
-  l << "CHART_OBJECT_DATABASE" << "LOAD" << _id;
+  _co.setData("ID", _command->parm(1));
 
-  Command command(l.join(","));
+  ChartObjectDataBase db;
+  db.load(&_co);
 
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ChartObjectSellDialog::loadGroups: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
-
-  l = command.stringData().split(",", QString::SkipEmptyParts);
-
-//  _color->setColor(set.color("Color"));
-//  _date->setDateTime(set.dateTime("Date"));
-//  _price->setValue(set.getDouble("Price"));
+  _color->setColor(_co.color("Color"));
+  _date->setDateTime(_co.dateTime("Date"));
+  _price->setValue(_co.getDouble("Price"));
 }
 
 void ChartObjectSellDialog::loadSettings ()

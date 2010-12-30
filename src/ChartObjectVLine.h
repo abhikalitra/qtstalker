@@ -26,6 +26,8 @@
 
 class ChartObjectVLine : public ChartObject
 {
+  Q_OBJECT
+
   public:
     ChartObjectVLine ();
     void info (Setting &);
@@ -35,8 +37,6 @@ class ChartObjectVLine : public ChartObject
   public slots:
     void move (QPoint);
     void click (int, QPoint);
-    void dialog ();
-    void dialog2 (Setting);
 };
 
 #endif

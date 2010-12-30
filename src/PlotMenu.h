@@ -26,18 +26,21 @@
 #include <QMenu>
 #include <QAction>
 
+#include "Command.h"
+
 class PlotMenu : public QMenu
 {
   Q_OBJECT
 
   signals:
-    void signalNewChartObject (int);
+    void signalNewChartObject (int, QString);
     void signalLockStatus (bool);
     void signalDateStatus (bool);
     void signalLogStatus (bool);
 
   public:
     PlotMenu (QWidget *);
+    ~PlotMenu ();
     void init ();
     void setCOMenuStatus (bool);
     void setLog (bool);
@@ -46,18 +49,25 @@ class PlotMenu : public QMenu
     bool date ();
     void setLock (bool);
     bool lock ();
+    void setIndicator (QString);
 
   public slots:
     void chartObjectMenuSelected (QAction *);
+    void chartObjectMenuSelected2 ();
     void editIndicator ();
     void deleteIndicator ();
     void deleteAllChartObjects ();
+    void editChartObject ();
+    void deleteChartObject ();
 
   private:
     QAction *_dateAction;
     QAction *_logAction;
     QAction *_lockAction;
     QMenu *_coListMenu;
+    QAction *_currentAction;
+    QString _indicator;
+    Command *_command;
 };
 
 #endif

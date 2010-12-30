@@ -96,3 +96,13 @@ void MiddleMan::plotUpdate (QString d)
 {
   emit signalPlotUpdate(d);
 }
+
+void MiddleMan::chartObjectDelete (QStringList d)
+{
+  emit signalChartObjectDelete(d);
+}
+
+void MiddleMan::chartObjectUpdate (QString d)
+{
+  emit signalChartObjectUpdate(d);
+}

@@ -22,8 +22,7 @@
 #include "ChartObjectRetracementDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "Command.h"
-#include "ScriptPluginFactory.h"
+#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -31,12 +30,14 @@
 #include <QLayout>
 #include <QSettings>
 
-ChartObjectRetracementDialog::ChartObjectRetracementDialog (QString id)
+ChartObjectRetracementDialog::ChartObjectRetracementDialog (Command *c)
 {
-  _id = id;
+  _command = c;
   _helpFile = "main.html";
 
-  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit Retracement"));
+  QStringList l;
+  l << "QtStalker" << g_session << ":" << tr("Edit Retracement") << _command->parm(1);
+  setWindowTitle(l.join(" "));
 
   createDialog();
 
@@ -44,9 +45,11 @@ ChartObjectRetracementDialog::ChartObjectRetracementDialog (QString id)
 
   createLinePage();
 
+  loadSettings();
+
   loadObject();
 
-  loadSettings();
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ChartObjectRetracementDialog::createDialog ()
@@ -91,9 +94,8 @@ void ChartObjectRetracementDialog::createMainPage ()
   w->setLayout(form);
 
   // color
-  QColor c(Qt::red);
-  _color = new ColorButton(this, c);
-  _color->setColorButton();
+  _color = new ColorButton(this, QColor(Qt::red));
+//  _color->setColorButton();
   form->addRow(tr("Color"), _color);
   
   // date
@@ -109,13 +111,11 @@ void ChartObjectRetracementDialog::createMainPage ()
   // high
   _high = new QDoubleSpinBox;
   _high->setRange(0.0, 99999999.0);
-  _high->setValue(0);
   form->addRow(tr("High"), _high);
 
   // low
   _low = new QDoubleSpinBox;
   _low->setRange(0.0, 99999999.0);
-  _low->setValue(0);
   form->addRow(tr("Low"), _low);
 
   // extend
@@ -186,22 +186,25 @@ void ChartObjectRetracementDialog::done ()
     settings.sync();
   }
 
-//  _settings.color = _color->color();
-//  _settings.date = _date->dateTime();
-//  _settings.date2 = _date2->dateTime();
-//  _settings.high = _high->value();
-//  _settings.low = _low->value();
-//  _settings.extend = _extend->isChecked();
-//  _settings.line1 = _line1->value();
-//  _settings.line2 = _line2->value();
-//  _settings.line3 = _line3->value();
-//  _settings.line4 = _line4->value();
-//  _settings.line5 = _line5->value();
-//  _settings.line6 = _line6->value();
+  _co.setData("Color", _color->color());
+  _co.setData("Date", _date->dateTime());
+  _co.setData("Date2", _date2->dateTime());
+  _co.setData("High", _high->value());
+  _co.setData("Low", _low->value());
+  _co.setData("Extend", _extend->isChecked());
+  _co.setData("Line1", _line1->value());
+  _co.setData("Line2", _line2->value());
+  _co.setData("Line3", _line3->value());
+  _co.setData("Line4", _line4->value());
+  _co.setData("Line5", _line5->value());
+  _co.setData("Line6", _line6->value());
 
-  emit signalDone(_id);
+  ChartObjectDataBase db;
+  db.save(&_co);
 
   saveSettings();
+
+  _command->setReturnData("0");
 
   accept();
 }
@@ -220,35 +223,23 @@ void ChartObjectRetracementDialog::cancel ()
 
 void ChartObjectRetracementDialog::loadObject ()
 {
-  QStringList l;
-  l << "CHART_OBJECT_DATABASE" << "LOAD" << _id;
+  _co.setData("ID", _command->parm(1));
 
-  Command command(l.join(","));
+  ChartObjectDataBase db;
+  db.load(&_co);
 
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ChartObjectRetracementDialog::loadGroups: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
-
-  l = command.stringData().split(",", QString::SkipEmptyParts);
-
-//  _color->setColor(_settings.color);
-//  _date->setDateTime(_settings.date);
-//  _date2->setDateTime(_settings.date2);
-//  _high->setValue(_settings.high);
-//  _low->setValue(_settings.low);
-//  _line1->setValue(_settings.line1);
-//  _line2->setValue(_settings.line2);
-//  _line3->setValue(_settings.line3);
-//  _line4->setValue(_settings.line4);
-//  _line5->setValue(_settings.line5);
-//  _line6->setValue(_settings.line6);
-//  _extend->setChecked(_settings.extend);
+  _color->setColor(_co.color("Color"));
+  _date->setDateTime(_co.dateTime("Date"));
+  _date2->setDateTime(_co.dateTime("Date2"));
+  _high->setValue(_co.getDouble("High"));
+  _low->setValue(_co.getDouble("Low"));
+  _extend->setChecked(_co.getInt("Extend"));
+  _line1->setValue(_co.getDouble("Line1"));
+  _line2->setValue(_co.getDouble("Line2"));
+  _line3->setValue(_co.getDouble("Line3"));
+  _line4->setValue(_co.getDouble("Line4"));
+  _line5->setValue(_co.getDouble("Line5"));
+  _line6->setValue(_co.getDouble("Line6"));
 }
 
 void ChartObjectRetracementDialog::loadSettings ()

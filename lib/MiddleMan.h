@@ -46,6 +46,8 @@ class MiddleMan: public QObject
     void signalScriptRun (QString);
     void signalPlotTabPosition (int);
     void signalPlotUpdate (QString);
+    void signalChartObjectDelete (QStringList);
+    void signalChartObjectUpdate (QString);
 
   public:
     MiddleMan (QObject *);
@@ -63,6 +65,8 @@ class MiddleMan: public QObject
     void scriptRun (QString);
     void plotTabPosition (int);
     void plotUpdate (QString);
+    void chartObjectDelete (QStringList);
+    void chartObjectUpdate (QString);
 };
 
 #endif

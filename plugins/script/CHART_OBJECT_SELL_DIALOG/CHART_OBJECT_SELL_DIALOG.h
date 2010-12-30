@@ -28,7 +28,7 @@ class CHART_OBJECT_SELL_DIALOG : public ScriptPlugin
 {
   public:
     CHART_OBJECT_SELL_DIALOG ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

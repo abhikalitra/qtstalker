@@ -54,19 +54,15 @@ class Indicator : public QObject
     void clearLines ();
     int deleteLine (QString);
     void clear ();
-    Setting * chartObject (QString);
-    void addChartObject (Setting *);
+    Setting chartObject (QString);
+    void addChartObject (Setting);
     void clearChartObjects ();
-    void deleteChartObject (QString);
     void weedPlots ();
     void init ();
-    void coKeys (QList<QString> &);
-    int coCount ();
     QString toString ();
     int fromString (QString);
     void loadChartObjects ();
-    void saveChartObjects ();
-    QHash<QString, Setting *> & chartObjects ();
+    QHash<QString, Setting> & chartObjects ();
 
   public slots:
     int save ();
@@ -82,7 +78,7 @@ class Indicator : public QObject
 
   protected:
     QHash<QString, Curve *> _lines;
-    QHash<QString, Setting *> _chartObjects;
+    QHash<QString, Setting> _chartObjects;
     QString _name;
     QString _script;
     QString _command;

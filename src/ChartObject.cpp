@@ -23,23 +23,26 @@
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
 #include "Globals.h"
+#include "ChartObjectDataBase.h"
+#include "Script.h"
 
 #include <QDebug>
 
 ChartObject::ChartObject ()
 {
-  _settings = 0;
+  _settings = new Setting;
   _status = _None;
 
   _menu = new QMenu;
-  _menu->addAction(QPixmap(edit_xpm), tr("&Edit"), this, SLOT(dialog()), Qt::ALT+Qt::Key_E);
-  _menu->addAction(QPixmap(delete_xpm), tr("&Delete"), this, SLOT(deleteChartObject()), Qt::ALT+Qt::Key_D);
+  _editAction = _menu->addAction(QPixmap(edit_xpm), tr("&Edit"), this, SLOT(dialog()), Qt::ALT+Qt::Key_E);
+  _deleteAction = _menu->addAction(QPixmap(delete_xpm), tr("&Delete"), this, SLOT(deleteChartObject()), Qt::ALT+Qt::Key_D);
 }
 
 ChartObject::~ChartObject ()
 {
   delete _menu;
   delete _draw;
+  delete _settings;
 }
 
 void ChartObject::info (Setting &)
@@ -75,11 +78,28 @@ void ChartObject::create ()
 
 void ChartObject::dialog ()
 {
+  QSettings settings(g_settingsFile);
+  settings.setValue("chart_object_edit_id", _settings->data("ID"));
+  settings.sync();
+
+  Script *script = new Script;
+  script->setName("ChartObjectEdit");
+  script->setFile(settings.value("chart_object_edit_script").toString());
+  script->setCommand("perl");
+  script->startScript();
 }
 
 void ChartObject::deleteChartObject ()
 {
-  emit signalDelete(_settings->data("ID"));
+  QSettings settings(g_settingsFile);
+  settings.setValue("chart_object_delete_id", _settings->data("ID"));
+  settings.sync();
+
+  Script *script = new Script;
+  script->setName("ChartObjectDelete");
+  script->setFile(settings.value("chart_object_delete_script").toString());
+  script->setCommand("perl");
+  script->startScript();
 }
 
 void ChartObject::setZ (int d)
@@ -99,6 +119,23 @@ Setting * ChartObject::settings ()
 
 void ChartObject::setSettings (Setting *d)
 {
-  _settings = d;
-  _draw->setSettings(d);
+  QString s;
+  d->string(s);
+  _settings->parse(s);
+}
+
+void ChartObject::load ()
+{
+  ChartObjectDataBase db;
+  db.load(_settings);
+}
+
+void ChartObject::save ()
+{
+  if (! _settings->getInt("Modified"))
+    return;
+
+  ChartObjectDataBase db;
+  db.save(_settings);
+  _settings->setData("Modified", 0);
 }

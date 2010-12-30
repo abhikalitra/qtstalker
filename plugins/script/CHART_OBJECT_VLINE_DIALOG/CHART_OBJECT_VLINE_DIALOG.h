@@ -28,7 +28,7 @@ class CHART_OBJECT_VLINE_DIALOG : public ScriptPlugin
 {
   public:
     CHART_OBJECT_VLINE_DIALOG ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

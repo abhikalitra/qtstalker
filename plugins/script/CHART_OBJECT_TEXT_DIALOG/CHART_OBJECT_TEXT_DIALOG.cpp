@@ -27,23 +27,21 @@
 
 CHART_OBJECT_TEXT_DIALOG::CHART_OBJECT_TEXT_DIALOG ()
 {
-  _threadSafe = 0;
+  _type = _DIALOG;
 }
 
-int CHART_OBJECT_TEXT_DIALOG::command (Command &command)
+int CHART_OBJECT_TEXT_DIALOG::command (Command *command)
 {
   // CHART_OBJECT_TEXT_DIALOG,<ID>
   //            0             1
 
-  if (command.count() != 2)
+  if (command->count() != 2)
   {
-    qDebug() << "CHART_OBJECT_TEXT_DIALOG::command: invalid parm count" << command.count();
+    qDebug() << "CHART_OBJECT_TEXT_DIALOG::command: invalid parm count" << command->count();
     return 1;
   }
 
-  ChartObjectTextDialog *dialog = new ChartObjectTextDialog(command.parm(1));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  connect(dialog, SIGNAL(signalDone(QString)), this, SIGNAL(signalDone(QString)));
+  ChartObjectTextDialog *dialog = new ChartObjectTextDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   dialog->show();
 

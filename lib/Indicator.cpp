@@ -159,31 +159,19 @@ void Indicator::clear ()
   clearChartObjects();
 }
 
-Setting * Indicator::chartObject (QString k)
+Setting Indicator::chartObject (QString k)
 {
   return _chartObjects.value(k);
 }
 
-void Indicator::addChartObject (Setting *co)
+void Indicator::addChartObject (Setting co)
 {
-  _chartObjects.insert(co->data("ID"), co);
+  _chartObjects.insert(co.data("ID"), co);
 }
 
 void Indicator::clearChartObjects ()
 {
-  if (_chartObjects.count())
-    qDeleteAll(_chartObjects);
   _chartObjects.clear();
-}
-
-void Indicator::deleteChartObject (QString k)
-{
-  Setting *co = chartObject(k);
-  if (! co)
-    return;
-
-  delete co;
-  _chartObjects.remove(k);
 }
 
 void Indicator::weedPlots ()
@@ -202,16 +190,6 @@ void Indicator::weedPlots ()
       _lines.remove(keys.at(loop));
     }
   }
-}
-
-void Indicator::coKeys (QList<QString> &l)
-{
-  l = _chartObjects.keys();
-}
-
-int Indicator::coCount ()
-{
-  return _chartObjects.count();
 }
 
 void Indicator::clearLines ()
@@ -251,12 +229,10 @@ int Indicator::save ()
 {
   if (! _modified)
     return 0;
-
+  
   IndicatorDataBase db;
   int rc = db.save(this);
 
-  saveChartObjects();
-  
   _modified = 0;
 
   return rc;
@@ -267,8 +243,6 @@ int Indicator::load ()
   IndicatorDataBase db;
   int rc = db.load(this);
 
-  loadChartObjects();
-  
   _modified = 0;
   
   return rc;
@@ -289,36 +263,24 @@ void Indicator::calculate ()
 void Indicator::scriptFinished ()
 {
   weedPlots();
+
+  loadChartObjects();
+  
   emit signalPlot();
 }
 
 void Indicator::loadChartObjects ()
 {
-  QList<Setting *> l;
+  QList<Setting> l;
   ChartObjectDataBase db;
   db.load(_name, g_barData, l);
 
   int loop = 0;
   for (; loop < l.count(); loop++)
     addChartObject(l.at(loop));
-qDebug() << "Indicator::loadChartObjects" << l.count();  
 }
 
-void Indicator::saveChartObjects ()
-{
-  ChartObjectDataBase db;
-
-  QHashIterator<QString, Setting *> it(_chartObjects);
-  while (it.hasNext())
-  {
-    it.next();
-    Setting *co = it.value();
-    if (co->getInt("Modified"))
-      db.save(co);
-  }
-}
-
-QHash<QString, Setting *> &  Indicator::chartObjects ()
+QHash<QString, Setting> &  Indicator::chartObjects ()
 {
   return _chartObjects;
 }

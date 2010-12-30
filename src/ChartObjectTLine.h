@@ -37,8 +37,6 @@ class ChartObjectTLine : public ChartObject
   public slots:
     void move (QPoint);
     void click (int, QPoint);
-    void dialog ();
-    void dialog2 (Setting);
 
   private:
     int _createFlag;

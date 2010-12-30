@@ -52,6 +52,7 @@ class Plot : public QwtPlot
     void signalClick (int, QPoint);
     void signalMove (QPoint);
     void signalIndex (int);
+    void signalSave ();
 
   public:
     Plot (QString, QMainWindow *);
@@ -59,7 +60,7 @@ class Plot : public QwtPlot
     void setDates ();
     void addCurve (QString id, Curve *);
     void addCurves (QHash<QString, Curve *> &);
-    void addChartObjects (QHash<QString, Setting *> &);
+    void addChartObjects (QHash<QString, Setting> &);
     void setIndicator ();
     Indicator * indicator ();
     void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
@@ -85,8 +86,9 @@ class Plot : public QwtPlot
     void showContextMenu ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
-    void deleteChartObject (QString);
-    void chartObjectNew (int);
+    void deleteChartObject (QStringList);
+    void updateChartObject (QString);
+    void chartObjectNew (int, QString);
     void chartObjectSelected (QString);
     void chartObjectUnselected (QString);
     void chartObjectMoveStart (QString);

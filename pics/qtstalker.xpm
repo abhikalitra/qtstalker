@@ -1,5 +1,5 @@
 /* XPM */
-static const char *qtstalker[] = {
+static const char *qtstalker_xpm[] = {
 "79 77 1772 2",
 "  	c None",
 ". 	c #000000",

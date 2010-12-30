@@ -31,16 +31,15 @@
 #include <QStringList>
 
 #include "ColorButton.h"
+#include "Command.h"
+#include "Setting.h"
 
 class ChartObjectBuyDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalDone (QString);
-
   public:
-    ChartObjectBuyDialog (QString id);
+    ChartObjectBuyDialog (Command *);
     void createGUI ();
     void loadObject ();
     void loadSettings ();
@@ -60,7 +59,8 @@ class ChartObjectBuyDialog : public QDialog
     ColorButton *_color;
     QString _helpFile;
     QLabel *_message;
-    QString _id;
+    Command *_command;
+    Setting _co;
 };
 
 #endif

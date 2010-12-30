@@ -23,6 +23,8 @@
 #include "ChartObject.h"
 #include "Globals.h"
 #include "Script.h"
+#include "ChartObjectDataBase.h"
+#include "ScriptPluginFactory.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -42,6 +44,11 @@
 PlotMenu::PlotMenu (QWidget *p) : QMenu (p)
 {
   init ();
+}
+
+PlotMenu::~PlotMenu ()
+{
+  delete _command;
 }
 
 void PlotMenu::init ()
@@ -86,10 +93,13 @@ void PlotMenu::init ()
   addAction(QPixmap(delete_xpm), tr("De&lete Indicator..."), this, SLOT(deleteIndicator()), Qt::ALT+Qt::Key_L);
   
   addSeparator ();
-  
+
+  // chart object section
   addMenu(_coListMenu);
   
-  addAction(QPixmap(delete_xpm), tr("Delete &All Chart Objects"), this, SLOT(deleteAllChartObjects()), Qt::ALT+Qt::Key_A);
+  addAction(QPixmap(edit_xpm), tr("Edit &Chart Object"), this, SLOT(editChartObject()), Qt::ALT+Qt::Key_C);
+
+  addAction(QPixmap(delete_xpm), tr("&Delete Chart Objects"), this, SLOT(deleteChartObject()), Qt::ALT+Qt::Key_D);
   
   addSeparator ();
   
@@ -107,6 +117,8 @@ void PlotMenu::init ()
   _lockAction->setCheckable(TRUE);
   _lockAction->setChecked(FALSE);
   connect(_lockAction, SIGNAL(toggled(bool)), this, SIGNAL(signalLockStatus(bool)));
+
+  _command = new Command;
 }
 
 void PlotMenu::editIndicator ()
@@ -144,7 +156,36 @@ void PlotMenu::deleteAllChartObjects ()
 
 void PlotMenu::chartObjectMenuSelected (QAction *a)
 {
-  emit signalNewChartObject(a->data().toInt());
+  _currentAction = a;
+
+  ChartObjectDataBase db;
+  QStringList l;
+  db.ids(g_barData, _indicator, l);
+
+  l.prepend(tr("chart object"));
+  l.prepend("NEW_DIALOG");
+  _command->parse(l.join(","));
+
+  ScriptPluginFactory fac;
+  ScriptPlugin *plug = fac.plugin(_command->plugin());
+  if (! plug)
+  {
+    qDebug() << "PlotMenu::chartObjectMenuSelected: no plugin" << _command->plugin();
+    return;
+  }
+
+  connect(plug, SIGNAL(signalResume()), this, SLOT(chartObjectMenuSelected2()));
+
+  plug->command(_command);
+}
+
+void PlotMenu::chartObjectMenuSelected2 ()
+{
+  QString s = _command->stringData();
+  if (s == "ERROR")
+    return;
+  
+  emit signalNewChartObject(_currentAction->data().toInt(), s);
 }
 
 void PlotMenu::setCOMenuStatus (bool status)
@@ -180,4 +221,41 @@ void PlotMenu::setLock (bool status)
 bool PlotMenu::lock ()
 {
   return _lockAction->isChecked();
+}
+
+void PlotMenu::setIndicator (QString d)
+{
+  _indicator = d;
+}
+
+void PlotMenu::editChartObject ()
+{
+  QStringList l;
+  l << _indicator << g_barData->exchange() << g_barData->symbol();
+  
+  QSettings settings(g_settingsFile);
+  settings.setValue("chart_object_edit_data", l.join(","));
+  settings.sync();
+  
+  Script *script = new Script;
+  script->setName("ChartObjectEditSelect");
+  script->setFile(settings.value("chart_object_edit_select_script").toString());
+  script->setCommand("perl");
+  script->startScript();
+}
+
+void PlotMenu::deleteChartObject ()
+{
+  QStringList l;
+  l << _indicator << g_barData->exchange() << g_barData->symbol();
+
+  QSettings settings(g_settingsFile);
+  settings.setValue("chart_object_delete_data", l.join(","));
+  settings.sync();
+
+  Script *script = new Script;
+  script->setName("DeleteObjectDeleteSelect");
+  script->setFile(settings.value("chart_object_delete_select_script").toString());
+  script->setCommand("perl");
+  script->startScript();
 }

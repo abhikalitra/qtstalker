@@ -32,16 +32,15 @@
 #include <QTabWidget>
 
 #include "ColorButton.h"
+#include "Command.h"
+#include "Setting.h"
 
 class ChartObjectRetracementDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalDone (QString);
-
   public:
-    ChartObjectRetracementDialog (QString id);
+    ChartObjectRetracementDialog (Command *);
     void createDialog ();
     void createMainPage ();
     void createLinePage ();
@@ -72,8 +71,9 @@ class ChartObjectRetracementDialog : public QDialog
     QPushButton *_cancelButton;
     QString _helpFile;
     QLabel *_message;
-    QString _id;
     QTabWidget *_tabs;
+    Command *_command;
+    Setting _co;
 };
 
 #endif

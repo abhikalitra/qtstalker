@@ -33,6 +33,11 @@
 ChartObjectVLine::ChartObjectVLine ()
 {
   _draw = new ChartObjectVLineDraw;
+  _draw->setSettings(_settings);
+
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_vline_color", "red").toString());
+  _settings->setData("Type", _VLine);
 }
 
 void ChartObjectVLine::info (Setting &info)
@@ -161,6 +166,8 @@ void ChartObjectVLine::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
+          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
+          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
           _menu->exec(QCursor::pos());
           break;
         default:
@@ -176,6 +183,7 @@ void ChartObjectVLine::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
+          _settings->setData("Modified", 1);
           return;
         default:
           break;
@@ -205,31 +213,9 @@ void ChartObjectVLine::click (int button, QPoint p)
   }
 }
 
-void ChartObjectVLine::dialog ()
-{
-/*  
-  ChartObjectVLineDialog *dialog = new ChartObjectVLineDialog;
-  dialog->setSettings(_settings);
-  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-*/
-}
-
-void ChartObjectVLine::dialog2 (Setting)
-{
-  _settings->setData("Modified", 1);
-  _draw->plot()->replot();
-}
-
 void ChartObjectVLine::create ()
 {
-  _settings->setData("Type", _VLine);
   _settings->setData("Modified", 1);
-
-  QSettings set(g_settingsFile);
-  _settings->setData("Color", set.value("default_chart_object_vline_color", "red").toString());
-  
   _status = _Move;
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));

@@ -585,6 +585,17 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>ChartObjectBuy</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChartObjectBuyDialog</name>
     <message>
         <source>Color</source>
@@ -608,6 +619,17 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>ChartObjectHLine</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChartObjectHLineDialog</name>
     <message>
         <source>Color</source>
@@ -623,6 +645,17 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Edit HLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectRetracement</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -694,6 +727,17 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>ChartObjectSell</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChartObjectSellDialog</name>
     <message>
         <source>Color</source>
@@ -717,11 +761,18 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>ChartObjectTLineDialog</name>
+    <name>ChartObjectTLine</name>
     <message>
-        <source>Edit TLine Chart Object</source>
+        <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectTLineDialog</name>
     <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
@@ -748,6 +799,21 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit TLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectText</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -783,6 +849,17 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Edit Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ChartObjectVLine</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -875,6 +952,13 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConfirmDialog</name>
+    <message>
+        <source>Confirm</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1224,10 +1308,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete &amp;All Chart Objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Date</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1237,6 +1317,18 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>&amp;Locked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>chart object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit &amp;Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Chart Objects</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

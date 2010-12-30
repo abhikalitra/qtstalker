@@ -23,7 +23,7 @@
 
 #include <QFontDialog>
 
-FontButton::FontButton (QWidget *w, QFont &f) : QPushButton (w)
+FontButton::FontButton (QWidget *w, QFont f) : QPushButton (w)
 {
   _font = f;
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fontDialog()));

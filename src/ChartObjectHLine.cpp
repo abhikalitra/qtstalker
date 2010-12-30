@@ -32,6 +32,12 @@
 ChartObjectHLine::ChartObjectHLine ()
 {
   _draw = new ChartObjectHLineDraw;
+  _draw->setSettings(_settings);
+  
+  QSettings set(g_settingsFile);
+  QString s = set.value("default_chart_object_hline_color", "red").toString();
+  _settings->setData("Color", s);
+  _settings->setData("Type", ChartObject::_HLine);
 }
 
 void ChartObjectHLine::info (Setting &info)
@@ -156,6 +162,8 @@ void ChartObjectHLine::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
+          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
+          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
           _menu->exec(QCursor::pos());
           break;
         default:
@@ -171,6 +179,7 @@ void ChartObjectHLine::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
+          _settings->setData("Modified", 1);
           return;
         default:
           break;
@@ -200,32 +209,9 @@ void ChartObjectHLine::click (int button, QPoint p)
   }
 }
 
-void ChartObjectHLine::dialog ()
-{
-/*  
-  ChartObjectHLineDialog *dialog = new ChartObjectHLineDialog;
-  dialog->setSettings(_settings);
-  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-*/
-}
-
-void ChartObjectHLine::dialog2 (Setting)
-{
-  _settings->setData("Modified", 1);
-//  setSettings(set);
-  _draw->plot()->replot();
-}
-
 void ChartObjectHLine::create ()
 {
-  QSettings set(g_settingsFile);
-  QString s = set.value("default_chart_object_hline_color", "red").toString();
-  _settings->setData("Color", s);
-  _settings->setData("Type", ChartObject::_HLine);
   _settings->setData("Modified", 1);
-
   _status = _Move;
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));

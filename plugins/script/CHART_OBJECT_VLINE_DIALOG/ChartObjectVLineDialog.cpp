@@ -22,8 +22,7 @@
 #include "ChartObjectVLineDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "Command.h"
-#include "ScriptPluginFactory.h"
+#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -31,18 +30,22 @@
 #include <QLayout>
 #include <QSettings>
 
-ChartObjectVLineDialog::ChartObjectVLineDialog (QString id)
+ChartObjectVLineDialog::ChartObjectVLineDialog (Command *c)
 {
-  _id = id;
+  _command = c;
   _helpFile = "main.html";
 
-  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit VLine"));
+  QStringList l;
+  l << "QtStalker" << g_session << ":" << tr("Edit VLine") << _command->parm(1);
+  setWindowTitle(l.join(" "));
 
   createGUI();
 
+  loadSettings();
+
   loadObject();
 
-  loadSettings();
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ChartObjectVLineDialog::createGUI ()
@@ -62,9 +65,8 @@ void ChartObjectVLineDialog::createGUI ()
   form->addRow(tr("Date"), _date);
 
   // color
-  QColor c(Qt::red);
-  _color = new ColorButton(this, c);
-  _color->setColorButton();
+  _color = new ColorButton(this, QColor(Qt::red));
+//  _color->setColorButton();
   form->addRow(tr("Color"), _color);
   
   // default
@@ -103,12 +105,15 @@ void ChartObjectVLineDialog::done ()
     settings.sync();
   }
 
-//  _settings.color = _color->color();
-//  _settings.date = _date->dateTime();
+  _co.setData("Color", _color->color());
+  _co.setData("Date", _date->dateTime());
 
-  emit signalDone(_id);
+  ChartObjectDataBase db;
+  db.save(&_co);
 
   saveSettings();
+
+  _command->setReturnData("0");
 
   accept();
 }
@@ -127,25 +132,13 @@ void ChartObjectVLineDialog::cancel ()
 
 void ChartObjectVLineDialog::loadObject ()
 {
-  QStringList l;
-  l << "CHART_OBJECT_DATABASE" << "LOAD" << _id;
+  _co.setData("ID", _command->parm(1));
 
-  Command command(l.join(","));
+  ChartObjectDataBase db;
+  db.load(&_co);
 
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ChartObjectVLineDialog::loadGroups: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
-
-  l = command.stringData().split(",", QString::SkipEmptyParts);
-
-//  _color->setColor(_settings.color);
-//  _date->setDateTime(_settings.date);
+  _date->setDateTime(_co.dateTime("Date"));
+  _color->setColor(_co.color("Color"));
 }
 
 void ChartObjectVLineDialog::loadSettings ()

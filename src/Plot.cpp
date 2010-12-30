@@ -93,7 +93,7 @@ Plot::Plot (QString name, QMainWindow *mw)
   connect(_menu, SIGNAL(signalDateStatus(bool)), _indicator, SLOT(setDate(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), _indicator, SLOT(setLog(bool)));
-  connect(_menu, SIGNAL(signalNewChartObject(int)), this, SLOT(chartObjectNew(int)));
+  connect(_menu, SIGNAL(signalNewChartObject(int, QString)), this, SLOT(chartObjectNew(int, QString)));
 
   _dock = new DockWidget(name.left(4), mw);
   _dock->setObjectName(name);
@@ -106,7 +106,6 @@ Plot::Plot (QString name, QMainWindow *mw)
 Plot::~Plot ()
 {
   delete _indicator;
-  
   clear();
 }
 
@@ -119,6 +118,8 @@ void Plot::clear ()
   _indicator->save();
   _indicator->clear();
 
+  emit signalSave();
+  
   if (_chartObjects.count())
     qDeleteAll(_chartObjects);
   _chartObjects.clear();
@@ -138,6 +139,7 @@ void Plot::setIndicator ()
   _dock->statusChanged(_indicator->lock());
   _menu->setDate(_indicator->date());
   _menu->setLog(_indicator->log());
+  _menu->setIndicator(_indicator->name());
 }
 
 Indicator * Plot::indicator ()
@@ -531,33 +533,46 @@ void Plot::deleteAllChartObjects2 ()
 }
 */
 
-void Plot::chartObjectNew (int type)
+void Plot::chartObjectNew (int type, QString id)
 {
   ChartObjectFactory fac;
   ChartObject *co = fac.chartObject(type);
   if (! co)
     return;
 
-  Setting *set = new Setting;
-  co->setSettings(set);
+  Setting *set = co->settings();
   set->setData("Exchange", g_barData->exchange());
   set->setData("Symbol", g_barData->symbol());
   set->setData("Indicator", _indicator->name());
-
-  QSettings settings(g_settingsFile);
-  int id = settings.value("chart_object_last_id", -1).toInt();
-  id++;
-  settings.setValue("chart_object_last_id", id);
-  settings.sync();
   set->setData("ID", id);
   
   setupChartObject(co);
 
-  _chartObjects.insert(set->data("ID"), co);
+  _chartObjects.insert(id, co);
 
   co->create();
 }
 
+void Plot::deleteChartObject (QStringList l)
+{
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    ChartObject *co = _chartObjects.value(l.at(loop));
+    if (! co)
+      continue;
+
+    delete co;
+    _chartObjects.remove(l.at(loop));
+  }
+
+  _selected = 0;
+  setHighLow();
+  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
+  replot();
+}
+
+/*
 void Plot::deleteChartObject (QString id)
 {
   ChartObject *co = _chartObjects.value(id);
@@ -566,11 +581,26 @@ void Plot::deleteChartObject (QString id)
 
   delete co;
   _chartObjects.remove(id);
+
   _selected = 0;
 
-  _indicator->deleteChartObject(id);
+  setHighLow();
+  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
+  replot();
+}
+*/
 
-  updatePlot();
+void Plot::updateChartObject (QString id)
+{
+  ChartObject *co = _chartObjects.value(id);
+  if (! co)
+    return;
+
+  co->load();
+
+  setHighLow();
+  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
+  replot();
 }
 
 void Plot::chartObjectSelected (QString id)
@@ -616,28 +646,28 @@ void Plot::setupChartObject (ChartObject *co)
   
   connect(co, SIGNAL(signalSelected(QString)), this, SLOT(chartObjectSelected(QString)));
   connect(co, SIGNAL(signalUnselected(QString)), this, SLOT(chartObjectUnselected(QString)));
-  connect(co, SIGNAL(signalDelete(QString)), this, SLOT(deleteChartObject(QString)));
+//  connect(co, SIGNAL(signalDelete(QString)), this, SLOT(deleteChartObject(QString)));
   connect(co, SIGNAL(signalMoveStart(QString)), this, SLOT(chartObjectMoveStart(QString)));
   connect(co, SIGNAL(signalMoveEnd(QString)), this, SLOT(chartObjectMoveEnd(QString)));
   connect(this, SIGNAL(signalClick(int, QPoint)), co, SLOT(click(int, QPoint)));
+  connect(this, SIGNAL(signalSave()), co, SLOT(save()));
 }
 
-void Plot::addChartObjects (QHash<QString, Setting *> &l)
+void Plot::addChartObjects (QHash<QString, Setting> &l)
 {
   ChartObjectFactory fac;
-  QHashIterator<QString, Setting *> it(l);
+  QHashIterator<QString, Setting> it(l);
   while (it.hasNext())
   {
     it.next();
-    Setting *set = it.value();
+    Setting set = it.value();
     
-    ChartObject *co = fac.chartObject(set->getInt("Type"));
+    ChartObject *co = fac.chartObject(set.getInt("Type"));
     if (! co)
       return;
 
-    co->setSettings(set);
+    co->setSettings(&set);
     setupChartObject(co);
-    _chartObjects.insert(set->data("ID"), co);
-qDebug() << "Plot::addChartObjects" << set->data("ID");
+    _chartObjects.insert(set.data("ID"), co);
   }
 }

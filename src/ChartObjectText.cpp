@@ -32,6 +32,13 @@
 ChartObjectText::ChartObjectText ()
 {
   _draw = new ChartObjectTextDraw;
+  _draw->setSettings(_settings);
+
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_text_color", "red").toString());
+  _settings->setData("Font", set.value("default_chart_object_text_font", "Helvetica,9,50,0").toString());
+  _settings->setData("Text", set.value("default_chart_object_text_text", "Text").toString());
+  _settings->setData("Type", ChartObject::_Text);
 }
 
 void ChartObjectText::info (Setting &info)
@@ -195,6 +202,8 @@ void ChartObjectText::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
+          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
+          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
           _menu->exec(QCursor::pos());
           break;
         default:
@@ -210,6 +219,7 @@ void ChartObjectText::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
+          _settings->setData("Modified", 1);
           return;
         default:
           break;
@@ -239,33 +249,9 @@ void ChartObjectText::click (int button, QPoint p)
   }
 }
 
-void ChartObjectText::dialog ()
-{
-/*  
-  ChartObjectTextDialog *dialog = new ChartObjectTextDialog;
-  dialog->setSettings(_settings);
-  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-*/
-}
-
-void ChartObjectText::dialog2 (Setting)
-{
-  _settings->setData("Modified", 1);
-//  setSettings(set);
-  _draw->plot()->replot();
-}
-
 void ChartObjectText::create ()
 {
-  QSettings set(g_settingsFile);
-  _settings->setData("Color", set.value("default_chart_object_text_color", "red").toString());
-  _settings->setData("Font", set.value("default_chart_object_text_font", "Helvetica,9,50,0").toString());
-  _settings->setData("Text", set.value("default_chart_object_text_text", "Text").toString());
-  _settings->setData("Type", ChartObject::_Text);
   _settings->setData("Modified", 1);
-
   _status = _Move;
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));

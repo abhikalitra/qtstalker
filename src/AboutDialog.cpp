@@ -59,9 +59,19 @@ void AboutDialog::createQTSPage ()
 {
   QWidget *w = new QWidget;
   
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setSpacing(2);
+  w->setLayout(hbox);
+
   QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  w->setLayout(vbox);
+  vbox->setSpacing(0);
+  hbox->addLayout(vbox);
+
+  QLabel *label = new QLabel;
+  label->setPixmap(qtstalker_xpm);
+  vbox->addWidget(label);
+
+  vbox->addStretch(1);
 
   QString s = tr("Qtstalker version 0.37-dev (working title)");
   s.append(tr("\nBuilt using Qt "));
@@ -70,8 +80,8 @@ void AboutDialog::createQTSPage ()
   s.append(tr("\n\nQtstalker is licensed with GNU General Public License (GPL) version 2."));
   s.append(tr("\nQt Assistant is licensed with GNU General Public License (GPL) version 3."));
 
-  QLabel *label = new QLabel(s);
-  vbox->addWidget(label);
+  label = new QLabel(s);
+  hbox->addWidget(label);
 
   _tabs->addTab(w, tr("About") + " QtStalker");
 }

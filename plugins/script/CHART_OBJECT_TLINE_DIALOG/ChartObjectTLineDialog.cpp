@@ -22,8 +22,7 @@
 #include "ChartObjectTLineDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "Command.h"
-#include "ScriptPluginFactory.h"
+#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -31,18 +30,22 @@
 #include <QLayout>
 #include <QSettings>
 
-ChartObjectTLineDialog::ChartObjectTLineDialog (QString id)
+ChartObjectTLineDialog::ChartObjectTLineDialog (Command *c)
 {
-  _id = id;
+  _command = c;
   _helpFile = "main.html";
 
-  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit TLine Chart Object"));
+  QStringList l;
+  l << "QtStalker" << g_session << ":" << tr("Edit TLine") << _command->parm(1);
+  setWindowTitle(l.join(" "));
 
   createGUI();
 
+  loadSettings();
+
   loadObject();
 
-  loadSettings();
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ChartObjectTLineDialog::createGUI ()
@@ -67,9 +70,8 @@ void ChartObjectTLineDialog::createGUI ()
   form->addRow(tr("End Date"), _date2);
 
   // color
-  QColor c(Qt::red);
-  _color = new ColorButton(this, c);
-  _color->setColorButton();
+  _color = new ColorButton(this, QColor(Qt::red));
+//  _color->setColorButton();
   form->addRow(tr("Color"), _color);
   
   // price
@@ -123,16 +125,19 @@ void ChartObjectTLineDialog::done ()
     settings.sync();
   }
 
-//  _settings.color = _color->color();
-//  _settings.date = _date->dateTime();
-//  _settings.date2 = _date2->dateTime();
-//  _settings.price = _price->value();
-//  _settings.price2 = _price2->value();
-//  _settings.extend = _extend->isChecked();
+  _co.setData("Color", _color->color());
+  _co.setData("Date", _date->dateTime());
+  _co.setData("Date2", _date2->dateTime());
+  _co.setData("Price", _price->value());
+  _co.setData("Price2", _price2->value());
+  _co.setData("Extend", _extend->isChecked());
 
-  emit signalDone(_id);
+  ChartObjectDataBase db;
+  db.save(&_co);
 
   saveSettings();
+
+  _command->setReturnData("0");
 
   accept();
 }
@@ -151,29 +156,17 @@ void ChartObjectTLineDialog::cancel ()
 
 void ChartObjectTLineDialog::loadObject ()
 {
-  QStringList l;
-  l << "CHART_OBJECT_DATABASE" << "LOAD" << _id;
+  _co.setData("ID", _command->parm(1));
 
-  Command command(l.join(","));
+  ChartObjectDataBase db;
+  db.load(&_co);
 
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ChartObjectTLineDialog::loadGroups: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
-
-  l = command.stringData().split(",", QString::SkipEmptyParts);
-
-//  _color->setColor(_settings.color);
-//  _date->setDateTime(_settings.date);
-//  _date2->setDateTime(_settings.date2);
-//  _price->setValue(_settings.price);
-//  _price2->setValue(_settings.price2);
-//  _extend->setChecked(_settings.extend);
+  _date->setDateTime(_co.dateTime("Date"));
+  _date2->setDateTime(_co.dateTime("Date2"));
+  _color->setColor(_co.color("Color"));
+  _price->setValue(_co.getDouble("Price"));
+  _price2->setValue(_co.getDouble("Price2"));
+  _extend->setChecked(_co.getInt("Extend"));
 }
 
 void ChartObjectTLineDialog::loadSettings ()

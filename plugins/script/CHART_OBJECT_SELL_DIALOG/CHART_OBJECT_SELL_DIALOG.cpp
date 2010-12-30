@@ -27,23 +27,21 @@
 
 CHART_OBJECT_SELL_DIALOG::CHART_OBJECT_SELL_DIALOG ()
 {
-  _threadSafe = 0;
+  _type = _DIALOG;
 }
 
-int CHART_OBJECT_SELL_DIALOG::command (Command &command)
+int CHART_OBJECT_SELL_DIALOG::command (Command *command)
 {
   // CHART_OBJECT_SELL_DIALOG,<ID>
   //            0             1
 
-  if (command.count() != 2)
+  if (command->count() != 2)
   {
-    qDebug() << "CHART_OBJECT_SELL_DIALOG::command: invalid parm count" << command.count();
+    qDebug() << "CHART_OBJECT_SELL_DIALOG::command: invalid parm count" << command->count();
     return 1;
   }
 
-  ChartObjectSellDialog *dialog = new ChartObjectSellDialog(command.parm(1));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  connect(dialog, SIGNAL(signalDone(QString)), this, SIGNAL(signalDone(QString)));
+  ChartObjectSellDialog *dialog = new ChartObjectSellDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   dialog->show();
 

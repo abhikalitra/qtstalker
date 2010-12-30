@@ -22,8 +22,7 @@
 #include "ChartObjectHLineDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "Command.h"
-#include "ScriptPluginFactory.h"
+#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -31,18 +30,22 @@
 #include <QLayout>
 #include <QSettings>
 
-ChartObjectHLineDialog::ChartObjectHLineDialog (QString id)
+ChartObjectHLineDialog::ChartObjectHLineDialog (Command *c)
 {
-  _id = id;
+  _command = c;
   _helpFile = "main.html";
 
-  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit HLine"));
+  QStringList l;
+  l << "QtStalker" << g_session << ":" << tr("Edit HLine") << _command->parm(1);
+  setWindowTitle(l.join(" "));
 
   createGUI();
 
+  loadSettings();
+
   loadObject();
 
-  loadSettings();
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ChartObjectHLineDialog::createGUI ()
@@ -57,15 +60,13 @@ void ChartObjectHLineDialog::createGUI ()
   vbox->addLayout(form);
 
   // color
-  QColor c(Qt::red);
-  _color = new ColorButton(this, c);
-  _color->setColorButton();
+  _color = new ColorButton(this, QColor(Qt::red));
+//  _color->setColorButton();
   form->addRow(tr("Color"), _color);
   
   // price
   _price = new QDoubleSpinBox;
   _price->setRange(0.0, 99999999.0);
-  _price->setValue(0);
   form->addRow(tr("Price"), _price);
 
   // label
@@ -108,12 +109,15 @@ void ChartObjectHLineDialog::done ()
     settings.sync();
   }
 
-//  _settings.color = _color->color();
-//  _settings.price = _price->value();
+  _co.setData("Color", _color->color());
+  _co.setData("Price", _price->value());
 
-  emit signalDone(_id);
+  ChartObjectDataBase db;
+  db.save(&_co);
 
   saveSettings();
+
+  _command->setReturnData("0");
 
   accept();
 }
@@ -128,29 +132,6 @@ void ChartObjectHLineDialog::cancel ()
 {
   saveSettings();
   reject();
-}
-
-void ChartObjectHLineDialog::loadObject ()
-{
-  QStringList l;
-  l << "CHART_OBJECT_DATABASE" << "LOAD" << _id;
-
-  Command command(l.join(","));
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ChartObjectHLineDialog::loadObject: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
-
-  l = command.stringData().split(",", QString::SkipEmptyParts);
-
-//  _color->setColor(_settings.color);
-//  _price->setValue(_settings.price);
 }
 
 void ChartObjectHLineDialog::loadSettings ()
@@ -174,4 +155,15 @@ void ChartObjectHLineDialog::saveSettings ()
   settings.setValue("chart_object_hline_dialog_window_size", size());
   settings.setValue("chart_object_hline_dialog_window_position", pos());
   settings.sync();
+}
+
+void ChartObjectHLineDialog::loadObject ()
+{
+  _co.setData("ID", _command->parm(1));
+
+  ChartObjectDataBase db;
+  db.load(&_co);
+
+  _color->setColor(_co.color("Color"));
+  _price->setValue(_co.getDouble("Price"));
 }

@@ -23,7 +23,7 @@
 
 #include <QColorDialog>
 
-ColorButton::ColorButton (QWidget *w, QColor &c) : QPushButton (w)
+ColorButton::ColorButton (QWidget *w, QColor c) : QPushButton (w)
 {
   _color = c;
   

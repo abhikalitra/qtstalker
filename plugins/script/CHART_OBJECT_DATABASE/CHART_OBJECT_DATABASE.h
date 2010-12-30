@@ -22,42 +22,28 @@
 #ifndef CHART_OBJECT_DATABASE_HPP
 #define CHART_OBJECT_DATABASE_HPP
 
-#include <QtSql>
-
 #include "ScriptPlugin.h"
+#include "ChartObjectDataBase.h"
 
 class CHART_OBJECT_DATABASE : public ScriptPlugin
 {
   public:
     enum Method
     {
-      _GET,
-      _LOAD,
-      _SAVE,
-      _DELETE,
-      _DELETE_SYMBOL,
-      _DELETE_INDICATOR,
-      _SEARCH,
-      _RENAME,
-      _TRANSACTION,
-      _COMMIT
+      _IDS,
+      _TYPE,
+      _DELETE
     };
     
     CHART_OBJECT_DATABASE ();
     int command (Command *);
-    int get (Command *);
-    int load (Command *);
-    int save (Command *);
-    int deleteObject (Command *);
-    int deleteSymbol (Command *);
-    int deleteIndicator (Command *);
-    int rename (Command *);
-    int transaction (Command *);
-    int commit (Command *);
+    int ids (Command *);
+    int type (Command *);
+    int remove (Command *);
     
   private:
     QStringList _method;
-    QSqlDatabase _db;
+    ChartObjectDataBase _db;
 };
 
 extern "C"

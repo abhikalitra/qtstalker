@@ -48,7 +48,7 @@ void ChartObjectDataBase::init ()
 
   QSqlQuery q(_db);
   QString s = "CREATE TABLE IF NOT EXISTS " + _table + " (";
-  s.append("id INT PRIMARY KEY");
+  s.append("id TEXT PRIMARY KEY");
   s.append(", indicator TEXT");
   s.append(", exchange TEXT");
   s.append(", symbol TEXT");
@@ -115,7 +115,7 @@ void ChartObjectDataBase::deleteChartObject (QString id)
 
   _db.transaction();
   
-  QString s = "DELETE FROM " + _table + " WHERE id=" + id;
+  QString s = "DELETE FROM " + _table + " WHERE id='" + id + "'";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ChartObjectDataBase::deleteChartObject: " << q.lastError().text();
@@ -123,7 +123,23 @@ void ChartObjectDataBase::deleteChartObject (QString id)
   _db.commit();
 }
 
-void ChartObjectDataBase::load (QString indicator, BarData *bd, QList<Setting *> &l)
+void ChartObjectDataBase::load (Setting *co)
+{
+  QSqlQuery q(_db);
+
+  QString s = "SELECT settings FROM " + _table + " WHERE id='" + co->data("ID") + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "ChartObjectDataBase::load: " << q.lastError().text();
+    return;
+  }
+
+  if (q.next())
+    co->parse(q.value(0).toString());
+}
+
+void ChartObjectDataBase::load (QString indicator, BarData *bd, QList<Setting> &l)
 {
   QSqlQuery q(_db);
 
@@ -140,8 +156,8 @@ void ChartObjectDataBase::load (QString indicator, BarData *bd, QList<Setting *>
 
   while (q.next())
   {
-    Setting *co = new Setting;
-    co->parse(q.value(0).toString()); // order is critical (settings first)
+    Setting co;
+    co.parse(q.value(0).toString()); // order is critical (settings first)
     l.append(co);
   }
 }
@@ -154,7 +170,7 @@ void ChartObjectDataBase::save (Setting *co)
 
   QString s = "INSERT OR REPLACE INTO " + _table + " (id,settings,indicator,exchange,symbol)";
   s.append(" VALUES (");
-  s.append(co->data("ID"));
+  s.append("'" + co->data("ID") + "'");
   QString ts;
   co->string(ts);
   s.append(",'" + ts + "'");

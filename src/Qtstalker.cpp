@@ -54,7 +54,7 @@
 
 QtstalkerApp::QtstalkerApp(QString session, QString asset)
 {
-  setWindowIcon(QIcon(qtstalker));
+  setWindowIcon(QIcon(qtstalker_xpm));
 
   QCoreApplication::setOrganizationName("QtStalker");
   QCoreApplication::setOrganizationDomain("QtStalker.com");
@@ -425,6 +425,8 @@ void QtstalkerApp::addPlot (QString indicator)
   connect(g_middleMan, SIGNAL(signalGrid(bool)), plot, SLOT(setGrid(bool)));
   connect(g_middleMan, SIGNAL(signalCrosshairsColor(QColor)), plot, SLOT(setCrossHairsColor(QColor)));
   connect(g_middleMan, SIGNAL(signalCrosshairs(bool)), plot, SLOT(setCrossHairs(bool)));
+  connect(g_middleMan, SIGNAL(signalChartObjectDelete(QStringList)), plot, SLOT(deleteChartObject(QStringList)));
+  connect(g_middleMan, SIGNAL(signalChartObjectUpdate(QString)), plot, SLOT(updateChartObject(QString)));
 
   _plots.insert(indicator, plot);
 }

@@ -33,6 +33,18 @@ ChartObjectRetracement::ChartObjectRetracement ()
 {
   _createFlag = 0;
   _draw = new ChartObjectRetracementDraw;
+  _draw->setSettings(_settings);
+
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_retracement_color", "red").toString());
+  _settings->setData("Line1", set.value("default_chart_object_retracement_line1", 0.382).toDouble());
+  _settings->setData("Line2", set.value("default_chart_object_retracement_line2", 0.5).toDouble());
+  _settings->setData("Line3", set.value("default_chart_object_retracement_line3", 0.618).toDouble());
+  _settings->setData("Line4", set.value("default_chart_object_retracement_line4", 0).toDouble());
+  _settings->setData("Line5", set.value("default_chart_object_retracement_line5", 0).toDouble());
+  _settings->setData("Line6", set.value("default_chart_object_retracement_line6", 0).toDouble());
+  _settings->setData("Type", ChartObject::_Retracement);
+  _settings->setData("Extend", 0);
 }
 
 void ChartObjectRetracement::info (Setting &info)
@@ -262,6 +274,8 @@ void ChartObjectRetracement::click (int button, QPoint p)
           break;
         }
         case Qt::RightButton:
+          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
+          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
           _menu->exec(QCursor::pos());
           break;
         default:
@@ -283,6 +297,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
 
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
+          _settings->setData("Modified", 1);
           return;
         default:
           break;
@@ -327,38 +342,9 @@ void ChartObjectRetracement::click (int button, QPoint p)
   }
 }
 
-void ChartObjectRetracement::dialog ()
-{
-/*  
-  ChartObjectRetracementDialog *dialog = new ChartObjectRetracementDialog;
-  dialog->setSettings(_settings);
-  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-*/
-}
-
-void ChartObjectRetracement::dialog2 (Setting)
-{
-  _settings->setData("Modified", 1);
-//  setSettings(set);
-  _draw->plot()->replot();
-}
-
 void ChartObjectRetracement::create ()
 {
-  QSettings set(g_settingsFile);
-  _settings->setData("Color", set.value("default_chart_object_retracement_color", "red").toString());
-  _settings->setData("Line1", set.value("default_chart_object_retracement_line1", 0.382).toDouble());
-  _settings->setData("Line2", set.value("default_chart_object_retracement_line2", 0.5).toDouble());
-  _settings->setData("Line3", set.value("default_chart_object_retracement_line3", 0.618).toDouble());
-  _settings->setData("Line4", set.value("default_chart_object_retracement_line4", 0).toDouble());
-  _settings->setData("Line5", set.value("default_chart_object_retracement_line5", 0).toDouble());
-  _settings->setData("Line6", set.value("default_chart_object_retracement_line6", 0).toDouble());
-  _settings->setData("Type", ChartObject::_Retracement);
-  _settings->setData("Extend", 0);
   _settings->setData("Modified", 1);
-
   _createFlag = 1;
   _status = _Move;
   _draw->setSelected(TRUE);

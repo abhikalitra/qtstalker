@@ -27,6 +27,7 @@
 #include <QHash>
 #include <QDateTime>
 #include <QColor>
+#include <QFont>
 
 class Setting
 {
@@ -37,12 +38,14 @@ class Setting
     void setData (QString, double);
     void setData (QString, QColor);
     void setData (QString, QDateTime);
+    void setData (QString, QFont);
     
     QString data (QString);
     double getDouble (QString);
     int getInt (QString);
     QDateTime dateTime (QString);
     QColor color (QString);
+    QFont font (QString);
     
     void keyList (QStringList &);
     void remove (QString);

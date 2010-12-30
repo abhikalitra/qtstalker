@@ -30,16 +30,15 @@
 #include <QDialog>
 
 #include "ColorButton.h"
+#include "Command.h"
+#include "Setting.h"
 
 class ChartObjectVLineDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalDone (QString);
-
   public:
-    ChartObjectVLineDialog (QString id);
+    ChartObjectVLineDialog (Command *);
     void createGUI ();
     void loadObject ();
     void loadSettings ();
@@ -58,7 +57,8 @@ class ChartObjectVLineDialog : public QDialog
     QPushButton *_cancelButton;
     QString _helpFile;
     QLabel *_message;
-    QString _id;
+    Command *_command;
+    Setting _co;
 };
 
 #endif

@@ -34,6 +34,12 @@ ChartObjectTLine::ChartObjectTLine ()
 {
   _createFlag = 0;
   _draw = new ChartObjectTLineDraw;
+  _draw->setSettings(_settings);
+
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_tline_color", "red").toString());
+  _settings->setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
+  _settings->setData("Type", ChartObject::_TLine);
 }
 
 void ChartObjectTLine::info (Setting &info)
@@ -251,6 +257,8 @@ void ChartObjectTLine::click (int button, QPoint p)
           break;
         }
         case Qt::RightButton:
+          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
+          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
           _menu->exec(QCursor::pos());
           break;
         default:
@@ -287,6 +295,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           _status = _Selected;
           _createFlag = 0;
           emit signalMoveEnd(_settings->data("ID"));
+          _settings->setData("Modified", 1);
           return;
         default:
           break;
@@ -316,32 +325,9 @@ void ChartObjectTLine::click (int button, QPoint p)
   }
 }
 
-void ChartObjectTLine::dialog ()
-{
-/*  
-  ChartObjectTLineDialog *dialog = new ChartObjectTLineDialog;
-  dialog->setSettings(_settings);
-  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-*/
-}
-
-void ChartObjectTLine::dialog2 (Setting)
-{
-  _settings->setData("Modified", 1);
-//  setSettings(set);
-  _draw->plot()->replot();
-}
-
 void ChartObjectTLine::create ()
 {
-  QSettings set(g_settingsFile);
-  _settings->setData("Color", set.value("default_chart_object_tline_color", "red").toString());
-  _settings->setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
   _settings->setData("Modified", 1);
-  _settings->setData("Type", ChartObject::_TLine);
-
   _createFlag = 1;
   _status = _Move;
   _draw->setSelected(TRUE);

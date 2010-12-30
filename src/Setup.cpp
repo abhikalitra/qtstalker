@@ -155,8 +155,17 @@ void Setup::setupDirectories ()
   s = sysdir + "ScriptPanelRunScript.pl";
   settings.setValue("script_panel_run_script_script", s);
 
-  s = sysdir + "ChartObjectDeleteAll.pl";
-  settings.setValue("chart_object_delete_all_script", s);
+  s = sysdir + "ChartObjectDelete.pl";
+  settings.setValue("chart_object_delete_script", s);
+
+  s = sysdir + "ChartObjectDeleteSelect.pl";
+  settings.setValue("chart_object_delete_select_script", s);
+
+  s = sysdir + "ChartObjectEdit.pl";
+  settings.setValue("chart_object_edit_script", s);
+
+  s = sysdir + "ChartObjectEditSelect.pl";
+  settings.setValue("chart_object_edit_select_script", s);
 
   s = sysdir + "Configure.pl";
   settings.setValue("configure_script", s);

@@ -23,8 +23,7 @@
 #include "Globals.h"
 #include "Strip.h"
 #include "Doc.h"
-#include "Command.h"
-#include "ScriptPluginFactory.h"
+#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
 #include <QFormLayout>
@@ -32,18 +31,22 @@
 #include <QLayout>
 #include <QSettings>
 
-ChartObjectTextDialog::ChartObjectTextDialog (QString id)
+ChartObjectTextDialog::ChartObjectTextDialog (Command *c)
 {
-  _id = id;
+  _command = c;
   _helpFile = "main.html";
 
-  setWindowTitle("Qtstalker" + g_session + ": " + tr("Edit Text"));
+  QStringList l;
+  l << "QtStalker" << g_session << ":" << tr("Edit Text") << _command->parm(1);
+  setWindowTitle(l.join(" "));
 
   createGUI();
 
+  loadSettings();
+
   loadObject();
 
-  loadSettings();
+  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ChartObjectTextDialog::createGUI ()
@@ -63,15 +66,13 @@ void ChartObjectTextDialog::createGUI ()
   form->addRow(tr("Date"), _date);
 
   // color
-  QColor c(Qt::red);
-  _color = new ColorButton(this, c);
-  _color->setColorButton();
+  _color = new ColorButton(this, QColor(Qt::red));
+//  _color->setColorButton();
   form->addRow(tr("Color"), _color);
 
   // font
-  QFont f;
-  _font = new FontButton(this, f);
-  _font->setFontButton();
+  _font = new FontButton(this, QFont());
+//  _font->setFontButton();
   form->addRow(tr("Font"), _font);
   
   // price
@@ -132,15 +133,18 @@ void ChartObjectTextDialog::done ()
     settings.sync();
   }
 
-//  _settings.color = _color->color();
-//  _settings.date = _date->dateTime();
-//  _settings.price = _price->value();
-//  _settings.text = _label->text();
-//  _settings.font = _font->font();
+  _co.setData("Color", _color->color());
+  _co.setData("Price", _price->value());
+  _co.setData("Date", _date->dateTime());
+  _co.setData("Text", _label->text());
+  _co.setData("Font", _font->font());
 
-  emit signalDone(_id);
+  ChartObjectDataBase db;
+  db.save(&_co);
 
   saveSettings();
+
+  _command->setReturnData("0");
 
   accept();
 }
@@ -159,28 +163,16 @@ void ChartObjectTextDialog::cancel ()
 
 void ChartObjectTextDialog::loadObject ()
 {
-  QStringList l;
-  l << "CHART_OBJECT_DATABASE" << "LOAD" << _id;
+  _co.setData("ID", _command->parm(1));
 
-  Command command(l.join(","));
+  ChartObjectDataBase db;
+  db.load(&_co);
 
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ChartObjectTextDialog::loadGroups: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(command);
-
-  l = command.stringData().split(",", QString::SkipEmptyParts);
-
-//  _color->setColor(_settings.color);
-//  _date->setDateTime(_settings.date);
-//  _price->setValue(_settings.price);
-//  _font->setFont(_settings.font);
-//  _label->setText(_settings.text);
+  _date->setDateTime(_co.dateTime("Date"));
+  _color->setColor(_co.color("Color"));
+  _font->setFont(_co.font("Font"));
+  _price->setValue(_co.getDouble("Price"));
+  _label->setText(_co.data("Text"));
 }
 
 void ChartObjectTextDialog::loadSettings ()
@@ -199,7 +191,6 @@ void ChartObjectTextDialog::loadSettings ()
 
   QFont font;
   QStringList l = settings.value("default_chart_object_text_font").toStringList();
-  
 }
 
 void ChartObjectTextDialog::saveSettings ()

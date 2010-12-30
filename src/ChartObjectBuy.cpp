@@ -32,6 +32,11 @@
 ChartObjectBuy::ChartObjectBuy ()
 {
   _draw = new ChartObjectBuyDraw;
+  _draw->setSettings(_settings);
+
+  QSettings set(g_settingsFile);
+  _settings->setData("Color", set.value("default_chart_object_buy_color", "green").toString());
+  _settings->setData(QString("Type"), ChartObject::_Buy);
 }
 
 void ChartObjectBuy::info (Setting &info)
@@ -183,6 +188,8 @@ void ChartObjectBuy::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
+          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
+          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
           _menu->exec(QCursor::pos());
           break;
         default:
@@ -198,6 +205,7 @@ void ChartObjectBuy::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
+          _settings->setData("Modified", 1);
           return;
         default:
           break;
@@ -227,31 +235,9 @@ void ChartObjectBuy::click (int button, QPoint p)
   }
 }
 
-void ChartObjectBuy::dialog ()
-{
-/*  
-  ChartObjectBuyDialog *dialog = new ChartObjectBuyDialog;
-  dialog->setSettings(_settings);
-  connect(dialog, SIGNAL(signalDone(ChartObjectSettings)), this, SLOT(dialog2(ChartObjectSettings)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-*/
-}
-
-void ChartObjectBuy::dialog2 (Setting)
-{
-  _settings->setData("Modified", 1);
-//  setSettings(set);
-  _draw->plot()->replot();
-}
-
 void ChartObjectBuy::create ()
 {
-  QSettings set(g_settingsFile);
-  _settings->setData("Color", set.value("default_chart_object_buy_color", "green").toString());
-  _settings->setData(QString("Type"), ChartObject::_Buy);
   _settings->setData("Modified", 1);
-
   _status = _Move;
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));
