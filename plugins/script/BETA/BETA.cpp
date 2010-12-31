@@ -22,6 +22,7 @@
 #include "BETA.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ BETA::BETA ()
 {
 }
 
-int BETA::command (Command &command)
+int BETA::command (Command *command)
 {
   // BETA,<NAME>,<INPUT_1>,<INPUT_2>,<PERIOD>
   //  0      1       2         3        4
 
-  if (command.count() != 5)
+  if (command->count() != 5)
   {
-    qDebug() << "BETA::command: invalid settings count" << command.count();
+    qDebug() << "BETA::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "BETA::command: no indicator";
@@ -48,7 +49,7 @@ int BETA::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -57,27 +58,27 @@ int BETA::command (Command &command)
   }
 
   pos++;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "BETA::command: input missing" << command.parm(pos);
+    qDebug() << "BETA::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  Curve *in2 = i->line(command.parm(pos));
+  Curve *in2 = i->line(command->parm(pos));
   if (! in2)
   {
-    qDebug() << "BETA::command: input 2 missing" << command.parm(pos);
+    qDebug() << "BETA::command: input 2 missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "BETA::command: invalid period" << command.parm(pos);
+    qDebug() << "BETA::command: invalid period" << command->parm(pos);
     return 1;
   }
 
@@ -142,12 +143,9 @@ int BETA::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

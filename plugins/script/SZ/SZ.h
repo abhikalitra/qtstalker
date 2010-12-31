@@ -36,7 +36,7 @@ class SZ : public ScriptPlugin
     };
 
     SZ ();
-    int command (Command &);
+    int command (Command *);
 
   private:
     QStringList _method;

@@ -38,7 +38,7 @@ class HT : public ScriptPlugin
     };
 
     HT ();
-    int command (Command &);
+    int command (Command *);
 
   protected:
     QStringList _method;

@@ -31,6 +31,7 @@
 
 #include "THERM.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -39,32 +40,32 @@ THERM::THERM ()
 {
 }
 
-int THERM::command (Command &command)
+int THERM::command (Command *command)
 {
   // THERM,<NAME>
   //   0     1
 
-  if (command.count() != 2)
+  if (command->count() != 2)
   {
-    qDebug() << "THERM::command: invalid parm count" << command.count();
+    qDebug() << "THERM::command: invalid parm count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "THERM::command: no bars";
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "THERM::command: no indicator";
     return 1;
   }
 
-  QString name = command.parm(1);
+  QString name = command->parm(1);
 
   Curve *line = i->line(name);
   if (line)
@@ -96,12 +97,9 @@ int THERM::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

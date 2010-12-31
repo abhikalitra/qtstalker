@@ -30,7 +30,7 @@ class BETA : public ScriptPlugin
   
   public:
     BETA ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

@@ -22,6 +22,7 @@
 #include "T3.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ T3::T3 ()
 {
 }
 
-int T3::command (Command &command)
+int T3::command (Command *command)
 {
   // T3,<NAME>,<INPUT>,<PERIOD>,<VFACTOR>
   //  0     1      2       3        4
 
-  if (command.count() != 5)
+  if (command->count() != 5)
   {
-    qDebug() << "T3::command: invalid settings count" << command.count();
+    qDebug() << "T3::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "T3::command: no indicator";
@@ -48,7 +49,7 @@ int T3::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -57,27 +58,27 @@ int T3::command (Command &command)
   }
 
   pos++;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "T3::command: input missing" << command.parm(pos);
+    qDebug() << "T3::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "T3::command: invalid period" << command.parm(pos);
+    qDebug() << "T3::command: invalid period" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  double vfactor = command.parm(pos).toDouble(&ok);
+  double vfactor = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "T3::command: invalid vfactor" << command.parm(pos);
+    qDebug() << "T3::command: invalid vfactor" << command->parm(pos);
     return 1;
   }
 
@@ -127,12 +128,9 @@ int T3::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

@@ -30,7 +30,7 @@ class CCI : public ScriptPlugin
   
   public:
     CCI ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

@@ -22,6 +22,7 @@
 #include "CORREL.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ CORREL::CORREL ()
 {
 }
 
-int CORREL::command (Command &command)
+int CORREL::command (Command *command)
 {
   // CORREL,<NAME>,<INPUT_1>,<INPUT_2>,<PERIOD>
   //    0     1        2         3        4
 
-  if (command.count() != 5)
+  if (command->count() != 5)
   {
-    qDebug() << "CORREL::command: invalid settings count" << command.count();
+    qDebug() << "CORREL::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "CORREL::command: no indicator";
@@ -48,7 +49,7 @@ int CORREL::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -57,27 +58,27 @@ int CORREL::command (Command &command)
   }
 
   pos++;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "CORREL::command: input missing" << command.parm(pos);
+    qDebug() << "CORREL::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  Curve *in2 = i->line(command.parm(pos));
+  Curve *in2 = i->line(command->parm(pos));
   if (! in2)
   {
-    qDebug() << "CORREL::command: input 2 missing" << command.parm(pos);
+    qDebug() << "CORREL::command: input 2 missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "CORREL::command: invalid period" << command.parm(pos);
+    qDebug() << "CORREL::command: invalid period" << command->parm(pos);
     return 1;
   }
 
@@ -142,12 +143,9 @@ int CORREL::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

@@ -30,7 +30,7 @@ class VFI : public ScriptPlugin
   
   public:
     VFI ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

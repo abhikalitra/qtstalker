@@ -30,7 +30,7 @@ class ATR : public ScriptPlugin
   
   public:
     ATR ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

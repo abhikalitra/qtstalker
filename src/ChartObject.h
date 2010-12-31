@@ -47,17 +47,6 @@ class ChartObject : public QObject
     void signalMoveEnd (QString);
   
   public:
-    enum Type
-    {
-      _Buy,
-      _HLine,
-      _Retracement,
-      _Sell,
-      _Text,
-      _TLine,
-      _VLine
-    };
-
     enum Status
     {
       _None,

@@ -30,7 +30,7 @@ class STOCH_FAST : public ScriptPlugin
   
   public:
     STOCH_FAST ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

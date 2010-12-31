@@ -33,7 +33,7 @@ class PlotMenu : public QMenu
   Q_OBJECT
 
   signals:
-    void signalNewChartObject (int, QString);
+    void signalNewChartObject (QString, QString);
     void signalLockStatus (bool);
     void signalDateStatus (bool);
     void signalLogStatus (bool);

@@ -27,8 +27,19 @@
 class CHART_OBJECT_RETRACEMENT : public ScriptPlugin
 {
   public:
+    enum Method
+    {
+      _RO,
+      _RW
+    };
+
     CHART_OBJECT_RETRACEMENT ();
     int command (Command *);
+    int createRW (Command *);
+    int createRO (Command *);
+
+  private:
+    QStringList _method;
 };
 
 extern "C"

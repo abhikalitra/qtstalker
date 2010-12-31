@@ -30,7 +30,7 @@ class MFI : public ScriptPlugin
   
   public:
     MFI ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

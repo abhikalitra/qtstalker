@@ -30,7 +30,7 @@ class AROON : public ScriptPlugin
   
   public:
     AROON ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

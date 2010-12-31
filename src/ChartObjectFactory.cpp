@@ -35,31 +35,31 @@ ChartObjectFactory::ChartObjectFactory ()
   _types << "Buy" << "HLine" << "Retracement" << "Sell" << "Text" << "TLine" << "VLine";
 }
 
-ChartObject * ChartObjectFactory::chartObject (int type)
+ChartObject * ChartObjectFactory::chartObject (QString type)
 {
   ChartObject *co = 0;
   
-  switch ((ChartObject::Type) type)
+  switch ((Type) _types.indexOf(type))
   {
-    case ChartObject::_Buy:
+    case _BUY:
       co = new ChartObjectBuy;
       break;
-    case ChartObject::_HLine:
+    case _HLINE:
       co = new ChartObjectHLine;
       break;
-    case ChartObject::_Retracement:
+    case _RETRACEMENT:
       co = new ChartObjectRetracement;
       break;
-    case ChartObject::_Sell:
+    case _SELL:
       co = new ChartObjectSell;
       break;
-    case ChartObject::_Text:
+    case _TEXT:
       co = new ChartObjectText;
       break;
-    case ChartObject::_TLine:
+    case _TLINE:
       co = new ChartObjectTLine;
       break;
-    case ChartObject::_VLine:
+    case _VLINE:
       co = new ChartObjectVLine;
       break;
     default:
@@ -68,9 +68,3 @@ ChartObject * ChartObjectFactory::chartObject (int type)
   
   return co;
 }
-
-ChartObject * ChartObjectFactory::chartObject (QString type)
-{
-  return chartObject(_types.indexOf(type));
-}
-

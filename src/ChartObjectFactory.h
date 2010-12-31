@@ -33,8 +33,18 @@
 class ChartObjectFactory
 {
   public:
+    enum Type
+    {
+      _BUY,
+      _HLINE,
+      _RETRACEMENT,
+      _SELL,
+      _TEXT,
+      _TLINE,
+      _VLINE
+    };
+    
     ChartObjectFactory ();
-    ChartObject * chartObject (int);
     ChartObject * chartObject (QString);
 
   private:

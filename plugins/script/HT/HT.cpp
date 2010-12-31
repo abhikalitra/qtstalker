@@ -22,6 +22,7 @@
 #include "HT.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,18 +31,18 @@ HT::HT ()
   _method << "DCPERIOD" << "DCPHASE" << "TRENDLINE" << "TRENDMODE";
 }
 
-int HT::command (Command &command)
+int HT::command (Command *command)
 {
   // HT,<METHOD>,<NAME>,<INPUT>
   //  0    1       2       3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "HT::command: invalid settings count" << command.count();
+    qDebug() << "HT::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "HT::command: no indicator";
@@ -49,15 +50,15 @@ int HT::command (Command &command)
   }
 
   int pos = 1;
-  int method = _method.indexOf(command.parm(pos));
+  int method = _method.indexOf(command->parm(pos));
   if (method == -1)
   {
-    qDebug() << "HT::command: invalid method" << command.parm(pos);
+    qDebug() << "HT::command: invalid method" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -66,10 +67,10 @@ int HT::command (Command &command)
   }
 
   pos++;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "HT::command: input missing" << command.parm(pos);
+    qDebug() << "HT::command: input missing" << command->parm(pos);
     return 1;
   }
 
@@ -126,8 +127,7 @@ int HT::command (Command &command)
 
       line->setLabel(name);
       i->setLine(name, line);
-      command.setReturnData("0");
-      emit signalDone();
+      command->setReturnData("0");
       return 0;
       break;
     }
@@ -153,12 +153,9 @@ int HT::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

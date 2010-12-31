@@ -30,7 +30,7 @@ class RSI : public ScriptPlugin
   
   public:
     RSI ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

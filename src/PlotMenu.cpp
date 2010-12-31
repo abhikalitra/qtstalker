@@ -20,7 +20,6 @@
  */
 
 #include "PlotMenu.h"
-#include "ChartObject.h"
 #include "Globals.h"
 #include "Script.h"
 #include "ChartObjectDataBase.h"
@@ -56,33 +55,13 @@ void PlotMenu::init ()
   _coListMenu = new QMenu(this);
   _coListMenu->setTitle(tr("New Chart Object..."));
   
-  QAction *a = _coListMenu->addAction(QPixmap(buyarrow_xpm), tr("&Buy"));
-  a->setShortcut(Qt::ALT+Qt::Key_B);
-  a->setData(QVariant(ChartObject::_Buy));
-  
-  a = _coListMenu->addAction(QPixmap(horizontal_xpm), tr("&HLine"));
-  a->setShortcut(Qt::ALT+Qt::Key_H);
-  a->setData(QVariant(ChartObject::_HLine));
-  
-  a = _coListMenu->addAction(QPixmap(fib_xpm), tr("&Retracement"));
-  a->setShortcut(Qt::ALT+Qt::Key_R);
-  a->setData(QVariant(ChartObject::_Retracement));
-  
-  a = _coListMenu->addAction(QPixmap(sellarrow_xpm), tr("&Sell"));
-  a->setShortcut(Qt::ALT+Qt::Key_S);
-  a->setData(QVariant(ChartObject::_Sell));
-  
-  a = _coListMenu->addAction(QPixmap(text_xpm), tr("Te&xt"));
-  a->setShortcut(Qt::ALT+Qt::Key_X);
-  a->setData(QVariant(ChartObject::_Text));
-  
-  a = _coListMenu->addAction(QPixmap(trend_xpm), tr("&TLine"));
-  a->setShortcut(Qt::ALT+Qt::Key_T);
-  a->setData(QVariant(ChartObject::_TLine));
-  
-  a = _coListMenu->addAction(QPixmap(vertical_xpm), tr("&VLine"));
-  a->setShortcut(Qt::ALT+Qt::Key_V);
-  a->setData(QVariant(ChartObject::_VLine));
+  _coListMenu->addAction(QPixmap(buyarrow_xpm), tr("Buy"));
+  _coListMenu->addAction(QPixmap(horizontal_xpm), tr("HLine"));
+  _coListMenu->addAction(QPixmap(fib_xpm), tr("Retracement"));
+  _coListMenu->addAction(QPixmap(sellarrow_xpm), tr("Sell"));
+  _coListMenu->addAction(QPixmap(text_xpm), tr("Text"));
+  _coListMenu->addAction(QPixmap(trend_xpm), tr("TLine"));
+  _coListMenu->addAction(QPixmap(vertical_xpm), tr("VLine"));
   
   connect(_coListMenu, SIGNAL(triggered(QAction *)), this, SLOT(chartObjectMenuSelected(QAction *)));
   
@@ -185,7 +164,7 @@ void PlotMenu::chartObjectMenuSelected2 ()
   if (s == "ERROR")
     return;
   
-  emit signalNewChartObject(_currentAction->data().toInt(), s);
+  emit signalNewChartObject(_currentAction->text(), s);
 }
 
 void PlotMenu::setCOMenuStatus (bool status)

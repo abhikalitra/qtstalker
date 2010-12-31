@@ -30,7 +30,7 @@ class BBANDS : public ScriptPlugin
   
   public:
     BBANDS ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

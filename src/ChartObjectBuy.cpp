@@ -36,18 +36,18 @@ ChartObjectBuy::ChartObjectBuy ()
 
   QSettings set(g_settingsFile);
   _settings->setData("Color", set.value("default_chart_object_buy_color", "green").toString());
-  _settings->setData(QString("Type"), ChartObject::_Buy);
+  _settings->setData(QString("Type"), QString("Buy"));
 }
 
 void ChartObjectBuy::info (Setting &info)
 {
-  info.setData(QObject::tr("Type"), QObject::tr("Buy"));
+  info.setData(tr("Type"), tr("Buy"));
 
   QDateTime dt = _settings->dateTime("Date");
-  info.setData(QObject::tr("D"), dt.toString("yyyy-MM-dd"));
-  info.setData(QObject::tr("T"), dt.toString("HH:mm:ss"));
+  info.setData(tr("D"), dt.toString("yyyy-MM-dd"));
+  info.setData(tr("T"), dt.toString("HH:mm:ss"));
 
-  info.setData(QObject::tr("Price"), _settings->data("Price"));
+  info.setData(tr("Price"), _settings->data("Price"));
 }
 
 int ChartObjectBuy::highLow (int start, int end, double &h, double &l)
@@ -91,6 +91,9 @@ void ChartObjectBuy::move (QPoint p)
 
 void ChartObjectBuy::click (int button, QPoint p)
 {
+  if (_settings->getInt("RO"))
+    return;
+
   switch (_status)
   {
     case _Selected:

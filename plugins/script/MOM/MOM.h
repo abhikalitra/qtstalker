@@ -30,7 +30,7 @@ class MOM : public ScriptPlugin
   
   public:
     MOM ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

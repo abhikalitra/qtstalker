@@ -22,6 +22,7 @@
 #include "HT_SINE.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ HT_SINE::HT_SINE ()
 {
 }
 
-int HT_SINE::command (Command &command)
+int HT_SINE::command (Command *command)
 {
   // HT_SINE,<INPUT>,<SINE NAME>,<LEAD NAME>
   //    0       1         2          3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "HT_SINE::command: invalid settings count" << command.count();
+    qDebug() << "HT_SINE::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "HT_SINE::command: no indicator";
@@ -48,15 +49,15 @@ int HT_SINE::command (Command &command)
   }
 
   int pos = 1;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "HT_SINE::command: input missing" << command.parm(pos);
+    qDebug() << "HT_SINE::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;  
-  QString sname = command.parm(pos);
+  QString sname = command->parm(pos);
   Curve *line = i->line(sname);
   if (line)
   {
@@ -65,7 +66,7 @@ int HT_SINE::command (Command &command)
   }
 
   pos++;
-  QString lname = command.parm(pos);
+  QString lname = command->parm(pos);
   line = i->line(lname);
   if (line)
   {
@@ -127,9 +128,7 @@ int HT_SINE::command (Command &command)
   i->setLine(sname, sline);
   i->setLine(lname, lline);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

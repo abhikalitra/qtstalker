@@ -22,6 +22,7 @@
 #include "ROC.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,18 +31,18 @@ ROC::ROC ()
   _method << "ROC" << "ROCP" << "ROCR" << "ROCR100";
 }
 
-int ROC::command (Command &command)
+int ROC::command (Command *command)
 {
   // ROC,<METHOD>,<NAME>,<INPUT>,<PERIOD>
   //  0     1       2       3       4
 
-  if (command.count() != 5)
+  if (command->count() != 5)
   {
-    qDebug() << "ROC::command: invalid settings count" << command.count();
+    qDebug() << "ROC::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "ROC::command: no indicator";
@@ -49,15 +50,15 @@ int ROC::command (Command &command)
   }
 
   int pos = 1;
-  int method = _method.indexOf(command.parm(pos));
+  int method = _method.indexOf(command->parm(pos));
   if (method == -1)
   {
-    qDebug() << "ROC::command: invalid method" << command.parm(pos);
+    qDebug() << "ROC::command: invalid method" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -66,19 +67,19 @@ int ROC::command (Command &command)
   }
 
   pos++;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "ROC::command: input missing" << command.parm(pos);
+    qDebug() << "ROC::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ROC::command: invalid period" << command.parm(pos);
+    qDebug() << "ROC::command: invalid period" << command->parm(pos);
     return 1;
   }
 
@@ -139,12 +140,9 @@ int ROC::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

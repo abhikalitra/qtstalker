@@ -22,6 +22,7 @@
 #include "AROON.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ AROON::AROON ()
 {
 }
 
-int AROON::command (Command &command)
+int AROON::command (Command *command)
 {
   // AROON,<UPPER NAME>,<LOWER NAME>,<PERIOD>
   //   0       1              2         3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "AROON::command: invalid settings count" << command.count();
+    qDebug() << "AROON::command: invalid settings count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "AROON::command: no bars";
@@ -50,7 +51,7 @@ int AROON::command (Command &command)
   if (data->count() < 1)
     return 1;
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "AROON::command: no indicator";
@@ -58,8 +59,7 @@ int AROON::command (Command &command)
   }
 
   int pos = 1;
-  QString uname = command.parm(pos);
-
+  QString uname = command->parm(pos);
   Curve *line = i->line(uname);
   if (line)
   {
@@ -68,7 +68,7 @@ int AROON::command (Command &command)
   }
 
   pos++;
-  QString lname = command.parm(pos);
+  QString lname = command->parm(pos);
 
   line = i->line(lname);
   if (line)
@@ -79,10 +79,10 @@ int AROON::command (Command &command)
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "AROON::command: invalid period" << command.parm(pos);
+    qDebug() << "AROON::command: invalid period" << command->parm(pos);
     return 1;
   }
 
@@ -138,9 +138,7 @@ int AROON::command (Command &command)
   i->setLine(uname, upper);
   i->setLine(lname, lower);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

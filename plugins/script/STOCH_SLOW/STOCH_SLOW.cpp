@@ -23,6 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "FunctionMA.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,18 +31,18 @@ STOCH_SLOW::STOCH_SLOW ()
 {
 }
 
-int STOCH_SLOW::command (Command &command)
+int STOCH_SLOW::command (Command *command)
 {
   // STOCH_SLOW,<NAME SLOWK>,<NAME SLOWD>,<FASTK PERIOD>,<SLOWK PERIOD>,<SLOWK MA TYPE>,<SLOWD PERIOD>,<SLOWD MA TYPE>
   //     0           1            2             3              4               5              6               7
 
-  if (command.count() != 8)
+  if (command->count() != 8)
   {
-    qDebug() << "STOCH_SLOW::command: invalid settings count" << command.count();
+    qDebug() << "STOCH_SLOW::command: invalid settings count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "STOCH_SLOW::command: no bars";
@@ -51,7 +52,7 @@ int STOCH_SLOW::command (Command &command)
   if (data->count() < 1)
     return 1;
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "STOCH_SLOW::command: no indicator";
@@ -59,7 +60,7 @@ int STOCH_SLOW::command (Command &command)
   }
 
   int pos = 1;
-  QString kname = command.parm(pos);
+  QString kname = command->parm(pos);
   Curve *line = i->line(kname);
   if (line)
   {
@@ -68,7 +69,7 @@ int STOCH_SLOW::command (Command &command)
   }
 
   pos++;
-  QString dname = command.parm(pos);
+  QString dname = command->parm(pos);
   line = i->line(dname);
   if (line)
   {
@@ -78,43 +79,43 @@ int STOCH_SLOW::command (Command &command)
 
   pos++;
   bool ok;
-  int fkperiod = command.parm(pos).toInt(&ok);
+  int fkperiod = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_SLOW::command: invalid fast k period" << command.parm(pos);
+    qDebug() << "STOCH_SLOW::command: invalid fast k period" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int skperiod = command.parm(pos).toInt(&ok);
+  int skperiod = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_SLOW::command: invalid slow k period" << command.parm(pos);
+    qDebug() << "STOCH_SLOW::command: invalid slow k period" << command->parm(pos);
     return 1;
   }
 
   pos++;
   FunctionMA fma;
-  int kma = fma.typeFromString(command.parm(pos));
+  int kma = fma.typeFromString(command->parm(pos));
   if (kma == -1)
   {
-    qDebug() << "STOCH_SLOW::command: invalid slow k ma type" << command.parm(pos);
+    qDebug() << "STOCH_SLOW::command: invalid slow k ma type" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int sdperiod = command.parm(pos).toInt(&ok);
+  int sdperiod = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_SLOW::command: invalid slow d period" << command.parm(pos);
+    qDebug() << "STOCH_SLOW::command: invalid slow d period" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int dma = fma.typeFromString(command.parm(pos));
+  int dma = fma.typeFromString(command->parm(pos));
   if (dma == -1)
   {
-    qDebug() << "STOCH_SLOW::command: invalid slow d ma type" << command.parm(pos);
+    qDebug() << "STOCH_SLOW::command: invalid slow d ma type" << command->parm(pos);
     return 1;
   }
 
@@ -181,9 +182,7 @@ int STOCH_SLOW::command (Command &command)
   i->setLine(kname, kline);
   i->setLine(dname, dline);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

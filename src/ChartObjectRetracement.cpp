@@ -43,7 +43,7 @@ ChartObjectRetracement::ChartObjectRetracement ()
   _settings->setData("Line4", set.value("default_chart_object_retracement_line4", 0).toDouble());
   _settings->setData("Line5", set.value("default_chart_object_retracement_line5", 0).toDouble());
   _settings->setData("Line6", set.value("default_chart_object_retracement_line6", 0).toDouble());
-  _settings->setData("Type", ChartObject::_Retracement);
+  _settings->setData("Type", QString("Retracement"));
   _settings->setData("Extend", 0);
 }
 
@@ -142,6 +142,9 @@ void ChartObjectRetracement::move (QPoint p)
 
 void ChartObjectRetracement::click (int button, QPoint p)
 {
+  if (_settings->getInt("RO"))
+    return;
+
   switch (_status)
   {
     case _Selected:

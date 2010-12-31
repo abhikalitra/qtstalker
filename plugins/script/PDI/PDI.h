@@ -30,7 +30,7 @@ class PDI : public ScriptPlugin
   
   public:
     PDI ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

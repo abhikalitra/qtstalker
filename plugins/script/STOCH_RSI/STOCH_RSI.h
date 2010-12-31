@@ -30,7 +30,7 @@ class STOCH_RSI : public ScriptPlugin
   
   public:
     STOCH_RSI ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

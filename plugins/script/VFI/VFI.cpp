@@ -21,6 +21,7 @@
 
 #include "VFI.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -29,18 +30,18 @@ VFI::VFI ()
 {
 }
 
-int VFI::command (Command &command)
+int VFI::command (Command *command)
 {
   // VFI,<NAME>,<PERIOD>
   //  0     1      2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "VFI::command: invalid settings count" << command.count();
+    qDebug() << "VFI::command: invalid settings count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "VFI::command: no bars";
@@ -50,7 +51,7 @@ int VFI::command (Command &command)
   if (data->count() < 1)
     return 1;
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "VFI::command: no indicator";
@@ -58,7 +59,7 @@ int VFI::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
 
   Curve *line = i->line(name);
   if (line)
@@ -69,10 +70,10 @@ int VFI::command (Command &command)
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "VFI::command: invalid period" << command.parm(pos);
+    qDebug() << "VFI::command: invalid period" << command->parm(pos);
     return 1;
   }
 
@@ -138,12 +139,9 @@ int VFI::command (Command &command)
   }
 
   vfi->setLabel(name);
-
   i->setLine(name, vfi);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

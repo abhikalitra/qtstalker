@@ -30,7 +30,7 @@ class AD : public ScriptPlugin
   
   public:
     AD ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

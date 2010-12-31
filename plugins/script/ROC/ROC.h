@@ -38,7 +38,7 @@ class ROC : public ScriptPlugin
     };
 
     ROC ();
-    int command (Command &);
+    int command (Command *);
 
   protected:
     QStringList _method;

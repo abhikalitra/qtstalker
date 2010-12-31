@@ -30,7 +30,7 @@ class MACD : public ScriptPlugin
   
   public:
     MACD ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

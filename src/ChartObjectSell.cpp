@@ -36,7 +36,7 @@ ChartObjectSell::ChartObjectSell ()
 
   QSettings set(g_settingsFile);
   _settings->setData("Color", set.value("default_chart_object_sell_color", "red").toString());
-  _settings->setData("Type", ChartObject::_Sell);
+  _settings->setData("Type", QString("Sell"));
 }
 
 void ChartObjectSell::info (Setting &info)
@@ -91,6 +91,9 @@ void ChartObjectSell::move (QPoint p)
 
 void ChartObjectSell::click (int button, QPoint p)
 {
+  if (_settings->getInt("RO"))
+    return;
+
   switch (_status)
   {
     case _Selected:

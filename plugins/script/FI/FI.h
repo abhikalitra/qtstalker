@@ -30,7 +30,7 @@ class FI : public ScriptPlugin
   
   public:
     FI ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

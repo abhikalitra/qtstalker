@@ -20,6 +20,7 @@
  */
 
 #include "VIDYA.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include "ta_libc.h"
@@ -33,18 +34,18 @@ VIDYA::VIDYA ()
 {
 }
 
-int VIDYA::command (Command &command)
+int VIDYA::command (Command *command)
 {
   // VIDYA,<NAME>,<INPUT>,<PERIOD>,<VOLUME PERIOD>
   //   0     1       2       3            4
 
-  if (command.count() != 5)
+  if (command->count() != 5)
   {
-    qDebug() << "VIDYA::command: invalid settings count" << command.count();
+    qDebug() << "VIDYA::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "VIDYA::command: no indicator";
@@ -52,7 +53,7 @@ int VIDYA::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -61,27 +62,27 @@ int VIDYA::command (Command &command)
   }
 
   pos++;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "VIDYA::command: input missing" << command.parm(pos);
+    qDebug() << "VIDYA::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "VIDYA::command: invalid period" << command.parm(pos);
+    qDebug() << "VIDYA::command: invalid period" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int vperiod = command.parm(pos).toDouble(&ok);
+  int vperiod = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "VIDYA::command: invalid volume period" << command.parm(pos);
+    qDebug() << "VIDYA::command: invalid volume period" << command->parm(pos);
     return 1;
   }
 
@@ -142,12 +143,9 @@ int VIDYA::command (Command &command)
   delete cmo;
 
   out->setLabel(name);
-
   i->setLine(name, out);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

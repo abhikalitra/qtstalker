@@ -63,6 +63,7 @@ class Indicator : public QObject
     int fromString (QString);
     void loadChartObjects ();
     QHash<QString, Setting> & chartObjects ();
+    int chartObjectCount ();
 
   public slots:
     int save ();

@@ -39,7 +39,7 @@ ChartObjectTLine::ChartObjectTLine ()
   QSettings set(g_settingsFile);
   _settings->setData("Color", set.value("default_chart_object_tline_color", "red").toString());
   _settings->setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
-  _settings->setData("Type", ChartObject::_TLine);
+  _settings->setData("Type", QString("TLine"));
 }
 
 void ChartObjectTLine::info (Setting &info)
@@ -139,6 +139,9 @@ void ChartObjectTLine::move (QPoint p)
 
 void ChartObjectTLine::click (int button, QPoint p)
 {
+  if (_settings->getInt("RO"))
+    return;
+
   switch (_status)
   {
     case _Selected:

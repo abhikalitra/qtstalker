@@ -87,7 +87,7 @@ class Plot : public QwtPlot
     void mouseClick (int, QPoint);
     void deleteChartObject (QStringList);
     void updateChartObject (QString);
-    void chartObjectNew (int, QString);
+    void chartObjectNew (QString, QString);
     void chartObjectSelected (QString);
     void chartObjectUnselected (QString);
     void chartObjectMoveStart (QString);

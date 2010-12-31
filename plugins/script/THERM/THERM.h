@@ -30,7 +30,7 @@ class THERM : public ScriptPlugin
   
   public:
     THERM ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

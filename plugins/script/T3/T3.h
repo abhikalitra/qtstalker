@@ -30,7 +30,7 @@ class T3 : public ScriptPlugin
   
   public:
     T3 ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

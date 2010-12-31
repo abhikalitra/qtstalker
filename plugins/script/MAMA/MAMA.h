@@ -30,7 +30,7 @@ class MAMA : public ScriptPlugin
   
   public:
     MAMA ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

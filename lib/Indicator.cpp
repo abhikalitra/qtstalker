@@ -284,3 +284,8 @@ QHash<QString, Setting> &  Indicator::chartObjects ()
 {
   return _chartObjects;
 }
+
+int Indicator::chartObjectCount ()
+{
+  return _chartObjects.count();
+}

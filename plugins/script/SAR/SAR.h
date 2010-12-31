@@ -30,7 +30,7 @@ class SAR : public ScriptPlugin
   
   public:
     SAR ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

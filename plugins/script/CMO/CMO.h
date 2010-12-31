@@ -30,7 +30,7 @@ class CMO : public ScriptPlugin
   
   public:
     CMO ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

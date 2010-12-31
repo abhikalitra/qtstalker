@@ -38,7 +38,7 @@ ChartObjectText::ChartObjectText ()
   _settings->setData("Color", set.value("default_chart_object_text_color", "red").toString());
   _settings->setData("Font", set.value("default_chart_object_text_font", "Helvetica,9,50,0").toString());
   _settings->setData("Text", set.value("default_chart_object_text_text", "Text").toString());
-  _settings->setData("Type", ChartObject::_Text);
+  _settings->setData("Type", QString("Text"));
 }
 
 void ChartObjectText::info (Setting &info)
@@ -95,6 +95,9 @@ void ChartObjectText::move (QPoint p)
 
 void ChartObjectText::click (int button, QPoint p)
 {
+  if (_settings->getInt("RO"))
+    return;
+
   switch (_status)
   {
     case _Selected:

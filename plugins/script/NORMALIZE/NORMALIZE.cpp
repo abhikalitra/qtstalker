@@ -21,6 +21,7 @@
 
 #include "NORMALIZE.h"
 #include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -30,18 +31,18 @@ NORMALIZE::NORMALIZE ()
 {
 }
 
-int NORMALIZE::command (Command &command)
+int NORMALIZE::command (Command *command)
 {
   // NORMALIZE,<NAME>,<INPUT>
   //     0        1      2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "NORMALIZE::command: invalid settings count" << command.count();
+    qDebug() << "NORMALIZE::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "NORMALIZE::command: no indicator";
@@ -49,7 +50,7 @@ int NORMALIZE::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -58,10 +59,10 @@ int NORMALIZE::command (Command &command)
   }
 
   pos++;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "NORMALIZE::command: input missing" << command.parm(pos);
+    qDebug() << "NORMALIZE::command: input missing" << command->parm(pos);
     return 1;
   }
 
@@ -86,12 +87,9 @@ int NORMALIZE::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

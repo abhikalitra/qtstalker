@@ -22,6 +22,7 @@
 #include "AD.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ AD::AD ()
 {
 }
 
-int AD::command (Command &command)
+int AD::command (Command *command)
 {
   // AD,<NAME>
   // 0    1
 
-  if (command.count() != 2)
+  if (command->count() != 2)
   {
-    qDebug() << "AD::command: invalid parm count" << command.count();
+    qDebug() << "AD::command: invalid parm count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "AD::command: no bars";
@@ -50,15 +51,14 @@ int AD::command (Command &command)
   if (data->count() < 1)
     return 1;
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "AD::command: no indicator";
     return 1;
   }
 
-  QString name = command.parm(1);
-
+  QString name = command->parm(1);
   Curve *line = i->line(name);
   if (line)
   {
@@ -66,11 +66,13 @@ int AD::command (Command &command)
     return 1;
   }
 
-  TA_Real out[data->count()];
-  TA_Real high[data->count()];
-  TA_Real low[data->count()];
-  TA_Real close[data->count()];
-  TA_Real volume[data->count()];
+  int size = data->count();
+  
+  TA_Real out[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real volume[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
@@ -111,12 +113,9 @@ int AD::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
@@ -130,4 +129,3 @@ ScriptPlugin * createScriptPlugin ()
   AD *o = new AD;
   return ((ScriptPlugin *) o);
 }
-

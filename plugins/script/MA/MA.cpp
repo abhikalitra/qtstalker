@@ -88,7 +88,6 @@ int MA::command (Command *command)
     return 1;
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
   command->setReturnData("0");

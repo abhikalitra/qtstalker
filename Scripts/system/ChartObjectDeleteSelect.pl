@@ -13,7 +13,7 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # display select dialog
-$command = "SELECT_DIALOG,1,Chart Objects,$rc";
+$command = "SELECT_DIALOG,0,Chart Objects,$rc";
 print STDOUT $command;
 $list = <STDIN>; chomp($list); if ($list eq "ERROR") {print STDERR $command; exit; }
 

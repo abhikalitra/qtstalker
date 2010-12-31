@@ -30,7 +30,7 @@ class MDI : public ScriptPlugin
   
   public:
     MDI ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

@@ -30,7 +30,7 @@ class MAVP : public ScriptPlugin
   
   public:
     MAVP ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

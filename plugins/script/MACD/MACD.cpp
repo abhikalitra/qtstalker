@@ -23,6 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "FunctionMA.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,18 +31,18 @@ MACD::MACD ()
 {
 }
 
-int MACD::command (Command &command)
+int MACD::command (Command *command)
 {
   // MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<FAST_MA_TYPE>,<SLOW_PERIOD>,<SLOW_MA_TYPE>,<SIGNAL_PERIOD>,<SIGNAL_MA_TYPE>
   //  0      1         2            3            4           5              6             7               8              9               10
 
-  if (command.count() != 11)
+  if (command->count() != 11)
   {
-    qDebug() << "MACD::command: invalid settings count" << command.count();
+    qDebug() << "MACD::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "MACD::command: no indicator";
@@ -49,15 +50,15 @@ int MACD::command (Command &command)
   }
 
   int pos = 1;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "MACD::command: input missing" << command.parm(pos);
+    qDebug() << "MACD::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  QString mname = command.parm(pos);
+  QString mname = command->parm(pos);
   Curve *line = i->line(mname);
   if (line)
   {
@@ -66,7 +67,7 @@ int MACD::command (Command &command)
   }
 
   pos++;
-  QString sname = command.parm(pos);
+  QString sname = command->parm(pos);
   line = i->line(sname);
   if (line)
   {
@@ -75,7 +76,7 @@ int MACD::command (Command &command)
   }
 
   pos++;
-  QString hname = command.parm(pos);
+  QString hname = command->parm(pos);
   line = i->line(hname);
   if (line)
   {
@@ -85,51 +86,51 @@ int MACD::command (Command &command)
 
   pos++;
   bool ok;
-  int fperiod = command.parm(pos).toInt(&ok);
+  int fperiod = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid fast period" << command.parm(pos);
+    qDebug() << "MACD::command: invalid fast period" << command->parm(pos);
     return 1;
   }
 
   pos++;
   FunctionMA fma;
-  int ftype = fma.typeFromString(command.parm(pos));
+  int ftype = fma.typeFromString(command->parm(pos));
   if (ftype == -1)
   {
-    qDebug() << "MACD::command: invalid fast ma type" << command.parm(pos);
+    qDebug() << "MACD::command: invalid fast ma type" << command->parm(pos);
     return 1;
   }
   
   pos++;
-  int speriod = command.parm(pos).toInt(&ok);
+  int speriod = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid slow period" << command.parm(pos);
+    qDebug() << "MACD::command: invalid slow period" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int stype = fma.typeFromString(command.parm(pos));
+  int stype = fma.typeFromString(command->parm(pos));
   if (stype == -1)
   {
-    qDebug() << "MACD::command: invalid slow ma type" << command.parm(pos);
+    qDebug() << "MACD::command: invalid slow ma type" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int sigperiod = command.parm(pos).toInt(&ok);
+  int sigperiod = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid signal period" << command.parm(pos);
+    qDebug() << "MACD::command: invalid signal period" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int sigtype = fma.typeFromString(command.parm(pos));
+  int sigtype = fma.typeFromString(command->parm(pos));
   if (sigtype == -1)
   {
-    qDebug() << "MACD::command: invalid signal ma type" << command.parm(pos);
+    qDebug() << "MACD::command: invalid signal ma type" << command->parm(pos);
     return 1;
   }
 
@@ -198,9 +199,7 @@ int MACD::command (Command &command)
   i->setLine(sname, signal);
   i->setLine(hname, hist);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

@@ -126,12 +126,18 @@ void ChartObject::setSettings (Setting *d)
 
 void ChartObject::load ()
 {
+  if (_settings->getInt("RO"))
+    return;
+  
   ChartObjectDataBase db;
   db.load(_settings);
 }
 
 void ChartObject::save ()
 {
+  if (_settings->getInt("RO"))
+    return;
+
   ChartObjectDataBase db;
   db.save(_settings);
 }

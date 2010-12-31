@@ -26,28 +26,56 @@
 
 CHART_OBJECT_HLINE::CHART_OBJECT_HLINE ()
 {
+  _method << "RO" << "RW";
 }
 
 int CHART_OBJECT_HLINE::command (Command *command)
 {
-  // CHART_OBJECT_HLINE,<NAME>,<INDICATOR>,<EXCHANGE>,<SYMBOL>,<PRICE>,<COLOR>
-  //          0           1        2           3         4         5      6
+  // CHART_OBJECT_HLINE,<METHOD>
+  //          0           1
 
-  if (command->count() != 7)
+  if (command->count() < 2)
   {
     qDebug() << "CHART_OBJECT_HLINE::command: invalid parm count" << command->count();
+    return 1;
+  }
+
+  switch ((Method) _method.indexOf(command->parm(1)))
+  {
+    case _RO:
+      return createRO(command);
+      break;
+    case _RW:
+      return createRW(command);
+      break;
+    default:
+      break;
+  }
+
+  return 0;
+}
+
+int CHART_OBJECT_HLINE::createRW (Command *command)
+{
+  // CHART_OBJECT_HLINE,<METHOD>,<NAME>,<INDICATOR>,<EXCHANGE>,<SYMBOL>,<PRICE>,<COLOR>
+  //          0            1        2         3         4         5       6        7
+
+  if (command->count() != 8)
+  {
+    qDebug() << "CHART_OBJECT_HLINE::createRW: invalid parm count" << command->count();
     return 1;
   }
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "CHART_OBJECT_HLINE::command: no indicator";
+    qDebug() << "CHART_OBJECT_HLINE::createRW: no indicator";
     return 1;
   }
 
-  int pos = 1;
+  int pos = 2;
   Setting co;
+  co.setData("Type", QString("HLine"));
   co.setData("ID", command->parm(pos++));
   co.setData("Indicator", command->parm(pos++));
   co.setData("Exchange", command->parm(pos++));
@@ -58,23 +86,73 @@ int CHART_OBJECT_HLINE::command (Command *command)
   command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "CHART_OBJECT_HLINE::command: invalid price" << command->parm(pos);
+    qDebug() << "CHART_OBJECT_HLINE::createRW: invalid price" << command->parm(pos);
     return 1;
   }
-  co.setData("Price", command->parm(pos));
-  pos++;
+  co.setData("Price", command->parm(pos++));
 
   // verify color
   QColor color(command->parm(pos));
   if (! color.isValid())
   {
-    qDebug() << "CHART_OBJECT_HLINE::command: invalid color" << command->parm(pos);
+    qDebug() << "CHART_OBJECT_HLINE::createRW: invalid color" << command->parm(pos);
     return 1;
   }
-  co.setData("Color", command->parm(pos));
+  co.setData("Color", command->parm(pos++));
 
   ChartObjectDataBase db;
   db.save(&co);
+
+  i->addChartObject(co);
+
+  command->setReturnData("0");
+
+  return 0;
+}
+
+int CHART_OBJECT_HLINE::createRO (Command *command)
+{
+  // CHART_OBJECT_HLINE,<METHOD>,<PRICE>,<COLOR>
+  //          0            1        2       3 
+
+  if (command->count() != 4)
+  {
+    qDebug() << "CHART_OBJECT_HLINE::createRO: invalid parm count" << command->count();
+    return 1;
+  }
+
+  Indicator *i = command->indicator();
+  if (! i)
+  {
+    qDebug() << "CHART_OBJECT_HLINE::createRO: no indicator";
+    return 1;
+  }
+
+  Setting co;
+  QString key = "-" + QString::number(i->chartObjectCount() + 1);
+  co.setData("Type", QString("HLine"));
+  co.setData("ID", key);
+  co.setData("RO", 1);
+
+  // verify price
+  int pos = 2;
+  bool ok;
+  command->parm(pos).toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << "CHART_OBJECT_HLINE::createRO: invalid price" << command->parm(pos);
+    return 1;
+  }
+  co.setData("Price", command->parm(pos++));
+
+  // verify color
+  QColor color(command->parm(pos));
+  if (! color.isValid())
+  {
+    qDebug() << "CHART_OBJECT_HLINE::createRO: invalid color" << command->parm(pos);
+    return 1;
+  }
+  co.setData("Color", command->parm(pos++));
 
   i->addChartObject(co);
 

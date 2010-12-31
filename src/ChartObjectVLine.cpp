@@ -37,7 +37,7 @@ ChartObjectVLine::ChartObjectVLine ()
 
   QSettings set(g_settingsFile);
   _settings->setData("Color", set.value("default_chart_object_vline_color", "red").toString());
-  _settings->setData("Type", _VLine);
+  _settings->setData("Type", QString("VLine"));
 }
 
 void ChartObjectVLine::info (Setting &info)
@@ -78,6 +78,9 @@ void ChartObjectVLine::move (QPoint p)
 
 void ChartObjectVLine::click (int button, QPoint p)
 {
+  if (_settings->getInt("RO"))
+    return;
+
   switch (_status)
   {
     case _Selected:

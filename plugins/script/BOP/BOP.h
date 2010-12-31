@@ -30,7 +30,7 @@ class BOP : public ScriptPlugin
   
   public:
     BOP ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

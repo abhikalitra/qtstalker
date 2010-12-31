@@ -30,7 +30,7 @@ class HT_PHASOR : public ScriptPlugin
   
   public:
     HT_PHASOR ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

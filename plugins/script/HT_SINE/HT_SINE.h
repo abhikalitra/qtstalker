@@ -30,7 +30,7 @@ class HT_SINE : public ScriptPlugin
   
   public:
     HT_SINE ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

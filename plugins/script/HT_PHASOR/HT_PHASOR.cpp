@@ -22,6 +22,7 @@
 #include "HT_PHASOR.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ HT_PHASOR::HT_PHASOR ()
 {
 }
 
-int HT_PHASOR::command (Command &command)
+int HT_PHASOR::command (Command *command)
 {
   // HT_PHASOR,<INPUT>,<PHASE NAME>,<QUAD NAME>
   //     0        1          2           3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "HT_PHASOR::command: invalid settings count" << command.count();
+    qDebug() << "HT_PHASOR::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "HT_PHASOR::command: no indicator";
@@ -48,15 +49,15 @@ int HT_PHASOR::command (Command &command)
   }
 
   int pos = 1;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "HT_PHASOR::command: input missing" << command.parm(pos);
+    qDebug() << "HT_PHASOR::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;  
-  QString pname = command.parm(pos);
+  QString pname = command->parm(pos);
   Curve *line = i->line(pname);
   if (line)
   {
@@ -65,7 +66,7 @@ int HT_PHASOR::command (Command &command)
   }
 
   pos++;
-  QString qname = command.parm(pos);
+  QString qname = command->parm(pos);
   line = i->line(qname);
   if (line)
   {
@@ -127,9 +128,7 @@ int HT_PHASOR::command (Command &command)
   i->setLine(pname, pline);
   i->setLine(qname, qline);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

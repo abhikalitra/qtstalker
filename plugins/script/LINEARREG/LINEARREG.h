@@ -39,7 +39,7 @@ class LINEARREG : public ScriptPlugin
     };
 
     LINEARREG ();
-    int command (Command &);
+    int command (Command *);
 
   protected:
     QStringList _method;

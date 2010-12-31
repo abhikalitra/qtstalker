@@ -30,7 +30,7 @@ class VAR : public ScriptPlugin
   
   public:
     VAR ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

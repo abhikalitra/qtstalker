@@ -23,6 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "FunctionMA.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,18 +31,18 @@ STOCH_FAST::STOCH_FAST ()
 {
 }
 
-int STOCH_FAST::command (Command &command)
+int STOCH_FAST::command (Command *command)
 {
   // STOCH_FAST,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>
   //     0            1            2            3              4               5
 
-  if (command.count() != 6)
+  if (command->count() != 6)
   {
-    qDebug() << "STOCH_FAST::command: invalid settings count" << command.count();
+    qDebug() << "STOCH_FAST::command: invalid settings count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "STOCH_FAST::command: no bars";
@@ -51,7 +52,7 @@ int STOCH_FAST::command (Command &command)
   if (data->count() < 1)
     return 1;
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "STOCH_FAST::command: no indicator";
@@ -59,7 +60,7 @@ int STOCH_FAST::command (Command &command)
   }
 
   int pos = 1;
-  QString kname = command.parm(pos);
+  QString kname = command->parm(pos);
   Curve *line = i->line(kname);
   if (line)
   {
@@ -68,7 +69,7 @@ int STOCH_FAST::command (Command &command)
   }
 
   pos++;
-  QString dname = command.parm(pos);
+  QString dname = command->parm(pos);
   line = i->line(dname);
   if (line)
   {
@@ -78,27 +79,27 @@ int STOCH_FAST::command (Command &command)
 
   pos++;
   bool ok;
-  int kperiod = command.parm(pos).toInt(&ok);
+  int kperiod = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_FAST::command: invalid fast k period" << command.parm(pos);
+    qDebug() << "STOCH_FAST::command: invalid fast k period" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int dperiod = command.parm(pos).toInt(&ok);
+  int dperiod = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_FAST::command: invalid fast d period" << command.parm(pos);
+    qDebug() << "STOCH_FAST::command: invalid fast d period" << command->parm(pos);
     return 1;
   }
 
   pos++;
   FunctionMA fma;
-  int type = fma.typeFromString(command.parm(pos));
+  int type = fma.typeFromString(command->parm(pos));
   if (type == -1)
   {
-    qDebug() << "STOCH_FAST::command: invalid fast d ma type" << command.parm(pos);
+    qDebug() << "STOCH_FAST::command: invalid fast d ma type" << command->parm(pos);
     return 1;
   }
   
@@ -163,9 +164,7 @@ int STOCH_FAST::command (Command &command)
   i->setLine(kname, kline);
   i->setLine(dname, dline);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

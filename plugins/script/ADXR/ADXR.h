@@ -30,7 +30,7 @@ class ADXR : public ScriptPlugin
   
   public:
     ADXR ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

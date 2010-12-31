@@ -37,7 +37,7 @@ ChartObjectHLine::ChartObjectHLine ()
   QSettings set(g_settingsFile);
   QString s = set.value("default_chart_object_hline_color", "red").toString();
   _settings->setData("Color", s);
-  _settings->setData("Type", ChartObject::_HLine);
+  _settings->setData("Type", QString("HLine"));
 }
 
 void ChartObjectHLine::info (Setting &info)
@@ -73,6 +73,9 @@ void ChartObjectHLine::move (QPoint p)
 
 void ChartObjectHLine::click (int button, QPoint p)
 {
+  if (_settings->getInt("RO"))
+    return;
+  
   switch (_status)
   {
     case _Selected:

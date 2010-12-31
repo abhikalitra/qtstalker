@@ -23,6 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "FunctionMA.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,19 +31,19 @@ BBANDS::BBANDS ()
 {
 }
 
-int BBANDS::command (Command &command)
+int BBANDS::command (Command *command)
 {
   // BBANDS,<INPUT>,<NAME UPPER>,<NAME MIDDLE>,<NAME LOWER>,<PERIOD>,<MA_TYPE>,<UP DEV>,<LOW DEV>
   //   0       1         2             3            4           5        6        7         8
 
 
-  if (command.count() != 9)
+  if (command->count() != 9)
   {
-    qDebug() << "BBANDS::command: invalid settings count" << command.count();
+    qDebug() << "BBANDS::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "BBANDS::command: no indicator";
@@ -50,16 +51,15 @@ int BBANDS::command (Command &command)
   }
 
   int pos = 1;
-  Curve *input = i->line(command.parm(pos));
+  Curve *input = i->line(command->parm(pos));
   if (! input)
   {
-    qDebug() << "BBANDS::command: input missing" << command.parm(pos);
+    qDebug() << "BBANDS::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  QString uname = command.parm(pos);
-
+  QString uname = command->parm(pos);
   Curve *line = i->line(uname);
   if (line)
   {
@@ -68,8 +68,7 @@ int BBANDS::command (Command &command)
   }
 
   pos++;
-  QString mname = command.parm(pos);
-
+  QString mname = command->parm(pos);
   line = i->line(mname);
   if (line)
   {
@@ -78,8 +77,7 @@ int BBANDS::command (Command &command)
   }
 
   pos++;
-  QString lname = command.parm(pos);
-
+  QString lname = command->parm(pos);
   line = i->line(lname);
   if (line)
   {
@@ -89,10 +87,10 @@ int BBANDS::command (Command &command)
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "BBANDS::command: invalid period" << command.parm(pos);
+    qDebug() << "BBANDS::command: invalid period" << command->parm(pos);
     return 1;
   }
 
@@ -101,26 +99,26 @@ int BBANDS::command (Command &command)
 
   pos++;
   FunctionMA fma;
-  int type = fma.typeFromString(command.parm(pos));
+  int type = fma.typeFromString(command->parm(pos));
   if (type == -1)
   {
-    qDebug() << "BBANDS::command: invalid ma type" << command.parm(pos);
+    qDebug() << "BBANDS::command: invalid ma type" << command->parm(pos);
     return 1;
   }
   
   pos++;
-  double udev = command.parm(pos).toDouble(&ok);
+  double udev = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "BBANDS::command: invalid upper deviation" << command.parm(pos);
+    qDebug() << "BBANDS::command: invalid upper deviation" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  double ldev = command.parm(pos).toDouble(&ok);
+  double ldev = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "BBANDS::command: invalid lower deviation" << command.parm(pos);
+    qDebug() << "BBANDS::command: invalid lower deviation" << command->parm(pos);
     return 1;
   }
 
@@ -184,9 +182,7 @@ int BBANDS::command (Command &command)
   i->setLine(mname, middle);
   i->setLine(lname, lower);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

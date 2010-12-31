@@ -22,6 +22,7 @@
 #include "PDI.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ PDI::PDI ()
 {
 }
 
-int PDI::command (Command &command)
+int PDI::command (Command *command)
 {
   // PDI,<NAME>,<PERIOD>
   //  0     1      2
 
-  if (command.count() != 3)
+  if (command->count() != 3)
   {
-    qDebug() << "PDI::command: invalid settings count" << command.count();
+    qDebug() << "PDI::command: invalid settings count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "PDI::command: no bars";
@@ -50,7 +51,7 @@ int PDI::command (Command &command)
   if (data->count() < 1)
     return 1;
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "PDI::command: no indicator";
@@ -58,8 +59,7 @@ int PDI::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
-
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -69,10 +69,10 @@ int PDI::command (Command &command)
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "PDI::command: invalid period" << command.parm(pos);
+    qDebug() << "PDI::command: invalid period" << command->parm(pos);
     return 1;
   }
 
@@ -121,12 +121,9 @@ int PDI::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

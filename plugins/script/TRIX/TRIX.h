@@ -30,7 +30,7 @@ class TRIX : public ScriptPlugin
   
   public:
     TRIX ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

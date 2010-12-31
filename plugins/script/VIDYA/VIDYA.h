@@ -31,7 +31,7 @@ class VIDYA : public ScriptPlugin
   
   public:
     VIDYA ();
-    int command (Command &);
+    int command (Command *);
     Curve * getCMO (Curve *in, int period);
 };
 

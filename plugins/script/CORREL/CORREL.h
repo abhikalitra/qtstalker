@@ -30,7 +30,7 @@ class CORREL : public ScriptPlugin
   
   public:
     CORREL ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

@@ -30,7 +30,7 @@ class WILLR : public ScriptPlugin
   
   public:
     WILLR ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

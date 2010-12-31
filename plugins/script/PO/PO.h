@@ -36,7 +36,7 @@ class PO : public ScriptPlugin
     };
 
     PO ();
-    int command (Command &);
+    int command (Command *);
 
   private:
     QStringList _method;

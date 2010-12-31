@@ -22,6 +22,7 @@
 #include "SAR.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ SAR::SAR ()
 {
 }
 
-int SAR::command (Command &command)
+int SAR::command (Command *command)
 {
   // SAR,<NAME>,<INITIAL_STEP>,<MAX_STEP>
   //  0     1          2           3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "SAR::command: invalid settings count" << command.count();
+    qDebug() << "SAR::command: invalid settings count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "SAR::command: no bars";
@@ -50,7 +51,7 @@ int SAR::command (Command &command)
   if (data->count() < 1)
     return 1;
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "SAR::command: no indicator";
@@ -58,7 +59,7 @@ int SAR::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -68,18 +69,18 @@ int SAR::command (Command &command)
 
   pos++;
   bool ok;
-  double init = command.parm(pos).toDouble(&ok);
+  double init = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "SAR::command: initial step" << command.parm(pos);
+    qDebug() << "SAR::command: initial step" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  double max = command.parm(pos).toDouble(&ok);
+  double max = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "SAR::command: max step" << command.parm(pos);
+    qDebug() << "SAR::command: max step" << command->parm(pos);
     return 1;
   }
 
@@ -120,12 +121,9 @@ int SAR::command (Command &command)
     line->setBar(loop + 1, new CurveBar(out[loop]));
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

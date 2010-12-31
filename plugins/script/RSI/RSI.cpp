@@ -22,6 +22,7 @@
 #include "RSI.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ RSI::RSI ()
 {
 }
 
-int RSI::command (Command &command)
+int RSI::command (Command *command)
 {
   // RSI,<NAME>,<INPUT>,<PERIOD>
   //  0     1      2       3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "RSI::command: invalid settings count" << command.count();
+    qDebug() << "RSI::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "RSI::command: no indicator";
@@ -48,7 +49,7 @@ int RSI::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -57,19 +58,19 @@ int RSI::command (Command &command)
   }
 
   pos++;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "RSI::command: input missing" << command.parm(pos);
+    qDebug() << "RSI::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "RSI::command: invalid period" << command.parm(pos);
+    qDebug() << "RSI::command: invalid period" << command->parm(pos);
     return 1;
   }
 
@@ -116,12 +117,9 @@ int RSI::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

@@ -23,6 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "FunctionMA.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -30,18 +31,18 @@ FI::FI ()
 {
 }
 
-int FI::command (Command &command)
+int FI::command (Command *command)
 {
   // FI,<NAME>,<PERIOD>,<MA_TYPE>
   //  0    1      2         3
 
-  if (command.count() != 4)
+  if (command->count() != 4)
   {
-    qDebug() << "FI::command: invalid settings count" << command.count();
+    qDebug() << "FI::command: invalid settings count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "FI::command: no bars";
@@ -51,7 +52,7 @@ int FI::command (Command &command)
   if (data->count() < 1)
     return 1;
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "FI::command: no indicator";
@@ -59,8 +60,7 @@ int FI::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
-
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -70,19 +70,19 @@ int FI::command (Command &command)
 
   pos++;
   bool ok;
-  int period = command.parm(pos).toInt(&ok);
+  int period = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "FI::command: invalid period" << command.parm(pos);
+    qDebug() << "FI::command: invalid period" << command->parm(pos);
     return 1;
   }
 
   pos++;
   FunctionMA fma;
-  int type = fma.typeFromString(command.parm(pos));
+  int type = fma.typeFromString(command->parm(pos));
   if (type == -1)
   {
-    qDebug() << "FI::command: invalid ma type" << command.parm(pos);
+    qDebug() << "FI::command: invalid ma type" << command->parm(pos);
     return 1;
   }
 
@@ -117,12 +117,9 @@ int FI::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

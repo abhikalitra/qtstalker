@@ -38,7 +38,7 @@ void ChartObjectHLineDraw::draw (QPainter *p, const QwtScaleMap &, const QwtScal
   int y = yMap.transform(_settings->getDouble("Price"));
 
   // test start
-  QString s = _settings->data("Price");
+  QString s = " " + _settings->data("Price"); // prepend space so we can clearly read text
   QFontMetrics fm = p->fontMetrics();
   QRect rc = p->boundingRect(0, y - (fm.height() / 2), 1, 1, 0, s);
   p->fillRect(rc, plot()->canvasBackground()); // fill in behind text first
@@ -85,4 +85,3 @@ void ChartObjectHLineDraw::draw (QPainter *p, const QwtScaleMap &, const QwtScal
     }
   }
 }
-

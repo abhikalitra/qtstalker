@@ -30,7 +30,7 @@ class ULTOSC : public ScriptPlugin
   
   public:
     ULTOSC ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

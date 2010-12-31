@@ -22,6 +22,7 @@
 #include "MAMA.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ MAMA::MAMA ()
 {
 }
 
-int MAMA::command (Command &command)
+int MAMA::command (Command *command)
 {
   // MAMA,<INPUT>,<NAME_MAMA>,<NAME_FAMA>,<FAST_LIMIT>,<SLOW_LIMIT>
   //   0     1         2           3           4            5
 
-  if (command.count() != 6)
+  if (command->count() != 6)
   {
-    qDebug() << "MAMA::command: invalid settings count" << command.count();
+    qDebug() << "MAMA::command: invalid settings count" << command->count();
     return 1;
   }
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "MAMA::command: no indicator";
@@ -48,15 +49,15 @@ int MAMA::command (Command &command)
   }
 
   int pos = 1;
-  Curve *in = i->line(command.parm(pos));
+  Curve *in = i->line(command->parm(pos));
   if (! in)
   {
-    qDebug() << "MAMA::command: input missing" << command.parm(pos);
+    qDebug() << "MAMA::command: input missing" << command->parm(pos);
     return 1;
   }
 
   pos++;  
-  QString mname = command.parm(pos);
+  QString mname = command->parm(pos);
   Curve *line = i->line(mname);
   if (line)
   {
@@ -65,7 +66,7 @@ int MAMA::command (Command &command)
   }
 
   pos++;
-  QString fname = command.parm(pos);
+  QString fname = command->parm(pos);
   line = i->line(fname);
   if (line)
   {
@@ -75,18 +76,18 @@ int MAMA::command (Command &command)
 
   pos++;
   bool ok;
-  int flimit = command.parm(pos).toInt(&ok);
+  int flimit = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid fast limit" << command.parm(pos);
+    qDebug() << "MACD::command: invalid fast limit" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int slimit = command.parm(pos).toInt(&ok);
+  int slimit = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid slow limit" << command.parm(pos);
+    qDebug() << "MACD::command: invalid slow limit" << command->parm(pos);
     return 1;
   }
 
@@ -146,9 +147,7 @@ int MAMA::command (Command &command)
   i->setLine(mname, mama);
   i->setLine(fname, fama);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }

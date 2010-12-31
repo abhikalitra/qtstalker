@@ -93,7 +93,7 @@ Plot::Plot (QString name, QMainWindow *mw)
   connect(_menu, SIGNAL(signalDateStatus(bool)), _indicator, SLOT(setDate(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), _indicator, SLOT(setLog(bool)));
-  connect(_menu, SIGNAL(signalNewChartObject(int, QString)), this, SLOT(chartObjectNew(int, QString)));
+  connect(_menu, SIGNAL(signalNewChartObject(QString, QString)), this, SLOT(chartObjectNew(QString, QString)));
 
   _dock = new DockWidget(name.left(4), mw);
   _dock->setObjectName(name);
@@ -484,7 +484,7 @@ void Plot::loadSettings ()
 //***************** CHART OBJECT FUNCTIONS ***************************
 //********************************************************************
 
-void Plot::chartObjectNew (int type, QString id)
+void Plot::chartObjectNew (QString type, QString id)
 {
   ChartObjectFactory fac;
   ChartObject *co = fac.chartObject(type);
@@ -593,7 +593,7 @@ void Plot::addChartObjects (QHash<QString, Setting> &l)
     it.next();
     Setting set = it.value();
     
-    ChartObject *co = fac.chartObject(set.getInt("Type"));
+    ChartObject *co = fac.chartObject(set.data("Type"));
     if (! co)
       return;
 

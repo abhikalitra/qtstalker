@@ -22,6 +22,7 @@
 #include "ULTOSC.h"
 #include "Curve.h"
 #include "ta_libc.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -29,18 +30,18 @@ ULTOSC::ULTOSC ()
 {
 }
 
-int ULTOSC::command (Command &command)
+int ULTOSC::command (Command *command)
 {
   // ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>
   //   0       1         2             3            4
 
-  if (command.count() != 5)
+  if (command->count() != 5)
   {
-    qDebug() << "ULTOSC::command: invalid settings count" << command.count();
+    qDebug() << "ULTOSC::command: invalid settings count" << command->count();
     return 1;
   }
 
-  BarData *data = command.barData();
+  BarData *data = g_barData;
   if (! data)
   {
     qDebug() << "ULTOSC::command: no bars";
@@ -50,7 +51,7 @@ int ULTOSC::command (Command &command)
   if (data->count() < 1)
     return 1;
 
-  Indicator *i = command.indicator();
+  Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << "ULTOSC::command: no indicator";
@@ -58,7 +59,7 @@ int ULTOSC::command (Command &command)
   }
 
   int pos = 1;
-  QString name = command.parm(pos);
+  QString name = command->parm(pos);
 
   Curve *line = i->line(name);
   if (line)
@@ -69,26 +70,26 @@ int ULTOSC::command (Command &command)
 
   pos++;
   bool ok;
-  int sp = command.parm(pos).toInt(&ok);
+  int sp = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ULTOSC::command: invalid short period" << command.parm(pos);
+    qDebug() << "ULTOSC::command: invalid short period" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int mp = command.parm(pos).toInt(&ok);
+  int mp = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ULTOSC::command: invalid medium period" << command.parm(pos);
+    qDebug() << "ULTOSC::command: invalid medium period" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int lp = command.parm(pos).toInt(&ok);
+  int lp = command->parm(pos).toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ULTOSC::command: invalid long period" << command.parm(pos);
+    qDebug() << "ULTOSC::command: invalid long period" << command->parm(pos);
     return 1;
   }
 
@@ -143,12 +144,9 @@ int ULTOSC::command (Command &command)
   }
 
   line->setLabel(name);
-
   i->setLine(name, line);
 
-  command.setReturnData("0");
-
-  emit signalDone();
+  command->setReturnData("0");
 
   return 0;
 }
