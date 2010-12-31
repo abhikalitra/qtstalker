@@ -54,70 +54,6 @@ int ChartObjectHLine::highLow (int, int, double &h, double &l)
   return 1;
 }
 
-/*
-int ChartObjectHLine::CUS (QStringList &l)
-{
-  // CO,<TYPE>,<EXCHANGE>,<SYMBOL>,<INDICATOR>,<PRICE>,<COLOR>
-  //  0    1       2         3          4         5       6
-
-  if (l.count() != 7)
-  {
-    qDebug() << "ChartObjectHLine::CUS: invalid parm count" << l.count();
-    return 1;
-  }
-
-  // verify exchange
-  Strip strip;
-  QString s = l.at(2);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectHLine::CUS: invalid exchange" << l.at(2);
-    return 1;
-  }
-  _settings->exchange = s;
-
-  // verify symbol
-  s = l.at(3);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectHLine::CUS: invalid symbol" << l.at(3);
-    return 1;
-  }
-  _settings->symbol = s;
-
-  // verify indicator
-  s = l.at(4);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectHLine::CUS: invalid indicator" << l.at(4);
-    return 1;
-  }
-  _settings->indicator = s;
-
-  // verify price
-  bool ok;
-  _settings->price = l.at(5).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ChartObjectHLine::CUS: invalid price" << l.at(5);
-    return 1;
-  }
-
-  // verify color
-  _settings->color.setNamedColor(l.at(6));
-  if (! _settings->color.isValid())
-  {
-    qDebug() << "ChartObjectHLine::CUS: invalid color" << l.at(6);
-    return 1;
-  }
-
-  return 0;
-}
-*/
-
 void ChartObjectHLine::move (QPoint p)
 {
   switch (_status)
@@ -148,7 +84,6 @@ void ChartObjectHLine::click (int button, QPoint p)
           {
             _status = _Move;
             emit signalMoveStart(_settings->data("ID"));
-            _settings->setData("Modified", 1);
             return;
           }
 
@@ -179,7 +114,7 @@ void ChartObjectHLine::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
-          _settings->setData("Modified", 1);
+          save();
           return;
         default:
           break;
@@ -211,7 +146,6 @@ void ChartObjectHLine::click (int button, QPoint p)
 
 void ChartObjectHLine::create ()
 {
-  _settings->setData("Modified", 1);
   _status = _Move;
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));

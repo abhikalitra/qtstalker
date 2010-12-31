@@ -54,69 +54,6 @@ int ChartObjectVLine::highLow (int, int, double &, double &)
   return 0;
 }
 
-/*
-int ChartObjectVLine::CUS (QStringList &l)
-{
-  // CO,<TYPE>,<EXCHANGE>,<SYMBOL>,<INDICATOR>,<DATE>,<COLOR>
-  //  0   1        2         3          4        5       6
-
-  if (l.count() != 7)
-  {
-    qDebug() << "ChartObjectVLine::CUS: invalid parm count" << l.count();
-    return 1;
-  }
-
-  // verify exchange
-  Strip strip;
-  QString s = l.at(2);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectVLine::CUS: invalid exchange" << l.at(2);
-    return 1;
-  }
-  _settings->exchange = s;
-
-  // verify symbol
-  s = l.at(3);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectVLine::CUS: invalid symbol" << l.at(3);
-    return 1;
-  }
-  _settings->symbol = s;
-
-  // verify indicator
-  s = l.at(4);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectVLine::CUS: invalid indicator" << l.at(4);
-    return 1;
-  }
-  _settings->indicator = s;
-
-  // verify date
-  _settings->date = QDateTime::fromString(l.at(5), Qt::ISODate);
-  if (! _settings->date.isValid())
-  {
-    qDebug() << "ChartObjectVLine::CUS: invalid date" << l.at(5);
-    return 1;
-  }
-
-  // verify color
-  _settings->color.setNamedColor(l.at(6));
-  if (! _settings->color.isValid())
-  {
-    qDebug() << "ChartObjectVLine::CUS: invalid color" << l.at(6);
-    return 1;
-  }
-
-  return 0;
-}
-*/
-
 void ChartObjectVLine::move (QPoint p)
 {
   switch (_status)
@@ -151,7 +88,6 @@ void ChartObjectVLine::click (int button, QPoint p)
           if (_draw->isGrabSelected(p))
           {
             _status = _Move;
-            _settings->setData("Modified", 1);
             emit signalMoveStart(_settings->data("ID"));
             return;
           }
@@ -183,7 +119,7 @@ void ChartObjectVLine::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
-          _settings->setData("Modified", 1);
+          save();
           return;
         default:
           break;
@@ -215,7 +151,6 @@ void ChartObjectVLine::click (int button, QPoint p)
 
 void ChartObjectVLine::create ()
 {
-  _settings->setData("Modified", 1);
   _status = _Move;
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));

@@ -85,108 +85,6 @@ int ChartObjectRetracement::highLow (int start, int end, double &h, double &l)
   return 0;
 }
 
-/*
-int ChartObjectRetracement::CUS (QStringList &l)
-{
-  // CO,<TYPE>,<EXCHANGE>,<SYMBOL>,<INDICATOR>,<DATE>,<DATE2>,<HIGH>,<LOW>,<PERCENTAGE>,<COLOR>
-  //  0    1       2         3          4        5       6      7      8        9         10
-
-  if (l.count() != 11)
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid parm count" << l.count();
-    return 1;
-  }
-
-  // verify exchange
-  Strip strip;
-  QString s = l.at(2);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid exchange" << l.at(2);
-    return 1;
-  }
-  _settings->exchange = s;
-
-  // verify symbol
-  s = l.at(3);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid symbol" << l.at(3);
-    return 1;
-  }
-  _settings->symbol = s;
-
-  // verify indicator
-  s = l.at(4);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid indicator" << l.at(4);
-    return 1;
-  }
-  _settings->indicator = s;
-
-  // verify date
-  _settings->date = QDateTime::fromString(l.at(5), Qt::ISODate);
-  if (! _settings->date.isValid())
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid start date" << l.at(5);
-    return 1;
-  }
-
-  // verify date2
-  _settings->date2 = QDateTime::fromString(l.at(6), Qt::ISODate);
-  if (! _settings->date2.isValid())
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid end date" << l.at(6);
-    return 1;
-  }
-
-  // verify high
-  bool ok;
-  _settings->high = l.at(7).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid high" << l.at(7);
-    return 1;
-  }
-
-  // verify low
-  _settings->low = l.at(8).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid low" << l.at(8);
-    return 1;
-  }
-
-  // verify retracement
-  _settings->line1 = l.at(9).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid retracement" << l.at(9);
-    return 1;
-  }
-
-  // verify color
-  _settings->color.setNamedColor(l.at(10));
-  if (! _settings->color.isValid())
-  {
-    qDebug() << "ChartObjectRetracement::CUS: invalid color" << l.at(10);
-    return 1;
-  }
-
-  _settings->line2 = 0;
-  _settings->line3 = 0;
-  _settings->line4 = 0;
-  _settings->line5 = 0;
-  _settings->line6 = 0;
-
-  return 0;
-}
-*/
-
 void ChartObjectRetracement::move (QPoint p)
 {
   switch (_status)
@@ -259,7 +157,6 @@ void ChartObjectRetracement::click (int button, QPoint p)
             if (grab == 2)
               _status = _Move2;
             emit signalMoveStart(_settings->data("ID"));
-            _settings->setData("Modified", 1);
             return;
           }
 
@@ -297,7 +194,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
 
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
-          _settings->setData("Modified", 1);
+          save();
           return;
         default:
           break;
@@ -344,7 +241,6 @@ void ChartObjectRetracement::click (int button, QPoint p)
 
 void ChartObjectRetracement::create ()
 {
-  _settings->setData("Modified", 1);
   _createFlag = 1;
   _status = _Move;
   _draw->setSelected(TRUE);

@@ -35,11 +35,9 @@ class Curve
     enum Type
     {
       Candle,
-      Dash,
       Dot,
       Histogram,
       HistogramBar,
-      Horizontal,
       Line,
       OHLC
     };

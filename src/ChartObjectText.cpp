@@ -68,88 +68,6 @@ int ChartObjectText::highLow (int start, int end, double &h, double &l)
   return 1;
 }
 
-/*
-int ChartObjectText::CUS (QStringList &l)
-{
-  // CO,<TYPE>,<EXCHANGE>,<SYMBOL>,<INDICATOR>,<DATE>,<PRICE>,<LABEL>,<COLOR>
-  //  0   1         2        3          4         5      6       7       8
-
-  if (l.count() != 9)
-  {
-    qDebug() << "ChartObjectText::CUS: invalid parm count" << l.count();
-    return 1;
-  }
-
-  // verify exchange
-  Strip strip;
-  QString s = l.at(2);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectText::CUS: invalid exchange" << l.at(2);
-    return 1;
-  }
-  _settings->exchange = s;
-
-  // verify symbol
-  s = l.at(3);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectText::CUS: invalid symbol" << l.at(3);
-    return 1;
-  }
-  _settings->symbol = s;
-
-  // verify indicator
-  s = l.at(4);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectText::CUS: invalid indicator" << l.at(4);
-    return 1;
-  }
-  _settings->indicator = s;
-
-  // verify date
-  _settings->date = QDateTime::fromString(l.at(5), Qt::ISODate);
-  if (! _settings->date.isValid())
-  {
-    qDebug() << "ChartObjectText::CUS: invalid date" << l.at(5);
-    return 1;
-  }
-
-  // verify price
-  bool ok;
-  _settings->price = l.at(6).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ChartObjectText::CUS: invalid price" << l.at(6);
-    return 1;
-  }
-
-  // verify text
-  s = l.at(7);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectText::CUS: invalid text" << l.at(7);
-    return 1;
-  }
-  _settings->text = s;
-
-  // verify color
-  _settings->color.setNamedColor(l.at(8));
-  if (! _settings->color.isValid())
-  {
-    qDebug() << "ChartObjectText::CUS: invalid color" << l.at(8);
-    return 1;
-  }
-
-  return 0;
-}
-*/
-
 void ChartObjectText::move (QPoint p)
 {
   switch (_status)
@@ -188,7 +106,6 @@ void ChartObjectText::click (int button, QPoint p)
           {
             _status = _Move;
             emit signalMoveStart(_settings->data("ID"));
-            _settings->setData("Modified", 1);
             return;
           }
 
@@ -219,7 +136,7 @@ void ChartObjectText::click (int button, QPoint p)
         case Qt::LeftButton:
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
-          _settings->setData("Modified", 1);
+          save();
           return;
         default:
           break;
@@ -251,7 +168,6 @@ void ChartObjectText::click (int button, QPoint p)
 
 void ChartObjectText::create ()
 {
-  _settings->setData("Modified", 1);
   _status = _Move;
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));

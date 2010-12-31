@@ -132,10 +132,6 @@ void ChartObject::load ()
 
 void ChartObject::save ()
 {
-  if (! _settings->getInt("Modified"))
-    return;
-
   ChartObjectDataBase db;
   db.save(_settings);
-  _settings->setData("Modified", 0);
 }

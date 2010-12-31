@@ -90,94 +90,6 @@ int ChartObjectTLine::highLow (int start, int end, double &h, double &l)
   return 0;
 }
 
-/*
-int ChartObjectTLine::CUS (QStringList &l)
-{
-  // CO,<TYPE>,<EXCHANGE>,<SYMBOL>,<INDICATOR>,<DATE>,<PRICE>,<DATE2>,<PRICE2>,<COLOR>
-  //  0    1       2         3          4        5       6       7       8        9
-
-  if (l.count() != 10)
-  {
-    qDebug() << "ChartObjectTLine::CUS: invalid parm count" << l.count();
-    return 1;
-  }
-
-  // verify exchange
-  Strip strip;
-  QString s = l.at(2);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectTLine::CUS: invalid exchange" << l.at(2);
-    return 1;
-  }
-  _settings->exchange = s;
-
-  // verify symbol
-  s = l.at(3);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectTLine::CUS: invalid symbol" << l.at(3);
-    return 1;
-  }
-  _settings->symbol = s;
-
-  // verify indicator
-  s = l.at(4);
-  strip.verifyText(s);
-  if (s.isEmpty())
-  {
-    qDebug() << "ChartObjectTLine::CUS: invalid indicator" << l.at(4);
-    return 1;
-  }
-  _settings->indicator = s;
-
-  // verify date
-  _settings->date = QDateTime::fromString(l.at(5), Qt::ISODate);
-  if (! _settings->date.isValid())
-  {
-    qDebug() << "ChartObjectTLine::CUS: invalid start date" << l.at(5);
-    return 1;
-  }
-
-  // verify price
-  bool ok;
-  _settings->price = l.at(6).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ChartObjectTLine::CUS: invalid start price" << l.at(6);
-    return 1;
-  }
-
-  // verify date2
-  _settings->date2 = QDateTime::fromString(l.at(7), Qt::ISODate);
-  if (! _settings->date2.isValid())
-  {
-    qDebug() << "ChartObjectTLine::CUS: invalid end date" << l.at(7);
-    return 1;
-  }
-
-  // verify price2
-  _settings->price2 = l.at(8).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "ChartObjectTLine::CUS: invalid end price" << l.at(8);
-    return 1;
-  }
-
-  // verify color
-  _settings->color.setNamedColor(l.at(9));
-  if (! _settings->color.isValid())
-  {
-    qDebug() << "ChartObjectTLine::CUS: invalid color" << l.at(9);
-    return 1;
-  }
-
-  return 0;
-}
-*/
-
 void ChartObjectTLine::move (QPoint p)
 {
   switch (_status)
@@ -242,7 +154,6 @@ void ChartObjectTLine::click (int button, QPoint p)
             if (grab == 2)
               _status = _Move2;
             emit signalMoveStart(_settings->data("ID"));
-            _settings->setData("Modified", 1);
             return;
           }
 
@@ -280,6 +191,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           
           _status = _Selected;
           emit signalMoveEnd(_settings->data("ID"));
+          save();
           return;
         default:
           break;
@@ -295,7 +207,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           _status = _Selected;
           _createFlag = 0;
           emit signalMoveEnd(_settings->data("ID"));
-          _settings->setData("Modified", 1);
+          save();
           return;
         default:
           break;
@@ -327,7 +239,6 @@ void ChartObjectTLine::click (int button, QPoint p)
 
 void ChartObjectTLine::create ()
 {
-  _settings->setData("Modified", 1);
   _createFlag = 1;
   _status = _Move;
   _draw->setSelected(TRUE);

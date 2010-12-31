@@ -52,7 +52,6 @@ class Plot : public QwtPlot
     void signalClick (int, QPoint);
     void signalMove (QPoint);
     void signalIndex (int);
-    void signalSave ();
 
   public:
     Plot (QString, QMainWindow *);

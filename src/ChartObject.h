@@ -43,7 +43,6 @@ class ChartObject : public QObject
   signals:
     void signalSelected (QString);
     void signalUnselected (QString);
-    void signalDelete (QString);
     void signalMoveStart (QString);
     void signalMoveEnd (QString);
   

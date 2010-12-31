@@ -118,8 +118,6 @@ void Plot::clear ()
   _indicator->save();
   _indicator->clear();
 
-  emit signalSave();
-  
   if (_chartObjects.count())
     qDeleteAll(_chartObjects);
   _chartObjects.clear();
@@ -149,7 +147,6 @@ Indicator * Plot::indicator ()
 
 void Plot::updatePlot ()
 {
-//  clear();
   setDates();
   addCurves(_indicator->curves());
   addChartObjects(_indicator->chartObjects());
@@ -216,22 +213,6 @@ void Plot::addCurve (QString id, Curve *curve)
       PlotHistogramBar *qcurve = new PlotHistogramBar;
       qcurve->setData(curve);
       addCurve3(id, curve, qcurve);
-      break;
-    }
-    case Curve::Horizontal:
-    {
-      CurveBar *bar = curve->bar(0);
-      if (! bar)
-        break;
-
-      QwtPlotMarker *line = new QwtPlotMarker;
-      line->setYValue(bar->data());
-      line->setLineStyle(QwtPlotMarker::HLine);
-      line->setLabelAlignment(Qt::AlignRight | Qt::AlignBottom);
-      line->setLinePen(QPen(bar->color(), 0, Qt::SolidLine));
-      line->setYAxis(QwtPlot::yRight);
-      line->setZ(curve->z());
-      line->attach(this);
       break;
     }
     case Curve::Line:
@@ -329,15 +310,12 @@ void Plot::setLogScaling (bool d)
   else
     setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
 
-//  _menu->setLogStatus(d);
-
   replot();
 }
 
 void Plot::showDate (bool d)
 {
   enableAxis(QwtPlot::xBottom, d);
-//  _menu->setDateStatus(d);
 }
 
 void Plot::setCrossHairs (bool d)
@@ -506,33 +484,6 @@ void Plot::loadSettings ()
 //***************** CHART OBJECT FUNCTIONS ***************************
 //********************************************************************
 
-/*
-void Plot::deleteAllChartObjects ()
-{
-  Dialog *dialog = new Dialog;
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Delete All Chart Objects"));
-  dialog->setMessage(tr("Delete all chart objects from this indicator?"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
-  dialog->show();
-}
-
-void Plot::deleteAllChartObjects2 ()
-{
-// FIXME  
-  ChartObjectDataBase db;
-  db.transaction();
-  db.deleteChartObjectsIndicator(_indicator);
-  db.commit();
-
-  qDeleteAll(_chartObjects);
-  _chartObjects.clear();
-
-  _selected = 0;
-
-  updatePlot();
-}
-*/
-
 void Plot::chartObjectNew (int type, QString id)
 {
   ChartObjectFactory fac;
@@ -571,24 +522,6 @@ void Plot::deleteChartObject (QStringList l)
   setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
   replot();
 }
-
-/*
-void Plot::deleteChartObject (QString id)
-{
-  ChartObject *co = _chartObjects.value(id);
-  if (! co)
-    return;
-
-  delete co;
-  _chartObjects.remove(id);
-
-  _selected = 0;
-
-  setHighLow();
-  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
-  replot();
-}
-*/
 
 void Plot::updateChartObject (QString id)
 {
@@ -646,11 +579,9 @@ void Plot::setupChartObject (ChartObject *co)
   
   connect(co, SIGNAL(signalSelected(QString)), this, SLOT(chartObjectSelected(QString)));
   connect(co, SIGNAL(signalUnselected(QString)), this, SLOT(chartObjectUnselected(QString)));
-//  connect(co, SIGNAL(signalDelete(QString)), this, SLOT(deleteChartObject(QString)));
   connect(co, SIGNAL(signalMoveStart(QString)), this, SLOT(chartObjectMoveStart(QString)));
   connect(co, SIGNAL(signalMoveEnd(QString)), this, SLOT(chartObjectMoveEnd(QString)));
   connect(this, SIGNAL(signalClick(int, QPoint)), co, SLOT(click(int, QPoint)));
-  connect(this, SIGNAL(signalSave()), co, SLOT(save()));
 }
 
 void Plot::addChartObjects (QHash<QString, Setting> &l)

@@ -43,7 +43,7 @@ Curve::~Curve ()
 
 void Curve::init ()
 {
-  _list << "Candle" << "Dash" << "Dot" << "Histogram" << "Histogram Bar" << "Horizontal" << "Line" << "OHLC";
+  _list << "Candle" << "Dot" << "Histogram" << "Histogram Bar" << "Line" << "OHLC";
   _type = Line;
   _z = -1;
   _color = QColor(Qt::red);
@@ -190,10 +190,7 @@ void Curve::info (int index, Setting &set)
       set.setData("C", d);
       break;
     }
-    case Dot:
-    case Histogram:
-    case HistogramBar:
-    case Line:
+    default:
     {
       CurveBar *b = bar(index);
       if (! b)
@@ -204,60 +201,36 @@ void Curve::info (int index, Setting &set)
       set.setData(label(), d);
       break;
     }
-    default:
-      break;
   }
 }
 
 int Curve::highLowRange (int start, int end, double &h, double &l)
 {
-  switch (_type)
+  int rc = 1;
+  int loop;
+  h = -9999999999.0;
+  l = 9999999999.0;
+
+  for (loop = start; loop <= end; loop++)
   {
-    case Horizontal:
-    {
-      if (! _data.count())
-        return 1;
+    CurveBar *r = _data.value(loop);
+    if (! r)
+      continue;
 
-      CurveBar *r = _data.value(0);
-      if (! r)
-        return 1;
+    double th, tl;
+    if (r->highLow(th, tl))
+      continue;
 
-      if (r->highLow(h, l))
-        return 0;
-      
-      break;
-    }
-    default:
-    {
-      int rc = 1;
-      int loop;
-      h = -9999999999.0;
-      l = 9999999999.0;
+    rc = 0;
 
-      for (loop = start; loop <= end; loop++)
-      {
-        CurveBar *r = _data.value(loop);
-        if (! r)
-          continue;
-
-        double th, tl;
-        if (r->highLow(th, tl))
-          continue;
-
-        rc = 0;
-
-        if (th > h)
-          h = th;
+    if (th > h)
+      h = th;
   
-        if (tl < l)
-          l = tl;
-      }
-
-      return rc;
-    }
+    if (tl < l)
+      l = tl;
   }
 
-  return 1;
+  return rc;
 }
 
 void Curve::string (QString &d)
@@ -317,4 +290,3 @@ void Curve::parse (QString &d)
     setBar(index, b);
   }
 }
-
