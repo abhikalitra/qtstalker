@@ -167,7 +167,6 @@ SUBDIRS += plugins/script/MACD
 SUBDIRS += plugins/script/MAMA
 SUBDIRS += plugins/script/MAVP
 SUBDIRS += plugins/script/MDI
-#SUBDIRS += plugins/script/MESSAGE
 SUBDIRS += plugins/script/MFI
 SUBDIRS += plugins/script/MOM
 SUBDIRS += plugins/script/NEW_DIALOG
@@ -175,8 +174,7 @@ SUBDIRS += plugins/script/NORMALIZE
 SUBDIRS += plugins/script/PDI
 SUBDIRS += plugins/script/PLOT
 SUBDIRS += plugins/script/PO
-#SUBDIRS += plugins/script/PP
-#SUBDIRS += plugins/script/PROCESS
+SUBDIRS += plugins/script/PROCESS
 SUBDIRS += plugins/script/QUOTE_DATABASE
 SUBDIRS += plugins/script/ROC
 SUBDIRS += plugins/script/RSI
@@ -189,7 +187,7 @@ SUBDIRS += plugins/script/SETTINGS
 SUBDIRS += plugins/script/STOCH_FAST
 SUBDIRS += plugins/script/STOCH_RSI
 SUBDIRS += plugins/script/STOCH_SLOW
-#SUBDIRS += plugins/script/SYMBOL_CURRENT
+SUBDIRS += plugins/script/SYMBOL_CURRENT
 SUBDIRS += plugins/script/SYMBOL_DIALOG
 SUBDIRS += plugins/script/SZ
 SUBDIRS += plugins/script/T3
@@ -200,6 +198,9 @@ SUBDIRS += plugins/script/VAR
 SUBDIRS += plugins/script/VFI
 SUBDIRS += plugins/script/VIDYA
 SUBDIRS += plugins/script/WILLR
+SUBDIRS += plugins/script/YAHOO_DATABASE
+SUBDIRS += plugins/script/YAHOO_DIALOG
+SUBDIRS += plugins/script/YAHOO_HISTORY
 
 
 # install docs and i18n

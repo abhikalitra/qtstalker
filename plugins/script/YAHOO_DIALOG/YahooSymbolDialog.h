@@ -19,39 +19,43 @@
  *  USA.
  */
 
-#include "DATA_WINDOW.h"
-#include "Globals.h"
-#include "DataWindow.h"
+#ifndef YAHOO_SYMBOL_DIALOG_HPP
+#define YAHOO_SYMBOL_DIALOG_HPP
 
-#include <QtDebug>
+#include <QPushButton>
+#include <QListWidget>
+#include <QStringList>
+#include <QDialog>
+#include <QLabel>
 
-DATA_WINDOW::DATA_WINDOW ()
+class YahooSymbolDialog : public QDialog
 {
-  _type = _DIALOG;
-}
+  Q_OBJECT
 
-int DATA_WINDOW::command (Command *command)
-{
-  // DATA_WINDOW
-  //     0
+  signals:
+    void signalSymbols (QStringList);
 
-  DataWindow *dialog = new DataWindow;
-  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
-  dialog->setData();
-  dialog->show();
-  dialog->scrollToBottom();
+  public:
+    YahooSymbolDialog ();
+    void createGUI ();
+    void saveSettings ();
+      
+  public slots:
+    void loadSettings ();
+    void addSymbol ();
+    void deleteSymbol ();
+    void done ();
+    void selectionChanged ();
+    void cancel ();
+    void help ();
 
-  command->setReturnData("0");
+  private:
+    QListWidget *_list;
+    QPushButton *_deleteButton;
+    QPushButton *_okButton;
+    QPushButton *_cancelButton;
+    QString _helpFile;
+    QLabel *_message;
+};
 
-  return 0;
-}
-
-//*************************************************************
-//*************************************************************
-//*************************************************************
-
-ScriptPlugin * createScriptPlugin ()
-{
-  DATA_WINDOW *o = new DATA_WINDOW;
-  return ((ScriptPlugin *) o);
-}
+#endif

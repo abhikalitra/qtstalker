@@ -19,29 +19,22 @@
  *  USA.
  */
 
-#include "DATA_WINDOW.h"
-#include "Globals.h"
-#include "DataWindow.h"
+#include "YAHOO_DIALOG.h"
+#include "YahooDialog.h"
 
 #include <QtDebug>
+#include <QDialog>
 
-DATA_WINDOW::DATA_WINDOW ()
+YAHOO_DIALOG::YAHOO_DIALOG ()
 {
   _type = _DIALOG;
 }
 
-int DATA_WINDOW::command (Command *command)
+int YAHOO_DIALOG::command (Command *command)
 {
-  // DATA_WINDOW
-  //     0
-
-  DataWindow *dialog = new DataWindow;
+  YahooDialog *dialog = new YahooDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
-  dialog->setData();
   dialog->show();
-  dialog->scrollToBottom();
-
-  command->setReturnData("0");
 
   return 0;
 }
@@ -52,6 +45,6 @@ int DATA_WINDOW::command (Command *command)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  DATA_WINDOW *o = new DATA_WINDOW;
+  YAHOO_DIALOG *o = new YAHOO_DIALOG;
   return ((ScriptPlugin *) o);
 }

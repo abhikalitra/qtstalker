@@ -28,7 +28,7 @@ class SYMBOL_CURRENT : public ScriptPlugin
 {
   public:
     SYMBOL_CURRENT ();
-    int command (Command &);
+    int command (Command *);
 };
 
 extern "C"

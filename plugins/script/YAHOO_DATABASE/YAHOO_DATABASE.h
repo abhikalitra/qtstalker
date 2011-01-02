@@ -19,39 +19,45 @@
  *  USA.
  */
 
-#include "DATA_WINDOW.h"
-#include "Globals.h"
-#include "DataWindow.h"
+#ifndef YAHOO_DATABASE_HPP
+#define YAHOO_DATABASE_HPP
 
-#include <QtDebug>
+#include <QtSql>
 
-DATA_WINDOW::DATA_WINDOW ()
+#include "ScriptPlugin.h"
+
+class YAHOO_DATABASE : public ScriptPlugin
 {
-  _type = _DIALOG;
+  Q_OBJECT
+  
+  public:
+    enum Method
+    {
+      _LOAD,
+      _SAVE,
+      _DELETE,
+      _SYMBOLS,
+      _TRANSACTION,
+      _COMMIT
+    };
+    
+    YAHOO_DATABASE ();
+    int command (Command *);
+    int load (Command *);
+    int save (Command *);
+    int deleteSymbol (Command *);
+    int symbols (Command *);
+    int transaction (Command *);
+    int commit (Command *);
+
+  private:
+    QStringList _method;
+    QSqlDatabase _db;
+};
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
 }
 
-int DATA_WINDOW::command (Command *command)
-{
-  // DATA_WINDOW
-  //     0
-
-  DataWindow *dialog = new DataWindow;
-  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
-  dialog->setData();
-  dialog->show();
-  dialog->scrollToBottom();
-
-  command->setReturnData("0");
-
-  return 0;
-}
-
-//*************************************************************
-//*************************************************************
-//*************************************************************
-
-ScriptPlugin * createScriptPlugin ()
-{
-  DATA_WINDOW *o = new DATA_WINDOW;
-  return ((ScriptPlugin *) o);
-}
+#endif

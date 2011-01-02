@@ -28,14 +28,12 @@ SYMBOL_CURRENT::SYMBOL_CURRENT ()
 {
 }
 
-int SYMBOL_CURRENT::command (Command &command)
+int SYMBOL_CURRENT::command (Command *command)
 {
   // SYMBOL_CURRENT
   //       0
 
-  command.setReturnData(g_barData->key());
-
-  emit signalDone();
+  command->setReturnData(g_barData->key());
 
   return 0;
 }

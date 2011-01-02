@@ -19,39 +19,28 @@
  *  USA.
  */
 
-#include "DATA_WINDOW.h"
-#include "Globals.h"
-#include "DataWindow.h"
+#ifndef YAHOO_HISTORY_HPP
+#define YAHOO_HISTORY_HPP
 
-#include <QtDebug>
+#include <QDateTime>
 
-DATA_WINDOW::DATA_WINDOW ()
+#include "ScriptPlugin.h"
+#include "Setting.h"
+
+class YAHOO_HISTORY : public ScriptPlugin
 {
-  _type = _DIALOG;
+  Q_OBJECT
+  
+  public:
+    YAHOO_HISTORY ();
+    int command (Command *);
+    void getUrl (QDateTime &, QDateTime &, Setting &);
+    void parse (QByteArray &, Setting &);
+};
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
 }
 
-int DATA_WINDOW::command (Command *command)
-{
-  // DATA_WINDOW
-  //     0
-
-  DataWindow *dialog = new DataWindow;
-  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
-  dialog->setData();
-  dialog->show();
-  dialog->scrollToBottom();
-
-  command->setReturnData("0");
-
-  return 0;
-}
-
-//*************************************************************
-//*************************************************************
-//*************************************************************
-
-ScriptPlugin * createScriptPlugin ()
-{
-  DATA_WINDOW *o = new DATA_WINDOW;
-  return ((ScriptPlugin *) o);
-}
+#endif

@@ -19,39 +19,23 @@
  *  USA.
  */
 
-#include "DATA_WINDOW.h"
-#include "Globals.h"
-#include "DataWindow.h"
+#ifndef YAHOO_DIALOG_HPP
+#define YAHOO_DIALOG_HPP
 
-#include <QtDebug>
+#include "ScriptPlugin.h"
 
-DATA_WINDOW::DATA_WINDOW ()
+class YAHOO_DIALOG : public ScriptPlugin
 {
-  _type = _DIALOG;
+  Q_OBJECT
+  
+  public:
+    YAHOO_DIALOG ();
+    int command (Command *);
+};
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
 }
 
-int DATA_WINDOW::command (Command *command)
-{
-  // DATA_WINDOW
-  //     0
-
-  DataWindow *dialog = new DataWindow;
-  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
-  dialog->setData();
-  dialog->show();
-  dialog->scrollToBottom();
-
-  command->setReturnData("0");
-
-  return 0;
-}
-
-//*************************************************************
-//*************************************************************
-//*************************************************************
-
-ScriptPlugin * createScriptPlugin ()
-{
-  DATA_WINDOW *o = new DATA_WINDOW;
-  return ((ScriptPlugin *) o);
-}
+#endif

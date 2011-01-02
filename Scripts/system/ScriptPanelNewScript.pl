@@ -18,6 +18,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # save the new script
-$command = "SCRIPT_DATABASE,SAVE,$script,$rc";
+$command = "SCRIPT_DATABASE,SAVE,$rc";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

@@ -594,6 +594,26 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObjectBuyDialog</name>
@@ -1272,34 +1292,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Buy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;HLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Sell</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Te&amp;xt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;TLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;VLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit &amp;Indicator...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1329,6 +1321,34 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>&amp;Delete Chart Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>HLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VLine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1447,10 +1467,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Buy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

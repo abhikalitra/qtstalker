@@ -19,21 +19,47 @@
  *  USA.
  */
 
-#ifndef PROCESS_HPP
-#define PROCESS_HPP
+#ifndef YAHOO_DIALOG_DIALOG_HPP
+#define YAHOO_DIALOG_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include <QDialog>
+#include <QPushButton>
+#include <QDateTimeEdit>
+#include <QCheckBox>
+#include <QStringList>
+#include <QLabel>
 
-class PROCESS : public ScriptPlugin
+#include "Command.h"
+
+class YahooDialog : public QDialog
 {
+  Q_OBJECT
+
   public:
-    PROCESS ();
-    int command (Command *);
-};
+    YahooDialog (Command *);
+    void createGUI ();
+    void loadSettings ();
+    void saveSettings ();
+      
+  public slots:
+    void selectSymbolsDialog ();
+    void setSymbols (QStringList);
+    void done ();
+    void cancel ();
+    void help ();
 
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
-}
+  private:
+    QDateTimeEdit *_sdate;
+    QDateTimeEdit *_edate;
+    QCheckBox *_adjustment;
+    QCheckBox *_allSymbols;
+    QPushButton *_selectSymbolsButton;
+    QStringList _symbolList;
+    QPushButton *_okButton;
+    QPushButton *_cancelButton;
+    QString _helpFile;
+    QLabel *_message;
+    Command *_command;
+};
 
 #endif

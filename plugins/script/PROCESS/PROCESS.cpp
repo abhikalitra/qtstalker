@@ -28,25 +28,25 @@ PROCESS::PROCESS ()
 {
 }
 
-int PROCESS::command (Command &command)
+int PROCESS::command (Command *command)
 {
   // PROCESS,<COMMAND>
   //    0       1
 
-  if (command.count() != 2)
+  if (command->count() != 2)
   {
-    qDebug() << "PROCESS::command: invalid parm count" << command.count();
+    qDebug() << "PROCESS::command: invalid parm count" << command->count();
     return 1;
   }
 
-  int rc = QProcess::startDetached(command.parm(1));
+  int rc = QProcess::startDetached(command->parm(1));
   if (! rc)
   {
     qDebug() << "PROCESS::command: error starting the process";
     return 1;
   }
 
-  command.setReturnData("0");
+  command->setReturnData("0");
 
   return 0;
 }
