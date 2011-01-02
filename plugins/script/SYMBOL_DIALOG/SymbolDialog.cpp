@@ -22,7 +22,8 @@
 #include "SymbolDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "ScriptPluginFactory.h"
+#include "QuoteDataBase.h"
+#include "BarData.h"
 
 #include "../pics/search.xpm"
 
@@ -253,32 +254,16 @@ void SymbolDialog::deleteButtonPressed ()
 
 void SymbolDialog::searchButtonPressed ()
 {
-  QStringList l;
-  l << "QUOTE_DATABASE" << "SEARCH" << _exchanges->currentText();
+  BarData symbol;
+  symbol.setExchange(_exchanges->currentText());
   QString s = _search->text();
   if (s.isEmpty())
     s = "*";
-  l << s;
+  symbol.setSymbol(s);
 
-  Command command(l.join(","));
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "SYMBOL_DIALOG::searchButtonPressed: no plugin" << command.plugin();
-    return;
-  }
-  
-  if (plug->command(&command))
-  {
-    delete plug;
-    return;
-  }
-
-  delete plug;
-  
-  l = command.stringData().split(";", QString::SkipEmptyParts);
+  QuoteDataBase db;
+  QStringList l;
+  db.search(&symbol, l);
 
   _searchList->clear();
 
@@ -300,25 +285,10 @@ void SymbolDialog::searchButtonPressed ()
 
 void SymbolDialog::loadExchanges ()
 {
-  Command command("QUOTE_DATABASE,EXCHANGE");
+  QuoteDataBase db;
+  QStringList l;
+  db.getExchange(l);
 
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "SYMBOL_DIALOG::loadExchanges: no plugin" << command.plugin();
-    return;
-  }
-
-  if (plug->command(&command))
-  {
-    delete plug;
-    return;
-  }
-
-  delete plug;
-  
-  QStringList l = command.stringData().split(",", QString::SkipEmptyParts);
   l.prepend("*");
 
   _exchanges->clear();

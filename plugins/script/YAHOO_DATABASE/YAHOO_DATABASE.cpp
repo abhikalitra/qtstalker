@@ -94,7 +94,7 @@ int YAHOO_DATABASE::load (Command *command)
 
   QSqlQuery q(_db);
 
-  QString s = "SELECT symbol,exchange FROM YahooSymbols WHERE ysymbol='" + ysymbol + "'";
+  QString s = "SELECT exchange,symbol FROM YahooSymbols WHERE ysymbol='" + ysymbol + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {

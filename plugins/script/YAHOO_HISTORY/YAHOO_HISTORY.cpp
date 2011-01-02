@@ -83,22 +83,27 @@ int YAHOO_HISTORY::command (Command *command)
       continue;
     }
 
-    cl << tcommand.stringData().split(",", QString::SkipEmptyParts);
+    cl = tcommand.stringData().split(",", QString::SkipEmptyParts);
     if (cl.count() != 2)
       continue;
 
     data.setData("exchange", cl.at(0));
     data.setData("symbol", cl.at(1));
+    data.setData("name", cl.at(1));
 
+    // get name
+    downloadName(data);
+    
     // get the url
-    getUrl(sd, ed, data);
+    QString url;
+    getUrl(sd, ed, data, url);
 
     // download the data
-    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(data.data("url"))));
+    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
     QEventLoop e;
     connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
     e.exec();
-
+    
     // parse the data and save quotes
     QByteArray ba = reply->readAll();
     parse(ba, data);
@@ -111,18 +116,17 @@ int YAHOO_HISTORY::command (Command *command)
   return 0;
 }
 
-void YAHOO_HISTORY::getUrl (QDateTime &sd, QDateTime &ed, Setting &data)
+void YAHOO_HISTORY::getUrl (QDateTime &sd, QDateTime &ed, Setting &data, QString &url)
 {
-  QString s = "http://ichart.finance.yahoo.com/table.csv?s=";
-  s.append(data.data("ysymbol"));
-  s.append("&d=" + QString::number(ed.date().month() - 1));
-  s.append("&e=" + ed.date().toString("d"));
-  s.append("&f=" + ed.date().toString("yyyy"));
-  s.append("&a=" + QString::number(sd.date().month() - 1));
-  s.append("&b=" + sd.date().toString("d"));
-  s.append("&c=" + sd.date().toString("yyyy"));
-  s.append("&ignore=.csv");
-  data.setData("url", s);
+  url = "http://ichart.finance.yahoo.com/table.csv?s=";
+  url.append(data.data("ysymbol"));
+  url.append("&d=" + QString::number(ed.date().month() - 1));
+  url.append("&e=" + ed.date().toString("d"));
+  url.append("&f=" + ed.date().toString("yyyy"));
+  url.append("&a=" + QString::number(sd.date().month() - 1));
+  url.append("&b=" + sd.date().toString("d"));
+  url.append("&c=" + sd.date().toString("yyyy"));
+  url.append("&ignore=.csv");
 }
 
 void YAHOO_HISTORY::parse (QByteArray &ba, Setting &data)
@@ -135,6 +139,7 @@ void YAHOO_HISTORY::parse (QByteArray &ba, Setting &data)
   BarData symbol;
   symbol.setExchange(data.data("exchange"));
   symbol.setSymbol(data.data("symbol"));
+  symbol.setName(data.data("name"));
   symbol.setType(QString("Stock"));
 
   int loop = 1; // skip past first line
@@ -228,6 +233,31 @@ void YAHOO_HISTORY::parse (QByteArray &ba, Setting &data)
   db.transaction();
   db.setBars(&symbol);
   db.commit();
+}
+
+void YAHOO_HISTORY::downloadName (Setting &data)
+{
+  QNetworkAccessManager manager;
+
+  QString url = "http://download.finance.yahoo.com/d/quotes.csv?s=";
+  url.append(data.data("ysymbol"));
+  url.append("&f=n");
+  url.append("&e=.csv");
+
+  QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
+  QEventLoop e;
+  connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
+  e.exec();
+
+  // parse the data and save quotes
+  QByteArray ba = reply->readAll();
+  QString s(ba);
+  s = s.remove('"');
+  s = s.trimmed();
+  if (s.isEmpty())
+    return;
+
+  data.setData("name", s);
 }
 
 //*************************************************************

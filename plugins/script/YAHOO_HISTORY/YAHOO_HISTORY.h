@@ -34,8 +34,9 @@ class YAHOO_HISTORY : public ScriptPlugin
   public:
     YAHOO_HISTORY ();
     int command (Command *);
-    void getUrl (QDateTime &, QDateTime &, Setting &);
+    void getUrl (QDateTime &, QDateTime &, Setting &, QString &);
     void parse (QByteArray &, Setting &);
+    void downloadName (Setting &);
 };
 
 extern "C"

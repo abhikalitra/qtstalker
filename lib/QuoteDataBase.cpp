@@ -584,8 +584,6 @@ int QuoteDataBase::getExchange (QStringList &l)
   while (q.next())
     l << q.value(0).toString();
 
-  l.sort();
-
   return 0;
 }
 
