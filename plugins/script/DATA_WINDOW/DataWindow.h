@@ -30,7 +30,7 @@
 #include <QDateTime>
 
 #include "Curve.h"
-#include "Plot.h"
+#include "Indicator.h"
 
 class DataWindow : public QDialog
 {
@@ -41,9 +41,9 @@ class DataWindow : public QDialog
 
   public:
     DataWindow ();
-    void setData ();
-    void setPlot (Plot *);
-    void setDates (Plot *);
+    void setData (Indicator *);
+    void setPlot (Indicator *);
+    void setDates ();
     void setLine (Curve *);
     void setOHLC (Curve *);
     void scrollToBottom ();

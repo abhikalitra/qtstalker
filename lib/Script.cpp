@@ -28,11 +28,13 @@
 Script::Script ()
 {
   _killFlag = 0;
-  _indicator = 0;
   _barData = 0;
   
   _command = new Command;
   _command->setScriptFlag(1);
+
+  _indicator = new Indicator;
+  _indicatorFlag = 1;
 
   connect(&_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
   connect(&_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
@@ -44,7 +46,12 @@ Script::Script ()
 Script::~Script ()
 {
   clear();
+  
   delete _command;
+
+  if (_indicatorFlag)
+    delete _indicator;
+
 //qDebug() << "Script::~Script:" << _name << "deleted";
 }
 
@@ -59,6 +66,9 @@ void Script::clear ()
 
 void Script::setIndicator (Indicator *d)
 {
+  delete _indicator;
+  _indicatorFlag = 0;
+  
   _indicator = d;
 }
 
@@ -172,7 +182,7 @@ void Script::readFromStdout ()
     default:
 //      plug->command(_command);
 //      _proc.write(_command->arrayData());
-      CommandThread *ct = new CommandThread(this, _command);
+      CommandThread *ct = new CommandThread(this, plug, _command);
       connect(ct, SIGNAL(finished()), ct, SLOT(deleteLater()));
       connect(ct, SIGNAL(finished()), this, SLOT(resume()), Qt::QueuedConnection);
       ct->start();

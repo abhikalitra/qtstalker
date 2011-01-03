@@ -289,3 +289,8 @@ int Indicator::chartObjectCount ()
 {
   return _chartObjects.count();
 }
+
+int Indicator::lineCount ()
+{
+  return _lines.count();
+}

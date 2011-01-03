@@ -178,8 +178,6 @@ int INDICATOR_DATABASE::indicators (Command *command)
     return 1;
   }
   
-  l.sort();
-
   command->setReturnData(l.join(","));
 
   return 0;

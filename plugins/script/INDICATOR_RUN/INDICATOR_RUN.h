@@ -19,31 +19,21 @@
  *  USA.
  */
 
-#ifndef COMMAND_THREAD_HPP
-#define COMMAND_THREAD_HPP
+#ifndef INDICATOR_RUN_HPP
+#define INDICATOR_RUN_HPP
 
-#include <QString>
-#include <QThread>
-
-#include "Command.h"
 #include "ScriptPlugin.h"
 
-class CommandThread : public QThread
+class INDICATOR_RUN : public ScriptPlugin
 {
-  Q_OBJECT
-
-//  signals:
-//    void signalDone (Command *);
-
   public:
-    CommandThread (QObject *, ScriptPlugin *, Command *);
-
-  protected:
-    void run ();
-
-  private:
-    Command *_command;
-    ScriptPlugin *_plug;
+    INDICATOR_RUN ();
+    int command (Command *);
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

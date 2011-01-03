@@ -22,15 +22,32 @@
 #ifndef DATA_WINDOW_HPP
 #define DATA_WINDOW_HPP
 
+#include <QStringList>
+
 #include "ScriptPlugin.h"
+#include "DataWindow.h"
 
 class DATA_WINDOW : public ScriptPlugin
 {
   Q_OBJECT
   
   public:
+    enum Method
+    {
+      _START,
+      _SET,
+      _END
+    };
+    
     DATA_WINDOW ();
     int command (Command *);
+    int start (Command *);
+    int setData (Command *);
+    int end (Command *);
+
+  private:
+    QStringList _method;
+    DataWindow *_dw;
 };
 
 extern "C"

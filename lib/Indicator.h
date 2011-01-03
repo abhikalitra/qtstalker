@@ -64,6 +64,7 @@ class Indicator : public QObject
     void loadChartObjects ();
     QHash<QString, Setting> & chartObjects ();
     int chartObjectCount ();
+    int lineCount ();
 
   public slots:
     int save ();

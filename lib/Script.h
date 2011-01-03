@@ -76,6 +76,7 @@ class Script : public QObject
     QProcess _proc;
     int _killFlag;
     Indicator *_indicator;
+    int _indicatorFlag;
     BarData *_barData;
     ScriptPluginFactory _factory;
     QString _name;

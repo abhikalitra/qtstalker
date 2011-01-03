@@ -60,25 +60,18 @@ DataWindow::DataWindow () : QDialog (0, 0)
   setWindowTitle(l.join(" "));
 }
 
-void DataWindow::setData ()
+void DataWindow::setData (Indicator *i)
 {
-  QHashIterator<QString, Plot *> it(g_plots);
-  while (it.hasNext())
-  {
-    it.next();
-    Plot *plot = it.value();
-
-    if (! _dateFlag)
-      setDates(plot);
+  if (! _dateFlag)
+    setDates();
     
-    setPlot(plot);
-  }
+  setPlot(i);
 }
 
-void DataWindow::setPlot (Plot *plot)
+void DataWindow::setPlot (Indicator *i)
 {
   QHash<QString, Curve *> curves;
-  plot->curves(curves);
+  curves = i->curves();
 
   // get the plot data
   QHashIterator<QString, Curve *> it(curves);
@@ -89,8 +82,6 @@ void DataWindow::setPlot (Plot *plot)
     
     switch ((Curve::Type) line->type())
     {
-      case Curve::Horizontal:
-        break;
       case Curve::Candle:
       case Curve::OHLC:
         if (! _ohlcFlag)
@@ -103,21 +94,23 @@ void DataWindow::setPlot (Plot *plot)
   }
 }
 
-void DataWindow::setDates (Plot *plot)
+void DataWindow::setDates ()
 {
-  QList<QDateTime> dates;
-  plot->dates(dates);
-  
   _table->setColumnCount(_table->columnCount() + 1);
   QTableWidgetItem *item = new QTableWidgetItem(tr("Date"));
   _table->setHorizontalHeaderItem(_table->columnCount() - 1, item);
 
-  _table->setRowCount(dates.count());
+  _table->setRowCount(g_barData->count());
   
   int loop;
-  for (loop = 0; loop < (int) dates.count(); loop++)
+  for (loop = 0; loop < g_barData->count(); loop++)
   {
-    QString s = dates.at(loop).toString("yyyy-MM-dd HH:mm:ss");
+    Bar *bar = g_barData->bar(loop);
+    if (! bar)
+      continue;
+    
+    QString s;
+    bar->dateTimeString(s);
     
     QTableWidgetItem *item = new QTableWidgetItem(s);
     _table->setItem(loop, _table->columnCount() - 1, item);
