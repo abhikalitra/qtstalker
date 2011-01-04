@@ -45,6 +45,7 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
       _startDate.setTime(QTime(_startDate.time().hour(), _startDate.time().minute(), 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(60);
+      _endDate = _endDate.addSecs(-1);
       break;
     case Bar::Minute5:
     {
@@ -52,6 +53,7 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 5, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(300);
+      _endDate = _endDate.addSecs(-1);
       break;
     }
     case Bar::Minute10:
@@ -60,6 +62,7 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 10, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(600);
+      _endDate = _endDate.addSecs(-1);
       break;
     }
     case Bar::Minute15:
@@ -68,6 +71,7 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 15, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(900);
+      _endDate = _endDate.addSecs(-1);
       break;
     }
     case Bar::Minute30:
@@ -76,29 +80,34 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 30, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(1800);
+      _endDate = _endDate.addSecs(-1);
       break;
     }
     case Bar::Minute60:
       _startDate.setTime(QTime(_startDate.time().hour(), 0, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(3600);
+      _endDate = _endDate.addSecs(-1);
       break;
     case Bar::DailyBar:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addDays(1);
+      _endDate = _endDate.addSecs(-1);
       break;
     case Bar::WeeklyBar:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _startDate = _startDate.addDays(- _startDate.date().dayOfWeek());
       _endDate = _startDate;
       _endDate = _endDate.addDays(7);
+      _endDate = _endDate.addSecs(-1);
       break;
     case Bar::MonthlyBar:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _startDate = _startDate.addDays(- (_startDate.date().day() - 1));
       _endDate = _startDate;
       _endDate = _endDate.addDays(_endDate.date().daysInMonth());
+      _endDate = _endDate.addSecs(-1);
       break;
     default:
       break;

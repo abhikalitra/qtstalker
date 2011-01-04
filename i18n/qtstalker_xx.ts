@@ -1222,6 +1222,13 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>IconButton</name>
+    <message>
+        <source>Select Icon</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IndicatorEditDialog</name>
     <message>
         <source>Script command</source>
@@ -1934,12 +1941,19 @@ e.g. Qtstalker alert was triggered.</source>
         <source>&amp;Configure</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>ScriptLaunchButtonDialog</name>
     <message>
-        <source>Select Script</source>
+        <source>Set Date Range</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure Script Launcher</source>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Icon</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

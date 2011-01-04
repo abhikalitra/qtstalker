@@ -284,10 +284,6 @@ void QtstalkerApp::loadChart (BarData symbol)
   g_barData->setName(symbol.name());
   g_barData->setBarLength((BarData::BarLength) _barLengthButtons->length());
 
-  QSettings settings(g_settingsFile);
-  settings.setValue("current_chart", g_barData->key());
-  settings.sync();
-
   if (_dateRangeButton->isChecked())
   {
     g_barData->setStartDate(_dateRangeButton->startDate());
@@ -300,7 +296,13 @@ void QtstalkerApp::loadChart (BarData symbol)
     g_barData->setEndDate(QDateTime());
     g_barData->setRange(_dateRange->dateRange());
   }
-  
+
+//  QSettings settings(g_settingsFile);
+//  settings.setValue("current_chart", g_barData->key());
+//  settings.setValue("current_chart_length", g_barData->barLength());
+//  settings.setValue("current_chart_range", g_barData->range());
+//  settings.sync();
+
   QuoteDataBase db;
   db.getBars(g_barData);
 

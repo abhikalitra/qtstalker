@@ -21,6 +21,7 @@
 
 #include "ChartPage.h"
 #include "Globals.h"
+#include "QuoteDataBase.h"
 
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
@@ -164,34 +165,25 @@ void ChartPage::updateList ()
 
   _nav->setSortingEnabled(FALSE);
 
-  QStringList cl;
-  cl << "QUOTE_DATABASE" << "SEARCH" << _searchExchange << _searchString;
-
-  Command command(cl.join(","));
-
-  ScriptPlugin *plug = _factory.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ChartPage::updateList: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(&command);
-  delete plug;
-
-  cl = command.stringData().split(";", QString::SkipEmptyParts);
+  BarData bd;
+  bd.setExchange(_searchExchange);
+  bd.setSymbol(_searchString);
   
+  QuoteDataBase db;
+  QStringList l;
+  db.search(&bd, l);
+
   int loop = 0;
-  for (; loop < cl.count(); loop++)
+  for (; loop < l.count(); loop++)
   {
-    QStringList l = cl.at(loop).split(",");
-    if (l.count() != 3)
+    QStringList tl = l.at(loop).split(",");
+    if (tl.count() != 3)
       continue;
     
     BarData bd;
-    bd.setExchange(l.at(0));
-    bd.setSymbol(l.at(1));
-    bd.setName(l.at(2));
+    bd.setExchange(tl.at(0));
+    bd.setSymbol(tl.at(1));
+    bd.setName(tl.at(2));
     
     _nav->addSymbol(bd);
   }

@@ -145,7 +145,7 @@ int QUOTE_DATABASE::getBars (Command *command)
 int QUOTE_DATABASE::setBars (Command *command)
 {
   // QUOTE_DATABASE,<METHOD>,<FORMAT>,<DATA>
-  //   0      1         2      3
+  //       0           1         2      3
   // format delimited by a colon
   // data delimted by a colon between fields
 

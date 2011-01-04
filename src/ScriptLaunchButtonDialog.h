@@ -19,34 +19,41 @@
  *  USA.
  */
 
-#ifndef SCRIPT_LAUNCH_BUTTON_HPP
-#define SCRIPT_LAUNCH_BUTTON_HPP
+#ifndef SCRIPT_LAUNCH_BUTTON_DIALOG_HPP
+#define SCRIPT_LAUNCH_BUTTON_DIALOG_HPP
 
-#include <QToolButton>
-#include <QString>
-#include <QMenu>
+#include <QDateTimeEdit>
+#include <QDialog>
+#include <QLabel>
+#include <QComboBox>
+#include <QIcon>
 
-class ScriptLaunchButton : public QToolButton
+#include "IconButton.h"
+
+class ScriptLaunchButtonDialog : public QDialog
 {
   Q_OBJECT
 
   signals:
-    void signalButtonClicked (QString);
+    void signalDone (QString, QString);
 
   public:
-    ScriptLaunchButton (int, int);
-    
+    ScriptLaunchButtonDialog (QString script, QString icon);
+    void createMainPage ();
+    void loadSettings ();
+    void saveSettings ();
+
   public slots:
-    void buttonClicked ();
-    void configure ();
-    void configure2 (QString, QString);
-    void contextMenu ();
+    void done ();
+    void cancel ();
+    void help ();
 
   private:
-    int _position;
-    QString _scriptName;
-    QString _icon;
-    QMenu *_menu;
+    QPushButton *_okButton;
+    QPushButton *_cancelButton;
+    IconButton *_icon;
+    QString _helpFile;
+    QComboBox *_script;
 };
 
 #endif

@@ -72,7 +72,7 @@ void ChartObjectBuy::move (QPoint p)
     {
       QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::xBottom);
       int x = map.invTransform((double) p.x());
-      
+
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);

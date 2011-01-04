@@ -34,7 +34,6 @@
 
 #include "BarData.h"
 #include "SymbolListWidget.h"
-#include "ScriptPluginFactory.h"
 #include "Script.h"
 
 class ChartPage : public QWidget
@@ -79,7 +78,6 @@ class ChartPage : public QWidget
     SymbolListWidget *_nav;
     QMenu *_menu;
     QHash<int, QAction *> _actions;
-    ScriptPluginFactory _factory;
     Command _symbolDialogCommand;
     Command _addGroupCommand;
 };

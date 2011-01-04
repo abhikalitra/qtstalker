@@ -20,7 +20,7 @@
  */
 
 #include "ScriptLaunchButton.h"
-#include "ScriptPluginFactory.h"
+#include "ScriptLaunchButtonDialog.h"
 #include "Globals.h"
 
 #include "../pics/configure.xpm"
@@ -40,8 +40,10 @@ ScriptLaunchButton::ScriptLaunchButton (int pos, int label)
 
   QSettings settings(g_settingsFile);
   _scriptName = settings.value("script_launch_button_" + QString::number(_position)).toString();
+  _icon = settings.value("script_launch_button_icon_" + QString::number(_position)).toString();
 
   setToolTip(_scriptName);
+  setIcon(QIcon(_icon));
 
   connect(this, SIGNAL(clicked()), this, SLOT(buttonClicked()));
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
@@ -60,23 +62,15 @@ void ScriptLaunchButton::buttonClicked ()
 
 void ScriptLaunchButton::configure ()
 {
-  QStringList cl;
-  cl << "SCRIPT_DATABASE" << "SCRIPTS";
-
-  Command command(cl.join(","));
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(command.plugin());
-  if (! plug)
-  {
-    qDebug() << "ScriptLaunchButton::configure: no plugin" << command.plugin();
-    return;
-  }
-
-  plug->command(&command);
-  delete plug;
+  ScriptLaunchButtonDialog *dialog = new ScriptLaunchButtonDialog(_scriptName, _icon);
+  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(configure2(QString, QString)));
+  dialog->show();
   
-  QStringList l = command.stringData().split(",");
+/*  
+  ScriptDataBase db;
+  QStringList l;
+  db.scripts(l);
+
   int index = l.indexOf(_scriptName);
 
   QInputDialog *dialog = new QInputDialog(this);
@@ -87,16 +81,20 @@ void ScriptLaunchButton::configure ()
     dialog->setTextValue(l.at(index));
   connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(configure2(QString)));
   dialog->show();
+*/
 }
 
-void ScriptLaunchButton::configure2 (QString d)
+void ScriptLaunchButton::configure2 (QString d, QString i)
 {
   _scriptName = d;
+  _icon = i;
 
   setToolTip(_scriptName);
+  setIcon(QIcon(_icon));
 
   QSettings settings(g_settingsFile);
   settings.setValue("script_launch_button_" + QString::number(_position), _scriptName);
+  settings.setValue("script_launch_button_icon_" + QString::number(_position), _icon);
   settings.sync();
 }
 

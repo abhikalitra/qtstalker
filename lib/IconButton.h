@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,34 +19,31 @@
  *  USA.
  */
 
-#ifndef SCRIPT_LAUNCH_BUTTON_HPP
-#define SCRIPT_LAUNCH_BUTTON_HPP
+#ifndef ICON_BUTTON_HPP
+#define ICON_BUTTON_HPP
 
-#include <QToolButton>
+#include <QPushButton>
 #include <QString>
-#include <QMenu>
+#include <QIcon>
 
-class ScriptLaunchButton : public QToolButton
+class IconButton : public QPushButton
 {
   Q_OBJECT
 
   signals:
-    void signalButtonClicked (QString);
+    void signalSelectionChanged ();
 
   public:
-    ScriptLaunchButton (int, int);
-    
-  public slots:
-    void buttonClicked ();
-    void configure ();
-    void configure2 (QString, QString);
-    void contextMenu ();
+    IconButton (QWidget *, QString);
+    QString file ();
+    void updateButton ();
 
+  public slots:
+    void fileDialog ();
+    void setFile (QString);
+        
   private:
-    int _position;
-    QString _scriptName;
-    QString _icon;
-    QMenu *_menu;
+    QString _file;
 };
 
 #endif

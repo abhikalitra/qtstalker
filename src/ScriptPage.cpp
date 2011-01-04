@@ -225,16 +225,10 @@ void ScriptPage::queStatus ()
 
 void ScriptPage::loadSettings ()
 {
-//  QSettings settings;
-//  settings.beginGroup("main"); // global setting
-
 }
 
 void ScriptPage::saveSettings ()
 {
-//  QSettings settings;
-//  settings.beginGroup("main"); // global setting
-//  settings.sync();
 }
 
 void ScriptPage::runScript ()
