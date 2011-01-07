@@ -105,8 +105,8 @@ Plot::Plot (QString name, QMainWindow *mw)
 
 Plot::~Plot ()
 {
-  delete _indicator;
   clear();
+  delete _indicator;
 }
 
 void Plot::clear ()
@@ -456,6 +456,11 @@ void Plot::mouseMove (QPoint p)
 PlotMenu * Plot::plotMenu ()
 {
   return _menu;
+}
+
+DockWidget * Plot::dockWidget ()
+{
+  return _dock;
 }
 
 void Plot::loadSettings ()

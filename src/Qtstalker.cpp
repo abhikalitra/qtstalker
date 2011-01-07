@@ -449,8 +449,13 @@ void QtstalkerApp::deletePlot (QStringList l)
   {
     if (! _plots.contains(l.at(loop)))
       continue;
+    
     Plot *plot = _plots.value(l.at(loop));
+
+    removeDockWidget(plot->dockWidget());
+    
     delete plot;
+    
     _plots.remove(l.at(loop));
   }
 }

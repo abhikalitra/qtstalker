@@ -22,11 +22,11 @@
 #include "FileButton.h"
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QDebug>
 
 FileButton::FileButton (QWidget *w, QStringList l, QString p) : QPushButton (w)
 {
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
-//  setMaximumHeight(25);
   _files = l;
   
   _path = QDir::homePath();
@@ -57,6 +57,7 @@ void FileButton::fileDialog ()
   }
 
   QFileDialog *dialog = new QFileDialog(this);
+  dialog->setFileMode(QFileDialog::ExistingFile);
   dialog->setDirectory(_path);
   dialog->setWindowTitle(tr("Select Files"));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));

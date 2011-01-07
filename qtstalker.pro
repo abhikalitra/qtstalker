@@ -118,6 +118,7 @@ SUBDIRS += src
 #SUBDIRS += plugins/script/AROON
 #SUBDIRS += plugins/script/ATR
 SUBDIRS += plugins/script/BARS
+SUBDIRS += plugins/script/BARS_DIALOG
 #SUBDIRS += plugins/script/BBANDS
 #SUBDIRS += plugins/script/BETA
 #SUBDIRS += plugins/script/BOP

@@ -70,6 +70,7 @@ class Plot : public QwtPlot
     void dates (QList<QDateTime> &);
     int index ();
     PlotMenu * plotMenu ();
+    DockWidget * dockWidget ();
 
   public slots:
     virtual void clear ();
