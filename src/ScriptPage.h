@@ -82,6 +82,7 @@ class ScriptPage : public QWidget
     void launchButtonRows2 (int);
     void launchButtonCols ();
     void launchButtonCols2 (int);
+    void startup ();
 
   protected:
     QListWidget *_queList;

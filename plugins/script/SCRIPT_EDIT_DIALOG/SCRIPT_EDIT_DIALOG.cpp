@@ -32,8 +32,8 @@ SCRIPT_EDIT_DIALOG::SCRIPT_EDIT_DIALOG ()
 
 int SCRIPT_EDIT_DIALOG::command (Command *command)
 {
-  // SCRIPT_EDIT_DIALOG,<NAME>,COMMAND,FILE
-  //          0           1       2     3
+  // SCRIPT_EDIT_DIALOG,NAME
+  //          0          1
 
   if (command->count() < 2)
   {

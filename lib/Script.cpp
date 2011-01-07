@@ -29,6 +29,7 @@ Script::Script ()
 {
   _killFlag = 0;
   _barData = 0;
+  _startup = 0;
   
   _command = new Command;
   _command->setScriptFlag(1);
@@ -239,6 +240,16 @@ void Script::setFile (QString d)
 QString & Script::file ()
 {
   return _file;
+}
+
+void Script::setStartup (int d)
+{
+  _startup = d;
+}
+
+int Script::startup ()
+{
+  return _startup;
 }
 
 void Script::resume ()

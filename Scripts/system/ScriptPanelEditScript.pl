@@ -12,17 +12,7 @@ $command = "SELECT_DIALOG,1,Script,$rc";
 print STDOUT $command;
 $script = <STDIN>; chomp($script); if ($script eq "ERROR") {print STDERR $command; exit; }
 
-# get script parms
-$command = "SCRIPT_DATABASE,LOAD,$script";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
-
 # display the edit script dialog
-$command = "SCRIPT_EDIT_DIALOG,$script,$rc";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
-
-# save the script to the database
-$command = "SCRIPT_DATABASE,SAVE,$script,$rc";
+$command = "SCRIPT_EDIT_DIALOG,$script";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

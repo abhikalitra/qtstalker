@@ -27,6 +27,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
+#include <QCheckBox>
 
 #include "Command.h"
 
@@ -39,6 +40,7 @@ class ScriptEditDialog : public QDialog
     void createGUI ();
     void loadSettings ();
     void saveSettings ();
+    void loadScript ();
 
   public slots:
     void done ();
@@ -50,6 +52,7 @@ class ScriptEditDialog : public QDialog
 
   private:
     QLineEdit *_com;
+    QCheckBox *_startup;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
     QPushButton *_fileButton;

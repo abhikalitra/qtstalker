@@ -49,6 +49,9 @@ ScriptPage::ScriptPage ()
 
   createGUI();
 
+  // scan for startup scripts
+  QTimer::singleShot(100, this, SLOT(startup()));
+  
   queStatus();
 }
 
@@ -332,4 +335,26 @@ void ScriptPage::launchButtonCols2 (int d)
   QSettings settings(g_settingsFile);
   settings.setValue("script_launch_button_cols", d);
   settings.sync();
+}
+
+void ScriptPage::startup ()
+{
+  ScriptDataBase db;
+  QStringList l;
+  db.scripts(l);
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    Script script;
+    script.setName(l.at(loop));
+    db.load(&script);
+
+    if (! script.startup())
+      continue;
+
+    runScript(l.at(loop));    
+  }
+
+  queStatus();
 }

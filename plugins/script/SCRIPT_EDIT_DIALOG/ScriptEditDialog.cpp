@@ -22,6 +22,7 @@
 #include "ScriptEditDialog.h"
 #include "Globals.h"
 #include "Doc.h"
+#include "ScriptDataBase.h"
 
 #include <QtDebug>
 #include <QDialogButtonBox>
@@ -45,13 +46,7 @@ ScriptEditDialog::ScriptEditDialog (Command *c)
 
   loadSettings();
 
-  if (_command->count() > 2)
-  {
-    _file = _command->parm(2);
-    fileButtonPressed2(_file);
-
-    _com->setText(_command->parm(3));
-  }
+  loadScript();
 
   buttonStatus();
 
@@ -80,6 +75,11 @@ void ScriptEditDialog::createGUI ()
   _fileButton->setToolTip(tr("The script location"));
   connect(_fileButton, SIGNAL(clicked()), this, SLOT(fileButtonPressed()));
   form->addRow(tr("Script File"), _fileButton);
+
+  // startup
+  _startup = new QCheckBox;
+  _startup->setToolTip(tr("Run this script as soon as QtStalker starts."));
+  form->addRow(tr("Run at startup"), _startup);
 
   // status message
   _message = new QLabel;
@@ -181,13 +181,33 @@ void ScriptEditDialog::done ()
     _message->setText(tr("Invalid command."));
     return;
   }
-  
-  QStringList l;
-  l << _name << com << _file;
 
-  _command->setReturnData(l.join(","));
+  ScriptDataBase db;
+  Script script;
+  script.setName(_name);
+  script.setCommand(com);
+  script.setFile(_file);
+  script.setStartup(_startup->isChecked());
+  db.save(&script);
+
+  _command->setReturnData("0");
 
   saveSettings();
 
   accept();
+}
+
+void ScriptEditDialog::loadScript ()
+{
+  ScriptDataBase db;
+  Script script;
+  script.setName(_name);
+  db.load(&script);
+
+  _file = script.file();
+  fileButtonPressed2(_file);
+
+  _com->setText(script.command());
+
+  _startup->setChecked(script.startup());
 }

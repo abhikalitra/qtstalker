@@ -48,6 +48,7 @@ void ScriptDataBase::init ()
   s.append("name TEXT PRIMARY KEY UNIQUE");
   s.append(", command TEXT");
   s.append(", script TEXT");
+  s.append(", startup INT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -64,7 +65,7 @@ int ScriptDataBase::load (Script *script)
   }
 
   QSqlQuery q(_db);
-  QString s = "SELECT command,script FROM script WHERE name='" + name + "'";
+  QString s = "SELECT command,script,startup FROM script WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -77,6 +78,7 @@ int ScriptDataBase::load (Script *script)
     int pos = 0;
     script->setCommand(q.value(pos++).toString());
     script->setFile(q.value(pos++).toString());
+    script->setStartup(q.value(pos++).toInt());
   }
 
   return 0;
@@ -94,10 +96,11 @@ int ScriptDataBase::save (Script *script)
   QSqlQuery q(_db);
   _db.transaction();
   
-  QString s = "INSERT OR REPLACE INTO script (name,command,script) VALUES (";
+  QString s = "INSERT OR REPLACE INTO script (name,command,script,startup) VALUES (";
   s.append("'" + name + "'");
   s.append(",'" + script->command() + "'");
   s.append(",'" + script->file() + "'");
+  s.append("," + QString::number(script->startup()));
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
