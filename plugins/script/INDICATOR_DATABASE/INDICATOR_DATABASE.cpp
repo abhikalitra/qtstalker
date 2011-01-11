@@ -26,7 +26,7 @@
 
 INDICATOR_DATABASE::INDICATOR_DATABASE ()
 {
-  _method << "LOAD" << "SAVE" << "DELETE" << "INDICATORS";
+  _method << "LOAD" << "SAVE" << "DELETE" << "INDICATORS" << "DIALOG";
 }
 
 int INDICATOR_DATABASE::command (Command *command)
@@ -53,6 +53,9 @@ int INDICATOR_DATABASE::command (Command *command)
       break;
     case _INDICATORS:
       return indicators(command);
+      break;
+    case _DIALOG:
+      return dialog(command);
       break;
     default:
       break;
@@ -179,6 +182,29 @@ int INDICATOR_DATABASE::indicators (Command *command)
   }
   
   command->setReturnData(l.join(","));
+
+  return 0;
+}
+
+int INDICATOR_DATABASE::dialog (Command *command)
+{
+  // INDICATOR_DATABASE,DIALOG,NAME
+  //           0           1    2
+
+  if (command->count() != 3)
+  {
+    qDebug() << "INDICATOR_DATABASE::dialog: invalid parm count" << command->count();
+    return 1;
+  }
+
+  QString d;
+  if (_db.dialog(command->parm(2), d))
+  {
+    qDebug() << "INDICATOR_DATABASE::dialog: IndicatorDataBase error";
+    return 1;
+  }
+
+  command->setReturnData(d);
 
   return 0;
 }

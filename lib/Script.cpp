@@ -172,22 +172,14 @@ void Script::readFromStdout ()
     case ScriptPlugin::_DIALOG:
       plug->command(_command);
       break;
-//    case ScriptPlugin::_THREAD:
-//    {
-//      CommandThread *ct = new CommandThread(this, _command);
-//      connect(ct, SIGNAL(finished()), ct, SLOT(deleteLater()));
-//      connect(ct, SIGNAL(finished()), this, SLOT(resume()), Qt::QueuedConnection);
-//      ct->start();
-//      break;
-//    }
     default:
-//      plug->command(_command);
-//      _proc.write(_command->arrayData());
+    {
       CommandThread *ct = new CommandThread(this, plug, _command);
       connect(ct, SIGNAL(finished()), ct, SLOT(deleteLater()));
       connect(ct, SIGNAL(finished()), this, SLOT(resume()), Qt::QueuedConnection);
       ct->start();
       break;
+    }
   }
 }
 

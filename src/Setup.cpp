@@ -84,22 +84,19 @@ void Setup::setupDirectories ()
 
   QSettings settings(g_settingsFile);
 
-  // set the indicator script directory
-  QString s = INSTALL_DATA_DIR;
-  s.append("/qtstalker/indicator/");
+  // create the indicator script directory where indicator scripts are stored
+  QString s = home + "/indicator/";
+  if (! dir.exists(s))
+  {
+    if (! dir.mkdir(s))
+      qDebug() << "Unable to create" << s <<  "directory.";
+  }
   settings.setValue("indicator_script_directory", s);
-  
+
   // set the system script directory
   QString sysdir = INSTALL_DATA_DIR;
   sysdir.append("/qtstalker/system/");
   settings.setValue("system_script_directory", sysdir);
-
-  // set the default system scripts
-//  s = sysdir + "ChartBackgroundColor.pl";
-//  settings.setValue("chart_background_color_script", s);
-    
-//  s = sysdir + "ChartFont.pl";
-//  settings.setValue("chart_font_script", s);
 
   s = sysdir + "ChartPanelAddGroup.pl";
   settings.setValue("chart_panel_add_group_script", s);
@@ -183,7 +180,8 @@ void Setup::setupDefaultIndicators ()
   Indicator i;
   i.setName("Bars");
   i.setCommand("perl");
-  QString s = settings.value("indicator_script_directory").toString() + "Bars.pl";
+  QString s = INSTALL_DATA_DIR;
+  s.append("/qtstalker/indicator/Bars.pl");
   i.setScript(s);
   i.setLock(TRUE);
   if (i.save())
@@ -193,7 +191,8 @@ void Setup::setupDefaultIndicators ()
   }
 
   i.setName("VOL");
-  s = settings.value("indicator_script_directory").toString() + "Volume.pl";
+  s = INSTALL_DATA_DIR;
+  s.append("/qtstalker/indicator/Volume.pl");
   i.setScript(s);
   i.setLock(TRUE);
   if (i.save())

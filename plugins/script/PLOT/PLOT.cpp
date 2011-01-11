@@ -26,8 +26,6 @@
 
 PLOT::PLOT ()
 {
-  _type = _SERIAL;
-  
   _method << "BACKGROUND_COLOR" << "FONT" << "GRID_COLOR" << "GRID" << "CROSSHAIRS_COLOR" << "CROSSHAIRS";
   _method << "NEW" << "DELETE" << "UPDATE";
 }

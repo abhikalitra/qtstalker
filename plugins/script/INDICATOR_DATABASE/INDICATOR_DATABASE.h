@@ -33,7 +33,8 @@ class INDICATOR_DATABASE : public ScriptPlugin
       _LOAD,
       _SAVE,
       _DELETE,
-      _INDICATORS
+      _INDICATORS,
+      _DIALOG
     };
     
     INDICATOR_DATABASE ();
@@ -42,6 +43,7 @@ class INDICATOR_DATABASE : public ScriptPlugin
     int save (Command *);
     int deleteIndicator (Command *);
     int indicators (Command *);
+    int dialog (Command *);
 
   private:
     QStringList _method;

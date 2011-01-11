@@ -164,21 +164,21 @@ void IndicatorEditDialog::loadSettings ()
 {
   QSettings settings(g_settingsFile);
 
-  QSize sz = settings.value("indicator_new_dialog_window_size", QSize(200,150)).toSize();
+  QSize sz = settings.value("indicator_edit_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("indicator_new_dialog_window_position", QPoint(0,0)).toPoint();
+  QPoint p = settings.value("indicator_edit_dialog_window_position", QPoint(0,0)).toPoint();
   move(p);
 
-  _file = settings.value("indicator_new_dialog_last_file", QDir::homePath()).toString();
+  _file = settings.value("indicator_edit_dialog_last_file", QDir::homePath()).toString();
 }
 
 void IndicatorEditDialog::saveSettings ()
 {
   QSettings settings(g_settingsFile);
-  settings.setValue("indicator_new_dialog_window_size", size());
-  settings.setValue("indicator_new_dialog_window_position", pos());
-  settings.setValue("indicator_new_dialog_last_file", _file);
+  settings.setValue("indicator_edit_dialog_window_size", size());
+  settings.setValue("indicator_edit_dialog_window_position", pos());
+  settings.setValue("indicator_edit_dialog_last_file", _file);
   settings.sync();
 }

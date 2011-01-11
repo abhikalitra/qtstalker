@@ -36,6 +36,7 @@ class IndicatorDataBase
     int save (Indicator *);
     int deleteIndicator (QStringList &);
     int indicators (QStringList &);
+    int dialog (QString name, QString &);
 
   private:
     QSqlDatabase _db;

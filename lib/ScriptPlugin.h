@@ -37,8 +37,7 @@ class ScriptPlugin : public QObject
     enum Type
     {
       _DIALOG,
-      _THREAD,
-      _SERIAL
+      _THREAD
     };
     
     ScriptPlugin ();

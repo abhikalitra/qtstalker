@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCSYMBOL_HPP
-#define SCSYMBOL_HPP
+#ifndef SYMBOL_HPP
+#define SYMBOL_HPP
 
 #include "ScriptPlugin.h"
 
@@ -29,15 +29,17 @@ class SYMBOL : public ScriptPlugin
   public:
     enum Method
     {
-      _CURRENT  // get the current symbol
+      _CURRENT,
+      _SYMBOL
     };
     
     SYMBOL ();
-    int command (QStringList &, Indicator &, BarData &, QByteArray &);
-    int getCurrent (QStringList &, QByteArray &);
+    int command (Command *);
+    int current (Command *);
+    int symbol (Command *);
 
-  protected:
-    QStringList _methodList;
+  private:
+    QStringList _method;
 };
 
 extern "C"

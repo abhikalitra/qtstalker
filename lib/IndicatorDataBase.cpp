@@ -54,6 +54,8 @@ void IndicatorDataBase::init ()
   s.append(", log INT");
   s.append(", command TEXT");
   s.append(", script TEXT");
+  s.append(", dialog TEXT");
+  s.append(", dialogSettings TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -70,7 +72,7 @@ int IndicatorDataBase::load (Indicator *i)
   }
 
   QSqlQuery q(_db);
-  QString s = "SELECT command,script,lock,log,date FROM " + _table + " WHERE name='" + name + "'";
+  QString s = "SELECT command,script,dialog,dialogSettings,lock,log,date FROM " + _table + " WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -84,6 +86,8 @@ int IndicatorDataBase::load (Indicator *i)
   int pos = 0;
   i->setCommand(q.value(pos++).toString());
   i->setScript(q.value(pos++).toString());
+  i->setDialog(q.value(pos++).toString());
+  i->setDialogSettings(q.value(pos++).toString());
   i->setLock(q.value(pos++).toInt());
   i->setLog(q.value(pos++).toInt());
   i->setDate(q.value(pos++).toInt());
@@ -103,10 +107,12 @@ int IndicatorDataBase::save (Indicator *i)
   QSqlQuery q(_db);
   _db.transaction();
   
-  QString s = "INSERT OR REPLACE INTO " + _table + " (name,command,script,lock,log,date) VALUES (";
+  QString s = "INSERT OR REPLACE INTO " + _table + " (name,command,script,dialog,dialogSettings,lock,log,date) VALUES (";
   s.append("'" + name + "'");
   s.append(",'" + i->command() + "'");
   s.append(",'" + i->script() + "'");
+  s.append(",'" + i->dialog() + "'");
+  s.append(",'" + i->dialogSettings() + "'");
   s.append("," + QString::number(i->lock()));
   s.append("," + QString::number(i->log()));
   s.append("," + QString::number(i->date()));
@@ -162,6 +168,25 @@ int IndicatorDataBase::indicators (QStringList &l)
     l << q.value(0).toString();
 
   l.sort();
+
+  return 0;
+}
+
+int IndicatorDataBase::dialog (QString name, QString &d)
+{
+  d.clear();
+
+  QSqlQuery q(_db);
+  QString s = "SELECT dialog FROM " + _table + " WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "IndicatorDataBase::dialog:" << q.lastError().text();
+    return 1;
+  }
+
+  if (q.next())
+    d = q.value(0).toString();
 
   return 0;
 }

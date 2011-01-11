@@ -40,13 +40,15 @@ class Indicator : public QObject
   
   public:
     Indicator ();
-    void setParms (QString name, QString command, QString script, bool lock, bool date, bool log);
+    void setParms (QString name, QString command, QString script, QString dialog, bool lock, bool date, bool log);
     QString & name ();
     bool lock ();
     bool date ();
     bool log ();
     QString & script ();
     QString & command ();
+    QString & dialog ();
+    QString & dialogSettings ();
     void setLine (QString, Curve *);
     void setLine (int, Curve *);
     Curve * line (QString);
@@ -77,6 +79,8 @@ class Indicator : public QObject
     void setCommand (QString);
     void calculate ();
     void scriptFinished ();
+    void setDialog (QString);
+    void setDialogSettings (QString);
 
   protected:
     QHash<QString, Curve *> _lines;
@@ -84,6 +88,8 @@ class Indicator : public QObject
     QString _name;
     QString _script;
     QString _command;
+    QString _dialog;
+    QString _dialogSettings;
     bool _lock;
     bool _date;
     bool _log;

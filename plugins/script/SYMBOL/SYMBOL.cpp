@@ -20,66 +20,223 @@
  */
 
 #include "SYMBOL.h"
-#include "Config.h"
+#include "Globals.h"
+#include "QuoteDataBase.h"
 
 #include <QtDebug>
 
 SYMBOL::SYMBOL ()
 {
-  _methodList << "CURRENT";
+  _method << "CURRENT" << "SYMBOL";
 }
 
-int SYMBOL::command (QStringList &l, Indicator &, BarData &, QByteArray &ba)
+int SYMBOL::command (Command *command)
 {
-  // SYMBOL,METHOD,*
-  //    0      1  
-
-  int rc = 1;
-  ba.clear();
-  ba.append("ERROR\n");
-
-  if (l.count() < 2)
-  {
-    qDebug() << "SYMBOL::command: invalid parm count" << l.count();
-    return rc;
-  }
+  // SYMBOL,<METHOD>
+  //   0       1
   
-  switch ((Method) _methodList.indexOf(l[1]))
+  if (command->count() < 2)
+  {
+    qDebug() << "SYMBOL::command: invalid parm count" << command->count();
+    return 1;
+  }
+
+  switch ((Method) _method.indexOf(command->parm(1)))
   {
     case _CURRENT:
-      rc = getCurrent(l, ba);
+      return current(command);
+      break;
+    case _SYMBOL:
+      return symbol(command);
       break;
     default:
       break;
   }
-  
-  return rc;
+
+  return 0;
 }
 
-int SYMBOL::getCurrent (QStringList &l, QByteArray &ba)
+int SYMBOL::current (Command *command)
 {
   // SYMBOL,CURRENT
-  //    0,    1
+  //   0       1
 
-  if (l.count() != 2)
+  command->setReturnData(g_barData->key());
+
+  return 0;
+}
+
+int SYMBOL::symbol (Command *command)
+{
+  // SYMBOL,SYMBOL,<NAME>,<EXCHANGE>,<SYMBOL>
+  //   0      1       2        3        4
+
+  if (command->count() != 5)
   {
-    qDebug() << "SYMBOL::getCurrent: invalid parm count" << l.count();
+    qDebug() << "SYMBOL::symbol: invalid parm count" << command->count();
     return 1;
   }
 
-  Config config;
-  QStringList l2;
-  config.getData(Config::CurrentChart, l2);
-  
-  QString s = "NONE";
-  if (l2.count() == 2)
-    s = l2.join(",");
+  Indicator *i = command->indicator();
+  if (! i)
+  {
+    qDebug() << "SYMBOL::symbol: no indicator";
+    return 1;
+  }
 
-  ba.clear();
-  ba.append(s + '\n');
+  int pos = 2;
+  QString name = command->parm(pos);
+  Curve *line = i->line(name);
+  if (line)
+  {
+    qDebug() << "SYMBOL::symbol: duplicate name" << name;
+    return 1;
+  }
+
+  BarData bd;
+  pos++;
+  QString s = command->parm(pos);
+  if (s.isEmpty())
+  {
+    qDebug() << "SYMBOL::symbol: invalid exchange";
+    return 1;
+  }
+  bd.setExchange(s);
+
+  pos++;
+  s = command->parm(pos);
+  if (s.isEmpty())
+  {
+    qDebug() << "SYMBOL::symbol: invalid symbol";
+    return 1;
+  }
+  bd.setSymbol(s);
+
+  bd.setBarLength(g_barData->barLength());
+  bd.setRange(g_barData->range());
+
+  QuoteDataBase db;
+  if (db.getBars(&bd))
+  {
+    qDebug() << "SYMBOL::symbol: QuoteDataBase error";
+    return 1;
+  }
+
+  line = bd.input(BarData::Close);
+  if (! line)
+  {
+    qDebug() << "SYMBOL::symbol: no input returned";
+    return 1;
+  }
+
+  line->setLabel(name);
+  i->setLine(name, line);
   
+  command->setReturnData("0");
+
   return 0;
 }
+
+/*
+int SYMBOL::symbol (Command *command)
+{
+  // SYMBOL,SYMBOL,<NAME>,<EXCHANGE>,<SYMBOL>,<LENGTH>,<START DATE>,<END DATE>,<DATE RANGE>,<FIELD>
+  //   0      1       2        3        4         5          6          7           8          9
+
+  if (command->count() != 10)
+  {
+    qDebug() << "SYMBOL::symbol: invalid parm count" << command->count();
+    return 1;
+  }
+
+  Indicator *i = command->indicator();
+  if (! i)
+  {
+    qDebug() << "SYMBOL::symbol: no indicator";
+    return 1;
+  }
+
+  int pos = 2;
+  QString name = command->parm(pos);
+  Curve *line = i->line(name);
+  if (line)
+  {
+    qDebug() << "SYMBOL::symbol: duplicate name" << name;
+    return 1;
+  }
+
+  BarData bd;
+  pos++;
+  QString s = command->parm(pos);
+  if (s.isEmpty())
+  {
+    qDebug() << "SYMBOL::symbol: invalid exchange";
+    return 1;
+  }
+  bd.setExchange(s);
+
+  pos++;
+  s = command->parm(pos);
+  if (s.isEmpty())
+  {
+    qDebug() << "SYMBOL::symbol: invalid symbol";
+    return 1;
+  }
+  bd.setSymbol(s);
+
+  pos++;
+  s = command->parm(pos);
+  QStringList l;
+  Bar tbar;
+  tbar.lengthList(l);
+  int length = l.indexOf(s);
+  if (length == -1)
+  {
+    qDebug() << "SYMBOL::symbol: invalid length" << command->parm(pos);
+    return 1;
+  }
+  bd.setBarLength((BarData::BarLength) length);
+
+  pos++;
+  bd.setStartDate(QDateTime::fromString(command->parm(pos), Qt::ISODate));
+
+  pos++;
+  bd.setEndDate(QDateTime::fromString(command->parm(pos), Qt::ISODate));
+
+  pos++;
+  bd.setRange(command->parm(pos).toInt());
+
+  pos++;
+  bd.inputFields(l);
+  QString field = command->parm(pos);
+  if (l.indexOf(field) == -1)
+  {
+    qDebug() << "SYMBOL::symbol: invalid field";
+    return 1;
+  }
+
+  QuoteDataBase db;
+  if (db.getBars(&bd))
+  {
+    qDebug() << "SYMBOL::symbol: QuoteDataBase error";
+    return 1;
+  }
+
+  line = bd.input(bd.inputType(field));
+  if (! line)
+  {
+    qDebug() << "SYMBOL::symbol: no input returned";
+    return 1;
+  }
+
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnData("0");
+
+  return 0;
+}
+*/
 
 //*************************************************************
 //*************************************************************

@@ -2,13 +2,8 @@
 
 $|=1;
 
-# get current indicators from database
-$command = "INDICATOR_DATABASE,INDICATORS";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
-
 # display new dialog
-$command = "NEW_DIALOG,Indicator,$rc";
+$command = "INDICATOR_NEW_DIALOG";
 print STDOUT $command;
 $name = <STDIN>; chomp($name); if ($name eq "ERROR") {print STDERR $command; exit; }
 
@@ -17,7 +12,7 @@ $command = "INDICATOR_EDIT_DIALOG,$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# create the chart
+# create the indicator
 $command = "PLOT,NEW,$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

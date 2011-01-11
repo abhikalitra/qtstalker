@@ -26,8 +26,6 @@
 
 CHART_OBJECT::CHART_OBJECT ()
 {
-  _type = _SERIAL;
-  
   _method << "DELETE" << "UPDATE";
 }
 

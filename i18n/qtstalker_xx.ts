@@ -1295,6 +1295,33 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>IndicatorNewDialog</name>
+    <message>
+        <source>New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>NONE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BARS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>already exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>NewDialog</name>
     <message>
         <source>New</source>

@@ -178,32 +178,32 @@ int YahooAddSymbolDialog::getSymbolExchange (QString &ysymbol, QString &symbol, 
     // unfortunately yahoo does not separate NYSE,NASDAQ,ASE quotes
     // so we lump them into the NYSE exchange
     case 0: // NYSE
-      symbol = l[0];
+      symbol = l.at(0);
       exchange = "XNYS";
       break;
     case 1: // AX
-      symbol = l[0];
+      symbol = l.at(0);
       exchange = "XASX";
       break;
     case 2: // SA
-      symbol = l[0];
+      symbol = l.at(0);
       exchange = "BVMF";
       break;
     case 3: // TO
-      symbol = l[0];
+      symbol = l.at(0);
       exchange = "XTSE";
       break;
     case 4: // BO
     case 5: // NS
-      symbol = l[0];
+      symbol = l.at(0);
       exchange = "XNSE";
       break;
     case 6: // L
-      symbol = l[0];
+      symbol = l.at(0);
       exchange = "XLON";
       break;
     case 7: // B, some XNYS symbols use .B eg BRK.B
-      symbol = l[0] + ".B"; // we keep the .B
+      symbol = l.at(0) + ".B"; // we keep the .B
       exchange = "XNYS";
       break;
     default: // error

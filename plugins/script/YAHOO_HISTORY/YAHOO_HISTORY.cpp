@@ -253,6 +253,7 @@ void YAHOO_HISTORY::downloadName (Setting &data)
   QByteArray ba = reply->readAll();
   QString s(ba);
   s = s.remove('"');
+  s = s.remove(',');
   s = s.trimmed();
   if (s.isEmpty())
     return;

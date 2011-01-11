@@ -17,7 +17,7 @@ $command = "INDICATOR_EDIT_DIALOG,$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# create the chart
+# update indicator with new settings
 $command = "PLOT,UPDATE,$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

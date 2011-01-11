@@ -5,4 +5,3 @@
 HEADERS += SYMBOL.h
 
 SOURCES += SYMBOL.cpp
-
