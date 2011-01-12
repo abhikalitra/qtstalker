@@ -14,7 +14,7 @@ $command = "INDICATOR_PLOT_STYLE,HIST,Histogram";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR,ALL,HIST,red";
+$command = "INDICATOR_PLOT_COLOR,ALL,HIST,blue";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

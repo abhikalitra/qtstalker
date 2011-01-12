@@ -6,13 +6,9 @@ $command = "BARS,Close,c";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "ROC,ROC,troc,c,10";
+$command = "ROC,ROC,ROC,c,10";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "MA,EMA,ROC,troc,1";
-print STDOUT $command;
-$a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
 $command = "INDICATOR_PLOT_STYLE,ROC,Histogram Bar";
 print STDOUT $command;

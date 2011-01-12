@@ -67,10 +67,10 @@ int BARS::command (Command *command)
 
 int BARS::getBars (Command *command)
 {
-  // BARS,<METHOD>,<NAME>
-  //  0      1       2
+  // BARS,BARS,<NAME>,<UP_COLOR>,<DOWN_COLOR>,<NEUTRAL_COLOR>
+  //  0    1      2        3          4             5
 
-  if (command->count() != 3)
+  if (command->count() != 6)
   {
     qDebug() << "BARS::getBars: invalid parm count" << command->count();
     return 1;
@@ -83,13 +83,15 @@ int BARS::getBars (Command *command)
     return 1;
   }
 
-  if (g_barData->count() < 1)
+  int size = g_barData->count();
+  if (size < 1)
   {
     qDebug() << "BARS::getBars: no bars";
     return 1;
   }
 
-  QString name = command->parm(2);
+  int pos = 2;
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -97,9 +99,31 @@ int BARS::getBars (Command *command)
     return 1;
   }
 
-  line = new Curve(Curve::OHLC);
+  pos++;
+  QColor upColor(command->parm(pos));
+  if (! upColor.isValid())
+  {
+    qDebug() << "BARS::getBars: invalid up color" << command->parm(pos);
+    return 1;
+  }
 
-  int size = g_barData->count();
+  pos++;
+  QColor downColor(command->parm(pos));
+  if (! downColor.isValid())
+  {
+    qDebug() << "BARS::getBars: invalid down color" << command->parm(pos);
+    return 1;
+  }
+
+  pos++;
+  QColor neutralColor(command->parm(pos));
+  if (! neutralColor.isValid())
+  {
+    qDebug() << "BARS::getBars: invalid neutral color" << command->parm(pos);
+    return 1;
+  }
+
+  line = new Curve(Curve::OHLC);
 
   int loop = 0;
   for (; loop < size; loop++)
@@ -113,7 +137,20 @@ int BARS::getBars (Command *command)
     bar->setData(1, b->high());
     bar->setData(2, b->low());
     bar->setData(3, b->close());
+    bar->setColor(neutralColor);
     
+    Bar *yb = g_barData->bar(loop - 1);
+    if (yb)
+    {
+      if (b->close() > yb->close())
+        bar->setColor(upColor);
+      else
+      {
+        if (b->close() < yb->close())
+          bar->setColor(downColor);
+      }
+    }
+
     line->setBar(loop, bar);
   }
 
@@ -127,10 +164,10 @@ int BARS::getBars (Command *command)
 
 int BARS::getCandles (Command *command)
 {
-  // BARS,<METHOD>,<NAME>
-  //  0      1       2
+  // BARS,CANDLES,<NAME>,<UP_COLOR>,<DOWN_COLOR>,<NEUTRAL_COLOR>
+  //  0      1      2        3           4             5
 
-  if (command->count() != 3)
+  if (command->count() != 6)
   {
     qDebug() << "BARS::getCandles: invalid parm count" << command->count();
     return 1;
@@ -143,13 +180,15 @@ int BARS::getCandles (Command *command)
     return 1;
   }
 
-  if (g_barData->count() < 1)
+  int size = g_barData->count();
+  if (size < 1)
   {
     qDebug() << "BARS::getCandles: no bars";
     return 1;
   }
 
-  QString name = command->parm(2);
+  int pos = 2;
+  QString name = command->parm(pos);
   Curve *line = i->line(name);
   if (line)
   {
@@ -157,9 +196,31 @@ int BARS::getCandles (Command *command)
     return 1;
   }
 
-  line = new Curve(Curve::Candle);
+  pos++;
+  QColor upColor(command->parm(pos));
+  if (! upColor.isValid())
+  {
+    qDebug() << "BARS::getCandles: invalid up color" << command->parm(pos);
+    return 1;
+  }
 
-  int size = g_barData->count();
+  pos++;
+  QColor downColor(command->parm(pos));
+  if (! downColor.isValid())
+  {
+    qDebug() << "BARS::getCandles: invalid down color" << command->parm(pos);
+    return 1;
+  }
+
+  pos++;
+  QColor neutralColor(command->parm(pos));
+  if (! neutralColor.isValid())
+  {
+    qDebug() << "BARS::getCandles: invalid neutral color" << command->parm(pos);
+    return 1;
+  }
+
+  line = new Curve(Curve::Candle);
 
   int loop = 0;
   for (; loop < size; loop++)
@@ -173,6 +234,19 @@ int BARS::getCandles (Command *command)
     bar->setData(1, b->high());
     bar->setData(2, b->low());
     bar->setData(3, b->close());
+    bar->setColor(neutralColor);
+
+    Bar *yb = g_barData->bar(loop - 1);
+    if (yb)
+    {
+      if (b->close() > yb->close())
+        bar->setColor(upColor);
+      else
+      {
+        if (b->close() < yb->close())
+          bar->setColor(downColor);
+      }
+    }
 
     line->setBar(loop, bar);
   }

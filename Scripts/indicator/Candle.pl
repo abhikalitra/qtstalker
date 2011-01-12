@@ -3,17 +3,10 @@
 
 $|++;
 
-# get the Candle indicator
-$command = "BARS,CANDLES,candles";
+$command = "BARS,CANDLES,candles,green,green,green";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# set the color
-$command = "INDICATOR_PLOT_COLOR,ALL,candles,green";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# plot it
 $command = "INDICATOR_PLOT,candles,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

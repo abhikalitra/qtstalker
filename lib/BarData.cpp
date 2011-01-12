@@ -171,6 +171,14 @@ BarData::InputType BarData::inputType (QString d)
 
 Bar * BarData::bar (int d)
 {
+  if (! _barList.count())
+    return 0;
+  else
+  {
+    if (d < 0 || d >= _barList.count())
+      return 0;
+  }
+  
   return _barList.at(d);
 }
 

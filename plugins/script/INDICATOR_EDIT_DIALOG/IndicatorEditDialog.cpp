@@ -46,8 +46,10 @@ IndicatorEditDialog::IndicatorEditDialog (Command *c)
 
   _indicator.setName(_name);
   _indicator.load();
-    
-  _com->setText(_indicator.command());
+
+  QString s = _indicator.command();
+  if (! s.isEmpty())
+    _com->setText(s);
 
   QStringList tl;
   tl << _indicator.script();
@@ -172,6 +174,9 @@ void IndicatorEditDialog::loadSettings ()
   move(p);
 
   _file = settings.value("indicator_edit_dialog_last_file", QDir::homePath()).toString();
+  QStringList l;
+  l << _file;
+  _fileButton->setFile(l);
 }
 
 void IndicatorEditDialog::saveSettings ()

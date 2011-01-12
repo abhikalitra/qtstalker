@@ -76,18 +76,18 @@ int MAMA::command (Command *command)
 
   pos++;
   bool ok;
-  int flimit = command->parm(pos).toInt(&ok);
+  double flimit = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid fast limit" << command->parm(pos);
+    qDebug() << "MAMA::command: invalid fast limit" << command->parm(pos);
     return 1;
   }
 
   pos++;
-  int slimit = command->parm(pos).toInt(&ok);
+  double slimit = command->parm(pos).toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid slow limit" << command->parm(pos);
+    qDebug() << "MAMA::command: invalid slow limit" << command->parm(pos);
     return 1;
   }
 

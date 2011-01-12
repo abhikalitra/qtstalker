@@ -68,7 +68,7 @@ int MAVP::command (Command *command)
 
   pos++;
   Curve *in2 = i->line(command->parm(pos));
-  if (in2)
+  if (! in2)
   {
     qDebug() << "MAVP::command: input 2 missing" << command->parm(pos);
     return 1;
