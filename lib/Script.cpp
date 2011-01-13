@@ -158,7 +158,7 @@ void Script::readFromStdout ()
     plug = _factory.plugin(_command->plugin());
     if (! plug)
     {
-      // check for internal command here
+      // check for internal NAME command
       if (_command->plugin() == "NAME")
       {
         QByteArray ba;
@@ -167,6 +167,16 @@ void Script::readFromStdout ()
         return;
       }
       
+      // check for internal CLEAR command
+      if (_command->plugin() == "CLEAR")
+      {
+        _indicator->clear();
+        QByteArray ba;
+        ba.append("0\n");
+        _proc.write(ba);
+        return;
+      }
+
       qDebug() << "Script::readFromStdout: syntax error, script abend" << s;
       clear();
       return;

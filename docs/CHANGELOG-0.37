@@ -897,3 +897,11 @@
            NOTE: When a new indicator is created, it is unlocked and stacked at the bottom. You then drag and drop it
            where you like. Dropping it on top of other indicators will create a tabbed group.
 
+20110113:  Things are coming together. The plugins are generally completed. Just need to fine tune the
+           command syntax and polish the dialogs. The scripts work very well. The only thing left is to
+           complete the backtesting plugins.
+
+           Added sample scripts for creating scans and alerts.
+
+           Once the command syntax has been finalized, I will write the QtStalker handbook that will be a
+           comprehensive guide to QtStalker.
