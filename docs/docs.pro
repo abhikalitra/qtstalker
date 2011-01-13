@@ -35,13 +35,27 @@ dbUpdate.path = "$${INSTALL_DATA_DIR}/qtstalker/db"
 dbUpdate.files = *.csv
 INSTALLS += dbUpdate
 
-# install the system script files
-script.path = "$${INSTALL_DATA_DIR}/qtstalker/system"
-script.files = ../Scripts/system/*.pl
-INSTALLS += script
+# install the alert script files
+alert.path = "$${INSTALL_DATA_DIR}/qtstalker/alert"
+alert.files = ../Scripts/alert/*.pl
+INSTALLS += alert
 
-# install the indicator files
+# install the indicator script files
 indicator.path = "$${INSTALL_DATA_DIR}/qtstalker/indicator"
 indicator.files = ../Scripts/indicator/*.pl
 INSTALLS += indicator
 
+# install the quote script files
+quote.path = "$${INSTALL_DATA_DIR}/qtstalker/quote"
+quote.files = ../Scripts/quote/*.pl
+INSTALLS += quote
+
+# install the scanner script files
+scanner.path = "$${INSTALL_DATA_DIR}/qtstalker/scanner"
+scanner.files = ../Scripts/scanner/*.pl
+INSTALLS += scanner
+
+# install the system script files
+system.path = "$${INSTALL_DATA_DIR}/qtstalker/system"
+system.files = ../Scripts/system/*.pl
+INSTALLS += system

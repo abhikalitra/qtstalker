@@ -4,6 +4,7 @@
 $group = "200_MA_Breakout";
 $length = "D";
 $range = "1 Year";
+$result = "";
 
 ######################################################################
 
@@ -14,7 +15,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 my @symbols = split(',', $rc);
-$result = "";
 
 foreach $item (@symbols)
 {
