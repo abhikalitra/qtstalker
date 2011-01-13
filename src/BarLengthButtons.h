@@ -37,19 +37,19 @@ class BarLengthButtons : public QObject
   public:
     BarLengthButtons (QToolBar *);
     void createButtons (QToolBar *);
-    void buttonStatus ();
+//    void buttonStatus ();
     int length ();
     void getCurrentText (QString &);
     
   public slots:
-    void prevLength ();
-    void nextLength ();
+//    void prevLength ();
+//    void nextLength ();
     void lengthChanged (int);
     
   protected:
     QComboBox *_lengths;
-    QToolButton *_prevButton;
-    QToolButton *_nextButton;
+//    QToolButton *_prevButton;
+//    QToolButton *_nextButton;
 };
 
 #endif

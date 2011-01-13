@@ -38,17 +38,17 @@ class DateRangeControl : public QObject
     DateRangeControl (QToolBar *);
     void createButtons (QToolBar *);
     int dateRange ();
-    void buttonStatus ();
+//    void buttonStatus ();
     
   public slots:
-    void prevRange ();
-    void nextRange ();
+//    void prevRange ();
+//    void nextRange ();
     void rangeChanged (int);
     
   protected:
     QComboBox *_ranges;
-    QToolButton *_prevButton;
-    QToolButton *_nextButton;
+//    QToolButton *_prevButton;
+//    QToolButton *_nextButton;
 };
 
 #endif

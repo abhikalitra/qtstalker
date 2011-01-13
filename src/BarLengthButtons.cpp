@@ -23,8 +23,8 @@
 #include "BarData.h"
 #include "Globals.h"
 
-#include "../pics/prev.xpm"
-#include "../pics/next.xpm"
+//#include "../pics/prev.xpm"
+//#include "../pics/next.xpm"
 
 #include <QDebug>
 #include <QString>
@@ -40,6 +40,7 @@ BarLengthButtons::BarLengthButtons (QToolBar *tb) : QObject (tb)
 void BarLengthButtons::createButtons (QToolBar *tb)
 {
   // previous button
+/*  
   _prevButton = new QToolButton;
   _prevButton->setIcon(QIcon(prev_xpm));
   _prevButton->setToolTip(QString(tr("Previous Bar Length")));
@@ -47,6 +48,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
   _prevButton->setCheckable(FALSE);
   connect(_prevButton, SIGNAL(clicked()), this, SLOT(prevLength()));
   tb->addWidget(_prevButton);
+*/
 
   QStringList l;
   BarData bd;
@@ -65,6 +67,7 @@ void BarLengthButtons::createButtons (QToolBar *tb)
   tb->addWidget(_lengths);
   
   // next button
+/*  
   _nextButton = new QToolButton;
   _nextButton->setIcon(QIcon(next_xpm));
   _nextButton->setToolTip(QString(tr("Next Bar Length")));
@@ -72,8 +75,10 @@ void BarLengthButtons::createButtons (QToolBar *tb)
   _nextButton->setCheckable(FALSE);
   connect(_nextButton, SIGNAL(clicked()), this, SLOT(nextLength()));
   tb->addWidget(_nextButton);
+*/
 }
 
+/*
 void BarLengthButtons::prevLength ()
 {
   int t = _lengths->currentIndex();
@@ -101,6 +106,7 @@ void BarLengthButtons::nextLength ()
 
   buttonStatus();
 }
+*/
 
 void BarLengthButtons::lengthChanged (int d)
 {
@@ -108,7 +114,7 @@ void BarLengthButtons::lengthChanged (int d)
   settings.setValue("bar_length", d);
   settings.sync();
   
-  buttonStatus();
+//  buttonStatus();
 
   emit signalBarLengthChanged(d);
 }
@@ -118,6 +124,7 @@ int BarLengthButtons::length ()
   return _lengths->currentIndex();
 }
 
+/*
 void BarLengthButtons::buttonStatus ()
 {
   bool left = TRUE;
@@ -131,6 +138,7 @@ void BarLengthButtons::buttonStatus ()
   _prevButton->setEnabled(left);
   _nextButton->setEnabled(right);
 }
+*/
 
 void BarLengthButtons::getCurrentText (QString &d)
 {

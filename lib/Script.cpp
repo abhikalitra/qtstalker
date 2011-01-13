@@ -29,7 +29,7 @@ Script::Script ()
 {
   _killFlag = 0;
   _barData = 0;
-  _startup = 0;
+  _minutes = 0;
   
   _command = new Command;
   _command->setScriptFlag(1);
@@ -158,6 +158,15 @@ void Script::readFromStdout ()
     plug = _factory.plugin(_command->plugin());
     if (! plug)
     {
+      // check for internal command here
+      if (_command->plugin() == "NAME")
+      {
+        QByteArray ba;
+        ba.append(_name + "\n");
+        _proc.write(ba);
+        return;
+      }
+      
       qDebug() << "Script::readFromStdout: syntax error, script abend" << s;
       clear();
       return;
@@ -234,14 +243,24 @@ QString & Script::file ()
   return _file;
 }
 
-void Script::setStartup (int d)
+void Script::setMinutes (int d)
 {
-  _startup = d;
+  _minutes = d;
 }
 
-int Script::startup ()
+int Script::minutes ()
 {
-  return _startup;
+  return _minutes;
+}
+
+void Script::setLastRun (QString d)
+{
+  _lastRun = d;
+}
+
+QString & Script::lastRun ()
+{
+  return _lastRun;
 }
 
 void Script::resume ()

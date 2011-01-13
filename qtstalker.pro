@@ -169,6 +169,7 @@ SUBDIRS += plugins/script/MACD
 SUBDIRS += plugins/script/MAMA
 SUBDIRS += plugins/script/MAVP
 SUBDIRS += plugins/script/MDI
+SUBDIRS += plugins/script/MESSAGE_DIALOG
 SUBDIRS += plugins/script/MFI
 SUBDIRS += plugins/script/MOM
 SUBDIRS += plugins/script/NEW_DIALOG

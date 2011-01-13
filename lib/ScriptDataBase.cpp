@@ -48,7 +48,8 @@ void ScriptDataBase::init ()
   s.append("name TEXT PRIMARY KEY UNIQUE");
   s.append(", command TEXT");
   s.append(", script TEXT");
-  s.append(", startup INT");
+  s.append(", minutes INT");
+  s.append(", lastRun TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -65,7 +66,7 @@ int ScriptDataBase::load (Script *script)
   }
 
   QSqlQuery q(_db);
-  QString s = "SELECT command,script,startup FROM script WHERE name='" + name + "'";
+  QString s = "SELECT command,script,minutes,lastRun FROM script WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -78,7 +79,8 @@ int ScriptDataBase::load (Script *script)
     int pos = 0;
     script->setCommand(q.value(pos++).toString());
     script->setFile(q.value(pos++).toString());
-    script->setStartup(q.value(pos++).toInt());
+    script->setMinutes(q.value(pos++).toInt());
+    script->setLastRun(q.value(pos++).toString());
   }
 
   return 0;
@@ -96,11 +98,12 @@ int ScriptDataBase::save (Script *script)
   QSqlQuery q(_db);
   _db.transaction();
   
-  QString s = "INSERT OR REPLACE INTO script (name,command,script,startup) VALUES (";
+  QString s = "INSERT OR REPLACE INTO script (name,command,script,minutes,lastRun) VALUES (";
   s.append("'" + name + "'");
   s.append(",'" + script->command() + "'");
   s.append(",'" + script->file() + "'");
-  s.append("," + QString::number(script->startup()));
+  s.append("," + QString::number(script->minutes()));
+  s.append(",'" + script->lastRun() + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -150,6 +153,25 @@ int ScriptDataBase::scripts (QStringList &l)
     l << q.value(0).toString();
 
   l.sort();
+
+  return 0;
+}
+
+int ScriptDataBase::timerScripts (QStringList &l)
+{
+  l.clear();
+
+  QSqlQuery q(_db);
+  QString s = "SELECT name FROM script WHERE minutes > 0";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "ScriptDataBase::timerScripts:" << q.lastError().text();
+    return 1;
+  }
+
+  while (q.next())
+    l << q.value(0).toString();
 
   return 0;
 }

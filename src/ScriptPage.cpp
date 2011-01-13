@@ -50,7 +50,9 @@ ScriptPage::ScriptPage ()
   createGUI();
 
   // scan for startup scripts
-  QTimer::singleShot(100, this, SLOT(startup()));
+//  QTimer::singleShot(100, this, SLOT(startup()));
+  connect(&_timer, SIGNAL(timeout()), this, SLOT(scriptTimer()));
+  _timer.start(60000);
   
   queStatus();
 }
@@ -293,6 +295,20 @@ void ScriptPage::done (QString name)
 
   _itemList.remove(name);
   delete item;
+
+  ScriptDataBase db;
+  Script script;
+  script.setName(name);
+  if (db.load(&script))
+  {
+    qDebug() << "ScriptPage::done: script load error" << name;
+    return;
+  }
+
+  script.setLastRun(QDateTime::currentDateTime().toString(Qt::ISODate));
+  
+  if (db.save(&script))
+    qDebug() << "ScriptPage::done: script save error" << name;
 }
 
 void ScriptPage::runFileScript ()
@@ -337,11 +353,11 @@ void ScriptPage::launchButtonCols2 (int d)
   settings.sync();
 }
 
-void ScriptPage::startup ()
+void ScriptPage::scriptTimer ()
 {
   ScriptDataBase db;
   QStringList l;
-  db.scripts(l);
+  db.timerScripts(l);
 
   int loop = 0;
   for (; loop < l.count(); loop++)
@@ -350,7 +366,10 @@ void ScriptPage::startup ()
     script.setName(l.at(loop));
     db.load(&script);
 
-    if (! script.startup())
+    QDateTime dt = QDateTime::currentDateTime();
+    QDateTime dt2 = QDateTime::fromString(script.lastRun(), Qt::ISODate);
+    int secs = dt2.secsTo(dt);
+    if (secs / 60 < script.minutes())
       continue;
 
     runScript(l.at(loop));    

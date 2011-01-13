@@ -172,7 +172,7 @@ void QtstalkerApp::createToolBar ()
   // create the zoom button box on the main toolbar
   _zoomButtons = new ZoomButtons(toolbar);
 
-  toolbar->addSeparator();
+//  toolbar->addSeparator();
   
   // create the bar length button group
   _barLengthButtons = new BarLengthButtons(toolbar);
@@ -183,12 +183,7 @@ void QtstalkerApp::createToolBar ()
   _dateRange = new DateRangeControl(toolbar);
   connect(_dateRange, SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
 
-  // date range button
-  _dateRangeButton = new DateRangeButton();
-  connect(_dateRangeButton, SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
-  toolbar->addWidget(_dateRangeButton);
-
-  toolbar->addSeparator();
+//  toolbar->addSeparator();
 
   // create recent charts combobox
   _recentCharts = new RecentCharts(toolbar);
@@ -227,6 +222,11 @@ void QtstalkerApp::createStatusToolBar ()
   // new indicator button
   NewIndicatorButton *nib = new NewIndicatorButton;
   _statusToolBar->addWidget(nib);
+
+  // date range button
+  _dateRangeButton = new DateRangeButton();
+  connect(_dateRangeButton, SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
+  _statusToolBar->addWidget(_dateRangeButton);
 
   // docs button
   HelpButton *hb = new HelpButton;

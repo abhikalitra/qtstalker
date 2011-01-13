@@ -22,8 +22,8 @@
 #include "DateRangeControl.h"
 #include "Globals.h"
 #include "DateRange.h"
-#include "../pics/prev.xpm"
-#include "../pics/next.xpm"
+//#include "../pics/prev.xpm"
+//#include "../pics/next.xpm"
 
 #include <QDebug>
 #include <QString>
@@ -41,6 +41,7 @@ void DateRangeControl::createButtons (QToolBar *tb)
   QSettings settings(g_settingsFile);
 
   // previous button
+/*  
   _prevButton = new QToolButton;
   _prevButton->setIcon(QIcon(prev_xpm));
   _prevButton->setToolTip(QString(tr("Previous Date Range")));
@@ -48,6 +49,7 @@ void DateRangeControl::createButtons (QToolBar *tb)
   _prevButton->setCheckable(FALSE);
   connect(_prevButton, SIGNAL(clicked()), this, SLOT(prevRange()));
   tb->addWidget(_prevButton);
+*/
 
   QStringList l;
   DateRange dr;
@@ -62,8 +64,9 @@ void DateRangeControl::createButtons (QToolBar *tb)
   _ranges->setMaxVisibleItems(l.count());
   connect(_ranges, SIGNAL(currentIndexChanged(int)), this, SLOT(rangeChanged(int)));
   tb->addWidget(_ranges);
-  
+
   // next button
+/*  
   _nextButton = new QToolButton;
   _nextButton->setIcon(QIcon(next_xpm));
   _nextButton->setToolTip(QString(tr("Next Date Range")));
@@ -71,8 +74,10 @@ void DateRangeControl::createButtons (QToolBar *tb)
   _nextButton->setCheckable(FALSE);
   connect(_nextButton, SIGNAL(clicked()), this, SLOT(nextRange()));
   tb->addWidget(_nextButton);
+*/
 }
 
+/*
 void DateRangeControl::prevRange ()
 {
   int t = _ranges->currentIndex();
@@ -100,6 +105,7 @@ void DateRangeControl::nextRange ()
 
   buttonStatus();
 }
+*/
 
 void DateRangeControl::rangeChanged (int d)
 {
@@ -107,7 +113,7 @@ void DateRangeControl::rangeChanged (int d)
   settings.setValue("last_date_range", d);
   settings.sync();
   
-  buttonStatus();
+//  buttonStatus();
 
   emit signalDateRangeChanged();
 }
@@ -117,6 +123,7 @@ int DateRangeControl::dateRange ()
   return _ranges->currentIndex();
 }
 
+/*
 void DateRangeControl::buttonStatus ()
 {
   bool left = TRUE;
@@ -130,3 +137,4 @@ void DateRangeControl::buttonStatus ()
   _prevButton->setEnabled(left);
   _nextButton->setEnabled(right);
 }
+*/

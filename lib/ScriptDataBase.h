@@ -36,6 +36,7 @@ class ScriptDataBase
     int save (Script *);
     int deleteScript (QStringList &l);
     int scripts (QStringList &l);
+    int timerScripts (QStringList &l);
 
   private:
     QSqlDatabase _db;

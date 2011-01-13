@@ -27,9 +27,10 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
-#include <QCheckBox>
+#include <QSpinBox>
 
 #include "Command.h"
+#include "FileButton.h"
 
 class ScriptEditDialog : public QDialog
 {
@@ -47,15 +48,13 @@ class ScriptEditDialog : public QDialog
     void buttonStatus ();
     void cancel ();
     void help ();
-    void fileButtonPressed ();
-    void fileButtonPressed2 (QString);
 
   private:
     QLineEdit *_com;
-    QCheckBox *_startup;
+    QSpinBox *_minutes;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
-    QPushButton *_fileButton;
+    FileButton *_fileButton;
     QString _helpFile;
     QLabel *_message;
     QString _file;

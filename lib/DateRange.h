@@ -52,6 +52,7 @@ class DateRange
     DateRange ();
     int dateRange (DateRange::Range, QDateTime &input, QDateTime &output);
     void list (QStringList &);
+    int toType (QString);
 };
 
 #endif

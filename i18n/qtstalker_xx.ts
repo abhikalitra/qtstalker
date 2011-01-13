@@ -299,14 +299,6 @@ e.g. Qtstalker alert was triggered.</source>
 <context>
     <name>BarLengthButtons</name>
     <message>
-        <source>Previous Bar Length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Next Bar Length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Bar Length</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1087,14 +1079,6 @@ e.g. Qtstalker alert was triggered.</source>
 </context>
 <context>
     <name>DateRangeControl</name>
-    <message>
-        <source>Previous Date Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Next Date Range</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Date Range</source>
         <translation type="unfinished"></translation>

@@ -45,6 +45,7 @@ class SCRIPT_DATABASE : public ScriptPlugin
 
   private:
     QStringList _method;
+    QStringList _field;
     ScriptDataBase _db;
 };
 

@@ -31,6 +31,7 @@
 #include <QToolButton>
 #include <QHash>
 #include <QToolBar>
+#include <QTimer>
 
 #include "ScriptPluginFactory.h"
 #include "Script.h"
@@ -82,7 +83,7 @@ class ScriptPage : public QWidget
     void launchButtonRows2 (int);
     void launchButtonCols ();
     void launchButtonCols2 (int);
-    void startup ();
+    void scriptTimer ();
 
   protected:
     QListWidget *_queList;
@@ -90,6 +91,7 @@ class ScriptPage : public QWidget
     QHash<int, QAction *> _actions;
     QHash<QString, QListWidgetItem *> _itemList;
     ScriptPluginFactory _factory;
+    QTimer _timer;
 };
 
 #endif

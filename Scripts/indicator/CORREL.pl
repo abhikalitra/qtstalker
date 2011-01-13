@@ -6,7 +6,7 @@ $command = "BARS,BARS,Bars";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "SYMBOL,SYMBOL,sp500,XNYS,^GSPC";
+$command = "SYMBOL,SYMBOL,sp500,XNYS,^GSPC,-1,-1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

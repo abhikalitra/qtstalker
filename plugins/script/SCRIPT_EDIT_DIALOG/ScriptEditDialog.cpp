@@ -71,15 +71,15 @@ void ScriptEditDialog::createGUI ()
   form->addRow(tr("Command"), _com);
   
   // file
-  _fileButton = new QPushButton;
+  _fileButton = new FileButton(this, QStringList(), QString());
   _fileButton->setToolTip(tr("The script location"));
-  connect(_fileButton, SIGNAL(clicked()), this, SLOT(fileButtonPressed()));
+  connect(_fileButton, SIGNAL(signalSelectionChanged()), this, SLOT(buttonStatus()));
   form->addRow(tr("Script File"), _fileButton);
 
-  // startup
-  _startup = new QCheckBox;
-  _startup->setToolTip(tr("Run this script as soon as QtStalker starts."));
-  form->addRow(tr("Run at startup"), _startup);
+  // minutes
+  _minutes = new QSpinBox;
+  _minutes->setToolTip(tr("Run this script every X minutes."));
+  form->addRow(tr("Run every X minutes"), _minutes);
 
   // status message
   _message = new QLabel;
@@ -109,8 +109,13 @@ void ScriptEditDialog::buttonStatus ()
   if (_com->text().length())
     status++;
 
-  if (! _file.isEmpty())
+  QStringList l;
+  _fileButton->getFile(l);
+  if (l.count())
+  {
+    _file = l.at(0);
     status++;
+  }
 
   _okButton->setEnabled(status);
 }
@@ -140,7 +145,9 @@ void ScriptEditDialog::loadSettings ()
 
   // last file selected
   _file = settings.value("script_edit_dialog_last_file", QDir::homePath()).toString();
-  fileButtonPressed2(_file);
+  QStringList l;
+  l << _file;
+  _fileButton->setFile(l);
 }
 
 void ScriptEditDialog::saveSettings ()
@@ -150,26 +157,6 @@ void ScriptEditDialog::saveSettings ()
   settings.setValue("script_edit_dialog_window_position", pos());
   settings.setValue("script_edit_dialog_last_file", _file);
   settings.sync();
-}
-
-void ScriptEditDialog::fileButtonPressed ()
-{
-  QFileDialog *dialog = new QFileDialog(this);
-  QFileInfo fi(_file);
-  dialog->setDirectory(fi.absolutePath() + "/");
-  connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(fileButtonPressed2(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-}
-
-void ScriptEditDialog::fileButtonPressed2 (QString d)
-{
-  _file = d;
-
-  QFileInfo fi(_file);
-  _fileButton->setText(fi.fileName());
-
-  buttonStatus();
 }
 
 void ScriptEditDialog::done ()
@@ -187,7 +174,7 @@ void ScriptEditDialog::done ()
   script.setName(_name);
   script.setCommand(com);
   script.setFile(_file);
-  script.setStartup(_startup->isChecked());
+  script.setMinutes(_minutes->value());
   db.save(&script);
 
   _command->setReturnData("0");
@@ -205,9 +192,11 @@ void ScriptEditDialog::loadScript ()
   db.load(&script);
 
   _file = script.file();
-  fileButtonPressed2(_file);
+  QStringList l;
+  l << _file;
+  _fileButton->setFile(l);
 
   _com->setText(script.command());
 
-  _startup->setChecked(script.startup());
+  _minutes->setValue(script.minutes());
 }

@@ -84,3 +84,10 @@ void DateRange::list (QStringList &l)
   l << "2 Years" << "5 Years" << "10 Years" << "25 Years" << "50 Years" << "All";
 }
 
+int DateRange::toType (QString d)
+{
+  QStringList l;
+  list(l);
+  return l.indexOf(d);
+}
+

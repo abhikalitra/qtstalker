@@ -22,6 +22,7 @@
 #include "SYMBOL.h"
 #include "Globals.h"
 #include "QuoteDataBase.h"
+#include "DateRange.h"
 
 #include <QtDebug>
 
@@ -68,10 +69,10 @@ int SYMBOL::current (Command *command)
 
 int SYMBOL::symbol (Command *command)
 {
-  // SYMBOL,SYMBOL,<NAME>,<EXCHANGE>,<SYMBOL>
-  //   0      1       2        3        4
+  // SYMBOL,SYMBOL,<NAME>,<EXCHANGE>,<SYMBOL>,<LENGTH>,<RANGE>
+  //   0      1       2        3        4        5        6
 
-  if (command->count() != 5)
+  if (command->count() != 7)
   {
     qDebug() << "SYMBOL::symbol: invalid parm count" << command->count();
     return 1;
@@ -112,8 +113,40 @@ int SYMBOL::symbol (Command *command)
   }
   bd.setSymbol(s);
 
-  bd.setBarLength(g_barData->barLength());
-  bd.setRange(g_barData->range());
+  pos++;
+  QStringList l;
+  Bar tbar;
+  tbar.lengthList(l);
+  s = command->parm(pos);
+  int length = l.indexOf(s);
+  if (length == -1)
+  {
+    if (s != "-1")
+    {
+      qDebug() << "SYMBOL::symbol: invalid length" << command->parm(pos);
+      return 1;
+    }
+
+    bd.setBarLength(g_barData->barLength());
+  }
+  else
+    bd.setBarLength((BarData::BarLength) length);
+
+  pos++;
+  DateRange dr;
+  int range = dr.toType(command->parm(pos));
+  if (range == -1)
+  {
+    if (command->parm(pos) != "-1")
+    {
+      qDebug() << "SYMBOL::symbol: invalid range" << command->parm(pos);
+      return 1;
+    }
+    
+    bd.setRange(g_barData->range());
+  }
+  else
+    bd.setRange(range);
 
   QuoteDataBase db;
   if (db.getBars(&bd))

@@ -26,6 +26,7 @@
 SCRIPT_DATABASE::SCRIPT_DATABASE ()
 {
   _method << "LOAD" << "SAVE" << "DELETE" << "SCRIPTS";
+  _field << "MINUTES";
 }
 
 int SCRIPT_DATABASE::command (Command *command)
@@ -62,32 +63,44 @@ int SCRIPT_DATABASE::command (Command *command)
 
 int SCRIPT_DATABASE::load (Command *command)
 {
-  // SCRIPT_DATABASE,LOAD,<NAME>
-  //       0          1      2
+  // SCRIPT_DATABASE,LOAD,<NAME>,<FIELD>
+  //       0          1      2      3
 
-  if (command->count() != 3)
+  if (command->count() != 4)
   {
     qDebug() << "SCRIPT_DATABASE::load: invalid parm count" << command->count();
     return 1;
   }
 
+  int pos = 2;
   Script script;
-  script.setName(command->parm(2));
+  script.setName(command->parm(pos));
 
   if (_db.load(&script))
   {
-    qDebug() << "SCRIPT_DATABASE::load: ScriptDataBase error";
+    qDebug() << "SCRIPT_DATABASE::load: script load error" << command->parm(pos);
     return 1;
   }
   
-  command->setReturnData(script.toString());
+  pos++;
 
-  return 0;
+  switch (_field.indexOf(command->parm(pos)))
+  {
+    case 0: // MINUTES
+      command->setReturnData(script.toString());
+      return 0;
+      break;
+    default:
+      qDebug() << "SCRIPT_DATABASE::load: invalid field" << command->parm(pos);
+      break;
+  }
+  
+  return 1;
 }
 
 int SCRIPT_DATABASE::save (Command *command)
 {
-  // SCRIPT_DATABASE,SAVE,<NAME>,<FILE>,<COMMAND>
+  // SCRIPT_DATABASE,SAVE,<NAME>,<FIELD>,<DATA>
   //        0         1      2      3       4
 
   if (command->count() != 5)
@@ -99,12 +112,38 @@ int SCRIPT_DATABASE::save (Command *command)
   int pos = 2;
   Script script;
   script.setName(command->parm(pos++));
-  script.setCommand(command->parm(pos++));
-  script.setFile(command->parm(pos++));
+  
+  if (_db.load(&script))
+  {
+    qDebug() << "SCRIPT_DATABASE::save: load error";
+    return 1;
+  }
+
+  switch (_field.indexOf(command->parm(pos)))
+  {
+    case 0: // MINUTES
+    {
+      pos++;
+      bool ok;
+      int minutes = command->parm(pos).toInt(&ok);
+      if (! ok)
+      {
+        qDebug() << "SCRIPT_DATABASE::save: invalid MINUTES";
+        return 1;
+      }
+
+      script.setMinutes(minutes);
+      break;
+    }
+    default:
+      qDebug() << "SCRIPT_DATABASE::load: invalid field" << command->parm(pos);
+      return 1;
+      break;
+  }
 
   if (_db.save(&script))
   {
-    qDebug() << "SCRIPT_DATABASE::save: ScriptDataBase error";
+    qDebug() << "SCRIPT_DATABASE::save: save error";
     return 1;
   }
 

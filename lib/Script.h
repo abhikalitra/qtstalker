@@ -61,8 +61,10 @@ class Script : public QObject
     QString & command ();
     void setFile (QString);
     QString & file ();
-    void setStartup (int);
-    int startup ();
+    void setMinutes (int);
+    int minutes ();
+    void setLastRun (QString);
+    QString & lastRun ();
     int fromString (QString);
     QString toString ();
     
@@ -84,7 +86,8 @@ class Script : public QObject
     QString _name;
     QString _com;
     QString _file;
-    int _startup;
+    int _minutes;
+    QString _lastRun;
     QHash<QString, ScriptPlugin *> _plugins;
     Command *_command;
 };
