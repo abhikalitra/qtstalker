@@ -19,73 +19,29 @@
  *  USA.
  */
 
-#include "SETTINGS.h"
+#include "SETTINGS_SAVE.h"
 #include "Globals.h"
 
 #include <QtDebug>
 #include <QSettings>
 
-SETTINGS::SETTINGS ()
+SETTINGS_SAVE::SETTINGS_SAVE ()
 {
-  _method << "LOAD" << "SAVE";
 }
 
-int SETTINGS::command (Command *command)
+int SETTINGS_SAVE::command (Command *command)
 {
-  // SETTINGS,<METHOD>,<KEY>
-  //     0       1       2
-  
-  if (command->count() < 3)
-  {
-    qDebug() << "SETTINGS::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  switch ((Method) _method.indexOf(command->parm(1)))
-  {
-    case _LOAD:
-      return load(command);
-      break;
-    case _SAVE:
-      return save(command);
-      break;
-    default:
-      break;
-  }
-
-  return 0;
-}
-
-int SETTINGS::load (Command *command)
-{
-  // SETTINGS,<METHOD>,<KEY>
-  //     0       1       2
+  // SETTINGS_SAVE,<KEY>,<DATA>
+  //        0       1      2
 
   if (command->count() != 3)
   {
-    qDebug() << "SETTINGS::load: invalid parm count" << command->count();
+    qDebug() << "SETTINGS_SAVE::command: invalid parm count" << command->count();
     return 1;
   }
 
   QSettings set(g_settingsFile);
-  command->setReturnData(set.value(command->parm(2)).toString());
-
-  return 0;
-}
-
-int SETTINGS::save (Command *command)
-{
-  // SETTINGS,<METHOD>,<KEY>,<DATA>
-  //     0       1       2      3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "SETTINGS::save: invalid parm count" << command->count();
-    return 1;
-  }
-
-  QSettings set(g_settingsFile);
-  set.setValue(command->parm(2), command->parm(3));
+  set.setValue(command->parm(1), command->parm(2));
   set.sync();
 
   command->setReturnData("0");
@@ -99,6 +55,6 @@ int SETTINGS::save (Command *command)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  SETTINGS *o = new SETTINGS;
+  SETTINGS_SAVE *o = new SETTINGS_SAVE;
   return ((ScriptPlugin *) o);
 }

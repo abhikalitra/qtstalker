@@ -19,15 +19,15 @@
  *  USA.
  */
 
-#ifndef SYMBOL_HPP
-#define SYMBOL_HPP
+#ifndef SYMBOL_CURRENT_HPP
+#define SYMBOL_CURRENT_HPP
 
 #include "ScriptPlugin.h"
 
-class SYMBOL : public ScriptPlugin
+class SYMBOL_CURRENT : public ScriptPlugin
 {
   public:
-    SYMBOL ();
+    SYMBOL_CURRENT ();
     int command (Command *);
 };
 

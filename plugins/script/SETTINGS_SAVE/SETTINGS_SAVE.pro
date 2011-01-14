@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += SETTINGS.h
+HEADERS += SETTINGS_SAVE.h
 
-SOURCES += SETTINGS.cpp
+SOURCES += SETTINGS_SAVE.cpp

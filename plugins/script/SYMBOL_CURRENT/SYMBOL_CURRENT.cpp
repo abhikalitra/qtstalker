@@ -19,32 +19,28 @@
  *  USA.
  */
 
-#ifndef SETTINGS_HPP
-#define SETTINGS_HPP
+#include "SYMBOL_CURRENT.h"
+#include "Globals.h"
 
-#include "ScriptPlugin.h"
+#include <QtDebug>
 
-class SETTINGS : public ScriptPlugin
+SYMBOL_CURRENT::SYMBOL_CURRENT ()
 {
-  public:
-    enum Method
-    {
-      _LOAD,
-      _SAVE
-    };
-    
-    SETTINGS ();
-    int command (Command *);
-    int load (Command *);
-    int save (Command *);
-
-  private:
-    QStringList _method;
-};
-
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
 }
 
-#endif
+int SYMBOL_CURRENT::command (Command *command)
+{
+  command->setReturnData(g_barData->key());
+
+  return 0;
+}
+
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  SYMBOL_CURRENT *o = new SYMBOL_CURRENT;
+  return ((ScriptPlugin *) o);
+}

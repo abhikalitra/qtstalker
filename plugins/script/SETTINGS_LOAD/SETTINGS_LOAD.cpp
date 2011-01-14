@@ -19,21 +19,39 @@
  *  USA.
  */
 
-#ifndef SYMBOL_HPP
-#define SYMBOL_HPP
+#include "SETTINGS_LOAD.h"
+#include "Globals.h"
 
-#include "ScriptPlugin.h"
+#include <QtDebug>
+#include <QSettings>
 
-class SYMBOL : public ScriptPlugin
+SETTINGS_LOAD::SETTINGS_LOAD ()
 {
-  public:
-    SYMBOL ();
-    int command (Command *);
-};
-
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
 }
 
-#endif
+int SETTINGS_LOAD::command (Command *command)
+{
+  // SETTINGS_LOAD,<KEY>
+  //       0         1
+
+  if (command->count() != 2)
+  {
+    qDebug() << "SETTINGS_LOAD::command: invalid parm count" << command->count();
+    return 1;
+  }
+
+  QSettings set(g_settingsFile);
+  command->setReturnData(set.value(command->parm(1)).toString());
+
+  return 0;
+}
+
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  SETTINGS_LOAD *o = new SETTINGS_LOAD;
+  return ((ScriptPlugin *) o);
+}
