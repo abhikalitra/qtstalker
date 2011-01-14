@@ -1,27 +1,32 @@
 # qtstalker BETA indicator
 
+$barsName = 'Bars';
+
+$betaName = 'BETA';
+$betaStyle = 'Line';
+$betaColor = 'red';
+
+$symbolName = 'symbol';
+$exchange = 'XNYS';
+$symbol = '^GSPC';
+$period = 5;
+
+###################################################################
+
 $|++;
 
-$command = "BARS,BARS,Bars";
+$command = "BARS,BARS,$barsName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "SYMBOL,SYMBOL,sp500,XNYS,^GSPC,-1,-1";
+$command = "SYMBOL,SYMBOL,$symbolName,$exchange,$symbol,-1,-1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "BETA,BETA,Bars,sp500,5";
+$command = "BETA,$betaName,$barsName,$symbolName,$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,BETA,Line";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,BETA,red";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,BETA,0";
+$command = "INDICATOR_PLOT_ALL,$betaName,$betaStyle,$betaColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

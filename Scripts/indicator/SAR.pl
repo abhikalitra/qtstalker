@@ -1,27 +1,29 @@
 # qtstalker SAR indicator
 
+$barsName = 'Bars';
+
+$sarName = 'SAR';
+$sarStyle = 'Dot';
+$sarColor = 'white';
+$initial = 0.02;
+$maxStep = 0.2;
+
+###################################################################
+
 $|++;
 
-$command = "BARS,BARS,Bars,green,red,blue";
+$command = "BARS,BARS,$barsName,green,red,blue";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,Bars,0";
+$command = "INDICATOR_PLOT,$barsName,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "SAR,SAR,0.02,0.2";
+$command = "SAR,$sarName,$initial,$maxStep";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,SAR,Dot";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,SAR,white";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,SAR,1";
+$command = "INDICATOR_PLOT_ALL,$sarName,$sarStyle,$sarColor,1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

@@ -1,47 +1,44 @@
 # qtstalker MACD indicator
 
+$input = 'c';
+
+$macdName = 'MACD';
+$macdStyle = 'Line';
+$macdColor = 'red';
+
+$sigName = 'MACD_SIG';
+$sigStyle = 'Line';
+$sigColor = 'yellow';
+$sigPeriod = 9;
+
+$histName = 'MACD_HIST';
+$histStyle = 'Histogram';
+$histColor = 'blue';
+
+$fastPeriod = 12;
+$slowPeriod = 26;
+$maType = 'EMA';
+
+###################################################################
+
 $|++;
 
-$command = "BARS,Close,c";
+$command = "BARS,Close,$input";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MACD,c,MACD,SIGNAL,HIST,12,EMA,26,EMA,9,EMA";
+$command = "MACD,$input,$macdName,$sigName,$histName,$fastPeriod,$maType,$slowPeriod,$maType,$sigPeriod,$maType";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,HIST,Histogram";
+$command = "INDICATOR_PLOT_ALL,$histName,$histStyle,$histColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR,ALL,HIST,blue";
+$command = "INDICATOR_PLOT_ALL,$macdName,$macdStyle,$macdColor,1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,HIST,0";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_STYLE,MACD,Line";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,MACD,red";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,MACD,1";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_STYLE,SIGNAL,Line";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,SIGNAL,yellow";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,SIGNAL,2";
+$command = "INDICATOR_PLOT_ALL,$sigName,$sigStyle,$sigColor,2";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

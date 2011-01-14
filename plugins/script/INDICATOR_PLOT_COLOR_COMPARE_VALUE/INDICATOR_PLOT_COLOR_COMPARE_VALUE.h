@@ -19,31 +19,16 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLOT_COLOR_HPP
-#define INDICATOR_PLOT_COLOR_HPP
+#ifndef INDICATOR_PLOT_COLOR_COMPARE_VALUE_HPP
+#define INDICATOR_PLOT_COLOR_COMPARE_VALUE_HPP
 
 #include "ScriptPlugin.h"
 
-class INDICATOR_PLOT_COLOR : public ScriptPlugin
+class INDICATOR_PLOT_COLOR_COMPARE_VALUE : public ScriptPlugin
 {
   public:
-    enum Method
-    {
-      _SET,
-      _ALL,
-      _COMPARE_INDEX_ALL,
-      _COMPARE_VALUE_ALL
-    };
-    
-    INDICATOR_PLOT_COLOR ();
+    INDICATOR_PLOT_COLOR_COMPARE_VALUE ();
     int command (Command *);
-    int setColor (Command *);
-    int setColorAll (Command *);
-    int compareIndexAll (Command *);
-    int compareValueAll (Command *);
-
-  private:
-    QStringList _method;
 };
 
 extern "C"

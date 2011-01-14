@@ -5,36 +5,30 @@
 
 # FIXME: Not yet dealing with "Penetration" parameter.
 
+$pName = 'Piercing Line';
+$pStyle = 'Histogram Bar';
+$pColor = 'yellow';
+
+$dccName = 'Dark Cloud Cover';
+$dccStyle = 'Histogram Bar';
+$dccColor = 'orange';
+
+###################################################################
+
 $|++;
 
-$command = "CANDLES,PIERCING,Piercing Line";
+$command = "CANDLES,PIERCING,$pName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,Piercing Line,Histogram Bar";
+$command = "INDICATOR_PLOT_ALL,$pName,$pStyle,$pColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR,ALL,Piercing Line,yellow";
+$command = "CANDLES,DARKCLOUDCOVER,$dccName,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,Piercing Line,0";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "CANDLES,DARKCLOUDCOVER,Dark Cloud Cover,0";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_STYLE,Dark Cloud Cover,Histogram Bar";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,Dark Cloud Cover,orange";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,Dark Cloud Cover,1";
+$command = "INDICATOR_PLOT_ALL,$dccName,$dccStyle,$dccColor,1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

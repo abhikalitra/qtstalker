@@ -19,29 +19,16 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLOT_INDEX_HPP
-#define INDICATOR_PLOT_INDEX_HPP
+#ifndef INDICATOR_PLOT_INDEX_SET_HPP
+#define INDICATOR_PLOT_INDEX_SET_HPP
 
 #include "ScriptPlugin.h"
 
-class INDICATOR_PLOT_INDEX : public ScriptPlugin
+class INDICATOR_PLOT_INDEX_SET : public ScriptPlugin
 {
   public:
-    enum Method
-    {
-      _GET,
-      _SET,
-      _RANGE
-    };
-    
-    INDICATOR_PLOT_INDEX ();
+    INDICATOR_PLOT_INDEX_SET ();
     int command (Command *);
-    int getIndex (Command *);
-    int setIndex (Command *);
-    int getRange (Command *);
-
-  private:
-    QStringList _method;
 };
 
 extern "C"

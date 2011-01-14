@@ -1,43 +1,32 @@
 # qtstalker ADXR indicator
 
+$adxName = 'ADX';
+$adxStyle = 'Line';
+$adxColor = 'red';
+
+$adxrName = 'ADXR';
+$adxrStyle = 'Line';
+$adxrColor = 'yellow';
+
+$adxPeriod = 14;
+$adxrPeriod = 10;
+
+###################################################################
+
 $|++;
 
-# create the ADX
-$command = "ADX,ADX,14";
+$command = "ADX,$adxName,$adxPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# create the ADXR
-$command = "ADXR,ADXR,10";
+$command = "INDICATOR_PLOT_ALL,$adxName,$adxStyle,$adxColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# set ADX plot style
-$command = "INDICATOR_PLOT_STYLE,ADX,Line";
+$command = "ADXR,$adxrName,$adxrPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# set ADX color
-$command = "INDICATOR_PLOT_COLOR,ALL,ADX,red";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# plot the ADX
-$command = "INDICATOR_PLOT,ADX,0";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# set ADXR plot style
-$command = "INDICATOR_PLOT_STYLE,ADXR,Line";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# set ADXR color
-$command = "INDICATOR_PLOT_COLOR,ALL,ADXR,yellow";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# plot the ADXR
-$command = "INDICATOR_PLOT,ADXR,1";
+$command = "INDICATOR_PLOT_ALL,$adxrName,$adxrStyle,$adxrColor,1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

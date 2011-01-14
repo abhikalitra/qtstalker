@@ -1,27 +1,28 @@
 # qtstalker HT indicator
 
+$barsName = 'Bars';
+
+$name = 'HT';
+$style = 'Line';
+$color = 'yellow';
+$method = 'TRENDLINE';
+
+###################################################################
+
 $|++;
 
-$command = "BARS,BARS,Bars,green,red,blue";
+$command = "BARS,BARS,$barsName,green,red,blue";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,Bars,0";
+$command = "INDICATOR_PLOT,$barsName,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "HT,TRENDLINE,HT,Bars";
+$command = "HT,$method,$name,$barsName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,HT,Line";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,HT,yellow";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,HT,1";
+$command = "INDICATOR_PLOT_ALL,$name,$style,$color,1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

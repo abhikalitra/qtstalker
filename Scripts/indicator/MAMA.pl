@@ -1,39 +1,38 @@
 # qtstalker MAMA indicator
 
+$barsName = 'Bars';
+
+$mamaName = 'MAMA';
+$mamaStyle = 'Line';
+$mamaColor = 'red';
+
+$famaName = 'FAMA';
+$famaStyle = 'Line';
+$famaColor = 'yellow';
+
+$fastLimit = 0.5;
+$slowLimit = 0.05;
+
+###################################################################
+
 $|++;
 
-$command = "BARS,BARS,Bars,green,red,blue";
+$command = "BARS,BARS,$barsName,green,red,blue";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,Bars,0";
+$command = "INDICATOR_PLOT,$barsName,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MAMA,Bars,MAMA,FAMA,0.5,0.05";
+$command = "MAMA,$barsName,$mamaName,$famaName,$fastLimit,$slowLimit";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,MAMA,Line";
+$command = "INDICATOR_PLOT_ALL,$mamaName,$mamaStyle,$mamaColor,1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR,ALL,MAMA,red";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,MAMA,1";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_STYLE,FAMA,Line";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,FAMA,yellow";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,FAMA,2";
+$command = "INDICATOR_PLOT_ALL,$famaName,$famaStyle,$famaColor,2";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

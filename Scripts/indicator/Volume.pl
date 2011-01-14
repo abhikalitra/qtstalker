@@ -1,58 +1,48 @@
 # qtstalker Volume (Volume) indicator, red is down, blue is neutral, green is up, color based on close price.
 
+$closeName = 'cl';
+
+$volName = 'VOL';
+$volStyle = 'Histogram Bar';
+
+$maName = 'VOL_MA';
+$maStyle = 'Line';
+$maColor = 'yellow';
+$maType = 'EMA';
+$maPeriod = '10';
+
+$upColor = 'green';
+$downColor = 'red';
+$neutralColor = 'blue';
+
+###################################################################
+
 $|++;
 
-# get the volume data
-$command = "BARS,Volume,Volume";
+$command = "BARS,Volume,$volName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# get close data
-$command = "BARS,Close,cl";
+$command = "BARS,Close,$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# color volume bars red if close < previous close
-$command = "INDICATOR_PLOT_COLOR,COMPARE_INDEX_ALL,cl.0,<,cl.1,Volume.0,red";
+$command = "INDICATOR_PLOT_ALL,$volName,$volStyle,$neutralColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# color volume bars blue if close == previous close
-$command = "INDICATOR_PLOT_COLOR,COMPARE_INDEX_ALL,cl.0,=,cl.1,Volume.0,blue";
+$command = "INDICATOR_PLOT_COLOR_COMPARE_INDEX,$closeName.0,>,$closeName.1,$volName.0,$upColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# color volume bars green if close > previous close
-$command = "INDICATOR_PLOT_COLOR,COMPARE_INDEX_ALL,cl.0,>,cl.1,Volume.0,green";
+$command = "INDICATOR_PLOT_COLOR_COMPARE_INDEX,$closeName.0,<,$closeName.1,$volName.0,$downColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# set the plot style to Histogram Bar
-$command = "INDICATOR_PLOT_STYLE,Volume,Histogram Bar";
+$command = "MA,$maType,$maName,$volName,$maPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# plot the Volume indicator
-$command = "INDICATOR_PLOT,Volume,0";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# create the 10 EMA indicator
-$command = "MA,EMA,10MA,Volume,10";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# set 10MA plot style
-$command = "INDICATOR_PLOT_STYLE,10MA,Line";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# set 10MA color
-$command = "INDICATOR_PLOT_COLOR,ALL,10MA,yellow";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# plot the 10MA
-$command = "INDICATOR_PLOT,10MA,1";
+$command = "INDICATOR_PLOT_ALL,$maName,$maStyle,$maColor,1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

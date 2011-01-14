@@ -1,19 +1,19 @@
 # qtstalker FI indicator
 
+$name = 'FI';
+$style = 'Histogram Bar';
+$color = 'yellow';
+$period = 2;
+$maType = 'EMA';
+
+###################################################################
+
 $|++;
 
-$command = "FI,FI,2,EMA";
+$command = "FI,$name,$period,$maType";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,FI,Histogram Bar";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,FI,red";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,FI,0";
+$command = "INDICATOR_PLOT_ALL,$name,$style,$color,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

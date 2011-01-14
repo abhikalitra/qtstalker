@@ -1,23 +1,24 @@
 # qtstalker MOM indicator
 
+$input = 'c';
+
+$momName = 'MOM';
+$momStyle = 'Histogram Bar';
+$momColor = 'yellow';
+$momPeriod = 10;
+
+###################################################################
+
 $|++;
 
-$command = "BARS,Close,c";
+$command = "BARS,Close,$input";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MOM,MOM,c,10";
+$command = "MOM,$momName,$input,$momPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,MOM,Histogram Bar";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,MOM,red";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,MOM,0";
+$command = "INDICATOR_PLOT_ALL,$momName,$momStyle,$momColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

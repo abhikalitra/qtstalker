@@ -1,44 +1,47 @@
 # qtstalker c_harami - Candles: Harami and Harami Cross
 
-# green   : Bull Harami
-# cyan    : Bull Harami Cross
-# red     : Bear Harami
-# magenta : Bear Harami Cross
+$candleName = 'candles';
+$candleColor = 'dimgray';
+
+$haramiName = 'ch1';
+$haramiCrossName = 'ch2';
+$bullHaramiColor = 'green';
+$bullHaramiCrossColor = 'cyan';
+$bearHaramiColor = 'red';
+$bearHaramiCrossColor = 'magenta';
+
+###########################################################
 
 $|++;
 
-$command = "BARS,CANDLES,candles,dimgray,dimgray,dimgray";
+$command = "BARS,CANDLES,$candleName,$candleColor,$candleColor,$candleColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CANDLES,HARAMI,ch1";
+$command = "CANDLES,HARAMI,$haramiName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CANDLES,HARAMICROSS,ch2";
+$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$haramiName,<,0,$candleName,$bearHaramiColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# set ch1 >= 1 set candles current bar color to green
-$command = "INDICATOR_PLOT_COLOR,COMPARE_VALUE_ALL,ch1,=>,1,candles.0,green";
+$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$haramiName,>,0,$candleName,$bullHaramiColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# set ch1 <= -1 set candles current bar color to red
-$command = "INDICATOR_PLOT_COLOR,COMPARE_VALUE_ALL,ch1,<=,-1,candles.0,red";
+$command = "CANDLES,HARAMICROSS,$haramiCrossName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# set ch2 >= 1 set candles current bar color to cyan
-$command = "INDICATOR_PLOT_COLOR,COMPARE_VALUE_ALL,ch2,=>,1,candles.0,cyan";
+$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$haramiCrossName,<,0,$candleName,$bearHaramiCrossColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# set ch2 <= -1 set candles current bar color to magenta
-$command = "INDICATOR_PLOT_COLOR,COMPARE_VALUE_ALL,ch2,<=,-1,candles.0,magenta";
+$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$haramiCrossName,>,0,$candleName,$bullHaramiCrossColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,candles,0";
+$command = "INDICATOR_PLOT,$candleName,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

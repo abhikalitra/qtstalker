@@ -5,36 +5,30 @@
 #
 # Positive values are bullish, negative values are bearish.
 
+$haramiName = 'Harami';
+$haramiStyle = 'Histogram Bar';
+$haramiColor = 'yellow';
+
+$haramiCrossName = 'Harami Cross';
+$haramiCrossStyle = 'Histogram Bar';
+$haramiCrossColor = 'orange';
+
+###################################################################
+
 $|++;
 
-$command = "CANDLES,HARAMI,Harami";
+$command = "CANDLES,HARAMI,$haramiName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,Harami,Histogram Bar";
+$command = "INDICATOR_PLOT_ALL,$haramiName,$haramiStyle,$haramiColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR,ALL,Harami,yellow";
+$command = "CANDLES,HARAMICROSS,$haramiCrossName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,Harami,0";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "CANDLES,HARAMICROSS,Harami Cross";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_STYLE,Harami Cross,Histogram Bar";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,Harami Cross,orange";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,Harami Cross,1";
+$command = "INDICATOR_PLOT_ALL,$haramiCrossName,$haramiCrossStyle,$haramiCrossColor,1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

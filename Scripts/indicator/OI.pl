@@ -1,19 +1,19 @@
 # qtstalker OI (Open Interest) indicator
 
+$input = 'oi';
+
+$oiName = 'OI';
+$oiStyle = 'Line';
+$oiColor = 'yellow';
+
+###################################################################
+
 $|++;
 
-$command = "BARS,OI,oi";
+$command = "BARS,OI,input";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,oi,Line";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,oi,yellow";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,oi,0";
+$command = "INDICATOR_PLOT_ALL,$oiName,$oiStyle,$oiColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

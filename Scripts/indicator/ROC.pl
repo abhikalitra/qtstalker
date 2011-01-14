@@ -1,23 +1,25 @@
 # qtstalker ROC indicator
 
+$input = 'c';
+
+$rocName = 'ROC';
+$rocStyle = 'Histogram Bar';
+$rocColor = 'yellow';
+$rocPeriod = 10;
+$method = 'ROC';
+
+###################################################################
+
 $|++;
 
-$command = "BARS,Close,c";
+$command = "BARS,Close,$input";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "ROC,ROC,ROC,c,10";
+$command = "ROC,$method,$rocName,$input,$rocPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_STYLE,ROC,Histogram Bar";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT_COLOR,ALL,ROC,red";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "INDICATOR_PLOT,ROC,0";
+$command = "INDICATOR_PLOT_ALL,$rocName,$rocStyle,$rocColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
