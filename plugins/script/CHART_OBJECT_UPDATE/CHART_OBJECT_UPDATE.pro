@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += CHART_OBJECT.h
+HEADERS += CHART_OBJECT_UPDATE.h
 
-SOURCES += CHART_OBJECT.cpp
+SOURCES += CHART_OBJECT_UPDATE.cpp

@@ -19,55 +19,28 @@
  *  USA.
  */
 
-#include "CHART_OBJECT.h"
+#include "CHART_OBJECT_DELETE.h"
 #include "Globals.h"
 
 #include <QtDebug>
 
-CHART_OBJECT::CHART_OBJECT ()
+CHART_OBJECT_DELETE::CHART_OBJECT_DELETE ()
 {
-  _method << "DELETE" << "UPDATE";
 }
 
-int CHART_OBJECT::command (Command *command)
+int CHART_OBJECT_DELETE::command (Command *command)
 {
-  // CHART_OBJECT,<METHOD>
-  //   0     1 
-  
+  // CHART_OBJECT_DELETE,<NAME>,*
+  //           0           1    2*
+
   if (command->count() < 2)
   {
-    qDebug() << "CHART_OBJECT::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  switch ((Method) _method.indexOf(command->parm(1)))
-  {
-    case _DELETE:
-      return remove(command);
-      break;
-    case _UPDATE:
-      return update(command);
-      break;
-    default:
-      break;
-  }
-
-  return 0;
-}
-
-int CHART_OBJECT::remove (Command *command)
-{
-  // CHART_OBJECT,DELETE,<NAME>,*
-  //      0         1      2    3*
-
-  if (command->count() < 3)
-  {
-    qDebug() << "CHART_OBJECT::remove: invalid parm count" << command->count();
+    qDebug() << "CHART_OBJECT_DELETE::command: invalid parm count" << command->count();
     return 1;
   }
 
   QStringList l;
-  int pos = 2;
+  int pos = 1;
   for (; pos < command->count(); pos++)
     l << command->parm(pos);
 
@@ -77,31 +50,12 @@ int CHART_OBJECT::remove (Command *command)
 
   return 0;
 }
-
-int CHART_OBJECT::update (Command *command)
-{
-  // CHART_OBJECT,UPDATE,<NAME>
-  //       0         1     2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "CHART_OBJECT::update: invalid parm count" << command->count();
-    return 1;
-  }
-
-  g_middleMan->chartObjectUpdate(command->parm(2));
-
-  command->setReturnData("0");
-
-  return 0;
-}
-
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
 ScriptPlugin * createScriptPlugin ()
 {
-  CHART_OBJECT *o = new CHART_OBJECT;
+  CHART_OBJECT_DELETE *o = new CHART_OBJECT_DELETE;
   return ((ScriptPlugin *) o);
 }

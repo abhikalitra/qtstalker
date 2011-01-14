@@ -19,32 +19,39 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_PLUGIN_HPP
-#define CHART_OBJECT_PLUGIN_HPP
+#include "CHART_OBJECT_UPDATE.h"
+#include "Globals.h"
 
-#include "ScriptPlugin.h"
+#include <QtDebug>
 
-class CHART_OBJECT : public ScriptPlugin
+CHART_OBJECT_UPDATE::CHART_OBJECT_UPDATE ()
 {
-  public:
-    enum Method
-    {
-      _DELETE,
-      _UPDATE
-    };
-    
-    CHART_OBJECT ();
-    int command (Command *);
-    int update (Command *);
-    int remove (Command *);
-
-  private:
-    QStringList _method;
-};
-
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
 }
 
-#endif
+int CHART_OBJECT_UPDATE::command (Command *command)
+{
+  // CHART_OBJECT_UPDATE,<NAME>
+  //          0            1
+
+  if (command->count() != 2)
+  {
+    qDebug() << "CHART_OBJECT_UPDATE::command: invalid parm count" << command->count();
+    return 1;
+  }
+
+  g_middleMan->chartObjectUpdate(command->parm(1));
+
+  command->setReturnData("0");
+
+  return 0;
+}
+
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  CHART_OBJECT_UPDATE *o = new CHART_OBJECT_UPDATE;
+  return ((ScriptPlugin *) o);
+}
