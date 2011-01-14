@@ -18,6 +18,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
 
 # delete the charts
-$command = "PLOT,DELETE,$list";
+$command = "PLOT_DELETE,$list";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }

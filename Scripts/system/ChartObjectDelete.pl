@@ -3,7 +3,7 @@
 $|=1;
 
 # get chart object id
-$command = "SETTINGS,LOAD,chart_object_delete_id";
+$command = "SETTINGS_LOAD,chart_object_delete_id";
 print STDOUT $command;
 $name = <STDIN>; chomp($name); if ($name eq "ERROR") {print STDERR $command; exit; }
 

@@ -13,7 +13,7 @@ print STDOUT $command;
 $group = <STDIN>; chomp($group); if ($group eq "ERROR") {print STDERR $command; exit; }
 
 # get the current crosshairs color
-$command = "SETTINGS,LOAD,1,main,chart_panel_selected";
+$command = "SETTINGS_LOAD,1,main,chart_panel_selected";
 print STDOUT $command;
 $symbols = <STDIN>; chomp($symbols); if ($symbols eq "ERROR") {print STDERR $command; exit; }
 

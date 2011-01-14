@@ -3,7 +3,7 @@
 $|=1;
 
 # get indicator to select from
-$command = "SETTINGS,LOAD,chart_object_edit_id";
+$command = "SETTINGS_LOAD,chart_object_edit_id";
 print STDOUT $command;
 $name = <STDIN>; chomp($name); if ($name eq "ERROR") {print STDERR $command; exit; }
 

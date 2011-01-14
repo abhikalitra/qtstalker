@@ -1,4 +1,4 @@
-# plot font dialog
+# data window dialog
 
 $|=1;
 

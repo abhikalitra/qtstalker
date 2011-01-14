@@ -13,6 +13,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create the indicator
-$command = "PLOT,NEW,$name";
+$command = "PLOT_NEW,$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

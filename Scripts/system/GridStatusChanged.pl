@@ -3,7 +3,7 @@
 $|=1;
 
 # get the current grid status
-$command = "SETTINGS,LOAD,grid";
+$command = "SETTINGS_LOAD,grid";
 print STDOUT $command;
 $status = <STDIN>; chomp($status); if ($status eq "ERROR") {print STDERR $command; exit; }
 
@@ -11,11 +11,11 @@ $status = <STDIN>; chomp($status); if ($status eq "ERROR") {print STDERR $comman
 if ($status eq "0") { $status = "1"; } else { $status = "0"; }
 
 # save status
-$command = "SETTINGS,SAVE,grid,$status";
+$command = "SETTINGS_SAVE,grid,$status";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update charts with new grid status
-$command = "PLOT,GRID,$status";
+$command = "PLOT_GRID,$status";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

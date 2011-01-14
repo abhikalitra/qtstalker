@@ -19,7 +19,7 @@ $command = "BARS,BARS,$barsName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "SYMBOL,SYMBOL,$symbolName,$exchange,$symbol,-1,-1";
+$command = "SYMBOL,$symbolName,$exchange,$symbol,-1,-1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

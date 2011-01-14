@@ -12,7 +12,7 @@ use DateTime;
 
 $|=1;
 
-$command = "SYMBOL,SYMBOL,symbol,$exchange,$symbol,$length,$range";
+$command = "SYMBOL,symbol,$exchange,$symbol,$length,$range";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

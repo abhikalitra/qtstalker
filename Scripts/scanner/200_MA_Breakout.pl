@@ -24,7 +24,7 @@ foreach $item (@symbols)
 
   my @symbol = split(':', $item);
 
-  $command = "SYMBOL,SYMBOL,symbol,$symbol[0],$symbol[1],$length,$range";
+  $command = "SYMBOL,symbol,$symbol[0],$symbol[1],$length,$range";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 

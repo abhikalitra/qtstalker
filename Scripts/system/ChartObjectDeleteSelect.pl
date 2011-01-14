@@ -3,7 +3,7 @@
 $|=1;
 
 # get indicator to select from
-$command = "SETTINGS,LOAD,chart_object_delete_data";
+$command = "SETTINGS_LOAD,chart_object_delete_data";
 print STDOUT $command;
 $indicator = <STDIN>; chomp($indicator); if ($indicator eq "ERROR") {print STDERR $command; exit; }
 
