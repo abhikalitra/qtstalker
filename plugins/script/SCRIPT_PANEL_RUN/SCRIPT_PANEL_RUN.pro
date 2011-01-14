@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += SCRIPT_PANEL.h
+HEADERS += SCRIPT_PANEL_RUN.h
 
-SOURCES += SCRIPT_PANEL.cpp
+SOURCES += SCRIPT_PANEL_RUN.cpp

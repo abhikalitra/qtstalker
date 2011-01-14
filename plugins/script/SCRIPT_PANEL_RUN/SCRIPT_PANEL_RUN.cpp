@@ -19,30 +19,39 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PANEL_HPP
-#define SCRIPT_PANEL_HPP
+#include "SCRIPT_PANEL_RUN.h"
+#include "Globals.h"
 
-#include "ScriptPlugin.h"
+#include <QtDebug>
 
-class SCRIPT_PANEL : public ScriptPlugin
+SCRIPT_PANEL_RUN::SCRIPT_PANEL_RUN ()
 {
-  public:
-    enum Method
-    {
-      _RUN
-    };
-    
-    SCRIPT_PANEL ();
-    int command (Command *);
-    int run (Command *);
-
-  private:
-    QStringList _method;
-};
-
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
 }
 
-#endif
+int SCRIPT_PANEL_RUN::command (Command *command)
+{
+  // SCRIPT_PANEL_RUN,NAME
+  //         0         1
+
+  if (command->count() != 2)
+  {
+    qDebug() << "SCRIPT_PANEL_RUN::command: invalid parm count" << command->count();
+    return 1;
+  }
+
+  g_middleMan->scriptRun(command->parm(1));
+  
+  command->setReturnData("0");
+
+  return 0;
+}
+
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  SCRIPT_PANEL_RUN *o = new SCRIPT_PANEL_RUN;
+  return ((ScriptPlugin *) o);
+}
