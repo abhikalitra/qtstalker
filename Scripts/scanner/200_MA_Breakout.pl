@@ -32,11 +32,11 @@ foreach $item (@symbols)
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
-  $command = "INDICATOR_PLOT_INDEX,GET,symbol.0";
+  $command = "INDICATOR_PLOT_INDEX_GET,symbol.0";
   print STDOUT $command;
   $price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; next; }
 
-  $command = "INDICATOR_PLOT_INDEX,GET,ma.0";
+  $command = "INDICATOR_PLOT_INDEX_GET,ma.0";
   print STDOUT $command;
   $ma = <STDIN>; chomp($ma); if ($ma eq "ERROR") { print STDERR $command; next; }
 
@@ -49,6 +49,6 @@ $command = "GROUP_DATABASE,SAVE_ALL,$group,$result";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "GROUP_PANEL,REFRESH";
+$command = "GROUP_PANEL_REFRESH";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

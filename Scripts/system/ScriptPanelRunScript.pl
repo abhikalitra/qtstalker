@@ -12,6 +12,6 @@ $command = "SELECT_DIALOG,0,Script,$rc";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "SCRIPT_PANEL,RUN,$rc";
+$command = "SCRIPT_PANEL_RUN,$rc";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

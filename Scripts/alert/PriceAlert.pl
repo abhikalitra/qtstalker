@@ -16,7 +16,7 @@ $command = "SYMBOL,SYMBOL,symbol,$exchange,$symbol,$length,$range";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_INDEX,GET,symbol.0";
+$command = "INDICATOR_PLOT_INDEX_GET,symbol.0";
 print STDOUT $command;
 $price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; exit; }
 

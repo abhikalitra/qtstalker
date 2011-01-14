@@ -25,6 +25,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # refresh the chart panel
-$command = "CHART_PANEL,REFRESH";
+$command = "CHART_PANEL_REFRESH";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

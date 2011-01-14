@@ -25,6 +25,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update the app
-$command = "CHART_OBJECT,UPDATE,$name";
+$command = "CHART_OBJECT_UPDATE,$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

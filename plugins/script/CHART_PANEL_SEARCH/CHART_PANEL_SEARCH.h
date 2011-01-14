@@ -19,25 +19,16 @@
  *  USA.
  */
 
-#ifndef GROUP_PANEL_HPP
-#define GROUP_PANEL_HPP
+#ifndef CHART_PANEL_SEARCH_HPP
+#define CHART_PANEL_SEARCH_HPP
 
 #include "ScriptPlugin.h"
 
-class GROUP_PANEL : public ScriptPlugin
+class CHART_PANEL_SEARCH : public ScriptPlugin
 {
   public:
-    enum Method
-    {
-      _REFRESH
-    };
-    
-    GROUP_PANEL ();
+    CHART_PANEL_SEARCH ();
     int command (Command *);
-    int refresh (Command *);
-
-  private:
-    QStringList _method;
 };
 
 extern "C"

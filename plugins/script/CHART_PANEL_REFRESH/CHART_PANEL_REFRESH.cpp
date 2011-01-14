@@ -19,45 +19,21 @@
  *  USA.
  */
 
-#include "GROUP_PANEL.h"
+#include "CHART_PANEL_REFRESH.h"
 #include "Globals.h"
 
 #include <QtDebug>
 
-GROUP_PANEL::GROUP_PANEL ()
+CHART_PANEL_REFRESH::CHART_PANEL_REFRESH ()
 {
-  _method << "REFRESH";
 }
 
-int GROUP_PANEL::command (Command *command)
+int CHART_PANEL_REFRESH::command (Command *command)
 {
-  // GROUP_PANEL,<METHOD>
-  //         0          1
-  
-  if (command->count() < 2)
-  {
-    qDebug() << "GROUP_PANEL::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // CHART_PANEL_REFRESH
+  //           0  
 
-  switch ((Method) _method.indexOf(command->parm(1)))
-  {
-    case _REFRESH:
-      return refresh(command);
-      break;
-    default:
-      break;
-  }
-
-  return 0;
-}
-
-int GROUP_PANEL::refresh (Command *command)
-{
-  // GROUP_PANEL,REFRESH
-  //      0         1
-
-  g_middleMan->groupPanelRefresh();
+  g_middleMan->chartPanelRefresh();
   
   command->setReturnData("0");
 
@@ -70,6 +46,6 @@ int GROUP_PANEL::refresh (Command *command)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  GROUP_PANEL *o = new GROUP_PANEL;
+  CHART_PANEL_REFRESH *o = new CHART_PANEL_REFRESH;
   return ((ScriptPlugin *) o);
 }

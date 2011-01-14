@@ -28,6 +28,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update the app
-$command = "CHART_OBJECT,DELETE,$list";
+$command = "CHART_OBJECT_DELETE,$list";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
