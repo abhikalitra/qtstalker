@@ -19,41 +19,16 @@
  *  USA.
  */
 
-#ifndef PLOT_PLUGIN_HPP
-#define PLOT_PLUGIN_HPP
+#ifndef PLOT_GRID_COLOR_PLUGIN_HPP
+#define PLOT_GRID_COLOR_PLUGIN_HPP
 
 #include "ScriptPlugin.h"
 
-class PLOT : public ScriptPlugin
+class PLOT_GRID_COLOR : public ScriptPlugin
 {
   public:
-    enum Method
-    {
-      _BACKGROUND_COLOR,
-      _FONT,
-      _GRID_COLOR,
-      _GRID,
-      _CROSSHAIRS_COLOR,
-      _CROSSHAIRS,
-      __NEW,
-      _DELETE,
-      _UPDATE
-    };
-    
-    PLOT ();
+    PLOT_GRID_COLOR ();
     int command (Command *);
-    int backgroundColor (Command *);
-    int font (Command *);
-    int gridColor (Command *);
-    int grid (Command *);
-    int crosshairsColor (Command *);
-    int crosshairs (Command *);
-    int newPlot (Command *);
-    int deletePlot (Command *);
-    int update (Command *);
-
-  private:
-    QStringList _method;
 };
 
 extern "C"
