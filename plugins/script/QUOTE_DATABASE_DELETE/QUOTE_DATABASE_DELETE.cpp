@@ -32,32 +32,28 @@ QUOTE_DATABASE_DELETE::QUOTE_DATABASE_DELETE ()
 int QUOTE_DATABASE_DELETE::command (Command *command)
 {
   // PARMS:
-  // EXCHANGE
-  // SYMBOL
+  // NAME - semicolon delimited EXCHANGE:SYMBOL list
 
-  BarData bd;
-  QString s = command->parm("EXCHANGE");
-  if (s.isEmpty())
-  {
-    qDebug() << _plugin << "::command: invalid EXCHANGE" << command->parm("EXCHANGE");
-    return 1;
-  }
-  bd.setExchange(s);
-
-  s = command->parm("SYMBOL");
-  if (s.isEmpty())
-  {
-    qDebug() << _plugin << "::command: invalid SYMBOL" << command->parm("SYMBOL");
-    return 1;
-  }
-  bd.setSymbol(s);
+  QStringList l = command->parm("NAME").split(";");
 
   QuoteDataBase db;
-  if (db.deleteSymbol(&bd))
+  db.transaction();
+  
+  int loop = 0;
+  for (; loop < l.count(); loop++)
   {
-    qDebug() << _plugin << "::command: QuoteDataBase error";
-    return 1;
+    BarData bd;
+    if (bd.setKey(l.at(loop)))
+    {
+      qDebug() << _plugin << "::command: invalid EXCHANGE:SYMBOL" << l.at(loop);
+      continue;
+    }
+    
+    if (db.deleteSymbol(&bd))
+      qDebug() << _plugin << "::command: QuoteDataBase error deleting" << l.at(loop);
   }
+
+  db.commit();
   
   command->setReturnCode("0");
 

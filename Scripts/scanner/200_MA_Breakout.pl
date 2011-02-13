@@ -29,7 +29,7 @@ foreach $item (@symbols)
 
   my @symbol = split(':', $item);
 
-  $command = "PLUGIN=SYMBOL,NAME=symbol,EXCHANGE=$symbol[0],SYMBOL=$symbol[1],LENGTH=$length,RANGE=$range";
+  $command = "PLUGIN=QUOTE_DATABASE_GET,NAME_CLOSE=symbol,EXCHANGE=$symbol[0],SYMBOL=$symbol[1],LENGTH=$length,RANGE=$range";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
@@ -37,21 +37,21 @@ foreach $item (@symbols)
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
-  $command = "PLUGIN=INDICATOR_PLOT_INDEX_OFFSET,INDEX=symbol.0";
+  $command = "PLUGIN=INDICATOR_PLOT_VALUE_GET,NAME=symbol.0";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # return the price string
-  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_INDEX_OFFSET_VALUE";
+  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_VALUE_GET_VALUE";
   print STDOUT $command;
   $price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; next; }
 
-  $command = "PLUGIN=INDICATOR_PLOT_INDEX_OFFSET,INDEX=ma.0";
+  $command = "PLUGIN=INDICATOR_PLOT_VALUE_GET,NAME=ma.0";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # return the ma string
-  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_INDEX_OFFSET_VALUE";
+  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_VALUE_GET_VALUE";
   print STDOUT $command;
   $ma = <STDIN>; chomp($ma); if ($ma eq "ERROR") { print STDERR $command; next; }
 
@@ -60,7 +60,7 @@ foreach $item (@symbols)
   $result = $result . ";$item";
 }
 
-$command = "PLUGIN=GROUP_DATABASE,METHOD=SAVE_ALL,NAME=$group,ITEMS=$result";
+$command = "PLUGIN=GROUP_DATABASE_SAVE_ALL,NAME=$group,ITEMS=$result";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

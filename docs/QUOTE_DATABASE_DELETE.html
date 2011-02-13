@@ -28,16 +28,16 @@
   <tbody>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
-      <td style="vertical-align: top;">Deletes a symbol from the
-database.<br>
+      <td style="vertical-align: top;">Deletes a symbol(s) from the
+database. NAME is a semicolon delimited string of EXCHANGE:SYMBOL
+symbols.<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = QUOTE_DATABASE_DELETE<br>
-EXCHANGE = &lt;EXCHANGE&gt;<br>
-SYMBOL = &lt;SYMBOL&gt;<br>
+NAME = &lt;EXCHANGE:SYMBOL&gt; semicolon delimited list<br>
       <br>
       </td>
     </tr>
@@ -51,7 +51,7 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=QUOTE_DATABASE_DELETE,EXCHANGE=XNYS,SYMBOL=GOOG<br>
+      <td style="vertical-align: top;">PLUGIN=QUOTE_DATABASE_DELETE,NAME=XNYS:GOOG;XNYS:AAPL<br>
       <br>
       </td>
     </tr>

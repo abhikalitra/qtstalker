@@ -41,27 +41,69 @@ int INDICATOR_PLOT_VALUE_GET::command (Command *command)
     return 1;
   }
 
-  // verify name
-  Curve *line = i->line(command->parm("NAME"));
+  // verify NAME
+  int offsetFlag = FALSE;
+  int offset = 0;
+  QString name = command->parm("NAME");
+  QStringList l = name.split(".", QString::SkipEmptyParts);
+  if (l.count() == 2)
+  {
+    name = l.at(0);
+
+    bool ok;
+    offset = l.at(1).toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid NAME" << name;
+      return 1;
+    }
+
+    offsetFlag = TRUE;
+  }
+
+  Curve *line = i->line(name);
   if (! line)
   {
-    qDebug() << _plugin << "::command: name not found" << command->parm("NAME");
+    qDebug() << _plugin << "::command: NAME not found" << name;
     return 1;
   }
 
-  bool ok;
-  int index = command->parm("INDEX").toInt(&ok);
-  if (! ok)
+  // verify INDEX
+  int index = 0;
+  if (! offsetFlag)
   {
-    qDebug() << _plugin << "::command: invalid INDEX value" << command->parm("INDEX");
-    return 1;
+    bool ok;
+    index = command->parm("INDEX").toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid INDEX value" << command->parm("INDEX");
+      return 1;
+    }
   }
 
-  CurveBar *bar = line->bar(index);
-  if (! bar)
+  // get bar
+  CurveBar *bar = 0;
+  if (offsetFlag)
   {
-    qDebug() << _plugin << "::command: bar not found at index" << index;
-    return 1;
+    int high = 0;
+    int low = 0;
+    line->keyRange(low, high);
+    
+    bar = line->bar(high - offset);
+    if (! bar)
+    {
+      qDebug() << _plugin << "::command: bar not found at offset" << high - offset;
+      return 1;
+    }
+  }
+  else
+  {
+    bar = line->bar(index);
+    if (! bar)
+    {
+      qDebug() << _plugin << "::command: bar not found at index" << index;
+      return 1;
+    }
   }
 
   QString s = QString::number(bar->data());

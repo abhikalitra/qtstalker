@@ -18,7 +18,7 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # delete chart object from database
-$command = "PLUGIN=CHART_OBJECT_DATABASE,METHOD=DELETE,ID=$name";
+$command = "PLUGIN=CHART_OBJECT_DATABASE_DELETE,ID=$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 

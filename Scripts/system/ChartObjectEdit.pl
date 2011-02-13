@@ -13,12 +13,12 @@ print STDOUT $command;
 $name = <STDIN>; chomp($name); if ($name eq "ERROR") {print STDERR $command; exit; }
 
 # get the chart object type from the database
-$command = "PLUGIN=CHART_OBJECT_DATABASE,METHOD=TYPE,ID=$name";
+$command = "PLUGIN=CHART_OBJECT_DATABASE_TYPE,ID=$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # get the type string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=CHART_OBJECT_DATABASE_TYPE";
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=CHART_OBJECT_DATABASE_TYPE_TYPE";
 print STDOUT $command;
 $type = <STDIN>; chomp($type); if ($type eq "ERROR") {print STDERR $command; exit; }
 

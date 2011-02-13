@@ -18,7 +18,7 @@ $command = "PLUGIN=CANDLES,NAME=$candleName,COLOR_UP=$candleColor,COLOR_DOWN=$ca
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_METHOD,METHOD=HARAMI,NAME=$haramiName";
+$command = "PLUGIN=CANDLE_PATTERN,METHOD=HARAMI,NAME=$haramiName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -30,7 +30,7 @@ $command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$haramiName,OP=>,VALU
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_METHOD,METHOD=HARAMICROSS,NAME=$haramiCrossName";
+$command = "PLUGIN=CANDLE_PATTERN,METHOD=HARAMICROSS,NAME=$haramiCrossName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

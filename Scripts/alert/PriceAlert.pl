@@ -12,16 +12,16 @@ use DateTime;
 
 $|=1;
 
-$command = "PLUGIN=SYMBOL,NAME=symbol,EXCHANGE=$exchange,SYMBOL=$symbol,LENGTH=$length,RANGE=$range";
+$command = "PLUGIN=QUOTE_DATABASE_GET,NAME_CLOSE=symbol,EXCHANGE=$exchange,SYMBOL=$symbol,LENGTH=$length,RANGE=$range";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_OFFSET,INDEX=symbol.0";
+$command = "PLUGIN=INDICATOR_PLOT_VALUE_GET,NAME=symbol.0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # return the price string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_INDEX_OFFSET_VALUE";
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_VALUE_GET_VALUE";
 print STDOUT $command;
 $price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; next; }
 
@@ -31,7 +31,7 @@ $command = "PLUGIN=SCRIPT_NAME";
 print STDOUT $command;
 $name = <STDIN>; chomp($name); if ($name eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=SCRIPT_DATABASE,METHOD=SAVE,NAME=$name,FIELD=MINUTES,DATA=0";
+$command = "PLUGIN=SCRIPT_DATABASE_SAVE,NAME=$name,FIELD=MINUTES,DATA=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

@@ -905,3 +905,12 @@
 
            Once the command syntax has been finalized, I will write the QtStalker handbook that will be a
            comprehensive guide to QtStalker.
+
+20110213:  The conversion to a script based app is pretty much complete. Still tying up a few loose ends.
+           I will focus on tweaking the API where needed, and fix bugs. Features are almost completed with
+           the exception of back testing. However, back testing can be done by scripting if desired right now,
+           just more tedious without any plugins to assist. Back testing functions will be added later once
+           the main app and API has been finalized.
+
+           Also working on updating the docs.
+

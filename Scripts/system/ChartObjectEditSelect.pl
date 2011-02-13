@@ -28,12 +28,12 @@ print STDOUT $command;
 $symbol = <STDIN>; chomp($symbol); if ($symbol eq "ERROR") {print STDERR $command; exit; }
 
 # get current chart objects from database allocated to the indicator
-$command = "PLUGIN=CHART_OBJECT_DATABASE,METHOD=IDS,INDICATOR=$indicator,EXCHANGE=$exchange,SYMBOL=$symbol";
+$command = "PLUGIN=CHART_OBJECT_DATABASE_LIST,INDICATOR=$indicator,EXCHANGE=$exchange,SYMBOL=$symbol";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# get the chart object ids
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=CHART_OBJECT_DATABASE_IDS";
+# get the chart object names
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=CHART_OBJECT_DATABASE_LIST_NAME";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
@@ -48,12 +48,12 @@ print STDOUT $command;
 $name = <STDIN>; chomp($name); if ($name eq "ERROR") {print STDERR $command; exit; }
 
 # get the chart object type from the database
-$command = "PLUGIN=CHART_OBJECT_DATABASE,METHOD=TYPE,ID=$name";
+$command = "PLUGIN=CHART_OBJECT_DATABASE_TYPE,ID=$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # get the type string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=CHART_OBJECT_DATABASE_TYPE";
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=CHART_OBJECT_DATABASE_TYPE_TYPE";
 print STDOUT $command;
 $type = <STDIN>; chomp($type); if ($type eq "ERROR") {print STDERR $command; exit; }
 

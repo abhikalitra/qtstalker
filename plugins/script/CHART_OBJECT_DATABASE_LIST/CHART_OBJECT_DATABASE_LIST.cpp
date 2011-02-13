@@ -44,7 +44,7 @@ int CHART_OBJECT_DATABASE_LIST::command (Command *command)
   QStringList l;
   db.ids(&bd, command->parm("INDICATOR"), l);
 
-  command->setReturnData(_plugin + "_IDS", l.join(";"));
+  command->setReturnData(_plugin + "_NAME", l.join(";"));
 
   command->setReturnCode("0");
 

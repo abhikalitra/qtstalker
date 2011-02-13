@@ -17,7 +17,7 @@ $dccColor = 'orange';
 
 $|++;
 
-$command = "PLUGIN=CANDLE_METHOD,METHOD=PIERCING,NAME=$pName";
+$command = "PLUGIN=CANDLE_PATTERN,METHOD=PIERCING,NAME=$pName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -25,7 +25,7 @@ $command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$pName,STYLE=$pStyle,COLOR=$pColor,Z=
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_METHOD,METHOD=DARKCLOUDCOVER,NAME=$dccName,PENETRATION=0";
+$command = "PLUGIN=CANDLE_PATTERN,METHOD=DARKCLOUDCOVER,NAME=$dccName,PENETRATION=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

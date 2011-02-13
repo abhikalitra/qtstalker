@@ -16,11 +16,11 @@ $command = "PLUGIN=CANDLES,NAME=$candleName,COLOR_UP=$candleColor,COLOR_DOWN=$ca
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_METHOD,METHOD=PIERCING,NAME=$ckk1Name";
+$command = "PLUGIN=CANDLE_PATTERN,METHOD=PIERCING,NAME=$ckk1Name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_METHOD,METHOD=DARKCLOUDCOVER,NAME=$ckk2Name,Z=0";
+$command = "PLUGIN=CANDLE_PATTERN,METHOD=DARKCLOUDCOVER,NAME=$ckk2Name,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
