@@ -19,21 +19,38 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLOT_INDEX_SET_HPP
-#define INDICATOR_PLOT_INDEX_SET_HPP
+#ifndef YAHOO_HISTORY_HPP
+#define YAHOO_HISTORY_HPP
 
-#include "ScriptPlugin.h"
+#include <QThread>
+#include <QDateTime>
+#include <QList>
 
-class INDICATOR_PLOT_INDEX_SET : public ScriptPlugin
+#include "Setting.h"
+
+class YahooHistory : public QThread
 {
+  Q_OBJECT
+
+  signals:
+    void signalMessage (QString);
+//    void signalDone ();
+  
   public:
-    INDICATOR_PLOT_INDEX_SET ();
-    int command (Command *);
-};
+    YahooHistory (QObject *, QList<Setting>);
+    void getUrl (QDateTime &, QDateTime &, Setting &, QString &);
+    void parse (QByteArray &, Setting &);
+    void downloadName (Setting &);
 
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
-}
+  public slots:
+    void stop ();
+
+  protected:
+    void run ();
+
+  private:
+    int _stopFlag;
+    QList<Setting> _symbols;
+};
 
 #endif

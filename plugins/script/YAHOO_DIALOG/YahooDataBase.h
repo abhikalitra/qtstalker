@@ -19,48 +19,27 @@
  *  USA.
  */
 
-#ifndef QUOTE_DATABASE_HPP
-#define QUOTE_DATABASE_HPP
+#ifndef YAHOO_DATA_BASE_HPP
+#define YAHOO_DATA_BASE_HPP
 
 #include <QtSql>
 
-#include "ScriptPlugin.h"
-#include "QuoteDataBase.h"
+#include "Setting.h"
 
-class QUOTE_DATABASE : public ScriptPlugin
+class YahooDataBase
 {
   public:
-    enum Method
-    {
-      _GET,
-      _SET,
-      _DELETE,
-      _EXCHANGE,
-      _RENAME,
-      _SEARCH,
-      _TRANSACTION,
-      _COMMIT
-    };
-    
-    QUOTE_DATABASE ();
-    int command (Command *);
-    int getBars (Command *);
-    int setBars (Command *);
-    int transaction (Command *);
-    int commit (Command *);
-    int deleteSymbol (Command *);
-    int getExchange (Command *);
-    int rename (Command *);
-    int search (Command *);
+    YahooDataBase ();
+    int load (Setting &);
+    int save (Setting &);
+    int deleteSymbol (Setting &);
+    int symbols (QStringList &);
+    void transaction ();
+    void commit ();
 
   private:
-    QStringList _method;
-    QuoteDataBase _db;
+    QSqlDatabase _db;
+    QString _table;
 };
-
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
-}
 
 #endif
