@@ -26,21 +26,16 @@
 
 CHART_OBJECT_DATABASE::CHART_OBJECT_DATABASE ()
 {
+  _plugin = "CHART_OBJECT_DATABASE";
   _method << "IDS" << "TYPE" << "DELETE";
 }
 
 int CHART_OBJECT_DATABASE::command (Command *command)
 {
-  // CHART_OBJECT_DATABASE,<METHOD>
-  //               0          1
-  
-  if (command->count() < 2)
-  {
-    qDebug() << "CHART_OBJECT_DATABASE::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
 
-  switch ((Method) _method.indexOf(command->parm(1)))
+  switch ((Method) _method.indexOf(command->parm("METHOD")))
   {
     case _IDS:
       return ids(command);
@@ -60,64 +55,53 @@ int CHART_OBJECT_DATABASE::command (Command *command)
 
 int CHART_OBJECT_DATABASE::ids (Command *command)
 {
-  // CHART_OBJECT_DATABASE,IDS,INDICATOR,EXCHANGE,SYMBOL
-  //            0           1      2        3       4
-
-  if (command->count() != 5)
-  {
-    qDebug() << "CHART_OBJECT_DATABASE::ids: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (IDS)
+  // INDICATOR
+  // EXCHANGE
+  // SYMBOL
 
   BarData bd;
-  bd.setExchange(command->parm(3));
-  bd.setSymbol(command->parm(4));
+  bd.setExchange(command->parm("EXCHANGE"));
+  bd.setSymbol(command->parm("SYMBOL"));
   
   QStringList l;
-  _db.ids(&bd, command->parm(2), l);
+  _db.ids(&bd, command->parm("INDICATOR"), l);
 
-  command->setReturnData(l.join(","));
+  command->setReturnData(_plugin + "_IDS", l.join(","));
+
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int CHART_OBJECT_DATABASE::type (Command *command)
 {
-  // CHART_OBJECT_DATABASE,TYPE,ID
-  //            0           1    2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "CHART_OBJECT_DATABASE::ids: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (TYPE)
+  // ID
 
   Setting co;
-  co.setData("ID", command->parm(2));
+  co.setData("ID", command->parm("ID"));
 
   _db.load(&co);
 
-  command->setReturnData(co.data("Type"));
+  command->setReturnData(_plugin + "_TYPE", co.data("Type"));
+
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int CHART_OBJECT_DATABASE::remove (Command *command)
 {
-  // CHART_OBJECT_DATABASE,DELETE,ID*
-  //            0            1    2*
+  // PARMS:
+  // METHOD (DELETE)
+  // ID
 
-  if (command->count() < 3)
-  {
-    qDebug() << "CHART_OBJECT_DATABASE::remove: invalid parm count" << command->count();
-    return 1;
-  }
+  _db.deleteChartObject(command->parm("ID"));
 
-  int loop = 2;
-  for (; loop < command->count(); loop++)
-    _db.deleteChartObject(command->parm(loop));
-
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

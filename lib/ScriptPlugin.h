@@ -47,6 +47,7 @@ class ScriptPlugin : public QObject
 
   protected:
     int _type;
+    QString _plugin;
 };
 
 #endif

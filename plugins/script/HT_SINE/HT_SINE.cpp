@@ -28,49 +28,43 @@
 
 HT_SINE::HT_SINE ()
 {
+  _plugin = "HT_SINE";
 }
 
 int HT_SINE::command (Command *command)
 {
-  // HT_SINE,<INPUT>,<SINE NAME>,<LEAD NAME>
-  //    0       1         2          3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "HT_SINE::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // INPUT
+  // NAME_SINE
+  // NAME_LEAD
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "HT_SINE::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "HT_SINE::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;  
-  QString sname = command->parm(pos);
+  QString sname = command->parm("NAME_SINE");
   Curve *line = i->line(sname);
   if (line)
   {
-    qDebug() << "HT_SINE::command: duplicate sine name" << sname;
+    qDebug() << _plugin << "::command: duplicate NAME_SINE" << sname;
     return 1;
   }
 
-  pos++;
-  QString lname = command->parm(pos);
+  QString lname = command->parm("NAME_LEAD");
   line = i->line(lname);
   if (line)
   {
-    qDebug() << "HT_SINE::command: duplicate lead name" << lname;
+    qDebug() << _plugin << "::command: duplicate NAME_LEAD" << lname;
     return 1;
   }
 
@@ -104,7 +98,7 @@ int HT_SINE::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "HT_SINE::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -128,7 +122,7 @@ int HT_SINE::command (Command *command)
   i->setLine(sname, sline);
   i->setLine(lname, lline);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

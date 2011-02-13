@@ -27,13 +27,16 @@
 #include <QDateTimeEdit>
 #include <QCheckBox>
 #include <QStringList>
-#include <QLabel>
+#include <QTextEdit>
 
 #include "Command.h"
 
 class YahooDialog : public QDialog
 {
   Q_OBJECT
+
+  signals:
+    void signalStop ();
 
   public:
     YahooDialog (Command *);
@@ -47,6 +50,7 @@ class YahooDialog : public QDialog
     void done ();
     void cancel ();
     void help ();
+    void downloadDone ();
 
   private:
     QDateTimeEdit *_sdate;
@@ -58,8 +62,8 @@ class YahooDialog : public QDialog
     QPushButton *_okButton;
     QPushButton *_cancelButton;
     QString _helpFile;
-    QLabel *_message;
     Command *_command;
+    QTextEdit *_log;
 };
 
 #endif

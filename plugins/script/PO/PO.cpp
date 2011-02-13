@@ -29,75 +29,69 @@
 
 PO::PO ()
 {
+  _plugin = "PO";
   _method << "APO" << "PPO";
 }
 
 int PO::command (Command *command)
 {
-  // PO,<METHOD>,<NAME>,<INPUT>,<FAST_PERIOD>,<SLOW_PERIOD>,<MA_TYPE>
-  //  0    1       2       3         4              5          6
-
-  if (command->count() != 7)
-  {
-    qDebug() << "PO::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
+  // NAME
+  // INPUT
+  // PERIOD_FAST
+  // PERIOD_SLOW
+  // MA_TYPE
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "PO::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  int method = _method.indexOf(command->parm(pos));
+  int method = _method.indexOf(command->parm("METHOD"));
   if (method == -1)
   {
-    qDebug() << "PO::command: invalid method" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid METHOD" << command->parm("METHOD");
     return 1;
   }
 
-  pos++;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "PO::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "PO::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;
   bool ok;
-  int fast = command->parm(pos).toInt(&ok);
+  int fast = command->parm("PERIOD_FAST").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "PO::command: invalid fast period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_FAST" << command->parm("PERIOD_FAST");
     return 1;
   }
 
-  pos++;
-  int slow = command->parm(pos).toInt(&ok);
+  int slow = command->parm("PERIOD_SLOW").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "PO::command: invalid slow period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_SLOW" << command->parm("PERIOD_SLOW");
     return 1;
   }
 
-  pos++;
   FunctionMA fma;
-  int type = fma.typeFromString(command->parm(pos));
+  int type = fma.typeFromString(command->parm("MA_TYPE"));
   if (type == -1)
   {
-    qDebug() << "PO::command: invalid ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid MA_TYPE" << command->parm("MA_TYPE");
     return 1;
   }
 
@@ -136,7 +130,7 @@ int PO::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "PO::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -154,7 +148,7 @@ int PO::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

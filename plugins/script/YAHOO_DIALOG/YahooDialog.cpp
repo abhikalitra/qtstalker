@@ -23,7 +23,8 @@
 #include "YahooSymbolDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "ScriptPluginFactory.h"
+#include "YahooDataBase.h"
+#include "YahooHistory.h"
 
 #include <QLayout>
 #include <QDialogButtonBox>
@@ -89,9 +90,10 @@ void YahooDialog::createGUI ()
   _adjustment->setToolTip(tr("Uses the yahoo adjusted close instead of the actual close"));
   form->addRow(tr("Adjust for splits"), _adjustment);
 
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
+  // message log
+  _log = new QTextEdit;
+  _log->setReadOnly(TRUE);
+  vbox->addWidget(_log);
 
   // buttonbox
   QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
@@ -101,10 +103,10 @@ void YahooDialog::createGUI ()
 
   // ok button
   _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  _okButton->setDefault(TRUE);
 
   // cancel button
   _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
+  _cancelButton->setDefault(TRUE);
 
   // help button
   QPushButton *b = bbox->button(QDialogButtonBox::Help);
@@ -113,8 +115,13 @@ void YahooDialog::createGUI ()
 
 void YahooDialog::cancel ()
 {
-  saveSettings();
-  reject();
+  if (_okButton->isEnabled())
+  {
+    saveSettings();
+    reject();
+  }
+  else
+    emit signalStop();
 }
 
 void YahooDialog::loadSettings ()
@@ -147,42 +154,45 @@ void YahooDialog::saveSettings ()
 
 void YahooDialog::done ()
 {
-  saveSettings();
+  _sdate->setEnabled(FALSE);
+  _edate->setEnabled(FALSE);
+  _adjustment->setEnabled(FALSE);
+  _allSymbols->setEnabled(FALSE);
+  _selectSymbolsButton->setEnabled(FALSE);
+  _okButton->setEnabled(FALSE);
 
-  QStringList l;
-  l << _sdate->dateTime().toString(Qt::ISODate) << _edate->dateTime().toString(Qt::ISODate);
+  _log->append("\n*** " + tr("Starting history download") + " ***");
+
+  YahooDataBase db;
 
   if (_allSymbols->isChecked())
+    db.symbols(_symbolList);
+
+  QList<Setting> symbols;
+  int loop = 0;
+  for (; loop < _symbolList.count(); loop++)
   {
-    ScriptPluginFactory fac;
-    ScriptPlugin *plug = fac.plugin("YAHOO_DATABASE");
-    if (! plug)
+    Setting symbol;
+    symbol.setData("YSYMBOL", _symbolList.at(loop));
+
+    if (db.load(symbol))
     {
-      qDebug() << "YahooDialog::done: no plugin";
-      reject();
+      qDebug() << "YahooDialog::done error loading symbol from YahooDataBase" << _symbolList.at(loop);
+      continue;
     }
 
-    QStringList cl;
-    cl << "YAHOO_DATABASE" << "SYMBOLS";
-    Command command(cl.join(","));
+    symbol.setData("DATE_START", _sdate->dateTime().toString(Qt::ISODate));
+    symbol.setData("DATE_END", _sdate->dateTime().toString(Qt::ISODate));
+    symbol.setData("ADJUSTMENT", _adjustment->isChecked());
 
-    if (plug->command(&command))
-      qDebug() << "YahooDialog::done: command error";
-
-    delete plug;
-
-    l << command.stringData();
+    symbols.append(symbol);
   }
-  else
-  {
-    int loop = 0;
-    for (; loop < _symbolList.count(); loop++)
-      l << _symbolList.at(loop);
-  }
-
-  _command->setReturnData(l.join(","));
-
-  accept();
+  
+  YahooHistory *thread = new YahooHistory(this, symbols);
+  connect(thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
+  connect(thread, SIGNAL(finished()), this, SLOT(downloadDone()));
+  connect(this, SIGNAL(signalStop()), thread, SLOT(stop()));
+  thread->start();
 }
 
 void YahooDialog::selectSymbolsDialog ()
@@ -202,3 +212,18 @@ void YahooDialog::help ()
   Doc *doc = new Doc;
   doc->showDocumentation(_helpFile);
 }
+
+void YahooDialog::downloadDone ()
+{
+  _log->append("*** " + tr("Download finished") + " ***");
+
+  _sdate->setEnabled(TRUE);
+  _edate->setEnabled(TRUE);
+  _adjustment->setEnabled(TRUE);
+  _allSymbols->setEnabled(TRUE);
+  _selectSymbolsButton->setEnabled(TRUE);
+  _okButton->setEnabled(TRUE);
+  
+  g_middleMan->chartPanelRefresh();
+}
+

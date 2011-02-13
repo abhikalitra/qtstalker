@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>Qtstalker: QUOTE_DATABASE_GET</title>
+  <link rel="stylesheet" type="text/css" href="qtstalker.css"
+ media="screen">
+  <script src="qtstalker.js" type="text/javascript"> </script>
+</head>
+<body>
+<div id="content">
+<div id="rightPanel">
+<div id="toc">
+<hr>
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="toc.html">Table of Contents</a></li>
+</ul>
+</div>
+</div>
+<!-- Content -->
+<h1>QUOTE_DATABASE_GET
+</h1>
+<br>
+<table style="text-align: left; width: 1336px; height: 153px;"
+ border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
+      <td style="vertical-align: top;">Load quotes from the database.<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
+      <td style="vertical-align: top;">PLUGIN = QUOTE_DATABASE_GET<br>
+NAME_OPEN = &lt;VARIABLE NAME&gt; - Optional use<br>
+NAME_HIGH = &lt;VARIABLE NAME&gt; - Optional use<br>
+NAME_LOW = &lt;VARIABLE NAME&gt; - Optional use<br>
+NAME_CLOSE = &lt;VARIABLE NAME&gt; - Optional use<br>
+NAME_VOLUME = &lt;VARIABLE NAME&gt; - Optional use<br>
+NAME_OI = &lt;VARIABLE NAME&gt; - Optional use<br>
+EXCHANGE = &lt;EXCHANGE&gt;<br>
+SYMBOL = &lt;SYMBOL&gt;<br>
+LENGTH = &lt;BAR LENGTH&gt;<br>
+      <div style="margin-left: 40px;">
+      <ol>
+        <li>1 - Minute<br>
+        </li>
+        <li>5 - Minute<br>
+        </li>
+        <li>10 - Minute</li>
+        <li>15 - Minute</li>
+        <li>30 - Minute</li>
+        <li>60 - Minute</li>
+        <li>D - Daily<br>
+        </li>
+        <li>W - Weekly<br>
+        </li>
+        <li>M - Monthly<br>
+        </li>
+      </ol>
+      </div>
+RANGE = &lt;DATE RANGE&gt;<br>
+      <div style="margin-left: 40px;">
+      <ol>
+        <li>1 Day</li>
+        <li>1 Week</li>
+        <li>1 Month</li>
+        <li>3 Months</li>
+        <li>6 Months</li>
+        <li>1 Year</li>
+        <li>2 Years</li>
+        <li>5 Years</li>
+        <li>10 Years</li>
+        <li>25 Years</li>
+        <li>50 Years</li>
+        <li>All<br>
+          <br>
+        </li>
+      </ol>
+      </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
+      <td style="vertical-align: top;">'0' = Success<br>
+'ERROR' =
+Failure<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
+      <td style="vertical-align: top;">PLUGIN=QUOTE_DATABASE_GET,NAME_CLOSE=close,NAME_VOLUME=volume,EXCHANGE=XNYS,SYMBOL=GOOG,LENGTH=D,RANGE=1
+Year<br>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<span style="font-weight: bold;"></span><br>
+</div>
+</body>
+</html>

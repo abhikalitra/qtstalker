@@ -28,23 +28,19 @@
 
 PDI::PDI ()
 {
+  _plugin = "PDI";
 }
 
 int PDI::command (Command *command)
 {
-  // PDI,<NAME>,<PERIOD>
-  //  0     1      2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "PDI::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // PERIOD
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "PDI::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -54,25 +50,23 @@ int PDI::command (Command *command)
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "PDI::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "PDI::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "PDI::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
@@ -105,7 +99,7 @@ int PDI::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "PDI::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -123,7 +117,7 @@ int PDI::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

@@ -29,96 +29,89 @@
 
 BBANDS::BBANDS ()
 {
+  _plugin = "BBANDS";
 }
 
 int BBANDS::command (Command *command)
 {
-  // BBANDS,<INPUT>,<NAME UPPER>,<NAME MIDDLE>,<NAME LOWER>,<PERIOD>,<MA_TYPE>,<UP DEV>,<LOW DEV>
-  //   0       1         2             3            4           5        6        7         8
-
-
-  if (command->count() != 9)
-  {
-    qDebug() << "BBANDS::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // INPUT
+  // NAME_UPPER
+  // NAME_MIDDLE
+  // NAME_LOWER
+  // PERIOD
+  // MA_TYPE
+  // DEV_UP
+  // DEV_DOWN
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "BBANDS::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  Curve *input = i->line(command->parm(pos));
+  Curve *input = i->line(command->parm("INPUT"));
   if (! input)
   {
-    qDebug() << "BBANDS::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;
-  QString uname = command->parm(pos);
+  QString uname = command->parm("NAME_UPPER");
   Curve *line = i->line(uname);
   if (line)
   {
-    qDebug() << "BBANDS::command: duplicate upper name" << uname;
+    qDebug() << _plugin << "::command: duplicate NAME_UPPER" << uname;
     return 1;
   }
 
-  pos++;
-  QString mname = command->parm(pos);
+  QString mname = command->parm("NAME_MIDDLE");
   line = i->line(mname);
   if (line)
   {
-    qDebug() << "BBANDS::command: duplicate middle name" << mname;
+    qDebug() << _plugin << "::command: duplicate NAME_MIDDLE" << mname;
     return 1;
   }
 
-  pos++;
-  QString lname = command->parm(pos);
+  QString lname = command->parm("NAME_LOWER");
   line = i->line(lname);
   if (line)
   {
-    qDebug() << "BBANDS::command: duplicate lower name" << lname;
+    qDebug() << _plugin << "::command: duplicate NAME_LOWER" << lname;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "BBANDS::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
   if (input->count() < period)
     return 1;
 
-  pos++;
   FunctionMA fma;
-  int type = fma.typeFromString(command->parm(pos));
+  int type = fma.typeFromString(command->parm("MA_TYPE"));
   if (type == -1)
   {
-    qDebug() << "BBANDS::command: invalid ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid MA_TYPE" << command->parm("MA_TYPE");
     return 1;
   }
   
-  pos++;
-  double udev = command->parm(pos).toDouble(&ok);
+  double udev = command->parm("DEV_UP").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "BBANDS::command: invalid upper deviation" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid DEV_UP" << command->parm("DEV_UP");
     return 1;
   }
 
-  pos++;
-  double ldev = command->parm(pos).toDouble(&ok);
+  double ldev = command->parm("DEV_DOWN").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "BBANDS::command: invalid lower deviation" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid DEV_DOWN" << command->parm("DEV_DOWN");
     return 1;
   }
 
@@ -154,7 +147,7 @@ int BBANDS::command (Command *command)
                             &lout[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "BBANDS::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -182,7 +175,7 @@ int BBANDS::command (Command *command)
   i->setLine(mname, middle);
   i->setLine(lname, lower);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

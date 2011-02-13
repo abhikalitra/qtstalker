@@ -27,17 +27,19 @@
 
 CONFIRM_DIALOG::CONFIRM_DIALOG ()
 {
+  _plugin = "CONFIRM_DIALOG";
   _type = _DIALOG;
 }
 
 int CONFIRM_DIALOG::command (Command *command)
 {
-  // CONFIRM_DIALOG,MESSAGE
-  //        0         1
+  // PARMS:
+  // MESSAGE
 
-  if (command->count() != 2)
+  QString s = command->parm("MESSAGE");
+  if (s.isEmpty())
   {
-    qDebug() << "CONFIRM_DIALOG::command: invalid parm count" << command->count();
+    qDebug() << _plugin << "::command: message empty";
     return 1;
   }
 

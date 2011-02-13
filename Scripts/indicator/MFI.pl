@@ -21,26 +21,26 @@ $refDown = 20;
 
 $|++;
 
-$command = "MFI,$mfiName,$mfiPeriod";
+$command = "PLUGIN=MFI,NAME=$mfiName,PERIOD=$mfiPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MA,$maType,$maName,$mfiName,maPeriod";
+$command = "PLUGIN=MA,METHOD=$maType,NAME=$maName,INPUT=$mfiName,PERIOD=$maPeriod";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refDown,$refDownColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refDown,COLOR=$refDownColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refUp,$refUpColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refUp,COLOR=$refUpColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$mfiName,$mfiStyle,$mfiColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$mfiName,STYLE=$mfiStyle,COLOR=$mfiColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$maName,$maStyle,$maColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$maName,STYLE=$maStyle,COLOR=$maColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

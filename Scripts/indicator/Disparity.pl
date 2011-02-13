@@ -2,6 +2,8 @@
 # See: http://tadoc.org/indicator/DISPARITY.htm
 
 $closeName = 'cl';
+$upColor = 'green';
+$downColor = 'red';
 
 $name = 'Disparity';
 $style = 'Histogram Bar';
@@ -16,48 +18,38 @@ $maName = 'sma_13';
 $|++;
 
 # Get today's close
-$command = "BARS,Close,$closeName";
+$command = "PLUGIN=CLOSE,NAME=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # Get the 13-bar SMA
-$command = "MA,$maType,$maName,$closeName,$period";
+$command = "PLUGIN=MA,METHOD=$maType,NAME=$maName,INPUT=$closeName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# create the disparity indicator
-$command = "INDICATOR_PLOT_NEW,$name";
+# difference of close - ma
+$command = "PLUGIN=SUB,NAME=sub.0,NAME2=$closeName.0,NAME3=$maName.0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# get the index range of the close bars
-$command = "INDICATOR_PLOT_INDEX_RANGE,$closeName";
+# multiply ma * 100
+$command = "PLUGIN=MULT_VALUE,NAME=mult.0,NAME2=$maName.0,VALUE=100";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# split the start and end values
-my @range = split(',', $rc);
+# calculate disparity (sub / mult)
+$command = "PLUGIN=DIV,NAME=$name.0,NAME2=sub.0,NAME3=mult.0";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-for ($count = 12; $count <= $range[1]; $count++)
-{
-  # get the current close value
-  $command = "INDICATOR_PLOT_INDEX_GET,$closeName,$count";
-  print STDOUT $command;
-  $close = <STDIN>; chomp($close); if ($close eq "ERROR") { print STDERR $command; next; } # empty index position, continue
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$name,STYLE=$style,COLOR=$color,Z=0";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-  # get the ma value
-  $command = "INDICATOR_PLOT_INDEX_GET,$maName,$count";
-  print STDOUT $command;
-  $ma = <STDIN>; chomp($ma); if ($ma eq "ERROR") { print STDERR $command; next; } # empty index position, continue
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$name,OP=GT,VALUE=0,NAME2=$name,COLOR=$upColor";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-  $disparity = sprintf("%.2f", ($close - $ma) / $ma * 100);
-
-  # set the disparity indicator with value
-  $command = "INDICATOR_PLOT_INDEX_SET,$name,$count,$disparity,red";
-  print STDOUT $command;
-  $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-}
-
-$command = "INDICATOR_PLOT_ALL,$name,$style,$color,0";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$name,OP=LT,VALUE=0,NAME2=$name,COLOR=$downColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

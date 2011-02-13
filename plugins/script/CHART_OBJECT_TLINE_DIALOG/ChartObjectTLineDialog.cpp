@@ -36,7 +36,7 @@ ChartObjectTLineDialog::ChartObjectTLineDialog (Command *c)
   _helpFile = "main.html";
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Edit TLine") << _command->parm(1);
+  l << "QtStalker" << g_session << ":" << tr("Edit TLine") << _command->parm("ID");
   setWindowTitle(l.join(" "));
 
   createGUI();
@@ -137,7 +137,7 @@ void ChartObjectTLineDialog::done ()
 
   saveSettings();
 
-  _command->setReturnData("0");
+  _command->setReturnCode("0");
 
   accept();
 }
@@ -156,7 +156,7 @@ void ChartObjectTLineDialog::cancel ()
 
 void ChartObjectTLineDialog::loadObject ()
 {
-  _co.setData("ID", _command->parm(1));
+  _co.setData("ID", _command->parm("ID"));
 
   ChartObjectDataBase db;
   db.load(&_co);

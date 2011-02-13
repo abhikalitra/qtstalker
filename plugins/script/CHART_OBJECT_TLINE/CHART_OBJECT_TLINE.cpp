@@ -26,195 +26,88 @@
 
 CHART_OBJECT_TLINE::CHART_OBJECT_TLINE ()
 {
-  _method << "RO" << "RW";
+  _plugin = "CHART_OBJECT_TLINE";
 }
 
 int CHART_OBJECT_TLINE::command (Command *command)
 {
-  // CHART_OBJECT_TLINE,<METHOD>
-  //          0           1
-
-  if (command->count() < 2)
-  {
-    qDebug() << "CHART_OBJECT_TLINE::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  switch ((Method) _method.indexOf(command->parm(1)))
-  {
-    case _RO:
-      return createRO(command);
-      break;
-    case _RW:
-      return createRW(command);
-      break;
-    default:
-      break;
-  }
-
-  return 0;
-}
-
-int CHART_OBJECT_TLINE::createRW (Command *command)
-{
-  // CHART_OBJECT_TLINE,<METHOD>,<NAME>,<INDICATOR>,<EXCHANGE>,<SYMBOL>,<DATE>,<DATE2>,<PRICE>,<PRICE2>,<COLOR>
-  //          0            1        2        3          4         5       6       7       8        9       10
-
-  if (command->count() != 11)
-  {
-    qDebug() << "CHART_OBJECT_TLINE::createRW: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INDICATOR
+  // EXCHANGE
+  // SYMBOL
+  // DATE
+  // DATE2
+  // PRICE
+  // PRICE2
+  // COLOR
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "CHART_OBJECT_TLINE::createRW: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 2;
   Setting co;
   co.setData("Type", QString("TLine"));
-  co.setData("ID", command->parm(pos++));
-  co.setData("Indicator", command->parm(pos++));
-  co.setData("Exchange", command->parm(pos++));
-  co.setData("Symbol", command->parm(pos++));
+  co.setData("ID", command->parm("NAME"));
+  co.setData("Indicator", command->parm("INDICATOR"));
+  co.setData("Exchange", command->parm("EXCHANGE"));
+  co.setData("Symbol", command->parm("SYMBOL"));
 
   // verify date
-  QDateTime dt = QDateTime::fromString(command->parm(pos), Qt::ISODate);
+  QDateTime dt = QDateTime::fromString(command->parm("DATE"), Qt::ISODate);
   if (! dt.isValid())
   {
-    qDebug() << "CHART_OBJECT_TLINE::createRW: invalid date" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid DATE" << command->parm("DATE");
     return 1;
   }
-  co.setData("Date", command->parm(pos));
-  pos++;
+  co.setData("Date", command->parm("DATE"));
 
   // verify date2
-  dt = QDateTime::fromString(command->parm(pos), Qt::ISODate);
+  dt = QDateTime::fromString(command->parm("DATE2"), Qt::ISODate);
   if (! dt.isValid())
   {
-    qDebug() << "CHART_OBJECT_TLINE::createRW: invalid date2" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid DATE2" << command->parm("DATE2");
     return 1;
   }
-  co.setData("Date2", command->parm(pos));
-  pos++;
+  co.setData("Date2", command->parm("DATE2"));
 
   // verify price
   bool ok;
-  command->parm(pos).toDouble(&ok);
+  command->parm("PRICE").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "CHART_OBJECT_TLINE::createRW: invalid price" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PRICE" << command->parm("PRICE");
     return 1;
   }
-  co.setData("Price", command->parm(pos));
-  pos++;
+  co.setData("Price", command->parm("PRICE"));
 
   // verify price2
-  command->parm(pos).toDouble(&ok);
+  command->parm("PRICE2").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "CHART_OBJECT_TLINE::createRW: invalid price2" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PRICE2" << command->parm("PRICE2");
     return 1;
   }
-  co.setData("Price2", command->parm(pos));
-  pos++;
+  co.setData("Price2", command->parm("PRICE2"));
 
   // verify color
-  QColor color(command->parm(pos));
+  QColor color(command->parm("COLOR"));
   if (! color.isValid())
   {
-    qDebug() << "CHART_OBJECT_TLINE::createRW: invalid color" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
-  co.setData("Color", command->parm(pos));
+  co.setData("Color", command->parm("COLOR"));
 
   ChartObjectDataBase db;
   db.save(&co);
 
   i->addChartObject(co);
 
-  command->setReturnData("0");
-
-  return 0;
-}
-
-int CHART_OBJECT_TLINE::createRO (Command *command)
-{
-  // CHART_OBJECT_TLINE,<METHOD>,<DATE>,<DATE2>,<PRICE>,<PRICE2>,<COLOR>
-  //          0            1        2      3       4        5       6
-
-  if (command->count() != 7)
-  {
-    qDebug() << "CHART_OBJECT_TLINE::createRO: invalid parm count" << command->count();
-    return 1;
-  }
-
-  Indicator *i = command->indicator();
-  if (! i)
-  {
-    qDebug() << "CHART_OBJECT_TLINE::createRO: no indicator";
-    return 1;
-  }
-
-  Setting co;
-  QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("Type", QString("TLine"));
-  co.setData("ID", key);
-  co.setData("RO", 1);
-
-  // verify date
-  int pos = 2;
-  QDateTime dt = QDateTime::fromString(command->parm(pos), Qt::ISODate);
-  if (! dt.isValid())
-  {
-    qDebug() << "CHART_OBJECT_TLINE::createRO: invalid date" << command->parm(pos);
-    return 1;
-  }
-  co.setData("Date", command->parm(pos++));
-
-  // verify date2
-  dt = QDateTime::fromString(command->parm(pos), Qt::ISODate);
-  if (! dt.isValid())
-  {
-    qDebug() << "CHART_OBJECT_TLINE::createRO: invalid date2" << command->parm(pos);
-    return 1;
-  }
-  co.setData("Date2", command->parm(pos++));
-
-  // verify price
-  bool ok;
-  command->parm(pos).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "CHART_OBJECT_TLINE::createRO: invalid price" << command->parm(pos);
-    return 1;
-  }
-  co.setData("Price", command->parm(pos++));
-
-  // verify price2
-  command->parm(pos).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "CHART_OBJECT_TLINE::createRO: invalid price2" << command->parm(pos);
-    return 1;
-  }
-  co.setData("Price2", command->parm(pos++));
-
-  // verify color
-  QColor color(command->parm(pos));
-  if (! color.isValid())
-  {
-    qDebug() << "CHART_OBJECT_TLINE::createRO: invalid color" << command->parm(pos);
-    return 1;
-  }
-  co.setData("Color", command->parm(pos++));
-
-  i->addChartObject(co);
-
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

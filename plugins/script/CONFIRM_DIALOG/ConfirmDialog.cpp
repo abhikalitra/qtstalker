@@ -38,7 +38,7 @@ ConfirmDialog::ConfirmDialog (Command *c)
 
   createGUI();
 
-  _message->setText(_command->parm(1));
+  _message->setText(_command->parm("MESSAGE"));
 
   loadSettings();
 
@@ -71,7 +71,7 @@ void ConfirmDialog::createGUI ()
 
 void ConfirmDialog::done ()
 {
-  _command->setReturnData("0");
+  _command->setReturnCode("0");
   saveSettings();
   accept();
 }

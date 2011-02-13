@@ -26,22 +26,17 @@
 
 CHART_OBJECT_UPDATE::CHART_OBJECT_UPDATE ()
 {
+  _plugin = "CHART_OBJECT_UPDATE";
 }
 
 int CHART_OBJECT_UPDATE::command (Command *command)
 {
-  // CHART_OBJECT_UPDATE,<NAME>
-  //          0            1
+  // PARMS:
+  // NAME
 
-  if (command->count() != 2)
-  {
-    qDebug() << "CHART_OBJECT_UPDATE::command: invalid parm count" << command->count();
-    return 1;
-  }
+  g_middleMan->chartObjectUpdate(command->parm("NAME"));
 
-  g_middleMan->chartObjectUpdate(command->parm(1));
-
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

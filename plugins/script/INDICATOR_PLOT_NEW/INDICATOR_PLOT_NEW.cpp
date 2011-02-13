@@ -25,32 +25,26 @@
 
 INDICATOR_PLOT_NEW::INDICATOR_PLOT_NEW ()
 {
+  _plugin = "INDICATOR_PLOT_NEW";
 }
 
 int INDICATOR_PLOT_NEW::command (Command *command)
 {
-  // INDICATOR_PLOT_NEW,<NAME>
-  //           0           1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "INDICATOR_PLOT_NEW::command: invalid parm count " << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT_NEW::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "INDICATOR_PLOT_NEW::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
@@ -58,7 +52,7 @@ int INDICATOR_PLOT_NEW::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

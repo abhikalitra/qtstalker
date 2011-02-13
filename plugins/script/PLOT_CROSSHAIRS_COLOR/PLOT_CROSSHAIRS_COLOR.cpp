@@ -26,29 +26,24 @@
 
 PLOT_CROSSHAIRS_COLOR::PLOT_CROSSHAIRS_COLOR ()
 {
+  _plugin = "PLOT_CROSSHAIRS_COLOR";
 }
 
 int PLOT_CROSSHAIRS_COLOR::command (Command *command)
 {
-  // PLOT_CROSSHAIRS_COLOR,<COLOR>
-  //          0               1
+  // PARMS:
+  // COLOR
 
-  if (command->count() != 2)
-  {
-    qDebug() << "PLOT_CROSSHAIRS_COLOR::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  QColor c(command->parm(1));
+  QColor c(command->parm("COLOR"));
   if (! c.isValid())
   {
-    qDebug() << "PLOT_CROSSHAIRS_COLOR::command: invalid color" << command->parm(2);
+    qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
 
   g_middleMan->crosshairsColor(c);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

@@ -28,23 +28,21 @@
 
 ULTOSC::ULTOSC ()
 {
+  _plugin = "ULTOSC";
 }
 
 int ULTOSC::command (Command *command)
 {
-  // ULTOSC,<NAME>,<SHORT PERIOD>,<MED PERIOD>,<LONG PERIOD>
-  //   0       1         2             3            4
-
-  if (command->count() != 5)
-  {
-    qDebug() << "ULTOSC::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // PERIOD_SHORT
+  // PERIOD_MED
+  // PERIOD_LONG
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "ULTOSC::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -54,42 +52,37 @@ int ULTOSC::command (Command *command)
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "ULTOSC::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "ULTOSC::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int sp = command->parm(pos).toInt(&ok);
+  int sp = command->parm("PERIOD_SHORT").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ULTOSC::command: invalid short period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_SHORT" << command->parm("PERIOD_SHORT");
     return 1;
   }
 
-  pos++;
-  int mp = command->parm(pos).toInt(&ok);
+  int mp = command->parm("PERIOD_MEDIUM").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ULTOSC::command: invalid medium period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_MEDIUM" << command->parm("PERIOD_MEDIUM");
     return 1;
   }
 
-  pos++;
-  int lp = command->parm(pos).toInt(&ok);
+  int lp = command->parm("PERIOD_LONG").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ULTOSC::command: invalid long period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_LONG" << command->parm("PERIOD_LONG");
     return 1;
   }
 
@@ -128,7 +121,7 @@ int ULTOSC::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "ULTOSC::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -146,7 +139,7 @@ int ULTOSC::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

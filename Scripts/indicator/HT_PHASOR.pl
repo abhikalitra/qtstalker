@@ -14,18 +14,18 @@ $quadColor = 'yellow';
 
 $|++;
 
-$command = "BARS,Close,$input";
+$command = "PLUGIN=OHLC,NAME=$input";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "HT_PHASOR,$input,$phaseName,$quadName";
+$command = "PLUGIN=HT_PHASOR,INPUT=$input,NAME_PHASE=$phaseName,NAME_QUAD=$quadName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$phaseName,$phaseStyle,$phaseColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$phaseName,STYLE=$phaseStyle,COLOR=$phaseColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$quadName,$quadStyle,$quadColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$quadName,STYLE=$quadStyle,COLOR=$quadColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

@@ -27,24 +27,20 @@
 
 SETTINGS_SAVE::SETTINGS_SAVE ()
 {
+  _plugin = "SETTINGS_SAVE";
 }
 
 int SETTINGS_SAVE::command (Command *command)
 {
-  // SETTINGS_SAVE,<KEY>,<DATA>
-  //        0       1      2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "SETTINGS_SAVE::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // KEY
+  // DATA
 
   QSettings set(g_settingsFile);
-  set.setValue(command->parm(1), command->parm(2));
+  set.setValue(command->parm("KEY"), command->parm("DATA"));
   set.sync();
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
   
   return 0;
 }

@@ -50,20 +50,6 @@ class BarData
       MonthlyBar
     };
 
-    enum InputType
-    {
-      Open,
-      High,
-      Low,
-      Close,
-      Volume,
-      OI,
-      AveragePrice,
-      MedianPrice,
-      TypicalPrice,
-      WeightedClosePrice
-    };
-
     BarData ();
     ~BarData ();
     void clear ();
@@ -72,9 +58,6 @@ class BarData
     void append (Bar *bar);
     double max ();
     double min ();
-    void inputFields (QStringList &);
-    Curve * input (BarData::InputType);
-    BarData::InputType inputType (QString);
     Bar * bar (int);
     void setMinMax ();
     void setBarLength (BarLength);
@@ -84,9 +67,6 @@ class BarData
     void setSymbol (QString);
     QString & name ();
     void setName (QString);
-    double avgPrice (int);
-    double medianPrice (int);
-    double typicalPrice (int);
     QString & exchange ();
     void setExchange (QString);
     void barLengthList (QStringList &);

@@ -28,49 +28,43 @@
 
 TRIX::TRIX ()
 {
+  _plugin = "TRIX";
 }
 
 int TRIX::command (Command *command)
 {
-  // TRIX,<NAME>,<INPUT>,<PERIOD>
-  //  0     1      2       3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "TRIX::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INPUT
+  // PERIOD
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "TRIX::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "TRIX::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "TRIX::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "TRIX::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
@@ -101,7 +95,7 @@ int TRIX::command (Command *command)
                          &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "TRIX::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -119,7 +113,7 @@ int TRIX::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

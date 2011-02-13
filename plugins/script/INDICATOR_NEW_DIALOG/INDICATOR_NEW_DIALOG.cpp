@@ -27,14 +27,12 @@
 
 INDICATOR_NEW_DIALOG::INDICATOR_NEW_DIALOG ()
 {
+  _plugin = "INDICATOR_NEW_DIALOG";
   _type = _DIALOG;
 }
 
 int INDICATOR_NEW_DIALOG::command (Command *command)
 {
-  // INDICATOR_NEW_DIALOG
-  //          0
-
   IndicatorNewDialog *dialog = new IndicatorNewDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   dialog->show();

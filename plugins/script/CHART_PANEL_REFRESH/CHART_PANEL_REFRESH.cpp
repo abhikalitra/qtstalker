@@ -26,16 +26,14 @@
 
 CHART_PANEL_REFRESH::CHART_PANEL_REFRESH ()
 {
+  _plugin = "CHART_PANEL_REFRESH";
 }
 
 int CHART_PANEL_REFRESH::command (Command *command)
 {
-  // CHART_PANEL_REFRESH
-  //           0  
-
   g_middleMan->chartPanelRefresh();
   
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

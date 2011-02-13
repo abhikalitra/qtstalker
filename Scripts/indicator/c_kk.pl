@@ -12,26 +12,26 @@ $ckk2Color = 'cyan'; # Dark Cloud Cover Color
 
 $|++;
 
-$command = "BARS,CANDLES,$candleName,$candleColor,$candleColor,$candleColor";
+$command = "PLUGIN=CANDLES,NAME=$candleName,COLOR_UP=$candleColor,COLOR_DOWN=$candleColor,COLOR_NEUTRAL=$candleColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CANDLES,PIERCING,$ckk1Name";
+$command = "PLUGIN=CANDLE_METHOD,METHOD=PIERCING,NAME=$ckk1Name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CANDLES,DARKCLOUDCOVER,$ckk2Name,0";
+$command = "PLUGIN=CANDLE_METHOD,METHOD=DARKCLOUDCOVER,NAME=$ckk2Name,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$ckk1Name,>,0,$candleName,$ckk1Color";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$ckk1Name,OP=>,VALUE=0,NAME2=$candleName,COLOR=$ckk1Color";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$ckk2Name,<,0,$candleName,$ckk2Color";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$ckk2Name,OP=<,VALUE=0,NAME2=$candleName,COLOR=$ckk2Color";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,$candleName,0";
+$command = "PLUGIN=INDICATOR_PLOT,NAME=$candleName,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

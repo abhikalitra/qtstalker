@@ -23,22 +23,22 @@ $maType = 'EMA';
 
 $|++;
 
-$command = "BARS,Close,$input";
+$command = "PLUGIN=CLOSE,NAME=$input";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MACD,$input,$macdName,$sigName,$histName,$fastPeriod,$maType,$slowPeriod,$maType,$sigPeriod,$maType";
+$command = "PLUGIN=MACD,INPUT=$input,NAME_MACD=$macdName,NAME_SIGNAL=$sigName,NAME_HIST=$histName,PERIOD_FAST=$fastPeriod,MA_TYPE_FAST=$maType,PERIOD_SLOW=$slowPeriod,MA_TYPE_SLOW=$maType,PERIOD_SIGNAL=$sigPeriod,MA_TYPE_SIGNAL=$maType";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$histName,$histStyle,$histColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$histName,STYLE=$histStyle,COLOR=$histColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$macdName,$macdStyle,$macdColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$macdName,STYLE=$macdStyle,COLOR=$macdColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$sigName,$sigStyle,$sigColor,2";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$sigName,STYLE=$sigStyle,COLOR=$sigColor,Z=2";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

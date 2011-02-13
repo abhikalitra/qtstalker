@@ -23,22 +23,22 @@ $refDown = 20;
 
 $|++;
 
-$command = "STOCH_SLOW,$slowkName,$slowdName,$fastkPeriod,$slowkPeriod,$maType,$slowdName,$maType";
+$command = "PLUGIN=STOCH_SLOW,NAME_SLOWK=$slowkName,NAME_SLOWD=$slowdName,PERIOD_FASTK=$fastkPeriod,PERIOD_SLOWK=$slowkPeriod,MA_TYPE_SLOWK=$maType,NAME_SLOWD=$slowdName,MA_TYPE_SLOWD=$maType";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refDown,$refDownColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refDown,COLOR=$refDownColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refUp,$refUpColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refUp,COLOR=$refUpColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$slowkName,$slowkStyle,$slowkColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$slowkName,STYLE=$slowkStyle,COLOR=$slowkColor,0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$slowdName,$slowdStyle,$slowdColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$slowdName,STYLE=$slowdStyle,COLOR=$slowdColor,1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

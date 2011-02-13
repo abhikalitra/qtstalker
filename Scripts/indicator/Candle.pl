@@ -7,10 +7,10 @@ $name = 'Candles';
 
 $|++;
 
-$command = "BARS,CANDLES,$name,green,green,green";
+$command = "PLUGIN=CANDLES,NAME=$name,COLOR_UP=green,COLOR_DOWN=green,COLOR_NEUTRAL=green";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,$name,0";
+$command = "PLUGIN=INDICATOR_PLOT,NAME=$name,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

@@ -9,10 +9,10 @@ $period = 14;
 
 $|++;
 
-$command = "ATR,$name,$period";
+$command = "PLUGIN=ATR,NAME=$name,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$name,$style,$color,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$name,STYLE=$style,COLOR=$color,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

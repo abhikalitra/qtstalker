@@ -154,6 +154,25 @@ void QtstalkerApp::createGUI ()
     addPlot(l.at(loop));
 
   setUnifiedTitleAndToolBarOnMac(TRUE);
+
+/*  
+  // test start
+
+  QWidget *testw = new QWidget(this);
+  testw->setFixedHeight(50);
+
+  QHBoxLayout *hbox = new QHBoxLayout;
+  testw->setLayout(hbox);
+
+  dock = new DockWidget(QString(), this);
+  dock->setObjectName("testDock");
+  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+  dock->setWidget(testw);
+  addDockWidget(Qt::LeftDockWidgetArea, dock);
+
+  // test end
+*/
 }
 
 void QtstalkerApp::createToolBar ()

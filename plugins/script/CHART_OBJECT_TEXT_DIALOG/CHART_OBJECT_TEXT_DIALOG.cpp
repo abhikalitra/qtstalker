@@ -27,17 +27,19 @@
 
 CHART_OBJECT_TEXT_DIALOG::CHART_OBJECT_TEXT_DIALOG ()
 {
+  _plugin = "CHART_OBJECT_TEXT_DIALOG";
   _type = _DIALOG;
 }
 
 int CHART_OBJECT_TEXT_DIALOG::command (Command *command)
 {
-  // CHART_OBJECT_TEXT_DIALOG,<ID>
-  //            0             1
+  // PARMS:
+  // ID
 
-  if (command->count() != 2)
+  QString id = command->parm("ID");
+  if (id.isEmpty())
   {
-    qDebug() << "CHART_OBJECT_TEXT_DIALOG::command: invalid parm count" << command->count();
+    qDebug() << _plugin << "::command: invalid parm count" << id;
     return 1;
   }
 

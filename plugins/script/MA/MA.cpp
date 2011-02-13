@@ -28,58 +28,52 @@
 
 MA::MA ()
 {
+  _plugin = "MA";
 }
 
 int MA::command (Command *command)
 {
-  // MA,<METHOD>,<NAME>,<INPUT>,<PERIOD>
-  //  0    1        2      3       4
-
-  if (command->count() != 5)
-  {
-    qDebug() << "MA::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
+  // NAME
+  // INPUT
+  // PERIOD
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "MA::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
   FunctionMA fma;
-  int method = fma.typeFromString(command->parm(pos));
+  int method = fma.typeFromString(command->parm("METHOD"));
   if (method == -1)
   {
-    qDebug() << "MA::command: invalid method" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid METHOD" << command->parm("METHOD");
     return 1;
   }
 
-  pos++;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "MA::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "MA::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MA::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
@@ -90,7 +84,7 @@ int MA::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

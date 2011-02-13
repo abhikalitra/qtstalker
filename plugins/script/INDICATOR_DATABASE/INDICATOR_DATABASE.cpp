@@ -26,21 +26,17 @@
 
 INDICATOR_DATABASE::INDICATOR_DATABASE ()
 {
-  _method << "LOAD" << "SAVE" << "DELETE" << "INDICATORS" << "DIALOG";
+  _plugin = "INDICATOR_DATABASE";
+//  _method << "LOAD" << "SAVE" << "DELETE" << "INDICATORS" << "DIALOG";
+  _method << "LOAD" << "SAVE" << "DELETE" << "INDICATORS";
 }
 
 int INDICATOR_DATABASE::command (Command *command)
 {
-  // INDICATOR_DATABASE,<METHOD>
-  //         0          1
-  
-  if (command->count() < 2)
-  {
-    qDebug() << "INDICATOR_DATABASE::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
 
-  switch ((Method) _method.indexOf(command->parm(1)))
+  switch ((Method) _method.indexOf(command->parm("METHOD")))
   {
     case _LOAD:
       return load(command);
@@ -54,9 +50,9 @@ int INDICATOR_DATABASE::command (Command *command)
     case _INDICATORS:
       return indicators(command);
       break;
-    case _DIALOG:
-      return dialog(command);
-      break;
+//    case _DIALOG:
+//      return dialog(command);
+//      break;
     default:
       break;
   }
@@ -66,148 +62,137 @@ int INDICATOR_DATABASE::command (Command *command)
 
 int INDICATOR_DATABASE::load (Command *command)
 {
-  // INDICATOR_DATABASE,<LOAD>,<NAME>
-  //          0            1       2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "INDICATOR_DATABASE::load: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (LOAD)
+  // NAME
 
   Indicator i;
-  i.setName(command->parm(2));
+  i.setName(command->parm("NAME"));
   
   if (_db.load(&i))
   {
-    qDebug() << "INDICATOR_DATABASE::load: IndicatorDataBase error";
+    qDebug() << _plugin << "::load: IndicatorDataBase error";
     return 1;
   }
 
-  command->setReturnData(i.toString());
+//  command->setReturnData(_plugin + "_INDICATOR", i.toString());
+
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int INDICATOR_DATABASE::save (Command *command)
 {
-  // INDICATOR_DATABASE,<METHOD>,<NAME>,<COMMAND>,<SCRIPT>,<ROW>,<LOG>,<DATE>
-  //           0           1       2        3        4       5     6     7
+  // PARMS:
+  // METHOD
+  // NAME
+  // COMMAND
+  // SCRIPT
+  // ROW
+  // LOG
+  // DATE
 
-  if (command->count() != 8)
-  {
-    qDebug() << "INDICATOR_DATABASE::save: invalid parm count" << command->count();
-    return 1;
-  }
-
-  int pos = 2;
   Indicator i;
-  i.setName(command->parm(pos++));
-  i.setCommand(command->parm(pos++));
-  i.setScript(command->parm(pos++));
+  i.setName(command->parm("NAME"));
+  i.setCommand(command->parm("COMMAND"));
+  i.setScript(command->parm("SCRIPT"));
 
   bool ok;
-  int t = command->parm(pos++).toInt(&ok);
+  int t = command->parm("ROW").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_DATABASE::save: invalid row" << t;
+    qDebug() << _plugin << "::save: invalid row" << t;
     return 1;
   }
   i.setLock(t);
   
-  t = command->parm(pos++).toInt(&ok);
+  t = command->parm("LOG").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_DATABASE::save: invalid log" << t;
+    qDebug() << _plugin << "::save: invalid log" << t;
     return 1;
   }
   i.setLog(t);
 
-  t = command->parm(pos++).toInt(&ok);
+  t = command->parm("DATE").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_DATABASE::save: invalid date" << t;
+    qDebug() << _plugin << "::save: invalid date" << t;
     return 1;
   }
   i.setDate(t);
 
   if (_db.save(&i))
   {
-    qDebug() << "INDICATOR_DATABASE::save: IndicatorDataBase error";
+    qDebug() << _plugin << "::save: IndicatorDataBase error";
     return 1;
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int INDICATOR_DATABASE::deleteIndicator (Command *command)
 {
-  // INDICATOR_DATABASE,<DELETE>,<NAME>,*
-  //           0           1       2
+  // PARMS:
+  // METHOD (DELETE)
+  // NAME
 
-  if (command->count() < 3)
-  {
-    qDebug() << "INDICATOR_DATABASE::deleteIndicator: invalid parm count" << command->count();
-    return 1;
-  }
-
-  QStringList l;
-  int pos = 2;
-  for (; pos < command->count(); pos++)
-    l << command->parm(pos);
+  QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
 
   if (_db.deleteIndicator(l))
   {
-    qDebug() << "INDICATOR_DATABASE::deleteIndicator: IndicatorDataBase error";
+    qDebug() << _plugin << "::deleteIndicator: IndicatorDataBase error";
     return 1;
   }
     
-  command->setReturnData("0");
+  command->setReturnCode("0");
   
   return 0;
 }
 
 int INDICATOR_DATABASE::indicators (Command *command)
 {
-  // INDICATOR_DATABASE,INDICATORS
-  //           0           1
+  // PARMS:
+  // INDICATORS
 
   QStringList l;
   if (_db.indicators(l))
   {
-    qDebug() << "INDICATOR_DATABASE::indicators: IndicatorDataBase error";
+    qDebug() << _plugin << "::indicators: IndicatorDataBase error";
     return 1;
   }
   
-  command->setReturnData(l.join(","));
+  command->setReturnData(_plugin + "_INDICATORS", l.join(";"));
+
+  command->setReturnCode("0");
 
   return 0;
 }
 
+/*
 int INDICATOR_DATABASE::dialog (Command *command)
 {
-  // INDICATOR_DATABASE,DIALOG,NAME
-  //           0           1    2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "INDICATOR_DATABASE::dialog: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // DIALOG
+  // NAME
 
   QString d;
-  if (_db.dialog(command->parm(2), d))
+  if (_db.dialog(command->parm("NAME"), d))
   {
-    qDebug() << "INDICATOR_DATABASE::dialog: IndicatorDataBase error";
+    qDebug() << _plugin << "::dialog: IndicatorDataBase error";
     return 1;
   }
 
-  command->setReturnData(d);
+  command->setReturnData(_plugin + "", d);
+
+  command->setReturnCode("0");
 
   return 0;
 }
+*/
 
 //*************************************************************
 //*************************************************************

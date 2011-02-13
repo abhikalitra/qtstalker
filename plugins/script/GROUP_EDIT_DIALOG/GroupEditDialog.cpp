@@ -23,6 +23,7 @@
 #include "Globals.h"
 #include "Doc.h"
 #include "Command.h"
+#include "GroupDataBase.h"
 
 #include "../pics/add.xpm"
 #include "../pics/delete.xpm"
@@ -35,16 +36,16 @@
 GroupEditDialog::GroupEditDialog (Command *command)
 {
   _command = command;
-  _name = _command->parm(1);
+  _name = _command->parm("NAME");
   _helpFile = "main.html";
   setWindowTitle("QtStalker" + g_session + ": " + tr("Edit Group"));
 
   createGUI();
 
   QStringList l;
-  int loop = 2;
-  for (; loop < _command->count(); loop++)
-    l << _command->parm(loop);
+  GroupDataBase db;
+  db.load(_name, l);
+  
   _list->clear();
   _list->addItems(l);
 
@@ -52,7 +53,7 @@ GroupEditDialog::GroupEditDialog (Command *command)
 
   selectionChanged();
 
-  _symbolDialogCommand = new Command("SYMBOL_DIALOG,0");
+  _symbolDialogCommand = new Command("PLUGIN=SYMBOL_DIALOG,FLAG=0");
 
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
@@ -148,7 +149,15 @@ void GroupEditDialog::done ()
   for (; loop < _list->count(); loop++)
     l << _list->item(loop)->text();
 
-  _command->setReturnData(l.join(","));
+  GroupDataBase db;
+  if (db.saveAll(_name, l))
+  {
+    qDebug() << "GroupEditDialog::done: GroupDataBase error";
+    cancel();
+    return;
+  }
+
+  _command->setReturnCode("0");
 
   saveSettings();
 
@@ -177,7 +186,7 @@ void GroupEditDialog::addButtonPressed ()
 
 void GroupEditDialog::addButtonPressed2 ()
 {
-  _list->addItems(_symbolDialogCommand->stringData().split(",", QString::SkipEmptyParts));
+  _list->addItems(_symbolDialogCommand->returnData("SYMBOL_DIALOG_SYMBOLS").split(";", QString::SkipEmptyParts));
 }
 
 void GroupEditDialog::deleteButtonPressed ()

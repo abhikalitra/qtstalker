@@ -27,17 +27,19 @@
 
 INDICATOR_EDIT_DIALOG::INDICATOR_EDIT_DIALOG ()
 {
+  _plugin = "INDICATOR_EDIT_DIALOG";
   _type = _DIALOG;
 }
 
 int INDICATOR_EDIT_DIALOG::command (Command *command)
 {
-  // INDICATOR_EDIT_DIALOG,NAME
-  //           0            1 
+  // PARMS:
+  // NAME
 
-  if (command->count() != 2)
+  QString name = command->parm("NAME");
+  if (name.isEmpty())
   {
-    qDebug() << "INDICATOR_EDIT_DIALOG::command: invalid parm count" << command->count();
+    qDebug() << "INDICATOR_EDIT_DIALOG::command: invalid NAME";
     return 1;
   }
 

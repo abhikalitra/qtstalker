@@ -10,45 +10,60 @@ $result = "";
 
 $|=1;
 
-$command = "SYMBOL_DIALOG,0";
+$command = "PLUGIN=SYMBOL_DIALOG,FLAG=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-my @symbols = split(',', $rc);
+# return the symbols string
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SYMBOL_DIALOG_SYMBOLS";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
+
+my @symbols = split(';', $rc);
 
 foreach $item (@symbols)
 {
-  $command = "CLEAR";
+  $command = "PLUGIN=INDICATOR_CLEAR";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   my @symbol = split(':', $item);
 
-  $command = "SYMBOL,symbol,$symbol[0],$symbol[1],$length,$range";
+  $command = "PLUGIN=SYMBOL,NAME=symbol,EXCHANGE=$symbol[0],SYMBOL=$symbol[1],LENGTH=$length,RANGE=$range";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
-  $command = "MA,EMA,ma,symbol,200";
+  $command = "PLUGIN=MA,METHOD=EMA,NAME=ma,INPUT=symbol,PERIOD=200";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
-  $command = "INDICATOR_PLOT_INDEX_GET,symbol.0";
+  $command = "PLUGIN=INDICATOR_PLOT_INDEX_OFFSET,INDEX=symbol.0";
+  print STDOUT $command;
+  $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
+
+  # return the price string
+  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_INDEX_OFFSET_VALUE";
   print STDOUT $command;
   $price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; next; }
 
-  $command = "INDICATOR_PLOT_INDEX_GET,ma.0";
+  $command = "PLUGIN=INDICATOR_PLOT_INDEX_OFFSET,INDEX=ma.0";
+  print STDOUT $command;
+  $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
+
+  # return the ma string
+  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_INDEX_OFFSET_VALUE";
   print STDOUT $command;
   $ma = <STDIN>; chomp($ma); if ($ma eq "ERROR") { print STDERR $command; next; }
 
   if ($price <= $ma) { next; }
 
-  $result = $result . ",$item";
+  $result = $result . ";$item";
 }
 
-$command = "GROUP_DATABASE,SAVE_ALL,$group,$result";
+$command = "PLUGIN=GROUP_DATABASE,METHOD=SAVE_ALL,NAME=$group,ITEMS=$result";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "GROUP_PANEL_REFRESH";
+$command = "PLUGIN=GROUP_PANEL_REFRESH";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

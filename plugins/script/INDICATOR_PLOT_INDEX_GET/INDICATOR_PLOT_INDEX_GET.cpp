@@ -25,53 +25,49 @@
 
 INDICATOR_PLOT_INDEX_GET::INDICATOR_PLOT_INDEX_GET ()
 {
+  _plugin = "INDICATOR_PLOT_INDEX_GET";
 }
 
 int INDICATOR_PLOT_INDEX_GET::command (Command *command)
 {
-  // INDICATOR_PLOT_INDEX_GET,<NAME>,<INDEX>
-  //             0              1       2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "INDICATOR_PLOT_INDEX_GET::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INDEX
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_GET::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
   // verify name
-  int pos = 1;
-  Curve *line = i->line(command->parm(pos));
+  Curve *line = i->line(command->parm("NAME"));
   if (! line)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_GET::command: name not found" << command->parm(pos);
+    qDebug() << _plugin << "::command: name not found" << command->parm("NAME");
     return 1;
   }
 
-  pos++;
   bool ok;
-  int index = command->parm(pos).toInt(&ok);
+  int index = command->parm("INDEX").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_GET::command: invalid index value" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid INDEX value" << command->parm("INDEX");
     return 1;
   }
 
   CurveBar *bar = line->bar(index);
   if (! bar)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_GET::command: bar not found" << command->parm(pos);
+    qDebug() << _plugin << "::command: bar not found at index" << index;
     return 1;
   }
 
   QString s = QString::number(bar->data());
-  command->setReturnData(s);
+  command->setReturnData(_plugin + "_VALUE", s);
+
+  command->setReturnCode("0");
 
   return 0;
 }

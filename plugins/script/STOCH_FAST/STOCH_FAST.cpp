@@ -29,23 +29,22 @@
 
 STOCH_FAST::STOCH_FAST ()
 {
+  _plugin = "STOCH_FAST";
 }
 
 int STOCH_FAST::command (Command *command)
 {
-  // STOCH_FAST,<NAME FASTK>,<NAME FASTD>,<FASTK PERIOD>,<FASTD PERIOD>,<FASTD MA TYPE>
-  //     0            1            2            3              4               5
-
-  if (command->count() != 6)
-  {
-    qDebug() << "STOCH_FAST::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME_FASTK
+  // NAME_FASTD
+  // PERIOD_FASTK
+  // PERIOD_FASTD
+  // MA_TYPE_FASTD
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "STOCH_FAST::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -55,51 +54,46 @@ int STOCH_FAST::command (Command *command)
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "STOCH_FAST::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString kname = command->parm(pos);
+  QString kname = command->parm("NAME_FASTK");
   Curve *line = i->line(kname);
   if (line)
   {
-    qDebug() << "STOCH_FAST::command: duplicate fast k name" << kname;
+    qDebug() << _plugin << "::command: duplicate NAME_FASTK" << kname;
     return 1;
   }
 
-  pos++;
-  QString dname = command->parm(pos);
+  QString dname = command->parm("NAME_FASTD");
   line = i->line(dname);
   if (line)
   {
-    qDebug() << "STOCH_FAST::command: duplicate fast d name" << dname;
+    qDebug() << _plugin << "::command: duplicate NAME_FASTD" << dname;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int kperiod = command->parm(pos).toInt(&ok);
+  int kperiod = command->parm("PERIOD_FASTK").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_FAST::command: invalid fast k period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_FASTK" << command->parm("PERIOD_FASTK");
     return 1;
   }
 
-  pos++;
-  int dperiod = command->parm(pos).toInt(&ok);
+  int dperiod = command->parm("PERIOD_FASTD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_FAST::command: invalid fast d period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_FASTD" << command->parm("PERIOD_FASTD");
     return 1;
   }
 
-  pos++;
   FunctionMA fma;
-  int type = fma.typeFromString(command->parm(pos));
+  int type = fma.typeFromString(command->parm("MA_TYPE_FASTD"));
   if (type == -1)
   {
-    qDebug() << "STOCH_FAST::command: invalid fast d ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid MA_TYPE_FASTD" << command->parm("MA_TYPE_FASTD");
     return 1;
   }
   
@@ -140,7 +134,7 @@ int STOCH_FAST::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "STOCH_FAST::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -164,7 +158,7 @@ int STOCH_FAST::command (Command *command)
   i->setLine(kname, kline);
   i->setLine(dname, dline);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

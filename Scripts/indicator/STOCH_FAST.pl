@@ -22,22 +22,22 @@ $refDown = 20;
 
 $|++;
 
-$command = "STOCH_FAST,$fastkName,$fastdName,$fastkPeriod,$fastdPeriod,$maType";
+$command = "PLUGIN=STOCH_FAST,NAME_FASTK=$fastkName,NAME_FASTD=$fastdName,PERIOD_FASTK=$fastkPeriod,PERIOD_FASTD=$fastdPeriod,MA_TYPE=$maType";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refDown,$refDownColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refDown,COLOR=$refDownColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refUp,$refUpColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refUp,COLOR=$refUpColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$fastkName,$fastkStyle,$fastkColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$fastkName,STYLE=$fastkStyle,COLOR=$fastkColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$fastdName,$fastdStyle,$fastdColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$fastdName,STYLE=$fastdStyle,COLOR=$fastdColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

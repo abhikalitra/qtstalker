@@ -28,49 +28,43 @@
 
 HT::HT ()
 {
+  _plugin = "HT";
   _method << "DCPERIOD" << "DCPHASE" << "TRENDLINE" << "TRENDMODE";
 }
 
 int HT::command (Command *command)
 {
-  // HT,<METHOD>,<NAME>,<INPUT>
-  //  0    1       2       3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "HT::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
+  // NAME
+  // INPUT
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "HT::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  int method = _method.indexOf(command->parm(pos));
+  int method = _method.indexOf(command->parm("METHOD"));
   if (method == -1)
   {
-    qDebug() << "HT::command: invalid method" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid method" << command->parm("METHOD");
     return 1;
   }
 
-  pos++;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "HT::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate name" << name;
     return 1;
   }
 
-  pos++;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "HT::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: input missing" << command->parm("INPUT");
     return 1;
   }
 
@@ -111,7 +105,7 @@ int HT::command (Command *command)
       rc = TA_HT_TRENDMODE (0, size - 1, &input[0], &outBeg, &outNb, &iout[0]);
       if (rc != TA_SUCCESS)
       {
-        qDebug() << "HT::command: TA-Lib error" << rc;
+        qDebug() << _plugin << "::command: TA-Lib error" << rc;
         return 1;
       }
 
@@ -127,7 +121,7 @@ int HT::command (Command *command)
 
       line->setLabel(name);
       i->setLine(name, line);
-      command->setReturnData("0");
+      command->setReturnCode("0");
       return 0;
       break;
     }
@@ -137,7 +131,7 @@ int HT::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "HT::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -155,7 +149,7 @@ int HT::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

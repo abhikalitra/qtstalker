@@ -25,47 +25,40 @@
 
 INDICATOR_PLOT_COLOR_ALL::INDICATOR_PLOT_COLOR_ALL ()
 {
+  _plugin = "INDICATOR_PLOT_COLOR_ALL";
 }
 
 int INDICATOR_PLOT_COLOR_ALL::command (Command *command)
 {
-  // INDICATOR_PLOT_COLOR_ALL,<NAME>,<COLOR>
-  //             0              1       2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "INDICATOR_PLOT_COLOR_ALL::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // COLOR
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_ALL::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (! line)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_ALL::command: name not found" << name;
+    qDebug() << _plugin << "::command: NAME not found" << name;
     return 1;
   }
 
-  pos++;
-  QColor color(command->parm(pos));
+  QColor color(command->parm("COLOR"));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_ALL::command: invalid color" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
 
   line->setAllColor(color);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

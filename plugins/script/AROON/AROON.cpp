@@ -28,23 +28,20 @@
 
 AROON::AROON ()
 {
+  _plugin = "AROON";
 }
 
 int AROON::command (Command *command)
 {
-  // AROON,<UPPER NAME>,<LOWER NAME>,<PERIOD>
-  //   0       1              2         3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "AROON::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // <NAME_UPPER>
+  // <NAME_LOWER>
+  // <PERIOD>
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "AROON::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -54,35 +51,31 @@ int AROON::command (Command *command)
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "AROON::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString uname = command->parm(pos);
+  QString uname = command->parm("NAME_UPPER");
   Curve *line = i->line(uname);
   if (line)
   {
-    qDebug() << "AROON::command: duplicate upper name" << uname;
+    qDebug() << _plugin << "::command: duplicate NAME_UPPER" << uname;
     return 1;
   }
 
-  pos++;
-  QString lname = command->parm(pos);
-
+  QString lname = command->parm("NAME_LOWER");
   line = i->line(lname);
   if (line)
   {
-    qDebug() << "AROON::command: duplicate lower name" << lname;
+    qDebug() << _plugin << "::command: duplicate NAME_LOWER" << lname;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "AROON::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid period" << command->parm("PERIOD");
     return 1;
   }
 
@@ -114,7 +107,7 @@ int AROON::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "AROON::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -138,7 +131,7 @@ int AROON::command (Command *command)
   i->setLine(uname, upper);
   i->setLine(lname, lower);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

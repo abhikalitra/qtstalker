@@ -28,23 +28,18 @@
 
 AD::AD ()
 {
+  _plugin = "AD";
 }
 
 int AD::command (Command *command)
 {
-  // AD,<NAME>
-  // 0    1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "AD::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS
+  // <NAME>
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "AD::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -54,15 +49,15 @@ int AD::command (Command *command)
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "AD::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  QString name = command->parm(1);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "AD::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate name" << name;
     return 1;
   }
 
@@ -97,7 +92,7 @@ int AD::command (Command *command)
                         &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "AD::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -115,7 +110,7 @@ int AD::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

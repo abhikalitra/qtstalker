@@ -38,39 +38,33 @@
 
 THERM::THERM ()
 {
+  _plugin = "THERM";
 }
 
 int THERM::command (Command *command)
 {
-  // THERM,<NAME>
-  //   0     1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "THERM::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "THERM::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "THERM::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  QString name = command->parm(1);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "THERM::command: duplicate name" << name;
+    qDebug() << "THERM::command: duplicate NAME" << name;
     return 1;
   }
 
@@ -99,7 +93,7 @@ int THERM::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

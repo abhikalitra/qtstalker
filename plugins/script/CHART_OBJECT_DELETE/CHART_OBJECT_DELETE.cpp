@@ -26,27 +26,19 @@
 
 CHART_OBJECT_DELETE::CHART_OBJECT_DELETE ()
 {
+  _plugin = "CHART_OBJECT_DELETE";
 }
 
 int CHART_OBJECT_DELETE::command (Command *command)
 {
-  // CHART_OBJECT_DELETE,<NAME>,*
-  //           0           1    2*
+  // PARMS:
+  // LIST
 
-  if (command->count() < 2)
-  {
-    qDebug() << "CHART_OBJECT_DELETE::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  QStringList l;
-  int pos = 1;
-  for (; pos < command->count(); pos++)
-    l << command->parm(pos);
+  QStringList l = command->parm("LIST").split(";", QString::SkipEmptyParts);
 
   g_middleMan->chartObjectDelete(l);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

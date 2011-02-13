@@ -20,7 +20,6 @@
  */
 
 #include "Command.h"
-#include "ScriptPluginFactory.h"
 
 #include <QtDebug>
 
@@ -37,62 +36,54 @@ Command::Command (QString d)
 void Command::clear ()
 {
   _parms.clear();
-  _scriptFlag = 0;
-  _returnData = "ERROR";
+  _returnData.clear();
+  _returnCode = "ERROR";
   _indicator = 0;
   _barData = 0;
 }
 
 void Command::parse (QString d)
 {
-  clear();
-  _parms = d.split(",", QString::SkipEmptyParts);
+  _parms.clear();
+  _returnCode = "ERROR";
+  
+  QStringList l = d.split(",", QString::SkipEmptyParts);
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QStringList l2 = l.at(loop).split("=", QString::SkipEmptyParts);
+    if (l2.count() != 2)
+      continue;
+
+    strip(l2[0]);
+    strip(l2[1]);
+
+    _parms.insert(l2.at(0), l2.at(1));
+  }
 }
 
 QString Command::plugin ()
 {
-  QString s;
-  if (_parms.count())
-    s = _parms.at(0);
-  return s;
+  return _parms.value("PLUGIN");
 }
 
-void Command::setScriptFlag (int d)
+void Command::setReturnData (QString k, QString d)
 {
-  _scriptFlag = d;
+  _returnData.insert(k, d);
 }
 
-int Command::scriptFlag ()
+QString Command::returnData (QString k)
 {
-  return _scriptFlag;
+  return _returnData.value(k);
 }
 
-int Command::count ()
-{
-  return _parms.count();
-}
-
-void Command::setReturnData (QString d)
-{
-  _returnData = d;
-}
-
-QByteArray Command::arrayData ()
+QByteArray Command::arrayReturnData (QString k)
 {
   QByteArray ba;
-  ba.append(_returnData);
+  ba.append(_returnData.value(k));
   ba.append('\n');
   return ba;
-}
-
-QString & Command::stringData ()
-{
-  return _returnData;
-}
-
-QString Command::parm (int index)
-{
-  return _parms.at(index);
 }
 
 Indicator * Command::indicator ()
@@ -113,4 +104,44 @@ BarData * Command::barData ()
 void Command::setBarData (BarData *d)
 {
   _barData = d;
+}
+
+void Command::strip (QString &d)
+{
+  d = d.remove(QString("="), Qt::CaseSensitive);
+  d = d.remove(QString("|"), Qt::CaseSensitive);
+  d = d.remove(QString("'"), Qt::CaseSensitive);
+}
+
+int Command::count ()
+{
+  return _parms.count();
+}
+
+QString Command::parm (QString k)
+{
+  return _parms.value(k);
+}
+
+void Command::setReturnCode (QString d)
+{
+  _returnCode = d;
+}
+
+QByteArray Command::returnCode ()
+{
+  QByteArray ba;
+  ba.append(_returnCode);
+  ba.append('\n');
+  return ba;
+}
+
+void Command::setName (QString d)
+{
+  _name = d;
+}
+
+QString Command::name ()
+{
+  return _name;
 }

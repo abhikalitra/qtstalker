@@ -26,22 +26,18 @@
 
 CHART_PANEL_SEARCH::CHART_PANEL_SEARCH ()
 {
+  _plugin = "CHART_PANEL_SEARCH";
 }
 
 int CHART_PANEL_SEARCH::command (Command *command)
 {
-  // CHART_PANEL_SEARCH,<EXCHANGE>,<SYMBOL>
-  //           0            1         2
+  // PARMS:
+  // EXCHANGE
+  // SYMBOL
 
-  if (command->count() != 3)
-  {
-    qDebug() << "CHART_PANEL_SEARCH::command: invalid parm count" << command->count();
-    return 1;
-  }
+  g_middleMan->chartPanelSearch(command->parm("EXCHANGE"), command->parm("SYMBOL"));
 
-  g_middleMan->chartPanelSearch(command->parm(1), command->parm(2));
-
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

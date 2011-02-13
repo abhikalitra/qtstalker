@@ -26,27 +26,19 @@
 
 PLOT_DELETE::PLOT_DELETE ()
 {
+  _plugin = "PLOT_DELETE";
 }
 
 int PLOT_DELETE::command (Command *command)
 {
-  // PLOT_DELETE,<NAME>*
-  //       0       1*
+  // PARMS:
+  // NAME - semicolon delimited string
 
-  if (command->count() < 2)
-  {
-    qDebug() << "PLOT_DELETE::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  QStringList l;
-  int pos = 1;
-  for (; pos < command->count(); pos++)
-    l << command->parm(pos);
+  QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
 
   g_middleMan->indicatorDelete(l);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

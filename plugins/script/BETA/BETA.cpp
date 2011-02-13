@@ -28,57 +28,51 @@
 
 BETA::BETA ()
 {
+  _plugin = "BETA";
 }
 
 int BETA::command (Command *command)
 {
-  // BETA,<NAME>,<INPUT_1>,<INPUT_2>,<PERIOD>
-  //  0      1       2         3        4
-
-  if (command->count() != 5)
-  {
-    qDebug() << "BETA::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INPUT
+  // INPUT2
+  // PERIOD
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "BETA::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "BETA::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "BETA::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;
-  Curve *in2 = i->line(command->parm(pos));
+  Curve *in2 = i->line(command->parm("INPUT2"));
   if (! in2)
   {
-    qDebug() << "BETA::command: input 2 missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT2 missing" << command->parm("INPUT2");
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "BETA::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
@@ -127,7 +121,7 @@ int BETA::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "BETA::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -145,7 +139,7 @@ int BETA::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

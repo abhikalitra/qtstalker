@@ -28,65 +28,62 @@
 
 SYMBOL::SYMBOL ()
 {
+  _plugin = "SYMBOL";
+  _field << "OPEN" << "HIGH" << "LOW" << "CLOSE" << "VOLUME" << "OI";
 }
 
 int SYMBOL::command (Command *command)
 {
-  // SYMBOL,<NAME>,<EXCHANGE>,<SYMBOL>,<LENGTH>,<RANGE>
-  //   0      1        2         3        4        5
-
-  if (command->count() != 6)
-  {
-    qDebug() << "SYMBOL::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // EXCHANGE
+  // SYMBOL
+  // LENGTH
+  // RANGE
+  // FIELD
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "SYMBOL::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "SYMBOL::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
   BarData bd;
-  pos++;
-  QString s = command->parm(pos);
+  QString s = command->parm("EXCHANGE");
   if (s.isEmpty())
   {
-    qDebug() << "SYMBOL::command: invalid exchange";
+    qDebug() << _plugin << "::command: invalid exchange" << s;
     return 1;
   }
   bd.setExchange(s);
 
-  pos++;
-  s = command->parm(pos);
+  s = command->parm("SYMBOL");
   if (s.isEmpty())
   {
-    qDebug() << "SYMBOL::command: invalid symbol";
+    qDebug() << _plugin << "::command: invalid symbol" << s;
     return 1;
   }
   bd.setSymbol(s);
 
-  pos++;
   QStringList l;
   Bar tbar;
   tbar.lengthList(l);
-  s = command->parm(pos);
+  s = command->parm("LENGTH");
   int length = l.indexOf(s);
   if (length == -1)
   {
     if (s != "-1")
     {
-      qDebug() << "SYMBOL::command: invalid length" << command->parm(pos);
+      qDebug() << _plugin << "::command: invalid LENGTH" << command->parm("LENGTH");
       return 1;
     }
 
@@ -95,14 +92,13 @@ int SYMBOL::command (Command *command)
   else
     bd.setBarLength((BarData::BarLength) length);
 
-  pos++;
   DateRange dr;
-  int range = dr.toType(command->parm(pos));
+  int range = dr.toType(command->parm("RANGE"));
   if (range == -1)
   {
-    if (command->parm(pos) != "-1")
+    if (command->parm("RANGE") != "-1")
     {
-      qDebug() << "SYMBOL::command: invalid range" << command->parm(pos);
+      qDebug() << _plugin << "::command: invalid RANGE" << command->parm("RANGE");
       return 1;
     }
     
@@ -114,24 +110,122 @@ int SYMBOL::command (Command *command)
   QuoteDataBase db;
   if (db.getBars(&bd))
   {
-    qDebug() << "SYMBOL::command: QuoteDataBase error";
+    qDebug() << _plugin << "::command: QuoteDataBase error";
     return 1;
   }
 
-  line = bd.input(BarData::Close);
-  if (! line)
+  switch ((Field) _field.indexOf(command->parm("FIELD")))
   {
-    qDebug() << "SYMBOL::command: no input returned";
-    return 1;
+    case _OPEN:
+      line = getOpen(bd);
+      break;
+    case _HIGH:
+      line = getHigh(bd);
+      break;
+    case _LOW:
+      line = getLow(bd);
+      break;
+    case _CLOSE:
+      line = getClose(bd);
+      break;
+    case _VOLUME:
+      line = getVolume(bd);
+      break;
+    case _OI:
+      line = getOI(bd);
+      break;
+    default:
+      qDebug() << _plugin << "::command: invalid field" << command->parm("FIELD");
+      return 1;
+      break;
   }
-
+  
   line->setLabel(name);
   i->setLine(name, line);
   
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
+
+Curve * SYMBOL::getOpen (BarData &bd)
+{
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < bd.count(); loop++)
+  {
+    Bar *b = bd.bar(loop);
+    line->setBar(loop, new CurveBar(b->open()));
+  }
+
+  return line;
+}
+
+Curve * SYMBOL::getHigh (BarData &bd)
+{
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < bd.count(); loop++)
+  {
+    Bar *b = bd.bar(loop);
+    line->setBar(loop, new CurveBar(b->high()));
+  }
+
+  return line;
+}
+
+Curve * SYMBOL::getLow (BarData &bd)
+{
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < bd.count(); loop++)
+  {
+    Bar *b = bd.bar(loop);
+    line->setBar(loop, new CurveBar(b->low()));
+  }
+
+  return line;
+}
+
+Curve * SYMBOL::getClose (BarData &bd)
+{
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < bd.count(); loop++)
+  {
+    Bar *b = bd.bar(loop);
+    line->setBar(loop, new CurveBar(b->close()));
+  }
+
+  return line;
+}
+
+Curve * SYMBOL::getVolume (BarData &bd)
+{
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < bd.count(); loop++)
+  {
+    Bar *b = bd.bar(loop);
+    line->setBar(loop, new CurveBar(b->volume()));
+  }
+
+  return line;
+}
+
+Curve * SYMBOL::getOI (BarData &bd)
+{
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < bd.count(); loop++)
+  {
+    Bar *b = bd.bar(loop);
+    line->setBar(loop, new CurveBar(b->oi()));
+  }
+
+  return line;
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************

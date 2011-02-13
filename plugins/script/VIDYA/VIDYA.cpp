@@ -32,57 +32,51 @@
 
 VIDYA::VIDYA ()
 {
+  _plugin = "VIDYA";
 }
 
 int VIDYA::command (Command *command)
 {
-  // VIDYA,<NAME>,<INPUT>,<PERIOD>,<VOLUME PERIOD>
-  //   0     1       2       3            4
-
-  if (command->count() != 5)
-  {
-    qDebug() << "VIDYA::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INPUT
+  // PERIOD
+  // PERIOD_VOLUME
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "VIDYA::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "VIDYA::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "VIDYA::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "VIDYA::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
-  pos++;
-  int vperiod = command->parm(pos).toDouble(&ok);
+  int vperiod = command->parm("PERIOD_VOLUME").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "VIDYA::command: invalid volume period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_VOLUME" << command->parm("PERIOD_VOLUME");
     return 1;
   }
 
@@ -145,7 +139,7 @@ int VIDYA::command (Command *command)
   out->setLabel(name);
   i->setLine(name, out);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
@@ -179,7 +173,7 @@ Curve * VIDYA::getCMO (Curve *in, int period)
                          &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "VIDYA::getCMO: TA-Lib error" << rc;
+    qDebug() << _plugin << "::getCMO: TA-Lib error" << rc;
     return 0;
   }
 

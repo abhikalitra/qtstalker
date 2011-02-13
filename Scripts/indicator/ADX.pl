@@ -18,26 +18,26 @@ $period = 14;
 
 $|++;
 
-$command = "MDI,$mdiName,$period";
+$command = "PLUGIN=MDI,NAME=$mdiName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$mdiName,$mdiStyle,$mdiColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$mdiName,STYLE=$mdiStyle,COLOR=$mdiColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PDI,$pdiName,$period";
+$command = "PLUGIN=PDI,NAME=$pdiName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$pdiName,$pdiStyle,$pdiColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$pdiName,STYLE=$pdiStyle,COLOR=$pdiColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "ADX,$adxName,$period";
+$command = "PLUGIN=ADX,NAME=$adxName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$adxName,$adxStyle,$adxColor,2";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$adxName,STYLE=$adxStyle,COLOR=$adxColor,Z=2";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

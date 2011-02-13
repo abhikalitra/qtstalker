@@ -26,26 +26,21 @@
 
 PLOT_FONT::PLOT_FONT ()
 {
+  _plugin = "PLOT_FONT";
 }
 
 int PLOT_FONT::command (Command *command)
 {
-  // PLOT_FONT,<FONT>
-  //      0      1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "PLOT_FONT::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // FONT
 
   QFont f;
-  QStringList l = command->parm(1).split(";");
+  QStringList l = command->parm("FONT").split(";", QString::SkipEmptyParts);
   f.fromString(l.join(","));
 
   g_middleMan->plotFont(f);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

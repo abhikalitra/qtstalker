@@ -21,26 +21,26 @@ $refDown = -100;
 
 $|++;
 
-$command = "CCI,$cciName,$cciPeriod";
+$command = "PLUGIN=CCI,NAME=$cciName,PERIOD=$cciPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MA,$maType,$maName,$cciName,$maPeriod";
+$command = "PLUGIN=MA,METHOD=$maType,NAME=$maName,INPUT=$cciName,PERIOD=$maPeriod";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refUp,$refUpColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refUp,COLOR=$refUpColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refDown,$refDownColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refDown,COLOR=$refDownColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$cciName,$cciStyle,$cciColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$cciName,STYLE=$cciStyle,COLOR=$cciColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$maName,$maStyle,$maColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$maName,STYLE=$maStyle,COLOR=$maColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

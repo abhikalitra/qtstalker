@@ -30,24 +30,23 @@
 
 SZ::SZ ()
 {
-  _method << "Long" << "Short";
+  _plugin = "SZ";
+  _method << "LONG" << "SHORT";
 }
 
 int SZ::command (Command *command)
 {
-  // SZ,<NAME>,<METHOD>,<PERIOD>,<NO_DECLINE_PERIOD>,<COEFFICIENT>
-  //  0    1      2        3             4                 5
-
-  if (command->count() != 6)
-  {
-    qDebug() << "SZ::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // METHOD
+  // PERIOD
+  // NO_DECLINE_PERIOD
+  // COEFFICIENT
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "SZ::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -57,50 +56,44 @@ int SZ::command (Command *command)
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "SZ::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "SZ::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
-  int method = _method.indexOf(command->parm(pos));
+  int method = _method.indexOf(command->parm("METHOD"));
   if (method == -1)
   {
-    qDebug() << "SZ::command: invalid method" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid METHOD" << command->parm("METHOD");
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "SZ::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
-  pos++;
-  int no_decline_period = command->parm(pos).toInt(&ok);
+  int no_decline_period = command->parm("NO_DECLINE_PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "SZ::command: invalid no decline period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid NO_DECLINE_PERIOD" << command->parm("NO_DECLINE_PERIOD");
     return 1;
   }
 
-  pos++;
-  double coefficient = command->parm(pos).toDouble(&ok);
+  double coefficient = command->parm("COEFFICIENT").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "SZ::command: invalid coefficient" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid COEFFICIENT" << command->parm("COEFFICIENT");
     return 1;
   }
 
@@ -224,7 +217,7 @@ int SZ::command (Command *command)
   pl->setLabel(name);
   i->setLine(name, pl);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

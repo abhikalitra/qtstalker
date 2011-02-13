@@ -29,23 +29,25 @@
 
 STOCH_SLOW::STOCH_SLOW ()
 {
+  _plugin = "STOCH_SLOW";
 }
 
 int STOCH_SLOW::command (Command *command)
 {
-  // STOCH_SLOW,<NAME SLOWK>,<NAME SLOWD>,<FASTK PERIOD>,<SLOWK PERIOD>,<SLOWK MA TYPE>,<SLOWD PERIOD>,<SLOWD MA TYPE>
-  //     0           1            2             3              4               5              6               7
+  // PARMS:
+  // NAME_SLOWK
+  // NAME_SLOWD
+  // PERIOD_FASTK
+  // PERIOD_SLOWK
+  // MA_TYPE_SLOWK
+  // PERIOD_SLOWD
+  // MA_TYPE_SLOWD
 
-  if (command->count() != 8)
-  {
-    qDebug() << "STOCH_SLOW::command: invalid settings count" << command->count();
-    return 1;
-  }
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "STOCH_SLOW::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -55,67 +57,60 @@ int STOCH_SLOW::command (Command *command)
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "STOCH_SLOW::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString kname = command->parm(pos);
+  QString kname = command->parm("NAME_SLOWK");
   Curve *line = i->line(kname);
   if (line)
   {
-    qDebug() << "STOCH_SLOW::command: duplicate slow k name" << kname;
+    qDebug() << _plugin << "::command: duplicate NAME_SLOWK" << kname;
     return 1;
   }
 
-  pos++;
-  QString dname = command->parm(pos);
+  QString dname = command->parm("NAME_SLOWD");
   line = i->line(dname);
   if (line)
   {
-    qDebug() << "STOCH_SLOW::command: duplicate slow d name" << dname;
+    qDebug() << _plugin << "::command: duplicate NAME_SLOWD" << dname;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int fkperiod = command->parm(pos).toInt(&ok);
+  int fkperiod = command->parm("PERIOD_FASTK").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_SLOW::command: invalid fast k period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_FASTK" << command->parm("PERIOD_FASTK");
     return 1;
   }
 
-  pos++;
-  int skperiod = command->parm(pos).toInt(&ok);
+  int skperiod = command->parm("PERIOD_SLOWK").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_SLOW::command: invalid slow k period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_SLOWK" << command->parm("PERIOD_SLOWK");
     return 1;
   }
 
-  pos++;
   FunctionMA fma;
-  int kma = fma.typeFromString(command->parm(pos));
+  int kma = fma.typeFromString(command->parm("MA_TYPE_SLOWK"));
   if (kma == -1)
   {
-    qDebug() << "STOCH_SLOW::command: invalid slow k ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid MA_TYPE_SLOWK" << command->parm("MA_TYPE_SLOWK");
     return 1;
   }
 
-  pos++;
-  int sdperiod = command->parm(pos).toInt(&ok);
+  int sdperiod = command->parm("PERIOD_SLOWD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "STOCH_SLOW::command: invalid slow d period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_SLOWD" << command->parm("PERIOD_SLOWD");
     return 1;
   }
 
-  pos++;
-  int dma = fma.typeFromString(command->parm(pos));
+  int dma = fma.typeFromString(command->parm("MA_TYPE_SLOWD"));
   if (dma == -1)
   {
-    qDebug() << "STOCH_SLOW::command: invalid slow d ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid MA_TYPE_SLOWD" << command->parm("MA_TYPE_SLOWD");
     return 1;
   }
 
@@ -158,7 +153,7 @@ int STOCH_SLOW::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "STOCH_SLOW::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -182,7 +177,7 @@ int STOCH_SLOW::command (Command *command)
   i->setLine(kname, kline);
   i->setLine(dname, dline);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

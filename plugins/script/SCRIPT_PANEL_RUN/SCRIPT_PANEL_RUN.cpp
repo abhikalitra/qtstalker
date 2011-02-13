@@ -26,22 +26,17 @@
 
 SCRIPT_PANEL_RUN::SCRIPT_PANEL_RUN ()
 {
+  _plugin = "SCRIPT_PANEL_RUN";
 }
 
 int SCRIPT_PANEL_RUN::command (Command *command)
 {
-  // SCRIPT_PANEL_RUN,NAME
-  //         0         1
+  // PARMS:
+  // NAME
 
-  if (command->count() != 2)
-  {
-    qDebug() << "SCRIPT_PANEL_RUN::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  g_middleMan->scriptRun(command->parm(1));
+  g_middleMan->scriptRun(command->parm("NAME"));
   
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

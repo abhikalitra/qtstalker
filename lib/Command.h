@@ -27,6 +27,7 @@
 
 #include <QStringList>
 #include <QByteArray>
+#include <QHash>
 
 #include "Indicator.h"
 #include "BarData.h"
@@ -39,24 +40,28 @@ class Command
     void clear ();
     void parse (QString);
     QString plugin ();
-    void setScriptFlag (int);
-    int scriptFlag ();
-    void setReturnData (QString);
-    QByteArray arrayData ();
-    QString & stringData ();
-    int count ();
-    QString parm (int);
+    void setReturnData (QString, QString);
+    QString returnData (QString);
+    QByteArray arrayReturnData (QString);
     Indicator * indicator ();
     void setIndicator (Indicator *);
     BarData * barData ();
     void setBarData (BarData *);
+    void strip (QString &);
+    int count ();
+    QString parm (QString);
+    void setReturnCode (QString);
+    QByteArray returnCode ();
+    void setName (QString);
+    QString name ();
 
   private:
-    int _scriptFlag;
-    QStringList _parms;
-    QString _returnData;
+    QHash<QString, QString> _parms;
+    QHash<QString, QString> _returnData;
     Indicator *_indicator;
     BarData *_barData;
+    QString _returnCode;
+    QString _name;
 };
 
 #endif

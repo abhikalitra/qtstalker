@@ -29,23 +29,20 @@
 
 FI::FI ()
 {
+  _plugin = "FI";
 }
 
 int FI::command (Command *command)
 {
-  // FI,<NAME>,<PERIOD>,<MA_TYPE>
-  //  0    1      2         3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "FI::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // PERIOD
+  // MA_TYPE
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "FI::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -55,34 +52,31 @@ int FI::command (Command *command)
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "FI::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "FI::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate name" << name;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "FI::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid period" << command->parm("PERIOD");
     return 1;
   }
 
-  pos++;
   FunctionMA fma;
-  int type = fma.typeFromString(command->parm(pos));
+  int type = fma.typeFromString(command->parm("MA_TYPE"));
   if (type == -1)
   {
-    qDebug() << "FI::command: invalid ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid ma type" << command->parm("MA_TYPE");
     return 1;
   }
 
@@ -119,7 +113,7 @@ int FI::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

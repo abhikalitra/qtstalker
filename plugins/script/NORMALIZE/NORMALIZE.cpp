@@ -29,40 +29,34 @@
 
 NORMALIZE::NORMALIZE ()
 {
+  _plugin = "NORMALIZE";
 }
 
 int NORMALIZE::command (Command *command)
 {
-  // NORMALIZE,<NAME>,<INPUT>
-  //     0        1      2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "NORMALIZE::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INPUT
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "NORMALIZE::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "NORMALIZE::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "NORMALIZE::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
@@ -89,7 +83,7 @@ int NORMALIZE::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

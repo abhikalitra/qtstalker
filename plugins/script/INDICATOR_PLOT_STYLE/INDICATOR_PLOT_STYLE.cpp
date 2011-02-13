@@ -25,47 +25,40 @@
 
 INDICATOR_PLOT_STYLE::INDICATOR_PLOT_STYLE ()
 {
+  _plugin = "INDICATOR_PLOT_STYLE";
 }
 
 int INDICATOR_PLOT_STYLE::command (Command *command)
 {
-  // INDICATOR_PLOT_STYLE,<NAME>,<STYLE>
-  //           0             1      2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "INDICATOR_PLOT_STYLE::command: invalid parm count " << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // STYLE
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT_STYLE::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (! line)
   {
-    qDebug() << "INDICATOR_PLOT_STYLE::command: name not found" << name;
+    qDebug() << _plugin << "::command: NAME not found" << name;
     return 1;
   }
 
-  pos++;
-  int style = line->typeFromString(command->parm(pos));
+  int style = line->typeFromString(command->parm("STYLE"));
   if (style == -1)
   {
-    qDebug() << "INDICATOR_PLOT_STYLE::command: invalid style" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid STYLE" << command->parm("STYLE");
     return 1;
   }
 
   line->setType((Curve::Type) style);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

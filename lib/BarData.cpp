@@ -47,91 +47,6 @@ void BarData::clear ()
   _range = 6;
 }
 
-void BarData::inputFields (QStringList &l)
-{
-  l.clear();
-  l << QObject::tr("Open");
-  l << QObject::tr("High");
-  l << QObject::tr("Low");
-  l << QObject::tr("Close");
-  l << QObject::tr("Volume");
-  l << QObject::tr("OI");
-  l << QObject::tr("AvgPrice");
-  l << QObject::tr("MedianPrice");
-  l << QObject::tr("TypicalPrice");
-  l << QObject::tr("WCPrice");
-}
-
-Curve * BarData::input (BarData::InputType field)
-{
-  Curve *line = new Curve;
-
-  int loop;
-  for (loop = 0; loop < count(); loop++)
-  {
-    Bar *b = bar(loop);
-    
-    switch (field)
-    {
-      case Open:
-      {
-        line->setBar(loop, new CurveBar(b->open()));
-        break;
-      }
-      case High:
-      {
-        line->setBar(loop, new CurveBar(b->high()));
-        break;
-      }
-      case Low:
-      {
-        line->setBar(loop, new CurveBar(b->low()));
-        break;
-      }
-      case Close:
-      {
-        line->setBar(loop, new CurveBar(b->close()));
-        break;
-      }
-      case Volume:
-      {
-        line->setBar(loop, new CurveBar(b->volume()));
-        break;
-      }
-      case OI:
-      {
-        line->setBar(loop, new CurveBar(b->oi()));
-        break;
-      }
-      case AveragePrice:
-      {
-        line->setBar(loop, new CurveBar(avgPrice(loop)));
-        break;
-      }
-      case MedianPrice:
-      {
-        line->setBar(loop, new CurveBar(medianPrice(loop)));
-        break;
-      }
-      case TypicalPrice:
-      {
-        line->setBar(loop, new CurveBar(typicalPrice(loop)));
-        break;
-      }
-      case WeightedClosePrice:
-      {
-        double t = (b->high() + b->low() + (b->close() * 2)) / 4.0;
-        line->setBar(loop, new CurveBar(t));
-        break;
-      }
-      default:
-        break;
-    }
-  }
-
-  return line;
-}
-
 int BarData::count ()
 {
   return _barList.count();
@@ -155,18 +70,6 @@ double BarData::max ()
 double BarData::min ()
 {
   return _low;
-}
-
-BarData::InputType BarData::inputType (QString d)
-{
-  QStringList l;
-  inputFields(l);
-  
-  InputType rc = Close;
-  int t = l.indexOf(d);
-  if (t != -1)
-    rc = (InputType) t;
-  return rc;
 }
 
 Bar * BarData::bar (int d)
@@ -232,27 +135,6 @@ QString & BarData::name ()
 void BarData::setName (QString d)
 {
   _name = d;
-}
-
-double BarData::avgPrice (int d)
-{
-  Bar *b = bar(d);
-  double t = (b->open() + b->high() + b->low() + b->close()) / 4.0;
-  return t;
-}
-
-double BarData::medianPrice (int d)
-{
-  Bar *b = bar(d);
-  double t = (b->high() + b->low()) / 2.0;
-  return t;
-}
-
-double BarData::typicalPrice (int d)
-{
-  Bar *b = bar(d);
-  double t = (b->high() + b->low() + b->close()) / 3.0;
-  return t;
 }
 
 QString & BarData::exchange ()

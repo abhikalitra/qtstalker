@@ -21,93 +21,51 @@
 
 #include "DATA_WINDOW.h"
 #include "Globals.h"
+#include "IndicatorDataBase.h"
+#include "DataWindow.h"
 
 #include <QtDebug>
 
 DATA_WINDOW::DATA_WINDOW ()
 {
+  _plugin = "DATA_WINDOW";
   _type = _DIALOG;
-  _dw = 0;
-  
-  _method << "START" << "SET" << "END";
 }
 
 int DATA_WINDOW::command (Command *command)
 {
-  // DATA_WINDOW,<METHOD>
-  //     0          1
-
-  if (command->count() < 2)
-  {
-    qDebug() << "DATA_WINDOW::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  switch ((Method) _method.indexOf(command->parm(1)))
-  {
-    case _START:
-      return start(command);
-      break;
-    case _SET:
-      return setData(command);
-      break;
-    case _END:
-      return end(command);
-      break;
-    default:
-      break;
-  }
-
-  return 0;
-}
-
-int DATA_WINDOW::start (Command *command)
-{
-  // DATA_WINDOW,START
-  //      0        1
-
-  if (_dw)
-    return 1;
-  
-  _dw = new DataWindow;
-
-  command->setReturnData("0");
-
-  emit signalResume();
-
-  return 0;
-}
-
-int DATA_WINDOW::setData (Command *command)
-{
-  // DATA_WINDOW,SET
-  //     0        1
-
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "DATA_WINDOW::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  _dw->setData(i);
+  DataWindow *dw = new DataWindow;
 
-  command->setReturnData("0");
+  IndicatorDataBase db;
+  QStringList l;
+  db.indicators(l);
 
-  emit signalResume();
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    i->clear();
+    i->setName(l.at(loop));
+    i->load();
+    i->calculate();
 
-  return 0;
-}
+    QEventLoop e;
+    connect(i, SIGNAL(signalPlot()), &e, SLOT(quit()));
+    e.exec();
 
-int DATA_WINDOW::end (Command *command)
-{
-  // DATA_WINDOW,END
-  //     0        1
+    dw->setData(i);
+  }
 
-  _dw->show();
-  _dw->scrollToBottom();
+  dw->show();
+  dw->scrollToBottom();
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   emit signalResume();
 

@@ -353,7 +353,7 @@ void BARSDialog::done ()
   i.setDialogSettings(s);
   i.save();
   
-  _command->setReturnData("0");
+  _command->setReturnCode("0");
   
   saveSettings();
   

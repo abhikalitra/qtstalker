@@ -25,6 +25,7 @@
 
 YAHOO_DATABASE::YAHOO_DATABASE ()
 {
+  _plugin = "YAHOO_DATABASE";
   _method << "LOAD" << "SAVE" << "DELETE" << "SYMBOLS" << "TRANSACTION" << "COMMIT";
 
   _db = QSqlDatabase::database("data");
@@ -43,16 +44,10 @@ YAHOO_DATABASE::YAHOO_DATABASE ()
 
 int YAHOO_DATABASE::command (Command *command)
 {
-  // YAHOO_DATABASE,<METHOD>
-  //         0          1
-  
-  if (command->count() < 2)
-  {
-    qDebug() << "YAHOO_DATABASE::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
 
-  switch ((Method) _method.indexOf(command->parm(1)))
+  switch ((Method) _method.indexOf(command->parm("METHOD")))
   {
     case _LOAD:
       return load(command);
@@ -81,16 +76,11 @@ int YAHOO_DATABASE::command (Command *command)
 
 int YAHOO_DATABASE::load (Command *command)
 {
-  // YAHOO_DATABASE,<METHOD>,<YSYMBOL>
-  //       0            1       2
+  // PARMS:
+  // METHOD (LOAD)
+  // YSYMBOL
 
-  if (command->count() != 3)
-  {
-    qDebug() << "YAHOO_DATABASE::load: invalid parm count" << command->count();
-    return 1;
-  }
-
-  QString ysymbol = command->parm(2);
+  QString ysymbol = command->parm("YSYMBOL");
 
   QSqlQuery q(_db);
 
@@ -98,85 +88,73 @@ int YAHOO_DATABASE::load (Command *command)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "YAHOO_DATABASE::load:" << q.lastError().text();
+    qDebug() << _plugin << "::load:" << q.lastError().text();
     return 1;
   }
 
-  QStringList l;
   if (q.next())
-    l << q.value(0).toString() << q.value(1).toString();
+  {
+    command->setReturnData(_plugin + "_EXCHANGE", q.value(0).toString());
+    command->setReturnData(_plugin + "_SYMBOL", q.value(1).toString());
+  }
 
-  command->setReturnData(l.join(","));
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int YAHOO_DATABASE::save (Command *command)
 {
-  // YAHOO_DATABASE,<METHOD>,<YSYMBOL>,<EXCHANGE>,<SYMBOL>
-  //        0           1        2         3         4
-
-  if (command->count() != 5)
-  {
-    qDebug() << "YAHOO_DATABASE::save: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (SAVE)
+  // YSYMBOL
+  // EXCHANGE
+  // SYMBOL
 
   QSqlQuery q(_db);
 
   QString s = "INSERT OR REPLACE INTO YahooSymbols (ysymbol,exchange,symbol) VALUES (";
-  s.append("'" + command->parm(2) + "'");
-  s.append(",'" + command->parm(3) + "'");
-  s.append(",'" + command->parm(4) + "'");
+  s.append("'" + command->parm("YSYMBOL") + "'");
+  s.append(",'" + command->parm("EXCHANGE") + "'");
+  s.append(",'" + command->parm("SYMBOL") + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "YAHOO_DATABASE::save:" << q.lastError().text();
+    qDebug() << _plugin << "::save:" << q.lastError().text();
     return 1;
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int YAHOO_DATABASE::deleteSymbol (Command *command)
 {
-  // YAHOO_DATABASE,<METHOD>,<YSYMBOL>
-  //        0           1        2    
-
-  if (command->count() != 3)
-  {
-    qDebug() << "YAHOO_DATABASE::deleteSymbol: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (DELETE)
+  // YSYMBOL
 
   QSqlQuery q(_db);
 
-  QString s = "DELETE FROM YahooSymbols WHERE ysymbol='" + command->parm(2) + "'";
+  QString s = "DELETE FROM YahooSymbols WHERE ysymbol='" + command->parm("YSYMBOL") + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "YAHOO_DATABASE::deleteSymbol:" << q.lastError().text();
+    qDebug() << _plugin << "::deleteSymbol:" << q.lastError().text();
     return 1;
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
   
   return 0;
 }
 
 int YAHOO_DATABASE::symbols (Command *command)
 {
-  // YAHOO_DATABASE,<METHOD>
-  //        0          1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "YAHOO_DATABASE::symbols: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (SYMBOLS)
 
   QSqlQuery q(_db);
 
@@ -184,7 +162,7 @@ int YAHOO_DATABASE::symbols (Command *command)
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "YAHOO_DATABASE::symbols: " << q.lastError().text();
+    qDebug() << _plugin << "::symbols: " << q.lastError().text();
     return 1;
   }
 
@@ -192,43 +170,33 @@ int YAHOO_DATABASE::symbols (Command *command)
   while (q.next())
     l << q.value(0).toString();
 
-  command->setReturnData(l.join(","));
+  command->setReturnData(_plugin + "_SYMBOLS", l.join(","));
+
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int YAHOO_DATABASE::transaction (Command *command)
 {
-  // YAHOO_DATABASE,<METHOD>
-  //        0          1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "YAHOO_DATABASE::transaction: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (TRANSACTION)
 
   _db.transaction();
   
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int YAHOO_DATABASE::commit (Command *command)
 {
-  // YAHOO_DATABASE,<METHOD>
-  //        0          1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "YAHOO_DATABASE::commit: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (COMMIT)
 
   _db.commit();
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

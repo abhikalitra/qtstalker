@@ -35,14 +35,13 @@ NewDialog::NewDialog (Command *c)
   _helpFile = "main.html";
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("New") << _command->parm(1);
+  l << "QtStalker" << g_session << ":" << tr("New") << _command->parm("TITLE");
   setWindowTitle(l.join(" "));
 
   createGUI();
 
-  int loop = 2;
-  for (; loop < _command->count(); loop++)
-    _items << _command->parm(loop);
+  _items = _command->parm("ITEMS").split(";", QString::SkipEmptyParts);
+
   _name->clear();
   _name->addItems(_items);
   _name->clearEditText();
@@ -60,7 +59,7 @@ void NewDialog::createGUI ()
   vbox->setSpacing(2);
   setLayout(vbox);
 
-  QLabel *label = new QLabel(tr("Enter new") + " " + _command->parm(1));
+  QLabel *label = new QLabel(tr("Enter new") + " " + _command->parm("TITLE"));
   vbox->addWidget(label);
 
   _name = new QComboBox;
@@ -116,7 +115,9 @@ void NewDialog::done ()
 
   saveSettings();
 
-  _command->setReturnData(name);
+  _command->setReturnData("NEW_DIALOG_NAME", name);
+
+  _command->setReturnCode("0");
 
   accept();
 }

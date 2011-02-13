@@ -29,18 +29,17 @@
 
 QUOTE_DATABASE::QUOTE_DATABASE ()
 {
+  _plugin = "QUOTE_DATABASE";
   _method << "GET" << "SET" << "DELETE" << "EXCHANGE" << "RENAME" << "SEARCH" << "TRANSACTION" << "COMMIT";
 }
 
 int QUOTE_DATABASE::command (Command *command)
 {
-  if (command->count() < 2)
-  {
-    qDebug() << "QUOTE_DATABASE::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
+  
 
-  switch ((Method) _method.indexOf(command->parm(1)))
+  switch ((Method) _method.indexOf(command->parm("METHOD")))
   {
     case _GET:
       return getBars(command);
@@ -75,95 +74,83 @@ int QUOTE_DATABASE::command (Command *command)
 
 int QUOTE_DATABASE::getBars (Command *command)
 {
-  // QUOTE_DATABASE,<METHOD>,<EXCHANGE>,<SYMBOL>,<LENGTH>,<START DATE>,<END DATE>,<DATE RANGE>
-  //        0          1         2         3         4          5          6           7
-
-  if (command->count() != 8)
-  {
-    qDebug() << "QUOTE_DATABASE::getBars: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (GET)
+  // EXCHANGE
+  // SYMBOL
+  // LENGTH
+  // DATE_START
+  // DATE_END
+  // DATE_RANGE
 
   BarData *bd = command->barData();
   if (! bd)
   {
-    qDebug() << "QUOTE_DATABASE::getBars: missing bar data";
+    qDebug() << _plugin << "::getBars: missing bar data";
     return 1;
   }
 
-  int pos = 2;
-  QString s = command->parm(pos);
+  QString s = command->parm("EXCHANGE");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::getBars: invalid exchange";
+    qDebug() << _plugin << "::getBars: invalid EXCHANGE" << s;
     return 1;
   }
   bd->setExchange(s);
 
-  pos++;
-  s = command->parm(pos);
+  s = command->parm("SYMBOL");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::getBars: invalid symbol";
+    qDebug() << _plugin << "::getBars: invalid SYMBOL" << s;
     return 1;
   }
   bd->setSymbol(s);
 
-  pos++;
-  s = command->parm(pos);
+  s = command->parm("LENGTH");
   QStringList l;
   Bar tbar;
   tbar.lengthList(l);
   int length = l.indexOf(s);
   if (length == -1)
   {
-    qDebug() << "QUOTE_DATABASE::getBars: invalid length" << command->parm(pos);
+    qDebug() << _plugin << "::getBars: invalid LENGTH" << command->parm("LENGTH");
     return 1;
   }
   bd->setBarLength((BarData::BarLength) length);
   
-  pos++;
-  bd->setStartDate(QDateTime::fromString(command->parm(pos), Qt::ISODate));
+  bd->setStartDate(QDateTime::fromString(command->parm("DATE_START"), Qt::ISODate));
 
-  pos++;
-  bd->setEndDate(QDateTime::fromString(command->parm(pos), Qt::ISODate));
+  bd->setEndDate(QDateTime::fromString(command->parm("DATE_END"), Qt::ISODate));
 
-  pos++;
-  bd->setRange(command->parm(pos).toInt());
+  bd->setRange(command->parm("DATE_RANGE").toInt());
 
   if (_db.getBars(bd))
   {
-    qDebug() << "QUOTE_DATABASE::getBars: QuoteDataBase error";
+    qDebug() << _plugin << "::getBars: QuoteDataBase error";
     return 1;
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int QUOTE_DATABASE::setBars (Command *command)
 {
-  // QUOTE_DATABASE,<METHOD>,<FORMAT>,<DATA>
-  //       0           1         2      3
-  // format delimited by a colon
-  // data delimted by a colon between fields
-
-  if (command->count() != 4)
-  {
-    qDebug() << "QUOTE_DATABASE::setBars: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (SET)
+  // FORMAT - delimited by colon
+  // DATA - delimted by colon
 
   QStringList formatList;
   formatList << "D" << "O" << "H" << "L" << "C" << "V" << "I" << "X" << "S" << "N" << "T";
 
   // validate format parms
-  QStringList format = command->parm(2).split(":", QString::SkipEmptyParts);
+  QStringList format = command->parm("FORMAT").split(":", QString::SkipEmptyParts);
 
   if (! format.contains("D") || ! format.contains("X") || ! format.contains("S"))
   {
-    qDebug() << "QUOTE_DATABASE::setBars: format must contain at least D,X,S fields" << command->parm(2);
+    qDebug() << _plugin << "::setBars: FORMAT must contain at least D,X,S fields" << command->parm("FORMAT");
     return 1;
   }
 
@@ -180,16 +167,16 @@ int QUOTE_DATABASE::setBars (Command *command)
     
   if (flag)
   {
-    qDebug() << "QUOTE_DATABASE::setBars: invalid format parm" << command->parm(2);
+    qDebug() << _plugin << "::setBars: invalid FORMAT parm" << command->parm("FORMAT");
     return 1;
   }
 
   // validate data fields
-  QStringList data = command->parm(3).split(":", QString::SkipEmptyParts);
+  QStringList data = command->parm("DATA").split(":", QString::SkipEmptyParts);
 
   if (data.count() != format.count())
   {
-    qDebug() << "QUOTE_DATABASE::setBars: # of format fields not equal to # data fields" << command->parm(3);
+    qDebug() << _plugin << "::setBars: # of format fields not equal to # DATA fields" << command->parm("DATA");
     return 1;
   }
 
@@ -241,166 +228,150 @@ int QUOTE_DATABASE::setBars (Command *command)
   if (flag)
   {
     delete bar;
-    qDebug() << "QUOTE_DATABASE::setBars: data error" << command->parm(3);
+    qDebug() << _plugin << "::setBars: DATA error" << command->parm("DATA");
     return 1;
   }
 
   if (_db.setBars(&symbol))
   {
-    qDebug() << "QUOTE_DATABASE::setBars: QuoteDataBase error";
+    qDebug() << _plugin << "::setBars: QuoteDataBase error";
     delete bar;
     return 1;
   }
   
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int QUOTE_DATABASE::deleteSymbol (Command *command)
 {
-  // QUOTE_DATABASE,DELETE,<EXCHANGE>,<SYMBOL>
-  //         0         1        2        3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "QUOTE_DATABASE::deleteSymbol: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (DELETE)
+  // EXCHANGE
+  // SYMBOL
 
   BarData bd;
-  int pos = 2;
-  QString s = command->parm(pos);
+  QString s = command->parm("EXCHANGE");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::deleteSymbol: invalid exchange" << command->parm(pos);
+    qDebug() << _plugin << "::deleteSymbol: invalid EXCHANGE" << command->parm("EXCHANGE");
     return 1;
   }
   bd.setExchange(s);
 
-  pos++;
-  s = command->parm(pos);
+  s = command->parm("SYMBOL");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::deleteSymbol: invalid symbol" << command->parm(pos);
+    qDebug() << _plugin << "::deleteSymbol: invalid SYMBOL" << command->parm("SYMBOL");
     return 1;
   }
   bd.setSymbol(s);
 
   if (_db.deleteSymbol(&bd))
   {
-    qDebug() << "QUOTE_DATABASE::deleteSymbol: QuoteDataBase error";
+    qDebug() << _plugin << "::deleteSymbol: QuoteDataBase error";
     return 1;
   }
   
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int QUOTE_DATABASE::getExchange (Command *command)
 {
-  // QUOTE_DATABASE,EXCHANGE
-  //       0           1
+  // PARMS:
+  // EXCHANGE
 
   QStringList l;
   if (_db.getExchange(l))
   {
-    qDebug() << "QUOTE_DATABASE::getExchange: QuoteDataBase error";
+    qDebug() << _plugin << "::getExchange: QuoteDataBase error";
     return 1;
   }
 
-  command->setReturnData(l.join(","));
+  command->setReturnData(_plugin + "_EXCHANGES", l.join(","));
+
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int QUOTE_DATABASE::rename (Command *command)
 {
-  // QUOTE_DATABASE,RENAME,<OLD EXCHANGE>,<OLD SYMBOL>,<NEW EXCHANGE>,<NEW SYMBOL>
-  //          0       1           2             3             4            5
-
-  if (command->count() != 6)
-  {
-    qDebug() << "QUOTE_DATABASE::rename: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (RENAME)
+  // OLD_EXCHANGE
+  // OLD_SYMBOL
+  // NEW_EXCHANGE
+  // NEW_SYMBOL
 
   BarData osymbol;
-  int pos = 2;
-  QString s = command->parm(pos);
+  QString s = command->parm("OLD_EXCHANGE");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::rename: invalid old exchange" << command->parm(pos);
+    qDebug() << _plugin << "::rename: invalid OLD_EXCHANGE" << command->parm("OLD_EXCHANGE");
     return 1;
   }
   osymbol.setExchange(s);
 
-  pos++;
-  s = command->parm(pos);
+  s = command->parm("OLD_SYMBOL");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::rename: invalid old symbol" << command->parm(pos);
+    qDebug() << _plugin << "::rename: invalid OLD_SYMBOL" << command->parm("OLD_SYMBOL");
     return 1;
   }
   osymbol.setSymbol(s);
 
   BarData nsymbol;
-  pos++;
-  s = command->parm(pos);
+  s = command->parm("NEW_EXCHANGE");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::rename: invalid new exchange" << command->parm(pos);
+    qDebug() << _plugin << "::rename: invalid NEW_EXCHANGE" << command->parm("NEW_EXCHANGE");
     return 1;
   }
   nsymbol.setExchange(s);
 
-  pos++;
-  s = command->parm(pos);
+  s = command->parm("NEW_SYMBOL");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::rename: invalid new symbol" << command->parm(pos);
+    qDebug() << _plugin << "::rename: invalid NEW_SYMBOL" << command->parm("NEW_SYMBOL");
     return 1;
   }
   nsymbol.setSymbol(s);
 
   if (_db.rename(&osymbol, &nsymbol))
   {
-    qDebug() << "QUOTE_DATABASE::rename: QuoteDataBase error";
+    qDebug() << _plugin << "::rename: QuoteDataBase error";
     return 1;
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int QUOTE_DATABASE::search (Command *command)
 {
-  // QUOTE_DATABASE,SEARCH,<EXCHANGE>,<SYMBOL>
-  //       0          1         2         3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "QUOTE_DATABASE::search: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD (SEARCH)
+  // EXCHANGE
+  // SYMBOL
 
   BarData bd;
-  int pos = 2;
-  QString s = command->parm(pos);
+  QString s = command->parm("EXCHANGE");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::search: invalid exchange" << command->parm(pos);
+    qDebug() << _plugin << "::search: invalid EXCHANGE" << command->parm("EXCHANGE");
     return 1;
   }
   bd.setExchange(s);
 
-  pos++;
-  s = command->parm(pos);
+  s = command->parm("SYMBOL");
   if (s.isEmpty())
   {
-    qDebug() << "QUOTE_DATABASE::search: invalid symbol" << command->parm(pos);
+    qDebug() << _plugin << "::search: invalid SYMBOL" << command->parm("SYMBOL");
     return 1;
   }
   bd.setSymbol(s);
@@ -408,36 +379,38 @@ int QUOTE_DATABASE::search (Command *command)
   QStringList l;
   if (_db.search(&bd, l))
   {
-    qDebug() << "QUOTE_DATABASE::search: QuoteDataBase error";
+    qDebug() << _plugin << "::search: QuoteDataBase error";
     return 1;
   }
 
   // now delimit each tuple with a semicolon
-  command->setReturnData(l.join(";"));
+  command->setReturnData(_plugin + "_SEARCH", l.join(";"));
+
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int QUOTE_DATABASE::transaction (Command *command)
 {
-  // QUOTE_DATABASE,TRANSACTION
-  //        0            1
+  // PARMS:
+  // METHOD (TRANSACTION)
 
   _db.transaction();
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int QUOTE_DATABASE::commit (Command *command)
 {
-  // QUOTE_DATABASE,COMMIT
-  //        0         1
+  // PARMS:
+  // METHOD (COMMIT)
 
   _db.commit();
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

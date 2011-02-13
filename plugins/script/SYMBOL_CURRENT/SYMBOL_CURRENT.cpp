@@ -26,11 +26,15 @@
 
 SYMBOL_CURRENT::SYMBOL_CURRENT ()
 {
+  _plugin = "SYMBOL_CURRENT";
 }
 
 int SYMBOL_CURRENT::command (Command *command)
 {
-  command->setReturnData(g_barData->key());
+  command->setReturnData(_plugin + "_EXCHANGE", g_barData->exchange());
+  command->setReturnData(_plugin + "_SYMBOL", g_barData->symbol());
+
+  command->setReturnCode("0");
 
   return 0;
 }

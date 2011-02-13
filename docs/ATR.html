@@ -1,52 +1,54 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
   <title>Qtstalker: ATR - Average True Range</title>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
-  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="qtstalker.css"
+ media="screen">
   <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-    <div id="content">
-      <div id="rightPanel">
-        <div id="version"></div>
-        <div id="toc">
-          <hr>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="toc.html">Table of Contents</a></li>
-          </ul>
-        </div>
-      </div>
+<div id="content">
+<div id="rightPanel">
+<div id="toc">
+<hr>
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="toc.html">Table of Contents</a></li>
+</ul>
+</div>
+</div>
 <!-- Content -->
-<h1>ATR - Average True Range</h1>
-<p>
-There are 2 versions of this indicator available:
-</p>
-<ul>
-<li><a href="http://www.tadoc.org/indicator/ATR.htm">ATR</a>
-- is the standard average true range.</li>
-<li><a href="http://www.tadoc.org/indicator/NATR.htm">NATR</a>
-- is a normalized version of the average true range.</li>
-</ul>
-<hr>
-<h2 id="ATR">ATR</h2>
-<p class="api">
-INDICATOR,PLUGIN,ATR,ATR,&lt;NAME&gt;,&lt;PERIOD&gt;
-</p>
-<ul>
-  <li>&lt;NAME&gt; is the variable name given to the ATR plot</li>
-  <li>&lt;PERIOD&gt; is an integer period value</li>
-</ul>
-<hr>
-<h2 id="NATR">NATR</h2>
-<p class="api">
-INDICATOR,PLUGIN,ATR,NATR,&lt;NAME&gt;,&lt;PERIOD&gt;
-</p>
-<ul>
-  <li>&lt;NAME&gt; is the variable name given to the ADOSC plot</li>
-  <li>&lt;PERIOD&gt; is an integer period value</li>
-</ul>
-    </div>
+<h1>ATR - Average True Range<br>
+</h1>
+<br>
+<span style="font-weight: bold;">DESCRIPTION:</span>&nbsp;&nbsp;&nbsp; <a
+ href="http://en.wikipedia.org/wiki/Average_True_Range">ATR</a><br>
+<br>
+<span style="font-weight: bold;">SYNTAX:</span>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+PLUGIN = ATR<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NAME = &lt;VARIABLE NAME&gt;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+PERIOD = &lt;INTEGER&gt;<br>
+<br>
+<span style="font-weight: bold;">RETURNS:</span>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; '0' = Success<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'ERROR' =
+Failure<br>
+<br>
+<span style="font-weight: bold;">EXAMPLE:</span>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+PLUGIN=ATR,NAME=atr,PERIOD=10<br>
+<br>
+<br>
+</div>
 </body>
 </html>

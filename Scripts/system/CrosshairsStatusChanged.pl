@@ -3,7 +3,12 @@
 $|=1;
 
 # get the current crosshairs status
-$command = "SETTINGS_LOAD,crosshairs";
+$command = "PLUGIN=SETTINGS_LOAD,KEY=crosshairs";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# get the crosshairs string
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SETTINGS_LOAD_DATA";
 print STDOUT $command;
 $status = <STDIN>; chomp($status); if ($status eq "ERROR") {print STDERR $command; exit; }
 
@@ -14,11 +19,11 @@ if ($status eq "") { $status = "0"; }
 if ($status eq "0") { $status = "1"; } else { $status = "0"; }
 
 # save status
-$command = "SETTINGS_SAVE,crosshairs,$status";
+$command = "PLUGIN=SETTINGS_SAVE,KEY=crosshairs,DATA=$status";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update charts with new crosshairs status
-$command = "PLOT_CROSSHAIRS,$status";
+$command = "PLUGIN=PLOT_CROSSHAIRS,STATUS=$status";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

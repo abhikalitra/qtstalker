@@ -36,7 +36,7 @@ ChartObjectSellDialog::ChartObjectSellDialog (Command *c)
   _helpFile = "main.html";
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Edit Sell") << _command->parm(1);
+  l << "QtStalker" << g_session << ":" << tr("Edit Sell") << _command->parm("ID");
   setWindowTitle(l.join(" "));
 
   createGUI();
@@ -119,7 +119,7 @@ void ChartObjectSellDialog::done ()
 
   saveSettings();
 
-  _command->setReturnData("0");
+  _command->setReturnCode("0");
 
   accept();
 }
@@ -138,7 +138,7 @@ void ChartObjectSellDialog::cancel ()
 
 void ChartObjectSellDialog::loadObject ()
 {
-  _co.setData("ID", _command->parm(1));
+  _co.setData("ID", _command->parm("ID"));
 
   ChartObjectDataBase db;
   db.load(&_co);

@@ -166,7 +166,7 @@ void ConfigureDialog::done ()
     g_middleMan->plotTabPosition(_tabPosition->currentIndex());
   }
 
-  _command->setReturnData("0");
+  _command->setReturnCode("0");
 
   saveSettings();
 

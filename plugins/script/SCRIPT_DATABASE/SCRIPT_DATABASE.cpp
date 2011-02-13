@@ -25,22 +25,17 @@
 
 SCRIPT_DATABASE::SCRIPT_DATABASE ()
 {
+  _plugin = "SCRIPT_DATABASE";
   _method << "LOAD" << "SAVE" << "DELETE" << "SCRIPTS";
   _field << "MINUTES";
 }
 
 int SCRIPT_DATABASE::command (Command *command)
 {
-  // SCRIPT_DATABASE,<METHOD>
-  //         0          1
-  
-  if (command->count() < 2)
-  {
-    qDebug() << "SCRIPT_DATABASE::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
 
-  switch ((Method) _method.indexOf(command->parm(1)))
+  switch ((Method) _method.indexOf(command->parm("METHOD")))
   {
     case _LOAD:
       return load(command);
@@ -63,35 +58,29 @@ int SCRIPT_DATABASE::command (Command *command)
 
 int SCRIPT_DATABASE::load (Command *command)
 {
-  // SCRIPT_DATABASE,LOAD,<NAME>,<FIELD>
-  //       0          1      2      3
+  // PARMS:
+  // METHOD (LOAD)
+  // NAME
+  // FIELD
 
-  if (command->count() != 4)
-  {
-    qDebug() << "SCRIPT_DATABASE::load: invalid parm count" << command->count();
-    return 1;
-  }
-
-  int pos = 2;
   Script script;
-  script.setName(command->parm(pos));
+  script.setName(command->parm("NAME"));
 
   if (_db.load(&script))
   {
-    qDebug() << "SCRIPT_DATABASE::load: script load error" << command->parm(pos);
+    qDebug() << _plugin << "::load: script load error" << command->parm("NAME");
     return 1;
   }
   
-  pos++;
-
-  switch (_field.indexOf(command->parm(pos)))
+  switch (_field.indexOf(command->parm("FIELD")))
   {
     case 0: // MINUTES
-      command->setReturnData(script.toString());
+      command->setReturnData(_plugin + "_SCRIPT", script.toString());
+      command->setReturnCode("0");
       return 0;
       break;
     default:
-      qDebug() << "SCRIPT_DATABASE::load: invalid field" << command->parm(pos);
+      qDebug() << _plugin << "::load: invalid FIELD" << command->parm("FIELD");
       break;
   }
   
@@ -100,35 +89,30 @@ int SCRIPT_DATABASE::load (Command *command)
 
 int SCRIPT_DATABASE::save (Command *command)
 {
-  // SCRIPT_DATABASE,SAVE,<NAME>,<FIELD>,<DATA>
-  //        0         1      2      3       4
+  // PARMS:
+  // METHOD (SAVE)
+  // NAME
+  // FIELD
+  // DATA
 
-  if (command->count() != 5)
-  {
-    qDebug() << "SCRIPT_DATABASE::save: invalid parm count" << command->count();
-    return 1;
-  }
-
-  int pos = 2;
   Script script;
-  script.setName(command->parm(pos++));
+  script.setName(command->parm("NAME"));
   
   if (_db.load(&script))
   {
-    qDebug() << "SCRIPT_DATABASE::save: load error";
+    qDebug() << _plugin << "::save: load error" << command->parm("NAME");
     return 1;
   }
 
-  switch (_field.indexOf(command->parm(pos)))
+  switch (_field.indexOf(command->parm("FIELD")))
   {
     case 0: // MINUTES
     {
-      pos++;
       bool ok;
-      int minutes = command->parm(pos).toInt(&ok);
+      int minutes = command->parm("DATA").toInt(&ok);
       if (! ok)
       {
-        qDebug() << "SCRIPT_DATABASE::save: invalid MINUTES";
+        qDebug() << _plugin << "::save: invalid MINUTES" << command->parm("DATA");
         return 1;
       }
 
@@ -136,62 +120,56 @@ int SCRIPT_DATABASE::save (Command *command)
       break;
     }
     default:
-      qDebug() << "SCRIPT_DATABASE::load: invalid field" << command->parm(pos);
+      qDebug() << _plugin << "::load: invalid FIELD" << command->parm("FIELD");
       return 1;
       break;
   }
 
   if (_db.save(&script))
   {
-    qDebug() << "SCRIPT_DATABASE::save: save error";
+    qDebug() << _plugin << "::save: save error";
     return 1;
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int SCRIPT_DATABASE::deleteScript (Command *command)
 {
-  // SCRIPT_DATABASE,DELETE,<NAME>,*
-  //        0           1      2    *
+  // PARMS:
+  // METHOD (DELETE)
+  // NAME - colon delemited list
 
-  if (command->count() < 3)
-  {
-    qDebug() << "SCRIPT_DATABASE::deleteScript: invalid parm count" << command->count();
-    return 1;
-  }
-
-  QStringList l;
-  int loop = 2;
-  for (; loop < command->count(); loop++)
-    l << command->parm(loop);
+  QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
 
   if (_db.deleteScript(l))
   {
-    qDebug() << "SCRIPT_DATABASE::deleteScript: ScriptDataBase error";
+    qDebug() << _plugin << "::deleteScript: ScriptDataBase error";
     return 1;
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
   
   return 0;
 }
 
 int SCRIPT_DATABASE::scripts (Command *command)
 {
-  // SCRIPT_DATABASE,SCRIPTS
-  //        0          1
+  // PARMS:
+  // METHOD (SCRIPTS)
 
   QStringList l;
   if (_db.scripts(l))
   {
-    qDebug() << "SCRIPT_DATABASE::scripts: ScriptDataBase error";
+    qDebug() << _plugin << "::scripts: ScriptDataBase error";
     return 1;
   }
   
-  command->setReturnData(l.join(","));
+  command->setReturnData(_plugin + "_SCRIPTS", l.join(";"));
+
+  command->setReturnCode("0");
 
   return 0;
 }

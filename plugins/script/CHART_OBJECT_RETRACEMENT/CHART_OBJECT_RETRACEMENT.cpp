@@ -26,120 +26,102 @@
 
 CHART_OBJECT_RETRACEMENT::CHART_OBJECT_RETRACEMENT ()
 {
-  _method << "RO" << "RW";
+  _plugin = "CHART_OBJECT_RETRACEMENT";
 }
 
 int CHART_OBJECT_RETRACEMENT::command (Command *command)
 {
-  // CHART_OBJECT_RETRACEMENT,<METHOD>
-  //          0           1
-
-  if (command->count() < 2)
-  {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  switch ((Method) _method.indexOf(command->parm(1)))
-  {
-    case _RO:
-      return createRO(command);
-      break;
-    case _RW:
-      return createRW(command);
-      break;
-    default:
-      break;
-  }
-
-  return 0;
-}
-
-int CHART_OBJECT_RETRACEMENT::createRW (Command *command)
-{
-  // CHART_OBJECT_RETRACEMENT,<METHOD>,<NAME>,<INDICATOR>,<EXCHANGE>,<SYMBOL>,<DATE>,<DATE2>,<COLOR>.<HIGH>,<LOW>,<LINE1>,*
-  //             0               1        2         3         4         5       6       7       8      9      10    11    12*
-
-  if (command->count() < 12)
-  {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRW: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INDICATOR
+  // EXCHANGE
+  // SYMBOL
+  // DATE
+  // DATE2
+  // COLOR
+  // HIGH
+  // LOW
+  // LINE1>
+  // LINE2>
+  // LINE3>
+  // LINE4>
+  // LINE5>
+  // LINE6>
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRW: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 2;
   Setting co;
   co.setData("Type", QString("Retracement"));
-  co.setData("ID", command->parm(pos++));
-  co.setData("Indicator", command->parm(pos++));
-  co.setData("Exchange", command->parm(pos++));
-  co.setData("Symbol", command->parm(pos++));
+  co.setData("ID", command->parm("NAME"));
+  co.setData("Indicator", command->parm("INDICATOR"));
+  co.setData("Exchange", command->parm("EXCHANGE"));
+  co.setData("Symbol", command->parm("SYMBOL"));
 
   // verify date
-  QDateTime dt = QDateTime::fromString(command->parm(pos), Qt::ISODate);
+  QDateTime dt = QDateTime::fromString(command->parm("DATE"), Qt::ISODate);
   if (! dt.isValid())
   {
-    qDebug() << "CHART_OBJECT_BUY::createRW: invalid date" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid DATE" << command->parm("DATE");
     return 1;
   }
-  co.setData("Date", command->parm(pos++));
+  co.setData("Date", command->parm("DATE"));
 
   // verify date2
-  dt = QDateTime::fromString(command->parm(pos), Qt::ISODate);
+  dt = QDateTime::fromString(command->parm("DATE2"), Qt::ISODate);
   if (! dt.isValid())
   {
-    qDebug() << "CHART_OBJECT_BUY::createRW: invalid date2" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid DATE2" << command->parm("DATE2");
     return 1;
   }
-  co.setData("Date2", command->parm(pos++));
+  co.setData("Date2", command->parm("DATE2"));
 
   // verify color
-  QColor color(command->parm(pos));
+  QColor color(command->parm("COLOR"));
   if (! color.isValid())
   {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRW: invalid color" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
-  co.setData("Color", command->parm(pos++));
+  co.setData("Color", command->parm("COLOR"));
 
   // verify high
   bool ok;
-  command->parm(pos).toDouble(&ok);
+  command->parm("HIGH").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRW: invalid high" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid HIGH" << command->parm("HIGH");
     return 1;
   }
-  co.setData("High", command->parm(pos++));
+  co.setData("High", command->parm("HIGH"));
 
   // verify low
-  command->parm(pos).toDouble(&ok);
+  command->parm("LOW").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRW: invalid low" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid LOW" << command->parm("LOW");
     return 1;
   }
-  co.setData("Low", command->parm(pos++));
+  co.setData("Low", command->parm("LOW"));
 
   // verify all the possible retracement values
   int line = 1;
-  for (; pos < command->count(); pos++, line++)
+  for (; line < 7; line++)
   {
-    command->parm(pos).toDouble(&ok);
+    QString k = "LINE" + QString::number(line);
+    command->parm(k).toDouble(&ok);
     if (! ok)
     {
-      qDebug() << "CHART_OBJECT_RETRACEMENT::createRW: invalid line" << command->parm(pos);
+      qDebug() << _plugin << "::command: invalid LINE" << k;
       continue;
     }
 
     QString key = "Line" + QString::number(line);
-    co.setData(key, command->parm(pos));
+    co.setData(key, command->parm(k));
   }
 
   ChartObjectDataBase db;
@@ -147,100 +129,7 @@ int CHART_OBJECT_RETRACEMENT::createRW (Command *command)
 
   i->addChartObject(co);
 
-  command->setReturnData("0");
-
-  return 0;
-}
-
-int CHART_OBJECT_RETRACEMENT::createRO (Command *command)
-{
-  // CHART_OBJECT_RETRACEMENT,<METHOD>,<DATE>,<DATE2>,<COLOR>.<HIGH>,<LOW>,<LINE1>,*
-  //             0               1        2      3       4      5      6      7,   8*
-
-  if (command->count() < 8)
-  {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRO: invalid parm count" << command->count();
-    return 1;
-  }
-
-  Indicator *i = command->indicator();
-  if (! i)
-  {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRO: no indicator";
-    return 1;
-  }
-
-  Setting co;
-  QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("Type", QString("Retracement"));
-  co.setData("ID", key);
-  co.setData("RO", 1);
-
-  // verify date
-  int pos = 2;
-  QDateTime dt = QDateTime::fromString(command->parm(pos), Qt::ISODate);
-  if (! dt.isValid())
-  {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRO: invalid date" << command->parm(pos);
-    return 1;
-  }
-  co.setData("Date", command->parm(pos++));
-
-  // verify date2
-  dt = QDateTime::fromString(command->parm(pos), Qt::ISODate);
-  if (! dt.isValid())
-  {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRO: invalid date2" << command->parm(pos);
-    return 1;
-  }
-  co.setData("Date2", command->parm(pos++));
-
-  // verify color
-  QColor color(command->parm(pos));
-  if (! color.isValid())
-  {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRO: invalid color" << command->parm(pos);
-    return 1;
-  }
-  co.setData("Color", command->parm(pos++));
-
-  // verify high
-  bool ok;
-  command->parm(pos).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRO: invalid high" << command->parm(pos);
-    return 1;
-  }
-  co.setData("High", command->parm(pos++));
-
-  // verify low
-  command->parm(pos).toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << "CHART_OBJECT_RETRACEMENT::createRO: invalid low" << command->parm(pos);
-    return 1;
-  }
-  co.setData("Low", command->parm(pos++));
-
-  // verify all the possible retracement values
-  int line = 1;
-  for (; pos < command->count(); pos++, line++)
-  {
-    command->parm(pos).toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << "CHART_OBJECT_RETRACEMENT::createRO: invalid line" << command->parm(pos);
-      continue;
-    }
-
-    QString key = "Line" + QString::number(line);
-    co.setData(key, command->parm(pos));
-  }
-
-  i->addChartObject(co);
-
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

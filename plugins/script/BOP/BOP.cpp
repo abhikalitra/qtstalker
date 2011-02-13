@@ -28,23 +28,18 @@
 
 BOP::BOP ()
 {
+  _plugin = "BOP";
 }
 
 int BOP::command (Command *command)
 {
-  // BOP,<NAME>
-  //  0    1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "BOP::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
 
   BarData *data = g_barData;
   if (! data)
   {
-    qDebug() << "BOP::command: no bars";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -54,16 +49,15 @@ int BOP::command (Command *command)
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "BOP::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "BOP::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
@@ -97,7 +91,7 @@ int BOP::command (Command *command)
                          &out[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "BOP::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -109,7 +103,7 @@ int BOP::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

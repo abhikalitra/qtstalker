@@ -26,30 +26,28 @@
 
 INDICATOR_PLOT_COLOR_COMPARE_INDEX::INDICATOR_PLOT_COLOR_COMPARE_INDEX ()
 {
+  _plugin = "INDICATOR_PLOT_COLOR_COMPARE_INDEX";
 }
 
 int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
 {
-  // INDICATOR_PLOT_COLOR_COMPARE_INDEX,<NAME>,<OP>,<NAME2>,<NAME3>,<COLOR>
-  //                   0                  1      2     3       4       5
-
-  if (command->count() != 6)
-  {
-    qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // OP
+  // NAME2
+  // NAME3
+  // COLOR
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
   // verify NAME
-  int pos = 1;
   int offset = 0;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   QStringList l = name.split(".", QString::SkipEmptyParts);
   if (l.count() == 2)
   {
@@ -59,7 +57,7 @@ int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
     offset = l.at(1).toInt(&ok);
     if (! ok)
     {
-      qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: invalid name" << command->parm(pos);
+      qDebug() << _plugin << "::command: invalid NAME" << name;
       return 1;
     }
   }
@@ -67,24 +65,22 @@ int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
   Curve *line = i->line(name);
   if (! line)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: name not found" << name;
+    qDebug() << _plugin << "::command: NAME not found" << name;
     return 1;
   }
 
   // verify OP
-  pos++;
   Operator top;
-  Operator::Type op = top.stringToOperator(command->parm(pos));
+  Operator::Type op = top.stringToOperator(command->parm("OP"));
   if (op == -1)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: invalid operator" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid OP" << command->parm("OP");
     return 1;
   }
 
   // verify NAME2
-  pos++;
   int offset2 = 0;
-  QString name2 = command->parm(pos);
+  QString name2 = command->parm("NAME2");
   l = name2.split(".", QString::SkipEmptyParts);
   if (l.count() == 2)
   {
@@ -94,7 +90,7 @@ int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
     offset2 = l.at(1).toInt(&ok);
     if (! ok)
     {
-      qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: invalid name2" << command->parm(pos);
+      qDebug() << _plugin << "::command: invalid NAME2" << name2;
       return 1;
     }
   }
@@ -102,14 +98,13 @@ int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
   Curve *line2 = i->line(name2);
   if (! line2)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: name2 not found" << name2;
+    qDebug() << _plugin << "::command: NAME2 not found" << name2;
     return 1;
   }
 
   // verify NAME3
-  pos++;
   int offset3 = 0;
-  QString name3 = command->parm(pos);
+  QString name3 = command->parm("NAME3");
   l = name3.split(".", QString::SkipEmptyParts);
   if (l.count() == 2)
   {
@@ -119,7 +114,7 @@ int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
     offset3 = l.at(1).toInt(&ok);
     if (! ok)
     {
-      qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: invalid name3" << command->parm(pos);
+      qDebug() << _plugin << "::command: invalid NAME3" << name3;
       return 1;
     }
   }
@@ -127,15 +122,14 @@ int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
   Curve *line3 = i->line(name3);
   if (! line3)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: name3 not found" << name3;
+    qDebug() << _plugin << "::command: NAME3 not found" << name3;
     return 1;
   }
 
-  pos++;
-  QColor color(command->parm(pos));
+  QColor color(command->parm("COLOR"));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_COMPARE_INDEX::command: invalid color" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
 
@@ -169,23 +163,23 @@ int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
 
     switch (op)
     {
-      case Operator::_LessThan:
+      case Operator::_LESS_THAN:
         if (bar->data() < bar2->data())
           bar3->setColor(color);
         break;
-      case Operator::_LessThanEqual:
+      case Operator::_LESS_THAN_EQUAL:
         if (bar->data() <= bar2->data())
           bar3->setColor(color);
         break;
-      case Operator::_Equal:
+      case Operator::_EQUAL:
         if (bar->data() == bar2->data())
           bar3->setColor(color);
         break;
-      case Operator::_GreaterThanEqual:
+      case Operator::_GREATER_THAN_EQUAL:
         if (bar->data() >= bar2->data())
           bar3->setColor(color);
         break;
-      case Operator::_GreaterThan:
+      case Operator::_GREATER_THAN:
         if (bar->data() > bar2->data())
           bar3->setColor(color);
         break;
@@ -194,7 +188,7 @@ int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
     }
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

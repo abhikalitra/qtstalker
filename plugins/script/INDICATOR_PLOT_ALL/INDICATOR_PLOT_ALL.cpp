@@ -25,76 +25,69 @@
 
 INDICATOR_PLOT_ALL::INDICATOR_PLOT_ALL ()
 {
+  _plugin = "INDICATOR_PLOT_ALL";
 }
 
 int INDICATOR_PLOT_ALL::command (Command *command)
 {
-  // INDICATOR_PLOT_ALL,<NAME>,<STYLE>,<COLOR>,<Z>
-  //           0          1       2       3     4
-
-  if (command->count() != 5)
-  {
-    qDebug() << "INDICATOR_PLOT_ALL::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // STYLE
+  // COLOR
+  // Z
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT_ALL::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
   // verify name
-  int pos = 1;
-  QString name = command->parm(pos);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (! line)
   {
-    qDebug() << "INDICATOR_PLOT_ALL::command: name not found" << name;
+    qDebug() << _plugin << "::command: NAME not found" << name;
     return 1;
   }
 
   // verify style
-  pos++;
-  int style = line->typeFromString(command->parm(pos));
+  int style = line->typeFromString(command->parm("STYLE"));
   if (style == -1)
   {
-    qDebug() << "INDICATOR_PLOT_ALL::command: invalid style" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid STYLE" << command->parm("STYLE");
     return 1;
   }
   line->setType((Curve::Type) style);
 
   // verify color
-  pos++;
-  QColor color(command->parm(pos));
+  QColor color(command->parm("COLOR"));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_ALL::setColorAll: invalid color" << command->parm(pos);
+    qDebug() << _plugin << "::setColorAll: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
   line->setAllColor(color);
 
   // verify Z
-  pos++;
   bool ok;
-  int z = command->parm(pos).toInt(&ok);
+  int z = command->parm("Z").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_ALL::command: invalid z value" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid Z value" << command->parm("Z");
     return 1;
   }
 
   if (z < 0)
   {
-    qDebug() << "INDICATOR_PLOT_ALL::command: invalid z value must be > -1" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid z value must be > -1" << z;
     return 1;
   }
 
   line->setZ(z);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

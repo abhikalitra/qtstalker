@@ -27,17 +27,20 @@
 
 NEW_DIALOG::NEW_DIALOG ()
 {
+  _plugin = "NEW_DIALOG";
   _type = _DIALOG;
 }
 
 int NEW_DIALOG::command (Command *command)
 {
-  // NEW_DIALOG,TITLE,ITEMS*
-  //      0       1     2
+  // PARMS:
+  // TITLE
+  // ITEMS*
 
-  if (command->count() < 2)
+  QString s = command->parm("TITLE");
+  if (s.isEmpty())
   {
-    qDebug() << "NEW_DIALOG::command: invalid parm count" << command->count();
+    qDebug() << _plugin << "::command: invalid TITLE" << s;
     return 1;
   }
 

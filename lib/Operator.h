@@ -29,16 +29,17 @@ class Operator
   public:
     enum Type
     {
-      _LessThan,
-      _LessThanEqual,
-      _Equal,
-      _GreaterThanEqual,
-      _GreaterThan
+      _LESS_THAN,
+      _LESS_THAN_EQUAL,
+      _EQUAL,
+      _GREATER_THAN_EQUAL,
+      _GREATER_THAN
     };
     
     Operator ();
     QStringList & list ();
     Operator::Type stringToOperator (QString);
+    int test (double val, Operator::Type, double val2);
 
   private:
     QStringList _list;

@@ -26,14 +26,12 @@
 
 CONFIGURE_DIALOG::CONFIGURE_DIALOG ()
 {
+  _plugin = "CONFIGURE_DIALOG";
   _type = _DIALOG;
 }
 
 int CONFIGURE_DIALOG::command (Command *command)
 {
-  // CONFIGURE_DIALOG
-  //        0
-
   ConfigureDialog *dialog = new ConfigureDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   dialog->show();

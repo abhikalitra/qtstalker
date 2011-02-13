@@ -1,56 +1,57 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>Qtstalker: AROON - AROON</title>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
-  <link rel="stylesheet" type="text/css" href="qtstalker.css" media="screen">
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>Qtstalker: AROON - Aroon Indicator</title>
+  <link rel="stylesheet" type="text/css" href="qtstalker.css"
+ media="screen">
   <script src="qtstalker.js" type="text/javascript"> </script>
 </head>
 <body>
-    <div id="content">
-      <div id="rightPanel">
-        <div id="version"></div>
-        <div id="toc">
-          <hr>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="toc.html">Table of Contents</a></li>
-          </ul>
-        </div>
-      </div>
+<div id="content">
+<div id="rightPanel">
+<div id="toc">
+<hr>
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="toc.html">Table of Contents</a></li>
+</ul>
+</div>
+</div>
 <!-- Content -->
-<h1>AROON - AROON</h1>
-<p>
-There are 2 versions of this indicator available:
-</p>
-<ul>
-<li><a href="http://www.tadoc.org/indicator/AROON.htm">AROON</a> - is the
-standard version.</li>
-<li><a href="http://www.tadoc.org/indicator/AROONOSC.htm">AROONOSC</a> - is
-an oscillator version.</li>
-</ul>
-<hr>
-<h2 id="AROON">AROON</h2>
-<p class="api">
-INDICATOR,PLUGIN,AROON,AROON,&lt;UP NAME&gt;,&lt;DOWN NAME&gt;&lt;PERIOD&gt;
-</p>
-<ul>
-  <li>&lt;UP NAME&gt; is the variable name given to the up band</li>
-  <li>&lt;DOWN NAME&gt; is the variable name given to the down band</li>
-  <li>&lt;PERIOD&gt; is an integer</li>
-</ul>
-<hr>
-<h2 id="AROONOSC">AROONOSC</h2>
-<p class="api">
-INDICATOR,PLUGIN,AROON,OSC,&lt;NAME&gt;,&lt;FAST PERIOD&gt;,&lt;SLOW PERIOD&gt;
-</p>
-<ul>
-  <li>&lt;NAME&gt; is the variable name given to the OSC plot</li>
-  <li>&lt;FAST PERIOD&gt; is an integer for the fast value of the
-oscillator. Usually less than the &lt;SLOW PERIOD&gt;.</li>
-  <li>&lt;SLOW PERIOD&gt; is an integer for the slow value of the
-oscillator. Usually greater than the &lt;FAST PERIOD&gt;.</li>
-</ul>
-    </div>
+<h1>AROON - Aroon Indicator<br>
+</h1>
+<br>
+<span style="font-weight: bold;">DESCRIPTION:</span>&nbsp;&nbsp;&nbsp; <a
+ href="http://stockcharts.com/help/doku.php?id=chart_school:technical_indicators:aroon">Aroon</a><br>
+<br>
+<span style="font-weight: bold;">SYNTAX:</span>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+PLUGIN = AROON<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NAME_UPPER = &lt;VARIABLE NAME&gt;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+NAME_LOWER = &lt;VARIABLE NAME&gt;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+PERIOD = &lt;INTEGER&gt;<br>
+<br>
+<span style="font-weight: bold;">RETURNS:</span>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; '0' = Success<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'ERROR' =
+Failure<br>
+<br>
+<span style="font-weight: bold;">EXAMPLE:</span>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+PLUGIN=AROON,NAME_UPPER=aroonup,NAME_LOWER=aroondown,PERIOD=10<br>
+<br>
+<br>
+</div>
 </body>
 </html>

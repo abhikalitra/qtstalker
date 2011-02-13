@@ -137,7 +137,9 @@ void IndicatorNewDialog::done ()
 //  QStringList l;
 //  l << name << _indicator->currentText();
 
-  _command->setReturnData(name);
+  _command->setReturnData("INDICATOR_NEW_DIALOG_NAME", name);
+
+  _command->setReturnCode("0");
 
   accept();
 }

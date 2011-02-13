@@ -14,14 +14,14 @@ $period = 14;
 
 $|++;
 
-$command = "AROON,$aroonUpName,$aroonDownName,$period";
+$command = "PLUGIN=AROON,NAME_UPPER=$aroonUpName,NAME_LOWER=$aroonDownName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$aroonUpName,$aroonUpStyle,$aroonUpColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$aroonUpName,STYLE=$aroonUpStyle,COLOR=$aroonUpColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$aroonDownName,$aroonDownStyle,$aroonDownColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$aroonDownName,STYLE=$aroonDownStyle,COLOR=$aroonDownColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

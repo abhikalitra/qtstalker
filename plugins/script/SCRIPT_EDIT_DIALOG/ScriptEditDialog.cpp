@@ -36,7 +36,7 @@ ScriptEditDialog::ScriptEditDialog (Command *c)
   _command = c;
   _helpFile = "cus.html";
 
-  _name = _command->parm(1);
+  _name = _command->parm("NAME");
 
   QStringList l;
   l << "Qtstalker" << g_session << ":" << tr("Edit Script") << _name;
@@ -177,7 +177,7 @@ void ScriptEditDialog::done ()
   script.setMinutes(_minutes->value());
   db.save(&script);
 
-  _command->setReturnData("0");
+  _command->setReturnCode("0");
 
   saveSettings();
 

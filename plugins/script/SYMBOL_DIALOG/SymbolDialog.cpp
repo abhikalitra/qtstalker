@@ -43,7 +43,7 @@ SymbolDialog::SymbolDialog (Command *c)
 
   createGUI();
 
-  _returnFlag = _command->parm(1).toInt();
+  _returnFlag = _command->parm("FLAG").toInt();
 
   loadExchanges();
 
@@ -111,6 +111,18 @@ void SymbolDialog::createGUI ()
 
   tvbox->addStretch(1);
 
+  QPushButton *b = new QPushButton;
+  b->setText(tr("Select"));
+  b->setToolTip(tr("Select All Items"));
+  connect(b, SIGNAL(clicked()), _searchList, SLOT(selectAll()));
+  tvbox->addWidget(b);
+
+  b = new QPushButton;
+  b->setText(tr("Unselect"));
+  b->setToolTip(tr("Unselect All Items"));
+  connect(b, SIGNAL(clicked()), _searchList, SLOT(clearSelection()));
+  tvbox->addWidget(b);
+
   _addButton = new QPushButton;
   _addButton->setText(">>");
   connect(_addButton, SIGNAL(clicked()), this, SLOT(addButtonPressed()));
@@ -160,7 +172,7 @@ void SymbolDialog::createGUI ()
   _cancelButton->setDefault(TRUE);
 
   // help button
-  QPushButton *b = bbox->button(QDialogButtonBox::Help);
+  b = bbox->button(QDialogButtonBox::Help);
   connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 
@@ -197,16 +209,20 @@ void SymbolDialog::done ()
   QStringList l;
   if (_returnFlag)
   {
-    l << _exchanges->currentText();
+    _command->setReturnData("SYMBOL_DIALOG_EXCHANGE", _exchanges->currentText());
+    
     if (_search->text().isEmpty())
-      l << "*";
+      _command->setReturnData("SYMBOL_DIALOG_SYMBOL", "*");
     else
-      l << _search->text();
+      _command->setReturnData("SYMBOL_DIALOG_SYMBOL", _search->text());
   }
   else
+  {
     symbols(l);
-  
-  _command->setReturnData(l.join(","));
+    _command->setReturnData("SYMBOL_DIALOG_SYMBOLS", l.join(";"));
+  }
+
+  _command->setReturnCode("0");
 
   accept();
 }

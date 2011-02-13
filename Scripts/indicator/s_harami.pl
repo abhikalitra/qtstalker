@@ -17,18 +17,18 @@ $haramiCrossColor = 'orange';
 
 $|++;
 
-$command = "CANDLES,HARAMI,$haramiName";
+$command = "PLUGIN=CANDLE_METHOD,METHOD=HARAMI,NAME=$haramiName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$haramiName,$haramiStyle,$haramiColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$haramiName,STYLE=$haramiStyle,COLOR=$haramiColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CANDLES,HARAMICROSS,$haramiCrossName";
+$command = "PLUGIN=CANDLE_METHOD,METHOD=HARAMICROSS,NAME=$haramiCrossName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$haramiCrossName,$haramiCrossStyle,$haramiCrossColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$haramiCrossName,STYLE=$haramiCrossStyle,COLOR=$haramiCrossColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

@@ -28,21 +28,16 @@
 
 BARS::BARS ()
 {
+  _plugin = "BARS";
   _method << "BARS" << "CANDLES" << "Open" << "High" << "Low" << "Close" << "Volume" << "OI";
 }
 
 int BARS::command (Command *command)
 {
-  // BARS,<METHOD>
-  //  0      1
+  // PARMS:
+  // <METHOD>
 
-  if (command->count() < 2)
-  {
-    qDebug() << "BARS::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  switch ((Method) _method.indexOf(command->parm(1)))
+  switch ((Method) _method.indexOf(command->parm("METHOD")))
   {
     case _BARS:
       return getBars(command);
@@ -67,59 +62,52 @@ int BARS::command (Command *command)
 
 int BARS::getBars (Command *command)
 {
-  // BARS,BARS,<NAME>,<UP_COLOR>,<DOWN_COLOR>,<NEUTRAL_COLOR>
-  //  0    1      2        3          4             5
-
-  if (command->count() != 6)
-  {
-    qDebug() << "BARS::getBars: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // <NAME>
+  // <COLOR_UP>
+  // <COLOR_DOWN>
+  // <COLOR_NEUTRAL>
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "BARS::getBars: no indicator";
+    qDebug() << _plugin << "::getBars: no indicator";
     return 1;
   }
 
   int size = g_barData->count();
   if (size < 1)
   {
-    qDebug() << "BARS::getBars: no bars";
+    qDebug() << _plugin << "::getBars: no bars";
     return 1;
   }
 
-  int pos = 2;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "BARS::getBars: duplicate name" << name;
+    qDebug() << _plugin << "::getBars: duplicate name" << name;
     return 1;
   }
 
-  pos++;
-  QColor upColor(command->parm(pos));
+  QColor upColor(command->parm("COLOR_UP"));
   if (! upColor.isValid())
   {
-    qDebug() << "BARS::getBars: invalid up color" << command->parm(pos);
+    qDebug() << _plugin << "::getBars: invalid COLOR_UP" << command->parm("COLOR_UP");
     return 1;
   }
 
-  pos++;
-  QColor downColor(command->parm(pos));
+  QColor downColor(command->parm("COLOR_DOWN"));
   if (! downColor.isValid())
   {
-    qDebug() << "BARS::getBars: invalid down color" << command->parm(pos);
+    qDebug() << _plugin << "::getBars: invalid COLOR_DOWN" << command->parm("COLOR_DOWN");
     return 1;
   }
 
-  pos++;
-  QColor neutralColor(command->parm(pos));
+  QColor neutralColor(command->parm("COLOR_NEUTRAL"));
   if (! neutralColor.isValid())
   {
-    qDebug() << "BARS::getBars: invalid neutral color" << command->parm(pos);
+    qDebug() << _plugin << "::getBars: invalid COLOR_NEUTRAL" << command->parm("COLOR_NEUTRAL");
     return 1;
   }
 
@@ -157,66 +145,59 @@ int BARS::getBars (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int BARS::getCandles (Command *command)
 {
-  // BARS,CANDLES,<NAME>,<UP_COLOR>,<DOWN_COLOR>,<NEUTRAL_COLOR>
-  //  0      1      2        3           4             5
-
-  if (command->count() != 6)
-  {
-    qDebug() << "BARS::getCandles: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // <NAME>
+  // <COLOR_UP>
+  // <COLOR_DOWN>
+  // <COLOR_NEUTRAL>
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "BARS::getCandles: no indicator";
+    qDebug() << _plugin << "::getCandles: no indicator";
     return 1;
   }
 
   int size = g_barData->count();
   if (size < 1)
   {
-    qDebug() << "BARS::getCandles: no bars";
+    qDebug() << _plugin << "::getCandles: no bars";
     return 1;
   }
 
-  int pos = 2;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "BARS::getCandles: duplicate name" << name;
+    qDebug() << _plugin << "::getCandles: duplicate name" << name;
     return 1;
   }
 
-  pos++;
-  QColor upColor(command->parm(pos));
+  QColor upColor(command->parm("COLOR_UP"));
   if (! upColor.isValid())
   {
-    qDebug() << "BARS::getCandles: invalid up color" << command->parm(pos);
+    qDebug() << _plugin << "::getCandles: invalid COLOR_UP" << command->parm("COLOR_UP");
     return 1;
   }
 
-  pos++;
-  QColor downColor(command->parm(pos));
+  QColor downColor(command->parm("COLOR_DOWN"));
   if (! downColor.isValid())
   {
-    qDebug() << "BARS::getCandles: invalid down color" << command->parm(pos);
+    qDebug() << _plugin << "::getCandles: invalid COLOR_DOWN" << command->parm("COLOR_DOWN");
     return 1;
   }
 
-  pos++;
-  QColor neutralColor(command->parm(pos));
+  QColor neutralColor(command->parm("COLOR_NEUTRAL"));
   if (! neutralColor.isValid())
   {
-    qDebug() << "BARS::getCandles: invalid neutral color" << command->parm(pos);
+    qDebug() << _plugin << "::getCandles: invalid COLOR_NEUTRAL" << command->parm("COLOR_NEUTRAL");
     return 1;
   }
 
@@ -254,54 +235,49 @@ int BARS::getCandles (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int BARS::getBarField (Command *command)
 {
-  // BARS,<METHOD>,<NAME>
-  //  0      1       2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "BARS::getBarField: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // <METHOD>
+  // <NAME>
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "BARS::getBarField: no indicator";
+    qDebug() << _plugin << "::getBarField: no indicator";
     return 1;
   }
 
   if (g_barData->count() < 1)
   {
-    qDebug() << "BARS::getBarField: no bars";
+    qDebug() << _plugin << "::getBarField: no bars";
     return 1;
   }
 
-  QString name = command->parm(2);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "BARS::getBarField: duplicate name" << name;
+    qDebug() << _plugin << "::getBarField: duplicate name" << name;
     return 1;
   }
 
-  line = g_barData->input(g_barData->inputType(command->parm(1)));
+  line = g_barData->input(g_barData->inputType(command->parm("METHOD")));
   if (! line)
   {
-    qDebug() << "BARS::getBarField: no input returned";
+    qDebug() << _plugin << "::getBarField: no input returned";
     return 1;
   }
 
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

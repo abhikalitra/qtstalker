@@ -14,18 +14,18 @@ $method = 'Long';
 
 $|++;
 
-$command = "BARS,BARS,$barsName,green,red,blue";
+$command = "PLUGIN=OHLC,NAME=$barsName,COLOR_UP=green,COLOR_DOWN=red,COLOR_NEUTRAL=blue";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,$barsName,0";
+$command = "PLUGIN=INDICATOR_PLOT,NAME=$barsName,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "T3,$t3Name,$barsName,$t3Period,$vfactor";
+$command = "PLUGIN=T3,NAME=$t3Name,INPUT=$barsName,PERIOD=$t3Period,VFACTOR=$vfactor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$t3Name,$t3Style,$t3Color,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$t3Name,STYLE=$t3Style,COLOR=$t3Color,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

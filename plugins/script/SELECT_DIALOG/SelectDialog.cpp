@@ -35,18 +35,15 @@ SelectDialog::SelectDialog (Command *c)
   _helpFile = "main.html";
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Select") << _command->parm(2);
+  l << "QtStalker" << g_session << ":" << tr("Select") << _command->parm("TITLE");
   setWindowTitle(l.join(" "));
 
   createGUI();
 
-  if (_command->parm(1).toInt())
+  if (_command->parm("MODE").toInt())
     _list->setSelectionMode(QAbstractItemView::SingleSelection);
 
-  l.clear();
-  int loop = 3;
-  for (; loop < _command->count(); loop++)
-    l << _command->parm(loop);
+  l = _command->parm("ITEMS").split(";", QString::SkipEmptyParts);
   _list->addItems(l);
 
   loadSettings();
@@ -62,7 +59,7 @@ void SelectDialog::createGUI ()
   vbox->setSpacing(2);
   setLayout(vbox);
 
-  QLabel *label = new QLabel(_command->parm(2));
+  QLabel *label = new QLabel(_command->parm("TITLE"));
   vbox->addWidget(label);
 
   // list
@@ -117,7 +114,9 @@ void SelectDialog::done ()
   for (; loop < sl.count(); loop++)
     l << sl.at(loop)->text();
   
-  _command->setReturnData(l.join(","));
+  _command->setReturnData("SELECT_DIALOG_SELECTED", l.join(";"));
+
+  _command->setReturnCode("0");
 
   saveSettings();
   

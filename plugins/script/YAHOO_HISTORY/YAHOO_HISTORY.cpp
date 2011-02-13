@@ -29,67 +29,81 @@
 
 YAHOO_HISTORY::YAHOO_HISTORY ()
 {
+  _plugin = "YAHOO_HISTORY";
 }
 
 int YAHOO_HISTORY::command (Command *command)
 {
-  // YAHOO_HISTORY,<START DATE>,<END DATE>,SYMBOL*
-  //       0             1           2       3           
-  
-  if (command->count() < 4)
+  // PARMS:
+  // DATE_START
+  // DATE_END
+  // SYMBOL - colon delimited list
+
+  // get DATE_START
+  QString key = command->parm("DATE_START");
+  if (key.isEmpty())
   {
-    qDebug() << "YAHOO_HISTORY::command: invalid parm count" << command->count();
+    qDebug() << _plugin << "::command: DATE_START empty";
     return 1;
   }
-
-  int pos = 1;
-  QDateTime sd = QDateTime::fromString(command->parm(pos), Qt::ISODate);
+  QDateTime sd = QDateTime::fromString(command->returnData(key), Qt::ISODate);
   if (! sd.isValid())
   {
-    qDebug() << "YAHOO_HISTORY::command: invalid start date" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid DATE_START" << command->returnData(key);
     return 1;
   }
 
-  pos++;
-  QDateTime ed = QDateTime::fromString(command->parm(pos), Qt::ISODate);
-  if (! ed.isValid())
+  // get DATE_END
+  key = command->parm("DATE_END");
+  if (key.isEmpty())
   {
-    qDebug() << "YAHOO_HISTORY::command: invalid end date" << command->parm(pos);
+    qDebug() << _plugin << "::command: DATE_END empty";
     return 1;
   }
+  QDateTime ed = QDateTime::fromString(command->returnData(key), Qt::ISODate);
+  if (! ed.isValid())
+  {
+    qDebug() << _plugin << "::command: invalid DATE_END" << command->returnData(key);;
+    return 1;
+  }
+
+  // get SYMBOL
+  key = command->parm("SYMBOL");
+  if (key.isEmpty())
+  {
+    qDebug() << _plugin << "::command: SYMBOL empty";
+    return 1;
+  }
+  QStringList l = command->returnData(key).split(",", QString::SkipEmptyParts);
 
   ScriptPluginFactory fac;
   ScriptPlugin *plug = fac.plugin("YAHOO_DATABASE");
   if (! plug)
   {
-    qDebug() << "YAHOO_HISTORY::command: no plugin";
+    qDebug() << _plugin << "::command: no plugin";
     return 1;
   }
 
-  pos++;
-  for (; pos < command->count(); pos++)
+  int loop = 0;
+  for (; loop < l.count(); loop++)
   {
     QNetworkAccessManager manager;
     Setting data;
-    data.setData("ysymbol", command->parm(pos));
+    data.setData("ysymbol", l.at(loop));
     data.setData("adjustment", 1);
 
     QStringList cl;
-    cl << "YAHOO_DATABASE" << "LOAD" << command->parm(pos);
+    cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=LOAD" << "YSYMBOL=" + l.at(loop);
     Command tcommand(cl.join(","));
     if (plug->command(&tcommand))
     {
-      qDebug() << "YahooDialog::done: command error";
+      qDebug() << _plugin << "::command: command error";
       continue;
     }
 
-    cl = tcommand.stringData().split(",", QString::SkipEmptyParts);
-    if (cl.count() != 2)
-      continue;
-
-    data.setData("exchange", cl.at(0));
-    data.setData("symbol", cl.at(1));
-    data.setData("name", cl.at(1));
+    data.setData("exchange", tcommand.returnData("YAHOO_DATABASE_EXCHANGE"));
+    data.setData("symbol", tcommand.returnData("YAHOO_DATABASE_SYMBOL"));
+    data.setData("name", tcommand.returnData("YAHOO_DATABASE_SYMBOL"));
 
     // get name
     downloadName(data);
@@ -111,7 +125,7 @@ int YAHOO_HISTORY::command (Command *command)
 
   delete plug;
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
@@ -156,7 +170,7 @@ void YAHOO_HISTORY::parse (QByteArray &ba, Setting &data)
     QStringList l = ts.split(",");
     if (l.count() != 7)
     {
-      qDebug() << "YAHOO_HISTORY::parse:" << data.data("ysymbol") << "line" << QString::number(line) << " # of bar fields, record skipped";
+      qDebug() << _plugin << "::parse:" << data.data("ysymbol") << "line" << QString::number(line) << " # of bar fields, record skipped";
       continue;
     }
 
@@ -166,7 +180,7 @@ void YAHOO_HISTORY::parse (QByteArray &ba, Setting &data)
       double adjclose = l[6].toDouble(&ok);
       if (! ok)
       {
-        qDebug() << "YAHOO_HISTORY::parse:" << data.data("ysymbol") << "line" << QString::number(line) << " invalid adjusted close, record skipped";
+        qDebug() << _plugin << "::parse:" << data.data("ysymbol") << "line" << QString::number(line) << " invalid adjusted close, record skipped";
         continue;
       }
 
@@ -190,7 +204,7 @@ void YAHOO_HISTORY::parse (QByteArray &ba, Setting &data)
     QDateTime dt = QDateTime::fromString(l.at(0), QString("yyyy-MM-ddHHmmss"));
     if (! dt.isValid())
     {
-      qDebug() << "YAHOO_HISTORY::parse: invalid date" << data.data("ysymbol") << l.at(0) << "line" << QString::number(loop);
+      qDebug() << _plugin << "::parse: invalid date" << data.data("ysymbol") << l.at(0) << "line" << QString::number(loop);
       continue;
     }
     else
@@ -198,31 +212,31 @@ void YAHOO_HISTORY::parse (QByteArray &ba, Setting &data)
 
     if (bar->setOpen(l.at(1)))
     {
-      qDebug() << "YAHOO_HISTORY::parse: invalid open" << data.data("ysymbol") << l.at(1) << "line" << QString::number(loop);
+      qDebug() << _plugin << "::parse: invalid open" << data.data("ysymbol") << l.at(1) << "line" << QString::number(loop);
       continue;
     }
 
     if (bar->setHigh(l.at(2)))
     {
-      qDebug() << "YAHOO_HISTORY::parse: invalid high" << data.data("ysymbol") << l.at(2) << "line" << QString::number(loop);
+      qDebug() << _plugin << "::parse: invalid high" << data.data("ysymbol") << l.at(2) << "line" << QString::number(loop);
       continue;
     }
 
     if (bar->setLow(l.at(3)))
     {
-      qDebug() << "YAHOO_HISTORY::parse: invalid low" << data.data("ysymbol") << l.at(3) << "line" << QString::number(loop);
+      qDebug() << _plugin << "::parse: invalid low" << data.data("ysymbol") << l.at(3) << "line" << QString::number(loop);
       continue;
     }
 
     if (bar->setClose(l.at(4)))
     {
-      qDebug() << "YAHOO_HISTORY::parse: invalid close" << data.data("ysymbol") << l.at(4) << "line" << QString::number(loop);
+      qDebug() << _plugin << "::parse: invalid close" << data.data("ysymbol") << l.at(4) << "line" << QString::number(loop);
       continue;
     }
 
     if (bar->setVolume(l.at(5)))
     {
-      qDebug() << "YAHOO_HISTORY::parse: invalid volume" << data.data("ysymbol") << l.at(5) << "line" << QString::number(loop);
+      qDebug() << _plugin << "::parse: invalid volume" << data.data("ysymbol") << l.at(5) << "line" << QString::number(loop);
       continue;
     }
 

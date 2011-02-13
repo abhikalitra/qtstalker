@@ -12,18 +12,18 @@ $maxStep = 0.2;
 
 $|++;
 
-$command = "BARS,BARS,$barsName,green,red,blue";
+$command = "PLUGIN=OHLC,NAME=$barsName,COLOR_UP=green,COLOR_DOWN=red,COLOR_NEUTRAL=blue";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,$barsName,0";
+$command = "PLUGIN=INDICATOR_PLOT,NAME=$barsName,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "SAR,$sarName,$initial,$maxStep";
+$command = "PLUGIN=SAR,NAME=$sarName,STEP_INITIAL=$initial,STEP_MAX=$maxStep";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$sarName,$sarStyle,$sarColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$sarName,STYLE=$sarStyle,COLOR=$sarColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

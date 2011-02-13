@@ -29,74 +29,68 @@
 
 MAVP::MAVP ()
 {
+  _plugin = "MAVP";
 }
 
 int MAVP::command (Command *command)
 {
-  // MAVP,<NAME>,<INPUT_1>,<INPUT_2>,<MIN_PERIOD>,<MAX_PERIOD>,<MA_TYPE>
-  //  0      1       2         3         4             5           6
-
-  if (command->count() != 7)
-  {
-    qDebug() << "MAVP::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INPUT
+  // INPUT2
+  // PERIOD_MIN
+  // PERIOD_MAX
+  // MA_TYPE
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "MAVP::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "MAVP::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "MAVP::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;
-  Curve *in2 = i->line(command->parm(pos));
+  Curve *in2 = i->line(command->parm("INPUT2"));
   if (! in2)
   {
-    qDebug() << "MAVP::command: input 2 missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT2 missing" << command->parm("INPUT2");
     return 1;
   }
 
-  pos++;
   bool ok;
-  int min = command->parm(pos).toInt(&ok);
+  int min = command->parm("PERIOD_MIN").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MAVP::command: invalid min period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_MIN" << command->parm("PERIOD_MIN");
     return 1;
   }
 
-  pos++;
-  int max = command->parm(pos).toInt(&ok);
+  int max = command->parm("PERIOD_MAX").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MAVP::command: invalid max period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_MAX" << command->parm("PERIOD_MAX");
     return 1;
   }
 
-  pos++;
   FunctionMA fma;
-  int type = fma.typeFromString(command->parm(pos));
+  int type = fma.typeFromString(command->parm("MA_TYPE"));
   if (type == -1)
   {
-    qDebug() << "MAVP::command: invalid ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid MA_TYPE" << command->parm("MA_TYPE");
     return 1;
   }
 
@@ -148,7 +142,7 @@ int MAVP::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "MAVP::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -180,7 +174,7 @@ int MAVP::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

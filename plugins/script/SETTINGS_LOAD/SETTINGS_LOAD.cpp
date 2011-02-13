@@ -27,21 +27,18 @@
 
 SETTINGS_LOAD::SETTINGS_LOAD ()
 {
+  _plugin = "SETTINGS_LOAD";
 }
 
 int SETTINGS_LOAD::command (Command *command)
 {
-  // SETTINGS_LOAD,<KEY>
-  //       0         1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "SETTINGS_LOAD::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // KEY
 
   QSettings set(g_settingsFile);
-  command->setReturnData(set.value(command->parm(1)).toString());
+  command->setReturnData(_plugin + "_DATA", set.value(command->parm("KEY")).toString());
+
+  command->setReturnCode("0");
 
   return 0;
 }

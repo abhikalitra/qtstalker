@@ -27,17 +27,27 @@
 
 MESSAGE_DIALOG::MESSAGE_DIALOG ()
 {
+  _plugin = "MESSAGE_DIALOG";
   _type = _DIALOG;
 }
 
 int MESSAGE_DIALOG::command (Command *command)
 {
-  // MESSAGE_DIALOG,TITLE,MESSAGE
-  //        0         1      2
+  // PARMS:
+  // TITLE
+  // MESSAGE
 
-  if (command->count() != 3)
+  QString s = command->parm("TITLE");
+  if (s.isEmpty())
   {
-    qDebug() << "MESSAGE_DIALOG::command: invalid parm count" << command->count();
+    qDebug() << _plugin << "::command: invalid TITLE" << s;
+    return 1;
+  }
+
+  s = command->parm("MESSAGE");
+  if (s.isEmpty())
+  {
+    qDebug() << _plugin << "::command: invalid MESSAGE" << s;
     return 1;
   }
 

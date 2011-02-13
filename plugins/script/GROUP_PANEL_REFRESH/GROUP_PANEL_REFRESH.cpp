@@ -26,16 +26,14 @@
 
 GROUP_PANEL_REFRESH::GROUP_PANEL_REFRESH ()
 {
+  _plugin = "GROUP_PANEL_REFRESH";
 }
 
 int GROUP_PANEL_REFRESH::command (Command *command)
 {
-  // GROUP_PANEL_REFRESH
-  //          0
-
   g_middleMan->groupPanelRefresh();
   
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

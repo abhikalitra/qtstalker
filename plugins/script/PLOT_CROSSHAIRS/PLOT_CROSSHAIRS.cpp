@@ -26,30 +26,25 @@
 
 PLOT_CROSSHAIRS::PLOT_CROSSHAIRS ()
 {
+  _plugin = "PLOT_CROSSHAIRS";
 }
 
 int PLOT_CROSSHAIRS::command (Command *command)
 {
-  // PLOT_CROSSHAIRS,<STATUS>
-  //         0          1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "PLOT_CROSSHAIRS::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // STATUS
 
   bool ok;
-  int status = command->parm(1).toInt(&ok);
+  int status = command->parm("STATUS").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "PLOT_CROSSHAIRS::command: invalid status" << command->parm(2);
+    qDebug() << _plugin << "::command: invalid STATUS" << command->parm("STATUS");
     return 1;
   }
 
   g_middleMan->crosshairs(status);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

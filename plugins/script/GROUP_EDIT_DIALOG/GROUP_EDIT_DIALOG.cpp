@@ -27,17 +27,19 @@
 
 GROUP_EDIT_DIALOG::GROUP_EDIT_DIALOG ()
 {
+  _plugin = "GROUP_EDIT_DIALOG";
   _type = _DIALOG;
 }
 
 int GROUP_EDIT_DIALOG::command (Command *command)
 {
-  // GROUP_EDIT_DIALOG,NAME,ITEMS*
-  //        0           1     2
+  // PARMS:
+  // NAME
 
-  if (command->count() < 2)
+  QString name = command->parm("NAME");
+  if (name.isEmpty())
   {
-    qDebug() << "GROUP_EDIT_DIALOG::command: invalid parm count" << command->count();
+    qDebug() << _plugin << "::command: invalid NAME";
     return 1;
   }
 

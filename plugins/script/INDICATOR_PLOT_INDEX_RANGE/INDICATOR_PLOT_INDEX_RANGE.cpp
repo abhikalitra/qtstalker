@@ -25,33 +25,26 @@
 
 INDICATOR_PLOT_INDEX_RANGE::INDICATOR_PLOT_INDEX_RANGE ()
 {
+  _plugin = "INDICATOR_PLOT_INDEX_RANGE";
 }
 
 int INDICATOR_PLOT_INDEX_RANGE::command (Command *command)
 {
-  // INDICATOR_PLOT_INDEX_RANGE,<NAME>
-  //               0              1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "INDICATOR_PLOT_INDEX_RANGE::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_RANGE::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (! line)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_RANGE::command: name not found" << name;
+    qDebug() << _plugin << "::command: NAME not found" << name;
     return 1;
   }
 
@@ -59,9 +52,10 @@ int INDICATOR_PLOT_INDEX_RANGE::command (Command *command)
   int end = 0;
   line->keyRange(start, end);
 
-  QStringList l;
-  l << QString::number(start) << QString::number(end);
-  command->setReturnData(l.join(","));
+  command->setReturnData(_plugin + "_START", QString::number(start));
+  command->setReturnData(_plugin + "_END", QString::number(end));
+
+  command->setReturnCode("0");
 
   return 0;
 }

@@ -25,21 +25,16 @@
 
 GROUP_DATABASE::GROUP_DATABASE ()
 {
+  _plugin = "GROUP_DATABASE";
   _method << "LOAD" << "SAVE" << "SAVE_ALL" << "DELETE" << "GROUPS";
 }
 
 int GROUP_DATABASE::command (Command *command)
 {
-  // GROUP_DATABASE,<METHOD>
-  //         0          1
-  
-  if (command->count() < 2)
-  {
-    qDebug() << "GROUP_DATABASE::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
 
-  switch ((Method) _method.indexOf(command->parm(1)))
+  switch ((Method) _method.indexOf(command->parm("METHOD")))
   {
     case _LOAD:
       return load(command);
@@ -65,127 +60,104 @@ int GROUP_DATABASE::command (Command *command)
 
 int GROUP_DATABASE::load (Command *command)
 {
-  // GROUP_DATABASE,<LOAD>,<NAME>
-  //       0          1       2
+  // PARMS:
+  // METHOD
+  // NAME
 
-  if (command->count() != 3)
-  {
-    qDebug() << "GROUP_DATABASE::load: invalid parm count" << command->count();
-    return 1;
-  }
-
-  QString name = command->parm(2);
+  QString name = command->parm("NAME");
   
   QStringList l;
   if (_db.load(name, l))
   {
-    qDebug() << "GROUP_DATABASE::load: GroupDataBase error";
+    qDebug() << _plugin << "::load: GroupDataBase error";
     return 1;
   }
   
-  command->setReturnData(l.join(","));
+  command->setReturnData(_plugin + "_GROUP", l.join(";"));
 
+  command->setReturnCode("0");
+  
   return 0;
 }
 
 int GROUP_DATABASE::save (Command *command)
 {
-  // GROUP_DATABASE,<SAVE>,<NAME>,*
-  //        0          1       2    *
+  // PARMS:
+  // METHOD
+  // NAME
+  // ITEMS - semicolon delimited string
 
-  if (command->count() < 3)
-  {
-    qDebug() << "GROUP_DATABASE::save: invalid parm count" << command->count();
-    return 1;
-  }
+  QString name = command->parm("NAME");
 
-  QString name = command->parm(2);
-
-  QStringList l;
-  int loop = 3;
-  for (; loop < command->count(); loop++)
-    l << command->parm(loop);
+  QStringList l = command->parm("ITEMS").split(";", QString::SkipEmptyParts);
 
   if (_db.save(name, l))
   {
-    qDebug() << "GROUP_DATABASE::save: GroupDataBase error";
+    qDebug() << _plugin << "::save: GroupDataBase error";
     return 1;
   }
   
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int GROUP_DATABASE::saveAll (Command *command)
 {
-  // GROUP_DATABASE,SAVE_ALL,<NAME>,*
-  //        0          1       2    *
+  // PARMS:
+  // METHOD
+  // NAME
+  // ITEMS -  - semicolon delimited string
 
-  if (command->count() < 3)
-  {
-    qDebug() << "GROUP_DATABASE::saveAll: invalid parm count" << command->count();
-    return 1;
-  }
+  QString name = command->parm("NAME");
 
-  QString name = command->parm(2);
-
-  QStringList l;
-  int loop = 3;
-  for (; loop < command->count(); loop++)
-    l << command->parm(loop);
+  QStringList l = command->parm("ITEMS").split(";", QString::SkipEmptyParts);
 
   if (_db.saveAll(name, l))
   {
-    qDebug() << "GROUP_DATABASE::saveAll: GroupDataBase error";
+    qDebug() << _plugin << "::saveAll: GroupDataBase error";
     return 1;
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }
 
 int GROUP_DATABASE::deleteGroup (Command *command)
 {
-  // GROUP_DATABASE,<DELETE>,<NAME>,*
-  //        0          1       2    *
+  // PARMS:
+  // METHOD
+  // NAME - semicolon delimited string
 
-  if (command->count() < 3)
-  {
-    qDebug() << "GROUP_DATABASE::deleteGroup: invalid parm count" << command->count();
-    return 1;
-  }
-
-  QStringList l;
-  int loop = 2;
-  for (; loop < command->count(); loop++)
-    l << command->parm(loop);
+  QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
 
   if (_db.deleteGroup(l))
   {
-    qDebug() << "GROUP_DATABASE::deleteGroup: GroupDataBase error";
+    qDebug() << _plugin << "::deleteGroup: GroupDataBase error";
     return 1;
   }
   
-  command->setReturnData("0");
+  command->setReturnCode("0");
   
   return 0;
 }
 
 int GROUP_DATABASE::groups (Command *command)
 {
-  // GROUP_DATABASE,<GROUPS>
-  //        0          1
+  // PARMS:
+  // METHOD
   
   QStringList l;
   if (_db.groups(l))
   {
-    qDebug() << "GROUP_DATABASE::groups: GroupDataBase error";
+    qDebug() << _plugin << "::groups: GroupDataBase error";
     return 1;
   }
 
-  command->setReturnData(l.join(","));
+  command->setReturnData(_plugin + "_GROUPS", l.join(";"));
+
+  command->setReturnCode("0");
 
   return 0;
 }

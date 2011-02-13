@@ -304,6 +304,49 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>CANDLESDialog</name>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BARS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CSVDeleteDialog</name>
     <message>
         <source>Delete Rules</source>
@@ -1451,10 +1494,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>1 Minute</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1491,27 +1530,7 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>OI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Unable to launch Qt Assistant (%1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>AvgPrice</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MedianPrice</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TypicalPrice</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>WCPrice</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1958,11 +1977,11 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Run at startup</source>
+        <source>Run this script every X minutes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Run this script as soon as QtStalker starts.</source>
+        <source>Run every X minutes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2188,11 +2207,146 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Symbols</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select All Items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect All Items</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SymbolListWidget</name>
     <message>
         <source>Name: </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TestReportDialog</name>
+    <message>
+        <source>Test Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Equity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit Factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Payoff Ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% Equity Gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% Profitable Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Winning Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Losing Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Drawdown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Avg Profit/Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Winning Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Losing Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Avg Bars Held</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min Bars Held</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Bars Held</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total Commissions</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

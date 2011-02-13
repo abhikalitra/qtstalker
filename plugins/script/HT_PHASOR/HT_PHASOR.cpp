@@ -28,49 +28,43 @@
 
 HT_PHASOR::HT_PHASOR ()
 {
+  _plugin = "HT_PHASOR";
 }
 
 int HT_PHASOR::command (Command *command)
 {
-  // HT_PHASOR,<INPUT>,<PHASE NAME>,<QUAD NAME>
-  //     0        1          2           3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "HT_PHASOR::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // INPUT
+  // NAME_PHASE
+  // NAME_QUAD
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "HT_PHASOR::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "HT_PHASOR::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;  
-  QString pname = command->parm(pos);
+  QString pname = command->parm("NAME_PHASE");
   Curve *line = i->line(pname);
   if (line)
   {
-    qDebug() << "HT_PHASOR::command: duplicate phase name" << pname;
+    qDebug() << _plugin << "::command: duplicate NAME_PHASE" << pname;
     return 1;
   }
 
-  pos++;
-  QString qname = command->parm(pos);
+  QString qname = command->parm("NAME_QUAD");
   line = i->line(qname);
   if (line)
   {
-    qDebug() << "HT_PHASOR::command: duplicate quad name" << qname;
+    qDebug() << _plugin << "::command: duplicate NAME_QUAD" << qname;
     return 1;
   }
 
@@ -104,7 +98,7 @@ int HT_PHASOR::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "HT_PHASOR::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -128,7 +122,7 @@ int HT_PHASOR::command (Command *command)
   i->setLine(pname, pline);
   i->setLine(qname, qline);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

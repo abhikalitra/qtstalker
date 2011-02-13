@@ -26,22 +26,25 @@
 
 COLOR_DIALOG::COLOR_DIALOG ()
 {
+  _plugin = "COLOR_DIALOG";
   _type = _DIALOG;
 }
 
 int COLOR_DIALOG::command (Command *command)
 {
-  // COLOR_DIALOG,<COLOR>
-  //      0          1
+  // PARMS:
+  // COLOR
 
   _command = command;
   QColor c(Qt::white);
-  if (command->count() == 2)
+
+  QString s = command->parm("COLOR");
+  if (! s.isEmpty())
   {
-    c.setNamedColor(command->parm(1));
+    c.setNamedColor(s);
     if (! c.isValid())
     {
-      qDebug() << "COLOR_DIALOG::command: invalid color" << command->parm(1);
+      qDebug() << _plugin << "::command: invalid color" << s;
       return 1;
     }
   }
@@ -57,7 +60,10 @@ int COLOR_DIALOG::command (Command *command)
 
 void COLOR_DIALOG::colorSelected (QColor c)
 {
-  _command->setReturnData(c.name());
+  _command->setReturnData(_plugin + "_COLOR", c.name());
+
+  _command->setReturnCode("0");
+
   emit signalResume();
 }
 

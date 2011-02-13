@@ -26,19 +26,22 @@
 
 FONT_DIALOG::FONT_DIALOG ()
 {
+  _plugin = "FONT_DIALOG";
   _type = _DIALOG;
 }
 
 int FONT_DIALOG::command (Command *command)
 {
-  // FONT_DIALOG,FONT
-  //      0       1
+  // PARMS:
+  // FONT
 
   _command = command;
   QFont font;
-  if (command->count() == 2)
+
+  QString s = command->parm("FONT");
+  if (! s.isEmpty())
   {
-    QStringList l = command->parm(1).split(";");
+    QStringList l = s.split(";");
     font.fromString(l.join(","));
   }
 
@@ -54,7 +57,10 @@ int FONT_DIALOG::command (Command *command)
 void FONT_DIALOG::fontSelected (QFont font)
 {
   QStringList l = font.toString().split(",", QString::SkipEmptyParts);
-  _command->setReturnData(l.join(";"));
+  _command->setReturnData(_plugin + "_FONT", l.join(";"));
+  
+  _command->setReturnCode("0");
+  
   emit signalResume();
 }
 

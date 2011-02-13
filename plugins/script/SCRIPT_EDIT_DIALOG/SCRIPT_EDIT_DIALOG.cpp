@@ -27,17 +27,19 @@
 
 SCRIPT_EDIT_DIALOG::SCRIPT_EDIT_DIALOG ()
 {
+  _plugin = "SCRIPT_EDIT_DIALOG";
   _type = _DIALOG;
 }
 
 int SCRIPT_EDIT_DIALOG::command (Command *command)
 {
-  // SCRIPT_EDIT_DIALOG,NAME
-  //          0          1
+  // PARMS:
+  // NAME
 
-  if (command->count() < 2)
+  QString name = command->parm("NAME");
+  if (name.isEmpty())
   {
-    qDebug() << "SCRIPT_EDIT_DIALOG::command: invalid parm count" << command->count();
+    qDebug() << _plugin << "::command: invalid NAME" << name;
     return 1;
   }
 

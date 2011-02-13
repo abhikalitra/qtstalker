@@ -15,18 +15,18 @@ $period = 5;
 
 $|++;
 
-$command = "BARS,BARS,$barsName";
+$command = "PLUGIN=CLOSE,NAME=$barsName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "SYMBOL,$symbolName,$exchange,$symbol,-1,-1";
+$command = "PLUGIN=SYMBOL,NAME=$symbolName,EXCHANGE=$exchange,SYMBOL=$symbol,LENGTH=-1,RANGE=-1,FIELD=CLOSE";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "BETA,$betaName,$barsName,$symbolName,$period";
+$command = "PLUGIN=BETA,NAME=$betaName,INPUT=$barsName,INPUT2=$symbolName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$betaName,$betaStyle,$betaColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$betaName,STYLE=$betaStyle,COLOR=$betaColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

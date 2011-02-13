@@ -112,7 +112,7 @@ void YahooAddSymbolDialog::done ()
   }
 
   QStringList cl;
-  cl << "YAHOO_DATABASE" << "TRANSACTION";
+  cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=TRANSACTION";
   Command command(cl.join(","));
 
   if (plug->command(&command))
@@ -133,7 +133,8 @@ void YahooAddSymbolDialog::done ()
     else
     {
       cl.clear();
-      cl << "YAHOO_DATABASE" << "SAVE" << l.at(loop) << exchange << symbol;
+      cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=SAVE" << "YSYMBOL=" + l.at(loop);
+      cl << "EXCHANGE=" + exchange << "SYMBOL=" + symbol;
       command.parse(cl.join(","));
 
       if (plug->command(&command))
@@ -142,7 +143,7 @@ void YahooAddSymbolDialog::done ()
   }
 
   cl.clear();
-  cl << "YAHOO_DATABASE" << "COMMIT";
+  cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=COMMIT";
   command.parse(cl.join(","));
 
   if (plug->command(&command))

@@ -19,30 +19,30 @@ $neutralColor = 'blue';
 
 $|++;
 
-$command = "BARS,Volume,$volName";
+$command = "PLUGIN=VOLUME,NAME=$volName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "BARS,Close,$closeName";
+$command = "PLUGIN=CLOSE,NAME=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$volName,$volStyle,$neutralColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$volName,STYLE=$volStyle,COLOR=$neutralColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR_COMPARE_INDEX,$closeName.0,>,$closeName.1,$volName.0,$upColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_INDEX,NAME=$closeName.0,OP=GT,NAME2=$closeName.1,NAME3=$volName.0,COLOR=$upColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR_COMPARE_INDEX,$closeName.0,<,$closeName.1,$volName.0,$downColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_INDEX,NAME=$closeName.0,OP=LT,NAME2=$closeName.1,NAME3=$volName.0,COLOR=$downColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MA,$maType,$maName,$volName,$maPeriod";
+$command = "PLUGIN=MA,METHOD=$maType,NAME=$maName,INPUT=$volName,PERIOD=$maPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$maName,$maStyle,$maColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$maName,STYLE=$maStyle,COLOR=$maColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

@@ -29,108 +29,102 @@
 
 MACD::MACD ()
 {
+  _plugin = "MACD";
 }
 
 int MACD::command (Command *command)
 {
-  // MACD,<INPUT>,<NAME_MACD>,<NAME_SIGNAL>,<NAME_HIST>,<FAST_PERIOD>,<FAST_MA_TYPE>,<SLOW_PERIOD>,<SLOW_MA_TYPE>,<SIGNAL_PERIOD>,<SIGNAL_MA_TYPE>
-  //  0      1         2            3            4           5              6             7               8              9               10
-
-  if (command->count() != 11)
-  {
-    qDebug() << "MACD::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // INPUT
+  // NAME_MACD
+  // NAME_SIGNAL
+  // NAME_HIST
+  // PERIOD_FAST
+  // MA_TYPE_FAST
+  // PERIOD_SLOW
+  // MA_TYPE_SLOW
+  // PERIOD_SIGNAL
+  // MA_TYPE_SIGNAL
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "MACD::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "MACD::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;
-  QString mname = command->parm(pos);
+  QString mname = command->parm("NAME_MACD");
   Curve *line = i->line(mname);
   if (line)
   {
-    qDebug() << "MACD::command: duplicate macd name" << mname;
+    qDebug() << _plugin << "::command: duplicate NAME_MACD" << mname;
     return 1;
   }
 
-  pos++;
-  QString sname = command->parm(pos);
+  QString sname = command->parm("NAME_SIGNAL");
   line = i->line(sname);
   if (line)
   {
-    qDebug() << "MACD::command: duplicate signal name" << sname;
+    qDebug() << _plugin << "::command: duplicate NAME_SIGNAL" << sname;
     return 1;
   }
 
-  pos++;
-  QString hname = command->parm(pos);
+  QString hname = command->parm("NAME_HIST");
   line = i->line(hname);
   if (line)
   {
-    qDebug() << "MACD::command: duplicate hist name" << hname;
+    qDebug() << _plugin << "::command: duplicate NAME_HIST" << hname;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int fperiod = command->parm(pos).toInt(&ok);
+  int fperiod = command->parm("PERIOD_FAST").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid fast period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_FAST" << command->parm("PERIOD_FAST");
     return 1;
   }
 
-  pos++;
   FunctionMA fma;
-  int ftype = fma.typeFromString(command->parm(pos));
+  int ftype = fma.typeFromString(command->parm("MA_TYPE_FAST"));
   if (ftype == -1)
   {
-    qDebug() << "MACD::command: invalid fast ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid MA_TYPE_FAST" << command->parm("MA_TYPE_FAST");
     return 1;
   }
   
-  pos++;
-  int speriod = command->parm(pos).toInt(&ok);
+  int speriod = command->parm("PERIOD_SLOW").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid slow period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_SLOW" << command->parm("PERIOD_SLOW");
     return 1;
   }
 
-  pos++;
-  int stype = fma.typeFromString(command->parm(pos));
+  int stype = fma.typeFromString(command->parm("MA_TYPE_SLOW"));
   if (stype == -1)
   {
-    qDebug() << "MACD::command: invalid slow ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid MA_TYPE_SLOW" << command->parm("MA_TYPE_SLOW");
     return 1;
   }
 
-  pos++;
-  int sigperiod = command->parm(pos).toInt(&ok);
+  int sigperiod = command->parm("PERIOD_SIGNAL").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "MACD::command: invalid signal period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD_SIGNAL" << command->parm("PERIOD_SIGNAL");
     return 1;
   }
 
-  pos++;
-  int sigtype = fma.typeFromString(command->parm(pos));
+  int sigtype = fma.typeFromString(command->parm("MA_TYPE_SIGNAL"));
   if (sigtype == -1)
   {
-    qDebug() << "MACD::command: invalid signal ma type" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid MA_TYPE_SIGNAL" << command->parm("MA_TYPE_SIGNAL");
     return 1;
   }
 
@@ -171,7 +165,7 @@ int MACD::command (Command *command)
                              &out3[0]);
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "MACD::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -199,7 +193,7 @@ int MACD::command (Command *command)
   i->setLine(sname, signal);
   i->setLine(hname, hist);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

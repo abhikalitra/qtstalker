@@ -26,30 +26,25 @@
 
 PLOT_GRID::PLOT_GRID ()
 {
+  _plugin = "PLOT_GRID";
 }
 
 int PLOT_GRID::command (Command *command)
 {
-  // PLOT_GRID,<STATUS>
-  //      0        1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "PLOT_GRID::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // STATUS
 
   bool ok;
-  int status = command->parm(1).toInt(&ok);
+  int status = command->parm("STATUS").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "PLOT_GRID::command: invalid status" << command->parm(2);
+    qDebug() << _plugin << "::command: invalid STATUS" << command->parm("STATUS");
     return 1;
   }
 
   g_middleMan->grid(status);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

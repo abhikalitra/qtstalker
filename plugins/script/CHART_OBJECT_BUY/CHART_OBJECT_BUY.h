@@ -27,19 +27,8 @@
 class CHART_OBJECT_BUY : public ScriptPlugin
 {
   public:
-    enum Method
-    {
-      _RO,
-      _RW
-    };
-
     CHART_OBJECT_BUY ();
     int command (Command *);
-    int createRW (Command *);
-    int createRO (Command *);
-
-  private:
-    QStringList _method;
 };
 
 extern "C"

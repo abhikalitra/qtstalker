@@ -36,7 +36,7 @@ ChartObjectVLineDialog::ChartObjectVLineDialog (Command *c)
   _helpFile = "main.html";
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Edit VLine") << _command->parm(1);
+  l << "QtStalker" << g_session << ":" << tr("Edit VLine") << _command->parm("ID");
   setWindowTitle(l.join(" "));
 
   createGUI();
@@ -113,7 +113,7 @@ void ChartObjectVLineDialog::done ()
 
   saveSettings();
 
-  _command->setReturnData("0");
+  _command->setReturnCode("0");
 
   accept();
 }
@@ -132,7 +132,7 @@ void ChartObjectVLineDialog::cancel ()
 
 void ChartObjectVLineDialog::loadObject ()
 {
-  _co.setData("ID", _command->parm(1));
+  _co.setData("ID", _command->parm("ID"));
 
   ChartObjectDataBase db;
   db.load(&_co);

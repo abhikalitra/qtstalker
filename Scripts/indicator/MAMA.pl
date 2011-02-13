@@ -17,22 +17,22 @@ $slowLimit = 0.05;
 
 $|++;
 
-$command = "BARS,BARS,$barsName,green,red,blue";
+$command = "PLUGIN=OHLC,NAME=$barsName,COLOR_UP=green,COLOR_DOWN=red,COLOR_NEUTRAL=blue";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,$barsName,0";
+$command = "PLUGIN=INDICATOR_PLOT,NAME=$barsName,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MAMA,$barsName,$mamaName,$famaName,$fastLimit,$slowLimit";
+$command = "PLUGIN=MAMA,INPUT=$barsName,NAME_MAMA=$mamaName,NAME_FAMA=$famaName,LIMIT_FAST=$fastLimit,LIMIT_SLOW=$slowLimit";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$mamaName,$mamaStyle,$mamaColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$mamaName,STYLE=$mamaStyle,COLOR=$mamaColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$famaName,$famaStyle,$famaColor,2";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$famaName,STYLE=$famaStyle,COLOR=$famaColor,Z=2";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

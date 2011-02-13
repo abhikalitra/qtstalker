@@ -32,7 +32,6 @@ Script::Script ()
   _minutes = 0;
   
   _command = new Command;
-  _command->setScriptFlag(1);
 
   _indicator = new Indicator;
   _indicatorFlag = 1;
@@ -63,6 +62,8 @@ void Script::clear ()
 
   if (_plugins.count())
     qDeleteAll(_plugins);
+
+  _command->clear();
 }
 
 void Script::setIndicator (Indicator *d)
@@ -105,6 +106,10 @@ int Script::startScript ()
     return 1;
   }
 
+  _command->setName(_name);
+  _command->setBarData(_barData);
+  _command->setIndicator(_indicator);
+  
   return 0;
 }
 
@@ -149,8 +154,8 @@ void Script::readFromStdout ()
     return;
   }
 
-  _command->setBarData(_barData);
-  _command->setIndicator(_indicator);
+//  _command->setBarData(_barData);
+//  _command->setIndicator(_indicator);
 
   ScriptPlugin *plug = _plugins.value(_command->plugin());
   if (! plug)
@@ -158,25 +163,6 @@ void Script::readFromStdout ()
     plug = _factory.plugin(_command->plugin());
     if (! plug)
     {
-      // check for internal NAME command
-      if (_command->plugin() == "NAME")
-      {
-        QByteArray ba;
-        ba.append(_name + "\n");
-        _proc.write(ba);
-        return;
-      }
-      
-      // check for internal CLEAR command
-      if (_command->plugin() == "CLEAR")
-      {
-        _indicator->clear();
-        QByteArray ba;
-        ba.append("0\n");
-        _proc.write(ba);
-        return;
-      }
-
       qDebug() << "Script::readFromStdout: syntax error, script abend" << s;
       clear();
       return;
@@ -275,7 +261,7 @@ QString & Script::lastRun ()
 
 void Script::resume ()
 {
-  _proc.write(_command->arrayData());
+  _proc.write(_command->returnCode());
 }
 
 int Script::fromString (QString d)

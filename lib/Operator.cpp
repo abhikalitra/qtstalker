@@ -23,7 +23,7 @@
 
 Operator::Operator ()
 {
-  _list << "<" << "<=" << "=" << "=>" << ">";
+  _list << "LT" << "LTE" << "E" << "GTE" << "GT";
 }
 
 QStringList & Operator::list ()
@@ -36,3 +36,35 @@ Operator::Type Operator::stringToOperator (QString d)
   return (Operator::Type) _list.indexOf(d);
 }
 
+int Operator::test (double val, Operator::Type op, double val2)
+{
+  int rc = 0;
+  
+  switch (op)
+  {
+    case _LESS_THAN:
+      if (val < val2)
+        rc = 1;
+      break;
+    case _LESS_THAN_EQUAL:
+      if (val <= val2)
+        rc = 1;
+      break;
+    case _EQUAL:
+      if (val == val2)
+        rc = 1;
+      break;
+    case _GREATER_THAN_EQUAL:
+      if (val >= val2)
+        rc = 1;
+      break;
+    case _GREATER_THAN:
+      if (val > val2)
+        rc = 1;
+      break;
+    default:
+      break;
+  }
+
+  return rc;
+}

@@ -25,64 +25,57 @@
 
 INDICATOR_PLOT_INDEX_SET::INDICATOR_PLOT_INDEX_SET ()
 {
+  _plugin = "INDICATOR_PLOT_INDEX_SET";
 }
 
 int INDICATOR_PLOT_INDEX_SET::command (Command *command)
 {
-  // INDICATOR_PLOT_INDEX_SET,<NAME>,<INDEX>,<VALUE>,<COLOR>
-  //              0             1       2       3       4
-
-  if (command->count() != 5)
-  {
-    qDebug() << "INDICATOR_PLOT_INDEX_SET::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INDEX
+  // VALUE
+  // COLOR
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_SET::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (! line)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_SET::command: name not found" << name;
+    qDebug() << _plugin << "::command: NAME not found" << name;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int index = command->parm(pos).toInt(&ok);
+  int index = command->parm("INDEX").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_SET::command: invalid index value" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid INDEX value" << command->parm("INDEX");
     return 1;
   }
 
-  pos++;
-  double value = command->parm(pos).toDouble(&ok);
+  double value = command->parm("VALUE").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_SET::command: invalid value" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid VALUE" << command->parm("VALUE");
     return 1;
   }
 
-  pos++;
-  QColor color(command->parm(pos));
+  QColor color(command->parm("COLOR"));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_INDEX_SET::command: invalid color" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
 
   line->setBar(index, new CurveBar(color, value));
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

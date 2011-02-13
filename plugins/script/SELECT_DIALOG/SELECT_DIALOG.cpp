@@ -27,25 +27,30 @@
 
 SELECT_DIALOG::SELECT_DIALOG ()
 {
+  _plugin = "SELECT_DIALOG";
   _type = _DIALOG;
 }
 
 int SELECT_DIALOG::command (Command *command)
 {
-  // SELECT_DIALOG,MODE,TITLE,ITEMS*
-  //       0         1    2    3*
+  // PARMS:
+  // MODE
+  // TITLE
+  // ITEMS - semicolon delimited list
 
-  if (command->count() < 3)
+
+  bool ok;
+  command->parm("MODE").toInt(&ok);
+  if (! ok)
   {
-    qDebug() << "SELECT_DIALOG::command: invalid parm count" << command->count();
+    qDebug() << _plugin << "::command: invalid mode" << command->parm("MODE");
     return 1;
   }
 
-  bool ok;
-  command->parm(1).toInt(&ok);
-  if (! ok)
+  QString s = command->parm("TITLE");
+  if (s.isEmpty())
   {
-    qDebug() << "SELECT_DIALOG::command: invalid mode" << command->parm(1);
+    qDebug() << _plugin << "::command: invalid TITLE" << s;
     return 1;
   }
 

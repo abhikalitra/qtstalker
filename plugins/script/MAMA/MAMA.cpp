@@ -28,66 +28,60 @@
 
 MAMA::MAMA ()
 {
+  _plugin = "MAMA";
 }
 
 int MAMA::command (Command *command)
 {
-  // MAMA,<INPUT>,<NAME_MAMA>,<NAME_FAMA>,<FAST_LIMIT>,<SLOW_LIMIT>
-  //   0     1         2           3           4            5
-
-  if (command->count() != 6)
-  {
-    qDebug() << "MAMA::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // INPUT
+  // NAME_MAMA
+  // NAME_FAMA
+  // LIMIT_FAST
+  // LIMIT_SLOW
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "MAMA::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "MAMA::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;  
-  QString mname = command->parm(pos);
+  QString mname = command->parm("NAME_MAMA");
   Curve *line = i->line(mname);
   if (line)
   {
-    qDebug() << "MAMA::command: duplicate mama name" << mname;
+    qDebug() << _plugin << "::command: duplicate NAME_MAMA" << mname;
     return 1;
   }
 
-  pos++;
-  QString fname = command->parm(pos);
+  QString fname = command->parm("NAME_FAMA");
   line = i->line(fname);
   if (line)
   {
-    qDebug() << "MAMA::command: duplicate fama name" << fname;
+    qDebug() << _plugin << "::command: duplicate NAME_FAMA" << fname;
     return 1;
   }
 
-  pos++;
   bool ok;
-  double flimit = command->parm(pos).toDouble(&ok);
+  double flimit = command->parm("LIMIT_FAST").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "MAMA::command: invalid fast limit" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid LIMIT_FAST" << command->parm("LIMIT_FAST");
     return 1;
   }
 
-  pos++;
-  double slimit = command->parm(pos).toDouble(&ok);
+  double slimit = command->parm("LIMIT_SLOW").toDouble(&ok);
   if (! ok)
   {
-    qDebug() << "MAMA::command: invalid slow limit" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid LIMIT_SLOW" << command->parm("LIMIT_FAST");
     return 1;
   }
 
@@ -123,7 +117,7 @@ int MAMA::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "MAMA::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -147,7 +141,7 @@ int MAMA::command (Command *command)
   i->setLine(mname, mama);
   i->setLine(fname, fama);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

@@ -34,12 +34,12 @@ MessageDialog::MessageDialog (Command *c)
   _command = c;
 
   QStringList l;
-  l << "QtStalker" + g_session << ":" << _command->parm(1);
+  l << "QtStalker" + g_session << ":" << _command->parm("TITLE");
   setWindowTitle(l.join(" "));
 
   createGUI();
 
-  _message->setText(_command->parm(2));
+  _message->setText(_command->parm("MESSAGE"));
 
   loadSettings();
 
@@ -93,7 +93,7 @@ void MessageDialog::createGUI ()
 
 void MessageDialog::done ()
 {
-  _command->setReturnData("0");
+  _command->setReturnCode("0");
   saveSettings();
   accept();
 }

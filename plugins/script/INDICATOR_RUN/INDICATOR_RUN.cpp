@@ -26,28 +26,22 @@
 
 INDICATOR_RUN::INDICATOR_RUN ()
 {
+  _plugin = "INDICATOR_RUN";
 }
 
 int INDICATOR_RUN::command (Command *command)
 {
-  // INDICATOR_RUN,<NAME>
-  //        0         1
-
-  if (command->count() != 2)
-  {
-    qDebug() << "INDICATOR_RUN::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_RUN::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
 
   i->clear();
   i->setName(name);
@@ -58,7 +52,7 @@ int INDICATOR_RUN::command (Command *command)
   connect(i, SIGNAL(signalPlot()), &e, SLOT(quit()));
   e.exec();
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

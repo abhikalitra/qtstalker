@@ -23,26 +23,26 @@ $ddev = 1;
 
 $|++;
 
-$command = "BARS,BARS,$barsName,green,red,blue";
+$command = "PLUGIN=OHLC,NAME=$barsName,COLOR_UP=green,COLOR_DOWN=red,COLOR_NEUTRAL=blue";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,$barsName,0";
+$command = "PLUGIN=INDICATOR_PLOT,NAME=$barsName,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "BBANDS,$barsName,$bbUpName,$bbMidName,$bbDownName,$period,$maType,$udev,$ddev";
+$command = "PLUGIN=BBANDS,INPUT=$barsName,NAME_UPPER=$bbUpName,NAME_MIDDLE=$bbMidName,NAME_LOWER=$bbDownName,PERIOD=$period,MA_TYPE=$maType,DEV_UP=$udev,DEV_DOWN=$ddev";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$bbUpName,$bbUpStyle,$bbUpColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$bbUpName,STYLE=$bbUpStyle,COLOR=$bbUpColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$bbMidName,$bbMidStyle,$bbMidColor,2";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$bbMidName,STYLE=$bbMidStyle,COLOR=$bbMidColor,Z=2";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$bbDownName,$bbDownStyle,$bbDownColor,3";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$bbDownName,STYLE=$bbDownStyle,COLOR=$bbDownColor,Z=3";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

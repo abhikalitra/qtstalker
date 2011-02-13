@@ -130,7 +130,7 @@ void YahooSymbolDialog::deleteSymbol ()
   }
 
   QStringList cl;
-  cl << "YAHOO_DATABASE" << "TRANSACTION";
+  cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=TRANSACTION";
   Command command(cl.join(","));
 
   if (plug->command(&command))
@@ -140,7 +140,7 @@ void YahooSymbolDialog::deleteSymbol ()
   for (; loop < l.count(); loop++)
   {
     cl.clear();
-    cl << "YAHOO_DATABASE" << "DELETE" << l.at(loop)->text();
+    cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=DELETE" << "YSYMBOL=" + l.at(loop)->text();
     command.parse(cl.join(","));
 
     if (plug->command(&command))
@@ -148,7 +148,7 @@ void YahooSymbolDialog::deleteSymbol ()
   }
   
   cl.clear();
-  cl << "YAHOO_DATABASE" << "COMMIT";
+  cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=COMMIT";
   command.parse(cl.join(","));
 
   if (plug->command(&command))
@@ -170,7 +170,7 @@ void YahooSymbolDialog::loadSettings ()
   }
 
   QStringList l;
-  l << "YAHOO_DATABASE" << "SYMBOLS";
+  l << "PLUGIN=YAHOO_DATABASE" << "METHOD=SYMBOLS";
   Command command(l.join(","));
 
   if (plug->command(&command))
@@ -179,7 +179,7 @@ void YahooSymbolDialog::loadSettings ()
   delete plug;
 
   l.clear();
-  l = command.stringData().split(",", QString::SkipEmptyParts);
+  l = command.returnData("YAHOO_DATABASE_SYMBOLS").split(",", QString::SkipEmptyParts);
 
   _list->addItems(l);
 

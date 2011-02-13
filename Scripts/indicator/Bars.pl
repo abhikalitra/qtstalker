@@ -6,10 +6,10 @@ $name = 'Bars';
 
 $|++;
 
-$command = "BARS,BARS,$name,green,red,blue";
+$command = "PLUGIN=OHLC,NAME=$name,COLOR_UP=green,COLOR_DOWN=red,COLOR_NEUTRAL=blue";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,$name,0";
+$command = "PLUGIN=INDICATOR_PLOT,NAME=$name,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

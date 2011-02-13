@@ -4,26 +4,31 @@
 $|=1;
 
 # get current groups from database
-$command = "GROUP_DATABASE,GROUPS";
+$command = "PLUGIN=GROUP_DATABASE_LIST";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# get the groups string
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=GROUP_DATABASE_GROUPS";
 print STDOUT $command;
 $groups = <STDIN>; chomp($groups); if ($groups eq "ERROR") {print STDERR $command; exit; }
 
 # display new group dialog
-$command = "NEW_DIALOG,Group,$groups";
+$command = "PLUGIN=NEW_DIALOG,TITLE=Group,ITEMS=$groups";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# get the group string
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=NEW_DIALOG_NAME";
 print STDOUT $command;
 $group = <STDIN>; chomp($group); if ($group eq "ERROR") {print STDERR $command; exit; }
 
 # display group edit dialog
-$command = "GROUP_EDIT_DIALOG,$group";
+$command = "PLUGIN=GROUP_EDIT_DIALOG,NAME=$group";
 print STDOUT $command;
-$items = <STDIN>; chomp($items); if ($items eq "ERROR") {print STDERR $command; print STDERR $items; exit; }
-
-# save the new group
-$command = "GROUP_DATABASE,SAVE,$group,$items";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; print STDERR $items; exit; }
 
 # refresh the group panel list
-$command = "GROUP_PANEL_REFRESH";
+$command = "PLUGIN=GROUP_PANEL_REFRESH";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

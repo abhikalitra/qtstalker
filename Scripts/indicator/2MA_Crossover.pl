@@ -16,26 +16,26 @@ $ma2Period = 200;
 
 $|++;
 
-$command = "BARS,BARS,$barsName,green,red,blue";
+$command = "PLUGIN=OHLC,NAME=$barsName,COLOR_UP=green,COLOR_DOWN=red,COLOR_NEUTRAL=blue";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,$barsName,0";
+$command = "PLUGIN=INDICATOR_PLOT,NAME=$barsName,Z=0";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MA,EMA,$ma1Name,$barsName,$ma1Period";
+$command = "PLUGIN=MA,METHOD=EMA,NAME=$ma1Name,INPUT=$barsName,PERIOD=$ma1Period";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$ma1Name,$ma1Style,$ma1Color,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$ma1Name,STYLE=$ma1Style,COLOR=$ma1Color,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "MA,EMA,$ma2Name,$barsName,$ma2Period";
+$command = "PLUGIN=MA,METHOD=EMA,NAME=$ma2Name,INPUT=$barsName,PERIOD=$ma2Period";
 print STDOUT $command;
 $a = <STDIN>; chomp($a); if ($a eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$ma2Name,$ma2Style,$ma2Color,2";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$ma2Name,STYLE=$ma2Style,COLOR=$ma2Color,Z=2";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

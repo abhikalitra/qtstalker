@@ -27,8 +27,27 @@
 class SYMBOL : public ScriptPlugin
 {
   public:
+    enum Field
+    {
+      _OPEN,
+      _HIGH,
+      _LOW,
+      _CLOSE,
+      _VOLUME,
+      _OI
+    };
+    
     SYMBOL ();
     int command (Command *);
+    Curve * getOpen (BarData &);
+    Curve * getHigh (BarData &);
+    Curve * getLow (BarData &);
+    Curve * getClose (BarData &);
+    Curve * getVolume (BarData &);
+    Curve * getOI (BarData &);
+
+  private:
+    QStringList _field;
 };
 
 extern "C"

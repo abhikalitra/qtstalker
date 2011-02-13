@@ -14,34 +14,34 @@ $bearHaramiCrossColor = 'magenta';
 
 $|++;
 
-$command = "BARS,CANDLES,$candleName,$candleColor,$candleColor,$candleColor";
+$command = "PLUGIN=CANDLES,NAME=$candleName,COLOR_UP=$candleColor,COLOR_DOWN=$candleColor,COLOR_NEUTRAL=$candleColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CANDLES,HARAMI,$haramiName";
+$command = "PLUGIN=CANDLE_METHOD,METHOD=HARAMI,NAME=$haramiName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$haramiName,<,0,$candleName,$bearHaramiColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$haramiName,OP=<,VALUE=0,NAME2=$candleName,COLOR=$bearHaramiColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$haramiName,>,0,$candleName,$bullHaramiColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$haramiName,OP=>,VALUE=0,NAME2=$candleName,COLOR=$bullHaramiColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CANDLES,HARAMICROSS,$haramiCrossName";
+$command = "PLUGIN=CANDLE_METHOD,METHOD=HARAMICROSS,NAME=$haramiCrossName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$haramiCrossName,<,0,$candleName,$bearHaramiCrossColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$haramiCrossName,OP=<,VALUE=0,NAME2=$candleName,COLOR=$bearHaramiCrossColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_COLOR_COMPARE_VALUE,$haramiCrossName,>,0,$candleName,$bullHaramiCrossColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$haramiCrossName,OP=>,VALUE=0,NAME2=$candleName,COLOR=$bullHaramiCrossColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT,$candleName,0";
+$command = "PLUGIN=INDICATOR_PLOT,NAME=$candleName,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

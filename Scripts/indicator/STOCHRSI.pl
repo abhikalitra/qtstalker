@@ -17,22 +17,22 @@ $refDown = 20;
 
 $|++;
 
-$command = "BARS,Close,$input";
+$command = "PLUGIN=CLOSE,NAME=$input";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "STOCH_RSI,$stochName,$input,$stochPeriod";
+$command = "PLUGIN=STOCH_RSI,NAME=$stochName,INPUT=$input,PERIOD=$stochPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refDown,$refDownColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refDown,COLOR=$refDownColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CHART_OBJECT_HLINE,RO,$refUp,$refUpColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refUp,COLOR=$refUpColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$stcohName,$stochStyle,$stochColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$stochName,STYLE=$stochStyle,COLOR=$stochColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

@@ -25,63 +25,56 @@
 
 INDICATOR_PLOT_COLOR_SET::INDICATOR_PLOT_COLOR_SET ()
 {
+  _plugin = "INDICATOR_PLOT_COLOR_SET";
 }
 
 int INDICATOR_PLOT_COLOR_SET::command (Command *command)
 {
-  // INDICATOR_PLOT_COLOR_SET,<NAME>,<INDEX>,<COLOR>
-  //              0             1       2       3
-
-  if (command->count() != 4)
-  {
-    qDebug() << "INDICATOR_PLOT_COLOR_SET::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // INDEX
+  // COLOR
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_SET::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (! line)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_SET::command: name not found" << name;
+    qDebug() << _plugin << "::command: NAME not found" << name;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int index = command->parm(pos).toInt(&ok);
+  int index = command->parm("INDEX").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_SET::command: invalid index value" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid INDEX value" << command->parm("INDEX");
     return 1;
   }
 
   CurveBar *bar = line->bar(index);
   if (! bar)
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_SET::command: bar not found" << command->parm(pos);
+    qDebug() << _plugin << "::command: bar not found at index" << index;
     return 1;
   }
 
-  pos++;
-  QColor color(command->parm(pos));
+  QColor color(command->parm("COLOR"));
   if (! color.isValid())
   {
-    qDebug() << "INDICATOR_PLOT_COLOR_SET::command: invalid color" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
 
   bar->setColor(color);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

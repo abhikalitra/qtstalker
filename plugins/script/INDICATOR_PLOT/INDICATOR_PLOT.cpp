@@ -25,54 +25,47 @@
 
 INDICATOR_PLOT::INDICATOR_PLOT ()
 {
+  _plugin = "INDICATOR_PLOT";
 }
 
 int INDICATOR_PLOT::command (Command *command)
 {
-  // INDICATOR_PLOT,<NAME>,<Z>
-  //        0         1     2
-
-  if (command->count() != 3)
-  {
-    qDebug() << "INDICATOR_PLOT::command: invalid parm count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // NAME
+  // Z
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "INDICATOR_PLOT::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  QString name = command->parm(pos);
-
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (! line)
   {
-    qDebug() << "INDICATOR_PLOT::command: name not found" << name;
+    qDebug() << _plugin << "::command: NAME not found" << name;
     return 1;
   }
 
-  pos++;
   bool ok;
-  int z = command->parm(pos).toInt(&ok);
+  int z = command->parm("Z").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "INDICATOR_PLOT::command: invalid z value" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid Z value" << z;
     return 1;
   }
 
   if (z < 0)
   {
-    qDebug() << "INDICATOR_PLOT::command: invalid z value must be > -1" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid Z value must be > -1" << z;
     return 1;
   }
 
   line->setZ(z);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

@@ -26,27 +26,22 @@
 
 PROCESS::PROCESS ()
 {
+  _plugin = "PROCESS";
 }
 
 int PROCESS::command (Command *command)
 {
-  // PROCESS,<COMMAND>
-  //    0       1
+  // PARMS:
+  // COMMAND
 
-  if (command->count() != 2)
-  {
-    qDebug() << "PROCESS::command: invalid parm count" << command->count();
-    return 1;
-  }
-
-  int rc = QProcess::startDetached(command->parm(1));
+  int rc = QProcess::startDetached(command->parm("PROCESS"));
   if (! rc)
   {
-    qDebug() << "PROCESS::command: error starting the process";
+    qDebug() << "PROCESS::command: error starting the PROCESS";
     return 1;
   }
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

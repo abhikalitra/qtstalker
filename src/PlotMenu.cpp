@@ -138,12 +138,12 @@ void PlotMenu::chartObjectMenuSelected (QAction *a)
   _currentAction = a;
 
   ChartObjectDataBase db;
-  QStringList l;
-  db.ids(g_barData, _indicator, l);
+  QStringList l2;
+  db.ids(g_barData, _indicator, l2);
 
-  l.prepend(tr("chart object"));
-  l.prepend("NEW_DIALOG");
-  _command->parse(l.join(","));
+  QStringList cl;
+  cl << "PLUGIN=NEW_DIALOG" << "TITLE=" + tr("chart object") << "ITEMS=" + l2.join(";");
+  _command->parse(cl.join(","));
 
   ScriptPluginFactory fac;
   ScriptPlugin *plug = fac.plugin(_command->plugin());
@@ -160,8 +160,8 @@ void PlotMenu::chartObjectMenuSelected (QAction *a)
 
 void PlotMenu::chartObjectMenuSelected2 ()
 {
-  QString s = _command->stringData();
-  if (s == "ERROR")
+  QString s = _command->returnData("NEW_DIALOG_NAME");
+  if (s.isEmpty())
     return;
   
   emit signalNewChartObject(_currentAction->text(), s);
@@ -209,11 +209,8 @@ void PlotMenu::setIndicator (QString d)
 
 void PlotMenu::editChartObject ()
 {
-  QStringList l;
-  l << _indicator << g_barData->exchange() << g_barData->symbol();
-  
   QSettings settings(g_settingsFile);
-  settings.setValue("chart_object_edit_data", l.join(","));
+  settings.setValue("chart_object_edit_data", _indicator);
   settings.sync();
   
   Script *script = new Script;
@@ -225,11 +222,8 @@ void PlotMenu::editChartObject ()
 
 void PlotMenu::deleteChartObject ()
 {
-  QStringList l;
-  l << _indicator << g_barData->exchange() << g_barData->symbol();
-
   QSettings settings(g_settingsFile);
-  settings.setValue("chart_object_delete_data", l.join(","));
+  settings.setValue("chart_object_delete_data", _indicator);
   settings.sync();
 
   Script *script = new Script;

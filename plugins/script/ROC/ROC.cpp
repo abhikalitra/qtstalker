@@ -28,58 +28,52 @@
 
 ROC::ROC ()
 {
+  _plugin = "ROC";
   _method << "ROC" << "ROCP" << "ROCR" << "ROCR100";
 }
 
 int ROC::command (Command *command)
 {
-  // ROC,<METHOD>,<NAME>,<INPUT>,<PERIOD>
-  //  0     1       2       3       4
-
-  if (command->count() != 5)
-  {
-    qDebug() << "ROC::command: invalid settings count" << command->count();
-    return 1;
-  }
+  // PARMS:
+  // METHOD
+  // NAME
+  // INPUT
+  // PERIOD
 
   Indicator *i = command->indicator();
   if (! i)
   {
-    qDebug() << "ROC::command: no indicator";
+    qDebug() << _plugin << "::command: no indicator";
     return 1;
   }
 
-  int pos = 1;
-  int method = _method.indexOf(command->parm(pos));
+  int method = _method.indexOf(command->parm("METHOD"));
   if (method == -1)
   {
-    qDebug() << "ROC::command: invalid method" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid METHOD" << command->parm("METHOD");
     return 1;
   }
 
-  pos++;
-  QString name = command->parm(pos);
+  QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << "ROC::command: duplicate name" << name;
+    qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
 
-  pos++;
-  Curve *in = i->line(command->parm(pos));
+  Curve *in = i->line(command->parm("INPUT"));
   if (! in)
   {
-    qDebug() << "ROC::command: input missing" << command->parm(pos);
+    qDebug() << _plugin << "::command: INPUT missing" << command->parm("INPUT");
     return 1;
   }
 
-  pos++;
   bool ok;
-  int period = command->parm(pos).toInt(&ok);
+  int period = command->parm("PERIOD").toInt(&ok);
   if (! ok)
   {
-    qDebug() << "ROC::command: invalid period" << command->parm(pos);
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
@@ -124,7 +118,7 @@ int ROC::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << "ROC::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
     return 1;
   }
 
@@ -142,7 +136,7 @@ int ROC::command (Command *command)
   line->setLabel(name);
   i->setLine(name, line);
 
-  command->setReturnData("0");
+  command->setReturnCode("0");
 
   return 0;
 }

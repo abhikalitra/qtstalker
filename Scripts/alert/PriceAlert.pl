@@ -12,26 +12,31 @@ use DateTime;
 
 $|=1;
 
-$command = "SYMBOL,symbol,$exchange,$symbol,$length,$range";
+$command = "PLUGIN=SYMBOL,NAME=symbol,EXCHANGE=$exchange,SYMBOL=$symbol,LENGTH=$length,RANGE=$range";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_INDEX_GET,symbol.0";
+$command = "PLUGIN=INDICATOR_PLOT_INDEX_OFFSET,INDEX=symbol.0";
 print STDOUT $command;
-$price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+# return the price string
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_INDEX_OFFSET_VALUE";
+print STDOUT $command;
+$price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; next; }
 
 if ($price < $target) { exit; }
 
-$command = "NAME";
+$command = "PLUGIN=SCRIPT_NAME";
 print STDOUT $command;
 $name = <STDIN>; chomp($name); if ($name eq "ERROR") { print STDERR $command; exit; }
 
-$command = "SCRIPT_DATABASE,SAVE,$name,MINUTES,0";
+$command = "PLUGIN=SCRIPT_DATABASE,METHOD=SAVE,NAME=$name,FIELD=MINUTES,DATA=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 my $dt = DateTime->now();
 
-$command = "MESSAGE_DIALOG,$exchange:$symbol Alert,$exchange:$symbol\nHas hit $target\n$dt";
+$command = "PLUGIN=MESSAGE_DIALOG,TITLE=$exchange:$symbol Alert,MESSAGE=$exchange:$symbol\nHas hit $target\n$dt";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

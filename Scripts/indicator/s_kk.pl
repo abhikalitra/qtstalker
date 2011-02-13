@@ -17,18 +17,18 @@ $dccColor = 'orange';
 
 $|++;
 
-$command = "CANDLES,PIERCING,$pName";
+$command = "PLUGIN=CANDLE_METHOD,METHOD=PIERCING,NAME=$pName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$pName,$pStyle,$pColor,0";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$pName,STYLE=$pStyle,COLOR=$pColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "CANDLES,DARKCLOUDCOVER,$dccName,0";
+$command = "PLUGIN=CANDLE_METHOD,METHOD=DARKCLOUDCOVER,NAME=$dccName,PENETRATION=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "INDICATOR_PLOT_ALL,$dccName,$dccStyle,$dccColor,1";
+$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$dccName,STYLE=$dccStyle,COLOR=$dccColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

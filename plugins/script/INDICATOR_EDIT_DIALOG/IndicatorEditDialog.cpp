@@ -36,7 +36,7 @@ IndicatorEditDialog::IndicatorEditDialog (Command *c)
   _command = c;
   _helpFile = "main.html";
 
-  _name = _command->parm(1);
+  _name = _command->parm("NAME");
 
   QStringList l;
   l << "QtStalker" << g_session << ":" << tr("Editing Indicator") << _name;
@@ -51,9 +51,13 @@ IndicatorEditDialog::IndicatorEditDialog (Command *c)
   if (! s.isEmpty())
     _com->setText(s);
 
-  QStringList tl;
-  tl << _indicator.script();
-  _fileButton->setFile(tl);
+  _file = _indicator.script();
+  if (! _file.isEmpty())
+  {
+    QStringList tl;
+    tl << _file;
+    _fileButton->setFile(tl);
+  }
 
   loadSettings();
 
@@ -149,7 +153,7 @@ void IndicatorEditDialog::done ()
   _indicator.setScript(_file);
   _indicator.save();
 
-  _command->setReturnData("0");
+  _command->setReturnCode("0");
 
   saveSettings();
 
@@ -173,10 +177,13 @@ void IndicatorEditDialog::loadSettings ()
   QPoint p = settings.value("indicator_edit_dialog_window_position", QPoint(0,0)).toPoint();
   move(p);
 
-  _file = settings.value("indicator_edit_dialog_last_file", QDir::homePath()).toString();
-  QStringList l;
-  l << _file;
-  _fileButton->setFile(l);
+  if (_file.isEmpty())
+  {
+    _file = settings.value("indicator_edit_dialog_last_file", QDir::homePath()).toString();
+    QStringList l;
+    l << _file;
+    _fileButton->setFile(l);
+  }
 }
 
 void IndicatorEditDialog::saveSettings ()
