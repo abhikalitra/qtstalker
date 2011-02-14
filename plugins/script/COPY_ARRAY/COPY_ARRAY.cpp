@@ -19,21 +19,22 @@
  *  USA.
  */
 
-#include "MULT_VALUE.h"
-#include "Operator.h"
+#include "COPY_ARRAY.h"
+#include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
-MULT_VALUE::MULT_VALUE ()
+COPY_ARRAY::COPY_ARRAY ()
 {
-  _plugin = "MULT_VALUE";
+  _plugin = "COPY_ARRAY";
 }
 
-int MULT_VALUE::command (Command *command)
+int COPY_ARRAY::command (Command *command)
 {
   // PARMS:
   // NAME
-  // NAME2
+  // INPUT
   // VALUE
 
   Indicator *i = command->indicator();
@@ -44,82 +45,53 @@ int MULT_VALUE::command (Command *command)
   }
 
   // verify NAME
-  int offset = 0;
   QString name = command->parm("NAME");
-  QStringList l = name.split(".", QString::SkipEmptyParts);
-  if (l.count() == 2)
-  {
-    name = l.at(0);
-    
-    bool ok;
-    offset = l.at(1).toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << _plugin << "::command: invalid NAME" << name;
-      return 1;
-    }
-  }
-  
   Curve *line = i->line(name);
   if (line)
   {
     qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
-  line = new Curve;
 
-  // verify NAME2
-  int offset2 = 0;
-  QString name2 = command->parm("NAME2");
-  l = name2.split(".", QString::SkipEmptyParts);
-  if (l.count() == 2)
+  // verify INPUT
+  Curve *in = i->line(command->parm("INPUT"));
+  if (! in)
   {
-    name2 = l.at(0);
-
-    bool ok;
-    offset2 = l.at(1).toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << _plugin << "::command: invalid NAME2" << name2;
-      return 1;
-    }
-  }
-
-  Curve *line2 = i->line(name2);
-  if (! line2)
-  {
-    qDebug() << _plugin << "::command: NAME2 not found" << name2;
+    qDebug() << _plugin << "::command: INPUT not found" << command->parm("INPUT");
     return 1;
   }
 
   // verify VALUE
-  bool ok;
-  double value = command->parm("VALUE").toDouble(&ok);
-  if (! ok)
+  int fillFlag = FALSE;
+  double value = 0;
+  QString s = command->parm("VALUE");
+  if (! s.isEmpty())
   {
-    qDebug() << _plugin << "::command: invalid VALUE" << command->parm("VALUE");
-    return 1;
+    bool ok;
+    value = s.toDouble(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid VALUE" << command->parm("VALUE");
+      return 1;
+    }
+
+    fillFlag = TRUE;
   }
 
-  // find lowest and highest index values
-  int high = 0;
-  int tlow = 0;
-  int thigh = 0;
-  line2->keyRange(tlow, thigh);
-  if (thigh > high)
-    high = thigh;
-  
+  QList<int> keys;
+  in->keys(keys);
+
+  int size = in->count();
+
+  line = new Curve;
   int loop = 0;
-  for (; loop <= high; loop++)
+  for (; loop < size; loop++)
   {
-    if (loop - offset < 0)
-      continue;
-
-    CurveBar *bar2 = line2->bar(loop - offset2);
-    if (! bar2)
-      continue;
-
-    line->setBar(loop - offset, new CurveBar(bar2->data() * value));
+    CurveBar *bar = in->bar(keys.at(loop));
+    if (fillFlag)
+      line->setBar(keys.at(loop), new CurveBar(value));
+    else      
+      line->setBar(keys.at(loop), new CurveBar(bar->data()));
   }
 
   line->setLabel(name);
@@ -136,6 +108,6 @@ int MULT_VALUE::command (Command *command)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  MULT_VALUE *o = new MULT_VALUE;
+  COPY_ARRAY *o = new COPY_ARRAY;
   return ((ScriptPlugin *) o);
 }

@@ -28,17 +28,22 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # difference of close - ma
-$command = "PLUGIN=SUB,NAME=sub.0,NAME2=$closeName.0,NAME3=$maName.0";
+$command = "PLUGIN=SUB,NAME=sub,INPUT=$closeName,INPUT2=$maName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+# copy array and fill with 1 value
+$command = "PLUGIN=COPY_ARRAY,NAME=val100,INPUT=$maName,VALUE=100";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # multiply ma * 100
-$command = "PLUGIN=MULT_VALUE,NAME=mult.0,NAME2=$maName.0,VALUE=100";
+$command = "PLUGIN=MULT,NAME=mult,INPUT=$maName,INPUT2=val100";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # calculate disparity (sub / mult)
-$command = "PLUGIN=DIV,NAME=$name.0,NAME2=sub.0,NAME3=mult.0";
+$command = "PLUGIN=DIV,NAME=$name,INPUT=sub,INPUT2=mult";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

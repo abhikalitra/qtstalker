@@ -72,32 +72,30 @@ int MEDIAN_PRICE::command (Command *command)
     return 1;
   }
 
-  // find lowest and highest index values
-  int high = 0;
-  int tlow = 0;
-  int thigh = 0;
-  in->keyRange(tlow, thigh);
-  if (thigh > high)
-    high = thigh;
-
-  in2->keyRange(tlow, thigh);
-  if (thigh > high)
-    high = thigh;
+  QList<int> keys;
+  int size = in->count();
+  if (in2->count() > size)
+  {
+    size = in2->count();
+    in2->keys(keys);
+  }
+  else
+    in->keys(keys);
 
   line = new Curve;
   int loop = 0;
-  for (; loop <= high; loop++)
+  for (; loop < size; loop++)
   {
-    CurveBar *bar = in->bar(loop);
+    CurveBar *bar = in->bar(keys.at(loop));
     if (! bar)
       continue;
 
-    CurveBar *bar2 = in2->bar(loop);
+    CurveBar *bar2 = in2->bar(keys.at(loop));
     if (! bar2)
       continue;
 
     double t = (bar->data() + bar2->data()) / 2.0;
-    line->setBar(loop, new CurveBar(t));
+    line->setBar(keys.at(loop), new CurveBar(t));
   }
 
   line->setLabel(name);

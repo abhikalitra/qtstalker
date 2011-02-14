@@ -47,6 +47,8 @@ $ssbLowName = 'ssbLow';
 
 $|++;
 
+# candles
+
 $command = "PLUGIN=CANDLES,NAME=$candleName,COLOR_UP=$candleUpColor,COLOR_DOWN=$candleDownColor,COLOR_NEUTRAL=$candleNeutralColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

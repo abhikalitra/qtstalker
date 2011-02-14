@@ -19,15 +19,15 @@
  *  USA.
  */
 
-#ifndef SUB_VALUE_HPP
-#define SUB_VALUE_HPP
+#ifndef COPY_ARRAY_HPP
+#define COPY_ARRAY_HPP
 
 #include "ScriptPlugin.h"
 
-class SUB_VALUE : public ScriptPlugin
+class COPY_ARRAY : public ScriptPlugin
 {
   public:
-    SUB_VALUE ();
+    COPY_ARRAY ();
     int command (Command *);
 };
 

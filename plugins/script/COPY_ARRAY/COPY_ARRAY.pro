@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += DIV_VALUE.h
+HEADERS += COPY_ARRAY.h
 
-SOURCES += DIV_VALUE.cpp
+SOURCES += COPY_ARRAY.cpp

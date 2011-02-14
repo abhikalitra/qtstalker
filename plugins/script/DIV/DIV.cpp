@@ -20,7 +20,8 @@
  */
 
 #include "DIV.h"
-#include "Operator.h"
+#include "Curve.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,8 +34,8 @@ int DIV::command (Command *command)
 {
   // PARMS:
   // NAME
-  // NAME2
-  // NAME3
+  // INPUT
+  // INPUT2
 
   Indicator *i = command->indicator();
   if (! i)
@@ -44,105 +45,53 @@ int DIV::command (Command *command)
   }
 
   // verify NAME
-  int offset = 0;
   QString name = command->parm("NAME");
-  QStringList l = name.split(".", QString::SkipEmptyParts);
-  if (l.count() == 2)
-  {
-    name = l.at(0);
-    
-    bool ok;
-    offset = l.at(1).toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << _plugin << "::command: invalid NAME" << name;
-      return 1;
-    }
-  }
-  
   Curve *line = i->line(name);
   if (line)
   {
     qDebug() << _plugin << "::command: duplicate NAME" << name;
     return 1;
   }
+
+  // verify INPUT
+  Curve *in = i->line(command->parm("INPUT"));
+  if (! in)
+  {
+    qDebug() << _plugin << "::command: INPUT not found" << command->parm("INPUT");
+    return 1;
+  }
+
+  // verify INPUT2
+  Curve *in2 = i->line(command->parm("INPUT2"));
+  if (! in2)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT2" << command->parm("INPUT2");
+    return 1;
+  }
+
+  QList<int> keys;
+  int size = in->count();
+  if (in2->count() > size)
+  {
+    size = in2->count();
+    in2->keys(keys);
+  }
+  else
+    in->keys(keys);
+
   line = new Curve;
-
-  // verify NAME2
-  int offset2 = 0;
-  QString name2 = command->parm("NAME2");
-  l = name2.split(".", QString::SkipEmptyParts);
-  if (l.count() == 2)
-  {
-    name2 = l.at(0);
-
-    bool ok;
-    offset2 = l.at(1).toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << _plugin << "::command: invalid NAME2" << name2;
-      return 1;
-    }
-  }
-
-  Curve *line2 = i->line(name2);
-  if (! line2)
-  {
-    qDebug() << _plugin << "::command: NAME2 not found" << name2;
-    return 1;
-  }
-
-  // verify NAME3
-  int offset3 = 0;
-  QString name3 = command->parm("NAME3");
-  l = name3.split(".", QString::SkipEmptyParts);
-  if (l.count() == 2)
-  {
-    name3 = l.at(0);
-
-    bool ok;
-    offset3 = l.at(1).toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << _plugin << "::command: invalid NAME3" << name3;
-      return 1;
-    }
-  }
-
-  Curve *line3 = i->line(name3);
-  if (! line3)
-  {
-    qDebug() << _plugin << "::command: NAME3 not found" << name3;
-    return 1;
-  }
-
-  // find lowest and highest index values
-  int high = 0;
-  int tlow = 0;
-  int thigh = 0;
-  line2->keyRange(tlow, thigh);
-  if (thigh > high)
-    high = thigh;
-  
-  line3->keyRange(tlow, thigh);
-  if (thigh > high)
-    high = thigh;
-  
   int loop = 0;
-  for (; loop <= high; loop++)
+  for (; loop < size; loop++)
   {
-    if (loop - offset < 0)
+    CurveBar *bar = in->bar(keys.at(loop));
+    if (! bar)
       continue;
 
-    CurveBar *bar2 = line2->bar(loop - offset2);
+    CurveBar *bar2 = in2->bar(keys.at(loop));
     if (! bar2)
       continue;
 
-    CurveBar *bar3 = line3->bar(loop - offset3);
-    if (! bar3)
-      continue;
-
-    line->setBar(loop - offset, new CurveBar(bar2->data() / bar3->data()));
+    line->setBar(keys.at(loop), new CurveBar(bar->data() / bar2->data()));
   }
 
   line->setLabel(name);
