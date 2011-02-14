@@ -19,34 +19,39 @@
  *  USA.
  */
 
-#include "MEDIAN_PRICE.h"
+#include "MIN.h"
 #include "Curve.h"
+#include "ta_libc.h"
 #include "Globals.h"
 
 #include <QtDebug>
 
-MEDIAN_PRICE::MEDIAN_PRICE ()
+MIN::MIN ()
 {
-  _plugin = "MEDIAN_PRICE";
+  _plugin = "MIN";
 }
 
-int MEDIAN_PRICE::command (Command *command)
+int MIN::command (Command *command)
 {
   // PARMS:
   // NAME
   // INPUT
-  // INPUT2
+  // PERIOD
+
+  BarData *data = g_barData;
+  if (! data)
+  {
+    qDebug() << _plugin << "::command: no bars";
+    return 1;
+  }
+
+  if (data->count() < 1)
+    return 1;
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
-    return 1;
-  }
-
-  if (g_barData->count() < 1)
-  {
-    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -65,39 +70,55 @@ int MEDIAN_PRICE::command (Command *command)
     return 1;
   }
 
-  Curve *in2 = i->line(command->parm("INPUT2"));
-  if (! in2)
+  bool ok;
+  int period = command->parm("PERIOD").toInt(&ok);
+  if (! ok)
   {
-    qDebug() << _plugin << "::command: INPUT2 missing" << command->parm("INPUT2");
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
-  // find lowest and highest index values
-  int high = 0;
-  int tlow = 0;
-  int thigh = 0;
-  in->keyRange(tlow, thigh);
-  if (thigh > high)
-    high = thigh;
+  if (in->count() < period)
+    return 1;
 
-  in2->keyRange(tlow, thigh);
-  if (thigh > high)
-    high = thigh;
+  TA_Real input[in->count()];
+  TA_Real out[in->count()];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+  
+  TA_RetCode rc = TA_MIN(0,
+                         keys.count() - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::command: TA-Lib error" << rc;
+    return 1;
+  }
 
   line = new Curve;
-  int loop = 0;
-  for (; loop <= high; loop++)
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
   {
-    CurveBar *bar = in->bar(loop);
-    if (! bar)
-      continue;
-
-    CurveBar *bar2 = in2->bar(loop);
-    if (! bar2)
-      continue;
-
-    double t = (bar->data() + bar2->data()) / 2.0;
-    line->setBar(loop, new CurveBar(t));
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
   }
 
   line->setLabel(name);
@@ -114,6 +135,6 @@ int MEDIAN_PRICE::command (Command *command)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  MEDIAN_PRICE *o = new MEDIAN_PRICE;
+  MIN *o = new MIN;
   return ((ScriptPlugin *) o);
 }

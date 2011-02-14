@@ -1279,21 +1279,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>IndicatorNewDialog</name>
-    <message>
-        <source>New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>already exists</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>NewDialog</name>
     <message>
         <source>New</source>
@@ -2792,6 +2777,14 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Yahoo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Let QtStalker figure out what dates to download.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto update dates</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

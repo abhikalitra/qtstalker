@@ -19,34 +19,26 @@
  *  USA.
  */
 
-#include "MEDIAN_PRICE.h"
-#include "Curve.h"
-#include "Globals.h"
+#include "INDICATOR_PLOT_INDEX_SHIFT.h"
 
 #include <QtDebug>
 
-MEDIAN_PRICE::MEDIAN_PRICE ()
+INDICATOR_PLOT_INDEX_SHIFT::INDICATOR_PLOT_INDEX_SHIFT ()
 {
-  _plugin = "MEDIAN_PRICE";
+  _plugin = "INDICATOR_PLOT_INDEX_SHIFT";
 }
 
-int MEDIAN_PRICE::command (Command *command)
+int INDICATOR_PLOT_INDEX_SHIFT::command (Command *command)
 {
   // PARMS:
   // NAME
   // INPUT
-  // INPUT2
+  // PERIOD
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
-    return 1;
-  }
-
-  if (g_barData->count() < 1)
-  {
-    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -65,39 +57,27 @@ int MEDIAN_PRICE::command (Command *command)
     return 1;
   }
 
-  Curve *in2 = i->line(command->parm("INPUT2"));
-  if (! in2)
+  bool ok;
+  int period = command->parm("PERIOD").toInt(&ok);
+  if (! ok)
   {
-    qDebug() << _plugin << "::command: INPUT2 missing" << command->parm("INPUT2");
+    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
     return 1;
   }
 
-  // find lowest and highest index values
   int high = 0;
-  int tlow = 0;
-  int thigh = 0;
-  in->keyRange(tlow, thigh);
-  if (thigh > high)
-    high = thigh;
-
-  in2->keyRange(tlow, thigh);
-  if (thigh > high)
-    high = thigh;
+  int low = 0;
+  in->keyRange(low, high);
 
   line = new Curve;
-  int loop = 0;
+  int loop = low;
   for (; loop <= high; loop++)
   {
     CurveBar *bar = in->bar(loop);
     if (! bar)
       continue;
 
-    CurveBar *bar2 = in2->bar(loop);
-    if (! bar2)
-      continue;
-
-    double t = (bar->data() + bar2->data()) / 2.0;
-    line->setBar(loop, new CurveBar(t));
+    line->setBar(loop + period, new CurveBar(bar->data()));
   }
 
   line->setLabel(name);
@@ -114,6 +94,6 @@ int MEDIAN_PRICE::command (Command *command)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  MEDIAN_PRICE *o = new MEDIAN_PRICE;
+  INDICATOR_PLOT_INDEX_SHIFT *o = new INDICATOR_PLOT_INDEX_SHIFT;
   return ((ScriptPlugin *) o);
 }
