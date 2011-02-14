@@ -51,12 +51,15 @@ class YahooDialog : public QDialog
     void cancel ();
     void help ();
     void downloadDone ();
+    void allSymbolsToggled (bool);
+    void autoDateToggled (bool);
 
   private:
     QDateTimeEdit *_sdate;
     QDateTimeEdit *_edate;
     QCheckBox *_adjustment;
     QCheckBox *_allSymbols;
+    QCheckBox *_autoDate;
     QPushButton *_selectSymbolsButton;
     QStringList _symbolList;
     QPushButton *_okButton;

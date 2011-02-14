@@ -35,7 +35,6 @@ YahooDataBase::YahooDataBase ()
   s.append("ysymbol TEXT PRIMARY KEY UNIQUE"); // yahoo symbol
   s.append(", symbol TEXT"); // actual symbol
   s.append(", exchange TEXT"); // actual exchange
-//  s.append(", lastDate TEXT"); // last datetime downloaded
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

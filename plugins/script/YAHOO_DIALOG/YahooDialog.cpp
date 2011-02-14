@@ -25,6 +25,8 @@
 #include "Doc.h"
 #include "YahooDataBase.h"
 #include "YahooHistory.h"
+#include "QuoteDataBase.h"
+#include "DateRange.h"
 
 #include <QLayout>
 #include <QDialogButtonBox>
@@ -84,11 +86,18 @@ void YahooDialog::createGUI ()
   // all symbols
   _allSymbols = new QCheckBox;
   form->addRow(tr("Select All Symbols"), _allSymbols);
+  connect(_allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
 
   // adjustment
   _adjustment = new QCheckBox;
   _adjustment->setToolTip(tr("Uses the yahoo adjusted close instead of the actual close"));
   form->addRow(tr("Adjust for splits"), _adjustment);
+
+  // auto date update
+  _autoDate = new QCheckBox;
+  _autoDate->setToolTip(tr("Let QtStalker figure out what dates to download."));
+  form->addRow(tr("Auto update dates"), _autoDate);
+  connect(_autoDate, SIGNAL(toggled(bool)), this, SLOT(autoDateToggled(bool)));
 
   // message log
   _log = new QTextEdit;
@@ -139,6 +148,8 @@ void YahooDialog::loadSettings ()
   _adjustment->setChecked(settings.value("yahoo_dialog_adjustment", TRUE).toBool());
 
   _allSymbols->setChecked(settings.value("yahoo_dialog_all_symbols", TRUE).toBool());
+  
+  _autoDate->setChecked(settings.value("yahoo_dialog_auto_date", TRUE).toBool());
 }
 
 void YahooDialog::saveSettings ()
@@ -149,6 +160,7 @@ void YahooDialog::saveSettings ()
   settings.setValue("yahoo_dialog_window_position", pos());
   settings.setValue("yahoo_dialog_adjustment", _adjustment->isChecked());
   settings.setValue("yahoo_dialog_all_symbols", _allSymbols->isChecked());
+  settings.setValue("yahoo_dialog_auto_date", _autoDate->isChecked());
   settings.sync();
 }
 
@@ -160,10 +172,12 @@ void YahooDialog::done ()
   _allSymbols->setEnabled(FALSE);
   _selectSymbolsButton->setEnabled(FALSE);
   _okButton->setEnabled(FALSE);
+  _autoDate->setEnabled(FALSE);
 
   _log->append("\n*** " + tr("Starting history download") + " ***");
 
   YahooDataBase db;
+  QuoteDataBase qdb;
 
   if (_allSymbols->isChecked())
     db.symbols(_symbolList);
@@ -181,13 +195,40 @@ void YahooDialog::done ()
       continue;
     }
 
-    symbol.setData("DATE_START", _sdate->dateTime().toString(Qt::ISODate));
-    symbol.setData("DATE_END", _sdate->dateTime().toString(Qt::ISODate));
+    if (_autoDate->isChecked())
+    {
+      BarData bd;
+      bd.setExchange(symbol.data("EXCHANGE"));
+      bd.setSymbol(symbol.data("SYMBOL"));
+      bd.setBarLength(BarData::DailyBar);
+      bd.setRange(DateRange::Day);
+
+      if (qdb.getBars(&bd))
+      {
+        qDebug() << "YahooDialog::done error loading bar from QuoteDataBase" << _symbolList.at(loop);
+        continue;
+      }
+
+      Bar *bar = bd.bar(0);
+      if (! bar)
+        continue;
+
+      symbol.setData("DATE_START", bar->date().toString(Qt::ISODate));
+      
+      symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
+// qDebug() << _symbolList.at(loop) << symbol.data("DATE_START") << symbol.data("DATE_END");
+    }
+    else
+    {
+      symbol.setData("DATE_START", _sdate->dateTime().toString(Qt::ISODate));
+      symbol.setData("DATE_END", _sdate->dateTime().toString(Qt::ISODate));
+    }
+    
     symbol.setData("ADJUSTMENT", _adjustment->isChecked());
 
     symbols.append(symbol);
   }
-  
+
   YahooHistory *thread = new YahooHistory(this, symbols);
   connect(thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
   connect(thread, SIGNAL(finished()), this, SLOT(downloadDone()));
@@ -217,13 +258,31 @@ void YahooDialog::downloadDone ()
 {
   _log->append("*** " + tr("Download finished") + " ***");
 
-  _sdate->setEnabled(TRUE);
-  _edate->setEnabled(TRUE);
+  allSymbolsToggled(_allSymbols->isChecked());
+  autoDateToggled(_autoDate->isChecked());
   _adjustment->setEnabled(TRUE);
   _allSymbols->setEnabled(TRUE);
-  _selectSymbolsButton->setEnabled(TRUE);
   _okButton->setEnabled(TRUE);
+  _autoDate->setEnabled(TRUE);
   
   g_middleMan->chartPanelRefresh();
 }
 
+void YahooDialog::allSymbolsToggled (bool d)
+{
+  bool status = FALSE;
+  if (! d)
+    status = TRUE;
+  
+  _selectSymbolsButton->setEnabled(status);
+}
+
+void YahooDialog::autoDateToggled (bool d)
+{
+  bool status = FALSE;
+  if (! d)
+    status = TRUE;
+
+  _sdate->setEnabled(status);
+  _edate->setEnabled(status);
+}
