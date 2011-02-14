@@ -26,8 +26,6 @@
 
 class HT_SINE : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     HT_SINE ();
     int command (Command *);

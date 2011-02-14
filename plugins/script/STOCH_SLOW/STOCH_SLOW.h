@@ -26,8 +26,6 @@
 
 class STOCH_SLOW : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     STOCH_SLOW ();
     int command (Command *);

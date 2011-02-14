@@ -26,8 +26,6 @@
 
 class WEIGHTED_CLOSE : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     WEIGHTED_CLOSE ();
     int command (Command *);

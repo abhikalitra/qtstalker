@@ -26,8 +26,6 @@
 
 class OPEN : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     OPEN ();
     int command (Command *);

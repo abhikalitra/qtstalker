@@ -26,8 +26,6 @@
 
 class AVERAGE_PRICE : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     AVERAGE_PRICE ();
     int command (Command *);

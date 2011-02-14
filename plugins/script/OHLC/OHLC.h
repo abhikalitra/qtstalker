@@ -26,8 +26,6 @@
 
 class OHLC : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     OHLC ();
     int command (Command *);

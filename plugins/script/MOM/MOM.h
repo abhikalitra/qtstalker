@@ -26,8 +26,6 @@
 
 class MOM : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     MOM ();
     int command (Command *);

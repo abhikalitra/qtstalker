@@ -26,8 +26,6 @@
 
 class FI : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     FI ();
     int command (Command *);

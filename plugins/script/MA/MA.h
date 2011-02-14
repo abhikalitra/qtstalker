@@ -26,8 +26,6 @@
 
 class MA : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     MA ();
     int command (Command *);

@@ -26,8 +26,6 @@
 
 class MACD : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     MACD ();
     int command (Command *);

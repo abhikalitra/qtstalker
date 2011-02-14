@@ -26,8 +26,6 @@
 
 class THERM : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     THERM ();
     int command (Command *);

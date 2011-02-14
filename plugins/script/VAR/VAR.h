@@ -26,8 +26,6 @@
 
 class VAR : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     VAR ();
     int command (Command *);

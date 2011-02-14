@@ -26,8 +26,6 @@
 
 class MEDIAN_PRICE : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     MEDIAN_PRICE ();
     int command (Command *);

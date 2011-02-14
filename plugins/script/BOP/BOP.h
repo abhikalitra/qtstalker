@@ -26,8 +26,6 @@
 
 class BOP : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     BOP ();
     int command (Command *);

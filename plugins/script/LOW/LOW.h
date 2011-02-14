@@ -26,8 +26,6 @@
 
 class LOW : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     LOW ();
     int command (Command *);

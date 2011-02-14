@@ -26,8 +26,6 @@
 
 class PDI : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     PDI ();
     int command (Command *);

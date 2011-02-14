@@ -26,8 +26,6 @@
 
 class MFI : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     MFI ();
     int command (Command *);

@@ -26,8 +26,6 @@
 
 class STOCH_FAST : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     STOCH_FAST ();
     int command (Command *);

@@ -26,8 +26,6 @@
 
 class AD : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     AD ();
     int command (Command *);

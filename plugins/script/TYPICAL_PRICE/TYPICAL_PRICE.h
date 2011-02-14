@@ -26,8 +26,6 @@
 
 class TYPICAL_PRICE : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     TYPICAL_PRICE ();
     int command (Command *);

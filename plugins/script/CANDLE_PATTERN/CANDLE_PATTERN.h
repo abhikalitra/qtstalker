@@ -26,8 +26,6 @@
 
 class CANDLE_PATTERN : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     enum Method
     {

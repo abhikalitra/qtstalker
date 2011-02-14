@@ -26,8 +26,6 @@
 
 class OPEN_INTEREST : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     OPEN_INTEREST ();
     int command (Command *);

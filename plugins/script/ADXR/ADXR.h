@@ -26,8 +26,6 @@
 
 class ADXR : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     ADXR ();
     int command (Command *);

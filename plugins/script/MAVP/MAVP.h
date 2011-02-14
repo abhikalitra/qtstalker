@@ -26,8 +26,6 @@
 
 class MAVP : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     MAVP ();
     int command (Command *);

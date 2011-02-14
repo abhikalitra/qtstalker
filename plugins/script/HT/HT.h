@@ -26,8 +26,6 @@
 
 class HT : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     enum Method
     {

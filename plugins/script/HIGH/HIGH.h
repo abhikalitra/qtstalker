@@ -26,8 +26,6 @@
 
 class HIGH : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     HIGH ();
     int command (Command *);

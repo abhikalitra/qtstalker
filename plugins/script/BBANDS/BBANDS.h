@@ -26,8 +26,6 @@
 
 class BBANDS : public ScriptPlugin
 {
-  Q_OBJECT
-  
   public:
     BBANDS ();
     int command (Command *);

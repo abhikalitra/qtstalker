@@ -26,8 +26,6 @@
 
 class CANDLES : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     CANDLES ();
     int command (Command *);

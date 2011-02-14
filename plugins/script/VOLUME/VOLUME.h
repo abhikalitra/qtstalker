@@ -26,8 +26,6 @@
 
 class VOLUME : public ScriptPlugin
 {
-  Q_OBJECT
-
   public:
     VOLUME ();
     int command (Command *);
