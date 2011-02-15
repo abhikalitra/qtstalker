@@ -19,37 +19,40 @@
  *  USA.
  */
 
-#ifndef BAR_LENGTH_BUTTONS_HPP
-#define BAR_LENGTH_BUTTONS_HPP
+#ifndef BAR_SPACE_BUTTON_HPP
+#define BAR_SPACE_BUTTON_HPP
 
-#include <QObject>
 #include <QToolButton>
-#include <QToolBar>
-#include <QComboBox>
+#include <QMenu>
 
-class BarLengthButtons : public QObject
+class BarSpaceButton : public QToolButton
 {
   Q_OBJECT
   
   signals:
-    void signalBarLengthChanged (int);
+    void signalZoom (int, int); // pixelSpace, index
+    void signalPixelSpace (int); // pixelSpace
 
   public:
-    BarLengthButtons (QToolBar *);
-    void createButtons (QToolBar *);
-//    void buttonStatus ();
-    int length ();
-    void getCurrentText (QString &);
+    BarSpaceButton ();
+    void createMenu ();
+    int getPixelSpace ();
+    void savePixelSpace ();
     
   public slots:
-//    void prevLength ();
-//    void nextLength ();
-    void lengthChanged (int);
+    void addZoom (int index, int pixelSpace);
+    void zoomIn ();
+    void zoomOut ();
+    void ps1Selected ();
+    void ps2Selected ();
     
-  protected:
-    QComboBox *_lengths;
-//    QToolButton *_prevButton;
-//    QToolButton *_nextButton;
+  private:
+    QMenu *_menu;
+    QAction *_zoomIn;
+    QAction *_zoomOut;
+    int _pixelSpace;
+    QAction *_ps1;
+    QAction *_ps2;
 };
 
 #endif

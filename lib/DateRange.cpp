@@ -91,3 +91,50 @@ int DateRange::toType (QString d)
   return l.indexOf(d);
 }
 
+void DateRange::dateRangeText (DateRange::Range k, QString &d)
+{
+  d.clear();
+
+  switch (k)
+  {
+    case Day:
+      d = "1D";
+      break;
+    case Week:
+      d = "1W";
+      break;
+    case Month:
+      d = "1M";
+      break;
+    case Month3:
+      d = "3M";
+      break;
+    case Month6:
+      d = "6M";
+      break;
+    case Year:
+      d = "1Y";
+      break;
+    case Year2:
+      d = "2Y";
+      break;
+    case Year5:
+      d = "5Y";
+      break;
+    case Year10:
+      d = "10Y";
+      break;
+    case Year25:
+      d = "25Y";
+      break;
+    case Year50:
+      d = "50Y";
+      break;
+    case All:
+      d = "All";
+      break;
+    default:
+      break;
+  }
+}
+

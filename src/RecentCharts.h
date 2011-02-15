@@ -22,13 +22,14 @@
 #ifndef RECENT_CHARTS_HPP
 #define RECENT_CHARTS_HPP
 
-#include <QComboBox>
-#include <QToolBar>
+#include <QToolButton>
 #include <QHash>
+#include <QMenu>
+#include <QList>
 
 #include "BarData.h"
 
-class RecentCharts : public QComboBox
+class RecentCharts : public QToolButton
 {
   Q_OBJECT
   
@@ -36,17 +37,19 @@ class RecentCharts : public QComboBox
     void signalChartSelected (BarData);
 
   public:
-    RecentCharts (QToolBar *);
-    ~RecentCharts ();
+    RecentCharts ();
+    void createMenu ();
     
   public slots:
     void addRecentChart (BarData);
-    void itemSelected (int row);
+    void itemSelected (QAction *);
     void save ();
-    void load ();
 
   protected:
+    int _maxCount;
+    QMenu *_menu;
     QHash<QString, BarData> _symbols;
+    QList<QAction *> _actions;
 };
 
 #endif

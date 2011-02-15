@@ -31,9 +31,9 @@
 
 #include "InfoPanel.h"
 #include "RecentCharts.h"
-#include "BarLengthButtons.h"
+#include "BarLengthButton.h"
 #include "PlotSlider.h"
-#include "ZoomButtons.h"
+#include "BarSpaceButton.h"
 #include "DateRangeControl.h"
 #include "DateRangeButton.h"
 #include "SidePanel.h"
@@ -54,7 +54,6 @@ class QtstalkerApp : public QMainWindow
     QtstalkerApp (QString session, QString asset);
     void createGUI ();
     void loadSettings ();
-    void createToolBar ();
     void createStatusToolBar ();
     QString getWindowCaption ();
     void setSliderStart (int);
@@ -78,9 +77,9 @@ class QtstalkerApp : public QMainWindow
     InfoPanel *_infoPanel;
     QStatusBar *_statusBar;
     RecentCharts *_recentCharts;
-    BarLengthButtons *_barLengthButtons;
+    BarLengthButton *_barLengthButton;
     PlotSlider *_plotSlider;
-    ZoomButtons *_zoomButtons;
+    BarSpaceButton *_barSpaceButton;
     QString _clAsset;
     DateRangeControl *_dateRange;
     DateRangeButton *_dateRangeButton;

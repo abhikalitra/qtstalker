@@ -7,7 +7,8 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math
 
 HEADERS += AboutButton.h
 HEADERS += AboutDialog.h
-HEADERS += BarLengthButtons.h
+HEADERS += BarLengthButton.h
+HEADERS += BarSpaceButton.h
 HEADERS += ChartObject.h
 HEADERS += ChartObjectBuy.h
 HEADERS += ChartObjectBuyDraw.h
@@ -60,12 +61,12 @@ HEADERS += ScriptPage.h
 HEADERS += Setup.h
 HEADERS += SidePanel.h
 HEADERS += SymbolListWidget.h
-HEADERS += ZoomButtons.h
 
 
 SOURCES += AboutButton.cpp
 SOURCES += AboutDialog.cpp
-SOURCES += BarLengthButtons.cpp
+SOURCES += BarLengthButton.cpp
+SOURCES += BarSpaceButton.cpp
 SOURCES += ChartObject.cpp
 SOURCES += ChartObjectBuy.cpp
 SOURCES += ChartObjectBuyDraw.cpp
@@ -118,7 +119,6 @@ SOURCES += ScriptPage.cpp
 SOURCES += Setup.cpp
 SOURCES += SidePanel.cpp
 SOURCES += SymbolListWidget.cpp
-SOURCES += ZoomButtons.cpp
 
 
 TARGET = qtstalker

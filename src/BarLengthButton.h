@@ -19,41 +19,32 @@
  *  USA.
  */
 
-#ifndef ZOOM_BUTTONS_HPP
-#define ZOOM_BUTTONS_HPP
+#ifndef BAR_LENGTH_BUTTON_HPP
+#define BAR_LENGTH_BUTTON_HPP
 
-#include <QObject>
 #include <QToolButton>
-#include <QToolBar>
+#include <QMenu>
+#include <QStringList>
 
-#include "PixelSpaceButton.h"
-
-class ZoomButtons : public QObject
+class BarLengthButton : public QToolButton
 {
   Q_OBJECT
   
   signals:
-    void signalZoom (int, int); // pixelSpace, index
-    void signalPixelSpace (int); // pixelSpace
+    void signalBarLengthChanged (int);
 
   public:
-    ZoomButtons (QToolBar *);
-    void createButtons (QToolBar *);
-    int getPixelSpace ();
-    void savePixelSpace ();
+    BarLengthButton ();
+    void createMenu ();
+    int length ();
     
   public slots:
-    void addZoom (int index, int pixelSpace);
-    void zoomIn ();
-    void zoomOut ();
-    void psButtonClicked (int);
+    void lengthChanged (QAction *);
     
-  protected:
-    QToolButton *_zoomInButton;
-    QToolButton *_zoomOutButton;
-    int _pixelSpace;
-    PixelSpaceButton *_ps1Button;
-    PixelSpaceButton *_ps2Button;
+  private:
+    QMenu *_menu;
+    QStringList _lengthList;
+    QStringList _shortList;
 };
 
 #endif

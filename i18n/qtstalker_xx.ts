@@ -297,6 +297,13 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>BarLengthButton</name>
+    <message>
+        <source>Bar Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BarLengthButtons</name>
     <message>
         <source>Bar Length</source>

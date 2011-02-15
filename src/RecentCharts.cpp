@@ -21,27 +21,44 @@
 
 #include "RecentCharts.h"
 #include "Globals.h"
+#include "../pics/recent_chart.xpm"
 
 #include <QDebug>
-#include <QString>
 #include <QStringList>
 #include <QSettings>
 
-RecentCharts::RecentCharts (QToolBar *tb)
+RecentCharts::RecentCharts ()
 {
-  setMaxCount(10);
-  setSizeAdjustPolicy(QComboBox::AdjustToContents);
-  setCurrentIndex(0);
-  setToolTip(tr("Recent Charts"));
-  connect(this, SIGNAL(activated(int)), this, SLOT(itemSelected(int)));
-  tb->addWidget(this);
+  _maxCount = 10;
+  createMenu();
 
-  load();
+  setPopupMode(QToolButton::InstantPopup);
+  setToolTip(tr("Recent Charts"));
+  setStatusTip(tr("Recent Charts"));
+  setIcon(QIcon(recent_chart_xpm));
 }
 
-RecentCharts::~RecentCharts ()
+void RecentCharts::createMenu ()
 {
-//  save();
+  _menu = new QMenu(this);
+  _menu->setTitle(tr("Recent Charts"));
+  connect(_menu, SIGNAL(triggered(QAction *)), this, SLOT(itemSelected(QAction *)));
+  setMenu(_menu);
+
+  QSettings settings(g_settingsFile);
+  QStringList l = settings.value("recent_charts_list").toStringList();
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    BarData bd;
+    bd.setKey(l.at(loop));
+    _symbols.insert(l.at(loop), bd);
+
+    QAction *a = _menu->addAction(l.at(loop));
+    a->setCheckable(FALSE);
+    _actions.append(a);
+  }
 }
 
 void RecentCharts::addRecentChart (BarData bd)
@@ -51,23 +68,27 @@ void RecentCharts::addRecentChart (BarData bd)
   if (_symbols.contains(key))
     return;
 
-  if (count() == maxCount())
-    _symbols.remove(itemText(maxCount() - 1));
+  if (_symbols.count() == _maxCount)
+  {
+    QAction *a = _actions.takeLast();
+    _menu->removeAction(a);
+    _symbols.remove(a->text());
+    delete a;
+  }
 
   _symbols.insert(key, bd);
 
-  insertItem(0, key);
+  QAction *a = new QAction(key, _menu);
+  a->setCheckable(FALSE);
+  _actions.prepend(a);
+
+  QAction *b = _actions.first();
+  _menu->insertAction(b, a);
 }
 
-void RecentCharts::itemSelected (int row)
+void RecentCharts::itemSelected (QAction *d)
 {
-  QString s = itemText(row);
-  removeItem(row);
-  insertItem(0, s);
-
-  setCurrentIndex(0);
-
-  emit signalChartSelected(_symbols.value(s));
+  emit signalChartSelected(_symbols.value(d->text()));
 }
 
 void RecentCharts::save ()
@@ -84,19 +105,4 @@ void RecentCharts::save ()
   QSettings settings(g_settingsFile);
   settings.setValue("recent_charts_list", l);
   settings.sync();
-}
-
-void RecentCharts::load ()
-{
-  QSettings settings(g_settingsFile);
-  QStringList l = settings.value("recent_charts_list").toStringList();
-
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    BarData bd;
-    bd.setKey(l.at(loop));
-    _symbols.insert(l.at(loop), bd);
-    addItem(l.at(loop));
-  }
 }

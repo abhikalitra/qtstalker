@@ -914,3 +914,7 @@
 
            Also working on updating the docs.
 
+20110214:  Moved the remaining main toolbar elements to the status bar. Main toolbar now removed to make more
+           room for future enhancements. The zoom buttons, bar length, date range and recent chart controls
+           are converted to buttons with popup menus.
+

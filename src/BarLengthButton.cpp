@@ -19,45 +19,45 @@
  *  USA.
  */
 
-#include "DateRangeControl.h"
+#include "BarLengthButton.h"
+#include "BarData.h"
 #include "Globals.h"
-#include "DateRange.h"
 
 #include <QDebug>
 #include <QSettings>
 
-DateRangeControl::DateRangeControl ()
+BarLengthButton::BarLengthButton ()
 {
-  DateRange dr;
-  dr.list(_lengthList);
-
+  BarData bd;
+  bd.barLengthList(_lengthList);
+  
   int loop = 0;
   for (; loop < _lengthList.count(); loop++)
   {
     QString s;
-    dr.dateRangeText((DateRange::Range) loop, s);
+    bd.barLengthText((BarData::BarLength) loop, s);
     _shortList << s;
   }
 
   createMenu();
 
   setPopupMode(QToolButton::InstantPopup);
-  setToolTip(tr("Date Range"));
-  setStatusTip(tr("Date Range"));
+  setToolTip(tr("Bar Length"));
+  setStatusTip(tr("Bar Length"));
 }
 
-void DateRangeControl::createMenu ()
+void BarLengthButton::createMenu ()
 {
   _menu = new QMenu(this);
-  _menu->setTitle(tr("Date Range"));
-  connect(_menu, SIGNAL(triggered(QAction *)), this, SLOT(rangeChanged(QAction *)));
+  _menu->setTitle(tr("Bar Length"));
+  connect(_menu, SIGNAL(triggered(QAction *)), this, SLOT(lengthChanged(QAction *)));
   setMenu(_menu);
 
   QSettings settings(g_settingsFile);
-  int index = settings.value("last_date_range", 5).toInt();
+  int index = settings.value("bar_length", 6).toInt();
 
   QActionGroup *group = new QActionGroup(this);
-
+  
   int loop = 0;
   for (; loop < _lengthList.count(); loop++)
   {
@@ -73,21 +73,21 @@ void DateRangeControl::createMenu ()
   }
 }
 
-void DateRangeControl::rangeChanged (QAction *d)
+void BarLengthButton::lengthChanged (QAction *d)
 {
   int index = _lengthList.indexOf(d->text());
-
+  
   QSettings settings(g_settingsFile);
-  settings.setValue("last_date_range", index);
+  settings.setValue("bar_length", index);
   settings.sync();
-
+  
   setText(_shortList.at(index));
 
-  emit signalDateRangeChanged();
+  emit signalBarLengthChanged(index);
 }
 
-int DateRangeControl::dateRange ()
+int BarLengthButton::length ()
 {
   QSettings settings(g_settingsFile);
-  return settings.value("last_date_range", 5).toInt();
+  return settings.value("bar_length", 6).toInt();
 }

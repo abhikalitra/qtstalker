@@ -65,8 +65,6 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
 
   createStatusToolBar();
 
-  createToolBar();
-
   createGUI();
 
   loadSettings();
@@ -141,9 +139,6 @@ void QtstalkerApp::createGUI ()
   connect(dock, SIGNAL(signalLockStatus(bool)), _infoPanel, SLOT(setLockStatus(bool)));
   connect(_infoPanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
 
-  // delay chart layout signals until all objects are created
-  connect(_barLengthButtons, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
-  
   // we have to load the plots before app is shown otherwise
   // dock widgets do not restore properly
   IndicatorDataBase db;
@@ -175,41 +170,6 @@ void QtstalkerApp::createGUI ()
 */
 }
 
-void QtstalkerApp::createToolBar ()
-{
-  //construct main toolbar
-  QToolBar *toolbar = addToolBar("buttonToolBar");
-  toolbar->setObjectName("buttonToolBar");
-  toolbar->setIconSize(QSize(16, 16));
-
-  // add this to right justify everything after on the toolbar
-  QWidget *spacerWidget = new QWidget;
-  spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-  spacerWidget->setVisible(true);
-  toolbar->addWidget(spacerWidget);
-
-  // create the zoom button box on the main toolbar
-  _zoomButtons = new ZoomButtons(toolbar);
-
-//  toolbar->addSeparator();
-  
-  // create the bar length button group
-  _barLengthButtons = new BarLengthButtons(toolbar);
-
-  toolbar->addSeparator();
-
-  // date range controls
-  _dateRange = new DateRangeControl(toolbar);
-  connect(_dateRange, SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
-
-//  toolbar->addSeparator();
-
-  // create recent charts combobox
-  _recentCharts = new RecentCharts(toolbar);
-  connect(_recentCharts, SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
-  connect(_quitButton, SIGNAL(signalShutdown()), _recentCharts, SLOT(save()));
-}
-
 void QtstalkerApp::createStatusToolBar ()
 {
   _statusBar = statusBar();
@@ -235,6 +195,7 @@ void QtstalkerApp::createStatusToolBar ()
   CrossHairsButton *chb = new CrossHairsButton;
   _statusToolBar->addWidget(chb);
 
+  // data window button
   DataWindowButton *dwb = new DataWindowButton;
   _statusToolBar->addWidget(dwb);
 
@@ -251,11 +212,33 @@ void QtstalkerApp::createStatusToolBar ()
   HelpButton *hb = new HelpButton;
   _statusToolBar->addWidget(hb);
 
+  // about button
   AboutButton *ab = new AboutButton;
   _statusToolBar->addWidget(ab);
 
+  // configure button
   ConfigureButton *configb = new ConfigureButton;
   _statusToolBar->addWidget(configb);
+
+  // create the bar space button
+  _barSpaceButton = new BarSpaceButton;
+  _statusToolBar->addWidget(_barSpaceButton);
+
+  // create bar length button
+  _barLengthButton = new BarLengthButton;
+  _statusToolBar->addWidget(_barLengthButton);
+  connect(_barLengthButton, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
+
+  // date range controls
+  _dateRange = new DateRangeControl;
+  _statusToolBar->addWidget(_dateRange);
+  connect(_dateRange, SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
+
+  // create recent charts combobox
+  _recentCharts = new RecentCharts;
+  _statusToolBar->addWidget(_recentCharts);
+  connect(_recentCharts, SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
+  connect(_quitButton, SIGNAL(signalShutdown()), _recentCharts, SLOT(save()));
 
   _statusBar->addPermanentWidget(_statusToolBar);
 }
@@ -301,7 +284,7 @@ void QtstalkerApp::loadChart (BarData symbol)
   g_barData->setExchange(symbol.exchange());
   g_barData->setSymbol(symbol.symbol());
   g_barData->setName(symbol.name());
-  g_barData->setBarLength((BarData::BarLength) _barLengthButtons->length());
+  g_barData->setBarLength((BarData::BarLength) _barLengthButton->length());
 
   if (_dateRangeButton->isChecked())
   {
@@ -346,7 +329,7 @@ QString QtstalkerApp::getWindowCaption ()
 
   QStringList l;
   g_barData->barLengthList(l);
-  caption.append(" " + l[_barLengthButtons->length()]);
+  caption.append(" " + l[_barLengthButton->length()]);
 
   return caption;
 }
@@ -427,12 +410,13 @@ void QtstalkerApp::addPlot (QString indicator)
 {
   Plot *plot = new Plot(indicator, this);
   plot->setIndicator();
-  plot->setBarSpacing(_zoomButtons->getPixelSpace());
+  plot->setBarSpacing(_barSpaceButton->getPixelSpace());
+  plot->setBarSpacing(8);
   plot->loadSettings();
 
   connect(plot, SIGNAL(signalInfoMessage(Setting)), _infoPanel, SLOT(showInfo(Setting)));
   connect(plot, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
-  connect(_zoomButtons, SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
+  connect(_barSpaceButton, SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
   connect(_plotSlider, SIGNAL(signalValueChanged(int)), plot, SLOT(setStartIndex(int)));
   connect(this, SIGNAL(signalClearPlot()), plot, SLOT(clear()));
 //  connect(this, SIGNAL(signalDraw()), plot, SLOT(replot()));

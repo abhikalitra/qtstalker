@@ -22,12 +22,11 @@
 #ifndef DATE_RANGE_CONTROL_HPP
 #define DATE_RANGE_CONTROL_HPP
 
-#include <QObject>
 #include <QToolButton>
-#include <QToolBar>
-#include <QComboBox>
+#include <QMenu>
+#include <QStringList>
 
-class DateRangeControl : public QObject
+class DateRangeControl : public QToolButton
 {
   Q_OBJECT
   
@@ -35,20 +34,17 @@ class DateRangeControl : public QObject
     void signalDateRangeChanged ();
 
   public:
-    DateRangeControl (QToolBar *);
-    void createButtons (QToolBar *);
+    DateRangeControl ();
+    void createMenu ();
     int dateRange ();
-//    void buttonStatus ();
     
   public slots:
-//    void prevRange ();
-//    void nextRange ();
-    void rangeChanged (int);
+    void rangeChanged (QAction *);
     
-  protected:
-    QComboBox *_ranges;
-//    QToolButton *_prevButton;
-//    QToolButton *_nextButton;
+  private:
+    QMenu *_menu;
+    QStringList _lengthList;
+    QStringList _shortList;
 };
 
 #endif
