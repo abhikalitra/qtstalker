@@ -918,3 +918,9 @@
            room for future enhancements. The zoom buttons, bar length, date range and recent chart controls
            are converted to buttons with popup menus.
 
+20110215:  More experimenting with gui elements. Moved the bottom toolbar and placed it above the plot slider.
+           I am trying to put all the app controls together as close as possible to minimize mouse travel and
+           maximize efficiency. Will keep refining it until I am happy with it.
+
+
+

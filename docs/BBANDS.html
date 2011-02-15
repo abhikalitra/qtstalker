@@ -3,7 +3,7 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="Content-Type">
-  <title>Qtstalker: BBANDS - Bollinger Bands</title>
+  <title>Qtstalker: BBANDS</title>
   <link rel="stylesheet" type="text/css" href="qtstalker.css"
  media="screen">
   <script src="qtstalker.js" type="text/javascript"> </script>
@@ -20,52 +20,55 @@
 </div>
 </div>
 <!-- Content -->
-<h1>BBANDS - Bollinger Bands<br>
+<h1>BBANDS
 </h1>
 <br>
-<span style="font-weight: bold;">DESCRIPTION:</span>&nbsp;&nbsp;&nbsp; <a
+<table style="text-align: left; width: 1336px; height: 153px;"
+ border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
+      <td style="vertical-align: top;"><a
  href="http://en.wikipedia.org/wiki/Bollinger_Bands">Bollinger Bands</a><br>
-<br>
-<span style="font-weight: bold;">SYNTAX:</span>&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-PLUGIN = BBANDS<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
-INPUT = &lt;VARIABLE NAME&gt; <br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
+      <td style="vertical-align: top;">PLUGIN = BBANDS<br>
+INPUT = &lt;VARIABLE NAME&gt;<br>
 NAME_UPPER = &lt;VARIABLE NAME&gt;<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
 NAME_MIDDLE = &lt;VARIABLE NAME&gt;<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
 NAME_LOWER = &lt;VARIABLE NAME&gt;<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
 PERIOD = &lt;INTEGER&gt;<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
-MA_TYPE = &lt;MOVING AVERAGE TYPE&gt;<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+MA_TYPE = &lt;MA TYPE&gt;<br>
 DEV_UP = &lt;DECIMAL&gt;<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
 DEV_DOWN = &lt;DECIMAL&gt;<br>
-<br>
-<span style="font-weight: bold;">RETURNS:</span>&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; '0' = Success<br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-family: 'Times New Roman'; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium;"><span
+ class="Apple-style-span"
+ style="font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 14px;"></span></span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
+      <td style="vertical-align: top;">'0' = Success<br>
 'ERROR' =
 Failure<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
+      <td style="vertical-align: top;">PLUGIN=BBANDS,INPUT=close,NAME_UPPER=bbu,NAME_MIDDLE=bbm,NAME_LOWER=bbl,PERIOD=20,MA_TYPE=EMA,DEV_UP=2,DEV_DOWN=2<br>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
 <br>
-<span style="font-weight: bold;">EXAMPLE:</span>&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-PLUGIN=BBANDS,INPUT=close,NAME_UPPER=bbu,NAME_MIDDLE=bbm,NAME_LOWER=bbl,PERIOD=20,MA_TYPE=EMA,DEV_UP=2,DEV_DOWN=2<br>
 <br>
-<br>
+<span style="font-weight: bold;"></span><br>
 </div>
 </body>
 </html>

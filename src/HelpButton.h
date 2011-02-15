@@ -23,6 +23,7 @@
 #define HELP_BUTTON_HPP
 
 #include <QToolButton>
+#include <QMenu>
 
 class HelpButton : public QToolButton
 {
@@ -30,9 +31,14 @@ class HelpButton : public QToolButton
   
   public:
     HelpButton ();
+    void createMenu ();
 
   public slots:
     void startDocumentation ();
+    void aboutDialog ();
+
+  private:
+    QMenu *_menu;
 };
 
 #endif

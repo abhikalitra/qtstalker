@@ -22,7 +22,7 @@
 #include "YahooAddSymbolDialog.h"
 #include "Globals.h"
 #include "Doc.h"
-#include "ScriptPluginFactory.h"
+#include "YahooDataBase.h"
 
 #include <QtDebug>
 #include <QDialogButtonBox>
@@ -103,20 +103,8 @@ void YahooAddSymbolDialog::help ()
 
 void YahooAddSymbolDialog::done ()
 {
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin("YAHOO_DATABASE");
-  if (! plug)
-  {
-    qDebug() << "YahooAddSymbolDialog::done: no plugin";
-    return;
-  }
-
-  QStringList cl;
-  cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=TRANSACTION";
-  Command command(cl.join(","));
-
-  if (plug->command(&command))
-    qDebug() << "YahooAddSymbolDialog::done: command error";
+  YahooDataBase db;
+  db.transaction();
 
   QString s = _symbols->text();
   s = s.trimmed();
@@ -132,24 +120,16 @@ void YahooAddSymbolDialog::done ()
       errorList.append(l[loop]);
     else
     {
-      cl.clear();
-      cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=SAVE" << "YSYMBOL=" + l.at(loop);
-      cl << "EXCHANGE=" + exchange << "SYMBOL=" + symbol;
-      command.parse(cl.join(","));
-
-      if (plug->command(&command))
+      Setting set;
+      set.setData("YSYMBOL", l.at(loop));
+      set.setData("EXCHANGE", exchange);
+      set.setData("SYMBOL", symbol);
+      if (db.save(set))
         qDebug() << "YahooAddSymbolDialog::done: command error";
     }
   }
 
-  cl.clear();
-  cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=COMMIT";
-  command.parse(cl.join(","));
-
-  if (plug->command(&command))
-    qDebug() << "YahooAddSymbolDialog::done: command error";
-
-  delete plug;
+  db.commit();
 
   if (errorList.count())
   {

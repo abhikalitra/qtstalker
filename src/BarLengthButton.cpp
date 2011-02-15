@@ -28,6 +28,10 @@
 
 BarLengthButton::BarLengthButton ()
 {
+  QFont font;
+  font.setPointSize(9);
+  setFont(font);
+
   BarData bd;
   bd.barLengthList(_lengthList);
   

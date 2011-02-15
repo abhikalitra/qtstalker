@@ -61,7 +61,7 @@ class ScriptPage : public QWidget
     void createGUI ();
     void createActions ();
     void startScript ();
-    void createButtonMenu (QToolBar *);
+    void createButtonMenu ();
     void createMainPage ();
     void loadSettings ();
     void saveSettings ();

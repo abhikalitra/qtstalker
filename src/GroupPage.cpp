@@ -44,22 +44,22 @@ GroupPage::GroupPage ()
   vbox->setSpacing(3);
   setLayout(vbox);
 
-  _groups = new QComboBox;
-  connect(_groups, SIGNAL(currentIndexChanged(int)), this, SLOT(groupSelected(int)));
-  _groups->setToolTip(tr("Current Group"));
-  _groups->setFocusPolicy(Qt::NoFocus);
-  vbox->addWidget(_groups);
-
-  QToolBar *tb = new QToolBar;
-  vbox->addWidget(tb);
-  tb->setIconSize(QSize(18, 18));
+//  QToolBar *tb = new QToolBar;
+//  vbox->addWidget(tb);
+//  tb->setIconSize(QSize(16, 16));
   
-  createButtonMenu(tb);
+  createButtonMenu();
   
   _nav = new SymbolListWidget;
   connect(_nav, SIGNAL(signalSymbolSelected(BarData)), this, SLOT(chartOpened(BarData)));
   connect(_nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   vbox->addWidget(_nav);
+
+  _groups = new QComboBox;
+  connect(_groups, SIGNAL(currentIndexChanged(int)), this, SLOT(groupSelected(int)));
+  _groups->setToolTip(tr("Current Group"));
+  _groups->setFocusPolicy(Qt::NoFocus);
+  vbox->addWidget(_groups);
 
   loadGroups();
 
@@ -95,12 +95,12 @@ void GroupPage::createActions ()
   _actions.insert(_DELETE_GROUP, action);
 }
 
-void GroupPage::createButtonMenu (QToolBar *tb)
+void GroupPage::createButtonMenu ()
 {
-  tb->addAction(_actions.value(_NEW_GROUP));
-  tb->addAction(_actions.value(_ADD_GROUP));
-  tb->addAction(_actions.value(_EDIT_GROUP));
-  tb->addAction(_actions.value(_DELETE_GROUP));
+//  tb->addAction(_actions.value(_NEW_GROUP));
+//  tb->addAction(_actions.value(_ADD_GROUP));
+//  tb->addAction(_actions.value(_EDIT_GROUP));
+//  tb->addAction(_actions.value(_DELETE_GROUP));
 
   _menu = new QMenu(this);
   _menu->addAction(_actions.value(_NEW_GROUP));

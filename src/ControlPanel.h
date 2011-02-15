@@ -19,16 +19,27 @@
  *  USA.
  */
 
-#ifndef PLOT_SLIDER_HPP
-#define PLOT_SLIDER_HPP
+#ifndef CONTROL_PANEL_HPP
+#define CONTROL_PANEL_HPP
 
 #include <QString>
 #include <QWidget>
 #include <QSlider>
-#include <QList>
 #include <QToolButton>
 
-class PlotSlider : public QWidget
+#include "RecentCharts.h"
+#include "BarLengthButton.h"
+#include "BarSpaceButton.h"
+#include "DateRangeControl.h"
+#include "DataWindowButton.h"
+#include "GridButton.h"
+#include "CrossHairsButton.h"
+#include "NewIndicatorButton.h"
+#include "RefreshButton.h"
+#include "HelpButton.h"
+#include "ConfigureButton.h"
+
+class ControlPanel : public QWidget
 {
   Q_OBJECT
   
@@ -37,21 +48,20 @@ class PlotSlider : public QWidget
     void signalLockStatus (bool);
     
   public:
-    PlotSlider ();
+    ControlPanel ();
     void createGUI ();
     void setStart (int, int, int);
     int getValue ();
+
+    BarSpaceButton * barSpaceButton ();
+    BarLengthButton * barLengthButton ();
+    DateRangeControl * dateRangeControl ();
+    RecentCharts * recentCharts ();
+    RefreshButton * refreshButton ();
     
   public slots:
     void setValue (int);
     void setStartValue (int);
-    void startButtonClicked ();
-    void pPageButtonClicked ();
-    void pBarButtonClicked ();
-    void nBarButtonClicked ();
-    void nPageButtonClicked ();
-    void endButtonClicked ();
-    void buttonStatus ();
     void sliderChanged (int);
     void setLockStatus (bool);
     void loadSettings ();
@@ -59,13 +69,19 @@ class PlotSlider : public QWidget
     
   protected:
     QSlider *_slider;
-    QToolButton *_startButton;
-    QToolButton *_pPageButton;
-    QToolButton *_pBarButton;
-    QToolButton *_nBarButton;
-    QToolButton *_nPageButton;
-    QToolButton *_endButton;
+    QToolButton *_Button;
     bool _lockStatus;
+    RecentCharts *_recentCharts;
+    BarLengthButton *_barLengthButton;
+    BarSpaceButton *_barSpaceButton;
+    DateRangeControl *_dateRangeControl;
+    GridButton *_gridButton;
+    RefreshButton *_refreshButton;
+    CrossHairsButton *_crossHairsButton;
+    DataWindowButton *_dataWindowButton;
+    NewIndicatorButton *_newIndicatorButton;
+    HelpButton *_helpButton;
+    ConfigureButton *_configureButton;
 };
 
 #endif

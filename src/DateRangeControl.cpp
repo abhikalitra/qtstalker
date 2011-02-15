@@ -25,9 +25,15 @@
 
 #include <QDebug>
 #include <QSettings>
+#include <QPixmap>
+#include <QPainter>
 
 DateRangeControl::DateRangeControl ()
 {
+  QFont font;
+  font.setPointSize(9);
+  setFont(font);
+  
   DateRange dr;
   dr.list(_lengthList);
 

@@ -32,28 +32,30 @@
 #include <QApplication>
 #include <QSettings>
 #include <QCoreApplication>
+#include <QStatusBar>
 
 #include "Qtstalker.h"
 #include "Setup.h"
-#include "HelpButton.h"
 #include "Globals.h"
 #include "CommandThread.h"
-#include "DataWindowButton.h"
-#include "GridButton.h"
-#include "CrossHairsButton.h"
-#include "AboutButton.h"
-#include "NewIndicatorButton.h"
-#include "RefreshButton.h"
 #include "QuoteDataBase.h"
 #include "InfoPanel.h"
 #include "DockWidget.h"
 #include "IndicatorDataBase.h"
-#include "ConfigureButton.h"
+#include "RefreshButton.h"
+#include "RecentCharts.h"
+#include "BarLengthButton.h"
+#include "BarSpaceButton.h"
+#include "DateRangeControl.h"
+#include "DateRangeButton.h"
+#include "QuitButton.h"
 
 #include "../pics/qtstalker.xpm"
 
 QtstalkerApp::QtstalkerApp(QString session, QString asset)
 {
+  connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutDown()));
+
   setWindowIcon(QIcon(qtstalker_xpm));
 
   QCoreApplication::setOrganizationName("QtStalker");
@@ -63,13 +65,9 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   Setup setup;
   setup.setup(session);
 
-  createStatusToolBar();
-
   createGUI();
 
   loadSettings();
-
-  _statusBar->showMessage(tr("Ready"), 2000);
 
   setWindowTitle(getWindowCaption());
 
@@ -82,6 +80,19 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
     _clAsset = asset;
     QTimer::singleShot(500, this, SLOT(commandLineAsset()));
   }
+}
+
+void QtstalkerApp::shutDown ()
+{
+  // save everything that needs to be saved before app quits
+  // some classes cannot save in their destructors due to SQL services
+  // shutting down before the destructor is called
+  // also need to save splitter sizes properly
+  emit signalShutDown();
+
+  // delete all the non-parented objects
+  delete g_barData;
+  delete g_middleMan;
 }
 
 void QtstalkerApp::createGUI ()
@@ -97,11 +108,9 @@ void QtstalkerApp::createGUI ()
   // side panel dock
   _sidePanel = new SidePanel;
   connect(_sidePanel, SIGNAL(signalLoadChart(BarData)), this, SLOT(loadChart(BarData)));
-  connect(_sidePanel, SIGNAL(signalRecentChart(BarData)), _recentCharts, SLOT(addRecentChart(BarData)));
   connect(_sidePanel, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
   connect(_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalLoadSettings()), _sidePanel, SLOT(loadSettings()));
-  connect(_quitButton, SIGNAL(signalShutdown()), _sidePanel, SLOT(saveSettings()));
 
   DockWidget *dock = new DockWidget(QString(), this);
   dock->setObjectName("sidePanelDock");
@@ -112,23 +121,50 @@ void QtstalkerApp::createGUI ()
   connect(dock, SIGNAL(signalLockStatus(bool)), _sidePanel, SLOT(setLockStatus(bool)));
   connect(_sidePanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
 
-  // plot slider dock
-  _plotSlider = new PlotSlider;
-  connect(this, SIGNAL(signalLoadSettings()), _plotSlider, SLOT(loadSettings()));
-  connect(_quitButton, SIGNAL(signalShutdown()), _plotSlider, SLOT(saveSettings()));
+  // control panel dock
+  _controlPanel = new ControlPanel;
+  connect(this, SIGNAL(signalLoadSettings()), _controlPanel, SLOT(loadSettings()));
+  connect(this, SIGNAL(signalShutDown()), _controlPanel, SLOT(saveSettings()));
+  connect(_controlPanel->barLengthButton(), SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
+  connect(_controlPanel->dateRangeControl(), SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
+  connect(_controlPanel->recentCharts(), SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
+  connect(this, SIGNAL(signalShutDown()), _controlPanel->recentCharts(), SLOT(save()));
+  connect(_sidePanel, SIGNAL(signalRecentChart(BarData)), _controlPanel->recentCharts(), SLOT(addRecentChart(BarData)));
+  connect(_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
+  connect(_controlPanel->dateRangeControl(), SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
+  connect(this, SIGNAL(signalShutDown()), this, SLOT(save()));
+  connect(this, SIGNAL(signalShutDown()), _sidePanel, SLOT(saveSettings()));
   
   dock = new DockWidget(QString(), this);
-  dock->setObjectName("plotSliderDock");
+  dock->setObjectName("controlPanelDock");
   dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-  dock->setWidget(_plotSlider);
+  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  dock->setWidget(_controlPanel);
   addDockWidget(Qt::RightDockWidgetArea, dock);
-  connect(dock, SIGNAL(signalLockStatus(bool)), _plotSlider, SLOT(setLockStatus(bool)));
-  connect(_plotSlider, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
+  connect(dock, SIGNAL(signalLockStatus(bool)), _controlPanel, SLOT(setLockStatus(bool)));
+  connect(_controlPanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
+
+  // testing
+/*  
+  QToolBar *tb = new QToolBar;
+
+  QToolButton *b = new QToolButton;
+  b->setText("A");
+  tb->addWidget(b);
+
+  dock = new DockWidget(QString(), this);
+  dock->setObjectName("testToolBar");
+  dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  dock->setWidget(tb);
+  addDockWidget(Qt::RightDockWidgetArea, dock);
+  // end testing
+*/
 
   // info panel dock
   _infoPanel = new InfoPanel;
   connect(this, SIGNAL(signalLoadSettings()), _infoPanel, SLOT(loadSettings()));
-  connect(_quitButton, SIGNAL(signalShutdown()), _infoPanel, SLOT(saveSettings()));
+  connect(this, SIGNAL(signalShutDown()), _infoPanel, SLOT(saveSettings()));
   
   dock = new DockWidget(QString(), this);
   dock->setObjectName("infoPanelDock");
@@ -148,99 +184,9 @@ void QtstalkerApp::createGUI ()
   for (; loop < l.count(); loop++)
     addPlot(l.at(loop));
 
+  statusBar()->showMessage(tr("Ready"), 2000);
+
   setUnifiedTitleAndToolBarOnMac(TRUE);
-
-/*  
-  // test start
-
-  QWidget *testw = new QWidget(this);
-  testw->setFixedHeight(50);
-
-  QHBoxLayout *hbox = new QHBoxLayout;
-  testw->setLayout(hbox);
-
-  dock = new DockWidget(QString(), this);
-  dock->setObjectName("testDock");
-  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-  dock->setWidget(testw);
-  addDockWidget(Qt::LeftDockWidgetArea, dock);
-
-  // test end
-*/
-}
-
-void QtstalkerApp::createStatusToolBar ()
-{
-  _statusBar = statusBar();
-
-  _statusToolBar = addToolBar("statusToolBar");
-  _statusToolBar->setIconSize(QSize(16, 16));
-
-  // add the toolbar actions
-  _quitButton = new QuitButton;
-  connect(_quitButton, SIGNAL(signalShutdown()), this, SLOT(save()));
-  _statusToolBar->addWidget(_quitButton);
-
-  // grid button
-  GridButton *gb = new GridButton;
-  _statusToolBar->addWidget(gb);
-
-  // refresh button
-  RefreshButton *rb = new RefreshButton;
-  connect(rb, SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
-  _statusToolBar->addWidget(rb);
-
-  // toggle crosshairs button
-  CrossHairsButton *chb = new CrossHairsButton;
-  _statusToolBar->addWidget(chb);
-
-  // data window button
-  DataWindowButton *dwb = new DataWindowButton;
-  _statusToolBar->addWidget(dwb);
-
-  // new indicator button
-  NewIndicatorButton *nib = new NewIndicatorButton;
-  _statusToolBar->addWidget(nib);
-
-  // date range button
-  _dateRangeButton = new DateRangeButton();
-  connect(_dateRangeButton, SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
-  _statusToolBar->addWidget(_dateRangeButton);
-
-  // docs button
-  HelpButton *hb = new HelpButton;
-  _statusToolBar->addWidget(hb);
-
-  // about button
-  AboutButton *ab = new AboutButton;
-  _statusToolBar->addWidget(ab);
-
-  // configure button
-  ConfigureButton *configb = new ConfigureButton;
-  _statusToolBar->addWidget(configb);
-
-  // create the bar space button
-  _barSpaceButton = new BarSpaceButton;
-  _statusToolBar->addWidget(_barSpaceButton);
-
-  // create bar length button
-  _barLengthButton = new BarLengthButton;
-  _statusToolBar->addWidget(_barLengthButton);
-  connect(_barLengthButton, SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
-
-  // date range controls
-  _dateRange = new DateRangeControl;
-  _statusToolBar->addWidget(_dateRange);
-  connect(_dateRange, SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
-
-  // create recent charts combobox
-  _recentCharts = new RecentCharts;
-  _statusToolBar->addWidget(_recentCharts);
-  connect(_recentCharts, SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
-  connect(_quitButton, SIGNAL(signalShutdown()), _recentCharts, SLOT(save()));
-
-  _statusBar->addPermanentWidget(_statusToolBar);
 }
 
 void QtstalkerApp::loadSettings ()
@@ -284,43 +230,25 @@ void QtstalkerApp::loadChart (BarData symbol)
   g_barData->setExchange(symbol.exchange());
   g_barData->setSymbol(symbol.symbol());
   g_barData->setName(symbol.name());
-  g_barData->setBarLength((BarData::BarLength) _barLengthButton->length());
+  g_barData->setBarLength((BarData::BarLength) _controlPanel->barLengthButton()->length());
 
-  if (_dateRangeButton->isChecked())
-  {
-    g_barData->setStartDate(_dateRangeButton->startDate());
-    g_barData->setEndDate(_dateRangeButton->endDate());
-    g_barData->setRange(-1);
-  }
-  else
-  {
-    g_barData->setStartDate(QDateTime());
-    g_barData->setEndDate(QDateTime());
-    g_barData->setRange(_dateRange->dateRange());
-  }
-
-//  QSettings settings(g_settingsFile);
-//  settings.setValue("current_chart", g_barData->key());
-//  settings.setValue("current_chart_length", g_barData->barLength());
-//  settings.setValue("current_chart_range", g_barData->range());
-//  settings.sync();
+  g_barData->setStartDate(QDateTime());
+  g_barData->setEndDate(QDateTime());
+  g_barData->setRange(_controlPanel->dateRangeControl()->dateRange());
 
   QuoteDataBase db;
   db.getBars(g_barData);
 
-//  _chartLayout->clearIndicator();
   emit signalClearPlot();
   setSliderStart(g_barData->count());
   setWindowTitle(getWindowCaption());
   statusMessage(QString());
-//  _chartLayout->loadPlots(_plotSlider->getValue());
   emit signalPlot();
 }
 
 QString QtstalkerApp::getWindowCaption ()
 {
   // update the main window text
-
   QString caption = tr("QtStalker");
   caption.append(g_session);
   caption.append(": " + g_barData->symbol());
@@ -329,7 +257,7 @@ QString QtstalkerApp::getWindowCaption ()
 
   QStringList l;
   g_barData->barLengthList(l);
-  caption.append(" " + l[_barLengthButton->length()]);
+  caption.append(" " + l[_controlPanel->barLengthButton()->length()]);
 
   return caption;
 }
@@ -337,8 +265,6 @@ QString QtstalkerApp::getWindowCaption ()
 void QtstalkerApp::chartUpdated ()
 {
   // we are here because something wants us to reload the chart with fresh bars
-//  _sidePanel->updateChartTab();
-
   if (g_barData->symbol().isEmpty())
     return;
 
@@ -351,7 +277,7 @@ void QtstalkerApp::chartUpdated ()
 void QtstalkerApp::statusMessage (QString d)
 {
   // update the status bar with a new message from somewhere
-  _statusBar->showMessage(d);
+  statusBar()->showMessage(d);
   wakeup();
 }
 
@@ -382,7 +308,7 @@ void QtstalkerApp::setSliderStart (int count)
        width = t;
   }
 
-  _plotSlider->setStart(count, width, 8);
+  _controlPanel->setStart(count, width, 8);
 }
 
 // ******************************************************************************
@@ -410,19 +336,18 @@ void QtstalkerApp::addPlot (QString indicator)
 {
   Plot *plot = new Plot(indicator, this);
   plot->setIndicator();
-  plot->setBarSpacing(_barSpaceButton->getPixelSpace());
+  plot->setBarSpacing(_controlPanel->barSpaceButton()->getPixelSpace());
   plot->setBarSpacing(8);
   plot->loadSettings();
 
   connect(plot, SIGNAL(signalInfoMessage(Setting)), _infoPanel, SLOT(showInfo(Setting)));
   connect(plot, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
-  connect(_barSpaceButton, SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
-  connect(_plotSlider, SIGNAL(signalValueChanged(int)), plot, SLOT(setStartIndex(int)));
+  connect(_controlPanel->barSpaceButton(), SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
+  connect(_controlPanel, SIGNAL(signalValueChanged(int)), plot, SLOT(setStartIndex(int)));
   connect(this, SIGNAL(signalClearPlot()), plot, SLOT(clear()));
-//  connect(this, SIGNAL(signalDraw()), plot, SLOT(replot()));
-  connect(_quitButton, SIGNAL(signalShutdown()), plot, SLOT(clear()));
+  connect(this, SIGNAL(signalShutDown()), plot, SLOT(clear()));
   connect(this, SIGNAL(signalPlot()), plot->indicator(), SLOT(calculate()));
-  connect(plot, SIGNAL(signalIndex(int)), _plotSlider, SLOT(setStartValue(int)));
+  connect(plot, SIGNAL(signalIndex(int)), _controlPanel, SLOT(setStartValue(int)));
   
   connect(g_middleMan, SIGNAL(signalPlotBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
   connect(g_middleMan, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setFont(QFont)));

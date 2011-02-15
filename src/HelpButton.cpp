@@ -20,9 +20,12 @@
  */
 
 #include "HelpButton.h"
-#include "../pics/help.xpm"
 #include "Globals.h"
 #include "Doc.h"
+#include "AboutDialog.h"
+
+#include "../pics/about.xpm"
+#include "../pics/help.xpm"
 
 #include <QApplication>
 #include <QDesktopServices>
@@ -32,11 +35,32 @@
 
 HelpButton::HelpButton ()
 {
+  createMenu();
+
+  setPopupMode(QToolButton::InstantPopup);
   setIcon(QIcon(help_xpm));
   setText(tr("&Help"));
   setStatusTip(tr("Show documentation"));
   setToolTip(tr("Show documentation"));
-  connect(this, SIGNAL(clicked()), this, SLOT(startDocumentation()));
+}
+
+void HelpButton::createMenu ()
+{
+  _menu = new QMenu(this);
+  _menu->setTitle(tr("Help"));
+  setMenu(_menu);
+
+  // help dialog
+  QAction *a = _menu->addAction(tr("Help"));
+  a->setCheckable(FALSE);
+  a->setIcon(QIcon(help_xpm));
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(startDocumentation()));
+
+  // about dialog
+  a = _menu->addAction(tr("About"));
+  a->setCheckable(FALSE);
+  a->setIcon(QIcon(about_xpm));
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
 }
 
 void HelpButton::startDocumentation ()
@@ -58,4 +82,10 @@ raise the minimum Qt version.
 
   Doc *doc = new Doc;  
   doc->showDocumentation("index.html");
+}
+
+void HelpButton::aboutDialog ()
+{
+  AboutDialog *dialog = new AboutDialog;
+  dialog->show();
 }

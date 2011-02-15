@@ -58,7 +58,7 @@ class ChartPage : public QWidget
 
     ChartPage ();
     void createActions ();
-    void createButtonMenu (QToolBar *);
+    void createButtonMenu ();
     void selected (QStringList &);
 
   public slots:

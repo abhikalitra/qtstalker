@@ -23,23 +23,15 @@
 #define QTSTALKER_H
 
 #include <QMainWindow>
-#include <QMenuBar>
 #include <QToolBar>
-#include <QString>
-#include <QStatusBar>
+#include <QStringList>
 #include <QHash>
 
 #include "InfoPanel.h"
-#include "RecentCharts.h"
-#include "BarLengthButton.h"
-#include "PlotSlider.h"
-#include "BarSpaceButton.h"
-#include "DateRangeControl.h"
-#include "DateRangeButton.h"
 #include "SidePanel.h"
 #include "Command.h"
-#include "QuitButton.h"
 #include "Plot.h"
+#include "ControlPanel.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -49,12 +41,12 @@ class QtstalkerApp : public QMainWindow
     void signalLoadSettings ();
     void signalClearPlot ();
     void signalPlot ();
+    void signalShutDown ();
 
   public:
     QtstalkerApp (QString session, QString asset);
     void createGUI ();
     void loadSettings ();
-    void createStatusToolBar ();
     QString getWindowCaption ();
     void setSliderStart (int);
     void addPlot (QString);
@@ -71,21 +63,14 @@ class QtstalkerApp : public QMainWindow
     void setPlotTabPosition (int);
     void fixDockTabs ();
     void updatePlot (QString);
+    void shutDown ();
 
   protected:
     QHash<QString, Plot *> _plots;
     InfoPanel *_infoPanel;
-    QStatusBar *_statusBar;
-    RecentCharts *_recentCharts;
-    BarLengthButton *_barLengthButton;
-    PlotSlider *_plotSlider;
-    BarSpaceButton *_barSpaceButton;
     QString _clAsset;
-    DateRangeControl *_dateRange;
-    DateRangeButton *_dateRangeButton;
     SidePanel *_sidePanel;
-    QuitButton *_quitButton;
-    QToolBar *_statusToolBar;
+    ControlPanel *_controlPanel;
 };
 
 #endif

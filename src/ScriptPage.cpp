@@ -64,19 +64,16 @@ void ScriptPage::createGUI ()
   vbox->setSpacing(0);
   setLayout(vbox);
   
-  QToolBar *tb = new QToolBar;
-  vbox->addWidget(tb);
-  tb->setIconSize(QSize(18, 18));
+  createButtonMenu();
   
-  createButtonMenu(tb);
-  
-  // create button grid
-  QGridLayout *grid = new QGridLayout;
-  grid->setMargin(0);
-  grid->setSpacing(0);
-//  grid->setColumnStretch(5, 1);
-  vbox->addLayout(grid);
+  _queList = new QListWidget;
+  _queList->setContextMenuPolicy(Qt::CustomContextMenu);
+  _queList->setSortingEnabled(TRUE);
+  connect(_queList, SIGNAL(itemSelectionChanged()), this, SLOT(queStatus()));
+  connect(_queList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(queRightClick(const QPoint &)));
+  vbox->addWidget(_queList);
 
+  // create launch buttons
   QSettings settings(g_settingsFile);
   int rows = settings.value("script_launch_button_rows", 2).toInt();
   int cols = settings.value("script_launch_button_cols", 4).toInt();
@@ -85,26 +82,18 @@ void ScriptPage::createGUI ()
   int pos = 1;
   for (; loop < rows; loop++)
   {
+    QToolBar *tb = new QToolBar;
+    vbox->addWidget(tb);
+    tb->setIconSize(QSize(16, 16));
+    
     int loop2 = 0;
     for (; loop2 < cols; loop2++, pos++)
     {
       ScriptLaunchButton *b = new ScriptLaunchButton(pos, pos);
       connect(b, SIGNAL(signalButtonClicked(QString)), this, SLOT(runScript(QString)));
-      grid->addWidget(b, loop, loop2);
+      tb->addWidget(b);
     }
   }
-
-  vbox->addSpacing(5);
-  
-  QLabel *label = new QLabel(tr("Active Scripts"));
-  vbox->addWidget(label);
-  
-  _queList = new QListWidget;
-  _queList->setContextMenuPolicy(Qt::CustomContextMenu);
-  _queList->setSortingEnabled(TRUE);
-  connect(_queList, SIGNAL(itemSelectionChanged()), this, SLOT(queStatus()));
-  connect(_queList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(queRightClick(const QPoint &)));
-  vbox->addWidget(_queList);
 }
 
 void ScriptPage::createActions ()
@@ -152,12 +141,12 @@ void ScriptPage::createActions ()
   _actions.insert(_LaunchButtonCols, action);
 }
 
-void ScriptPage::createButtonMenu (QToolBar *tb)
+void ScriptPage::createButtonMenu ()
 {
-  tb->addAction(_actions.value(_RunScript));
-  tb->addAction(_actions.value(_NewScript));
-  tb->addAction(_actions.value(_EditScript));
-  tb->addAction(_actions.value(_DeleteScript));
+//  tb->addAction(_actions.value(_RunScript));
+//  tb->addAction(_actions.value(_NewScript));
+//  tb->addAction(_actions.value(_EditScript));
+//  tb->addAction(_actions.value(_DeleteScript));
 
   _queMenu = new QMenu(this);
   _queMenu->addAction(_actions.value(_RunScript));

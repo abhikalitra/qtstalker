@@ -23,7 +23,7 @@
 #include "Globals.h"
 #include "YahooAddSymbolDialog.h"
 #include "Doc.h"
-#include "ScriptPluginFactory.h"
+#include "YahooDataBase.h"
 
 #include "../pics/add.xpm"
 #include "../pics/delete.xpm"
@@ -121,66 +121,27 @@ void YahooSymbolDialog::deleteSymbol ()
   if (! l.count())
     return;
 
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin("YAHOO_DATABASE");
-  if (! plug)
-  {
-    qDebug() << "YahooSymbolDialog::deleteSymbol: no plugin";
-    return;
-  }
-
-  QStringList cl;
-  cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=TRANSACTION";
-  Command command(cl.join(","));
-
-  if (plug->command(&command))
-    qDebug() << "YahooAddSymbolDialog::deleteSymbol: command error";
+  YahooDataBase db;
+  db.transaction();
 
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    cl.clear();
-    cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=DELETE" << "YSYMBOL=" + l.at(loop)->text();
-    command.parse(cl.join(","));
-
-    if (plug->command(&command))
-      qDebug() << "YahooSymbolDialog::deleteSymbol: command error";
+    Setting symbol;
+    symbol.setData("YSYMBOL", l.at(loop)->text());
+    db.deleteSymbol(symbol);
   }
-  
-  cl.clear();
-  cl << "PLUGIN=YAHOO_DATABASE" << "METHOD=COMMIT";
-  command.parse(cl.join(","));
 
-  if (plug->command(&command))
-    qDebug() << "YahooAddSymbolDialog::deleteSymbol: command error";
-
-  delete plug;
+  db.commit();
 }
 
 void YahooSymbolDialog::loadSettings ()
 {
   _list->clear();
   
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin("YAHOO_DATABASE");
-  if (! plug)
-  {
-    qDebug() << "YahooSymbolDialog::loadSettings: no plugin";
-    return;
-  }
-
+  YahooDataBase db;
   QStringList l;
-  l << "PLUGIN=YAHOO_DATABASE" << "METHOD=SYMBOLS";
-  Command command(l.join(","));
-
-  if (plug->command(&command))
-    qDebug() << "YahooSymbolDialog::loadSettings: command error";
-
-  delete plug;
-
-  l.clear();
-  l = command.returnData("YAHOO_DATABASE_SYMBOLS").split(",", QString::SkipEmptyParts);
-
+  db.symbols(l);
   _list->addItems(l);
 
   QSettings settings;

@@ -36,6 +36,7 @@ SidePanel::SidePanel ()
 {
   _lockStatus = TRUE;
   createTabs();
+  setTabPosition(QTabWidget::South);
 }
 
 void SidePanel::createTabs ()

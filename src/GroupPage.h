@@ -57,7 +57,7 @@ class GroupPage : public QWidget
 
     GroupPage ();
     void createActions ();
-    void createButtonMenu (QToolBar *);
+    void createButtonMenu ();
 
   public slots:
     void updateList ();

@@ -47,11 +47,11 @@ ChartPage::ChartPage ()
   vbox->setSpacing(0);
   setLayout(vbox);
 
-  QToolBar *tb = new QToolBar;
-  vbox->addWidget(tb);
-  tb->setIconSize(QSize(18, 18));
+//  QToolBar *tb = new QToolBar;
+//  vbox->addWidget(tb);
+//  tb->setIconSize(QSize(16, 16));
   
-  createButtonMenu(tb);
+  createButtonMenu();
   
   _nav = new SymbolListWidget;
   connect(_nav, SIGNAL(signalSymbolSelected(BarData)), this, SLOT(chartOpened(BarData)));
@@ -87,11 +87,11 @@ void ChartPage::createActions ()
   _actions.insert(AddGroup, action);
 }
 
-void ChartPage::createButtonMenu (QToolBar *tb)
+void ChartPage::createButtonMenu ()
 {
-  tb->addAction(_actions.value(ShowAll));
-  tb->addAction(_actions.value(Search));
-  tb->addAction(_actions.value(AddGroup));
+//  tb->addAction(_actions.value(ShowAll));
+//  tb->addAction(_actions.value(Search));
+//  tb->addAction(_actions.value(AddGroup));
 
   _menu = new QMenu(this);
   _menu->addAction(_actions.value(AddGroup));
