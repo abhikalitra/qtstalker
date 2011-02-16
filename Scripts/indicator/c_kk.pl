@@ -24,11 +24,11 @@ $command = "PLUGIN=CANDLE_PATTERN,METHOD=DARKCLOUDCOVER,NAME=$ckk2Name,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$ckk1Name,OP=>,VALUE=0,NAME2=$candleName,COLOR=$ckk1Color";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$ckk1Name,OP=GT,VALUE=0,NAME2=$candleName,COLOR=$ckk1Color";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$ckk2Name,OP=<,VALUE=0,NAME2=$candleName,COLOR=$ckk2Color";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$ckk2Name,OP=LT,VALUE=0,NAME2=$candleName,COLOR=$ckk2Color";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

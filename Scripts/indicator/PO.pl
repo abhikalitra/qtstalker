@@ -27,10 +27,10 @@ $command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$poName,STYLE=$poStyle,COLOR=$poColor
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$poName,OP=>,VALUE=0,NAME2=$poName,COLOR=$upColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$poName,OP=GT,VALUE=0,NAME2=$poName,COLOR=$upColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$poName,OP=<,VALUE=0,NAME2=$poName,COLOR=$downColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$poName,OP=LT,VALUE=0,NAME2=$poName,COLOR=$downColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

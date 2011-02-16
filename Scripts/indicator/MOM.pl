@@ -24,10 +24,10 @@ $command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$momName,STYLE=$momStyle,COLOR=$momCo
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$momName,OP=>,VALUE=0,NAME2=$momName,COLOR=$upColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$momName,OP=GT,VALUE=0,NAME2=$momName,COLOR=$upColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$momName,OP=<,VALUE=0,NAME2=$momName,COLOR=$downColor";
+$command = "PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=$momName,OP=LT,VALUE=0,NAME2=$momName,COLOR=$downColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
