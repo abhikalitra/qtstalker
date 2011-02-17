@@ -23,6 +23,7 @@
 #define CONFIGURE_BUTTON_HPP
 
 #include <QToolButton>
+#include <QMenu>
 
 class ConfigureButton : public QToolButton
 {
@@ -30,9 +31,16 @@ class ConfigureButton : public QToolButton
 
   public:
     ConfigureButton ();
+    void createMenu ();
 
   public slots:
-    void dialog ();
+    void configureDialog ();
+    void startDocumentation ();
+    void aboutDialog ();
+    void newIndicatorDialog ();
+
+  private:
+    QMenu *_menu;
 };
 
 #endif

@@ -928,3 +928,5 @@
 
            Fixed QUOTE_DATABASE_SET plugin date format. TYPE parm now defaults to 'Stock' if not used.
 
+           Consolidated some control panel buttons into the configure button.
+

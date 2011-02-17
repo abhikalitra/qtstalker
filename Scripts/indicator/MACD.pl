@@ -12,7 +12,7 @@ $sigColor = 'yellow';
 $sigPeriod = 9;
 
 $histName = 'MACD_HIST';
-$histStyle = 'Histogram';
+$histStyle = 'Histogram Bar';
 $histColor = 'blue';
 
 $fastPeriod = 12;

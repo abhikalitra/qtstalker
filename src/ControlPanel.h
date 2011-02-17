@@ -34,9 +34,7 @@
 #include "DataWindowButton.h"
 #include "GridButton.h"
 #include "CrossHairsButton.h"
-#include "NewIndicatorButton.h"
 #include "RefreshButton.h"
-#include "HelpButton.h"
 #include "ConfigureButton.h"
 
 class ControlPanel : public QWidget
@@ -79,8 +77,6 @@ class ControlPanel : public QWidget
     RefreshButton *_refreshButton;
     CrossHairsButton *_crossHairsButton;
     DataWindowButton *_dataWindowButton;
-    NewIndicatorButton *_newIndicatorButton;
-    HelpButton *_helpButton;
     ConfigureButton *_configureButton;
 };
 

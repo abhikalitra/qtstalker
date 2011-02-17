@@ -65,10 +65,6 @@ void ControlPanel::createGUI ()
   _recentCharts = new RecentCharts;
   tb->addWidget(_recentCharts);
   
-  // configure button
-  _configureButton = new ConfigureButton;
-  tb->addWidget(_configureButton);
-
   // chart toggles toolbar
   tb = new QToolBar;
   tb->setIconSize(QSize(length, width));
@@ -90,13 +86,9 @@ void ControlPanel::createGUI ()
   _dataWindowButton = new DataWindowButton;
   tb->addWidget(_dataWindowButton);
   
-  // new indicator button
-  _newIndicatorButton = new NewIndicatorButton;
-  tb->addWidget(_newIndicatorButton);
-
-  // docs button
-  _helpButton = new HelpButton;
-  tb->addWidget(_helpButton);
+  // configure button
+  _configureButton = new ConfigureButton;
+  tb->addWidget(_configureButton);
 
   // slider
   _slider = new QSlider;

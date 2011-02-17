@@ -22,27 +22,131 @@
 #include "ConfigureButton.h"
 #include "Globals.h"
 #include "Script.h"
+#include "Doc.h"
+#include "AboutDialog.h"
 
+#include "../pics/about.xpm"
+#include "../pics/help.xpm"
 #include "../pics/configure.xpm"
+#include "../pics/indicator.xpm"
+#include "../pics/done.xpm"
 
 #include <QDebug>
 #include <QString>
 #include <QSettings>
+#include <QApplication>
+#include <QDesktopServices>
+#include <QString>
+#include <QCursor>
+#include <QAction>
 
 ConfigureButton::ConfigureButton ()
 {
+  createMenu();
+
+  setPopupMode(QToolButton::InstantPopup);
   setIcon(QIcon(configure_xpm));
-  setStatusTip(tr("Configure"));
-  setToolTip(tr("Configure"));
-  connect(this, SIGNAL(clicked()), this, SLOT(dialog()));
+  setText(tr("Configure / Options"));
+  setStatusTip(tr("Configure and options"));
+  setToolTip(tr("Configure and options"));
 }
 
-void ConfigureButton::dialog ()
+void ConfigureButton::createMenu ()
+{
+  _menu = new QMenu(this);
+  _menu->setTitle(tr("Configure / Options"));
+  setMenu(_menu);
+
+  // new indicator
+  QAction *a = _menu->addAction(tr("New Indicator"));
+  a->setCheckable(FALSE);
+  a->setIcon(QIcon(indicator_xpm));
+  a->setStatusTip(tr("Add a new indicator..."));
+  a->setToolTip(tr("Add a new indicator..."));
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(newIndicatorDialog()));
+  
+  _menu->addSeparator();
+
+  // configure
+  a = _menu->addAction(tr("Configure"));
+  a->setCheckable(FALSE);
+  a->setIcon(QIcon(configure_xpm));
+  a->setStatusTip(tr("Configure settings..."));
+  a->setToolTip(tr("Configure settings..."));
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(configureDialog()));
+
+  _menu->addSeparator();
+  
+  // help dialog
+  a = _menu->addAction(tr("Help"));
+  a->setCheckable(FALSE);
+  a->setIcon(QIcon(help_xpm));
+  a->setStatusTip(tr("QtStalker help documentation..."));
+  a->setToolTip(tr("QtStalker help documentation..."));
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(startDocumentation()));
+
+  // about dialog
+  a = _menu->addAction(tr("About"));
+  a->setCheckable(FALSE);
+  a->setIcon(QIcon(about_xpm));
+  a->setStatusTip(tr("About QtStalker..."));
+  a->setToolTip(tr("About QtStalker..."));
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
+
+  _menu->addSeparator();
+
+  // quit
+  a = _menu->addAction(tr("Quit"));
+  a->setCheckable(FALSE);
+  a->setIcon(QIcon(done_xpm));
+  a->setStatusTip(tr("Quit QtStalker"));
+  a->setToolTip(tr("Quit QtStalker"));
+  connect(a, SIGNAL(triggered(bool)), qApp, SLOT(quit()));
+}
+
+void ConfigureButton::startDocumentation ()
+{
+/*
+FIXME: Due to the Qt issue 262508 (see docs/docs.html) we need to show them
+how to remove the stale cache file. This is complicated to report the location
+on different OSs (but perhaps i do not understand).
+This workaround should all go away when the Qt bug is fixed, but only if we
+raise the minimum Qt version.
+*/
+
+  QString location = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#ifdef Q_WS_MAC
+  location.insert(location.count() - QCoreApplication::applicationName().count(),
+    QCoreApplication::organizationName() + "/");
+#endif
+  qDebug("DocsAction::startDocumentation: Documentation cache: %s/", qPrintable(location));
+
+  Doc *doc = new Doc;
+  doc->showDocumentation("index.html");
+}
+
+void ConfigureButton::aboutDialog ()
+{
+  AboutDialog *dialog = new AboutDialog;
+  dialog->show();
+}
+
+void ConfigureButton::configureDialog ()
 {
   QSettings settings(g_settingsFile);
   Script *script = new Script;
   script->setName("Configure");
   script->setFile(settings.value("configure_script").toString());
+  script->setCommand("perl");
+  script->startScript();
+}
+
+void ConfigureButton::newIndicatorDialog ()
+{
+  QSettings settings(g_settingsFile);
+  Script *script = new Script;
+  script->setName("IndicatorNew");
+  script->setFile(settings.value("indicator_new_script").toString());
   script->setCommand("perl");
   script->startScript();
 }

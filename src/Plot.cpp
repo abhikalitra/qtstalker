@@ -64,7 +64,8 @@ Plot::Plot (QString name, QMainWindow *mw)
   setAxisScaleDraw(QwtPlot::yRight, _plotScaleDraw);
 
   _grid = new QwtPlotGrid;
-  _grid->enableXMin(FALSE);
+//  _grid->enableXMin(FALSE);
+  _grid->enableX(FALSE);
   _grid->enableYMin(FALSE);
   _grid->setMajPen(QPen(Qt::gray, 0, Qt::DotLine));
   _grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
