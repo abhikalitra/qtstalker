@@ -922,5 +922,9 @@
            I am trying to put all the app controls together as close as possible to minimize mouse travel and
            maximize efficiency. Will keep refining it until I am happy with it.
 
+20110217:  Fixed SCRIPT_RETURN_DATA plugin to ignore empty key.
 
+           Fixed YAHOO plugin empty symbols when downloading.
+
+           Fixed QUOTE_DATABASE_SET plugin date format. TYPE parm now defaults to 'Stock' if not used.
 

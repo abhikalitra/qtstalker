@@ -36,11 +36,11 @@ class PlotScaleDraw : public QwtScaleDraw
 {
   public:
     PlotScaleDraw ();
-    QwtText label (double v) const;
-//    void draw (QPainter *, const QPalette &) const;
+    virtual QwtText label (double v) const;
+    virtual void draw (QPainter *, const QPalette &) const;
 //    void drawPoints (QwtScaleWidget *);
-//    void clearPoints ();
-//    void addPoint (QColor, double);
+    void clearPoints ();
+    void addPoint (QColor, double);
     
   private:
     QList<QColor> _colors;

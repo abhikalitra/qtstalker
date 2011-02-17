@@ -47,8 +47,6 @@
 #include "BarLengthButton.h"
 #include "BarSpaceButton.h"
 #include "DateRangeControl.h"
-#include "DateRangeButton.h"
-#include "QuitButton.h"
 
 #include "../pics/qtstalker.xpm"
 

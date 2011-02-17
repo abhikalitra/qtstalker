@@ -78,17 +78,18 @@ QwtText DateScaleDraw::label (double v) const
       date = _dateList.at(t).toString("dd HH:mm");
       break;
     case BarData::DailyBar:
+      date = _dateList.at(t).toString("MMM-yy");
+      break;
     case BarData::WeeklyBar:
-      date = _dateList.at(t).toString("yy-MMM-dd");
+      date = _dateList.at(t).toString("yyyy");
       break;
     case BarData::MonthlyBar:
-      date = _dateList.at(t).toString("yyyy-MMM");
+      date = _dateList.at(t).toString("yyyy");
       break;
     default:
       break;
   }
   
-//  return _dateList.at(t).toString("yy-MMM-dd");
   return date;
 }
 
@@ -128,4 +129,146 @@ void DateScaleDraw::info (int index, Setting &set)
 QList<QDateTime> & DateScaleDraw::dates ()
 {
   return _dateList;
+}
+
+void DateScaleDraw::draw(QPainter *painter, const QPalette& palette) const
+{
+  if (! _dateList.count())
+    return;
+  
+  QwtScaleDiv sd = scaleDiv();
+  int loop = sd.lowerBound();
+  int size = sd.upperBound();
+  if (size > _dateList.count())
+    size = _dateList.count();
+
+  QDate oldDate = _dateList.at(loop).date();
+  QDate oldWeek = oldDate;
+  oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
+  QDate oldMonth = oldDate;
+  QDate oldYear = oldDate;
+
+  QDateTime nextHour = _dateList.at(loop);
+  QDateTime oldDay = nextHour;
+  nextHour.setTime(QTime(nextHour.time().hour(), 0, 0, 0));
+  if ((BarData::BarLength) _barLength != BarData::Minute1)
+    nextHour = nextHour.addSecs(7200);
+  else
+    nextHour = nextHour.addSecs(3600);
+
+  for (; loop < size; loop++)
+  {
+    switch ((BarData::BarLength) _barLength)
+    {
+      case BarData::Minute1:
+      case BarData::Minute5:
+      case BarData::Minute10:
+      case BarData::Minute15:
+      case BarData::Minute30:
+      case BarData::Minute60:
+      {
+        QDateTime date = _dateList.at(loop);
+        if (date.date().day() != oldDay.date().day())
+        {
+          oldDay = date;
+
+          // big tick
+          drawTick(painter, loop, 10);
+          drawLabel(painter, loop);
+          //QString text = date.date().toString("MMM d");
+        }
+        else
+        {
+          if (date >= nextHour)
+          {
+            if ((BarData::BarLength) _barLength < BarData::Minute30)
+            {
+              // draw the short tick
+              drawTick(painter, loop, 4);
+              //QString text = QString::number(date.time().hour()) + ":00";
+            }
+          }
+        }
+
+        if (date >= nextHour)
+        {
+          nextHour = date;
+          nextHour.setTime(QTime(date.time().hour(), 0, 0, 0));
+          if ((BarData::BarLength) _barLength != BarData::Minute1)
+            nextHour = nextHour.addSecs(7200);
+          else
+            nextHour = nextHour.addSecs(3600);
+        }
+        break;
+      }
+      case BarData::DailyBar:
+      {
+        QDate date = _dateList.at(loop).date();
+        if (date.month() != oldDate.month())
+        {
+          oldDate = date;
+          oldWeek = date;
+          oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
+
+          // draw the long tick
+          drawTick(painter, loop, 10);
+          drawLabel(painter, loop);
+          // QString text = date.toString("MMM-yy");
+        }
+        else
+        {
+          // if start of new week make a tick
+          if (date > oldWeek)
+          {
+            oldWeek = date;
+            oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
+
+            // draw the short week tick
+            drawTick(painter, loop, 4);
+            //QString text = date.toString("d");
+          }
+        }
+        break;
+      }
+      case BarData::WeeklyBar:
+      {
+        QDate date = _dateList.at(loop).date();
+        if (date.month() != oldMonth.month())
+        {
+          oldMonth = date;
+          if (date.month() == 1)
+          {
+            // draw the long tick
+            drawTick(painter, loop, 10);
+            drawLabel(painter, loop);
+            //QString text = date.toString("yyyy");
+          }
+          else
+          {
+            // draw the short tick
+            drawTick(painter, loop, 4);
+            //QString text = date.toString("MMM");
+            //text.chop(2);
+          }
+        }
+        break;
+      }
+      case BarData::MonthlyBar:
+      {
+        QDate date = _dateList.at(loop).date();
+        if (date.year() != oldYear.year())
+        {
+          oldYear = date;
+
+          // draw the long tick
+          drawTick(painter, loop, 10);
+          drawLabel(painter, loop);
+          //QString text = date.toString("yyyy");
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
 }

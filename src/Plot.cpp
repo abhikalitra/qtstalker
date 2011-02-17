@@ -387,7 +387,48 @@ void Plot::setStartIndex (int index)
 
   setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
 
+//  setYPoints();
+
   replot();
+}
+
+void Plot::setYPoints ()
+{
+  _plotScaleDraw->clearPoints();
+
+//  int page = width() / _spacing;
+//  int index = _startPos + page;
+//  if (index > _dateScaleDraw->count())
+//    index = _dateScaleDraw->count() - 1;
+
+  QwtScaleDiv sd = _dateScaleDraw->scaleDiv();
+  int index = sd.upperBound();
+
+  QHashIterator<QString, Curve *> it(_indicator->curves());
+  while (it.hasNext())
+  {
+    it.next();
+    Curve *curve = it.value();
+
+    CurveBar *bar = curve->bar(index);
+    if (! bar)
+      continue;
+
+    QColor color = bar->color();
+
+    switch ((Curve::Type) curve->type())
+    {
+      case Curve::Dot:
+      case Curve::Histogram:
+      case Curve::Line:
+        color = curve->color();
+        break;
+      default:
+        break;
+    }
+
+    _plotScaleDraw->addPoint(color, bar->data());
+  }
 }
 
 void Plot::showContextMenu ()

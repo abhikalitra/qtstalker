@@ -71,6 +71,7 @@ class Plot : public QwtPlot
     int index ();
     PlotMenu * plotMenu ();
     DockWidget * dockWidget ();
+    void setYPoints ();
 
   public slots:
     virtual void clear ();

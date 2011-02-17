@@ -116,11 +116,11 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
 
 int Bar::setDates (QString start, QString end)
 {
-  _startDate = QDateTime::fromString(start, "yyyyMMddHHmmss");
+  _startDate = QDateTime::fromString(start, Qt::ISODate);
   if (! _startDate.isValid())
     return TRUE;
 
-  _endDate = QDateTime::fromString(end, "yyyyMMddHHmmss");
+  _endDate = QDateTime::fromString(end, Qt::ISODate);
   if (! _endDate.isValid())
     return TRUE;
 

@@ -44,6 +44,7 @@ class DateScaleDraw : public QwtScaleDraw
     int x (QDateTime d);
     void info (int index, Setting &);
     QList<QDateTime> & dates ();
+    virtual void draw(QPainter *painter, const QPalette& palette) const;
 
   private:
     QHash<QString, int> _data;

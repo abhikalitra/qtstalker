@@ -87,7 +87,6 @@ QwtText PlotScaleDraw::label (double v) const
   return s;
 }
 
-/*
 void PlotScaleDraw::draw (QPainter *p, const QPalette &pal) const
 {
   // first draw the original label
@@ -138,6 +137,7 @@ void PlotScaleDraw::draw (QPainter *p, const QPalette &pal) const
   }
 }
 
+/*
 void PlotScaleDraw::drawPoints (QwtScaleWidget *w)
 {
   QPainter p;
@@ -187,11 +187,17 @@ void PlotScaleDraw::drawPoints (QwtScaleWidget *w)
     p.drawText(rc, s);
   }
 }
+*/
 
 void PlotScaleDraw::clearPoints ()
 {
   _colors.clear();
   _values.clear();
+
+  // force a replot
+  QwtScaleDiv sd = scaleDiv();
+  sd.invalidate();
+  setScaleDiv(sd);  
 }
 
 void PlotScaleDraw::addPoint (QColor c, double v)
@@ -199,4 +205,3 @@ void PlotScaleDraw::addPoint (QColor c, double v)
   _colors.append(c);
   _values.append(v);
 }
-*/

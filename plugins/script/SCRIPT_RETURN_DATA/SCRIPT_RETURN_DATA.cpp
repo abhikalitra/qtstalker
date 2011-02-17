@@ -35,8 +35,8 @@ int SCRIPT_RETURN_DATA::command (Command *command)
   // KEY
   
   QString s = command->returnData(command->parm("KEY"));
-  if (s.isEmpty())
-    s = "ERROR";
+//  if (s.isEmpty())
+//    s = "ERROR";
 
   command->setReturnCode(s);
 

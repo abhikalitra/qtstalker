@@ -45,6 +45,7 @@ void BarData::clear ()
   _length = DailyBar;
   _maxBars = 0;
   _range = 6;
+  _type = "Stock";
 }
 
 int BarData::count ()
