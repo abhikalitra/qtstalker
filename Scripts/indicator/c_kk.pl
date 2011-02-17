@@ -2,6 +2,7 @@
 
 $candleName = 'candles';
 $candleColor = 'dimgray';
+$penetration = '0'; # Use 50 for more reliable half-way penetration.
 
 $ckk1Name = 'ckk1'; # Piercing Line
 $ckk2Name = 'ckk2'; # Dark Cloud Cover
@@ -16,11 +17,11 @@ $command = "PLUGIN=CANDLES,NAME=$candleName,COLOR_UP=$candleColor,COLOR_DOWN=$ca
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_PATTERN,METHOD=PIERCING,NAME=$ckk1Name";
+$command = "PLUGIN=CANDLE_PATTERN,METHOD=PIERCING,PENETRATION=$penetration,NAME=$ckk1Name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_PATTERN,METHOD=DARKCLOUDCOVER,NAME=$ckk2Name,Z=0";
+$command = "PLUGIN=CANDLE_PATTERN,METHOD=DARKCLOUDCOVER,PENETRATION=$penetration,NAME=$ckk2Name,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
