@@ -26,6 +26,8 @@
 
 class NEW_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     NEW_DIALOG ();
     int command (Command *);

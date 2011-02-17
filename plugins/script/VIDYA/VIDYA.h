@@ -27,6 +27,8 @@
 
 class VIDYA : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     VIDYA ();
     int command (Command *);

@@ -26,6 +26,8 @@
 
 class GROUP_DATABASE_DELETE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     GROUP_DATABASE_DELETE ();
     int command (Command *);

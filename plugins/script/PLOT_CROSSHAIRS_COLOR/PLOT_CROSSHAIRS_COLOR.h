@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef PLOT_CROSSHAIRS_COLOR_PLUGIN_HPP
-#define PLOT_CROSSHAIRS_COLOR_PLUGIN_HPP
+#ifndef PLOT_CROSSHAIRS_COLOR_HPP
+#define PLOT_CROSSHAIRS_COLOR_HPP
 
 #include "ScriptPlugin.h"
 
 class PLOT_CROSSHAIRS_COLOR : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     PLOT_CROSSHAIRS_COLOR ();
     int command (Command *);

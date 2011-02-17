@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef PLOT_GRID_PLUGIN_HPP
-#define PLOT_GRID_PLUGIN_HPP
+#ifndef PLOT_GRID_HPP
+#define PLOT_GRID_HPP
 
 #include "ScriptPlugin.h"
 
 class PLOT_GRID : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     PLOT_GRID ();
     int command (Command *);

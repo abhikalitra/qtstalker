@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_VOLUME_HPP
-#define SCRIPT_PLUGIN_VOLUME_HPP
+#ifndef VOLUME_HPP
+#define VOLUME_HPP
 
 #include "ScriptPlugin.h"
 
 class VOLUME : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     VOLUME ();
     int command (Command *);

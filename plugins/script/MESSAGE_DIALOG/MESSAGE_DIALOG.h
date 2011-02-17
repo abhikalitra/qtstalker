@@ -26,6 +26,8 @@
 
 class MESSAGE_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     MESSAGE_DIALOG ();
     int command (Command *);

@@ -26,6 +26,8 @@
 
 class CLOSE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CLOSE ();
     int command (Command *);

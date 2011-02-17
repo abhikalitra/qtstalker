@@ -26,6 +26,8 @@
 
 class SCRIPT_PANEL_RUN : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SCRIPT_PANEL_RUN ();
     int command (Command *);

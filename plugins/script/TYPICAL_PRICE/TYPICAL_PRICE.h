@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_TYPICAL_PRICE_HPP
-#define SCRIPT_PLUGIN_TYPICAL_PRICE_HPP
+#ifndef TYPICAL_PRICE_HPP
+#define TYPICAL_PRICE_HPP
 
 #include "ScriptPlugin.h"
 
 class TYPICAL_PRICE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     TYPICAL_PRICE ();
     int command (Command *);

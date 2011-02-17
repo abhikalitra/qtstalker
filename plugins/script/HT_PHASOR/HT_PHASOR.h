@@ -26,6 +26,8 @@
 
 class HT_PHASOR : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     HT_PHASOR ();
     int command (Command *);

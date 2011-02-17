@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_SELL_SCRIPT_PLUGIN_HPP
-#define CHART_OBJECT_SELL_SCRIPT_PLUGIN_HPP
+#ifndef CHART_OBJECT_SELL_HPP
+#define CHART_OBJECT_SELL_HPP
 
 #include "ScriptPlugin.h"
 
 class CHART_OBJECT_SELL : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CHART_OBJECT_SELL ();
     int command (Command *);

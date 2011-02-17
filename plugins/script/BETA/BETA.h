@@ -26,6 +26,8 @@
 
 class BETA : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     BETA ();
     int command (Command *);

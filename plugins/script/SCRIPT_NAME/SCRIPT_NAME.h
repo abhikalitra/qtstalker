@@ -26,6 +26,8 @@
 
 class SCRIPT_NAME : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SCRIPT_NAME ();
     int command (Command *);

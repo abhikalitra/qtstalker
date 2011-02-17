@@ -26,6 +26,8 @@
 
 class ATR : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     ATR ();
     int command (Command *);

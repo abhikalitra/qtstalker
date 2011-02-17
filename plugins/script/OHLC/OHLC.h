@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_OHLC_HPP
-#define SCRIPT_PLUGIN_OHLC_HPP
+#ifndef OHLC_HPP
+#define OHLC_HPP
 
 #include "ScriptPlugin.h"
 
 class OHLC : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     OHLC ();
     int command (Command *);

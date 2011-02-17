@@ -26,6 +26,8 @@
 
 class MAMA : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     MAMA ();
     int command (Command *);

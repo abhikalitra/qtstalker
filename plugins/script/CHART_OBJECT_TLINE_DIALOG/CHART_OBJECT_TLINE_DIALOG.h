@@ -26,6 +26,8 @@
 
 class CHART_OBJECT_TLINE_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CHART_OBJECT_TLINE_DIALOG ();
     int command (Command *);

@@ -26,6 +26,8 @@
 
 class T3 : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     T3 ();
     int command (Command *);

@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef PLOT_DELETE_PLUGIN_HPP
-#define PLOT_DELETE_PLUGIN_HPP
+#ifndef PLOT_DELETE_HPP
+#define PLOT_DELETE_HPP
 
 #include "ScriptPlugin.h"
 
 class PLOT_DELETE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     PLOT_DELETE ();
     int command (Command *);

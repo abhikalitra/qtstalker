@@ -26,6 +26,8 @@
 
 class CHART_PANEL_REFRESH : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CHART_PANEL_REFRESH ();
     int command (Command *);

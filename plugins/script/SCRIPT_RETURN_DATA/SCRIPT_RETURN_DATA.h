@@ -26,6 +26,8 @@
 
 class SCRIPT_RETURN_DATA : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SCRIPT_RETURN_DATA ();
     int command (Command *);

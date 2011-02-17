@@ -26,6 +26,8 @@
 
 class CORREL : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CORREL ();
     int command (Command *);

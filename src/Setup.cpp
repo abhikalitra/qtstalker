@@ -84,21 +84,12 @@ void Setup::setupDirectories ()
 
   QSettings settings(g_settingsFile);
 
-  // create the indicator script directory where indicator scripts are stored
-  QString s = home + "/indicator/";
-  if (! dir.exists(s))
-  {
-    if (! dir.mkdir(s))
-      qDebug() << "Unable to create" << s <<  "directory.";
-  }
-  settings.setValue("indicator_script_directory", s);
-
   // set the system script directory
   QString sysdir = INSTALL_DATA_DIR;
   sysdir.append("/qtstalker/system/");
   settings.setValue("system_script_directory", sysdir);
 
-  s = sysdir + "ChartPanelAddGroup.pl";
+  QString s = sysdir + "ChartPanelAddGroup.pl";
   settings.setValue("chart_panel_add_group_script", s);
 
   s = sysdir + "ChartPanelSymbolSearch.pl";

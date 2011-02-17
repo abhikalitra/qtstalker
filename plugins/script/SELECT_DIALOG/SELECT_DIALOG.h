@@ -26,6 +26,8 @@
 
 class SELECT_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SELECT_DIALOG ();
     int command (Command *);

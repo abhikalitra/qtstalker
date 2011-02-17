@@ -26,6 +26,8 @@
 
 class INDICATOR_PLOT_COLOR_COMPARE_VALUE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_PLOT_COLOR_COMPARE_VALUE ();
     int command (Command *);

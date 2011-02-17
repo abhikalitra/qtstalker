@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_OPEN_HPP
-#define SCRIPT_PLUGIN_OPEN_HPP
+#ifndef OPEN_HPP
+#define OPEN_HPP
 
 #include "ScriptPlugin.h"
 
 class OPEN : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     OPEN ();
     int command (Command *);

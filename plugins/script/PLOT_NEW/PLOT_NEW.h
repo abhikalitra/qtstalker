@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef PLOT_NEW_PLUGIN_HPP
-#define PLOT_NEW_PLUGIN_HPP
+#ifndef PLOT_NEW_HPP
+#define PLOT_NEW_HPP
 
 #include "ScriptPlugin.h"
 
 class PLOT_NEW : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     PLOT_NEW ();
     int command (Command *);

@@ -26,6 +26,8 @@
 
 class MULT : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     MULT ();
     int command (Command *);

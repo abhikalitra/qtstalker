@@ -26,6 +26,8 @@
 
 class GROUP_EDIT_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     GROUP_EDIT_DIALOG ();
     int command (Command *);

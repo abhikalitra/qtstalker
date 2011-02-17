@@ -154,9 +154,6 @@ void Script::readFromStdout ()
     return;
   }
 
-//  _command->setBarData(_barData);
-//  _command->setIndicator(_indicator);
-
   ScriptPlugin *plug = _plugins.value(_command->plugin());
   if (! plug)
   {

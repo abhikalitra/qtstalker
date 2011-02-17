@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_OPEN_INTEREST_HPP
-#define SCRIPT_PLUGIN_OPEN_INTEREST_HPP
+#ifndef OPEN_INTEREST_HPP
+#define OPEN_INTEREST_HPP
 
 #include "ScriptPlugin.h"
 
 class OPEN_INTEREST : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     OPEN_INTEREST ();
     int command (Command *);

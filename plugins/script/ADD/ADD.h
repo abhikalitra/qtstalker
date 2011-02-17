@@ -26,6 +26,8 @@
 
 class ADD : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     ADD ();
     int command (Command *);

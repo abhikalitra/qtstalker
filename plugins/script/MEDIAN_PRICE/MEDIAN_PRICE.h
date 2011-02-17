@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_MEDIAN_PRICE_HPP
-#define SCRIPT_PLUGIN_MEDIAN_PRICE_HPP
+#ifndef MEDIAN_PRICE_HPP
+#define MEDIAN_PRICE_HPP
 
 #include "ScriptPlugin.h"
 
 class MEDIAN_PRICE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     MEDIAN_PRICE ();
     int command (Command *);

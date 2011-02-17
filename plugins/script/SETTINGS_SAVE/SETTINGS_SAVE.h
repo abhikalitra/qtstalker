@@ -26,6 +26,8 @@
 
 class SETTINGS_SAVE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SETTINGS_SAVE ();
     int command (Command *);

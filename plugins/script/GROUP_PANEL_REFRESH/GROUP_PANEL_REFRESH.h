@@ -26,6 +26,8 @@
 
 class GROUP_PANEL_REFRESH : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     GROUP_PANEL_REFRESH ();
     int command (Command *);

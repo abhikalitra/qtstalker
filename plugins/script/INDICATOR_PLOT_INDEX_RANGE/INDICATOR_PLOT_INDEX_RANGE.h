@@ -26,6 +26,8 @@
 
 class INDICATOR_PLOT_INDEX_RANGE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_PLOT_INDEX_RANGE ();
     int command (Command *);

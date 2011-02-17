@@ -26,6 +26,8 @@
 
 class INDICATOR_PLOT_INDEX_SHIFT : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_PLOT_INDEX_SHIFT ();
     int command (Command *);

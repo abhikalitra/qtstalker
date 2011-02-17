@@ -26,6 +26,8 @@
 
 class CONFIGURE_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CONFIGURE_DIALOG ();
     int command (Command *);

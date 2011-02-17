@@ -26,6 +26,8 @@
 
 class TRIX : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     TRIX ();
     int command (Command *);

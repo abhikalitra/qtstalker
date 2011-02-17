@@ -129,7 +129,6 @@ void QtstalkerApp::createGUI ()
   connect(this, SIGNAL(signalShutDown()), _controlPanel->recentCharts(), SLOT(save()));
   connect(_sidePanel, SIGNAL(signalRecentChart(BarData)), _controlPanel->recentCharts(), SLOT(addRecentChart(BarData)));
   connect(_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
-  connect(_controlPanel->dateRangeControl(), SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
   connect(this, SIGNAL(signalShutDown()), this, SLOT(save()));
   connect(this, SIGNAL(signalShutDown()), _sidePanel, SLOT(saveSettings()));
   

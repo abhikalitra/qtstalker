@@ -26,6 +26,8 @@
 
 class INDICATOR_EDIT_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_EDIT_DIALOG ();
     int command (Command *);

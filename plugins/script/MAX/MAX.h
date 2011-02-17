@@ -26,6 +26,8 @@
 
 class MAX : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     MAX ();
     int command (Command *);

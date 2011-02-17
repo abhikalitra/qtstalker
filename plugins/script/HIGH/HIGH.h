@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_HIGH_HPP
-#define SCRIPT_PLUGIN_HIGH_HPP
+#ifndef HIGH_HPP
+#define HIGH_HPP
 
 #include "ScriptPlugin.h"
 
 class HIGH : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     HIGH ();
     int command (Command *);

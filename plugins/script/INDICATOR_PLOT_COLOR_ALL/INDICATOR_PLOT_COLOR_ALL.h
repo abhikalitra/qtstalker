@@ -26,6 +26,8 @@
 
 class INDICATOR_PLOT_COLOR_ALL : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_PLOT_COLOR_ALL ();
     int command (Command *);

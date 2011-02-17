@@ -2,13 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>AboutButton</name>
-    <message>
-        <source>About...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>AboutDialog</name>
     <message>
         <source>Qtstalker version 0.37-dev (working title)</source>
@@ -304,9 +297,17 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>BarLengthButtons</name>
+    <name>BarSpaceButton</name>
     <message>
-        <source>Bar Length</source>
+        <source>Bar Spacing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom In</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom Out</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -977,6 +978,50 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Configure</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Configure / Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure and options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add a new indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure settings...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>QtStalker help documentation...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About QtStalker...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit QtStalker</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfigureDialog</name>
@@ -1021,6 +1066,13 @@ e.g. Qtstalker alert was triggered.</source>
     <name>ConfirmDialog</name>
     <message>
         <source>Confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ControlPanel</name>
+    <message>
+        <source>Scroll Chart</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1074,35 +1126,9 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>DateRangeButton</name>
-    <message>
-        <source>&amp;Configure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date Range Override</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>DateRangeControl</name>
     <message>
         <source>Date Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DateRangeDialog</name>
-    <message>
-        <source>First Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Last Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Date Range</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1245,17 +1271,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>HelpButton</name>
-    <message>
-        <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show documentation</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>IconButton</name>
     <message>
         <source>Select Icon</source>
@@ -1297,32 +1312,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>already exists</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>NewIndicatorButton</name>
-    <message>
-        <source>Add a new indicator...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PixelSpaceButton</name>
-    <message>
-        <source>Set Bar Spacing to </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Right click mouse for options.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter bar spacing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Bar Spacing Button</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1390,37 +1379,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>VLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PlotSlider</name>
-    <message>
-        <source>Start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Previous Page</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Previous Bar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Next Bar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Next Page</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scroll Chart</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1623,13 +1581,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>QtStalker</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>QuitButton</name>
-    <message>
-        <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1992,10 +1943,6 @@ e.g. Qtstalker alert was triggered.</source>
 </context>
 <context>
     <name>ScriptPage</name>
-    <message>
-        <source>Active Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>&amp;New Script</source>
         <translation type="unfinished"></translation>
@@ -2811,17 +2758,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Yahoo Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ZoomButtons</name>
-    <message>
-        <source>Zoom In</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Zoom Out</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

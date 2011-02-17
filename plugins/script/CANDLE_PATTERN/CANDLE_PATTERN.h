@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_CANDLE_PATTERN_HPP
-#define SCRIPT_PLUGIN_CANDLE_PATTERN_HPP
+#ifndef CANDLE_PATTERN_HPP
+#define CANDLE_PATTERN_HPP
 
 #include "ScriptPlugin.h"
 
 class CANDLE_PATTERN : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     enum Method
     {

@@ -26,6 +26,8 @@
 
 class INDICATOR_CLEAR : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_CLEAR ();
     int command (Command *);

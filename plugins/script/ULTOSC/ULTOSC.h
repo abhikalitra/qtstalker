@@ -26,6 +26,8 @@
 
 class ULTOSC : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     ULTOSC ();
     int command (Command *);

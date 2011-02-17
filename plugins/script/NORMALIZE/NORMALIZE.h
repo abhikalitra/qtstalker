@@ -26,6 +26,8 @@
 
 class NORMALIZE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     NORMALIZE ();
     int command (Command *);

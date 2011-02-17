@@ -26,6 +26,8 @@
 
 class PO : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     enum Method
     {

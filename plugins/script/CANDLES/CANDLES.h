@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_CANDLES_HPP
-#define SCRIPT_PLUGIN_CANDLES_HPP
+#ifndef CANDLES_HPP
+#define CANDLES_HPP
 
 #include "ScriptPlugin.h"
 
 class CANDLES : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CANDLES ();
     int command (Command *);

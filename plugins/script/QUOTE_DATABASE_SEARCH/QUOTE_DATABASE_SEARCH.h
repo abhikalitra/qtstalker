@@ -26,6 +26,8 @@
 
 class QUOTE_DATABASE_SEARCH : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     QUOTE_DATABASE_SEARCH ();
     int command (Command *);

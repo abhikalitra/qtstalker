@@ -26,6 +26,8 @@
 
 class CCI : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CCI ();
     int command (Command *);

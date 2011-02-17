@@ -26,6 +26,8 @@
 
 class CHART_OBJECT_TEXT_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CHART_OBJECT_TEXT_DIALOG ();
     int command (Command *);

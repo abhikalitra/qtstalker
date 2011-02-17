@@ -26,6 +26,8 @@
 
 class GROUP_DATABASE_SAVE_ALL : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     GROUP_DATABASE_SAVE_ALL ();
     int command (Command *);

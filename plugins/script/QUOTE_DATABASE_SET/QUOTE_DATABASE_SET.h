@@ -27,6 +27,8 @@
 
 class QUOTE_DATABASE_SET : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     QUOTE_DATABASE_SET ();
     int command (Command *);

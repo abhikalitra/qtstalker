@@ -26,6 +26,8 @@
 
 class SCRIPT_DATABASE_DELETE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SCRIPT_DATABASE_DELETE ();
     int command (Command *);

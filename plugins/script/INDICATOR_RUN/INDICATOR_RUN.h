@@ -26,6 +26,8 @@
 
 class INDICATOR_RUN : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_RUN ();
     int command (Command *);

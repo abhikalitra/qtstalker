@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_WEIGHTED_CLOSE_HPP
-#define SCRIPT_PLUGIN_WEIGHTED_CLOSE_HPP
+#ifndef WEIGHTED_CLOSE_HPP
+#define WEIGHTED_CLOSE_HPP
 
 #include "ScriptPlugin.h"
 
 class WEIGHTED_CLOSE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     WEIGHTED_CLOSE ();
     int command (Command *);

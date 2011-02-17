@@ -26,6 +26,8 @@
 
 class SYMBOL_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SYMBOL_DIALOG ();
     int command (Command *);

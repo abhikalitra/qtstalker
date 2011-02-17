@@ -26,6 +26,8 @@
 
 class SAR : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SAR ();
     int command (Command *);

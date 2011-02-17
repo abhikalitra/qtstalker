@@ -26,6 +26,8 @@
 
 class RSI : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     RSI ();
     int command (Command *);

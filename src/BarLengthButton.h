@@ -42,6 +42,7 @@ class BarLengthButton : public QToolButton
     void lengthChanged (QAction *);
     
   private:
+    int _barLength;
     QMenu *_menu;
     QStringList _lengthList;
     QStringList _shortList;

@@ -26,6 +26,8 @@
 
 class COPY_ARRAY : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     COPY_ARRAY ();
     int command (Command *);

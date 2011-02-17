@@ -26,6 +26,8 @@
 
 class SYMBOL_CURRENT : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SYMBOL_CURRENT ();
     int command (Command *);

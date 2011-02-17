@@ -60,7 +60,7 @@ void DateRangeControl::createMenu ()
   setMenu(_menu);
 
   QSettings settings(g_settingsFile);
-  int index = settings.value("last_date_range", 5).toInt();
+  _dateRange = settings.value("date_range", 5).toInt();
 
   QActionGroup *group = new QActionGroup(this);
 
@@ -71,7 +71,7 @@ void DateRangeControl::createMenu ()
     a->setCheckable(TRUE);
     group->addAction(a);
 
-    if (loop == index)
+    if (loop == _dateRange)
     {
       a->setChecked(TRUE);
       setText(_shortList.at(loop));
@@ -81,19 +81,18 @@ void DateRangeControl::createMenu ()
 
 void DateRangeControl::rangeChanged (QAction *d)
 {
-  int index = _lengthList.indexOf(d->text());
+  _dateRange = _lengthList.indexOf(d->text());
 
   QSettings settings(g_settingsFile);
-  settings.setValue("last_date_range", index);
+  settings.setValue("date_range", _dateRange);
   settings.sync();
 
-  setText(_shortList.at(index));
+  setText(_shortList.at(_dateRange));
 
   emit signalDateRangeChanged();
 }
 
 int DateRangeControl::dateRange ()
 {
-  QSettings settings(g_settingsFile);
-  return settings.value("last_date_range", 5).toInt();
+  return _dateRange;
 }

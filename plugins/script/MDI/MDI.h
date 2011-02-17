@@ -26,6 +26,8 @@
 
 class MDI : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     MDI ();
     int command (Command *);

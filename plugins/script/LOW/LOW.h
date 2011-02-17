@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_LOW_HPP
-#define SCRIPT_PLUGIN_LOW_HPP
+#ifndef LOW_HPP
+#define LOW_HPP
 
 #include "ScriptPlugin.h"
 
 class LOW : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     LOW ();
     int command (Command *);

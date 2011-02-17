@@ -26,6 +26,8 @@
 
 class AROON : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     AROON ();
     int command (Command *);

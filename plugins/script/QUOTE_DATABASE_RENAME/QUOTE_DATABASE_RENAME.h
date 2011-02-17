@@ -26,6 +26,8 @@
 
 class QUOTE_DATABASE_RENAME : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     QUOTE_DATABASE_RENAME ();
     int command (Command *);

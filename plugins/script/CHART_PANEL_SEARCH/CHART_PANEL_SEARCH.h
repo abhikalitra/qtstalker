@@ -26,6 +26,8 @@
 
 class CHART_PANEL_SEARCH : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CHART_PANEL_SEARCH ();
     int command (Command *);

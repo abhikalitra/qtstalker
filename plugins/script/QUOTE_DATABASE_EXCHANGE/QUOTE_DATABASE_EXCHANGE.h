@@ -26,6 +26,8 @@
 
 class QUOTE_DATABASE_EXCHANGE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     QUOTE_DATABASE_EXCHANGE ();
     int command (Command *);

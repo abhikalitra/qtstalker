@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef PLOT_CROSSHAIRS_PLUGIN_HPP
-#define PLOT_CROSSHAIRS_PLUGIN_HPP
+#ifndef PLOT_CROSSHAIRS_HPP
+#define PLOT_CROSSHAIRS_HPP
 
 #include "ScriptPlugin.h"
 
 class PLOT_CROSSHAIRS : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     PLOT_CROSSHAIRS ();
     int command (Command *);

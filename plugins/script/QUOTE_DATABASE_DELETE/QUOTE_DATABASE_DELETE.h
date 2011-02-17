@@ -26,6 +26,8 @@
 
 class QUOTE_DATABASE_DELETE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     QUOTE_DATABASE_DELETE ();
     int command (Command *);

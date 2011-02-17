@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_DELETE_PLUGIN_HPP
-#define CHART_OBJECT_DELETE_PLUGIN_HPP
+#ifndef CHART_OBJECT_DELETE_HPP
+#define CHART_OBJECT_DELETE_HPP
 
 #include "ScriptPlugin.h"
 
 class CHART_OBJECT_DELETE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CHART_OBJECT_DELETE ();
     int command (Command *);

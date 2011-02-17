@@ -26,6 +26,8 @@
 
 class INDICATOR_PLOT : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_PLOT ();
     int command (Command *);

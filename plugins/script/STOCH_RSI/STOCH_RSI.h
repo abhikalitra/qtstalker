@@ -26,6 +26,8 @@
 
 class STOCH_RSI : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     STOCH_RSI ();
     int command (Command *);

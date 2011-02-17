@@ -26,6 +26,8 @@
 
 class MIN : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     MIN ();
     int command (Command *);

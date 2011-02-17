@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_AVERAGE_PRICE_HPP
-#define SCRIPT_PLUGIN_AVERAGE_PRICE_HPP
+#ifndef AVERAGE_PRICE_HPP
+#define AVERAGE_PRICE_HPP
 
 #include "ScriptPlugin.h"
 
 class AVERAGE_PRICE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     AVERAGE_PRICE ();
     int command (Command *);

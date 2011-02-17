@@ -26,6 +26,8 @@
 
 class INDICATOR_DATABASE_LIST : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_DATABASE_LIST ();
     int command (Command *);

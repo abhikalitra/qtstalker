@@ -26,6 +26,8 @@
 
 class CHART_OBJECT_DATABASE_LIST : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CHART_OBJECT_DATABASE_LIST ();
     int command (Command *);

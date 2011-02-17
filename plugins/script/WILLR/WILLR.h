@@ -26,6 +26,8 @@
 
 class WILLR : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     WILLR ();
     int command (Command *);

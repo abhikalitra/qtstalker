@@ -26,6 +26,8 @@
 
 class STDDEV : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     STDDEV ();
     int command (Command *);

@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef PLOT_UPDATE_PLUGIN_HPP
-#define PLOT_UPDATE_PLUGIN_HPP
+#ifndef PLOT_UPDATE_HPP
+#define PLOT_UPDATE_HPP
 
 #include "ScriptPlugin.h"
 
 class PLOT_UPDATE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     PLOT_UPDATE ();
     int command (Command *);

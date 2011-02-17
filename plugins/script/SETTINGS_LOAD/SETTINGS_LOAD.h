@@ -26,6 +26,8 @@
 
 class SETTINGS_LOAD : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SETTINGS_LOAD ();
     int command (Command *);

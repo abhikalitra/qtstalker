@@ -26,6 +26,8 @@
 
 class SCRIPT_DATABASE_LOAD : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SCRIPT_DATABASE_LOAD ();
     int command (Command *);

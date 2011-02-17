@@ -26,6 +26,8 @@
 
 class SCRIPT_DATABASE_LIST : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SCRIPT_DATABASE_LIST ();
     int command (Command *);

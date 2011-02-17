@@ -26,6 +26,8 @@
 
 class SCRIPT_EDIT_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SCRIPT_EDIT_DIALOG ();
     int command (Command *);

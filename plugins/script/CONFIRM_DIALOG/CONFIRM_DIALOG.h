@@ -26,6 +26,8 @@
 
 class CONFIRM_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CONFIRM_DIALOG ();
     int command (Command *);

@@ -26,6 +26,8 @@
 
 class PROCESS : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     PROCESS ();
     int command (Command *);

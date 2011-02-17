@@ -26,6 +26,8 @@
 
 class GROUP_DATABASE_LOAD : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     GROUP_DATABASE_LOAD ();
     int command (Command *);

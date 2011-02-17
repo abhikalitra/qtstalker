@@ -26,6 +26,8 @@
 
 class VFI : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     VFI ();
     int command (Command *);

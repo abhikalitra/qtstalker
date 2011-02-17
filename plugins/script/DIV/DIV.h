@@ -26,6 +26,8 @@
 
 class DIV : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     DIV ();
     int command (Command *);

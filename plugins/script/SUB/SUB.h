@@ -26,6 +26,8 @@
 
 class SUB : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SUB ();
     int command (Command *);

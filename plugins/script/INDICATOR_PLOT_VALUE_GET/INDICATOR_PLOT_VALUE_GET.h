@@ -26,6 +26,8 @@
 
 class INDICATOR_PLOT_VALUE_GET : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_PLOT_VALUE_GET ();
     int command (Command *);

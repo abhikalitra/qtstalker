@@ -26,6 +26,8 @@
 
 class INDICATOR_DATABASE_DELETE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     INDICATOR_DATABASE_DELETE ();
     int command (Command *);

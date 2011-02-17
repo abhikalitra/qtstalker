@@ -26,6 +26,8 @@
 
 class CMO : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CMO ();
     int command (Command *);

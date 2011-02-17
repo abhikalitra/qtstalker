@@ -58,7 +58,7 @@ void BarLengthButton::createMenu ()
   setMenu(_menu);
 
   QSettings settings(g_settingsFile);
-  int index = settings.value("bar_length", 6).toInt();
+  _barLength = settings.value("bar_length", 6).toInt();
 
   QActionGroup *group = new QActionGroup(this);
   
@@ -69,7 +69,7 @@ void BarLengthButton::createMenu ()
     a->setCheckable(TRUE);
     group->addAction(a);
 
-    if (loop == index)
+    if (loop == _barLength)
     {
       a->setChecked(TRUE);
       setText(_shortList.at(loop));
@@ -79,19 +79,18 @@ void BarLengthButton::createMenu ()
 
 void BarLengthButton::lengthChanged (QAction *d)
 {
-  int index = _lengthList.indexOf(d->text());
+  _barLength = _lengthList.indexOf(d->text());
   
   QSettings settings(g_settingsFile);
-  settings.setValue("bar_length", index);
+  settings.setValue("bar_length", _barLength);
   settings.sync();
   
-  setText(_shortList.at(index));
+  setText(_shortList.at(_barLength));
 
-  emit signalBarLengthChanged(index);
+  emit signalBarLengthChanged(_barLength);
 }
 
 int BarLengthButton::length ()
 {
-  QSettings settings(g_settingsFile);
-  return settings.value("bar_length", 6).toInt();
+  return _barLength;
 }

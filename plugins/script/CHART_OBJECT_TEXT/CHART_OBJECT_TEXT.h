@@ -19,13 +19,15 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_TEXT_SCRIPT_PLUGIN_HPP
-#define CHART_OBJECT_TEXT_SCRIPT_PLUGIN_HPP
+#ifndef CHART_OBJECT_TEXT_HPP
+#define CHART_OBJECT_TEXT_HPP
 
 #include "ScriptPlugin.h"
 
 class CHART_OBJECT_TEXT : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     CHART_OBJECT_TEXT ();
     int command (Command *);

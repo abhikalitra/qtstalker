@@ -26,6 +26,8 @@
 
 class SCRIPT_DATABASE_SAVE : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
     SCRIPT_DATABASE_SAVE ();
     int command (Command *);
