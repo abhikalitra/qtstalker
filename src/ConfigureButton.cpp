@@ -29,7 +29,7 @@
 #include "../pics/help.xpm"
 #include "../pics/configure.xpm"
 #include "../pics/indicator.xpm"
-#include "../pics/done.xpm"
+#include "../pics/quit.xpm"
 
 #include <QDebug>
 #include <QString>
@@ -98,7 +98,7 @@ void ConfigureButton::createMenu ()
   // quit
   a = _menu->addAction(tr("Quit"));
   a->setCheckable(FALSE);
-  a->setIcon(QIcon(done_xpm));
+  a->setIcon(QIcon(quit_xpm));
   a->setStatusTip(tr("Quit QtStalker"));
   a->setToolTip(tr("Quit QtStalker"));
   connect(a, SIGNAL(triggered(bool)), qApp, SLOT(quit()));

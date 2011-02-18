@@ -24,8 +24,8 @@
 #include "GroupDataBase.h"
 
 #include "../pics/edit.xpm"
-#include "../pics/delgroup.xpm"
-#include "../pics/newchart.xpm"
+#include "../pics/delete.xpm"
+#include "../pics/new.xpm"
 #include "../pics/add.xpm"
 
 #include <QStringList>
@@ -44,10 +44,6 @@ GroupPage::GroupPage ()
   vbox->setSpacing(3);
   setLayout(vbox);
 
-//  QToolBar *tb = new QToolBar;
-//  vbox->addWidget(tb);
-//  tb->setIconSize(QSize(16, 16));
-  
   createButtonMenu();
   
   _nav = new SymbolListWidget;
@@ -70,7 +66,7 @@ GroupPage::GroupPage ()
 
 void GroupPage::createActions ()
 {
-  QAction *action  = new QAction(QIcon(newchart_xpm), tr("&New Group") + "...", this);
+  QAction *action  = new QAction(QIcon(new_xpm), tr("&New Group") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
   action->setToolTip(tr("Create a new group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(newGroup()));
@@ -88,7 +84,7 @@ void GroupPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(editGroup()));
   _actions.insert(_EDIT_GROUP, action);
 
-  action  = new QAction(QIcon(delgroup), tr("&Delete Group") + "...", this);
+  action  = new QAction(QIcon(delete_xpm), tr("&Delete Group") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
   action->setToolTip(tr("Delete group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(deleteGroup()));
@@ -97,11 +93,6 @@ void GroupPage::createActions ()
 
 void GroupPage::createButtonMenu ()
 {
-//  tb->addAction(_actions.value(_NEW_GROUP));
-//  tb->addAction(_actions.value(_ADD_GROUP));
-//  tb->addAction(_actions.value(_EDIT_GROUP));
-//  tb->addAction(_actions.value(_DELETE_GROUP));
-
   _menu = new QMenu(this);
   _menu->addAction(_actions.value(_NEW_GROUP));
   _menu->addAction(_actions.value(_ADD_GROUP));

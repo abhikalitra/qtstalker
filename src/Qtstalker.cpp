@@ -141,23 +141,6 @@ void QtstalkerApp::createGUI ()
   connect(dock, SIGNAL(signalLockStatus(bool)), _controlPanel, SLOT(setLockStatus(bool)));
   connect(_controlPanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
 
-  // testing
-/*  
-  QToolBar *tb = new QToolBar;
-
-  QToolButton *b = new QToolButton;
-  b->setText("A");
-  tb->addWidget(b);
-
-  dock = new DockWidget(QString(), this);
-  dock->setObjectName("testToolBar");
-  dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  dock->setWidget(tb);
-  addDockWidget(Qt::RightDockWidgetArea, dock);
-  // end testing
-*/
-
   // info panel dock
   _infoPanel = new InfoPanel;
   connect(this, SIGNAL(signalLoadSettings()), _infoPanel, SLOT(loadSettings()));
@@ -200,6 +183,14 @@ void QtstalkerApp::loadSettings ()
   // restore the position of the app
   QPoint p = settings.value("main_window_position", QPoint(0,0)).toPoint();
   move(p);
+
+  QStringList l = settings.value("app_font").toString().split(",", QString::SkipEmptyParts);
+  if (l.count())
+  {
+    QFont font;
+    font.fromString(l.join(","));
+    qApp->setFont(font);
+  }
 
   // load gui class settings that need to now
   emit signalLoadSettings();
@@ -347,7 +338,6 @@ void QtstalkerApp::addPlot (QString indicator)
   connect(plot, SIGNAL(signalIndex(int)), _controlPanel, SLOT(setStartValue(int)));
   
   connect(g_middleMan, SIGNAL(signalPlotBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
-  connect(g_middleMan, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setFont(QFont)));
   connect(g_middleMan, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
   connect(g_middleMan, SIGNAL(signalGrid(bool)), plot, SLOT(setGrid(bool)));
   connect(g_middleMan, SIGNAL(signalCrosshairsColor(QColor)), plot, SLOT(setCrossHairsColor(QColor)));

@@ -25,8 +25,8 @@
 #include "GroupPage.h"
 #include "ScriptPage.h"
 
-#include "../pics/dirclosed.xpm"
-#include "../pics/plainitem.xpm"
+#include "../pics/group.xpm"
+#include "../pics/chart.xpm"
 #include "../pics/script.xpm"
 
 #include <QDebug>
@@ -49,7 +49,7 @@ void SidePanel::createTabs ()
   connect(cp, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
   connect(g_middleMan, SIGNAL(signalChartPanelRefresh()), cp, SLOT(updateList()));
   connect(g_middleMan, SIGNAL(signalChartPanelSearch(QString, QString)), cp, SLOT(setSearch(QString, QString)));
-  addTab(cp, QIcon(plainitem), QString());
+  addTab(cp, QIcon(chart_xpm), QString());
   setTabToolTip(0, tr("Charts"));
 
   // group tab
@@ -59,7 +59,7 @@ void SidePanel::createTabs ()
   connect(gp, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
   connect(gp, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
   connect(g_middleMan, SIGNAL(signalGroupPanelRefresh()), gp, SLOT(updateGroups()));
-  addTab(gp, QIcon(dirclosed), QString());
+  addTab(gp, QIcon(group_xpm), QString());
   setTabToolTip(1, tr("Groups"));
 
   // script tab

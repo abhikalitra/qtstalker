@@ -1034,10 +1034,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>North</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1059,6 +1055,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>App Font</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

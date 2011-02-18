@@ -52,6 +52,16 @@ void DateScaleDraw::setDates ()
 
     _dateList.append(bar->date());
   }
+
+//  QwtValueList vlist[3];
+//  vlist[0] << 6 << 18 << 30;
+//  vlist[1] << 12 << 36;
+//  vlist[2] << 0 << 24;
+
+//  QwtScaleDiv sd(0, 300, vlist);
+//  setScaleDiv(sd);
+  
+//  getTicks();
 }
 
 int DateScaleDraw::count ()
@@ -66,7 +76,7 @@ QwtText DateScaleDraw::label (double v) const
     return QString();
 
   QwtText date;
-  
+
   switch ((BarData::BarLength) _barLength)
   {
     case BarData::Minute1:
@@ -75,21 +85,31 @@ QwtText DateScaleDraw::label (double v) const
     case BarData::Minute15:
     case BarData::Minute30:
     case BarData::Minute60:
-      date = _dateList.at(t).toString("dd HH:mm");
+      date = _dateList.at(t).toString("d h:m");
       break;
     case BarData::DailyBar:
-      date = _dateList.at(t).toString("MMM-yy");
+      if (_dateList.at(t).date().month() == 1)
+        date = _dateList.at(t).toString("yy");
+      else
+        date = _dateList.at(t).toString("MMM");
       break;
     case BarData::WeeklyBar:
-      date = _dateList.at(t).toString("yyyy");
+      if (_dateList.at(t).date().month() == 1)
+        date = _dateList.at(t).toString("yy");
+      else
+      {
+        QString s = _dateList.at(t).toString("MMM");
+        s.chop(2);
+        date = s;
+      }
       break;
     case BarData::MonthlyBar:
-      date = _dateList.at(t).toString("yyyy");
+      date = _dateList.at(t).toString("yy");
       break;
     default:
       break;
   }
-  
+
   return date;
 }
 
@@ -131,11 +151,11 @@ QList<QDateTime> & DateScaleDraw::dates ()
   return _dateList;
 }
 
-void DateScaleDraw::draw(QPainter *painter, const QPalette& palette) const
+void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
 {
   if (! _dateList.count())
     return;
-  
+
   QwtScaleDiv sd = scaleDiv();
   int loop = sd.lowerBound();
   int size = sd.upperBound();
@@ -158,6 +178,8 @@ void DateScaleDraw::draw(QPainter *painter, const QPalette& palette) const
 
   for (; loop < size; loop++)
   {
+    _dateString.clear();
+    
     switch ((BarData::BarLength) _barLength)
     {
       case BarData::Minute1:
@@ -225,6 +247,7 @@ void DateScaleDraw::draw(QPainter *painter, const QPalette& palette) const
 
             // draw the short week tick
             drawTick(painter, loop, 4);
+//            drawLabel(painter, loop);
             //QString text = date.toString("d");
           }
         }
@@ -247,6 +270,7 @@ void DateScaleDraw::draw(QPainter *painter, const QPalette& palette) const
           {
             // draw the short tick
             drawTick(painter, loop, 4);
+            drawLabel(painter, loop);
             //QString text = date.toString("MMM");
             //text.chop(2);
           }
@@ -272,3 +296,160 @@ void DateScaleDraw::draw(QPainter *painter, const QPalette& palette) const
     }
   }
 }
+
+/*
+void DateScaleDraw::getTicks ()
+{
+  if (! _dateList.count())
+    return;
+
+  _tickList.clear();
+  
+  int loop = 0;
+  int size = _dateList.count();
+
+  QDate oldDate = _dateList.at(loop).date();
+  QDate oldWeek = oldDate;
+  oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
+  QDate oldMonth = oldDate;
+  QDate oldYear = oldDate;
+
+  QDateTime nextHour = _dateList.at(loop);
+  QDateTime oldDay = nextHour;
+  nextHour.setTime(QTime(nextHour.time().hour(), 0, 0, 0));
+  if ((BarData::BarLength) _barLength != BarData::Minute1)
+    nextHour = nextHour.addSecs(7200);
+  else
+    nextHour = nextHour.addSecs(3600);
+
+  for (; loop < size; loop++)
+  {
+    switch ((BarData::BarLength) _barLength)
+    {
+      case BarData::Minute1:
+      case BarData::Minute5:
+      case BarData::Minute10:
+      case BarData::Minute15:
+      case BarData::Minute30:
+      case BarData::Minute60:
+      {
+        QDateTime date = _dateList.at(loop);
+        if (date.date().day() != oldDay.date().day())
+        {
+          oldDay = date;
+
+          // big tick
+          Setting tick;
+          tick.setData("TYPE", QString("0"));
+          tick.setData("TEXT", date.toString("d"));
+          _tickList.insert(loop, tick);
+        }
+        else
+        {
+          if (date >= nextHour)
+          {
+            if ((BarData::BarLength) _barLength < BarData::Minute30)
+            {
+              // draw the short tick
+              Setting tick;
+              tick.setData("TYPE", QString("1"));
+              tick.setData("TEXT", date.toString("h:m"));
+              _tickList.insert(loop, tick);
+            }
+          }
+        }
+
+        if (date >= nextHour)
+        {
+          nextHour = date;
+          nextHour.setTime(QTime(date.time().hour(), 0, 0, 0));
+          if ((BarData::BarLength) _barLength != BarData::Minute1)
+            nextHour = nextHour.addSecs(7200);
+          else
+            nextHour = nextHour.addSecs(3600);
+        }
+        break;
+      }
+      case BarData::DailyBar:
+      {
+        QDate date = _dateList.at(loop).date();
+        if (date.month() != oldDate.month())
+        {
+          oldDate = date;
+          oldWeek = date;
+          oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
+
+          // draw the long tick
+          Setting tick;
+          tick.setData("TYPE", QString("0"));
+          if (date.month() == 1)
+            tick.setData("TEXT", date.toString("yy"));
+          else
+            tick.setData("TEXT", date.toString("MMM"));
+          _tickList.insert(loop, tick);
+        }
+        else
+        {
+          // if start of new week make a tick
+          if (date > oldWeek)
+          {
+            oldWeek = date;
+            oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
+
+            // draw the short week tick
+            Setting tick;
+            tick.setData("TYPE", QString("1"));
+            tick.setData("TEXT", date.toString("d"));
+            _tickList.insert(loop, tick);
+          }
+        }
+        break;
+      }
+      case BarData::WeeklyBar:
+      {
+        QDate date = _dateList.at(loop).date();
+        if (date.month() != oldMonth.month())
+        {
+          oldMonth = date;
+          if (date.month() == 1)
+          {
+            // draw the long tick
+            Setting tick;
+            tick.setData("TYPE", QString("0"));
+            tick.setData("TEXT", date.toString("yy"));
+            _tickList.insert(loop, tick);
+          }
+          else
+          {
+            // draw the short tick
+            Setting tick;
+            tick.setData("TYPE", QString("1"));
+            QString s = date.toString("MMM");
+            s.chop(2);
+            tick.setData("TEXT", s);
+            _tickList.insert(loop, tick);
+          }
+        }
+        break;
+      }
+      case BarData::MonthlyBar:
+      {
+        QDate date = _dateList.at(loop).date();
+        if (date.year() != oldYear.year())
+        {
+          oldYear = date;
+
+          // draw the long tick
+          Setting tick;
+          tick.setData("TYPE", QString("1"));
+          tick.setData("TEXT", date.toString("yy"));
+          _tickList.insert(loop, tick);
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+}
+*/

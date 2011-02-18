@@ -36,7 +36,6 @@ class MiddleMan: public QObject
     void signalChartPanelSearch (QString, QString);
     void signalGroupPanelRefresh ();
     void signalPlotBackgroundColor (QColor);
-    void signalPlotFont (QFont);
     void signalGridColor (QColor);
     void signalGrid (bool);
     void signalCrosshairsColor (QColor);
@@ -55,7 +54,6 @@ class MiddleMan: public QObject
     void chartPanelSearch (QString, QString);
     void groupPanelRefresh ();
     void plotBackgroundColor (QColor);
-    void plotFont (QFont);
     void gridColor (QColor);
     void grid (int);
     void crosshairsColor (QColor);

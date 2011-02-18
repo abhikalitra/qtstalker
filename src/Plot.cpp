@@ -292,7 +292,7 @@ void Plot::setCrossHairsColor (QColor d)
 
 void Plot::setGrid (bool d)
 {
-  _grid->enableX(d);
+//  _grid->enableX(d);
   _grid->enableY(d);
   replot();
 }
@@ -388,7 +388,7 @@ void Plot::setStartIndex (int index)
 
   setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
 
-//  setYPoints();
+  setYPoints();
 
   replot();
 }
@@ -397,20 +397,19 @@ void Plot::setYPoints ()
 {
   _plotScaleDraw->clearPoints();
 
-//  int page = width() / _spacing;
-//  int index = _startPos + page;
-//  if (index > _dateScaleDraw->count())
-//    index = _dateScaleDraw->count() - 1;
-
-  QwtScaleDiv sd = _dateScaleDraw->scaleDiv();
-  int index = sd.upperBound();
-
   QHashIterator<QString, Curve *> it(_indicator->curves());
   while (it.hasNext())
   {
     it.next();
     Curve *curve = it.value();
 
+    int min = 0;
+    int max = 0;
+    curve->keyRange(min, max);
+    int index = _endPos;
+    if (index > max)
+      index = max;
+    
     CurveBar *bar = curve->bar(index);
     if (! bar)
       continue;

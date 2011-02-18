@@ -39,17 +39,18 @@ class DateScaleDraw : public QwtScaleDraw
     DateScaleDraw ();
     void setDates ();
     int count ();
-    virtual QwtText label (double v) const;
+    virtual QwtText label (double) const;
     void date (int, QDateTime &);
     int x (QDateTime d);
     void info (int index, Setting &);
     QList<QDateTime> & dates ();
-    virtual void draw(QPainter *painter, const QPalette& palette) const;
+    virtual void draw (QPainter *, const QPalette &) const;
 
   private:
     QHash<QString, int> _data;
     QList<QDateTime> _dateList;
     int _barLength;
+    mutable QString _dateString;
 };
 
 #endif

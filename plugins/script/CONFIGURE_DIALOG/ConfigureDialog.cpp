@@ -28,6 +28,7 @@
 #include <QLayout>
 #include <QSettings>
 #include <QFormLayout>
+#include <QApplication>
 
 ConfigureDialog::ConfigureDialog (Command *c)
 {
@@ -100,18 +101,18 @@ void ConfigureDialog::createGeneralPage ()
   
   _flags.insert("background", 0);
 
-  // plot font
+  // app font
   QFont font;
-  QStringList l = settings.value("plot_font").toString().split(",", QString::SkipEmptyParts);
+  QStringList l = settings.value("app_font").toString().split(",", QString::SkipEmptyParts);
   if (l.count())
     font.fromString(l.join(","));
   
-  _plotFont = new FontButton(w, font);
-  _plotFont->setToolTip(tr("Plot Font"));
-  connect(_plotFont, SIGNAL(valueChanged()), this, SLOT(plotFontChanged()));
-  form->addRow(tr("Plot Font"), _plotFont);
+  _appFont = new FontButton(w, font);
+  _appFont->setToolTip(tr("App Font"));
+  connect(_appFont, SIGNAL(valueChanged()), this, SLOT(appFontChanged()));
+  form->addRow(tr("App Font"), _appFont);
   
-  _flags.insert("plotFont", 0);
+  _flags.insert("appFont", 0);
 
   // tab position
   l.clear();
@@ -153,11 +154,11 @@ void ConfigureDialog::done ()
     g_middleMan->plotBackgroundColor(color);
   }
   
-  if (_flags.value("plotFont"))
+  if (_flags.value("appFont"))
   {
-    QFont font = _plotFont->font();
-    settings.setValue("plot_font", font.toString());
-    g_middleMan->plotFont(font);
+    QFont font = _appFont->font();
+    settings.setValue("app_font", font.toString());
+    QApplication::setFont(font);
   }
 
   if (_flags.value("plotTabPosition"))
@@ -206,10 +207,10 @@ void ConfigureDialog::backgroundChanged ()
   buttonStatus();
 }
 
-void ConfigureDialog::plotFontChanged ()
+void ConfigureDialog::appFontChanged ()
 {
   _modified++;
-  _flags.insert("plotFont", 1);
+  _flags.insert("appFont", 1);
   buttonStatus();
 }
 

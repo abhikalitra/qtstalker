@@ -47,11 +47,6 @@ void MiddleMan::plotBackgroundColor (QColor d)
   emit signalPlotBackgroundColor(d);
 }
 
-void MiddleMan::plotFont (QFont d)
-{
-  emit signalPlotFont(d);
-}
-
 void MiddleMan::gridColor (QColor d)
 {
   emit signalGridColor(d);

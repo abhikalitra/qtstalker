@@ -26,10 +26,10 @@
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
-#include "../pics/newchart.xpm"
-//#include "../pics/ok.xpm"
+#include "../pics/new.xpm"
 #include "../pics/script.xpm"
 #include "../pics/configure.xpm"
+#include "../pics/cancel.xpm"
 
 #include <QCursor>
 #include <QToolTip>
@@ -49,8 +49,6 @@ ScriptPage::ScriptPage ()
 
   createGUI();
 
-  // scan for startup scripts
-//  QTimer::singleShot(100, this, SLOT(startup()));
   connect(&_timer, SIGNAL(timeout()), this, SLOT(scriptTimer()));
   _timer.start(60000);
   
@@ -98,7 +96,7 @@ void ScriptPage::createGUI ()
 
 void ScriptPage::createActions ()
 {
-  QAction *action = new QAction(QIcon(newchart_xpm), tr("&New Script"), this);
+  QAction *action = new QAction(QIcon(new_xpm), tr("&New Script"), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
   action->setToolTip(tr("New Script"));
   connect(action, SIGNAL(activated()), this, SLOT(newScript()));
@@ -116,7 +114,7 @@ void ScriptPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(deleteScript()));
   _actions.insert(_DeleteScript, action);
 
-  action = new QAction(QIcon(delete_xpm), tr("&Cancel Script"), this);
+  action = new QAction(QIcon(cancel_xpm), tr("&Cancel Script"), this);
   action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
   action->setToolTip(tr("Cancel script"));
   connect(action, SIGNAL(activated()), this, SLOT(cancelScript()));
@@ -129,13 +127,11 @@ void ScriptPage::createActions ()
   _actions.insert(_RunScript, action);
 
   action = new QAction(QIcon(configure_xpm), tr("Launch Button Rows"), this);
-//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
   action->setToolTip(tr("Launch Button Rows"));
   connect(action, SIGNAL(activated()), this, SLOT(launchButtonRows()));
   _actions.insert(_LaunchButtonRows, action);
 
   action = new QAction(QIcon(configure_xpm), tr("Launch Button Columns"), this);
-//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
   action->setToolTip(tr("Launch Button Columns"));
   connect(action, SIGNAL(activated()), this, SLOT(launchButtonCols()));
   _actions.insert(_LaunchButtonCols, action);
@@ -143,11 +139,6 @@ void ScriptPage::createActions ()
 
 void ScriptPage::createButtonMenu ()
 {
-//  tb->addAction(_actions.value(_RunScript));
-//  tb->addAction(_actions.value(_NewScript));
-//  tb->addAction(_actions.value(_EditScript));
-//  tb->addAction(_actions.value(_DeleteScript));
-
   _queMenu = new QMenu(this);
   _queMenu->addAction(_actions.value(_RunScript));
   _queMenu->addAction(_actions.value(_CancelScript));
