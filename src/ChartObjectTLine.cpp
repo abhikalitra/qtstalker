@@ -44,19 +44,19 @@ ChartObjectTLine::ChartObjectTLine ()
 
 void ChartObjectTLine::info (Setting &info)
 {
-  info.setData(QObject::tr("Type"), QObject::tr("TLine"));
+  info.setData(tr("Type"), tr("TLine"));
 
   QDateTime dt = _settings->dateTime("Date");
-  info.setData(QObject::tr("SD"), dt.toString("yyyy-MM-dd"));
-  info.setData(QObject::tr("ST"), dt.toString("HH:mm:ss"));
+  info.setData(tr("SD"), dt.toString("yyyy-MM-dd"));
+  info.setData(tr("ST"), dt.toString("HH:mm:ss"));
 
   dt = _settings->dateTime("Date2");
-  info.setData(QObject::tr("ED"), dt.toString("yyyy-MM-dd"));
-  info.setData(QObject::tr("ET"), dt.toString("HH:mm:ss"));
+  info.setData(tr("ED"), dt.toString("yyyy-MM-dd"));
+  info.setData(tr("ET"), dt.toString("HH:mm:ss"));
   
-  info.setData(QObject::tr("SP"), _settings->data("Price"));
+  info.setData(tr("SP"), _settings->data("Price"));
   
-  info.setData(QObject::tr("EP"), _settings->data("Price2"));
+  info.setData(tr("EP"), _settings->data("Price2"));
 }
 
 int ChartObjectTLine::highLow (int start, int end, double &h, double &l)
@@ -189,6 +189,7 @@ void ChartObjectTLine::click (int button, QPoint p)
           if (_createFlag)
           {
             _status = _Move2;
+            g_middleMan->statusMessage(tr("Select TLine ending point..."));
             return;
           }
           
@@ -247,4 +248,5 @@ void ChartObjectTLine::create ()
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));
   emit signalMoveStart(_settings->data("ID"));
+  g_middleMan->statusMessage(tr("Select TLine starting point..."));
 }

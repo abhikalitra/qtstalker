@@ -34,7 +34,7 @@ DataWindowButton::DataWindowButton ()
   setIcon(QIcon(datawindow_xpm));
   setStatusTip(tr("Display Data Window"));
   setToolTip(tr("Display Data Window"));
-  
+
   connect(this, SIGNAL(clicked()), this, SLOT(dialog()));
 }
 

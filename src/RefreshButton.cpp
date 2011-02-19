@@ -20,8 +20,10 @@
  */
 
 #include "RefreshButton.h"
-#include "../pics/refresh.xpm"
 #include "Globals.h"
+
+#include "../pics/refresh.xpm"
+#include "../pics/configure.xpm"
 
 #include <QString>
 #include <QDebug>
@@ -31,7 +33,12 @@
 
 RefreshButton::RefreshButton ()
 {
+  setContextMenuPolicy(Qt::CustomContextMenu);
   _timer = 0;
+
+  _menu = new QMenu(this);
+  _menu->addAction(QPixmap(configure_xpm), tr("&Refresh Rate"), this, SLOT(dialog()), Qt::ALT+Qt::Key_R);
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
   
   QSettings settings(g_settingsFile);
   _minutes = settings.value("refresh", 1).toInt();
@@ -102,7 +109,7 @@ void RefreshButton::changeText ()
   setToolTip(s);
 }
 
-void RefreshButton::contextMenuEvent (QContextMenuEvent *)
+void RefreshButton::contextMenu ()
 {
-  dialog();
+  _menu->exec(QCursor::pos());
 }

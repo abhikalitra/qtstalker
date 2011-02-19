@@ -24,6 +24,7 @@
 
 #include <QTimer>
 #include <QToolButton>
+#include <QMenu>
 
 class RefreshButton : public QToolButton
 {
@@ -40,13 +41,12 @@ class RefreshButton : public QToolButton
     void refreshUpdated (int);
     void dialog ();
     void changeText ();
-
-  protected:
-    virtual void contextMenuEvent (QContextMenuEvent *);
+    void contextMenu ();
     
   private:
     QTimer *_timer;
     int _minutes;
+    QMenu *_menu;
 };
 
 #endif

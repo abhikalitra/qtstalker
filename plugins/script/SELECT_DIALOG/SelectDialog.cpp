@@ -80,6 +80,14 @@ void SelectDialog::createGUI ()
   connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
   vbox->addWidget(bbox);
 
+  // select all button
+  _selectButton = bbox->addButton(tr("Select All"), QDialogButtonBox::ActionRole);
+  connect(_selectButton, SIGNAL(clicked()), _list, SLOT(selectAll()));
+
+  // unselect all button
+  _unselectButton = bbox->addButton(tr("Unselect All"), QDialogButtonBox::ActionRole);
+  connect(_unselectButton, SIGNAL(clicked()), _list, SLOT(clearSelection()));
+
   // ok button
   _okButton = bbox->addButton(QDialogButtonBox::Ok);
   _okButton->setDefault(TRUE);

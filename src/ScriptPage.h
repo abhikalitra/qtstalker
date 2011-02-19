@@ -49,6 +49,7 @@ class ScriptPage : public QWidget
     enum Action
     {
       _RunScript,
+      _RunExternalScript,
       _NewScript,
       _EditScript,
       _DeleteScript,
@@ -71,6 +72,7 @@ class ScriptPage : public QWidget
     void queRightClick (const QPoint &);
     void queStatus ();
     void runScript ();
+    void runExternalScript (QString);
     void runScript (QString);
     void newScript ();
     void editScript ();
@@ -84,6 +86,7 @@ class ScriptPage : public QWidget
     void launchButtonCols ();
     void launchButtonCols2 (int);
     void scriptTimer ();
+    void fileSelect ();
 
   protected:
     QListWidget *_queList;

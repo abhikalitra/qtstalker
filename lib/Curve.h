@@ -66,6 +66,7 @@ class Curve
     int highLowRange (int start, int end, double &h, double &l);
     void string (QString &);
     void parse (QString &);
+    void deleteBar (int);
 
   protected:
     QStringList _list;

@@ -302,3 +302,13 @@ int GroupDataBase::getTable (QString &name, QString &table)
 
   return 0;
 }
+
+void GroupDataBase::transaction ()
+{
+  _db.transaction();
+}
+
+void GroupDataBase::commit ()
+{
+  _db.commit();
+}

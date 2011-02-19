@@ -49,24 +49,24 @@ ChartObjectRetracement::ChartObjectRetracement ()
 
 void ChartObjectRetracement::info (Setting &info)
 {
-  info.setData(QObject::tr("Type"), QObject::tr("Retracement"));
+  info.setData(tr("Type"), tr("Retracement"));
   
   QDateTime dt = _settings->dateTime("Date");
-  info.setData(QObject::tr("SD"), dt.toString("yyyy-MM-dd"));
-  info.setData(QObject::tr("ST"), dt.toString("HH:mm:ss"));
+  info.setData(tr("SD"), dt.toString("yyyy-MM-dd"));
+  info.setData(tr("ST"), dt.toString("HH:mm:ss"));
   
   dt = _settings->dateTime("Date2");
-  info.setData(QObject::tr("ED"), dt.toString("yyyy-MM-dd"));
-  info.setData(QObject::tr("ET"), dt.toString("HH:mm:ss"));
+  info.setData(tr("ED"), dt.toString("yyyy-MM-dd"));
+  info.setData(tr("ET"), dt.toString("HH:mm:ss"));
   
-  info.setData(QObject::tr("High"), _settings->data("High"));
-  info.setData(QObject::tr("Low"), _settings->data("Low"));
-  info.setData(QObject::tr("Level 1"), _settings->data("Line1"));
-  info.setData(QObject::tr("Level 2"), _settings->data("Line2"));
-  info.setData(QObject::tr("Level 3"), _settings->data("Line3"));
-  info.setData(QObject::tr("Level 4"), _settings->data("Line4"));
-  info.setData(QObject::tr("Level 5"), _settings->data("Line5"));
-  info.setData(QObject::tr("Level 6"), _settings->data("Line6"));
+  info.setData(tr("High"), _settings->data("High"));
+  info.setData(tr("Low"), _settings->data("Low"));
+  info.setData(tr("Level 1"), _settings->data("Line1"));
+  info.setData(tr("Level 2"), _settings->data("Line2"));
+  info.setData(tr("Level 3"), _settings->data("Line3"));
+  info.setData(tr("Level 4"), _settings->data("Line4"));
+  info.setData(tr("Level 5"), _settings->data("Line5"));
+  info.setData(tr("Level 6"), _settings->data("Line6"));
 }
 
 int ChartObjectRetracement::highLow (int start, int end, double &h, double &l)
@@ -192,6 +192,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
           if (_createFlag)
           {
             _status = _Move2;
+            g_middleMan->statusMessage(tr("Select lowest ending point..."));
             return;
           }
 
@@ -213,6 +214,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
           _status = _Selected;
           _createFlag = 0;
           emit signalMoveEnd(_settings->data("ID"));
+          save();
           return;
         default:
           break;
@@ -249,4 +251,5 @@ void ChartObjectRetracement::create ()
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));
   emit signalMoveStart(_settings->data("ID"));
+  g_middleMan->statusMessage(tr("Select highest starting point..."));
 }

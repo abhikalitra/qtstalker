@@ -113,14 +113,10 @@ void ChartObjectDataBase::deleteChartObject (QString id)
 {
   QSqlQuery q(_db);
 
-  _db.transaction();
-  
   QString s = "DELETE FROM " + _table + " WHERE id='" + id + "'";
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ChartObjectDataBase::deleteChartObject: " << q.lastError().text();
-
-  _db.commit();
 }
 
 void ChartObjectDataBase::load (Setting *co)
@@ -207,4 +203,14 @@ int ChartObjectDataBase::renameSymbol (BarData *obd, BarData *nbd)
   _db.commit();
   
   return 0;
+}
+
+void ChartObjectDataBase::transaction ()
+{
+  _db.transaction();
+}
+
+void ChartObjectDataBase::commit ()
+{
+  _db.commit();
 }

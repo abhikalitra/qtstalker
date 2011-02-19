@@ -42,6 +42,7 @@
 #include <QToolButton>
 #include <QSettings>
 #include <QInputDialog>
+#include <QFileDialog>
 
 ScriptPage::ScriptPage ()
 {
@@ -126,6 +127,12 @@ void ScriptPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(runScript()));
   _actions.insert(_RunScript, action);
 
+  action = new QAction(QIcon(script_xpm), tr("Run E&xternal Script"), this);
+  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_X));
+  action->setToolTip(tr("Run external script"));
+  connect(action, SIGNAL(activated()), this, SLOT(fileSelect()));
+  _actions.insert(_RunExternalScript, action);
+
   action = new QAction(QIcon(configure_xpm), tr("Launch Button Rows"), this);
   action->setToolTip(tr("Launch Button Rows"));
   connect(action, SIGNAL(activated()), this, SLOT(launchButtonRows()));
@@ -141,6 +148,7 @@ void ScriptPage::createButtonMenu ()
 {
   _queMenu = new QMenu(this);
   _queMenu->addAction(_actions.value(_RunScript));
+  _queMenu->addAction(_actions.value(_RunExternalScript));
   _queMenu->addAction(_actions.value(_CancelScript));
   _queMenu->addSeparator();
   _queMenu->addAction(_actions.value(_NewScript));
@@ -253,6 +261,23 @@ void ScriptPage::runScript (QString d)
   script->startScript();
 }
 
+void ScriptPage::runExternalScript (QString file)
+{
+  Script *script = new Script;
+  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
+  connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
+
+  script->setName(file);
+  script->setFile(file);
+  script->setCommand("perl");
+
+  QListWidgetItem *item = new QListWidgetItem(_queList);
+  item->setText(file);
+  _itemList.insert(file, item);
+  
+  script->startScript();
+}
+
 void ScriptPage::cancelScript ()
 {
   QList<QListWidgetItem *> sl = _queList->selectedItems();
@@ -356,4 +381,12 @@ void ScriptPage::scriptTimer ()
   }
 
   queStatus();
+}
+
+void ScriptPage::fileSelect ()
+{
+  QFileDialog *dialog = new QFileDialog;
+  connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(runExternalScript(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
 }

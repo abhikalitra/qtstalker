@@ -13,7 +13,7 @@ print STDOUT $command;
 $name = <STDIN>; chomp($name); if ($name eq "ERROR") { print STDERR $command; next; }
 
 # confirm delete
-$command = "PLUGIN=CONFIRM_DIALOG,MESSAGE=Confirm chart object delete";
+$command = "PLUGIN=CONFIRM_DIALOG,MESSAGE=Confirm chart object delete $name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -23,6 +23,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update the app
-$command = "PLUGIN=CHART_OBJECT_DELETE,NAME=$name";
+$command = "PLUGIN=CHART_OBJECT_DELETE,LIST=$name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

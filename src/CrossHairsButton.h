@@ -23,6 +23,7 @@
 #define CROSSHAIRS_BUTTON_HPP
 
 #include <QToolButton>
+#include <QMenu>
 
 class CrossHairsButton : public QToolButton
 {
@@ -34,9 +35,10 @@ class CrossHairsButton : public QToolButton
   public slots:
     void dialog ();
     void changed (bool);
+    void contextMenu ();
 
-  protected:
-    virtual void contextMenuEvent (QContextMenuEvent *);
+  private:
+    QMenu *_menu;
 };
 
 #endif

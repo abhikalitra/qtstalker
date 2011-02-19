@@ -32,6 +32,7 @@ class Operator
       _LESS_THAN,
       _LESS_THAN_EQUAL,
       _EQUAL,
+      _NOT_EQUAL,
       _GREATER_THAN_EQUAL,
       _GREATER_THAN
     };

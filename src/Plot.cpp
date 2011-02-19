@@ -482,7 +482,6 @@ void Plot::mouseMove (QPoint p)
 
   _dateScaleDraw->info(index, set);
 
-  Strip strip;
   QHashIterator<QString, Curve *> it(_indicator->curves());
   while (it.hasNext())
   {

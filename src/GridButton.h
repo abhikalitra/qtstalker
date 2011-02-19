@@ -23,6 +23,7 @@
 #define GRID_BUTTON_HPP
 
 #include <QToolButton>
+#include <QMenu>
 
 class GridButton : public QToolButton
 {
@@ -34,9 +35,10 @@ class GridButton : public QToolButton
   public slots:
     void changed (bool);
     void colorDialog ();
+    void contextMenu ();
 
-  protected:
-    virtual void contextMenuEvent (QContextMenuEvent *);
+  private:
+    QMenu *_menu;
 };
 
 #endif

@@ -76,7 +76,7 @@ void AboutDialog::createQTSPage ()
   QString s = tr("Qtstalker version 0.37-dev (working title)");
   s.append(tr("\nBuilt using Qt "));
   s += QT_VERSION_STR;
-  s.append(tr("\n(C) 2001-2010 by Stefan Stratigakos\nqtstalker.sourceforge.net"));
+  s.append(tr("\n(C) 2001-2011 by Stefan Stratigakos\nqtstalker.sourceforge.net"));
   s.append(tr("\n\nQtstalker is licensed with GNU General Public License (GPL) version 2."));
   s.append(tr("\nQt Assistant is licensed with GNU General Public License (GPL) version 3."));
 

@@ -48,21 +48,14 @@ print STDOUT $command;
 $list = <STDIN>; chomp($list); if ($list eq "ERROR") {print STDERR $command; exit; }
 
 # confirm delete
-$command = "PLUGIN=CONFIRM_DIALOG,MESSAGE=Confirm chart object delete";
+$command = "PLUGIN=CONFIRM_DIALOG,MESSAGE=Confirm chart object delete:\n$list";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-# split list string into an array
-my @names = split(',', $list);
-
-# loop through each item in the array and delete it from the database
-foreach $item (@names)
-{
-  # delete chart object from database
-  $command = "PLUGIN=CHART_OBJECT_DATABASE_DELETE,ID=$item";
-  print STDOUT $command;
-  $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
-}
+# delete chart objects from database
+$command = "PLUGIN=CHART_OBJECT_DATABASE_DELETE,ID=$list";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
 
 # update the app
 $command = "PLUGIN=CHART_OBJECT_DELETE,LIST=$list";

@@ -8,7 +8,6 @@ To Do:
 - median lines chart objects
 - fibo time chart objects
 - update classes with a description of purpose, usage etc.
-- Round off values to lesser precision when displaying in data panel.
 - Improve source code documentation. Javadoc comments are utilised by Doxygen.
 - interactive scripting
 - complete backtesting plugins

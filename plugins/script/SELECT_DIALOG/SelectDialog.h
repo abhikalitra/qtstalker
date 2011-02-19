@@ -50,6 +50,8 @@ class SelectDialog : public QDialog
     QListWidget *_list;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
+    QPushButton *_selectButton;
+    QPushButton *_unselectButton;
     QString _helpFile;
     QLabel *_message;
     Command *_command;

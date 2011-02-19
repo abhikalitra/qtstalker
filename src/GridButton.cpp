@@ -20,14 +20,18 @@
  */
 
 #include "GridButton.h"
-#include "../pics/grid.xpm"
 #include "Globals.h"
 #include "Script.h"
+
+#include "../pics/grid.xpm"
+#include "../pics/color.xpm"
 
 #include <QSettings>
 
 GridButton::GridButton ()
 {
+  setContextMenuPolicy(Qt::CustomContextMenu);
+
   setIcon(QIcon(grid_xpm));
   setText(tr("Chart &Grid"));
   setStatusTip(tr("Toggle the chart grid. Right click mouse for options."));
@@ -36,6 +40,10 @@ GridButton::GridButton ()
 
   QSettings settings(g_settingsFile);
   setChecked(settings.value("grid", 1).toInt());
+
+  _menu = new QMenu(this);
+  _menu->addAction(QPixmap(color_xpm), tr("Grid &Color"), this, SLOT(colorDialog()), Qt::ALT+Qt::Key_C);
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }
@@ -59,8 +67,8 @@ void GridButton::colorDialog ()
   script->setCommand("perl");
   script->startScript();
 }
-  
-void GridButton::contextMenuEvent (QContextMenuEvent *)
+
+void GridButton::contextMenu ()
 {
-  colorDialog();
+  _menu->exec(QCursor::pos());
 }

@@ -1,5 +1,6 @@
 # qtstalker Disparity Index indicator
 # See: http://tadoc.org/indicator/DISPARITY.htm
+# dix = ((100 * (close - ma)) / close)
 
 $closeName = 'cl';
 $upColor = 'green';
@@ -10,7 +11,7 @@ $style = 'Histogram Bar';
 $color = 'yellow';
 $period = 13;
 
-$maType = 'SMA';
+$maType = 'EMA';
 $maName = 'sma_13';
 
 ########################################################################
@@ -22,7 +23,7 @@ $command = "PLUGIN=CLOSE,NAME=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# Get the 13-bar SMA
+# Get the 13-bar MA
 $command = "PLUGIN=MA,METHOD=$maType,NAME=$maName,INPUT=$closeName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
@@ -32,18 +33,18 @@ $command = "PLUGIN=SUB,NAME=sub,INPUT=$closeName,INPUT2=$maName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# copy array and fill with 1 value
+# copy array and fill with '100' value
 $command = "PLUGIN=COPY_ARRAY,NAME=val100,INPUT=$maName,VALUE=100";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# multiply ma * 100
-$command = "PLUGIN=MULT,NAME=mult,INPUT=$maName,INPUT2=val100";
+# multiply 100 * sub
+$command = "PLUGIN=MULT,NAME=mult,INPUT=val100,INPUT2=sub";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# calculate disparity (sub / mult)
-$command = "PLUGIN=DIV,NAME=$name,INPUT=sub,INPUT2=mult";
+# calculate disparity (mult / close)
+$command = "PLUGIN=DIV,NAME=$name,INPUT=mult,INPUT2=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

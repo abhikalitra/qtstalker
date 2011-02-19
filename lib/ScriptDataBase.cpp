@@ -175,3 +175,13 @@ int ScriptDataBase::timerScripts (QStringList &l)
 
   return 0;
 }
+
+void ScriptDataBase::transaction ()
+{
+  _db.transaction();
+}
+
+void ScriptDataBase::commit ()
+{
+  _db.commit();
+}

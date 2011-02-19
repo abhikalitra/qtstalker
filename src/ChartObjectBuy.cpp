@@ -171,4 +171,5 @@ void ChartObjectBuy::create ()
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));
   emit signalMoveStart(_settings->data("ID"));
+  g_middleMan->statusMessage(tr("Place Buy object..."));
 }

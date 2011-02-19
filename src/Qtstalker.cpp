@@ -102,6 +102,7 @@ void QtstalkerApp::createGUI ()
   connect(g_middleMan, SIGNAL(signalIndicatorDelete(QStringList)), this, SLOT(deletePlot(QStringList)));
   connect(g_middleMan, SIGNAL(signalPlotTabPosition(int)), this, SLOT(setPlotTabPosition(int)));
   connect(g_middleMan, SIGNAL(signalPlotUpdate(QString)), this, SLOT(updatePlot(QString)));
+  connect(g_middleMan, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
 
   // side panel dock
   _sidePanel = new SidePanel;
@@ -265,7 +266,7 @@ void QtstalkerApp::chartUpdated ()
 void QtstalkerApp::statusMessage (QString d)
 {
   // update the status bar with a new message from somewhere
-  statusBar()->showMessage(d);
+  statusBar()->showMessage(d, 2000);
   wakeup();
 }
 

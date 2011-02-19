@@ -942,6 +942,5 @@
 
            Modified the QUOTE_DATABASE_SET syntax with a DATE_FORMAT parm to help with various date formats.
 
-           Added new indicators DonchianChannels.pl and CandlePatterns.pl
-
+           Added new indicators DonchianChannels.pl and CandlePatterns.pl and ROC1.pl
 

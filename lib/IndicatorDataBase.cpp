@@ -190,3 +190,13 @@ int IndicatorDataBase::dialog (QString name, QString &d)
 
   return 0;
 }
+
+void IndicatorDataBase::transaction ()
+{
+  _db.transaction();
+}
+
+void IndicatorDataBase::commit ()
+{
+  _db.commit();
+}

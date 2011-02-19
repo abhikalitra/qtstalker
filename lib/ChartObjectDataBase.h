@@ -48,6 +48,8 @@ class ChartObjectDataBase
     void load (QString indicator, BarData *, QList<Setting> &);
     void save (Setting *);
     int renameSymbol (BarData *, BarData *);
+    void transaction ();
+    void commit ();
 
   private:
     QSqlDatabase _db;

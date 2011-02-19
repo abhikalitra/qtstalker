@@ -182,10 +182,13 @@ void Curve::info (int index, Setting &set)
       QString d;
       strip.strip(b->data(0), 4, d);
       set.setData("O", d);
+      
       strip.strip(b->data(1), 4, d);
       set.setData("H", d);
+      
       strip.strip(b->data(2), 4, d);
       set.setData("L", d);
+      
       strip.strip(b->data(3), 4, d);
       set.setData("C", d);
       break;
@@ -198,6 +201,7 @@ void Curve::info (int index, Setting &set)
 
       QString d;
       strip.strip(b->data(), 4, d);
+//      d.append("," + b->color().name());
       set.setData(label(), d);
       break;
     }
@@ -288,5 +292,15 @@ void Curve::parse (QString &d)
       b->setData(pos, l2.at(loop2).toDouble());
 
     setBar(index, b);
+  }
+}
+
+void Curve::deleteBar (int d)
+{
+  CurveBar *bar = _data.value(d);
+  if (bar)
+  {
+    _data.remove(d);
+    delete bar;
   }
 }

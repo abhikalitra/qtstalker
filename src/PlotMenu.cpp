@@ -36,6 +36,7 @@
 #include "../pics/trend.xpm"
 #include "../pics/vertical.xpm"
 #include "../pics/edit.xpm"
+#include "../pics/lock.xpm"
 
 #include <QtDebug>
 #include <QSettings>
@@ -92,7 +93,7 @@ void PlotMenu::init ()
 
   addSeparator ();
 
-  _lockAction = addAction(QPixmap(), tr("&Locked"));
+  _lockAction = addAction(QPixmap(lock_xpm), tr("&Locked"));
   _lockAction->setCheckable(TRUE);
   _lockAction->setChecked(FALSE);
   connect(_lockAction, SIGNAL(toggled(bool)), this, SIGNAL(signalLockStatus(bool)));

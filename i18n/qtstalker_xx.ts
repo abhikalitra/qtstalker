@@ -14,12 +14,6 @@ Built using Qt </source>
     </message>
     <message>
         <source>
-(C) 2001-2010 by Stefan Stratigakos
-qtstalker.sourceforge.net</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>
 
 Qtstalker is licensed with GNU General Public License (GPL) version 2.</source>
         <translation type="unfinished"></translation>
@@ -31,6 +25,12 @@ Qt Assistant is licensed with GNU General Public License (GPL) version 3.</sourc
     </message>
     <message>
         <source>About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+(C) 2001-2011 by Stefan Stratigakos
+qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -657,6 +657,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Price</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Place Buy object...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObjectBuyDialog</name>
@@ -691,6 +695,22 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>HLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place HLine object...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObjectHLineDialog</name>
@@ -719,6 +739,70 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ST</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ED</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ET</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select lowest ending point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select highest starting point...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -799,6 +883,30 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place Sell object...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObjectSellDialog</name>
@@ -831,6 +939,46 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ST</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ED</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ET</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select TLine ending point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select TLine starting point...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -879,6 +1027,30 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place Text object...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObjectTextDialog</name>
@@ -923,6 +1095,26 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place VLine object...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1090,6 +1282,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Toggle the cursor crosshairs</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Crosshair &amp;Color</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DataWindow</name>
@@ -1211,6 +1407,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Toggle the chart grid</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Grid &amp;Color</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GroupEditDialog</name>
@@ -1297,6 +1497,21 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Editing Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>InfoPanel</name>
+    <message>
+        <source>Number &amp;Precision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Info Panel Number Precision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Precision</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1441,94 +1656,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>D</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>T</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>HLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ST</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ED</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ET</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sell</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>EP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>VLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Waiting</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1611,6 +1738,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source> Right click mouse for options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Refresh Rate</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2039,6 +2170,14 @@ e.g. Qtstalker alert was triggered.</source>
     <name>SelectDialog</name>
     <message>
         <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect All</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2734,11 +2873,19 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Let QtStalker figure out what dates to download.</source>
+        <source>Selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Auto update dates</source>
+        <source>Updates from last date on disk to now.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message Log</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -42,11 +42,11 @@ ChartObjectVLine::ChartObjectVLine ()
 
 void ChartObjectVLine::info (Setting &info)
 {
-  info.setData(QObject::tr("Type"), QObject::tr("VLine"));
+  info.setData(tr("Type"), tr("VLine"));
   
   QDateTime dt = _settings->dateTime("Date");
-  info.setData(QObject::tr("D"), dt.toString("yyyy-MM-dd"));
-  info.setData(QObject::tr("T"), dt.toString("HH:mm:ss"));
+  info.setData(tr("D"), dt.toString("yyyy-MM-dd"));
+  info.setData(tr("T"), dt.toString("HH:mm:ss"));
 }
 
 int ChartObjectVLine::highLow (int, int, double &, double &)
@@ -158,4 +158,5 @@ void ChartObjectVLine::create ()
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));
   emit signalMoveStart(_settings->data("ID"));
+  g_middleMan->statusMessage(tr("Place VLine object..."));
 }

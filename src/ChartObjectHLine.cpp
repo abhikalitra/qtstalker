@@ -42,8 +42,8 @@ ChartObjectHLine::ChartObjectHLine ()
 
 void ChartObjectHLine::info (Setting &info)
 {
-  info.setData(QObject::tr("Type"), QObject::tr("HLine"));
-  info.setData(QObject::tr("Price"), _settings->data("Price"));
+  info.setData(tr("Type"), tr("HLine"));
+  info.setData(tr("Price"), _settings->data("Price"));
 }
 
 int ChartObjectHLine::highLow (int, int, double &h, double &l)
@@ -153,4 +153,5 @@ void ChartObjectHLine::create ()
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));
   emit signalMoveStart(_settings->data("ID"));
+  g_middleMan->statusMessage(tr("Place HLine object..."));
 }

@@ -43,15 +43,15 @@ ChartObjectText::ChartObjectText ()
 
 void ChartObjectText::info (Setting &info)
 {
-  info.setData(QObject::tr("Type"), QObject::tr("Text"));
+  info.setData(tr("Type"), tr("Text"));
 
   QDateTime dt = _settings->dateTime("Date");
-  info.setData(QObject::tr("D"), dt.toString("yyyy-MM-dd"));
-  info.setData(QObject::tr("T"), dt.toString("HH:mm:ss"));
+  info.setData(tr("D"), dt.toString("yyyy-MM-dd"));
+  info.setData(tr("T"), dt.toString("HH:mm:ss"));
 
-  info.setData(QObject::tr("Price"), _settings->data("Price"));
+  info.setData(tr("Price"), _settings->data("Price"));
   
-  info.setData(QObject::tr("Text"), _settings->data("Text"));
+  info.setData(tr("Text"), _settings->data("Text"));
 }
 
 int ChartObjectText::highLow (int start, int end, double &h, double &l)
@@ -175,4 +175,5 @@ void ChartObjectText::create ()
   _draw->setSelected(TRUE);
   emit signalSelected(_settings->data("ID"));
   emit signalMoveStart(_settings->data("ID"));
+  g_middleMan->statusMessage(tr("Place Text object..."));
 }

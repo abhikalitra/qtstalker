@@ -34,6 +34,7 @@
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QSettings>
+#include <QApplication>
 
 YahooDialog::YahooDialog (Command *c)
 {
@@ -79,7 +80,7 @@ void YahooDialog::createGUI ()
 
   // symbols select
   _selectSymbolsButton = new QPushButton;
-  _selectSymbolsButton->setText(tr("Symbols..."));
+  _selectSymbolsButton->setText(QString("0 ") + tr("Selected"));
   connect(_selectSymbolsButton, SIGNAL(clicked()), this, SLOT(selectSymbolsDialog()));
   form->addRow(tr("Select Symbols"), _selectSymbolsButton);
 
@@ -95,14 +96,22 @@ void YahooDialog::createGUI ()
 
   // auto date update
   _autoDate = new QCheckBox;
-  _autoDate->setToolTip(tr("Let QtStalker figure out what dates to download."));
-  form->addRow(tr("Auto update dates"), _autoDate);
+  _autoDate->setToolTip(tr("Updates from last date on disk to now."));
+  form->addRow(tr("Auto dates"), _autoDate);
   connect(_autoDate, SIGNAL(toggled(bool)), this, SLOT(autoDateToggled(bool)));
 
+  // message log area
+  QGroupBox *gbox = new QGroupBox;
+  gbox->setTitle(tr("Message Log"));
+  vbox->addWidget(gbox);
+
+  QVBoxLayout *tvbox = new QVBoxLayout;
+  gbox->setLayout(tvbox);
+  
   // message log
   _log = new QTextEdit;
   _log->setReadOnly(TRUE);
-  vbox->addWidget(_log);
+  tvbox->addWidget(_log);
 
   // buttonbox
   QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
@@ -166,6 +175,9 @@ void YahooDialog::saveSettings ()
 
 void YahooDialog::done ()
 {
+  _log->append("\n*** " + tr("Starting history download") + " ***");
+  qApp->processEvents();
+
   _sdate->setEnabled(FALSE);
   _edate->setEnabled(FALSE);
   _adjustment->setEnabled(FALSE);
@@ -173,8 +185,6 @@ void YahooDialog::done ()
   _selectSymbolsButton->setEnabled(FALSE);
   _okButton->setEnabled(FALSE);
   _autoDate->setEnabled(FALSE);
-
-  _log->append("\n*** " + tr("Starting history download") + " ***");
 
   YahooDataBase db;
   QuoteDataBase qdb;
@@ -246,6 +256,9 @@ void YahooDialog::selectSymbolsDialog ()
 void YahooDialog::setSymbols (QStringList list)
 {
   _symbolList = list;
+
+  QString s = QString::number(list.count()) + " " + tr("Selected");
+  _selectSymbolsButton->setText(s);
 }
 
 void YahooDialog::help ()

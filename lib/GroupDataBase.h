@@ -37,6 +37,8 @@ class GroupDataBase
     int groups (QStringList &);
     int newGroup (QString &name, QString &table);
     int getTable (QString &name, QString &table);
+    void transaction ();
+    void commit ();
 
   private:
     QSqlDatabase _db;

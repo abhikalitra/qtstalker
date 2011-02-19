@@ -44,6 +44,7 @@ int QUOTE_DATABASE_SET::command (Command *command)
   // NAME
   // TYPE
   // SAVE
+  // DATE_FORMAT
 
   // verify SAVE command
   QString s = command->parm("SAVE");
@@ -74,20 +75,26 @@ int QUOTE_DATABASE_SET::command (Command *command)
   }
   symbol.setSymbol(s);
 
-  Bar *bar = new Bar;
-  
   // verify date
-  s = command->parm("DATE");
+  QString format = command->parm("DATE_FORMAT");
   if (s.isEmpty())
   {
-    qDebug() << _plugin << "::command: DATE missing";
-    delete bar;
+    qDebug() << _plugin << "::command: DATE_FORMAT missing";
     return 1;
   }
 
-  if (bar->setDates(s, s))
+  QDateTime dt = QDateTime::fromString(command->parm("DATE"), format);
+  if (! dt.isValid())
   {
-    qDebug() << _plugin << "::command: invalid DATE" << s;
+    qDebug() << _plugin << "::command: invalid DATE or DATE_FORMAT" << format << command->parm("DATE");
+    return 1;
+  }
+  
+  Bar *bar = new Bar;
+
+  if (bar->setDates(dt, dt))
+  {
+    qDebug() << _plugin << "::command: invalid DATE" << dt;
     delete bar;
     return 1;
   }

@@ -37,6 +37,8 @@ class ScriptDataBase
     int deleteScript (QStringList &l);
     int scripts (QStringList &l);
     int timerScripts (QStringList &l);
+    void transaction ();
+    void commit ();
 
   private:
     QSqlDatabase _db;

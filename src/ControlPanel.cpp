@@ -49,27 +49,6 @@ void ControlPanel::createGUI ()
   tb->setIconSize(QSize(length, width));
   vbox->addWidget(tb);
 
-  // create bar length button
-  _barLengthButton = new BarLengthButton;
-  tb->addWidget(_barLengthButton);
-
-  // date range controls
-  _dateRangeControl = new DateRangeControl;
-  tb->addWidget(_dateRangeControl);
-
-  // create the bar space button
-  _barSpaceButton = new BarSpaceButton;
-  tb->addWidget(_barSpaceButton);
-
-  // create recent charts combobox
-  _recentCharts = new RecentCharts;
-  tb->addWidget(_recentCharts);
-  
-  // chart toggles toolbar
-  tb = new QToolBar;
-  tb->setIconSize(QSize(length, width));
-  vbox->addWidget(tb);
-
   // grid button
   _gridButton = new GridButton;
   tb->addWidget(_gridButton);
@@ -85,10 +64,31 @@ void ControlPanel::createGUI ()
   // data window button
   _dataWindowButton = new DataWindowButton;
   tb->addWidget(_dataWindowButton);
-  
+
   // configure button
   _configureButton = new ConfigureButton;
   tb->addWidget(_configureButton);
+
+  // chart toggles toolbar
+  tb = new QToolBar;
+  tb->setIconSize(QSize(length, width));
+  vbox->addWidget(tb);
+
+  // create bar length button
+  _barLengthButton = new BarLengthButton;
+  tb->addWidget(_barLengthButton);
+
+  // date range controls
+  _dateRangeControl = new DateRangeControl;
+  tb->addWidget(_dateRangeControl);
+
+  // create the bar space button
+  _barSpaceButton = new BarSpaceButton;
+  tb->addWidget(_barSpaceButton);
+
+  // create recent charts combobox
+  _recentCharts = new RecentCharts;
+  tb->addWidget(_recentCharts);
 
   // slider
   _slider = new QSlider;

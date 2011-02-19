@@ -37,7 +37,8 @@
       <td style="vertical-align: top;">PLUGIN = QUOTE_DATABASE_SET<br>
 EXCHANGE = &lt;EXCHANGE&gt;<br>
 SYMBOL = &lt;SYMBOL&gt;<br>
-DATE = &lt;yyyy-MM-dd HH:mm:ss&gt;<br>
+DATE_FORMAT = &lt;<a href="APIDateFormat.html">DATE FORMAT</a>&gt;<br>
+DATE = &lt;DATE&gt;<br>
 OPEN = &lt;DECIMAL&gt;<br>
 HIGH = &lt;DECIMAL&gt;<br>
 LOW = &lt;DECIMAL&gt;<br>
@@ -61,7 +62,8 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=QUOTE_DATABASE_SET,EXCHANGE=XNYS,SYMBOL=GOOG,DATE=2011-02-11
+      <td style="vertical-align: top;">PLUGIN=QUOTE_DATABASE_SET,EXCHANGE=XNYS,SYMBOL=GOOG,DATE_FORMAT=yyyy-MM-dd
+HH:mm:ss,DATE=2011-02-11
 16:00:00,OPEN=500,HIGH=525,LOW=475,CLOSE=510,VOLUME=123456789<br>
       <br>
 PLUGIN=QUOTE_DATABASE_SET,SAVE=1<br>

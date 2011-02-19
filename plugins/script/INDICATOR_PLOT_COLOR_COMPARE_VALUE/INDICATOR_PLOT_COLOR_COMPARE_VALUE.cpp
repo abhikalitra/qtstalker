@@ -104,31 +104,8 @@ int INDICATOR_PLOT_COLOR_COMPARE_VALUE::command (Command *command)
     if (! bar2)
       continue;
 
-    switch (op)
-    {
-      case Operator::_LESS_THAN:
-        if (bar->data() < value)
-          bar2->setColor(color);
-        break;
-      case Operator::_LESS_THAN_EQUAL:
-        if (bar->data() <= value)
-          bar2->setColor(color);
-        break;
-      case Operator::_EQUAL:
-        if (bar->data() == value)
-          bar2->setColor(color);
-        break;
-      case Operator::_GREATER_THAN_EQUAL:
-        if (bar->data() >= value)
-          bar2->setColor(color);
-        break;
-      case Operator::_GREATER_THAN:
-        if (bar->data() > value)
-          bar2->setColor(color);
-        break;
-      default:
-        break;
-    }
+    if (top.test(bar->data(), op, value))
+      bar2->setColor(color);
   }
 
   command->setReturnCode("0");

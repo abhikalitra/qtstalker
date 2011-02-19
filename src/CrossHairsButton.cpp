@@ -20,9 +20,11 @@
  */
 
 #include "CrossHairsButton.h"
-#include "../pics/crosshair.xpm"
 #include "Globals.h"
 #include "Script.h"
+
+#include "../pics/crosshair.xpm"
+#include "../pics/color.xpm"
 
 #include <QString>
 #include <QDebug>
@@ -31,6 +33,8 @@
 
 CrossHairsButton::CrossHairsButton ()
 {
+  setContextMenuPolicy(Qt::CustomContextMenu);
+
   setIcon(QIcon(crosshair_xpm));
   setText(tr("Cursor Crosshairs"));
   setStatusTip(tr("Toggle the cursor crosshairs. Right click mouse for options."));
@@ -41,6 +45,10 @@ CrossHairsButton::CrossHairsButton ()
   setChecked(settings.value("crosshairs", 0).toInt());
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
+
+  _menu = new QMenu(this);
+  _menu->addAction(QPixmap(color_xpm), tr("Crosshair &Color"), this, SLOT(dialog()), Qt::ALT+Qt::Key_C);
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
 }
 
 void CrossHairsButton::changed (bool)
@@ -63,7 +71,7 @@ void CrossHairsButton::dialog ()
   script->startScript();
 }
 
-void CrossHairsButton::contextMenuEvent (QContextMenuEvent *)
+void CrossHairsButton::contextMenu ()
 {
-  dialog();
+  _menu->exec(QCursor::pos());
 }

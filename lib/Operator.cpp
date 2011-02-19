@@ -23,7 +23,7 @@
 
 Operator::Operator ()
 {
-  _list << "LT" << "LTE" << "E" << "GTE" << "GT";
+  _list << "LT" << "LTE" << "E" << "NE" << "GTE" << "GT";
 }
 
 QStringList & Operator::list ()
@@ -52,6 +52,10 @@ int Operator::test (double val, Operator::Type op, double val2)
       break;
     case _EQUAL:
       if (val == val2)
+        rc = 1;
+      break;
+    case _NOT_EQUAL:
+      if (val != val2)
         rc = 1;
       break;
     case _GREATER_THAN_EQUAL:

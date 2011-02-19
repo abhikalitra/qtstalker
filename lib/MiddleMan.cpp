@@ -101,3 +101,8 @@ void MiddleMan::chartObjectUpdate (QString d)
 {
   emit signalChartObjectUpdate(d);
 }
+
+void MiddleMan::statusMessage (QString d)
+{
+  emit signalStatusMessage(d);
+}

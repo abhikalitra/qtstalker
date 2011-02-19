@@ -873,12 +873,17 @@ int CANDLE_PATTERN::getCandlesPen (Command *command)
     return 1;
   }
 
-  bool ok;
-  double pen = command->parm("PENETRATION").toDouble(&ok);
-  if (! ok)
+  double pen = 0;
+  QString s = command->parm("PENETRATION");
+  if (! s.isEmpty())
   {
-    qDebug() << _plugin << "::getCandlesPen: invalid PENETRATION" << command->parm("PENETRATION");
-    return 1;
+    bool ok;
+    pen = s.toDouble(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::getCandlesPen: invalid PENETRATION" << command->parm("PENETRATION");
+      return 1;
+    }
   }
 
   int size = g_barData->count();

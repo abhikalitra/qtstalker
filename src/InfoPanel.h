@@ -23,6 +23,7 @@
 #define INFO_PANEL_HPP
 
 #include <QTextEdit>
+#include <QMenu>
 
 #include "Setting.h"
 
@@ -41,9 +42,14 @@ class InfoPanel : public QTextEdit
     void setLockStatus (bool);
     void loadSettings ();
     void saveSettings ();
+    void contextMenu ();
+    void dialog ();
+    void setPrecision (int);
 
-  protected:
+  private:
     bool _lockStatus;
+    int _precision;
+    QMenu *_menu;
 };
 
 #endif

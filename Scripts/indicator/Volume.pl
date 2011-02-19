@@ -1,4 +1,5 @@
-# qtstalker Volume (Volume) indicator, red is down, blue is neutral, green is up, color based on close price.
+# qtstalker Volume (Volume) indicator, red is down, blue is neutral, green is up
+# color based on close relative to previous close
 
 $closeName = 'cl';
 

@@ -32,10 +32,18 @@ CHART_OBJECT_DATABASE_DELETE::CHART_OBJECT_DATABASE_DELETE ()
 int CHART_OBJECT_DATABASE_DELETE::command (Command *command)
 {
   // PARMS:
-  // ID
+  // ID - semicolon delimited string
 
+  QStringList l = command->parm("ID").split(";", QString::SkipEmptyParts);
+  
   ChartObjectDataBase db;
-  db.deleteChartObject(command->parm("ID"));
+  db.transaction();
+  
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    db.deleteChartObject(l.at(loop));
+
+  db.commit();
 
   command->setReturnCode("0");
 
