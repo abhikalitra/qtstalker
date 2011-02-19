@@ -930,3 +930,18 @@
 
            Consolidated some control panel buttons into the configure button.
 
+20110218:  Updated icons.
+
+           Added context menu to the data panel that allows number precision to be set.
+
+           Updated Grid, Refresh and Crosshair control panel buttons to have context menus for settings.
+
+20110219:  Added new plugins FILE_DIALOG and INDICATOR_PLOT_INDEX_DELETE
+
+           Added new CSV scripts into Scripts/quote
+
+           Modified the QUOTE_DATABASE_SET syntax with a DATE_FORMAT parm to help with various date formats.
+
+           Added new indicators DonchianChannels.pl and CandlePatterns.pl
+
+
