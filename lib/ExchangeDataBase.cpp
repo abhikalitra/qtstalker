@@ -20,7 +20,6 @@
  */
 
 #include "ExchangeDataBase.h"
-#include "Config.h"
 #include "Globals.h"
 #include "qtstalker_defines.h"
 
@@ -31,22 +30,24 @@
 
 ExchangeDataBase::ExchangeDataBase ()
 {
-  _dbName = "data";
+  init();
+  createExchanges();
 }
 
-int ExchangeDataBase::verifyExchangeName (QString &exchange)
+void ExchangeDataBase::init ()
 {
-  QSqlQuery q(QSqlDatabase::database(_dbName));
-  QString s = "SELECT code FROM exchangeIndex WHERE code='" + exchange + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "ExchangeDataBase::verifyExchangeName: " << q.lastError().text();
-
-  int rc = 1;
-  if (q.next())
-    rc = 0;
-  
-  return rc;
+  _db = QSqlDatabase::database("data");
+  if (! _db.isOpen())
+  {
+    QString s = QDir::homePath() + "/.qtstalker/data.sqlite";
+    _db = QSqlDatabase::addDatabase("QSQLITE", "data");
+    _db.setHostName("QtStalker");
+    _db.setDatabaseName(s);
+    _db.setUserName("QtStalker");
+    _db.setPassword("QtStalker");
+    if (! _db.open())
+      qDebug() << "ExchangeDataBase::init:" << _db.lastError().text();
+  }
 }
 
 int ExchangeDataBase::createExchanges ()
@@ -59,9 +60,13 @@ int ExchangeDataBase::createExchanges ()
   // check if last modification date matches current one
   // if they match then no changes, no need to re-create the table
   // if not, new data is in file so re-create the table
-  QDateTime dt;
-  Config config;
-  config.getData(Config::ExchangeFileDate, dt);
+  QSettings settings(g_settingsFile);
+  QDateTime dt = settings.value("exchange_database_file_date", QDateTime::currentDateTime()).toDateTime();
+  if (! dt.isValid())
+  {
+    qDebug() << "ExchangeDataBase::createExchanges: invalid date" << dt;
+    return 1;
+  }
 
   QFileInfo fi(file);
   QDateTime dt2 = fi.lastModified();
@@ -72,14 +77,18 @@ int ExchangeDataBase::createExchanges ()
     return 0;
   }
   
-  config.setData(Config::ExchangeFileDate, dt2);
-  qDebug() << "ExchangeDataBase::createExchanges: creating new exchange db";
+  settings.setValue("exchange_database_file_date", dt2);
+  settings.sync();
+
+  qDebug() << "ExchangeDataBase::createExchanges: updating exchange db";
 
   QTextStream in(&file);
   in.readLine(); // skip past first line
- 
+
+  _db.transaction();
+  
   // delete the old table
-  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QSqlQuery q(_db);
   QString s = "DROP TABLE exchangeIndex";
   q.exec(s);
 
@@ -99,29 +108,47 @@ int ExchangeDataBase::createExchanges ()
   while (! in.atEnd())
   {
     s = in.readLine();
-    QStringList l = s.split(",");
+    QStringList l = s.split(",", QString::SkipEmptyParts);
+    int pos = 0;
    
     s = "REPLACE INTO exchangeIndex (code,countryName,countryCode2,name,city) VALUES(";
-    s.append("'" + l[0] + "'");
-    s.append(",'" + l[1] + "'");
-    s.append(",'" + l[2] + "'");
-    s.append(",'" + l[3] + "'");
-    s.append(",'" + l[4] + "'");
+    s.append("'" + l.at(pos++) + "'");
+    s.append(",'" + l.at(pos++) + "'");
+    s.append(",'" + l.at(pos++) + "'");
+    s.append(",'" + l.at(pos++) + "'");
+    s.append(",'" + l.at(pos++) + "'");
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())
       qDebug() << "ExchangeDataBase::createExchanges: add records" << q.lastError().text();
   }
-  
+
+  _db.commit();
+
   file.close();
   return 0;
+}
+
+int ExchangeDataBase::verifyExchangeName (QString &exchange)
+{
+  QSqlQuery q(_db);
+  QString s = "SELECT code FROM exchangeIndex WHERE code='" + exchange + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "ExchangeDataBase::verifyExchangeName: " << q.lastError().text();
+
+  int rc = 1;
+  if (q.next())
+    rc = 0;
+
+  return rc;
 }
 
 void ExchangeDataBase::getExchanges (QStringList &l)
 {
   l.clear();
   
-  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QSqlQuery q(_db);
   QString s = "SELECT code FROM exchangeIndex ORDER BY code ASC";
   q.exec(s);
   if (q.lastError().isValid())
@@ -135,7 +162,7 @@ void ExchangeDataBase::getFieldList (QString &field, QStringList &rl)
 {
   rl.clear();
 
-  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QSqlQuery q(_db);
   QString s = "SELECT DISTINCT " + field + " FROM exchangeIndex ORDER BY " + field + " ASC";
   q.exec(s);
   if (q.lastError().isValid())
@@ -184,7 +211,7 @@ int ExchangeDataBase::search (QString &country, QString &city, QString &pat, QSt
 
   s.append(" ORDER BY name ASC");
 
-  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QSqlQuery q(_db);
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -203,7 +230,7 @@ void ExchangeDataBase::codeFromName (QString &name, QString &code)
 {
   code.clear();
 
-  QSqlQuery q(QSqlDatabase::database(_dbName));
+  QSqlQuery q(_db);
   QString s = "SELECT code FROM exchangeIndex WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
@@ -212,4 +239,3 @@ void ExchangeDataBase::codeFromName (QString &name, QString &code)
   if(q.next())
     code = q.value(0).toString();
 }
-

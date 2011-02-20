@@ -19,32 +19,35 @@
  *  USA.
  */
 
-#ifndef FILE_DIALOG_HPP
-#define FILE_DIALOG_HPP
+#include "EXCHANGE_SEARCH_DIALOG.h"
+#include "ExchangeSearchDialog.h"
 
-#include <QStringList>
+#include <QtDebug>
+#include <QDialog>
 
-#include "ScriptPlugin.h"
-
-class FILE_DIALOG : public ScriptPlugin
+EXCHANGE_SEARCH_DIALOG::EXCHANGE_SEARCH_DIALOG ()
 {
-  Q_OBJECT
-  
-  public:
-    FILE_DIALOG ();
-    int command (Command *);
-    
-  public slots:
-    void filesSelected (QStringList);
-
-  private:
-    Command *_command;
-    int _mode;
-};
-
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
+  _plugin = "EXCHANGE_SEARCH_DIALOG";
+  _type = _DIALOG;
 }
 
-#endif
+int EXCHANGE_SEARCH_DIALOG::command (Command *command)
+{
+  // PARMS:
+
+  ExchangeSearchDialog *dialog = new ExchangeSearchDialog(command);
+  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  dialog->show();
+
+  return 0;
+}
+
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  EXCHANGE_SEARCH_DIALOG *o = new EXCHANGE_SEARCH_DIALOG;
+  return ((ScriptPlugin *) o);
+}

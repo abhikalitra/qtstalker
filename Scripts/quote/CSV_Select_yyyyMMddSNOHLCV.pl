@@ -1,11 +1,10 @@
 # import quotes from a CSV file.
 # format is yyyyMMdd,symbol,name,open,high,low,close,volume
-# fill in the $exchange variable with the exchange you want
 
 $|=1;
 use Text::CSV;
 
-$exchange = 'XXXX';
+#$exchange = 'XXXX';
 $dateFormat = 'yyyyMMdd';
 
 ################################################################################
@@ -19,6 +18,19 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=FILE_DIALOG_FILE";
 print STDOUT $command;
 $file = <STDIN>; chomp($file); if ($file eq "ERROR") { print STDERR $command; next; }
+
+# display the exchange search dialog
+$command = "PLUGIN=EXCHANGE_SEARCH_DIALOG";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# get the exchange
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=EXCHANGE_SEARCH_DIALOG_SELECTED";
+print STDOUT $command;
+$exchange = <STDIN>; chomp($exchange); if ($exchange eq "ERROR") { print STDERR $command; next; }
+
+# check for empty string
+if ($exchange eq "") { print STDERR $command; next; }
 
 # create the CSV object
 my $csv = Text::CSV->new();

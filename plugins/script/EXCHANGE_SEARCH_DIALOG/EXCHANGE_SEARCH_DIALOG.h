@@ -19,29 +19,23 @@
  *  USA.
  */
 
-#ifndef MESSAGE_HPP
-#define MESSAGE_HPP
+#ifndef EXCHANGE_SEARCH_DIALOG_HPP
+#define EXCHANGE_SEARCH_DIALOG_HPP
 
-#include <QStringList>
+#include "ScriptPlugin.h"
 
-class Message
+class EXCHANGE_SEARCH_DIALOG : public ScriptPlugin
 {
+  Q_OBJECT
+
   public:
-    enum Type
-    {
-      _REFRESH_CHART_PANEL,
-      _REFRESH_GROUP_PANEL,
-      _REFRESH_SCRIPT_PANEL
-    };
-
-    Message ();
-//    int newConnection (QLocalSocket *socket);
-    int sendMessage (Message::Type);
-//    void receiveMessage (QLocalSocket *socket, QString &message);
-    int stringToType (QString);
-
-  private:
-    QStringList _method;
+    EXCHANGE_SEARCH_DIALOG ();
+    int command (Command *);
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

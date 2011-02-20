@@ -509,6 +509,7 @@ void Plot::loadSettings ()
   QColor color(settings.value("plot_background_color", "black").toString());
   setBackgroundColor(color);
 
+/*  
   QStringList l = settings.value("plot_font").toString().split(";", QString::SkipEmptyParts);
   if (l.count())
   {
@@ -516,6 +517,11 @@ void Plot::loadSettings ()
     font.fromString(l.join(","));
     setFont(font);
   }
+*/
+
+  // set default font
+  QFont font;
+  setFont(font);
 
   // set crosshairs status
   setCrossHairs(settings.value("crosshairs", 0).toInt());

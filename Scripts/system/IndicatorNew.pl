@@ -13,7 +13,7 @@ print STDOUT $command;
 $indicators = <STDIN>; chomp($indicators); if ($indicators eq "ERROR") {print STDERR $command; exit; }
 
 # display new dialog
-$command = "PLUGIN=NEW_DIALOG,TITLE=Indicator,ITEMS=$indicators";
+$command = "PLUGIN=NEW_DIALOG,TITLE=indicator name,ITEMS=$indicators";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 

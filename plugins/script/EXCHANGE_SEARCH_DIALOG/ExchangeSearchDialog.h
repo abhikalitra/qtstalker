@@ -19,37 +19,47 @@
  *  USA.
  */
 
-#ifndef EXCHANGE_SEARCH_DIALOG_HPP
-#define EXCHANGE_SEARCH_DIALOG_HPP
+#ifndef EXCHANGE_SEARCH_DIALOG_DIALOG_HPP
+#define EXCHANGE_SEARCH_DIALOG_DIALOG_HPP
 
-#include <QLineEdit>
-#include <QComboBox>
+#include <QDialog>
+#include <QStringList>
 #include <QListWidget>
+#include <QPushButton>
+#include <QLabel>
+#include <QComboBox>
 
-#include "Dialog.h"
+#include "Command.h"
+#include "ExchangeDataBase.h"
 
-class ExchangeSearchDialog : public Dialog
+class ExchangeSearchDialog : public QDialog
 {
   Q_OBJECT
 
-  signals:
-    void signalExchangeCode (QString);
-  
   public:
-    ExchangeSearchDialog ();
-    ~ExchangeSearchDialog ();
-    void createMainPage ();
+    ExchangeSearchDialog (Command *);
+    void createGUI ();
+    void loadSettings ();
+    void saveSettings ();
 
   public slots:
     void done ();
-    void search ();
+    void cancel ();
     void selectionChanged ();
+    void help ();
+    void search ();
 
   private:
-    QLineEdit *_exchange;
+    ExchangeDataBase _db;
+    QListWidget *_list;
+    QPushButton *_okButton;
+    QPushButton *_cancelButton;
+    QString _helpFile;
+    QLabel *_message;
+    Command *_command;
     QComboBox *_country;
     QComboBox *_city;
-    QListWidget *_list;
+    QComboBox *_exchange;
 };
 
 #endif

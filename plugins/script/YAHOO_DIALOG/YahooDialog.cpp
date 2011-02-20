@@ -144,9 +144,7 @@ void YahooDialog::cancel ()
 
 void YahooDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
-
+  QSettings settings(g_settingsFile);
   QSize sz = settings.value("yahoo_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
@@ -163,8 +161,7 @@ void YahooDialog::loadSettings ()
 
 void YahooDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_settingsFile);
   settings.setValue("yahoo_dialog_window_size", size());
   settings.setValue("yahoo_dialog_window_position", pos());
   settings.setValue("yahoo_dialog_adjustment", _adjustment->isChecked());

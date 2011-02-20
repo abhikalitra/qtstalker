@@ -20,6 +20,7 @@
  */
 
 #include "FILE_DIALOG.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QFileDialog>
@@ -34,8 +35,8 @@ int FILE_DIALOG::command (Command *command)
 {
   // PARMS:
   // MODE
-  // FORMAT
   // DIRECTORY
+  // TITLE
 
   _command = command;
 
@@ -47,15 +48,9 @@ int FILE_DIALOG::command (Command *command)
     return 1;
   }
   
-  _format = command->parm("FORMAT").toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _plugin << "::command: invalid FORMAT" << command->parm("FORMAT");
-    return 1;
-  }
-
   QFileDialog *dialog = new QFileDialog;
   dialog->setDirectory(command->parm("DIRECTORY"));
+  dialog->setWindowTitle("QtStalker" + g_session + ": " + command->parm("TITLE"));
   connect(dialog, SIGNAL(filesSelected(const QStringList &)), this, SLOT(filesSelected(QStringList)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
@@ -66,23 +61,10 @@ int FILE_DIALOG::command (Command *command)
 
 void FILE_DIALOG::filesSelected (QStringList l)
 {
-  QStringList tl;
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    if (_format)
-    {
-      QFileInfo fi(l.at(0));
-      tl << fi.fileName();
-    }
-    else
-      tl << l.at(loop);
-  }
-  
   if (_mode)
-    _command->setReturnData(_plugin + "_FILE", tl.join(";"));
+    _command->setReturnData(_plugin + "_FILE", l.join(";"));
   else
-    _command->setReturnData(_plugin + "_FILE", tl.at(0));
+    _command->setReturnData(_plugin + "_FILE", l.at(0));
 
   _command->setReturnCode("0");
 

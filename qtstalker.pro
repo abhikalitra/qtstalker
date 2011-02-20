@@ -162,6 +162,7 @@ SUBDIRS += plugins/script/COPY_ARRAY
 SUBDIRS += plugins/script/CORREL
 SUBDIRS += plugins/script/DATA_WINDOW
 SUBDIRS += plugins/script/DIV
+SUBDIRS += plugins/script/EXCHANGE_SEARCH_DIALOG
 SUBDIRS += plugins/script/FI
 SUBDIRS += plugins/script/FILE_DIALOG
 SUBDIRS += plugins/script/FONT_DIALOG

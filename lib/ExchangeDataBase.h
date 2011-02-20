@@ -28,20 +28,23 @@
 #ifndef EXCHANGE_DATA_BASE_HPP
 #define EXCHANGE_DATA_BASE_HPP
 
+#include <QtSql>
 #include <QStringList>
 
-#include "DataBase.h"
-
-class ExchangeDataBase : public DataBase
+class ExchangeDataBase
 {
   public:
     ExchangeDataBase ();
+    void init ();
     int verifyExchangeName (QString &);
     int createExchanges ();
     void getExchanges (QStringList &);
     void getFieldList (QString &, QStringList &);
     int search (QString &, QString &, QString &, QStringList &);
     void codeFromName (QString &, QString &);
+
+  private:
+    QSqlDatabase _db;
 };
 
 #endif

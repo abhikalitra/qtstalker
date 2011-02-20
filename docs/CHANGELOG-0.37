@@ -946,3 +946,12 @@
 
            Added a menu option in the Script Panel to run an external script not listed in the database.
 
+20110220:  Added EXCHANGE_SEARCH_DIALOG plugin.
+
+           Added ExchangeDataBase back into lib.
+
+           Improved the CSV scripts to use the exchange dialog.
+
+           NOTE: CVS users will need to do a complete make distclean for this update. Changes to lib
+           require it.
+

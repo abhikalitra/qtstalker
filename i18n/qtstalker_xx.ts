@@ -1374,6 +1374,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Perform Search</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Exchange Search</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FileButton</name>
@@ -2136,6 +2140,14 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Configure Launch Button Columns</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run E&amp;xternal Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run external script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

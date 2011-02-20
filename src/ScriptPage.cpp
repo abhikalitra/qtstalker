@@ -263,6 +263,10 @@ void ScriptPage::runScript (QString d)
 
 void ScriptPage::runExternalScript (QString file)
 {
+  QSettings settings(g_settingsFile);
+  settings.setValue("script_panel_last_external_script", file);
+  settings.sync();
+  
   Script *script = new Script;
   connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
   connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
@@ -385,7 +389,10 @@ void ScriptPage::scriptTimer ()
 
 void ScriptPage::fileSelect ()
 {
+  QSettings settings(g_settingsFile);
   QFileDialog *dialog = new QFileDialog;
+  dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Select External Script"));
+  dialog->setDirectory(settings.value("script_panel_last_external_script").toString());
   connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(runExternalScript(QString)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();

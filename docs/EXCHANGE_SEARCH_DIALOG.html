@@ -3,7 +3,7 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="Content-Type">
-  <title>Qtstalker: FILE_DIALOG</title>
+  <title>Qtstalker: EXCHANGE_SEARCH_DIALOG</title>
   <link rel="stylesheet" type="text/css" href="qtstalker.css"
  media="screen">
   <script src="qtstalker.js" type="text/javascript"> </script>
@@ -20,7 +20,7 @@
 </div>
 </div>
 <!-- Content -->
-<h1>FILE_DIALOG
+<h1>EXCHANGE_SEARCH_DIALOG
 </h1>
 <br>
 <table style="text-align: left; width: 1336px; height: 153px;"
@@ -28,25 +28,15 @@
   <tbody>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
-      <td style="vertical-align: top;">Displays a file selection
-dialog. Returns the selected file(s) as a semicolon delimited string as
-KEY.<br>
+      <td style="vertical-align: top;">Displays a dialog to search for
+an ISO exchange code using a city or country name as search parameters.
+Returns the exchange code in KEY.<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = FILE_DIALOG<br>
-MODE = &lt;BOOLEAN&gt;<br>
-      <div style="margin-left: 40px;">
-      <ol>
-        <li>0 - single selection</li>
-        <li>1 - multiple selection<br>
-        </li>
-      </ol>
-      </div>
-DIRECTORY = &lt;INITIAL DIRECTORY PATH&gt;<br>
-TITLE = &lt;WINDOW TITLE&gt;<br>
+      <td style="vertical-align: top;">PLUGIN = EXCHANGE_SEARCH_DIALOG<br>
       <br>
       </td>
     </tr>
@@ -55,14 +45,13 @@ TITLE = &lt;WINDOW TITLE&gt;<br>
       <td style="vertical-align: top;">'0' = Success<br>
 'ERROR' =
 Failure<br>
-KEY=FILE_DIALOG_FILE<br>
+KEY = EXCHANGE_SEARCH_DIALOG_SELECTED<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=FILE_DIALOG,MODE=1,TITLE=Select
-Script,DIRECTORY=/usr/local/share/qtstalker<br>
+      <td style="vertical-align: top;">PLUGIN=EXCHANGE_SEARCH_DIALOG<br>
       <br>
       </td>
     </tr>
