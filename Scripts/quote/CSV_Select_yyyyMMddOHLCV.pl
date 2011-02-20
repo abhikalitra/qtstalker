@@ -1,11 +1,12 @@
 # import quotes from a CSV file with filename as symbol.
 # format is yyyyMMdd,open,high,low,close,volume
+# fill in the $exchange variable with the exchange you want
 
 $|=1;
 use File::Basename;
 use Text::CSV;
 
-$exchange = 'XNYS';
+$exchange = 'XXXX';
 $dateFormat = 'yyyyMMdd';
 
 ################################################################################

@@ -944,3 +944,5 @@
 
            Added new indicators DonchianChannels.pl and CandlePatterns.pl and ROC1.pl
 
+           Added a menu option in the Script Panel to run an external script not listed in the database.
+

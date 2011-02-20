@@ -20,6 +20,7 @@
  */
 
 #include "QUOTE_DATABASE_SET.h"
+#include "Strip.h"
 
 #include <QtDebug>
 
@@ -152,12 +153,20 @@ int QUOTE_DATABASE_SET::command (Command *command)
   // verify name
   s = command->parm("NAME");
   if (! s.isEmpty())
+  {
+    Strip strip;
+    strip.verifyText(s);
     symbol.setName(s);
+  }
 
   // verify type
   s = command->parm("TYPE");
   if (! s.isEmpty())
+  {
+    Strip strip;
+    strip.verifyText(s);
     symbol.setType(s);
+  }
 
   symbol.append(bar);
   
