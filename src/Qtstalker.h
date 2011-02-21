@@ -64,6 +64,7 @@ class QtstalkerApp : public QMainWindow
     void fixDockTabs ();
     void updatePlot (QString);
     void shutDown ();
+    void newChartObject (QString, QString, QString);
 
   protected:
     QHash<QString, Plot *> _plots;

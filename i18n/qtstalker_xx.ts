@@ -1533,35 +1533,7 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit &amp;Indicator...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>De&amp;lete Indicator...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Log &amp;Scaling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Locked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>chart object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit &amp;Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Chart Objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1590,6 +1562,94 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>VLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Buy Arrow Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Horizontal Line Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Retracement Levels Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Sell Arrow Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Text Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Trend Line Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create Vertical Line Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>De&amp;lete Indicator(s)...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Indicator(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit &amp;Chart Object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Chart Object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Date Axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle Date Axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle Log Scaling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loc&amp;ked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle Indicator Drag and Drop Lock</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2041,15 +2101,19 @@ e.g. Qtstalker alert was triggered.</source>
 <context>
     <name>ScriptLaunchButtonDialog</name>
     <message>
-        <source>Set Date Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Icon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script Launch Button Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Icon</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

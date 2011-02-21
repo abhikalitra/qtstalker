@@ -58,6 +58,8 @@ class Bar
     void lengthList (QStringList &);
     QString string ();
     QDateTime startDate ();
+    void setLastDate (QDateTime);
+    QDateTime lastDate ();
 
     int setOpen (QString);
     void setOpen (double);
@@ -93,6 +95,7 @@ class Bar
     QDateTime _startDate;
     QDateTime _endDate;
     BarLength _length;
+    QDateTime _lastDate;
 };
 
 #endif

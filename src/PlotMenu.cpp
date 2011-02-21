@@ -22,8 +22,6 @@
 #include "PlotMenu.h"
 #include "Globals.h"
 #include "Script.h"
-#include "ChartObjectDataBase.h"
-#include "ScriptPluginFactory.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -44,62 +42,156 @@
 
 PlotMenu::PlotMenu (QWidget *p) : QMenu (p)
 {
-  init ();
+  createActions();
+  createMenus();
 }
 
-PlotMenu::~PlotMenu ()
+void PlotMenu::createActions ()
 {
-  delete _command;
+  // buy
+  QAction *a = new QAction(QIcon(buyarrow_xpm), tr("Buy"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_B));
+  a->setToolTip(tr("Create Buy Arrow Chart Object"));
+  a->setStatusTip(QString(tr("Create Buy Arrow Chart Object")));
+  _actions.insert(_BUY_CHART_OBJECT, a);
+
+  // hline
+  a = new QAction(QIcon(horizontal_xpm), tr("HLine"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_H));
+  a->setToolTip(tr("Create Horizontal Line Chart Object"));
+  a->setStatusTip(QString(tr("Create Horizontal Line Chart Object")));
+  _actions.insert(_HLINE_CHART_OBJECT, a);
+
+  // retracement
+  a = new QAction(QIcon(fib_xpm), tr("Retracement"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
+  a->setToolTip(tr("Create Retracement Levels Chart Object"));
+  a->setStatusTip(QString(tr("Create Retracement Levels Chart Object")));
+  _actions.insert(_RETRACEMENT_CHART_OBJECT, a);
+
+  // sell
+  a = new QAction(QIcon(sellarrow_xpm), tr("Sell"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
+  a->setToolTip(tr("Create Sell Arrow Chart Object"));
+  a->setStatusTip(QString(tr("Create Sell Arrow Chart Object")));
+  _actions.insert(_SELL_CHART_OBJECT, a);
+
+  // text
+  a = new QAction(QIcon(text_xpm), tr("Text"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_T));
+  a->setToolTip(tr("Create Text Chart Object"));
+  a->setStatusTip(QString(tr("Create Text Chart Object")));
+  _actions.insert(_TEXT_CHART_OBJECT, a);
+
+  // tline
+  a = new QAction(QIcon(trend_xpm), tr("TLine"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_T));
+  a->setToolTip(tr("Create Trend Line Chart Object"));
+  a->setStatusTip(QString(tr("Create Trend Line Chart Object")));
+  _actions.insert(_TLINE_CHART_OBJECT, a);
+
+  // vline
+  a = new QAction(QIcon(vertical_xpm), tr("VLine"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_V));
+  a->setToolTip(tr("Create Vertical Line Chart Object"));
+  a->setStatusTip(QString(tr("Create Vertical Line Chart Object")));
+  _actions.insert(_VLINE_CHART_OBJECT, a);
+
+  // new indicator
+  a = new QAction(QIcon(indicator_xpm), tr("&New Indicator..."), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
+  a->setToolTip(tr("Add New Indicator"));
+  a->setStatusTip(QString(tr("Add New Indicator")));
+  _actions.insert(_NEW_INDICATOR, a);
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(newIndicator()));
+
+  // edit indicator
+  a = new QAction(QIcon(edit_xpm), tr("&Edit Indicator..."), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
+  a->setToolTip(tr("Edit Indicator"));
+  a->setStatusTip(QString(tr("Edit Indicator")));
+  _actions.insert(_EDIT_INDICATOR, a);
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(editIndicator()));
+
+  // delete indicator
+  a = new QAction(QIcon(delete_xpm), tr("De&lete Indicator(s)..."), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
+  a->setToolTip(tr("Delete Indicator(s)"));
+  a->setStatusTip(QString(tr("Delete Indicator(s)")));
+  _actions.insert(_DELETE_INDICATOR, a);
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(deleteIndicator()));
+
+  // edit chart object
+  a = new QAction(QIcon(edit_xpm), tr("Edit &Chart Object..."), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
+  a->setToolTip(tr("Edit Chart Object"));
+  a->setStatusTip(QString(tr("Edit Chart Object")));
+  _actions.insert(_EDIT_CHART_OBJECT, a);
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(editChartObject()));
+
+  // delete chart object
+  a = new QAction(QIcon(delete_xpm), tr("Delete Chart Object..."), this);
+  a->setToolTip(tr("Delete Chart Object"));
+  a->setStatusTip(QString(tr("Delete Chart Object")));
+  _actions.insert(_DELETE_CHART_OBJECT, a);
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(deleteChartObject()));
+
+  // date
+  a = new QAction(QIcon(date_xpm), tr("&Date Axis"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
+  a->setToolTip(tr("Toggle Date Axis"));
+  a->setStatusTip(QString(tr("Toggle Date Axis")));
+  a->setCheckable(TRUE);
+  _actions.insert(_DATE_AXIS, a);
+  connect(a, SIGNAL(triggered(bool)), this, SIGNAL(signalDateStatus(bool)));
+
+  // log
+  a = new QAction(QIcon(loggrid_xpm), tr("Log &Scaling"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
+  a->setToolTip(tr("Toggle Log Scaling"));
+  a->setStatusTip(QString(tr("Toggle Log Scaling")));
+  a->setCheckable(TRUE);
+  _actions.insert(_LOG_SCALING, a);
+  connect(a, SIGNAL(triggered(bool)), this, SIGNAL(signalLogStatus(bool)));
+
+  // lock
+  a = new QAction(QIcon(lock_xpm), tr("Loc&ked"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_K));
+  a->setToolTip(tr("Toggle Indicator Drag and Drop Lock"));
+  a->setStatusTip(QString(tr("Toggle Indicator Drag and Drop Lock")));
+  a->setCheckable(TRUE);
+  a->setChecked(FALSE);
+  _actions.insert(_LOCK, a);
+  connect(a, SIGNAL(triggered(bool)), this, SIGNAL(signalLockStatus(bool)));
 }
 
-void PlotMenu::init ()
+void PlotMenu::createMenus ()
 {
+  // create the chart object menu
   _coListMenu = new QMenu(this);
   _coListMenu->setTitle(tr("New Chart Object..."));
-  
-  _coListMenu->addAction(QPixmap(buyarrow_xpm), tr("Buy"));
-  _coListMenu->addAction(QPixmap(horizontal_xpm), tr("HLine"));
-  _coListMenu->addAction(QPixmap(fib_xpm), tr("Retracement"));
-  _coListMenu->addAction(QPixmap(sellarrow_xpm), tr("Sell"));
-  _coListMenu->addAction(QPixmap(text_xpm), tr("Text"));
-  _coListMenu->addAction(QPixmap(trend_xpm), tr("TLine"));
-  _coListMenu->addAction(QPixmap(vertical_xpm), tr("VLine"));
-  
+  _coListMenu->addAction(_actions.value(_BUY_CHART_OBJECT));
+  _coListMenu->addAction(_actions.value(_HLINE_CHART_OBJECT));
+  _coListMenu->addAction(_actions.value(_RETRACEMENT_CHART_OBJECT));
+  _coListMenu->addAction(_actions.value(_SELL_CHART_OBJECT));
+  _coListMenu->addAction(_actions.value(_TEXT_CHART_OBJECT));
+  _coListMenu->addAction(_actions.value(_TLINE_CHART_OBJECT));
+  _coListMenu->addAction(_actions.value(_VLINE_CHART_OBJECT));
   connect(_coListMenu, SIGNAL(triggered(QAction *)), this, SLOT(chartObjectMenuSelected(QAction *)));
-  
-  addAction(QPixmap(indicator_xpm), tr("&New Indicator..."), this, SLOT(newIndicator()), Qt::ALT+Qt::Key_N);
-  
-  addAction(QPixmap(edit_xpm), tr("Edit &Indicator..."), this, SLOT(editIndicator()), Qt::ALT+Qt::Key_I);
-  
-  addAction(QPixmap(delete_xpm), tr("De&lete Indicator..."), this, SLOT(deleteIndicator()), Qt::ALT+Qt::Key_L);
-  
-  addSeparator ();
 
-  // chart object section
+  // create the main menu
+  addAction(_actions.value(_NEW_INDICATOR));
+  addAction(_actions.value(_EDIT_INDICATOR));
+  addAction(_actions.value(_DELETE_INDICATOR));
+  addSeparator ();
   addMenu(_coListMenu);
-  
-  addAction(QPixmap(edit_xpm), tr("Edit &Chart Object"), this, SLOT(editChartObject()), Qt::ALT+Qt::Key_C);
-
-  addAction(QPixmap(delete_xpm), tr("&Delete Chart Objects"), this, SLOT(deleteChartObject()), Qt::ALT+Qt::Key_D);
-  
+  addAction(_actions.value(_EDIT_CHART_OBJECT));
+  addAction(_actions.value(_DELETE_CHART_OBJECT));
   addSeparator ();
-  
-  _dateAction = addAction(QPixmap(date_xpm), tr("&Date"));
-  _dateAction->setCheckable(TRUE);
-  connect(_dateAction, SIGNAL(toggled(bool)), this, SIGNAL(signalDateStatus(bool)));
-  
-  _logAction = addAction(QPixmap(loggrid_xpm), tr("Log &Scaling"));
-  _logAction->setCheckable(TRUE);
-  connect(_logAction, SIGNAL(toggled(bool)), this, SIGNAL(signalLogStatus(bool)));
-
+  addAction(_actions.value(_DATE_AXIS));
+  addAction(_actions.value(_LOG_SCALING));
   addSeparator ();
-
-  _lockAction = addAction(QPixmap(lock_xpm), tr("&Locked"));
-  _lockAction->setCheckable(TRUE);
-  _lockAction->setChecked(FALSE);
-  connect(_lockAction, SIGNAL(toggled(bool)), this, SIGNAL(signalLockStatus(bool)));
-
-  _command = new Command;
+  addAction(_actions.value(_LOCK));
 }
 
 void PlotMenu::editIndicator ()
@@ -137,36 +229,16 @@ void PlotMenu::deleteAllChartObjects ()
 
 void PlotMenu::chartObjectMenuSelected (QAction *a)
 {
-  _currentAction = a;
+  QSettings settings(g_settingsFile);
+  settings.setValue("chart_object_new", a->text());
+  settings.setValue("chart_object_new_indicator", _indicator);
+  settings.sync();
 
-  ChartObjectDataBase db;
-  QStringList l2;
-  db.ids(g_barData, _indicator, l2);
-
-  QStringList cl;
-  cl << "PLUGIN=NEW_DIALOG" << "TITLE=" + tr("chart object") << "ITEMS=" + l2.join(";");
-  _command->parse(cl.join(","));
-
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(_command->plugin());
-  if (! plug)
-  {
-    qDebug() << "PlotMenu::chartObjectMenuSelected: no plugin" << _command->plugin();
-    return;
-  }
-
-  connect(plug, SIGNAL(signalResume()), this, SLOT(chartObjectMenuSelected2()));
-
-  plug->command(_command);
-}
-
-void PlotMenu::chartObjectMenuSelected2 ()
-{
-  QString s = _command->returnData("NEW_DIALOG_NAME");
-  if (s.isEmpty())
-    return;
-  
-  emit signalNewChartObject(_currentAction->text(), s);
+  Script *script = new Script;
+  script->setName("ChartObjectNew");
+  script->setFile(settings.value("chart_object_new_script").toString());
+  script->setCommand("perl");
+  script->startScript();
 }
 
 void PlotMenu::setCOMenuStatus (bool status)
@@ -176,32 +248,32 @@ void PlotMenu::setCOMenuStatus (bool status)
 
 void PlotMenu::setLog (bool status)
 {
-  _logAction->setChecked(status);
+  _actions.value(_LOG_SCALING)->setChecked(status);
 }
 
 bool PlotMenu::log ()
 {
-  return _logAction->isChecked();
+  return _actions.value(_LOG_SCALING)->isChecked();
 }
 
 void PlotMenu::setDate (bool status)
 {
-  _dateAction->setChecked(status);
+  _actions.value(_DATE_AXIS)->setChecked(status);
 }
 
 bool PlotMenu::date ()
 {
-  return _dateAction->isChecked();
+  return _actions.value(_DATE_AXIS)->isChecked();
 }
 
 void PlotMenu::setLock (bool status)
 {
-  _lockAction->setChecked(status);
+  _actions.value(_LOCK)->setChecked(status);
 }
 
 bool PlotMenu::lock ()
 {
-  return _lockAction->isChecked();
+  return _actions.value(_LOCK)->isChecked();
 }
 
 void PlotMenu::setIndicator (QString d)

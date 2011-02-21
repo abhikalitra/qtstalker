@@ -965,4 +965,11 @@
 
            Fixed bug ID 3187594 - 0.37-dev recent price not visible.
 
+           Finally fixed the actual date/time display for bars.
+
+           NOTE* please do a full make distclean for this update. lib has changed.
+
+           Added new plugin CHART_OBJECT_NEW and new system script ChartObjectNew.pl.
+
+
  

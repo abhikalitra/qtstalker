@@ -33,7 +33,6 @@
 #include <QToolBar>
 #include <QTimer>
 
-#include "ScriptPluginFactory.h"
 #include "Script.h"
 
 class ScriptPage : public QWidget
@@ -93,7 +92,6 @@ class ScriptPage : public QWidget
     QMenu *_queMenu;
     QHash<int, QAction *> _actions;
     QHash<QString, QListWidgetItem *> _itemList;
-    ScriptPluginFactory _factory;
     QTimer _timer;
 };
 

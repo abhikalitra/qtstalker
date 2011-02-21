@@ -89,19 +89,14 @@ Plot::Plot (QString name, QMainWindow *mw)
   connect(_indicator, SIGNAL(signalPlot()), this, SLOT(updatePlot()));
 
   _menu = new PlotMenu(this);
-//  connect(_menu, SIGNAL(signalLockStatus(bool)), _indicator, SLOT(setLock(bool)));
   connect(_menu, SIGNAL(signalDateStatus(bool)), this, SLOT(showDate(bool)));
-//  connect(_menu, SIGNAL(signalDateStatus(bool)), _indicator, SLOT(setDate(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
-//  connect(_menu, SIGNAL(signalLogStatus(bool)), _indicator, SLOT(setLog(bool)));
-  connect(_menu, SIGNAL(signalNewChartObject(QString, QString)), this, SLOT(chartObjectNew(QString, QString)));
 
   _dock = new DockWidget(name.left(4), mw);
   _dock->setObjectName(name);
   _dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
   _dock->setWidget(this);
   mw->addDockWidget(Qt::LeftDockWidgetArea, _dock);
-//  connect(_menu, SIGNAL(signalLockStatus(bool)), _dock, SLOT(statusChanged(bool)));
   connect(_menu, SIGNAL(signalLockStatus(bool)), this, SLOT(lockChanged(bool)));
 }
 

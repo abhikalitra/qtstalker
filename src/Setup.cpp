@@ -155,6 +155,9 @@ void Setup::setupDirectories ()
   s = sysdir + "ChartObjectEditSelect.pl";
   settings.setValue("chart_object_edit_select_script", s);
 
+  s = sysdir + "ChartObjectNew.pl";
+  settings.setValue("chart_object_new_script", s);
+
   s = sysdir + "Configure.pl";
   settings.setValue("configure_script", s);
 

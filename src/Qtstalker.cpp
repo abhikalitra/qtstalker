@@ -103,6 +103,7 @@ void QtstalkerApp::createGUI ()
   connect(g_middleMan, SIGNAL(signalPlotTabPosition(int)), this, SLOT(setPlotTabPosition(int)));
   connect(g_middleMan, SIGNAL(signalPlotUpdate(QString)), this, SLOT(updatePlot(QString)));
   connect(g_middleMan, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
+  connect(g_middleMan, SIGNAL(signalChartObjectNew(QString, QString, QString)), this, SLOT(newChartObject(QString, QString, QString)));
 
   // side panel dock
   _sidePanel = new SidePanel;
@@ -416,4 +417,13 @@ void QtstalkerApp::updatePlot (QString d)
   Indicator *i = p->indicator();
   i->load();
   i->calculate();
+}
+
+void QtstalkerApp::newChartObject (QString ind, QString name, QString type)
+{
+  Plot *p = _plots.value(ind);
+  if (! p)
+    return;
+
+  p->chartObjectNew(type, name);
 }

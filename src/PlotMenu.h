@@ -25,23 +25,40 @@
 #include <QString>
 #include <QMenu>
 #include <QAction>
-
-#include "Command.h"
+#include <QHash>
 
 class PlotMenu : public QMenu
 {
   Q_OBJECT
 
   signals:
-    void signalNewChartObject (QString, QString);
     void signalLockStatus (bool);
     void signalDateStatus (bool);
     void signalLogStatus (bool);
 
   public:
+    enum Action
+    {
+      _BUY_CHART_OBJECT,
+      _HLINE_CHART_OBJECT,
+      _RETRACEMENT_CHART_OBJECT,
+      _SELL_CHART_OBJECT,
+      _TEXT_CHART_OBJECT,
+      _TLINE_CHART_OBJECT,
+      _VLINE_CHART_OBJECT,
+      _NEW_INDICATOR,
+      _EDIT_INDICATOR,
+      _DELETE_INDICATOR,
+      _EDIT_CHART_OBJECT,
+      _DELETE_CHART_OBJECT,
+      _DATE_AXIS,
+      _LOG_SCALING,
+      _LOCK
+    };
+    
     PlotMenu (QWidget *);
-    ~PlotMenu ();
-    void init ();
+    void createActions ();
+    void createMenus ();
     void setCOMenuStatus (bool);
     void setLog (bool);
     bool log ();
@@ -53,7 +70,6 @@ class PlotMenu : public QMenu
 
   public slots:
     void chartObjectMenuSelected (QAction *);
-    void chartObjectMenuSelected2 ();
     void editIndicator ();
     void deleteIndicator ();
     void deleteAllChartObjects ();
@@ -62,13 +78,9 @@ class PlotMenu : public QMenu
     void newIndicator ();
 
   private:
-    QAction *_dateAction;
-    QAction *_logAction;
-    QAction *_lockAction;
     QMenu *_coListMenu;
-    QAction *_currentAction;
     QString _indicator;
-    Command *_command;
+    QHash<int, QAction *> _actions;
 };
 
 #endif

@@ -34,7 +34,6 @@
 #include <QToolBar>
 
 #include "SymbolListWidget.h"
-#include "ScriptPluginFactory.h"
 #include "Script.h"
 
 class GroupPage : public QWidget
@@ -77,7 +76,6 @@ class GroupPage : public QWidget
     QMenu *_menu;
     QComboBox *_groups;
     QHash<int, QAction *> _actions;
-    ScriptPluginFactory _factory;
 };
 
 #endif

@@ -153,6 +153,7 @@ int QuoteDataBase::getBars (BarData *bd)
       bar->setClose(q.value(4).toDouble());
       bar->setVolume(q.value(5).toDouble());
       bar->setOI(q.value(6).toDouble());
+      bar->setLastDate(lastDate);
 
       bars.insert(s, bar);
       dateList.append(bar);
