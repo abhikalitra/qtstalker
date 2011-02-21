@@ -59,6 +59,7 @@ class PlotMenu : public QMenu
     void deleteAllChartObjects ();
     void editChartObject ();
     void deleteChartObject ();
+    void newIndicator ();
 
   private:
     QAction *_dateAction;

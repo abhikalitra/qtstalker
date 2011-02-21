@@ -421,8 +421,21 @@ void Plot::setYPoints ()
     int max = 0;
     curve->keyRange(min, max);
     int index = _endPos;
+    int flag = 0;
     if (index > max)
+    {
       index = max;
+      flag++;
+    }
+
+    // fix for Y AND X axis misalignment
+    if (curve->type() == Curve::HistogramBar
+        || curve->type() == Curve::Candle
+        || curve->type() == Curve::OHLC)
+    {
+      if (! flag)
+        index--;
+    }
     
     CurveBar *bar = curve->bar(index);
     if (! bar)

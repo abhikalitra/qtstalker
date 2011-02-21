@@ -37,6 +37,7 @@
 #include "../pics/vertical.xpm"
 #include "../pics/edit.xpm"
 #include "../pics/lock.xpm"
+#include "../pics/indicator.xpm"
 
 #include <QtDebug>
 #include <QSettings>
@@ -66,7 +67,7 @@ void PlotMenu::init ()
   
   connect(_coListMenu, SIGNAL(triggered(QAction *)), this, SLOT(chartObjectMenuSelected(QAction *)));
   
-//  addAction(QPixmap(indicator_xpm), tr("&New Indicator..."), this, SIGNAL(signalNewIndicator()), Qt::ALT+Qt::Key_N);
+  addAction(QPixmap(indicator_xpm), tr("&New Indicator..."), this, SLOT(newIndicator()), Qt::ALT+Qt::Key_N);
   
   addAction(QPixmap(edit_xpm), tr("Edit &Indicator..."), this, SLOT(editIndicator()), Qt::ALT+Qt::Key_I);
   
@@ -230,6 +231,16 @@ void PlotMenu::deleteChartObject ()
   Script *script = new Script;
   script->setName("DeleteObjectDeleteSelect");
   script->setFile(settings.value("chart_object_delete_select_script").toString());
+  script->setCommand("perl");
+  script->startScript();
+}
+
+void PlotMenu::newIndicator ()
+{
+  QSettings settings(g_settingsFile);
+  Script *script = new Script;
+  script->setName("IndicatorNew");
+  script->setFile(settings.value("indicator_new_script").toString());
   script->setCommand("perl");
   script->startScript();
 }

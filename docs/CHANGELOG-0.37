@@ -957,7 +957,12 @@
 
 20110221:  Fixed bug ID 3187465 - 0.37-dev can't delete indicator.
 
-           Fixed bug ID: 3187597 - 0.37-dev script button icon.
+           Fixed bug ID 3187597 - 0.37-dev script button icon.
 
            Added new plugin INDICATOR_PLOT_DATE_GET as per xley request.
 
+           Added New Indicator menu option to the chart context menu.
+
+           Fixed bug ID 3187594 - 0.37-dev recent price not visible.
+
+ 
