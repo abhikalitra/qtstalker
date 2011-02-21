@@ -31,18 +31,30 @@
 #include <QSettings>
 #include <QPushButton>
 
-ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QString script, QString icon)
+ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QString script, QString icon, int use)
 {
   _helpFile = "main.html";
   
-  setWindowTitle("Qtstalker" + g_session + ": " +  tr("Set Date Range"));
+  setWindowTitle("Qtstalker" + g_session + ": " +  tr("Script Launch Button Settings"));
 
   createMainPage();
 
   loadSettings();
 
   _script->setCurrentIndex(_script->findText(script));
+  
   _icon->setFile(icon);
+  
+  if (use)
+  {
+    _useIcon->setChecked(TRUE);
+    useIconToggled(TRUE);
+  }
+  else
+  {
+    _useIcon->setChecked(FALSE);
+    useIconToggled(FALSE);
+  }
 
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
@@ -67,10 +79,15 @@ void ScriptLaunchButtonDialog::createMainPage ()
   _script = new QComboBox;
   _script->addItems(l);
   form->addRow(tr("Script"), _script);
-  
+
   // icon
   _icon = new IconButton(this, QString());
   form->addRow(tr("Icon"), _icon);
+
+  // use icon checkbox
+  _useIcon = new QCheckBox;
+  form->addRow(tr("Use Icon"), _useIcon);
+  connect(_useIcon, SIGNAL(toggled(bool)), this, SLOT(useIconToggled(bool)));
 
   // buttonbox
   QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
@@ -93,7 +110,7 @@ void ScriptLaunchButtonDialog::createMainPage ()
 
 void ScriptLaunchButtonDialog::done ()
 {
-  emit signalDone(_script->currentText(), _icon->file());
+  emit signalDone(_script->currentText(), _icon->file(), (int) _useIcon->isChecked());
   
   saveSettings();
   
@@ -130,3 +147,12 @@ void ScriptLaunchButtonDialog::saveSettings ()
   settings.setValue("script_launch_button_dialog_window_position", pos());
   settings.sync();
 }
+
+void ScriptLaunchButtonDialog::useIconToggled (bool d)
+{
+  if (d)
+    _icon->setEnabled(TRUE);
+  else
+    _icon->setEnabled(FALSE);
+}
+

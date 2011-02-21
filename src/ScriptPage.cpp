@@ -88,7 +88,7 @@ void ScriptPage::createGUI ()
     int loop2 = 0;
     for (; loop2 < cols; loop2++, pos++)
     {
-      ScriptLaunchButton *b = new ScriptLaunchButton(pos, pos);
+      ScriptLaunchButton *b = new ScriptLaunchButton(pos);
       connect(b, SIGNAL(signalButtonClicked(QString)), this, SLOT(runScript(QString)));
       tb->addWidget(b);
     }

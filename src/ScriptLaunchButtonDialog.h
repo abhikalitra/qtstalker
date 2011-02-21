@@ -27,6 +27,7 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QIcon>
+#include <QCheckBox>
 
 #include "IconButton.h"
 
@@ -35,10 +36,10 @@ class ScriptLaunchButtonDialog : public QDialog
   Q_OBJECT
 
   signals:
-    void signalDone (QString, QString);
+    void signalDone (QString, QString, int);
 
   public:
-    ScriptLaunchButtonDialog (QString script, QString icon);
+    ScriptLaunchButtonDialog (QString script, QString icon, int);
     void createMainPage ();
     void loadSettings ();
     void saveSettings ();
@@ -47,6 +48,7 @@ class ScriptLaunchButtonDialog : public QDialog
     void done ();
     void cancel ();
     void help ();
+    void useIconToggled (bool);
 
   private:
     QPushButton *_okButton;
@@ -54,6 +56,7 @@ class ScriptLaunchButtonDialog : public QDialog
     IconButton *_icon;
     QString _helpFile;
     QComboBox *_script;
+    QCheckBox *_useIcon;
 };
 
 #endif

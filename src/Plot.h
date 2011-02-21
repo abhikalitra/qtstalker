@@ -97,6 +97,7 @@ class Plot : public QwtPlot
     void setCrossHairs (bool);
     void setCrossHairsColor (QColor);
     void setBarSpacing (int);
+    void lockChanged (bool);
 
   private:
     int _spacing;

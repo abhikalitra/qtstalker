@@ -37,22 +37,6 @@ void Indicator::init ()
   _lock = FALSE;
   _date = TRUE;
   _log = FALSE;
-  _modified = 0;
-  _dialog = "NONE";
-}
-
-void Indicator::setParms (QString name, QString command, QString script, QString dialog, bool lock, bool date, bool log)
-{
-  save();
-  
-  _name = name;
-  _command = command;
-  _script = script;
-  _dialog = dialog;
-  _lock = lock;
-  _date = date;
-  _log = log;
-  _modified = 0;
 }
 
 void Indicator::setName (QString d)
@@ -68,7 +52,6 @@ QString & Indicator::name ()
 void Indicator::setLock (bool d)
 {
   _lock = d;
-  _modified = 1;
 }
 
 bool Indicator::lock ()
@@ -79,7 +62,6 @@ bool Indicator::lock ()
 void Indicator::setDate (bool d)
 {
   _date = d;
-  _modified = 1;
 }
 
 bool Indicator::date ()
@@ -90,7 +72,6 @@ bool Indicator::date ()
 void Indicator::setLog (bool d)
 {
   _log = d;
-  _modified = 1;
 }
 
 bool Indicator::log ()
@@ -101,7 +82,6 @@ bool Indicator::log ()
 void Indicator::setScript (QString d)
 {
   _script = d;
-  _modified = 1;
 }
 
 QString & Indicator::script ()
@@ -112,34 +92,11 @@ QString & Indicator::script ()
 void Indicator::setCommand (QString d)
 {
   _command = d;
-  _modified = 1;
 }
 
 QString & Indicator::command ()
 {
   return _command;
-}
-
-void Indicator::setDialog (QString d)
-{
-  _dialog = d;
-  _modified = 1;
-}
-
-QString & Indicator::dialog ()
-{
-  return _dialog;
-}
-
-void Indicator::setDialogSettings (QString d)
-{
-  _dialogSettings = d;
-  _modified = 1;
-}
-
-QString & Indicator::dialogSettings ()
-{
-  return _dialogSettings;
 }
 
 void Indicator::setLine (QString k, Curve *d)
@@ -225,52 +182,16 @@ void Indicator::clearLines ()
   }
 }
 
-QString Indicator::toString ()
-{
-  QStringList l;
-  l << _command << _script << _dialog << QString::number(_lock) << QString::number(_log) << QString::number(_date);
-  
-  return l.join(",");
-}
-
-int Indicator::fromString (QString d)
-{
-  QStringList l = d.split(",", QString::SkipEmptyParts);
-  if (l.count() != 6)
-    return 1;
-
-  int pos = 0;
-  _command = l.at(pos++);
-  _script = l.at(pos++);
-  _dialog = l.at(pos++);
-  _lock = l.at(pos++).toInt();
-  _log = l.at(pos++).toInt();
-  _date = l.at(pos++).toInt();
-  
-  return 0;
-}
-
 int Indicator::save ()
 {
-  if (! _modified)
-    return 0;
-  
   IndicatorDataBase db;
-  int rc = db.save(this);
-
-  _modified = 0;
-
-  return rc;
+  return db.save(this);
 }
 
 int Indicator::load ()
 {
   IndicatorDataBase db;
-  int rc = db.load(this);
-
-  _modified = 0;
-  
-  return rc;
+  return db.load(this);
 }
 
 void Indicator::calculate ()

@@ -31,19 +31,22 @@
 #include <QSettings>
 #include <QDebug>
 
-ScriptLaunchButton::ScriptLaunchButton (int pos, int label)
+ScriptLaunchButton::ScriptLaunchButton (int pos)
 {
   setContextMenuPolicy(Qt::CustomContextMenu);
   _position = pos;
-  setMinimumWidth(32);
-  setText(QString::number(label));
 
   QSettings settings(g_settingsFile);
   _scriptName = settings.value("script_launch_button_" + QString::number(_position)).toString();
   _icon = settings.value("script_launch_button_icon_" + QString::number(_position)).toString();
+  _useIcon = settings.value("script_launch_button_use_icon_" + QString::number(_position), 0).toInt();
 
   setToolTip(_scriptName);
-  setIcon(QIcon(_icon));
+
+  setText(QString::number(_position));
+  
+  if (_useIcon)
+    setIcon(QIcon(_icon));
 
   connect(this, SIGNAL(clicked()), this, SLOT(buttonClicked()));
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
@@ -62,39 +65,30 @@ void ScriptLaunchButton::buttonClicked ()
 
 void ScriptLaunchButton::configure ()
 {
-  ScriptLaunchButtonDialog *dialog = new ScriptLaunchButtonDialog(_scriptName, _icon);
-  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(configure2(QString, QString)));
+  ScriptLaunchButtonDialog *dialog = new ScriptLaunchButtonDialog(_scriptName, _icon, _useIcon);
+  connect(dialog, SIGNAL(signalDone(QString, QString, int)), this, SLOT(configure2(QString, QString, int)));
   dialog->show();
-  
-/*  
-  ScriptDataBase db;
-  QStringList l;
-  db.scripts(l);
-
-  int index = l.indexOf(_scriptName);
-
-  QInputDialog *dialog = new QInputDialog(this);
-  dialog->setComboBoxItems(l);
-  dialog->setLabelText(tr("Select Script"));
-  dialog->setWindowTitle(tr("Configure Script Launcher"));
-  if (index != -1)
-    dialog->setTextValue(l.at(index));
-  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(configure2(QString)));
-  dialog->show();
-*/
 }
 
-void ScriptLaunchButton::configure2 (QString d, QString i)
+void ScriptLaunchButton::configure2 (QString n, QString i, int use)
 {
-  _scriptName = d;
+  _scriptName = n;
   _icon = i;
+  _useIcon = use;
 
   setToolTip(_scriptName);
-  setIcon(QIcon(_icon));
+
+  setText(QString::number(_position));
+
+  if (_useIcon)
+    setIcon(QIcon(_icon));
+  else
+    setIcon(QIcon());
 
   QSettings settings(g_settingsFile);
   settings.setValue("script_launch_button_" + QString::number(_position), _scriptName);
   settings.setValue("script_launch_button_icon_" + QString::number(_position), _icon);
+  settings.setValue("script_launch_button_use_icon_" + QString::number(_position), _useIcon);
   settings.sync();
 }
 

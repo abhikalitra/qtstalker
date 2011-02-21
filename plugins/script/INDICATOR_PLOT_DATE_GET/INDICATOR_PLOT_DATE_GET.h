@@ -19,29 +19,23 @@
  *  USA.
  */
 
-#ifndef INDICATOR_DATA_BASE_HPP
-#define INDICATOR_DATA_BASE_HPP
+#ifndef INDICATOR_PLOT_DATE_GET_HPP
+#define INDICATOR_PLOT_DATE_GET_HPP
 
-#include <QtSql>
-#include <QStringList>
+#include "ScriptPlugin.h"
 
-#include "Indicator.h"
-
-class IndicatorDataBase
+class INDICATOR_PLOT_DATE_GET : public ScriptPlugin
 {
-  public:
-    IndicatorDataBase ();
-    void init ();
-    int load (Indicator *);
-    int save (Indicator *);
-    int deleteIndicator (QStringList &);
-    int indicators (QStringList &);
-    void transaction ();
-    void commit ();
+  Q_OBJECT
 
-  private:
-    QSqlDatabase _db;
-    QString _table;
+  public:
+    INDICATOR_PLOT_DATE_GET ();
+    int command (Command *);
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

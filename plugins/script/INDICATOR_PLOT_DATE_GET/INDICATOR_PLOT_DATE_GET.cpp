@@ -19,33 +19,59 @@
  *  USA.
  */
 
-#include "INDICATOR_DATABASE_DELETE.h"
+#include "INDICATOR_PLOT_DATE_GET.h"
 #include "Globals.h"
-#include "IndicatorDataBase.h"
 
 #include <QtDebug>
 
-INDICATOR_DATABASE_DELETE::INDICATOR_DATABASE_DELETE ()
+INDICATOR_PLOT_DATE_GET::INDICATOR_PLOT_DATE_GET ()
 {
-  _plugin = "INDICATOR_DATABASE_DELETE";
+  _plugin = "INDICATOR_PLOT_DATE_GET";
 }
 
-int INDICATOR_DATABASE_DELETE::command (Command *command)
+int INDICATOR_PLOT_DATE_GET::command (Command *command)
 {
   // PARMS:
-  // NAME
+  // INDEX
+  // DATE_FORMAT
 
-  QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
-
-  IndicatorDataBase db;
-  if (db.deleteIndicator(l))
+  BarData *data = g_barData;
+  if (! data)
   {
-    qDebug() << _plugin << "::command: IndicatorDataBase error";
+    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
-    
+
+  if (data->count() < 1)
+    return 1;
+
+  // verify INDEX
+  bool ok;
+  int index = command->parm("INDEX").toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << _plugin << "::command: invalid INDEX value" << command->parm("INDEX");
+    return 1;
+  }
+
+  Bar *bar = data->bar(index);
+  if (! bar)
+  {
+    qDebug() << _plugin << "::command: bar not found at index" << index;
+    return 1;
+  }
+
+  QString format = command->parm("DATE_FORMAT");
+  if (format.isEmpty())
+  {
+    qDebug() << _plugin << "::command: invalid DATE_FORMAT" << format;
+    return 1;
+  }
+
+  command->setReturnData(_plugin + "_VALUE", bar->date().toString(format));
+
   command->setReturnCode("0");
-  
+
   return 0;
 }
 
@@ -55,7 +81,6 @@ int INDICATOR_DATABASE_DELETE::command (Command *command)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  INDICATOR_DATABASE_DELETE *o = new INDICATOR_DATABASE_DELETE;
+  INDICATOR_PLOT_DATE_GET *o = new INDICATOR_PLOT_DATE_GET;
   return ((ScriptPlugin *) o);
 }
-

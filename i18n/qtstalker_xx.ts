@@ -1342,10 +1342,6 @@ e.g. Qtstalker alert was triggered.</source>
 <context>
     <name>ExchangeSearchDialog</name>
     <message>
-        <source>Search For Exchange</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Country</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1355,10 +1351,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Exchange</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2148,6 +2140,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Run external script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select External Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

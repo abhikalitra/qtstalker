@@ -89,11 +89,11 @@ Plot::Plot (QString name, QMainWindow *mw)
   connect(_indicator, SIGNAL(signalPlot()), this, SLOT(updatePlot()));
 
   _menu = new PlotMenu(this);
-  connect(_menu, SIGNAL(signalLockStatus(bool)), _indicator, SLOT(setLock(bool)));
+//  connect(_menu, SIGNAL(signalLockStatus(bool)), _indicator, SLOT(setLock(bool)));
   connect(_menu, SIGNAL(signalDateStatus(bool)), this, SLOT(showDate(bool)));
-  connect(_menu, SIGNAL(signalDateStatus(bool)), _indicator, SLOT(setDate(bool)));
+//  connect(_menu, SIGNAL(signalDateStatus(bool)), _indicator, SLOT(setDate(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
-  connect(_menu, SIGNAL(signalLogStatus(bool)), _indicator, SLOT(setLog(bool)));
+//  connect(_menu, SIGNAL(signalLogStatus(bool)), _indicator, SLOT(setLog(bool)));
   connect(_menu, SIGNAL(signalNewChartObject(QString, QString)), this, SLOT(chartObjectNew(QString, QString)));
 
   _dock = new DockWidget(name.left(4), mw);
@@ -101,7 +101,8 @@ Plot::Plot (QString name, QMainWindow *mw)
   _dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
   _dock->setWidget(this);
   mw->addDockWidget(Qt::LeftDockWidgetArea, _dock);
-  connect(_menu, SIGNAL(signalLockStatus(bool)), _dock, SLOT(statusChanged(bool)));
+//  connect(_menu, SIGNAL(signalLockStatus(bool)), _dock, SLOT(statusChanged(bool)));
+  connect(_menu, SIGNAL(signalLockStatus(bool)), this, SLOT(lockChanged(bool)));
 }
 
 Plot::~Plot ()
@@ -116,7 +117,6 @@ void Plot::clear ()
     qDeleteAll(_qwtCurves);
   _qwtCurves.clear();
 
-  _indicator->save();
   _indicator->clear();
 
   if (_chartObjects.count())
@@ -311,12 +311,26 @@ void Plot::setLogScaling (bool d)
   else
     setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
 
+  _indicator->setLog(d);
+  _indicator->save();
+  
   replot();
 }
 
 void Plot::showDate (bool d)
 {
   enableAxis(QwtPlot::xBottom, d);
+  
+  _indicator->setDate(d);
+  _indicator->save();
+}
+
+void Plot::lockChanged (bool d)
+{
+  _dock->statusChanged(d);
+
+  _indicator->setLock(d);
+  _indicator->save();
 }
 
 void Plot::setCrossHairs (bool d)
@@ -509,19 +523,13 @@ void Plot::loadSettings ()
   QColor color(settings.value("plot_background_color", "black").toString());
   setBackgroundColor(color);
 
-/*  
-  QStringList l = settings.value("plot_font").toString().split(";", QString::SkipEmptyParts);
+  QStringList l = settings.value("app_font").toString().split(",", QString::SkipEmptyParts);
   if (l.count())
   {
     QFont font;
     font.fromString(l.join(","));
     setFont(font);
   }
-*/
-
-  // set default font
-  QFont font;
-  setFont(font);
 
   // set crosshairs status
   setCrossHairs(settings.value("crosshairs", 0).toInt());

@@ -955,3 +955,9 @@
            NOTE: CVS users will need to do a complete make distclean for this update. Changes to lib
            require it.
 
+20110221:  Fixed bug ID 3187465 - 0.37-dev can't delete indicator.
+
+           Fixed bug ID: 3187597 - 0.37-dev script button icon.
+
+           Added new plugin INDICATOR_PLOT_DATE_GET as per xley request.
+
