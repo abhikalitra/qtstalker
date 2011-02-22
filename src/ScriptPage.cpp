@@ -44,7 +44,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 
-ScriptPage::ScriptPage ()
+ScriptPage::ScriptPage (QWidget *p) : QWidget (p)
 {
   createActions();
 
@@ -75,7 +75,7 @@ void ScriptPage::createGUI ()
   // create launch buttons
   QSettings settings(g_settingsFile);
   int rows = settings.value("script_launch_button_rows", 2).toInt();
-  int cols = settings.value("script_launch_button_cols", 4).toInt();
+  int cols = settings.value("script_launch_button_cols", 5).toInt();
 
   int loop = 0;
   int pos = 1;

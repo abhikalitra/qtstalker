@@ -74,7 +74,7 @@ void ScriptLaunchButtonDialog::createMainPage ()
   // script
   ScriptDataBase db;
   QStringList l;
-  db.scripts(l);
+  db.scripts(QString(), l);
 
   _script = new QComboBox;
   _script->addItems(l);

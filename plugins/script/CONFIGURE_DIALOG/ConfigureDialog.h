@@ -53,6 +53,7 @@ class ConfigureDialog : public QDialog
     void help ();
     void backgroundChanged ();
     void appFontChanged ();
+    void plotFontChanged ();
     void tabPositionChanged ();
 
   private:
@@ -64,6 +65,7 @@ class ConfigureDialog : public QDialog
     Command *_command;
     ColorButton *_background;
     FontButton *_appFont;
+    FontButton *_plotFont;
     int _modified;
     QHash<QString, int> _flags;
     QComboBox *_tabPosition;

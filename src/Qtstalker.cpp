@@ -85,7 +85,6 @@ void QtstalkerApp::shutDown ()
   // save everything that needs to be saved before app quits
   // some classes cannot save in their destructors due to SQL services
   // shutting down before the destructor is called
-  // also need to save splitter sizes properly
   emit signalShutDown();
 
   // delete all the non-parented objects
@@ -106,7 +105,7 @@ void QtstalkerApp::createGUI ()
   connect(g_middleMan, SIGNAL(signalChartObjectNew(QString, QString, QString)), this, SLOT(newChartObject(QString, QString, QString)));
 
   // side panel dock
-  _sidePanel = new SidePanel;
+  _sidePanel = new SidePanel(this);
   connect(_sidePanel, SIGNAL(signalLoadChart(BarData)), this, SLOT(loadChart(BarData)));
   connect(_sidePanel, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
   connect(_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
@@ -239,17 +238,18 @@ void QtstalkerApp::loadChart (BarData symbol)
 QString QtstalkerApp::getWindowCaption ()
 {
   // update the main window text
-  QString caption = tr("QtStalker");
-  caption.append(g_session);
-  caption.append(": " + g_barData->symbol());
-  if (! g_barData->name().isEmpty())
-    caption.append(" (" + g_barData->name() + ")");
-
   QStringList l;
-  g_barData->barLengthList(l);
-  caption.append(" " + l[_controlPanel->barLengthButton()->length()]);
+  l << "QtStalker" + g_session + ":";
+  if (! g_barData->name().isEmpty())
+    l << g_barData->name();
+  if (! g_barData->symbol().isEmpty())
+    l << "(" + g_barData->symbol() + ")";
 
-  return caption;
+  QStringList bl;
+  g_barData->barLengthList(bl);
+  l << bl.at(_controlPanel->barLengthButton()->length());
+
+  return l.join(" ");
 }
 
 void QtstalkerApp::chartUpdated ()
@@ -346,6 +346,7 @@ void QtstalkerApp::addPlot (QString indicator)
   connect(g_middleMan, SIGNAL(signalCrosshairs(bool)), plot, SLOT(setCrossHairs(bool)));
   connect(g_middleMan, SIGNAL(signalChartObjectDelete(QStringList)), plot, SLOT(deleteChartObject(QStringList)));
   connect(g_middleMan, SIGNAL(signalChartObjectUpdate(QString)), plot, SLOT(updateChartObject(QString)));
+  connect(g_middleMan, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setFont(QFont)));
 
   _plots.insert(indicator, plot);
 }

@@ -39,6 +39,8 @@ void ChartObjectTextDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtS
 
   p->setPen(_settings->color("Color"));
 
+  p->setFont(_settings->font("Font"));
+  
   p->drawText(x, y, _settings->data("Text"));
 
   QFontMetrics fm = p->fontMetrics();

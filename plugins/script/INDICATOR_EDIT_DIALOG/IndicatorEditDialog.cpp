@@ -24,7 +24,6 @@
 #include "Doc.h"
 
 #include <QtDebug>
-#include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QLayout>
 #include <QSettings>
@@ -78,7 +77,8 @@ void IndicatorEditDialog::createGUI ()
   vbox->addLayout(form);
 
   // command
-  _com = new QLineEdit("perl");
+  _com = new LineEdit;
+  _com->setText("perl");
   _com->setToolTip(tr("Script command"));
   connect(_com, SIGNAL(textChanged(const QString &)), this, SLOT(buttonStatus()));
   form->addRow(tr("Command"), _com);

@@ -70,7 +70,7 @@ void ChartObjectHLineDialog::createGUI ()
   form->addRow(tr("Price"), _price);
 
   // label
-//  _label = new QLineEdit;
+//  _label = new LineEdit;
 //  form->addRow(tr("Text"), _label);
 
   // default

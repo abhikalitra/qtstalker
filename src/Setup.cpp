@@ -26,6 +26,7 @@
 #include "BarData.h"
 #include "MiddleMan.h"
 #include "qtstalker_defines.h"
+#include "ScriptDataBase.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -52,18 +53,24 @@ void Setup::setup (QString session)
   // order is critical here
   setupDirectories(); // initialize directory structure
 
-  // initialize database
-//  setupDataBase();
-
   // initialize data tables
-  setupExchanges();
+//  setupExchanges();
 
-  setupFutures();
+//  setupFutures();
 
   ScriptPluginFactory sfac;
   sfac.setPluginList();
 
+  QSettings settings(g_settingsFile);
+  int ti = settings.value("default_indicators", 0).toInt();
+  if (ti)
+    return;
+  
   setupDefaultIndicators();
+  setupDefaultScripts();
+
+  settings.setValue("default_indicators", 1);
+  settings.sync();
 }
 
 void Setup::setupDirectories ()
@@ -166,11 +173,6 @@ void Setup::setupDirectories ()
 
 void Setup::setupDefaultIndicators ()
 {
-  QSettings settings(g_settingsFile);
-  int ti = settings.value("default_indicators", 0).toInt();
-  if (ti)
-    return;
-
   Indicator i;
   i.setName("Bars");
   i.setCommand("perl");
@@ -194,8 +196,26 @@ void Setup::setupDefaultIndicators ()
     qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
     return;
   }
+}
 
-  settings.setValue("default_indicators", 1);
+void Setup::setupDefaultScripts ()
+{
+  QString name("Yahoo");
+  QString file = INSTALL_DATA_DIR;
+  file.append("/qtstalker/quote/YahooHistoryDownload.pl");
+  
+  ScriptDataBase db;
+  Script script;
+  script.setName(name);
+  script.setCommand("perl");
+  script.setFile(file);
+  script.setMinutes(0);
+  db.save(&script);
+
+  QSettings settings(g_settingsFile);
+  settings.setValue("script_launch_button_1", name);
+  settings.setValue("script_launch_button_icon_", QString());
+  settings.setValue("script_launch_button_use_icon_", 0);
   settings.sync();
 }
 

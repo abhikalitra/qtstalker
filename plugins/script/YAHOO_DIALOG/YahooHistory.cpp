@@ -46,9 +46,7 @@ void YahooHistory::run ()
     }
     
     Setting symbol = _symbols.at(loop);
-    
     QDateTime sd = QDateTime::fromString(symbol.data("DATE_START"), Qt::ISODate);
-
     QDateTime ed = QDateTime::fromString(symbol.data("DATE_END"), Qt::ISODate);
 
     // get name
@@ -79,6 +77,7 @@ void YahooHistory::run ()
 
 void YahooHistory::getUrl (QDateTime &sd, QDateTime &ed, Setting &data, QString &url)
 {
+//http://ichart.finance.yahoo.com/table.csv?s=AAPL&d=1&e=22&f=2011&g=d&a=8&b=7&c=1984&ignore=.csv  
   url = "http://ichart.finance.yahoo.com/table.csv?s=";
   url.append(data.data("YSYMBOL"));
   url.append("&d=" + QString::number(ed.date().month() - 1));

@@ -26,6 +26,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QHash>
+#include <QMainWindow>
 
 class PlotMenu : public QMenu
 {
@@ -56,7 +57,7 @@ class PlotMenu : public QMenu
       _LOCK
     };
     
-    PlotMenu (QWidget *);
+    PlotMenu (QMainWindow *);
     void createActions ();
     void createMenus ();
     void setCOMenuStatus (bool);

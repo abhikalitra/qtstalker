@@ -65,8 +65,10 @@ class Script : public QObject
     int minutes ();
     void setLastRun (QString);
     QString & lastRun ();
-    int fromString (QString);
-    QString toString ();
+    void setType (QString);
+    QString & type ();
+    void setComment (QString);
+    QString & comment ();
     
   public slots:
     void readFromStdout ();
@@ -86,6 +88,8 @@ class Script : public QObject
     QString _name;
     QString _com;
     QString _file;
+    QString _type;
+    QString _comment;
     int _minutes;
     QString _lastRun;
     QHash<QString, ScriptPlugin *> _plugins;

@@ -35,7 +35,7 @@
 #include <QDebug>
 #include <QSettings>
 
-GroupPage::GroupPage ()
+GroupPage::GroupPage (QWidget *p) : QWidget (p)
 {
   createActions();
 

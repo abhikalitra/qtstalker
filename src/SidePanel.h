@@ -23,6 +23,7 @@
 #define SIDE_PANEL_HPP
 
 #include <QTabWidget>
+#include <QMainWindow>
 
 #include "BarData.h"
 
@@ -38,7 +39,7 @@ class SidePanel : public QTabWidget
     void signalLockStatus (bool);
 
   public:
-    SidePanel ();
+    SidePanel (QMainWindow *);
     void createTabs ();
 
   public slots:

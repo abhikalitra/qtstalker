@@ -261,23 +261,22 @@ void Script::resume ()
   _proc.write(_command->returnCode());
 }
 
-int Script::fromString (QString d)
+void Script::setType (QString d)
 {
-  QStringList l = d.split(",", QString::SkipEmptyParts);
-  if (l.count() != 2)
-    return 1;
-
-  int pos = 0;
-  _com = l.at(pos++);
-  _file = l.at(pos++);
-
-  return 0;
+  _type = d;
 }
 
-QString Script::toString ()
+QString & Script::type ()
 {
-  QStringList l;
-  l << _com << _file;
+  return _type;
+}
 
-  return l.join(",");
+void Script::setComment (QString d)
+{
+  _comment = d;
+}
+
+QString & Script::comment ()
+{
+  return _comment;
 }

@@ -40,7 +40,7 @@
 #include <QtDebug>
 #include <QSettings>
 
-PlotMenu::PlotMenu (QWidget *p) : QMenu (p)
+PlotMenu::PlotMenu (QMainWindow *p) : QMenu (p)
 {
   createActions();
   createMenus();

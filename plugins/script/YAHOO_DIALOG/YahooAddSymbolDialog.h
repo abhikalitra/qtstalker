@@ -26,7 +26,8 @@
 #include <QDialog>
 #include <QPushButton>
 #include <QLabel>
-#include <QLineEdit>
+
+#include "LineEdit.h"
 
 class YahooAddSymbolDialog : public QDialog
 {
@@ -50,7 +51,7 @@ class YahooAddSymbolDialog : public QDialog
 
   private:
     QStringList _yexchange;
-    QLineEdit *_symbols;
+    LineEdit *_symbols;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
     QString _helpFile;

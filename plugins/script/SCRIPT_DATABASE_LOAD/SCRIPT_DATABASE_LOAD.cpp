@@ -51,7 +51,7 @@ int SCRIPT_DATABASE_LOAD::command (Command *command)
   switch (field.indexOf(command->parm("FIELD")))
   {
     case 0: // MINUTES
-      command->setReturnData(_plugin + "_FIELD", script.toString());
+      command->setReturnData(_plugin + "_FIELD", QString::number(script.minutes()));
       command->setReturnCode("0");
       return 0;
       break;

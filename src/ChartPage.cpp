@@ -36,7 +36,7 @@
 #include <QList>
 #include <QSettings>
 
-ChartPage::ChartPage ()
+ChartPage::ChartPage (QWidget *p) : QWidget (p)
 {
   setObjectName("ChartPage");
   
@@ -47,10 +47,6 @@ ChartPage::ChartPage ()
   vbox->setSpacing(0);
   setLayout(vbox);
 
-//  QToolBar *tb = new QToolBar;
-//  vbox->addWidget(tb);
-//  tb->setIconSize(QSize(16, 16));
-  
   createButtonMenu();
   
   _nav = new SymbolListWidget;
@@ -89,10 +85,6 @@ void ChartPage::createActions ()
 
 void ChartPage::createButtonMenu ()
 {
-//  tb->addAction(_actions.value(ShowAll));
-//  tb->addAction(_actions.value(Search));
-//  tb->addAction(_actions.value(AddGroup));
-
   _menu = new QMenu(this);
   _menu->addAction(_actions.value(AddGroup));
   _menu->addSeparator();
@@ -220,6 +212,12 @@ void ChartPage::allButtonPressed ()
 {
   _searchExchange = "*";
   _searchString = "*";
+
+  QSettings settings(g_settingsFile);
+  settings.setValue("last_chart_panel_symbol_search", _searchString);
+  settings.setValue("last_chart_panel_exchange_search", _searchExchange);
+  settings.sync();
+  
   updateList();
 }
 

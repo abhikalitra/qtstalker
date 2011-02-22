@@ -49,6 +49,7 @@ class MiddleMan: public QObject
     void signalChartObjectUpdate (QString);
     void signalStatusMessage (QString);
     void signalChartObjectNew (QString, QString, QString);
+    void signalPlotFont (QFont);
 
   public:
     MiddleMan (QObject *);
@@ -69,6 +70,7 @@ class MiddleMan: public QObject
     void chartObjectUpdate (QString);
     void statusMessage (QString);
     void chartObjectNew (QString indicator, QString name, QString type);
+    void plotFont (QFont);
 };
 
 #endif

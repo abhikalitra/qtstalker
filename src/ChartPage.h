@@ -30,7 +30,7 @@
 #include <QComboBox>
 #include <QHash>
 #include <QAction>
-#include <QToolBar>
+#include <QMainWindow>
 
 #include "BarData.h"
 #include "SymbolListWidget.h"
@@ -56,7 +56,7 @@ class ChartPage : public QWidget
       Delete
     };
 
-    ChartPage ();
+    ChartPage (QWidget *);
     void createActions ();
     void createButtonMenu ();
     void selected (QStringList &);

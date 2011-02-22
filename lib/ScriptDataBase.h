@@ -35,8 +35,9 @@ class ScriptDataBase
     int load (Script *);
     int save (Script *);
     int deleteScript (QStringList &l);
-    int scripts (QStringList &l);
+    int scripts (QString, QStringList &l);
     int timerScripts (QStringList &l);
+    int types (QStringList &l);
     void transaction ();
     void commit ();
 

@@ -26,11 +26,11 @@
 #include <QStringList>
 #include <QPushButton>
 #include <QLabel>
-#include <QLineEdit>
 
 #include "Command.h"
 #include "FileButton.h"
 #include "Indicator.h"
+#include "LineEdit.h"
 
 class IndicatorEditDialog : public QDialog
 {
@@ -50,7 +50,7 @@ class IndicatorEditDialog : public QDialog
 
   private:
     Indicator _indicator;
-    QLineEdit *_com;
+    LineEdit *_com;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
     QString _helpFile;

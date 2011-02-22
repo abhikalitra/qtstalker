@@ -114,6 +114,19 @@ void ConfigureDialog::createGeneralPage ()
   
   _flags.insert("appFont", 0);
 
+  // plot font
+  QFont font2;
+  l = settings.value("plot_font").toString().split(",", QString::SkipEmptyParts);
+  if (l.count())
+    font2.fromString(l.join(","));
+
+  _plotFont = new FontButton(w, font2);
+  _plotFont->setToolTip(tr("Plot Font"));
+  connect(_plotFont, SIGNAL(valueChanged()), this, SLOT(plotFontChanged()));
+  form->addRow(tr("Plot Font"), _plotFont);
+
+  _flags.insert("plotFont", 0);
+
   // tab position
   l.clear();
   l << tr("North") << tr("South") << tr("West") << tr("East");
@@ -159,6 +172,13 @@ void ConfigureDialog::done ()
     QFont font = _appFont->font();
     settings.setValue("app_font", font.toString());
     QApplication::setFont(font);
+  }
+
+  if (_flags.value("plotFont"))
+  {
+    QFont font = _plotFont->font();
+    settings.setValue("plot_font", font.toString());
+    g_middleMan->plotFont(font);
   }
 
   if (_flags.value("plotTabPosition"))
@@ -211,6 +231,13 @@ void ConfigureDialog::appFontChanged ()
 {
   _modified++;
   _flags.insert("appFont", 1);
+  buttonStatus();
+}
+
+void ConfigureDialog::plotFontChanged ()
+{
+  _modified++;
+  _flags.insert("plotFont", 1);
   buttonStatus();
 }
 

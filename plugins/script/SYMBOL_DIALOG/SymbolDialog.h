@@ -28,9 +28,9 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QComboBox>
-#include <QLineEdit>
 
 #include "Command.h"
+#include "LineEdit.h"
 
 class SymbolDialog : public QDialog
 {
@@ -61,7 +61,7 @@ class SymbolDialog : public QDialog
     QTreeWidget *_searchList;
     QTreeWidget *_symbolList;
     QComboBox *_exchanges;
-    QLineEdit *_search;
+    LineEdit *_search;
     QPushButton *_searchButton;
     QPushButton *_okButton;
     QPushButton *_cancelButton;

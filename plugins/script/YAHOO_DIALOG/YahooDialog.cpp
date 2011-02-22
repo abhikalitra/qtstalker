@@ -221,14 +221,13 @@ void YahooDialog::done ()
         continue;
 
       symbol.setData("DATE_START", bar->date().toString(Qt::ISODate));
-      
       symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
 // qDebug() << _symbolList.at(loop) << symbol.data("DATE_START") << symbol.data("DATE_END");
     }
     else
     {
       symbol.setData("DATE_START", _sdate->dateTime().toString(Qt::ISODate));
-      symbol.setData("DATE_END", _sdate->dateTime().toString(Qt::ISODate));
+      symbol.setData("DATE_END", _edate->dateTime().toString(Qt::ISODate));
     }
     
     symbol.setData("ADJUSTMENT", _adjustment->isChecked());

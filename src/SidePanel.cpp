@@ -32,7 +32,7 @@
 #include <QDebug>
 #include <QSettings>
 
-SidePanel::SidePanel ()
+SidePanel::SidePanel (QMainWindow *p) : QTabWidget (p)
 {
   _lockStatus = TRUE;
   createTabs();
@@ -42,7 +42,7 @@ SidePanel::SidePanel ()
 void SidePanel::createTabs ()
 {
   // chart tab
-  ChartPage *cp = new ChartPage;
+  ChartPage *cp = new ChartPage(this);
   connect(cp, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
   connect(cp, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
   connect(cp, SIGNAL(signalReloadChart()), this, SIGNAL(signalReloadChart()));
@@ -53,7 +53,7 @@ void SidePanel::createTabs ()
   setTabToolTip(0, tr("Charts"));
 
   // group tab
-  GroupPage *gp = new GroupPage;
+  GroupPage *gp = new GroupPage(this);
   connect(gp, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
   connect(cp, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
   connect(gp, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
@@ -63,8 +63,7 @@ void SidePanel::createTabs ()
   setTabToolTip(1, tr("Groups"));
 
   // script tab
-  ScriptPage *sp = new ScriptPage;
-//  connect(_scriptTab, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
+  ScriptPage *sp = new ScriptPage(this);
   connect(g_middleMan, SIGNAL(signalScriptRun(QString)), sp, SLOT(runScript(QString)));
   addTab(sp, QIcon(script_xpm), QString());
   setTabToolTip(2, tr("Scripts"));

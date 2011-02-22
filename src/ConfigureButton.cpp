@@ -28,7 +28,6 @@
 #include "../pics/about.xpm"
 #include "../pics/help.xpm"
 #include "../pics/configure.xpm"
-#include "../pics/indicator.xpm"
 #include "../pics/quit.xpm"
 
 #include <QDebug>
@@ -57,18 +56,8 @@ void ConfigureButton::createMenu ()
   _menu->setTitle(tr("Configure / Options"));
   setMenu(_menu);
 
-  // new indicator
-  QAction *a = _menu->addAction(tr("New Indicator"));
-  a->setCheckable(FALSE);
-  a->setIcon(QIcon(indicator_xpm));
-  a->setStatusTip(tr("Add a new indicator..."));
-  a->setToolTip(tr("Add a new indicator..."));
-  connect(a, SIGNAL(triggered(bool)), this, SLOT(newIndicatorDialog()));
-  
-  _menu->addSeparator();
-
   // configure
-  a = _menu->addAction(tr("Configure"));
+  QAction *a = _menu->addAction(tr("Configure"));
   a->setCheckable(FALSE);
   a->setIcon(QIcon(configure_xpm));
   a->setStatusTip(tr("Configure settings..."));
@@ -137,16 +126,6 @@ void ConfigureButton::configureDialog ()
   Script *script = new Script;
   script->setName("Configure");
   script->setFile(settings.value("configure_script").toString());
-  script->setCommand("perl");
-  script->startScript();
-}
-
-void ConfigureButton::newIndicatorDialog ()
-{
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
-  script->setName("IndicatorNew");
-  script->setFile(settings.value("indicator_new_script").toString());
   script->setCommand("perl");
   script->startScript();
 }

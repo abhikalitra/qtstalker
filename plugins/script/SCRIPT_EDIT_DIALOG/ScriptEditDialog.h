@@ -24,13 +24,13 @@
 
 #include <QDialog>
 #include <QStringList>
-#include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
 #include <QSpinBox>
 
 #include "Command.h"
 #include "FileButton.h"
+#include "LineEdit.h"
 
 class ScriptEditDialog : public QDialog
 {
@@ -50,7 +50,7 @@ class ScriptEditDialog : public QDialog
     void help ();
 
   private:
-    QLineEdit *_com;
+    LineEdit *_com;
     QSpinBox *_minutes;
     QPushButton *_okButton;
     QPushButton *_cancelButton;

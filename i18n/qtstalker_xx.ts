@@ -1179,14 +1179,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add a new indicator...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Configure settings...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1251,6 +1243,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>App Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Font</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1760,10 +1756,6 @@ e.g. Qtstalker alert was triggered.</source>
     <name>QtstalkerApp</name>
     <message>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>QtStalker</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

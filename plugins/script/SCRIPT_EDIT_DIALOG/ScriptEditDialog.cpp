@@ -65,7 +65,8 @@ void ScriptEditDialog::createGUI ()
   vbox->addLayout(form);
 
   // command
-  _com = new QLineEdit("perl");
+  _com = new LineEdit;
+  _com->setText("perl");
   _com->setToolTip(tr("Interpreter command and switches eg. perl -l -T"));
   connect(_com, SIGNAL(textEdited(const QString &)), this, SLOT(buttonStatus()));
   form->addRow(tr("Command"), _com);

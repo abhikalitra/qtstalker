@@ -57,7 +57,7 @@ class ScriptPage : public QWidget
       _LaunchButtonCols
     };
 
-    ScriptPage ();
+    ScriptPage (QWidget *);
     void createGUI ();
     void createActions ();
     void startScript ();

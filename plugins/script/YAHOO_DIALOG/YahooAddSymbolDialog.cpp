@@ -59,7 +59,7 @@ void YahooAddSymbolDialog::createGUI ()
   form->setMargin(5);
   vbox->addLayout(form);
 
-  _symbols = new QLineEdit;
+  _symbols = new LineEdit;
   _symbols->setToolTip(tr("Enter Yahoo symbols separated by a space"));
   connect(_symbols, SIGNAL(textChanged(const QString &)), this, SLOT(buttonStatus()));
   form->addRow(tr("Yahoo Symbols"), _symbols);

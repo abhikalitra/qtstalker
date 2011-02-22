@@ -25,7 +25,6 @@
 #include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QDateTimeEdit>
-#include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
 #include <QStringList>
@@ -35,6 +34,7 @@
 #include "FontButton.h"
 #include "Command.h"
 #include "Setting.h"
+#include "LineEdit.h"
 
 class ChartObjectTextDialog : public QDialog
 {
@@ -57,7 +57,7 @@ class ChartObjectTextDialog : public QDialog
     FontButton *_font;
     QDoubleSpinBox *_price;
     QCheckBox *_default;
-    QLineEdit *_label;
+    LineEdit *_label;
     QDateTimeEdit *_date;
     QPushButton *_okButton;
     QPushButton *_cancelButton;

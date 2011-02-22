@@ -180,6 +180,8 @@ void YahooSymbolDialog::done ()
 
   emit signalSymbols(l);
 
+  saveSettings();
+
   accept();
 }
 

@@ -88,7 +88,7 @@ Plot::Plot (QString name, QMainWindow *mw)
   _indicator->setName(name);
   connect(_indicator, SIGNAL(signalPlot()), this, SLOT(updatePlot()));
 
-  _menu = new PlotMenu(this);
+  _menu = new PlotMenu(mw);
   connect(_menu, SIGNAL(signalDateStatus(bool)), this, SLOT(showDate(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
 
@@ -531,7 +531,7 @@ void Plot::loadSettings ()
   QColor color(settings.value("plot_background_color", "black").toString());
   setBackgroundColor(color);
 
-  QStringList l = settings.value("app_font").toString().split(",", QString::SkipEmptyParts);
+  QStringList l = settings.value("plot_font").toString().split(",", QString::SkipEmptyParts);
   if (l.count())
   {
     QFont font;

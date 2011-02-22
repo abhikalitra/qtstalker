@@ -50,6 +50,8 @@ void ScriptDataBase::init ()
   s.append(", script TEXT");
   s.append(", minutes INT");
   s.append(", lastRun TEXT");
+  s.append(", type TEXT");
+  s.append(", comment TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -66,7 +68,7 @@ int ScriptDataBase::load (Script *script)
   }
 
   QSqlQuery q(_db);
-  QString s = "SELECT command,script,minutes,lastRun FROM script WHERE name='" + name + "'";
+  QString s = "SELECT command,script,minutes,lastRun,type,comment FROM script WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -81,6 +83,8 @@ int ScriptDataBase::load (Script *script)
     script->setFile(q.value(pos++).toString());
     script->setMinutes(q.value(pos++).toInt());
     script->setLastRun(q.value(pos++).toString());
+    script->setType(q.value(pos++).toString());
+    script->setComment(q.value(pos++).toString());
   }
 
   return 0;
@@ -98,12 +102,14 @@ int ScriptDataBase::save (Script *script)
   QSqlQuery q(_db);
   _db.transaction();
   
-  QString s = "INSERT OR REPLACE INTO script (name,command,script,minutes,lastRun) VALUES (";
+  QString s = "INSERT OR REPLACE INTO script (name,command,script,minutes,lastRun,type,comment) VALUES (";
   s.append("'" + name + "'");
   s.append(",'" + script->command() + "'");
   s.append(",'" + script->file() + "'");
   s.append("," + QString::number(script->minutes()));
   s.append(",'" + script->lastRun() + "'");
+  s.append(",'" + script->type() + "'");
+  s.append(",'" + script->comment() + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -136,16 +142,42 @@ int ScriptDataBase::deleteScript (QStringList &l)
   return 0;
 }
 
-int ScriptDataBase::scripts (QStringList &l)
+int ScriptDataBase::scripts (QString type, QStringList &l)
 {
   l.clear();
   
   QSqlQuery q(_db);
+
   QString s = "SELECT name FROM script";
+  if (! type.isEmpty())
+    s.append(" WHERE type='" + type + "'");
+  
   q.exec(s);
   if (q.lastError().isValid())
   {
     qDebug() << "ScriptDataBase::scripts:" << q.lastError().text();
+    return 1;
+  }
+
+  while (q.next())
+    l << q.value(0).toString();
+
+  l.sort();
+
+  return 0;
+}
+
+int ScriptDataBase::types (QStringList &l)
+{
+  l.clear();
+
+  QSqlQuery q(_db);
+
+  QString s = "SELECT DISTINCT type FROM script";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "ScriptDataBase::types:" << q.lastError().text();
     return 1;
   }
 

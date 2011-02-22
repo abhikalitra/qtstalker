@@ -961,7 +961,7 @@
 
            Added new plugin INDICATOR_PLOT_DATE_GET as per xley request.
 
-           Added New Indicator menu option to the chart context menu.
+           Added New Indicator menu option to the chart context menu. Removed the configure button placement.
 
            Fixed bug ID 3187594 - 0.37-dev recent price not visible.
 
@@ -971,5 +971,14 @@
 
            Added new plugin CHART_OBJECT_NEW and new system script ChartObjectNew.pl.
 
+           Added a plot font setting CONFIGURE_DIALOG.
 
- 
+           Fixed Text chart object now displays proper font.
+          
+           Added yahoo download script as a default for script launch button 1.
+
+20110222:  Fixed yahoo date bug. Was not downloading correct dates.
+
+           Changed the script table schema. CVS users will need to manually drop the script table
+           in ~/.qtstalker/data.sqlite database.
+

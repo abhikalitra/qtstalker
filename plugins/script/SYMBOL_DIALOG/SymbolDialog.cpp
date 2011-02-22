@@ -70,7 +70,8 @@ void SymbolDialog::createGUI ()
   _exchanges->setToolTip(tr("Select a specific exchange or * for all"));
   form->addRow(tr("Exchange"), _exchanges);
 
-  _search = new QLineEdit("*");
+  _search = new LineEdit;
+  _search->setText("*");
   _search->setToolTip(tr("Enter a partial search like %OOG% or * for all"));
   form->addRow(tr("Symbol pattern"), _search);
 

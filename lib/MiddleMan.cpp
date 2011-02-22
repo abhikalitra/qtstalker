@@ -111,3 +111,8 @@ void MiddleMan::chartObjectNew (QString indicator, QString name, QString type)
 {
   emit signalChartObjectNew(indicator, name, type);
 }
+
+void MiddleMan::plotFont (QFont d)
+{
+  emit signalPlotFont(d);
+}

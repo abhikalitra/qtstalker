@@ -54,7 +54,7 @@ class GroupPage : public QWidget
       _DELETE_GROUP
     };
 
-    GroupPage ();
+    GroupPage (QWidget *);
     void createActions ();
     void createButtonMenu ();
 
