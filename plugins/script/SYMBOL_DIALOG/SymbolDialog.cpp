@@ -315,19 +315,20 @@ void SymbolDialog::loadExchanges ()
 
 void SymbolDialog::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
 
   QSize sz = settings.value("symbol_dialog_window_size", QSize(400,300)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("symbol_dialog_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  QPoint p = settings.value("symbol_dialog_window_position").toPoint();
+  if (! p.isNull())
+    move(p);
 }
 
 void SymbolDialog::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("symbol_dialog_window_size", size());
   settings.setValue("symbol_dialog_window_position", pos());
   settings.sync();

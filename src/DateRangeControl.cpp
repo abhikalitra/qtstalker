@@ -59,7 +59,7 @@ void DateRangeControl::createMenu ()
   connect(_menu, SIGNAL(triggered(QAction *)), this, SLOT(rangeChanged(QAction *)));
   setMenu(_menu);
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   _dateRange = settings.value("date_range", 5).toInt();
 
   QActionGroup *group = new QActionGroup(this);
@@ -83,7 +83,7 @@ void DateRangeControl::rangeChanged (QAction *d)
 {
   _dateRange = _lengthList.indexOf(d->text());
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("date_range", _dateRange);
   settings.sync();
 

@@ -203,19 +203,20 @@ void GroupEditDialog::deleteButtonPressed ()
 
 void GroupEditDialog::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
 
   QSize sz = settings.value("group_edit_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("group_edit_dialog_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  QPoint p = settings.value("group_edit_dialog_window_position").toPoint();
+  if (! p.isNull())
+    move(p);
 }
 
 void GroupEditDialog::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("group_edit_dialog_window_size", size());
   settings.setValue("group_edit_dialog_window_position", pos());
   settings.sync();

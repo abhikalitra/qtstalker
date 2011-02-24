@@ -9,7 +9,8 @@
 #include "MiddleMan.h"
 
 extern QString g_session;
-extern QString g_settingsFile;
+extern QString g_localSettings;
+extern QString g_globalSettings;
 extern BarData * g_barData;
 extern MiddleMan * g_middleMan;
 extern QMutex g_middleManMutex;

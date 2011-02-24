@@ -23,6 +23,7 @@
 #define YAHOO_DIALOG_HPP
 
 #include "ScriptPlugin.h"
+#include "YahooDialog.h"
 
 class YAHOO_DIALOG : public ScriptPlugin
 {
@@ -31,6 +32,12 @@ class YAHOO_DIALOG : public ScriptPlugin
   public:
     YAHOO_DIALOG ();
     int command (Command *);
+
+  public slots:
+    void kill ();
+  
+  private:
+    YahooDialog *_dialog;    
 };
 
 extern "C"

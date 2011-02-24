@@ -127,7 +127,7 @@ void ChartObjectTextDialog::done ()
 
   if (_default->isChecked())
   {
-    QSettings settings(g_settingsFile);
+    QSettings settings(g_globalSettings);
     settings.setValue("default_chart_object_text_color", _color->color().name());
     settings.setValue("default_chart_object_text_font", _font->font());
     settings.sync();
@@ -177,14 +177,15 @@ void ChartObjectTextDialog::loadObject ()
 
 void ChartObjectTextDialog::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
 
   QSize sz = settings.value("chart_object_text_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("chart_object_text_dialog_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  QPoint p = settings.value("chart_object_text_dialog_window_position").toPoint();
+  if (! p.isNull())
+    move(p);
 
   QColor c(settings.value("default_chart_object_text_color", "red").toString());
   _color->setColor(c);
@@ -195,7 +196,7 @@ void ChartObjectTextDialog::loadSettings ()
 
 void ChartObjectTextDialog::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("chart_object_text_dialog_window_size", size());
   settings.setValue("chart_object_text_dialog_window_position", pos());
   settings.sync();

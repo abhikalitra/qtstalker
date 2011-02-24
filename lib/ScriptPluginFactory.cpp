@@ -30,7 +30,7 @@
 
 ScriptPluginFactory::ScriptPluginFactory ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   _path = settings.value("script_plugin_path").toString();
   if (_path.isEmpty())
   {
@@ -76,7 +76,7 @@ void ScriptPluginFactory::setPluginList ()
   QStringList l;
   getPluginList(_path, l);
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("script_plugin_list", l);
   settings.sync();
 }

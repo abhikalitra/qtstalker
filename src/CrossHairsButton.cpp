@@ -41,7 +41,7 @@ CrossHairsButton::CrossHairsButton ()
   setToolTip(tr("Toggle the cursor crosshairs"));
   setCheckable(TRUE);
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   setChecked(settings.value("crosshairs", 0).toInt());
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
@@ -53,8 +53,8 @@ CrossHairsButton::CrossHairsButton ()
 
 void CrossHairsButton::changed (bool)
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("CrosshairsStatusChanged");
   script->setFile(settings.value("crosshairs_status_changed_script").toString());
   script->setCommand("perl");
@@ -63,8 +63,8 @@ void CrossHairsButton::changed (bool)
 
 void CrossHairsButton::dialog ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("CrosshairsColor");
   script->setFile(settings.value("crosshairs_color_script").toString());
   script->setCommand("perl");

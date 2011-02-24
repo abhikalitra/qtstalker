@@ -982,3 +982,16 @@
            Changed the script table schema. CVS users will need to manually drop the script table
            in ~/.qtstalker/data.sqlite database.
 
+           Fixed dialogs first appearing at point 0,0 on the screen.
+
+           Symbols in the group panel now show company name in the tooltip.
+
+20110224:  Split the config files into 2. One for local sessions and one for global settings.
+           These changes should fix the empty indicator fresh install and the symbol search
+           issues.
+
+           Moved the indicator, group and script databases out of sqlite and into QSettings.
+           indicators are now in the local QSettings, script and groups are global.
+
+           Fixed bug # 3190704 - 0.37-dev chart grid toggle.
+

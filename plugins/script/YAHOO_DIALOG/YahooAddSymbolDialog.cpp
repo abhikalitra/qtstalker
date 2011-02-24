@@ -30,7 +30,7 @@
 #include <QSettings>
 #include <QFormLayout>
 
-YahooAddSymbolDialog::YahooAddSymbolDialog ()
+YahooAddSymbolDialog::YahooAddSymbolDialog (QWidget *p) : QDialog (p)
 {
   _yexchange << "NYSE" << "AX" << "SA" << "TO" << "BO" << "NS" << "L" << "B";
   _helpFile = "Yahoo.html";
@@ -203,21 +203,20 @@ void YahooAddSymbolDialog::cancel ()
 
 void YahooAddSymbolDialog::loadSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
+  QSettings settings(g_globalSettings);
 
   QSize sz = settings.value("yahoo_add_symbol_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("yahoo_add_symbol_dialog_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  QPoint p = settings.value("yahoo_add_symbol_dialog_window_position").toPoint();
+  if (! p.isNull())
+    move(p);
 }
 
 void YahooAddSymbolDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_globalSettings);
   settings.setValue("yahoo_add_symbol_dialog_window_size", size());
   settings.setValue("yahoo_add_symbol_dialog_window_position", pos());
   settings.sync();

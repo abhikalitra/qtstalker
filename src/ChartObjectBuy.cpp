@@ -34,7 +34,7 @@ ChartObjectBuy::ChartObjectBuy ()
   _draw = new ChartObjectBuyDraw;
   _draw->setSettings(_settings);
 
-  QSettings set(g_settingsFile);
+  QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_buy_color", "green").toString());
   _settings->setData(QString("Type"), QString("Buy"));
 }

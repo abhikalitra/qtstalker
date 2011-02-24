@@ -20,200 +20,87 @@
  */
 
 #include "GroupDataBase.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDir>
+#include <QSettings>
 
 GroupDataBase::GroupDataBase ()
 {
-  init();
-}
-
-void GroupDataBase::init ()
-{
-  _db = QSqlDatabase::database("data");
-  if (! _db.isOpen())
-  {
-    QString s = QDir::homePath() + "/.qtstalker/data.sqlite";
-    _db = QSqlDatabase::addDatabase("QSQLITE", "data");
-    _db.setHostName("QtStalker");
-    _db.setDatabaseName(s);
-    _db.setUserName("QtStalker");
-    _db.setPassword("QtStalker");
-    if (! _db.open())
-      qDebug() << "GroupDataBase::init: open" << _db.lastError().text();
-  }
-
-  QSqlQuery q(_db);
-  QString s = "CREATE TABLE IF NOT EXISTS groupIndex (";
-  s.append("name TEXT PRIMARY KEY UNIQUE");
-  s.append(", tableName TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "GroupDataBase::init: create table" << _db.lastError().text();
-    qDebug() << s;
-  }
 }
 
 int GroupDataBase::load (QString name, QStringList &l)
 {
   l.clear();
-  
-  QString table;
-  if (getTable(name, table))
-    return 1;
-
-  if (table.isEmpty())
-  {
-    qDebug() << "GroupDataBase::load: group not found" << name;
-    return 1;
-  }
-  
-  QSqlQuery q(_db);
-  QString s = "SELECT symbol FROM " + table;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "GroupDataBase::load:" << q.lastError().text();
-    return 1;
-  }
-
-  while (q.next())
-    l << q.value(0).toString();
+  QSettings db(g_globalSettings);
+  QString key = "group_" + name;
+  l = db.value(key).toStringList();
 
   return 0;
 }
 
-int GroupDataBase::save (QString name, QStringList &l)
+int GroupDataBase::merge (QString name, QStringList &l)
 {
-  QString table;
-  if (getTable(name, table))
-    return 1;
+  // merge
+  QSettings db(g_globalSettings);
 
-  if (table.isEmpty())
+  // check if this is a new indicator and add it to master list
+  QStringList gl = db.value("groups").toStringList();
+  if (gl.indexOf(name) == -1)
   {
-    if (newGroup(name, table))
-      return 1;
+    gl.append(name);
+    db.setValue("groups", gl);
   }
 
-  QSqlQuery q(_db);
-  _db.transaction();
+  QString key = "group_" + name;
+  QStringList g = db.value(key).toStringList();
 
   int loop = 0;
   for (; loop < l.count(); loop++)
-  {
-    QString s = "INSERT OR REPLACE INTO " + table + " (symbol) VALUES (";
-    s.append("'" + l.at(loop) + "'");
-    s.append(")");
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "GroupDataBase::save:" << q.lastError().text();
-      return 1;
-    }
-  }
-
-  _db.commit();
+    g << l.at(loop);
+  g.removeDuplicates();
+  
+  db.setValue(key, g);
 
   return 0;
 }
 
 int GroupDataBase::saveAll (QString name, QStringList &l)
 {
-  QString table;
-  if (getTable(name, table))
-    return 1;
+  QSettings db(g_globalSettings);
 
-  if (table.isEmpty())
+  // check if this is a new indicator and add it to master list
+  QStringList gl = db.value("groups").toStringList();
+  if (gl.indexOf(name) == -1)
   {
-    if (newGroup(name, table))
-      return 1;
-  }
-  else
-  {
-    QSqlQuery q(_db);
-    _db.transaction();
-
-    // drop old table
-    QString s = "DROP TABLE " + table;
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "GroupDataBase::saveAll:" << q.lastError().text();
-      return 1;
-    }
-    
-    s = "CREATE TABLE IF NOT EXISTS " + table + " (";
-    s.append("symbol TEXT PRIMARY KEY UNIQUE");
-    s.append(")");
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "GroupDataBase::newGroup:" << q.lastError().text();
-      return 1;
-    }
-
-    _db.commit();
+    gl.append(name);
+    db.setValue("groups", gl);
   }
 
-  QSqlQuery q(_db);
-  _db.transaction();
+  QString key = "group_" + name;
 
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    QString s = "INSERT OR REPLACE INTO " + table + " (symbol) VALUES (";
-    s.append("'" + l.at(loop) + "'");
-    s.append(")");
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "GroupDataBase::save:" << q.lastError().text();
-      return 1;
-    }
-  }
-
-  _db.commit();
+  db.setValue(key, l);
 
   return 0;
 }
 
 int GroupDataBase::deleteGroup (QStringList &l)
 {
-  QSqlQuery q(_db);
-  _db.transaction();
+  QSettings db(g_globalSettings);
+
+  QStringList il = db.value("groups").toStringList();
 
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QString table;
-    QString name = l.at(loop);
-    if (getTable(name, table))
-    {
-      qDebug() << "GroupDataBase::deleteGroup: group not found" << name;
-      continue;
-    }
-    
-    QString s = "DELETE FROM groupIndex WHERE name='" + name + "'";
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "GroupDataBase::deleteGroup:" << q.lastError().text();
-      continue;
-    }
+    il.removeAll(l.at(loop));
 
-    s = "DROP TABLE " + table;
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "GroupDataBase::deleteGroup:" << q.lastError().text();
-      continue;
-    }
+    QString key = "group_" + l.at(loop);
+    db.remove(key);
   }
 
-  _db.commit();
+  db.setValue("groups", il);
 
   return 0;
 }
@@ -221,94 +108,8 @@ int GroupDataBase::deleteGroup (QStringList &l)
 int GroupDataBase::groups (QStringList &l)
 {
   l.clear();
-
-  QSqlQuery q(_db);
-  QString s = "SELECT name FROM groupIndex ORDER BY name ASC";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "GroupDataBase::groups: " << q.lastError().text();
-    return 1;
-  }
-
-  while (q.next())
-    l << q.value(0).toString();
+  QSettings db(g_globalSettings);
+  l = db.value("groups").toStringList();
 
   return 0;
-}
-
-int GroupDataBase::newGroup (QString &name, QString &table)
-{
-  QSqlQuery q(_db);
-
-  // create the symbol
-  // we use the maximum record column and add 1 to it to generate a new table name
-  QString s = "SELECT max(rowid) FROM groupIndex";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "GroupDataBase::newGroup: get record max " << q.lastError().text();
-    return 1;
-  }
-
-  table = "G1";
-  if (q.next())
-    table = "G" + QString::number(q.value(0).toInt() + 1);
-
-  _db.transaction();
-  
-  // add new symbol entry into the symbolIndex table
-  s = "INSERT OR REPLACE INTO groupIndex (name,tableName) VALUES(";
-  s.append("'" + name + "'");
-  s.append(",'" + table + "'");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "GroupDataBase::newGroup:" << q.lastError().text();
-    return 1;
-  }
-
-  s = "CREATE TABLE IF NOT EXISTS " + table + " (";
-  s.append("symbol TEXT PRIMARY KEY UNIQUE");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "GroupDataBase::newGroup:" << q.lastError().text();
-    return 1;
-  }
-
-  _db.commit();
-  
-  return 0;
-}
-
-int GroupDataBase::getTable (QString &name, QString &table)
-{
-  table.clear();
-  
-  QSqlQuery q(_db);
-  QString s = "SELECT tableName FROM groupIndex WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "GroupDataBase::getTable:" << q.lastError().text();
-    return 1;
-  }
-
-  if (q.next())
-    table = q.value(0).toString();
-
-  return 0;
-}
-
-void GroupDataBase::transaction ()
-{
-  _db.transaction();
-}
-
-void GroupDataBase::commit ()
-{
-  _db.commit();
 }

@@ -34,7 +34,7 @@ ChartObjectSell::ChartObjectSell ()
   _draw = new ChartObjectSellDraw;
   _draw->setSettings(_settings);
 
-  QSettings set(g_settingsFile);
+  QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_sell_color", "red").toString());
   _settings->setData("Type", QString("Sell"));
 }

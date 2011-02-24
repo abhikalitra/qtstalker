@@ -25,7 +25,7 @@
 #include <QByteArray>
 #include <QtDebug>
 
-Script::Script ()
+Script::Script (QObject *p) : QObject(p)
 {
   _killFlag = 0;
   _barData = 0;
@@ -36,11 +36,12 @@ Script::Script ()
   _indicator = new Indicator;
   _indicatorFlag = 1;
 
-  connect(&_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-  connect(&_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
-  connect(&_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
-  connect(&_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
-  connect(&_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
+  _proc = new QProcess(this);
+  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+  connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
+  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
+  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
 }
 
 Script::~Script ()
@@ -52,18 +53,20 @@ Script::~Script ()
   if (_indicatorFlag)
     delete _indicator;
 
-//qDebug() << "Script::~Script:" << _name << "deleted";
+qDebug() << "Script::~Script:" << _name << "deleted";
 }
 
 void Script::clear ()
 {
-  _proc.terminate();
-  _killFlag = 0;
+  _proc->terminate();
 
   if (_plugins.count())
     qDeleteAll(_plugins);
+  _plugins.clear();
 
   _command->clear();
+
+  _killFlag = 0;
 }
 
 void Script::setIndicator (Indicator *d)
@@ -95,10 +98,10 @@ int Script::startScript ()
   emit signalMessage(l.join(" "));
 
   // start the process
-  _proc.start(command, QIODevice::ReadWrite);
+  _proc->start(command, QIODevice::ReadWrite);
 
   // make sure process starts error free
-  if (! _proc.waitForStarted())
+  if (! _proc->waitForStarted())
   {
     qDebug("Script::startScript: %s : error starting script...timed out", qPrintable(command));
     clear();
@@ -109,6 +112,8 @@ int Script::startScript ()
   _command->setName(_name);
   _command->setBarData(_barData);
   _command->setIndicator(_indicator);
+
+qDebug() << "Script::startScript:" << _name << "started";
   
   return 0;
 }
@@ -136,7 +141,7 @@ void Script::done (int, QProcess::ExitStatus)
 
 void Script::readFromStdout ()
 {
-  QByteArray ba = _proc.readAllStandardOutput();
+  QByteArray ba = _proc->readAllStandardOutput();
   QString s(ba);
 
   _command->parse(s);
@@ -167,6 +172,8 @@ void Script::readFromStdout ()
 
     _plugins.insert(_command->plugin(), plug);
     connect(plug, SIGNAL(signalResume()), this, SLOT(resume()));
+
+    connect(this, SIGNAL(signalKill()), plug, SLOT(kill()));
   }
 
   switch ((ScriptPlugin::Type) plug->type())
@@ -187,18 +194,23 @@ void Script::readFromStdout ()
 
 void Script::readFromStderr ()
 {
-  qDebug() << "Script::readFromStderr:" << _proc.readAllStandardError();
+  qDebug() << "Script::readFromStderr:" << _proc->readAllStandardError();
 }
 
 void Script::stopScript (QString d)
 {
-  if (_proc.state() == QProcess::NotRunning)
+  if (_proc->state() == QProcess::NotRunning)
     return;
 
-  if (_name != d)
-    return;
+  if (_name == d || d.isEmpty())
+  {
+    _killFlag = TRUE;
 
-  _killFlag = TRUE;
+    // test
+    emit signalKill();
+qDebug() << "Script::stopScript";    
+    // test end
+  }
 }
 
 void Script::setBarData (BarData *d)
@@ -258,7 +270,10 @@ QString & Script::lastRun ()
 
 void Script::resume ()
 {
-  _proc.write(_command->returnCode());
+//  if (_proc->state() == QProcess::NotRunning)
+//    return;
+
+  _proc->write(_command->returnCode());
 }
 
 void Script::setType (QString d)

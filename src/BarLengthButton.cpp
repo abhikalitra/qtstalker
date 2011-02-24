@@ -57,7 +57,7 @@ void BarLengthButton::createMenu ()
   connect(_menu, SIGNAL(triggered(QAction *)), this, SLOT(lengthChanged(QAction *)));
   setMenu(_menu);
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   _barLength = settings.value("bar_length", 6).toInt();
 
   QActionGroup *group = new QActionGroup(this);
@@ -81,7 +81,7 @@ void BarLengthButton::lengthChanged (QAction *d)
 {
   _barLength = _lengthList.indexOf(d->text());
   
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("bar_length", _barLength);
   settings.sync();
   

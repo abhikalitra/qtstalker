@@ -110,6 +110,7 @@ void QtstalkerApp::createGUI ()
   connect(_sidePanel, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
   connect(_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalLoadSettings()), _sidePanel, SLOT(loadSettings()));
+  connect(this, SIGNAL(signalShutDown()), _sidePanel, SLOT(saveSettings()));
 
   DockWidget *dock = new DockWidget(QString(), this);
   dock->setObjectName("sidePanelDock");
@@ -172,7 +173,7 @@ void QtstalkerApp::createGUI ()
 
 void QtstalkerApp::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   
   restoreGeometry(settings.value("main_window_geometry").toByteArray());
   restoreState(settings.value("main_window_state").toByteArray());
@@ -199,7 +200,7 @@ void QtstalkerApp::loadSettings ()
 
 void QtstalkerApp::save()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("main_window_geometry", saveGeometry());
   settings.setValue("main_window_state", saveState());
   settings.setValue("main_window_size", size());

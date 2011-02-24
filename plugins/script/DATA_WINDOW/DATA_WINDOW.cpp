@@ -25,6 +25,7 @@
 #include "DataWindow.h"
 
 #include <QtDebug>
+#include <QEventLoop>
 
 DATA_WINDOW::DATA_WINDOW ()
 {

@@ -38,6 +38,11 @@ int ScriptPlugin::command (Command *)
   return 0;
 }
 
+// virtual function
+void ScriptPlugin::kill ()
+{
+}
+
 int ScriptPlugin::type ()
 {
   return _type;

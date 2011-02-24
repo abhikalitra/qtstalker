@@ -63,9 +63,6 @@ class ScriptPage : public QWidget
     void startScript ();
     void createButtonMenu ();
     void createMainPage ();
-    void loadSettings ();
-    void saveSettings ();
-    void prepareScript (Script *script, QString name, QString command, QString file);
 
   public slots:
     void queRightClick (const QPoint &);
@@ -79,19 +76,21 @@ class ScriptPage : public QWidget
     void done (QString);
     void cancelScript ();
     void cancelScript (QString);
-    void runFileScript ();
     void launchButtonRows ();
     void launchButtonRows2 (int);
     void launchButtonCols ();
     void launchButtonCols2 (int);
     void scriptTimer ();
     void fileSelect ();
+    void setupScript (Script *);
+    void shutDown ();
 
   protected:
     QListWidget *_queList;
     QMenu *_queMenu;
     QHash<int, QAction *> _actions;
     QHash<QString, QListWidgetItem *> _itemList;
+    QHash<QString, Script *> _scriptList;
     QTimer _timer;
 };
 

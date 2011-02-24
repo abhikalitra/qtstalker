@@ -34,7 +34,7 @@ ChartObjectHLine::ChartObjectHLine ()
   _draw = new ChartObjectHLineDraw;
   _draw->setSettings(_settings);
   
-  QSettings set(g_settingsFile);
+  QSettings set(g_globalSettings);
   QString s = set.value("default_chart_object_hline_color", "red").toString();
   _settings->setData("Color", s);
   _settings->setData("Type", QString("HLine"));

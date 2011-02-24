@@ -36,7 +36,7 @@ class YahooSymbolDialog : public QDialog
     void signalSymbols (QStringList);
 
   public:
-    YahooSymbolDialog ();
+    YahooSymbolDialog (QWidget *);
     void createGUI ();
     void saveSettings ();
       

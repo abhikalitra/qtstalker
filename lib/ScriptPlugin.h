@@ -32,6 +32,7 @@ class ScriptPlugin : public QObject
 
   signals:
     void signalResume ();
+    void signalKill ();
   
   public:
     enum Type
@@ -44,6 +45,9 @@ class ScriptPlugin : public QObject
     virtual ~ScriptPlugin ();
     virtual int command (Command *);
     int type ();
+
+  public slots:
+    virtual void kill ();
 
   protected:
     int _type;

@@ -144,13 +144,14 @@ void YahooDialog::cancel ()
 
 void YahooDialog::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   QSize sz = settings.value("yahoo_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("yahoo_dialog_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  QPoint p = settings.value("yahoo_dialog_window_position").toPoint();
+  if (! p.isNull())
+    move(p);
 
   _adjustment->setChecked(settings.value("yahoo_dialog_adjustment", TRUE).toBool());
 
@@ -161,7 +162,7 @@ void YahooDialog::loadSettings ()
 
 void YahooDialog::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("yahoo_dialog_window_size", size());
   settings.setValue("yahoo_dialog_window_position", pos());
   settings.setValue("yahoo_dialog_adjustment", _adjustment->isChecked());
@@ -222,7 +223,6 @@ void YahooDialog::done ()
 
       symbol.setData("DATE_START", bar->date().toString(Qt::ISODate));
       symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
-// qDebug() << _symbolList.at(loop) << symbol.data("DATE_START") << symbol.data("DATE_END");
     }
     else
     {
@@ -244,7 +244,7 @@ void YahooDialog::done ()
 
 void YahooDialog::selectSymbolsDialog ()
 {
-  YahooSymbolDialog *sdialog = new YahooSymbolDialog;
+  YahooSymbolDialog *sdialog = new YahooSymbolDialog(this);
   connect(sdialog, SIGNAL(signalSymbols(QStringList)), this, SLOT(setSymbols(QStringList)));
   sdialog->show();
 }

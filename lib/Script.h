@@ -47,9 +47,10 @@ class Script : public QObject
     void signalDone (QString);
     void signalMessage (QString);
     void signalStopped (QString);
+    void signalKill ();
 
   public:
-    Script ();
+    Script (QObject *);
     ~Script ();
     void clear ();
     void setIndicator (Indicator *);
@@ -79,7 +80,7 @@ class Script : public QObject
     void resume ();
 
   private:
-    QProcess _proc;
+    QProcess *_proc;
     int _killFlag;
     Indicator *_indicator;
     int _indicatorFlag;

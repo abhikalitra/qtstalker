@@ -61,7 +61,7 @@ void Setup::setup (QString session)
   ScriptPluginFactory sfac;
   sfac.setPluginList();
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   int ti = settings.value("default_indicators", 0).toInt();
   if (ti)
     return;
@@ -87,9 +87,10 @@ void Setup::setupDirectories ()
   }
 
   // setup the config defaults
-  g_settingsFile = home + "/qtstalkerrc" + g_session;
+  g_localSettings = "QtStalker/qtstalkerrc" + g_session;
+  g_globalSettings = "QtStalker/qtstalkerrc";
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
 
   // set the system script directory
   QString sysdir = INSTALL_DATA_DIR;
@@ -205,14 +206,14 @@ void Setup::setupDefaultScripts ()
   file.append("/qtstalker/quote/YahooHistoryDownload.pl");
   
   ScriptDataBase db;
-  Script script;
+  Script script(0);
   script.setName(name);
   script.setCommand("perl");
   script.setFile(file);
   script.setMinutes(0);
   db.save(&script);
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("script_launch_button_1", name);
   settings.setValue("script_launch_button_icon_", QString());
   settings.setValue("script_launch_button_use_icon_", 0);

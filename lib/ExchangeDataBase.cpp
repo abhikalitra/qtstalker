@@ -60,7 +60,7 @@ int ExchangeDataBase::createExchanges ()
   // check if last modification date matches current one
   // if they match then no changes, no need to re-create the table
   // if not, new data is in file so re-create the table
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   QDateTime dt = settings.value("exchange_database_file_date", QDateTime::currentDateTime()).toDateTime();
   if (! dt.isValid())
   {

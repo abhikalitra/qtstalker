@@ -74,7 +74,7 @@ void ScriptLaunchButtonDialog::createMainPage ()
   // script
   ScriptDataBase db;
   QStringList l;
-  db.scripts(QString(), l);
+  db.scripts(l);
 
   _script = new QComboBox;
   _script->addItems(l);
@@ -131,18 +131,19 @@ void ScriptLaunchButtonDialog::cancel ()
 
 void ScriptLaunchButtonDialog::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   QSize sz = settings.value("script_launch_button_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("script_launch_button_dialog_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  QPoint p = settings.value("script_launch_button_dialog_window_position").toPoint();
+  if (! p.isNull())
+    move(p);
 }
 
 void ScriptLaunchButtonDialog::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("script_launch_button_dialog_window_size", size());
   settings.setValue("script_launch_button_dialog_window_position", pos());
   settings.sync();
@@ -155,4 +156,3 @@ void ScriptLaunchButtonDialog::useIconToggled (bool d)
   else
     _icon->setEnabled(FALSE);
 }
-

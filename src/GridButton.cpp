@@ -38,8 +38,8 @@ GridButton::GridButton ()
   setToolTip(tr("Toggle the chart grid"));
   setCheckable(TRUE);
 
-  QSettings settings(g_settingsFile);
-  setChecked(settings.value("grid", 1).toInt());
+  QSettings settings(g_localSettings);
+  setChecked(settings.value("grid", TRUE).toBool());
 
   _menu = new QMenu(this);
   _menu->addAction(QPixmap(color_xpm), tr("Grid &Color"), this, SLOT(colorDialog()), Qt::ALT+Qt::Key_C);
@@ -50,8 +50,8 @@ GridButton::GridButton ()
 
 void GridButton::changed (bool)
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("GridStatusChanged");
   script->setFile(settings.value("grid_status_changed_script").toString());
   script->setCommand("perl");
@@ -60,8 +60,8 @@ void GridButton::changed (bool)
 
 void GridButton::colorDialog ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("GridColor");
   script->setFile(settings.value("grid_color_script").toString());
   script->setCommand("perl");

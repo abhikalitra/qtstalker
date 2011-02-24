@@ -527,7 +527,7 @@ DockWidget * Plot::dockWidget ()
 
 void Plot::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   QColor color(settings.value("plot_background_color", "black").toString());
   setBackgroundColor(color);
 
@@ -541,6 +541,9 @@ void Plot::loadSettings ()
 
   // set crosshairs status
   setCrossHairs(settings.value("crosshairs", 0).toInt());
+
+  // set grid status
+  setGrid(settings.value("grid", TRUE).toBool());
 
   // set crosshairs color
   color.setNamedColor(settings.value("crosshairs_color", "white").toString());

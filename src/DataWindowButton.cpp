@@ -40,8 +40,8 @@ DataWindowButton::DataWindowButton ()
 
 void DataWindowButton::dialog ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("DataWindow");
   script->setFile(settings.value("data_window_script").toString());
   script->setCommand("perl");

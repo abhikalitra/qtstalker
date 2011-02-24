@@ -36,7 +36,7 @@ int SETTINGS_SAVE::command (Command *command)
   // KEY
   // DATA
 
-  QSettings set(g_settingsFile);
+  QSettings set(g_localSettings);
   set.setValue(command->parm("KEY"), command->parm("DATA"));
   set.sync();
 

@@ -135,14 +135,15 @@ void ScriptEditDialog::cancel ()
 
 void ScriptEditDialog::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
 
   QSize sz = settings.value("script_edit_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("script_edit_dialog_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  QPoint p = settings.value("script_edit_dialog_window_position").toPoint();
+  if (! p.isNull())
+    move(p);
 
   // last file selected
   _file = settings.value("script_edit_dialog_last_file", QDir::homePath()).toString();
@@ -153,7 +154,7 @@ void ScriptEditDialog::loadSettings ()
 
 void ScriptEditDialog::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("script_edit_dialog_window_size", size());
   settings.setValue("script_edit_dialog_window_position", pos());
   settings.setValue("script_edit_dialog_last_file", _file);
@@ -171,7 +172,7 @@ void ScriptEditDialog::done ()
   }
 
   ScriptDataBase db;
-  Script script;
+  Script script(0);
   script.setName(_name);
   script.setCommand(com);
   script.setFile(_file);
@@ -188,7 +189,7 @@ void ScriptEditDialog::done ()
 void ScriptEditDialog::loadScript ()
 {
   ScriptDataBase db;
-  Script script;
+  Script script(0);
   script.setName(_name);
   db.load(&script);
 

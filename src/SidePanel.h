@@ -26,6 +26,7 @@
 #include <QMainWindow>
 
 #include "BarData.h"
+#include "ScriptPage.h"
 
 class SidePanel : public QTabWidget
 {
@@ -49,6 +50,7 @@ class SidePanel : public QTabWidget
 
   private:
     bool _lockStatus;
+    ScriptPage *_scriptPage;
 };
 
 #endif

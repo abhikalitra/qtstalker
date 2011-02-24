@@ -157,14 +157,14 @@ void ControlPanel::sliderChanged (int d)
 
 void ControlPanel::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   _lockStatus = settings.value("plot_slider_lock_status", TRUE).toBool();
   emit signalLockStatus(_lockStatus);
 }
 
 void ControlPanel::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("plot_slider_lock_status", _lockStatus);
 }
 

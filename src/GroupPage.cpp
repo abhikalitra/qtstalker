@@ -22,6 +22,7 @@
 #include "GroupPage.h"
 #include "Globals.h"
 #include "GroupDataBase.h"
+#include "QuoteDataBase.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -59,7 +60,7 @@ GroupPage::GroupPage (QWidget *p) : QWidget (p)
 
   loadGroups();
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   QString s = settings.value("last_group_used").toString();
   _groups->setCurrentIndex(_groups->findText(s, Qt::MatchExactly));
 }
@@ -103,8 +104,8 @@ void GroupPage::createButtonMenu ()
 
 void GroupPage::newGroup ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("GroupPanelNewGroup");
   script->setFile(settings.value("group_panel_new_group_script").toString());
   script->setCommand("perl");
@@ -113,8 +114,8 @@ void GroupPage::newGroup ()
 
 void GroupPage::editGroup ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("GroupPanelEditGroup");
   script->setFile(settings.value("group_panel_edit_group_script").toString());
   script->setCommand("perl");
@@ -123,8 +124,8 @@ void GroupPage::editGroup ()
 
 void GroupPage::deleteGroup()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("GroupPanelDeleteGroup");
   script->setFile(settings.value("group_panel_delete_group_script").toString());
   script->setCommand("perl");
@@ -140,7 +141,7 @@ void GroupPage::groupSelected (int i)
 
   updateList();
   
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("last_group_used", s);
   settings.sync();
 }
@@ -223,8 +224,8 @@ void GroupPage::updateGroups ()
 
 void GroupPage::addToGroup ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("GroupPanelAddToGroup");
   script->setFile(settings.value("group_panel_add_to_group_script").toString());
   script->setCommand("perl");
@@ -241,12 +242,15 @@ void GroupPage::updateList ()
   GroupDataBase db;
   QStringList l;
   db.load(_groups->currentText(), l);
+
+  QuoteDataBase qdb;
   
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
     BarData bd;
     bd.setKey(l.at(loop));
+    qdb.getSymbol(&bd);
     _nav->addSymbol(bd);
   }
 }

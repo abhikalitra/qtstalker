@@ -35,7 +35,7 @@ int SCRIPT_DATABASE_LIST::command (Command *command)
 
   ScriptDataBase db;
   QStringList l;
-  if (db.scripts(QString(), l))
+  if (db.scripts(l))
   {
     qDebug() << _plugin << "::command: ScriptDataBase error";
     return 1;

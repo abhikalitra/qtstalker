@@ -35,7 +35,7 @@ ChartObjectRetracement::ChartObjectRetracement ()
   _draw = new ChartObjectRetracementDraw;
   _draw->setSettings(_settings);
 
-  QSettings set(g_settingsFile);
+  QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_retracement_color", "red").toString());
   _settings->setData("Line1", set.value("default_chart_object_retracement_line1", 0.382).toDouble());
   _settings->setData("Line2", set.value("default_chart_object_retracement_line2", 0.5).toDouble());

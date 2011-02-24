@@ -23,42 +23,11 @@
 #include "Globals.h"
 
 #include <QtDebug>
+#include <QSettings>
+#include <QDir>
 
 IndicatorDataBase::IndicatorDataBase ()
 {
-  _table = "indicator" + g_session;
-  init();
-}
-
-void IndicatorDataBase::init ()
-{
-  _db = QSqlDatabase::database("data");
-  if (! _db.isOpen())
-  {
-    QString s = QDir::homePath() + "/.qtstalker/data.sqlite";
-    _db = QSqlDatabase::addDatabase("QSQLITE", "data");
-    _db.setHostName("QtStalker");
-    _db.setDatabaseName(s);
-    _db.setUserName("QtStalker");
-    _db.setPassword("QtStalker");
-    if (! _db.open())
-      qDebug() << "IndicatorDataBase::init:" << _db.lastError().text();
-  }
-
-  QSqlQuery q(_db);
-  QString s = "CREATE TABLE IF NOT EXISTS " + _table + " (";
-  s.append("name TEXT PRIMARY KEY UNIQUE");
-  s.append(", lock INT");
-  s.append(", date INT");
-  s.append(", log INT");
-  s.append(", command TEXT");
-  s.append(", script TEXT");
-  s.append(", dialog TEXT"); // unused
-  s.append(", dialogSettings TEXT"); // unused
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "IndicatorDataBase::init:" << q.lastError().text();
 }
 
 int IndicatorDataBase::load (Indicator *i)
@@ -70,25 +39,16 @@ int IndicatorDataBase::load (Indicator *i)
     return 1;
   }
 
-  QSqlQuery q(_db);
-  QString s = "SELECT command,script,lock,log,date FROM " + _table + " WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "IndicatorDataBase::load:" << q.lastError().text();
-    return 1;
-  }
+  QSettings db(g_localSettings);
+
+  QString key = "indicator_" + name;
   
-  if (! q.next())
-    return 1;
-
-  int pos = 0;
-  i->setCommand(q.value(pos++).toString());
-  i->setScript(q.value(pos++).toString());
-  i->setLock(q.value(pos++).toInt());
-  i->setLog(q.value(pos++).toInt());
-  i->setDate(q.value(pos++).toInt());
-
+  i->setCommand(db.value(key + "_command", "perl").toString());
+  i->setScript(db.value(key + "_script", QDir::homePath()).toString());
+  i->setLock(db.value(key + "_lock", FALSE).toBool());
+  i->setLog(db.value(key + "_log", FALSE).toBool());
+  i->setDate(db.value(key + "_date", TRUE).toBool());
+  
   return 0;
 }
 
@@ -101,76 +61,47 @@ int IndicatorDataBase::save (Indicator *i)
     return 1;
   }
 
-  QSqlQuery q(_db);
-  _db.transaction();
+  QSettings db(g_localSettings);
 
-  QString s = "SELECT name FROM " + _table + " WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
+  // check if this is a new indicator and add it to master list
+  QStringList l = db.value("indicators").toStringList();
+  if (l.indexOf(name) == -1)
   {
-    qDebug() << "IndicatorDataBase::save:" << q.lastError().text();
-    return 1;
+    l.append(name);
+    db.setValue("indicators", l);
   }
 
-  if (q.next())
-  {
-    // record exists, use SET
-    s = "UPDATE " + _table;
-    s.append(" SET command='" + i->command() + "'");
-    s.append(", script='" + i->script() + "'");
-    s.append(", lock=" + QString::number(i->lock()));
-    s.append(", log=" + QString::number(i->log()));
-    s.append(", date=" + QString::number(i->date()));
-    s.append(" WHERE name='" + name + "'");
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "IndicatorDataBase::save:" << q.lastError().text();
-      return 1;
-    }
-  }
-  else
-  {
-    // insert new record
-    s = "INSERT OR REPLACE INTO " + _table + " (name,command,script,lock,log,date) VALUES (";
-    s.append("'" + name + "'");
-    s.append(",'" + i->command() + "'");
-    s.append(",'" + i->script() + "'");
-    s.append("," + QString::number(i->lock()));
-    s.append("," + QString::number(i->log()));
-    s.append("," + QString::number(i->date()));
-    s.append(")");
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "IndicatorDataBase::save:" << q.lastError().text();
-      return 1;
-    }
-  }
+  QString key = "indicator_" + name;
 
-  _db.commit();
+  db.setValue(key + "_command", i->command());
+  db.setValue(key + "_script", i->script());
+  db.setValue(key + "_lock", i->lock());
+  db.setValue(key + "_log", i->log());
+  db.setValue(key + "_date", i->date());
   
   return 0;
 }
 
 int IndicatorDataBase::deleteIndicator (QStringList &l)
 {
-  QSqlQuery q(_db);
-  _db.transaction();
+  QSettings db(g_localSettings);
+
+  QStringList il = db.value("indicators").toStringList();
 
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QString s = "DELETE FROM " + _table + " WHERE name='" + l.at(loop) + "'";
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "IndicatorDataBase::deleteIndicator:" << q.lastError().text();
-      continue;
-    }
+    il.removeAll(l.at(loop));
+
+    QString key = "indicator_" + l.at(loop);
+    db.remove(key + "_command");
+    db.remove(key + "_script");
+    db.remove(key + "_lock");
+    db.remove(key + "_log");
+    db.remove(key + "_date");
   }
 
-  _db.commit();
+  db.setValue("indicators", il);
 
   return 0;
 }
@@ -178,30 +109,9 @@ int IndicatorDataBase::deleteIndicator (QStringList &l)
 int IndicatorDataBase::indicators (QStringList &l)
 {
   l.clear();
-
-  QSqlQuery q(_db);
-  QString s = "SELECT name FROM " + _table;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "IndicatorDataBase::indicators:" << q.lastError().text();
-    return 1;
-  }
-
-  while (q.next())
-    l << q.value(0).toString();
-
+  QSettings db(g_localSettings);
+  l = db.value("indicators").toStringList();
   l.sort();
 
   return 0;
-}
-
-void IndicatorDataBase::transaction ()
-{
-  _db.transaction();
-}
-
-void IndicatorDataBase::commit ()
-{
-  _db.commit();
 }

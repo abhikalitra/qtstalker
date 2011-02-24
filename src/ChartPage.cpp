@@ -55,7 +55,7 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
   vbox->addWidget(_nav);
 
   // update to last symbol search before displaying
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   _searchExchange = settings.value("last_chart_panel_exchange_search", "*").toString();
   _searchString = settings.value("last_chart_panel_symbol_search", "*").toString();
 
@@ -115,11 +115,11 @@ void ChartPage::addToGroup ()
   for (; loop < l.count(); loop++)
     l2 << l.at(loop)->text();
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("chart_panel_selected", l2.join(","));
   settings.sync();
   
-  Script *script = new Script;
+  Script *script = new Script(this);
   script->setName("ChartPanelAddGroup");
   script->setFile(settings.value("chart_panel_add_group_script").toString());
   script->setCommand("perl");
@@ -187,8 +187,8 @@ void ChartPage::updateList ()
 
 void ChartPage::symbolSearch ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("ChartPanelSymbolSearch");
   script->setFile(settings.value("chart_panel_symbol_search_script").toString());
   script->setCommand("perl");
@@ -200,7 +200,7 @@ void ChartPage::setSearch (QString exchange, QString symbol)
   _searchExchange = exchange;
   _searchString = symbol;
   
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("last_chart_panel_symbol_search", _searchString);
   settings.setValue("last_chart_panel_exchange_search", _searchExchange);
   settings.sync();
@@ -213,7 +213,7 @@ void ChartPage::allButtonPressed ()
   _searchExchange = "*";
   _searchString = "*";
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("last_chart_panel_symbol_search", _searchString);
   settings.setValue("last_chart_panel_exchange_search", _searchExchange);
   settings.sync();

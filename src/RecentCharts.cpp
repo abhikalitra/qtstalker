@@ -45,7 +45,7 @@ void RecentCharts::createMenu ()
   connect(_menu, SIGNAL(triggered(QAction *)), this, SLOT(itemSelected(QAction *)));
   setMenu(_menu);
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   QStringList l = settings.value("recent_charts_list").toStringList();
 
   int loop = 0;
@@ -102,7 +102,7 @@ void RecentCharts::save ()
     l << bd.key();
   }
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("recent_charts_list", l);
   settings.sync();
 }

@@ -22,26 +22,17 @@
 #ifndef GROUP_DATA_BASE_HPP
 #define GROUP_DATA_BASE_HPP
 
-#include <QtSql>
 #include <QStringList>
 
 class GroupDataBase
 {
   public:
     GroupDataBase ();
-    void init ();
     int load (QString name, QStringList &);
-    int save (QString name, QStringList &);
+    int merge (QString name, QStringList &);
     int saveAll (QString name, QStringList &);
     int deleteGroup (QStringList &);
     int groups (QStringList &);
-    int newGroup (QString &name, QString &table);
-    int getTable (QString &name, QString &table);
-    void transaction ();
-    void commit ();
-
-  private:
-    QSqlDatabase _db;
 };
 
 #endif

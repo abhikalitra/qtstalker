@@ -36,7 +36,7 @@ ChartObjectTLine::ChartObjectTLine ()
   _draw = new ChartObjectTLineDraw;
   _draw->setSettings(_settings);
 
-  QSettings set(g_settingsFile);
+  QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_tline_color", "red").toString());
   _settings->setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
   _settings->setData("Type", QString("TLine"));

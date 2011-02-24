@@ -196,9 +196,9 @@ void PlotMenu::createMenus ()
 
 void PlotMenu::editIndicator ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   
-  Script *script = new Script;
+  Script *script = new Script(this);
   script->setName("IndicatorEdit");
   script->setFile(settings.value("indicator_edit_script").toString());
   script->setCommand("perl");
@@ -207,9 +207,9 @@ void PlotMenu::editIndicator ()
 
 void PlotMenu::deleteIndicator ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   
-  Script *script = new Script;
+  Script *script = new Script(this);
   script->setName("IndicatorDelete");
   script->setFile(settings.value("indicator_delete_script").toString());
   script->setCommand("perl");
@@ -218,9 +218,9 @@ void PlotMenu::deleteIndicator ()
 
 void PlotMenu::deleteAllChartObjects ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
 
-  Script *script = new Script;
+  Script *script = new Script(this);
   script->setName("ChartObjectDeleteAll");
   script->setFile(settings.value("chart_object_delete_all_script").toString());
   script->setCommand("perl");
@@ -229,12 +229,12 @@ void PlotMenu::deleteAllChartObjects ()
 
 void PlotMenu::chartObjectMenuSelected (QAction *a)
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("chart_object_new", a->text());
   settings.setValue("chart_object_new_indicator", _indicator);
   settings.sync();
 
-  Script *script = new Script;
+  Script *script = new Script(this);
   script->setName("ChartObjectNew");
   script->setFile(settings.value("chart_object_new_script").toString());
   script->setCommand("perl");
@@ -283,11 +283,11 @@ void PlotMenu::setIndicator (QString d)
 
 void PlotMenu::editChartObject ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("chart_object_edit_data", _indicator);
   settings.sync();
   
-  Script *script = new Script;
+  Script *script = new Script(this);
   script->setName("ChartObjectEditSelect");
   script->setFile(settings.value("chart_object_edit_select_script").toString());
   script->setCommand("perl");
@@ -296,11 +296,11 @@ void PlotMenu::editChartObject ()
 
 void PlotMenu::deleteChartObject ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("chart_object_delete_data", _indicator);
   settings.sync();
 
-  Script *script = new Script;
+  Script *script = new Script(this);
   script->setName("DeleteObjectDeleteSelect");
   script->setFile(settings.value("chart_object_delete_select_script").toString());
   script->setCommand("perl");
@@ -309,8 +309,8 @@ void PlotMenu::deleteChartObject ()
 
 void PlotMenu::newIndicator ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("IndicatorNew");
   script->setFile(settings.value("indicator_new_script").toString());
   script->setCommand("perl");

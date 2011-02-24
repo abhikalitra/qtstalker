@@ -73,7 +73,7 @@ void ScriptPage::createGUI ()
   vbox->addWidget(_queList);
 
   // create launch buttons
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   int rows = settings.value("script_launch_button_rows", 2).toInt();
   int cols = settings.value("script_launch_button_cols", 5).toInt();
 
@@ -161,12 +161,9 @@ void ScriptPage::createButtonMenu ()
 
 void ScriptPage::newScript ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   
-  Script *script = new Script;
-  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
-  connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
-  
+  Script *script = new Script(this);
   script->setName("ScriptPanelNewScript");
   script->setFile(settings.value("script_panel_new_script_script").toString());
   script->setCommand("perl");
@@ -175,12 +172,9 @@ void ScriptPage::newScript ()
 
 void ScriptPage::editScript ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   
-  Script *script = new Script;
-  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
-  connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
-
+  Script *script = new Script(this);
   script->setName("ScriptPanelEditScript");
   script->setFile(settings.value("script_panel_edit_script_script").toString());
   script->setCommand("perl");
@@ -189,12 +183,9 @@ void ScriptPage::editScript ()
 
 void ScriptPage::deleteScript ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   
-  Script *script = new Script;
-  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
-  connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
-
+  Script *script = new Script(this);
   script->setName("ScriptPanelDeleteScript");
   script->setFile(settings.value("script_panel_delete_script_script").toString());
   script->setCommand("perl");
@@ -216,22 +207,11 @@ void ScriptPage::queStatus ()
   _actions.value(_CancelScript)->setEnabled(status); 
 }
 
-void ScriptPage::loadSettings ()
-{
-}
-
-void ScriptPage::saveSettings ()
-{
-}
-
 void ScriptPage::runScript ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   
-  Script *script = new Script;
-  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
-  connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
-
+  Script *script = new Script(this);
   script->setName("ScriptPanelRunScript");
   script->setFile(settings.value("script_panel_run_script_script").toString());
   script->setCommand("perl");
@@ -240,10 +220,8 @@ void ScriptPage::runScript ()
 
 void ScriptPage::runScript (QString d)
 {
-  Script *script = new Script;
-  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
-  connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
-
+  Script *script = new Script(this);
+  setupScript(script);
   script->setName(d);
 
   ScriptDataBase db;
@@ -258,19 +236,19 @@ void ScriptPage::runScript (QString d)
   item->setText(d);
   _itemList.insert(d, item);
 
+//  _scriptList.insert(d, script);
+
   script->startScript();
 }
 
 void ScriptPage::runExternalScript (QString file)
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("script_panel_last_external_script", file);
   settings.sync();
   
-  Script *script = new Script;
-  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
-  connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
-
+  Script *script = new Script(this);
+  setupScript(script);
   script->setName(file);
   script->setFile(file);
   script->setCommand("perl");
@@ -279,6 +257,8 @@ void ScriptPage::runExternalScript (QString file)
   item->setText(file);
   _itemList.insert(file, item);
   
+//  _scriptList.insert(d, script);
+
   script->startScript();
 }
 
@@ -306,7 +286,7 @@ void ScriptPage::done (QString name)
   delete item;
 
   ScriptDataBase db;
-  Script script;
+  Script script(0);
   script.setName(name);
   if (db.load(&script))
   {
@@ -320,13 +300,9 @@ void ScriptPage::done (QString name)
     qDebug() << "ScriptPage::done: script save error" << name;
 }
 
-void ScriptPage::runFileScript ()
-{
-}
-
 void ScriptPage::launchButtonRows ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   
   QInputDialog *dialog = new QInputDialog(this);
   dialog->setIntValue(settings.value("script_launch_button_rows", 2).toInt());
@@ -338,14 +314,14 @@ void ScriptPage::launchButtonRows ()
 
 void ScriptPage::launchButtonRows2 (int d)
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("script_launch_button_rows", d);
   settings.sync();
 }
 
 void ScriptPage::launchButtonCols ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
 
   QInputDialog *dialog = new QInputDialog(this);
   dialog->setIntValue(settings.value("script_launch_button_cols", 4).toInt());
@@ -357,7 +333,7 @@ void ScriptPage::launchButtonCols ()
 
 void ScriptPage::launchButtonCols2 (int d)
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("script_launch_button_cols", d);
   settings.sync();
 }
@@ -371,7 +347,7 @@ void ScriptPage::scriptTimer ()
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    Script script;
+    Script script(0);
     script.setName(l.at(loop));
     db.load(&script);
 
@@ -389,11 +365,24 @@ void ScriptPage::scriptTimer ()
 
 void ScriptPage::fileSelect ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
+  
   QFileDialog *dialog = new QFileDialog;
   dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Select External Script"));
   dialog->setDirectory(settings.value("script_panel_last_external_script").toString());
   connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(runExternalScript(QString)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
+}
+
+void ScriptPage::setupScript (Script *script)
+{
+  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
+  connect(script, SIGNAL(signalStopped(QString)), this, SLOT(done(QString)));
+  connect(this, SIGNAL(signalCancelScript(QString)), script, SLOT(stopScript(QString)));
+}
+
+void ScriptPage::shutDown ()
+{
+  emit signalCancelScript(QString());
 }

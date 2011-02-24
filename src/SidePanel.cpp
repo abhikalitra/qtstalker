@@ -23,7 +23,6 @@
 #include "Globals.h"
 #include "ChartPage.h"
 #include "GroupPage.h"
-#include "ScriptPage.h"
 
 #include "../pics/group.xpm"
 #include "../pics/chart.xpm"
@@ -63,23 +62,26 @@ void SidePanel::createTabs ()
   setTabToolTip(1, tr("Groups"));
 
   // script tab
-  ScriptPage *sp = new ScriptPage(this);
-  connect(g_middleMan, SIGNAL(signalScriptRun(QString)), sp, SLOT(runScript(QString)));
-  addTab(sp, QIcon(script_xpm), QString());
+  _scriptPage = new ScriptPage(this);
+  connect(g_middleMan, SIGNAL(signalScriptRun(QString)), _scriptPage, SLOT(runScript(QString)));
+  addTab(_scriptPage, QIcon(script_xpm), QString());
   setTabToolTip(2, tr("Scripts"));
 }
 
 void SidePanel::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   _lockStatus = settings.value("side_panel_lock_status", TRUE).toBool();
   emit signalLockStatus(_lockStatus);
 }
 
 void SidePanel::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("side_panel_lock_status", _lockStatus);
+
+  // kill any running scripts
+  _scriptPage->shutDown();
 }
 
 void SidePanel::setLockStatus (bool status)

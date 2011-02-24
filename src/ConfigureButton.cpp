@@ -29,6 +29,7 @@
 #include "../pics/help.xpm"
 #include "../pics/configure.xpm"
 #include "../pics/quit.xpm"
+#include "../pics/indicator.xpm"
 
 #include <QDebug>
 #include <QString>
@@ -56,8 +57,18 @@ void ConfigureButton::createMenu ()
   _menu->setTitle(tr("Configure / Options"));
   setMenu(_menu);
 
+  // new indicator
+  QAction *a = _menu->addAction(tr("&New Indicator..."));
+  a->setIcon(QIcon(indicator_xpm));
+  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
+  a->setToolTip(tr("Add New Indicator"));
+  a->setStatusTip(QString(tr("Add New Indicator")));
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(newIndicator()));
+
+  _menu->addSeparator();
+
   // configure
-  QAction *a = _menu->addAction(tr("Configure"));
+  a = _menu->addAction(tr("&Configure..."));
   a->setCheckable(FALSE);
   a->setIcon(QIcon(configure_xpm));
   a->setStatusTip(tr("Configure settings..."));
@@ -67,7 +78,7 @@ void ConfigureButton::createMenu ()
   _menu->addSeparator();
   
   // help dialog
-  a = _menu->addAction(tr("Help"));
+  a = _menu->addAction(tr("&Help"));
   a->setCheckable(FALSE);
   a->setIcon(QIcon(help_xpm));
   a->setStatusTip(tr("QtStalker help documentation..."));
@@ -75,7 +86,7 @@ void ConfigureButton::createMenu ()
   connect(a, SIGNAL(triggered(bool)), this, SLOT(startDocumentation()));
 
   // about dialog
-  a = _menu->addAction(tr("About"));
+  a = _menu->addAction(tr("&About"));
   a->setCheckable(FALSE);
   a->setIcon(QIcon(about_xpm));
   a->setStatusTip(tr("About QtStalker..."));
@@ -122,10 +133,20 @@ void ConfigureButton::aboutDialog ()
 
 void ConfigureButton::configureDialog ()
 {
-  QSettings settings(g_settingsFile);
-  Script *script = new Script;
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
   script->setName("Configure");
   script->setFile(settings.value("configure_script").toString());
+  script->setCommand("perl");
+  script->startScript();
+}
+
+void ConfigureButton::newIndicator ()
+{
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
+  script->setName("IndicatorNew");
+  script->setFile(settings.value("indicator_new_script").toString());
   script->setCommand("perl");
   script->startScript();
 }

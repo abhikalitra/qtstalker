@@ -83,7 +83,7 @@ void InfoPanel::showInfo (Setting d)
 
 void InfoPanel::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   _precision = settings.value("info_panel_precision", 4).toInt();
   _lockStatus = settings.value("info_panel_lock_status", TRUE).toBool();
   emit signalLockStatus(_lockStatus);
@@ -91,7 +91,7 @@ void InfoPanel::loadSettings ()
 
 void InfoPanel::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("info_panel_lock_status", _lockStatus);
 }
 
@@ -123,7 +123,7 @@ void InfoPanel::setPrecision (int d)
 {
   _precision = d;
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("info_panel_precision", _precision);
   settings.sync();
 }

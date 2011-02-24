@@ -22,7 +22,6 @@
 #ifndef INDICATOR_DATA_BASE_HPP
 #define INDICATOR_DATA_BASE_HPP
 
-#include <QtSql>
 #include <QStringList>
 
 #include "Indicator.h"
@@ -31,17 +30,10 @@ class IndicatorDataBase
 {
   public:
     IndicatorDataBase ();
-    void init ();
     int load (Indicator *);
     int save (Indicator *);
     int deleteIndicator (QStringList &);
     int indicators (QStringList &);
-    void transaction ();
-    void commit ();
-
-  private:
-    QSqlDatabase _db;
-    QString _table;
 };
 
 #endif

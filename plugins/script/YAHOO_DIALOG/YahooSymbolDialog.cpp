@@ -34,7 +34,7 @@
 #include <QDialogButtonBox>
 #include <QSettings>
 
-YahooSymbolDialog::YahooSymbolDialog ()
+YahooSymbolDialog::YahooSymbolDialog (QWidget *p) : QDialog (p)
 {
   _helpFile = "Yahoo.html";
 
@@ -110,7 +110,7 @@ void YahooSymbolDialog::createGUI ()
 
 void YahooSymbolDialog::addSymbol ()
 {
-  YahooAddSymbolDialog *dialog = new YahooAddSymbolDialog;
+  YahooAddSymbolDialog *dialog = new YahooAddSymbolDialog(this);
   connect(dialog, SIGNAL(signalNew()), this, SLOT(loadSettings()));
   dialog->show();
 }
@@ -144,21 +144,19 @@ void YahooSymbolDialog::loadSettings ()
   db.symbols(l);
   _list->addItems(l);
 
-  QSettings settings;
-  settings.beginGroup("main"); // global setting
-
+  QSettings settings(g_globalSettings);
   QSize sz = settings.value("yahoo_symbol_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("yahoo_symbol_dialog_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  QPoint p = settings.value("yahoo_symbol_dialog_window_position").toPoint();
+  if (! p.isNull())
+    move(p);
 }
 
 void YahooSymbolDialog::saveSettings ()
 {
-  QSettings settings;
-  settings.beginGroup("main");
+  QSettings settings(g_globalSettings);
   settings.setValue("yahoo_symbol_dialog_window_size", size());
   settings.setValue("yahoo_symbol_dialog_window_position", pos());
   settings.sync();

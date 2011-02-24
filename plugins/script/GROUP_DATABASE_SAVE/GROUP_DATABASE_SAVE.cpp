@@ -40,7 +40,7 @@ int GROUP_DATABASE_SAVE::command (Command *command)
   QStringList l = command->parm("ITEMS").split(";", QString::SkipEmptyParts);
 
   GroupDataBase db;
-  if (db.save(name, l))
+  if (db.merge(name, l))
   {
     qDebug() << _plugin << "::save: GroupDataBase error";
     return 1;

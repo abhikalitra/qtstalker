@@ -34,7 +34,7 @@ ChartObjectText::ChartObjectText ()
   _draw = new ChartObjectTextDraw;
   _draw->setSettings(_settings);
 
-  QSettings set(g_settingsFile);
+  QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_text_color", "red").toString());
   _settings->setData("Font", set.value("default_chart_object_text_font", "Helvetica,9,50,0").toString());
   _settings->setData("Text", set.value("default_chart_object_text_text", "Text").toString());

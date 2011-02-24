@@ -35,7 +35,7 @@ int SETTINGS_LOAD::command (Command *command)
   // PARMS:
   // KEY
 
-  QSettings set(g_settingsFile);
+  QSettings set(g_localSettings);
   command->setReturnData(_plugin + "_DATA", set.value(command->parm("KEY")).toString());
 
   command->setReturnCode("0");

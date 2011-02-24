@@ -32,7 +32,7 @@
 
 BarSpaceButton::BarSpaceButton ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   _pixelSpace = settings.value("pixelspace", 8).toInt();
   
   createMenu();
@@ -121,7 +121,7 @@ int BarSpaceButton::getPixelSpace ()
 
 void BarSpaceButton::savePixelSpace ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("pixelspace", _pixelSpace);
   settings.sync();
 }

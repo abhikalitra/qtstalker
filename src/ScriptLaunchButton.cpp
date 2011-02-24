@@ -36,7 +36,7 @@ ScriptLaunchButton::ScriptLaunchButton (int pos)
   setContextMenuPolicy(Qt::CustomContextMenu);
   _position = pos;
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   _scriptName = settings.value("script_launch_button_" + QString::number(_position)).toString();
   _icon = settings.value("script_launch_button_icon_" + QString::number(_position)).toString();
   _useIcon = settings.value("script_launch_button_use_icon_" + QString::number(_position), 0).toInt();
@@ -85,7 +85,7 @@ void ScriptLaunchButton::configure2 (QString n, QString i, int use)
   else
     setIcon(QIcon());
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("script_launch_button_" + QString::number(_position), _scriptName);
   settings.setValue("script_launch_button_icon_" + QString::number(_position), _icon);
   settings.setValue("script_launch_button_use_icon_" + QString::number(_position), _useIcon);

@@ -22,7 +22,6 @@
 #ifndef SCRIPT_DATA_BASE_HPP
 #define SCRIPT_DATA_BASE_HPP
 
-#include <QtSql>
 #include <QStringList>
 
 #include "Script.h"
@@ -31,18 +30,11 @@ class ScriptDataBase
 {
   public:
     ScriptDataBase ();
-    void init ();
     int load (Script *);
     int save (Script *);
-    int deleteScript (QStringList &l);
-    int scripts (QString, QStringList &l);
-    int timerScripts (QStringList &l);
-    int types (QStringList &l);
-    void transaction ();
-    void commit ();
-
-  private:
-    QSqlDatabase _db;
+    int deleteScript (QStringList &);
+    int scripts (QStringList &);
+    int timerScripts (QStringList &);
 };
 
 #endif

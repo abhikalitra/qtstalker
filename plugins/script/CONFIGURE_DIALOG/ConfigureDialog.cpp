@@ -90,7 +90,7 @@ void ConfigureDialog::createGeneralPage ()
   form->setMargin(5);
   w->setLayout(form);
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   
   // background color
   QColor color(settings.value("plot_background_color", "black").toString());
@@ -158,7 +158,7 @@ void ConfigureDialog::help ()
 
 void ConfigureDialog::done ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
 
   if (_flags.value("background"))
   {
@@ -202,19 +202,20 @@ void ConfigureDialog::cancel ()
 
 void ConfigureDialog::loadSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
 
   QSize sz = settings.value("configure_dialog_window_size", QSize(200,150)).toSize();
   resize(sz);
 
   // restore the position of the app
-  QPoint p = settings.value("configure_dialog_window_position", QPoint(0,0)).toPoint();
-  move(p);
+  QPoint p = settings.value("configure_dialog_window_position").toPoint();
+  if (! p.isNull())
+    move(p);
 }
 
 void ConfigureDialog::saveSettings ()
 {
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_globalSettings);
   settings.setValue("configure_dialog_window_size", size());
   settings.setValue("configure_dialog_window_position", pos());
   settings.sync();

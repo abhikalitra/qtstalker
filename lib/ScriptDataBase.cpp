@@ -20,42 +20,14 @@
  */
 
 #include "ScriptDataBase.h"
+#include "Globals.h"
 
 #include <QtDebug>
+#include <QSettings>
+#include <QDir>
 
 ScriptDataBase::ScriptDataBase ()
 {
-  init();
-}
-
-void ScriptDataBase::init ()
-{
-  _db = QSqlDatabase::database("data");
-  if (! _db.isOpen())
-  {
-    QString s = QDir::homePath() + "/.qtstalker/data.sqlite";
-    _db = QSqlDatabase::addDatabase("QSQLITE", "data");
-    _db.setHostName("QtStalker");
-    _db.setDatabaseName(s);
-    _db.setUserName("QtStalker");
-    _db.setPassword("QtStalker");
-    if (! _db.open())
-      qDebug() << "ScriptDataBase::init:" << _db.lastError().text();
-  }
-
-  QSqlQuery q(_db);
-  QString s = "CREATE TABLE IF NOT EXISTS script (";
-  s.append("name TEXT PRIMARY KEY UNIQUE");
-  s.append(", command TEXT");
-  s.append(", script TEXT");
-  s.append(", minutes INT");
-  s.append(", lastRun TEXT");
-  s.append(", type TEXT");
-  s.append(", comment TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "ScriptDataBase::init:" << q.lastError().text();
 }
 
 int ScriptDataBase::load (Script *script)
@@ -67,25 +39,14 @@ int ScriptDataBase::load (Script *script)
     return 1;
   }
 
-  QSqlQuery q(_db);
-  QString s = "SELECT command,script,minutes,lastRun,type,comment FROM script WHERE name='" + name + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "ScriptDataBase::load:" << q.lastError().text();
-    return 1;
-  }
+  QSettings db(g_globalSettings);
 
-  if (q.next())
-  {
-    int pos = 0;
-    script->setCommand(q.value(pos++).toString());
-    script->setFile(q.value(pos++).toString());
-    script->setMinutes(q.value(pos++).toInt());
-    script->setLastRun(q.value(pos++).toString());
-    script->setType(q.value(pos++).toString());
-    script->setComment(q.value(pos++).toString());
-  }
+  QString key = "script_" + name;
+
+  script->setCommand(db.value(key + "_command", "perl").toString());
+  script->setFile(db.value(key + "_script", QDir::homePath()).toString());
+  script->setMinutes(db.value(key + "_minutes", 0).toInt());
+  script->setLastRun(db.value(key + "_last_run").toString());
 
   return 0;
 }
@@ -99,91 +60,55 @@ int ScriptDataBase::save (Script *script)
     return 1;
   }
 
-  QSqlQuery q(_db);
-  _db.transaction();
-  
-  QString s = "INSERT OR REPLACE INTO script (name,command,script,minutes,lastRun,type,comment) VALUES (";
-  s.append("'" + name + "'");
-  s.append(",'" + script->command() + "'");
-  s.append(",'" + script->file() + "'");
-  s.append("," + QString::number(script->minutes()));
-  s.append(",'" + script->lastRun() + "'");
-  s.append(",'" + script->type() + "'");
-  s.append(",'" + script->comment() + "'");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
+  QSettings db(g_globalSettings);
+
+  // check if this is a new indicator and add it to master list
+  QStringList l = db.value("scripts").toStringList();
+  if (l.indexOf(name) == -1)
   {
-    qDebug() << "ScriptDataBase::save:" << q.lastError().text();
-    return 1;
+    l.append(name);
+    db.setValue("scripts", l);
   }
 
-  _db.commit();
+  QString key = "script_" + name;
+
+  db.setValue(key + "_command", script->command());
+  db.setValue(key + "_script", script->file());
+  db.setValue(key + "_minutes", script->minutes());
+  db.setValue(key + "_last_run", script->lastRun());
   
   return 0;
 }
 
 int ScriptDataBase::deleteScript (QStringList &l)
 {
-  QSqlQuery q(_db);
-  _db.transaction();
+  QSettings db(g_globalSettings);
+
+  QStringList il = db.value("scripts").toStringList();
 
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QString s = "DELETE FROM script WHERE name='" + l.at(loop) + "'";
-    q.exec(s);
-    if (q.lastError().isValid())
-      qDebug() << "ScriptDataBase::deleteScript:" << q.lastError().text();
+    il.removeAll(l.at(loop));
+
+    QString key = "script_" + l.at(loop);
+    
+    db.remove(key + "_command");
+    db.remove(key + "_script");
+    db.remove(key + "_minutes");
+    db.remove(key + "_last_run");
   }
 
-  _db.commit();
+  db.setValue("scripts", il);
 
   return 0;
 }
 
-int ScriptDataBase::scripts (QString type, QStringList &l)
+int ScriptDataBase::scripts (QStringList &l)
 {
   l.clear();
-  
-  QSqlQuery q(_db);
-
-  QString s = "SELECT name FROM script";
-  if (! type.isEmpty())
-    s.append(" WHERE type='" + type + "'");
-  
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "ScriptDataBase::scripts:" << q.lastError().text();
-    return 1;
-  }
-
-  while (q.next())
-    l << q.value(0).toString();
-
-  l.sort();
-
-  return 0;
-}
-
-int ScriptDataBase::types (QStringList &l)
-{
-  l.clear();
-
-  QSqlQuery q(_db);
-
-  QString s = "SELECT DISTINCT type FROM script";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "ScriptDataBase::types:" << q.lastError().text();
-    return 1;
-  }
-
-  while (q.next())
-    l << q.value(0).toString();
-
+  QSettings db(g_globalSettings);
+  l = db.value("scripts").toStringList();
   l.sort();
 
   return 0;
@@ -193,27 +118,17 @@ int ScriptDataBase::timerScripts (QStringList &l)
 {
   l.clear();
 
-  QSqlQuery q(_db);
-  QString s = "SELECT name FROM script WHERE minutes > 0";
-  q.exec(s);
-  if (q.lastError().isValid())
+  QSettings db(g_globalSettings);
+  QStringList il = db.value("scripts").toStringList();
+
+  int loop = 0;
+  for (; loop < il.count(); loop++)
   {
-    qDebug() << "ScriptDataBase::timerScripts:" << q.lastError().text();
-    return 1;
+    QString key = "script_" + il.at(loop);
+    int minutes = db.value(key + "_minutes").toInt();
+    if (minutes > 0)
+      l << il.at(loop);
   }
-
-  while (q.next())
-    l << q.value(0).toString();
-
+    
   return 0;
-}
-
-void ScriptDataBase::transaction ()
-{
-  _db.transaction();
-}
-
-void ScriptDataBase::commit ()
-{
-  _db.commit();
 }

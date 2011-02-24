@@ -40,7 +40,7 @@ RefreshButton::RefreshButton ()
   _menu->addAction(QPixmap(configure_xpm), tr("&Refresh Rate"), this, SLOT(dialog()), Qt::ALT+Qt::Key_R);
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
   
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   _minutes = settings.value("refresh", 1).toInt();
 
   changeText();
@@ -65,7 +65,7 @@ void RefreshButton::refreshChart (bool status)
   else
     _timer->stop();
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("refresh_status", status);
   settings.sync();
 }
@@ -82,7 +82,7 @@ void RefreshButton::refreshUpdated (int minutes)
 
   changeText();
 
-  QSettings settings(g_settingsFile);
+  QSettings settings(g_localSettings);
   settings.setValue("refresh", _minutes);
   settings.sync();
 }
