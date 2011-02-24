@@ -10,7 +10,7 @@ $dateFormat = 'yyyyMMdd';
 ################################################################################
 
 # display the file selection dialog
-$command = "PLUGIN=FILE_DIALOG,MODE=0,FORMAT=0";
+$command = "PLUGIN=FILE_DIALOG,MODE=0,TITLE=Select CSV File";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 

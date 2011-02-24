@@ -1167,10 +1167,6 @@ e.g. Qtstalker alert was triggered.</source>
 <context>
     <name>ConfigureButton</name>
     <message>
-        <source>Configure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Configure / Options</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1183,15 +1179,7 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>QtStalker help documentation...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1204,6 +1192,26 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Quit QtStalker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Indicator...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;About</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

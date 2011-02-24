@@ -204,6 +204,12 @@ int QuoteDataBase::setBars (BarData *symbol)
     if (newSymbol(symbol))
       return 1;
   }
+  else
+  {
+    // check if we need to save the name
+    if (! symbol->name().isEmpty())
+      setName(symbol);
+  }
 
   int loop = 0;
   for (; loop < symbol->count(); loop++)
@@ -598,6 +604,46 @@ int QuoteDataBase::search (BarData *bd, QStringList &l)
       tl << q.value(loop).toString();
     l << tl.join(",");
   }
+
+  return 0;
+}
+
+int QuoteDataBase::setName (BarData *symbol)
+{
+  if (symbol->exchange().isEmpty())
+  {
+    qDebug() << "QuoteDataBase::setName: invalid exchange";
+    return 1;
+  }
+
+  if (symbol->symbol().isEmpty())
+  {
+    qDebug() << "QuoteDataBase::setName: invalid symbol";
+    return 1;
+  }
+
+  if (symbol->name().isEmpty())
+  {
+    qDebug() << "QuoteDataBase::setName: invalid name";
+    return 1;
+  }
+
+  QSqlQuery q(_db);
+
+  _db.transaction();
+
+  QString s = "UPDATE symbolIndex";
+  s.append(" SET name='" + symbol->name() + "'");
+  s.append(" WHERE symbol='" + symbol->symbol() + "'");
+  s.append(" AND exchange='" + symbol->exchange() + "'");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "QuoteDataBase::setName:" + q.lastError().text();
+    return 1;
+  }
+
+  _db.commit();
 
   return 0;
 }

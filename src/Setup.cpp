@@ -27,6 +27,7 @@
 #include "MiddleMan.h"
 #include "qtstalker_defines.h"
 #include "ScriptDataBase.h"
+#include "ExchangeDataBase.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -54,7 +55,7 @@ void Setup::setup (QString session)
   setupDirectories(); // initialize directory structure
 
   // initialize data tables
-//  setupExchanges();
+  setupExchanges();
 
 //  setupFutures();
 
@@ -222,12 +223,8 @@ void Setup::setupDefaultScripts ()
 
 void Setup::setupExchanges ()
 {
-/*  
   ExchangeDataBase db;
-  db.transaction();
   db.createExchanges();  
-  db.commit();
-*/
 }
 
 void Setup::setupFutures ()

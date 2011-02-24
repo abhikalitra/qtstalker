@@ -995,3 +995,10 @@
 
            Fixed bug # 3190704 - 0.37-dev chart grid toggle.
 
+           Fixed the empty exchange database fresh install bug.
+
+           Fixed symbol name not being updated in QuoteDataBase when using the name parameter in
+           QUOTE_DATABASE_SET.
+
+           Put the new indicator button back into the config/options control panel.
+

@@ -42,6 +42,7 @@ class QuoteDataBase
     int getExchange (QStringList &);
     int rename (BarData *osymbol, BarData *nsymbol);
     int search (BarData *bd, QStringList &l);
+    int setName (BarData *);
 
   private:
     QSqlDatabase _db;

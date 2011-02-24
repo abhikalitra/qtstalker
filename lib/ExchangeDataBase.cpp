@@ -31,7 +31,6 @@
 ExchangeDataBase::ExchangeDataBase ()
 {
   init();
-  createExchanges();
 }
 
 void ExchangeDataBase::init ()
