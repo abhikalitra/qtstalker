@@ -126,6 +126,11 @@ RefreshButton * ControlPanel::refreshButton ()
   return _refreshButton;
 }
 
+QSlider * ControlPanel::slider ()
+{
+  return _slider;
+}
+
 void ControlPanel::setStart (int count, int, int)
 {
   _slider->blockSignals(TRUE);

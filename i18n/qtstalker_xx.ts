@@ -295,6 +295,10 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Bar Length</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Bar &amp;Length</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BarSpaceButton</name>
@@ -1175,35 +1179,11 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>QtStalker help documentation...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About QtStalker...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Quit QtStalker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;New Indicator...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Add New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Configure...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1212,6 +1192,30 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>&amp;About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>QtStalker help documentation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About QtStalker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1400,15 +1404,11 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Toggle the chart grid. Right click mouse for options.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle the chart grid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Grid &amp;Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle the chart grid. Right click mouse for options</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1503,15 +1503,15 @@ e.g. Qtstalker alert was triggered.</source>
 <context>
     <name>InfoPanel</name>
     <message>
-        <source>Number &amp;Precision</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Info Panel Number Precision</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Precision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Number &amp;Precision</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1538,38 +1538,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Log &amp;Scaling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Buy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>HLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sell</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>VLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;New Indicator...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1605,15 +1573,7 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Edit Indicator...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>De&amp;lete Indicator(s)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1621,23 +1581,11 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit &amp;Chart Object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Edit Chart Object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Chart Object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Delete Chart Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Date Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1654,6 +1602,58 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Toggle Indicator Drag and Drop Lock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;HLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Sell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T&amp;Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;VLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Indicator(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit &amp;Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>De&amp;lete Chart Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date A&amp;xis</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2175,14 +2175,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Launch Button Rows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Launch Button Columns</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Rows</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2208,6 +2200,14 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Select External Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Launch Button Rows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Launch Button Columns</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2958,6 +2958,57 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Message Log</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>YahooHistory</name>
+    <message>
+        <source>line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source># of bar fields, record skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid adjusted close, record skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>record skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid high</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>records imported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>data error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

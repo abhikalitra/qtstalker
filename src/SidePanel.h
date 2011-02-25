@@ -27,6 +27,8 @@
 
 #include "BarData.h"
 #include "ScriptPage.h"
+#include "ChartPage.h"
+#include "GroupPage.h"
 
 class SidePanel : public QTabWidget
 {
@@ -47,10 +49,15 @@ class SidePanel : public QTabWidget
     void setLockStatus (bool);
     void loadSettings ();
     void saveSettings ();
+    void setChartPanelFocus ();
+    void setGroupPanelFocus ();
+    void setScriptPanelFocus ();
 
   private:
     bool _lockStatus;
     ScriptPage *_scriptPage;
+    ChartPage *_chartPage;
+    GroupPage *_groupPage;
 };
 
 #endif

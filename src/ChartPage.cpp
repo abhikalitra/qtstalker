@@ -129,31 +129,6 @@ void ChartPage::addToGroup ()
   script->startScript();
 }
 
-void ChartPage::doKeyPress (QKeyEvent *key)
-{
-  key->accept();
-
-  if (key->modifiers() == Qt::ControlModifier)
-  {
-    switch(key->key())
-    {
-      case Qt::Key_G:
-        addToGroup();
-	break;
-      default:
-        break;
-    }
-  }
-  else
-  {
-    switch(key->key())
-    {
-      default:
-        break;
-    }
-  }
-}
-
 void ChartPage::updateList ()
 {
   _nav->clearSymbols();
@@ -200,6 +175,8 @@ void ChartPage::symbolSearch ()
 
 void ChartPage::setSearch (QString exchange, QString symbol)
 {
+qDebug() << "ChartPage::setSearch" << exchange << symbol;
+
   _searchExchange = exchange;
   _searchString = symbol;
   
@@ -241,4 +218,9 @@ void ChartPage::selected (QStringList &l)
   int loop = 0;
   for (; loop < sel.count(); loop++)
     l << sel.at(loop)->text();
+}
+
+SymbolListWidget * ChartPage::list ()
+{
+  return _nav;
 }

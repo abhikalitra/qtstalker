@@ -21,8 +21,6 @@
 
 #include "SidePanel.h"
 #include "Globals.h"
-#include "ChartPage.h"
-#include "GroupPage.h"
 
 #include "../pics/group.xpm"
 #include "../pics/chart.xpm"
@@ -41,24 +39,24 @@ SidePanel::SidePanel (QMainWindow *p) : QTabWidget (p)
 void SidePanel::createTabs ()
 {
   // chart tab
-  ChartPage *cp = new ChartPage(this);
-  connect(cp, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
-  connect(cp, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
-  connect(cp, SIGNAL(signalReloadChart()), this, SIGNAL(signalReloadChart()));
-  connect(cp, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
-  connect(g_middleMan, SIGNAL(signalChartPanelRefresh()), cp, SLOT(updateList()));
-  connect(g_middleMan, SIGNAL(signalChartPanelSearch(QString, QString)), cp, SLOT(setSearch(QString, QString)));
-  addTab(cp, QIcon(chart_xpm), QString());
+  _chartPage = new ChartPage(this);
+  connect(_chartPage, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
+  connect(_chartPage, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
+  connect(_chartPage, SIGNAL(signalReloadChart()), this, SIGNAL(signalReloadChart()));
+  connect(_chartPage, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
+  connect(g_middleMan, SIGNAL(signalChartPanelRefresh()), _chartPage, SLOT(updateList()));
+  connect(g_middleMan, SIGNAL(signalChartPanelSearch(QString, QString)), _chartPage, SLOT(setSearch(QString, QString)));
+  addTab(_chartPage, QIcon(chart_xpm), QString());
   setTabToolTip(0, tr("Charts"));
 
   // group tab
-  GroupPage *gp = new GroupPage(this);
-  connect(gp, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
-  connect(cp, SIGNAL(signalAddToGroup()), gp, SLOT(updateGroups()));
-  connect(gp, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
-  connect(gp, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
-  connect(g_middleMan, SIGNAL(signalGroupPanelRefresh()), gp, SLOT(updateGroups()));
-  addTab(gp, QIcon(group_xpm), QString());
+  _groupPage = new GroupPage(this);
+  connect(_groupPage, SIGNAL(fileSelected(BarData)), this, SIGNAL(signalLoadChart(BarData)));
+  connect(_chartPage, SIGNAL(signalAddToGroup()), _groupPage, SLOT(updateGroups()));
+  connect(_groupPage, SIGNAL(addRecentChart(BarData)), this, SIGNAL(signalRecentChart(BarData)));
+  connect(_groupPage, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
+  connect(g_middleMan, SIGNAL(signalGroupPanelRefresh()), _groupPage, SLOT(updateGroups()));
+  addTab(_groupPage, QIcon(group_xpm), QString());
   setTabToolTip(1, tr("Groups"));
 
   // script tab
@@ -90,4 +88,22 @@ void SidePanel::saveSettings ()
 void SidePanel::setLockStatus (bool status)
 {
   _lockStatus = status;
+}
+
+void  SidePanel::setChartPanelFocus ()
+{
+  setCurrentIndex(0);
+  _chartPage->list()->setFocus();
+}
+
+void SidePanel::setGroupPanelFocus ()
+{
+  setCurrentIndex(1);
+  _groupPage->list()->setFocus();
+}
+
+void SidePanel::setScriptPanelFocus ()
+{
+  setCurrentIndex(2);
+  _scriptPage->list()->setFocus();
 }

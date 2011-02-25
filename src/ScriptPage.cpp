@@ -398,3 +398,8 @@ void ScriptPage::shutDown ()
 {
   emit signalCancelScript(QString());
 }
+
+QListWidget * ScriptPage::list ()
+{
+  return _queList;
+}

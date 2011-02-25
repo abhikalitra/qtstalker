@@ -17,7 +17,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # get the filename 
 $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=FILE_DIALOG_FILE";
 print STDOUT $command;
-$file = <STDIN>; chomp($file); if ($file eq "ERROR") { print STDERR $command; next; }
+$file = <STDIN>; chomp($file); if ($file eq "ERROR") { print STDERR $command; exit; }
 
 # display the exchange search dialog
 $command = "PLUGIN=EXCHANGE_SEARCH_DIALOG";
@@ -27,10 +27,10 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # get the exchange
 $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=EXCHANGE_SEARCH_DIALOG_SELECTED";
 print STDOUT $command;
-$exchange = <STDIN>; chomp($exchange); if ($exchange eq "ERROR") { print STDERR $command; next; }
+$exchange = <STDIN>; chomp($exchange); if ($exchange eq "ERROR") { print STDERR $command; exit; }
 
 # check for empty string
-if ($exchange eq "") { print STDERR $command; next; }
+if ($exchange eq "") { print STDERR $command; exit; }
 
 # create the CSV object
 my $csv = Text::CSV->new();
@@ -65,7 +65,7 @@ close CSV;
 # commit quotes to disk
 $command = "PLUGIN=QUOTE_DATABASE_SET,SAVE=1";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # refresh qtstalker chart panel
 $command = "PLUGIN=CHART_PANEL_REFRESH";

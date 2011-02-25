@@ -50,12 +50,12 @@ class ControlPanel : public QWidget
     void createGUI ();
     void setStart (int, int, int);
     int getValue ();
-
     BarSpaceButton * barSpaceButton ();
     BarLengthButton * barLengthButton ();
     DateRangeControl * dateRangeControl ();
     RecentCharts * recentCharts ();
     RefreshButton * refreshButton ();
+    QSlider * slider ();
     
   public slots:
     void setValue (int);

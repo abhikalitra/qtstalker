@@ -161,37 +161,6 @@ void GroupPage::rightClick (const QPoint &)
   _menu->exec(QCursor::pos());
 }
 
-void GroupPage::doKeyPress (QKeyEvent *key)
-{
-  key->accept();
-
-  if (key->modifiers() == Qt::ControlModifier)
-  {
-    switch(key->key())
-    {
-      case Qt::Key_N:
-        newGroup();
-	break;
-      case Qt::Key_E:
-        editGroup();
-	break;
-      case Qt::Key_D:
-        deleteGroup();
-	break;
-      default:
-        break;
-    }
-  }
-  else
-  {
-    switch(key->key())
-    {
-      default:
-        break;
-    }
-  }
-}
-
 void GroupPage::loadGroups ()
 {
   _groups->clear();
@@ -257,4 +226,9 @@ void GroupPage::updateList ()
     qdb.getSymbol(&bd);
     _nav->addSymbol(bd);
   }
+}
+
+SymbolListWidget * GroupPage::list ()
+{
+  return _nav;
 }

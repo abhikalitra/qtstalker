@@ -63,6 +63,7 @@ class ScriptPage : public QWidget
     void startScript ();
     void createButtonMenu ();
     void createMainPage ();
+    QListWidget * list ();
 
   public slots:
     void queRightClick (const QPoint &);

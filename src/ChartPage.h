@@ -60,10 +60,10 @@ class ChartPage : public QWidget
     void createActions ();
     void createButtonMenu ();
     void selected (QStringList &);
+    SymbolListWidget * list ();
 
   public slots:
     void rightClick (const QPoint &);
-    void doKeyPress (QKeyEvent *);
     void chartOpened (BarData);
     void addToGroup ();
     void updateList ();

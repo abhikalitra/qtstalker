@@ -1004,3 +1004,13 @@
 
            Fixed key accelerators in the menus to use just a letter or number. No ALT or CTRL keys needed.
 
+20110225:  Fixed ExchangeDataBase startup sync bug.
+
+           Added global key shortcuts:
+           CTRL + Q = quit
+           CTRL + C = chart panel
+           CTRL + G = group panel
+           CTRL + S = script panel
+           CTRL + L = chart slider
+
+           

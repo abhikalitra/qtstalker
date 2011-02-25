@@ -57,6 +57,7 @@ class GroupPage : public QWidget
     GroupPage (QWidget *);
     void createActions ();
     void createButtonMenu ();
+    SymbolListWidget * list ();
 
   public slots:
     void updateList ();
@@ -65,7 +66,6 @@ class GroupPage : public QWidget
     void deleteGroup ();
     void groupSelected (int);
     void rightClick (const QPoint &);
-    void doKeyPress (QKeyEvent *);
     void chartOpened (BarData);
     void updateGroups ();
     void addToGroup ();

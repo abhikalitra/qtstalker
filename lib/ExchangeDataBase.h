@@ -38,6 +38,9 @@ class ExchangeDataBase
     void init ();
     int verifyExchangeName (QString &);
     int createExchanges ();
+    int create ();
+    int createTable ();
+    int deleteTable ();
     void getExchanges (QStringList &);
     void getFieldList (QString &, QStringList &);
     int search (QString &, QString &, QString &, QStringList &);

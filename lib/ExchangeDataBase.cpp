@@ -21,7 +21,7 @@
 
 #include "ExchangeDataBase.h"
 #include "Globals.h"
-#include "qtstalker_defines.h"
+//#include "qtstalker_defines.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -47,15 +47,18 @@ void ExchangeDataBase::init ()
     if (! _db.open())
       qDebug() << "ExchangeDataBase::init:" << _db.lastError().text();
   }
+
+  createTable();
 }
 
 int ExchangeDataBase::createExchanges ()
 {
-  QString inputFile = QString("%1/qtstalker/db/exchanges.csv").arg(INSTALL_DATA_DIR);
-  QFile file(inputFile);
-  if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
-    return 1;
-
+  // check if table is empty and fill it in
+  QStringList l;
+  getExchanges(l);
+  if (! l.count())
+    return create();
+    
   // check if last modification date matches current one
   // if they match then no changes, no need to re-create the table
   // if not, new data is in file so re-create the table
@@ -67,49 +70,50 @@ int ExchangeDataBase::createExchanges ()
     return 1;
   }
 
-  QFileInfo fi(file);
+  QString inputFile = settings.value("db_data_directory").toString() + "exchanges.csv";
+  QFileInfo fi(inputFile);
   QDateTime dt2 = fi.lastModified();
 
   if (dt == dt2)
-  {
-    file.close();
     return 0;
-  }
   
   settings.setValue("exchange_database_file_date", dt2);
   settings.sync();
 
-  qDebug() << "ExchangeDataBase::createExchanges: updating exchange db";
+  return create();
+}
+
+int ExchangeDataBase::create ()
+{
+  QSettings settings(g_globalSettings);
+  
+  QString inputFile = settings.value("db_data_directory").toString() + "exchanges.csv";
+  
+  QFile file(inputFile);
+  if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
+    return 1;
 
   QTextStream in(&file);
   in.readLine(); // skip past first line
 
   _db.transaction();
-  
-  // delete the old table
-  QSqlQuery q(_db);
-  QString s = "DROP TABLE exchangeIndex";
-  q.exec(s);
 
-  // create the new table
-  s = "CREATE TABLE IF NOT EXISTS exchangeIndex (";
-  s.append("code TEXT PRIMARY KEY UNIQUE");
-  s.append(", countryName TEXT");
-  s.append(", countryCode2 TEXT");
-  s.append(", name TEXT");
-  s.append(", city TEXT");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-    qDebug() << "ExchangeDataBase::createExchanges: create exchangeIndex table" << q.lastError().text();
+  if (deleteTable())
+    return 1;
+  
+  if (createTable())
+    return 1;
+
+  qDebug() << "ExchangeDataBase::createExchanges: updating exchange db";
 
   // add records to the table
+  QSqlQuery q(_db);
   while (! in.atEnd())
   {
-    s = in.readLine();
+    QString s = in.readLine();
     QStringList l = s.split(",", QString::SkipEmptyParts);
     int pos = 0;
-   
+
     s = "REPLACE INTO exchangeIndex (code,countryName,countryCode2,name,city) VALUES(";
     s.append("'" + l.at(pos++) + "'");
     s.append(",'" + l.at(pos++) + "'");
@@ -124,7 +128,42 @@ int ExchangeDataBase::createExchanges ()
 
   _db.commit();
 
-  file.close();
+  return 0;
+}
+
+int ExchangeDataBase::createTable ()
+{
+  // create the new table
+  QSqlQuery q(_db);
+  QString s = "CREATE TABLE IF NOT EXISTS exchangeIndex (";
+  s.append("code TEXT PRIMARY KEY UNIQUE");
+  s.append(", countryName TEXT");
+  s.append(", countryCode2 TEXT");
+  s.append(", name TEXT");
+  s.append(", city TEXT");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "ExchangeDataBase::createExchanges: create exchangeIndex table" << q.lastError().text();
+    return 1;
+  }
+
+  return 0;
+}
+
+int ExchangeDataBase::deleteTable ()
+{
+  // delete the old table
+  QSqlQuery q(_db);
+  QString s = "DROP TABLE exchangeIndex";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "ExchangeDataBase::deleteTable" << q.lastError().text();
+    return 1;
+  }
+
   return 0;
 }
 

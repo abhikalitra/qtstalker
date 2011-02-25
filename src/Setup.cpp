@@ -99,8 +99,13 @@ void Setup::setupDefaults ()
 {
   QSettings settings(g_globalSettings);
 
-  // set the indicator script directory
+  // set the db ascii file directory
   QString sysdir = INSTALL_DATA_DIR;
+  sysdir.append("/qtstalker/db/");
+  settings.setValue("db_data_directory", sysdir);
+
+  // set the indicator script directory
+  sysdir = INSTALL_DATA_DIR;
   sysdir.append("/qtstalker/indicator/");
   settings.setValue("indicator_script_directory", sysdir);
 

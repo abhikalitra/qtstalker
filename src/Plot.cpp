@@ -83,6 +83,7 @@ Plot::Plot (QString name, QMainWindow *mw)
 
   // setup the context menu
   setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
 
   _indicator = new Indicator;
   _indicator->setName(name);

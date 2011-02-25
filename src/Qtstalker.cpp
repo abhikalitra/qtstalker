@@ -33,6 +33,7 @@
 #include <QSettings>
 #include <QCoreApplication>
 #include <QStatusBar>
+#include <QShortcut>
 
 #include "Qtstalker.h"
 #include "Setup.h"
@@ -65,6 +66,8 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
 
   createGUI();
 
+  createShortcuts();
+
   loadSettings();
 
   setWindowTitle(getWindowCaption());
@@ -90,6 +93,34 @@ void QtstalkerApp::shutDown ()
   // delete all the non-parented objects
   delete g_barData;
   delete g_middleMan;
+}
+
+void QtstalkerApp::createShortcuts ()
+{
+  // quit
+  QShortcut *sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::CTRL+Qt::Key_Q));
+  connect(sc, SIGNAL(activated()), qApp, SLOT(quit()));
+
+  // chart panel
+  sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::CTRL+Qt::Key_C));
+  connect(sc, SIGNAL(activated()), _sidePanel, SLOT(setChartPanelFocus()));
+  
+  // group panel
+  sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::CTRL+Qt::Key_G));
+  connect(sc, SIGNAL(activated()), _sidePanel, SLOT(setGroupPanelFocus()));
+
+  // script panel
+  sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::CTRL+Qt::Key_S));
+  connect(sc, SIGNAL(activated()), _sidePanel, SLOT(setScriptPanelFocus()));
+
+  // script panel
+  sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::CTRL+Qt::Key_L));
+  connect(sc, SIGNAL(activated()), _controlPanel->slider(), SLOT(setFocus()));
 }
 
 void QtstalkerApp::createGUI ()

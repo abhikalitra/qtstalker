@@ -121,13 +121,17 @@ void YahooDialog::createGUI ()
 
   // ok button
   _okButton = bbox->addButton(QDialogButtonBox::Ok);
+  _okButton->setText(tr("O&K"));
 
   // cancel button
   _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
+  _cancelButton->setText(tr("&Cancel"));
   _cancelButton->setDefault(TRUE);
+  _cancelButton->setFocus();
 
   // help button
   QPushButton *b = bbox->button(QDialogButtonBox::Help);
+  b->setText(tr("&Help"));
   connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 

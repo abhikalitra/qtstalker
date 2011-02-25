@@ -96,7 +96,7 @@ void ConfigureButton::createMenu ()
   _menu->addSeparator();
 
   // quit
-  a = _menu->addAction(tr("Quit"));
+  a = _menu->addAction(tr("&Quit"));
   a->setCheckable(FALSE);
   a->setIcon(QIcon(quit_xpm));
   a->setStatusTip(tr("Quit QtStalker"));
