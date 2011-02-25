@@ -1002,3 +1002,5 @@
 
            Put the new indicator button back into the config/options control panel.
 
+           Fixed key accelerators in the menus to use just a letter or number. No ALT or CTRL keys needed.
+

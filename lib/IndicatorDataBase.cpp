@@ -78,6 +78,7 @@ int IndicatorDataBase::save (Indicator *i)
   db.setValue(key + "_lock", i->lock());
   db.setValue(key + "_log", i->log());
   db.setValue(key + "_date", i->date());
+  db.sync();
   
   return 0;
 }
@@ -102,6 +103,7 @@ int IndicatorDataBase::deleteIndicator (QStringList &l)
   }
 
   db.setValue("indicators", il);
+  db.sync();
 
   return 0;
 }

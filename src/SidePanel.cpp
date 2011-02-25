@@ -73,12 +73,15 @@ void SidePanel::loadSettings ()
   QSettings settings(g_localSettings);
   _lockStatus = settings.value("side_panel_lock_status", TRUE).toBool();
   emit signalLockStatus(_lockStatus);
+
+  setCurrentIndex(settings.value("side_panel_last_tab", 0).toInt());
 }
 
 void SidePanel::saveSettings ()
 {
   QSettings settings(g_localSettings);
   settings.setValue("side_panel_lock_status", _lockStatus);
+  settings.setValue("side_panel_last_tab", currentIndex());
 
   // kill any running scripts
   _scriptPage->shutDown();

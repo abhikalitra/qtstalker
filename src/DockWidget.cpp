@@ -26,8 +26,8 @@
 DockWidget::DockWidget (QString title, QWidget *p) : QDockWidget (title, p)
 {
   _menu = new QMenu(this);
-  _menu->addAction(tr("&Lock"), this, SLOT(lock()), Qt::ALT+Qt::Key_L);
-  _menu->addAction(tr("&Unlock"), this, SLOT(unlock()), Qt::ALT+Qt::Key_U);
+  _menu->addAction(tr("&Lock"), this, SLOT(lock()));
+  _menu->addAction(tr("&Unlock"), this, SLOT(unlock()));
 
   _titleBar = titleBarWidget();
   _noTitleBar = new QWidget(this);
@@ -47,7 +47,7 @@ void DockWidget::unlock ()
 
 void DockWidget::statusChanged (bool status)
 {
-  if (status)
+  if (status == TRUE)
     lock();
   else
     unlock();

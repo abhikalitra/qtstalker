@@ -62,6 +62,7 @@ int GroupDataBase::merge (QString name, QStringList &l)
   g.removeDuplicates();
   
   db.setValue(key, g);
+  db.sync();
 
   return 0;
 }
@@ -81,6 +82,7 @@ int GroupDataBase::saveAll (QString name, QStringList &l)
   QString key = "group_" + name;
 
   db.setValue(key, l);
+  db.sync();
 
   return 0;
 }
@@ -101,6 +103,7 @@ int GroupDataBase::deleteGroup (QStringList &l)
   }
 
   db.setValue("groups", il);
+  db.sync();
 
   return 0;
 }

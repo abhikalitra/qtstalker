@@ -49,116 +49,116 @@ PlotMenu::PlotMenu (QMainWindow *p) : QMenu (p)
 void PlotMenu::createActions ()
 {
   // buy
-  QAction *a = new QAction(QIcon(buyarrow_xpm), tr("Buy"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_B));
+  QAction *a = new QAction(QIcon(buyarrow_xpm), tr("&Buy"), this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_B));
   a->setToolTip(tr("Create Buy Arrow Chart Object"));
   a->setStatusTip(QString(tr("Create Buy Arrow Chart Object")));
   _actions.insert(_BUY_CHART_OBJECT, a);
 
   // hline
-  a = new QAction(QIcon(horizontal_xpm), tr("HLine"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_H));
+  a = new QAction(QIcon(horizontal_xpm), tr("&HLine"), this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_H));
   a->setToolTip(tr("Create Horizontal Line Chart Object"));
   a->setStatusTip(QString(tr("Create Horizontal Line Chart Object")));
   _actions.insert(_HLINE_CHART_OBJECT, a);
 
   // retracement
-  a = new QAction(QIcon(fib_xpm), tr("Retracement"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
+  a = new QAction(QIcon(fib_xpm), tr("&Retracement"), this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
   a->setToolTip(tr("Create Retracement Levels Chart Object"));
   a->setStatusTip(QString(tr("Create Retracement Levels Chart Object")));
   _actions.insert(_RETRACEMENT_CHART_OBJECT, a);
 
   // sell
-  a = new QAction(QIcon(sellarrow_xpm), tr("Sell"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
+  a = new QAction(QIcon(sellarrow_xpm), tr("&Sell"), this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
   a->setToolTip(tr("Create Sell Arrow Chart Object"));
   a->setStatusTip(QString(tr("Create Sell Arrow Chart Object")));
   _actions.insert(_SELL_CHART_OBJECT, a);
 
   // text
-  a = new QAction(QIcon(text_xpm), tr("Text"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_T));
+  a = new QAction(QIcon(text_xpm), tr("&Text"), this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_T));
   a->setToolTip(tr("Create Text Chart Object"));
   a->setStatusTip(QString(tr("Create Text Chart Object")));
   _actions.insert(_TEXT_CHART_OBJECT, a);
 
   // tline
-  a = new QAction(QIcon(trend_xpm), tr("TLine"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_T));
+  a = new QAction(QIcon(trend_xpm), tr("T&Line"), this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
   a->setToolTip(tr("Create Trend Line Chart Object"));
   a->setStatusTip(QString(tr("Create Trend Line Chart Object")));
   _actions.insert(_TLINE_CHART_OBJECT, a);
 
   // vline
-  a = new QAction(QIcon(vertical_xpm), tr("VLine"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_V));
+  a = new QAction(QIcon(vertical_xpm), tr("&VLine"), this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_V));
   a->setToolTip(tr("Create Vertical Line Chart Object"));
   a->setStatusTip(QString(tr("Create Vertical Line Chart Object")));
   _actions.insert(_VLINE_CHART_OBJECT, a);
 
   // new indicator
-  a = new QAction(QIcon(indicator_xpm), tr("&New Indicator..."), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
-  a->setToolTip(tr("Add New Indicator"));
-  a->setStatusTip(QString(tr("Add New Indicator")));
+  a = new QAction(QIcon(indicator_xpm), tr("&New Indicator") + "...", this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
+  a->setToolTip(tr("Add New Indicator") + "...");
+  a->setStatusTip(tr("Add New Indicator") + "...");
   _actions.insert(_NEW_INDICATOR, a);
   connect(a, SIGNAL(triggered(bool)), this, SLOT(newIndicator()));
 
   // edit indicator
-  a = new QAction(QIcon(edit_xpm), tr("&Edit Indicator..."), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
-  a->setToolTip(tr("Edit Indicator"));
-  a->setStatusTip(QString(tr("Edit Indicator")));
+  a = new QAction(QIcon(edit_xpm), tr("&Edit Indicator") + "...", this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
+  a->setToolTip(tr("Edit Indicator") + "...");
+  a->setStatusTip(tr("Edit Indicator") + "...");
   _actions.insert(_EDIT_INDICATOR, a);
   connect(a, SIGNAL(triggered(bool)), this, SLOT(editIndicator()));
 
   // delete indicator
-  a = new QAction(QIcon(delete_xpm), tr("De&lete Indicator(s)..."), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
-  a->setToolTip(tr("Delete Indicator(s)"));
-  a->setStatusTip(QString(tr("Delete Indicator(s)")));
+  a = new QAction(QIcon(delete_xpm), tr("&Delete Indicator(s)") + "...", this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
+  a->setToolTip(tr("Delete Indicator(s)") + "...");
+  a->setStatusTip(tr("Delete Indicator(s)") + "...");
   _actions.insert(_DELETE_INDICATOR, a);
   connect(a, SIGNAL(triggered(bool)), this, SLOT(deleteIndicator()));
 
   // edit chart object
-  a = new QAction(QIcon(edit_xpm), tr("Edit &Chart Object..."), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
-  a->setToolTip(tr("Edit Chart Object"));
-  a->setStatusTip(QString(tr("Edit Chart Object")));
+  a = new QAction(QIcon(edit_xpm), tr("Edit &Chart Object") + "...", this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
+  a->setToolTip(tr("Edit Chart Object") + "...");
+  a->setStatusTip(tr("Edit Chart Object") + "...");
   _actions.insert(_EDIT_CHART_OBJECT, a);
   connect(a, SIGNAL(triggered(bool)), this, SLOT(editChartObject()));
 
   // delete chart object
-  a = new QAction(QIcon(delete_xpm), tr("Delete Chart Object..."), this);
-  a->setToolTip(tr("Delete Chart Object"));
-  a->setStatusTip(QString(tr("Delete Chart Object")));
+  a = new QAction(QIcon(delete_xpm), tr("De&lete Chart Object") + "...", this);
+  a->setToolTip(tr("Delete Chart Object") + "...");
+  a->setStatusTip(tr("Delete Chart Object") + "...");
   _actions.insert(_DELETE_CHART_OBJECT, a);
   connect(a, SIGNAL(triggered(bool)), this, SLOT(deleteChartObject()));
 
   // date
-  a = new QAction(QIcon(date_xpm), tr("&Date Axis"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
+  a = new QAction(QIcon(date_xpm), tr("Date A&xis"), this);
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_x));
   a->setToolTip(tr("Toggle Date Axis"));
-  a->setStatusTip(QString(tr("Toggle Date Axis")));
+  a->setStatusTip(tr("Toggle Date Axis"));
   a->setCheckable(TRUE);
   _actions.insert(_DATE_AXIS, a);
   connect(a, SIGNAL(triggered(bool)), this, SIGNAL(signalDateStatus(bool)));
 
   // log
   a = new QAction(QIcon(loggrid_xpm), tr("Log &Scaling"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
   a->setToolTip(tr("Toggle Log Scaling"));
-  a->setStatusTip(QString(tr("Toggle Log Scaling")));
+  a->setStatusTip(tr("Toggle Log Scaling"));
   a->setCheckable(TRUE);
   _actions.insert(_LOG_SCALING, a);
   connect(a, SIGNAL(triggered(bool)), this, SIGNAL(signalLogStatus(bool)));
 
   // lock
   a = new QAction(QIcon(lock_xpm), tr("Loc&ked"), this);
-  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_K));
+//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_K));
   a->setToolTip(tr("Toggle Indicator Drag and Drop Lock"));
-  a->setStatusTip(QString(tr("Toggle Indicator Drag and Drop Lock")));
+  a->setStatusTip(tr("Toggle Indicator Drag and Drop Lock"));
   a->setCheckable(TRUE);
   a->setChecked(FALSE);
   _actions.insert(_LOCK, a);

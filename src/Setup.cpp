@@ -54,6 +54,9 @@ void Setup::setup (QString session)
   // order is critical here
   setupDirectories(); // initialize directory structure
 
+  // setup the system scripts
+  setupDefaults();
+  
   // initialize data tables
   setupExchanges();
 
@@ -90,14 +93,23 @@ void Setup::setupDirectories ()
   // setup the config defaults
   g_localSettings = "QtStalker/qtstalkerrc" + g_session;
   g_globalSettings = "QtStalker/qtstalkerrc";
+}
 
+void Setup::setupDefaults ()
+{
   QSettings settings(g_globalSettings);
 
-  // set the system script directory
+  // set the indicator script directory
   QString sysdir = INSTALL_DATA_DIR;
+  sysdir.append("/qtstalker/indicator/");
+  settings.setValue("indicator_script_directory", sysdir);
+
+  // set the system script directory
+  sysdir = INSTALL_DATA_DIR;
   sysdir.append("/qtstalker/system/");
   settings.setValue("system_script_directory", sysdir);
 
+  // setup the system scripts
   QString s = sysdir + "ChartPanelAddGroup.pl";
   settings.setValue("chart_panel_add_group_script", s);
 

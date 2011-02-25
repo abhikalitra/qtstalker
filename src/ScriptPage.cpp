@@ -97,49 +97,59 @@ void ScriptPage::createGUI ()
 
 void ScriptPage::createActions ()
 {
-  QAction *action = new QAction(QIcon(new_xpm), tr("&New Script"), this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
-  action->setToolTip(tr("New Script"));
+  QAction *action = new QAction(QIcon(new_xpm), tr("&New Script") + "...", this);
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
+  action->setToolTip(tr("New Script") + "...");
+  action->setStatusTip(tr("New Script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(newScript()));
   _actions.insert(_NewScript, action);
 
-  action = new QAction(QIcon(edit_xpm), tr("&Edit Script"), this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
-  action->setToolTip(tr("Edit Script"));
+  action = new QAction(QIcon(edit_xpm), tr("&Edit Script") + "...", this);
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
+  action->setToolTip(tr("Edit Script") + "...");
+  action->setStatusTip(tr("Edit Script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(editScript()));
   _actions.insert(_EditScript, action);
 
-  action = new QAction(QIcon(delete_xpm), tr("&Delete Script"), this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
-  action->setToolTip(tr("Delete Script"));
+  action = new QAction(QIcon(delete_xpm), tr("&Delete Script") + "...", this);
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
+  action->setToolTip(tr("Delete Script") + "...");
+  action->setStatusTip(tr("Delete Script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(deleteScript()));
   _actions.insert(_DeleteScript, action);
 
-  action = new QAction(QIcon(cancel_xpm), tr("&Cancel Script"), this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
-  action->setToolTip(tr("Cancel script"));
+  action = new QAction(QIcon(cancel_xpm), tr("&Cancel Script") + "...", this);
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
+  action->setToolTip(tr("Cancel script") + "...");
+  action->setStatusTip(tr("Cancel script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(cancelScript()));
   _actions.insert(_CancelScript, action);
 
-  action = new QAction(QIcon(script_xpm), tr("&Run Script"), this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
-  action->setToolTip(tr("Run script"));
+  action = new QAction(QIcon(script_xpm), tr("&Run Script") + "...", this);
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
+  action->setToolTip(tr("Run script") + "...");
+  action->setStatusTip(tr("Run script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(runScript()));
   _actions.insert(_RunScript, action);
 
-  action = new QAction(QIcon(script_xpm), tr("Run E&xternal Script"), this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_X));
-  action->setToolTip(tr("Run external script"));
+  action = new QAction(QIcon(script_xpm), tr("Run E&xternal Script") + "...", this);
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_X));
+  action->setToolTip(tr("Run external script") + "...");
+  action->setStatusTip(tr("Run external script") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(fileSelect()));
   _actions.insert(_RunExternalScript, action);
 
-  action = new QAction(QIcon(configure_xpm), tr("Launch Button Rows"), this);
-  action->setToolTip(tr("Launch Button Rows"));
+  action = new QAction(QIcon(configure_xpm), tr("Set Launch Button Rows") + "...", this);
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
+  action->setToolTip(tr("Set Launch Button Rows") + "...");
+  action->setStatusTip(tr("Set Launch Button Rows") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(launchButtonRows()));
   _actions.insert(_LaunchButtonRows, action);
 
-  action = new QAction(QIcon(configure_xpm), tr("Launch Button Columns"), this);
-  action->setToolTip(tr("Launch Button Columns"));
+  action = new QAction(QIcon(configure_xpm), tr("Set Launch Button Columns") + "...", this);
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
+  action->setToolTip(tr("Set Launch Button Columns") + "...");
+  action->setStatusTip(tr("Set Launch Button Columns") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(launchButtonCols()));
   _actions.insert(_LaunchButtonCols, action);
 }
@@ -246,16 +256,18 @@ void ScriptPage::runExternalScript (QString file)
   QSettings settings(g_localSettings);
   settings.setValue("script_panel_last_external_script", file);
   settings.sync();
+
+  QFileInfo fi(file);
   
   Script *script = new Script(this);
   setupScript(script);
-  script->setName(file);
+  script->setName(fi.baseName());
   script->setFile(file);
   script->setCommand("perl");
 
   QListWidgetItem *item = new QListWidgetItem(_queList);
-  item->setText(file);
-  _itemList.insert(file, item);
+  item->setText(fi.baseName());
+  _itemList.insert(fi.baseName(), item);
   
 //  _scriptList.insert(d, script);
 

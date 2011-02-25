@@ -53,7 +53,7 @@ BarLengthButton::BarLengthButton ()
 void BarLengthButton::createMenu ()
 {
   _menu = new QMenu(this);
-  _menu->setTitle(tr("Bar Length"));
+  _menu->setTitle(tr("Bar &Length"));
   connect(_menu, SIGNAL(triggered(QAction *)), this, SLOT(lengthChanged(QAction *)));
   setMenu(_menu);
 

@@ -76,6 +76,7 @@ int ScriptDataBase::save (Script *script)
   db.setValue(key + "_script", script->file());
   db.setValue(key + "_minutes", script->minutes());
   db.setValue(key + "_last_run", script->lastRun());
+  db.sync();
   
   return 0;
 }
@@ -100,6 +101,7 @@ int ScriptDataBase::deleteScript (QStringList &l)
   }
 
   db.setValue("scripts", il);
+  db.sync();
 
   return 0;
 }

@@ -180,7 +180,8 @@ void IndicatorEditDialog::loadSettings ()
 
   if (_file.isEmpty())
   {
-    _file = settings.value("indicator_edit_dialog_last_file", QDir::homePath()).toString();
+    _file = settings.value("indicator_edit_dialog_last_file",
+                           settings.value("indicator_script_directory").toString()).toString();
     QStringList l;
     l << _file;
     _fileButton->setFile(l);

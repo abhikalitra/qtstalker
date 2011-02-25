@@ -37,7 +37,7 @@ RefreshButton::RefreshButton ()
   _timer = 0;
 
   _menu = new QMenu(this);
-  _menu->addAction(QPixmap(configure_xpm), tr("&Refresh Rate"), this, SLOT(dialog()), Qt::ALT+Qt::Key_R);
+  _menu->addAction(QPixmap(configure_xpm), tr("&Refresh Rate") + "...", this, SLOT(dialog()));
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
   
   QSettings settings(g_localSettings);
@@ -46,8 +46,7 @@ RefreshButton::RefreshButton ()
   changeText();
   setIcon(QIcon(refresh_xpm));
   setCheckable(TRUE);
-
-  setChecked(settings.value("refresh_status", 0).toInt());
+  setChecked(settings.value("refresh_status", FALSE).toBool());
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(refreshChart(bool)));
 

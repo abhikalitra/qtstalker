@@ -129,11 +129,20 @@ void Plot::setDates ()
 void Plot::setIndicator ()
 {
   _indicator->load();
+  
+  _menu->setIndicator(_indicator->name());
+
   _menu->setLock(_indicator->lock());
   _dock->statusChanged(_indicator->lock());
+  
   _menu->setDate(_indicator->date());
+  enableAxis(QwtPlot::xBottom, _indicator->date());
+  
   _menu->setLog(_indicator->log());
-  _menu->setIndicator(_indicator->name());
+  if (_indicator->log() == TRUE)
+    setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
+  else
+    setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
 }
 
 Indicator * Plot::indicator ()
@@ -301,7 +310,7 @@ void Plot::setFont (QFont d)
 
 void Plot::setLogScaling (bool d)
 {
-  if (d)
+  if (d == TRUE)
     setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
   else
     setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
@@ -315,7 +324,6 @@ void Plot::setLogScaling (bool d)
 void Plot::showDate (bool d)
 {
   enableAxis(QwtPlot::xBottom, d);
-  
   _indicator->setDate(d);
   _indicator->save();
 }
@@ -323,7 +331,6 @@ void Plot::showDate (bool d)
 void Plot::lockChanged (bool d)
 {
   _dock->statusChanged(d);
-
   _indicator->setLock(d);
   _indicator->save();
 }

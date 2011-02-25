@@ -31,6 +31,7 @@ class Setup
     Setup ();
     void setup (QString session);
     void setupDirectories ();
+    void setupDefaults ();
     void setupDefaultIndicators ();
     void setupDefaultScripts ();
     void setupExchanges ();

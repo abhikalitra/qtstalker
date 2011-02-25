@@ -68,26 +68,30 @@ GroupPage::GroupPage (QWidget *p) : QWidget (p)
 void GroupPage::createActions ()
 {
   QAction *action  = new QAction(QIcon(new_xpm), tr("&New Group") + "...", this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
   action->setToolTip(tr("Create a new group") + "...");
+  action->setStatusTip(tr("Create a new group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(newGroup()));
   _actions.insert(_NEW_GROUP, action);
 
   action  = new QAction(QIcon(add_xpm), tr("&Add To Group") + "...", this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_A));
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_A));
   action->setToolTip(tr("Add symbol to group") + "...");
+  action->setStatusTip(tr("Add symbol to group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
   _actions.insert(_ADD_GROUP, action);
 
   action  = new QAction(QIcon(edit_xpm), tr("&Edit Group Items") + "...", this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
   action->setToolTip(tr("Edit group") + "...");
+  action->setStatusTip(tr("Edit group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(editGroup()));
   _actions.insert(_EDIT_GROUP, action);
 
   action  = new QAction(QIcon(delete_xpm), tr("&Delete Group") + "...", this);
-  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
+//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_D));
   action->setToolTip(tr("Delete group") + "...");
+  action->setStatusTip(tr("Delete group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(deleteGroup()));
   _actions.insert(_DELETE_GROUP, action);
 }

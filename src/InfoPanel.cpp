@@ -39,7 +39,7 @@ InfoPanel::InfoPanel ()
   setReadOnly(TRUE);
 
   _menu = new QMenu(this);
-  _menu->addAction(QPixmap(configure_xpm), tr("Number &Precision"), this, SLOT(dialog()), Qt::ALT+Qt::Key_P);
+  _menu->addAction(QPixmap(configure_xpm), tr("Set Number &Precision") + "...", this, SLOT(dialog()));
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
 }
 

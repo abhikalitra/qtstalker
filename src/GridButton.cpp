@@ -34,15 +34,15 @@ GridButton::GridButton ()
 
   setIcon(QIcon(grid_xpm));
   setText(tr("Chart &Grid"));
-  setStatusTip(tr("Toggle the chart grid. Right click mouse for options."));
-  setToolTip(tr("Toggle the chart grid"));
+  setStatusTip(tr("Toggle the chart grid. Right click mouse for options"));
+  setToolTip(tr("Toggle the chart grid. Right click mouse for options"));
   setCheckable(TRUE);
 
   QSettings settings(g_localSettings);
   setChecked(settings.value("grid", TRUE).toBool());
 
   _menu = new QMenu(this);
-  _menu->addAction(QPixmap(color_xpm), tr("Grid &Color"), this, SLOT(colorDialog()), Qt::ALT+Qt::Key_C);
+  _menu->addAction(QPixmap(color_xpm), tr("Grid &Color") + "...", this, SLOT(colorDialog()), Qt::ALT+Qt::Key_C);
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
