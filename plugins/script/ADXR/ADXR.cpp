@@ -63,11 +63,16 @@ int ADXR::command (Command *command)
   }
 
   bool ok;
-  int period = command->parm("PERIOD").toInt(&ok);
-  if (! ok)
+  int period = 14;
+  QString s = command->parm("PERIOD");
+  if (! s.isEmpty())
   {
-    qDebug() << _plugin << "::command: invalid period" << command->parm("PERIOD");
-    return 1;
+    period = s.toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid period" << s;
+      return 1;
+    }
   }
 
   int size = data->count();

@@ -14,6 +14,11 @@ $adxColor = 'yellow';
 
 $period = 14;
 
+$refColor = 'white';
+$ref = 20;
+$ref2Color = 'white';
+$ref2 = 40;
+
 ###################################################################
 
 $|++;
@@ -39,5 +44,13 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 $command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$adxName,STYLE=$adxStyle,COLOR=$adxColor,Z=2";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$ref,COLOR=$refColor";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$ref2,COLOR=$ref2Color";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

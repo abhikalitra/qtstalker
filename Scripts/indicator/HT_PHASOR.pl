@@ -14,7 +14,7 @@ $quadColor = 'yellow';
 
 $|++;
 
-$command = "PLUGIN=OHLC,NAME=$input";
+$command = "PLUGIN=OHLC,NAME=$input,COLOR_UP=green,COLOR_DOWN=red,COLOR_NEUTRAL=blue";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

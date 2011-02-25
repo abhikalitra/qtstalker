@@ -42,6 +42,7 @@ int BARS_DIALOG::command (Command *command)
 
   BARSDialog *dialog = new BARSDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;

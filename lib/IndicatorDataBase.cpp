@@ -44,7 +44,7 @@ int IndicatorDataBase::load (Indicator *i)
   QString key = "indicator_" + name;
   
   i->setCommand(db.value(key + "_command", "perl").toString());
-  i->setScript(db.value(key + "_script", QDir::homePath()).toString());
+  i->setScript(db.value(key + "_script").toString());
   i->setLock(db.value(key + "_lock", FALSE).toBool());
   i->setLog(db.value(key + "_log", FALSE).toBool());
   i->setDate(db.value(key + "_date", TRUE).toBool());

@@ -173,7 +173,7 @@ void Script::readFromStdout ()
     _plugins.insert(_command->plugin(), plug);
     connect(plug, SIGNAL(signalResume()), this, SLOT(resume()));
 
-    connect(this, SIGNAL(signalKill()), plug, SLOT(kill()));
+    connect(this, SIGNAL(signalKill()), plug, SIGNAL(signalKill()));
   }
 
   switch ((ScriptPlugin::Type) plug->type())

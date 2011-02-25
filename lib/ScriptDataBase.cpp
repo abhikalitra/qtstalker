@@ -44,7 +44,7 @@ int ScriptDataBase::load (Script *script)
   QString key = "script_" + name;
 
   script->setCommand(db.value(key + "_command", "perl").toString());
-  script->setFile(db.value(key + "_script", QDir::homePath()).toString());
+  script->setFile(db.value(key + "_script").toString());
   script->setMinutes(db.value(key + "_minutes", 0).toInt());
   script->setLastRun(db.value(key + "_last_run").toString());
 

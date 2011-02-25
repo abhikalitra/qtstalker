@@ -34,6 +34,7 @@ int CONFIGURE_DIALOG::command (Command *command)
 {
   ConfigureDialog *dialog = new ConfigureDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;

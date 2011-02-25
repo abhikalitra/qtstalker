@@ -22,7 +22,7 @@ $refDown = 20;
 
 $|++;
 
-$command = "PLUGIN=STOCH_FAST,NAME_FASTK=$fastkName,NAME_FASTD=$fastdName,PERIOD_FASTK=$fastkPeriod,PERIOD_FASTD=$fastdPeriod,MA_TYPE=$maType";
+$command = "PLUGIN=STOCH_FAST,NAME_FASTK=$fastkName,NAME_FASTD=$fastdName,PERIOD_FASTK=$fastkPeriod,PERIOD_FASTD=$fastdPeriod,MA_TYPE_FASTD=$maType";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

@@ -53,6 +53,7 @@ int COLOR_DIALOG::command (Command *command)
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(colorSelected(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;

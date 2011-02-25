@@ -20,7 +20,7 @@
  */
 
 #include "YAHOO_DIALOG.h"
-//#include "YahooDialog.h"
+#include "YahooDialog.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -28,27 +28,17 @@
 YAHOO_DIALOG::YAHOO_DIALOG ()
 {
   _plugin = "YAHOO_DIALOG";
-  _dialog = 0;
   _type = _DIALOG;
 }
 
 int YAHOO_DIALOG::command (Command *command)
 {
-  if (_dialog)
-    return 0;
-  
-  _dialog = new YahooDialog(command);
-  connect(_dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
-  _dialog->show();
+  YahooDialog *dialog = new YahooDialog(command);
+  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
+  dialog->show();
 
   return 0;
-}
-
-void YAHOO_DIALOG::kill ()
-{
-  if (_dialog)
-    _dialog->reject();
-qDebug() << "YAHOO_DIALOG::kill";
 }
 
 //*************************************************************

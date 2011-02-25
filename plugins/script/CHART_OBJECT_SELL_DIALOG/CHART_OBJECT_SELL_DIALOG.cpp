@@ -46,6 +46,7 @@ int CHART_OBJECT_SELL_DIALOG::command (Command *command)
 
   ChartObjectSellDialog *dialog = new ChartObjectSellDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;

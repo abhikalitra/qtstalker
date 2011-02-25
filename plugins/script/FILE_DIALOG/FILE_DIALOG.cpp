@@ -54,6 +54,7 @@ int FILE_DIALOG::command (Command *command)
   connect(dialog, SIGNAL(filesSelected(const QStringList &)), this, SLOT(filesSelected(QStringList)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;

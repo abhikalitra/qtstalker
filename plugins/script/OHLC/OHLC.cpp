@@ -34,9 +34,9 @@ int OHLC::command (Command *command)
 {
   // PARMS:
   // NAME
-  // COLOR_UP
-  // COLOR_DOWN
-  // COLOR_NEUTRAL
+  // COLOR_UP - default green
+  // COLOR_DOWN - default red
+  // COLOR_NEUTRAL - default blue
 
   Indicator *i = command->indicator();
   if (! i)
@@ -60,25 +60,40 @@ int OHLC::command (Command *command)
     return 1;
   }
 
-  QColor upColor(command->parm("COLOR_UP"));
-  if (! upColor.isValid())
+  QColor upColor(Qt::green);
+  QString s = command->parm("COLOR_UP");
+  if (! s.isEmpty())
   {
-    qDebug() << _plugin << "::command: invalid COLOR_UP" << command->parm("COLOR_UP");
-    return 1;
+    upColor.setNamedColor(s);
+    if (! upColor.isValid())
+    {
+      qDebug() << _plugin << "::command: invalid COLOR_UP" << command->parm("COLOR_UP");
+      return 1;
+    }
   }
 
-  QColor downColor(command->parm("COLOR_DOWN"));
-  if (! downColor.isValid())
+  QColor downColor(Qt::red);
+  s = command->parm("COLOR_DOWN");
+  if (! s.isEmpty())
   {
-    qDebug() << _plugin << "::command: invalid COLOR_DOWN" << command->parm("COLOR_DOWN");
-    return 1;
+    downColor.setNamedColor(s);
+    if (! downColor.isValid())
+    {
+      qDebug() << _plugin << "::command: invalid COLOR_DOWN" << command->parm("COLOR_DOWN");
+      return 1;
+    }
   }
 
-  QColor neutralColor(command->parm("COLOR_NEUTRAL"));
-  if (! neutralColor.isValid())
+  QColor neutralColor(Qt::blue);
+  s = command->parm("COLOR_NEUTRAL");
+  if (! s.isEmpty())
   {
-    qDebug() << _plugin << "::command: invalid COLOR_NEUTRAL" << command->parm("COLOR_NEUTRAL");
-    return 1;
+    neutralColor.setNamedColor(s);
+    if (! neutralColor.isValid())
+    {
+      qDebug() << _plugin << "::command: invalid COLOR_NEUTRAL" << command->parm("COLOR_NEUTRAL");
+      return 1;
+    }
   }
 
   line = new Curve(Curve::OHLC);

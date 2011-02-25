@@ -37,6 +37,7 @@ int EXCHANGE_SEARCH_DIALOG::command (Command *command)
 
   ExchangeSearchDialog *dialog = new ExchangeSearchDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;

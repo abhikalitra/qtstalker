@@ -56,6 +56,7 @@ int SELECT_DIALOG::command (Command *command)
 
   SelectDialog *dialog = new SelectDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;

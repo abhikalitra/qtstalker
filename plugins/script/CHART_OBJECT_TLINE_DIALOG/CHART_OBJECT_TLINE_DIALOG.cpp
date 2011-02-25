@@ -45,6 +45,7 @@ int CHART_OBJECT_TLINE_DIALOG::command (Command *command)
 
   ChartObjectTLineDialog *dialog = new ChartObjectTLineDialog(command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;
