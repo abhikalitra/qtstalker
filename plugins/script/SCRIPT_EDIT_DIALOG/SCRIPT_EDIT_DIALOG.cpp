@@ -43,7 +43,7 @@ int SCRIPT_EDIT_DIALOG::command (Command *command)
     return 1;
   }
 
-  ScriptEditDialog *dialog = new ScriptEditDialog(command);
+  ScriptEditDialog *dialog = new ScriptEditDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

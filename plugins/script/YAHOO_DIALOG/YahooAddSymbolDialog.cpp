@@ -21,19 +21,16 @@
 
 #include "YahooAddSymbolDialog.h"
 #include "Globals.h"
-#include "Doc.h"
 #include "YahooDataBase.h"
 
 #include <QtDebug>
-#include <QDialogButtonBox>
-#include <QLayout>
-#include <QSettings>
-#include <QFormLayout>
 
-YahooAddSymbolDialog::YahooAddSymbolDialog (QWidget *p) : QDialog (p)
+YahooAddSymbolDialog::YahooAddSymbolDialog (QWidget *p) : Dialog (p)
 {
   _yexchange << "NYSE" << "AX" << "SA" << "TO" << "BO" << "NS" << "L" << "B";
   _helpFile = "Yahoo.html";
+  _keySize = "yahoo_add_symbol_dialog_window_size";
+  _keyPos = "yahoo_add_symbol_dialog_window_position";
 
   QStringList l;
   l << "QtStalker" << g_session << ":" << "Yahoo " + tr("Add Symbols");
@@ -44,46 +41,14 @@ YahooAddSymbolDialog::YahooAddSymbolDialog (QWidget *p) : QDialog (p)
   loadSettings();
 
   buttonStatus();
-
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void YahooAddSymbolDialog::createGUI ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  setLayout(vbox);
-
-  QFormLayout *form = new QFormLayout;
-  form->setSpacing(2);
-  form->setMargin(5);
-  vbox->addLayout(form);
-
   _symbols = new LineEdit;
   _symbols->setToolTip(tr("Enter Yahoo symbols separated by a space"));
   connect(_symbols, SIGNAL(textChanged(const QString &)), this, SLOT(buttonStatus()));
-  form->addRow(tr("Yahoo Symbols"), _symbols);
-
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-
-  // help button
-  QPushButton *b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
+  _form->addRow(tr("Yahoo Symbols"), _symbols);
 }
 
 void YahooAddSymbolDialog::buttonStatus ()
@@ -93,12 +58,6 @@ void YahooAddSymbolDialog::buttonStatus ()
     status++;
 
   _okButton->setEnabled(status);
-}
-
-void YahooAddSymbolDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
 }
 
 void YahooAddSymbolDialog::done ()
@@ -193,31 +152,4 @@ int YahooAddSymbolDialog::getSymbolExchange (QString &ysymbol, QString &symbol, 
   }
 
   return rc;
-}
-
-void YahooAddSymbolDialog::cancel ()
-{
-  saveSettings();
-  reject();
-}
-
-void YahooAddSymbolDialog::loadSettings ()
-{
-  QSettings settings(g_globalSettings);
-
-  QSize sz = settings.value("yahoo_add_symbol_dialog_window_size", QSize(200,150)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("yahoo_add_symbol_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
-}
-
-void YahooAddSymbolDialog::saveSettings ()
-{
-  QSettings settings(g_globalSettings);
-  settings.setValue("yahoo_add_symbol_dialog_window_size", size());
-  settings.setValue("yahoo_add_symbol_dialog_window_position", pos());
-  settings.sync();
 }

@@ -22,30 +22,19 @@
 #ifndef MESSAGE_DIALOG_DIALOG_HPP
 #define MESSAGE_DIALOG_DIALOG_HPP
 
-#include <QDialog>
-#include <QPushButton>
-#include <QLabel>
-#include <QString>
 
-#include "Command.h"
+#include "Dialog.h"
 
-class MessageDialog : public QDialog
+class MessageDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    MessageDialog (Command *);
+    MessageDialog (QWidget *, Command *);
     void createGUI ();
-    void loadSettings ();
-    void saveSettings ();
 
   public slots:
     void done ();
-
-  private:
-    QPushButton *_okButton;
-    QLabel *_message;
-    Command *_command;
 };
 
 #endif

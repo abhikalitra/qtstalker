@@ -38,6 +38,7 @@
 #include <QStringList>
 #include <QObject>
 #include <QHash>
+#include <QWidget>
 
 class Script : public QObject
 {
@@ -50,8 +51,11 @@ class Script : public QObject
     void signalKill ();
 
   public:
+    Script (QWidget *);
     Script (QObject *);
+    Script ();
     ~Script ();
+    void init ();
     void clear ();
     void setIndicator (Indicator *);
     Indicator * indicator ();
@@ -95,6 +99,7 @@ class Script : public QObject
     QString _lastRun;
     QHash<QString, ScriptPlugin *> _plugins;
     Command *_command;
+    QWidget *_parent;
 };
 
 #endif

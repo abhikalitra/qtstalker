@@ -22,39 +22,26 @@
 #ifndef SELECT_DIALOG_DIALOG_HPP
 #define SELECT_DIALOG_DIALOG_HPP
 
-#include <QDialog>
 #include <QListWidget>
-#include <QPushButton>
-#include <QLabel>
-#include <QString>
 
-#include "Command.h"
+#include "Dialog.h"
 
-class SelectDialog : public QDialog
+class SelectDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    SelectDialog (Command *);
+    SelectDialog (QWidget *, Command *);
     void createGUI ();
-    void loadSettings ();
-    void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
-    void help ();
     void selectionChanged ();
 
   private:
     QListWidget *_list;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
     QPushButton *_selectButton;
     QPushButton *_unselectButton;
-    QString _helpFile;
-    QLabel *_message;
-    Command *_command;
 };
 
 #endif

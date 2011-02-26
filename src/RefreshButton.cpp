@@ -47,6 +47,7 @@ RefreshButton::RefreshButton ()
   setIcon(QIcon(refresh_xpm));
   setCheckable(TRUE);
   setChecked(settings.value("refresh_status", FALSE).toBool());
+  setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
 
   connect(this, SIGNAL(toggled(bool)), this, SLOT(refreshChart(bool)));
 

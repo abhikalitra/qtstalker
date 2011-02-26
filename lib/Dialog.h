@@ -19,36 +19,43 @@
  *  USA.
  */
 
-#ifndef SCRIPT_EDIT_DIALOG_DIALOG_HPP
-#define SCRIPT_EDIT_DIALOG_DIALOG_HPP
+#ifndef DIALOG_HPP
+#define DIALOG_HPP
 
-#include <QSpinBox>
+#include <QDialog>
+#include <QPushButton>
+#include <QLabel>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLayout>
 
-#include "Dialog.h"
-#include "FileButton.h"
-#include "LineEdit.h"
+#include "Command.h"
 
-class ScriptEditDialog : public Dialog
+class Dialog : public QDialog
 {
   Q_OBJECT
 
   public:
-    ScriptEditDialog (QWidget *, Command *);
-    void createGUI ();
-    void loadSettings ();
-    void saveSettings ();
-    void loadScript ();
+    Dialog (QWidget *);
 
   public slots:
-    void done ();
-    void buttonStatus ();
+    virtual void done ();
+    virtual void cancel ();
+    virtual void help ();
+    virtual void loadSettings ();
+    virtual void saveSettings ();
 
-  private:
-    LineEdit *_com;
-    QSpinBox *_minutes;
-    FileButton *_fileButton;
-    QString _file;
-    QString _name;
+  protected:
+    QDialogButtonBox *_buttonBox;
+    QVBoxLayout *_vbox;
+    QFormLayout *_form;
+    QPushButton *_okButton;
+    QPushButton *_cancelButton;
+    QString _helpFile;
+    QLabel *_message;
+    Command *_command;
+    QString _keySize;
+    QString _keyPos;
 };
 
 #endif

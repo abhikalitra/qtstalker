@@ -45,7 +45,7 @@ int FONT_DIALOG::command (Command *command)
     font.fromString(l.join(","));
   }
 
-  QFontDialog *dialog = new QFontDialog(font, 0);
+  QFontDialog *dialog = new QFontDialog(font, _parent);
   connect(dialog, SIGNAL(fontSelected(const QFont &)), this, SLOT(fontSelected(QFont)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));

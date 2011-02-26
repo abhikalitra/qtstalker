@@ -43,7 +43,7 @@ int CHART_OBJECT_RETRACEMENT_DIALOG::command (Command *command)
     return 1;
   }
 
-  ChartObjectRetracementDialog *dialog = new ChartObjectRetracementDialog(command);
+  ChartObjectRetracementDialog *dialog = new ChartObjectRetracementDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

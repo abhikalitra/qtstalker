@@ -196,7 +196,7 @@ int Indicator::load ()
 
 void Indicator::calculate ()
 {
-  Script *script = new Script(0);
+  Script *script = new Script(this);
   script->setName(_name);
   script->setFile(_script);
   script->setCommand(_command);

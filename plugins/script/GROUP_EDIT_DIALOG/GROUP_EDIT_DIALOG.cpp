@@ -43,7 +43,7 @@ int GROUP_EDIT_DIALOG::command (Command *command)
     return 1;
   }
 
-  GroupEditDialog *dialog = new GroupEditDialog(command);
+  GroupEditDialog *dialog = new GroupEditDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

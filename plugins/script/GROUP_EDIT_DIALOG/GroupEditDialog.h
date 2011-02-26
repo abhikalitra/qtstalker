@@ -22,45 +22,33 @@
 #ifndef GROUP_EDIT_DIALOG_DIALOG_HPP
 #define GROUP_EDIT_DIALOG_DIALOG_HPP
 
-#include <QDialog>
-#include <QStringList>
 #include <QListWidget>
-#include <QPushButton>
-#include <QLabel>
 
 #include "ScriptPluginFactory.h"
+#include "Dialog.h"
 
-class GroupEditDialog : public QDialog
+class GroupEditDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    GroupEditDialog (Command *);
+    GroupEditDialog (QWidget *, Command *);
     ~GroupEditDialog ();
     void createGUI ();
-    void loadSettings ();
-    void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
     void selectionChanged ();
-    void help ();
     void addButtonPressed ();
     void addButtonPressed2 ();
     void deleteButtonPressed ();
 
   private:
     QListWidget *_list;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
     QPushButton *_addButton;
     QPushButton *_deleteButton;
-    QString _helpFile;
-    QLabel *_message;
     QString _name;
     ScriptPluginFactory _factory;
-    Command *_command;
     Command *_symbolDialogCommand;
 };
 

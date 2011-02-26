@@ -48,7 +48,7 @@ int FILE_DIALOG::command (Command *command)
     return 1;
   }
   
-  QFileDialog *dialog = new QFileDialog;
+  QFileDialog *dialog = new QFileDialog(_parent);
   dialog->setDirectory(command->parm("DIRECTORY"));
   dialog->setWindowTitle("QtStalker" + g_session + ": " + command->parm("TITLE"));
   connect(dialog, SIGNAL(filesSelected(const QStringList &)), this, SLOT(filesSelected(QStringList)));

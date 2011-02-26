@@ -307,11 +307,19 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Zoom In</source>
+        <source>Zoom &amp;In</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Zoom Out</source>
+        <source>Increase space between bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom &amp;Out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease space between bars</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -688,6 +696,18 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Edit Buy</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>O&amp;K</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObjectHLine</name>
@@ -732,6 +752,10 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Edit HLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1333,6 +1357,21 @@ e.g. Qtstalker alert was triggered.</source>
     <name>DateRangeControl</name>
     <message>
         <source>Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Dialog</name>
+    <message>
+        <source>O&amp;K</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2958,6 +2997,14 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Message Log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>O&amp;K</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

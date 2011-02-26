@@ -21,19 +21,16 @@
 
 #include "ConfigureDialog.h"
 #include "Globals.h"
-#include "Doc.h"
 
 #include <QtDebug>
-#include <QDialogButtonBox>
-#include <QLayout>
-#include <QSettings>
-#include <QFormLayout>
 #include <QApplication>
+#include <QSettings>
 
-ConfigureDialog::ConfigureDialog (Command *c)
+ConfigureDialog::ConfigureDialog (QWidget *p, Command *c) : Dialog (p)
 {
   _command = c;
-  _helpFile = "main.html";
+  _keySize = "configure_dialog_window_size";
+  _keyPos = "configure_dialog_window_position";
   _modified = 0;
 
   QStringList l;
@@ -46,39 +43,12 @@ ConfigureDialog::ConfigureDialog (Command *c)
   loadSettings();
 
   buttonStatus();
-
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ConfigureDialog::createGUI ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  setLayout(vbox);
-
   _tabs = new QTabWidget;
-  vbox->addWidget(_tabs);
-  
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-
-  // help button
-  QPushButton *b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
+  _vbox->insertWidget(0, _tabs);
 }
 
 void ConfigureDialog::createGeneralPage ()
@@ -150,12 +120,6 @@ void ConfigureDialog::buttonStatus ()
     _okButton->setEnabled(FALSE);
 }
 
-void ConfigureDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
-}
-
 void ConfigureDialog::done ()
 {
   QSettings settings(g_localSettings);
@@ -192,33 +156,6 @@ void ConfigureDialog::done ()
   saveSettings();
 
   accept();
-}
-
-void ConfigureDialog::cancel ()
-{
-  saveSettings();
-  reject();
-}
-
-void ConfigureDialog::loadSettings ()
-{
-  QSettings settings(g_globalSettings);
-
-  QSize sz = settings.value("configure_dialog_window_size", QSize(200,150)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("configure_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
-}
-
-void ConfigureDialog::saveSettings ()
-{
-  QSettings settings(g_globalSettings);
-  settings.setValue("configure_dialog_window_size", size());
-  settings.setValue("configure_dialog_window_position", pos());
-  settings.sync();
 }
 
 void ConfigureDialog::backgroundChanged ()

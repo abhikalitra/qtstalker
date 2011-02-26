@@ -22,41 +22,30 @@
 #ifndef INDICATOR_EDIT_DIALOG_DIALOG_HPP
 #define INDICATOR_EDIT_DIALOG_DIALOG_HPP
 
-#include <QDialog>
-#include <QStringList>
-#include <QPushButton>
-#include <QLabel>
-
 #include "Command.h"
 #include "FileButton.h"
 #include "Indicator.h"
 #include "LineEdit.h"
+#include "Dialog.h"
 
-class IndicatorEditDialog : public QDialog
+class IndicatorEditDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    IndicatorEditDialog (Command *);
+    IndicatorEditDialog (QWidget *, Command *);
     void createGUI ();
     void loadSettings ();
     void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
     void buttonStatus ();
-    void help ();
 
   private:
     Indicator _indicator;
     LineEdit *_com;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
-    QString _helpFile;
-    QLabel *_message;
     FileButton *_fileButton;
-    Command *_command;
     QString _name;
     QString _file;
 };

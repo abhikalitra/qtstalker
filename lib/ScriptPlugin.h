@@ -23,6 +23,7 @@
 #define SCRIPT_PLUGIN_HPP
 
 #include <QObject>
+#include <QWidget>
 
 #include "Command.h"
 
@@ -45,13 +46,12 @@ class ScriptPlugin : public QObject
     virtual ~ScriptPlugin ();
     virtual int command (Command *);
     int type ();
-
-  public slots:
-    virtual void kill ();
+    void setParent (QWidget *);
 
   protected:
     int _type;
     QString _plugin;
+    QWidget *_parent;
 };
 
 #endif

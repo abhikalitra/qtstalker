@@ -40,6 +40,7 @@ CrossHairsButton::CrossHairsButton ()
   setStatusTip(tr("Toggle the cursor crosshairs. Right click mouse for options."));
   setToolTip(tr("Toggle the cursor crosshairs"));
   setCheckable(TRUE);
+  setShortcut(QKeySequence(Qt::CTRL + Qt::Key_H));
 
   QSettings settings(g_localSettings);
   setChecked(settings.value("crosshairs", 0).toInt());

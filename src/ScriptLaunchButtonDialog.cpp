@@ -22,18 +22,13 @@
 #include "ScriptLaunchButtonDialog.h"
 #include "ScriptDataBase.h"
 #include "Globals.h"
-#include "Doc.h"
 
 #include <QtDebug>
-#include <QFormLayout>
-#include <QDialogButtonBox>
-#include <QLayout>
-#include <QSettings>
-#include <QPushButton>
 
-ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QString script, QString icon, int use)
+ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString script, QString icon, int use) : Dialog (p)
 {
-  _helpFile = "main.html";
+  _keySize = "script_launch_button_dialog_window_size";
+  _keyPos = "script_launch_button_dialog_window_position";
   
   setWindowTitle("Qtstalker" + g_session + ": " +  tr("Script Launch Button Settings"));
 
@@ -55,22 +50,10 @@ ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QString script, QString icon
     _useIcon->setChecked(FALSE);
     useIconToggled(FALSE);
   }
-
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ScriptLaunchButtonDialog::createMainPage ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(10);
-  vbox->setMargin(5);
-  setLayout(vbox);
-  
-  QFormLayout *form = new QFormLayout;
-  form->setSpacing(2);
-  form->setMargin(5);
-  vbox->addLayout(form);
-
   // script
   ScriptDataBase db;
   QStringList l;
@@ -78,34 +61,16 @@ void ScriptLaunchButtonDialog::createMainPage ()
 
   _script = new QComboBox;
   _script->addItems(l);
-  form->addRow(tr("Script"), _script);
+  _form->addRow(tr("Script"), _script);
 
   // icon
   _icon = new IconButton(this, QString());
-  form->addRow(tr("Icon"), _icon);
+  _form->addRow(tr("Icon"), _icon);
 
   // use icon checkbox
   _useIcon = new QCheckBox;
-  form->addRow(tr("Use Icon"), _useIcon);
+  _form->addRow(tr("Use Icon"), _useIcon);
   connect(_useIcon, SIGNAL(toggled(bool)), this, SLOT(useIconToggled(bool)));
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-  _cancelButton->setDefault(TRUE);
-
-  // help button
-  QPushButton *b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 
 void ScriptLaunchButtonDialog::done ()
@@ -115,38 +80,6 @@ void ScriptLaunchButtonDialog::done ()
   saveSettings();
   
   accept();
-}
-
-void ScriptLaunchButtonDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
-}
-
-void ScriptLaunchButtonDialog::cancel ()
-{
-  saveSettings();
-  reject();
-}
-
-void ScriptLaunchButtonDialog::loadSettings ()
-{
-  QSettings settings(g_localSettings);
-  QSize sz = settings.value("script_launch_button_dialog_window_size", QSize(200,150)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("script_launch_button_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
-}
-
-void ScriptLaunchButtonDialog::saveSettings ()
-{
-  QSettings settings(g_localSettings);
-  settings.setValue("script_launch_button_dialog_window_size", size());
-  settings.setValue("script_launch_button_dialog_window_position", pos());
-  settings.sync();
 }
 
 void ScriptLaunchButtonDialog::useIconToggled (bool d)

@@ -47,23 +47,24 @@ void BarSpaceButton::createMenu ()
 {
   _menu = new QMenu(this);
   _menu->setTitle(tr("Bar Spacing"));
-//  connect(_menu, SIGNAL(triggered(QAction *)), this, SLOT(lengthChanged(QAction *)));
   setMenu(_menu);
 
   // zoom in
-  _zoomIn = _menu->addAction(tr("Zoom In"));
+  _zoomIn = _menu->addAction(tr("Zoom &In"));
+  _zoomIn->setShortcut(QKeySequence(QKeySequence::ZoomIn));
   _zoomIn->setCheckable(FALSE);
   _zoomIn->setIcon(QIcon(zoomin_xpm));
-  _zoomIn->setToolTip(QString(tr("Zoom In")));
-  _zoomIn->setStatusTip(QString(tr("Zoom In")));
+  _zoomIn->setToolTip(QString(tr("Increase space between bars")));
+  _zoomIn->setStatusTip(QString(tr("Increase space between bars")));
   connect(_zoomIn, SIGNAL(triggered(bool)), this, SLOT(zoomIn()));
 
   // zoom out
-  _zoomOut = _menu->addAction(tr("Zoom Out"));
+  _zoomOut = _menu->addAction(tr("Zoom &Out"));
+  _zoomOut->setShortcut(QKeySequence(QKeySequence::ZoomOut));
   _zoomOut->setCheckable(FALSE);
   _zoomOut->setIcon(QIcon(zoomout_xpm));
-  _zoomOut->setToolTip(QString(tr("Zoom Out")));
-  _zoomOut->setStatusTip(QString(tr("Zoom Out")));
+  _zoomOut->setToolTip(QString(tr("Decrease space between bars")));
+  _zoomOut->setStatusTip(QString(tr("Decrease space between bars")));
   connect(_zoomOut, SIGNAL(triggered(bool)), this, SLOT(zoomOut()));
 
   _menu->addSeparator();

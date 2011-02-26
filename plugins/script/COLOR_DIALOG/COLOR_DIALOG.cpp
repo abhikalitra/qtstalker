@@ -49,7 +49,7 @@ int COLOR_DIALOG::command (Command *command)
     }
   }
 
-  QColorDialog *dialog = new QColorDialog(c, 0);
+  QColorDialog *dialog = new QColorDialog(c, _parent);
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(colorSelected(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));

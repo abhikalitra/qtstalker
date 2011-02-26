@@ -21,19 +21,16 @@
 
 #include "IndicatorEditDialog.h"
 #include "Globals.h"
-#include "Doc.h"
 
 #include <QtDebug>
-#include <QDialogButtonBox>
-#include <QLayout>
 #include <QSettings>
-#include <QFormLayout>
 #include <QDir>
 
-IndicatorEditDialog::IndicatorEditDialog (Command *c)
+IndicatorEditDialog::IndicatorEditDialog (QWidget *p, Command *c) : Dialog (p)
 {
   _command = c;
-  _helpFile = "main.html";
+  _keySize = "indicator_edit_dialog_window_size";
+  _keyPos = "indicator_edit_dialog_window_position";
 
   _name = _command->parm("NAME");
 
@@ -61,55 +58,23 @@ IndicatorEditDialog::IndicatorEditDialog (Command *c)
   loadSettings();
 
   buttonStatus();
-
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void IndicatorEditDialog::createGUI ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  setLayout(vbox);
-
-  QFormLayout *form = new QFormLayout;
-  form->setSpacing(2);
-  form->setMargin(5);
-  vbox->addLayout(form);
-
   // command
   _com = new LineEdit;
   _com->setText("perl");
   _com->setToolTip(tr("Script command"));
   connect(_com, SIGNAL(textChanged(const QString &)), this, SLOT(buttonStatus()));
-  form->addRow(tr("Command"), _com);
+  _form->addRow(tr("Command"), _com);
 
   // file
   QStringList tl;
   QString s;
   _fileButton = new FileButton(this, tl, s);
   connect(_fileButton, SIGNAL(signalSelectionChanged()), this, SLOT(buttonStatus()));
-  form->addRow(tr("Script File"), _fileButton);
-
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-
-  // help button
-  QPushButton *b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
+  _form->addRow(tr("Script File"), _fileButton);
 }
 
 void IndicatorEditDialog::buttonStatus ()
@@ -133,12 +98,6 @@ void IndicatorEditDialog::buttonStatus ()
     _okButton->setEnabled(FALSE);
 }
 
-void IndicatorEditDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
-}
-
 void IndicatorEditDialog::done ()
 {
   QString com = _com->text();
@@ -160,23 +119,11 @@ void IndicatorEditDialog::done ()
   accept();
 }
 
-void IndicatorEditDialog::cancel ()
-{
-  saveSettings();
-  reject();
-}
-
 void IndicatorEditDialog::loadSettings ()
 {
+  Dialog::loadSettings();
+
   QSettings settings(g_globalSettings);
-
-  QSize sz = settings.value("indicator_edit_dialog_window_size", QSize(200,150)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("indicator_edit_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
 
   if (_file.isEmpty())
   {
@@ -190,9 +137,9 @@ void IndicatorEditDialog::loadSettings ()
 
 void IndicatorEditDialog::saveSettings ()
 {
+  Dialog::saveSettings();
+
   QSettings settings(g_globalSettings);
-  settings.setValue("indicator_edit_dialog_window_size", size());
-  settings.setValue("indicator_edit_dialog_window_position", pos());
   settings.setValue("indicator_edit_dialog_last_file", _file);
   settings.sync();
 }

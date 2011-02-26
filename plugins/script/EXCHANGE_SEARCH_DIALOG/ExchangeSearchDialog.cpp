@@ -21,88 +21,50 @@
 
 #include "ExchangeSearchDialog.h"
 #include "Globals.h"
-#include "Doc.h"
-
 #include "../pics/search.xpm"
 
 #include <QtDebug>
-#include <QDialogButtonBox>
 #include <QSettings>
-#include <QFormLayout>
 
-ExchangeSearchDialog::ExchangeSearchDialog (Command *command)
+ExchangeSearchDialog::ExchangeSearchDialog (QWidget *p, Command *command) : Dialog (p)
 {
   _command = command;
-  _helpFile = "main.html";
+  _keySize = "exchange_search_dialog_window_size";
+  _keyPos = "exchange_search_dialog_window_position";
+
   setWindowTitle("QtStalker" + g_session + ": " + tr("Exchange Search"));
 
   createGUI();
 
   loadSettings();
-
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void ExchangeSearchDialog::createGUI ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(10);
-  vbox->setMargin(5);
-  setLayout(vbox);
-
-  QFormLayout *form = new QFormLayout;
-  form->setSpacing(2);
-  form->setMargin(0);
-  vbox->addLayout(form);
-
   // exchange name
   _exchange = new QComboBox;
-  form->addRow(tr("Exchange"), _exchange);
+  _form->addRow(tr("Exchange"), _exchange);
 
   // country
   _country = new QComboBox;
-  form->addRow(tr("Country"), _country);
+  _form->addRow(tr("Country"), _country);
 
   // city
   _city = new QComboBox;
-  form->addRow(tr("City"), _city);
+  _form->addRow(tr("City"), _city);
 
   // search button
   QPushButton *b = new QPushButton;
   b->setIcon(QIcon(search_xpm));
   connect(b, SIGNAL(clicked()), this, SLOT(search()));
-  form->addRow(tr("Perform Search"), b);
+  _form->addRow(tr("Perform Search"), b);
 
   // search results
   _list = new QListWidget;
   _list->setSelectionMode(QAbstractItemView::SingleSelection);
   connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   connect(_list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(done()));
-  vbox->addWidget(_list);
-
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-//  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-//  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  connect(_okButton, SIGNAL(clicked()), this, SLOT(done()));
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-  connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancel()));
-  _cancelButton->setDefault(TRUE);
-
-  // help button
-  b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
+  _vbox->insertWidget(1, _list);
 }
 
 void ExchangeSearchDialog::search ()
@@ -152,12 +114,6 @@ void ExchangeSearchDialog::selectionChanged ()
   _okButton->setEnabled(TRUE);
 }
 
-void ExchangeSearchDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
-}
-
 void ExchangeSearchDialog::done ()
 {
   _command->setReturnData("EXCHANGE_SEARCH_DIALOG_SELECTED", _exchange->currentText());
@@ -169,23 +125,11 @@ void ExchangeSearchDialog::done ()
   accept();
 }
 
-void ExchangeSearchDialog::cancel ()
-{
-  saveSettings();
-  reject();
-}
-
 void ExchangeSearchDialog::loadSettings ()
 {
+  Dialog::loadSettings();
+
   QSettings settings(g_globalSettings);
-
-  QSize sz = settings.value("exchange_search_dialog_window_size", QSize(200,150)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("exchange_search_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
 
   // exchange
   QStringList l;
@@ -211,9 +155,9 @@ void ExchangeSearchDialog::loadSettings ()
 
 void ExchangeSearchDialog::saveSettings ()
 {
+  Dialog::saveSettings();
+
   QSettings settings(g_globalSettings);
-  settings.setValue("exchange_search_dialog_window_size", size());
-  settings.setValue("exchange_search_dialog_window_position", pos());
   settings.setValue("exchange_search_dialog_last_selection", _exchange->currentText());
   settings.sync();
 }

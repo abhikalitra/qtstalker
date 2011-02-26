@@ -36,7 +36,7 @@ int SCRIPT_DATABASE_SAVE::command (Command *command)
   // FIELD
   // DATA
 
-  Script script(0);
+  Script script;
   script.setName(command->parm("NAME"));
 
   ScriptDataBase db;

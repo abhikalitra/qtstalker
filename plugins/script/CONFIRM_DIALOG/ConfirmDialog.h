@@ -22,32 +22,17 @@
 #ifndef CONFIRM_DIALOG_DIALOG_HPP
 #define CONFIRM_DIALOG_DIALOG_HPP
 
-#include <QDialog>
-#include <QPushButton>
-#include <QLabel>
-#include <QString>
+#include "Dialog.h"
 
-#include "Command.h"
-
-class ConfirmDialog : public QDialog
+class ConfirmDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ConfirmDialog (Command *);
-    void createGUI ();
-    void loadSettings ();
-    void saveSettings ();
+    ConfirmDialog (QWidget *, Command *);
 
   public slots:
     void done ();
-    void cancel ();
-
-  private:
-    QPushButton *_yesButton;
-    QPushButton *_noButton;
-    QLabel *_message;
-    Command *_command;
 };
 
 #endif

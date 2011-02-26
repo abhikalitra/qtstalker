@@ -22,37 +22,26 @@
 #ifndef SYMBOL_DIALOG_DIALOG_HPP
 #define SYMBOL_DIALOG_DIALOG_HPP
 
-#include <QDialog>
-#include <QStringList>
 #include <QTreeWidget>
-#include <QPushButton>
-#include <QLabel>
 #include <QComboBox>
 
-#include "Command.h"
+#include "Dialog.h"
 #include "LineEdit.h"
 
-class SymbolDialog : public QDialog
+class SymbolDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    SymbolDialog (Command *);
+    SymbolDialog (QWidget *, Command *);
     void createGUI ();
-//    void setSymbols (QString exchange, QString symbol);
-//    void getSymbols (Group &);
-//    void getSymbolSearch (QString &ex, QString &ss);
     void loadExchanges ();
-    void loadSettings ();
-    void saveSettings ();
     void symbols (QStringList &);
 
   public slots:
     void done ();
-    void cancel ();
     void searchSelectionChanged ();
     void symbolSelectionChanged ();
-    void help ();
     void searchButtonPressed ();
     void addButtonPressed ();
     void deleteButtonPressed ();
@@ -63,14 +52,9 @@ class SymbolDialog : public QDialog
     QComboBox *_exchanges;
     LineEdit *_search;
     QPushButton *_searchButton;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
     QPushButton *_addButton;
     QPushButton *_deleteButton;
-    QString _helpFile;
-    QLabel *_message;
     QStringList _groups;
-    Command *_command;
     int _returnFlag;
 };
 

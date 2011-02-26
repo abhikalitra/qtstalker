@@ -35,7 +35,7 @@ int SCRIPT_DATABASE_LOAD::command (Command *command)
   // NAME
   // FIELD
 
-  Script script(0);
+  Script script;
   script.setName(command->parm("NAME"));
 
   ScriptDataBase db;

@@ -21,23 +21,20 @@
 
 #include "GroupEditDialog.h"
 #include "Globals.h"
-#include "Doc.h"
-#include "Command.h"
 #include "GroupDataBase.h"
-
 #include "../pics/add.xpm"
 #include "../pics/delete.xpm"
 
 #include <QtDebug>
-#include <QDialogButtonBox>
-#include <QLayout>
 #include <QSettings>
 
-GroupEditDialog::GroupEditDialog (Command *command)
+GroupEditDialog::GroupEditDialog (QWidget *p, Command *command) : Dialog (p)
 {
   _command = command;
   _name = _command->parm("NAME");
-  _helpFile = "main.html";
+  _keySize = "group_edit_dialog_window_size";
+  _keyPos = "group_edit_dialog_window_position";
+
   setWindowTitle("QtStalker" + g_session + ": " + tr("Edit Group"));
 
   createGUI();
@@ -54,8 +51,6 @@ GroupEditDialog::GroupEditDialog (Command *command)
   selectionChanged();
 
   _symbolDialogCommand = new Command("PLUGIN=SYMBOL_DIALOG,FLAG=0");
-
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 GroupEditDialog::~GroupEditDialog ()
@@ -65,16 +60,13 @@ GroupEditDialog::~GroupEditDialog ()
 
 void GroupEditDialog::createGUI ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  setLayout(vbox);
-
+  int pos = 0;
   QLabel *label = new QLabel(tr("Group Symbols"));
-  vbox->addWidget(label);
+  _vbox->insertWidget(pos++, label);
 
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
-  vbox->addLayout(hbox);
+  _vbox->insertLayout(pos++, hbox);
 
   _list = new QListWidget;
   _list->setSortingEnabled(TRUE);
@@ -100,30 +92,6 @@ void GroupEditDialog::createGUI ()
   tvbox->addWidget(_deleteButton);
 
   tvbox->addStretch(1);
-
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-//  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-//  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  connect(_okButton, SIGNAL(clicked()), this, SLOT(done()));
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-  connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancel()));
-  _cancelButton->setDefault(TRUE);
-
-  // help button
-  QPushButton *b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 
 void GroupEditDialog::selectionChanged ()
@@ -134,12 +102,6 @@ void GroupEditDialog::selectionChanged ()
     status = 1;
 
   _deleteButton->setEnabled(status);
-}
-
-void GroupEditDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
 }
 
 void GroupEditDialog::done ()
@@ -162,12 +124,6 @@ void GroupEditDialog::done ()
   saveSettings();
 
   accept();
-}
-
-void GroupEditDialog::cancel ()
-{
-  saveSettings();
-  reject();
 }
 
 void GroupEditDialog::addButtonPressed ()
@@ -199,25 +155,4 @@ void GroupEditDialog::deleteButtonPressed ()
     QListWidgetItem *item = l.at(loop);
     delete item;
   }
-}
-
-void GroupEditDialog::loadSettings ()
-{
-  QSettings settings(g_globalSettings);
-
-  QSize sz = settings.value("group_edit_dialog_window_size", QSize(200,150)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("group_edit_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
-}
-
-void GroupEditDialog::saveSettings ()
-{
-  QSettings settings(g_globalSettings);
-  settings.setValue("group_edit_dialog_window_size", size());
-  settings.setValue("group_edit_dialog_window_position", pos());
-  settings.sync();
 }

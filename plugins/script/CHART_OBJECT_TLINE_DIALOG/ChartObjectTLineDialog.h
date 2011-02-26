@@ -25,30 +25,23 @@
 #include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QDateTimeEdit>
-#include <QPushButton>
-#include <QLabel>
-#include <QStringList>
-#include <QDialog>
 
 #include "ColorButton.h"
-#include "Command.h"
 #include "Setting.h"
+#include "Dialog.h"
 
-class ChartObjectTLineDialog : public QDialog
+class ChartObjectTLineDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ChartObjectTLineDialog (Command *);
+    ChartObjectTLineDialog (QWidget *, Command *);
     void createGUI ();
     void loadObject ();
     void loadSettings ();
-    void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
-    void help ();
 
   private:
     ColorButton *_color;
@@ -58,11 +51,6 @@ class ChartObjectTLineDialog : public QDialog
     QCheckBox *_extend;
     QDateTimeEdit *_date;
     QDateTimeEdit *_date2;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
-    QString _helpFile;
-    QLabel *_message;
-    Command *_command;
     Setting _co;
 };
 

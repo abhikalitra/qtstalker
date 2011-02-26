@@ -224,7 +224,7 @@ void Setup::setupDefaultScripts ()
   file.append("/qtstalker/quote/YahooHistoryDownload.pl");
   
   ScriptDataBase db;
-  Script script(0);
+  Script script;
   script.setName(name);
   script.setCommand("perl");
   script.setFile(file);

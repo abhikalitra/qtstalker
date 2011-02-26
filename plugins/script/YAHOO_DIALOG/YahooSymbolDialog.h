@@ -22,13 +22,11 @@
 #ifndef YAHOO_SYMBOL_DIALOG_HPP
 #define YAHOO_SYMBOL_DIALOG_HPP
 
-#include <QPushButton>
 #include <QListWidget>
-#include <QStringList>
-#include <QDialog>
-#include <QLabel>
 
-class YahooSymbolDialog : public QDialog
+#include "Dialog.h"
+
+class YahooSymbolDialog : public Dialog
 {
   Q_OBJECT
 
@@ -38,7 +36,6 @@ class YahooSymbolDialog : public QDialog
   public:
     YahooSymbolDialog (QWidget *);
     void createGUI ();
-    void saveSettings ();
       
   public slots:
     void loadSettings ();
@@ -46,16 +43,10 @@ class YahooSymbolDialog : public QDialog
     void deleteSymbol ();
     void done ();
     void selectionChanged ();
-    void cancel ();
-    void help ();
 
   private:
     QListWidget *_list;
     QPushButton *_deleteButton;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
-    QString _helpFile;
-    QLabel *_message;
 };
 
 #endif

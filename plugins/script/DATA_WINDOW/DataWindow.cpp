@@ -30,7 +30,7 @@
 #include <QStringList>
 #include <QTimer>
 
-DataWindow::DataWindow () : QDialog (0, 0)
+DataWindow::DataWindow (QWidget *p) : QDialog (p, 0)
 {
   setAttribute(Qt::WA_DeleteOnClose);
   _dateFlag = 0;

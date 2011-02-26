@@ -26,6 +26,7 @@
 ScriptPlugin::ScriptPlugin ()
 {
   _type = _THREAD;
+  _parent = 0;
 }
 
 ScriptPlugin::~ScriptPlugin ()
@@ -38,12 +39,12 @@ int ScriptPlugin::command (Command *)
   return 0;
 }
 
-// virtual function
-void ScriptPlugin::kill ()
-{
-}
-
 int ScriptPlugin::type ()
 {
   return _type;
+}
+
+void ScriptPlugin::setParent (QWidget *p)
+{
+  _parent = p;
 }

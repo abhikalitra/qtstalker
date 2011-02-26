@@ -22,21 +22,19 @@
 #include "YahooSymbolDialog.h"
 #include "Globals.h"
 #include "YahooAddSymbolDialog.h"
-#include "Doc.h"
 #include "YahooDataBase.h"
-
 #include "../pics/add.xpm"
 #include "../pics/delete.xpm"
 
-#include <QLayout>
 #include <QDebug>
 #include <QIcon>
-#include <QDialogButtonBox>
 #include <QSettings>
 
-YahooSymbolDialog::YahooSymbolDialog (QWidget *p) : QDialog (p)
+YahooSymbolDialog::YahooSymbolDialog (QWidget *p) : Dialog (p)
 {
   _helpFile = "Yahoo.html";
+  _keySize = "yahoo_symbol_dialog_window_size";
+  _keyPos = "yahoo_symbol_dialog_window_position";
 
   QStringList l;
   l << "QtStalker" << g_session << ":" << "Yahoo Symbols";
@@ -47,20 +45,15 @@ YahooSymbolDialog::YahooSymbolDialog (QWidget *p) : QDialog (p)
   loadSettings();
 
   selectionChanged();
-  
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void YahooSymbolDialog::createGUI ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  setLayout(vbox);
-
+  int pos = 0;
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
   hbox->setMargin(5);
-  vbox->addLayout(hbox);
+  _vbox->insertLayout(pos++, hbox);
 
   _list = new QListWidget;
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -85,27 +78,6 @@ void YahooSymbolDialog::createGUI ()
   tbbox->addWidget(_deleteButton);
   
   tbbox->addStretch();
-
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-
-  // help button
-  b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 
 void YahooSymbolDialog::addSymbol ()
@@ -144,22 +116,7 @@ void YahooSymbolDialog::loadSettings ()
   db.symbols(l);
   _list->addItems(l);
 
-  QSettings settings(g_globalSettings);
-  QSize sz = settings.value("yahoo_symbol_dialog_window_size", QSize(200,150)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("yahoo_symbol_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
-}
-
-void YahooSymbolDialog::saveSettings ()
-{
-  QSettings settings(g_globalSettings);
-  settings.setValue("yahoo_symbol_dialog_window_size", size());
-  settings.setValue("yahoo_symbol_dialog_window_position", pos());
-  settings.sync();
+  Dialog::loadSettings();
 }
 
 void YahooSymbolDialog::done ()
@@ -190,16 +147,4 @@ void YahooSymbolDialog::selectionChanged ()
     _deleteButton->setEnabled(FALSE);
   else
     _deleteButton->setEnabled(TRUE);
-}
-
-void YahooSymbolDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
-}
-
-void YahooSymbolDialog::cancel ()
-{
-  saveSettings();
-  reject();
 }

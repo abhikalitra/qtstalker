@@ -44,7 +44,7 @@ int NEW_DIALOG::command (Command *command)
     return 1;
   }
 
-  NewDialog *dialog = new NewDialog(command);
+  NewDialog *dialog = new NewDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

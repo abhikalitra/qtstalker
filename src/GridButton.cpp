@@ -37,6 +37,7 @@ GridButton::GridButton ()
   setStatusTip(tr("Toggle the chart grid. Right click mouse for options"));
   setToolTip(tr("Toggle the chart grid. Right click mouse for options"));
   setCheckable(TRUE);
+  setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
 
   QSettings settings(g_localSettings);
   setChecked(settings.value("grid", TRUE).toBool());

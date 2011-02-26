@@ -41,6 +41,10 @@ int ScriptDataBase::load (Script *script)
 
   QSettings db(g_globalSettings);
 
+  QStringList l = db.value("scripts").toStringList();
+  if (l.indexOf(name) == -1)
+    return 1;
+
   QString key = "script_" + name;
 
   script->setCommand(db.value(key + "_command", "perl").toString());

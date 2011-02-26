@@ -22,14 +22,11 @@
 #ifndef YAHOO_ADD_SYMBOL_DIALOG_HPP
 #define YAHOO_ADD_SYMBOL_DIALOG_HPP
 
-#include <QStringList>
-#include <QDialog>
-#include <QPushButton>
-#include <QLabel>
 
 #include "LineEdit.h"
+#include "Dialog.h"
 
-class YahooAddSymbolDialog : public QDialog
+class YahooAddSymbolDialog : public Dialog
 {
   Q_OBJECT
 
@@ -40,22 +37,14 @@ class YahooAddSymbolDialog : public QDialog
     YahooAddSymbolDialog (QWidget *);
     int getSymbolExchange (QString &ysymbol, QString &symbol, QString &exchange);
     void createGUI ();
-    void loadSettings ();
-    void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
     void buttonStatus ();
-    void help ();
 
   private:
     QStringList _yexchange;
     LineEdit *_symbols;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
-    QString _helpFile;
-    QLabel *_message;
 };
 
 #endif

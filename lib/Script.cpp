@@ -25,23 +25,22 @@
 #include <QByteArray>
 #include <QtDebug>
 
+Script::Script (QWidget *p) : QObject(p)
+{
+  _parent = p;
+  init();
+}
+
 Script::Script (QObject *p) : QObject(p)
 {
-  _killFlag = 0;
-  _barData = 0;
-  _minutes = 0;
-  
-  _command = new Command;
+  _parent = 0;
+  init();
+}
 
-  _indicator = new Indicator;
-  _indicatorFlag = 1;
-
-  _proc = new QProcess(this);
-  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-  connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
-  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
-  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
-  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
+Script::Script () : QObject(0)
+{
+  _parent = 0;
+  init();
 }
 
 Script::~Script ()
@@ -54,6 +53,25 @@ Script::~Script ()
     delete _indicator;
 
 qDebug() << "Script::~Script:" << _name << "deleted";
+}
+
+void Script::init ()
+{
+  _killFlag = 0;
+  _barData = 0;
+  _minutes = 0;
+
+  _command = new Command;
+
+  _indicator = new Indicator;
+  _indicatorFlag = 1;
+
+  _proc = new QProcess(this);
+  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+  connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
+  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
+  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
 }
 
 void Script::clear ()
@@ -172,8 +190,8 @@ void Script::readFromStdout ()
 
     _plugins.insert(_command->plugin(), plug);
     connect(plug, SIGNAL(signalResume()), this, SLOT(resume()));
-
     connect(this, SIGNAL(signalKill()), plug, SIGNAL(signalKill()));
+    plug->setParent(_parent);
   }
 
   switch ((ScriptPlugin::Type) plug->type())
@@ -270,9 +288,6 @@ QString & Script::lastRun ()
 
 void Script::resume ()
 {
-//  if (_proc->state() == QProcess::NotRunning)
-//    return;
-
   _proc->write(_command->returnCode());
 }
 

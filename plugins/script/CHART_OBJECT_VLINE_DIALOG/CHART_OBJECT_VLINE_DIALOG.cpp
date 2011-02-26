@@ -43,7 +43,7 @@ int CHART_OBJECT_VLINE_DIALOG::command (Command *command)
     return 1;
   }
 
-  ChartObjectVLineDialog *dialog = new ChartObjectVLineDialog(command);
+  ChartObjectVLineDialog *dialog = new ChartObjectVLineDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

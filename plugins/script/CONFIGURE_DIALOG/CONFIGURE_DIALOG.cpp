@@ -32,7 +32,7 @@ CONFIGURE_DIALOG::CONFIGURE_DIALOG ()
 
 int CONFIGURE_DIALOG::command (Command *command)
 {
-  ConfigureDialog *dialog = new ConfigureDialog(command);
+  ConfigureDialog *dialog = new ConfigureDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

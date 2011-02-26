@@ -22,38 +22,26 @@
 #ifndef NEW_DIALOG_DIALOG_HPP
 #define NEW_DIALOG_DIALOG_HPP
 
-#include <QDialog>
 #include <QStringList>
 #include <QComboBox>
-#include <QPushButton>
-#include <QLabel>
 
-#include "Command.h"
+#include "Dialog.h"
 
-class NewDialog : public QDialog
+class NewDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    NewDialog (Command *);
+    NewDialog (QWidget *, Command *);
     void createGUI ();
-    void loadSettings ();
-    void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
     void nameChanged (const QString &);
-    void help ();
 
   private:
     QStringList _items;
     QComboBox *_name;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
-    QString _helpFile;
-    QLabel *_message;
-    Command *_command;
 };
 
 #endif

@@ -21,18 +21,15 @@
 
 #include "NewDialog.h"
 #include "Globals.h"
-#include "Doc.h"
 
 #include <QtDebug>
 #include <QLineEdit>
-#include <QDialogButtonBox>
-#include <QLayout>
-#include <QSettings>
 
-NewDialog::NewDialog (Command *c)
+NewDialog::NewDialog (QWidget *p, Command *c) : Dialog (p)
 {
   _command = c;
-  _helpFile = "main.html";
+  _keySize = "new_dialog_window_size";
+  _keyPos = "new_dialog_window_position";
 
   QStringList l;
   l << "QtStalker" << g_session << ":" << tr("New") << _command->parm("TITLE");
@@ -49,44 +46,17 @@ NewDialog::NewDialog (Command *c)
   loadSettings();
 
   nameChanged(QString());
-
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void NewDialog::createGUI ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  setLayout(vbox);
-
   QLabel *label = new QLabel(tr("Enter new") + " " + _command->parm("TITLE"));
-  vbox->addWidget(label);
+  _vbox->insertWidget(0, label);
 
   _name = new QComboBox;
   _name->setEditable(TRUE);
   connect(_name, SIGNAL(editTextChanged(const QString &)), this, SLOT(nameChanged(const QString &)));
-  vbox->addWidget(_name);
-
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-
-  // help button
-  QPushButton *b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
+  _vbox->insertWidget(1, _name);
 }
 
 void NewDialog::nameChanged (const QString &text)
@@ -96,12 +66,6 @@ void NewDialog::nameChanged (const QString &text)
     status = 1;
 
   _okButton->setEnabled(status);
-}
-
-void NewDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
 }
 
 void NewDialog::done ()
@@ -120,31 +84,4 @@ void NewDialog::done ()
   _command->setReturnCode("0");
 
   accept();
-}
-
-void NewDialog::cancel ()
-{
-  saveSettings();
-  reject();
-}
-
-void NewDialog::loadSettings ()
-{
-  QSettings settings(g_globalSettings);
-
-  QSize sz = settings.value("new_dialog_window_size", QSize(200,150)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("new_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
-}
-
-void NewDialog::saveSettings ()
-{
-  QSettings settings(g_globalSettings);
-  settings.setValue("new_dialog_window_size", size());
-  settings.setValue("new_dialog_window_position", pos());
-  settings.sync();
 }

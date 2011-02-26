@@ -21,18 +21,14 @@
 
 #include "SelectDialog.h"
 #include "Globals.h"
-#include "Doc.h"
 
 #include <QtDebug>
-#include <QDialogButtonBox>
-#include <QLayout>
-#include <QStringList>
-#include <QSettings>
 
-SelectDialog::SelectDialog (Command *c)
+SelectDialog::SelectDialog (QWidget *p, Command *c) : Dialog (p)
 {
   _command = c;
-  _helpFile = "main.html";
+  _keySize = "select_dialog_window_size";
+  _keyPos = "select_dialog_window_position";
 
   QStringList l;
   l << "QtStalker" << g_session << ":" << tr("Select") << _command->parm("TITLE");
@@ -49,18 +45,13 @@ SelectDialog::SelectDialog (Command *c)
   loadSettings();
 
   selectionChanged();
-
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void SelectDialog::createGUI ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  setLayout(vbox);
-
+  int pos = 0;
   QLabel *label = new QLabel(_command->parm("TITLE"));
-  vbox->addWidget(label);
+  _vbox->insertWidget(pos++, label);
 
   // list
   _list = new QListWidget;
@@ -68,49 +59,21 @@ void SelectDialog::createGUI ()
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   connect(_list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(done()));
-  vbox->addWidget(_list);
-
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
+  _vbox->insertWidget(pos++, _list);
 
   // select all button
-  _selectButton = bbox->addButton(tr("Select All"), QDialogButtonBox::ActionRole);
+  _selectButton = _buttonBox->addButton(tr("Select All"), QDialogButtonBox::ActionRole);
   connect(_selectButton, SIGNAL(clicked()), _list, SLOT(selectAll()));
 
   // unselect all button
-  _unselectButton = bbox->addButton(tr("Unselect All"), QDialogButtonBox::ActionRole);
+  _unselectButton = _buttonBox->addButton(tr("Unselect All"), QDialogButtonBox::ActionRole);
   connect(_unselectButton, SIGNAL(clicked()), _list, SLOT(clearSelection()));
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-  _cancelButton->setDefault(TRUE);
-
-  // help button
-  QPushButton *b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 
 void SelectDialog::selectionChanged ()
 {
   QList<QListWidgetItem *> sl = _list->selectedItems();
   _okButton->setEnabled(sl.count());
-}
-
-void SelectDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
 }
 
 void SelectDialog::done ()
@@ -129,31 +92,4 @@ void SelectDialog::done ()
   saveSettings();
   
   accept();
-}
-
-void SelectDialog::cancel ()
-{
-  saveSettings();
-  reject();
-}
-
-void SelectDialog::loadSettings ()
-{
-  QSettings settings(g_globalSettings);
-
-  QSize sz = settings.value("select_dialog_window_size", QSize(200,150)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("select_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
-}
-
-void SelectDialog::saveSettings ()
-{
-  QSettings settings(g_globalSettings);
-  settings.setValue("select_dialog_window_size", size());
-  settings.setValue("select_dialog_window_position", pos());
-  settings.sync();
 }

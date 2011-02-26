@@ -27,6 +27,7 @@
 #include <QLayout>
 #include <QSettings>
 #include <QToolBar>
+#include <QShortcut>
 
 ControlPanel::ControlPanel ()
 {
@@ -99,6 +100,11 @@ void ControlPanel::createGUI ()
   _slider->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
   connect(_slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
   vbox->addWidget(_slider);
+
+  // create shortcut key for the slider
+  QShortcut *sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::CTRL + Qt::Key_L));
+  connect(sc, SIGNAL(activated()), _slider, SLOT(setFocus()));
 }
 
 BarSpaceButton * ControlPanel::barSpaceButton ()

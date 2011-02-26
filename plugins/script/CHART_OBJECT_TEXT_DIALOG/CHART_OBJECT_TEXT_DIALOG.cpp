@@ -43,7 +43,7 @@ int CHART_OBJECT_TEXT_DIALOG::command (Command *command)
     return 1;
   }
 
-  ChartObjectTextDialog *dialog = new ChartObjectTextDialog(command);
+  ChartObjectTextDialog *dialog = new ChartObjectTextDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

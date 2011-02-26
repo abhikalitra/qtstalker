@@ -59,8 +59,8 @@ void ConfigureButton::createMenu ()
 
   // new indicator
   QAction *a = _menu->addAction(tr("&New Indicator") + "...");
+  a->setShortcut(QKeySequence(QKeySequence::New));
   a->setIcon(QIcon(indicator_xpm));
-//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
   a->setToolTip(tr("Add New Indicator") + "...");
   a->setStatusTip(tr("Add New Indicator") + "...");
   connect(a, SIGNAL(triggered(bool)), this, SLOT(newIndicator()));
@@ -69,6 +69,7 @@ void ConfigureButton::createMenu ()
 
   // configure
   a = _menu->addAction(tr("&Configure") + "...");
+  a->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
   a->setCheckable(FALSE);
   a->setIcon(QIcon(configure_xpm));
   a->setStatusTip(tr("Configure settings") + "...");
@@ -79,6 +80,7 @@ void ConfigureButton::createMenu ()
   
   // help dialog
   a = _menu->addAction(tr("&Help") + "...");
+  a->setShortcut(QKeySequence(QKeySequence::HelpContents));
   a->setCheckable(FALSE);
   a->setIcon(QIcon(help_xpm));
   a->setStatusTip(tr("QtStalker help documentation") + "...");
@@ -97,6 +99,7 @@ void ConfigureButton::createMenu ()
 
   // quit
   a = _menu->addAction(tr("&Quit"));
+  a->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
   a->setCheckable(FALSE);
   a->setIcon(QIcon(quit_xpm));
   a->setStatusTip(tr("Quit QtStalker"));

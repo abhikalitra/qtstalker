@@ -65,21 +65,21 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
 void ChartPage::createActions ()
 {
   QAction *action  = new QAction(QIcon(asterisk_xpm), tr("Show &All Symbols"), this);
-//  action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_A));
+  action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Asterisk));
   action->setToolTip(tr("Show All Symbols"));
   action->setStatusTip(tr("Show All Symbols"));
   connect(action, SIGNAL(activated()), this, SLOT(allButtonPressed()));
   _actions.insert(ShowAll, action);
 
   action  = new QAction(QIcon(search_xpm), tr("Symbol &Search") + "...", this);
-//  action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_S));
+  action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
   action->setToolTip(tr("Symbol Search") + "...");
   action->setStatusTip(tr("Symbol Search") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(symbolSearch()));
   _actions.insert(Search, action);
 
   action  = new QAction(QIcon(add_xpm), tr("Add To &Group") + "...", this);
-//  action->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_G));
+  action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
   action->setToolTip(tr("Add symbol to group") + "...");
   action->setStatusTip(tr("Add symbol to group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));

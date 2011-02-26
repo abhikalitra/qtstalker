@@ -43,7 +43,7 @@ int CHART_OBJECT_BUY_DIALOG::command (Command *command)
     return 1;
   }
 
-  ChartObjectBuyDialog *dialog = new ChartObjectBuyDialog(command);
+  ChartObjectBuyDialog *dialog = new ChartObjectBuyDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

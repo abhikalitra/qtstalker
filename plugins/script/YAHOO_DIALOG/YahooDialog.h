@@ -22,16 +22,13 @@
 #ifndef YAHOO_DIALOG_DIALOG_HPP
 #define YAHOO_DIALOG_DIALOG_HPP
 
-#include <QDialog>
-#include <QPushButton>
 #include <QDateTimeEdit>
 #include <QCheckBox>
-#include <QStringList>
 #include <QTextEdit>
 
-#include "Command.h"
+#include "Dialog.h"
 
-class YahooDialog : public QDialog
+class YahooDialog : public Dialog
 {
   Q_OBJECT
 
@@ -39,7 +36,7 @@ class YahooDialog : public QDialog
     void signalStop ();
 
   public:
-    YahooDialog (Command *);
+    YahooDialog (QWidget *, Command *);
     void createGUI ();
     void loadSettings ();
     void saveSettings ();
@@ -49,7 +46,6 @@ class YahooDialog : public QDialog
     void setSymbols (QStringList);
     void done ();
     void cancel ();
-    void help ();
     void downloadDone ();
     void allSymbolsToggled (bool);
     void autoDateToggled (bool);
@@ -62,10 +58,6 @@ class YahooDialog : public QDialog
     QCheckBox *_autoDate;
     QPushButton *_selectSymbolsButton;
     QStringList _symbolList;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
-    QString _helpFile;
-    Command *_command;
     QTextEdit *_log;
 };
 

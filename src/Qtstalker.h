@@ -50,7 +50,6 @@ class QtstalkerApp : public QMainWindow
     QString getWindowCaption ();
     void setSliderStart (int);
     void addPlot (QString);
-    void createShortcuts ();
 
   public slots:
     void loadChart (BarData);

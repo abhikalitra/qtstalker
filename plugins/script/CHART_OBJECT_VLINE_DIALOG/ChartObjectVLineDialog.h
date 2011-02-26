@@ -24,40 +24,28 @@
 
 #include <QCheckBox>
 #include <QDateTimeEdit>
-#include <QPushButton>
-#include <QLabel>
-#include <QStringList>
-#include <QDialog>
 
 #include "ColorButton.h"
-#include "Command.h"
 #include "Setting.h"
+#include "Dialog.h"
 
-class ChartObjectVLineDialog : public QDialog
+class ChartObjectVLineDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ChartObjectVLineDialog (Command *);
+    ChartObjectVLineDialog (QWidget *, Command *);
     void createGUI ();
     void loadObject ();
     void loadSettings ();
-    void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
-    void help ();
 
   private:
     ColorButton *_color;
     QCheckBox *_default;
     QDateTimeEdit *_date;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
-    QString _helpFile;
-    QLabel *_message;
-    Command *_command;
     Setting _co;
 };
 

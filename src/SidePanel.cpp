@@ -28,6 +28,7 @@
 
 #include <QDebug>
 #include <QSettings>
+#include <QShortcut>
 
 SidePanel::SidePanel (QMainWindow *p) : QTabWidget (p)
 {
@@ -64,6 +65,22 @@ void SidePanel::createTabs ()
   connect(g_middleMan, SIGNAL(signalScriptRun(QString)), _scriptPage, SLOT(runScript(QString)));
   addTab(_scriptPage, QIcon(script_xpm), QString());
   setTabToolTip(2, tr("Scripts"));
+
+  // create shortcut keys for the tabs
+  // chart panel
+  QShortcut *sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::CTRL + Qt::Key_1));
+  connect(sc, SIGNAL(activated()), this, SLOT(setChartPanelFocus()));
+  
+  // group panel
+  sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::CTRL + Qt::Key_2));
+  connect(sc, SIGNAL(activated()), this, SLOT(setGroupPanelFocus()));
+
+  // chart panel
+  sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::CTRL + Qt::Key_3));
+  connect(sc, SIGNAL(activated()), this, SLOT(setScriptPanelFocus()));
 }
 
 void SidePanel::loadSettings ()

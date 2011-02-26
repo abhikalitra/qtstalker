@@ -51,7 +51,7 @@ int MESSAGE_DIALOG::command (Command *command)
     return 1;
   }
 
-  MessageDialog *dialog = new MessageDialog(command);
+  MessageDialog *dialog = new MessageDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

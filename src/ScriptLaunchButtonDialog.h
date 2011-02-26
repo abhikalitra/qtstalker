@@ -23,15 +23,14 @@
 #define SCRIPT_LAUNCH_BUTTON_DIALOG_HPP
 
 #include <QDateTimeEdit>
-#include <QDialog>
-#include <QLabel>
 #include <QComboBox>
 #include <QIcon>
 #include <QCheckBox>
 
 #include "IconButton.h"
+#include "Dialog.h"
 
-class ScriptLaunchButtonDialog : public QDialog
+class ScriptLaunchButtonDialog : public Dialog
 {
   Q_OBJECT
 
@@ -39,22 +38,15 @@ class ScriptLaunchButtonDialog : public QDialog
     void signalDone (QString, QString, int);
 
   public:
-    ScriptLaunchButtonDialog (QString script, QString icon, int);
+    ScriptLaunchButtonDialog (QWidget *, QString script, QString icon, int);
     void createMainPage ();
-    void loadSettings ();
-    void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
-    void help ();
     void useIconToggled (bool);
 
   private:
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
     IconButton *_icon;
-    QString _helpFile;
     QComboBox *_script;
     QCheckBox *_useIcon;
 };

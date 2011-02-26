@@ -45,7 +45,7 @@ int SYMBOL_DIALOG::command (Command *command)
     return 1;
   }
   
-  SymbolDialog *dialog = new SymbolDialog(command);
+  SymbolDialog *dialog = new SymbolDialog(_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

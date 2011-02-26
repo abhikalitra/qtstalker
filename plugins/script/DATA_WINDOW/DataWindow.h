@@ -40,7 +40,7 @@ class DataWindow : public QDialog
     void signalResume ();
 
   public:
-    DataWindow ();
+    DataWindow (QWidget *);
     void setData (Indicator *);
     void setPlot (Indicator *);
     void setDates ();

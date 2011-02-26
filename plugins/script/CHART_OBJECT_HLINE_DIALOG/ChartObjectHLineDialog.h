@@ -24,42 +24,30 @@
 
 #include <QDoubleSpinBox>
 #include <QCheckBox>
-#include <QDialog>
-#include <QPushButton>
-#include <QLabel>
-#include <QStringList>
 
 #include "ColorButton.h"
-#include "Command.h"
 #include "Setting.h"
 #include "LineEdit.h"
+#include "Dialog.h"
 
-class ChartObjectHLineDialog : public QDialog
+class ChartObjectHLineDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ChartObjectHLineDialog (Command *);
+    ChartObjectHLineDialog (QWidget *, Command *);
     void createGUI ();
     void loadSettings ();
-    void saveSettings ();
     void loadObject ();
 
   public slots:
     void done ();
-    void cancel ();
-    void help ();
 
   private:
     QDoubleSpinBox *_price;
     QCheckBox *_default;
     LineEdit *_label;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
     ColorButton *_color;
-    QString _helpFile;
-    QLabel *_message;
-    Command *_command;
     Setting _co;
 };
 

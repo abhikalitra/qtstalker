@@ -78,26 +78,30 @@ void ChartObject::create ()
 
 void ChartObject::dialog ()
 {
-  QSettings settings(g_globalSettings);
-  settings.setValue("chart_object_edit_id", _settings->data("ID"));
-  settings.sync();
+  QSettings lsettings(g_localSettings);
+  lsettings.setValue("chart_object_edit_id", _settings->data("ID"));
+  lsettings.sync();
+
+  QSettings gsettings(g_globalSettings);
 
   Script *script = new Script(this);
   script->setName("ChartObjectEdit");
-  script->setFile(settings.value("chart_object_edit_script").toString());
+  script->setFile(gsettings.value("chart_object_edit_script").toString());
   script->setCommand("perl");
   script->startScript();
 }
 
 void ChartObject::deleteChartObject ()
 {
-  QSettings settings(g_globalSettings);
-  settings.setValue("chart_object_delete_id", _settings->data("ID"));
-  settings.sync();
+  QSettings lsettings(g_localSettings);
+  lsettings.setValue("chart_object_delete_id", _settings->data("ID"));
+  lsettings.sync();
+
+  QSettings gsettings(g_globalSettings);
 
   Script *script = new Script(this);
   script->setName("ChartObjectDelete");
-  script->setFile(settings.value("chart_object_delete_script").toString());
+  script->setFile(gsettings.value("chart_object_delete_script").toString());
   script->setCommand("perl");
   script->startScript();
 }

@@ -53,6 +53,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_B));
   a->setToolTip(tr("Create Buy Arrow Chart Object"));
   a->setStatusTip(QString(tr("Create Buy Arrow Chart Object")));
+  a->setData(QVariant("Buy"));
   _actions.insert(_BUY_CHART_OBJECT, a);
 
   // hline
@@ -60,6 +61,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_H));
   a->setToolTip(tr("Create Horizontal Line Chart Object"));
   a->setStatusTip(QString(tr("Create Horizontal Line Chart Object")));
+  a->setData(QVariant("HLine"));
   _actions.insert(_HLINE_CHART_OBJECT, a);
 
   // retracement
@@ -67,6 +69,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
   a->setToolTip(tr("Create Retracement Levels Chart Object"));
   a->setStatusTip(QString(tr("Create Retracement Levels Chart Object")));
+  a->setData(QVariant("Retracement"));
   _actions.insert(_RETRACEMENT_CHART_OBJECT, a);
 
   // sell
@@ -74,6 +77,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
   a->setToolTip(tr("Create Sell Arrow Chart Object"));
   a->setStatusTip(QString(tr("Create Sell Arrow Chart Object")));
+  a->setData(QVariant("Sell"));
   _actions.insert(_SELL_CHART_OBJECT, a);
 
   // text
@@ -81,6 +85,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_T));
   a->setToolTip(tr("Create Text Chart Object"));
   a->setStatusTip(QString(tr("Create Text Chart Object")));
+  a->setData(QVariant("Text"));
   _actions.insert(_TEXT_CHART_OBJECT, a);
 
   // tline
@@ -88,6 +93,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
   a->setToolTip(tr("Create Trend Line Chart Object"));
   a->setStatusTip(QString(tr("Create Trend Line Chart Object")));
+  a->setData(QVariant("TLine"));
   _actions.insert(_TLINE_CHART_OBJECT, a);
 
   // vline
@@ -95,11 +101,12 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_V));
   a->setToolTip(tr("Create Vertical Line Chart Object"));
   a->setStatusTip(QString(tr("Create Vertical Line Chart Object")));
+  a->setData(QVariant("VLine"));
   _actions.insert(_VLINE_CHART_OBJECT, a);
 
   // new indicator
   a = new QAction(QIcon(indicator_xpm), tr("&New Indicator") + "...", this);
-//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_N));
+  a->setShortcut(QKeySequence(QKeySequence::New));
   a->setToolTip(tr("Add New Indicator") + "...");
   a->setStatusTip(tr("Add New Indicator") + "...");
   _actions.insert(_NEW_INDICATOR, a);
@@ -107,7 +114,7 @@ void PlotMenu::createActions ()
 
   // edit indicator
   a = new QAction(QIcon(edit_xpm), tr("&Edit Indicator") + "...", this);
-//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_E));
+  a->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
   a->setToolTip(tr("Edit Indicator") + "...");
   a->setStatusTip(tr("Edit Indicator") + "...");
   _actions.insert(_EDIT_INDICATOR, a);
@@ -115,7 +122,7 @@ void PlotMenu::createActions ()
 
   // delete indicator
   a = new QAction(QIcon(delete_xpm), tr("&Delete Indicator(s)") + "...", this);
-//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
+  a->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
   a->setToolTip(tr("Delete Indicator(s)") + "...");
   a->setStatusTip(tr("Delete Indicator(s)") + "...");
   _actions.insert(_DELETE_INDICATOR, a);
@@ -123,7 +130,6 @@ void PlotMenu::createActions ()
 
   // edit chart object
   a = new QAction(QIcon(edit_xpm), tr("Edit &Chart Object") + "...", this);
-//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_C));
   a->setToolTip(tr("Edit Chart Object") + "...");
   a->setStatusTip(tr("Edit Chart Object") + "...");
   _actions.insert(_EDIT_CHART_OBJECT, a);
@@ -138,7 +144,6 @@ void PlotMenu::createActions ()
 
   // date
   a = new QAction(QIcon(date_xpm), tr("Date A&xis"), this);
-//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_x));
   a->setToolTip(tr("Toggle Date Axis"));
   a->setStatusTip(tr("Toggle Date Axis"));
   a->setCheckable(TRUE);
@@ -147,7 +152,6 @@ void PlotMenu::createActions ()
 
   // log
   a = new QAction(QIcon(loggrid_xpm), tr("Log &Scaling"), this);
-//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
   a->setToolTip(tr("Toggle Log Scaling"));
   a->setStatusTip(tr("Toggle Log Scaling"));
   a->setCheckable(TRUE);
@@ -156,7 +160,6 @@ void PlotMenu::createActions ()
 
   // lock
   a = new QAction(QIcon(lock_xpm), tr("Loc&ked"), this);
-//  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_K));
   a->setToolTip(tr("Toggle Indicator Drag and Drop Lock"));
   a->setStatusTip(tr("Toggle Indicator Drag and Drop Lock"));
   a->setCheckable(TRUE);
@@ -229,14 +232,15 @@ void PlotMenu::deleteAllChartObjects ()
 
 void PlotMenu::chartObjectMenuSelected (QAction *a)
 {
-  QSettings settings(g_globalSettings);
-  settings.setValue("chart_object_new", a->text());
-  settings.setValue("chart_object_new_indicator", _indicator);
-  settings.sync();
+  QSettings lsettings(g_localSettings);
+  lsettings.setValue("chart_object_new", a->data());
+  lsettings.setValue("chart_object_new_indicator", _indicator);
+  lsettings.sync();
 
+  QSettings gsettings(g_globalSettings);
   Script *script = new Script(this);
   script->setName("ChartObjectNew");
-  script->setFile(settings.value("chart_object_new_script").toString());
+  script->setFile(gsettings.value("chart_object_new_script").toString());
   script->setCommand("perl");
   script->startScript();
 }
@@ -283,26 +287,30 @@ void PlotMenu::setIndicator (QString d)
 
 void PlotMenu::editChartObject ()
 {
-  QSettings settings(g_globalSettings);
-  settings.setValue("chart_object_edit_data", _indicator);
-  settings.sync();
+  QSettings lsettings(g_localSettings);
+  lsettings.setValue("chart_object_edit_data", _indicator);
+  lsettings.sync();
   
+  QSettings gsettings(g_globalSettings);
+
   Script *script = new Script(this);
   script->setName("ChartObjectEditSelect");
-  script->setFile(settings.value("chart_object_edit_select_script").toString());
+  script->setFile(gsettings.value("chart_object_edit_select_script").toString());
   script->setCommand("perl");
   script->startScript();
 }
 
 void PlotMenu::deleteChartObject ()
 {
-  QSettings settings(g_globalSettings);
-  settings.setValue("chart_object_delete_data", _indicator);
-  settings.sync();
+  QSettings lsettings(g_localSettings);
+  lsettings.setValue("chart_object_delete_data", _indicator);
+  lsettings.sync();
+
+  QSettings gsettings(g_globalSettings);
 
   Script *script = new Script(this);
   script->setName("DeleteObjectDeleteSelect");
-  script->setFile(settings.value("chart_object_delete_select_script").toString());
+  script->setFile(gsettings.value("chart_object_delete_select_script").toString());
   script->setCommand("perl");
   script->startScript();
 }
@@ -310,6 +318,7 @@ void PlotMenu::deleteChartObject ()
 void PlotMenu::newIndicator ()
 {
   QSettings settings(g_globalSettings);
+  
   Script *script = new Script(this);
   script->setName("IndicatorNew");
   script->setFile(settings.value("indicator_new_script").toString());

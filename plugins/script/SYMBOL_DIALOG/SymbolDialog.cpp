@@ -21,24 +21,20 @@
 
 #include "SymbolDialog.h"
 #include "Globals.h"
-#include "Doc.h"
 #include "QuoteDataBase.h"
 #include "BarData.h"
-
 #include "../pics/search.xpm"
 
-#include <QLayout>
 #include <QtDebug>
 #include <QTreeWidgetItem>
-#include <QFormLayout>
-#include <QDialogButtonBox>
-#include <QSettings>
 #include <QGroupBox>
 
-SymbolDialog::SymbolDialog (Command *c)
+SymbolDialog::SymbolDialog (QWidget *p, Command *c) : Dialog (p)
 {
   _command = c;
-  _helpFile = "main.html";
+  _keySize = "symbol_dialog_window_size";
+  _keyPos = "symbol_dialog_window_position";
+
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Select Symbols"));
 
   createGUI();
@@ -51,39 +47,29 @@ SymbolDialog::SymbolDialog (Command *c)
 
   searchSelectionChanged();
   symbolSelectionChanged();
-  
-  connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 void SymbolDialog::createGUI ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->setSpacing(2);
-  setLayout(vbox);
-
-  QFormLayout *form = new QFormLayout;
-  form->setMargin(0);
-  form->setSpacing(2);
-  vbox->addLayout(form);
-
   _exchanges = new QComboBox;
   _exchanges->setToolTip(tr("Select a specific exchange or * for all"));
-  form->addRow(tr("Exchange"), _exchanges);
+  _form->addRow(tr("Exchange"), _exchanges);
 
   _search = new LineEdit;
   _search->setText("*");
   _search->setToolTip(tr("Enter a partial search like %OOG% or * for all"));
-  form->addRow(tr("Symbol pattern"), _search);
+  _form->addRow(tr("Symbol pattern"), _search);
 
   _searchButton = new QPushButton;
   _searchButton->setIcon(QIcon(search_xpm));
   _searchButton->setToolTip(tr("Perform search"));
   connect(_searchButton, SIGNAL(clicked()), this, SLOT(searchButtonPressed()));
-  form->addRow(tr("Search"), _searchButton);
+  _form->addRow(tr("Search"), _searchButton);
 
+  int pos = 1;
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
-  vbox->addLayout(hbox);
+  _vbox->insertLayout(pos++, hbox);
 
   QGroupBox *gbox = new QGroupBox;
   gbox->setTitle(tr("Search Results"));
@@ -153,28 +139,6 @@ void SymbolDialog::createGUI ()
   connect(_symbolList, SIGNAL(itemSelectionChanged()), this, SLOT(symbolSelectionChanged()));
 //  connect(_symbolList, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(done()));
   tvbox->addWidget(_symbolList);
-
-  // status message
-  _message = new QLabel;
-  vbox->addWidget(_message);
-
-  // buttonbox
-  QDialogButtonBox *bbox = new QDialogButtonBox(QDialogButtonBox::Help);
-  connect(bbox, SIGNAL(accepted()), this, SLOT(done()));
-  connect(bbox, SIGNAL(rejected()), this, SLOT(cancel()));
-  vbox->addWidget(bbox);
-
-  // ok button
-  _okButton = bbox->addButton(QDialogButtonBox::Ok);
-  _okButton->setDefault(TRUE);
-
-  // cancel button
-  _cancelButton = bbox->addButton(QDialogButtonBox::Cancel);
-  _cancelButton->setDefault(TRUE);
-
-  // help button
-  b = bbox->button(QDialogButtonBox::Help);
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
 }
 
 void SymbolDialog::searchSelectionChanged ()
@@ -195,12 +159,6 @@ void SymbolDialog::symbolSelectionChanged ()
     status = 1;
 
   _deleteButton->setEnabled(status);
-}
-
-void SymbolDialog::help ()
-{
-  Doc *doc = new Doc;
-  doc->showDocumentation(_helpFile);
 }
 
 void SymbolDialog::done ()
@@ -228,12 +186,6 @@ qDebug() << "SymbolDialog::done:" << "EXCHANGE=" + _command->parm("SYMBOL_DIALOG
   _command->setReturnCode("0");
 
   accept();
-}
-
-void SymbolDialog::cancel ()
-{
-  saveSettings();
-  reject();
 }
 
 void SymbolDialog::addButtonPressed ()
@@ -280,10 +232,14 @@ void SymbolDialog::searchButtonPressed ()
     s = "*";
   symbol.setSymbol(s);
 
+qDebug() << "SymbolDialog::searchButtonPressed" << symbol.exchange() << symbol.symbol();
+
   QuoteDataBase db;
   QStringList l;
   db.search(&symbol, l);
 
+qDebug() << "SymbolDialog::searchButtonPressed" << l;
+  
   _searchList->clear();
 
   int loop = 0;
@@ -313,27 +269,6 @@ void SymbolDialog::loadExchanges ()
   _exchanges->clear();
   _exchanges->addItems(l);
   _exchanges->setCurrentIndex(0);
-}
-
-void SymbolDialog::loadSettings ()
-{
-  QSettings settings(g_globalSettings);
-
-  QSize sz = settings.value("symbol_dialog_window_size", QSize(400,300)).toSize();
-  resize(sz);
-
-  // restore the position of the app
-  QPoint p = settings.value("symbol_dialog_window_position").toPoint();
-  if (! p.isNull())
-    move(p);
-}
-
-void SymbolDialog::saveSettings ()
-{
-  QSettings settings(g_globalSettings);
-  settings.setValue("symbol_dialog_window_size", size());
-  settings.setValue("symbol_dialog_window_position", pos());
-  settings.sync();
 }
 
 void SymbolDialog::symbols (QStringList &l)

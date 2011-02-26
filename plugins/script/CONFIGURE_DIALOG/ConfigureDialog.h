@@ -22,35 +22,26 @@
 #ifndef CONFIGURE_DIALOG_DIALOG_HPP
 #define CONFIGURE_DIALOG_DIALOG_HPP
 
-#include <QDialog>
-#include <QStringList>
 #include <QTabWidget>
-#include <QPushButton>
-#include <QLabel>
 #include <QHash>
 #include <QComboBox>
 
-#include "Command.h"
 #include "ColorButton.h"
 #include "FontButton.h"
+#include "Dialog.h"
 
-
-class ConfigureDialog : public QDialog
+class ConfigureDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ConfigureDialog (Command *);
+    ConfigureDialog (QWidget *, Command *);
     void createGUI ();
     void createGeneralPage ();
-    void loadSettings ();
-    void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
     void buttonStatus ();
-    void help ();
     void backgroundChanged ();
     void appFontChanged ();
     void plotFontChanged ();
@@ -58,11 +49,6 @@ class ConfigureDialog : public QDialog
 
   private:
     QTabWidget *_tabs;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
-    QString _helpFile;
-    QLabel *_message;
-    Command *_command;
     ColorButton *_background;
     FontButton *_appFont;
     FontButton *_plotFont;

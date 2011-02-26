@@ -22,41 +22,30 @@
 #ifndef EXCHANGE_SEARCH_DIALOG_DIALOG_HPP
 #define EXCHANGE_SEARCH_DIALOG_DIALOG_HPP
 
-#include <QDialog>
-#include <QStringList>
 #include <QListWidget>
-#include <QPushButton>
-#include <QLabel>
 #include <QComboBox>
 
-#include "Command.h"
 #include "ExchangeDataBase.h"
+#include "Dialog.h"
 
-class ExchangeSearchDialog : public QDialog
+class ExchangeSearchDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ExchangeSearchDialog (Command *);
+    ExchangeSearchDialog (QWidget *, Command *);
     void createGUI ();
     void loadSettings ();
     void saveSettings ();
 
   public slots:
     void done ();
-    void cancel ();
     void selectionChanged ();
-    void help ();
     void search ();
 
   private:
     ExchangeDataBase _db;
     QListWidget *_list;
-    QPushButton *_okButton;
-    QPushButton *_cancelButton;
-    QString _helpFile;
-    QLabel *_message;
-    Command *_command;
     QComboBox *_country;
     QComboBox *_city;
     QComboBox *_exchange;

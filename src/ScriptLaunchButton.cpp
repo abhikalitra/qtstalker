@@ -65,7 +65,7 @@ void ScriptLaunchButton::buttonClicked ()
 
 void ScriptLaunchButton::configure ()
 {
-  ScriptLaunchButtonDialog *dialog = new ScriptLaunchButtonDialog(_scriptName, _icon, _useIcon);
+  ScriptLaunchButtonDialog *dialog = new ScriptLaunchButtonDialog(this, _scriptName, _icon, _useIcon);
   connect(dialog, SIGNAL(signalDone(QString, QString, int)), this, SLOT(configure2(QString, QString, int)));
   dialog->show();
 }
