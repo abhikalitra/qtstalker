@@ -1007,5 +1007,16 @@
 20110225:  Fixed ExchangeDataBase startup sync bug.
 
            Added global key shortcuts:
-            
+
+20110226:  Fixed bug # 3193576 - 0.37-dev tab position.
+
+           Added a YAHOO exchange to the exchnage database. All Yahoo quotes will now use this
+           as the exchange so we can keep those quotes separate from other sources. Trying to
+           translate yahoo symbols into the actual symbols is a waste of time. Better to separate
+           them. The YAHOO_DIALOG has been changed to use the raw yahoo symbol in a YAHOO:XXXXX
+           format now.
+
+           Made an attempt at fixing bug # 3188945 - trouble with symbol search.
+
+
            

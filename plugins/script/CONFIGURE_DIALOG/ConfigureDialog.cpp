@@ -103,7 +103,7 @@ void ConfigureDialog::createGeneralPage ()
   
   _tabPosition = new QComboBox;
   _tabPosition->addItems(l);
-  _tabPosition->setCurrentIndex(settings.value("plot_tab_position", 3).toInt());
+  _tabPosition->setCurrentIndex(settings.value("plot_tab_position", 0).toInt());
   connect(_tabPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(tabPositionChanged()));
   form->addRow(tr("Tab Position"), _tabPosition);
   

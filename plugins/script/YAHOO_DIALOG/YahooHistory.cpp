@@ -75,7 +75,7 @@ void YahooHistory::getUrl (QDateTime &sd, QDateTime &ed, Setting &data, QString 
 {
 //http://ichart.finance.yahoo.com/table.csv?s=AAPL&d=1&e=22&f=2011&g=d&a=8&b=7&c=1984&ignore=.csv  
   url = "http://ichart.finance.yahoo.com/table.csv?s=";
-  url.append(data.data("YSYMBOL"));
+  url.append(data.data("SYMBOL"));
   url.append("&d=" + QString::number(ed.date().month() - 1));
   url.append("&e=" + ed.date().toString("d"));
   url.append("&f=" + ed.date().toString("yyyy"));
@@ -114,7 +114,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
     if (l.count() != 7)
     {
       QStringList tl;
-      tl << data.data("YSYMBOL") << tr("line") << QString::number(line) << tr("# of bar fields, record skipped");
+      tl << data.data("SYMBOL") << tr("line") << QString::number(line) << tr("# of bar fields, record skipped");
       emit signalMessage(tl.join(" "));
       error++;
       continue;
@@ -127,7 +127,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
       if (! ok)
       {
         QStringList tl;
-        tl << data.data("YSYMBOL") << tr("line") << QString::number(line) << tr("invalid adjusted close, record skipped");
+        tl << data.data("SYMBOL") << tr("line") << QString::number(line) << tr("invalid adjusted close, record skipped");
         emit signalMessage(tl.join(" "));
         error++;
         continue;
@@ -146,7 +146,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
       }
     }
 
-    l[0].append("160000"); // add the close time to the date
+    l[0].append(data.data("TIME")); // add the close time to the date
 
     Bar *bar = new Bar;
 
@@ -154,7 +154,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
     if (! dt.isValid())
     {
       QStringList tl;
-      tl << data.data("YSYMBOL") << tr("invalid date") << l.at(0) << tr("record skipped");
+      tl << data.data("SYMBOL") << tr("invalid date") << l.at(0) << tr("record skipped");
       emit signalMessage(tl.join(" "));
       error++;
       continue;
@@ -165,7 +165,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
     if (bar->setOpen(l.at(1)))
     {
       QStringList tl;
-      tl << data.data("YSYMBOL") << tr("invalid open") << l.at(1) << tr("record skipped");
+      tl << data.data("SYMBOL") << tr("invalid open") << l.at(1) << tr("record skipped");
       emit signalMessage(tl.join(" "));
       error++;
       continue;
@@ -174,7 +174,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
     if (bar->setHigh(l.at(2)))
     {
       QStringList tl;
-      tl << data.data("YSYMBOL") << tr("invalid high") << l.at(2) << tr("record skipped");
+      tl << data.data("SYMBOL") << tr("invalid high") << l.at(2) << tr("record skipped");
       emit signalMessage(tl.join(" "));
       error++;
       continue;
@@ -183,7 +183,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
     if (bar->setLow(l.at(3)))
     {
       QStringList tl;
-      tl << data.data("YSYMBOL") << tr("invalid low") << l.at(3) << tr("record skipped");
+      tl << data.data("SYMBOL") << tr("invalid low") << l.at(3) << tr("record skipped");
       emit signalMessage(tl.join(" "));
       error++;
       continue;
@@ -192,7 +192,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
     if (bar->setClose(l.at(4)))
     {
       QStringList tl;
-      tl << data.data("YSYMBOL") << tr("invalid close") << l.at(4) << tr("record skipped");
+      tl << data.data("SYMBOL") << tr("invalid close") << l.at(4) << tr("record skipped");
       emit signalMessage(tl.join(" "));
       error++;
       continue;
@@ -201,7 +201,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
     if (bar->setVolume(l.at(5)))
     {
       QStringList tl;
-      tl << data.data("YSYMBOL") << tr("invalid volume") << l.at(5) << tr("record skipped");
+      tl << data.data("SYMBOL") << tr("invalid volume") << l.at(5) << tr("record skipped");
       emit signalMessage(tl.join(" "));
       error++;
       continue;
@@ -213,7 +213,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
   if (! symbol.count())
   {
     QStringList l;
-    l << data.data("YSYMBOL") << "...";
+    l << data.data("SYMBOL") << "...";
     l << "0" << tr("records imported");
     if (error)
       l << "ERROR";
@@ -227,7 +227,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
   db.commit();
 
   QStringList l;
-  l << data.data("YSYMBOL") << "..." << QString::number(symbol.count()) << tr("records imported");
+  l << data.data("SYMBOL") << "..." << QString::number(symbol.count()) << tr("records imported");
   if (error)
     l << tr("data error");
   else
@@ -239,7 +239,7 @@ void YahooHistory::parse (QByteArray &ba, Setting &data)
 void YahooHistory::downloadName (Setting &data)
 {
   QString url = "http://download.finance.yahoo.com/d/quotes.csv?s=";
-  url.append(data.data("YSYMBOL"));
+  url.append(data.data("SYMBOL"));
   url.append("&f=n");
   url.append("&e=.csv");
 

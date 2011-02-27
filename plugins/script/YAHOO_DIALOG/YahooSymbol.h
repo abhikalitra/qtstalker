@@ -19,26 +19,19 @@
  *  USA.
  */
 
-#ifndef YAHOO_DATA_BASE_HPP
-#define YAHOO_DATA_BASE_HPP
-
-#include <QtSql>
+#ifndef YAHOO_SYMBOL_HPP
+#define YAHOO_SYMBOL_HPP
 
 #include "Setting.h"
 
-class YahooDataBase
+class YahooSymbol
 {
   public:
-    YahooDataBase ();
-    int save (Setting &);
-    int deleteSymbol (Setting &);
-    int symbols (QStringList &);
-    void transaction ();
-    void commit ();
+    YahooSymbol ();
+    int data (Setting &);
 
   private:
-    QSqlDatabase _db;
-    QString _table;
+    QStringList _yexchange;
 };
 
 #endif

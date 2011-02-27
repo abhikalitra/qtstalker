@@ -194,6 +194,9 @@ void QtstalkerApp::loadSettings ()
     qApp->setFont(font);
   }
 
+  // set the last used tab position
+  setPlotTabPosition(settings.value("plot_tab_position", 0).toInt());
+
   // load gui class settings that need to now
   emit signalLoadSettings();
 }

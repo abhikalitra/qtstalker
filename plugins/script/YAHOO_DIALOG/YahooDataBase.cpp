@@ -28,50 +28,34 @@ YahooDataBase::YahooDataBase ()
   _table = "data";
   
   _db = QSqlDatabase::database(_table);
-  QSqlQuery q(_db);
+  if (! _db.isOpen())
+  {
+    QString s = QDir::homePath() + "/.qtstalker/data.sqlite";
+    _db = QSqlDatabase::addDatabase("QSQLITE", "data");
+    _db.setHostName("QtStalker");
+    _db.setDatabaseName(s);
+    _db.setUserName("QtStalker");
+    _db.setPassword("QtStalker");
+    if (! _db.open())
+      qDebug() << "YahooDataBase::YahooDataBase:" << _db.lastError().text();
+  }
 
   // create the table
+  QSqlQuery q(_db);
   QString s = "CREATE TABLE IF NOT EXISTS YahooSymbols (";
-  s.append("ysymbol TEXT PRIMARY KEY UNIQUE"); // yahoo symbol
-  s.append(", symbol TEXT"); // actual symbol
-  s.append(", exchange TEXT"); // actual exchange
+  s.append("symbol TEXT PRIMARY KEY UNIQUE"); // yahoo symbol
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "YahooDataBase::YahooDataBase: " << q.lastError().text();
 }
 
-int YahooDataBase::load (Setting &set)
-{
-  QString ysymbol = set.data("YSYMBOL");
-
-  QSqlQuery q(_db);
-
-  QString s = "SELECT exchange,symbol FROM YahooSymbols WHERE ysymbol='" + ysymbol + "'";
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "YahooDataBase::load" << q.lastError().text();
-    return 1;
-  }
-
-  if (q.next())
-  {
-    set.setData("EXCHANGE", q.value(0).toString());
-    set.setData("SYMBOL", q.value(1).toString());
-  }
-
-  return 0;
-}
-
 int YahooDataBase::save (Setting &set)
 {
   QSqlQuery q(_db);
 
-  QString s = "INSERT OR REPLACE INTO YahooSymbols (ysymbol,exchange,symbol) VALUES (";
-  s.append("'" + set.data("YSYMBOL") + "'");
-  s.append(",'" + set.data("EXCHANGE") + "'");
-  s.append(",'" + set.data("SYMBOL") + "'");
+  QString s = "INSERT OR REPLACE INTO YahooSymbols (symbol) VALUES (";
+  s.append("'" + set.data("SYMBOL") + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -87,7 +71,7 @@ int YahooDataBase::deleteSymbol (Setting &set)
 {
   QSqlQuery q(_db);
 
-  QString s = "DELETE FROM YahooSymbols WHERE ysymbol='" + set.data("YSYMBOL") + "'";
+  QString s = "DELETE FROM YahooSymbols WHERE symbol='" + set.data("SYMBOL") + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -104,7 +88,7 @@ int YahooDataBase::symbols (QStringList &l)
   
   QSqlQuery q(_db);
 
-  QString s = "SELECT ysymbol FROM YahooSymbols ORDER BY ysymbol ASC";
+  QString s = "SELECT symbol FROM YahooSymbols ORDER BY symbol ASC";
   q.exec(s);
   if (q.lastError().isValid())
   {

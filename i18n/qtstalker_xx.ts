@@ -696,18 +696,6 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Edit Buy</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>O&amp;K</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ChartObjectHLine</name>
@@ -752,10 +740,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Edit HLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2997,14 +2981,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Message Log</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>O&amp;K</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

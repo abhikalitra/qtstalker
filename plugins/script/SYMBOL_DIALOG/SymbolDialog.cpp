@@ -47,6 +47,8 @@ SymbolDialog::SymbolDialog (QWidget *p, Command *c) : Dialog (p)
 
   searchSelectionChanged();
   symbolSelectionChanged();
+
+  _search->setFocus();
 }
 
 void SymbolDialog::createGUI ()
@@ -232,26 +234,19 @@ void SymbolDialog::searchButtonPressed ()
     s = "*";
   symbol.setSymbol(s);
 
-qDebug() << "SymbolDialog::searchButtonPressed" << symbol.exchange() << symbol.symbol();
-
   QuoteDataBase db;
-  QStringList l;
+  QList<BarData> l;
   db.search(&symbol, l);
 
-qDebug() << "SymbolDialog::searchButtonPressed" << l;
-  
   _searchList->clear();
 
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QStringList l2 = l.at(loop).split(",", QString::SkipEmptyParts);
-    if (l2.count() != 3)
-      continue;
-
+    BarData bd = l.at(loop);
     QTreeWidgetItem *item = new QTreeWidgetItem(_searchList);
-    item->setText(0, l2.at(0) + ":" + l2.at(1));
-    item->setText(1, l2.at(2));
+    item->setText(0, bd.exchange() + ":" + bd.symbol());
+    item->setText(1, bd.name());
   }
 
   for (loop = 0; loop < _searchList->columnCount(); loop++)

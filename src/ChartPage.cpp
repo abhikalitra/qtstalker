@@ -140,23 +140,12 @@ void ChartPage::updateList ()
   bd.setSymbol(_searchString);
   
   QuoteDataBase db;
-  QStringList l;
+  QList<BarData> l;
   db.search(&bd, l);
 
   int loop = 0;
   for (; loop < l.count(); loop++)
-  {
-    QStringList tl = l.at(loop).split(",");
-    if (tl.count() != 3)
-      continue;
-    
-    BarData bd;
-    bd.setExchange(tl.at(0));
-    bd.setSymbol(tl.at(1));
-    bd.setName(tl.at(2));
-    
-    _nav->addSymbol(bd);
-  }
+    _nav->addSymbol(l.at(loop));
 
   _nav->setSortingEnabled(TRUE);
   

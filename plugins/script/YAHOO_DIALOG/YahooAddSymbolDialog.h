@@ -35,7 +35,6 @@ class YahooAddSymbolDialog : public Dialog
 
   public:
     YahooAddSymbolDialog (QWidget *);
-    int getSymbolExchange (QString &ysymbol, QString &symbol, QString &exchange);
     void createGUI ();
 
   public slots:
@@ -43,7 +42,6 @@ class YahooAddSymbolDialog : public Dialog
     void buttonStatus ();
 
   private:
-    QStringList _yexchange;
     LineEdit *_symbols;
 };
 

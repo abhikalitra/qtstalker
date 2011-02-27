@@ -42,6 +42,7 @@ NewDialog::NewDialog (QWidget *p, Command *c) : Dialog (p)
   _name->clear();
   _name->addItems(_items);
   _name->clearEditText();
+  _name->setFocus();
 
   loadSettings();
 

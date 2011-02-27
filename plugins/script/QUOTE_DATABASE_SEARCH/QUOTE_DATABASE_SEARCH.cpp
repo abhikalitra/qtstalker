@@ -52,7 +52,7 @@ int QUOTE_DATABASE_SEARCH::command (Command *command)
   }
   bd.setSymbol(s);
 
-  QStringList l;
+  QList<BarData> l;
   QuoteDataBase db;
   if (db.search(&bd, l))
   {
@@ -60,8 +60,16 @@ int QUOTE_DATABASE_SEARCH::command (Command *command)
     return 1;
   }
 
+  QStringList tl;
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    BarData t = l.at(loop);
+    tl << t.key();
+  }
+  
   // now delimit each tuple with a semicolon
-  command->setReturnData(_plugin + "_SEARCH", l.join(";"));
+  command->setReturnData(_plugin + "_SEARCH", tl.join(";"));
 
   command->setReturnCode("0");
 

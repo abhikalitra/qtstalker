@@ -27,7 +27,6 @@
 
 YahooAddSymbolDialog::YahooAddSymbolDialog (QWidget *p) : Dialog (p)
 {
-  _yexchange << "NYSE" << "AX" << "SA" << "TO" << "BO" << "NS" << "L" << "B";
   _helpFile = "Yahoo.html";
   _keySize = "yahoo_add_symbol_dialog_window_size";
   _keyPos = "yahoo_add_symbol_dialog_window_position";
@@ -41,6 +40,8 @@ YahooAddSymbolDialog::YahooAddSymbolDialog (QWidget *p) : Dialog (p)
   loadSettings();
 
   buttonStatus();
+
+  _symbols->setFocus();
 }
 
 void YahooAddSymbolDialog::createGUI ()
@@ -70,86 +71,20 @@ void YahooAddSymbolDialog::done ()
   s = s.toUpper();
   QStringList l = s.split(" ");
 
-  QStringList errorList;
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QString symbol, exchange;
-    if (getSymbolExchange(l[loop], symbol, exchange))
-      errorList.append(l[loop]);
-    else
-    {
-      Setting set;
-      set.setData("YSYMBOL", l.at(loop));
-      set.setData("EXCHANGE", exchange);
-      set.setData("SYMBOL", symbol);
-      if (db.save(set))
-        qDebug() << "YahooAddSymbolDialog::done: command error";
-    }
+    Setting set;
+    set.setData("SYMBOL", l.at(loop));
+    if (db.save(set))
+      qDebug() << "YahooAddSymbolDialog::done: symbol save error";
   }
 
   db.commit();
-
-  if (errorList.count())
-  {
-    errorList.prepend(tr("Invalid symbols found\n"));
-    _message->setText(errorList.join("\n"));
-    return;
-  }
 
   saveSettings();
 
   emit signalNew();
 
   accept();
-}
-
-int YahooAddSymbolDialog::getSymbolExchange (QString &ysymbol, QString &symbol, QString &exchange)
-{
-  QString s;
-  QStringList l = ysymbol.split(".");
-  if (l.count() == 1)
-    l.append("NYSE");
-
-  int rc = 0;
-
-  switch (_yexchange.indexOf(l[1]))
-  {
-    // unfortunately yahoo does not separate NYSE,NASDAQ,ASE quotes
-    // so we lump them into the NYSE exchange
-    case 0: // NYSE
-      symbol = l.at(0);
-      exchange = "XNYS";
-      break;
-    case 1: // AX
-      symbol = l.at(0);
-      exchange = "XASX";
-      break;
-    case 2: // SA
-      symbol = l.at(0);
-      exchange = "BVMF";
-      break;
-    case 3: // TO
-      symbol = l.at(0);
-      exchange = "XTSE";
-      break;
-    case 4: // BO
-    case 5: // NS
-      symbol = l.at(0);
-      exchange = "XNSE";
-      break;
-    case 6: // L
-      symbol = l.at(0);
-      exchange = "XLON";
-      break;
-    case 7: // B, some XNYS symbols use .B eg BRK.B
-      symbol = l.at(0) + ".B"; // we keep the .B
-      exchange = "XNYS";
-      break;
-    default: // error
-      rc = 1;
-      break;
-  }
-
-  return rc;
 }

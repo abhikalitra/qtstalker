@@ -301,6 +301,10 @@ int QuoteDataBase::newSymbol (BarData *symbol)
   if (q.next())
     symbol->setTable("Q" + QString::number(q.value(0).toInt() + 1));
 
+  // set default name to symbol
+  if (symbol->name().isEmpty())
+    symbol->setName(symbol->symbol());
+
   // add new symbol entry into the symbolIndex table
   s = "INSERT OR REPLACE INTO symbolIndex (symbol,tableName,exchange,name,type) VALUES(";
   s.append("'" + symbol->symbol() + "'");
@@ -535,7 +539,7 @@ int QuoteDataBase::rename (BarData *osymbol, BarData *nsymbol)
   return 0;
 }
 
-int QuoteDataBase::search (BarData *bd, QStringList &l)
+int QuoteDataBase::search (BarData *bd, QList<BarData> &l)
 {
   l.clear();
   
@@ -595,14 +599,14 @@ int QuoteDataBase::search (BarData *bd, QStringList &l)
     return 1;
   }
 
-  // we create exchange,symbol,name tuples comma delimiter
   while (q.next())
   {
-    QStringList tl;
-    int loop = 0;
-    for (; loop < 3; loop++)
-      tl << q.value(loop).toString();
-    l << tl.join(",");
+    int pos = 0;
+    BarData bd;
+    bd.setExchange(q.value(pos++).toString());
+    bd.setSymbol(q.value(pos++).toString());
+    bd.setName(q.value(pos++).toString());
+    l.append(bd);
   }
 
   return 0;

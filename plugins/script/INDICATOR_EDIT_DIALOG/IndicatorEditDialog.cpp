@@ -58,6 +58,8 @@ IndicatorEditDialog::IndicatorEditDialog (QWidget *p, Command *c) : Dialog (p)
   loadSettings();
 
   buttonStatus();
+
+  _com->setFocus();
 }
 
 void IndicatorEditDialog::createGUI ()

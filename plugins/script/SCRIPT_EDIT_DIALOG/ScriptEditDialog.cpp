@@ -46,6 +46,8 @@ ScriptEditDialog::ScriptEditDialog (QWidget *p, Command *c) : Dialog (p)
   loadScript();
 
   buttonStatus();
+
+  _com->setFocus();
 }
 
 void ScriptEditDialog::createGUI ()

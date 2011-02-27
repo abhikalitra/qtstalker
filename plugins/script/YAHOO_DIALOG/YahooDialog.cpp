@@ -26,6 +26,7 @@
 #include "YahooHistory.h"
 #include "QuoteDataBase.h"
 #include "DateRange.h"
+#include "YahooSymbol.h"
 
 #include <QDebug>
 #include <QGroupBox>
@@ -152,18 +153,15 @@ void YahooDialog::done ()
   if (_allSymbols->isChecked())
     db.symbols(_symbolList);
 
+  YahooSymbol ys;
   QList<Setting> symbols;
   int loop = 0;
   for (; loop < _symbolList.count(); loop++)
   {
     Setting symbol;
-    symbol.setData("YSYMBOL", _symbolList.at(loop));
+    symbol.setData("SYMBOL", _symbolList.at(loop));
 
-    if (db.load(symbol))
-    {
-      qDebug() << "YahooDialog::done error loading symbol from YahooDataBase" << _symbolList.at(loop);
-      continue;
-    }
+    ys.data(symbol);
 
     if (_autoDate->isChecked())
     {
@@ -175,16 +173,18 @@ void YahooDialog::done ()
 
       if (qdb.getBars(&bd))
       {
-        qDebug() << "YahooDialog::done error loading bar from QuoteDataBase" << _symbolList.at(loop);
-        continue;
+        symbol.setData("DATE_START", QString("1950-01-01 00:00:00"));
+        symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
       }
+      else
+      {
+        Bar *bar = bd.bar(0);
+        if (! bar)
+          continue;
 
-      Bar *bar = bd.bar(0);
-      if (! bar)
-        continue;
-
-      symbol.setData("DATE_START", bar->date().toString(Qt::ISODate));
-      symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
+        symbol.setData("DATE_START", bar->date().toString(Qt::ISODate));
+        symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
+      }
     }
     else
     {

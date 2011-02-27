@@ -24,6 +24,7 @@
 
 #include <QtSql>
 #include <QStringList>
+#include <QList>
 
 #include "BarData.h"
 
@@ -41,7 +42,7 @@ class QuoteDataBase
     int deleteSymbol (BarData *);
     int getExchange (QStringList &);
     int rename (BarData *osymbol, BarData *nsymbol);
-    int search (BarData *bd, QStringList &l);
+    int search (BarData *bd, QList<BarData> &l);
     int setName (BarData *);
 
   private:
