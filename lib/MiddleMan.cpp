@@ -34,8 +34,6 @@ void MiddleMan::chartPanelRefresh ()
 
 void MiddleMan::chartPanelSearch (QString exchange, QString symbol)
 {
-qDebug() << "MiddleMan::chartPanelSearch" << exchange << symbol;
-
   emit signalChartPanelSearch(exchange, symbol);
 }
 

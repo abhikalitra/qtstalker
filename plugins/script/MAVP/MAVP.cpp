@@ -22,7 +22,6 @@
 #include "MAVP.h"
 #include "Curve.h"
 #include "ta_libc.h"
-#include "FunctionMA.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -30,6 +29,7 @@
 MAVP::MAVP ()
 {
   _plugin = "MAVP";
+  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
 }
 
 int MAVP::command (Command *command)
@@ -86,8 +86,7 @@ int MAVP::command (Command *command)
     return 1;
   }
 
-  FunctionMA fma;
-  int type = fma.typeFromString(command->parm("MA_TYPE"));
+  int type = _maList.indexOf(command->parm("MA_TYPE"));
   if (type == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE" << command->parm("MA_TYPE");

@@ -54,7 +54,7 @@ Dialog::Dialog (QWidget *p) : QDialog (p)
 
   // ok button
   _okButton = _buttonBox->addButton(QDialogButtonBox::Ok);
-  _okButton->setText(tr("O&K"));
+  _okButton->setText(tr("&OK"));
 
   // cancel button
   _cancelButton = _buttonBox->addButton(QDialogButtonBox::Cancel);

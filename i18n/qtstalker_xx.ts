@@ -1175,6 +1175,14 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Add To &amp;Group</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Delete Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Permanantly delete symbols from the database</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfigureButton</name>
@@ -1347,15 +1355,15 @@ e.g. Qtstalker alert was triggered.</source>
 <context>
     <name>Dialog</name>
     <message>
-        <source>O&amp;K</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

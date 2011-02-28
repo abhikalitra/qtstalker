@@ -121,6 +121,9 @@ void Setup::setupDefaults ()
   s = sysdir + "ChartPanelSymbolSearch.pl";
   settings.setValue("chart_panel_symbol_search_script", s);
 
+  s = sysdir + "ChartPanelDelete.pl";
+  settings.setValue("chart_panel_delete_script", s);
+
   s = sysdir + "CrosshairsStatusChanged.pl";
   settings.setValue("crosshairs_status_changed_script", s);
 

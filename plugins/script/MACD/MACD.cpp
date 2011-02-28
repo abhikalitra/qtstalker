@@ -22,7 +22,6 @@
 #include "MACD.h"
 #include "Curve.h"
 #include "ta_libc.h"
-#include "FunctionMA.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -30,6 +29,7 @@
 MACD::MACD ()
 {
   _plugin = "MACD";
+  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
 }
 
 int MACD::command (Command *command)
@@ -92,8 +92,7 @@ int MACD::command (Command *command)
     return 1;
   }
 
-  FunctionMA fma;
-  int ftype = fma.typeFromString(command->parm("MA_TYPE_FAST"));
+  int ftype = _maList.indexOf(command->parm("MA_TYPE_FAST"));
   if (ftype == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_FAST" << command->parm("MA_TYPE_FAST");
@@ -107,7 +106,7 @@ int MACD::command (Command *command)
     return 1;
   }
 
-  int stype = fma.typeFromString(command->parm("MA_TYPE_SLOW"));
+  int stype = _maList.indexOf(command->parm("MA_TYPE_SLOW"));
   if (stype == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_SLOW" << command->parm("MA_TYPE_SLOW");
@@ -121,7 +120,7 @@ int MACD::command (Command *command)
     return 1;
   }
 
-  int sigtype = fma.typeFromString(command->parm("MA_TYPE_SIGNAL"));
+  int sigtype = _maList.indexOf(command->parm("MA_TYPE_SIGNAL"));
   if (sigtype == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_SIGNAL" << command->parm("MA_TYPE_SIGNAL");

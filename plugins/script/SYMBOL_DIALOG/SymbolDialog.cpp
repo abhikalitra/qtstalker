@@ -183,8 +183,6 @@ void SymbolDialog::done ()
     _command->setReturnData("SYMBOL_DIALOG_SYMBOLS", l.join(";"));
   }
 
-qDebug() << "SymbolDialog::done:" << "EXCHANGE=" + _command->parm("SYMBOL_DIALOG_EXCHANGE") << "SYMBOL=" + _command->parm("SYMBOL_DIALOG_SYMBOL");
-
   _command->setReturnCode("0");
 
   accept();

@@ -31,6 +31,10 @@ class FI : public ScriptPlugin
   public:
     FI ();
     int command (Command *);
+    Curve * getMA (Curve *, int period, int method);
+
+  private:
+    QStringList _maList;
 };
 
 extern "C"

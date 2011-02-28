@@ -52,7 +52,7 @@ Script::~Script ()
   if (_indicatorFlag)
     delete _indicator;
 
-qDebug() << "Script::~Script:" << _name << "deleted";
+//qDebug() << "Script::~Script:" << _name << "deleted";
 }
 
 void Script::init ()
@@ -131,7 +131,7 @@ int Script::startScript ()
   _command->setBarData(_barData);
   _command->setIndicator(_indicator);
 
-qDebug() << "Script::startScript:" << _name << "started";
+//qDebug() << "Script::startScript:" << _name << "started";
   
   return 0;
 }
@@ -223,11 +223,8 @@ void Script::stopScript (QString d)
   if (_name == d || d.isEmpty())
   {
     _killFlag = TRUE;
-
-    // test
     emit signalKill();
-qDebug() << "Script::stopScript";    
-    // test end
+//qDebug() << "Script::stopScript";    
   }
 }
 

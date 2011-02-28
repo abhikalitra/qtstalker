@@ -26,6 +26,7 @@
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
+#include "../pics/delete.xpm"
 
 #include <QCursor>
 #include <QToolTip>
@@ -84,12 +85,20 @@ void ChartPage::createActions ()
   action->setStatusTip(tr("Add symbol to group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
   _actions.insert(AddGroup, action);
+
+  action  = new QAction(QIcon(delete_xpm), tr("&Delete Symbol") + "...", this);
+  action->setToolTip(tr("Permanantly delete symbols from the database") + "...");
+  action->setStatusTip(tr("Permanantly delete symbols from the database") + "...");
+  connect(action, SIGNAL(activated()), this, SLOT(deleteSymbol()));
+  _actions.insert(Delete, action);
 }
 
 void ChartPage::createButtonMenu ()
 {
   _menu = new QMenu(this);
   _menu->addAction(_actions.value(AddGroup));
+  _menu->addSeparator();
+  _menu->addAction(_actions.value(Delete));
   _menu->addSeparator();
   _menu->addAction(_actions.value(ShowAll));
   _menu->addAction(_actions.value(Search));
@@ -164,8 +173,6 @@ void ChartPage::symbolSearch ()
 
 void ChartPage::setSearch (QString exchange, QString symbol)
 {
-qDebug() << "ChartPage::setSearch" << exchange << symbol;
-
   _searchExchange = exchange;
   _searchString = symbol;
   
@@ -212,4 +219,14 @@ void ChartPage::selected (QStringList &l)
 SymbolListWidget * ChartPage::list ()
 {
   return _nav;
+}
+
+void ChartPage::deleteSymbol ()
+{
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
+  script->setName("ChartPanelDelete");
+  script->setFile(settings.value("chart_panel_delete_script").toString());
+  script->setCommand("perl");
+  script->startScript();
 }

@@ -19,27 +19,19 @@
  *  USA.
  */
 
-#include "MA.h"
+#include "WILDER_MA.h"
 #include "Curve.h"
-#include "ta_libc.h"
 
 #include <QtDebug>
 
-MA::MA ()
+WILDER_MA::WILDER_MA ()
 {
-  _plugin = "MA";
-  
-  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("MA::MA: error on TA_Initialize");
+  _plugin = "WILDER_MA";
 }
 
-int MA::command (Command *command)
+int WILDER_MA::command (Command *command)
 {
   // PARMS:
-  // METHOD
   // NAME
   // INPUT
   // PERIOD
@@ -48,13 +40,6 @@ int MA::command (Command *command)
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
-    return 1;
-  }
-
-  int method = typeFromString(command->parm("METHOD"));
-  if (method == -1)
-  {
-    qDebug() << _plugin << "::command: invalid METHOD" << command->parm("METHOD");
     return 1;
   }
 
@@ -81,7 +66,7 @@ int MA::command (Command *command)
     return 1;
   }
 
-  line = calculate(in, period, method);
+  line = calculate(in, period);
   if (! line)
     return 1;
 
@@ -93,60 +78,7 @@ int MA::command (Command *command)
   return 0;
 }
 
-Curve * MA::calculate (Curve *in, int period, int method)
-{
-  if (in->count() < period)
-    return 0;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int size = keys.count();
-
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_MA(0, size - 1, &input[0], period, (TA_MAType) method, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "MA::calculate: TA-Lib error" << rc;
-    return 0;
-  }
-
-  Curve *line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
-  }
-
-  return line;
-}
-
-QStringList & MA::list ()
-{
-  return _maList;
-}
-
-int MA::typeFromString (QString d)
-{
-  return _maList.indexOf(d);
-}
-
-Curve * MA::getWilder (Curve *in, int period)
+Curve * WILDER_MA::calculate (Curve *in, int period)
 {
   if (in->count() < period)
     return 0;
@@ -184,6 +116,6 @@ Curve * MA::getWilder (Curve *in, int period)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  MA *o = new MA;
+  WILDER_MA *o = new WILDER_MA;
   return ((ScriptPlugin *) o);
 }

@@ -23,6 +23,7 @@
 #include "Globals.h"
 
 #include <QtDebug>
+#include <QMessageBox>
 
 ConfirmDialog::ConfirmDialog (QWidget *p, Command *c) : Dialog (p)
 {
@@ -34,9 +35,35 @@ ConfirmDialog::ConfirmDialog (QWidget *p, Command *c) : Dialog (p)
   l << "QtStalker" << g_session << ":" << tr("Confirm");
   setWindowTitle(l.join(" "));
 
+  createGUI();
+
   _message->setText(_command->parm("MESSAGE"));
 
   loadSettings();
+}
+
+void ConfirmDialog::createGUI ()
+{
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setSpacing(2);
+  _vbox->insertLayout(0, hbox);
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(0);
+  hbox->addLayout(vbox);
+
+  QMessageBox mb;
+  mb.setIcon(QMessageBox::Warning);
+  
+  QLabel *label = new QLabel;
+  label->setPixmap(mb.iconPixmap());
+  vbox->addWidget(label);
+
+  vbox->addStretch(1);
+
+  delete _message;
+  _message = new QLabel;
+  hbox->addWidget(_message);
 }
 
 void ConfirmDialog::done ()

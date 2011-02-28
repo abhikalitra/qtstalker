@@ -11,13 +11,11 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SYMBOL_DIALOG_EXCHANGE";
 print STDOUT $command;
 $exchange = <STDIN>; chomp($exchange); if ($exchange eq "ERROR") {print STDERR $command; exit; }
-print STDERR "ChartPanelSymbolSearch: exchange=$exchange";
 
 # get the symbol string
 $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SYMBOL_DIALOG_SYMBOL";
 print STDOUT $command;
 $symbol = <STDIN>; chomp($symbol); if ($symbol eq "ERROR") {print STDERR $command; exit; }
-print STDERR "ChartPanelSymbolSearch: symbol=$symbol";
 
 # get symbols selected from the chart panel
 $command = "PLUGIN=CHART_PANEL_SEARCH,EXCHANGE=$exchange,SYMBOL=$symbol";

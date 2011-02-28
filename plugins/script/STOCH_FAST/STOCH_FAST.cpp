@@ -22,7 +22,6 @@
 #include "STOCH_FAST.h"
 #include "Curve.h"
 #include "ta_libc.h"
-#include "FunctionMA.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -30,6 +29,7 @@
 STOCH_FAST::STOCH_FAST ()
 {
   _plugin = "STOCH_FAST";
+  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
 }
 
 int STOCH_FAST::command (Command *command)
@@ -89,8 +89,7 @@ int STOCH_FAST::command (Command *command)
     return 1;
   }
 
-  FunctionMA fma;
-  int type = fma.typeFromString(command->parm("MA_TYPE_FASTD"));
+  int type = _maList.indexOf(command->parm("MA_TYPE_FASTD"));
   if (type == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_FASTD" << command->parm("MA_TYPE_FASTD");

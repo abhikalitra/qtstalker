@@ -31,6 +31,9 @@ class MAVP : public ScriptPlugin
   public:
     MAVP ();
     int command (Command *);
+
+  private:
+    QStringList _maList;
 };
 
 extern "C"

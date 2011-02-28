@@ -30,6 +30,7 @@ class ConfirmDialog : public Dialog
 
   public:
     ConfirmDialog (QWidget *, Command *);
+    void createGUI ();
 
   public slots:
     void done ();

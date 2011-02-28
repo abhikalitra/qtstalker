@@ -19,26 +19,24 @@
  *  USA.
  */
 
-#ifndef INDICATOR_SCRIPT_FILE_HPP
-#define INDICATOR_SCRIPT_FILE_HPP
+#ifndef WILDER_MA_HPP
+#define WILDER_MA_HPP
 
-#include <QFile>
-#include <QTextStream>
-#include <QString>
+#include "ScriptPlugin.h"
 
-class IndicatorScriptFile
+class WILDER_MA : public ScriptPlugin
 {
-  public:
-    IndicatorScriptFile ();
-    int open (QString);
-    void close ();
-    void append (QString);
+  Q_OBJECT
 
-  private:
-    QFile _file;
-    QTextStream _stream;
-    QString _q;
-    QString _reply;
+  public:
+    WILDER_MA ();
+    int command (Command *);
+    Curve * calculate (Curve *, int period);
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

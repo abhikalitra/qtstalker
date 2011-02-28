@@ -1008,15 +1008,21 @@
 
            Added global key shortcuts:
 
-20110226:  Fixed bug # 3193576 - 0.37-dev tab position.
+20110226:  Fixed bug # 3193576 - 0.37-dev tab position. Also will use a default North position
+           to preserve chart alignment.
 
-           Added a YAHOO exchange to the exchnage database. All Yahoo quotes will now use this
-           as the exchange so we can keep those quotes separate from other sources. Trying to
-           translate yahoo symbols into the actual symbols is a waste of time. Better to separate
-           them. The YAHOO_DIALOG has been changed to use the raw yahoo symbol in a YAHOO:XXXXX
-           format now.
+           All Yahoo quotes will now use YAHOO as the exchange so we can keep those quotes separate
+           from other sources. Trying to translate yahoo symbols into the actual symbols is a
+           waste of time. Better to separate them. The YAHOO_DIALOG has been changed to use the
+           raw yahoo symbol in a YAHOO:XXXXX format now.
 
            Made an attempt at fixing bug # 3188945 - trouble with symbol search.
 
+           Added a delete symbol context menu item to the chart panel. User can now select symbols
+           to delete from the database.
+
+           Added closing times to the yahoo download that match the exchange.
+
+           Added WILDER_MA plugin.
 
            

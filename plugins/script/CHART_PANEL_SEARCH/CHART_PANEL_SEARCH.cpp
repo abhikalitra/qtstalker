@@ -35,8 +35,6 @@ int CHART_PANEL_SEARCH::command (Command *command)
   // EXCHANGE
   // SYMBOL
 
-qDebug() << _plugin << "EXCHANGE=" + command->parm("EXCHANGE") << "SYMBOL=" + command->parm("SYMBOL");
-
   g_middleMan->chartPanelSearch(command->parm("EXCHANGE"), command->parm("SYMBOL"));
 
   command->setReturnCode("0");

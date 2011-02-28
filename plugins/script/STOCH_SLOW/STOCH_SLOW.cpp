@@ -22,7 +22,6 @@
 #include "STOCH_SLOW.h"
 #include "Curve.h"
 #include "ta_libc.h"
-#include "FunctionMA.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -30,6 +29,7 @@
 STOCH_SLOW::STOCH_SLOW ()
 {
   _plugin = "STOCH_SLOW";
+  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
 }
 
 int STOCH_SLOW::command (Command *command)
@@ -92,8 +92,7 @@ int STOCH_SLOW::command (Command *command)
     return 1;
   }
 
-  FunctionMA fma;
-  int kma = fma.typeFromString(command->parm("MA_TYPE_SLOWK"));
+  int kma = _maList.indexOf(command->parm("MA_TYPE_SLOWK"));
   if (kma == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_SLOWK" << command->parm("MA_TYPE_SLOWK");
@@ -107,7 +106,7 @@ int STOCH_SLOW::command (Command *command)
     return 1;
   }
 
-  int dma = fma.typeFromString(command->parm("MA_TYPE_SLOWD"));
+  int dma = _maList.indexOf(command->parm("MA_TYPE_SLOWD"));
   if (dma == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_SLOWD" << command->parm("MA_TYPE_SLOWD");

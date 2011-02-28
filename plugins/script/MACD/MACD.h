@@ -31,6 +31,9 @@ class MACD : public ScriptPlugin
   public:
     MACD ();
     int command (Command *);
+
+  private:
+    QStringList _maList;
 };
 
 extern "C"

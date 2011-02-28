@@ -137,6 +137,7 @@ void YahooDialog::saveSettings ()
 void YahooDialog::done ()
 {
   _log->append("\n*** " + tr("Starting history download") + " ***");
+  _log->update();
   qApp->processEvents();
 
   _sdate->setEnabled(FALSE);

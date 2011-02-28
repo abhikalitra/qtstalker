@@ -1,4 +1,4 @@
-# scans selected symbols for any close breaking above its 200 MA
+# scans selected symbols for latest close breaking above its 200 MA
 # a group is created that contains all matches
 
 $group = "200_MA_Breakout";

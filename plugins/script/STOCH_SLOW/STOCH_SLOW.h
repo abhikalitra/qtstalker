@@ -31,6 +31,9 @@ class STOCH_SLOW : public ScriptPlugin
   public:
     STOCH_SLOW ();
     int command (Command *);
+
+  private:
+    QStringList _maList;
 };
 
 extern "C"

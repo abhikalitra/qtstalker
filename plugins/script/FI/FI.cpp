@@ -22,7 +22,6 @@
 #include "FI.h"
 #include "Curve.h"
 #include "ta_libc.h"
-#include "FunctionMA.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -30,6 +29,7 @@
 FI::FI ()
 {
   _plugin = "FI";
+  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
 }
 
 int FI::command (Command *command)
@@ -72,8 +72,7 @@ int FI::command (Command *command)
     return 1;
   }
 
-  FunctionMA fma;
-  int type = fma.typeFromString(command->parm("MA_TYPE"));
+  int type = _maList.indexOf(command->parm("MA_TYPE"));
   if (type == -1)
   {
     qDebug() << _plugin << "::command: invalid ma type" << command->parm("MA_TYPE");
@@ -99,7 +98,7 @@ int FI::command (Command *command)
 
   if (period > 1)
   {
-    Curve *ma = fma.calculate(line, period, type);
+    Curve *ma = getMA(line, period, type);
     if (! ma)
     {
       delete line;
@@ -116,6 +115,49 @@ int FI::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * FI::getMA (Curve *in, int period, int method)
+{
+  if (in->count() < period)
+    return 0;
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_MA(0, size - 1, &input[0], period, (TA_MAType) method, &outBeg, &outNb, &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << "FI::calculate: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  return line;
 }
 
 //*************************************************************

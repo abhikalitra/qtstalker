@@ -40,6 +40,7 @@ class PO : public ScriptPlugin
 
   private:
     QStringList _method;
+    QStringList _maList;
 };
 
 extern "C"

@@ -408,8 +408,6 @@ int QuoteDataBase::deleteSymbol (BarData *bd)
   else
     table = q.value(0).toString();
 
-  _db.transaction();
-  
   // drop quote table
   s = "DROP TABLE " + table;
   q.exec(s);
@@ -430,8 +428,6 @@ int QuoteDataBase::deleteSymbol (BarData *bd)
     return 1;
   }
 
-  _db.commit();
-  
   return 0;
 }
 

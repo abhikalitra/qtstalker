@@ -265,6 +265,7 @@ SUBDIRS += plugins/script/VFI
 SUBDIRS += plugins/script/VIDYA
 SUBDIRS += plugins/script/VOLUME
 SUBDIRS += plugins/script/WEIGHTED_CLOSE
+SUBDIRS += plugins/script/WILDER_MA
 SUBDIRS += plugins/script/WILLR
 SUBDIRS += plugins/script/YAHOO_DIALOG
 

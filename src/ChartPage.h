@@ -71,6 +71,7 @@ class ChartPage : public QWidget
     void setSearch (QString exchange, QString symbol);
     void allButtonPressed ();
     void buttonStatus ();
+    void deleteSymbol ();
 
   protected:
     QString _searchString;
