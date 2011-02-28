@@ -30,6 +30,10 @@ LINEARREG::LINEARREG ()
 {
   _plugin = "LINEARREG";
   _method << "LINEARREG" << "ANGLE" << "INTERCEPT" "SLOPE" << "TSF";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("LINEARREG::LINEARREG: error on TA_Initialize");
 }
 
 int LINEARREG::command (Command *command)

@@ -31,6 +31,10 @@ PO::PO ()
   _plugin = "PO";
   _method << "APO" << "PPO";
   _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("PO::PO: error on TA_Initialize");
 }
 
 int PO::command (Command *command)

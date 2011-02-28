@@ -29,6 +29,10 @@
 HT_SINE::HT_SINE ()
 {
   _plugin = "HT_SINE";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("HT_SINE::HT_SINE: error on TA_Initialize");
 }
 
 int HT_SINE::command (Command *command)

@@ -30,6 +30,10 @@ STOCH_FAST::STOCH_FAST ()
 {
   _plugin = "STOCH_FAST";
   _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("STOCH_FAST::STOCH_FAST: error on TA_Initialize");
 }
 
 int STOCH_FAST::command (Command *command)

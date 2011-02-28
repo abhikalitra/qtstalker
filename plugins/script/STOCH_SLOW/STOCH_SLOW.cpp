@@ -30,6 +30,10 @@ STOCH_SLOW::STOCH_SLOW ()
 {
   _plugin = "STOCH_SLOW";
   _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("STOCH_SLOW::STOCH_SLOW: error on TA_Initialize");
 }
 
 int STOCH_SLOW::command (Command *command)

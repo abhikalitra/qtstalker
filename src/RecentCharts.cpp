@@ -38,6 +38,11 @@ RecentCharts::RecentCharts ()
   setIcon(QIcon(recent_chart_xpm));
 }
 
+RecentCharts::~RecentCharts ()
+{
+  save();
+}
+
 void RecentCharts::createMenu ()
 {
   _menu = new QMenu(this);

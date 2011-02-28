@@ -29,6 +29,10 @@
 CCI::CCI ()
 {
   _plugin = "CCI";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("CCI::CCI: error on TA_Initialize");
 }
 
 int CCI::command (Command *command)

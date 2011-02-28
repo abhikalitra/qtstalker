@@ -29,6 +29,10 @@
 CMO::CMO ()
 {
   _plugin = "CMO";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("CMO::CMO: error on TA_Initialize");
 }
 
 int CMO::command (Command *command)

@@ -29,6 +29,10 @@
 STDDEV::STDDEV ()
 {
   _plugin = "STDDEV";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("STDDEV::STDDEV: error on TA_Initialize");
 }
 
 int STDDEV::command (Command *command)

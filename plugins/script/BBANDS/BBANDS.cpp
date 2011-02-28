@@ -30,6 +30,10 @@ BBANDS::BBANDS ()
 {
   _plugin = "BBANDS";
   _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("BBANDS::BBANDS: error on TA_Initialize");
 }
 
 int BBANDS::command (Command *command)

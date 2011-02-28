@@ -50,7 +50,7 @@
 
 #include "../pics/qtstalker.xpm"
 
-QtstalkerApp::QtstalkerApp(QString session, QString asset)
+QtstalkerApp::QtstalkerApp (QString session, QString asset)
 {
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutDown()));
 
@@ -70,14 +70,27 @@ QtstalkerApp::QtstalkerApp(QString session, QString asset)
   setWindowTitle(getWindowCaption());
 
   // expose hidden charts so they plot properly (simple hack)
-  QTimer::singleShot(500, this, SLOT(fixDockTabs()));
+//  QTimer::singleShot(500, this, SLOT(fixDockTabs()));
 
   // check if we are going to display a chart from the command line
   if (asset.length())
   {
     _clAsset = asset;
-    QTimer::singleShot(500, this, SLOT(commandLineAsset()));
+//    QTimer::singleShot(500, this, SLOT(commandLineAsset()));
+    commandLineAsset();
   }
+  else
+  {
+    // display last viewed chart
+    QSettings settings(g_localSettings);
+    BarData bd;
+    bd.setExchange(settings.value("last_symbol_exchange").toString());
+    bd.setSymbol(settings.value("last_symbol_symbol").toString());
+    loadChart(bd);
+  }
+
+  // expose hidden charts so they plot properly (simple hack)
+  QTimer::singleShot(100, this, SLOT(fixDockTabs()));
 }
 
 void QtstalkerApp::shutDown ()
@@ -85,6 +98,7 @@ void QtstalkerApp::shutDown ()
   // save everything that needs to be saved before app quits
   // some classes cannot save in their destructors due to SQL services
   // shutting down before the destructor is called
+  save();
   emit signalShutDown();
 
   // delete all the non-parented objects
@@ -128,11 +142,8 @@ void QtstalkerApp::createGUI ()
   connect(_controlPanel->barLengthButton(), SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
   connect(_controlPanel->dateRangeControl(), SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
   connect(_controlPanel->recentCharts(), SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
-  connect(this, SIGNAL(signalShutDown()), _controlPanel->recentCharts(), SLOT(save()));
   connect(_sidePanel, SIGNAL(signalRecentChart(BarData)), _controlPanel->recentCharts(), SLOT(addRecentChart(BarData)));
   connect(_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
-  connect(this, SIGNAL(signalShutDown()), this, SLOT(save()));
-  connect(this, SIGNAL(signalShutDown()), _sidePanel, SLOT(saveSettings()));
   
   dock = new DockWidget(QString(), this);
   dock->setObjectName("controlPanelDock");
@@ -199,6 +210,12 @@ void QtstalkerApp::loadSettings ()
 
   // load gui class settings that need to now
   emit signalLoadSettings();
+
+  // display last viewed chart
+//  BarData bd;
+//  bd.setExchange(settings.value("last_symbol_exchange").toString());
+//  bd.setSymbol(settings.value("last_symbol_symbol").toString());
+//  loadChart(bd);
 }
 
 void QtstalkerApp::save()
@@ -208,6 +225,8 @@ void QtstalkerApp::save()
   settings.setValue("main_window_state", saveState());
   settings.setValue("main_window_size", size());
   settings.setValue("main_window_position", pos());
+  settings.setValue("last_symbol_exchange", g_barData->exchange());
+  settings.setValue("last_symbol_symbol", g_barData->symbol());
   settings.sync();
 }
 
@@ -224,7 +243,6 @@ void QtstalkerApp::loadChart (BarData symbol)
   g_barData->setSymbol(symbol.symbol());
   g_barData->setName(symbol.name());
   g_barData->setBarLength((BarData::BarLength) _controlPanel->barLengthButton()->length());
-
   g_barData->setStartDate(QDateTime());
   g_barData->setEndDate(QDateTime());
   g_barData->setRange(_controlPanel->dateRangeControl()->dateRange());
@@ -339,7 +357,7 @@ void QtstalkerApp::addPlot (QString indicator)
   connect(_controlPanel->barSpaceButton(), SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
   connect(_controlPanel, SIGNAL(signalValueChanged(int)), plot, SLOT(setStartIndex(int)));
   connect(this, SIGNAL(signalClearPlot()), plot, SLOT(clear()));
-  connect(this, SIGNAL(signalShutDown()), plot, SLOT(clear()));
+//  connect(this, SIGNAL(signalShutDown()), plot, SLOT(clear()));
   connect(this, SIGNAL(signalPlot()), plot->indicator(), SLOT(calculate()));
   connect(plot, SIGNAL(signalIndex(int)), _controlPanel, SLOT(setStartValue(int)));
   

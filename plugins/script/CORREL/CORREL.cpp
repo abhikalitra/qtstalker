@@ -29,6 +29,10 @@
 CORREL::CORREL ()
 {
   _plugin = "CORREL";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("CORREL::CORREL: error on TA_Initialize");
 }
 
 int CORREL::command (Command *command)

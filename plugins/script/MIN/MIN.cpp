@@ -29,6 +29,10 @@
 MIN::MIN ()
 {
   _plugin = "MIN";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MIN::MIN: error on TA_Initialize");
 }
 
 int MIN::command (Command *command)

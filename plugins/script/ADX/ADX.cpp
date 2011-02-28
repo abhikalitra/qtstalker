@@ -29,6 +29,10 @@
 ADX::ADX ()
 {
   _plugin = "ADX";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("ADX::ADX: error on TA_Initialize");
 }
 
 int ADX::command (Command *command)

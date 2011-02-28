@@ -29,6 +29,10 @@
 AROON::AROON ()
 {
   _plugin = "AROON";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("AROON::AROON: error on TA_Initialize");
 }
 
 int AROON::command (Command *command)

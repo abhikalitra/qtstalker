@@ -89,13 +89,13 @@ QwtText DateScaleDraw::label (double v) const
       break;
     case BarData::DailyBar:
       if (_dateList.at(t).date().month() == 1)
-        date = _dateList.at(t).toString("yy");
+        date = _dateList.at(t).toString("yyyy");
       else
         date = _dateList.at(t).toString("MMM");
       break;
     case BarData::WeeklyBar:
       if (_dateList.at(t).date().month() == 1)
-        date = _dateList.at(t).toString("yy");
+        date = _dateList.at(t).toString("yyyy");
       else
       {
         QString s = _dateList.at(t).toString("MMM");
@@ -104,7 +104,7 @@ QwtText DateScaleDraw::label (double v) const
       }
       break;
     case BarData::MonthlyBar:
-      date = _dateList.at(t).toString("yy");
+      date = _dateList.at(t).toString("yyyy");
       break;
     default:
       break;

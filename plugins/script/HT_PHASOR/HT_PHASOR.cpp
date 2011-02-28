@@ -29,6 +29,10 @@
 HT_PHASOR::HT_PHASOR ()
 {
   _plugin = "HT_PHASOR";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("HT_PHASOR::HT_PHASOR: error on TA_Initialize");
 }
 
 int HT_PHASOR::command (Command *command)

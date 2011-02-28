@@ -29,6 +29,10 @@
 MFI::MFI ()
 {
   _plugin = "MFI";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MFI::MFI: error on TA_Initialize");
 }
 
 int MFI::command (Command *command)

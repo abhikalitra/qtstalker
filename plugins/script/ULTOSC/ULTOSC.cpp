@@ -29,6 +29,10 @@
 ULTOSC::ULTOSC ()
 {
   _plugin = "ULTOSC";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("ULTOSC::ULTOSC: error on TA_Initialize");
 }
 
 int ULTOSC::command (Command *command)

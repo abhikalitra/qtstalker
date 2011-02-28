@@ -29,6 +29,10 @@
 BOP::BOP ()
 {
   _plugin = "BOP";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("BOP::BOP: error on TA_Initialize");
 }
 
 int BOP::command (Command *command)

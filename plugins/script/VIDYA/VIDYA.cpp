@@ -33,6 +33,10 @@
 VIDYA::VIDYA ()
 {
   _plugin = "VIDYA";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("VIDYA::VIDYA: error on TA_Initialize");
 }
 
 int VIDYA::command (Command *command)

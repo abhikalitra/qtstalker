@@ -29,6 +29,10 @@
 RSI::RSI ()
 {
   _plugin = "RSI";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("RSI::RSI: error on TA_Initialize");
 }
 
 int RSI::command (Command *command)

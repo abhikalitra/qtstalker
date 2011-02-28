@@ -29,6 +29,10 @@
 TRIX::TRIX ()
 {
   _plugin = "TRIX";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("TRIX::TRIX: error on TA_Initialize");
 }
 
 int TRIX::command (Command *command)

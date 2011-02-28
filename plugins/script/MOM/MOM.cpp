@@ -29,6 +29,10 @@
 MOM::MOM ()
 {
   _plugin = "MOM";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MOM::MOM: error on TA_Initialize");
 }
 
 int MOM::command (Command *command)

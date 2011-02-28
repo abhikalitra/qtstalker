@@ -30,6 +30,10 @@ MACD::MACD ()
 {
   _plugin = "MACD";
   _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MACD::MACD: error on TA_Initialize");
 }
 
 int MACD::command (Command *command)

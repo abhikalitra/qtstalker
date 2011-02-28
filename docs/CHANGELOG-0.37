@@ -1025,4 +1025,4 @@
 
            Added WILDER_MA plugin.
 
-           
+           Last viewed chart is now saved between sessions and loaded on startup.

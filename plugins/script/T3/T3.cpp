@@ -29,6 +29,10 @@
 T3::T3 ()
 {
   _plugin = "T3";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("T3::T3: error on TA_Initialize");
 }
 
 int T3::command (Command *command)

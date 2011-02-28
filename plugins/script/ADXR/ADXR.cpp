@@ -29,6 +29,10 @@
 ADXR::ADXR ()
 {
   _plugin = "ADXR";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("ADXR::ADXR: error on TA_Initialize");
 }
 
 int ADXR::command (Command *command)

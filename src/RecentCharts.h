@@ -38,6 +38,7 @@ class RecentCharts : public QToolButton
 
   public:
     RecentCharts ();
+    ~RecentCharts ();
     void createMenu ();
     
   public slots:

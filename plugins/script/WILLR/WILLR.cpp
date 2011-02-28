@@ -29,6 +29,10 @@
 WILLR::WILLR ()
 {
   _plugin = "WILLR";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("WILLR::WILLR: error on TA_Initialize");
 }
 
 int WILLR::command (Command *command)

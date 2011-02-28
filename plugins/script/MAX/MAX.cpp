@@ -29,6 +29,10 @@
 MAX::MAX ()
 {
   _plugin = "MAX";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MAX::MAX: error on TA_Initialize");
 }
 
 int MAX::command (Command *command)

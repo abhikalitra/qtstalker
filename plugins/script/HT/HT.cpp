@@ -30,6 +30,10 @@ HT::HT ()
 {
   _plugin = "HT";
   _method << "DCPERIOD" << "DCPHASE" << "TRENDLINE" << "TRENDMODE";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("HT::HT: error on TA_Initialize");
 }
 
 int HT::command (Command *command)

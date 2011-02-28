@@ -4,7 +4,6 @@ To Do:
 - documentation
 - create some howto docs for indicators
 - add more cursor behaviours to Plot
-- save last chart viewed between sessions.
 - median lines chart objects
 - fibo time chart objects
 - update classes with a description of purpose, usage etc.

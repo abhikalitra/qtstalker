@@ -29,6 +29,10 @@
 AD::AD ()
 {
   _plugin = "AD";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("AD::AD: error on TA_Initialize");
 }
 
 int AD::command (Command *command)

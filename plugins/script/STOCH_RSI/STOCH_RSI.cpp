@@ -29,6 +29,10 @@
 STOCH_RSI::STOCH_RSI ()
 {
   _plugin = "STOCH_RSI";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("STOCH_RSI::STOCH_RSI: error on TA_Initialize");
 }
 
 int STOCH_RSI::command (Command *command)

@@ -30,6 +30,10 @@ ROC::ROC ()
 {
   _plugin = "ROC";
   _method << "ROC" << "ROCP" << "ROCR" << "ROCR100";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("ROC::ROC: error on TA_Initialize");
 }
 
 int ROC::command (Command *command)

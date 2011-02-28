@@ -29,6 +29,10 @@
 ATR::ATR ()
 {
   _plugin = "ATR";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("ATR::ATR: error on TA_Initialize");
 }
 
 int ATR::command (Command *command)

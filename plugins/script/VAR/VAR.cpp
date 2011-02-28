@@ -29,6 +29,10 @@
 VAR::VAR ()
 {
   _plugin = "VAR";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("VAR::VAR: error on TA_Initialize");
 }
 
 int VAR::command (Command *command)

@@ -91,6 +91,10 @@ CANDLE_PATTERN::CANDLE_PATTERN ()
   _method << "UNIQUE3RIVER";
   _method << "UPSIDEGAP2CROWS";
   _method << "XSIDEGAP3METHODS";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("CANDLE_PATTERN::CANDLE_PATTERN: error on TA_Initialize");
 }
 
 int CANDLE_PATTERN::command (Command *command)

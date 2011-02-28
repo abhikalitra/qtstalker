@@ -29,6 +29,10 @@
 MDI::MDI ()
 {
   _plugin = "MDI";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("MDI::MDI: error on TA_Initialize");
 }
 
 int MDI::command (Command *command)

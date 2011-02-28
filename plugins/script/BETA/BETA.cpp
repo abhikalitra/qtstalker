@@ -29,6 +29,10 @@
 BETA::BETA ()
 {
   _plugin = "BETA";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("BETA::BETA: error on TA_Initialize");
 }
 
 int BETA::command (Command *command)
