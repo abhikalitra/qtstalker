@@ -21,13 +21,18 @@
 
 #include "QUOTE_DATABASE_SET.h"
 #include "Strip.h"
+#include "QuoteDataBase.h"
 
 #include <QtDebug>
 
 QUOTE_DATABASE_SET::QUOTE_DATABASE_SET ()
 {
   _plugin = "QUOTE_DATABASE_SET";
-  _db.transaction();
+}
+
+QUOTE_DATABASE_SET::~QUOTE_DATABASE_SET ()
+{
+  clear();
 }
 
 int QUOTE_DATABASE_SET::command (Command *command)
@@ -51,12 +56,12 @@ int QUOTE_DATABASE_SET::command (Command *command)
   QString s = command->parm("SAVE");
   if (s.length())
   {
-    _db.commit();
+    save();
     command->setReturnCode("0");
     return 0;
   }
 
-  BarData symbol;
+  BarData tbd;
   
   // verify exchange
   s = command->parm("EXCHANGE");
@@ -65,7 +70,7 @@ int QUOTE_DATABASE_SET::command (Command *command)
     qDebug() << _plugin << "::command: EXCHANGE missing";
     return 1;
   }
-  symbol.setExchange(s);
+  tbd.setExchange(s);
 
   // verify symbol
   s = command->parm("SYMBOL");
@@ -74,7 +79,15 @@ int QUOTE_DATABASE_SET::command (Command *command)
     qDebug() << _plugin << "::command: SYMBOL missing";
     return 1;
   }
-  symbol.setSymbol(s);
+  tbd.setSymbol(s);
+
+  BarData *symbol = _symbols.value(tbd.key());
+  if (! symbol)
+  {
+    symbol = new BarData;
+    symbol->setKey(tbd.key());
+    _symbols.insert(tbd.key(), symbol);
+  }
 
   // verify date
   QString format = command->parm("DATE_FORMAT");
@@ -156,7 +169,7 @@ int QUOTE_DATABASE_SET::command (Command *command)
   {
     Strip strip;
     strip.verifyText(s);
-    symbol.setName(s);
+    symbol->setName(s);
   }
 
   // verify type
@@ -165,20 +178,47 @@ int QUOTE_DATABASE_SET::command (Command *command)
   {
     Strip strip;
     strip.verifyText(s);
-    symbol.setType(s);
+    symbol->setType(s);
   }
 
-  symbol.append(bar);
+  symbol->append(bar);
   
-  if (_db.setBars(&symbol))
-  {
-    qDebug() << _plugin << "::command: QuoteDataBase error";
-    return 1;
-  }
-
   command->setReturnCode("0");
 
   return 0;
+}
+
+void QUOTE_DATABASE_SET::clear ()
+{
+  QHashIterator<QString, BarData *> it(_symbols);
+  while (it.hasNext())
+  {
+    it.next();
+    delete it.value();
+  }
+
+  _symbols.clear();
+}
+
+void QUOTE_DATABASE_SET::save ()
+{
+  QuoteDataBase db;
+  QHashIterator<QString, BarData *> it(_symbols);
+  while (it.hasNext())
+  {
+    it.next();
+    BarData *bd = it.value();
+    
+    db.transaction();
+    if (db.setBars(bd))
+    {
+      qDebug() << _plugin << "::save: error saving" << bd->key();
+      continue;
+    }
+    db.commit();
+  }
+
+  clear();
 }
 
 //*************************************************************

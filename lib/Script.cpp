@@ -63,7 +63,7 @@ void Script::init ()
 
   _command = new Command;
 
-  _indicator = new Indicator;
+  _indicator = new Indicator(0);
   _indicatorFlag = 1;
 
   _proc = new QProcess(this);

@@ -39,7 +39,7 @@ Setup::Setup ()
 {
 }
 
-void Setup::setup (QString session)
+void Setup::setup (QObject *p, QString session)
 {
   // set the global variables
   g_session = session;
@@ -48,7 +48,7 @@ void Setup::setup (QString session)
   g_barData = new BarData;
   
   // create a dummy barData
-  g_middleMan = new MiddleMan(0);
+  g_middleMan = new MiddleMan(p);
 
   // setup the disk environment and init databases
   // order is critical here
@@ -195,7 +195,7 @@ void Setup::setupDefaults ()
 
 void Setup::setupDefaultIndicators ()
 {
-  Indicator i;
+  Indicator i(0);
   i.setName("Bars");
   i.setCommand("perl");
   QString s = INSTALL_DATA_DIR;

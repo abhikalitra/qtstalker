@@ -1707,42 +1707,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>1 Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>5 Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>10 Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>15 Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>30 Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>60 Minute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Daily</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Weekly</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Monthly</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Unable to launch Qt Assistant (%1)</source>
         <translation type="unfinished"></translation>
     </message>

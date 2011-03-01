@@ -23,6 +23,7 @@
 #include "Strip.h"
 #include "Bar.h"
 #include "DateRange.h"
+#include "BarLength.h"
 
 #include <QDateTime>
 #include <QtDebug>
@@ -139,14 +140,14 @@ int QuoteDataBase::getBars (BarData *bd)
     QDateTime lastDate = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmss");
 
     Bar tbar;
-    tbar.setDateRange(lastDate, (Bar::BarLength) length);
+    tbar.setDateRange(lastDate, (BarLength::Length) length);
     tbar.rangeKey(s);
 
     Bar *bar = bars.value(s);
     if (! bar)
     {
       bar = new Bar;
-      bar->setDateRange(lastDate, (Bar::BarLength) length);
+      bar->setDateRange(lastDate, (BarLength::Length) length);
       bar->setOpen(q.value(1).toDouble());
       bar->setHigh(q.value(2).toDouble());
       bar->setLow(q.value(3).toDouble());
@@ -516,8 +517,6 @@ int QuoteDataBase::rename (BarData *osymbol, BarData *nsymbol)
     return 1;
   }
 
-  _db.transaction();
-
   s = "UPDATE symbolIndex";
   s.append(" SET symbol='" + nsymbol->symbol() + "'");
   s.append(", exchange='" + nsymbol->exchange() + "'");
@@ -529,8 +528,6 @@ int QuoteDataBase::rename (BarData *osymbol, BarData *nsymbol)
     qDebug() << "QuoteDataBase::rename:" + q.lastError().text();
     return 1;
   }
-
-  _db.commit();
 
   return 0;
 }
@@ -630,8 +627,6 @@ int QuoteDataBase::setName (BarData *symbol)
 
   QSqlQuery q(_db);
 
-  _db.transaction();
-
   QString s = "UPDATE symbolIndex";
   s.append(" SET name='" + symbol->name() + "'");
   s.append(" WHERE symbol='" + symbol->symbol() + "'");
@@ -642,8 +637,6 @@ int QuoteDataBase::setName (BarData *symbol)
     qDebug() << "QuoteDataBase::setName:" + q.lastError().text();
     return 1;
   }
-
-  _db.commit();
 
   return 0;
 }

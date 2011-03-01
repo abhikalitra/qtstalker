@@ -39,7 +39,7 @@
 #include <qwt_scale_engine.h>
 
 
-Plot::Plot (QString name, QMainWindow *mw)
+Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
 {
   _spacing = 8;
   _high = 0;
@@ -85,11 +85,11 @@ Plot::Plot (QString name, QMainWindow *mw)
   setContextMenuPolicy(Qt::CustomContextMenu);
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
 
-  _indicator = new Indicator;
+  _indicator = new Indicator(this);
   _indicator->setName(name);
   connect(_indicator, SIGNAL(signalPlot()), this, SLOT(updatePlot()));
 
-  _menu = new PlotMenu(mw);
+  _menu = new PlotMenu(this);
   connect(_menu, SIGNAL(signalDateStatus(bool)), this, SLOT(showDate(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
 
@@ -104,7 +104,7 @@ Plot::Plot (QString name, QMainWindow *mw)
 Plot::~Plot ()
 {
   clear();
-  delete _indicator;
+//  delete _indicator;
 }
 
 void Plot::clear ()

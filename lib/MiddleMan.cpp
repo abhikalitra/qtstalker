@@ -116,3 +116,8 @@ void MiddleMan::plotFont (QFont d)
 {
   emit signalPlotFont(d);
 }
+
+void MiddleMan::loadChart (BarData d)
+{
+  emit signalLoadChart(d);
+}

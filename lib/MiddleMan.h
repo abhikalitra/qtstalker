@@ -27,6 +27,8 @@
 #include <QColor>
 #include <QFont>
 
+#include "BarData.h"
+
 class MiddleMan: public QObject
 {
   Q_OBJECT
@@ -50,6 +52,7 @@ class MiddleMan: public QObject
     void signalStatusMessage (QString);
     void signalChartObjectNew (QString, QString, QString);
     void signalPlotFont (QFont);
+    void signalLoadChart (BarData);
 
   public:
     MiddleMan (QObject *);
@@ -71,6 +74,7 @@ class MiddleMan: public QObject
     void statusMessage (QString);
     void chartObjectNew (QString indicator, QString name, QString type);
     void plotFont (QFont);
+    void loadChart (BarData);
 };
 
 #endif

@@ -37,19 +37,6 @@
 class BarData
 {
   public:
-    enum BarLength
-    {
-      Minute1,
-      Minute5,
-      Minute10,
-      Minute15,
-      Minute30,
-      Minute60,
-      DailyBar,
-      WeeklyBar,
-      MonthlyBar
-    };
-
     BarData ();
     ~BarData ();
     void clear ();
@@ -60,22 +47,19 @@ class BarData
     double min ();
     Bar * bar (int);
     void setMinMax ();
-    void setBarLength (BarLength);
-    void setBarLength (QString);
-    BarData::BarLength & barLength ();
+    void setBarLength (int);
+    int barLength ();
     QString & symbol ();
     void setSymbol (QString);
     QString & name ();
     void setName (QString);
     QString & exchange ();
     void setExchange (QString);
-    void barLengthList (QStringList &);
-    void barLengthText (BarData::BarLength, QString &);
     int setKey (QString);
     QString key ();
-    void parse (QString &);
-    void stringSettings (QString &);
-    int setStringSettings (QString &);
+//    void parse (QString &);
+//    void stringSettings (QString &);
+//    int setStringSettings (QString &);
     int maxBars ();
     void setMaxBars (int);
     void setStartDate (QDateTime);
@@ -95,7 +79,7 @@ class BarData
     QList<Bar *> _barList;
     double _high;
     double _low;
-    BarLength _length;
+    int _length;
     QString _symbol;
     QString _name;
     QString _exchange;

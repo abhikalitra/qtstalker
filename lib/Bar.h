@@ -27,27 +27,15 @@
 #define BAR_HPP
 
 #include <QString>
-#include <QStringList>
 #include <QDateTime>
+
+#include "BarLength.h"
 
 class Bar
 {
   public:
-    enum BarLength
-    {
-      Minute1,
-      Minute5,
-      Minute10,
-      Minute15,
-      Minute30,
-      Minute60,
-      DailyBar,
-      WeeklyBar,
-      MonthlyBar
-    };
-
     Bar ();
-    void setDateRange (QDateTime, Bar::BarLength);
+    void setDateRange (QDateTime, BarLength::Length);
     int setDates (QString start, QString end);
     int setDates (QDateTime, QDateTime);
     void dateString (QString &);
@@ -55,7 +43,6 @@ class Bar
     void timeString (QString &);
     void rangeKey (QString &);
     QDateTime & date ();
-    void lengthList (QStringList &);
     QString string ();
     QDateTime startDate ();
     void setLastDate (QDateTime);
@@ -94,7 +81,7 @@ class Bar
     double _oi;
     QDateTime _startDate;
     QDateTime _endDate;
-    BarLength _length;
+    int _length;
     QDateTime _lastDate;
 };
 

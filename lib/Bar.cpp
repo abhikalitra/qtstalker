@@ -25,7 +25,7 @@
 
 Bar::Bar ()
 {
-  _length = DailyBar;
+  _length = -1;
   _open = 0;
   _high = 0;
   _low = 0;
@@ -34,20 +34,20 @@ Bar::Bar ()
   _oi = 0;
 }
 
-void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
+void Bar::setDateRange (QDateTime dt, BarLength::Length l)
 {
-  _length = l;
+  _length = (int) l;
   _startDate = dt;
 
-  switch (_length)
+  switch ((BarLength::Length) _length)
   {
-    case Bar::Minute1:
+    case BarLength::_MINUTE1:
       _startDate.setTime(QTime(_startDate.time().hour(), _startDate.time().minute(), 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(60);
       _endDate = _endDate.addSecs(-1);
       break;
-    case Bar::Minute5:
+    case BarLength::_MINUTE5:
     {
       int tint = _startDate.time().minute() / 5;
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 5, 0, 0));
@@ -56,7 +56,7 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
       _endDate = _endDate.addSecs(-1);
       break;
     }
-    case Bar::Minute10:
+    case BarLength::_MINUTE10:
     {
       int tint = _startDate.time().minute() / 10;
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 10, 0, 0));
@@ -65,7 +65,7 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
       _endDate = _endDate.addSecs(-1);
       break;
     }
-    case Bar::Minute15:
+    case BarLength::_MINUTE15:
     {
       int tint = _startDate.time().minute() / 15;
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 15, 0, 0));
@@ -74,7 +74,7 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
       _endDate = _endDate.addSecs(-1);
       break;
     }
-    case Bar::Minute30:
+    case BarLength::_MINUTE30:
     {
       int tint = _startDate.time().minute() / 30;
       _startDate.setTime(QTime(_startDate.time().hour(), tint * 30, 0, 0));
@@ -83,26 +83,26 @@ void Bar::setDateRange (QDateTime dt, Bar::BarLength l)
       _endDate = _endDate.addSecs(-1);
       break;
     }
-    case Bar::Minute60:
+    case BarLength::_MINUTE60:
       _startDate.setTime(QTime(_startDate.time().hour(), 0, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addSecs(3600);
       _endDate = _endDate.addSecs(-1);
       break;
-    case Bar::DailyBar:
+    case BarLength::_DAILY:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _endDate = _startDate;
       _endDate = _endDate.addDays(1);
       _endDate = _endDate.addSecs(-1);
       break;
-    case Bar::WeeklyBar:
+    case BarLength::_WEEKLY:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _startDate = _startDate.addDays(- _startDate.date().dayOfWeek());
       _endDate = _startDate;
       _endDate = _endDate.addDays(7);
       _endDate = _endDate.addSecs(-1);
       break;
-    case Bar::MonthlyBar:
+    case BarLength::_MONTHLY:
       _startDate.setTime(QTime(0, 0, 0, 0));
       _startDate = _startDate.addDays(- (_startDate.date().day() - 1));
       _endDate = _startDate;
@@ -301,12 +301,6 @@ double Bar::oi ()
   return _oi;
 }
 
-void Bar::lengthList (QStringList &l)
-{
-  l.clear();
-  l << "1" << "5" << "10" << "15" << "30" << "60" << "D" << "W" << "M";
-}
-
 QString Bar::string ()
 {
   QStringList l;
@@ -335,4 +329,3 @@ QDateTime Bar::lastDate ()
 {
   return _lastDate;
 }
-

@@ -22,8 +22,9 @@
 #ifndef QUOTE_DATABASE_SET_HPP
 #define QUOTE_DATABASE_SET_HPP
 
+#include <QHash>
+
 #include "ScriptPlugin.h"
-#include "QuoteDataBase.h"
 
 class QUOTE_DATABASE_SET : public ScriptPlugin
 {
@@ -31,11 +32,13 @@ class QUOTE_DATABASE_SET : public ScriptPlugin
 
   public:
     QUOTE_DATABASE_SET ();
+    ~QUOTE_DATABASE_SET ();
     int command (Command *);
+    void clear ();
+    void save ();
 
   private:
-    QuoteDataBase _db;
-    int _transaction;
+    QHash<QString, BarData *> _symbols;
 };
 
 extern "C"

@@ -24,12 +24,13 @@
 #define SETUP_HPP
 
 #include <QString>
+#include <QObject>
 
 class Setup
 {
   public:
     Setup ();
-    void setup (QString session);
+    void setup (QObject *, QString session);
     void setupDirectories ();
     void setupDefaults ();
     void setupDefaultIndicators ();

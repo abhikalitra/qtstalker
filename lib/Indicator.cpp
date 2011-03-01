@@ -27,6 +27,11 @@
 
 #include <QDebug>
 
+Indicator::Indicator (QObject *p) : QObject (p)
+{
+  init();
+}
+
 Indicator::Indicator ()
 {
   init();

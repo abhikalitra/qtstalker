@@ -23,6 +23,7 @@
 #include "Globals.h"
 #include "QuoteDataBase.h"
 #include "DateRange.h"
+#include "BarLength.h"
 
 #include <QtDebug>
 
@@ -70,8 +71,8 @@ int QUOTE_DATABASE_GET::command (Command *command)
   bd.setSymbol(s);
 
   QStringList l;
-  Bar tbar;
-  tbar.lengthList(l);
+  BarLength bl;
+  l = bl.list();
   s = command->parm("LENGTH");
   int length = l.indexOf(s);
   if (length == -1)
@@ -85,7 +86,7 @@ int QUOTE_DATABASE_GET::command (Command *command)
     bd.setBarLength(g_barData->barLength());
   }
   else
-    bd.setBarLength((BarData::BarLength) length);
+    bd.setBarLength((BarLength::Length) length);
 
   DateRange dr;
   int range = dr.toType(command->parm("RANGE"));

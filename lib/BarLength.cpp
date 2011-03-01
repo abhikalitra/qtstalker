@@ -19,32 +19,21 @@
  *  USA.
  */
 
-#ifndef BAR_LENGTH_BUTTON_HPP
-#define BAR_LENGTH_BUTTON_HPP
+#include "BarLength.h"
 
-#include <QToolButton>
-#include <QMenu>
-#include <QStringList>
+#include <QtDebug>
 
-class BarLengthButton : public QToolButton
+BarLength::BarLength ()
 {
-  Q_OBJECT
-  
-  signals:
-    void signalBarLengthChanged (int);
+  _list << "1" << "5" << "10" << "15" << "30" << "60" << "D" << "W" << "M";
+}
 
-  public:
-    BarLengthButton ();
-    void createMenu ();
-    int length ();
-    
-  public slots:
-    void lengthChanged (QAction *);
-    
-  private:
-    int _barLength;
-    QMenu *_menu;
-    QStringList _list;
-};
+QStringList & BarLength::list ()
+{
+  return _list;
+}
 
-#endif
+QString BarLength::barLengthText (BarLength::Length k)
+{
+  return _list.at((int) k);
+}

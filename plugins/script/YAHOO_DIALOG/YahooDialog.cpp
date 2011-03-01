@@ -27,6 +27,7 @@
 #include "QuoteDataBase.h"
 #include "DateRange.h"
 #include "YahooSymbol.h"
+#include "BarLength.h"
 
 #include <QDebug>
 #include <QGroupBox>
@@ -169,7 +170,7 @@ void YahooDialog::done ()
       BarData bd;
       bd.setExchange(symbol.data("EXCHANGE"));
       bd.setSymbol(symbol.data("SYMBOL"));
-      bd.setBarLength(BarData::DailyBar);
+      bd.setBarLength(BarLength::_DAILY);
       bd.setRange(DateRange::Day);
 
       if (qdb.getBars(&bd))

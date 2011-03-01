@@ -19,31 +19,38 @@
  *  USA.
  */
 
-#ifndef BAR_LENGTH_BUTTON_HPP
-#define BAR_LENGTH_BUTTON_HPP
+// ******************************************************
+// This class is used for holding 1 bar or quote of data.
+// ******************************************************
 
-#include <QToolButton>
-#include <QMenu>
+#ifndef BAR_LENGTH_HPP
+#define BAR_LENGTH_HPP
+
+#include <QString>
 #include <QStringList>
+#include <QDateTime>
 
-class BarLengthButton : public QToolButton
+class BarLength
 {
-  Q_OBJECT
-  
-  signals:
-    void signalBarLengthChanged (int);
-
   public:
-    BarLengthButton ();
-    void createMenu ();
-    int length ();
-    
-  public slots:
-    void lengthChanged (QAction *);
-    
-  private:
-    int _barLength;
-    QMenu *_menu;
+    enum Length
+    {
+      _MINUTE1,
+      _MINUTE5,
+      _MINUTE10,
+      _MINUTE15,
+      _MINUTE30,
+      _MINUTE60,
+      _DAILY,
+      _WEEKLY,
+      _MONTHLY
+    };
+
+    BarLength ();
+    QStringList & list ();
+    QString barLengthText (BarLength::Length);
+
+  protected:
     QStringList _list;
 };
 

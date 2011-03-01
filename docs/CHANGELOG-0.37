@@ -1026,3 +1026,7 @@
            Added WILDER_MA plugin.
 
            Last viewed chart is now saved between sessions and loaded on startup.
+
+20110301:  Fixed transaction logic in QUOTE_DATABASE_SET. Database saves will be MUCH faster when
+           doing multiple symbols.
+

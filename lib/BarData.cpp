@@ -42,9 +42,9 @@ void BarData::clear ()
   
   _high = -99999999;
   _low = 99999999;
-  _length = DailyBar;
+  _length = -1;
   _maxBars = 0;
-  _range = 6;
+  _range = -1;
   _type = "Stock";
 }
 
@@ -101,19 +101,12 @@ void BarData::setMinMax ()
   }
 }
 
-void BarData::setBarLength (BarLength d)
+void BarData::setBarLength (int d)
 {
   _length = d;
 }
 
-void BarData::setBarLength (QString d)
-{
-  QStringList l;
-  barLengthList(l);
-  _length = (BarLength) l.indexOf(d);
-}
-
-BarData::BarLength & BarData::barLength ()
+int BarData::barLength ()
 {
   return _length;
 }
@@ -148,58 +141,6 @@ void BarData::setExchange (QString d)
   _exchange = d;
 }
 
-void BarData::barLengthList (QStringList &l)
-{
-  l.clear();
-  l << QObject::tr("1 Minute");
-  l << QObject::tr("5 Minute");
-  l << QObject::tr("10 Minute");
-  l << QObject::tr("15 Minute");
-  l << QObject::tr("30 Minute");
-  l << QObject::tr("60 Minute");
-  l << QObject::tr("Daily");
-  l << QObject::tr("Weekly");
-  l << QObject::tr("Monthly");
-}
-
-void BarData::barLengthText (BarData::BarLength k, QString &d)
-{
-  d.clear();
-  
-  switch (k)
-  {
-    case Minute1:
-      d = "1";
-      break;
-    case Minute5:
-      d = "5";
-      break;
-    case Minute10:
-      d = "10";
-      break;
-    case Minute15:
-      d = "15";
-      break;
-    case Minute30:
-      d = "30";
-      break;
-    case Minute60:
-      d = "60";
-      break;
-    case DailyBar:
-      d = "D";
-      break;
-    case WeeklyBar:
-      d = "W";
-      break;
-    case MonthlyBar:
-      d = "M";
-      break;
-    default:
-      break;
-  }
-}
-
 int BarData::setKey (QString d)
 {
   QStringList l = d.split(":");
@@ -218,6 +159,7 @@ QString BarData::key ()
   return s;
 }
 
+/*
 void BarData::parse (QString &d)
 {
   QStringList l = d.split(";", QString::SkipEmptyParts);
@@ -242,7 +184,8 @@ void BarData::parse (QString &d)
     append(bar);
   }
 }
-
+*/
+/*
 void BarData::stringSettings (QString &d)
 {
   QStringList l;
@@ -252,7 +195,8 @@ void BarData::stringSettings (QString &d)
   l << QString::number (_range);
   d = l.join(",");
 }
-
+*/
+/*
 int BarData::setStringSettings (QString &d)
 {
   QStringList l = d.split(",", QString::SkipEmptyParts);
@@ -267,6 +211,7 @@ int BarData::setStringSettings (QString &d)
 
   return 0;
 }
+*/
 
 int BarData::maxBars ()
 {

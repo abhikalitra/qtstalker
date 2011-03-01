@@ -61,7 +61,7 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
   QCoreApplication::setApplicationName("QtStalker");
 
   Setup setup;
-  setup.setup(session);
+  setup.setup(this, session);
 
   createGUI();
 
@@ -103,7 +103,7 @@ void QtstalkerApp::shutDown ()
 
   // delete all the non-parented objects
   delete g_barData;
-  delete g_middleMan;
+//  delete g_middleMan;
 }
 
 void QtstalkerApp::createGUI ()
@@ -117,6 +117,7 @@ void QtstalkerApp::createGUI ()
   connect(g_middleMan, SIGNAL(signalPlotUpdate(QString)), this, SLOT(updatePlot(QString)));
   connect(g_middleMan, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(g_middleMan, SIGNAL(signalChartObjectNew(QString, QString, QString)), this, SLOT(newChartObject(QString, QString, QString)));
+  connect(g_middleMan, SIGNAL(signalLoadChart(BarData)), this, SLOT(loadChart(BarData)));
 
   // side panel dock
   _sidePanel = new SidePanel(this);
@@ -210,12 +211,6 @@ void QtstalkerApp::loadSettings ()
 
   // load gui class settings that need to now
   emit signalLoadSettings();
-
-  // display last viewed chart
-//  BarData bd;
-//  bd.setExchange(settings.value("last_symbol_exchange").toString());
-//  bd.setSymbol(settings.value("last_symbol_symbol").toString());
-//  loadChart(bd);
 }
 
 void QtstalkerApp::save()
@@ -242,7 +237,7 @@ void QtstalkerApp::loadChart (BarData symbol)
   g_barData->setExchange(symbol.exchange());
   g_barData->setSymbol(symbol.symbol());
   g_barData->setName(symbol.name());
-  g_barData->setBarLength((BarData::BarLength) _controlPanel->barLengthButton()->length());
+  g_barData->setBarLength((BarLength::Length) _controlPanel->barLengthButton()->length());
   g_barData->setStartDate(QDateTime());
   g_barData->setEndDate(QDateTime());
   g_barData->setRange(_controlPanel->dateRangeControl()->dateRange());
@@ -268,7 +263,8 @@ QString QtstalkerApp::getWindowCaption ()
     l << "(" + g_barData->symbol() + ")";
 
   QStringList bl;
-  g_barData->barLengthList(bl);
+  BarLength b;
+  bl = b.list();
   l << bl.at(_controlPanel->barLengthButton()->length());
 
   return l.join(" ");

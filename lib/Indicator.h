@@ -38,6 +38,7 @@ class Indicator : public QObject
     void signalPlot ();
   
   public:
+    Indicator (QObject *);
     Indicator ();
     QString & name ();
     bool lock ();

@@ -22,6 +22,7 @@
 #include "DataWindow.h"
 #include "Globals.h"
 #include "Strip.h"
+#include "BarLength.h"
 
 #include <QLayout>
 #include <QVBoxLayout>
@@ -54,7 +55,8 @@ DataWindow::DataWindow (QWidget *p) : QDialog (p, 0)
   if (! g_barData->name().isEmpty())
     l << "(" + g_barData->name() + ")";
   QString s;
-  g_barData->barLengthText((BarData::BarLength) g_barData->barLength(), s);
+  BarLength bl;
+  s = bl.barLengthText((BarLength::Length) g_barData->barLength());
   l << s;
   l << "-" << tr("Indicators");
   setWindowTitle(l.join(" "));

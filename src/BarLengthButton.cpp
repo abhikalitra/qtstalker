@@ -20,7 +20,7 @@
  */
 
 #include "BarLengthButton.h"
-#include "BarData.h"
+#include "BarLength.h"
 #include "Globals.h"
 
 #include <QDebug>
@@ -32,16 +32,8 @@ BarLengthButton::BarLengthButton ()
   font.setPointSize(9);
   setFont(font);
 
-  BarData bd;
-  bd.barLengthList(_lengthList);
-  
-  int loop = 0;
-  for (; loop < _lengthList.count(); loop++)
-  {
-    QString s;
-    bd.barLengthText((BarData::BarLength) loop, s);
-    _shortList << s;
-  }
+  BarLength bl;
+  _list = bl.list();
 
   createMenu();
 
@@ -63,29 +55,29 @@ void BarLengthButton::createMenu ()
   QActionGroup *group = new QActionGroup(this);
   
   int loop = 0;
-  for (; loop < _lengthList.count(); loop++)
+  for (; loop < _list.count(); loop++)
   {
-    QAction *a = _menu->addAction(_lengthList.at(loop));
+    QAction *a = _menu->addAction(_list.at(loop));
     a->setCheckable(TRUE);
     group->addAction(a);
 
     if (loop == _barLength)
     {
       a->setChecked(TRUE);
-      setText(_shortList.at(loop));
+      setText(_list.at(loop));
     }
   }
 }
 
 void BarLengthButton::lengthChanged (QAction *d)
 {
-  _barLength = _lengthList.indexOf(d->text());
+  _barLength = _list.indexOf(d->text());
   
   QSettings settings(g_localSettings);
   settings.setValue("bar_length", _barLength);
   settings.sync();
   
-  setText(_shortList.at(_barLength));
+  setText(_list.at(_barLength));
 
   emit signalBarLengthChanged(_barLength);
 }
