@@ -14,10 +14,10 @@ $bbDownName = 'BB-';
 $bbDownStyle = 'Line';
 $bbDownColor = 'green';
 
-$period = 14;
-$maType = 'EMA';
-$udev = 1;
-$ddev = 1;
+$period = 20;
+$maType = 'SMA';
+$udev = 2;
+$ddev = 2;
 
 ###################################################################
 
