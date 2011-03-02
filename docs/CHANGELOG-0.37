@@ -1030,3 +1030,9 @@
 20110301:  Fixed transaction logic in QUOTE_DATABASE_SET. Database saves will be MUCH faster when
            doing multiple symbols.
 
+           Added new indicators Bollinger_Bands_B and Bollinger_Bandwidth
+
+           Added TEST plugin. Not functional yet.
+
+20110302:  Added INTEGER_DIALOG, INDICATOR_PLOT_DELETE plugins.
+

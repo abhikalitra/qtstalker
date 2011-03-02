@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>Qtstalker: TEST</title>
+  <link rel="stylesheet" type="text/css" href="qtstalker.css"
+ media="screen">
+  <script src="qtstalker.js" type="text/javascript"> </script>
+</head>
+<body>
+<div id="content">
+<div id="rightPanel">
+<div id="toc">
+<hr>
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="toc.html">Table of Contents</a></li>
+</ul>
+</div>
+</div>
+<!-- Content -->
+<h1>TEST
+</h1>
+<br>
+<table style="text-align: left; width: 1336px; height: 153px;"
+ border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
+      <td style="vertical-align: top;">Conducts a back test of a symbol
+depending on the parameters set. This plugin operates a little
+different from the others. Each METHOD type has it's own sub commands
+that only apply to that particular method.<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
+      <td style="vertical-align: top;">PLUGIN = TEST<br>
+METHOD =<br>
+      <div style="margin-left: 40px;">
+      <ol>
+        <li>SET_RULE</li>
+        <ol>
+          <li>TYPE = <br>
+          </li>
+          <ol>
+            <li>&lt;ENTER_LONG&gt;</li>
+            <li>&lt;EXIT_LONG&gt;</li>
+            <li>&lt;ENTER_SHORT&gt;</li>
+            <li>&lt;EXIT_SHORT&gt;</li>
+          </ol>
+          <li>NAME = &lt;VARIABLE NAME&gt;</li>
+          <li>OP = &lt;<a href="Operators.html">OPERATOR</a>&gt;</li>
+          <li>NAME2 = &lt;VARIABLE NAME&gt;</li>
+        </ol>
+        <li>TEST</li>
+        <li>SET_VOLUME</li>
+        <ol>
+          <li>VOLUME = &lt;INTEGER&gt;<br>
+          </li>
+        </ol>
+        <li>SET_ENTER_COMM</li>
+        <ol>
+          <li>COMM = &lt;DECIMAL&gt;<br>
+          </li>
+        </ol>
+        <li>SET_EXIT_COMM</li>
+        <ol>
+          <li>COMM = &lt;DECIMAL&gt;<br>
+          </li>
+        </ol>
+        <li>SET_EQUITY</li>
+        <ol>
+          <li>EQUITY = &lt;DECIMAL&gt;<br>
+          </li>
+        </ol>
+        <li>SET_PRICES</li>
+        <ol>
+          <li>BUY = &lt;VARIABLE NAME&gt;</li>
+          <li>SELL = &lt;VARIABLE NAME&gt;</li>
+          <li>CLOSE = &lt;VARIABLE NAME&gt;</li>
+        </ol>
+        <li>RESET</li>
+        <li>SAVE</li>
+        <ol>
+          <li>NAME = &lt;TEXT&gt;<br>
+          </li>
+        </ol>
+      </ol>
+      </div>
+      <br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
+      <td style="vertical-align: top;">'0' = Success<br>
+'ERROR' =
+Failure<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
+      <td style="vertical-align: top;">PLUGIN=TEST<br>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<span style="font-weight: bold;"></span><br>
+</div>
+</body>
+</html>

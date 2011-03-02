@@ -36,10 +36,15 @@ class TEST : public ScriptPlugin
       _SET_VOLUME,
       _SET_ENTER_COMM,
       _SET_EXIT_COMM,
-      _SET_EQUITY
+      _SET_EQUITY,
+      _SET_PRICES,
+      _RESET,
+      _SAVE
     };
     
     TEST ();
+    ~TEST ();
+    void init ();
     int command (Command *);
     int setRule (Command *);
     int test (Command *);
@@ -50,6 +55,9 @@ class TEST : public ScriptPlugin
     int enterTrade (int status, int pos);
     int exitTrade (int pos, int signal);
     int updateTrade (int pos);
+    int setPrices (Command *);
+    int reset (Command *);
+    int save (Command *);
 
   private:
     QStringList _method;
@@ -61,7 +69,9 @@ class TEST : public ScriptPlugin
     Curve *_enterShort2;
     Curve *_exitShort;
     Curve *_exitShort2;
-    BarData *_bars;
+    Curve *_buyPrice;
+    Curve *_sellPrice;
+    Curve *_closePrice;
     QList<Setting *> _trades;
     double _volume;
     double _enterCommission;
