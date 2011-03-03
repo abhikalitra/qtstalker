@@ -31,20 +31,33 @@
 <ul>
   <li>When Qtstalker first starts, there will be some default indicators.
     However there will not be any data to display. </li>
-  <li>Follow the "<a href="cus.html">Script API</a>" document to load some
+  <li>Get some quick data from the Yahoo service. 
+    Select the Script panel. From its background context menu (i.e. right-click),
+    select "Run Sript".
+    There is a pre-installed script for Yahoo data.
+  </li>
+  <li>There are some other data loading example scripts in the
+    "<code>/usr/local/share/qtstalker/quote/</code>" directory.
+    Use these to load some
     end-of-day data using "Comma-Separated Values" text files. Perhaps you
-    already have an EOD data supplier, otherwise get some quick CSV data files
-    from the Yahoo service. </li>
+    already have an EOD data supplier.
+  </li>
   <li>To load a chart, select the "Charts" button in the Navigation panel.
     Select the "All Symbols" button or use the "Symbol Search" to narrow the
     list. Navigate the list and select a symbol to load by double-clicking it.
   </li>
   <li>Some default indicators were created when you installed Qtstalker.</li>
-  <li>To add more indicators, open the "New Indicator" dialog from the toolbar
-    and specify an indicator. Or use the "CUS" option to then specify a
-    <a href="cus.html">script</a> to create your own indicators.
-    There is a set of example indicator
-    scripts available in the "<code>misc/CUS_examples/</code>" directory.
+  <li>To add more indicators, open the "New Indicator" dialog from the
+    chart background context menu (i.e. right-click)
+    and specify an indicator.
+    There is a set of example scripts available in the
+    "<code>/usr/local/share/qtstalker/indicator/</code>" directory.
+  <li>Use the 
+    <a href="toc.html#api">Script API Reference</a> to create your own indicators,
+    data loading, and other facilities.
+    There is a set of example scripts available at
+    "<code>/usr/local/share/qtstalker/</code>"
+    and some others in the "<code>misc/CUS_examples/</code>" directory.
   </li>
   <li>This should be enough to get you started for now. Consult the <a
     href="toc.html">documentation</a> and play with the functions to become
