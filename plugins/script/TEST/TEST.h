@@ -29,38 +29,21 @@
 class TEST : public ScriptPlugin
 {
   public:
-    enum Method
-    {
-      _SET_RULE,
-      _TEST,
-      _SET_VOLUME,
-      _SET_ENTER_COMM,
-      _SET_EXIT_COMM,
-      _SET_EQUITY,
-      _SET_PRICES,
-      _RESET,
-      _SAVE
-    };
-    
     TEST ();
     ~TEST ();
     void init ();
     int command (Command *);
-    int setRule (Command *);
-    int test (Command *);
-    int setVolume (Command *);
-    int setEnterComm (Command *);
-    int setExitComm (Command *);
-    int setEquity (Command *);
+    int setRule (QString, Command *);
+    int test ();
     int enterTrade (int status, int pos);
     int exitTrade (int pos, int signal);
     int updateTrade (int pos);
-    int setPrices (Command *);
-    int reset (Command *);
-    int save (Command *);
+    int save ();
 
   private:
-    QStringList _method;
+    QString _name;
+    QString _version;
+    QString _symbol;
     Curve *_enterLong;
     Curve *_enterLong2;
     Curve *_exitLong;
@@ -81,10 +64,6 @@ class TEST : public ScriptPlugin
     Operator::Type _exitLongOp;
     Operator::Type _enterShortOp;
     Operator::Type _exitShortOp;
-    double _enterLongValue;
-    double _exitLongValue;
-    double _enterShortValue;
-    double _exitShortValue;
 };
 
 extern "C"

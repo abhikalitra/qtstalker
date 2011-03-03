@@ -21,19 +21,15 @@
 
 #include "TEST.h"
 #include "Globals.h"
+#include "TestDataBase.h"
 
 #include <QtDebug>
 
 TEST::TEST ()
 {
   _plugin = "TEST";
-  _method << "SET_RULE" << "TEST" << "SET_VOLUME" << "SET_ENTER_COMM" << "SET_EXIT_COMM" << "SET_EQUITY";
-  _method << "SET_PRICES" << "RESET" << "SAVE";
-
+  
   init();
-  _buyPrice = 0;
-  _sellPrice = 0;
-  _closePrice = 0;
 }
 
 TEST::~TEST ()
@@ -51,66 +47,249 @@ void TEST::init ()
   _enterShort2 = 0;
   _exitShort = 0;
   _exitShort2 = 0;
-  _volume = 0.2;
-  _enterCommission = 10;
-  _exitCommission = 10;
-  _equity = 1000;
+  _volume = 0;
+  _enterCommission = 0;
+  _exitCommission = 0;
+  _equity = 0;
   _enterLongOp = Operator::_EQUAL;
   _exitLongOp = Operator::_EQUAL;
   _enterShortOp = Operator::_EQUAL;
   _exitShortOp = Operator::_EQUAL;
-  _enterLongValue = 0;
-  _exitLongValue = 0;
-  _enterShortValue = 0;
-  _exitShortValue = 0;
+  _buyPrice = 0;
+  _sellPrice = 0;
+  _closePrice = 0;
+  _name.clear();
+  _version.clear();
+  _symbol.clear();
+  qDeleteAll(_trades);
 }
 
 int TEST::command (Command *command)
 {
   // PARMS:
-  // METHOD
+  // NAME
+  // VERSION
+  // SYMBOL
+  // ENTER_LONG_NAME
+  // ENTER_LONG_OP
+  // ENTER_LONG_NAME2
+  // EXIT_LONG_NAME
+  // EXIT_LONG_OP
+  // EXIT_LONG_NAME2
+  // ENTER_SHORT_NAME
+  // ENTER_SHORT_OP
+  // ENTER_SHORT_NAME2
+  // EXIT_SHORT_NAME
+  // EXIT_SHORT_OP
+  // EXIT_SHORT_NAME2
+  // BUY_NAME
+  // SELL_NAME
+  // CLOSE_NAME
+  // VOLUME
+  // ENTER_COMM
+  // EXIT_COMM
+  // EQUITY
 
-  switch ((Method) _method.indexOf(command->parm("METHOD")))
+  init();
+
+  // verify indicator
+  Indicator *i = command->indicator();
+  if (! i)
   {
-    case _SET_RULE:
-      return setRule(command);
-      break;
-    case _TEST:
-      return test(command);
-      break;
-    case _SET_VOLUME:
-      return setVolume(command);
-      break;
-    case _SET_ENTER_COMM:
-      return setEnterComm(command);
-      break;
-    case _SET_EXIT_COMM:
-      return setExitComm(command);
-      break;
-    case _SET_EQUITY:
-      return setEquity(command);
-      break;
-    case _SET_PRICES:
-      return setPrices(command);
-      break;
-    case _RESET:
-      return reset(command);
-      break;
-    case _SAVE:
-      return save(command);
-      break;
-    default:
-      break;
+    qDebug() << _plugin << "::command: no indicator";
+    return 1;
   }
+
+  // verify NAME
+  _name = command->parm("NAME");
+  if (_name.isEmpty())
+  {
+    qDebug() << _plugin << "::command: NAME not found";
+    return 1;
+  }
+
+  // verify VERSION
+  _version = command->parm("VERSION");
+  if (_version.isEmpty())
+  {
+    qDebug() << _plugin << "::command: VERSION not found";
+    return 1;
+  }
+
+  // verify SYMBOL
+  _symbol = command->parm("SYMBOL");
+  if (_symbol.isEmpty())
+  {
+    qDebug() << _plugin << "::command: SYMBOL not found";
+    return 1;
+  }
+
+  // verify ENTER_LONG / EXIT_LONG
+  QString s = command->parm("ENTER_LONG");
+  if (! s.isEmpty())
+  {
+    if (setRule(QString("ENTER_LONG"), command))
+      return 1;
+
+    s = command->parm("EXIT_LONG");
+    if (s.isEmpty())
+    {
+      qDebug() << _plugin << "::command: missing EXIT_LONG";
+      return 1;
+    }
+    
+    if (setRule(QString("EXIT_LONG"), command))
+      return 1;
+  }
+
+  // verify ENTER_SHORT / EXIT_SHORT
+  s = command->parm("ENTER_SHORT");
+  if (! s.isEmpty())
+  {
+    if (setRule(QString("ENTER_SHORT"), command))
+      return 1;
+
+    s = command->parm("EXIT_SHORT");
+    if (s.isEmpty())
+    {
+      qDebug() << _plugin << "::command: missing EXIT_SHORT";
+      return 1;
+    }
+
+    if (setRule(QString("EXIT_SHORT"), command))
+      return 1;
+  }
+
+  // verify BUY_NAME
+  _buyPrice = i->line(command->parm("BUY_NAME"));
+  if (! _buyPrice)
+  {
+    qDebug() << _plugin << "::command: BUY_NAME not found" << command->parm("BUY_NAME");
+    return 1;
+  }
+
+  // verify SELL_NAME
+  _sellPrice = i->line(command->parm("SELL_NAME"));
+  if (! _sellPrice)
+  {
+    qDebug() << _plugin << "::command: SELL_NAME not found" << command->parm("SELL_NAME");
+    return 1;
+  }
+
+  // verify CLOSE_NAME
+  _closePrice = i->line(command->parm("CLOSE_NAME"));
+  if (! _closePrice)
+  {
+    qDebug() << _plugin << "::command: CLOSE_NAME not found" << command->parm("CLOSE_NAME");
+    return 1;
+  }
+
+  // verify VOLUME
+  s = command->parm("VOLUME");
+  if (! s.isEmpty())
+  {
+    bool ok;
+    double t = s.toDouble(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid VOLUME" << s;
+      return 1;
+    }
+
+    if (t < 0 || t > 1)
+    {
+      qDebug() << _plugin << "::command: invalid VOLUME, value must be between 0 and 1" << t;
+      return 1;
+    }
+
+    _volume = t;
+  }
+  else
+    _volume = 0.2;
+
+  // verify ENTER_COMM
+  s = command->parm("ENTER_COMM");
+  if (! s.isEmpty())
+  {
+    bool ok;
+    double t = s.toDouble(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid ENTER_COMM" << s;
+      return 1;
+    }
+
+    if (t < 0)
+    {
+      qDebug() << _plugin << "::command: invalid ENTER_COMM value < 0" << t;
+      return 1;
+    }
+
+    _enterCommission = t;
+  }
+  else
+    _enterCommission = 10;
+
+  // verify EXIT_COMM
+  s = command->parm("EXIT_COMM");
+  if (! s.isEmpty())
+  {
+    bool ok;
+    double t = s.toDouble(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid EXIT_COMM" << s;
+      return 1;
+    }
+
+    if (t < 0)
+    {
+      qDebug() << _plugin << "::command: invalid EXIT_COMM value < 0" << t;
+      return 1;
+    }
+
+    _exitCommission = t;
+  }
+  else
+    _exitCommission = 10;
+
+  // verify EQUITY
+  s = command->parm("EQUITY");
+  if (! s.isEmpty())
+  {
+    bool ok;
+    double t = s.toDouble(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid EQUITY" << s;
+      return 1;
+    }
+
+    if (t < 0)
+    {
+      qDebug() << _plugin << "::command: invalid EQUITY value < 0" << t;
+      return 1;
+    }
+
+    _equity = t;
+  }
+  else
+    _equity = 1000;
+
+  if (test())
+    return 1;
+
+  if (save())
+    return 1;
+
+  command->setReturnCode("0");
 
   return 0;
 }
 
-int TEST::setRule (Command *command)
+int TEST::setRule (QString method, Command *command)
 {
   // PARMS:
-  // METHOD (SET_RULE)
-  // TYPE
   // NAME
   // OP
   // NAME2
@@ -126,46 +305,42 @@ int TEST::setRule (Command *command)
   // verify type
   QStringList typeList;
   typeList << "ENTER_LONG" << "EXIT_LONG" << "ENTER_SHORT" << "EXIT_SHORT";
-  int type = typeList.indexOf(command->parm("TYPE"));
+  int type = typeList.indexOf(method);
   if (type == -1)
   {
-    qDebug() << _plugin << "::setRule: invalid TYPE" << command->parm("TYPE");
+    qDebug() << _plugin << "::setRule: invalid TYPE" << method;
     return 1;
   }
 
+  QString key = typeList.at(type) + "_";
+
   // verify name
-  Curve *input = i->line(command->parm("NAME"));
+  QString s = key + "NAME";
+  Curve *input = i->line(s);
   if (! input)
   {
-    qDebug() << _plugin << "::setRule: NAME not found" << command->parm("NAME");
+    qDebug() << _plugin << "::setRule:" << s << "not found";
     return 1;
   }
   
   // verify operator
+  s = key + "OP";
   Operator oper;
-  Operator::Type op = oper.stringToOperator(command->parm("OP"));
+  Operator::Type op = oper.stringToOperator(s);
   if (op == -1)
   {
-    qDebug() << _plugin << "::setRule: invalid OP" << command->parm("OP");
+    qDebug() << _plugin << "::setRule: invalid" << s;
     return 1;
   }
   
   // verify name2/value
   // first check if its a name
-  double value = 0;
-  Curve *input2 = i->line(command->parm("NAME2"));
+  s = key + "NAME2";
+  Curve *input2 = i->line(s);
   if (! input2)
   {
-    // check if its a value
-    bool ok;
-    double t = command->parm("NAME2").toDouble(&ok);
-    if (! ok)
-    {
-      qDebug() << _plugin << "::setRule: invalid NAME2" << command->parm("NAME2");
-      return 1;
-    }
-
-    value = t;
+    qDebug() << _plugin << "::setRule:" << s << "not found";
+    return 1;
   }
 
   switch (type)
@@ -173,236 +348,42 @@ int TEST::setRule (Command *command)
     case 0: // ENTER_LONG
       _enterLong = input;
       _enterLongOp = op;
-      if (input2)
-        _enterLong2 = input2;
-      else
-        _enterLongValue = value;
+      _enterLong2 = input2;
       break;
     case 1: // EXIT_LONG
       _exitLong = input;
       _exitLongOp = op;
-      if (input2)
-        _exitLong2 = input2;
-      else
-        _exitLongValue = value;
+      _exitLong2 = input2;
       break;
     case 2: // ENTER_SHORT
       _enterShort = input;
       _enterShortOp = op;
-      if (input2)
-        _enterShort2 = input2;
-      else
-        _enterShortValue = value;
+      _enterShort2 = input2;
       break;
     case 3: // EXIT_SHORT
       _exitShort = input;
       _exitShortOp = op;
-      if (input2)
-        _exitShort2 = input2;
-      else
-        _exitShortValue = value;
+      _exitShort2 = input2;
       break;
     default:
       break;
   }
   
-  command->setReturnCode("0");
-
   return 0;
 }
 
-int TEST::setVolume (Command *command)
+int TEST::save ()
 {
-  // PARMS:
-  // METHOD (SET_VOLUME)
-  // VOLUME
+  Setting parms;
+  parms.setData("NAME", _name);
+  parms.setData("VERSION", _version);
 
-  bool ok;
-  double t = command->parm("VOLUME").toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << _plugin << "::setVolume: invalid VOLUME" << command->parm("VOLUME");
-    return 1;
-  }
-
-  if (t < 0 || t > 1)
-  {
-    qDebug() << _plugin << "::setVolume: invalid VOLUME, value must be between 0 and 1" << t;
-    return 1;
-  }
-
-  _volume = t;
-
-  command->setReturnCode("0");
-
-  return 0;
+  TestDataBase db;
+  return db.saveTrades(parms, _trades);
 }
 
-int TEST::setEnterComm (Command *command)
+int TEST::test ()
 {
-  // PARMS:
-  // METHOD (SET_ENTER_COMM)
-  // COMM
-
-  bool ok;
-  double t = command->parm("COMM").toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << _plugin << "::setEnterComm: invalid COMM" << command->parm("COMM");
-    return 1;
-  }
-
-  if (t < 0)
-  {
-    qDebug() << _plugin << "::setEnterComm: invalid enter COMM value < 0" << t;
-    return 1;
-  }
-
-  _enterCommission = t;
-
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-int TEST::setExitComm (Command *command)
-{
-  // PARMS:
-  // METHOD (SET_EXIT_COMM)
-  // COMM
-
-  bool ok;
-  double t = command->parm("COMM").toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << _plugin << "::setExitComm: invalid COMM" << command->parm("COMM");
-    return 1;
-  }
-
-  if (t < 0)
-  {
-    qDebug() << _plugin << "::setExitComm: invalid exit COMM value < 0" << t;
-    return 1;
-  }
-
-  _exitCommission = t;
-
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-int TEST::setEquity (Command *command)
-{
-  // PARMS:
-  // METHOD (SET_EQUITY)
-  // EQUITY
-
-  bool ok;
-  double t = command->parm("EQUITY").toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << _plugin << "::setEquity: invalid EQUITY" << command->parm("EQUITY");
-    return 1;
-  }
-
-  if (t < 0)
-  {
-    qDebug() << _plugin << "::setEquity: invalid EQUITY value < 0" << t;
-    return 1;
-  }
-
-  _equity = t;
-
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-int TEST::setPrices (Command *command)
-{
-  // PARMS:
-  // METHOD (SET_PRICES)
-  // BUY
-  // SELL
-  // CLOSE
-
-  Indicator *i = command->indicator();
-  if (! i)
-  {
-    qDebug() << _plugin << "::setPrices: no indicator";
-    return 1;
-  }
-
-  // verify buy prices
-  _buyPrice = i->line(command->parm("BUY"));
-  if (! _buyPrice)
-  {
-    qDebug() << _plugin << "::setPrices: BUY not found" << command->parm("BUY");
-    return 1;
-  }
-
-  // verify sell prices
-  _sellPrice = i->line(command->parm("SELL"));
-  if (! _sellPrice)
-  {
-    qDebug() << _plugin << "::setPrices: SELL not found" << command->parm("SELL");
-    return 1;
-  }
-
-  // verify close prices
-  _closePrice = i->line(command->parm("CLOSE"));
-  if (! _closePrice)
-  {
-    qDebug() << _plugin << "::setPrices: CLOSE not found" << command->parm("CLOSE");
-    return 1;
-  }
-
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-int TEST::reset (Command *command)
-{
-  // PARMS:
-  // METHOD (RESET)
-
-  qDeleteAll(_trades);
-  _trades.clear();
-
-  _equity = 1000;
-  
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-int TEST::save (Command *command)
-{
-  // PARMS:
-  // METHOD (SAVE)
-  // NAME
-
-  QString name = command->parm("NAME");
-  if (name.isEmpty())
-  {
-    qDebug() << _plugin << "::save: NAME not found" << name;
-    return 1;
-  }
-
-qDebug() << _plugin << "::save: total trades =" << _trades.count() << _equity;
-
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-int TEST::test (Command *command)
-{
-  // PARMS:
-  // METHOD (TEST)
-
   int status = 0;
 
   QList<int> keys;
@@ -434,22 +415,10 @@ int TEST::test (Command *command)
         CurveBar *bar = _exitLong->bar(keys.at(pos));
         if (bar)
         {
-          if (_exitLong2)
+          CurveBar *bar2 = _exitLong2->bar(keys.at(pos));
+          if (bar2)
           {
-            CurveBar *bar2 = _exitLong2->bar(keys.at(pos));
-            if (bar2)
-            {
-              if (oper.test(bar->data(), _exitLongOp, bar2->data()))
-              {
-                status = 0;
-                exitTrade(pos, status);
-                continue;
-              }
-            }
-          }
-          else
-          {
-            if (oper.test(bar->data(), _exitLongOp, _exitLongValue))
+            if (oper.test(bar->data(), _exitLongOp, bar2->data()))
             {
               status = 0;
               exitTrade(pos, status);
@@ -471,22 +440,10 @@ int TEST::test (Command *command)
         CurveBar *bar = _exitShort->bar(keys.at(pos));
         if (bar)
         {
-          if (_exitShort2)
+          CurveBar *bar2 = _exitShort2->bar(keys.at(pos));
+          if (bar2)
           {
-            CurveBar *bar2 = _exitShort2->bar(keys.at(pos));
-            if (bar2)
-            {
-              if (oper.test(bar->data(), _exitShortOp, bar2->data()))
-              {
-                status = 0;
-                exitTrade(pos, status);
-                continue;
-              }
-            }
-          }
-          else
-          {
-            if (oper.test(bar->data(), _exitShortOp, _exitShortValue))
+            if (oper.test(bar->data(), _exitShortOp, bar2->data()))
             {
               status = 0;
               exitTrade(pos, status);
@@ -494,7 +451,6 @@ int TEST::test (Command *command)
             }
           }
         }
-        
         break;
       }
       default:  // no trade
@@ -505,23 +461,10 @@ int TEST::test (Command *command)
           CurveBar *bar = _enterLong->bar(keys.at(pos));
           if (bar)
           {
-            if (_enterLong2)
+            CurveBar *bar2 = _enterLong2->bar(keys.at(pos));
+            if (bar2)
             {
-              CurveBar *bar2 = _enterLong2->bar(keys.at(pos));
-              if (bar2)
-              {
-                if (oper.test(bar->data(), _enterLongOp, bar2->data()))
-                {
-                  if (enterTrade(1, pos))
-                    continue;
-                  status = 1;
-                  continue;
-                }
-              }
-            }
-            else
-            {
-              if (oper.test(bar->data(), _enterLongOp, _enterLongValue))
+              if (oper.test(bar->data(), _enterLongOp, bar2->data()))
               {
                 if (enterTrade(1, pos))
                   continue;
@@ -538,23 +481,10 @@ int TEST::test (Command *command)
           CurveBar *bar = _enterShort->bar(keys.at(pos));
           if (bar)
           {
-            if (_enterShort2)
+            CurveBar *bar2 = _enterShort2->bar(keys.at(pos));
+            if (bar2)
             {
-              CurveBar *bar2 = _enterShort2->bar(keys.at(pos));
-              if (bar2)
-              {
-                if (oper.test(bar->data(), _enterShortOp, bar2->data()))
-                {
-                  if (enterTrade(-1, pos))
-                    continue;
-                  status = -1;
-                  continue;
-                }
-              }
-            }
-            else
-            {
-              if (oper.test(bar->data(), _enterShortOp, _enterShortValue))
+              if (oper.test(bar->data(), _enterShortOp, bar2->data()))
               {
                 if (enterTrade(-1, pos))
                   continue;
@@ -567,8 +497,6 @@ int TEST::test (Command *command)
       }
     }
   }
-
-  command->setReturnCode("0");
 
   return 0;
 }
@@ -590,15 +518,15 @@ int TEST::enterTrade (int status, int pos)
   Setting *trade = new Setting;
   _trades.append(trade);
   
-//  trade->setData("Symbol", _bars->symbol());
-  trade->setData("Type", status);
-  trade->setData("Enter Date", pos);
-  trade->setData("Enter Price", bar->data());
-  trade->setData("Price High", bar->data());
-  trade->setData("Price Low", bar->data());
-  trade->setData("High", bar->data());
-  trade->setData("Low", bar->data());
-  trade->setData("Volume", volume);
+  trade->setData("SYMBOL", _symbol);
+  trade->setData("TYPE", status);
+  trade->setData("ENTER_DATE", pos);
+  trade->setData("ENTER_PRICE", bar->data());
+  trade->setData("PRICE_HIGH", bar->data());
+  trade->setData("PRICE_LOW", bar->data());
+  trade->setData("HIGH", bar->data());
+  trade->setData("LOW", bar->data());
+  trade->setData("VOLUME", volume);
   
   _equity -= value;
   _equity -= _enterCommission;
@@ -622,23 +550,21 @@ int TEST::exitTrade (int pos, int signal)
   if (! trade)
     return 1;
   
-  trade->setData("Exit Date", pos);
-  trade->setData("Exit Price", bar->data());
-  trade->setData("Signal", signal);
+  trade->setData("EXIT_DATE", pos);
+  trade->setData("EXIT_PRICE", bar->data());
+  trade->setData("SIGNAL", signal);
 
   double profit = 0;
-  if (trade->getInt("Type"))
-    profit = trade->getDouble("Volume") * (bar->data() - trade->getDouble("Enter Price")); // long
+  if (trade->getInt("TYPE"))
+    profit = trade->getDouble("VOLUME") * (bar->data() - trade->getDouble("ENTER_PRICE")); // long
   else
-    profit = trade->getDouble("Volume") * (trade->getDouble("Enter Price") - bar->data()); // short
+    profit = trade->getDouble("VOLUME") * (trade->getDouble("ENTER_PRICE") - bar->data()); // short
 
-  _equity += trade->getDouble("Volume") * bar->data();
+  _equity += trade->getDouble("VOLUME") * bar->data();
   _equity -= _exitCommission;
   
-  trade->setData("Profit", profit);
+  trade->setData("PROFIT", profit);
 
-qDebug() << trade->data("Type") << trade->data("Enter Date") << trade->data("Enter Price") << trade->data("Volume") << trade->data("Exit Date") << trade->data("Exit Price") << _equity << profit;
-  
   return 0;
 }
 
@@ -653,22 +579,22 @@ int TEST::updateTrade (int pos)
     return 1;
 
   double profit = 0;
-  if (trade->getInt("Type"))
-    profit = trade->getDouble("Volume") * (bar->data() - trade->getDouble("Enter Price")); // long
+  if (trade->getInt("TYPE"))
+    profit = trade->getDouble("VOLUME") * (bar->data() - trade->getDouble("ENTER_PRICE")); // long
   else
-    profit = trade->getDouble("Volume") * (trade->getDouble("Enter Price") - bar->data()); // short
+    profit = trade->getDouble("VOLUME") * (trade->getDouble("ENTER_PRICE") - bar->data()); // short
 
-  if (profit < trade->getDouble("Low"))
-    trade->setData("Low", profit);
+  if (profit < trade->getDouble("LOW"))
+    trade->setData("LOW", profit);
 
-  if (profit > trade->getDouble("High"))
-    trade->setData("High", profit);
+  if (profit > trade->getDouble("HIGH"))
+    trade->setData("HIGH", profit);
 
-  if (bar->data() > trade->getDouble("Price High"))
-    trade->setData("Price High", bar->data());
+  if (bar->data() > trade->getDouble("PRICE_HIGH"))
+    trade->setData("PRICE_HIGH", bar->data());
 
-  if (bar->data() < trade->getDouble("Price Low"))
-    trade->setData("Price Low", bar->data());
+  if (bar->data() < trade->getDouble("PRICE_LOW"))
+    trade->setData("PRICE_LOW", bar->data());
 
   return 0;
 }

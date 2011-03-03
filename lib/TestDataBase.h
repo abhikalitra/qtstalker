@@ -19,41 +19,36 @@
  *  USA.
  */
 
-#ifndef BAR_SPACE_BUTTON_HPP
-#define BAR_SPACE_BUTTON_HPP
+// *************************************************************************************************
+// Chart object database. Used for storing/returning chart object settings for any chart objects
+// created on charts.
+// *************************************************************************************************
 
-#include <QToolButton>
-#include <QMenu>
 
-class BarSpaceButton : public QToolButton
+#ifndef TEST_DATA_BASE_HPP
+#define TEST_DATA_BASE_HPP
+
+#include <QtSql>
+#include <QStringList>
+#include <QList>
+
+#include "Setting.h"
+
+class TestDataBase
 {
-  Q_OBJECT
-  
-  signals:
-    void signalZoom (int, int); // pixelSpace, index
-    void signalPixelSpace (int); // pixelSpace
-
   public:
-    BarSpaceButton ();
-    void createMenu ();
-    int getPixelSpace ();
-    void savePixelSpace ();
-    
-  public slots:
-    void addZoom (int index, int pixelSpace);
-    void zoomIn ();
-    void zoomOut ();
-    void ps1Selected ();
-    void ps2Selected ();
-    
+    TestDataBase ();
+    void init ();
+    int trades (Setting, QList<Setting> &);
+    int deleteTrades (Setting);
+    int saveTrades (Setting, QList<Setting *> &);
+    int names (QStringList &);
+    int versions (QString name, QStringList &);
+    void transaction ();
+    void commit ();
+
   private:
-    QMenu *_menu;
-    QAction *_zoomIn;
-    QAction *_zoomOut;
-    int _pixelSpace;
-    QAction *_ps1;
-    QAction *_ps2;
-    int _minSpace;
+    QSqlDatabase _db;
 };
 
 #endif

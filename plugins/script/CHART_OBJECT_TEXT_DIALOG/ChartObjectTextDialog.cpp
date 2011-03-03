@@ -61,6 +61,7 @@ void ChartObjectTextDialog::createGUI ()
   // price
   _price = new QDoubleSpinBox;
   _price->setRange(0.0, 99999999.0);
+  _price->setDecimals(4);
   _form->addRow(tr("Price"), _price);
 
   // label

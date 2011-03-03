@@ -32,6 +32,8 @@
 
 BarSpaceButton::BarSpaceButton ()
 {
+  _minSpace = 3;
+  
   QSettings settings(g_localSettings);
   _pixelSpace = settings.value("pixelspace", 8).toInt();
   
@@ -88,8 +90,8 @@ void BarSpaceButton::zoomIn ()
 void BarSpaceButton::zoomOut ()
 {
   _pixelSpace--;
-  if (_pixelSpace < 6)
-    _pixelSpace = 6;
+  if (_pixelSpace < _minSpace)
+    _pixelSpace = _minSpace;
   savePixelSpace();
   emit signalPixelSpace(_pixelSpace); 
 }

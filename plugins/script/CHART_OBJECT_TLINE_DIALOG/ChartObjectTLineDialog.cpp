@@ -61,11 +61,13 @@ void ChartObjectTLineDialog::createGUI ()
   // price
   _price = new QDoubleSpinBox;
   _price->setRange(0.0, 99999999.0);
+  _price->setDecimals(4);
   _form->addRow(tr("Start Price"), _price);
 
   // price2
   _price2 = new QDoubleSpinBox;
   _price2->setRange(0.0, 99999999.0);
+  _price2->setDecimals(4);
   _form->addRow(tr("End Price"), _price2);
 
   // extend

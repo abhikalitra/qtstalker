@@ -105,7 +105,7 @@ void PlotScaleDraw::draw (QPainter *p, const QPalette &pal) const
     
     double v = _values.at(loop);
     QString s;
-    strip.strip(v, 2, s);
+    strip.strip(v, 4, s);
     
     int y = map().transform(v);
 

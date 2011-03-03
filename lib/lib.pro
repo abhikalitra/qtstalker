@@ -35,6 +35,7 @@ HEADERS += ScriptPlugin.h
 HEADERS += ScriptPluginFactory.h
 HEADERS += Setting.h
 HEADERS += Strip.h
+HEADERS += TestDataBase.h
 
 
 SOURCES += Bar.cpp
@@ -67,6 +68,7 @@ SOURCES += ScriptPlugin.cpp
 SOURCES += ScriptPluginFactory.cpp
 SOURCES += Setting.cpp
 SOURCES += Strip.cpp
+SOURCES += TestDataBase.cpp
 
 
 TARGET = qtstalker

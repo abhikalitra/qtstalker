@@ -78,11 +78,13 @@ void ChartObjectRetracementDialog::createMainPage ()
   // high
   _high = new QDoubleSpinBox;
   _high->setRange(0.0, 99999999.0);
+  _high->setDecimals(4);
   form->addRow(tr("High"), _high);
 
   // low
   _low = new QDoubleSpinBox;
   _low->setRange(0.0, 99999999.0);
+  _low->setDecimals(4);
   form->addRow(tr("Low"), _low);
 
   // extend
@@ -108,31 +110,37 @@ void ChartObjectRetracementDialog::createLinePage ()
   // line1
   _line1 = new QDoubleSpinBox;
   _line1->setRange(0.0, 99999999.0);
+  _line1->setDecimals(4);
   form->addRow(tr("Line 1"), _line1);
 
   // line2
   _line2 = new QDoubleSpinBox;
   _line2->setRange(0.0, 99999999.0);
+  _line2->setDecimals(4);
   form->addRow(tr("Line 2"), _line2);
 
   // line3
   _line3 = new QDoubleSpinBox;
   _line3->setRange(0.0, 99999999.0);
+  _line3->setDecimals(4);
   form->addRow(tr("Line 3"), _line3);
 
   // line4
   _line4 = new QDoubleSpinBox;
   _line4->setRange(0.0, 99999999.0);
+  _line4->setDecimals(4);
   form->addRow(tr("Line 4"), _line4);
 
   // line5
   _line5 = new QDoubleSpinBox;
   _line5->setRange(0.0, 99999999.0);
+  _line5->setDecimals(4);
   form->addRow(tr("Line 5"), _line5);
 
   // line6
   _line6 = new QDoubleSpinBox;
   _line6->setRange(0.0, 99999999.0);
+  _line6->setDecimals(4);
   form->addRow(tr("Line 6"), _line6);
 
   _tabs->addTab(w, tr("Levels"));

@@ -1036,3 +1036,8 @@
 
 20110302:  Added INTEGER_DIALOG, INDICATOR_PLOT_DELETE plugins.
 
+20110303:  Feature request #3198213 - enable smaller bar width, see more data. The minimum bar spacing is now
+           set to 3. Any smaller and OHLC bars are unrecognizable.
+
+           Fixed bug #3198204 - enable values for tenths of a cent.
+
