@@ -71,17 +71,17 @@ LIBS += -L/usr/local/qwt-5.2.1/lib</pre>
 <p> For Snow Leopard, edit configure ... to tweak the 'qmake'
 invocation to include "CONFIG += qt x86_64" </p>
 <p> Now compile Qtstalker: </p>
-<pre>./configure<br>make<br>sudo make install </pre>
+<pre>./configure
+make
+sudo make install
+</pre>
 <h3 id="start">Start Qtstalker</h3>
-<p>At the current stage of development, need to first start the QuoteServer:
-<pre>/usr/local/bin/QuoteServer.app/Contents/MacOS/QuoteServer</pre>
-<p>Then:</p>
+<p>In a Terminal window, do this:</p>
 <pre>/usr/local/bin/qtstalker.app/Contents/MacOS/qtstalker</pre>
-<p> Tip: Use the "Keep in Dock" making it easier to start. </p>
-<p> Tip: Use the "Console" application to see any log messages, e.g.
-during data loading.<br>
-<br>
-</p>
+<h3 id="where">Where does stuff get installed</h3>
+<p>See the main <a href="install.html#where">notes</a> about this topic.</p>
+<p>Mac OS X also stores user preferences information at:</p>
+<pre>~/Library/Preferences/*qtstalker*.plist</pre>
 </div>
 </body>
 </html>
