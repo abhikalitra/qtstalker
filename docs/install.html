@@ -78,14 +78,6 @@ ta-lib-config</code>' to ensure that this is properly installed. </p>
 <code>qtstalker.config</code> file (e.g. "<code>INCLUDEPATH +=
 /opt/local/include/ta-lib</code>"). </p>
 
-<p>On some systems the following error might occur when you start Qtstalker ...</p>
-<p><code>/usr/local/bin/qtstalker: error while loading shared libraries:
-    libqtstalker.so.0: cannot open shared object file: No such file or
-    directory</code></p>
-    <p>Fix this by adding <code>/usr/local/lib</code>
-    to your <code>/etc/ld.so.conf</code> file and run <code>ldconfig -v</code>
-    (as root).</p>
-
 <h4>Build and install Qtstalker</h4>
 
 <p>See important pre-requisite notes <a href="#source">above</a>.</p>
@@ -109,6 +101,14 @@ if Qt or Qwt or TA-Lib is installed at a non-standard location, then edit the
 <p>
 Ensure that the Qt and Qwt examples and demonstrations can be utilised.
 </p>
+
+<p>On some Linux systems the following error might occur when you start Qtstalker ...</p>
+<p><code>/usr/local/bin/qtstalker: error while loading shared libraries:
+    libqtstalker.so.0: cannot open shared object file: No such file or
+    directory</code></p>
+    <p>Fix this by adding <code>/usr/local/lib</code>
+    to your <code>/etc/ld.so.conf</code> file and run <code>ldconfig -v</code>
+    (as root).</p>
 
 <h2 id="where">Where does stuff get installed</h2>
 <ul>
