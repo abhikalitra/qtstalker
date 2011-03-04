@@ -19,51 +19,16 @@
  *  USA.
  */
 
-#ifndef TEST_HPP
-#define TEST_HPP
+#ifndef TEST_DIALOG_HPP
+#define TEST_DIALOG_HPP
 
 #include "ScriptPlugin.h"
-#include "Curve.h"
-#include "Operator.h"
 
-class TEST : public ScriptPlugin
+class TEST_DIALOG : public ScriptPlugin
 {
   public:
-    TEST ();
-    ~TEST ();
-    void init ();
+    TEST_DIALOG ();
     int command (Command *);
-    int setRule (QString, Command *);
-    int test ();
-    int enterTrade (int status, int pos);
-    int exitTrade (int pos, int signal);
-    int updateTrade (int pos);
-    int save ();
-
-  private:
-    QString _name;
-    QString _symbol;
-    Curve *_enterLong;
-    Curve *_enterLong2;
-    Curve *_exitLong;
-    Curve *_exitLong2;
-    Curve *_enterShort;
-    Curve *_enterShort2;
-    Curve *_exitShort;
-    Curve *_exitShort2;
-    Curve *_buyPrice;
-    Curve *_sellPrice;
-    Curve *_closePrice;
-    Curve *_date;
-    QList<Setting *> _trades;
-    double _volume;
-    double _enterCommission;
-    double _exitCommission;
-    double _equity;
-    Operator::Type _enterLongOp;
-    Operator::Type _exitLongOp;
-    Operator::Type _enterShortOp;
-    Operator::Type _exitShortOp;
 };
 
 extern "C"

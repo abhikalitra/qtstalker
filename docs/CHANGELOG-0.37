@@ -1041,3 +1041,7 @@
 
            Fixed bug #3198204 - enable values for tenths of a cent.
 
+           Fixed false error message when script completes.
+
+           Added TEST_DIALOG plugin. Not functional yet.
+

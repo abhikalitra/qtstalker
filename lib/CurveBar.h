@@ -24,6 +24,7 @@
 
 #include <QColor>
 #include <QHash>
+#include <QDateTime>
 
 class CurveBar
 {
@@ -37,12 +38,15 @@ class CurveBar
     void setData (double);
     void setColor (QColor);
     QColor color ();
+    void setDateTime (QDateTime);
+    QDateTime dateTime ();
     int count ();
     int highLow (double &, double &);
 
   protected:
     QHash<int, double> _data;
     QColor _color;
+    QDateTime _dateTime;
 };
 
 #endif

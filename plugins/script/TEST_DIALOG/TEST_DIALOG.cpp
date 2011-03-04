@@ -19,35 +19,34 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Chart object database. Used for storing/returning chart object settings for any chart objects
-// created on charts.
-// *************************************************************************************************
+#include "TEST_DIALOG.h"
+#include "TestDialog.h"
 
+#include <QtDebug>
+#include <QDialog>
 
-#ifndef TEST_DATA_BASE_HPP
-#define TEST_DATA_BASE_HPP
-
-#include <QtSql>
-#include <QStringList>
-#include <QList>
-
-#include "Setting.h"
-
-class TestDataBase
+TEST_DIALOG::TEST_DIALOG ()
 {
-  public:
-    TestDataBase ();
-    void init ();
-    int trades (Setting, QList<Setting> &);
-    int deleteTrades (Setting);
-    int saveTrades (Setting, QList<Setting *> &);
-    int names (QStringList &);
-    void transaction ();
-    void commit ();
+  _plugin = "TEST_DIALOG";
+  _type = _DIALOG;
+}
 
-  private:
-    QSqlDatabase _db;
-};
+int TEST_DIALOG::command (Command *command)
+{
+  TestDialog *dialog = new TestDialog(_parent, command);
+  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
+  dialog->show();
 
-#endif
+  return 0;
+}
+
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+ScriptPlugin * createScriptPlugin ()
+{
+  TEST_DIALOG *o = new TEST_DIALOG;
+  return ((ScriptPlugin *) o);
+}

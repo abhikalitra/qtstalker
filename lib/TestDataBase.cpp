@@ -48,7 +48,6 @@ void TestDataBase::init ()
   QString s = "CREATE TABLE IF NOT EXISTS testTrades (";
   s.append("a INTEGER PRIMARY KEY");
   s.append(", name TEXT");
-  s.append(", version TEXT");
   s.append(", symbol TEXT");
   s.append(", type TEXT");
   s.append(", enterDate TEXT");
@@ -57,6 +56,12 @@ void TestDataBase::init ()
   s.append(", exitDate TEXT");
   s.append(", exitPrice REAL");
   s.append(", profit REAL");
+  s.append(", signal TEXT");
+  s.append(", equity REAL");
+  s.append(", drawDown REAL");
+  s.append(", barsHeld INT");
+  s.append(", enterComm REAL");
+  s.append(", exitComm REAL");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -69,9 +74,8 @@ int TestDataBase::trades (Setting parms, QList<Setting> &trades)
 
   trades.clear();
   
-  QString s = "SELECT symbol,type,enterDate,enterPrice,volume,exitDate,exitPrice,profit FROM testTrades";
+  QString s = "SELECT symbol,type,enterDate,enterPrice,volume,exitDate,exitPrice,profit,signal,equity,drawDown,barsHeld,enterComm,exitComm FROM testTrades";
   s.append(" WHERE name='" + parms.data("NAME") + "'");
-  s.append(" AND version='" + parms.data("VERSION") + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -91,6 +95,12 @@ int TestDataBase::trades (Setting parms, QList<Setting> &trades)
     trade.setData("EXIT_DATE", q.value(pos++).toString());
     trade.setData("EXIT_PRICE", q.value(pos++).toString());
     trade.setData("PROFIT", q.value(pos++).toString());
+    trade.setData("SIGNAL", q.value(pos++).toString());
+    trade.setData("EQUITY", q.value(pos++).toString());
+    trade.setData("DRAWDOWN", q.value(pos++).toString());
+    trade.setData("BARS_HELD", q.value(pos++).toString());
+    trade.setData("ENTER_COMM", q.value(pos++).toString());
+    trade.setData("EXIT_COMM", q.value(pos++).toString());
     trades.append(trade);
   }
 
@@ -104,7 +114,6 @@ int TestDataBase::deleteTrades (Setting parms)
   // delete index records
   QString s = "DELETE FROM testTrades";
   s.append(" WHERE name='" + parms.data("NAME") + "'");
-  s.append(" AND version='" + parms.data("VERSION") + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -130,7 +139,6 @@ int TestDataBase::saveTrades (Setting parms, QList<Setting *> &trades)
     QString s = "INSERT INTO testTrades VALUES (";
     s.append("NULL"); // auto increment 
     s.append(",'" + parms.data("NAME") + "'");
-    s.append(",'" + parms.data("VERSION") + "'");
     s.append(",'" + trade->data("SYMBOL") + "'");
     s.append(",'" + trade->data("TYPE") + "'");
     s.append(",'" + trade->data("ENTER_DATE") + "'");
@@ -139,13 +147,19 @@ int TestDataBase::saveTrades (Setting parms, QList<Setting *> &trades)
     s.append(",'" + trade->data("EXIT_DATE") + "'");
     s.append("," + trade->data("EXIT_PRICE"));
     s.append("," + trade->data("PROFIT"));
+    s.append(",'" + trade->data("SIGNAL") + "'");
+    s.append("," + trade->data("EQUITY"));
+    s.append("," + trade->data("DRAWDOWN"));
+    s.append("," + trade->data("BARS_HELD"));
+    s.append("," + trade->data("ENTER_COMM"));
+    s.append("," + trade->data("EXIT_COMM"));
     s.append(")");
     q.exec(s);
     if (q.lastError().isValid())
     {
       qDebug() << "TestDataBase::saveTrades: " << q.lastError().text();
       qDebug() << s;
-      return 1;
+//      return 1;
     }
   }
 
@@ -163,29 +177,6 @@ int TestDataBase::names (QStringList &l)
   if (q.lastError().isValid())
   {
     qDebug() << "TestDataBase::names: " << q.lastError().text();
-    return 1;
-  }
-
-  while (q.next())
-    l << q.value(0).toString();
-
-  l.sort();
-
-  return 0;
-}
-
-int TestDataBase::versions (QString name, QStringList &l)
-{
-  QSqlQuery q(_db);
-
-  l.clear();
-
-  QString s = "SELECT DISTINCT version FROM testTrades";
-  s.append(" WHERE name='" + name + "'");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "TestDataBase::versions: " << q.lastError().text();
     return 1;
   }
 

@@ -35,6 +35,7 @@ QUOTE_DATABASE_GET::QUOTE_DATABASE_GET ()
 int QUOTE_DATABASE_GET::command (Command *command)
 {
   // PARMS:
+  // NAME_DATE
   // NAME_OPEN
   // NAME_HIGH
   // NAME_LOW
@@ -102,6 +103,22 @@ int QUOTE_DATABASE_GET::command (Command *command)
   }
   else
     bd.setRange(range);
+
+  Curve *dline = 0;
+  s = command->parm("NAME_DATE");
+  if (! s.isEmpty())
+  {
+    dline = i->line(s);
+    if (dline)
+    {
+      qDebug() << _plugin << "::command: duplicate NAME_DATE" << s;
+      return 1;
+    }
+
+    dline = new Curve;
+    dline->setLabel(s);
+    i->setLine(s, dline);
+  }
 
   Curve *oline = 0;
   s = command->parm("NAME_OPEN");
@@ -212,6 +229,13 @@ int QUOTE_DATABASE_GET::command (Command *command)
     Bar *b = bd.bar(loop);
     if (! b)
       continue;
+
+    if (dline)
+    {
+      CurveBar *cb = new CurveBar;
+      cb->setDateTime(b->date());
+      dline->setBar(loop, cb);
+    }
 
     if (oline)
       oline->setBar(loop, new CurveBar(b->open()));

@@ -2205,6 +2205,18 @@ e.g. Qtstalker alert was triggered.</source>
         <source>Set Launch Button Columns</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ended</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptSearchDialog</name>

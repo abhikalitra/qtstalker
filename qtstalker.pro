@@ -258,6 +258,7 @@ SUBDIRS += plugins/script/SYMBOL_DIALOG
 SUBDIRS += plugins/script/SZ
 SUBDIRS += plugins/script/T3
 SUBDIRS += plugins/script/TEST
+SUBDIRS += plugins/script/TEST_DIALOG
 SUBDIRS += plugins/script/THERM
 SUBDIRS += plugins/script/TRIX
 SUBDIRS += plugins/script/TYPICAL_PRICE

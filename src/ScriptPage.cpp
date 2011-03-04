@@ -241,8 +241,10 @@ void ScriptPage::runScript (QString d)
   item->setText(d);
   _itemList.insert(d, item);
 
-//  _scriptList.insert(d, script);
-
+  QStringList l;
+  l << tr("Script") << d << tr("started");
+  g_middleMan->statusMessage(l.join(" "));
+  
   script->startScript();
 }
 
@@ -264,7 +266,9 @@ void ScriptPage::runExternalScript (QString file)
   item->setText(fi.baseName());
   _itemList.insert(fi.baseName(), item);
   
-//  _scriptList.insert(d, script);
+  QStringList l;
+  l << tr("Script") << script->name() << tr("started");
+  g_middleMan->statusMessage(l.join(" "));
 
   script->startScript();
 }
@@ -292,12 +296,17 @@ void ScriptPage::done (QString name)
   _itemList.remove(name);
   delete item;
 
+  QStringList l;
+  l << tr("Script") << name << tr("ended");
+  g_middleMan->statusMessage(l.join(" "));
+
   ScriptDataBase db;
   Script script(this);
   script.setName(name);
   if (db.load(&script))
   {
-    qDebug() << "ScriptPage::done: script load error" << name;
+    // if an external script has run, we are ok to exit here
+//    qDebug() << "ScriptPage::done: script load error" << name;
     return;
   }
 

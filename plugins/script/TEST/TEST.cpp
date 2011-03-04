@@ -58,17 +58,18 @@ void TEST::init ()
   _buyPrice = 0;
   _sellPrice = 0;
   _closePrice = 0;
+  _date = 0;
   _name.clear();
-  _version.clear();
   _symbol.clear();
+  
   qDeleteAll(_trades);
+  _trades.clear();
 }
 
 int TEST::command (Command *command)
 {
   // PARMS:
   // NAME
-  // VERSION
   // SYMBOL
   // ENTER_LONG_NAME
   // ENTER_LONG_OP
@@ -82,6 +83,7 @@ int TEST::command (Command *command)
   // EXIT_SHORT_NAME
   // EXIT_SHORT_OP
   // EXIT_SHORT_NAME2
+  // DATE_NAME
   // BUY_NAME
   // SELL_NAME
   // CLOSE_NAME
@@ -108,14 +110,6 @@ int TEST::command (Command *command)
     return 1;
   }
 
-  // verify VERSION
-  _version = command->parm("VERSION");
-  if (_version.isEmpty())
-  {
-    qDebug() << _plugin << "::command: VERSION not found";
-    return 1;
-  }
-
   // verify SYMBOL
   _symbol = command->parm("SYMBOL");
   if (_symbol.isEmpty())
@@ -125,16 +119,16 @@ int TEST::command (Command *command)
   }
 
   // verify ENTER_LONG / EXIT_LONG
-  QString s = command->parm("ENTER_LONG");
+  QString s = command->parm("ENTER_LONG_NAME");
   if (! s.isEmpty())
   {
     if (setRule(QString("ENTER_LONG"), command))
       return 1;
 
-    s = command->parm("EXIT_LONG");
+    s = command->parm("EXIT_LONG_NAME");
     if (s.isEmpty())
     {
-      qDebug() << _plugin << "::command: missing EXIT_LONG";
+      qDebug() << _plugin << "::command: missing EXIT_LONG_NAME";
       return 1;
     }
     
@@ -143,21 +137,29 @@ int TEST::command (Command *command)
   }
 
   // verify ENTER_SHORT / EXIT_SHORT
-  s = command->parm("ENTER_SHORT");
+  s = command->parm("ENTER_SHORT_NAME");
   if (! s.isEmpty())
   {
     if (setRule(QString("ENTER_SHORT"), command))
       return 1;
 
-    s = command->parm("EXIT_SHORT");
+    s = command->parm("EXIT_SHORT_NAME");
     if (s.isEmpty())
     {
-      qDebug() << _plugin << "::command: missing EXIT_SHORT";
+      qDebug() << _plugin << "::command: missing EXIT_SHORT_NAME";
       return 1;
     }
 
     if (setRule(QString("EXIT_SHORT"), command))
       return 1;
+  }
+
+  // verify DATE_NAME
+  _date = i->line(command->parm("DATE_NAME"));
+  if (! _date)
+  {
+    qDebug() << _plugin << "::command: DATE_NAME not found" << command->parm("DATE_NAME");
+    return 1;
   }
 
   // verify BUY_NAME
@@ -316,7 +318,7 @@ int TEST::setRule (QString method, Command *command)
 
   // verify name
   QString s = key + "NAME";
-  Curve *input = i->line(s);
+  Curve *input = i->line(command->parm(s));
   if (! input)
   {
     qDebug() << _plugin << "::setRule:" << s << "not found";
@@ -326,7 +328,7 @@ int TEST::setRule (QString method, Command *command)
   // verify operator
   s = key + "OP";
   Operator oper;
-  Operator::Type op = oper.stringToOperator(s);
+  Operator::Type op = oper.stringToOperator(command->parm(s));
   if (op == -1)
   {
     qDebug() << _plugin << "::setRule: invalid" << s;
@@ -336,7 +338,7 @@ int TEST::setRule (QString method, Command *command)
   // verify name2/value
   // first check if its a name
   s = key + "NAME2";
-  Curve *input2 = i->line(s);
+  Curve *input2 = i->line(command->parm(s));
   if (! input2)
   {
     qDebug() << _plugin << "::setRule:" << s << "not found";
@@ -376,10 +378,15 @@ int TEST::save ()
 {
   Setting parms;
   parms.setData("NAME", _name);
-  parms.setData("VERSION", _version);
 
   TestDataBase db;
-  return db.saveTrades(parms, _trades);
+  db.transaction();
+  if (db.saveTrades(parms, _trades))
+    return 1;
+  
+  db.commit();
+  
+  return 0;
 }
 
 int TEST::test ()
@@ -510,6 +517,10 @@ int TEST::enterTrade (int status, int pos)
   if (! bar)
     return 1;
 
+  CurveBar *date = _date->bar(pos);
+  if (! date)
+    return 1;
+
   int volume = (_equity * _volume) / bar->data();
   if (! volume)
     return 1;
@@ -519,20 +530,25 @@ int TEST::enterTrade (int status, int pos)
   _trades.append(trade);
   
   trade->setData("SYMBOL", _symbol);
-  trade->setData("TYPE", status);
-  trade->setData("ENTER_DATE", pos);
+
+  if (status == 1)
+    trade->setData("TYPE", QString("L"));
+  else
+    trade->setData("TYPE", QString("S"));
+
+  trade->setData("ENTER_DATE", date->dateTime().toString("yyyy-MM-dd HH:mm:ss"));
   trade->setData("ENTER_PRICE", bar->data());
   trade->setData("PRICE_HIGH", bar->data());
   trade->setData("PRICE_LOW", bar->data());
   trade->setData("HIGH", bar->data());
   trade->setData("LOW", bar->data());
   trade->setData("VOLUME", volume);
+  trade->setData("BARS_HELD", 1);
+  trade->setData("ENTER_COMM", _enterCommission);
+  trade->setData("DRAWDOWN", 0);
   
   _equity -= value;
   _equity -= _enterCommission;
-
-//  _low = value;
-//  _high = value;
 
   return 0;
 }
@@ -550,21 +566,26 @@ int TEST::exitTrade (int pos, int signal)
   if (! trade)
     return 1;
   
-  trade->setData("EXIT_DATE", pos);
+  CurveBar *date = _date->bar(pos);
+  if (! date)
+    return 1;
+
+  trade->setData("EXIT_DATE", date->dateTime().toString("yyyy-MM-dd HH:mm:ss"));
   trade->setData("EXIT_PRICE", bar->data());
   trade->setData("SIGNAL", signal);
+  trade->setData("EXIT_COMM", _exitCommission);
 
   double profit = 0;
-  if (trade->getInt("TYPE"))
+  if (trade->data("TYPE") == "L")
     profit = trade->getDouble("VOLUME") * (bar->data() - trade->getDouble("ENTER_PRICE")); // long
   else
     profit = trade->getDouble("VOLUME") * (trade->getDouble("ENTER_PRICE") - bar->data()); // short
+  trade->setData("PROFIT", profit);
 
   _equity += trade->getDouble("VOLUME") * bar->data();
   _equity -= _exitCommission;
+  trade->setData("EQUITY", _equity);
   
-  trade->setData("PROFIT", profit);
-
   return 0;
 }
 
@@ -579,13 +600,16 @@ int TEST::updateTrade (int pos)
     return 1;
 
   double profit = 0;
-  if (trade->getInt("TYPE"))
+  if (trade->data("TYPE") == "L")
     profit = trade->getDouble("VOLUME") * (bar->data() - trade->getDouble("ENTER_PRICE")); // long
   else
     profit = trade->getDouble("VOLUME") * (trade->getDouble("ENTER_PRICE") - bar->data()); // short
 
   if (profit < trade->getDouble("LOW"))
+  {
     trade->setData("LOW", profit);
+    trade->setData("DRAWDOWN", profit);
+  }
 
   if (profit > trade->getDouble("HIGH"))
     trade->setData("HIGH", profit);
@@ -596,6 +620,8 @@ int TEST::updateTrade (int pos)
   if (bar->data() < trade->getDouble("PRICE_LOW"))
     trade->setData("PRICE_LOW", bar->data());
 
+  trade->setData("BARS_HELD", trade->getInt("BARS_HELD") + 1);
+  
   return 0;
 }
 

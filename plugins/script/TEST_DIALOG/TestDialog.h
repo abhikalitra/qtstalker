@@ -19,35 +19,38 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Chart object database. Used for storing/returning chart object settings for any chart objects
-// created on charts.
-// *************************************************************************************************
+#ifndef TEST_DIALOG_DIALOG_HPP
+#define TEST_DIALOG_DIALOG_HPP
 
-
-#ifndef TEST_DATA_BASE_HPP
-#define TEST_DATA_BASE_HPP
-
-#include <QtSql>
 #include <QStringList>
+#include <QTextEdit>
+#include <QTreeWidget>
+#include <QComboBox>
 #include <QList>
 
+#include "Dialog.h"
 #include "Setting.h"
 
-class TestDataBase
+class TestDialog : public Dialog
 {
+  Q_OBJECT
+
   public:
-    TestDataBase ();
-    void init ();
-    int trades (Setting, QList<Setting> &);
-    int deleteTrades (Setting);
-    int saveTrades (Setting, QList<Setting *> &);
-    int names (QStringList &);
-    void transaction ();
-    void commit ();
+    TestDialog (QWidget *, Command *);
+    void createGUI ();
+    void updateTrades (QList<Setting> &);
+    void updateReport (QList<Setting> &);
+
+  public slots:
+    void done ();
+    void loadSettings ();
+    void saveSettings ();
+    void update ();
 
   private:
-    QSqlDatabase _db;
+    QComboBox *_tests;
+    QTreeWidget *_tradeList;
+    QTextEdit *_report;
 };
 
 #endif

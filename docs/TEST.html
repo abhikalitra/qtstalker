@@ -63,6 +63,7 @@ EXIT_SHORT_OP = &lt;<a href="Operators.html">OPERATOR</a>&gt; -
 *optional if not testing a short trades<br>
 EXIT_SHORT_NAME2 = &lt;VARIABLE NAME&gt; - *optional if not testing a
 short trades<br>
+DATE_NAME = &lt;VARIABLE NAME&gt; - dates used for trades<br>
 BUY_NAME = &lt;VARIABLE NAME&gt; - prices used for entering trades<br>
 SELL_NAME = &lt;VARIABLE NAME&gt; - prices used for exiting trades<br>
 CLOSE_NAME = &lt;VARIABLE NAME&gt; - prices used for EOD open trades<br>
@@ -84,7 +85,11 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=TEST,NAME=test1,VERSION=1,SYMBOL=XNYS:GOOG,ENTER_LONG_NAME=close,ENTER_LONG_OP=GT,ENTER_LONG_NAME2=emaHigh,EXIT_LONG_NAME=close,EXIT_LONG_OP=LT,EXIT_LONG_NAME2=emaLow,BUY_NAME=open,SELL_NAME=close,CLOSE_NAME=close<br>
+      <td style="vertical-align: top;">PLUGIN=TEST, NAME=test1,
+VERSION=1, SYMBOL=XNYS:GOOG, ENTER_LONG_NAME=close, ENTER_LONG_OP=GT,
+ENTER_LONG_NAME2=emaHigh, EXIT_LONG_NAME=close, EXIT_LONG_OP=LT,
+EXIT_LONG_NAME2=emaLow, DATE_NAME=date, BUY_NAME=open, SELL_NAME=close,
+CLOSE_NAME=close<br>
       <br>
       </td>
     </tr>

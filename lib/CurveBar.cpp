@@ -100,3 +100,13 @@ int CurveBar::highLow (double &h, double &l)
 
   return rc;
 }
+
+void CurveBar::setDateTime (QDateTime d)
+{
+  _dateTime = d;
+}
+
+QDateTime CurveBar::dateTime ()
+{
+  return _dateTime;
+}
