@@ -60,10 +60,13 @@ Ensure that '<code>qmake</code>' and friends are available (e.g. add
 href="http://en.wikipedia.org/wiki/Environment_variable">environment
 variable</a>).
 Do '<code>which qmake</code>' and '<code>which lupdate</code>' etc. to ensure
-that these are properly installed. </p>
+that these are properly installed.
+Ensure that its '<code>qtdemo</code>' application can be started.
+</p>
 
 <p><strong>Important (Qwt):</strong> Ensure that Qwt is installed properly.
 Follow its installation instructions, especially about the "shared library".
+Ensure that its "examples" can be used.
 </p>
 
 <p><strong>Important (TA-Lib):</strong> Ensure that TA-Lib is installed
@@ -93,7 +96,7 @@ ta-lib-config</code>' to ensure that this is properly installed. </p>
 </ul>
 <p>See instructions for <a href="install-macx.html">Mac OS X</a>.</p>
 
-<h4>Trouble building?</h4>
+<h4>Trouble building or running?</h4>
 
 <p>
 Perhaps there was trouble finding your supporting products, for example
@@ -101,6 +104,10 @@ if Qt or Qwt or TA-Lib is installed at a non-standard location, then edit the
 <code>qtstalker.config</code> file to specify your locations
 (e.g. "<code>INCLUDEPATH += /opt/local/include/ta-lib</code>") and then do
 '<code>make distclean</code>' before doing the normal configure-and-make process.
+</p>
+
+<p>
+Ensure that the Qt and Qwt examples and demonstrations can be utilised.
 </p>
 
 <h2 id="where">Where does stuff get installed</h2>
