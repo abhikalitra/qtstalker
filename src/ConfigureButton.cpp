@@ -109,21 +109,6 @@ void ConfigureButton::createMenu ()
 
 void ConfigureButton::startDocumentation ()
 {
-/*
-FIXME: Due to the Qt issue 262508 (see docs/docs.html) we need to show them
-how to remove the stale cache file. This is complicated to report the location
-on different OSs (but perhaps i do not understand).
-This workaround should all go away when the Qt bug is fixed, but only if we
-raise the minimum Qt version.
-*/
-
-  QString location = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-#ifdef Q_WS_MAC
-  location.insert(location.count() - QCoreApplication::applicationName().count(),
-    QCoreApplication::organizationName() + "/");
-#endif
-  qDebug("DocsAction::startDocumentation: Documentation cache: %s/", qPrintable(location));
-
   Doc *doc = new Doc;
   doc->showDocumentation("index.html");
 }
