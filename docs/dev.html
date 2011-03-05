@@ -26,26 +26,25 @@
 </div>
 </div>
 
-<h1><u>Using CVS to keep on the bleeding edge</u></h1>
+<h1>Using CVS to keep on the bleeding edge</h1>
 
 <p>The source code is maintained in Concurrent Version System (CVS) at
-SourceForge. To get your local working copy of the current codebase, go to the
+SourceForge.</p>
+
+<p>
+To get your local working copy of the current codebase, go to the
 <a href="https://sourceforge.net/projects/qtstalker/develop">sourceforge
-page</a>. Follow the instructions to get your local working copy installed. </p>
+page</a>. Follow the instructions to get your local working copy downloaded.
+Use the "modulename" of "<code>qtstalker</code>" to get the trunk of our
+development code.
+</p>
 
-<p>Or simply enter (copy&amp;paste) the following in a terminal that will
-create the folder <code>qtstalker</code> in your current working directory and
-download the latest version into it.</p>
+<p>If you get an error like "<code>command not found</code>" then you need to
+install
+"<a href="http://en.wikipedia.org/wiki/Concurrent_Versions_System">CVS</a>".
+</p>
 
-<p><code>cvs -z3
--d:pserver:anonymous@qtstalker.cvs.sourceforge.net:/cvsroot/qtstalker checkout
--P qtstalker</code></p>
-
-<p>If you get an error like <code>command not found</code> you have to install
-<em>cvs</em>. Ubuntu/Debian users have simply to install the package
-<em>cvs</em></p>
-
-<p>To build this version just do exactly the same as you would to <a
+<p>To build this version of Qtstalker, just do exactly the same as you would to <a
 href="install.html">build</a> a release tarball. Now edit some source code,
 build, install, see your changes, and send the project a Patch to incorporate
 your wonderful new features. </p>
@@ -81,7 +80,13 @@ package is very useful. For example, doing 'cvsu' shows local modifications.
 <p>You could keep two versions on your system - a "stable" version and a "test"
 version. Both versions can be from CVS if you like, as long as you deem one of
 them stable. Flipping back and forth between versions is just a matter of
-installing one over the other. A <tt>'make install'</tt> will overwrite
+installing one in place of the other.
+Just remember to do '<code>sudo make uninstall</code>' etc. from the
+corresponding working copy.
+</p>
+
+<p>
+ A <tt>'make install'</tt> will overwrite
 everything except your data and preferences. If you find that the test version
 has problems, then just install the stable version. As a precaution, backup
 your ~/.qtstalker directory before installing a
