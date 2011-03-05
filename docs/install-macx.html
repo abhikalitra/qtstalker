@@ -25,36 +25,48 @@
 <ul>
   <li>Mac OS X Leopard (10.5) or Snow Leopard (10.6)</li>
   <li>Apple Xcode Tools. To build Qtstalker from sources.</li>
+  <li>Dependencies: Qt and Qwt and TA-Lib</li>
 </ul>
 <h2 id="install">Installation</h2>
 <p> See the general <a href="install.html">Installation</a>
-instructions for overview, requirements, and tips. </p>
+instructions for overview, requirements, dependencies, and tips. </p>
 <p> There are other build systems and IDEs, however this works from the
-command-line with minimal changes to Qtstalker sources. </p>
+command-line with minimal changes to Qtstalker sources.
+</p>
+<p>
+The dependencies are easy to install from their source.
+You might be able to install these using package managers. 
+However use the examples of each dependency to ensure proper installation,
+before complaining about Qtstalker.
+</p>
 <h3 id="ta-lib">Install TA-Lib</h3>
-<p> Install TA-Lib 0.4.0 from source.
-This is easy. (It could instead be installed via <a
- href="http://macports.org/">MacPorts</a>.) </p>
-<pre>./configure<br>make<br>sudo make install </pre>
+<p> Install TA-Lib 0.4.0 from source. </p>
+<pre>./configure
+make
+sudo make install
+</pre>
 <p> This will install TA-Lib at <code>/usr/local</code> ... See
 important <a href="install.html#source">notes</a> about ensuring
 proper installation and configuration if at a non-standard location. </p>
 <h3 id="qt">Install Qt</h3>
-<p> Install Qt 4.6 or newer from source. (This could instead be
-installed via <a href="http://macports.org/">MacPorts</a>.) </p>
+<p> Install Qt 4.6 or newer from source. </p>
 <p> For Leopard this is straight-forward: </p>
-<pre>./configure<br>make<br>sudo make install </pre>
+<pre>./configure
+make
+sudo make install
+</pre>
 <p> For Snow Leopard use this configuration: </p>
-<pre>./configure -cocoa -arch x86_64<br>make<br>sudo make install </pre>
+<pre>./configure -cocoa -arch x86_64
+make
+sudo make install
+</pre>
 <p> See important <a href="install.html#source">notes</a> about
 ensuring proper installation and adding to your <code>$PATH</code>
 <a href="http://en.wikipedia.org/wiki/Environment_variable">environment
 variable</a>
 to ensure that '<code>qmake</code>' etc can be found. </p>
 <h3 id="qwt">Install Qwt</h3>
-<p> Install Qwt 5.2 or newer from source.
-(It could instead be installed via <a href="http://macports.org/">MacPorts</a>.)
-</p>
+<p> Install Qwt 5.2 or newer from source. </p>
 <p> See important <a href="install.html#source">notes</a> about
 ensuring proper installation and adding to your <code>$DYLD_LIBRARY_PATH</code>
 <a href="http://en.wikipedia.org/wiki/Environment_variable">environment
@@ -80,7 +92,7 @@ sudo make install
 <pre>/usr/local/bin/qtstalker.app/Contents/MacOS/qtstalker</pre>
 <h3 id="where">Where does stuff get installed</h3>
 <p>See the main <a href="install.html#where">notes</a> about this topic.</p>
-<p>Mac OS X also stores user preferences information at:</p>
+<p>Mac OS X stores user preferences information at:</p>
 <pre>~/Library/Preferences/*qtstalker*.plist</pre>
 </div>
 <div id="bottom-spacer">
