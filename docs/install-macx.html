@@ -74,13 +74,15 @@ variable</a>
 to ensure that its shared library can be found. </p>
 <h3 id="build">Building Qtstalker</h3>
 <p> Prepare for compiling Qtstalker: </p>
-<p> edit qtstalker.config ... to add the following lines
+<p>By default Qt and Qwt are installed at a non-standard location
+(which is difficult for Qtstalker to automatically guess). So edit the
+<code>qtstalker.config</code> file to add the following lines
 (using whatever relevant version numbers): </p>
 <pre>INCLUDEPATH += /usr/local/Trolltech/Qt-4.6.3/include/Qt
 LIBS += -L/usr/local/Trolltech/Qt-4.6.3/lib
 INCLUDEPATH += /usr/local/qwt-5.2.1/include
 LIBS += -L/usr/local/qwt-5.2.1/lib</pre>
-<p> For Snow Leopard, edit configure ... to tweak the 'qmake'
+<p> For Snow Leopard, edit our "<code>configure</code>" file to tweak the "qmake"
 invocation to include "CONFIG += qt x86_64" </p>
 <p> Now compile Qtstalker: </p>
 <pre>./configure
