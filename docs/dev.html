@@ -64,7 +64,7 @@ make distclean
 
 <p>
 From time-to-time you may also need to remove your user home directory with
-'<code>rm -rf ~/.qtstalker'.
+'<code>rm -rf ~/.qtstalker'
 </p>
 
 <p>
@@ -89,13 +89,14 @@ corresponding working copy.
  A <tt>'make install'</tt> will overwrite
 everything except your data and preferences. If you find that the test version
 has problems, then just install the stable version. As a precaution, backup
-your ~/.qtstalker directory before installing a
+your ~/.qtstalker directory and user preferences
+(see <a href="install.html#where">notes</a>)
+before installing a
 test version, so that you have a clean data tree to revert to in case of data
 corruption. You should never get data corruption anyway, but as always it is
 better to be safe. </p>
-<a name="patch"></a> 
 
-<h2><u>Contributing patches to the project</u></h2>
+<h2 id="patch">Contributing patches to the project</h2>
 
 <p>Contributions are the life-blood of a community project. You can contribute
 in many ways, such as: discussion on the mailing list; helping other users;
@@ -106,7 +107,7 @@ sending patches for code or documentation. </p>
 and the version in the central repository. To create a patch, use... </p>
 <pre>cd /local/cvs/qtstalker
 cvs -q update -dP
-cvs diff -u &gt; mypatch.diff</pre>
+cvs diff -u &gt; mypatch.txt</pre>
 
 <p>...and add it via the
 <a href="https://sourceforge.net/tracker/?group_id=25632">Tracker</a>
@@ -119,16 +120,15 @@ purpose of your patch.</p>
 <p>Of course you do not need CVS just to send a patch. If you are using a
 release version then make a backup copy of the original file and do...</p>
 
-<p><code>diff -u file.html.orig file.html &gt; mypatch.diff</code> </p>
+<p><code>diff -u file.html.orig file.html &gt; mypatch.txt</code> </p>
 
-<h2><u>More information about CVS</u></h2>
+<h2 id="cvs-info">More information about CVS</h2>
 
 <p>See the <a href="http://cvsbook.red-bean.com/">CVS Book</a> and many more
-links e.g at <a
+links e.g. at <a
 href="http://en.wikipedia.org/wiki/Concurrent_Versions_System">wikipedia.org</a></p>
-<a name="patch-apply"></a> 
 
-<h2><u>Apply a Patch</u></h2>
+<h2 id="patch-apply">Apply a Patch</h2>
 
 <p>If there are new patches posted in the Tracker section, which are currently
 not included in the cvs tree, you can download them and apply them to your
@@ -143,8 +143,7 @@ your cvs sources with the abovementioned command:</p>
 
 <p><code>cvs -q update -d</code></p>
 
-<a name="docs"></a> 
-<h2><u>Enhancing documentation</u></h2>
+<h2 id="docs">Enhancing documentation</h2>
 
 <p>The intention is to keep the documentation as simple as possible and link to
 tadoc.org where relevant. </p>
@@ -162,6 +161,9 @@ id="warnDoc"&gt;&lt;/div&gt;</code> element. </p>
 
 <p>See other info about the "indicator docs" help system.</p>
 
+</div>
+<div id="bottom-spacer">
+<!-- Spacer so that can link directly to certain items in the list above. -->
 </div>
 </body>
 </html>
