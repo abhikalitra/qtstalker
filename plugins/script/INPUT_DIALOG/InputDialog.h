@@ -19,39 +19,37 @@
  *  USA.
  */
 
-#ifndef TEST_DIALOG_DIALOG_HPP
-#define TEST_DIALOG_DIALOG_HPP
+#ifndef INPUT_DIALOG_DIALOG_HPP
+#define INPUT_DIALOG_DIALOG_HPP
 
+#include <QDoubleSpinBox>
+#include <QSpinBox>
+#include <QLineEdit>
+#include <QHash>
 #include <QStringList>
-#include <QTreeWidget>
-#include <QComboBox>
-#include <QList>
 
-#include "Dialog.h"
 #include "Setting.h"
+#include "Dialog.h"
 
-class TestDialog : public Dialog
+class InputDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    TestDialog (QWidget *, Command *);
+    InputDialog (QWidget *, Command *);
     void createGUI ();
-    void updateTrades (QString);
+    void newInteger (QString &key, QString &label, QString &value);
+    void newDouble (QString &key, QString &label, QString &value);
+    void newText (QString &key, QString &label, QString &value);
 
   public slots:
-    void loadSettings ();
-    void saveSettings ();
-    void summarySelected (QTreeWidgetItem *);
-    void updateSummary ();
-    void updateSummary2 ();
-    void addSummary (Setting);
-    void deleteVersions ();
+    void done ();
 
   private:
-    QComboBox *_tests;
-    QTreeWidget *_tradeList;
-    QTreeWidget *_summary;
+    QStringList _typeList;
+    QHash<QString, QDoubleSpinBox *> _doubles;
+    QHash<QString, QSpinBox *> _integers;
+    QHash<QString, QLineEdit *> _texts;
 };
 
 #endif

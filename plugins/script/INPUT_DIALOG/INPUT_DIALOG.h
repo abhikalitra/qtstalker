@@ -19,39 +19,23 @@
  *  USA.
  */
 
-#ifndef TEST_DIALOG_DIALOG_HPP
-#define TEST_DIALOG_DIALOG_HPP
+#ifndef INPUT_DIALOG_HPP
+#define INPUT_DIALOG_HPP
 
-#include <QStringList>
-#include <QTreeWidget>
-#include <QComboBox>
-#include <QList>
+#include "ScriptPlugin.h"
 
-#include "Dialog.h"
-#include "Setting.h"
-
-class TestDialog : public Dialog
+class INPUT_DIALOG : public ScriptPlugin
 {
   Q_OBJECT
 
   public:
-    TestDialog (QWidget *, Command *);
-    void createGUI ();
-    void updateTrades (QString);
-
-  public slots:
-    void loadSettings ();
-    void saveSettings ();
-    void summarySelected (QTreeWidgetItem *);
-    void updateSummary ();
-    void updateSummary2 ();
-    void addSummary (Setting);
-    void deleteVersions ();
-
-  private:
-    QComboBox *_tests;
-    QTreeWidget *_tradeList;
-    QTreeWidget *_summary;
+    INPUT_DIALOG ();
+    int command (Command *);
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

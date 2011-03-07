@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,39 +19,33 @@
  *  USA.
  */
 
-#ifndef TEST_DIALOG_DIALOG_HPP
-#define TEST_DIALOG_DIALOG_HPP
+#ifndef SUMMARY_THREAD_HPP
+#define SUMMARY_THREAD_HPP
 
+#include <QThread>
 #include <QStringList>
-#include <QTreeWidget>
-#include <QComboBox>
 #include <QList>
 
-#include "Dialog.h"
 #include "Setting.h"
 
-class TestDialog : public Dialog
+class SummaryThread : public QThread
 {
   Q_OBJECT
 
+  signals:
+    void signalAdd (Setting);
+    void signalDone ();
+    
   public:
-    TestDialog (QWidget *, Command *);
-    void createGUI ();
-    void updateTrades (QString);
+    SummaryThread (QObject *, QString);
+    void stop ();
 
-  public slots:
-    void loadSettings ();
-    void saveSettings ();
-    void summarySelected (QTreeWidgetItem *);
-    void updateSummary ();
-    void updateSummary2 ();
-    void addSummary (Setting);
-    void deleteVersions ();
+  protected:
+    void run();
 
   private:
-    QComboBox *_tests;
-    QTreeWidget *_tradeList;
-    QTreeWidget *_summary;
+    QString _name;
+    int _stopFlag;
 };
 
 #endif

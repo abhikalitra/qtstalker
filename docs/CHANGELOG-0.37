@@ -1045,3 +1045,12 @@
 
            Added TEST_DIALOG plugin. Not functional yet.
 
+20110306:  Removed the INTEGER_DIALOG plugin.
+
+           Added the INPUT_DIALOG plugin.
+
+           Added a test script Best_MA.pl to optimize the best performing MA for a given symbol.
+
+           Added script TestDialog.pl that displays the Test Dialog database browser.
+
+

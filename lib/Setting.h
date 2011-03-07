@@ -28,6 +28,7 @@
 #include <QDateTime>
 #include <QColor>
 #include <QFont>
+#include <QMetaType>
 
 class Setting
 {
@@ -58,5 +59,8 @@ class Setting
   protected:
     QHash<QString, QString> dict;
 };
+
+// this is for passing Indicator data between threads
+Q_DECLARE_METATYPE(Setting)
 
 #endif

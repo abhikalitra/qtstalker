@@ -21,6 +21,8 @@
 
 #include "TEST.h"
 #include "Globals.h"
+#include "Strip.h"
+#include "TestSignal.h"
 #include "TestDataBase.h"
 
 #include <QtDebug>
@@ -51,6 +53,7 @@ void TEST::init ()
   _enterCommission = 0;
   _exitCommission = 0;
   _equity = 0;
+  _startEquity = 0;
   _enterLongOp = Operator::_EQUAL;
   _exitLongOp = Operator::_EQUAL;
   _enterShortOp = Operator::_EQUAL;
@@ -61,6 +64,7 @@ void TEST::init ()
   _date = 0;
   _name.clear();
   _symbol.clear();
+  _version.clear();
   
   qDeleteAll(_trades);
   _trades.clear();
@@ -70,6 +74,7 @@ int TEST::command (Command *command)
 {
   // PARMS:
   // NAME
+  // VERSION
   // SYMBOL
   // ENTER_LONG_NAME
   // ENTER_LONG_OP
@@ -107,6 +112,14 @@ int TEST::command (Command *command)
   if (_name.isEmpty())
   {
     qDebug() << _plugin << "::command: NAME not found";
+    return 1;
+  }
+
+  // verify VERSION
+  _version = command->parm("VERSION");
+  if (_version.isEmpty())
+  {
+    qDebug() << _plugin << "::command: VERSION not found";
     return 1;
   }
 
@@ -274,14 +287,18 @@ int TEST::command (Command *command)
     }
 
     _equity = t;
+    _startEquity = t;
   }
   else
-    _equity = 1000;
+  {
+    _equity = 10000;
+    _startEquity = 10000;
+  }
 
   if (test())
     return 1;
 
-  if (save())
+  if (saveSummary())
     return 1;
 
   command->setReturnCode("0");
@@ -374,39 +391,21 @@ int TEST::setRule (QString method, Command *command)
   return 0;
 }
 
-int TEST::save ()
-{
-  Setting parms;
-  parms.setData("NAME", _name);
-
-  TestDataBase db;
-  db.transaction();
-  if (db.saveTrades(parms, _trades))
-    return 1;
-  
-  db.commit();
-  
-  return 0;
-}
-
 int TEST::test ()
 {
   int status = 0;
 
   QList<int> keys;
-  if (_enterLong)
-    _enterLong->keys(keys);
-  if (_enterShort)
-    _enterShort->keys(keys);
-
+  _closePrice->keys(keys);
   if (! keys.count())
     return 1;
 
   Operator oper;
   
-  int pos = keys.at(0);
-  for (; pos < keys.count(); pos++)
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
+    int pos = keys.at(loop);
     switch (status)
     {
       case 1: // long trade
@@ -419,16 +418,16 @@ int TEST::test ()
           break;
         }
         
-        CurveBar *bar = _exitLong->bar(keys.at(pos));
+        CurveBar *bar = _exitLong->bar(pos);
         if (bar)
         {
-          CurveBar *bar2 = _exitLong2->bar(keys.at(pos));
+          CurveBar *bar2 = _exitLong2->bar(pos);
           if (bar2)
           {
             if (oper.test(bar->data(), _exitLongOp, bar2->data()))
             {
               status = 0;
-              exitTrade(pos, status);
+              exitTrade(pos, (int) TestSignal::_EXIT_LONG);
               continue;
             }
           }
@@ -444,16 +443,16 @@ int TEST::test ()
           status = 0;
         }
 
-        CurveBar *bar = _exitShort->bar(keys.at(pos));
+        CurveBar *bar = _exitShort->bar(pos);
         if (bar)
         {
-          CurveBar *bar2 = _exitShort2->bar(keys.at(pos));
+          CurveBar *bar2 = _exitShort2->bar(pos);
           if (bar2)
           {
             if (oper.test(bar->data(), _exitShortOp, bar2->data()))
             {
               status = 0;
-              exitTrade(pos, status);
+              exitTrade(pos, (int) TestSignal::_EXIT_SHORT);
               continue;
             }
           }
@@ -462,13 +461,17 @@ int TEST::test ()
       }
       default:  // no trade
       {
+        // if we are on the last bar, dont enter any trades
+        if (loop == keys.count() - 1)
+          continue;
+        
         // check if we enter long trade
         if (_enterLong)
         {
-          CurveBar *bar = _enterLong->bar(keys.at(pos));
+          CurveBar *bar = _enterLong->bar(pos);
           if (bar)
           {
-            CurveBar *bar2 = _enterLong2->bar(keys.at(pos));
+            CurveBar *bar2 = _enterLong2->bar(pos);
             if (bar2)
             {
               if (oper.test(bar->data(), _enterLongOp, bar2->data()))
@@ -485,10 +488,10 @@ int TEST::test ()
         // check if we enter short trade
         if (_enterShort)
         {
-          CurveBar *bar = _enterShort->bar(keys.at(pos));
+          CurveBar *bar = _enterShort->bar(pos);
           if (bar)
           {
-            CurveBar *bar2 = _enterShort2->bar(keys.at(pos));
+            CurveBar *bar2 = _enterShort2->bar(pos);
             if (bar2)
             {
               if (oper.test(bar->data(), _enterShortOp, bar2->data()))
@@ -505,14 +508,19 @@ int TEST::test ()
     }
   }
 
+  // check if this is the last bar and close the trade
+  Setting *trade = _trades.at(_trades.count() - 1);
+  if (! trade)
+    return 1;
+  QString s = trade->data("EXIT_DATE");
+  if (s.isEmpty())
+    exitTrade(loop - 1, (int) TestSignal::_TEST_END);
+
   return 0;
 }
 
 int TEST::enterTrade (int status, int pos)
 {
-  if (! _buyPrice)
-    return 1;
-  
   CurveBar *bar = _buyPrice->bar(pos);
   if (! bar)
     return 1;
@@ -555,9 +563,6 @@ int TEST::enterTrade (int status, int pos)
 
 int TEST::exitTrade (int pos, int signal)
 {
-  if (! _sellPrice)
-    return 1;
-
   CurveBar *bar = _sellPrice->bar(pos);
   if (! bar)
     return 1;
@@ -572,7 +577,10 @@ int TEST::exitTrade (int pos, int signal)
 
   trade->setData("EXIT_DATE", date->dateTime().toString("yyyy-MM-dd HH:mm:ss"));
   trade->setData("EXIT_PRICE", bar->data());
-  trade->setData("SIGNAL", signal);
+  QString s;
+  TestSignal ts;
+  ts.signalText((TestSignal::Signal) signal, s);
+  trade->setData("SIGNAL", s);
   trade->setData("EXIT_COMM", _exitCommission);
 
   double profit = 0;
@@ -621,7 +629,116 @@ int TEST::updateTrade (int pos)
     trade->setData("PRICE_LOW", bar->data());
 
   trade->setData("BARS_HELD", trade->getInt("BARS_HELD") + 1);
-  
+
+  return 0;
+}
+
+int TEST::saveSummary ()
+{
+  int win = 0;
+  int loss = 0;
+  double winTotal = 0;
+  double lossTotal = 0;
+  double profit = 0;
+  double drawDown = 0;
+  int maxBars = 0;
+  int minBars = 99999999;
+  int totalBars = 0;
+  double commissions = 0;
+  double equity = 0;
+  int loop = 0;
+  Setting report;
+  for (; loop < _trades.count(); loop++)
+  {
+    Setting *trade = _trades.at(loop);
+
+    if (trade->getDouble("PROFIT") < 0)
+    {
+      loss++;
+      lossTotal += trade->getDouble("PROFIT");
+    }
+    else
+    {
+      win++;
+      winTotal += trade->getDouble("PROFIT");
+    }
+
+    profit += trade->getDouble("PROFIT");
+
+    int bars = trade->getInt("BARS_HELD");
+    totalBars += bars;
+    if (bars < minBars)
+      minBars = bars;
+    if (bars > maxBars)
+      maxBars = bars;
+
+    if (trade->getDouble("DRAWDOWN") < drawDown)
+      drawDown = trade->getDouble("DRAWDOWN");
+
+    commissions += trade->getDouble("ENTER_COMM");
+    commissions += trade->getDouble("EXIT_COMM");
+
+    equity = trade->getDouble("EQUITY");
+  }
+
+  Strip strip;
+  QString s;
+  double t = 0;
+  if (winTotal == 0 || lossTotal == 0)
+    t = 0;
+  else
+    t = (double) (winTotal / lossTotal);
+  strip.strip(t, 2, s);
+  report.setData("PROFIT_FACTOR", s);
+
+  if (winTotal == 0 || lossTotal == 0)
+    t = 0;
+  else
+    t = (double) ((winTotal / (double) win) / (lossTotal / (double) loss));
+  strip.strip(t, 2, s);
+  report.setData("PAYOFF_RATIO", s);
+
+  t = (double) ((equity - _startEquity) / _startEquity) * 100;
+  strip.strip(t, 2, s);
+  report.setData("EQUITY_GAIN", s);
+
+  report.setData("EQUITY", equity);
+  report.setData("TOTAL_PROFIT", profit);
+
+  t = (double) (((double) win / (double) _trades.count()) * 100);
+  strip.strip(t, 2, s);
+  report.setData("PROFITABLE_TRADES", s);
+
+  report.setData("TOTAL_TRADES", _trades.count());
+  report.setData("WIN_TRADES", win);
+  report.setData("LOSE_TRADES", loss);
+  report.setData("MAX_DRAWDOWN", drawDown);
+
+  t = (double) (profit / (double) _trades.count());
+  strip.strip(t, 2, s);
+  report.setData("AVG_PROFIT_LOSS", s);
+
+  report.setData("TOTAL_WIN_TRADES", winTotal);
+  report.setData("TOTAL_LOSE_TRADES", lossTotal);
+
+  t = (int) totalBars / _trades.count();
+  report.setData("AVG_BARS_HELD", t);
+
+  report.setData("MIN_BARS_HELD", minBars);
+  report.setData("MAX_BARS_HELD", maxBars);
+  report.setData("TOTAL_COMMISSIONS", commissions);
+
+  // save summary
+  report.setData("NAME", _name);
+  report.setData("VERSION", _version);
+  report.setData("SYMBOL", _symbol);
+
+  TestDataBase db;
+  db.transaction();
+  if (db.saveSummary(report, _trades))
+    return 1;
+  db.commit();
+
   return 0;
 }
 

@@ -29,6 +29,7 @@
 Dialog::Dialog (QWidget *p) : QDialog (p)
 {
   _helpFile = "main.html";
+  _command = 0;
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
   // main vbox
@@ -71,6 +72,10 @@ Dialog::Dialog (QWidget *p) : QDialog (p)
 // virtual
 void Dialog::done ()
 {
+  if (_command)
+    _command->setReturnCode("0");
+  saveSettings();
+  accept();
 }
 
 // virtual

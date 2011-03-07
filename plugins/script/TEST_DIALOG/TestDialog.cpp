@@ -22,11 +22,16 @@
 #include "TestDialog.h"
 #include "Globals.h"
 #include "TestDataBase.h"
+#include "../../../pics/refresh.xpm"
+#include "../../../pics/delete.xpm"
+#include "SummaryThread.h"
 
 #include <QtDebug>
 #include <QSettings>
 #include <QGroupBox>
 #include <QToolBar>
+#include <QToolButton>
+#include <QApplication>
 
 TestDialog::TestDialog (QWidget *p, Command *c) : Dialog (p)
 {
@@ -41,52 +46,82 @@ TestDialog::TestDialog (QWidget *p, Command *c) : Dialog (p)
   createGUI();
 
   loadSettings();
+
+  updateSummary();
 }
 
 void TestDialog::createGUI ()
 {
   int pos = 0;
-  
+
   QToolBar *toolBar = new QToolBar;
   _vbox->insertWidget(pos++, toolBar);
 
+  // names
   _tests = new QComboBox;
   _tests->setToolTip(tr("Test Name"));
-  connect(_tests, SIGNAL(activated(int)), this, SLOT(update()));
+  connect(_tests, SIGNAL(activated(int)), this, SLOT(updateSummary()));
   toolBar->addWidget(_tests);
 
-  QStringList l;
-  l << tr("Symbol") << tr("Type") << tr("Volume") << tr("Enter Date") << tr("Enter Price") << tr("Exit Date");
-  l << tr("Exit Price") << tr("Profit") << tr("Signal") << tr("Equity");
+  // refresh button
+  QToolButton *tb = new QToolButton;
+  tb->setIcon(QIcon(refresh_xpm));
+  tb->setToolTip(tr("Refresh"));
+  connect(tb, SIGNAL(clicked()), this, SLOT(updateSummary()));
+  toolBar->addWidget(tb);
 
+  // refresh button
+  tb = new QToolButton;
+  tb->setIcon(QIcon(delete_xpm));
+  tb->setToolTip(tr("Delete version"));
+  connect(tb, SIGNAL(clicked()), this, SLOT(deleteVersions()));
+  toolBar->addWidget(tb);
+
+  // summary
   QGroupBox *gbox = new QGroupBox;
+  gbox->setTitle(tr("Summary"));
+  _vbox->insertWidget(pos++, gbox);
+
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setMargin(0);
+  vbox->setSpacing(0);
+  gbox->setLayout(vbox);
+
+  QStringList l;
+  l << tr("Ver.") << tr("Symbol") << tr("P Factor") << tr("Payoff Ratio") << tr("% Gain");
+  l << tr("Equity") << tr("T Profit") << tr("% P Trades") << tr("T Trades");
+  l << tr("Win Trades") << tr("Loss Trades") << tr("Max Draw") << tr("Avg P/L");
+  l << tr("T Win Trades") << tr("T Loss Trades") << tr("Avg Bars");
+  l << tr("Min Bars") << tr("Max Bars") << tr("T Comm.");
+
+  _summary = new QTreeWidget;
+  _summary->setSortingEnabled(TRUE);
+  _summary->setRootIsDecorated(FALSE);
+  _summary->setHeaderLabels(l);
+  _summary->setSelectionMode(QAbstractItemView::SingleSelection);
+  connect(_summary, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(summarySelected(QTreeWidgetItem *)));
+  vbox->addWidget(_summary);
+
+  // trades  
+  gbox = new QGroupBox;
   gbox->setTitle(tr("Trades"));
   _vbox->insertWidget(pos++, gbox);
 
-  QVBoxLayout *tvbox = new QVBoxLayout;
-  tvbox->setMargin(0);
-  tvbox->setSpacing(0);
-  gbox->setLayout(tvbox);
+  vbox = new QVBoxLayout;
+  vbox->setMargin(0);
+  vbox->setSpacing(0);
+  gbox->setLayout(vbox);
+
+  l.clear();
+  l << tr("Type") << tr("Volume") << tr("Enter Date") << tr("Enter Price") << tr("Exit Date");
+  l << tr("Exit Price") << tr("Profit") << tr("Signal") << tr("Equity");
 
   _tradeList = new QTreeWidget;
   _tradeList->setSortingEnabled(TRUE);
   _tradeList->setRootIsDecorated(FALSE);
   _tradeList->setHeaderLabels(l);
   _tradeList->setSelectionMode(QAbstractItemView::SingleSelection);
-  tvbox->addWidget(_tradeList);
-
-  gbox = new QGroupBox;
-  gbox->setTitle(tr("Report"));
-  _vbox->insertWidget(pos++, gbox);
-
-  tvbox = new QVBoxLayout;
-  tvbox->setMargin(0);
-  tvbox->setSpacing(0);
-  gbox->setLayout(tvbox);
-
-  _report = new QTextEdit;
-  _report->setReadOnly(TRUE);
-  tvbox->addWidget(_report);
+  vbox->addWidget(_tradeList);
 
   _message->hide();
 }
@@ -95,13 +130,23 @@ void TestDialog::loadSettings ()
 {
   Dialog::loadSettings();
 
-  TestDataBase db;
-  QStringList l;
-  db.names(l);
-  _tests->addItems(l);
-
   QSettings settings(g_localSettings);
   _tests->setCurrentIndex(settings.value("test_dialog_last_test").toInt());
+
+  int loop = 0;
+  QString key = "test_dialog_summary_col_width_";
+  for (; loop < _summary->columnCount(); loop++)
+  {
+    QString s = key + QString::number(loop);
+    _summary->setColumnWidth(loop, settings.value(s, 75).toInt());
+  }
+
+  key = "test_dialog_trades_col_width_";
+  for (loop = 0; loop < _tradeList->columnCount(); loop++)
+  {
+    QString s = key + QString::number(loop);
+    _tradeList->setColumnWidth(loop, settings.value(s, 75).toInt());
+  }
 }
 
 void TestDialog::saveSettings ()
@@ -110,21 +155,33 @@ void TestDialog::saveSettings ()
 
   QSettings settings(g_localSettings);
   settings.setValue("test_dialog_last_test", _tests->currentIndex());
+
+  int loop = 0;
+  QString key = "test_dialog_summary_col_width_";
+  for (; loop < _summary->columnCount(); loop++)
+  {
+    QString s = key + QString::number(loop);
+    settings.setValue(s, _summary->columnWidth(loop));
+  }
+  
+  key = "test_dialog_trades_col_width_";
+  for (loop = 0; loop < _tradeList->columnCount(); loop++)
+  {
+    QString s = key + QString::number(loop);
+    settings.setValue(s, _tradeList->columnWidth(loop));
+  }
+
   settings.sync();
 }
 
-void TestDialog::done ()
+void TestDialog::updateTrades (QString version)
 {
-  _command->setReturnCode("0");
-  saveSettings();
-  accept();
-}
-
-void TestDialog::update ()
-{
+  _tradeList->clear();
+  
   TestDataBase db;
   Setting set;
   set.setData("NAME", _tests->currentText());
+  set.setData("VERSION", version);
 
   QList<Setting> trades;
   if (db.trades(set, trades))
@@ -133,128 +190,95 @@ void TestDialog::update ()
     return;
   }
 
-  updateTrades(trades);
-
-  updateReport(trades);
-}
-
-void TestDialog::updateTrades (QList<Setting> &trades)
-{
-  _tradeList->clear();
-  
   int loop = 0;
   for (; loop < trades.count(); loop++)
   {
     Setting trade = trades.at(loop);
     
     QStringList l;
-    l << trade.data("SYMBOL") << trade.data("TYPE") << trade.data("VOLUME") << trade.data("ENTER_DATE");
-    l << trade.data("ENTER_PRICE") << trade.data("EXIT_DATE") << trade.data("EXIT_PRICE");
-    l << trade.data("PROFIT") << trade.data("SIGNAL") << trade.data("EQUITY");
+    l << trade.data("TYPE");
+    l << trade.data("VOLUME");
+    l << trade.data("ENTER_DATE");
+    l << trade.data("ENTER_PRICE");
+    l << trade.data("EXIT_DATE");
+    l << trade.data("EXIT_PRICE");
+    l << trade.data("PROFIT");
+    l << trade.data("SIGNAL");
+    l << trade.data("EQUITY");
     new QTreeWidgetItem(_tradeList, l);
   }
-
-  for (loop = 0; loop < _tradeList->columnCount(); loop++)
-    _tradeList->resizeColumnToContents(loop);
 }
 
-void TestDialog::updateReport (QList<Setting> &trades)
+void TestDialog::updateSummary ()
 {
-  _report->clear();
+  _tests->clear();
+  _summary->clear();
+  _tradeList->clear();
 
-  int win = 0;
-  int loss = 0;
-  double winTotal = 0;
-  double lossTotal = 0;
-  double profit = 0;
-  double drawDown = 0;
-  int maxBars = 0;
-  int minBars = 99999999;
-  int totalBars = 0;
-  double commissions = 0;
-  double sequity = 0;
-  double equity = 0;
-  int loop = 0;
-  for (; loop < trades.count(); loop++)
-  {
-    Setting t = trades.at(loop);
+  this->setEnabled(FALSE);
+  qApp->processEvents();
 
-    if (t.getDouble("PROFIT") < 0)
-    {
-      loss++;
-      lossTotal += t.getDouble("PROFIT");
-    }
-    else
-    {
-      win++;
-      winTotal += t.getDouble("PROFIT");
-    }
+  TestDataBase db;
+  QStringList l;
+  db.names(l);
+  _tests->addItems(l);
 
-    profit += t.getDouble("PROFIT");
+  qRegisterMetaType<Setting>("Setting");
+  SummaryThread *thread = new SummaryThread(this, _tests->currentText());
+  connect(thread, SIGNAL(signalDone()), this, SLOT(updateSummary2()));
+  connect(thread, SIGNAL(signalAdd(Setting)), this, SLOT(addSummary(Setting)));
+//  connect(thread, SIGNAL(signalStopped(QString)), this, SLOT(testStopped()));
+  thread->start();
+}
 
-    int bars = t.getInt("BARS_HELD");
-    totalBars += bars;
-    if (bars < minBars)
-      minBars = bars;
-    if (bars > maxBars)
-      maxBars = bars;
+void TestDialog::updateSummary2 ()
+{
+  this->setEnabled(TRUE);
+}
 
-    if (t.getDouble("DRAWDOWN") < drawDown)
-      drawDown = t.getDouble("DRAWDOWN");
+void TestDialog::addSummary (Setting report)
+{
+  QStringList l;
+  l << report.data("VERSION");
+  l << report.data("SYMBOL");
+  l << report.data("PROFIT_FACTOR");
+  l << report.data("PAYOFF_RATIO");
+  l << report.data("EQUITY_GAIN");
+  l << report.data("EQUITY");
+  l << report.data("TOTAL_PROFIT");
+  l << report.data("PROFITABLE_TRADES");
+  l << report.data("TOTAL_TRADES");
+  l << report.data("WIN_TRADES");
+  l << report.data("LOSE_TRADES");
+  l << report.data("MAX_DRAWDOWN");
+  l << report.data("AVG_PROFIT_LOSS");
+  l << report.data("TOTAL_WIN_TRADES");
+  l << report.data("TOTAL_LOSE_TRADES");
+  l << report.data("AVG_BARS_HELD");
+  l << report.data("MIN_BARS_HELD");
+  l << report.data("MAX_BARS_HELD");
+  l << report.data("TOTAL_COMMISSIONS");
+  new QTreeWidgetItem(_summary, l);
+}
 
-    commissions += t.getDouble("ENTER_COMM");
-    commissions += t.getDouble("EXIT_COMM");
+void TestDialog::summarySelected (QTreeWidgetItem *i)
+{
+  if (! i)
+    return;
+  
+  updateTrades(i->text(0));
+}
 
-    if (sequity == 0)
-      sequity = t.getDouble("EQUITY") + profit + commissions;
+void TestDialog::deleteVersions ()
+{
+  this->setEnabled(FALSE);
+  qApp->processEvents();
 
-    equity = t.getDouble("EQUITY");
-  }
-
-  double t = 0;
-  if (winTotal == 0 || lossTotal == 0)
-    t = 0;
-  else
-    t = (double) (winTotal / lossTotal);
-  _report->append(tr("Profit Factor") + ": \t" + QString::number(t, 'f', 2));
-
-  if (winTotal == 0 || lossTotal == 0)
-    t = 0;
-  else
-    t = (double) ((winTotal / (double) win) / (lossTotal / (double) loss));
-  _report->append(tr("Payoff Ratio") + ": \t" + QString::number(t, 'f', 2));
-
-  t = (double) ((equity - sequity) / sequity) * 100;
-  _report->append(tr("% Equity Gain") + ": \t" + QString::number(t, 'f', 2));
-
-  _report->append(tr("Equity") + ": \t\t" + QString::number(equity, 'f', 2));
-
-  _report->append(tr("Total Profit") + ": \t" + QString::number(profit, 'f', 2));
-
-  t = (double) (((double) win / (double) trades.count()) * 100);
-  _report->append(tr("% Profitable Trades") + ": \t" + QString::number(t, 'f', 2));
-
-  _report->append(tr("Total Trades") + ": \t" + QString::number(trades.count()));
-
-  _report->append(tr("Winning Trades") + ": \t" + QString::number(win));
-
-  _report->append(tr("Losing Trades") + ": \t" + QString::number(loss));
-
-  _report->append(tr("Maximum Drawdown") + ": \t" + QString::number(drawDown, 'f', 2));
-
-  t = (double) (profit / (double) trades.count());
-  _report->append(tr("Avg Profit/Loss") + ": \t" + QString::number(t, 'f', 2));
-
-  _report->append(tr("Total Winning Trades") + ": \t" + QString::number(winTotal, 'f', 2));
-
-  _report->append(tr("Total Losing Trades") + ": \t" + QString::number(lossTotal, 'f', 2));
-
-  t = (int) totalBars / trades.count();
-  _report->append(tr("Avg Bars Held") + ": \t" + QString::number(t, 'f', 2));
-
-  _report->append(tr("Min Bars Held") + ": \t" + QString::number(minBars));
-
-  _report->append(tr("Max Bars Held") + ": \t" + QString::number(maxBars));
-
-  _report->append(tr("Total Commissions") + ": \t" + QString::number(commissions, 'f', 2));
+  TestDataBase db;
+  db.transaction();
+  if (db.deleteName(_tests->currentText()))
+    return;
+  db.commit();
+  
+  updateSummary();
 }

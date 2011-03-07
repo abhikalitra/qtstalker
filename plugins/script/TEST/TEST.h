@@ -22,9 +22,12 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
+#include <QList>
+
 #include "ScriptPlugin.h"
 #include "Curve.h"
 #include "Operator.h"
+#include "Setting.h"
 
 class TEST : public ScriptPlugin
 {
@@ -38,11 +41,12 @@ class TEST : public ScriptPlugin
     int enterTrade (int status, int pos);
     int exitTrade (int pos, int signal);
     int updateTrade (int pos);
-    int save ();
+    int saveSummary ();
 
   private:
     QString _name;
     QString _symbol;
+    QString _version;
     Curve *_enterLong;
     Curve *_enterLong2;
     Curve *_exitLong;
@@ -60,6 +64,7 @@ class TEST : public ScriptPlugin
     double _enterCommission;
     double _exitCommission;
     double _equity;
+    double _startEquity;
     Operator::Type _enterLongOp;
     Operator::Type _exitLongOp;
     Operator::Type _enterShortOp;

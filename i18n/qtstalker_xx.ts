@@ -2346,9 +2346,29 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
-    <name>TestReportDialog</name>
+    <name>TestDialog</name>
     <message>
-        <source>Test Report</source>
+        <source>Test Summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Payoff Ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Equity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2388,79 +2408,75 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Equity</source>
+        <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Trades</source>
+        <source>Ver.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Report</source>
+        <source>P Factor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Profit Factor</source>
+        <source>% Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Payoff Ratio</source>
+        <source>T Profit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>% Equity Gain</source>
+        <source>% P Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Total Profit</source>
+        <source>T Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>% Profitable Trades</source>
+        <source>Win Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Total Trades</source>
+        <source>Loss Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Winning Trades</source>
+        <source>Max Draw</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Losing Trades</source>
+        <source>Avg P/L</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Maximum Drawdown</source>
+        <source>T Win Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Avg Profit/Loss</source>
+        <source>T Loss Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Total Winning Trades</source>
+        <source>Avg Bars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Total Losing Trades</source>
+        <source>Min Bars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Avg Bars Held</source>
+        <source>Max Bars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Min Bars Held</source>
+        <source>T Comm.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Max Bars Held</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Total Commissions</source>
+        <source>Delete version</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

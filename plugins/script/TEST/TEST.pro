@@ -3,5 +3,7 @@
 } 
 
 HEADERS += TEST.h
+HEADERS += TestSignal.h
 
 SOURCES += TEST.cpp
+SOURCES += TestSignal.cpp

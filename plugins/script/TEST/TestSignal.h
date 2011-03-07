@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,29 +19,28 @@
  *  USA.
  */
 
-#ifndef INTEGER_DIALOG_HPP
-#define INTEGER_DIALOG_HPP
+#ifndef TEST_SIGNAL_HPP
+#define TEST_SIGNAL_HPP
 
-#include "ScriptPlugin.h"
+#include <QString>
 
-class INTEGER_DIALOG : public ScriptPlugin
+class TestSignal
 {
-  Q_OBJECT
-  
   public:
-    INTEGER_DIALOG ();
-    int command (Command *);
+    enum Signal
+    {
+      _NONE,
+      _EXIT_LONG,
+      _EXIT_SHORT,
+      _TEST_END,
+      _MAXIMUM_LOSS_STOP,
+      _PROFIT_TARGET_STOP,
+      _TRAILING_STOP,
+      _BARS_STOP
+    };
     
-  public slots:
-    void integerSelected (int);
-
-  private:
-    Command *_command;
+    TestSignal ();
+    void signalText (TestSignal::Signal, QString &);
 };
-
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
-}
 
 #endif

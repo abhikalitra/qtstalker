@@ -19,56 +19,26 @@
  *  USA.
  */
 
-#include "INTEGER_DIALOG.h"
+#include "INPUT_DIALOG.h"
+#include "InputDialog.h"
 
 #include <QtDebug>
-#include <QInputDialog>
+#include <QDialog>
 
-INTEGER_DIALOG::INTEGER_DIALOG ()
+INPUT_DIALOG::INPUT_DIALOG ()
 {
-  _plugin = "INTEGER_DIALOG";
+  _plugin = "INPUT_DIALOG";
   _type = _DIALOG;
 }
 
-int INTEGER_DIALOG::command (Command *command)
+int INPUT_DIALOG::command (Command *command)
 {
-  // PARMS:
-  // LABEL
-  // MIN
-  // MAX
-  // VALUE
-
-  _command = command;
-
-  QInputDialog *dialog = new QInputDialog(_parent);
-  dialog->setLabelText(_command->parm("LABEL"));
-  
-  QString s = _command->parm("MIN");
-  if (! s.isEmpty())
-    dialog->setIntMinimum(s.toInt());
-
-  s = _command->parm("MAX");
-  if (! s.isEmpty())
-    dialog->setIntMaximum(s.toInt());
-  
-  s = _command->parm("VALUE");
-  if (! s.isEmpty())
-    dialog->setIntValue(s.toInt());
-
-  connect(dialog, SIGNAL(intValueSelected(int)), this, SLOT(integerSelected(int)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
+  InputDialog *dialog = new InputDialog(_parent, command);
+  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;
-}
-
-void INTEGER_DIALOG::integerSelected (int d)
-{
-  _command->setReturnData(_plugin + "_INTEGER", QString::number(d));
-  _command->setReturnCode("0");
-  emit signalResume();
 }
 
 //*************************************************************
@@ -77,6 +47,6 @@ void INTEGER_DIALOG::integerSelected (int d)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  INTEGER_DIALOG *o = new INTEGER_DIALOG;
+  INPUT_DIALOG *o = new INPUT_DIALOG;
   return ((ScriptPlugin *) o);
 }
