@@ -22,9 +22,9 @@
 #include "TestDialog.h"
 #include "Globals.h"
 #include "TestDataBase.h"
-#include "../../../pics/refresh.xpm"
-#include "../../../pics/delete.xpm"
 #include "SummaryThread.h"
+#include "DeleteTestThread.h"
+#include "../../../pics/refresh.xpm"
 
 #include <QtDebug>
 #include <QSettings>
@@ -54,29 +54,16 @@ void TestDialog::createGUI ()
 {
   int pos = 0;
 
-  QToolBar *toolBar = new QToolBar;
-  _vbox->insertWidget(pos++, toolBar);
+  QToolBar *tb = new QToolBar(this);
+  _vbox->insertWidget(pos++, tb);
 
-  // names
-  _tests = new QComboBox;
-  _tests->setToolTip(tr("Test Name"));
-  connect(_tests, SIGNAL(activated(int)), this, SLOT(updateSummary()));
-  toolBar->addWidget(_tests);
-
-  // refresh button
-  QToolButton *tb = new QToolButton;
-  tb->setIcon(QIcon(refresh_xpm));
-  tb->setToolTip(tr("Refresh"));
-  connect(tb, SIGNAL(clicked()), this, SLOT(updateSummary()));
-  toolBar->addWidget(tb);
-
-  // refresh button
-  tb = new QToolButton;
-  tb->setIcon(QIcon(delete_xpm));
-  tb->setToolTip(tr("Delete version"));
-  connect(tb, SIGNAL(clicked()), this, SLOT(deleteVersions()));
-  toolBar->addWidget(tb);
-
+  QToolButton *b = new QToolButton(this);
+  b->setIcon(QIcon(refresh_xpm));
+  b->setToolTip(tr("Refresh Summary"));
+  b->setStatusTip(tr("Refresh Summary"));
+  connect(b, SIGNAL(clicked()), this, SLOT(updateSummary()));
+  tb->addWidget(b);
+  
   // summary
   QGroupBox *gbox = new QGroupBox;
   gbox->setTitle(tr("Summary"));
@@ -88,11 +75,24 @@ void TestDialog::createGUI ()
   gbox->setLayout(vbox);
 
   QStringList l;
-  l << tr("Ver.") << tr("Symbol") << tr("P Factor") << tr("Payoff Ratio") << tr("% Gain");
-  l << tr("Equity") << tr("T Profit") << tr("% P Trades") << tr("T Trades");
-  l << tr("Win Trades") << tr("Loss Trades") << tr("Max Draw") << tr("Avg P/L");
-  l << tr("T Win Trades") << tr("T Loss Trades") << tr("Avg Bars");
-  l << tr("Min Bars") << tr("Max Bars") << tr("T Comm.");
+  l << tr("Name");
+  l << tr("Tag");
+  l << tr("Symbol");
+  l << tr("% Gain");
+  l << tr("Equity");
+  l << tr("T Profit");
+  l << tr("% P Trades");
+  l << tr("T Trades");
+  l << tr("Win Trades");
+  l << tr("Loss Trades");
+  l << tr("Max Draw");
+  l << tr("Avg P/L");
+  l << tr("T Win Trades");
+  l << tr("T Loss Trades");
+  l << tr("Avg Bars");
+  l << tr("Min Bars");
+  l << tr("Max Bars");
+  l << tr("T Comm.");
 
   _summary = new QTreeWidget;
   _summary->setSortingEnabled(TRUE);
@@ -131,7 +131,6 @@ void TestDialog::loadSettings ()
   Dialog::loadSettings();
 
   QSettings settings(g_localSettings);
-  _tests->setCurrentIndex(settings.value("test_dialog_last_test").toInt());
 
   int loop = 0;
   QString key = "test_dialog_summary_col_width_";
@@ -154,7 +153,6 @@ void TestDialog::saveSettings ()
   Dialog::saveSettings();
 
   QSettings settings(g_localSettings);
-  settings.setValue("test_dialog_last_test", _tests->currentIndex());
 
   int loop = 0;
   QString key = "test_dialog_summary_col_width_";
@@ -174,14 +172,18 @@ void TestDialog::saveSettings ()
   settings.sync();
 }
 
-void TestDialog::updateTrades (QString version)
+void TestDialog::updateTrades ()
 {
   _tradeList->clear();
+
+  QList<QTreeWidgetItem *> l = _summary->selectedItems();
+  if (! l.count())
+    return;
+  QTreeWidgetItem *item = l.at(0);
   
   TestDataBase db;
   Setting set;
-  set.setData("NAME", _tests->currentText());
-  set.setData("VERSION", version);
+  set.setData("NAME", item->text(0));
 
   QList<Setting> trades;
   if (db.trades(set, trades))
@@ -211,23 +213,16 @@ void TestDialog::updateTrades (QString version)
 
 void TestDialog::updateSummary ()
 {
-  _tests->clear();
   _summary->clear();
   _tradeList->clear();
 
   this->setEnabled(FALSE);
   qApp->processEvents();
 
-  TestDataBase db;
-  QStringList l;
-  db.names(l);
-  _tests->addItems(l);
-
   qRegisterMetaType<Setting>("Setting");
-  SummaryThread *thread = new SummaryThread(this, _tests->currentText());
+  SummaryThread *thread = new SummaryThread(this);
   connect(thread, SIGNAL(signalDone()), this, SLOT(updateSummary2()));
   connect(thread, SIGNAL(signalAdd(Setting)), this, SLOT(addSummary(Setting)));
-//  connect(thread, SIGNAL(signalStopped(QString)), this, SLOT(testStopped()));
   thread->start();
 }
 
@@ -239,10 +234,9 @@ void TestDialog::updateSummary2 ()
 void TestDialog::addSummary (Setting report)
 {
   QStringList l;
-  l << report.data("VERSION");
+  l << report.data("NAME");
+  l << report.data("TAG");
   l << report.data("SYMBOL");
-  l << report.data("PROFIT_FACTOR");
-  l << report.data("PAYOFF_RATIO");
   l << report.data("EQUITY_GAIN");
   l << report.data("EQUITY");
   l << report.data("TOTAL_PROFIT");
@@ -266,19 +260,26 @@ void TestDialog::summarySelected (QTreeWidgetItem *i)
   if (! i)
     return;
   
-  updateTrades(i->text(0));
+  updateTrades();
 }
 
-void TestDialog::deleteVersions ()
+void TestDialog::deleteTest ()
 {
+  QList<QTreeWidgetItem *> l = _summary->selectedItems();
+  if (! l.count())
+    return;
+  QTreeWidgetItem *item = l.at(0);
+
   this->setEnabled(FALSE);
   qApp->processEvents();
 
-  TestDataBase db;
-  db.transaction();
-  if (db.deleteName(_tests->currentText()))
-    return;
-  db.commit();
-  
+  DeleteTestThread *thread = new DeleteTestThread(this, item->text(0));
+  connect(thread, SIGNAL(signalDone()), this, SLOT(deleteTest2()));
+  thread->start();
+}
+
+void TestDialog::deleteTest2 ()
+{
   updateSummary();
+  this->setEnabled(TRUE);
 }

@@ -24,22 +24,16 @@
 
 #include <QDebug>
 
-SummaryThread::SummaryThread (QObject *p, QString name) : QThread (p)
+SummaryThread::SummaryThread (QObject *p) : QThread (p)
 {
-  _name = name;
-  _stopFlag = 0;
-
   connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void SummaryThread::run ()
 {
-  _stopFlag = 0;
   TestDataBase db;
   QList<Setting> reports;
-  Setting parms;
-  parms.setData("NAME", _name);
-  if (db.summaries(parms, reports))
+  if (db.summaries(reports))
   {
     qDebug() << "SummaryThread::run: db error loading summaries";
     return;
@@ -47,22 +41,7 @@ void SummaryThread::run ()
 
   int loop = 0;
   for (; loop < reports.count(); loop++)
-  {
-    if (_stopFlag)
-    {
-      qDebug() << "SummaryThread::run: stopped";
-      emit signalDone();
-      quit();
-      return;
-    }
-
     emit signalAdd(reports.at(loop));
-  }
 
   emit signalDone();
-}
-
-void SummaryThread::stop ()
-{
-  _stopFlag = 1;
 }

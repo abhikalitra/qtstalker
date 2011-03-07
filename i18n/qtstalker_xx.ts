@@ -1547,6 +1547,13 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
 </context>
 <context>
+    <name>InputDialog</name>
+    <message>
+        <source>Input Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>NewDialog</name>
     <message>
         <source>New</source>
@@ -2360,10 +2367,6 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Payoff Ratio</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Equity</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2409,14 +2412,6 @@ e.g. Qtstalker alert was triggered.</source>
     </message>
     <message>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ver.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>P Factor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2476,7 +2471,11 @@ e.g. Qtstalker alert was triggered.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete version</source>
+        <source>Delete test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -24,7 +24,6 @@
 
 #include <QThread>
 #include <QStringList>
-#include <QList>
 
 #include "Setting.h"
 
@@ -37,15 +36,11 @@ class SummaryThread : public QThread
     void signalDone ();
     
   public:
-    SummaryThread (QObject *, QString);
+    SummaryThread (QObject *);
     void stop ();
 
   protected:
     void run();
-
-  private:
-    QString _name;
-    int _stopFlag;
 };
 
 #endif

@@ -46,13 +46,9 @@ void TestDataBase::init ()
 
   QSqlQuery q(_db);
   QString s = "CREATE TABLE IF NOT EXISTS testIndex (";
-  s.append("a INTEGER PRIMARY KEY");
-  s.append(", name TEXT");
-  s.append(", version TEXT");
-  s.append(", tradeTable TEXT");
+  s.append("name TEXT PRIMARY KEY");
+  s.append(", tag TEXT");
   s.append(", symbol TEXT");
-  s.append(", profitFactor REAL");
-  s.append(", payoffRatio REAL");
   s.append(", equityGain REAL");
   s.append(", equity REAL");
   s.append(", totalProfit REAL");
@@ -72,23 +68,41 @@ void TestDataBase::init ()
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "TestDataBase::init: " << q.lastError().text();
+
+  s = "CREATE TABLE IF NOT EXISTS trades (";
+  s.append("a INTEGER PRIMARY KEY");
+  s.append(", name TEXT");
+  s.append(", type TEXT");
+  s.append(", enterDate TEXT");
+  s.append(", enterPrice REAL");
+  s.append(", volume INT");
+  s.append(", exitDate TEXT");
+  s.append(", exitPrice REAL");
+  s.append(", profit REAL");
+  s.append(", signal TEXT");
+  s.append(", equity REAL");
+  s.append(", drawDown REAL");
+  s.append(", barsHeld INT");
+  s.append(", enterComm REAL");
+  s.append(", exitComm REAL");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+    qDebug() << "TestDataBase::saveTrades: " << q.lastError().text();
 }
 
 int TestDataBase::trades (Setting parms, QList<Setting> &trades)
 {
   trades.clear();
 
-  QString table;
-  if (tableName(parms, table))
-    return 1;
-  
   QSqlQuery q(_db);
   QString s = "SELECT ";
   QStringList l;
   l << "type" << "enterDate" << "enterPrice" << "volume" << "exitDate" << "exitPrice" << "profit";
   l << "signal" << "equity" << "drawDown" << "barsHeld" << "enterComm" << "exitComm";
   s.append(l.join(","));
-  s.append(" FROM " + table);
+  s.append(" FROM trades");
+  s.append(" WHERE name='" + parms.data("NAME") + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -119,40 +133,17 @@ int TestDataBase::trades (Setting parms, QList<Setting> &trades)
   return 0;
 }
 
-int TestDataBase::saveTrades (QString table, QList<Setting *> &trades)
+int TestDataBase::saveTrades (QList<Setting *> &trades)
 {
-  // create the trades table
   QSqlQuery q(_db);
-  QString s = "CREATE TABLE IF NOT EXISTS " + table + " (";
-  s.append("a INTEGER PRIMARY KEY");
-  s.append(", type TEXT");
-  s.append(", enterDate TEXT");
-  s.append(", enterPrice REAL");
-  s.append(", volume INT");
-  s.append(", exitDate TEXT");
-  s.append(", exitPrice REAL");
-  s.append(", profit REAL");
-  s.append(", signal TEXT");
-  s.append(", equity REAL");
-  s.append(", drawDown REAL");
-  s.append(", barsHeld INT");
-  s.append(", enterComm REAL");
-  s.append(", exitComm REAL");
-  s.append(")");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "TestDataBase::saveTrades: " << q.lastError().text();
-    return 1;
-  }
-
   int loop = 0;
   for (; loop < trades.count(); loop++)
   {
     Setting *trade = trades.at(loop);
     
-    QString s = "INSERT INTO " + table + " VALUES (";
+    QString s = "INSERT INTO trades VALUES (";
     s.append("NULL"); // auto increment 
+    s.append(",'" + trade->data("NAME") + "'");
     s.append(",'" + trade->data("TYPE") + "'");
     s.append(",'" + trade->data("ENTER_DATE") + "'");
     s.append("," + trade->data("ENTER_PRICE"));
@@ -184,34 +175,11 @@ int TestDataBase::names (QStringList &l)
 
   l.clear();
 
-  QString s = "SELECT DISTINCT name FROM testIndex";
+  QString s = "SELECT name FROM testIndex";
   q.exec(s);
   if (q.lastError().isValid())
   {
     qDebug() << "TestDataBase::names: " << q.lastError().text();
-    return 1;
-  }
-
-  while (q.next())
-    l << q.value(0).toString();
-
-  l.sort();
-
-  return 0;
-}
-
-int TestDataBase::versions (QString name, QStringList &l)
-{
-  QSqlQuery q(_db);
-
-  l.clear();
-
-  QString s = "SELECT DISTINCT version FROM testIndex";
-  s.append(" WHERE name='" + name + "'");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "TestDataBase::versions: " << q.lastError().text();
     return 1;
   }
 
@@ -228,19 +196,11 @@ int TestDataBase::saveSummary (Setting report, QList<Setting *> &trades)
   // delete old one
   deleteSummary(report);
 
-  QString table;
-  if (newTableName(table))
-    return 1;
-
   QSqlQuery q(_db);
   QString s = "INSERT INTO testIndex VALUES (";
-  s.append("NULL"); // auto increment
-  s.append(",'" + report.data("NAME") + "'");
-  s.append(",'" + report.data("VERSION") + "'");
-  s.append(",'" + table + "'");
+  s.append("'" + report.data("NAME") + "'");
+  s.append(",'" + report.data("TAG") + "'");
   s.append(",'" + report.data("SYMBOL") + "'");
-  s.append("," + report.data("PROFIT_FACTOR"));
-  s.append("," + report.data("PAYOFF_RATIO"));
   s.append("," + report.data("EQUITY_GAIN"));
   s.append("," + report.data("EQUITY"));
   s.append("," + report.data("TOTAL_PROFIT"));
@@ -265,13 +225,13 @@ int TestDataBase::saveSummary (Setting report, QList<Setting *> &trades)
     return 1;
   }
 
-  if (saveTrades(table, trades))
+  if (saveTrades(trades))
     return 1;
 
   return 0;
 }
 
-int TestDataBase::summaries (Setting parms, QList<Setting> &reports)
+int TestDataBase::summaries (QList<Setting> &reports)
 {
   QSqlQuery q(_db);
 
@@ -279,13 +239,12 @@ int TestDataBase::summaries (Setting parms, QList<Setting> &reports)
 
   QString s = "SELECT ";
   QStringList l;
-  l << "version" << "symbol" << "profitFactor" << "payoffRatio" << "equityGain" << "equity" << "totalProfit";
+  l << "name" << "tag" << "symbol" << "equityGain" << "equity" << "totalProfit";
   l << "profitableTrades" << "totalTrades" << "winTrades" << "loseTrades" << "maxDrawdown";
   l << "avgProfitLoss" << "totalWinTrades" << "totalLoseTrades" << "avgBarsHeld";
   l << "minBarsHeld" << "maxBarsHeld" << "totalCommissions";
   s.append(l.join(","));
   s.append(" FROM testIndex");
-  s.append(" WHERE name='" + parms.data("NAME") + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -297,10 +256,9 @@ int TestDataBase::summaries (Setting parms, QList<Setting> &reports)
   {
     int pos = 0;
     Setting report;
-    report.setData("VERSION", q.value(pos++).toString());
+    report.setData("NAME", q.value(pos++).toString());
+    report.setData("TAG", q.value(pos++).toString());
     report.setData("SYMBOL", q.value(pos++).toString());
-    report.setData("PROFIT_FACTOR", q.value(pos++).toString());
-    report.setData("PAYOFF_RATIO", q.value(pos++).toString());
     report.setData("EQUITY_GAIN", q.value(pos++).toString());
     report.setData("EQUITY", q.value(pos++).toString());
     report.setData("TOTAL_PROFIT", q.value(pos++).toString());
@@ -324,20 +282,9 @@ int TestDataBase::summaries (Setting parms, QList<Setting> &reports)
 
 int TestDataBase::deleteSummary (Setting parms)
 {
-  QString table;
-  if (tableName(parms, table))
-    return 1;
-
-  if (! table.isEmpty())
-  {
-    if (deleteTable(table))
-      return 1;
-  }
-
   QSqlQuery q(_db);
   QString s = "DELETE FROM testIndex";
   s.append(" WHERE name='" + parms.data("NAME") + "'");
-  s.append(" AND version='" + parms.data("VERSION") + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -345,102 +292,12 @@ int TestDataBase::deleteSummary (Setting parms)
     return 1;
   }
 
-  return 0;
-}
-
-int TestDataBase::deleteName (QString name)
-{
-  QSqlQuery q(_db);
-
-  QStringList l;
-  versions(name, l);
-
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    Setting parms;
-    parms.setData("NAME", name);
-    parms.setData("VERSION", l.at(loop));
-
-    QString table;
-    if (tableName(parms, table))
-      continue;
-
-    if (deleteTable(table))
-      continue;
-  }
-
-  // delete index records
-  QString s = "DELETE FROM testIndex";
-  s.append(" WHERE name='" + name + "'");
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "TestDataBase::deleteName: " << q.lastError().text();
-    return 1;
-  }
-
-  return 0;
-}
-
-int TestDataBase::newTableName (QString &table)
-{
-  table.clear();
-
-  QSqlQuery q(_db);
-
-  while (1)
-  {
-    table = "T" + QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz");
-    QString s = "SELECT name FROM sqlite_master WHERE name='" + table + "'";
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "TestDataBase::newTableName:" + q.lastError().text();
-      return 1;
-    }
-
-    if (! q.next())
-      break;
-  }
-
-  return 0;
-}
-
-int TestDataBase::tableName (Setting &parms, QString &table)
-{
-  table.clear();
-  
-  QSqlQuery q(_db);
-
-  QString s = "SELECT tradeTable FROM testIndex";
+  s = "DELETE FROM trades";
   s.append(" WHERE name='" + parms.data("NAME") + "'");
-  s.append(" AND version='" + parms.data("VERSION") + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {
-    qDebug() << "TestDataBase::tableName: " << q.lastError().text();
-    return 1;
-  }
-
-  if (! q.next())
-    return 0;
-
-  table = q.value(0).toString();
-
-  return 0;
-}
-
-int TestDataBase::deleteTable (QString table)
-{
-  QSqlQuery q(_db);
-
-  // drop trade table
-  QString s = "DROP TABLE " + table;
-  q.exec(s);
-  if (q.lastError().isValid())
-  {
-    qDebug() << "TestDataBase::deleteTable:" + q.lastError().text();
+    qDebug() << "TestDataBase::deleteSummary: " << q.lastError().text();
     return 1;
   }
 

@@ -41,16 +41,11 @@ class TestDataBase
     void init ();
     int trades (Setting, QList<Setting> &);
     int deleteTrades (Setting);
-    int saveTrades (QString, QList<Setting *> &);
+    int saveTrades (QList<Setting *> &);
     int names (QStringList &);
-    int versions (QString, QStringList &);
     int deleteSummary (Setting);
-    int summaries (Setting, QList<Setting> &);
+    int summaries (QList<Setting> &);
     int saveSummary (Setting, QList<Setting *> &);
-    int deleteName (QString);
-    int tableName (Setting &, QString &);
-    int newTableName (QString &);
-    int deleteTable (QString);
     void transaction ();
     void commit ();
 

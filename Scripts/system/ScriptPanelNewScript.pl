@@ -13,7 +13,7 @@ print STDOUT $command;
 $scripts = <STDIN>; chomp($scripts); if ($scripts eq "ERROR") {print STDERR $command; exit; }
 
 # display new script dialog
-$command = "PLUGIN=NEW_DIALOG,TITLE=Script,$scripts";
+$command = "PLUGIN=NEW_DIALOG,TITLE=Script,ITEMS=$scripts";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 

@@ -29,9 +29,9 @@
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
       <td style="vertical-align: top;">Conducts a back test of a symbol
-depending on the parameters set. Results are saved to the database. The
-VERSION parm allows the user to create multiple versions of a test.
-This is useful for optimization. <br>
+depending on the parameters set. The results are saved to the database.
+If using optimization, then the best results (highest equity) will be
+saved.<br>
       <br>
       </td>
     </tr>
@@ -39,38 +39,38 @@ This is useful for optimization. <br>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = TEST<br>
 NAME = &lt;TEST NAME&gt; - a unique name to identify the test<br>
-VERSION = &lt;VERSION NAME&gt; - a version identifier of NAME<br>
 SYMBOL = &lt;EXCHANGE:SYMBOL&gt; - the security symbol<br>
-ENTER_LONG_NAME = &lt;VARIABLE NAME&gt; - *optional if not testing a
-long trades<br>
+ENTER_LONG_NAME = &lt;VARIABLE NAME&gt; - *optional if not testing long
+trades<br>
 ENTER_LONG_OP = &lt;<a href="Operators.html">OPERATOR</a>&gt; -
-*optional if not testing a long trades<br>
-ENTER_LONG_NAME2 = &lt;VARIABLE NAME&gt; - *optional if not testing a
+*optional if not testing long trades<br>
+ENTER_LONG_NAME2 = &lt;VARIABLE NAME&gt; - *optional if not testing
 long trades<br>
-EXIT_LONG_NAME = &lt;VARIABLE NAME&gt; - *optional if not testing a
-long trades<br>
+EXIT_LONG_NAME = &lt;VARIABLE NAME&gt; - *optional if not testing long
+trades<br>
 EXIT_LONG_OP = &lt;<a href="Operators.html">OPERATOR</a>&gt; -
-*optional if not testing a long trades<br>
-EXIT_LONG_NAME2 = &lt;VARIABLE NAME&gt; - *optional if not testing a
-long trades<br>
-ENTER_SHORT_NAME = &lt;VARIABLE NAME&gt; - *optional if not testing a
+*optional if not testing long trades<br>
+EXIT_LONG_NAME2 = &lt;VARIABLE NAME&gt; - *optional if not testing long
+trades<br>
+ENTER_SHORT_NAME = &lt;VARIABLE NAME&gt; - *optional if not testing
 short trades<br>
 ENTER_SHORT_OP = &lt;<a href="Operators.html">OPERATOR</a>&gt; -
-*optional if not testing a short trades<br>
-ENTER_SHORT_NAME2 = &lt;VARIABLE NAME&gt; - *optional if not testing a
+*optional if not testing short trades<br>
+ENTER_SHORT_NAME2 = &lt;VARIABLE NAME&gt; - *optional if not testing
 short trades<br>
-EXIT_SHORT_NAME = &lt;VARIABLE NAME&gt; - *optional if not testing a
+EXIT_SHORT_NAME = &lt;VARIABLE NAME&gt; - *optional if not testing
 short trades<br>
 EXIT_SHORT_OP = &lt;<a href="Operators.html">OPERATOR</a>&gt; -
-*optional if not testing a short trades<br>
-EXIT_SHORT_NAME2 = &lt;VARIABLE NAME&gt; - *optional if not testing a
+*optional if not testing short trades<br>
+EXIT_SHORT_NAME2 = &lt;VARIABLE NAME&gt; - *optional if not testing
 short trades<br>
 DATE_NAME = &lt;VARIABLE NAME&gt; - dates used for trades<br>
 BUY_NAME = &lt;VARIABLE NAME&gt; - prices used for entering trades<br>
 SELL_NAME = &lt;VARIABLE NAME&gt; - prices used for exiting trades<br>
 CLOSE_NAME = &lt;VARIABLE NAME&gt; - prices used for EOD open trades<br>
 VOLUME = &lt;DECIMAL&gt; *optional (0.2 default) - volume percentage of
-current equity to calculate volume. <br>
+current equity to calculate volume. If set to zero, a volume of 1 will
+be used.<br>
 ENTER_COMM = &lt;DECIMAL&gt; *optional (10 default) - entry commission<br>
 EXIT_COMM = &lt;DECIMAL&gt; *optional (10 default) - exit commission<br>
 EQUITY = &lt;DECIMAL&gt; *optional (1000 default) - starting equity<br>
@@ -88,7 +88,7 @@ Failure<br>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
       <td style="vertical-align: top;">PLUGIN=TEST, NAME=test1,
-VERSION=1, SYMBOL=XNYS:GOOG, ENTER_LONG_NAME=close, ENTER_LONG_OP=GT,
+SYMBOL=XNYS:GOOG, ENTER_LONG_NAME=close, ENTER_LONG_OP=GT,
 ENTER_LONG_NAME2=emaHigh, EXIT_LONG_NAME=close, EXIT_LONG_OP=LT,
 EXIT_LONG_NAME2=emaLow, DATE_NAME=date, BUY_NAME=open, SELL_NAME=close,
 CLOSE_NAME=close<br>

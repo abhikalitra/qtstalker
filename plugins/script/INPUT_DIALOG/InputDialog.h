@@ -27,6 +27,7 @@
 #include <QLineEdit>
 #include <QHash>
 #include <QStringList>
+#include <QComboBox>
 
 #include "Setting.h"
 #include "Dialog.h"
@@ -41,6 +42,7 @@ class InputDialog : public Dialog
     void newInteger (QString &key, QString &label, QString &value);
     void newDouble (QString &key, QString &label, QString &value);
     void newText (QString &key, QString &label, QString &value);
+    void newList (QString &key, QString &label, QString &value);
 
   public slots:
     void done ();
@@ -50,6 +52,7 @@ class InputDialog : public Dialog
     QHash<QString, QDoubleSpinBox *> _doubles;
     QHash<QString, QSpinBox *> _integers;
     QHash<QString, QLineEdit *> _texts;
+    QHash<QString, QComboBox *> _lists;
 };
 
 #endif

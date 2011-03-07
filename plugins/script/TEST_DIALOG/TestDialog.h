@@ -24,8 +24,6 @@
 
 #include <QStringList>
 #include <QTreeWidget>
-#include <QComboBox>
-#include <QList>
 
 #include "Dialog.h"
 #include "Setting.h"
@@ -37,7 +35,7 @@ class TestDialog : public Dialog
   public:
     TestDialog (QWidget *, Command *);
     void createGUI ();
-    void updateTrades (QString);
+    void updateTrades ();
 
   public slots:
     void loadSettings ();
@@ -46,10 +44,10 @@ class TestDialog : public Dialog
     void updateSummary ();
     void updateSummary2 ();
     void addSummary (Setting);
-    void deleteVersions ();
+    void deleteTest ();
+    void deleteTest2 ();
 
   private:
-    QComboBox *_tests;
     QTreeWidget *_tradeList;
     QTreeWidget *_summary;
 };

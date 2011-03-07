@@ -64,7 +64,7 @@ void TEST::init ()
   _date = 0;
   _name.clear();
   _symbol.clear();
-  _version.clear();
+  _tag.clear();
   
   qDeleteAll(_trades);
   _trades.clear();
@@ -74,7 +74,7 @@ int TEST::command (Command *command)
 {
   // PARMS:
   // NAME
-  // VERSION
+  // TAG
   // SYMBOL
   // ENTER_LONG_NAME
   // ENTER_LONG_OP
@@ -115,13 +115,10 @@ int TEST::command (Command *command)
     return 1;
   }
 
-  // verify VERSION
-  _version = command->parm("VERSION");
-  if (_version.isEmpty())
-  {
-    qDebug() << _plugin << "::command: VERSION not found";
-    return 1;
-  }
+  // verify TAG
+  _tag = command->parm("TAG");
+  if (_tag.isEmpty())
+    _tag = _name;
 
   // verify SYMBOL
   _symbol = command->parm("SYMBOL");
@@ -529,15 +526,20 @@ int TEST::enterTrade (int status, int pos)
   if (! date)
     return 1;
 
-  int volume = (_equity * _volume) / bar->data();
-  if (! volume)
-    return 1;
+  int volume = 1;
+  if (_volume != 0)
+  {
+    volume = (_equity * _volume) / bar->data();
+    if (! volume)
+      return 1;
+  }
   double value = volume * bar->data();
 
   Setting *trade = new Setting;
   _trades.append(trade);
   
   trade->setData("SYMBOL", _symbol);
+  trade->setData("NAME", _name);
 
   if (status == 1)
     trade->setData("TYPE", QString("L"));
@@ -684,20 +686,6 @@ int TEST::saveSummary ()
   Strip strip;
   QString s;
   double t = 0;
-  if (winTotal == 0 || lossTotal == 0)
-    t = 0;
-  else
-    t = (double) (winTotal / lossTotal);
-  strip.strip(t, 2, s);
-  report.setData("PROFIT_FACTOR", s);
-
-  if (winTotal == 0 || lossTotal == 0)
-    t = 0;
-  else
-    t = (double) ((winTotal / (double) win) / (lossTotal / (double) loss));
-  strip.strip(t, 2, s);
-  report.setData("PAYOFF_RATIO", s);
-
   t = (double) ((equity - _startEquity) / _startEquity) * 100;
   strip.strip(t, 2, s);
   report.setData("EQUITY_GAIN", s);
@@ -730,14 +718,20 @@ int TEST::saveSummary ()
 
   // save summary
   report.setData("NAME", _name);
-  report.setData("VERSION", _version);
   report.setData("SYMBOL", _symbol);
+  report.setData("TAG", _tag);
 
-  TestDataBase db;
-  db.transaction();
-  if (db.saveSummary(report, _trades))
-    return 1;
-  db.commit();
+  // keep track of the best performer (highest equity) and save it
+  if (report.getDouble("EQUITY") > _bestReport.getDouble("EQUITY"))
+  {
+    _bestReport = report;
+
+    TestDataBase db;
+    db.transaction();
+    if (db.saveSummary(report, _trades))
+      return 1;
+    db.commit();
+  }
 
   return 0;
 }

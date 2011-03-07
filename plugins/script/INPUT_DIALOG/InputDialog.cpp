@@ -30,7 +30,7 @@ InputDialog::InputDialog (QWidget *p, Command *c) : Dialog (p)
   _keySize = "input_dialog_window_size";
   _keyPos = "input_dialog_window_position";
 
-  _typeList << "INTEGER" << "DOUBLE" << "TEXT";
+  _typeList << "INTEGER" << "DOUBLE" << "TEXT" << "LIST";
 
   QStringList l;
   l << "QtStalker" << g_session << ":" << tr("Input Dialog");
@@ -70,6 +70,9 @@ void InputDialog::createGUI ()
         break;
       case 2: // TEXT
         newText(key, label, value);
+        break;
+      case 3: // LIST
+        newList(key, label, value);
         break;
       default:
         break;
@@ -113,6 +116,13 @@ void InputDialog::done ()
           _command->setReturnData(rkey, le->text());
         break;
       }
+      case 3: // LIST
+      {
+        QComboBox *cb = _lists.value(key);
+        if (cb)
+          _command->setReturnData(rkey, cb->currentText());
+        break;
+      }
       default:
         break;
     }
@@ -128,6 +138,7 @@ void InputDialog::done ()
 void InputDialog::newInteger (QString &key, QString &label, QString &value)
 {
   QSpinBox *sb = new QSpinBox(this);
+  sb->setRange(-999999, 999999);
   sb->setValue(value.toInt());
   _form->addRow(label, sb);
   _integers.insert(key, sb);
@@ -136,6 +147,7 @@ void InputDialog::newInteger (QString &key, QString &label, QString &value)
 void InputDialog::newDouble (QString &key, QString &label, QString &value)
 {
   QDoubleSpinBox *sb = new QDoubleSpinBox(this);
+  sb->setRange(-99999999, 99999999);
   sb->setValue(value.toDouble());
   _form->addRow(label, sb);
   _doubles.insert(key, sb);
@@ -147,4 +159,12 @@ void InputDialog::newText (QString &key, QString &label, QString &value)
   le->setText(value);
   _form->addRow(label, le);
   _texts.insert(key, le);
+}
+
+void InputDialog::newList (QString &key, QString &label, QString &value)
+{
+  QComboBox *cb = new QComboBox(this);
+  cb->addItems(value.split(";", QString::SkipEmptyParts));
+  _form->addRow(label, cb);
+  _lists.insert(key, cb);
 }

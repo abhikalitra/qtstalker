@@ -1053,4 +1053,6 @@
 
            Added script TestDialog.pl that displays the Test Dialog database browser.
 
+20110307:  Refined the TEST scripts and logic to increase speed 10 fold by only saving the best
+           performer and not every iteration. The hold up was the db.
 

@@ -46,7 +46,8 @@ class TEST : public ScriptPlugin
   private:
     QString _name;
     QString _symbol;
-    QString _version;
+    QString _tag;
+    Setting _bestReport;
     Curve *_enterLong;
     Curve *_enterLong2;
     Curve *_exitLong;
