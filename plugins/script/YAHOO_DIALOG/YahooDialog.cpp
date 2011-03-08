@@ -30,7 +30,6 @@
 #include "BarLength.h"
 
 #include <QDebug>
-#include <QGroupBox>
 #include <QApplication>
 
 YahooDialog::YahooDialog (QWidget *p, Command *c) : Dialog (p)
@@ -51,44 +50,54 @@ YahooDialog::YahooDialog (QWidget *p, Command *c) : Dialog (p)
 
 void YahooDialog::createGUI ()
 {
+  int pos = 0;
+
+  // create the date box
+  _dateBox = new QGroupBox(this);
+  _dateBox->setTitle(tr("Auto Dates"));
+  _dateBox->setCheckable(TRUE);
+  connect(_dateBox, SIGNAL(clicked(bool)), this, SLOT(autoDateToggled(bool)));
+  _vbox->insertWidget(pos++, _dateBox);
+
+  QFormLayout *tform = new QFormLayout;
+  _dateBox->setLayout(tform);
+  
   // start date parm
   _sdate = new QDateTimeEdit(QDate::currentDate().addDays(-1));
   _sdate->setCalendarPopup(TRUE);
   _sdate->setMaximumDate(QDate::currentDate());
   _sdate->setDisplayFormat("yyyy.MM.dd");
-  _form->addRow(tr("Start Date"), _sdate);
+  tform->addRow(tr("Start Date"), _sdate);
 
   // end date parm
   _edate = new QDateTimeEdit(QDate::currentDate());
   _edate->setCalendarPopup(TRUE);
   _edate->setMaximumDate(QDate::currentDate());
   _edate->setDisplayFormat("yyyy.MM.dd");
-  _form->addRow(tr("End Date"), _edate);
+  tform->addRow(tr("End Date"), _edate);
+
+  // create the symbol box
+  _symbolBox = new QGroupBox(this);
+  _symbolBox->setTitle(tr("Select All Symbols"));
+  _symbolBox->setCheckable(TRUE);
+  connect(_symbolBox, SIGNAL(clicked(bool)), this, SLOT(allSymbolsToggled(bool)));
+  _vbox->insertWidget(pos++, _symbolBox);
+
+  tform = new QFormLayout;
+  _symbolBox->setLayout(tform);
 
   // symbols select
   _selectSymbolsButton = new QPushButton;
   _selectSymbolsButton->setText(QString("0 ") + tr("Selected"));
   connect(_selectSymbolsButton, SIGNAL(clicked()), this, SLOT(selectSymbolsDialog()));
-  _form->addRow(tr("Select Symbols"), _selectSymbolsButton);
-
-  // all symbols
-  _allSymbols = new QCheckBox;
-  _form->addRow(tr("Select All Symbols"), _allSymbols);
-  connect(_allSymbols, SIGNAL(toggled(bool)), this, SLOT(allSymbolsToggled(bool)));
+  tform->addRow(tr("Select Symbols"), _selectSymbolsButton);
 
   // adjustment
   _adjustment = new QCheckBox;
   _adjustment->setToolTip(tr("Uses the yahoo adjusted close instead of the actual close"));
   _form->addRow(tr("Adjust for splits"), _adjustment);
 
-  // auto date update
-  _autoDate = new QCheckBox;
-  _autoDate->setToolTip(tr("Updates from last date on disk to now."));
-  _form->addRow(tr("Auto dates"), _autoDate);
-  connect(_autoDate, SIGNAL(toggled(bool)), this, SLOT(autoDateToggled(bool)));
-
-  int pos = 1;
-  
+  pos++;
   // message log area
   QGroupBox *gbox = new QGroupBox;
   gbox->setTitle(tr("Message Log"));
@@ -120,8 +129,11 @@ void YahooDialog::loadSettings ()
 
   QSettings settings(g_globalSettings);
   _adjustment->setChecked(settings.value("yahoo_dialog_adjustment", TRUE).toBool());
-  _allSymbols->setChecked(settings.value("yahoo_dialog_all_symbols", TRUE).toBool());
-  _autoDate->setChecked(settings.value("yahoo_dialog_auto_date", TRUE).toBool());
+  _symbolBox->setChecked(settings.value("yahoo_dialog_all_symbols", TRUE).toBool());
+  _dateBox->setChecked(settings.value("yahoo_dialog_auto_date", TRUE).toBool());
+
+  allSymbolsToggled(_symbolBox->isChecked());
+  autoDateToggled(_dateBox->isChecked());
 }
 
 void YahooDialog::saveSettings ()
@@ -130,8 +142,8 @@ void YahooDialog::saveSettings ()
   
   QSettings settings(g_globalSettings);
   settings.setValue("yahoo_dialog_adjustment", _adjustment->isChecked());
-  settings.setValue("yahoo_dialog_all_symbols", _allSymbols->isChecked());
-  settings.setValue("yahoo_dialog_auto_date", _autoDate->isChecked());
+  settings.setValue("yahoo_dialog_all_symbols", _symbolBox->isChecked());
+  settings.setValue("yahoo_dialog_auto_date", _dateBox->isChecked());
   settings.sync();
 }
 
@@ -141,18 +153,18 @@ void YahooDialog::done ()
   _log->update();
   qApp->processEvents();
 
-  _sdate->setEnabled(FALSE);
-  _edate->setEnabled(FALSE);
+//  _sdate->setEnabled(FALSE);
+//  _edate->setEnabled(FALSE);
   _adjustment->setEnabled(FALSE);
-  _allSymbols->setEnabled(FALSE);
-  _selectSymbolsButton->setEnabled(FALSE);
+  _symbolBox->setEnabled(FALSE);
+//  _selectSymbolsButton->setEnabled(FALSE);
   _okButton->setEnabled(FALSE);
-  _autoDate->setEnabled(FALSE);
+  _dateBox->setEnabled(FALSE);
 
   YahooDataBase db;
   QuoteDataBase qdb;
 
-  if (_allSymbols->isChecked())
+  if (_symbolBox->isChecked())
     db.symbols(_symbolList);
 
   YahooSymbol ys;
@@ -165,7 +177,7 @@ void YahooDialog::done ()
 
     ys.data(symbol);
 
-    if (_autoDate->isChecked())
+    if (_dateBox->isChecked())
     {
       BarData bd;
       bd.setExchange(symbol.data("EXCHANGE"));
@@ -225,12 +237,12 @@ void YahooDialog::downloadDone ()
 {
   _log->append("*** " + tr("Download finished") + " ***");
 
-  allSymbolsToggled(_allSymbols->isChecked());
-  autoDateToggled(_autoDate->isChecked());
+  allSymbolsToggled(_symbolBox->isChecked());
+  autoDateToggled(_dateBox->isChecked());
   _adjustment->setEnabled(TRUE);
-  _allSymbols->setEnabled(TRUE);
+  _symbolBox->setEnabled(TRUE);
   _okButton->setEnabled(TRUE);
-  _autoDate->setEnabled(TRUE);
+  _dateBox->setEnabled(TRUE);
   
   g_middleMan->chartPanelRefresh();
 }

@@ -25,6 +25,7 @@
 #include <QDateTimeEdit>
 #include <QCheckBox>
 #include <QTextEdit>
+#include <QGroupBox>
 
 #include "Dialog.h"
 
@@ -54,11 +55,11 @@ class YahooDialog : public Dialog
     QDateTimeEdit *_sdate;
     QDateTimeEdit *_edate;
     QCheckBox *_adjustment;
-    QCheckBox *_allSymbols;
-    QCheckBox *_autoDate;
     QPushButton *_selectSymbolsButton;
     QStringList _symbolList;
     QTextEdit *_log;
+    QGroupBox *_dateBox;
+    QGroupBox *_symbolBox;
 };
 
 #endif
