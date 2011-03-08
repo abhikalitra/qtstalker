@@ -37,6 +37,15 @@ object. <br>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = CHART_OBJECT_HLINE<br>
+TYPE = &lt;TYPE&gt;<br>
+      <div style="margin-left: 40px;">
+      <ul>
+        <li>RO - read only, not user interactive, not saved to disk<br>
+        </li>
+        <li>RW - read write, user interactive, saved to disk<br>
+        </li>
+      </ul>
+      </div>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INDICATOR = &lt;INDICATOR NAME&gt;<br>
 EXCHANGE = &lt;EXCHANGE&gt;<br>
@@ -65,8 +74,9 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=CHART_OBJECT_RETRACEMENT,NAME=r1,INDICATOR=Bars,EXCHANGE=XNYS,SYMBOL=GOOG,DATE=2011-01-01
-09:30:00,DATE2=2011-02-08 16:00:00,COLOR=red,HIGH=500,LOW=400,LINE1=0.236,LINE2=0.381,LINE3=0.618<br>
+      <td style="vertical-align: top;">PLUGIN=CHART_OBJECT_RETRACEMENT,TYPE=RW,NAME=r1,INDICATOR=Bars,EXCHANGE=XNYS,SYMBOL=GOOG,DATE=2011-01-01
+09:30:00,DATE2=2011-02-08
+16:00:00,COLOR=red,HIGH=500,LOW=400,LINE1=0.236,LINE2=0.381,LINE3=0.618<br>
       <br>
       </td>
     </tr>

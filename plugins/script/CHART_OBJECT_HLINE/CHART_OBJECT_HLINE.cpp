@@ -32,6 +32,7 @@ CHART_OBJECT_HLINE::CHART_OBJECT_HLINE ()
 int CHART_OBJECT_HLINE::command (Command *command)
 {
   // PARMS:
+  // TYPE
   // NAME
   // INDICATOR
   // EXCHANGE
@@ -46,12 +47,41 @@ int CHART_OBJECT_HLINE::command (Command *command)
     return 1;
   }
 
+  // verify TYPE
+  QString type = command->parm("TYPE");
+  if (type.isEmpty())
+  {
+    qDebug() << _plugin << "::command: invalid TYPE" << type;
+    return 1;
+  }
+
+  QStringList typeList;
+  typeList << "RO" << "RW";
   Setting co;
-  co.setData("Type", QString("HLine"));
-  co.setData("ID", command->parm("NAME"));
-  co.setData("Indicator", command->parm("INDICATOR"));
-  co.setData("Exchange", command->parm("EXCHANGE"));
-  co.setData("Symbol", command->parm("SYMBOL"));
+  int saveFlag = 0;
+  switch (typeList.indexOf(type))
+  {
+    case 0: // RO
+    {
+      QString key = "-" + QString::number(i->chartObjectCount() + 1);
+      co.setData("Type", QString("HLine"));
+      co.setData("ID", key);
+      co.setData("RO", 1);
+      break;
+    }
+    case 1:
+      co.setData("Type", QString("HLine"));
+      co.setData("ID", command->parm("NAME"));
+      co.setData("Indicator", command->parm("INDICATOR"));
+      co.setData("Exchange", command->parm("EXCHANGE"));
+      co.setData("Symbol", command->parm("SYMBOL"));
+      saveFlag++;
+      break;
+    default:
+      qDebug() << _plugin << "::command: invalid TYPE" << type;
+      return 1;
+      break;
+  }
 
   // verify price
   bool ok;
@@ -72,8 +102,11 @@ int CHART_OBJECT_HLINE::command (Command *command)
   }
   co.setData("Color", command->parm("COLOR"));
 
-  ChartObjectDataBase db;
-  db.save(&co);
+  if (saveFlag)
+  {
+    ChartObjectDataBase db;
+    db.save(&co);
+  }
 
   i->addChartObject(co);
 

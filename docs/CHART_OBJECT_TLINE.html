@@ -36,6 +36,15 @@ indicator.<br>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = CHART_OBJECT_TLINE<br>
+TYPE = &lt;TYPE&gt;<br>
+      <div style="margin-left: 40px;">
+      <ul>
+        <li>RO - read only, not user interactive, not saved to disk<br>
+        </li>
+        <li>RW - read write, user interactive, saved to disk<br>
+        </li>
+      </ul>
+      </div>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INDICATOR = &lt;INDICATOR NAME&gt;<br>
 EXCHANGE = &lt;EXCHANGE&gt;<br>
@@ -58,7 +67,7 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=CHART_OBJECT_TLINE,NAME=tline1,INDICATOR=Bars,EXCHANGE=XNYS,SYMBOL=GOOG,DATE=2011-01-01
+      <td style="vertical-align: top;">PLUGIN=CHART_OBJECT_TLINE,TYPE=RW,NAME=tline1,INDICATOR=Bars,EXCHANGE=XNYS,SYMBOL=GOOG,DATE=2011-01-01
 09:30:00,DATE2=2011-02-08
 16:00:00,PRICE=450.50,PRICE2=550.5,COLOR=red<br>
       <br>

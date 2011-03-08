@@ -1064,3 +1064,7 @@
            Fixed bug 3202579 - chart object names not unique per asset. Removed user selection of chart
            object id's and will use UUID instead to assign unique names.
 
+           Fixed bug 3202527 - missing DeleteTestThread.h
+
+           Consolidated the CHART_OBJECT_*_TEMP plugins.
+

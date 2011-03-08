@@ -36,6 +36,15 @@ object. <br>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = CHART_OBJECT_HLINE<br>
+TYPE = &lt;TYPE&gt;<br>
+      <div style="margin-left: 40px;">
+      <ul>
+        <li>RO - read only, not user interactive, not saved to disk<br>
+        </li>
+        <li>RW - read write, user interactive, saved to disk<br>
+        </li>
+      </ul>
+      </div>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INDICATOR = &lt;INDICATOR NAME&gt;<br>
 EXCHANGE = &lt;EXCHANGE&gt;<br>
@@ -55,7 +64,7 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=CHART_OBJECT_HLINE,NAME=hline1,INDICATOR=Bars,EXCHANGE=XNYS,SYMBOL=GOOG,PRICE=450.5,COLOR=white<br>
+      <td style="vertical-align: top;">PLUGIN=CHART_OBJECT_HLINE,TYPE=RW,NAME=hline1,INDICATOR=Bars,EXCHANGE=XNYS,SYMBOL=GOOG,PRICE=450.5,COLOR=white<br>
       <br>
       </td>
     </tr>

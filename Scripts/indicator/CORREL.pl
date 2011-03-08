@@ -37,15 +37,15 @@ $command = "PLUGIN=CORREL,NAME=$correlName,INPUT=$barsName,INPUT2=$symbolName,PE
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refDown,COLOR=$refDownColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE,TYPE=RO,PRICE=$refDown,COLOR=$refDownColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refMid,COLOR=$refMidColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE,TYPE=RO,PRICE=$refMid,COLOR=$refMidColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CHART_OBJECT_HLINE_TEMP,PRICE=$refUp,COLOR=$refUpColor";
+$command = "PLUGIN=CHART_OBJECT_HLINE,TYPE=RO,PRICE=$refUp,COLOR=$refUpColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
