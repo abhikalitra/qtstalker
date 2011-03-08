@@ -99,9 +99,13 @@ void YahooSymbolDialog::deleteSymbol ()
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
+    QListWidgetItem *item = l.at(loop);
+    
     Setting symbol;
-    symbol.setData("YSYMBOL", l.at(loop)->text());
+    symbol.setData("SYMBOL", item->text());
     db.deleteSymbol(symbol);
+    
+    delete item;
   }
 
   db.commit();

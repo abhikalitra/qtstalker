@@ -92,24 +92,9 @@ void MiddleMan::plotUpdate (QString d)
   emit signalPlotUpdate(d);
 }
 
-void MiddleMan::chartObjectDelete (QStringList d)
-{
-  emit signalChartObjectDelete(d);
-}
-
-void MiddleMan::chartObjectUpdate (QString d)
-{
-  emit signalChartObjectUpdate(d);
-}
-
 void MiddleMan::statusMessage (QString d)
 {
   emit signalStatusMessage(d);
-}
-
-void MiddleMan::chartObjectNew (QString indicator, QString name, QString type)
-{
-  emit signalChartObjectNew(indicator, name, type);
 }
 
 void MiddleMan::plotFont (QFont d)

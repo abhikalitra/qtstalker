@@ -25,6 +25,7 @@
 #include "Globals.h"
 #include "ChartObjectDataBase.h"
 #include "Script.h"
+#include "ConfirmDialog.h"
 
 #include <QDebug>
 
@@ -78,32 +79,19 @@ void ChartObject::create ()
 
 void ChartObject::dialog ()
 {
-  QSettings lsettings(g_localSettings);
-  lsettings.setValue("chart_object_edit_id", _settings->data("ID"));
-  lsettings.sync();
-
-  QSettings gsettings(g_globalSettings);
-
-  Script *script = new Script(this);
-  script->setName("ChartObjectEdit");
-  script->setFile(gsettings.value("chart_object_edit_script").toString());
-  script->setCommand("perl");
-  script->startScript();
 }
 
 void ChartObject::deleteChartObject ()
 {
-  QSettings lsettings(g_localSettings);
-  lsettings.setValue("chart_object_delete_id", _settings->data("ID"));
-  lsettings.sync();
+  ConfirmDialog *dialog = new ConfirmDialog(0);
+  dialog->setMessage(tr("Confirm chart object delete"));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteChartObject2()));
+  dialog->show();
+}
 
-  QSettings gsettings(g_globalSettings);
-
-  Script *script = new Script(this);
-  script->setName("ChartObjectDelete");
-  script->setFile(gsettings.value("chart_object_delete_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+void ChartObject::deleteChartObject2 ()
+{
+  emit signalDelete(_settings->data("ID"));
 }
 
 void ChartObject::setZ (int d)

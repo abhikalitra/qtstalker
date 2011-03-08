@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CONFIRM_DIALOG_HPP
-#define CONFIRM_DIALOG_HPP
+#ifndef CONFIRM_DIALOG_PLUGIN_HPP
+#define CONFIRM_DIALOG_PLUGIN_HPP
 
 #include "ScriptPlugin.h"
 

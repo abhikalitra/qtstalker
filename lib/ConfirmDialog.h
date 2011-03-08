@@ -19,29 +19,23 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Sell chart object
-// *************************************************************************************************
+#ifndef CONFIRM_DIALOG_HPP
+#define CONFIRM_DIALOG_HPP
 
-#ifndef CHART_OBJECT_SELL_HPP
-#define CHART_OBJECT_SELL_HPP
+#include "Dialog.h"
 
-#include "ChartObject.h"
-
-class ChartObjectSell : public ChartObject
+class ConfirmDialog : public Dialog
 {
   Q_OBJECT
 
-  public:
-    ChartObjectSell ();
-    void info (Setting &);
-    int highLow (int start, int end, double &high, double &low);
-    void create ();
+  signals:
+    void signalDone (int);
 
-  public slots:
-    void move (QPoint);
-    void click (int, QPoint);
-    void dialog ();
+  public:
+    ConfirmDialog (QWidget *);
+    void createGUI ();
+    void setMessage (QString);
+    void setCommand (Command *);
 };
 
 #endif

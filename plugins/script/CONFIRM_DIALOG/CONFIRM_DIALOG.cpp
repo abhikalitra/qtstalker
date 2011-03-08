@@ -43,7 +43,9 @@ int CONFIRM_DIALOG::command (Command *command)
     return 1;
   }
 
-  ConfirmDialog *dialog = new ConfirmDialog(_parent, command);
+  ConfirmDialog *dialog = new ConfirmDialog(_parent);
+  dialog->setCommand(command);
+  dialog->setMessage(s);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

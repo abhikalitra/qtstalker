@@ -25,6 +25,7 @@
 #include "ChartObjectBuyDraw.h"
 #include "Strip.h"
 #include "Globals.h"
+#include "ChartObjectBuyDialog.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -118,8 +119,8 @@ void ChartObjectBuy::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
-          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
-          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
+//          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
+//          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
           _menu->exec(QCursor::pos());
           break;
         default:
@@ -172,4 +173,10 @@ void ChartObjectBuy::create ()
   emit signalSelected(_settings->data("ID"));
   emit signalMoveStart(_settings->data("ID"));
   g_middleMan->statusMessage(tr("Place Buy object..."));
+}
+
+void ChartObjectBuy::dialog ()
+{
+  ChartObjectBuyDialog *dialog = new ChartObjectBuyDialog(0, _settings);
+  dialog->show();
 }

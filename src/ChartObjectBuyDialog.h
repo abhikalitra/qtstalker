@@ -19,29 +19,36 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Sell chart object
-// *************************************************************************************************
+#ifndef CHART_OBJECT_BUY_DIALOG_HPP
+#define CHART_OBJECT_BUY_DIALOG_HPP
 
-#ifndef CHART_OBJECT_SELL_HPP
-#define CHART_OBJECT_SELL_HPP
+#include <QDoubleSpinBox>
+#include <QCheckBox>
+#include <QDateTimeEdit>
 
-#include "ChartObject.h"
+#include "ColorButton.h"
+#include "Setting.h"
+#include "Dialog.h"
 
-class ChartObjectSell : public ChartObject
+class ChartObjectBuyDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ChartObjectSell ();
-    void info (Setting &);
-    int highLow (int start, int end, double &high, double &low);
-    void create ();
+    ChartObjectBuyDialog (QWidget *, Setting *);
+    void createGUI ();
+    void loadObject ();
+    void loadSettings ();
 
   public slots:
-    void move (QPoint);
-    void click (int, QPoint);
-    void dialog ();
+    void done ();
+
+  private:
+    QDoubleSpinBox *_price;
+    QCheckBox *_default;
+    QDateTimeEdit *_date;
+    ColorButton *_color;
+    Setting *_co;
 };
 
 #endif

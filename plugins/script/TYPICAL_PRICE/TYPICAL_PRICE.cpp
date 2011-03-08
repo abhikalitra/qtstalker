@@ -34,17 +34,14 @@ int TYPICAL_PRICE::command (Command *command)
 {
   // PARMS:
   // NAME
+  // HIGH
+  // LOW
+  // CLOSE
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
-    return 1;
-  }
-
-  if (g_barData->count() < 1)
-  {
-    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -56,12 +53,47 @@ int TYPICAL_PRICE::command (Command *command)
     return 1;
   }
 
-  line = new Curve;
-  int loop = 0;
-  for (; loop < g_barData->count(); loop++)
+  Curve *high = i->line(command->parm("HIGH"));
+  if (! high)
   {
-    Bar *b = g_barData->bar(loop);
-    double t = (b->high() + b->low() + b->close()) / 3.0;
+    qDebug() << _plugin << "::command: invalid HIGH" << command->parm("HIGH");
+    return 1;
+  }
+
+  Curve *low = i->line(command->parm("LOW"));
+  if (! low)
+  {
+    qDebug() << _plugin << "::command: invalid LOW" << command->parm("LOW");
+    return 1;
+  }
+
+  Curve *close = i->line(command->parm("CLOSE"));
+  if (! close)
+  {
+    qDebug() << _plugin << "::command: invalid CLOSE" << command->parm("CLOSE");
+    return 1;
+  }
+
+  int loop = 0;
+  int end = 0;
+  close->keyRange(loop, end);
+  
+  line = new Curve;
+  for (; loop <= end; loop++)
+  {
+    CurveBar *h = high->bar(loop);
+    if (! h)
+      continue;
+
+    CurveBar *l = low->bar(loop);
+    if (! l)
+      continue;
+
+    CurveBar *c = close->bar(loop);
+    if (! c)
+      continue;
+    
+    double t = (h->data() + l->data() + c->data()) / 3.0;
     line->setBar(loop, new CurveBar(t));
   }
 

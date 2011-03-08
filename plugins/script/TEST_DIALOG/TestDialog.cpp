@@ -23,7 +23,6 @@
 #include "Globals.h"
 #include "TestDataBase.h"
 #include "SummaryThread.h"
-#include "DeleteTestThread.h"
 #include "../../../pics/refresh.xpm"
 
 #include <QtDebug>
@@ -114,7 +113,7 @@ void TestDialog::createGUI ()
 
   l.clear();
   l << tr("Type") << tr("Volume") << tr("Enter Date") << tr("Enter Price") << tr("Exit Date");
-  l << tr("Exit Price") << tr("Profit") << tr("Signal") << tr("Equity");
+  l << tr("Exit Price") << tr("Bars") << tr("Profit") << tr("Signal") << tr("Equity");
 
   _tradeList = new QTreeWidget;
   _tradeList->setSortingEnabled(TRUE);
@@ -204,6 +203,7 @@ void TestDialog::updateTrades ()
     l << trade.data("ENTER_PRICE");
     l << trade.data("EXIT_DATE");
     l << trade.data("EXIT_PRICE");
+    l << trade.data("BARS_HELD");
     l << trade.data("PROFIT");
     l << trade.data("SIGNAL");
     l << trade.data("EQUITY");
@@ -265,6 +265,7 @@ void TestDialog::summarySelected (QTreeWidgetItem *i)
 
 void TestDialog::deleteTest ()
 {
+/*  
   QList<QTreeWidgetItem *> l = _summary->selectedItems();
   if (! l.count())
     return;
@@ -276,6 +277,7 @@ void TestDialog::deleteTest ()
   DeleteTestThread *thread = new DeleteTestThread(this, item->text(0));
   connect(thread, SIGNAL(signalDone()), this, SLOT(deleteTest2()));
   thread->start();
+*/
 }
 
 void TestDialog::deleteTest2 ()

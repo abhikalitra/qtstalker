@@ -1056,3 +1056,6 @@
 20110307:  Refined the TEST scripts and logic to increase speed 10 fold by only saving the best
            performer and not every iteration. The hold up was the db.
 
+           Fixed bug in YAHOO_DIALOG that did not update the list or db when a symbol is deleted
+           from the db.
+

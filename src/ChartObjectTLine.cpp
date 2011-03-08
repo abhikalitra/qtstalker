@@ -25,6 +25,7 @@
 #include "ChartObjectTLineDraw.h"
 #include "Strip.h"
 #include "Globals.h"
+#include "ChartObjectTLineDialog.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -171,8 +172,8 @@ void ChartObjectTLine::click (int button, QPoint p)
           break;
         }
         case Qt::RightButton:
-          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
-          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
+//          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
+//          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
           _menu->exec(QCursor::pos());
           break;
         default:
@@ -249,4 +250,10 @@ void ChartObjectTLine::create ()
   emit signalSelected(_settings->data("ID"));
   emit signalMoveStart(_settings->data("ID"));
   g_middleMan->statusMessage(tr("Select TLine starting point..."));
+}
+
+void ChartObjectTLine::dialog ()
+{
+  ChartObjectTLineDialog *dialog = new ChartObjectTLineDialog(0, _settings);
+  dialog->show();
 }

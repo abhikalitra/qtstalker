@@ -25,6 +25,7 @@
 #include "ChartObjectVLineDraw.h"
 #include "Strip.h"
 #include "Globals.h"
+#include "ChartObjectVLineDialog.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -105,8 +106,8 @@ void ChartObjectVLine::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
-          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
-          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
+//          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
+//          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
           _menu->exec(QCursor::pos());
           break;
         default:
@@ -159,4 +160,10 @@ void ChartObjectVLine::create ()
   emit signalSelected(_settings->data("ID"));
   emit signalMoveStart(_settings->data("ID"));
   g_middleMan->statusMessage(tr("Place VLine object..."));
+}
+
+void ChartObjectVLine::dialog ()
+{
+  ChartObjectVLineDialog *dialog = new ChartObjectVLineDialog(0, _settings);
+  dialog->show();
 }

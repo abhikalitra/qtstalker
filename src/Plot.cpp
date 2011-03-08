@@ -92,6 +92,7 @@ Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
   _menu = new PlotMenu(this);
   connect(_menu, SIGNAL(signalDateStatus(bool)), this, SLOT(showDate(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
+  connect(_menu, SIGNAL(signalNewChartObject(QString)), this, SLOT(chartObjectNew(QString)));
 
   _dock = new DockWidget(name.left(4), mw);
   _dock->setObjectName(name);
@@ -562,7 +563,7 @@ void Plot::loadSettings ()
 //***************** CHART OBJECT FUNCTIONS ***************************
 //********************************************************************
 
-void Plot::chartObjectNew (QString type, QString id)
+void Plot::chartObjectNew (QString type)
 {
   ChartObjectFactory fac;
   ChartObject *co = fac.chartObject(type);
@@ -573,6 +574,10 @@ void Plot::chartObjectNew (QString type, QString id)
   set->setData("Exchange", g_barData->exchange());
   set->setData("Symbol", g_barData->symbol());
   set->setData("Indicator", _indicator->name());
+  QString id = QUuid::createUuid().toString();
+  id = id.remove(QString("{"), Qt::CaseSensitive);
+  id = id.remove(QString("}"), Qt::CaseSensitive);
+  id = id.remove(QString("-"), Qt::CaseSensitive);
   set->setData("ID", id);
   
   setupChartObject(co);

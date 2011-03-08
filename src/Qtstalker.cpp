@@ -438,11 +438,11 @@ void QtstalkerApp::updatePlot (QString d)
   i->calculate();
 }
 
-void QtstalkerApp::newChartObject (QString ind, QString name, QString type)
+void QtstalkerApp::newChartObject (QString ind, QString, QString type)
 {
   Plot *p = _plots.value(ind);
   if (! p)
     return;
 
-  p->chartObjectNew(type, name);
+  p->chartObjectNew(type);
 }

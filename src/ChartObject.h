@@ -45,6 +45,7 @@ class ChartObject : public QObject
     void signalUnselected (QString);
     void signalMoveStart (QString);
     void signalMoveEnd (QString);
+    void signalDelete (QString);
   
   public:
     enum Status
@@ -72,9 +73,9 @@ class ChartObject : public QObject
   public slots:
     virtual void move (QPoint);
     virtual void click (int, QPoint);
-    
-    void dialog ();
+    virtual void dialog ();
     void deleteChartObject ();
+    void deleteChartObject2 ();
     void save ();
 
   protected:

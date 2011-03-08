@@ -128,20 +128,6 @@ void PlotMenu::createActions ()
   _actions.insert(_DELETE_INDICATOR, a);
   connect(a, SIGNAL(triggered(bool)), this, SLOT(deleteIndicator()));
 
-  // edit chart object
-  a = new QAction(QIcon(edit_xpm), tr("Edit &Chart Object") + "...", this);
-  a->setToolTip(tr("Edit Chart Object") + "...");
-  a->setStatusTip(tr("Edit Chart Object") + "...");
-  _actions.insert(_EDIT_CHART_OBJECT, a);
-  connect(a, SIGNAL(triggered(bool)), this, SLOT(editChartObject()));
-
-  // delete chart object
-  a = new QAction(QIcon(delete_xpm), tr("De&lete Chart Object") + "...", this);
-  a->setToolTip(tr("Delete Chart Object") + "...");
-  a->setStatusTip(tr("Delete Chart Object") + "...");
-  _actions.insert(_DELETE_CHART_OBJECT, a);
-  connect(a, SIGNAL(triggered(bool)), this, SLOT(deleteChartObject()));
-
   // date
   a = new QAction(QIcon(date_xpm), tr("Date A&xis"), this);
   a->setToolTip(tr("Toggle Date Axis"));
@@ -188,9 +174,6 @@ void PlotMenu::createMenus ()
   addAction(_actions.value(_DELETE_INDICATOR));
   addSeparator ();
   addMenu(_coListMenu);
-  addAction(_actions.value(_EDIT_CHART_OBJECT));
-  addAction(_actions.value(_DELETE_CHART_OBJECT));
-  addSeparator ();
   addAction(_actions.value(_DATE_AXIS));
   addAction(_actions.value(_LOG_SCALING));
   addSeparator ();
@@ -232,17 +215,7 @@ void PlotMenu::deleteAllChartObjects ()
 
 void PlotMenu::chartObjectMenuSelected (QAction *a)
 {
-  QSettings lsettings(g_localSettings);
-  lsettings.setValue("chart_object_new", a->data());
-  lsettings.setValue("chart_object_new_indicator", _indicator);
-  lsettings.sync();
-
-  QSettings gsettings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("ChartObjectNew");
-  script->setFile(gsettings.value("chart_object_new_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  emit signalNewChartObject(a->data().toString());
 }
 
 void PlotMenu::setCOMenuStatus (bool status)
@@ -283,36 +256,6 @@ bool PlotMenu::lock ()
 void PlotMenu::setIndicator (QString d)
 {
   _indicator = d;
-}
-
-void PlotMenu::editChartObject ()
-{
-  QSettings lsettings(g_localSettings);
-  lsettings.setValue("chart_object_edit_data", _indicator);
-  lsettings.sync();
-  
-  QSettings gsettings(g_globalSettings);
-
-  Script *script = new Script(this);
-  script->setName("ChartObjectEditSelect");
-  script->setFile(gsettings.value("chart_object_edit_select_script").toString());
-  script->setCommand("perl");
-  script->startScript();
-}
-
-void PlotMenu::deleteChartObject ()
-{
-  QSettings lsettings(g_localSettings);
-  lsettings.setValue("chart_object_delete_data", _indicator);
-  lsettings.sync();
-
-  QSettings gsettings(g_globalSettings);
-
-  Script *script = new Script(this);
-  script->setName("DeleteObjectDeleteSelect");
-  script->setFile(gsettings.value("chart_object_delete_select_script").toString());
-  script->setCommand("perl");
-  script->startScript();
 }
 
 void PlotMenu::newIndicator ()

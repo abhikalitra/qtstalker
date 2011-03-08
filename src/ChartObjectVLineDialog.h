@@ -19,29 +19,34 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Sell chart object
-// *************************************************************************************************
+#ifndef CHART_OBJECT_VLINE_DIALOG_HPP
+#define CHART_OBJECT_VLINE_DIALOG_HPP
 
-#ifndef CHART_OBJECT_SELL_HPP
-#define CHART_OBJECT_SELL_HPP
+#include <QCheckBox>
+#include <QDateTimeEdit>
 
-#include "ChartObject.h"
+#include "ColorButton.h"
+#include "Setting.h"
+#include "Dialog.h"
 
-class ChartObjectSell : public ChartObject
+class ChartObjectVLineDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ChartObjectSell ();
-    void info (Setting &);
-    int highLow (int start, int end, double &high, double &low);
-    void create ();
+    ChartObjectVLineDialog (QWidget *, Setting *);
+    void createGUI ();
+    void loadObject ();
+    void loadSettings ();
 
   public slots:
-    void move (QPoint);
-    void click (int, QPoint);
-    void dialog ();
+    void done ();
+
+  private:
+    ColorButton *_color;
+    QCheckBox *_default;
+    QDateTimeEdit *_date;
+    Setting *_co;
 };
 
 #endif

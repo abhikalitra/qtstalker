@@ -37,6 +37,7 @@ class ChartObjectRetracement : public ChartObject
   public slots:
     void move (QPoint);
     void click (int, QPoint);
+    void dialog ();
 
   private:
     int _createFlag;
