@@ -1059,3 +1059,8 @@
            Fixed bug in YAHOO_DIALOG that did not update the list or db when a symbol is deleted
            from the db.
 
+20110308:  Moved chart object dialog plugins into src and consolidated some of the plugins.
+
+           Fixed bug 3202579 - chart object names not unique per asset. Removed user selection of chart
+           object id's and will use UUID instead to assign unique names.
+

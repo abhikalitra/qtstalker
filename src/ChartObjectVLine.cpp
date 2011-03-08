@@ -165,5 +165,6 @@ void ChartObjectVLine::create ()
 void ChartObjectVLine::dialog ()
 {
   ChartObjectVLineDialog *dialog = new ChartObjectVLineDialog(0, _settings);
+  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
   dialog->show();
 }

@@ -22,6 +22,7 @@
 #include "PlotMenu.h"
 #include "Globals.h"
 #include "Script.h"
+#include "ConfirmDialog.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -128,6 +129,14 @@ void PlotMenu::createActions ()
   _actions.insert(_DELETE_INDICATOR, a);
   connect(a, SIGNAL(triggered(bool)), this, SLOT(deleteIndicator()));
 
+  // delete all chart objects
+  a = new QAction(QIcon(delete_xpm), tr("Delete All &Chart Objects"), this);
+  a->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+  a->setToolTip(tr("Delete All Chart Objects"));
+  a->setStatusTip(tr("Delete All Chart Objects"));
+  _actions.insert(_DELETE_ALL_CHART_OBJECTS, a);
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(deleteAllChartObjects()));
+
   // date
   a = new QAction(QIcon(date_xpm), tr("Date A&xis"), this);
   a->setToolTip(tr("Toggle Date Axis"));
@@ -174,6 +183,8 @@ void PlotMenu::createMenus ()
   addAction(_actions.value(_DELETE_INDICATOR));
   addSeparator ();
   addMenu(_coListMenu);
+  addAction(_actions.value(_DELETE_ALL_CHART_OBJECTS));
+  addSeparator ();
   addAction(_actions.value(_DATE_AXIS));
   addAction(_actions.value(_LOG_SCALING));
   addSeparator ();
@@ -204,13 +215,15 @@ void PlotMenu::deleteIndicator ()
 
 void PlotMenu::deleteAllChartObjects ()
 {
-  QSettings settings(g_globalSettings);
+  ConfirmDialog *dialog = new ConfirmDialog(0);
+  dialog->setMessage(tr("Confirm all chart objects delete"));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
+  dialog->show();
+}
 
-  Script *script = new Script(this);
-  script->setName("ChartObjectDeleteAll");
-  script->setFile(settings.value("chart_object_delete_all_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+void PlotMenu::deleteAllChartObjects2 ()
+{
+  emit signalDeleteAllChartObjects();
 }
 
 void PlotMenu::chartObjectMenuSelected (QAction *a)

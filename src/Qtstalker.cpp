@@ -116,7 +116,6 @@ void QtstalkerApp::createGUI ()
   connect(g_middleMan, SIGNAL(signalPlotTabPosition(int)), this, SLOT(setPlotTabPosition(int)));
   connect(g_middleMan, SIGNAL(signalPlotUpdate(QString)), this, SLOT(updatePlot(QString)));
   connect(g_middleMan, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
-  connect(g_middleMan, SIGNAL(signalChartObjectNew(QString, QString, QString)), this, SLOT(newChartObject(QString, QString, QString)));
   connect(g_middleMan, SIGNAL(signalLoadChart(BarData)), this, SLOT(loadChart(BarData)));
 
   // side panel dock
@@ -362,8 +361,6 @@ void QtstalkerApp::addPlot (QString indicator)
   connect(g_middleMan, SIGNAL(signalGrid(bool)), plot, SLOT(setGrid(bool)));
   connect(g_middleMan, SIGNAL(signalCrosshairsColor(QColor)), plot, SLOT(setCrossHairsColor(QColor)));
   connect(g_middleMan, SIGNAL(signalCrosshairs(bool)), plot, SLOT(setCrossHairs(bool)));
-  connect(g_middleMan, SIGNAL(signalChartObjectDelete(QStringList)), plot, SLOT(deleteChartObject(QStringList)));
-  connect(g_middleMan, SIGNAL(signalChartObjectUpdate(QString)), plot, SLOT(updateChartObject(QString)));
   connect(g_middleMan, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setFont(QFont)));
 
   _plots.insert(indicator, plot);
@@ -436,13 +433,4 @@ void QtstalkerApp::updatePlot (QString d)
   Indicator *i = p->indicator();
   i->load();
   i->calculate();
-}
-
-void QtstalkerApp::newChartObject (QString ind, QString, QString type)
-{
-  Plot *p = _plots.value(ind);
-  if (! p)
-    return;
-
-  p->chartObjectNew(type);
 }

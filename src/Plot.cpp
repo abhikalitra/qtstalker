@@ -93,6 +93,7 @@ Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
   connect(_menu, SIGNAL(signalDateStatus(bool)), this, SLOT(showDate(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
   connect(_menu, SIGNAL(signalNewChartObject(QString)), this, SLOT(chartObjectNew(QString)));
+  connect(_menu, SIGNAL(signalDeleteAllChartObjects()), this, SLOT(deleteAllChartObjects()));
 
   _dock = new DockWidget(name.left(4), mw);
   _dock->setObjectName(name);
@@ -587,18 +588,42 @@ void Plot::chartObjectNew (QString type)
   co->create();
 }
 
-void Plot::deleteChartObject (QStringList l)
+void Plot::deleteChartObject (QString id)
 {
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    ChartObject *co = _chartObjects.value(l.at(loop));
-    if (! co)
-      continue;
+  ChartObject *co = _chartObjects.value(id);
+  if (! co)
+    return;
 
+  delete co;
+  _chartObjects.remove(id);
+
+  ChartObjectDataBase db;
+  db.deleteChartObject(id);
+
+  _selected = 0;
+  setHighLow();
+  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
+  replot();
+}
+
+void Plot::deleteAllChartObjects ()
+{
+  ChartObjectDataBase db;
+  db.transaction();
+  
+  QHashIterator<QString, ChartObject *> it(_chartObjects);
+  while (it.hasNext())
+  {
+    it.next();
+    
+    ChartObject *co = it.value();
     delete co;
-    _chartObjects.remove(l.at(loop));
+    _chartObjects.remove(it.key());
+
+    db.deleteChartObject(it.key());
   }
+
+  db.commit();
 
   _selected = 0;
   setHighLow();
@@ -660,6 +685,8 @@ void Plot::setupChartObject (ChartObject *co)
   co->setZ(10);
   co->attach(this);
   
+  connect(co, SIGNAL(signalDelete(QString)), this, SLOT(deleteChartObject(QString)));
+  connect(co, SIGNAL(signalUpdate(QString)), this, SLOT(updateChartObject(QString)));
   connect(co, SIGNAL(signalSelected(QString)), this, SLOT(chartObjectSelected(QString)));
   connect(co, SIGNAL(signalUnselected(QString)), this, SLOT(chartObjectUnselected(QString)));
   connect(co, SIGNAL(signalMoveStart(QString)), this, SLOT(chartObjectMoveStart(QString)));

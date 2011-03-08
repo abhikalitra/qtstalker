@@ -36,6 +36,7 @@ class PlotMenu : public QMenu
     void signalDateStatus (bool);
     void signalLogStatus (bool);
     void signalNewChartObject (QString);
+    void signalDeleteAllChartObjects ();
 
   public:
     enum Action
@@ -52,7 +53,8 @@ class PlotMenu : public QMenu
       _DELETE_INDICATOR,
       _DATE_AXIS,
       _LOG_SCALING,
-      _LOCK
+      _LOCK,
+      _DELETE_ALL_CHART_OBJECTS
     };
     
     PlotMenu (QWidget *);
@@ -72,6 +74,7 @@ class PlotMenu : public QMenu
     void editIndicator ();
     void deleteIndicator ();
     void deleteAllChartObjects ();
+    void deleteAllChartObjects2 ();
     void newIndicator ();
 
   private:

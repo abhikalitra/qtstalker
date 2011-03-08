@@ -160,5 +160,6 @@ void ChartObjectHLine::create ()
 void ChartObjectHLine::dialog ()
 {
   ChartObjectHLineDialog *dialog = new ChartObjectHLineDialog(0, _settings);
+  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
   dialog->show();
 }

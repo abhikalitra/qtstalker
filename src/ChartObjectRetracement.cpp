@@ -258,5 +258,6 @@ void ChartObjectRetracement::create ()
 void ChartObjectRetracement::dialog ()
 {
   ChartObjectRetracementDialog *dialog = new ChartObjectRetracementDialog(0, _settings);
+  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
   dialog->show();
 }

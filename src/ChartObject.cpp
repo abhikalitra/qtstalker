@@ -133,3 +133,8 @@ void ChartObject::save ()
   ChartObjectDataBase db;
   db.save(_settings);
 }
+
+void ChartObject::update ()
+{
+  emit signalUpdate(_settings->data("ID"));
+}

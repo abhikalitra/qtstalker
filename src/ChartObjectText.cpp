@@ -182,5 +182,6 @@ void ChartObjectText::create ()
 void ChartObjectText::dialog ()
 {
   ChartObjectTextDialog *dialog = new ChartObjectTextDialog(0, _settings);
+  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
   dialog->show();
 }

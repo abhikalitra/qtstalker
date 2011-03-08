@@ -178,5 +178,6 @@ void ChartObjectBuy::create ()
 void ChartObjectBuy::dialog ()
 {
   ChartObjectBuyDialog *dialog = new ChartObjectBuyDialog(0, _settings);
+  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
   dialog->show();
 }
