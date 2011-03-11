@@ -12,6 +12,18 @@ $closeName = 'Close';
 
 $|++;
 
+$command = "PLUGIN=HIGH,NAME=$highName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=LOW,NAME=$lowName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CLOSE,NAME=$closeName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
 $command = "PLUGIN=ATR,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME=$name,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

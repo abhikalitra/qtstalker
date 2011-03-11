@@ -22,7 +22,7 @@
 #include "Setup.h"
 #include "Indicator.h"
 #include "Globals.h"
-#include "ScriptPluginFactory.h"
+//#include "ScriptPluginFactory.h"
 #include "BarData.h"
 #include "MiddleMan.h"
 #include "qtstalker_defines.h"
@@ -62,9 +62,6 @@ void Setup::setup (QObject *p, QString session)
 
 //  setupFutures();
 
-  ScriptPluginFactory sfac;
-  sfac.setPluginList();
-
   QSettings settings(g_localSettings);
   int ti = settings.value("default_indicators", 0).toInt();
   if (ti)
@@ -99,8 +96,13 @@ void Setup::setupDefaults ()
 {
   QSettings settings(g_globalSettings);
 
+  // set the plugin directory
+  QString sysdir = INSTALL_LIB_DIR;
+  sysdir.append("/qtstalker/plugins/script/");
+  settings.setValue("script_plugin_path", sysdir);
+  
   // set the db ascii file directory
-  QString sysdir = INSTALL_DATA_DIR;
+  sysdir = INSTALL_DATA_DIR;
   sysdir.append("/qtstalker/db/");
   settings.setValue("db_data_directory", sysdir);
 

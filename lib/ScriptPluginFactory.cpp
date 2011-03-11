@@ -20,7 +20,7 @@
  */
 
 #include "ScriptPluginFactory.h"
-#include "qtstalker_defines.h"
+//#include "qtstalker_defines.h"
 #include "Globals.h"
 
 #include <QDebug>
@@ -32,27 +32,16 @@ ScriptPluginFactory::ScriptPluginFactory ()
 {
   QSettings settings(g_globalSettings);
   _path = settings.value("script_plugin_path").toString();
-  if (_path.isEmpty())
-  {
-    _path = QString("%1/qtstalker/plugins/script").arg(INSTALL_LIB_DIR);
-    settings.setValue("script_plugin_path", _path);
-    settings.sync();
-  }
 }
 
 ScriptPluginFactory::~ScriptPluginFactory ()
 {
-//  qDeleteAll(_plugins);
   qDeleteAll(_libs);
 }
 
 ScriptPlugin * ScriptPluginFactory::plugin (QString plugin)
 {
   ScriptPlugin *plug = 0;
-//  ScriptPlugin *plug = _plugins.value(plugin);
-//  if (plug)
-//    return plug;
-
   QString file = _path;
   file.append("/lib" + plugin);
 
@@ -63,38 +52,9 @@ ScriptPlugin * ScriptPluginFactory::plugin (QString plugin)
   {
     plug = (*so)();
     _libs.insert(plugin, lib);
-//    _plugins.insert(plugin, plug);
   }
   else
     delete lib;
   
   return plug;
 }
-
-void ScriptPluginFactory::setPluginList ()
-{
-  QStringList l;
-  getPluginList(_path, l);
-
-  QSettings settings(g_globalSettings);
-  settings.setValue("script_plugin_list", l);
-  settings.sync();
-}
-
-void ScriptPluginFactory::getPluginList (QString &path, QStringList &list)
-{
-  list.clear();
-
-  QDir dir(path);
-  int loop;
-  for (loop = 2; loop < (int) dir.count(); loop++)
-  {
-    QFileInfo fi(QString(dir.absolutePath() + "/" + dir[loop]));
-    QString s = fi.baseName();
-    s.remove(0, 3);
-    list.append(s);
-  }
-
-  list.sort();
-}
-

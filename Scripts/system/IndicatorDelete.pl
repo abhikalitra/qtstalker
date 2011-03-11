@@ -25,9 +25,9 @@ $list = <STDIN>; chomp($list); if ($list eq "ERROR") {print STDERR $command; exi
 # delete indicators from the database
 $command = "PLUGIN=INDICATOR_DATABASE_DELETE,NAME=$list";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # delete the charts
 $command = "PLUGIN=PLOT_DELETE,NAME=$list";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

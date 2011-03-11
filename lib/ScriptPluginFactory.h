@@ -34,8 +34,6 @@ class ScriptPluginFactory
     ScriptPluginFactory ();
     ~ScriptPluginFactory ();
     ScriptPlugin * plugin (QString plugin);
-    void setPluginList ();
-    void getPluginList (QString &path, QStringList &list);
     
   protected:
     QString _path;
