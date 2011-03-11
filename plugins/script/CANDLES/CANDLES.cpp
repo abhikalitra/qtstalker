@@ -33,6 +33,10 @@ CANDLES::CANDLES ()
 int CANDLES::command (Command *command)
 {
   // PARMS:
+  // INPUT_OPEN
+  // INPUT_HIGH
+  // INPUT_LOW
+  // INPUT_CLOSE
   // NAME
   // COLOR_UP
   // COLOR_DOWN
@@ -45,10 +49,31 @@ int CANDLES::command (Command *command)
     return 1;
   }
 
-  int size = g_barData->count();
-  if (size < 1)
+  Curve *iopen = i->line(command->parm("INPUT_OPEN"));
+  if (! iopen)
   {
-    qDebug() << _plugin << "::command: no bars";
+    qDebug() << _plugin << "::command: invalid INPUT_OPEN" << command->parm("INPUT_OPEN");
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
+    return 1;
+  }
+
+  Curve *iclose = i->line(command->parm("INPUT_CLOSE"));
+  if (! iclose)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_CLOSE" << command->parm("INPUT_CLOSE");
     return 1;
   }
 
@@ -98,33 +123,47 @@ int CANDLES::command (Command *command)
 
   line = new Curve(Curve::Candle);
 
-  int loop = 0;
-  for (; loop < size; loop++)
+  int ipos = 0;
+  int end = 0;
+  iclose->keyRange(ipos, end);
+  for (; ipos <= end; ipos++)
   {
-    Bar *b = g_barData->bar(loop);
-    if (! b)
+    CurveBar *obar = iopen->bar(ipos);
+    if (! obar)
+      continue;
+
+    CurveBar *hbar = ihigh->bar(ipos);
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos);
+    if (! lbar)
+      continue;
+
+    CurveBar *cbar = iclose->bar(ipos);
+    if (! cbar)
       continue;
 
     CurveBar *bar = new CurveBar;
-    bar->setData(0, b->open());
-    bar->setData(1, b->high());
-    bar->setData(2, b->low());
-    bar->setData(3, b->close());
+    bar->setData(0, obar->data());
+    bar->setData(1, hbar->data());
+    bar->setData(2, lbar->data());
+    bar->setData(3, cbar->data());
     bar->setColor(neutralColor);
 
-    Bar *yb = g_barData->bar(loop - 1);
-    if (yb)
+    CurveBar *ycbar = iclose->bar(ipos - 1);
+    if (ycbar)
     {
-      if (b->close() > yb->close())
+      if (cbar->data() > ycbar->data())
         bar->setColor(upColor);
       else
       {
-        if (b->close() < yb->close())
+        if (cbar->data() < ycbar->data())
           bar->setColor(downColor);
       }
     }
 
-    line->setBar(loop, bar);
+    line->setBar(ipos, bar);
   }
 
   line->setLabel(name);

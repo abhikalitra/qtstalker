@@ -18,11 +18,27 @@ $refUp = 80;
 $refDownColor = 'green';
 $refDown = 20;
 
+$highName = 'High';
+$lowName = 'Low';
+$closeName = 'Close';
+
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=STOCH_FAST,NAME_FASTK=$fastkName,NAME_FASTD=$fastdName,PERIOD_FASTK=$fastkPeriod,PERIOD_FASTD=$fastdPeriod,MA_TYPE_FASTD=$maType";
+$command = "PLUGIN=HIGH,NAME=$highName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=LOW,NAME=$lowName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CLOSE,NAME=$closeName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=STOCH_FAST,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME_FASTK=$fastkName,NAME_FASTD=$fastdName,PERIOD_FASTK=$fastkPeriod,PERIOD_FASTD=$fastdPeriod,MA_TYPE_FASTD=$maType";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

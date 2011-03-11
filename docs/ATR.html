@@ -37,6 +37,9 @@ Range</a><br>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = ATR<br>
+INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
+INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
+INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;INTEGER&gt;<br>
       <br>
@@ -52,7 +55,8 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=ATR,NAME=atr,PERIOD=10<br>
+      <td style="vertical-align: top;">PLUGIN=ATR, INPUT_HIGH=high,
+INPUT_LOW=low, INPUT_CLOSE=close, NAME=atr, PERIOD=10<br>
       <br>
       </td>
     </tr>

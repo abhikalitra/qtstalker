@@ -38,24 +38,30 @@ SAR::SAR ()
 int SAR::command (Command *command)
 {
   // PARMS:
+  // INPUT_HIGH
+  // INPUT_LOW
   // NAME
   // STEP_INITIAL
   // STEP_MAX
-
-  BarData *data = g_barData;
-  if (! data)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
-
-  if (data->count() < 1)
-    return 1;
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
     return 1;
   }
 
@@ -82,19 +88,30 @@ int SAR::command (Command *command)
     return 1;
   }
 
-  int size = data->count();
+  int size = ihigh->count();
+
   TA_Real out[size];
   TA_Real high[size];
   TA_Real low[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
+  int ipos = 0;
+  int opos = 0;
+  int end = 0;
+  ihigh->keyRange(ipos, end);
+  for (; ipos <= end; ipos++, opos++)
   {
-    Bar *bar = data->bar(loop);
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
+    CurveBar *hbar = ihigh->bar(ipos);
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos);
+    if (! lbar)
+      continue;
+
+    high[opos] = (TA_Real) hbar->data();
+    low[opos] = (TA_Real) lbar->data();
   }
 
   TA_RetCode rc = TA_SAR(0,
@@ -115,7 +132,8 @@ int SAR::command (Command *command)
 
   line = new Curve(Curve::Dot);
 
-  for (loop = 0; loop < outNb; loop++)
+  int loop = 0;
+  for (; loop < outNb; loop++)
     line->setBar(loop + 1, new CurveBar(out[loop]));
 
   line->setLabel(name);

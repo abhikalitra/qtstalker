@@ -7,12 +7,22 @@ $period = 2;
 $maType = 'EMA';
 $upColor = 'green';
 $downColor = 'red';
+$closeName = 'Close';
+$volName = 'Volume';
 
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=FI,NAME=$name,PERIOD=$period,MA_TYPE=$maType";
+$command = "PLUGIN=VOLUME,NAME=$volName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CLOSE,NAME=$closeName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=FI,INPUT_VOLUME=$volName,INPUT_CLOSE=$closeName,NAME=$name,PERIOD=$period,MA_TYPE=$maType";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

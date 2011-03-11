@@ -43,13 +43,34 @@ $ssbZ = '5';
 $ssbHighName = 'ssbHigh';
 $ssbLowName = 'ssbLow';
 
+$openName = 'Open';
+$highName = 'High';
+$lowName = 'Low';
+$closeName = 'Close';
+
 ###################################################################
 
 $|++;
 
 # candles
 
-$command = "PLUGIN=CANDLES,NAME=$candleName,COLOR_UP=$candleUpColor,COLOR_DOWN=$candleDownColor,COLOR_NEUTRAL=$candleNeutralColor";
+$command = "PLUGIN=OPEN,NAME=$openName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=HIGH,NAME=$highName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=LOW,NAME=$lowName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CLOSE,NAME=$closeName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CANDLES,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME=$candleName,COLOR_UP=$candleUpColor,COLOR_DOWN=$candleDownColor,COLOR_NEUTRAL=$candleNeutralColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -57,21 +78,13 @@ $command = "PLUGIN=INDICATOR_PLOT,NAME=$candleName,Z=$candleZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=HIGH,NAME=high";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "PLUGIN=LOW,NAME=low";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
 # TENKAN SEN
 
-$command = "PLUGIN=MAX,NAME=$tsHighName,INPUT=high,PERIOD=$tsPeriod";
+$command = "PLUGIN=MAX,NAME=$tsHighName,INPUT=$highName,PERIOD=$tsPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=MIN,NAME=$tsLowName,INPUT=low,PERIOD=$tsPeriod";
+$command = "PLUGIN=MIN,NAME=$tsLowName,INPUT=$lowName,PERIOD=$tsPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -85,11 +98,11 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # KIJUN SEN
 
-$command = "PLUGIN=MAX,NAME=$ksHighName,INPUT=high,PERIOD=$ksPeriod";
+$command = "PLUGIN=MAX,NAME=$ksHighName,INPUT=$highName,PERIOD=$ksPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=MIN,NAME=$ksLowName,INPUT=low,PERIOD=$ksPeriod";
+$command = "PLUGIN=MIN,NAME=$ksLowName,INPUT=$lowName,PERIOD=$ksPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -103,11 +116,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # CHIKOU SPAN
 
-$command = "PLUGIN=CLOSE,NAME=close";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_SHIFT,NAME=$csName,INPUT=close,PERIOD=$csPeriod";
+$command = "PLUGIN=INDICATOR_PLOT_INDEX_SHIFT,NAME=$csName,INPUT=$closeName,PERIOD=$csPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -131,11 +140,11 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # SENKOU SPAN B
 
-$command = "PLUGIN=MAX,NAME=$ssbHighName,INPUT=high,PERIOD=$ssbPeriod";
+$command = "PLUGIN=MAX,NAME=$ssbHighName,INPUT=$highName,PERIOD=$ssbPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=MIN,NAME=$ssbLowName,INPUT=low,PERIOD=$ssbPeriod";
+$command = "PLUGIN=MIN,NAME=$ssbLowName,INPUT=$lowName,PERIOD=$ssbPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

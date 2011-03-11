@@ -37,26 +37,32 @@ SZ::SZ ()
 int SZ::command (Command *command)
 {
   // PARMS:
+  // INPUT_HIGH
+  // INPUT_LOW
   // NAME
   // METHOD
   // PERIOD
   // NO_DECLINE_PERIOD
   // COEFFICIENT
 
-  BarData *data = g_barData;
-  if (! data)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
-
-  if (data->count() < 1)
-    return 1;
-
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
     return 1;
   }
 
@@ -97,9 +103,6 @@ int SZ::command (Command *command)
     return 1;
   }
 
-  if (data->count() < period || data->count() < no_decline_period)
-    return 1;
-
   int display_uptrend = 0;
   int display_dntrend = 0;
   int position = 1;
@@ -131,26 +134,44 @@ int SZ::command (Command *command)
     old_dntrend_stops[loop] = 0;
   }
 
-  int start = period + 1;
-  for (loop = start; loop < data->count(); loop++)
+  int ipos = 0;
+  int end = 0;
+  ihigh->keyRange(ipos, end);
+  ipos += period + 1;
+  int start = ipos;
+  for (; ipos <= end; ipos++)
   {
     // calculate downside/upside penetration for lookback period
     int lbloop;
-    int lbstart = loop - period;
+    int lbstart = ipos - period;
     if (lbstart < 2)
       lbstart = 2;
     double uptrend_noise_avg = 0;
     double uptrend_noise_cnt = 0;
     double dntrend_noise_avg = 0;
     double dntrend_noise_cnt = 0;
-    for (lbloop = lbstart; lbloop < loop; lbloop++)
+    for (lbloop = lbstart; lbloop < ipos; lbloop++)
     {
-      Bar *bar = data->bar(lbloop);
-      Bar *pbar = data->bar(lbloop - 1);
-      double lo_curr = bar->low();
-      double lo_last = pbar->low();
-      double hi_curr = bar->high();
-      double hi_last = pbar->high();
+      CurveBar *hbar = ihigh->bar(lbloop);
+      if (! hbar)
+        continue;
+
+      CurveBar *phbar = ihigh->bar(lbloop - 1);
+      if (! phbar)
+        continue;
+
+      CurveBar *lbar = ilow->bar(lbloop);
+      if (! lbar)
+        continue;
+
+      CurveBar *plbar = ilow->bar(lbloop - 1);
+      if (! plbar)
+        continue;
+
+      double lo_curr = lbar->data();
+      double lo_last = plbar->data();
+      double hi_curr = hbar->data();
+      double hi_last = phbar->data();
       if (lo_last > lo_curr)
       {
         uptrend_noise_avg += lo_last - lo_curr;
@@ -168,9 +189,16 @@ int SZ::command (Command *command)
     if (dntrend_noise_cnt > 0)
       dntrend_noise_avg /= dntrend_noise_cnt;
 
-    Bar *pbar = data->bar(loop - 1);
-    double lo_last = pbar->low();
-    double hi_last = pbar->high();
+    CurveBar *phbar = ihigh->bar(ipos - 1);
+    if (! phbar)
+      continue;
+
+    CurveBar *plbar = ilow->bar(ipos - 1);
+    if (! plbar)
+      continue;
+
+    double lo_last = plbar->data();
+    double hi_last = phbar->data();
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
     dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
 

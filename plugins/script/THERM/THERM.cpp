@@ -44,19 +44,28 @@ THERM::THERM ()
 int THERM::command (Command *command)
 {
   // PARMS:
+  // INPUT_HIGH
+  // INPUT_LOW
   // NAME
-
-  BarData *data = g_barData;
-  if (! data)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
     return 1;
   }
 
@@ -68,26 +77,41 @@ int THERM::command (Command *command)
     return 1;
   }
 
-  if (data->count() < 2)
-    return 1;
-
   line = new Curve;
 
-  int loop = 1;
   double thermometer = 0;
-  for (; loop < (int) data->count(); loop++)
+  int ipos = 0;
+  int opos = 0;
+  int end = 0;
+  ihigh->keyRange(ipos, end);
+  ipos++;
+  for (; ipos <= end; ipos++, opos++)
   {
-    Bar *bar = data->bar(loop);
-    Bar *pbar = data->bar(loop - 1);
-    double high = fabs(bar->high() - pbar->high());
-    double lo = fabs(pbar->low() - bar->low());
+    CurveBar *hbar = ihigh->bar(ipos);
+    if (! hbar)
+      continue;
+
+    CurveBar *phbar = ihigh->bar(ipos - 1);
+    if (! phbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos);
+    if (! lbar)
+      continue;
+
+    CurveBar *plbar = ilow->bar(ipos - 1);
+    if (! plbar)
+      continue;
+
+    double high = fabs(hbar->data() - phbar->data());
+    double lo = fabs(plbar->data() - lbar->data());
 
     if (high > lo)
       thermometer = high;
     else
       thermometer = lo;
 
-    line->setBar(loop, new CurveBar(thermometer));
+    line->setBar(ipos, new CurveBar(thermometer));
   }
 
   line->setLabel(name);

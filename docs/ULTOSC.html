@@ -36,6 +36,9 @@
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = ULTOSC<br>
+INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
+INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
+INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 PERIOD_SHORT = &lt;INTEGER&gt;<br>
 PERIOD_MED = &lt;INTEGER&gt;<br>
@@ -53,7 +56,9 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=ULTOSC,NAME=ultosc,PERIOD_SHORT=7,PERIOD_MED=14,PERIOD_LONG=28<br>
+      <td style="vertical-align: top;">PLUGIN=ULTOSC, INPUT_HIGH=high,
+INPUT_LOW=low, INPUT_CLOSE=close, NAME=ultosc, PERIOD_SHORT=7,
+PERIOD_MED=14, PERIOD_LONG=28<br>
       <br>
       </td>
     </tr>

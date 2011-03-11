@@ -38,24 +38,30 @@ AROON::AROON ()
 int AROON::command (Command *command)
 {
   // PARMS:
-  // <NAME_UPPER>
-  // <NAME_LOWER>
-  // <PERIOD>
-
-  BarData *data = g_barData;
-  if (! data)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
-
-  if (data->count() < 1)
-    return 1;
+  // INPUT_HIGH
+  // INPUT_LOW
+  // NAME_UPPER
+  // NAME_LOWER
+  // PERIOD
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
     return 1;
   }
 
@@ -83,7 +89,8 @@ int AROON::command (Command *command)
     return 1;
   }
 
-  int size = data->count();
+  int size = ihigh->count();
+
   TA_Real out[size];
   TA_Real out2[size];
   TA_Real high[size];
@@ -91,12 +98,22 @@ int AROON::command (Command *command)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
+  int ipos = 0;
+  int opos = 0;
+  int end = 0;
+  ihigh->keyRange(ipos, end);
+  for (; ipos <= end; ipos++, opos++)
   {
-    Bar *bar = data->bar(loop);
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
+    CurveBar *hbar = ihigh->bar(ipos);
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos);
+    if (! lbar)
+      continue;
+
+    high[opos] = (TA_Real) hbar->data();
+    low[opos] = (TA_Real) lbar->data();
   }
 
   TA_RetCode rc = TA_AROON(0,

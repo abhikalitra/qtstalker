@@ -32,13 +32,18 @@
  style="border-collapse: separate; color: rgb(0, 0, 0); font-family: 'Times New Roman'; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium;"><span
  class="Apple-style-span"
  style="font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 14px;"></span></span>Average
-Price calculation is ((Open + High + Low + Close) / 4)<br>
+Price
+calculation is ((Open + High + Low + Close) / 4)<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = AVERAGE_PRICE<br>
+INPUT_OPEN = &lt;VARIABLE NAME&gt;<br>
+INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
+INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
+INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
       <br>
       </td>
@@ -53,7 +58,9 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=AVERAGE_PRICE,NAME=ap<br>
+      <td style="vertical-align: top;">PLUGIN=AVERAGE_PRICE,
+INPUT_OPEN=open, INPUT_HIGH=high, INPUT_LOW=low, INPUT_CLOSE=close,
+NAME=ap<br>
       <br>
       </td>
     </tr>

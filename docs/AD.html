@@ -30,13 +30,18 @@
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
       <td style="vertical-align: top;"><a
  href="http://en.wikipedia.org/wiki/Accumulation/distribution_index">Chaikin's
-Accumulation Distribution</a><br>
+Accumulation
+Distribution</a><br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = AD<br>
+INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
+INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
+INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
+INPUT_VOLUME = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
       <br>
       </td>
@@ -51,7 +56,8 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=AD,NAME=ad<br>
+      <td style="vertical-align: top;">PLUGIN=AD, INPUT_HIGH=high,
+INPUT_LOW=low, INPUT_CLOSE=close, INPUT_VOLUME=volume, NAME=ad<br>
       <br>
       </td>
     </tr>

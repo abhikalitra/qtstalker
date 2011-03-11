@@ -13,11 +13,32 @@ $haramiCrossName = 'Harami Cross';
 $haramiCrossStyle = 'Histogram Bar';
 $haramiCrossColor = 'orange';
 
+$openName = 'Open';
+$highName = 'High';
+$lowName = 'Low';
+$closeName = 'Close';
+
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=CANDLE_PATTERN,METHOD=HARAMI,NAME=$haramiName";
+$command = "PLUGIN=OPEN,NAME=$openName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=HIGH,NAME=$highName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=LOW,NAME=$lowName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CLOSE,NAME=$closeName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,METHOD=HARAMI,NAME=$haramiName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -25,7 +46,7 @@ $command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$haramiName,STYLE=$haramiStyle,COLOR=
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_PATTERN,METHOD=HARAMICROSS,NAME=$haramiCrossName";
+$command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,METHOD=HARAMICROSS,NAME=$haramiCrossName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

@@ -38,23 +38,45 @@ MFI::MFI ()
 int MFI::command (Command *command)
 {
   // PARMS:
+  // INPUT_HIGH
+  // INPUT_LOW
+  // INPUT_CLOSE
+  // INPUT_VOLUME
   // NAME
   // PERIOD
-
-  BarData *data = g_barData;
-  if (! data)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
-
-  if (data->count() < 1)
-    return 1;
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
+    return 1;
+  }
+
+  Curve *iclose = i->line(command->parm("INPUT_CLOSE"));
+  if (! iclose)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_CLOSE" << command->parm("INPUT_CLOSE");
+    return 1;
+  }
+
+  Curve *ivol = i->line(command->parm("INPUT_VOLUME"));
+  if (! ivol)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_VOLUME" << command->parm("INPUT_VOLUME");
     return 1;
   }
 
@@ -74,7 +96,8 @@ int MFI::command (Command *command)
     return 1;
   }
 
-  int size = data->count();
+  int size = iclose->count();
+
   TA_Real out[size];
   TA_Real high[size];
   TA_Real low[size];
@@ -83,14 +106,32 @@ int MFI::command (Command *command)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
+  int ipos = 0;
+  int opos = 0;
+  int end = 0;
+  iclose->keyRange(ipos, end);
+  for (; ipos <= end; ipos++, opos++)
   {
-    Bar *bar = data->bar(loop);
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-    close[loop] = (TA_Real) bar->close();
-    volume[loop] = (TA_Real) bar->volume();
+    CurveBar *hbar = ihigh->bar(ipos);
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos);
+    if (! lbar)
+      continue;
+
+    CurveBar *cbar = iclose->bar(ipos);
+    if (! cbar)
+      continue;
+
+    CurveBar *vbar = ivol->bar(ipos);
+    if (! vbar)
+      continue;
+
+    high[opos] = (TA_Real) hbar->data();
+    low[opos] = (TA_Real) lbar->data();
+    close[opos] = (TA_Real) cbar->data();
+    volume[opos] = (TA_Real) vbar->data();
   }
 
   TA_RetCode rc = TA_MFI(0,

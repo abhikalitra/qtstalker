@@ -17,11 +17,15 @@ $refUp = 100;
 $refDownColor = 'white';
 $refDown = -100;
 
+$highName = 'High';
+$lowName = 'Low';
+$closeName = 'Close';
+
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=CCI,NAME=$cciName,PERIOD=$cciPeriod";
+$command = "PLUGIN=CCI,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME=$cciName,PERIOD=$cciPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

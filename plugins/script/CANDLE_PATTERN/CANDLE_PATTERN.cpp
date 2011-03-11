@@ -179,6 +179,10 @@ int CANDLE_PATTERN::command (Command *command)
 int CANDLE_PATTERN::getCandles (Command *command)
 {
   // PARMS:
+  // INPUT_OPEN
+  // INPUT_HIGH
+  // INPUT_LOW
+  // INPUT_CLOSE
   // METHOD
   // NAME
 
@@ -189,9 +193,31 @@ int CANDLE_PATTERN::getCandles (Command *command)
     return 1;
   }
 
-  if (g_barData->count() < 1)
+  Curve *iopen = i->line(command->parm("INPUT_OPEN"));
+  if (! iopen)
   {
-    qDebug() << _plugin << "::getCandles: no bars";
+    qDebug() << _plugin << "::command: invalid INPUT_OPEN" << command->parm("INPUT_OPEN");
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
+    return 1;
+  }
+
+  Curve *iclose = i->line(command->parm("INPUT_CLOSE"));
+  if (! iclose)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_CLOSE" << command->parm("INPUT_CLOSE");
     return 1;
   }
 
@@ -203,7 +229,8 @@ int CANDLE_PATTERN::getCandles (Command *command)
     return 1;
   }
 
-  int size = g_barData->count();
+  int size = iclose->count();
+
   TA_Integer out[size];
   TA_Real open[size];
   TA_Real high[size];
@@ -212,14 +239,32 @@ int CANDLE_PATTERN::getCandles (Command *command)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
+  int ipos = 0;
+  int opos = 0;
+  int end = 0;
+  iclose->keyRange(ipos, end);
+  for (; ipos <= end; ipos++, opos++)
   {
-    Bar *bar = g_barData->bar(loop);
-    open[loop] = (TA_Real) bar->open();
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-    close[loop] = (TA_Real) bar->close();
+    CurveBar *obar = iopen->bar(ipos);
+    if (! obar)
+      continue;
+
+    CurveBar *hbar = ihigh->bar(ipos);
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos);
+    if (! lbar)
+      continue;
+
+    CurveBar *cbar = iclose->bar(ipos);
+    if (! cbar)
+      continue;
+
+    open[opos] = (TA_Real) obar->data();
+    high[opos] = (TA_Real) hbar->data();
+    low[opos] = (TA_Real) lbar->data();
+    close[opos] = (TA_Real) cbar->data();
   }
 
   TA_RetCode rc = TA_SUCCESS;
@@ -852,6 +897,10 @@ int CANDLE_PATTERN::getCandles (Command *command)
 int CANDLE_PATTERN::getCandlesPen (Command *command)
 {
   // PARMS:
+  // INPUT_OPEN
+  // INPUT_HIGH
+  // INPUT_LOW
+  // INPUT_CLOSE
   // METHOD
   // NAME
   // PENETRATION
@@ -863,9 +912,31 @@ int CANDLE_PATTERN::getCandlesPen (Command *command)
     return 1;
   }
 
-  if (g_barData->count() < 1)
+  Curve *iopen = i->line(command->parm("INPUT_OPEN"));
+  if (! iopen)
   {
-    qDebug() << _plugin << "::getCandlesPen: no bars";
+    qDebug() << _plugin << "::command: invalid INPUT_OPEN" << command->parm("INPUT_OPEN");
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
+    return 1;
+  }
+
+  Curve *iclose = i->line(command->parm("INPUT_CLOSE"));
+  if (! iclose)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_CLOSE" << command->parm("INPUT_CLOSE");
     return 1;
   }
 
@@ -890,7 +961,8 @@ int CANDLE_PATTERN::getCandlesPen (Command *command)
     }
   }
 
-  int size = g_barData->count();
+  int size = iclose->count();
+
   TA_Integer out[size];
   TA_Real open[size];
   TA_Real high[size];
@@ -899,14 +971,32 @@ int CANDLE_PATTERN::getCandlesPen (Command *command)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
+  int ipos = 0;
+  int opos = 0;
+  int end = 0;
+  iclose->keyRange(ipos, end);
+  for (; ipos <= end; ipos++, opos++)
   {
-    Bar *bar = g_barData->bar(loop);
-    open[loop] = (TA_Real) bar->open();
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-    close[loop] = (TA_Real) bar->close();
+    CurveBar *obar = iopen->bar(ipos);
+    if (! obar)
+      continue;
+
+    CurveBar *hbar = ihigh->bar(ipos);
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos);
+    if (! lbar)
+      continue;
+
+    CurveBar *cbar = iclose->bar(ipos);
+    if (! cbar)
+      continue;
+
+    open[opos] = (TA_Real) obar->data();
+    high[opos] = (TA_Real) hbar->data();
+    low[opos] = (TA_Real) lbar->data();
+    close[opos] = (TA_Real) cbar->data();
   }
 
   TA_RetCode rc = TA_SUCCESS;

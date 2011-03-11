@@ -9,12 +9,22 @@ $aroonDownStyle = 'Line';
 $aroonDownColor = 'red';
 
 $period = 14;
+$highName = 'High';
+$lowName = 'Low';
 
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=AROON,NAME_UPPER=$aroonUpName,NAME_LOWER=$aroonDownName,PERIOD=$period";
+$command = "PLUGIN=HIGH,NAME=$highName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=LOW,NAME=$lowName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=AROON,INPUT_HIGH=$highName,INPUT_LOW=$lowName,NAME_UPPER=$aroonUpName,NAME_LOWER=$aroonDownName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

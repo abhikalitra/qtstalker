@@ -34,23 +34,45 @@ VFI::VFI ()
 int VFI::command (Command *command)
 {
   // PARMS:
+  // INPUT_HIGH
+  // INPUT_LOW
+  // INPUT_CLOSE
+  // INPUT_VOLUME
   // NAME
   // PERIOD
-
-  BarData *data = g_barData;
-  if (! data)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
-
-  if (data->count() < 1)
-    return 1;
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
+    return 1;
+  }
+
+  Curve *iclose = i->line(command->parm("INPUT_CLOSE"));
+  if (! iclose)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_CLOSE" << command->parm("INPUT_CLOSE");
+    return 1;
+  }
+
+  Curve *ivol = i->line(command->parm("INPUT_VOLUME"));
+  if (! ivol)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_VOLUME" << command->parm("INPUT_VOLUME");
     return 1;
   }
 
@@ -70,53 +92,103 @@ int VFI::command (Command *command)
     return 1;
   }
 
-  int size = data->count();
-
-  if (size < period)
-    return 1;
-
   Curve *vfi = new Curve;
 
-  int loop = period;
-  for (; loop < size; loop++)
+  int ipos = 0;
+  int end = 0;
+  iclose->keyRange(ipos, end);
+  ipos += period;
+  for (; ipos <= end; ipos++)
   {
+    CurveBar *hbar = ihigh->bar(ipos - period);
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos - period);
+    if (! lbar)
+      continue;
+
+    CurveBar *cbar = iclose->bar(ipos - period);
+    if (! cbar)
+      continue;
+
     double inter = 0.0;
     double sma_vol = 0.0;
     int i;
-    Bar *bar = data->bar(loop - period);
-    double close = bar->close();
-    double high = bar->high();
-    double low = bar->low();
+    double close = cbar->data();
+    double high = hbar->data();
+    double low = lbar->data();
     double typical = (high + low + close) / 3.0;
-    for (i = loop - period + 1; i <= loop; i++)
+    for (i = ipos - period + 1; i <= ipos; i++)
     {
-      bar = data->bar(i);
+      hbar = ihigh->bar(i);
+      if (! hbar)
+        continue;
+
+      lbar = ilow->bar(i);
+      if (! lbar)
+        continue;
+
+      cbar = iclose->bar(i);
+      if (! cbar)
+        continue;
+
+      CurveBar *vbar = ivol->bar(i);
+      if (! vbar)
+        continue;
+
       double ytypical = typical;
-      close = bar->close();
-      high = bar->high();
-      low = bar->low();
+      close = cbar->data();
+      high = hbar->data();
+      low = lbar->data();
       typical = (high + low + close) / 3.0;
       double delta = (log(typical) - log(ytypical));
       inter += delta * delta;
-      sma_vol += bar->volume();
+      sma_vol += vbar->data();
     }
     inter = 0.2 * sqrt(inter / (double) period) * typical;
     sma_vol /= (double) period;
 
-    bar = data->bar(loop - period);
-    close = bar->close();
-    high = bar->high();
-    low = bar->low();
+    hbar = ihigh->bar(ipos - period);
+    if (! hbar)
+      continue;
+
+    lbar = ilow->bar(ipos - period);
+    if (! lbar)
+      continue;
+
+    cbar = iclose->bar(ipos - period);
+    if (! cbar)
+      continue;
+
+    close = cbar->data();
+    high = hbar->data();
+    low = lbar->data();
     typical = (high + low + close) / 3.0;
     double t = 0;
-    for (i = loop - period + 1; i <= loop; i++)
+    for (i = ipos - period + 1; i <= ipos; i++)
     {
-      bar = data->bar(i);
+      hbar = ihigh->bar(i);
+      if (! hbar)
+        continue;
+
+      lbar = ilow->bar(i);
+      if (! lbar)
+        continue;
+
+      cbar = iclose->bar(i);
+      if (! cbar)
+        continue;
+
+      CurveBar *vbar = ivol->bar(i);
+      if (! vbar)
+        continue;
+
       double ytypical = typical;
-      double volume = bar->volume();
-      close = bar->close();
-      high = bar->high();
-      low = bar->low();
+      double volume = vbar->data();
+      close = cbar->data();
+      high = hbar->data();
+      low = lbar->data();
       typical = (high + low + close) / 3.0;
 
       if (typical > ytypical + inter)
@@ -128,7 +200,7 @@ int VFI::command (Command *command)
       }
     }
 
-    vfi->setBar(loop, new CurveBar(t));
+    vfi->setBar(ipos, new CurveBar(t));
   }
 
   vfi->setLabel(name);

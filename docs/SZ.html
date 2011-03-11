@@ -36,6 +36,8 @@ described in Dr. Alexander Elder's book Come Into My Trading Room, p.173<br>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = SZ<br>
+INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
+INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 METHOD = &lt;TYPE&gt;<br>
       <div style="margin-left: 40px;">
@@ -61,7 +63,9 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=SZ,NAME=sz,METHOD=SHORT,PERIOD=10,NO_DECLINE_PERIOD=2,COEFFICIENT=2<br>
+      <td style="vertical-align: top;">PLUGIN=SZ, INPUT_HIGH=high,
+INPUT_LOW=low, NAME=sz, METHOD=SHORT, PERIOD=10, NO_DECLINE_PERIOD=2,
+COEFFICIENT=2<br>
       <br>
       </td>
     </tr>

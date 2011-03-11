@@ -17,8 +17,8 @@ $exitLongInput = 'Close';
 $name = 'Best MA';
 $maBuy = 'bma';
 $maSell = 'sma';
-#$maList = 'EMA,DEMA,KAMA,SMA,TEMA,TRIMA,WMA';
-$maList = 'EMA';
+$maList = 'EMA,DEMA,KAMA,SMA,TEMA,TRIMA,WMA';
+#$maList = 'EMA';
 $barLengthList = '1;5;10;15;30;60;D;W;M';
 $dateRangeList = '1 Day;1 Week;1 Month;3 Months;6 Months;1 Year;2 Years;5 Years;10 Years;25 Years;50 Years;All';
 $fieldList = 'Open;High;Low;Close';
@@ -105,32 +105,35 @@ foreach $buyFieldType (@buyFieldTypes)
       for ($loop = $minPeriod; $loop <= $maxPeriod; $loop++)
       {
         # delete the buy ma
-        $command = "PLUGIN=INDICATOR_PLOT_DELETE,NAME=$maBuy";
+        $command = "PLUGIN=INDICATOR_PLOT_DELETE,NAME=buy$loop";
         print STDOUT $command;
         $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
 
         # create the buy ma
-        $command = "PLUGIN=MA,NAME=$maBuy,METHOD=$maType,INPUT=$buyFieldType,PERIOD=$loop";
+        $command = "PLUGIN=MA,NAME=buy$loop,METHOD=$maType,INPUT=$buyFieldType,PERIOD=$loop";
         print STDOUT $command;
         $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
 
+        # delete the sell ma
+        $command = "PLUGIN=INDICATOR_PLOT_DELETE,NAME=sell$loop";
+        print STDOUT $command;
+        $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
+
+        # create the sell ma
+        $command = "PLUGIN=MA,NAME=sell$loop,METHOD=$maType,INPUT=$sellFieldType,PERIOD=$loop";
+        print STDOUT $command;
+        $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
+      }
+
+      for ($loop = $minPeriod; $loop <= $maxPeriod; $loop++)
+      {
         for ($loop2 = $minPeriod; $loop2 <= $maxPeriod; $loop2++)
         {
-          # delete the sell ma
-          $command = "PLUGIN=INDICATOR_PLOT_DELETE,NAME=$maSell";
-          print STDOUT $command;
-          $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
-
-          # create the sell ma
-          $command = "PLUGIN=MA,NAME=$maSell,METHOD=$maType,INPUT=$sellFieldType,PERIOD=$loop2";
-          print STDOUT $command;
-          $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
-
           # do the test
-          $s1 = "PLUGIN=TEST,NAME=$name,TAG=$buyFieldType-$loop-$sellFieldType-$loop2,SYMBOL=$exchange:$symbol";
-          $s2 = "ENTER_LONG_NAME=$buyFieldType,ENTER_LONG_OP=GT,ENTER_LONG_NAME2=$maBuy";
-          $s3 = "EXIT_LONG_NAME=$sellFieldType,EXIT_LONG_OP=LT,EXIT_LONG_NAME2=$maSell";
-          $s4 = "DATE_NAME=$dateName,BUY_NAME=$typicalPrice,SELL_NAME=$typicalPrice,CLOSE_NAME=$closeName";
+          $s1 = "PLUGIN=TEST,NAME=$name,TAG=$maType-$buyFieldType-$loop-$sellFieldType-$loop2,SYMBOL=$exchange:$symbol";
+          $s2 = "ENTER_LONG_NAME=$closeName,ENTER_LONG_OP=GT,ENTER_LONG_NAME2=buy$loop";
+          $s3 = "EXIT_LONG_NAME=$closeName,EXIT_LONG_OP=LT,EXIT_LONG_NAME2=sell$loop2";
+          $s4 = "DATE_NAME=$dateName,BUY_NAME=$closeName,SELL_NAME=$closeName,CLOSE_NAME=$closeName";
           $command = "$s1,$s2,$s3,$s4";
           print STDOUT $command;
           $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }

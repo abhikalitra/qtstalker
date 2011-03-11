@@ -35,24 +35,30 @@ FI::FI ()
 int FI::command (Command *command)
 {
   // PARMS:
+  // INPUT_CLOSE
+  // INPUT_VOLUME
   // NAME
   // PERIOD
   // MA_TYPE
-
-  BarData *data = g_barData;
-  if (! data)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
-
-  if (data->count() < 1)
-    return 1;
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  Curve *iclose = i->line(command->parm("INPUT_CLOSE"));
+  if (! iclose)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_CLOSE" << command->parm("INPUT_CLOSE");
+    return 1;
+  }
+
+  Curve *ivol = i->line(command->parm("INPUT_VOLUME"));
+  if (! ivol)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_VOLUME" << command->parm("INPUT_VOLUME");
     return 1;
   }
 
@@ -79,21 +85,31 @@ int FI::command (Command *command)
     return 1;
   }
 
-  if (data->count() < period)
-    return 0;
-
   line = new Curve;
 
-  int loop = 1;
+  int ipos = 0;
+  int end = 0;
+  iclose->keyRange(ipos, end);
+  ipos++;
   double force = 0;
-  for (; loop < data->count(); loop++)
+  for (; ipos <= end; ipos++)
   {
-    Bar *bar = data->bar(loop);
-    Bar *pbar = data->bar(loop - 1);
-    double cdiff = bar->close() - pbar->close();
-    force = bar->volume() * cdiff;
+    CurveBar *cbar = iclose->bar(ipos);
+    if (! cbar)
+      continue;
 
-    line->setBar(loop, new CurveBar(force));
+    CurveBar *cybar = iclose->bar(ipos - 1);
+    if (! cybar)
+      continue;
+
+    CurveBar *vbar = ivol->bar(ipos);
+    if (! vbar)
+      continue;
+
+    double cdiff = cbar->data() - cybar->data();
+    force = vbar->data() * cdiff;
+
+    line->setBar(ipos, new CurveBar(force));
   }
 
   if (period > 1)

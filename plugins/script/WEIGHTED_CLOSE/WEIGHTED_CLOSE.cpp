@@ -33,6 +33,9 @@ WEIGHTED_CLOSE::WEIGHTED_CLOSE ()
 int WEIGHTED_CLOSE::command (Command *command)
 {
   // PARMS:
+  // INPUT_HIGH
+  // INPUT_LOW
+  // INPUT_CLOSE
   // NAME
 
   Indicator *i = command->indicator();
@@ -42,9 +45,24 @@ int WEIGHTED_CLOSE::command (Command *command)
     return 1;
   }
 
-  if (g_barData->count() < 1)
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
   {
-    qDebug() << _plugin << "::command: no bars";
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
+    return 1;
+  }
+
+  Curve *iclose = i->line(command->parm("INPUT_CLOSE"));
+  if (! iclose)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_CLOSE" << command->parm("INPUT_CLOSE");
     return 1;
   }
 
@@ -57,12 +75,25 @@ int WEIGHTED_CLOSE::command (Command *command)
   }
 
   line = new Curve;
-  int loop = 0;
-  for (; loop < g_barData->count(); loop++)
+  int ipos = 0;
+  int end = 0;
+  iclose->keyRange(ipos, end);
+  for (; ipos <= end; ipos++)
   {
-    Bar *b = g_barData->bar(loop);
-    double t = (b->high() + b->low() + (b->close() * 2)) / 4.0;
-    line->setBar(loop, new CurveBar(t));
+    CurveBar *hbar = ihigh->bar(ipos);
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos);
+    if (! lbar)
+      continue;
+
+    CurveBar *cbar = iclose->bar(ipos);
+    if (! cbar)
+      continue;
+
+    double t = (hbar->data() + lbar->data() + (cbar->data() * 2)) / 4.0;
+    line->setBar(ipos, new CurveBar(t));
   }
 
   line->setLabel(name);

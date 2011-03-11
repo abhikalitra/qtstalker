@@ -4,12 +4,15 @@ $name = 'ATR';
 $style = 'Line';
 $color = 'red';
 $period = 14;
+$highName = 'High';
+$lowName = 'Low';
+$closeName = 'Close';
 
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=ATR,NAME=$name,PERIOD=$period";
+$command = "PLUGIN=ATR,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME=$name,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

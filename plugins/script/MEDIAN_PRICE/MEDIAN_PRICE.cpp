@@ -44,12 +44,6 @@ int MEDIAN_PRICE::command (Command *command)
     return 1;
   }
 
-  if (g_barData->count() < 1)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
-
   QString name = command->parm("NAME");
   Curve *line = i->line(name);
   if (line)

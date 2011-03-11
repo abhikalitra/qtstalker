@@ -35,6 +35,10 @@
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = OHLC<br>
+INPUT_OPEN = &lt;VARIABLE NAME&gt;<br>
+INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
+INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
+INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 COLOR_UP = &lt;COLOR&gt; - default = green<br>
 COLOR_DOWN = &lt;COLOR&gt; - default = red<br>
@@ -52,7 +56,9 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=OHLC,NAME=ohlc,COLOR_UP=green,COLOR_DOWN=red,COLOR_NEUTRAL=blue<br>
+      <td style="vertical-align: top;">PLUGIN=OHLC, INPUT_OPEN=open,
+INPUT_HIGH=high, INPUT_LOW=low, INPUT_CLOSE=close, NAME=ohlc,
+COLOR_UP=green, COLOR_DOWN=red, COLOR_NEUTRAL=blue<br>
       <br>
       </td>
     </tr>

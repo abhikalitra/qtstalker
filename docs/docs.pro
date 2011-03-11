@@ -59,3 +59,8 @@ INSTALLS += scanner
 system.path = "$${INSTALL_DATA_DIR}/qtstalker/system"
 system.files = ../Scripts/system/*.pl
 INSTALLS += system
+
+# install the test script files
+tester.path = "$${INSTALL_DATA_DIR}/qtstalker/test"
+tester.files = ../Scripts/test/*.pl
+INSTALLS += tester

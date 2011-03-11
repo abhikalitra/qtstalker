@@ -9,19 +9,24 @@ $ckk2Name = 'ckk2'; # Dark Cloud Cover
 $ckk1Color = 'green'; # Piercing Line Color
 $ckk2Color = 'cyan'; # Dark Cloud Cover Color
 
+$openName = 'Open';
+$highName = 'High';
+$lowName = 'Low';
+$closeName = 'Close';
+
 ###########################################################
 
 $|++;
 
-$command = "PLUGIN=CANDLES,NAME=$candleName,COLOR_UP=$candleColor,COLOR_DOWN=$candleColor,COLOR_NEUTRAL=$candleColor";
+$command = "PLUGIN=CANDLES,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME=$candleName,COLOR_UP=$candleColor,COLOR_DOWN=$candleColor,COLOR_NEUTRAL=$candleColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_PATTERN,METHOD=PIERCING,PENETRATION=$penetration,NAME=$ckk1Name";
+$command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,METHOD=PIERCING,PENETRATION=$penetration,NAME=$ckk1Name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_PATTERN,METHOD=DARKCLOUDCOVER,PENETRATION=$penetration,NAME=$ckk2Name,Z=0";
+$command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,METHOD=DARKCLOUDCOVER,PENETRATION=$penetration,NAME=$ckk2Name,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

@@ -20,13 +20,34 @@ $lowerName = 'DCL';
 $lowerColor = 'red';
 $lowerZ = '3';
 
+$openName = 'Open';
+$highName = 'High';
+$lowName = 'Low';
+$closeName = 'Close';
+
 ###################################################################
 
 $|++;
 
 # OHLC bars
 
-$command = "PLUGIN=OHLC,NAME=$barsName,COLOR_UP=$barsUpColor,COLOR_DOWN=$barsDownColor,COLOR_NEUTRAL=$barsNeutralColor";
+$command = "PLUGIN=OPEN,NAME=$openName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=HIGH,NAME=$highName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=LOW,NAME=$lowName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CLOSE,NAME=$closeName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=OHLC,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME=$barsName,COLOR_UP=$barsUpColor,COLOR_DOWN=$barsDownColor,COLOR_NEUTRAL=$barsNeutralColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -35,13 +56,8 @@ $command = "PLUGIN=INDICATOR_PLOT,NAME=$barsName,Z=$barsZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# get the high
-$command = "PLUGIN=HIGH,NAME=high";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
 # get the index ranges for the high
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_RANGE,NAME=high";
+$command = "PLUGIN=INDICATOR_PLOT_INDEX_RANGE,NAME=$highName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -51,17 +67,12 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # remove the most recent bar from the high
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_DELETE,NAME=high,INDEX=$rc";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-# get the low
-$command = "PLUGIN=LOW,NAME=low";
+$command = "PLUGIN=INDICATOR_PLOT_INDEX_DELETE,NAME=$highName,INDEX=$rc";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # get the index ranges for the low
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_RANGE,NAME=low";
+$command = "PLUGIN=INDICATOR_PLOT_INDEX_RANGE,NAME=$lowName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -71,17 +82,17 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # remove the most recent bar from the low
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_DELETE,NAME=low,INDEX=$rc";
+$command = "PLUGIN=INDICATOR_PLOT_INDEX_DELETE,NAME=$lowName,INDEX=$rc";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # get the MAX of the high
-$command = "PLUGIN=MAX,NAME=max,INPUT=high,PERIOD=$period";
+$command = "PLUGIN=MAX,NAME=max,INPUT=$highName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # get the MIN of the low
-$command = "PLUGIN=MIN,NAME=min,INPUT=low,PERIOD=$period";
+$command = "PLUGIN=MIN,NAME=min,INPUT=$lowName,PERIOD=$period";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

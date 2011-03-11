@@ -17,11 +17,32 @@ $refUp = 80;
 $refDownColor = 'white';
 $refDown = 20;
 
+$highName = 'High';
+$lowName = 'Low';
+$closeName = 'Close';
+$volName = 'Volume';
+
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=MFI,NAME=$mfiName,PERIOD=$mfiPeriod";
+$command = "PLUGIN=HIGH,NAME=$highName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=LOW,NAME=$lowName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CLOSE,NAME=$closeName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=VOLUME,NAME=$volName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=MFI,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,INPUT_VOLUME=$volName,NAME=$mfiName,PERIOD=$mfiPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

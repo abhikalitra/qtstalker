@@ -42,16 +42,6 @@ int MAX::command (Command *command)
   // INPUT
   // PERIOD
 
-  BarData *data = g_barData;
-  if (! data)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
-
-  if (data->count() < 1)
-    return 1;
-
   Indicator *i = command->indicator();
   if (! i)
   {

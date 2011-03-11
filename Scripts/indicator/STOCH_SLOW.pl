@@ -19,11 +19,27 @@ $refUp = 80;
 $refDownColor = 'green';
 $refDown = 20;
 
+$highName = 'High';
+$lowName = 'Low';
+$closeName = 'Close';
+
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=STOCH_SLOW,NAME_SLOWK=$slowkName,NAME_SLOWD=$slowdName,PERIOD_FASTK=$fastkPeriod,PERIOD_SLOWK=$slowkPeriod,MA_TYPE_SLOWK=$maType,PERIOD_SLOWD=$slowdPeriod,MA_TYPE_SLOWD=$maType";
+$command = "PLUGIN=HIGH,NAME=$highName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=LOW,NAME=$lowName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=CLOSE,NAME=$closeName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+$command = "PLUGIN=STOCH_SLOW,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME_SLOWK=$slowkName,NAME_SLOWD=$slowdName,PERIOD_FASTK=$fastkPeriod,PERIOD_SLOWK=$slowkPeriod,MA_TYPE_SLOWK=$maType,PERIOD_SLOWD=$slowdPeriod,MA_TYPE_SLOWD=$maType";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

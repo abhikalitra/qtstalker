@@ -38,22 +38,44 @@ BOP::BOP ()
 int BOP::command (Command *command)
 {
   // PARMS:
+  // INPUT_OPEN
+  // INPUT_HIGH
+  // INPUT_LOW
+  // INPUT_CLOSE
   // NAME
-
-  BarData *data = g_barData;
-  if (! data)
-  {
-    qDebug() << _plugin << "::command: no bars";
-    return 1;
-  }
-
-  if (data->count() < 1)
-    return 1;
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  Curve *iopen = i->line(command->parm("INPUT_OPEN"));
+  if (! iopen)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_OPEN" << command->parm("INPUT_OPEN");
+    return 1;
+  }
+
+  Curve *ihigh = i->line(command->parm("INPUT_HIGH"));
+  if (! ihigh)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_HIGH" << command->parm("INPUT_HIGH");
+    return 1;
+  }
+
+  Curve *ilow = i->line(command->parm("INPUT_LOW"));
+  if (! ilow)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_LOW" << command->parm("INPUT_LOW");
+    return 1;
+  }
+
+  Curve *iclose = i->line(command->parm("INPUT_CLOSE"));
+  if (! iclose)
+  {
+    qDebug() << _plugin << "::command: invalid INPUT_CLOSE" << command->parm("INPUT_CLOSE");
     return 1;
   }
 
@@ -65,7 +87,8 @@ int BOP::command (Command *command)
     return 1;
   }
 
-  int size = data->count();
+  int size = iclose->count();
+
   TA_Real out[size];
   TA_Real open[size];
   TA_Real high[size];
@@ -74,14 +97,32 @@ int BOP::command (Command *command)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
+  int ipos = 0;
+  int opos = 0;
+  int end = 0;
+  iclose->keyRange(ipos, end);
+  for (; ipos <= end; ipos++, opos++)
   {
-    Bar *bar = data->bar(loop);
-    open[loop] = (TA_Real) bar->open();
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-    close[loop] = (TA_Real) bar->close();
+    CurveBar *obar = iopen->bar(ipos);
+    if (! obar)
+      continue;
+
+    CurveBar *hbar = ihigh->bar(ipos);
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(ipos);
+    if (! lbar)
+      continue;
+
+    CurveBar *cbar = iclose->bar(ipos);
+    if (! cbar)
+      continue;
+
+    open[opos] = (TA_Real) obar->data();
+    high[opos] = (TA_Real) hbar->data();
+    low[opos] = (TA_Real) lbar->data();
+    close[opos] = (TA_Real) cbar->data();
   }
 
   TA_RetCode rc = TA_BOP(0,
@@ -101,7 +142,8 @@ int BOP::command (Command *command)
 
   line = new Curve;
 
-  for (loop = 0; loop < size; loop++)
+  int loop = 0;
+  for (; loop < size; loop++)
     line->setBar(loop, new CurveBar(out[loop]));
 
   line->setLabel(name);

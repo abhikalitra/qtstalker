@@ -1068,3 +1068,6 @@
 
            Consolidated the CHART_OBJECT_*_TEMP plugins.
 
+20110310:  Added new INPUT_* parms for most of the indicators. These changes are to fix some problems with
+           indicators using displayed chart bars instead of bars loaded by scripts.
+

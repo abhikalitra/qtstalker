@@ -30,13 +30,18 @@
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
       <td style="vertical-align: top;"><a
  href="http://www.mbtrading.com/help/navpro/Volume_Flow_Indicator_%28VFI%29.htm">Volume
-Flow Indicator</a> - simple version.<br>
+Flow
+Indicator</a> - simple version.<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = VFI<br>
+INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
+INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
+INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
+INPUT_VOLUME = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;INTEGER&gt;<br>
       <br>
@@ -52,7 +57,9 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=VFI,NAME=vfi,PERIOD=130<br>
+      <td style="vertical-align: top;">PLUGIN=VFI, INPUT_HIGH=high,
+INPUT_LOW=low, INPUT_CLOSE=close, INPUT_VOLUME=volume, NAME=vfi,
+PERIOD=130<br>
       <br>
       </td>
     </tr>

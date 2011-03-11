@@ -37,6 +37,9 @@ Directional Movement Index</a><br>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = ADX<br>
+INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
+INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
+INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;INTEGER&gt; - default = 14<br>
       <br>
@@ -52,7 +55,8 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=ADX,NAME=adx,PERIOD=14<br>
+      <td style="vertical-align: top;">PLUGIN=ADX, INPUT_HIGH=high,
+INPUT_LOW=low, INPUT_CLOSE=close, NAME=adx, PERIOD=14<br>
       <br>
       </td>
     </tr>
