@@ -29,17 +29,14 @@
 #include <QTreeWidgetItem>
 #include <QGroupBox>
 
-SymbolDialog::SymbolDialog (QWidget *p, Command *c) : Dialog (p)
+SymbolDialog::SymbolDialog (QWidget *p) : Dialog (p)
 {
-  _command = c;
   _keySize = "symbol_dialog_window_size";
   _keyPos = "symbol_dialog_window_position";
 
   setWindowTitle("Qtstalker" + g_session + ": " + tr("Select Symbols"));
 
   createGUI();
-
-  _returnFlag = _command->parm("FLAG").toInt();
 
   loadExchanges();
 
@@ -168,22 +165,8 @@ void SymbolDialog::done ()
   saveSettings();
 
   QStringList l;
-  if (_returnFlag)
-  {
-    _command->setReturnData("SYMBOL_DIALOG_EXCHANGE", _exchanges->currentText());
-    
-    if (_search->text().isEmpty())
-      _command->setReturnData("SYMBOL_DIALOG_SYMBOL", "*");
-    else
-      _command->setReturnData("SYMBOL_DIALOG_SYMBOL", _search->text());
-  }
-  else
-  {
-    symbols(l);
-    _command->setReturnData("SYMBOL_DIALOG_SYMBOLS", l.join(";"));
-  }
-
-  _command->setReturnCode("0");
+  symbols(l);
+  emit signalDone(_exchanges->currentText(), _search->text(), l);
 
   accept();
 }

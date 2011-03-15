@@ -33,6 +33,7 @@ class YahooDataBase
     int save (Setting &);
     int deleteSymbol (Setting &);
     int symbols (QStringList &);
+    int search (QString, QStringList &);
     void transaction ();
     void commit ();
 

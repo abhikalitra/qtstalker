@@ -19,23 +19,44 @@
  *  USA.
  */
 
-#ifndef INDICATOR_PLOT_DATE_GET_HPP
-#define INDICATOR_PLOT_DATE_GET_HPP
+#ifndef SYMBOL_DIALOG_DIALOG_HPP
+#define SYMBOL_DIALOG_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include <QTreeWidget>
+#include <QComboBox>
 
-class INDICATOR_PLOT_DATE_GET : public ScriptPlugin
+#include "Dialog.h"
+#include "LineEdit.h"
+
+class SymbolDialog : public Dialog
 {
   Q_OBJECT
 
-  public:
-    INDICATOR_PLOT_DATE_GET ();
-    int command (Command *);
-};
+  signals:
+    void signalDone (QString, QString, QStringList);
 
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
-}
+  public:
+    SymbolDialog (QWidget *);
+    void createGUI ();
+    void loadExchanges ();
+    void symbols (QStringList &);
+
+  public slots:
+    void done ();
+    void searchSelectionChanged ();
+    void symbolSelectionChanged ();
+    void searchButtonPressed ();
+    void addButtonPressed ();
+    void deleteButtonPressed ();
+
+  private:
+    QTreeWidget *_searchList;
+    QTreeWidget *_symbolList;
+    QComboBox *_exchanges;
+    LineEdit *_search;
+    QPushButton *_searchButton;
+    QPushButton *_addButton;
+    QPushButton *_deleteButton;
+};
 
 #endif

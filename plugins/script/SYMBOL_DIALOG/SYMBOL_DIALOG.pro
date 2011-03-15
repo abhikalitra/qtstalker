@@ -3,7 +3,5 @@
 }
 
 HEADERS += SYMBOL_DIALOG.h
-HEADERS += SymbolDialog.h
 
 SOURCES += SYMBOL_DIALOG.cpp
-SOURCES += SymbolDialog.cpp

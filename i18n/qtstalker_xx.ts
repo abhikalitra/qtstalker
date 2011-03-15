@@ -1377,6 +1377,13 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>SymbolButton</name>
+    <message>
+        <source> Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SymbolDialog</name>
     <message>
         <source>Select Symbols</source>
@@ -1634,6 +1641,18 @@ qtstalker.sourceforge.net</source>
         <source>Auto Dates</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>YahooHistory</name>
@@ -1689,11 +1708,35 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>YahooSymbolDialog</name>
     <message>
-        <source>Delete</source>
+        <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add...</source>
+        <source>Search Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Symbol...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

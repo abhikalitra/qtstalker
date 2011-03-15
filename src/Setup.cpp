@@ -22,7 +22,6 @@
 #include "Setup.h"
 #include "Indicator.h"
 #include "Globals.h"
-//#include "ScriptPluginFactory.h"
 #include "BarData.h"
 #include "MiddleMan.h"
 #include "qtstalker_defines.h"

@@ -110,6 +110,11 @@ void YahooDialog::createGUI ()
   _log = new QTextEdit;
   _log->setReadOnly(TRUE);
   tvbox->addWidget(_log);
+
+  _message->hide();
+
+  _okButton->setText(tr("Download"));
+  _cancelButton->setText(tr("Close"));
 }
 
 void YahooDialog::cancel ()
@@ -150,17 +155,19 @@ void YahooDialog::saveSettings ()
 void YahooDialog::done ()
 {
   _log->append("\n*** " + tr("Starting history download") + " ***");
-  _log->update();
-  qApp->processEvents();
+//  _log->update();
 
-//  _sdate->setEnabled(FALSE);
-//  _edate->setEnabled(FALSE);
   _adjustment->setEnabled(FALSE);
   _symbolBox->setEnabled(FALSE);
-//  _selectSymbolsButton->setEnabled(FALSE);
   _okButton->setEnabled(FALSE);
   _dateBox->setEnabled(FALSE);
+  _cancelButton->setText(tr("Cancel"));
 
+  QTimer::singleShot(100, this, SLOT(downloadStart()));
+}
+
+void YahooDialog::downloadStart ()
+{
   YahooDataBase db;
   QuoteDataBase qdb;
 
@@ -243,6 +250,7 @@ void YahooDialog::downloadDone ()
   _symbolBox->setEnabled(TRUE);
   _okButton->setEnabled(TRUE);
   _dateBox->setEnabled(TRUE);
+  _cancelButton->setText(tr("Close"));
   
   g_middleMan->chartPanelRefresh();
 }

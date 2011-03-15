@@ -110,3 +110,8 @@ QDateTime CurveBar::dateTime ()
 {
   return _dateTime;
 }
+
+int CurveBar::isDate ()
+{
+  return (int) _dateTime.isValid();
+}

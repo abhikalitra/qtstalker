@@ -18,7 +18,7 @@ $downColor = 'red';
 
 $|++;
 
-$command = "PLUGIN=CLOSE,NAME=$barsName";
+$command = "PLUGIN=DOHLCVI,METHOD=C,NAME=$barsName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

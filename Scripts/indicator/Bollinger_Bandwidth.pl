@@ -20,7 +20,7 @@ $bwZ = '0';
 
 $|++;
 
-$command = "PLUGIN=CLOSE,NAME=$closeName";
+$command = "PLUGIN=DOHLCVI,METHOD=C,NAME=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

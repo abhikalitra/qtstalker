@@ -35,6 +35,7 @@ class BarLength
   public:
     enum Length
     {
+      _NONE,
       _MINUTE1,
       _MINUTE5,
       _MINUTE10,

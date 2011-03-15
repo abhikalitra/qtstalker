@@ -36,6 +36,8 @@ HEADERS += ScriptPlugin.h
 HEADERS += ScriptPluginFactory.h
 HEADERS += Setting.h
 HEADERS += Strip.h
+HEADERS += SymbolButton.h
+HEADERS += SymbolDialog.h
 HEADERS += TestDataBase.h
 
 
@@ -70,6 +72,8 @@ SOURCES += ScriptPlugin.cpp
 SOURCES += ScriptPluginFactory.cpp
 SOURCES += Setting.cpp
 SOURCES += Strip.cpp
+SOURCES += SymbolButton.cpp
+SOURCES += SymbolDialog.cpp
 SOURCES += TestDataBase.cpp
 
 

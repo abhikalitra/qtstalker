@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,23 +19,31 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PLUGIN_CLOSE_HPP
-#define SCRIPT_PLUGIN_CLOSE_HPP
+#ifndef SYMBOL_BUTTON_HPP
+#define SYMBOL_BUTTON_HPP
 
-#include "ScriptPlugin.h"
+#include <QWidget>
+#include <QPushButton>
+#include <QString>
 
-class CLOSE : public ScriptPlugin
+class SymbolButton : public QPushButton
 {
   Q_OBJECT
+  
+  signals:
+    void symbolChanged ();
 
   public:
-    CLOSE ();
-    int command (Command *);
-};
+    SymbolButton (QWidget *);
+    QStringList symbols ();
+    void setSymbols (QStringList);
 
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
-}
+  public slots:
+    void fileDialog ();
+    void fileDialog2 (QString, QString, QStringList);
+        
+  private:
+    QStringList _symbols;
+};
 
 #endif

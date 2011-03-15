@@ -19,18 +19,21 @@
  *  USA.
  */
 
-#ifndef OPEN_HPP
-#define OPEN_HPP
+#ifndef DOHLCVI_HPP
+#define DOHLCVI_HPP
 
 #include "ScriptPlugin.h"
 
-class OPEN : public ScriptPlugin
+class DOHLCVI : public ScriptPlugin
 {
   Q_OBJECT
 
   public:
-    OPEN ();
+    DOHLCVI ();
     int command (Command *);
+
+  private:
+    QStringList _methods;
 };
 
 extern "C"

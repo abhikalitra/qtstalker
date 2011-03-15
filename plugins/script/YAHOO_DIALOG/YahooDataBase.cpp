@@ -102,6 +102,37 @@ int YahooDataBase::symbols (QStringList &l)
   return 0;
 }
 
+int YahooDataBase::search (QString pat, QStringList &l)
+{
+  l.clear();
+
+  QSqlQuery q(_db);
+
+  QString s = "SELECT symbol FROM YahooSymbols";
+
+  if (! pat.isEmpty())
+  {
+    if (pat.contains("%"))
+      s.append(" WHERE symbol LIKE '" + pat + "'");
+    else
+      s.append(" WHERE symbol='" + pat + "'");
+  }
+
+  s.append(" ORDER BY symbol ASC");
+
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "YahooDataBase::search:" + q.lastError().text();
+    return 1;
+  }
+
+  while (q.next())
+    l << q.value(0).toString();
+
+  return 0;
+}
+
 void YahooDataBase::transaction ()
 {
   _db.transaction();

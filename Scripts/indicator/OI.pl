@@ -8,7 +8,7 @@ $oiColor = 'yellow';
 
 $|++;
 
-$command = "PLUGIN=OPEN_INTEREST,NAME=$oiName";
+$command = "PLUGIN=DOHLCVI,METHOD=I,NAME=$oiName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

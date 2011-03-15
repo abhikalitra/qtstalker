@@ -42,6 +42,7 @@ class CurveBar
     QDateTime dateTime ();
     int count ();
     int highLow (double &, double &);
+    int isDate ();
 
   protected:
     QHash<int, double> _data;

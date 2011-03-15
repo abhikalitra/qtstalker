@@ -106,7 +106,12 @@ int INDICATOR_PLOT_VALUE_GET::command (Command *command)
     }
   }
 
-  QString s = QString::number(bar->data());
+  QString s;
+  if (bar->isDate())
+    s = bar->dateTime().toString(Qt::ISODate);
+  else
+    s = QString::number(bar->data());
+  
   command->setReturnData(_plugin + "_VALUE", s);
 
   command->setReturnCode("0");

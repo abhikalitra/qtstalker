@@ -21,7 +21,7 @@ $refDown = 30;
 
 $|++;
 
-$command = "PLUGIN=CLOSE,NAME=$input";
+$command = "PLUGIN=DOHLCVI,METHOD=C,NAME=$input";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

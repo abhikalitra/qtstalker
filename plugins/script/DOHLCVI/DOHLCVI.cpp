@@ -19,32 +19,34 @@
  *  USA.
  */
 
-#include "VOLUME.h"
+#include "DOHLCVI.h"
 #include "Curve.h"
 #include "Globals.h"
 
 #include <QtDebug>
 
-VOLUME::VOLUME ()
+DOHLCVI::DOHLCVI ()
 {
-  _plugin = "VOLUME";
+  _plugin = "DOHLCVI";
+  _methods << "D" << "O" << "H" << "L" << "C" << "V" << "I";
 }
 
-int VOLUME::command (Command *command)
+int DOHLCVI::command (Command *command)
 {
   // PARMS:
+  // METHOD
   // NAME
+
+  if (g_barData->count() < 1)
+  {
+    qDebug() << _plugin << "::command: no bars";
+    return 1;
+  }
 
   Indicator *i = command->indicator();
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
-    return 1;
-  }
-
-  if (g_barData->count() < 1)
-  {
-    qDebug() << _plugin << "::command: no bars";
     return 1;
   }
 
@@ -56,12 +58,47 @@ int VOLUME::command (Command *command)
     return 1;
   }
 
+  int method = _methods.indexOf(command->parm("METHOD"));
+  if (method == -1)
+  {
+    qDebug() << _plugin << "::command: invalid METHOD" << command->parm("METHOD");
+    return 1;
+  }
+  
   line = new Curve;
   int loop = 0;
   for (; loop < g_barData->count(); loop++)
   {
     Bar *b = g_barData->bar(loop);
-    line->setBar(loop, new CurveBar(b->volume()));
+
+    switch (method)
+    {
+      case 0: // date
+      {
+	CurveBar *cb = new CurveBar;
+	cb->setDateTime(b->date());
+        line->setBar(loop, cb);
+	break;
+      }
+      case 1: // open
+        line->setBar(loop, new CurveBar(b->open()));
+	break;
+      case 2: // high
+        line->setBar(loop, new CurveBar(b->high()));
+	break;
+      case 3: // low
+        line->setBar(loop, new CurveBar(b->low()));
+	break;
+      case 4: // close
+        line->setBar(loop, new CurveBar(b->close()));
+	break;
+      case 5: // volume
+        line->setBar(loop, new CurveBar(b->volume()));
+	break;
+      case 6: // oi
+        line->setBar(loop, new CurveBar(b->oi()));
+	break;
+    }
   }
 
   line->setLabel(name);
@@ -78,6 +115,6 @@ int VOLUME::command (Command *command)
 
 ScriptPlugin * createScriptPlugin ()
 {
-  VOLUME *o = new VOLUME;
+  DOHLCVI *o = new DOHLCVI;
   return ((ScriptPlugin *) o);
 }

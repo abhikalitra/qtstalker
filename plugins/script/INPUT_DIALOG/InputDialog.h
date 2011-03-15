@@ -28,9 +28,11 @@
 #include <QHash>
 #include <QStringList>
 #include <QComboBox>
+#include <QDateTimeEdit>
 
 #include "Setting.h"
 #include "Dialog.h"
+#include "SymbolButton.h"
 
 class InputDialog : public Dialog
 {
@@ -43,6 +45,8 @@ class InputDialog : public Dialog
     void newDouble (QString &key, QString &label, QString &value);
     void newText (QString &key, QString &label, QString &value);
     void newList (QString &key, QString &label, QString &value);
+    void newDate (QString &key, QString &label, QString &value);
+    void newSymbol (QString &key, QString &label, QString &value);
 
   public slots:
     void done ();
@@ -53,6 +57,8 @@ class InputDialog : public Dialog
     QHash<QString, QSpinBox *> _integers;
     QHash<QString, QLineEdit *> _texts;
     QHash<QString, QComboBox *> _lists;
+    QHash<QString, QDateTimeEdit *> _dates;
+    QHash<QString, SymbolButton *> _symbols;
 };
 
 #endif

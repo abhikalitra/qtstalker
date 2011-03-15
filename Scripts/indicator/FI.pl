@@ -14,11 +14,11 @@ $volName = 'Volume';
 
 $|++;
 
-$command = "PLUGIN=VOLUME,NAME=$volName";
+$command = "PLUGIN=DOHLCVI,METHOD=V,NAME=$volName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CLOSE,NAME=$closeName";
+$command = "PLUGIN=DOHLCVI,METHOD=C,NAME=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

@@ -41,6 +41,9 @@ void Bar::setDateRange (QDateTime dt, BarLength::Length l)
 
   switch ((BarLength::Length) _length)
   {
+    case BarLength::_NONE:
+      _endDate = _startDate;
+      break;
     case BarLength::_MINUTE1:
       _startDate.setTime(QTime(_startDate.time().hour(), _startDate.time().minute(), 0, 0));
       _endDate = _startDate;
@@ -142,19 +145,16 @@ int Bar::setDates (QDateTime start, QDateTime end)
 
 void Bar::dateString (QString &d)
 {
-//  d = _endDate.toString("yyyy-MM-dd");
   d = _lastDate.toString("yyyy-MM-dd");
 }
 
 void Bar::dateTimeString (QString &d)
 {
-//  d = _endDate.toString(Qt::ISODate);
   d = _lastDate.toString(Qt::ISODate);
 }
 
 void Bar::timeString (QString &d)
 {
-//  d = _endDate.toString("HH:mm:ss");
   d = _lastDate.toString("HH:mm:ss");
 }
 
@@ -165,7 +165,6 @@ void Bar::rangeKey (QString &d)
 
 QDateTime & Bar::date ()
 {
-//  return _endDate;
   return _lastDate;
 }
 

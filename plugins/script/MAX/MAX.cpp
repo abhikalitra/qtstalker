@@ -72,9 +72,6 @@ int MAX::command (Command *command)
     return 1;
   }
 
-  if (in->count() < period)
-    return 1;
-
   TA_Real input[in->count()];
   TA_Real out[in->count()];
   TA_Integer outBeg;
@@ -82,6 +79,9 @@ int MAX::command (Command *command)
 
   QList<int> keys;
   in->keys(keys);
+
+  if (period == 0)
+    period = keys.count() - 1;
 
   int loop = 0;
   for (; loop < keys.count(); loop++)

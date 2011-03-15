@@ -36,21 +36,31 @@ int SYMBOL_DIALOG::command (Command *command)
   // PARMS:
   // FLAG - 1 will return only the exchange/search pattern, 0 will return symbols
 
+  _command = command;
 
-  bool ok;
-  command->parm("FLAG").toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << "SYMBOL_DIALOG::command: invalid FLAG" << command->parm("FLAG");
-    return 1;
-  }
-  
-  SymbolDialog *dialog = new SymbolDialog(_parent, command);
+  SymbolDialog *dialog = new SymbolDialog(_parent);
+  connect(dialog, SIGNAL(signalDone(QString, QString, QStringList)), this, SLOT(dialogDone(QString, QString, QStringList)));
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();
 
   return 0;
+}
+
+void SYMBOL_DIALOG::dialogDone (QString ex, QString sym, QStringList l)
+{
+  _command->setReturnData("SYMBOL_DIALOG_EXCHANGE", ex);
+
+  if (sym.isEmpty())
+    _command->setReturnData("SYMBOL_DIALOG_SYMBOL", "*");
+  else
+    _command->setReturnData("SYMBOL_DIALOG_SYMBOL", sym);
+  
+  _command->setReturnData("SYMBOL_DIALOG_SYMBOLS", l.join(";"));
+  
+  _command->setReturnCode("0");
+
+  emit signalResume();
 }
 
 //*************************************************************

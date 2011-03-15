@@ -1,10 +1,10 @@
 # scans selected symbols for latest close breaking above its 200 MA
 # a group is created that contains all matches
 
-$group = "200_MA_Breakout";
-$length = "D";
-$range = "1 Year";
-$result = "";
+$group = '200_MA_Breakout';
+$length = 'D';
+$range = '1 Year';
+$result = '';
 
 ######################################################################
 
@@ -17,7 +17,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 # return the symbols string
 $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SYMBOL_DIALOG_SYMBOLS";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 my @symbols = split(';', $rc);
 

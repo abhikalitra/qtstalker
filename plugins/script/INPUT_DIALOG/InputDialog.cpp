@@ -30,7 +30,7 @@ InputDialog::InputDialog (QWidget *p, Command *c) : Dialog (p)
   _keySize = "input_dialog_window_size";
   _keyPos = "input_dialog_window_position";
 
-  _typeList << "INTEGER" << "DOUBLE" << "TEXT" << "LIST";
+  _typeList << "INTEGER" << "DOUBLE" << "TEXT" << "LIST" << "DATE" << "SYMBOL";
 
   QStringList l;
   l << "QtStalker" << g_session << ":" << tr("Input Dialog");
@@ -73,6 +73,12 @@ void InputDialog::createGUI ()
         break;
       case 3: // LIST
         newList(key, label, value);
+        break;
+      case 4: // DATE
+        newList(key, label, value);
+        break;
+      case 5: // SYMBOL
+        newSymbol(key, label, value);
         break;
       default:
         break;
@@ -123,6 +129,20 @@ void InputDialog::done ()
           _command->setReturnData(rkey, cb->currentText());
         break;
       }
+      case 4: // DATE
+      {
+        QDateTimeEdit *dt = _dates.value(key);
+        if (dt)
+          _command->setReturnData(rkey, dt->dateTime().toString(Qt::ISODate));
+        break;
+      }
+      case 5: // SYMBOL
+      {
+        SymbolButton *sb = _symbols.value(key);
+        if (sb)
+          _command->setReturnData(rkey, sb->symbols().join(";"));
+        break;
+      }
       default:
         break;
     }
@@ -167,4 +187,30 @@ void InputDialog::newList (QString &key, QString &label, QString &value)
   cb->addItems(value.split(";", QString::SkipEmptyParts));
   _form->addRow(label, cb);
   _lists.insert(key, cb);
+}
+
+void InputDialog::newDate (QString &key, QString &label, QString &value)
+{
+  QDateTime dt;
+  if (! value.isEmpty())
+  {
+    dt = QDateTime::fromString(value);
+    if (! dt.isValid())
+      dt = QDateTime::currentDateTime();
+  }
+  else
+    dt = QDateTime::currentDateTime();
+
+  QDateTimeEdit *dte = new QDateTimeEdit(this);
+  dte->setDateTime(dt);
+  _form->addRow(label, dte);
+  _dates.insert(key, dte);
+}
+
+void InputDialog::newSymbol (QString &key, QString &label, QString &value)
+{
+  SymbolButton *sb = new SymbolButton(this);
+  sb->setSymbols(value.split(";", QString::SkipEmptyParts));
+  _form->addRow(label, sb);
+  _symbols.insert(key, sb);
 }

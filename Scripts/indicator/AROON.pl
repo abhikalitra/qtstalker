@@ -16,11 +16,11 @@ $lowName = 'Low';
 
 $|++;
 
-$command = "PLUGIN=HIGH,NAME=$highName";
+$command = "PLUGIN=DOHLCVI,METHOD=H,NAME=$highName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=LOW,NAME=$lowName";
+$command = "PLUGIN=DOHLCVI,METHOD=L,NAME=$lowName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

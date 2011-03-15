@@ -34,13 +34,13 @@ Dialog::Dialog (QWidget *p) : QDialog (p)
 
   // main vbox
   _vbox = new QVBoxLayout;
-  _vbox->setSpacing(2);
+  _vbox->setSpacing(5);
   setLayout(_vbox);
 
   // form layout
   _form = new QFormLayout;
   _form->setSpacing(2);
-  _form->setMargin(5);
+  _form->setMargin(0);
   _vbox->addLayout(_form);
 
   // status message

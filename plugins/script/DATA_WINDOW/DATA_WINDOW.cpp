@@ -42,6 +42,9 @@ int DATA_WINDOW::command (Command *command)
     return 1;
   }
 
+  if (! g_barData->count())
+    return 1;
+  
   DataWindow *dw = new DataWindow(_parent);
 
   IndicatorDataBase db;

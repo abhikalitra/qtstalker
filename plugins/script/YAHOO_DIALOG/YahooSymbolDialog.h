@@ -23,6 +23,8 @@
 #define YAHOO_SYMBOL_DIALOG_HPP
 
 #include <QListWidget>
+#include <QToolButton>
+#include <QLineEdit>
 
 #include "Dialog.h"
 
@@ -43,10 +45,12 @@ class YahooSymbolDialog : public Dialog
     void deleteSymbol ();
     void done ();
     void selectionChanged ();
+    void search ();
 
   private:
     QListWidget *_list;
-    QPushButton *_deleteButton;
+    QToolButton *_deleteButton;
+    QLineEdit *_search;
 };
 
 #endif

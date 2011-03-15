@@ -18,8 +18,8 @@ $maName = 'sma_13';
 
 $|++;
 
-# Get today's close
-$command = "PLUGIN=CLOSE,NAME=$closeName";
+# Get the close
+$command = "PLUGIN=DOHLCVI,METHOD=C,NAME=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

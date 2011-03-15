@@ -2,7 +2,6 @@
   message( "Oops -- No custom build options specified" ) 
 } 
 
-HEADERS += CLOSE.h
+HEADERS += DOHLCVI.h
 
-SOURCES += CLOSE.cpp
-
+SOURCES += DOHLCVI.cpp

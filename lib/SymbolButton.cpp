@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,23 +19,34 @@
  *  USA.
  */
 
-#ifndef HIGH_HPP
-#define HIGH_HPP
+#include "SymbolButton.h"
+#include "SymbolDialog.h"
 
-#include "ScriptPlugin.h"
-
-class HIGH : public ScriptPlugin
+SymbolButton::SymbolButton (QWidget *w) : QPushButton (w)
 {
-  Q_OBJECT
-
-  public:
-    HIGH ();
-    int command (Command *);
-};
-
-extern "C"
-{
-  ScriptPlugin * createScriptPlugin ();
+  connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
 }
 
-#endif
+QStringList SymbolButton::symbols ()
+{
+  return _symbols;
+}
+
+void SymbolButton::fileDialog ()
+{
+  SymbolDialog *dialog = new SymbolDialog(this);
+  connect(dialog, SIGNAL(signalDone(QString, QString, QStringList)), this, SLOT(fileDialog2(QString, QString, QStringList)));
+  dialog->show();
+}
+
+void SymbolButton::fileDialog2 (QString, QString, QStringList l)
+{
+  setSymbols(l);
+  emit symbolChanged();
+}
+
+void SymbolButton::setSymbols (QStringList l)
+{
+  _symbols = l;
+  setText(QString::number(_symbols.count()) + tr(" Symbols"));
+}

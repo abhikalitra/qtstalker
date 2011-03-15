@@ -25,7 +25,7 @@
 
 BarLength::BarLength ()
 {
-  _list << "1" << "5" << "10" << "15" << "30" << "60" << "D" << "W" << "M";
+  _list << "0" << "1" << "5" << "10" << "15" << "30" << "60" << "D" << "W" << "M";
 }
 
 QStringList & BarLength::list ()

@@ -31,6 +31,12 @@ class SYMBOL_DIALOG : public ScriptPlugin
   public:
     SYMBOL_DIALOG ();
     int command (Command *);
+
+  public slots:
+    void dialogDone (QString, QString, QStringList);
+
+  private:
+    Command *_command;
 };
 
 extern "C"

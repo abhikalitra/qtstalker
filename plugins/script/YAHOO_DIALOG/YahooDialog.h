@@ -48,6 +48,7 @@ class YahooDialog : public Dialog
     void done ();
     void cancel ();
     void downloadDone ();
+    void downloadStart ();
     void allSymbolsToggled (bool);
     void autoDateToggled (bool);
 
