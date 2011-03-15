@@ -68,8 +68,8 @@ int QUOTE_DATABASE_SEARCH::command (Command *command)
     tl << t.key();
   }
   
-  // now delimit each tuple with a semicolon
-  command->setReturnData(_plugin + "_SEARCH", tl.join(";"));
+  // now delimit each item with a semicolon
+  command->setReturnData(_plugin + "_SYMBOLS", tl.join(";"));
 
   command->setReturnCode("0");
 

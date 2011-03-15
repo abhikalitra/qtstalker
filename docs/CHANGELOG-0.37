@@ -1086,4 +1086,6 @@
            Removed the INDICATOR_PLOT_DATE_GET plugin. The new way to get the date is to use the DOHLCVI
            plugin and then use the INDICATOR_PLOT_VALUE_GET plugin with the date created with DOHLCVI. This
            way we have a uniform method of getting values.
-           
+
+           Fixed bug #3203932 - KEY = QUOTE_DATABASE_SEARCH_SYMBOLS failed to return data.
+
