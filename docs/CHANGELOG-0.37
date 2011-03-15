@@ -1089,3 +1089,5 @@
 
            Fixed bug #3203932 - KEY = QUOTE_DATABASE_SEARCH_SYMBOLS failed to return data.
 
+           Added STOCK_SPLIT plugin and Scripts/quote/Stock_Split.pl script to use it.
+

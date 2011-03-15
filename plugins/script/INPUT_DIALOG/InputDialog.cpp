@@ -75,7 +75,7 @@ void InputDialog::createGUI ()
         newList(key, label, value);
         break;
       case 4: // DATE
-        newList(key, label, value);
+        newDate(key, label, value);
         break;
       case 5: // SYMBOL
         newSymbol(key, label, value);
@@ -191,17 +191,13 @@ void InputDialog::newList (QString &key, QString &label, QString &value)
 
 void InputDialog::newDate (QString &key, QString &label, QString &value)
 {
-  QDateTime dt;
-  if (! value.isEmpty())
-  {
-    dt = QDateTime::fromString(value);
-    if (! dt.isValid())
-      dt = QDateTime::currentDateTime();
-  }
-  else
+  QDateTime dt = QDateTime::fromString(value);
+  if (! dt.isValid())
     dt = QDateTime::currentDateTime();
 
   QDateTimeEdit *dte = new QDateTimeEdit(this);
+  dte->setCalendarPopup(TRUE);
+  dte->setDisplayFormat("yyyy.MM.dd");
   dte->setDateTime(dt);
   _form->addRow(label, dte);
   _dates.insert(key, dte);
