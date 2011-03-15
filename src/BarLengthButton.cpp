@@ -50,7 +50,7 @@ void BarLengthButton::createMenu ()
   setMenu(_menu);
 
   QSettings settings(g_localSettings);
-  _barLength = settings.value("bar_length", 6).toInt();
+  _barLength = settings.value("bar_length", 7).toInt();
 
   QActionGroup *group = new QActionGroup(this);
   
