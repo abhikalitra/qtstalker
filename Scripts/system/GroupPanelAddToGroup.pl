@@ -21,7 +21,7 @@ $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SELECT_DIALOG_SELECTED";
 print STDOUT $command;
 $group = <STDIN>; chomp($group); if ($group eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=SYMBOL_DIALOG,FLAG=0";
+$command = "PLUGIN=SYMBOL_DIALOG";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
