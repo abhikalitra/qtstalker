@@ -32,6 +32,16 @@
 class TEST : public ScriptPlugin
 {
   public:
+    enum Status
+    {
+      _NONE,
+      _LONG,
+      _SHORT,
+      _LONG_ENTER_DELAY,
+      _SHORT_ENTER_DELAY,
+      _EXIT_DELAY
+    };
+    
     TEST ();
     ~TEST ();
     void init ();
@@ -42,6 +52,8 @@ class TEST : public ScriptPlugin
     int exitTrade (int pos, int signal);
     int updateTrade (int pos);
     int saveSummary ();
+    int maxLossStop (int);
+    int trailingStop (int);
 
   private:
     QString _name;
@@ -70,6 +82,9 @@ class TEST : public ScriptPlugin
     Operator::Type _exitLongOp;
     Operator::Type _enterShortOp;
     Operator::Type _exitShortOp;
+    int _delay;
+    double _maxLossStop;
+    double _trailingStop;
 };
 
 extern "C"

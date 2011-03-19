@@ -68,10 +68,7 @@ int INDICATOR_PLOT_VALUE_SET::command (Command *command)
 
   QColor color(command->parm("COLOR"));
   if (! color.isValid())
-  {
-    qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
-    return 1;
-  }
+    color = QColor(Qt::red);
 
   line->setBar(index, new CurveBar(color, value));
 

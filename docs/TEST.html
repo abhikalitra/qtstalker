@@ -30,7 +30,7 @@
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
       <td style="vertical-align: top;">Conducts a back test of a symbol
 depending on the parameters set. The results are saved to the database.
-If using optimization, then the best results (highest equity) will be
+If using optimization, then the best result (highest equity) will be
 saved.<br>
       <br>
       </td>
@@ -68,12 +68,18 @@ DATE_NAME = &lt;VARIABLE NAME&gt; - dates used for trades<br>
 BUY_NAME = &lt;VARIABLE NAME&gt; - prices used for entering trades<br>
 SELL_NAME = &lt;VARIABLE NAME&gt; - prices used for exiting trades<br>
 CLOSE_NAME = &lt;VARIABLE NAME&gt; - prices used for EOD open trades<br>
-VOLUME = &lt;DECIMAL&gt; *optional (0.2 default) - volume percentage of
+VOLUME = &lt;DECIMAL&gt; *optional (0.02 default 2%) - volume
+percentage of
 current equity to calculate volume. If set to zero, a volume of 1 will
-be used.<br>
+be used. 0 - 1 range.<br>
 ENTER_COMM = &lt;DECIMAL&gt; *optional (10 default) - entry commission<br>
 EXIT_COMM = &lt;DECIMAL&gt; *optional (10 default) - exit commission<br>
 EQUITY = &lt;DECIMAL&gt; *optional (1000 default) - starting equity<br>
+DELAY = &lt;INTEGER&gt; *optional (0 default) - delay trade entry/exit
+1 bar<br>
+MAX_LOSS_STOP = &lt;DECIMAL&gt; *optional (0 default) exit trade if
+loss =&gt; the entry value * MAX_LOSS_STOP. 0 - 1 range.<br>
+TRAILING_STOP = &lt;DECIMAL&gt; *optional (0 default) 0 - 1.0 range.<br>
       <br>
       </td>
     </tr>
@@ -91,7 +97,7 @@ Failure<br>
 SYMBOL=XNYS:GOOG, ENTER_LONG_NAME=close, ENTER_LONG_OP=GT,
 ENTER_LONG_NAME2=emaHigh, EXIT_LONG_NAME=close, EXIT_LONG_OP=LT,
 EXIT_LONG_NAME2=emaLow, DATE_NAME=date, BUY_NAME=open, SELL_NAME=close,
-CLOSE_NAME=close<br>
+CLOSE_NAME=close, DELAY=1, MAX_LOSS_STOP=0.06, TRAILING_STOP=0.06<br>
       <br>
       </td>
     </tr>

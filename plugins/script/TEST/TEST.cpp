@@ -65,6 +65,9 @@ void TEST::init ()
   _name.clear();
   _symbol.clear();
   _tag.clear();
+  _delay = 0;
+  _maxLossStop = 0;
+  _trailingStop = 0;
   
   qDeleteAll(_trades);
   _trades.clear();
@@ -96,6 +99,9 @@ int TEST::command (Command *command)
   // ENTER_COMM
   // EXIT_COMM
   // EQUITY
+  // DELAY
+  // MAX_LOSS_STOP
+  // TRAILING_STOP
 
   init();
 
@@ -217,7 +223,7 @@ int TEST::command (Command *command)
     _volume = t;
   }
   else
-    _volume = 0.2;
+    _volume = 0.02;
 
   // verify ENTER_COMM
   s = command->parm("ENTER_COMM");
@@ -292,6 +298,70 @@ int TEST::command (Command *command)
     _startEquity = 10000;
   }
 
+  // verify DELAY
+  s = command->parm("DELAY");
+  if (! s.isEmpty())
+  {
+    bool ok;
+    s.toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid DELAY" << s;
+      return 1;
+    }
+
+    _delay = 1;
+  }
+  else
+    _delay = 0;
+
+  // verify MAX_LOSS_STOP
+  s = command->parm("MAX_LOSS_STOP");
+  if (! s.isEmpty())
+  {
+    bool ok;
+    double t = s.toDouble(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid MAX_LOSS_STOP" << s;
+      return 1;
+    }
+
+    if (t < 0)
+    {
+      qDebug() << _plugin << "::command: invalid MAX_LOSS_STOP value < 0" << t;
+      return 1;
+    }
+
+    _maxLossStop = t;
+  }
+  else
+    _maxLossStop = 0;
+
+  // verify TRAILING_STOP
+  s = command->parm("TRAILING_STOP");
+  if (! s.isEmpty())
+  {
+    bool ok;
+    double t = s.toDouble(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid TRAILING_STOP" << s;
+      return 1;
+    }
+
+    if (t < 0)
+    {
+      qDebug() << _plugin << "::command: invalid TRAILING_STOP value < 0" << t;
+      return 1;
+    }
+
+    _trailingStop = t;
+  }
+  else
+    _trailingStop = 0;
+
+  // run test
   if (test())
     return 1;
 
@@ -390,7 +460,7 @@ int TEST::setRule (QString method, Command *command)
 
 int TEST::test ()
 {
-  int status = 0;
+  int status = _NONE;
 
   QList<int> keys;
   _closePrice->keys(keys);
@@ -399,19 +469,26 @@ int TEST::test ()
 
   Operator oper;
   
+  int rc = 0;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
     int pos = keys.at(loop);
     switch (status)
     {
-      case 1: // long trade
+      case _LONG:
       {
-        int rc = updateTrade(pos);
+        rc = updateTrade(pos);
         if (rc)
         {
+	  if (_delay)
+	  {
+	    status = _EXIT_DELAY;
+	    continue;
+	  }
+	  
           exitTrade(pos, rc);
-          status = 0;
+          status = _NONE;
           break;
         }
         
@@ -423,7 +500,7 @@ int TEST::test ()
           {
             if (oper.test(bar->data(), _exitLongOp, bar2->data()))
             {
-              status = 0;
+              status = _NONE;
               exitTrade(pos, (int) TestSignal::_EXIT_LONG);
               continue;
             }
@@ -431,13 +508,19 @@ int TEST::test ()
         }
         break;
       }
-      case -1: // short trade
+      case _SHORT:
       {
-        int rc = updateTrade(pos);
+        rc = updateTrade(pos);
         if (rc)
         {
+	  if (_delay)
+	  {
+	    status = _EXIT_DELAY;
+	    continue;
+	  }
+
           exitTrade(pos, rc);
-          status = 0;
+          status = _NONE;
         }
 
         CurveBar *bar = _exitShort->bar(pos);
@@ -448,7 +531,7 @@ int TEST::test ()
           {
             if (oper.test(bar->data(), _exitShortOp, bar2->data()))
             {
-              status = 0;
+              status = _NONE;
               exitTrade(pos, (int) TestSignal::_EXIT_SHORT);
               continue;
             }
@@ -456,7 +539,28 @@ int TEST::test ()
         }
         break;
       }
-      default:  // no trade
+      case _LONG_ENTER_DELAY:
+      {
+        if (enterTrade(_LONG, pos))
+          continue;
+        status = _LONG;
+	break;
+      }
+      case _SHORT_ENTER_DELAY:
+      {
+        if (enterTrade(_SHORT, pos))
+          continue;
+        status = _SHORT;
+	break;
+      }
+      case _EXIT_DELAY:
+      {
+        if (exitTrade(pos, rc))
+	  continue;
+        status = _NONE;
+	break;
+      }
+      default: // no trade
       {
         // if we are on the last bar, dont enter any trades
         if (loop == keys.count() - 1)
@@ -473,9 +577,15 @@ int TEST::test ()
             {
               if (oper.test(bar->data(), _enterLongOp, bar2->data()))
               {
+		if (_delay)
+		{
+		  status = _LONG_ENTER_DELAY;
+		  continue;
+		}
+		
                 if (enterTrade(1, pos))
                   continue;
-                status = 1;
+                status = _LONG;
                 continue;
               }
             }
@@ -493,9 +603,15 @@ int TEST::test ()
             {
               if (oper.test(bar->data(), _enterShortOp, bar2->data()))
               {
+		if (_delay)
+		{
+		  status = _SHORT_ENTER_DELAY;
+		  continue;
+		}
+
                 if (enterTrade(-1, pos))
                   continue;
-                status = -1;
+                status = _SHORT;
                 continue;
               }
             }
@@ -541,21 +657,16 @@ int TEST::enterTrade (int status, int pos)
   trade->setData("SYMBOL", _symbol);
   trade->setData("NAME", _name);
 
-  if (status == 1)
+  if (status == _LONG)
     trade->setData("TYPE", QString("L"));
   else
     trade->setData("TYPE", QString("S"));
 
   trade->setData("ENTER_DATE", date->dateTime().toString("yyyy-MM-dd HH:mm:ss"));
   trade->setData("ENTER_PRICE", bar->data());
-  trade->setData("PRICE_HIGH", bar->data());
-  trade->setData("PRICE_LOW", bar->data());
-  trade->setData("HIGH", bar->data());
-  trade->setData("LOW", bar->data());
   trade->setData("VOLUME", volume);
   trade->setData("BARS_HELD", 1);
   trade->setData("ENTER_COMM", _enterCommission);
-  trade->setData("DRAWDOWN", 0);
   
   _equity -= value;
   _equity -= _enterCommission;
@@ -615,22 +726,94 @@ int TEST::updateTrade (int pos)
   else
     profit = trade->getDouble("VOLUME") * (trade->getDouble("ENTER_PRICE") - bar->data()); // short
 
-  if (profit < trade->getDouble("LOW"))
+  trade->setData("BARS_HELD", trade->getInt("BARS_HELD") + 1);
+
+  if (maxLossStop(pos))
+    return TestSignal::_MAXIMUM_LOSS_STOP;
+
+  if (trailingStop(pos))
+    return TestSignal::_TRAILING_STOP;
+
+  return 0;
+}
+
+int TEST::maxLossStop (int pos)
+{
+  if (! _maxLossStop)
+    return 0;
+  
+  CurveBar *bar = _closePrice->bar(pos);
+  if (! bar)
+    return 0;
+
+  Setting *trade = _trades.at(_trades.count() - 1);
+  if (! trade)
+    return 0;
+
+  double risk = (trade->getDouble("VOLUME") * trade->getDouble("ENTER_PRICE")) * _maxLossStop;
+
+  double profit = 0;
+  if (trade->data("TYPE") == "L")
+    profit = trade->getDouble("VOLUME") * (bar->data() - trade->getDouble("ENTER_PRICE")); // long
+  else
+    profit = trade->getDouble("VOLUME") * (trade->getDouble("ENTER_PRICE") - bar->data()); // short
+
+  if (profit * 1 >= risk)
+    return 1;
+
+  return 0;
+}
+
+int TEST::trailingStop (int pos)
+{
+  if (! _trailingStop)
+    return 0;
+
+  CurveBar *bar = _closePrice->bar(pos);
+  if (! bar)
+    return 0;
+
+  Setting *trade = _trades.at(_trades.count() - 1);
+  if (! trade)
+    return 0;
+
+  double risk = bar->data() * _trailingStop;
+  
+  double trail = trade->getDouble("TRAILING_STOP");
+  if (trail == 0)
   {
-    trade->setData("LOW", profit);
-    trade->setData("DRAWDOWN", profit);
+    if (trade->data("TYPE") == "L")
+      trail = trade->getDouble("ENTER_PRICE") - (trade->getDouble("ENTER_PRICE") * _trailingStop);
+    else
+      trail = trade->getDouble("ENTER_PRICE") + (trade->getDouble("ENTER_PRICE") * _trailingStop);
   }
 
-  if (profit > trade->getDouble("HIGH"))
-    trade->setData("HIGH", profit);
+  if (trade->data("TYPE") == "L")
+  {
+    double stop = bar->data() - risk;
 
-  if (bar->data() > trade->getDouble("PRICE_HIGH"))
-    trade->setData("PRICE_HIGH", bar->data());
+    if (stop > trail)
+    {
+      trail = stop;
+      trade->setData("TRAILING_STOP", trail);
+    }
+    
+    if (stop < trail)
+      return 1;
+  }
+  else
+  {
+    double stop = bar->data() + risk;
 
-  if (bar->data() < trade->getDouble("PRICE_LOW"))
-    trade->setData("PRICE_LOW", bar->data());
+    if (stop < trail)
+    {
+      trail = stop;
+      trade->setData("TRAILING_STOP", trail);
+    }
 
-  trade->setData("BARS_HELD", trade->getInt("BARS_HELD") + 1);
+    if (stop > trail)
+      return 1;
+  }
 
   return 0;
 }
@@ -639,10 +822,13 @@ int TEST::saveSummary ()
 {
   int win = 0;
   int loss = 0;
+  int conLoss = 0;
+  int tConLoss = 0;
   double winTotal = 0;
   double lossTotal = 0;
   double profit = 0;
   double drawDown = 0;
+  double tDrawDown = 0;
   int maxBars = 0;
   int minBars = 99999999;
   int totalBars = 0;
@@ -658,11 +844,22 @@ int TEST::saveSummary ()
     {
       loss++;
       lossTotal += trade->getDouble("PROFIT");
+
+      tConLoss++;
+      if (tConLoss > conLoss)
+	conLoss = tConLoss;
+
+      tDrawDown += trade->getDouble("PROFIT");
+      if (tDrawDown < drawDown)
+	drawDown = tDrawDown;
     }
     else
     {
       win++;
       winTotal += trade->getDouble("PROFIT");
+
+      tConLoss = 0;
+      tDrawDown = 0;
     }
 
     profit += trade->getDouble("PROFIT");
@@ -673,9 +870,6 @@ int TEST::saveSummary ()
       minBars = bars;
     if (bars > maxBars)
       maxBars = bars;
-
-    if (trade->getDouble("DRAWDOWN") < drawDown)
-      drawDown = trade->getDouble("DRAWDOWN");
 
     commissions += trade->getDouble("ENTER_COMM");
     commissions += trade->getDouble("EXIT_COMM");
@@ -701,6 +895,7 @@ int TEST::saveSummary ()
   report.setData("WIN_TRADES", win);
   report.setData("LOSE_TRADES", loss);
   report.setData("MAX_DRAWDOWN", drawDown);
+  report.setData("MAX_LOSS", conLoss);
 
   t = (double) (profit / (double) _trades.count());
   strip.strip(t, 2, s);
