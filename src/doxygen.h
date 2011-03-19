@@ -7,6 +7,7 @@
 * documented.
 *
 * Start at <a href="class_qtstalker_app.html">QtstalkerApp Class Reference</a>
+* and <a href="hierarchy.html">Class Hierarchy</a>
 * and <a href="inherits.html">Graphical Class Hierarchy</a>.
 *
 * \todo
