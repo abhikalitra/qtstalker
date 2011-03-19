@@ -1091,3 +1091,5 @@
 
            Added STOCK_SPLIT plugin and Scripts/quote/Stock_Split.pl script to use it.
 
+20110319:  Fixed bug #3224825 - Ichimoku indicator better line colour.
+

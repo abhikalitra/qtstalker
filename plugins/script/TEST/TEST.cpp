@@ -667,6 +667,7 @@ int TEST::enterTrade (int status, int pos)
   trade->setData("VOLUME", volume);
   trade->setData("BARS_HELD", 1);
   trade->setData("ENTER_COMM", _enterCommission);
+  trade->setData("DRAWDOWN", 0);
   
   _equity -= value;
   _equity -= _enterCommission;
@@ -725,6 +726,10 @@ int TEST::updateTrade (int pos)
     profit = trade->getDouble("VOLUME") * (bar->data() - trade->getDouble("ENTER_PRICE")); // long
   else
     profit = trade->getDouble("VOLUME") * (trade->getDouble("ENTER_PRICE") - bar->data()); // short
+
+  double t = trade->getDouble("DRAWDOWN");
+  if (profit < t)
+    trade->setData("DRAWDOWN", profit);
 
   trade->setData("BARS_HELD", trade->getInt("BARS_HELD") + 1);
 
@@ -897,7 +902,7 @@ int TEST::saveSummary ()
   report.setData("MAX_DRAWDOWN", drawDown);
   report.setData("MAX_LOSS", conLoss);
 
-  t = (double) (profit / (double) _trades.count());
+  t = (double) (winTotal / (lossTotal * 1));
   strip.strip(t, 2, s);
   report.setData("AVG_PROFIT_LOSS", s);
 

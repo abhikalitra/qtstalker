@@ -480,11 +480,11 @@ int Plot::index ()
 
 void Plot::mouseClick (int button, QPoint p)
 {
-  if (! _selected && button == Qt::RightButton) 
-  {
-    showContextMenu();
-    return;
-  }
+//  if (! _selected && button == Qt::RightButton) 
+//  {
+//    showContextMenu();
+//    return;
+//  }
   
   emit signalClick(button, p);
 }

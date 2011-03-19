@@ -30,7 +30,7 @@ $csZ = '3';
 
 $ssaName = 'SENKOU SPAN A';
 $ssaStyle = 'Line';
-$ssaColor = 'yellow';
+$ssaColor = 'orange';
 $ssaPeriod = '26';
 $ssaZ = '4';
 
