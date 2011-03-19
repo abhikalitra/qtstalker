@@ -20,6 +20,7 @@
  */
 
 #include "INDICATOR_PLOT_VALUE_GET.h"
+#include "Strip.h"
 
 #include <QtDebug>
 
@@ -110,7 +111,10 @@ int INDICATOR_PLOT_VALUE_GET::command (Command *command)
   if (bar->isDate())
     s = bar->dateTime().toString(Qt::ISODate);
   else
-    s = QString::number(bar->data());
+  {
+    Strip strip;
+    strip.strip(bar->data(), 4, s);
+  }
   
   command->setReturnData(_plugin + "_VALUE", s);
 

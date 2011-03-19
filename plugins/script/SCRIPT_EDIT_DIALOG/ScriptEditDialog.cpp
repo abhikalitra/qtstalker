@@ -60,7 +60,7 @@ void ScriptEditDialog::createGUI ()
   _form->addRow(tr("Command"), _com);
   
   // file
-  _fileButton = new FileButton(this, QStringList(), QString());
+  _fileButton = new FileButton(this);
   _fileButton->setToolTip(tr("The script location"));
   connect(_fileButton, SIGNAL(signalSelectionChanged()), this, SLOT(buttonStatus()));
   _form->addRow(tr("Script File"), _fileButton);
@@ -77,8 +77,7 @@ void ScriptEditDialog::buttonStatus ()
   if (_com->text().length())
     status++;
 
-  QStringList l;
-  _fileButton->getFile(l);
+  QStringList l = _fileButton->files();
   if (l.count())
   {
     _file = l.at(0);
@@ -98,7 +97,7 @@ void ScriptEditDialog::loadSettings ()
   _file = settings.value("script_edit_dialog_last_file", QDir::homePath()).toString();
   QStringList l;
   l << _file;
-  _fileButton->setFile(l);
+  _fileButton->setFiles(l);
 }
 
 void ScriptEditDialog::saveSettings ()
@@ -145,7 +144,7 @@ void ScriptEditDialog::loadScript ()
   _file = script.file();
   QStringList l;
   l << _file;
-  _fileButton->setFile(l);
+  _fileButton->setFiles(l);
 
   _com->setText(script.command());
 

@@ -34,40 +34,40 @@ int DateRange::dateRange (DateRange::Range type, QDateTime &input, QDateTime &ou
   
   switch (type)
   {
-    case Day:
+    case _DAY:
       output = input.addDays(-1);
       break;
-    case Week:
+    case _WEEK:
       output = input.addDays(-7);
       break;
-    case Month:
+    case _MONTH:
       output = input.addDays(-31);
       break;
-    case Month3:
+    case _MONTH3:
       output = input.addDays(-63);
       break;
-    case Month6:
+    case _MONTH6:
       output = input.addDays(-186);
       break;
-    case Year:
+    case _YEAR:
       output = input.addYears(-1);
       break;
-    case Year2:
+    case _YEAR2:
       output = input.addYears(-2);
       break;
-    case Year5:
+    case _YEAR5:
       output = input.addYears(-5);
       break;
-    case Year10:
+    case _YEAR10:
       output = input.addYears(-10);
       break;
-    case Year25:
+    case _YEAR25:
       output = input.addYears(-25);
       break;
-    case Year50:
+    case _YEAR50:
       output = input.addYears(-50);
       break;
-    case All:
+    case _ALL:
       output = input.addYears(-1000);
       break;
     default:
@@ -97,44 +97,43 @@ void DateRange::dateRangeText (DateRange::Range k, QString &d)
 
   switch (k)
   {
-    case Day:
+    case _DAY:
       d = "1D";
       break;
-    case Week:
+    case _WEEK:
       d = "1W";
       break;
-    case Month:
+    case _MONTH:
       d = "1M";
       break;
-    case Month3:
+    case _MONTH3:
       d = "3M";
       break;
-    case Month6:
+    case _MONTH6:
       d = "6M";
       break;
-    case Year:
+    case _YEAR:
       d = "1Y";
       break;
-    case Year2:
+    case _YEAR2:
       d = "2Y";
       break;
-    case Year5:
+    case _YEAR5:
       d = "5Y";
       break;
-    case Year10:
+    case _YEAR10:
       d = "10Y";
       break;
-    case Year25:
+    case _YEAR25:
       d = "25Y";
       break;
-    case Year50:
+    case _YEAR50:
       d = "50Y";
       break;
-    case All:
+    case _ALL:
       d = "All";
       break;
     default:
       break;
   }
 }
-

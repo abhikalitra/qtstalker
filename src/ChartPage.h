@@ -53,7 +53,8 @@ class ChartPage : public QWidget
       ShowAll,
       Search,
       AddGroup,
-      Delete
+      Delete,
+      Export
     };
 
     ChartPage (QWidget *);
@@ -72,6 +73,7 @@ class ChartPage : public QWidget
     void allButtonPressed ();
     void buttonStatus ();
     void deleteSymbol ();
+    void exportSymbol ();
 
   protected:
     QString _searchString;

@@ -30,10 +30,10 @@ InputDialog::InputDialog (QWidget *p, Command *c) : Dialog (p)
   _keySize = "input_dialog_window_size";
   _keyPos = "input_dialog_window_position";
 
-  _typeList << "INTEGER" << "DOUBLE" << "TEXT" << "LIST" << "DATE" << "SYMBOL";
+  _typeList << "INTEGER" << "DOUBLE" << "TEXT" << "LIST" << "DATE" << "SYMBOL" << "FILE";
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Input Dialog");
+  l << "QtStalker" << g_session << ":" << _command->parm("TITLE");
   setWindowTitle(l.join(" "));
 
   createGUI();
@@ -79,6 +79,9 @@ void InputDialog::createGUI ()
         break;
       case 5: // SYMBOL
         newSymbol(key, label, value);
+        break;
+      case 6: // FILE
+        newFile(key, label, value);
         break;
       default:
         break;
@@ -141,6 +144,13 @@ void InputDialog::done ()
         SymbolButton *sb = _symbols.value(key);
         if (sb)
           _command->setReturnData(rkey, sb->symbols().join(";"));
+        break;
+      }
+      case 6: // FILE
+      {
+        FileButton *fb = _files.value(key);
+        if (fb)
+          _command->setReturnData(rkey, fb->files().join(";"));
         break;
       }
       default:
@@ -209,4 +219,12 @@ void InputDialog::newSymbol (QString &key, QString &label, QString &value)
   sb->setSymbols(value.split(";", QString::SkipEmptyParts));
   _form->addRow(label, sb);
   _symbols.insert(key, sb);
+}
+
+void InputDialog::newFile (QString &key, QString &label, QString &value)
+{
+  FileButton *fb = new FileButton(this);
+  fb->setFiles(value.split(";", QString::SkipEmptyParts));
+  _form->addRow(label, fb);
+  _files.insert(key, fb);
 }

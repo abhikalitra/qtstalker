@@ -935,13 +935,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>InputDialog</name>
-    <message>
-        <source>Input Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>NewDialog</name>
     <message>
         <source>New</source>

@@ -204,6 +204,7 @@ SUBDIRS += plugins/script/PLOT_UPDATE
 SUBDIRS += plugins/script/PO
 SUBDIRS += plugins/script/PROCESS
 SUBDIRS += plugins/script/QUOTE_DATABASE_DELETE
+SUBDIRS += plugins/script/QUOTE_DATABASE_DUMP
 SUBDIRS += plugins/script/QUOTE_DATABASE_EXCHANGE
 SUBDIRS += plugins/script/QUOTE_DATABASE_GET
 SUBDIRS += plugins/script/QUOTE_DATABASE_RENAME

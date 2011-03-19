@@ -33,6 +33,7 @@
 #include "Setting.h"
 #include "Dialog.h"
 #include "SymbolButton.h"
+#include "FileButton.h"
 
 class InputDialog : public Dialog
 {
@@ -47,6 +48,7 @@ class InputDialog : public Dialog
     void newList (QString &key, QString &label, QString &value);
     void newDate (QString &key, QString &label, QString &value);
     void newSymbol (QString &key, QString &label, QString &value);
+    void newFile (QString &key, QString &label, QString &value);
 
   public slots:
     void done ();
@@ -59,6 +61,7 @@ class InputDialog : public Dialog
     QHash<QString, QComboBox *> _lists;
     QHash<QString, QDateTimeEdit *> _dates;
     QHash<QString, SymbolButton *> _symbols;
+    QHash<QString, FileButton *> _files;
 };
 
 #endif

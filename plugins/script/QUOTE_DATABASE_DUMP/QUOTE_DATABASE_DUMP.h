@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,32 +19,23 @@
  *  USA.
  */
 
-#ifndef FILEBUTTON_HPP
-#define FILEBUTTON_HPP
+#ifndef QUOTE_DATABASE_DUMP_HPP
+#define QUOTE_DATABASE_DUMP_HPP
 
-#include <QPushButton>
-#include <QStringList>
+#include "ScriptPlugin.h"
 
-class FileButton : public QPushButton
+class QUOTE_DATABASE_DUMP : public ScriptPlugin
 {
   Q_OBJECT
 
-  signals:
-    void signalSelectionChanged ();
-
   public:
-    FileButton (QWidget *);
-    QStringList files ();
-    void updateButtonText ();
-    void setPath (QString);
-
-  public slots:
-    void fileDialog ();
-    void setFiles (QStringList);
-        
-  private:
-    QStringList _files;
-    QString _path;
+    QUOTE_DATABASE_DUMP ();
+    int command (Command *);
 };
+
+extern "C"
+{
+  ScriptPlugin * createScriptPlugin ();
+}
 
 #endif

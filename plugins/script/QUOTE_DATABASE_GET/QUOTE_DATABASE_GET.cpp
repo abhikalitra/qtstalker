@@ -256,6 +256,8 @@ int QUOTE_DATABASE_GET::command (Command *command)
       iline->setBar(loop, new CurveBar(b->oi()));
   }
   
+  command->setReturnData(_plugin + "_NAME", bd.name());
+
   command->setReturnCode("0");
 
   return 0;

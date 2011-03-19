@@ -20,31 +20,32 @@
  */
 
 #include "FileButton.h"
+
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QDebug>
 
-FileButton::FileButton (QWidget *w, QStringList l, QString p) : QPushButton (w)
+FileButton::FileButton (QWidget *w) : QPushButton (w)
 {
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
-  _files = l;
-  
   _path = QDir::homePath();
-  if (p.length())
-    _path = p;
-  
   updateButtonText();
 }
 
-void FileButton::getFile (QStringList &l)
+QStringList FileButton::files ()
 {
-  l.clear();
-  l = _files;
+  return _files;
 }
 
-void FileButton::setFile (QStringList l)
+void FileButton::setFiles (QStringList l)
 {
   _files = l;
+  updateButtonText();
+}
+
+void FileButton::setPath (QString d)
+{
+  _path = d;
   updateButtonText();
 }
 
@@ -57,11 +58,11 @@ void FileButton::fileDialog ()
   }
 
   QFileDialog *dialog = new QFileDialog(this);
-  dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setFileMode(QFileDialog::AnyFile);
   dialog->setDirectory(_path);
   dialog->setWindowTitle(tr("Select Files"));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  connect(dialog, SIGNAL(filesSelected(const QStringList &)), this, SLOT(setFile(QStringList)));
+  connect(dialog, SIGNAL(filesSelected(const QStringList &)), this, SLOT(setFiles(QStringList)));
   dialog->show();
 }
 

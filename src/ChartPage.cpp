@@ -27,6 +27,7 @@
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
 #include "../pics/delete.xpm"
+#include "../pics/export.xpm"
 
 #include <QCursor>
 #include <QToolTip>
@@ -91,6 +92,12 @@ void ChartPage::createActions ()
   action->setStatusTip(tr("Permanantly delete symbols from the database") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(deleteSymbol()));
   _actions.insert(Delete, action);
+
+  action  = new QAction(QIcon(export_xpm), tr("E&xport Symbol") + "...", this);
+  action->setToolTip(tr("Export symbols to CSV files") + "...");
+  action->setStatusTip(tr("Export symbols to CSV files") + "...");
+  connect(action, SIGNAL(activated()), this, SLOT(exportSymbol()));
+  _actions.insert(Export, action);
 }
 
 void ChartPage::createButtonMenu ()
@@ -103,6 +110,7 @@ void ChartPage::createButtonMenu ()
   _menu->addAction(_actions.value(ShowAll));
   _menu->addAction(_actions.value(Search));
   _menu->addSeparator();
+  _menu->addAction(_actions.value(Export));
 }
 
 void ChartPage::chartOpened (BarData bd)
@@ -227,6 +235,16 @@ void ChartPage::deleteSymbol ()
   Script *script = new Script(this);
   script->setName("ChartPanelDelete");
   script->setFile(settings.value("chart_panel_delete_script").toString());
+  script->setCommand("perl");
+  script->startScript();
+}
+
+void ChartPage::exportSymbol ()
+{
+  QSettings settings(g_globalSettings);
+  Script *script = new Script(this);
+  script->setName("ChartPanelSymbolExport");
+  script->setFile(settings.value("chart_panel_symbol_export_script").toString());
   script->setCommand("perl");
   script->startScript();
 }

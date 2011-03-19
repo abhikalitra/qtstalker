@@ -1093,3 +1093,6 @@
 
 20110319:  Fixed bug #3224825 - Ichimoku indicator better line colour.
 
+           Added new plugin QUOTE_DATABASE_DUMP and Scripts/quote/Export_Symbol.pl.
+
+           Added an export symbols menu option to the chart panel as per request.

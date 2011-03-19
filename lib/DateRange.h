@@ -35,18 +35,18 @@ class DateRange
   public:
     enum Range
     {
-      Day,
-      Week,
-      Month,
-      Month3,
-      Month6,
-      Year,
-      Year2,
-      Year5,
-      Year10,
-      Year25,
-      Year50,
-      All
+      _DAY,
+      _WEEK,
+      _MONTH,
+      _MONTH3,
+      _MONTH6,
+      _YEAR,
+      _YEAR2,
+      _YEAR5,
+      _YEAR10,
+      _YEAR25,
+      _YEAR50,
+      _ALL
     };
     
     DateRange ();

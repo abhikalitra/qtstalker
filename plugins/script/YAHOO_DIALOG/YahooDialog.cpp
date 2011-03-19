@@ -190,7 +190,7 @@ void YahooDialog::downloadStart ()
       bd.setExchange(symbol.data("EXCHANGE"));
       bd.setSymbol(symbol.data("SYMBOL"));
       bd.setBarLength(BarLength::_DAILY);
-      bd.setRange(DateRange::Day);
+      bd.setRange(DateRange::_DAY);
 
       if (qdb.getBars(&bd))
       {

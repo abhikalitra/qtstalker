@@ -52,7 +52,7 @@ IndicatorEditDialog::IndicatorEditDialog (QWidget *p, Command *c) : Dialog (p)
   {
     QStringList tl;
     tl << _file;
-    _fileButton->setFile(tl);
+    _fileButton->setFiles(tl);
   }
 
   loadSettings();
@@ -72,9 +72,7 @@ void IndicatorEditDialog::createGUI ()
   _form->addRow(tr("Command"), _com);
 
   // file
-  QStringList tl;
-  QString s;
-  _fileButton = new FileButton(this, tl, s);
+  _fileButton = new FileButton(this);
   connect(_fileButton, SIGNAL(signalSelectionChanged()), this, SLOT(buttonStatus()));
   _form->addRow(tr("Script File"), _fileButton);
 }
@@ -83,8 +81,7 @@ void IndicatorEditDialog::buttonStatus ()
 {
   int status = 0;
 
-  QStringList l;
-  _fileButton->getFile(l);
+  QStringList l = _fileButton->files();
   if (l.count())
   {
     _file = l.at(0);
@@ -133,7 +130,7 @@ void IndicatorEditDialog::loadSettings ()
                            settings.value("indicator_script_directory").toString()).toString();
     QStringList l;
     l << _file;
-    _fileButton->setFile(l);
+    _fileButton->setFiles(l);
   }
 }
 
