@@ -1096,3 +1096,7 @@
            Added new plugin QUOTE_DATABASE_DUMP and Scripts/quote/Export_Symbol.pl.
 
            Added an export symbols menu option to the chart panel as per request.
+
+20110320:  Fixed chart panel and group panel add to group functions.
+
+           

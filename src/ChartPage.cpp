@@ -135,13 +135,14 @@ void ChartPage::addToGroup ()
   for (; loop < l.count(); loop++)
     l2 << l.at(loop)->text();
 
-  QSettings settings(g_globalSettings);
-  settings.setValue("chart_panel_selected", l2.join(","));
+  QSettings settings(g_localSettings);
+  settings.setValue("chart_panel_selected", l2.join(";"));
   settings.sync();
   
+  QSettings settings2(g_globalSettings);
   Script *script = new Script(this);
   script->setName("ChartPanelAddGroup");
-  script->setFile(settings.value("chart_panel_add_group_script").toString());
+  script->setFile(settings2.value("chart_panel_add_group_script").toString());
   script->setCommand("perl");
   script->startScript();
 }

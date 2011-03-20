@@ -21,15 +21,17 @@ $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SELECT_DIALOG_SELECTED";
 print STDOUT $command;
 $group = <STDIN>; chomp($group); if ($group eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=SYMBOL_DIALOG";
+# get the current selected symbols from the group panel
+$command = "PLUGIN=SETTINGS_LOAD,KEY=group_panel_selected";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# get the symbols string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SYMBOL_DIALOG_SYMBOLS";
+# get the selected symbols string
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SETTINGS_LOAD_DATA";
 print STDOUT $command;
 $symbols = <STDIN>; chomp($symbols); if ($symbols eq "ERROR") {print STDERR $command; exit; }
 
+# save the symbols to the group
 $command = "PLUGIN=GROUP_DATABASE_SAVE,NAME=$group,ITEMS=$symbols";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

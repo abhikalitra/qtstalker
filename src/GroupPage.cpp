@@ -197,10 +197,23 @@ void GroupPage::updateGroups ()
 
 void GroupPage::addToGroup ()
 {
-  QSettings settings(g_globalSettings);
+  QList<QListWidgetItem *> l = _nav->selectedItems();
+  if (! l.count())
+    return;
+
+  QStringList l2;
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    l2 << l.at(loop)->text();
+
+  QSettings settings(g_localSettings);
+  settings.setValue("group_panel_selected", l2.join(";"));
+  settings.sync();
+
+  QSettings settings2(g_globalSettings);
   Script *script = new Script(this);
   script->setName("GroupPanelAddToGroup");
-  script->setFile(settings.value("group_panel_add_to_group_script").toString());
+  script->setFile(settings2.value("group_panel_add_to_group_script").toString());
   script->setCommand("perl");
   script->startScript();
 }
