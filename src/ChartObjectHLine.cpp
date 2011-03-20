@@ -25,7 +25,6 @@
 #include "ChartObjectHLineDraw.h"
 #include "Strip.h"
 #include "Globals.h"
-#include "ChartObjectHLineDialog.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -34,11 +33,18 @@ ChartObjectHLine::ChartObjectHLine ()
 {
   _draw = new ChartObjectHLineDraw;
   _draw->setSettings(_settings);
+  _dialog = 0;
   
   QSettings set(g_globalSettings);
   QString s = set.value("default_chart_object_hline_color", "red").toString();
   _settings->setData("Color", s);
   _settings->setData("Type", QString("HLine"));
+}
+
+ChartObjectHLine::~ChartObjectHLine ()
+{
+  if (_dialog)
+    delete _dialog;
 }
 
 void ChartObjectHLine::info (Setting &info)
@@ -101,9 +107,8 @@ void ChartObjectHLine::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
-//          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
-//          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
-          _menu->exec(QCursor::pos());
+	  if (! _dialog)
+            _menu->exec(QCursor::pos());
           break;
         default:
           break;
@@ -159,7 +164,16 @@ void ChartObjectHLine::create ()
 
 void ChartObjectHLine::dialog ()
 {
-  ChartObjectHLineDialog *dialog = new ChartObjectHLineDialog(0, _settings);
-  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
-  dialog->show();
+  if (_dialog)
+    return;
+
+  _dialog = new ChartObjectHLineDialog(_parent, _settings);
+  connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
+  connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
+  _dialog->show();
+}
+
+void ChartObjectHLine::dialogDone ()
+{
+  _dialog = 0;
 }

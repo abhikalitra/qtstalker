@@ -25,7 +25,6 @@
 #include "ChartObjectTLineDraw.h"
 #include "Strip.h"
 #include "Globals.h"
-#include "ChartObjectTLineDialog.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -36,11 +35,18 @@ ChartObjectTLine::ChartObjectTLine ()
   _createFlag = 0;
   _draw = new ChartObjectTLineDraw;
   _draw->setSettings(_settings);
+  _dialog = 0;
 
   QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_tline_color", "red").toString());
   _settings->setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
   _settings->setData("Type", QString("TLine"));
+}
+
+ChartObjectTLine::~ChartObjectTLine ()
+{
+  if (_dialog)
+    delete _dialog;
 }
 
 void ChartObjectTLine::info (Setting &info)
@@ -172,9 +178,8 @@ void ChartObjectTLine::click (int button, QPoint p)
           break;
         }
         case Qt::RightButton:
-//          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
-//          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
-          _menu->exec(QCursor::pos());
+	  if (! _dialog)
+            _menu->exec(QCursor::pos());
           break;
         default:
           break;
@@ -254,7 +259,16 @@ void ChartObjectTLine::create ()
 
 void ChartObjectTLine::dialog ()
 {
-  ChartObjectTLineDialog *dialog = new ChartObjectTLineDialog(0, _settings);
-  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
-  dialog->show();
+  if (_dialog)
+    return;
+
+  _dialog = new ChartObjectTLineDialog(_parent, _settings);
+  connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
+  connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
+  _dialog->show();
+}
+
+void ChartObjectTLine::dialogDone ()
+{
+  _dialog = 0;
 }

@@ -27,6 +27,7 @@
 #define CHART_OBJECT_BUY_HPP
 
 #include "ChartObject.h"
+#include "ChartObjectBuyDialog.h"
 
 class ChartObjectBuy : public ChartObject
 {
@@ -34,6 +35,7 @@ class ChartObjectBuy : public ChartObject
   
   public:
     ChartObjectBuy ();
+    ~ChartObjectBuy ();
     void info (Setting &);
     int highLow (int start, int end, double &high, double &low);
     void create ();
@@ -42,6 +44,11 @@ class ChartObjectBuy : public ChartObject
     void move (QPoint);
     void click (int, QPoint);
     void dialog ();
+    void dialogDone ();
+
+  private:
+    ChartObjectBuyDialog *_dialog;
+    
 };
 
 #endif

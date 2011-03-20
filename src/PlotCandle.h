@@ -32,7 +32,6 @@
 #include <QList>
 
 #include "Curve.h"
-#include "OHLC.h"
 
 class PlotCandle : public QwtPlotCurve
 {
@@ -50,7 +49,7 @@ class PlotCandle : public QwtPlotCurve
     double low ();
 
   private:
-    QList<OHLC> _list;
+    QList<CurveBar *> _list;
     double _high;
     double _low;
 };

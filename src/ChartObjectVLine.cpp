@@ -25,7 +25,6 @@
 #include "ChartObjectVLineDraw.h"
 #include "Strip.h"
 #include "Globals.h"
-#include "ChartObjectVLineDialog.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -35,10 +34,17 @@ ChartObjectVLine::ChartObjectVLine ()
 {
   _draw = new ChartObjectVLineDraw;
   _draw->setSettings(_settings);
+  _dialog = 0;
 
   QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_vline_color", "red").toString());
   _settings->setData("Type", QString("VLine"));
+}
+
+ChartObjectVLine::~ChartObjectVLine ()
+{
+  if (_dialog)
+    delete _dialog;
 }
 
 void ChartObjectVLine::info (Setting &info)
@@ -106,9 +112,8 @@ void ChartObjectVLine::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
-//          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
-//          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
-          _menu->exec(QCursor::pos());
+	  if (! _dialog)
+            _menu->exec(QCursor::pos());
           break;
         default:
           break;
@@ -164,7 +169,16 @@ void ChartObjectVLine::create ()
 
 void ChartObjectVLine::dialog ()
 {
-  ChartObjectVLineDialog *dialog = new ChartObjectVLineDialog(0, _settings);
-  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
-  dialog->show();
+  if (_dialog)
+    return;
+
+  _dialog = new ChartObjectVLineDialog(_parent, _settings);
+  connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
+  connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
+  _dialog->show();
+}
+
+void ChartObjectVLine::dialogDone ()
+{
+  _dialog = 0;
 }

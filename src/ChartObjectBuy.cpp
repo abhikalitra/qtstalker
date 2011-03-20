@@ -25,7 +25,6 @@
 #include "ChartObjectBuyDraw.h"
 #include "Strip.h"
 #include "Globals.h"
-#include "ChartObjectBuyDialog.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -34,10 +33,17 @@ ChartObjectBuy::ChartObjectBuy ()
 {
   _draw = new ChartObjectBuyDraw;
   _draw->setSettings(_settings);
+  _dialog = 0;
 
   QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_buy_color", "green").toString());
   _settings->setData(QString("Type"), QString("Buy"));
+}
+
+ChartObjectBuy::~ChartObjectBuy ()
+{
+  if (_dialog)
+    delete _dialog;
 }
 
 void ChartObjectBuy::info (Setting &info)
@@ -119,9 +125,8 @@ void ChartObjectBuy::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
-//          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
-//          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
-          _menu->exec(QCursor::pos());
+	  if (! _dialog)
+            _menu->exec(QCursor::pos());
           break;
         default:
           break;
@@ -177,7 +182,16 @@ void ChartObjectBuy::create ()
 
 void ChartObjectBuy::dialog ()
 {
-  ChartObjectBuyDialog *dialog = new ChartObjectBuyDialog(0, _settings);
-  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
-  dialog->show();
+  if (_dialog)
+    return;
+  
+  _dialog = new ChartObjectBuyDialog(_parent, _settings);
+  connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
+  connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
+  _dialog->show();
+}
+
+void ChartObjectBuy::dialogDone ()
+{
+  _dialog = 0;
 }

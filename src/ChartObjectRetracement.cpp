@@ -25,7 +25,6 @@
 #include "ChartObjectRetracementDraw.h"
 #include "Strip.h"
 #include "Globals.h"
-#include "ChartObjectRetracementDialog.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -35,6 +34,7 @@ ChartObjectRetracement::ChartObjectRetracement ()
   _createFlag = 0;
   _draw = new ChartObjectRetracementDraw;
   _draw->setSettings(_settings);
+  _dialog = 0;
 
   QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_retracement_color", "red").toString());
@@ -46,6 +46,12 @@ ChartObjectRetracement::ChartObjectRetracement ()
   _settings->setData("Line6", set.value("default_chart_object_retracement_line6", 0).toDouble());
   _settings->setData("Type", QString("Retracement"));
   _settings->setData("Extend", 0);
+}
+
+ChartObjectRetracement::~ChartObjectRetracement ()
+{
+  if (_dialog)
+    delete _dialog;
 }
 
 void ChartObjectRetracement::info (Setting &info)
@@ -175,9 +181,8 @@ void ChartObjectRetracement::click (int button, QPoint p)
           break;
         }
         case Qt::RightButton:
-//          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
-//          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
-          _menu->exec(QCursor::pos());
+	  if (! _dialog)
+            _menu->exec(QCursor::pos());
           break;
         default:
           break;
@@ -257,7 +262,16 @@ void ChartObjectRetracement::create ()
 
 void ChartObjectRetracement::dialog ()
 {
-  ChartObjectRetracementDialog *dialog = new ChartObjectRetracementDialog(0, _settings);
-  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
-  dialog->show();
+  if (_dialog)
+    return;
+
+  _dialog = new ChartObjectRetracementDialog(_parent, _settings);
+  connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
+  connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
+  _dialog->show();
+}
+
+void ChartObjectRetracement::dialogDone ()
+{
+  _dialog = 0;
 }

@@ -106,7 +106,6 @@ Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
 Plot::~Plot ()
 {
   clear();
-//  delete _indicator;
 }
 
 void Plot::clear ()
@@ -120,6 +119,8 @@ void Plot::clear ()
   if (_chartObjects.count())
     qDeleteAll(_chartObjects);
   _chartObjects.clear();
+
+  _selected = 0;
 
   QwtPlot::clear();
 }
@@ -465,6 +466,9 @@ void Plot::setYPoints ()
 
 void Plot::showContextMenu ()
 {
+  if (_selected)
+    return;
+  
   if (_qwtCurves.count())
     _menu->setCOMenuStatus(TRUE);
   else
@@ -684,6 +688,7 @@ void Plot::setupChartObject (ChartObject *co)
 {
   co->setZ(10);
   co->attach(this);
+  co->setParent(this);
   
   connect(co, SIGNAL(signalDelete(QString)), this, SLOT(deleteChartObject(QString)));
   connect(co, SIGNAL(signalUpdate(QString)), this, SLOT(updateChartObject(QString)));

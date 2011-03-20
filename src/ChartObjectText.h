@@ -23,6 +23,7 @@
 #define CHART_OBJECT_TEXT_HPP
 
 #include "ChartObject.h"
+#include "ChartObjectTextDialog.h"
 
 class ChartObjectText : public ChartObject
 {
@@ -30,6 +31,7 @@ class ChartObjectText : public ChartObject
   
   public:
     ChartObjectText ();
+    ~ChartObjectText ();
     void info (Setting &);
     int highLow (int start, int end, double &high, double &low);
     void create ();
@@ -38,6 +40,10 @@ class ChartObjectText : public ChartObject
     void move (QPoint);
     void click (int, QPoint);
     void dialog ();
+    void dialogDone ();
+
+  private:
+    ChartObjectTextDialog *_dialog;
 };
 
 #endif

@@ -38,6 +38,7 @@ PlotOHLC::PlotOHLC (const QString &title) : QwtPlotCurve (QwtText(title))
 
 PlotOHLC::~PlotOHLC ()
 {
+  qDeleteAll(_list);
 }
 
 void PlotOHLC::init ()
@@ -53,10 +54,12 @@ void PlotOHLC::init ()
 
 void PlotOHLC::setData (Curve *curve)
 {
+  qDeleteAll(_list);
+  _list.clear();
+  
   QList<int> keys;
   curve->keys(keys);
 
-  _list.clear();
   _high = -99999999;
   _low = 99999999;
 
@@ -64,19 +67,19 @@ void PlotOHLC::setData (Curve *curve)
   for (; loop < keys.count(); loop++)
   {
     CurveBar *bar = curve->bar(keys.at(loop));
-    OHLC ohlc;
-    ohlc.open = bar->data(0);
-    ohlc.high = bar->data(1);
-    ohlc.low = bar->data(2);
-    ohlc.close = bar->data(3);
-    ohlc.color = bar->color();
-    _list.append(ohlc);
+    CurveBar *b = new CurveBar;
+    b->setData(0, bar->data(0));
+    b->setData(1, bar->data(1));
+    b->setData(2, bar->data(2));
+    b->setData(3, bar->data(3));
+    b->setColor(bar->color());
+    _list.append(b);
 
-    if (ohlc.high > _high)
-      _high = ohlc.high;
+    if (b->data(1) > _high)
+      _high = b->data(1);
 
-    if (ohlc.low < _low)
-      _low = ohlc.low;
+    if (b->data(2) < _low)
+      _low = b->data(2);
   }
 
   itemChanged();
@@ -107,50 +110,25 @@ void PlotOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMa
 
   for (; loop < size; loop++)
   {
-    OHLC ohlc = _list.at(loop);
+    CurveBar *b = _list.at(loop);
 
-    painter->setPen(ohlc.color);
-
-    int x = xMap.transform(loop);
-
-    // draw the open tick
-    int y = yMap.transform(ohlc.open);
-    painter->drawLine (x, y, x + 2, y);
-
-    // draw the close tick
-    y = yMap.transform(ohlc.close);
-    painter->drawLine (x + 2, y, x + 4, y);
-
-    // draw the high/low tick
-    y = yMap.transform(ohlc.high);
-    int y2 = yMap.transform(ohlc.low);
-    painter->drawLine (x + 2, y, x + 2, y2);
-  }
-
-/*
-  int loop = 0;
-  for (; loop < _list.count(); loop++)
-  {
-    OHLC ohlc = _list.at(loop);
-
-    painter->setPen(ohlc.color);
+    painter->setPen(b->color());
 
     int x = xMap.transform(loop);
 
     // draw the open tick
-    int y = yMap.transform(ohlc.open);
+    int y = yMap.transform(b->data(0));
     painter->drawLine (x, y, x + 2, y);
 
     // draw the close tick
-    y = yMap.transform(ohlc.close);
+    y = yMap.transform(b->data(3));
     painter->drawLine (x + 2, y, x + 4, y);
 
     // draw the high/low tick
-    y = yMap.transform(ohlc.high);
-    int y2 = yMap.transform(ohlc.low);
+    y = yMap.transform(b->data(1));
+    int y2 = yMap.transform(b->data(2));
     painter->drawLine (x + 2, y, x + 2, y2);
   }
-*/
 }
 
 double PlotOHLC::high ()
@@ -162,4 +140,3 @@ double PlotOHLC::low ()
 {
   return _low;
 }
-

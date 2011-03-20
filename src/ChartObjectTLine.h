@@ -23,6 +23,7 @@
 #define CHART_OBJECT_TLINE_HPP
 
 #include "ChartObject.h"
+#include "ChartObjectTLineDialog.h"
 
 class ChartObjectTLine : public ChartObject
 {
@@ -30,6 +31,7 @@ class ChartObjectTLine : public ChartObject
 
   public:
     ChartObjectTLine ();
+    ~ChartObjectTLine ();
     void info (Setting &);
     int highLow (int start, int end, double &high, double &low);
     void create ();
@@ -38,8 +40,10 @@ class ChartObjectTLine : public ChartObject
     void move (QPoint);
     void click (int, QPoint);
     void dialog ();
+    void dialogDone ();
 
   private:
+    ChartObjectTLineDialog *_dialog;
     int _createFlag;
 };
 

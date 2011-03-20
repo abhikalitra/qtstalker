@@ -70,6 +70,7 @@ class ChartObject : public QObject
     void attach (QwtPlot *);
     int isSelected (QPoint);
     void load ();
+    void setParent (QWidget *);
 
   public slots:
     virtual void move (QPoint);
@@ -81,6 +82,7 @@ class ChartObject : public QObject
     void update ();
 
   protected:
+    QWidget *_parent;
     Status _status;
     Setting *_settings;
     QMenu *_menu;

@@ -38,6 +38,7 @@ PlotCandle::PlotCandle (const QString &title) : QwtPlotCurve (QwtText(title))
 
 PlotCandle::~PlotCandle ()
 {
+  qDeleteAll(_list);
 }
 
 void PlotCandle::init ()
@@ -53,10 +54,12 @@ void PlotCandle::init ()
 
 void PlotCandle::setData (Curve *curve)
 {
+  qDeleteAll(_list);
+  _list.clear();
+
   QList<int> keys;
   curve->keys(keys);
 
-  _list.clear();
   _high = -99999999;
   _low = 99999999;
 
@@ -64,19 +67,19 @@ void PlotCandle::setData (Curve *curve)
   for (; loop < keys.count(); loop++)
   {
     CurveBar *bar = curve->bar(keys.at(loop));
-    OHLC ohlc;
-    ohlc.open = bar->data(0);
-    ohlc.high = bar->data(1);
-    ohlc.low = bar->data(2);
-    ohlc.close = bar->data(3);
-    ohlc.color = bar->color();
-    _list.append(ohlc);
+    CurveBar *b = new CurveBar;
+    b->setData(0, bar->data(0));
+    b->setData(1, bar->data(1));
+    b->setData(2, bar->data(2));
+    b->setData(3, bar->data(3));
+    b->setColor(bar->color());
+    _list.append(b);
 
-    if (ohlc.high > _high)
-      _high = ohlc.high;
+    if (b->data(1) > _high)
+      _high = b->data(1);
 
-    if (ohlc.low < _low)
-      _low = ohlc.low;
+    if (b->data(2) < _low)
+      _low = b->data(2);
   }
 
   itemChanged();
@@ -108,20 +111,20 @@ void PlotCandle::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScale
   bool ff = FALSE;
   for (; loop < size; loop++)
   {
-    OHLC ohlc = _list.at(loop);
+    CurveBar *b = _list.at(loop);
 
     ff = FALSE;
-    if (ohlc.close < ohlc.open)
+    if (b->data(3) < b->data(0))
       ff = TRUE;
 
-    painter->setPen(ohlc.color);
+    painter->setPen(b->color());
 
     int x = xMap.transform(loop);
 
-    int xo = yMap.transform(ohlc.open);
-    int xh = yMap.transform(ohlc.high);
-    int xl = yMap.transform(ohlc.low);
-    int xc = yMap.transform(ohlc.close);
+    int xo = yMap.transform(b->data(0));
+    int xh = yMap.transform(b->data(1));
+    int xl = yMap.transform(b->data(2));
+    int xc = yMap.transform(b->data(3));
 
     if (! ff)
     {
@@ -134,45 +137,9 @@ void PlotCandle::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScale
     {
       // filled candle
       painter->drawLine (x + 2, xh, x + 2, xl);
-      painter->fillRect(x, xo, 5, xc - xo, ohlc.color);
+      painter->fillRect(x, xo, 5, xc - xo, b->color());
     }
   }
-  
-/*  
-  int loop = 0;
-  bool ff = FALSE;
-  for (; loop < _list.count(); loop++)
-  {
-    OHLC ohlc = _list.at(loop);
-
-    ff = FALSE;
-    if (ohlc.close < ohlc.open)
-      ff = TRUE;
-
-    painter->setPen(ohlc.color);
-
-    int x = xMap.transform(loop);
-
-    int xo = yMap.transform(ohlc.open);
-    int xh = yMap.transform(ohlc.high);
-    int xl = yMap.transform(ohlc.low);
-    int xc = yMap.transform(ohlc.close);
-
-    if (! ff)
-    {
-      // empty candle
-      painter->drawLine (x + 3, xh, x + 3, xc);
-      painter->drawLine (x + 3, xo, x + 3, xl);
-      painter->drawRect(x, xc, 6, xo - xc);
-    }
-    else
-    {
-      // filled candle
-      painter->drawLine (x + 2, xh, x + 2, xl);
-      painter->fillRect(x, xo, 5, xc - xo, ohlc.color);
-    }
-  }
-*/
 }
 
 double PlotCandle::high ()
@@ -184,4 +151,3 @@ double PlotCandle::low ()
 {
   return _low;
 }
-

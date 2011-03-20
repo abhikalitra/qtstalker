@@ -23,6 +23,7 @@
 #define CHART_OBJECT_VLINE_HPP
 
 #include "ChartObject.h"
+#include "ChartObjectVLineDialog.h"
 
 class ChartObjectVLine : public ChartObject
 {
@@ -30,6 +31,7 @@ class ChartObjectVLine : public ChartObject
 
   public:
     ChartObjectVLine ();
+    ~ChartObjectVLine ();
     void info (Setting &);
     int highLow (int start, int end, double &high, double &low);
     void create ();
@@ -38,6 +40,10 @@ class ChartObjectVLine : public ChartObject
     void move (QPoint);
     void click (int, QPoint);
     void dialog ();
+    void dialogDone ();
+
+  private:
+    ChartObjectVLineDialog *_dialog;
 };
 
 #endif

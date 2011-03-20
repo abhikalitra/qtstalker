@@ -43,7 +43,6 @@ HEADERS += DockWidget.h
 HEADERS += GridButton.h
 HEADERS += GroupPage.h
 HEADERS += InfoPanel.h
-HEADERS += OHLC.h
 HEADERS += PickerMachine.h
 HEADERS += Plot.h
 HEADERS += PlotCandle.h

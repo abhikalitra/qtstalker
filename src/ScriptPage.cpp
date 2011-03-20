@@ -340,7 +340,7 @@ void ScriptPage::launchButtonCols ()
   QSettings settings(g_localSettings);
 
   QInputDialog *dialog = new QInputDialog(this);
-  dialog->setIntValue(settings.value("script_launch_button_cols", 4).toInt());
+  dialog->setIntValue(settings.value("script_launch_button_cols", 5).toInt());
   dialog->setLabelText(tr("Columns"));
   dialog->setWindowTitle(tr("Configure Launch Button Columns"));
   connect(dialog, SIGNAL(intValueSelected(int)), this, SLOT(launchButtonCols2(int)));
@@ -383,7 +383,7 @@ void ScriptPage::fileSelect ()
 {
   QSettings settings(g_localSettings);
   
-  QFileDialog *dialog = new QFileDialog;
+  QFileDialog *dialog = new QFileDialog(this);
   dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Select External Script"));
   dialog->setDirectory(settings.value("script_panel_last_external_script").toString());
   connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(runExternalScript(QString)));

@@ -25,7 +25,6 @@
 #include "ChartObjectTextDraw.h"
 #include "Strip.h"
 #include "Globals.h"
-#include "ChartObjectTextDialog.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -34,12 +33,19 @@ ChartObjectText::ChartObjectText ()
 {
   _draw = new ChartObjectTextDraw;
   _draw->setSettings(_settings);
+  _dialog = 0;
 
   QSettings set(g_globalSettings);
   _settings->setData("Color", set.value("default_chart_object_text_color", "red").toString());
   _settings->setData("Font", set.value("default_chart_object_text_font", "Helvetica,9,50,0").toString());
   _settings->setData("Text", set.value("default_chart_object_text_text", "Text").toString());
   _settings->setData("Type", QString("Text"));
+}
+
+ChartObjectText::~ChartObjectText ()
+{
+  if (_dialog)
+    delete _dialog;
 }
 
 void ChartObjectText::info (Setting &info)
@@ -123,9 +129,8 @@ void ChartObjectText::click (int button, QPoint p)
           }
           break;
         case Qt::RightButton:
-//          _editAction->setText(tr("Edit") + " " + _settings->data("ID"));
-//          _deleteAction->setText(tr("Delete") + " " + _settings->data("ID"));
-          _menu->exec(QCursor::pos());
+	  if (! _dialog)
+            _menu->exec(QCursor::pos());
           break;
         default:
           break;
@@ -181,7 +186,16 @@ void ChartObjectText::create ()
 
 void ChartObjectText::dialog ()
 {
-  ChartObjectTextDialog *dialog = new ChartObjectTextDialog(0, _settings);
-  connect(dialog, SIGNAL(accepted()), this, SLOT(update()));
-  dialog->show();
+  if (_dialog)
+    return;
+
+  _dialog = new ChartObjectTextDialog(_parent, _settings);
+  connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
+  connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
+  _dialog->show();
+}
+
+void ChartObjectText::dialogDone ()
+{
+  _dialog = 0;
 }

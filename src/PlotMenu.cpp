@@ -215,7 +215,7 @@ void PlotMenu::deleteIndicator ()
 
 void PlotMenu::deleteAllChartObjects ()
 {
-  ConfirmDialog *dialog = new ConfirmDialog(0);
+  ConfirmDialog *dialog = new ConfirmDialog(this);
   dialog->setMessage(tr("Confirm all chart objects delete"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
   dialog->show();
