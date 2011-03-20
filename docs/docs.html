@@ -20,15 +20,18 @@
       </div>
 <!-- Content -->
     <h1>Qtstalker: Documentation</h1>
+    <h2>Viewing the documentation</h2>
     <p>
       Local documentation can be viewed with a web browser, by opening
       <code>/usr/local/share/doc/qtstalker/html/index.html</code>
+      and can be edited at
+      <code>path-to-your-source/qtstalker/docs/</code>
     </p>
     <p>
       Source code documentation can be viewed with a web browser, by opening
       <code>path-to-your-source/qtstalker/docs/api/index.html</code>
-      (if documentation has not yet been built using Doxygen, then see the
-      file <code>api.html</code> in that directory).
+      (If that documentation has not yet been generated using Doxygen,
+      then see the <a href="#doxygen">notes</a> below.)
     </p>
     <p>
       Documentation can also be viewed via the Qt Assistant application, by
@@ -43,6 +46,51 @@
       <code>&lt;div id="warnDoc"&gt;&lt;/div&gt;</code> element.
     </p>
 -->
+    <h2 id="doxygen">Using Doxygen to generate documentation</h2>
+    <p>
+      Documentation for all of the Qtstalker source code can be generated.
+      Any comment blocks in the source code are added to the documentation.
+    </p>
+    <p>
+      This documentation generation system can also be used to document
+      the source code of your own indicators and other scripts.
+    </p>
+    <h3 id="requirements">Requirements</h3>
+    <p>
+      Install <a href="http://www.doxygen.org/">Doxygen</a> and
+      ensure that the 'doxygen' executables are available on your $PATH
+    </p>
+    <p>
+      Optionally install <a href="http://www.graphviz.org/">Graphviz</a>
+      to generate better diagrams.
+      Set <code>HAVE_DOT=YES</code> in the
+      <code>qtstalker/misc/doxygen/config.txt</code> file.
+    </p>
+<pre>
+### FIXME: Explain installation of a filter for handling Perl scripts.
+</pre>
+    <h3 id="configuration">Configuration</h3>
+    <p>
+      The configuration file for Doxygen is located at:
+      <code>qtstalker/misc/doxygen/config.txt</code>
+    </p>
+    <p>
+      By default it will process C++ and Python files.
+    </p>
+<pre>
+### FIXME: Link to Doxygen documentation for the comment syntaxes.
+### FIXME: Explain configuring the processing of user scripts
+</pre>
+    <h3 id="processing">Processing</h3>
+    <p>
+      In the top-level directory of the Qtstalker distribution, do
+      '<code>./build-api-docs.sh</code>' and
+      then do the normal Qtstalker build and install process 
+      '<code>make distclean; ./configure</code>' etc.
+    </p>
     </div>
+<div id="bottom-spacer">
+<!-- Spacer so that can link directly to certain items in the list above. -->
+</div>
   </body>
 </html>
