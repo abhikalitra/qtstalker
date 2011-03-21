@@ -500,6 +500,13 @@ int TEST::test ()
           {
             if (oper.test(bar->data(), _exitLongOp, bar2->data()))
             {
+	      if (_delay)
+	      {
+	        status = _EXIT_DELAY;
+		rc = (int) TestSignal::_EXIT_LONG;
+	        continue;
+	      }
+
               status = _NONE;
               exitTrade(pos, (int) TestSignal::_EXIT_LONG);
               continue;
@@ -531,6 +538,13 @@ int TEST::test ()
           {
             if (oper.test(bar->data(), _exitShortOp, bar2->data()))
             {
+	      if (_delay)
+	      {
+	        status = _EXIT_DELAY;
+		rc = (int) TestSignal::_EXIT_SHORT;
+	        continue;
+	      }
+
               status = _NONE;
               exitTrade(pos, (int) TestSignal::_EXIT_SHORT);
               continue;
@@ -902,7 +916,7 @@ int TEST::saveSummary ()
   report.setData("MAX_DRAWDOWN", drawDown);
   report.setData("MAX_LOSS", conLoss);
 
-  t = (double) (winTotal / (lossTotal * 1));
+  t = (double) (winTotal / (lossTotal * -1));
   strip.strip(t, 2, s);
   report.setData("AVG_PROFIT_LOSS", s);
 

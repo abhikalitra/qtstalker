@@ -193,11 +193,14 @@ void PlotMenu::createMenus ()
 
 void PlotMenu::editIndicator ()
 {
-  QSettings settings(g_globalSettings);
+  QSettings settings(g_localSettings);
+  settings.setValue("edit_indicator_selected", _indicator);
+  settings.sync();
   
+  QSettings settings2(g_globalSettings);
   Script *script = new Script(this);
   script->setName("IndicatorEdit");
-  script->setFile(settings.value("indicator_edit_script").toString());
+  script->setFile(settings2.value("indicator_edit_script").toString());
   script->setCommand("perl");
   script->startScript();
 }

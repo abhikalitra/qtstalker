@@ -2,23 +2,13 @@
 
 $|=1;
 
-# get current indicators from database
-$command = "PLUGIN=INDICATOR_DATABASE_LIST";
+# get the current selected indicator
+$command = "PLUGIN=SETTINGS_LOAD,KEY=edit_indicator_selected";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# get the indicators string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_DATABASE_LIST_INDICATORS";
-print STDOUT $command;
-$indicators = <STDIN>; chomp($indicators); if ($indicators eq "ERROR") {print STDERR $command; exit; }
-
-# display select dialog
-$command = "PLUGIN=SELECT_DIALOG,MODE=1,TITLE=Indicator,ITEMS=$indicators";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
-
-# get the indicator string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SELECT_DIALOG_SELECTED";
+# get the selected symbols string
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SETTINGS_LOAD_DATA";
 print STDOUT $command;
 $indicator = <STDIN>; chomp($indicator); if ($indicator eq "ERROR") {print STDERR $command; exit; }
 

@@ -40,8 +40,6 @@ class SelectDialog : public Dialog
 
   private:
     QListWidget *_list;
-    QPushButton *_selectButton;
-    QPushButton *_unselectButton;
 };
 
 #endif

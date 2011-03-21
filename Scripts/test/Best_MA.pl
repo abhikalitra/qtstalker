@@ -26,6 +26,7 @@ $fieldList2 = "$openName;$closeName;$avgName";
 $exchange = 'YAHOO';
 $symbol = 'XIU.TO';
 $equity = '50000';
+$volume = '0.1';
 
 ###############################################################################################################
 
@@ -49,7 +50,8 @@ $s4 = "INPUT4_LABEL=Date Range,INPUT4_TYPE=LIST,INPUT4_VALUE=$dateRangeList";
 $s5 = "INPUT5_LABEL=Buy On,INPUT5_TYPE=LIST,INPUT5_VALUE=$fieldList2";
 $s6 = "INPUT6_LABEL=Sell On,INPUT6_TYPE=LIST,INPUT6_VALUE=$fieldList2";
 $s7 = "INPUT7_LABEL=Equity,INPUT7_TYPE=DOUBLE,INPUT7_VALUE=$equity";
-$command = "$s1,$s2,$s3,$s4,$s5,$s6,$s7";
+$s8 = "INPUT8_LABEL=Volume,INPUT8_TYPE=DOUBLE,INPUT8_VALUE=$volume";
+$command = "$s1,$s2,$s3,$s4,$s5,$s6,$s7,$s8";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
@@ -87,6 +89,11 @@ $sellField = <STDIN>; chomp($sellField); if ($sellField eq "ERROR") {print STDER
 $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INPUT_DIALOG_INPUT7_DATA";
 print STDOUT $command;
 $equity = <STDIN>; chomp($equity); if ($equity eq "ERROR") {print STDERR $command; exit; }
+
+# get the volume field
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INPUT_DIALOG_INPUT8_DATA";
+print STDOUT $command;
+$volume = <STDIN>; chomp($volume); if ($volume eq "ERROR") {print STDERR $command; exit; }
 
 # display the symbol search dialog to return symbols
 #$command = "PLUGIN=SYMBOL_DIALOG,FLAG=0";
@@ -153,7 +160,7 @@ foreach $input1 (@fields)
         $s2 = "ENTER_LONG_NAME=$closeName,ENTER_LONG_OP=GT,ENTER_LONG_NAME2=buy$loop";
         $s3 = "EXIT_LONG_NAME=$closeName,EXIT_LONG_OP=LT,EXIT_LONG_NAME2=sell$loop2";
         $s4 = "DATE_NAME=$dateName,BUY_NAME=$buyField,SELL_NAME=$sellField,CLOSE_NAME=$closeName";
-        $s5 = "DELAY=1,EQUITY=$equity";
+        $s5 = "DELAY=1,EQUITY=$equity,VOLUME=$volume";
         $command = "$s1,$s2,$s3,$s4,$s5";
         print STDOUT $command;
         $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }

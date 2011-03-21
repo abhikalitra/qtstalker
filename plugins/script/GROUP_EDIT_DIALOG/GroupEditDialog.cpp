@@ -22,11 +22,16 @@
 #include "GroupEditDialog.h"
 #include "Globals.h"
 #include "GroupDataBase.h"
-#include "../pics/add.xpm"
-#include "../pics/delete.xpm"
+#include "SymbolDialog.h"
+
+#include "../../../pics/add.xpm"
+#include "../../../pics/delete.xpm"
+#include "../../../pics/select_all.xpm"
+#include "../../../pics/unselect_all.xpm"
 
 #include <QtDebug>
 #include <QSettings>
+#include <QToolBar>
 
 GroupEditDialog::GroupEditDialog (QWidget *p, Command *command) : Dialog (p)
 {
@@ -49,13 +54,6 @@ GroupEditDialog::GroupEditDialog (QWidget *p, Command *command) : Dialog (p)
   loadSettings();
 
   selectionChanged();
-
-  _symbolDialogCommand = new Command("PLUGIN=SYMBOL_DIALOG,FLAG=0");
-}
-
-GroupEditDialog::~GroupEditDialog ()
-{
-  delete _symbolDialogCommand;
 }
 
 void GroupEditDialog::createGUI ()
@@ -65,7 +63,7 @@ void GroupEditDialog::createGUI ()
   _vbox->insertWidget(pos++, label);
 
   QHBoxLayout *hbox = new QHBoxLayout;
-  hbox->setSpacing(2);
+  hbox->setSpacing(0);
   _vbox->insertLayout(pos++, hbox);
 
   _list = new QListWidget;
@@ -75,23 +73,38 @@ void GroupEditDialog::createGUI ()
   connect(_list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(done()));
   hbox->addWidget(_list);
 
-  QVBoxLayout *tvbox = new QVBoxLayout;
-  tvbox->setSpacing(2);
-  hbox->addLayout(tvbox);
+  QToolBar *tb = new QToolBar;
+  tb->setOrientation(Qt::Vertical);
+  hbox->addWidget(tb);
 
-  _addButton = new QPushButton;
-  _addButton->setIcon(QIcon(add_xpm));
-  _addButton->setToolTip(tr("Add Symbols"));
-  connect(_addButton, SIGNAL(clicked()), this, SLOT(addButtonPressed()));
-  tvbox->addWidget(_addButton);
+  QToolButton *b = new QToolButton;
+  b->setIcon(QIcon(add_xpm));
+  b->setToolTip(tr("Add Symbols"));
+  connect(b, SIGNAL(clicked(bool)), this, SLOT(addButtonPressed()));
+  tb->addWidget(b);
   
-  _deleteButton = new QPushButton;
+  _deleteButton = new QToolButton;
   _deleteButton->setIcon(QIcon(delete_xpm));
   _deleteButton->setToolTip(tr("Delete Symbols"));
-  connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteButtonPressed()));
-  tvbox->addWidget(_deleteButton);
+  connect(_deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteButtonPressed()));
+  tb->addWidget(_deleteButton);
 
-  tvbox->addStretch(1);
+  // select all button
+  b = new QToolButton;
+  b->setIcon(QIcon(select_all_xpm));
+  b->setToolTip(tr("Select All"));
+  connect(b, SIGNAL(clicked(bool)), _list, SLOT(selectAll()));
+  tb->addWidget(b);
+
+  // unselect all button
+  b = new QToolButton;
+  b->setIcon(QIcon(unselect_all_xpm));
+  b->setToolTip(tr("Unselect All"));
+  connect(b, SIGNAL(clicked(bool)), _list, SLOT(clearSelection()));
+  tb->addWidget(b);
+
+  // clear some unused space
+  _message->hide();
 }
 
 void GroupEditDialog::selectionChanged ()
@@ -128,21 +141,14 @@ void GroupEditDialog::done ()
 
 void GroupEditDialog::addButtonPressed ()
 {
-  ScriptPlugin *plug = _factory.plugin(_symbolDialogCommand->plugin());
-  if (! plug)
-  {
-    qDebug() << "GroupEditDialog::addButtonPressed: no plugin" << _symbolDialogCommand->plugin();
-    return;
-  }
-
-  connect(plug, SIGNAL(signalResume()), this, SLOT(addButtonPressed2()));
-
-  plug->command(_symbolDialogCommand);
+  SymbolDialog *dialog = new SymbolDialog(this);
+  connect(dialog, SIGNAL(signalDone(QString, QString, QStringList)), this, SLOT(addButtonPressed2(QString, QString, QStringList)));
+  dialog->show();
 }
 
-void GroupEditDialog::addButtonPressed2 ()
+void GroupEditDialog::addButtonPressed2 (QString, QString, QStringList l)
 {
-  _list->addItems(_symbolDialogCommand->returnData("SYMBOL_DIALOG_SYMBOLS").split(";", QString::SkipEmptyParts));
+  _list->addItems(l);
 }
 
 void GroupEditDialog::deleteButtonPressed ()

@@ -2,13 +2,13 @@
 
 $|=1;
 
-# display the symbol search dialog to return symbols
-$command = "PLUGIN=SYMBOL_DIALOG,FLAG=0";
+# get the current selected symbols from the chart panel
+$command = "PLUGIN=SETTINGS_LOAD,KEY=chart_panel_selected";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# get the symbols string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SYMBOL_DIALOG_SYMBOLS";
+# get the selected symbols string
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SETTINGS_LOAD_DATA";
 print STDOUT $command;
 $symbols = <STDIN>; chomp($symbols); if ($symbols eq "ERROR") {print STDERR $command; exit; }
 

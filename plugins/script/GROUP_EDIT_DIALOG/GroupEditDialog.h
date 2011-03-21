@@ -23,8 +23,8 @@
 #define GROUP_EDIT_DIALOG_DIALOG_HPP
 
 #include <QListWidget>
+#include <QToolButton>
 
-#include "ScriptPluginFactory.h"
 #include "Dialog.h"
 
 class GroupEditDialog : public Dialog
@@ -33,23 +33,19 @@ class GroupEditDialog : public Dialog
 
   public:
     GroupEditDialog (QWidget *, Command *);
-    ~GroupEditDialog ();
     void createGUI ();
 
   public slots:
     void done ();
     void selectionChanged ();
     void addButtonPressed ();
-    void addButtonPressed2 ();
+    void addButtonPressed2 (QString, QString, QStringList);
     void deleteButtonPressed ();
 
   private:
     QListWidget *_list;
-    QPushButton *_addButton;
-    QPushButton *_deleteButton;
+    QToolButton *_deleteButton;
     QString _name;
-    ScriptPluginFactory _factory;
-    Command *_symbolDialogCommand;
 };
 
 #endif

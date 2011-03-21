@@ -21,8 +21,12 @@
 
 #include "SelectDialog.h"
 #include "Globals.h"
+#include "../../../pics/select_all.xpm"
+#include "../../../pics/unselect_all.xpm"
 
 #include <QtDebug>
+#include <QToolBar>
+#include <QToolButton>
 
 SelectDialog::SelectDialog (QWidget *p, Command *c) : Dialog (p)
 {
@@ -53,21 +57,38 @@ void SelectDialog::createGUI ()
   QLabel *label = new QLabel(_command->parm("TITLE"));
   _vbox->insertWidget(pos++, label);
 
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setSpacing(0);
+  _vbox->insertLayout(pos++, hbox);
+
   // list
   _list = new QListWidget;
   _list->setSortingEnabled(TRUE);
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
   connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   connect(_list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(done()));
-  _vbox->insertWidget(pos++, _list);
+  hbox->addWidget(_list);
+
+  QToolBar *tb = new QToolBar;
+  tb->setOrientation(Qt::Vertical);
+  hbox->addWidget(tb);
 
   // select all button
-  _selectButton = _buttonBox->addButton(tr("Select All"), QDialogButtonBox::ActionRole);
-  connect(_selectButton, SIGNAL(clicked()), _list, SLOT(selectAll()));
+  QToolButton *b = new QToolButton;
+  b->setIcon(QIcon(select_all_xpm));
+  b->setToolTip(tr("Select All"));
+  connect(b, SIGNAL(clicked(bool)), _list, SLOT(selectAll()));
+  tb->addWidget(b);
 
   // unselect all button
-  _unselectButton = _buttonBox->addButton(tr("Unselect All"), QDialogButtonBox::ActionRole);
-  connect(_unselectButton, SIGNAL(clicked()), _list, SLOT(clearSelection()));
+  b = new QToolButton;
+  b->setIcon(QIcon(unselect_all_xpm));
+  b->setToolTip(tr("Unselect All"));
+  connect(b, SIGNAL(clicked(bool)), _list, SLOT(clearSelection()));
+  tb->addWidget(b);
+
+  // clear some uneeded space
+  _message->hide();
 }
 
 void SelectDialog::selectionChanged ()

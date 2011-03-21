@@ -50,16 +50,18 @@ class ChartPage : public QWidget
   public:
     enum Action
     {
-      ShowAll,
-      Search,
-      AddGroup,
-      Delete,
-      Export
+      _SHOW_ALL,
+      _SEARCH,
+      _ADD_GROUP,
+      _DELETE,
+      _EXPORT,
+      _SELECT_ALL,
+      _UNSELECT_ALL
     };
 
     ChartPage (QWidget *);
     void createActions ();
-    void createButtonMenu ();
+    void createMenu ();
     void selected (QStringList &);
     SymbolListWidget * list ();
 

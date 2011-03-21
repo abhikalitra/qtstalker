@@ -28,6 +28,8 @@
 #include "../pics/asterisk.xpm"
 #include "../pics/delete.xpm"
 #include "../pics/export.xpm"
+#include "../pics/select_all.xpm"
+#include "../pics/unselect_all.xpm"
 
 #include <QCursor>
 #include <QToolTip>
@@ -42,15 +44,11 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
 {
   setObjectName("ChartPage");
   
-  createActions();
-
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setMargin(0);
   vbox->setSpacing(0);
   setLayout(vbox);
 
-  createButtonMenu();
-  
   _nav = new SymbolListWidget;
   connect(_nav, SIGNAL(signalSymbolSelected(BarData)), this, SLOT(chartOpened(BarData)));
   connect(_nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
@@ -60,6 +58,10 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
   QSettings settings(g_localSettings);
   _searchExchange = settings.value("last_chart_panel_exchange_search", "*").toString();
   _searchString = settings.value("last_chart_panel_symbol_search", "*").toString();
+
+  createActions();
+
+  createMenu();
 
   updateList();
 }
@@ -71,46 +73,61 @@ void ChartPage::createActions ()
   action->setToolTip(tr("Show All Symbols"));
   action->setStatusTip(tr("Show All Symbols"));
   connect(action, SIGNAL(activated()), this, SLOT(allButtonPressed()));
-  _actions.insert(ShowAll, action);
+  _actions.insert(_SHOW_ALL, action);
 
   action  = new QAction(QIcon(search_xpm), tr("Symbol &Search") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
   action->setToolTip(tr("Symbol Search") + "...");
   action->setStatusTip(tr("Symbol Search") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(symbolSearch()));
-  _actions.insert(Search, action);
+  _actions.insert(_SEARCH, action);
 
   action  = new QAction(QIcon(add_xpm), tr("Add To &Group") + "...", this);
   action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
   action->setToolTip(tr("Add symbol to group") + "...");
   action->setStatusTip(tr("Add symbol to group") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(addToGroup()));
-  _actions.insert(AddGroup, action);
+  _actions.insert(_ADD_GROUP, action);
 
   action  = new QAction(QIcon(delete_xpm), tr("&Delete Symbol") + "...", this);
   action->setToolTip(tr("Permanantly delete symbols from the database") + "...");
   action->setStatusTip(tr("Permanantly delete symbols from the database") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(deleteSymbol()));
-  _actions.insert(Delete, action);
+  _actions.insert(_DELETE, action);
 
   action  = new QAction(QIcon(export_xpm), tr("E&xport Symbol") + "...", this);
   action->setToolTip(tr("Export symbols to CSV files") + "...");
   action->setStatusTip(tr("Export symbols to CSV files") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(exportSymbol()));
-  _actions.insert(Export, action);
+  _actions.insert(_EXPORT, action);
+
+  action  = new QAction(QIcon(select_all_xpm), tr("Select All"), this);
+  action->setToolTip(tr("Select All"));
+  action->setStatusTip(tr("Select All"));
+  connect(action, SIGNAL(activated()), _nav, SLOT(selectAll()));
+  _actions.insert(_SELECT_ALL, action);
+
+  action  = new QAction(QIcon(unselect_all_xpm), tr("Unselect All"), this);
+  action->setToolTip(tr("Unselect All"));
+  action->setStatusTip(tr("Unselect All"));
+  connect(action, SIGNAL(activated()), _nav, SLOT(clearSelection()));
+  _actions.insert(_UNSELECT_ALL, action);
 }
 
-void ChartPage::createButtonMenu ()
+void ChartPage::createMenu ()
 {
   _menu = new QMenu(this);
-  _menu->addAction(_actions.value(AddGroup));
+  _menu->addAction(_actions.value(_SHOW_ALL));
+  _menu->addAction(_actions.value(_SEARCH));
   _menu->addSeparator();
-  _menu->addAction(_actions.value(Delete));
+  _menu->addAction(_actions.value(_ADD_GROUP));
   _menu->addSeparator();
-  _menu->addAction(_actions.value(ShowAll));
-  _menu->addAction(_actions.value(Search));
+  _menu->addAction(_actions.value(_DELETE));
   _menu->addSeparator();
-  _menu->addAction(_actions.value(Export));
+  _menu->addAction(_actions.value(_EXPORT));
+  _menu->addSeparator();
+  _menu->addAction(_actions.value(_SELECT_ALL));
+  _menu->addAction(_actions.value(_UNSELECT_ALL));
 }
 
 void ChartPage::chartOpened (BarData bd)
@@ -209,7 +226,7 @@ void ChartPage::allButtonPressed ()
 void ChartPage::buttonStatus ()
 {
   int status = _nav->count();
-  _actions.value(AddGroup)->setEnabled(status); 
+  _actions.value(_ADD_GROUP)->setEnabled(status);
 }
 
 void ChartPage::selected (QStringList &l)
@@ -232,10 +249,23 @@ SymbolListWidget * ChartPage::list ()
 
 void ChartPage::deleteSymbol ()
 {
-  QSettings settings(g_globalSettings);
+  QList<QListWidgetItem *> l = _nav->selectedItems();
+  if (! l.count())
+    return;
+
+  QStringList l2;
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    l2 << l.at(loop)->text();
+
+  QSettings settings(g_localSettings);
+  settings.setValue("chart_panel_selected", l2.join(";"));
+  settings.sync();
+
+  QSettings settings2(g_globalSettings);
   Script *script = new Script(this);
   script->setName("ChartPanelDelete");
-  script->setFile(settings.value("chart_panel_delete_script").toString());
+  script->setFile(settings2.value("chart_panel_delete_script").toString());
   script->setCommand("perl");
   script->startScript();
 }
