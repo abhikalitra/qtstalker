@@ -1,6 +1,15 @@
-# qtstalker Disparity Index indicator
-# See: http://tadoc.org/indicator/DISPARITY.htm
+## @file
+# Qtstalker Disparity Index indicator
+#
+# @par References
+# - http://tadoc.org/indicator/DISPARITY.htm
+#
+# @par Formula
 # dix = ((100 * (close - ma)) / close)
+#
+# @par Legend
+# - green = positive disparity
+# - red = negative disparity
 
 $closeName = 'cl';
 $upColor = 'green';

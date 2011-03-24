@@ -66,9 +66,13 @@
       Set <code>HAVE_DOT=YES</code> in the
       <code>qtstalker/misc/doxygen/config.txt</code> file.
     </p>
-<pre>
-### FIXME: Explain installation of a filter for handling Perl scripts.
-</pre>
+    <p>
+      Optionally install
+      <a href="http://www.bigsister.ch/doxygenfilter/">DoxygenFilter</a>
+      (or another
+      <a href="http://www.stack.nl/~dimitri/doxygen/helpers.html">filter</a>)
+      to enable processing of Perl scripts.
+    </p>
     <h3 id="configuration">Configuration</h3>
     <p>
       The configuration file for Doxygen is located at:
@@ -76,10 +80,8 @@
     </p>
     <p>
       By default it will process C++ and Python files.
+      With the abovementioned filter it will do Perl scripts and others.
     </p>
-<pre>
-### FIXME: Link to Doxygen documentation for the comment syntaxes.
-</pre>
     <p>
       To process your set of user indicators and other scripts, configure the
       <code>INPUT</code> parameter of the <code>config.txt</code> to be:
@@ -88,6 +90,15 @@
     <p>
       Note: Be sure to retain the configuration for the path "." (as shown above)
       to process all of the Qtstalker source files.
+    </p>
+    <p>
+      See the Doxygen
+      <a href="http://www.stack.nl/~dimitri/doxygen/docblocks.html">instructions</a>
+      for documenting your source code.
+    </p>
+    <p>
+      There is one example for the Qtstalker Disparity indicator.
+      Note: Trying to keep documentation simple.
     </p>
     <h3 id="processing">Processing</h3>
     <p>
