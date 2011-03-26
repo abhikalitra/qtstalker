@@ -59,11 +59,13 @@ class QtstalkerApp : public QMainWindow
     void wakeup ();
     void commandLineAsset ();
     void addNewPlot (QString);
+    void addNewPlot2 ();
     void deletePlot (QStringList);
     void setPlotTabPosition (int);
     void fixDockTabs ();
     void updatePlot (QString);
     void shutDown ();
+    void afterStartup ();
 
   protected:
     QHash<QString, Plot *> _plots;
@@ -71,6 +73,7 @@ class QtstalkerApp : public QMainWindow
     QString _clAsset;
     SidePanel *_sidePanel;
     ControlPanel *_controlPanel;
+    QString _newIndicator;
 };
 
 #endif

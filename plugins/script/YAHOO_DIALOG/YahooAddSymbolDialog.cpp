@@ -21,7 +21,7 @@
 
 #include "YahooAddSymbolDialog.h"
 #include "Globals.h"
-#include "YahooDataBase.h"
+#include "QuoteDataBase.h"
 
 #include <QtDebug>
 
@@ -63,7 +63,7 @@ void YahooAddSymbolDialog::buttonStatus ()
 
 void YahooAddSymbolDialog::done ()
 {
-  YahooDataBase db;
+  QuoteDataBase db;
   db.transaction();
 
   QString s = _symbols->text();
@@ -74,10 +74,10 @@ void YahooAddSymbolDialog::done ()
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    Setting set;
-    set.setData("SYMBOL", l.at(loop));
-    if (db.save(set))
-      qDebug() << "YahooAddSymbolDialog::done: symbol save error";
+    BarData bd;
+    bd.setExchange("YAHOO");
+    bd.setSymbol(l.at(loop));
+    db.newSymbol(&bd);
   }
 
   db.commit();

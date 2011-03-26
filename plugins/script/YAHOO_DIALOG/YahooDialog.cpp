@@ -22,7 +22,6 @@
 #include "YahooDialog.h"
 #include "YahooSymbolDialog.h"
 #include "Globals.h"
-#include "YahooDataBase.h"
 #include "YahooHistory.h"
 #include "QuoteDataBase.h"
 #include "DateRange.h"
@@ -168,11 +167,28 @@ void YahooDialog::done ()
 
 void YahooDialog::downloadStart ()
 {
-  YahooDataBase db;
   QuoteDataBase qdb;
 
   if (_symbolBox->isChecked())
-    db.symbols(_symbolList);
+  {
+    QList<BarData> l;
+    BarData bd;
+    bd.setExchange("YAHOO");
+    bd.setSymbol("*");
+    if (qdb.search(&bd, l))
+    {
+      qDebug() << "YahooDialog::downloadStart: quote database search error";
+      return;
+    }
+
+    int loop = 0;
+    _symbolList.clear();
+    for (; loop < l.count(); loop++)
+    {
+      BarData tbd = l.at(loop);
+      _symbolList << tbd.symbol();
+    }
+  }
 
   YahooSymbol ys;
   QList<Setting> symbols;

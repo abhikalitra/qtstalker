@@ -170,7 +170,7 @@ void Plot::updatePlot ()
 
   setStartIndex(_startPos);
 
-  if (isVisible())
+//  if (isVisible())
     emit signalIndex(_startPos);
 }
 
@@ -404,6 +404,8 @@ void Plot::setStartIndex (int index)
   _endPos = _startPos + page;
   if (_endPos > (_dateScaleDraw->count() + _dateScaleDraw->count()))
     _endPos = _dateScaleDraw->count() + _dateScaleDraw->count();
+
+//qDebug() << "Plot::setStartIndex" << _startPos << width() << _spacing << _endPos;
 
   setHighLow();
 

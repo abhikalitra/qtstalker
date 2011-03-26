@@ -22,9 +22,8 @@
 #include "YahooSymbolDialog.h"
 #include "Globals.h"
 #include "YahooAddSymbolDialog.h"
-#include "YahooDataBase.h"
+#include "QuoteDataBase.h"
 #include "../pics/add.xpm"
-#include "../pics/delete.xpm"
 #include "../pics/search.xpm"
 #include "../pics/select_all.xpm"
 #include "../pics/unselect_all.xpm"
@@ -47,8 +46,6 @@ YahooSymbolDialog::YahooSymbolDialog (QWidget *p) : Dialog (p)
   createGUI();
 
   loadSettings();
-
-  selectionChanged();
 }
 
 void YahooSymbolDialog::createGUI ()
@@ -60,7 +57,6 @@ void YahooSymbolDialog::createGUI ()
 
   _list = new QListWidget;
   _list->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   _vbox->insertWidget(pos++, _list);
 
   QLabel *label = new QLabel(tr("Search"));
@@ -82,12 +78,6 @@ void YahooSymbolDialog::createGUI ()
   b->setIcon(QIcon(add_xpm));
   tb->addWidget(b);
 
-  _deleteButton = new QToolButton;
-  connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteSymbol()));
-  _deleteButton->setToolTip(tr("Delete Symbol"));
-  _deleteButton->setIcon(QIcon(delete_xpm));
-  tb->addWidget(_deleteButton);
-
   b = new QToolButton;
   connect(b, SIGNAL(clicked()), _list, SLOT(selectAll()));
   b->setToolTip(tr("Select All"));
@@ -108,30 +98,6 @@ void YahooSymbolDialog::addSymbol ()
   dialog->show();
 }
   
-void YahooSymbolDialog::deleteSymbol ()
-{
-  QList<QListWidgetItem *> l = _list->selectedItems();
-  if (! l.count())
-    return;
-
-  YahooDataBase db;
-  db.transaction();
-
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    QListWidgetItem *item = l.at(loop);
-    
-    Setting symbol;
-    symbol.setData("SYMBOL", item->text());
-    db.deleteSymbol(symbol);
-    
-    delete item;
-  }
-
-  db.commit();
-}
-
 void YahooSymbolDialog::loadSettings ()
 {
   Dialog::loadSettings();
@@ -160,28 +126,33 @@ void YahooSymbolDialog::done ()
   accept();
 }
 
-void YahooSymbolDialog::selectionChanged ()
-{
-  QList<QListWidgetItem *> sel = _list->selectedItems();
-  if (! sel.count())
-    _deleteButton->setEnabled(FALSE);
-  else
-    _deleteButton->setEnabled(TRUE);
-}
-
 void YahooSymbolDialog::search ()
 {
   _list->clear();
 
-  YahooDataBase db;
-  QStringList l;
-  if (db.search(_search->text(), l))
+  QList<BarData> l;
+  QuoteDataBase db;
+  BarData bd;
+  bd.setExchange("YAHOO");
+  if (_search->text().isEmpty())
+    bd.setSymbol("*");
+  else
+    bd.setSymbol(_search->text());
+  if (db.search(&bd, l))
   {
     qDebug() << "YahooSymbolDialog::search: db error";
     return;
   }
+
+  int loop = 0;
+  QStringList l2;
+  for (; loop < l.count(); loop++)
+  {
+    BarData tbd = l.at(loop);
+    l2 << tbd.symbol();
+  }
   
-  _list->addItems(l);
+  _list->addItems(l2);
 
   QStringList ml;
   ml << QString::number(l.count()) << tr("Symbols");

@@ -119,68 +119,8 @@ void Setup::setupDefaults ()
   settings.setValue("system_script_directory", sysdir);
 
   // setup the system scripts
-  QString s = sysdir + "ChartPanelAddGroup.pl";
-  settings.setValue("chart_panel_add_group_script", s);
-
-  s = sysdir + "ChartPanelSymbolSearch.pl";
-  settings.setValue("chart_panel_symbol_search_script", s);
-
-  s = sysdir + "ChartPanelDelete.pl";
-  settings.setValue("chart_panel_delete_script", s);
-
-  s = sysdir + "ChartPanelSymbolExport.pl";
-  settings.setValue("chart_panel_symbol_export_script", s);
-
-  s = sysdir + "CrosshairsStatusChanged.pl";
-  settings.setValue("crosshairs_status_changed_script", s);
-
-  s = sysdir + "CrosshairsColor.pl";
-  settings.setValue("crosshairs_color_script", s);
-
-  s = sysdir + "DataWindow.pl";
+  QString s = sysdir + "DataWindow.pl";
   settings.setValue("data_window_script", s);
-
-  s = sysdir + "GridStatusChanged.pl";
-  settings.setValue("grid_status_changed_script", s);
-
-  s = sysdir + "GridColor.pl";
-  settings.setValue("grid_color_script", s);
-
-  s = sysdir + "GroupPanelNewGroup.pl";
-  settings.setValue("group_panel_new_group_script", s);
-
-  s = sysdir + "GroupPanelEditGroup.pl";
-  settings.setValue("group_panel_edit_group_script", s);
-
-  s = sysdir + "GroupPanelDeleteGroup.pl";
-  settings.setValue("group_panel_delete_group_script", s);
-
-  s = sysdir + "GroupPanelAddToGroup.pl";
-  settings.setValue("group_panel_add_to_group_script", s);
-
-  s = sysdir + "IndicatorNew.pl";
-  settings.setValue("indicator_new_script", s);
-
-  s = sysdir + "IndicatorEdit.pl";
-  settings.setValue("indicator_edit_script", s);
-
-  s = sysdir + "IndicatorDelete.pl";
-  settings.setValue("indicator_delete_script", s);
-
-  s = sysdir + "ScriptPanelNewScript.pl";
-  settings.setValue("script_panel_new_script_script", s);
-
-  s = sysdir + "ScriptPanelEditScript.pl";
-  settings.setValue("script_panel_edit_script_script", s);
-
-  s = sysdir + "ScriptPanelDeleteScript.pl";
-  settings.setValue("script_panel_delete_script_script", s);
-
-  s = sysdir + "ScriptPanelRunScript.pl";
-  settings.setValue("script_panel_run_script_script", s);
-
-  s = sysdir + "Configure.pl";
-  settings.setValue("configure_script", s);
 
   settings.sync();
 }

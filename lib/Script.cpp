@@ -52,6 +52,8 @@ Script::~Script ()
   if (_indicatorFlag)
     delete _indicator;
 
+  _proc->terminate();
+
 //qDebug() << "Script::~Script:" << _name << "deleted";
 }
 

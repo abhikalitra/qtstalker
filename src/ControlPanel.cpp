@@ -32,6 +32,7 @@
 ControlPanel::ControlPanel ()
 {
   _lockStatus = TRUE;
+  _startFlag = FALSE;
   createGUI();
 }
 
@@ -147,6 +148,7 @@ void ControlPanel::setStart (int count, int, int)
   _slider->blockSignals(TRUE);
   _slider->setRange(0, count - 1);
   _slider->blockSignals(FALSE);
+  _startFlag = FALSE;
 }
 
 int ControlPanel::getValue ()
@@ -161,9 +163,15 @@ void ControlPanel::setValue (int d)
 
 void ControlPanel::setStartValue (int d)
 {
+  if (_startFlag)
+    return;
+  
   _slider->blockSignals(TRUE);
   _slider->setValue(d);
   _slider->blockSignals(FALSE);
+
+  _startFlag = TRUE;
+//qDebug() << "ControlPanel::setStartValue" << d;
 }
 
 void ControlPanel::sliderChanged (int d)

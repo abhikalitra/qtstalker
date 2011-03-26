@@ -1105,4 +1105,10 @@
 20110325:  Added settings dialogs for the indicators. Changed the indicator scripting back to using
            the CUS indicator.
 
+20110326:  Fixed bar spacing startup error.
+
+           Fixed new indicator bar spacing and index position error.
+
+           Removed yahoo database. Not needed anymore.
+
 

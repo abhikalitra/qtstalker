@@ -371,6 +371,30 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>CUSDialog</name>
+    <message>
+        <source>Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The interpreter command line and any switches required.
+eg. perl -l -T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The script location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CandlePatternDialog</name>
     <message>
         <source>Indicator</source>
@@ -1489,20 +1513,20 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA Type</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Style</source>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MAMADialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
@@ -1516,14 +1540,6 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Slow Limit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Oscillator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1532,20 +1548,28 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
+        <source>Slow Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label</source>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MAVPDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
@@ -1555,54 +1579,46 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
+        <source>MA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label</source>
+        <source>Min Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MFIDialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1615,10 +1631,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Smoothing Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1626,20 +1638,12 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MOMDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
@@ -1657,19 +1661,11 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Smoothing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Smoothing Type</source>
+        <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1740,10 +1736,6 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>PODialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1764,19 +1756,15 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MA Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
+        <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1968,10 +1956,6 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>ROCDialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1992,14 +1976,6 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Smoothing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2007,13 +1983,13 @@ qtstalker.sourceforge.net</source>
         <source>Smoothing Type</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RSIDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
@@ -2039,27 +2015,11 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2100,10 +2060,6 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>SARDialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2112,15 +2068,27 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label</source>
+        <source>Initial Step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Initial</source>
+        <source>Maximum Step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Max</source>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2136,54 +2104,7 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>STOCHDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>STOCHRSIDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
@@ -2201,50 +2122,26 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ref 1</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ref 2</source>
+        <source>Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smoothing Type</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>STOCHSDialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast K Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow K Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2252,11 +2149,30 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
+        <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label</source>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slow Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>STOCH_FASTDialog</name>
+    <message>
+        <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2264,24 +2180,24 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>SZDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
@@ -2299,19 +2215,27 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No Decline Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Coefficient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2608,10 +2532,6 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>T3Dialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2632,22 +2552,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>THERMDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2659,15 +2564,14 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Threshold Color</source>
+        <source>Neutral Color</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>THERMDialog</name>
     <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Threshold</source>
+        <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2679,36 +2583,16 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>THERM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TRIXDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
@@ -2726,11 +2610,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2864,23 +2744,11 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>ULTOSCDialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2896,33 +2764,17 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ref 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ref 3</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>VARDialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2939,21 +2791,13 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>VFIDialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2966,20 +2810,12 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>VIDYADialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
@@ -2993,19 +2829,27 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>V Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
+        <source>Volume Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label</source>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Neutral Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3059,10 +2903,6 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>WILLRDialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3075,11 +2915,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Label</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

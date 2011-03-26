@@ -79,6 +79,7 @@ class ControlPanel : public QWidget
     CrossHairsButton *_crossHairsButton;
     DataWindowButton *_dataWindowButton;
     ConfigureButton *_configureButton;
+    int _startFlag;
 };
 
 #endif

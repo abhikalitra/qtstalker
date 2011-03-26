@@ -35,7 +35,15 @@ BarSpaceButton::BarSpaceButton ()
   _minSpace = 3;
   
   QSettings settings(g_localSettings);
-  _pixelSpace = settings.value("pixelspace", 8).toInt();
+  QString s = settings.value("pixelspace").toString();
+  if (s.isEmpty())
+  {
+    _pixelSpace = 8;
+    settings.setValue("pixelspace", _pixelSpace);
+    settings.sync();
+  }
+  else
+    _pixelSpace = settings.value("pixelspace").toInt();
   
   createMenu();
   

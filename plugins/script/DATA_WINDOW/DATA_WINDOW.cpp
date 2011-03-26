@@ -59,9 +59,9 @@ int DATA_WINDOW::command (Command *command)
     i->load();
     i->calculate();
 
-    QEventLoop e;
-    connect(i, SIGNAL(signalPlot()), &e, SLOT(quit()));
-    e.exec();
+//    QEventLoop e;
+//    connect(i, SIGNAL(signalPlot()), &e, SLOT(quit()));
+//    e.exec();
 
     dw->setData(i);
   }

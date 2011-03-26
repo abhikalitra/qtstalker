@@ -109,9 +109,9 @@ void NewIndicatorDialog::loadSettings ()
   db.plugins(l);
   _indicator->addItems(l);
 
-  db.indicators(l);
+  db.indicators(_items);
   _name->clear();
-  _name->addItems(l);
+  _name->addItems(_items);
   _name->clearEditText();
 }
 

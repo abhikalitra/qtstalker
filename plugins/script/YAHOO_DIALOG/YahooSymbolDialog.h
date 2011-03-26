@@ -42,14 +42,11 @@ class YahooSymbolDialog : public Dialog
   public slots:
     void loadSettings ();
     void addSymbol ();
-    void deleteSymbol ();
     void done ();
-    void selectionChanged ();
     void search ();
 
   private:
     QListWidget *_list;
-    QToolButton *_deleteButton;
     QLineEdit *_search;
 };
 

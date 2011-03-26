@@ -52,6 +52,8 @@
 
 QtstalkerApp::QtstalkerApp (QString session, QString asset)
 {
+  _clAsset = asset;
+  
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutDown()));
 
   setWindowIcon(QIcon(qtstalker_xpm));
@@ -69,30 +71,7 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
 
   setWindowTitle(getWindowCaption());
 
-  setSliderStart(g_barData->count());
-
-  // expose hidden charts so they plot properly (simple hack)
-//  QTimer::singleShot(500, this, SLOT(fixDockTabs()));
-
-  // check if we are going to display a chart from the command line
-  if (asset.length())
-  {
-    _clAsset = asset;
-//    QTimer::singleShot(500, this, SLOT(commandLineAsset()));
-    commandLineAsset();
-  }
-  else
-  {
-    // display last viewed chart
-    QSettings settings(g_localSettings);
-    BarData bd;
-    bd.setExchange(settings.value("last_symbol_exchange").toString());
-    bd.setSymbol(settings.value("last_symbol_symbol").toString());
-    loadChart(bd);
-  }
-
-  // expose hidden charts so they plot properly (simple hack)
-  QTimer::singleShot(100, this, SLOT(fixDockTabs()));
+  QTimer::singleShot(100, this, SLOT(afterStartup()));
 }
 
 void QtstalkerApp::shutDown ()
@@ -105,7 +84,6 @@ void QtstalkerApp::shutDown ()
 
   // delete all the non-parented objects
   delete g_barData;
-//  delete g_middleMan;
 }
 
 void QtstalkerApp::createGUI ()
@@ -373,10 +351,19 @@ void QtstalkerApp::addPlot (QString indicator)
 void QtstalkerApp::addNewPlot (QString indicator)
 {
   addPlot(indicator);
-  Plot *p = _plots.value(indicator);
+  _newIndicator = indicator;
+
+  // we need to make sure plot widget has shown before we start drawing
+  QTimer::singleShot(100, this, SLOT(addNewPlot2()));
+}
+
+void QtstalkerApp::addNewPlot2 ()
+{
+  Plot *p = _plots.value(_newIndicator);
   if (! p)
     return;
   p->indicator()->calculate();
+  p->setStartIndex(_controlPanel->getValue());
 }
 
 void QtstalkerApp::deletePlot (QStringList l)
@@ -440,4 +427,23 @@ void QtstalkerApp::updatePlot (QString d)
   Indicator *i = p->indicator();
   i->load();
   i->calculate();
+}
+
+void QtstalkerApp::afterStartup ()
+{
+  // expose hidden charts so they plot properly (simple hack)
+  fixDockTabs();
+  
+  // check if we are going to display a chart from the command line
+  if (! _clAsset.isEmpty())
+    commandLineAsset();
+  else
+  {
+    // display last viewed chart
+    QSettings settings(g_localSettings);
+    BarData bd;
+    bd.setExchange(settings.value("last_symbol_exchange").toString());
+    bd.setSymbol(settings.value("last_symbol_symbol").toString());
+    loadChart(bd);
+  }
 }
