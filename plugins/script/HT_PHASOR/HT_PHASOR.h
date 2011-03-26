@@ -22,20 +22,34 @@
 #ifndef HT_PHASOR_HPP
 #define HT_PHASOR_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class HT_PHASOR : public ScriptPlugin
+class HT_PHASOR : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR_PHASE = 10,
+      _COLOR_QUAD = 20,
+      _STYLE_PHASE = 30,
+      _STYLE_QUAD = 40,
+      _LABEL_PHASE = 50,
+      _LABEL_QUAD = 60,
+      _INPUT = 70
+    };
+
     HT_PHASOR ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

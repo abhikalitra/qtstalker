@@ -22,9 +22,9 @@
 #ifndef INDICATOR_DATABASE_LIST_HPP
 #define INDICATOR_DATABASE_LIST_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class INDICATOR_DATABASE_LIST : public ScriptPlugin
+class INDICATOR_DATABASE_LIST : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class INDICATOR_DATABASE_LIST : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

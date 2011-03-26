@@ -35,15 +35,21 @@ class Setting
   public:
     Setting ();
     void setData (QString, QString);
+    void setData (int, QString);
     void setData (QString, int);
+    void setData (int, int);
     void setData (QString, double);
+    void setData (int, double);
     void setData (QString, QColor);
     void setData (QString, QDateTime);
     void setData (QString, QFont);
     
     QString data (QString);
+    QString data (int);
     double getDouble (QString);
+    double getDouble (int);
     int getInt (QString);
+    int getInt (int);
     QDateTime dateTime (QString);
     QColor color (QString);
     QFont font (QString);

@@ -22,9 +22,9 @@
 #ifndef PO_HPP
 #define PO_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class PO : public ScriptPlugin
+class PO : public Plugin
 {
   Q_OBJECT
 
@@ -35,17 +35,32 @@ class PO : public ScriptPlugin
       _PPO
     };
 
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _PERIOD_FAST = 40,
+      _PERIOD_SLOW = 50,
+      _MA_TYPE = 60,
+      _INPUT = 70,
+      _METHOD = 80
+    };
+
     PO ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
+    QStringList method ();
 
   private:
     QStringList _method;
-    QStringList _maList;
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

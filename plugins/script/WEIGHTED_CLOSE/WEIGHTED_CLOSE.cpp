@@ -108,8 +108,8 @@ int WEIGHTED_CLOSE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   WEIGHTED_CLOSE *o = new WEIGHTED_CLOSE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

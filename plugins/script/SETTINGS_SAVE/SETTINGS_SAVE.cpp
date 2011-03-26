@@ -49,8 +49,8 @@ int SETTINGS_SAVE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SETTINGS_SAVE *o = new SETTINGS_SAVE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

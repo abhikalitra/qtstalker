@@ -43,8 +43,8 @@ int SYMBOL_CURRENT::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SYMBOL_CURRENT *o = new SYMBOL_CURRENT;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

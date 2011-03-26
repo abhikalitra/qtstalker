@@ -45,8 +45,8 @@ int PLOT_NEW::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   PLOT_NEW *o = new PLOT_NEW;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

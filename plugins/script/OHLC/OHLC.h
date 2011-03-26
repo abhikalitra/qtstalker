@@ -22,20 +22,32 @@
 #ifndef OHLC_HPP
 #define OHLC_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class OHLC : public ScriptPlugin
+class OHLC : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR_UP = 10,
+      _COLOR_DOWN = 20,
+      _COLOR_NEUTRAL = 30,
+      _LABEL = 40,
+      _STYLE = 50
+    };
+
     OHLC ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

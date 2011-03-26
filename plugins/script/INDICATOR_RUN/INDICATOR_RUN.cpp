@@ -61,8 +61,8 @@ int INDICATOR_RUN::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_RUN *o = new INDICATOR_RUN;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -24,12 +24,12 @@
 
 #include <QList>
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 #include "Curve.h"
 #include "Operator.h"
 #include "Setting.h"
 
-class TEST : public ScriptPlugin
+class TEST : public Plugin
 {
   public:
     enum Status
@@ -89,7 +89,7 @@ class TEST : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

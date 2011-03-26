@@ -34,6 +34,7 @@ class IndicatorDataBase
     int save (Indicator *);
     int deleteIndicator (QStringList &);
     int indicators (QStringList &);
+    int plugins (QStringList &);
 };
 
 #endif

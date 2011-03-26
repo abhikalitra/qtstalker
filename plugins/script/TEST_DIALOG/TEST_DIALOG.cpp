@@ -45,8 +45,8 @@ int TEST_DIALOG::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   TEST_DIALOG *o = new TEST_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

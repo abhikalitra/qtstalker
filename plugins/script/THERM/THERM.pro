@@ -3,5 +3,7 @@
 } 
 
 HEADERS += THERM.h
+HEADERS += THERMDialog.h
 
 SOURCES += THERM.cpp
+SOURCES += THERMDialog.cpp

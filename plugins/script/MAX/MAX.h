@@ -22,9 +22,9 @@
 #ifndef MAX_HPP
 #define MAX_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class MAX : public ScriptPlugin
+class MAX : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class MAX : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -53,8 +53,8 @@ int INDICATOR_DATABASE_LIST::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_DATABASE_LIST *o = new INDICATOR_DATABASE_LIST;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

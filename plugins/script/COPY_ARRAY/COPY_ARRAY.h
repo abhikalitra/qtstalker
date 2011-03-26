@@ -22,9 +22,9 @@
 #ifndef COPY_ARRAY_HPP
 #define COPY_ARRAY_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class COPY_ARRAY : public ScriptPlugin
+class COPY_ARRAY : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class COPY_ARRAY : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

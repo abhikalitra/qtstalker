@@ -136,8 +136,8 @@ int STDDEV::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   STDDEV *o = new STDDEV;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

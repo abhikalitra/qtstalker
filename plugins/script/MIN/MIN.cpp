@@ -127,8 +127,8 @@ int MIN::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   MIN *o = new MIN;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

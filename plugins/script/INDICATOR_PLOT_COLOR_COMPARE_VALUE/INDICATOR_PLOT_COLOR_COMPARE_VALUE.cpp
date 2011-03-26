@@ -117,8 +117,8 @@ int INDICATOR_PLOT_COLOR_COMPARE_VALUE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT_COLOR_COMPARE_VALUE *o = new INDICATOR_PLOT_COLOR_COMPARE_VALUE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

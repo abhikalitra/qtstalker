@@ -52,8 +52,8 @@ int SCRIPT_DATABASE_LIST::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SCRIPT_DATABASE_LIST *o = new SCRIPT_DATABASE_LIST;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

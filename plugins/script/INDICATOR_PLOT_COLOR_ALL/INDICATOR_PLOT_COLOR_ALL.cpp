@@ -66,8 +66,8 @@ int INDICATOR_PLOT_COLOR_ALL::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT_COLOR_ALL *o = new INDICATOR_PLOT_COLOR_ALL;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -22,9 +22,9 @@
 #ifndef PLOT_DELETE_HPP
 #define PLOT_DELETE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class PLOT_DELETE : public ScriptPlugin
+class PLOT_DELETE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class PLOT_DELETE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -22,9 +22,9 @@
 #ifndef MEDIAN_PRICE_HPP
 #define MEDIAN_PRICE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class MEDIAN_PRICE : public ScriptPlugin
+class MEDIAN_PRICE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class MEDIAN_PRICE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

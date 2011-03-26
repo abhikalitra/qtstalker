@@ -3,5 +3,7 @@
 } 
 
 HEADERS += ULTOSC.h
+HEADERS += ULTOSCDialog.h
 
 SOURCES += ULTOSC.cpp
+SOURCES += ULTOSCDialog.cpp

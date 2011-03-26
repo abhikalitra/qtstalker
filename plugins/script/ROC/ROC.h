@@ -22,9 +22,9 @@
 #ifndef ROC_HPP
 #define ROC_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class ROC : public ScriptPlugin
+class ROC : public Plugin
 {
   Q_OBJECT
 
@@ -37,8 +37,24 @@ class ROC : public ScriptPlugin
       _ROCR100
     };
 
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _PERIOD = 40,
+      _SMOOTHING = 50,
+      _SMOOTHING_TYPE = 60,
+      _INPUT = 70,
+      _METHOD = 80
+    };
+
     ROC ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
+    QStringList method ();
 
   protected:
     QStringList _method;
@@ -46,7 +62,7 @@ class ROC : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

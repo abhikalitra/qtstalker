@@ -23,6 +23,9 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "PODialog.h"
+#include "InputType.h"
+#include "MAType.h"
 
 #include <QtDebug>
 
@@ -30,11 +33,85 @@ PO::PO ()
 {
   _plugin = "PO";
   _method << "APO" << "PPO";
-  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("PO::PO: error on TA_Initialize");
+}
+
+int PO::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int fast = settings->getInt(_PERIOD_FAST);
+  int slow = settings->getInt(_PERIOD_SLOW);
+
+  MAType mat;
+  int type = mat.fromString(settings->data(_MA_TYPE));
+
+  InputType itypes;
+  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  int method = _method.indexOf(settings->data(_METHOD));
+
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  delete in;
+  
+  TA_RetCode rc = TA_SUCCESS;
+  switch ((Method) method)
+  {
+    case _APO:
+      rc = TA_APO(0, size - 1, &input[0], fast, slow, (TA_MAType) type, &outBeg, &outNb, &out[0]);
+      break;
+    case _PPO:
+      rc = TA_PPO(0, size - 1, &input[0], fast, slow, (TA_MAType) type, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int PO::command (Command *command)
@@ -91,7 +168,8 @@ int PO::command (Command *command)
     return 1;
   }
 
-  int type = _maList.indexOf(command->parm("MA_TYPE"));
+  MAType mat;
+  int type = mat.fromString(command->parm("MA_TYPE"));
   if (type == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE" << command->parm("MA_TYPE");
@@ -156,12 +234,37 @@ int PO::command (Command *command)
   return 0;
 }
 
+void PO::dialog (QWidget *p, Indicator *i)
+{
+  PODialog *dialog = new PODialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void PO::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Histogram Bar");
+  set->setData(_PERIOD_FAST, 12);
+  set->setData(_PERIOD_SLOW, 26);
+  set->setData(_MA_TYPE, "EMA");
+  set->setData(_INPUT, "Close");
+  set->setData(_METHOD, "APO");
+}
+
+QStringList PO::method ()
+{
+  return _method;
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   PO *o = new PO;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

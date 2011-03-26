@@ -21,22 +21,67 @@
 
 #include "VIDYA.h"
 #include "Globals.h"
+#include "ta_libc.h"
+#include "InputType.h"
+#include "VIDYADialog.h"
 
 #include <QtDebug>
-#include "ta_libc.h"
 #include <cmath>
 #include <QVector>
 
 #define PI 3.14159265
 
-
 VIDYA::VIDYA ()
 {
   _plugin = "VIDYA";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("VIDYA::VIDYA: error on TA_Initialize");
+}
+
+int VIDYA::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_PERIOD);
+  int vperiod = settings->getInt(_VPERIOD);
+
+  InputType it;
+  Curve *in = it.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  // create bars
+  Curve *bars = it.ohlc(bd,
+			QColor(settings->data(_COLOR_BARS_UP)),
+			QColor(settings->data(_COLOR_BARS_DOWN)),
+			QColor(settings->data(_COLOR_BARS_NEUTRAL)));
+  if (settings->data(_STYLE_BARS) == "OHLC")
+    bars->setType(Curve::OHLC);
+  else
+    bars->setType(Curve::Candle);
+  bars->setLabel("BARS");
+  bars->setZ(0);
+  i->setLine("BARS", bars);
+
+  Curve *line = getVIDYA(in, period, vperiod);
+  if (! line)
+  {
+    delete in;
+    return 1;
+  }
+
+  delete in;
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(1);
+  i->setLine(settings->data(_LABEL), line);
+  
+  return 0;  
 }
 
 int VIDYA::command (Command *command)
@@ -87,9 +132,23 @@ int VIDYA::command (Command *command)
   if (in->count() < period || in->count() < vperiod)
     return 1;
 
+  line = getVIDYA(in, period, vperiod);
+  if (! line)
+    return 1;
+
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * VIDYA::getVIDYA (Curve *in, int period, int vperiod)
+{
   Curve *cmo = getCMO(in, vperiod);
   if (! cmo)
-    return 1;
+    return 0;
 
   Curve *out = new Curve;
 
@@ -140,12 +199,7 @@ int VIDYA::command (Command *command)
   delete vidya;
   delete cmo;
 
-  out->setLabel(name);
-  i->setLine(name, out);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return out;
 }
 
 Curve * VIDYA::getCMO (Curve *in, int period)
@@ -195,12 +249,34 @@ Curve * VIDYA::getCMO (Curve *in, int period)
   return line;
 }
 
+void VIDYA::dialog (QWidget *p, Indicator *i)
+{
+  VIDYADialog *dialog = new VIDYADialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void VIDYA::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Line");
+  set->setData(_PERIOD, 10);
+  set->setData(_VPERIOD, 10);
+  set->setData(_INPUT, "Close");
+  set->setData(_STYLE_BARS, "OHLC");
+  set->setData(_COLOR_BARS_UP, "green");
+  set->setData(_COLOR_BARS_DOWN, "red");
+  set->setData(_COLOR_BARS_NEUTRAL, "dimgray");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   VIDYA *o = new VIDYA;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

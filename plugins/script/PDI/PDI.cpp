@@ -164,8 +164,8 @@ int PDI::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   PDI *o = new PDI;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

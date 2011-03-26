@@ -129,8 +129,8 @@ int CHART_OBJECT_SELL::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CHART_OBJECT_SELL *o = new CHART_OBJECT_SELL;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

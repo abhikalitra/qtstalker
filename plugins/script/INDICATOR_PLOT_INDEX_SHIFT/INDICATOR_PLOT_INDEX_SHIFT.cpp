@@ -92,8 +92,8 @@ int INDICATOR_PLOT_INDEX_SHIFT::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT_INDEX_SHIFT *o = new INDICATOR_PLOT_INDEX_SHIFT;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

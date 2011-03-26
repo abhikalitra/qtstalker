@@ -92,8 +92,8 @@ int NORMALIZE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   NORMALIZE *o = new NORMALIZE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

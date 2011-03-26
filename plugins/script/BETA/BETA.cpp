@@ -23,16 +23,120 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "BETADialog.h"
+#include "InputType.h"
+#include "QuoteDataBase.h"
 
 #include <QtDebug>
 
 BETA::BETA ()
 {
   _plugin = "BETA";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("BETA::BETA: error on TA_Initialize");
+}
+
+int BETA::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+  int period = settings->getInt(_PERIOD);
+  
+  InputType it;
+  Curve *in = it.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  BarData tbd;
+  tbd.setKey(settings->data(_INDEX));
+  tbd.setRange(bd->range());
+  tbd.setBarLength(bd->barLength());
+  tbd.setStartDate(bd->startDate());
+  tbd.setEndDate(bd->endDate());
+
+  QuoteDataBase db;
+  if (db.getBars(&tbd))
+  {
+    delete in;
+    return 1;
+  }
+  
+  Curve *in2 = it.input(&tbd, "Close");
+  if (! in2)
+  {
+    delete in;
+    return 1;
+  }
+
+  QList<int> keys;
+  int size = in->count();
+  if (in2->count() < size)
+  {
+    size = in2->count();
+    in2->keys(keys);
+  }
+  else
+    in->keys(keys);
+
+  TA_Real input[size];
+  TA_Real input2[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    if (! bar)
+      continue;
+
+    CurveBar *bar2 = in2->bar(keys.at(loop));
+    if (! bar2)
+      continue;
+
+    input[loop] = (TA_Real) bar->data();
+    input2[loop] = (TA_Real) bar2->data();
+  }
+
+  delete in;
+  delete in2;
+  
+  TA_RetCode rc = TA_BETA(0,
+                          size - 1,
+                          &input[0],
+                          &input2[0],
+                          period,
+                          &outBeg,
+                          &outNb,
+                          &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int BETA::command (Command *command)
@@ -148,12 +252,30 @@ int BETA::command (Command *command)
   return 0;
 }
 
+void BETA::dialog (QWidget *p, Indicator *i)
+{
+  BETADialog *dialog = new BETADialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void BETA::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, QString("red"));
+  set->setData(_LABEL, QString("BETA"));
+  set->setData(_STYLE, QString("Histogram Bar"));
+  set->setData(_INPUT, QString("Close"));
+  set->setData(_PERIOD, 5);
+  set->setData(_INDEX, QString("YAHOO:SPY"));
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   BETA *o = new BETA;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

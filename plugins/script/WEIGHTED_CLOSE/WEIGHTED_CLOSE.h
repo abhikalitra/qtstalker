@@ -22,9 +22,9 @@
 #ifndef WEIGHTED_CLOSE_HPP
 #define WEIGHTED_CLOSE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class WEIGHTED_CLOSE : public ScriptPlugin
+class WEIGHTED_CLOSE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class WEIGHTED_CLOSE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

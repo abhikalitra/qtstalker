@@ -53,6 +53,8 @@ class MiddleMan: public QObject
 
   public:
     MiddleMan (QObject *);
+
+  public slots:
     void chartPanelRefresh ();
     void chartPanelSearch (QString, QString);
     void groupPanelRefresh ();

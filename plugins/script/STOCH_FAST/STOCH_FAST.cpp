@@ -23,17 +23,115 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "MAType.h"
+#include "STOCH_FASTDialog.h"
 
 #include <QtDebug>
 
 STOCH_FAST::STOCH_FAST ()
 {
   _plugin = "STOCH_FAST";
-  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("STOCH_FAST::STOCH_FAST: error on TA_Initialize");
+}
+
+int STOCH_FAST::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int kperiod = settings->getInt(_PERIOD_FASTK);
+  int dperiod = settings->getInt(_PERIOD_FASTD);
+
+  MAType mat;
+  int type = mat.fromString(settings->data(_MA_TYPE_FASTD));
+  
+  int size = bd->count();
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    high[loop] = (TA_Real) bar->high();
+    low[loop] = (TA_Real) bar->low();
+    close[loop] = (TA_Real) bar->close();
+  }
+
+  TA_RetCode rc = TA_STOCHF(0,
+                            size - 1,
+                            &high[0],
+                            &low[0],
+                            &close[0],
+                            kperiod,
+                            dperiod,
+                            (TA_MAType) type,
+                            &outBeg,
+                            &outNb,
+                            &out[0],
+                            &out2[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *kline = new Curve;
+  Curve *dline = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    kline->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dline->setBar(dataLoop, new CurveBar(out2[outLoop]));
+
+    dataLoop--;
+    outLoop--;
+  }
+
+  kline->setAllColor(QColor(settings->data(_COLOR_K)));
+  kline->setLabel(settings->data(_LABEL_K));
+  kline->setType((Curve::Type) kline->typeFromString(settings->data(_STYLE_K)));
+  kline->setZ(0);
+  i->setLine(settings->data(_LABEL_K), kline);
+  
+  dline->setAllColor(QColor(settings->data(_COLOR_D)));
+  dline->setLabel(settings->data(_LABEL_D));
+  dline->setType((Curve::Type) dline->typeFromString(settings->data(_STYLE_D)));
+  dline->setZ(1);
+  i->setLine(settings->data(_LABEL_D), dline);
+
+  // create ref1 line
+  Setting co;
+  QString key = "-" + QString::number(i->chartObjectCount() + 1);
+  co.setData("Type", QString("HLine"));
+  co.setData("ID", key);
+  co.setData("RO", 1);
+  co.setData("Price", settings->data(_REF1));
+  co.setData("Color", settings->data(_COLOR_REF1));
+  i->addChartObject(co);
+
+  // create ref2 line
+  key = "-" + QString::number(i->chartObjectCount() + 1);
+  co.setData("ID", key);
+  co.setData("Price", settings->data(_REF2));
+  co.setData("Color", settings->data(_COLOR_REF2));
+  i->addChartObject(co);
+
+  return 0;
 }
 
 int STOCH_FAST::command (Command *command)
@@ -107,7 +205,8 @@ int STOCH_FAST::command (Command *command)
     return 1;
   }
 
-  int type = _maList.indexOf(command->parm("MA_TYPE_FASTD"));
+  MAType mat;
+  int type = mat.fromString(command->parm("MA_TYPE_FASTD"));
   if (type == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_FASTD" << command->parm("MA_TYPE_FASTD");
@@ -191,12 +290,37 @@ int STOCH_FAST::command (Command *command)
   return 0;
 }
 
+void STOCH_FAST::dialog (QWidget *p, Indicator *i)
+{
+  STOCH_FASTDialog *dialog = new STOCH_FASTDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void STOCH_FAST::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR_K, "red");
+  set->setData(_LABEL_K, "%K");
+  set->setData(_STYLE_K, "Line");
+  set->setData(_COLOR_D, "yellow");
+  set->setData(_LABEL_D, "%D");
+  set->setData(_STYLE_D, "Line");
+  set->setData(_PERIOD_FASTK, 5);
+  set->setData(_PERIOD_FASTD, 3);
+  set->setData(_COLOR_REF1, "white");
+  set->setData(_REF1, 20);
+  set->setData(_COLOR_REF2, "white");
+  set->setData(_REF2, 80);
+  set->setData(_MA_TYPE_FASTD, "EMA");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   STOCH_FAST *o = new STOCH_FAST;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

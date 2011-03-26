@@ -63,8 +63,8 @@ int MESSAGE_DIALOG::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   MESSAGE_DIALOG *o = new MESSAGE_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

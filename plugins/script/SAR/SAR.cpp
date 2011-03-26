@@ -23,16 +23,88 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "SARDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
 SAR::SAR ()
 {
   _plugin = "SAR";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("SAR::SAR: error on TA_Initialize");
+}
+
+int SAR::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  double init = settings->getDouble(_STEP_INITIAL);
+  double max = settings->getDouble(_STEP_MAX);
+
+  // create bars
+  InputType it;
+  Curve *bars = it.ohlc(bd,
+			QColor(settings->data(_COLOR_BARS_UP)),
+			QColor(settings->data(_COLOR_BARS_DOWN)),
+			QColor(settings->data(_COLOR_BARS_NEUTRAL)));
+  if (settings->data(_STYLE_BARS) == "OHLC")
+    bars->setType(Curve::OHLC);
+  else
+    bars->setType(Curve::Candle);
+  bars->setLabel("BARS");
+  bars->setZ(0);
+  i->setLine("BARS", bars);
+
+  int size = bd->count();
+  TA_Real out[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    high[loop] = (TA_Real) bar->high();
+    low[loop] = (TA_Real) bar->low();
+  }
+
+  TA_RetCode rc = TA_SAR(0,
+                         size - 1,
+                         &high[0],
+                         &low[0],
+                         init,
+                         max,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve(Curve::Dot);
+
+  loop = 0;
+  for (; loop < outNb; loop++)
+    line->setBar(loop + 1, new CurveBar(out[loop]));
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setZ(1);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int SAR::command (Command *command)
@@ -144,12 +216,32 @@ int SAR::command (Command *command)
   return 0;
 }
 
+void SAR::dialog (QWidget *p, Indicator *i)
+{
+  SARDialog *dialog = new SARDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void SAR::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "white");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STEP_INITIAL, 0.02);
+  set->setData(_STEP_MAX, 0.2);
+  set->setData(_STYLE_BARS, "OHLC");
+  set->setData(_COLOR_BARS_UP, "green");
+  set->setData(_COLOR_BARS_DOWN, "red");
+  set->setData(_COLOR_BARS_NEUTRAL, "dimgray");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SAR *o = new SAR;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -55,6 +55,7 @@ class ControlPanel : public QWidget
     DateRangeControl * dateRangeControl ();
     RecentCharts * recentCharts ();
     RefreshButton * refreshButton ();
+    ConfigureButton * configureButton ();
     QSlider * slider ();
     
   public slots:

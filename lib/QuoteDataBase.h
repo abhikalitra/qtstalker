@@ -44,6 +44,7 @@ class QuoteDataBase
     int rename (BarData *osymbol, BarData *nsymbol);
     int search (BarData *bd, QList<BarData> &l);
     int setName (BarData *);
+    int dump (BarData *, QString);
 
   private:
     QSqlDatabase _db;

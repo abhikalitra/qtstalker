@@ -55,8 +55,8 @@ int INDICATOR_EDIT_DIALOG::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_EDIT_DIALOG *o = new INDICATOR_EDIT_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

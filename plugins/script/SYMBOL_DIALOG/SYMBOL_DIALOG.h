@@ -22,9 +22,9 @@
 #ifndef SYMBOL_DIALOG_HPP
 #define SYMBOL_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SYMBOL_DIALOG : public ScriptPlugin
+class SYMBOL_DIALOG : public Plugin
 {
   Q_OBJECT
 
@@ -41,7 +41,7 @@ class SYMBOL_DIALOG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

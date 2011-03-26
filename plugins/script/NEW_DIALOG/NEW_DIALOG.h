@@ -19,23 +19,29 @@
  *  USA.
  */
 
-#ifndef NEW_DIALOG_HPP
-#define NEW_DIALOG_HPP
+#ifndef SCRIPT_NEW_DIALOG_HPP
+#define SCRIPT_NEW_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class NEW_DIALOG : public ScriptPlugin
+class NEW_DIALOG : public Plugin
 {
   Q_OBJECT
 
   public:
     NEW_DIALOG ();
     int command (Command *);
+
+  public slots:
+    void command2 (QString);
+
+  private:
+    Command *_command;
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -45,8 +45,8 @@ int INPUT_DIALOG::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INPUT_DIALOG *o = new INPUT_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

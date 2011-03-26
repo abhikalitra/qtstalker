@@ -174,8 +174,8 @@ int INDICATOR_PLOT_COLOR_COMPARE_INDEX::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT_COLOR_COMPARE_INDEX *o = new INDICATOR_PLOT_COLOR_COMPARE_INDEX;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

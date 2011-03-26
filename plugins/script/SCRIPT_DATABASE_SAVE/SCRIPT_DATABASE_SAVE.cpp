@@ -85,8 +85,8 @@ int SCRIPT_DATABASE_SAVE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SCRIPT_DATABASE_SAVE *o = new SCRIPT_DATABASE_SAVE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

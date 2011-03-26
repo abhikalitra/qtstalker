@@ -22,20 +22,32 @@
 #ifndef TRIX_HPP
 #define TRIX_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class TRIX : public ScriptPlugin
+class TRIX : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _PERIOD = 40,
+      _INPUT = 50
+    };
+
     TRIX ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

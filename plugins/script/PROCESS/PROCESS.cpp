@@ -50,8 +50,8 @@ int PROCESS::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   PROCESS *o = new PROCESS;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

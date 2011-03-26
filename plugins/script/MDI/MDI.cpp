@@ -164,8 +164,8 @@ int MDI::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   MDI *o = new MDI;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -22,9 +22,9 @@
 #ifndef GROUP_DATABASE_LIST_HPP
 #define GROUP_DATABASE_LIST_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class GROUP_DATABASE_LIST : public ScriptPlugin
+class GROUP_DATABASE_LIST : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class GROUP_DATABASE_LIST : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -32,6 +32,9 @@
 #include "THERM.h"
 #include "Curve.h"
 #include "Globals.h"
+#include "THERMDialog.h"
+#include "InputType.h"
+#include "MAType.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -39,6 +42,49 @@
 THERM::THERM ()
 {
   _plugin = "THERM";
+  _type = _INDICATOR;
+}
+
+int THERM::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  InputType it;
+  Curve *high = it.input(bd, "High");
+  if (! high)
+    return 1;
+
+  Curve *low = it.input(bd, "Low");
+  if (! low)
+  {
+    delete high;
+    return 1;
+  }
+
+  Curve *line = getTHERM(high, low);
+
+  delete high;
+  delete low;
+
+  int smoothing = settings->getInt(_SMOOTHING);
+  if (smoothing > 1)
+  {
+    MAType mat;
+    Curve *ma = mat.getMA(line, smoothing, mat.fromString(settings->data(_SMOOTHING_TYPE)));
+    if (ma)
+    {
+      delete line;
+      line = ma;
+    }
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int THERM::command (Command *command)
@@ -77,7 +123,19 @@ int THERM::command (Command *command)
     return 1;
   }
 
-  line = new Curve;
+  line = getTHERM(ihigh, ilow);
+
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * THERM::getTHERM (Curve *ihigh, Curve *ilow)
+{
+  Curve *line = new Curve;
 
   double thermometer = 0;
   int ipos = 0;
@@ -114,20 +172,32 @@ int THERM::command (Command *command)
     line->setBar(ipos, new CurveBar(thermometer));
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
+  return line;
+}
 
-  command->setReturnCode("0");
+void THERM::dialog (QWidget *p, Indicator *i)
+{
+  THERMDialog *dialog = new THERMDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
 
-  return 0;
+void THERM::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "red");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Line");
+  set->setData(_SMOOTHING, 9);
+  set->setData(_SMOOTHING_TYPE, "EMA");
 }
 
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   THERM *o = new THERM;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

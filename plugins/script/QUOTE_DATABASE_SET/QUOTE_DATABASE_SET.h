@@ -24,9 +24,9 @@
 
 #include <QHash>
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class QUOTE_DATABASE_SET : public ScriptPlugin
+class QUOTE_DATABASE_SET : public Plugin
 {
   Q_OBJECT
 
@@ -43,7 +43,7 @@ class QUOTE_DATABASE_SET : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

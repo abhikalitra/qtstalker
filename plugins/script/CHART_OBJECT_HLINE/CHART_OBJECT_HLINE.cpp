@@ -119,8 +119,8 @@ int CHART_OBJECT_HLINE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CHART_OBJECT_HLINE *o = new CHART_OBJECT_HLINE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

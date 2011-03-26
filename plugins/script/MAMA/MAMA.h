@@ -22,20 +22,40 @@
 #ifndef MAMA_HPP
 #define MAMA_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class MAMA : public ScriptPlugin
+class MAMA : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _INPUT = 10,
+      _COLOR_MAMA = 20,
+      _COLOR_FAMA = 30,
+      _STYLE_MAMA = 40,
+      _STYLE_FAMA = 50,
+      _LABEL_MAMA = 60,
+      _LABEL_FAMA = 70,
+      _LIMIT_FAST = 80,
+      _LIMIT_SLOW = 90,
+      _STYLE_BARS = 100,
+      _COLOR_BARS_UP = 110,
+      _COLOR_BARS_DOWN = 120,
+      _COLOR_BARS_NEUTRAL = 130
+    };
+
     MAMA ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

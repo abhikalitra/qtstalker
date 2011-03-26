@@ -23,6 +23,9 @@
 #include "ScriptLaunchButton.h"
 #include "ScriptDataBase.h"
 #include "Globals.h"
+#include "NewDialog.h"
+#include "SelectDialog.h"
+#include "ScriptEditDialog.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -166,35 +169,71 @@ void ScriptPage::createButtonMenu ()
 
 void ScriptPage::newScript ()
 {
-  QSettings settings(g_globalSettings);
-  
-  Script *script = new Script(this);
-  script->setName("ScriptPanelNewScript");
-  script->setFile(settings.value("script_panel_new_script_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  ScriptDataBase db;
+  QStringList l;
+  db.scripts(l);
+
+  NewDialog *dialog = new NewDialog(this);
+  dialog->setItems(l);
+  dialog->setTitle(tr("Enter new script name"));
+  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(editScript(QString)));
+
+  l.clear();
+  l << "QtStalker" + g_session + ":" << tr("New Script");
+  dialog->setWindowTitle(l.join(" "));
+  dialog->show();
 }
 
 void ScriptPage::editScript ()
 {
-  QSettings settings(g_globalSettings);
+  SelectDialog *dialog = new SelectDialog(this);
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << tr("Edit Script");
+  dialog->setWindowTitle(l.join(" "));
+
+  ScriptDataBase db;
+  db.scripts(l);
+  dialog->setItems(l);
+
+  dialog->setTitle(tr("Scripts"));
+  dialog->setMode(1);
+  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(editScript(QStringList)));
+  dialog->show();
+}
+
+void ScriptPage::editScript (QString s)
+{
+  ScriptEditDialog *dialog = new ScriptEditDialog(this, s);
+  dialog->show();
+}
   
-  Script *script = new Script(this);
-  script->setName("ScriptPanelEditScript");
-  script->setFile(settings.value("script_panel_edit_script_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+void ScriptPage::editScript (QStringList l)
+{
+  editScript(l.at(0));
 }
 
 void ScriptPage::deleteScript ()
 {
-  QSettings settings(g_globalSettings);
-  
-  Script *script = new Script(this);
-  script->setName("ScriptPanelDeleteScript");
-  script->setFile(settings.value("script_panel_delete_script_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  SelectDialog *dialog = new SelectDialog(this);
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << tr("Delete Script");
+  dialog->setWindowTitle(l.join(" "));
+
+  ScriptDataBase db;
+  db.scripts(l);
+  dialog->setItems(l);
+
+  dialog->setTitle(tr("Scripts"));
+  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(deleteScript2(QStringList)));
+  dialog->show();
+}
+
+void ScriptPage::deleteScript2 (QStringList l)
+{
+  ScriptDataBase db;
+  db.deleteScript(l);
 }
 
 void ScriptPage::queRightClick (const QPoint &)
@@ -214,13 +253,24 @@ void ScriptPage::queStatus ()
 
 void ScriptPage::runScript ()
 {
-  QSettings settings(g_globalSettings);
-  
-  Script *script = new Script(this);
-  script->setName("ScriptPanelRunScript");
-  script->setFile(settings.value("script_panel_run_script_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  SelectDialog *dialog = new SelectDialog(this);
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << tr("Run Script");
+  dialog->setWindowTitle(l.join(" "));
+
+  ScriptDataBase db;
+  db.scripts(l);
+  dialog->setItems(l);
+
+  dialog->setTitle(tr("Scripts"));
+  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(runScript2(QStringList)));
+  dialog->show();
+}
+
+void ScriptPage::runScript2 (QStringList l)
+{
+  runScript(l.at(0));
 }
 
 void ScriptPage::runScript (QString d)

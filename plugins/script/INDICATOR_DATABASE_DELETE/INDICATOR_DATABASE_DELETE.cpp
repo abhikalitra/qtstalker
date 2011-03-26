@@ -53,9 +53,9 @@ int INDICATOR_DATABASE_DELETE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_DATABASE_DELETE *o = new INDICATOR_DATABASE_DELETE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }
 

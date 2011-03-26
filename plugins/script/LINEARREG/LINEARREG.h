@@ -22,9 +22,9 @@
 #ifndef LINEARREG_HPP
 #define LINEARREG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class LINEARREG : public ScriptPlugin
+class LINEARREG : public Plugin
 {
   Q_OBJECT
 
@@ -38,8 +38,26 @@ class LINEARREG : public ScriptPlugin
       _TSF
     };
 
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _METHOD = 40,
+      _INPUT = 50,
+      _STYLE_BARS = 60,
+      _COLOR_BARS_UP = 70,
+      _COLOR_BARS_DOWN = 80,
+      _COLOR_BARS_NEUTRAL = 90,
+      _PERIOD = 100
+    };
+
     LINEARREG ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
+    QStringList method ();
 
   protected:
     QStringList _method;
@@ -47,7 +65,7 @@ class LINEARREG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

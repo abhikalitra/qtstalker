@@ -22,9 +22,9 @@
 #ifndef CHART_OBJECT_RETRACEMENT_HPP
 #define CHART_OBJECT_RETRACEMENT_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class CHART_OBJECT_RETRACEMENT : public ScriptPlugin
+class CHART_OBJECT_RETRACEMENT : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class CHART_OBJECT_RETRACEMENT : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

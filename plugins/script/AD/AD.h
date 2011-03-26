@@ -22,20 +22,30 @@
 #ifndef AD_HPP
 #define AD_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class AD : public ScriptPlugin
+class AD : public Plugin
 {
   Q_OBJECT
   
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _LABEL = 20,
+      _STYLE = 30
+    };
+
     AD ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

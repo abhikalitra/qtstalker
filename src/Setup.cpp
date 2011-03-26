@@ -55,6 +55,9 @@ void Setup::setup (QObject *p, QString session)
 
   // setup the system scripts
   setupDefaults();
+
+  // scan plugins
+  scanPlugins();
   
   // initialize data tables
   setupExchanges();
@@ -98,7 +101,7 @@ void Setup::setupDefaults ()
   // set the plugin directory
   QString sysdir = INSTALL_LIB_DIR;
   sysdir.append("/qtstalker/plugins/script/");
-  settings.setValue("script_plugin_path", sysdir);
+  settings.setValue("plugin_path", sysdir);
   
   // set the db ascii file directory
   sysdir = INSTALL_DATA_DIR;
@@ -184,29 +187,43 @@ void Setup::setupDefaults ()
 
 void Setup::setupDefaultIndicators ()
 {
+  PluginFactory fac;
+  Plugin *plug = fac.plugin("OHLC");
+  if (! plug)
+  {
+    qDebug() << "Setup::setupDefaultIndicators: no OHLC plugin";
+    return;
+  }
+  
   Indicator i(0);
+  plug->defaults(i.settings());
   i.setName("Bars");
-  i.setCommand("perl");
-  QString s = INSTALL_DATA_DIR;
-  s.append("/qtstalker/indicator/Bars.pl");
-  i.setScript(s);
   i.setLock(TRUE);
   if (i.save())
   {
     qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
+    delete plug;
+    return;
+  }
+  delete plug;
+  
+  plug = fac.plugin("VOL");
+  if (! plug)
+  {
+    qDebug() << "Setup::setupDefaultIndicators: no VOL plugin";
     return;
   }
 
+  plug->defaults(i.settings());
   i.setName("VOL");
-  s = INSTALL_DATA_DIR;
-  s.append("/qtstalker/indicator/Volume.pl");
-  i.setScript(s);
   i.setLock(TRUE);
   if (i.save())
   {
     qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
+    delete plug;
     return;
   }
+  delete plug;
 }
 
 void Setup::setupDefaultScripts ()
@@ -244,4 +261,35 @@ void Setup::setupFutures ()
   db.createFutures();  
   db.commit();
 */
+}
+
+void Setup::scanPlugins ()
+{
+  QSettings settings(g_globalSettings);
+
+  QDir dir(settings.value("plugin_path").toString());
+  QStringList l = dir.entryList(QDir::NoDotAndDotDot | QDir::Files);
+
+  PluginFactory fac;
+  int loop = 0;
+  QStringList il;
+  for (; loop < l.count(); loop++)
+  {
+    QString s = l.at(loop);
+    s = s.remove(".so");
+    s = s.remove("lib");
+    
+    Plugin *plug = fac.plugin(s);
+    if (! plug)
+    {
+      qDebug() << "Setup::scanPlugins: no plugin" << s;
+      continue;
+    }
+
+    if (plug->type() == (int) Plugin::_INDICATOR)
+      il << s;
+  }
+
+  settings.setValue("indicator_plugins", il);
+  settings.sync();
 }

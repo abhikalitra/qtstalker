@@ -22,9 +22,9 @@
 #ifndef HT_HPP
 #define HT_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class HT : public ScriptPlugin
+class HT : public Plugin
 {
   Q_OBJECT
 
@@ -37,8 +37,25 @@ class HT : public ScriptPlugin
       _TRENDMODE
     };
 
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _METHOD = 40,
+      _INPUT = 50,
+      _STYLE_BARS = 60,
+      _COLOR_BARS_UP = 70,
+      _COLOR_BARS_DOWN = 80,
+      _COLOR_BARS_NEUTRAL = 90
+    };
+
     HT ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
+    QStringList method ();
 
   protected:
     QStringList _method;
@@ -46,7 +63,7 @@ class HT : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

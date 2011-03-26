@@ -37,6 +37,9 @@ class PlotMenu : public QMenu
     void signalLogStatus (bool);
     void signalNewChartObject (QString);
     void signalDeleteAllChartObjects ();
+    void signalEditIndicator ();
+    void signalNewIndicator (QString);
+    void signalDeleteIndicator (QStringList);
 
   public:
     enum Action

@@ -267,8 +267,8 @@ int QUOTE_DATABASE_GET::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   QUOTE_DATABASE_GET *o = new QUOTE_DATABASE_GET;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

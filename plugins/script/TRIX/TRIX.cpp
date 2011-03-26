@@ -23,16 +23,80 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "InputType.h"
+#include "TRIXDialog.h"
 
 #include <QtDebug>
 
 TRIX::TRIX ()
 {
   _plugin = "TRIX";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("TRIX::TRIX: error on TA_Initialize");
+}
+
+int TRIX::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_PERIOD);
+
+  InputType itypes;
+  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  TA_Real input[in->count()];
+  TA_Real out[in->count()];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  delete in;
+  
+  TA_RetCode rc = TA_TRIX(0,
+                         keys.count() - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int TRIX::command (Command *command)
@@ -122,12 +186,29 @@ int TRIX::command (Command *command)
   return 0;
 }
 
+void TRIX::dialog (QWidget *p, Indicator *i)
+{
+  TRIXDialog *dialog = new TRIXDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void TRIX::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Histogram Bar");
+  set->setData(_PERIOD, 9);
+  set->setData(_INPUT, "Close");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   TRIX *o = new TRIX;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

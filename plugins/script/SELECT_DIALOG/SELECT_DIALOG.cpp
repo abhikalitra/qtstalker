@@ -21,6 +21,7 @@
 
 #include "SELECT_DIALOG.h"
 #include "SelectDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -40,34 +41,50 @@ int SELECT_DIALOG::command (Command *command)
 
 
   bool ok;
-  command->parm("MODE").toInt(&ok);
+  int mode = command->parm("MODE").toInt(&ok);
   if (! ok)
   {
     qDebug() << _plugin << "::command: invalid mode" << command->parm("MODE");
     return 1;
   }
 
-  QString s = command->parm("TITLE");
-  if (s.isEmpty())
-  {
-    qDebug() << _plugin << "::command: invalid TITLE" << s;
-    return 1;
-  }
+  QString title = command->parm("TITLE");
+  if (title.isEmpty())
+    title = tr("Items");
 
-  SelectDialog *dialog = new SelectDialog(_parent, command);
-  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  QStringList items = command->parm("ITEMS").split(";", QString::SkipEmptyParts);
+
+  _command = command;
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << tr("Select");
+
+  SelectDialog *dialog = new SelectDialog(_parent);
+  dialog->setWindowTitle(l.join(" "));
+  dialog->setMode(mode);
+  dialog->setTitle(title);
+  dialog->setItems(items);
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
+  connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
+  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(command2(QStringList)));
   dialog->show();
 
   return 0;
+}
+
+void SELECT_DIALOG::command2 (QStringList l)
+{
+  _command->setReturnData(_plugin + "_SELECTED", l.join(";"));
+  _command->setReturnCode("0");
+  emit signalResume();
 }
 
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SELECT_DIALOG *o = new SELECT_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -27,6 +27,9 @@
 
 #include <QDateTime>
 #include <QtDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
 
 QuoteDataBase::QuoteDataBase ()
 {
@@ -637,6 +640,89 @@ int QuoteDataBase::setName (BarData *symbol)
     qDebug() << "QuoteDataBase::setName:" + q.lastError().text();
     return 1;
   }
+
+  return 0;
+}
+
+int QuoteDataBase::dump (BarData *bd, QString d)
+{
+  bd->setBarLength(BarLength::_NONE);
+  bd->setRange(DateRange::_ALL);
+
+  // create base directory if needed
+  QFileInfo fi(d);
+  QString path = fi.absolutePath();
+
+  QDir dir;
+  if (! dir.mkpath(path))
+  {
+    qDebug() << "QuoteDataBase::dump: error creating directory" << path;
+    return 1;
+  }
+
+  // create exchange directory
+  path.append("/");
+  path.append(bd->exchange());
+  if (! dir.mkpath(path))
+  {
+    qDebug() << "QuoteDataBase::dump: error creating directory" << path;
+    return 1;
+  }
+
+  path.append("/");
+  path.append(bd->symbol());
+
+  QFile file(path);
+  if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
+  {
+    qDebug() << "QuoteDataBase::dump: error opening csv file" << path;
+    return 1;
+  }
+  QTextStream out(&file);
+
+  if (getBars(bd))
+  {
+    qDebug() << "QuoteDataBase::dump: getBars error";
+    return 1;
+  }
+
+  Strip strip;
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *b = bd->bar(loop);
+    if (! b)
+      continue;
+
+    QStringList l;
+    l << bd->exchange() << bd->symbol() << bd->name();
+
+    QString s;
+    b->dateTimeString(s);
+    l << s;
+
+    strip.strip(b->open(), 4, s);
+    l << s;
+
+    strip.strip(b->high(), 4, s);
+    l << s;
+
+    strip.strip(b->low(), 4, s);
+    l << s;
+
+    strip.strip(b->close(), 4, s);
+    l << s;
+
+    strip.strip(b->volume(), 4, s);
+    l << s;
+
+    strip.strip(b->oi(), 4, s);
+    l << s;
+
+    out << l.join(",") << "\n";
+  }
+
+  file.close();
 
   return 0;
 }

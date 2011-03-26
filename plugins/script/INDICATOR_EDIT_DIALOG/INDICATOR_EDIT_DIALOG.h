@@ -22,9 +22,9 @@
 #ifndef INDICATOR_EDIT_DIALOG_HPP
 #define INDICATOR_EDIT_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class INDICATOR_EDIT_DIALOG : public ScriptPlugin
+class INDICATOR_EDIT_DIALOG : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class INDICATOR_EDIT_DIALOG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

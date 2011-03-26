@@ -132,8 +132,8 @@ int CHART_OBJECT_TEXT::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CHART_OBJECT_TEXT *o = new CHART_OBJECT_TEXT;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

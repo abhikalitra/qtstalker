@@ -3,6 +3,7 @@
 } 
 
 HEADERS += CANDLE_PATTERN.h
+HEADERS += CandlePatternDialog.h
 
 SOURCES += CANDLE_PATTERN.cpp
-
+SOURCES += CandlePatternDialog.cpp

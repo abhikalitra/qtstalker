@@ -22,9 +22,9 @@
 #ifndef SUB_HPP
 #define SUB_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SUB : public ScriptPlugin
+class SUB : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class SUB : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -81,8 +81,8 @@ int INDICATOR_PLOT_VALUE_SET::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT_VALUE_SET *o = new INDICATOR_PLOT_VALUE_SET;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

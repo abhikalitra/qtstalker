@@ -22,20 +22,37 @@
 #ifndef T3_HPP
 #define T3_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class T3 : public ScriptPlugin
+class T3 : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _PERIOD = 40,
+      _VFACTOR = 50,
+      _INPUT = 60,
+      _COLOR_BARS_UP = 70,
+      _COLOR_BARS_DOWN = 80,
+      _COLOR_BARS_NEUTRAL = 90,
+      _STYLE_BARS = 100
+    };
+
     T3 ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

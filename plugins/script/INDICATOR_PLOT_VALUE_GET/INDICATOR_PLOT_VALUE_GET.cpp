@@ -127,8 +127,8 @@ int INDICATOR_PLOT_VALUE_GET::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT_VALUE_GET *o = new INDICATOR_PLOT_VALUE_GET;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

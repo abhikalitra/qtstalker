@@ -22,9 +22,9 @@
 #ifndef SCRIPT_DATABASE_DELETE_HPP
 #define SCRIPT_DATABASE_DELETE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SCRIPT_DATABASE_DELETE : public ScriptPlugin
+class SCRIPT_DATABASE_DELETE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class SCRIPT_DATABASE_DELETE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

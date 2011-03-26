@@ -22,9 +22,9 @@
 #ifndef CONFIRM_DIALOG_PLUGIN_HPP
 #define CONFIRM_DIALOG_PLUGIN_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class CONFIRM_DIALOG : public ScriptPlugin
+class CONFIRM_DIALOG : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class CONFIRM_DIALOG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -23,16 +23,113 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "MFIDialog.h"
+#include "MAType.h"
 
 #include <QtDebug>
 
 MFI::MFI ()
 {
   _plugin = "MFI";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("MFI::MFI: error on TA_Initialize");
+}
+
+int MFI::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_PERIOD);
+
+  int size = bd->count();
+  TA_Real out[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real volume[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    high[loop] = (TA_Real) bar->high();
+    low[loop] = (TA_Real) bar->low();
+    close[loop] = (TA_Real) bar->close();
+    volume[loop] = (TA_Real) bar->volume();
+  }
+
+  TA_RetCode rc = TA_MFI(0,
+                         size - 1,
+                         &high[0],
+                         &low[0],
+                         &close[0],
+                         &volume[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  int smoothing = settings->getInt(_SMOOTHING);
+  if (smoothing > 1)
+  {
+    MAType mat;
+    Curve *ma = mat.getMA(line, smoothing, mat.fromString(settings->data(_SMOOTHING_TYPE)));
+    if (ma)
+    {
+      delete line;
+      line = ma;
+    }
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  // create ref1 line
+  Setting co;
+  QString key = "-" + QString::number(i->chartObjectCount() + 1);
+  co.setData("Type", QString("HLine"));
+  co.setData("ID", key);
+  co.setData("RO", 1);
+  co.setData("Price", settings->data(_REF1));
+  co.setData("Color", settings->data(_COLOR_REF1));
+  i->addChartObject(co);
+
+  // create ref2 line
+  key = "-" + QString::number(i->chartObjectCount() + 1);
+  co.setData("ID", key);
+  co.setData("Price", settings->data(_REF2));
+  co.setData("Color", settings->data(_COLOR_REF2));
+  i->addChartObject(co);
+
+  return 0;
 }
 
 int MFI::command (Command *command)
@@ -170,12 +267,34 @@ int MFI::command (Command *command)
   return 0;
 }
 
+void MFI::dialog (QWidget *p, Indicator *i)
+{
+  MFIDialog *dialog = new MFIDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void MFI::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "red");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Line");
+  set->setData(_PERIOD, 9);
+  set->setData(_COLOR_REF1, "white");
+  set->setData(_REF1, 20);
+  set->setData(_COLOR_REF2, "white");
+  set->setData(_REF2, 80);
+  set->setData(_SMOOTHING, 9);
+  set->setData(_SMOOTHING_TYPE, "EMA");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   MFI *o = new MFI;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

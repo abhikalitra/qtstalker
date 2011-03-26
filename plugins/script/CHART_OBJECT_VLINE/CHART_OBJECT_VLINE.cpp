@@ -118,8 +118,8 @@ int CHART_OBJECT_VLINE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CHART_OBJECT_VLINE *o = new CHART_OBJECT_VLINE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

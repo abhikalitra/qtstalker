@@ -22,9 +22,9 @@
 #ifndef INPUT_DIALOG_HPP
 #define INPUT_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class INPUT_DIALOG : public ScriptPlugin
+class INPUT_DIALOG : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class INPUT_DIALOG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

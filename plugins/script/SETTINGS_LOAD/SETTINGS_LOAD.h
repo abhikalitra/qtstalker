@@ -22,9 +22,9 @@
 #ifndef SETTINGS_LOAD_HPP
 #define SETTINGS_LOAD_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SETTINGS_LOAD : public ScriptPlugin
+class SETTINGS_LOAD : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class SETTINGS_LOAD : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

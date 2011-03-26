@@ -22,9 +22,9 @@
 #ifndef PROCESS_HPP
 #define PROCESS_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class PROCESS : public ScriptPlugin
+class PROCESS : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class PROCESS : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

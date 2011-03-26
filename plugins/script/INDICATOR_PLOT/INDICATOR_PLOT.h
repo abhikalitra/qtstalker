@@ -22,9 +22,9 @@
 #ifndef INDICATOR_PLOT_HPP
 #define INDICATOR_PLOT_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class INDICATOR_PLOT : public ScriptPlugin
+class INDICATOR_PLOT : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class INDICATOR_PLOT : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

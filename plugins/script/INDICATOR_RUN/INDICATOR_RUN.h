@@ -22,9 +22,9 @@
 #ifndef INDICATOR_RUN_HPP
 #define INDICATOR_RUN_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class INDICATOR_RUN : public ScriptPlugin
+class INDICATOR_RUN : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class INDICATOR_RUN : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -3,7 +3,5 @@
 }
 
 HEADERS += SCRIPT_EDIT_DIALOG.h
-HEADERS += ScriptEditDialog.h
 
 SOURCES += SCRIPT_EDIT_DIALOG.cpp
-SOURCES += ScriptEditDialog.cpp

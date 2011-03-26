@@ -24,9 +24,9 @@
 
 #include <QStringList>
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class FILE_DIALOG : public ScriptPlugin
+class FILE_DIALOG : public Plugin
 {
   Q_OBJECT
   
@@ -44,7 +44,7 @@ class FILE_DIALOG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -22,20 +22,34 @@
 #ifndef AROON_HPP
 #define AROON_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class AROON : public ScriptPlugin
+class AROON : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR_UP = 10,
+      _COLOR_DOWN = 20,
+      _STYLE_UP = 30,
+      _STYLE_DOWN = 40,
+      _LABEL_UP = 50,
+      _LABEL_DOWN = 60,
+      _PERIOD = 70,
+    };
+
     AROON ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

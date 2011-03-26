@@ -164,8 +164,8 @@ int ADXR::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   ADXR *o = new ADXR;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -21,15 +21,67 @@
 
 #include "FI.h"
 #include "Curve.h"
-#include "ta_libc.h"
 #include "Globals.h"
+#include "FIDialog.h"
+#include "MAType.h"
 
 #include <QtDebug>
 
 FI::FI ()
 {
   _plugin = "FI";
-  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+  _type = _INDICATOR;
+}
+
+int FI::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_SMOOTHING);
+
+  MAType mat;
+  int type = mat.fromString(settings->data(_SMOOTHING_TYPE));
+
+  Curve *line = new Curve;
+
+  int loop = 1;
+  double force = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    Bar *ybar = bd->bar(loop - 1);
+    if (! ybar)
+      continue;
+
+    double cdiff = bar->close() - ybar->close();
+    force = bar->volume() * cdiff;
+
+    line->setBar(loop, new CurveBar(force));
+  }
+
+  if (period > 1)
+  {
+    Curve *ma = mat.getMA(line, period, type);
+    if (! ma)
+    {
+      delete line;
+      return 1;
+    }
+
+    delete line;
+    line = ma;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int FI::command (Command *command)
@@ -78,7 +130,8 @@ int FI::command (Command *command)
     return 1;
   }
 
-  int type = _maList.indexOf(command->parm("MA_TYPE"));
+  MAType mat;
+  int type = mat.fromString(command->parm("MA_TYPE"));
   if (type == -1)
   {
     qDebug() << _plugin << "::command: invalid ma type" << command->parm("MA_TYPE");
@@ -114,7 +167,7 @@ int FI::command (Command *command)
 
   if (period > 1)
   {
-    Curve *ma = getMA(line, period, type);
+    Curve *ma = mat.getMA(line, period, type);
     if (! ma)
     {
       delete line;
@@ -133,55 +186,29 @@ int FI::command (Command *command)
   return 0;
 }
 
-Curve * FI::getMA (Curve *in, int period, int method)
+void FI::dialog (QWidget *p, Indicator *i)
 {
-  if (in->count() < period)
-    return 0;
+  FIDialog *dialog = new FIDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
 
-  QList<int> keys;
-  in->keys(keys);
-
-  int size = keys.count();
-
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_MA(0, size - 1, &input[0], period, (TA_MAType) method, &outBeg, &outNb, &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << "FI::calculate: TA-Lib error" << rc;
-    return 0;
-  }
-
-  Curve *line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
-  }
-
-  return line;
+void FI::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Histogram Bar");
+  set->setData(_SMOOTHING, 2);
+  set->setData(_SMOOTHING_TYPE, "EMA");
 }
 
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   FI *o = new FI;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

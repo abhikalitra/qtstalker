@@ -45,8 +45,8 @@ int PLOT_UPDATE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   PLOT_UPDATE *o = new PLOT_UPDATE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

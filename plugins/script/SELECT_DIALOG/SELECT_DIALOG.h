@@ -19,23 +19,29 @@
  *  USA.
  */
 
-#ifndef SELECT_DIALOG_HPP
-#define SELECT_DIALOG_HPP
+#ifndef SCRIPT_SELECT_DIALOG_HPP
+#define SCRIPT_SELECT_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SELECT_DIALOG : public ScriptPlugin
+class SELECT_DIALOG : public Plugin
 {
   Q_OBJECT
 
   public:
     SELECT_DIALOG ();
     int command (Command *);
+
+  public slots:
+    void command2 (QStringList);
+
+  private:
+    Command *_command;
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

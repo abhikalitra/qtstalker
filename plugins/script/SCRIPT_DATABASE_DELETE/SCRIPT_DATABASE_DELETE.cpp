@@ -52,8 +52,8 @@ int SCRIPT_DATABASE_DELETE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SCRIPT_DATABASE_DELETE *o = new SCRIPT_DATABASE_DELETE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

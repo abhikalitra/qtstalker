@@ -22,12 +22,65 @@
 #include "OHLC.h"
 #include "Curve.h"
 #include "Globals.h"
+#include "OHLCDialog.h"
 
 #include <QtDebug>
 
 OHLC::OHLC ()
 {
+  _type = _INDICATOR;
   _plugin = "OHLC";
+}
+
+int OHLC::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+  
+  QColor upColor(settings->data(_COLOR_UP));
+  QColor downColor(settings->data(_COLOR_DOWN));
+  QColor neutralColor(settings->data(_COLOR_NEUTRAL));
+
+  Curve *line;
+  if (settings->data(_STYLE) == "OHLC")
+    line = new Curve(Curve::OHLC);
+  else
+    line = new Curve(Curve::Candle);
+    
+  line->setZ(0);
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+    
+    CurveBar *b = new CurveBar;
+    b->setData(0, bar->open());
+    b->setData(1, bar->high());
+    b->setData(2, bar->low());
+    b->setData(3, bar->close());
+    b->setColor(neutralColor);
+
+    Bar *ybar = bd->bar(loop - 1);
+    if (ybar)
+    {
+      if (bar->close() > ybar->close())
+        b->setColor(upColor);
+      else
+      {
+        if (bar->close() < ybar->close())
+          b->setColor(downColor);
+      }
+    }
+
+    line->setBar(loop, b);
+  }
+
+  line->setLabel(settings->data(_LABEL));
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int OHLC::command (Command *command)
@@ -174,12 +227,29 @@ int OHLC::command (Command *command)
   return 0;
 }
 
+void OHLC::dialog (QWidget *p, Indicator *i)
+{
+  OHLCDialog *dialog = new OHLCDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void OHLC::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR_UP, QString("green"));
+  set->setData(_COLOR_DOWN, QString("red"));
+  set->setData(_COLOR_NEUTRAL, QString("dimgray"));
+  set->setData(_LABEL, QString("OHLC"));
+  set->setData(_STYLE, QString("OHLC"));
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   OHLC *o = new OHLC;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

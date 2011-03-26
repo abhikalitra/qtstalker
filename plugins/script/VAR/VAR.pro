@@ -3,5 +3,7 @@
 } 
 
 HEADERS += VAR.h
+HEADERS += VARDialog.h
 
 SOURCES += VAR.cpp
+SOURCES += VARDialog.cpp

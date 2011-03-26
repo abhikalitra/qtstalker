@@ -42,8 +42,8 @@ int CHART_PANEL_REFRESH::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CHART_PANEL_REFRESH *o = new CHART_PANEL_REFRESH;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

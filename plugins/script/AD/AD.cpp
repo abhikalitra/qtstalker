@@ -23,16 +23,80 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "ADDialog.h"
 
 #include <QtDebug>
 
 AD::AD ()
 {
   _plugin = "AD";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("AD::AD: error on TA_Initialize");
+}
+
+int AD::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+  
+  int size = bd->count();
+
+  TA_Real out[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real volume[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    high[loop] = (TA_Real) bar->high();
+    low[loop] = (TA_Real) bar->low();
+    close[loop] = (TA_Real) bar->close();
+    volume[loop] = (TA_Real) bar->volume();
+  }
+
+  TA_RetCode rc = TA_AD(0,
+                        size - 1,
+                        &high[0],
+                        &low[0],
+                        &close[0],
+                        &volume[0],
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int AD::command (Command *command)
@@ -159,12 +223,27 @@ int AD::command (Command *command)
   return 0;
 }
 
+void AD::dialog (QWidget *p, Indicator *i)
+{
+  ADDialog *dialog = new ADDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void AD::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, QString("red"));
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, QString("Line"));
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   AD *o = new AD;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

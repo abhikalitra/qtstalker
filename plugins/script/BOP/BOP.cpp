@@ -23,16 +23,91 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "BOPDialog.h"
+#include "MAType.h"
 
 #include <QtDebug>
 
 BOP::BOP ()
 {
   _plugin = "BOP";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("BOP::BOP: error on TA_Initialize");
+}
+
+int BOP::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int size = bd->count();
+  TA_Real out[size];
+  TA_Real open[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    open[loop] = (TA_Real) bar->open();
+    high[loop] = (TA_Real) bar->high();
+    low[loop] = (TA_Real) bar->low();
+    close[loop] = (TA_Real) bar->close();
+  }
+
+
+  TA_RetCode rc = TA_BOP(0,
+                         size - 1,
+                         &open[0],
+                         &high[0],
+                         &low[0],
+                         &close[0],
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+  loop = 0;
+  for (; loop < size; loop++)
+    line->setBar(loop, new CurveBar(out[loop]));
+
+  MAType mat;
+  int period = settings->getInt(_SMOOTHING);
+  int method = mat.fromString(settings->data(_SMOOTHING_TYPE));
+  if (period > 1)
+  {
+    Curve *ma = mat.getMA(line, period, method);
+    if (! ma)
+    {
+      delete line;
+      return 1;
+    }
+
+    delete line;
+    line = ma;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int BOP::command (Command *command)
@@ -154,12 +229,29 @@ int BOP::command (Command *command)
   return 0;
 }
 
+void BOP::dialog (QWidget *p, Indicator *i)
+{
+  BOPDialog *dialog = new BOPDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void BOP::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, QString("red"));
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, QString("Histogram Bar"));
+  set->setData(_SMOOTHING, 10);
+  set->setData(_SMOOTHING_TYPE, QString("EMA"));
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   BOP *o = new BOP;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

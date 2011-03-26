@@ -57,8 +57,8 @@ int CONFIRM_DIALOG::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CONFIRM_DIALOG *o = new CONFIRM_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

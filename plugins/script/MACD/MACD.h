@@ -22,23 +22,43 @@
 #ifndef MACD_HPP
 #define MACD_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class MACD : public ScriptPlugin
+class MACD : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _INPUT = 10,
+      _COLOR_MACD = 20,
+      _COLOR_SIG = 30,
+      _COLOR_HIST = 40,
+      _STYLE_MACD = 50,
+      _STYLE_SIG = 60,
+      _STYLE_HIST = 70,
+      _PERIOD_FAST = 80,
+      _PERIOD_SLOW = 90,
+      _PERIOD_SIG = 100,
+      _MA_TYPE_FAST = 110,
+      _MA_TYPE_SLOW = 120,
+      _MA_TYPE_SIG = 130,
+      _LABEL_MACD = 140,
+      _LABEL_SIG = 150,
+      _LABEL_HIST = 160
+    };
+
     MACD ();
     int command (Command *);
-
-  private:
-    QStringList _maList;
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

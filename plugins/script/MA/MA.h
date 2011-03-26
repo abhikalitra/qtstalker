@@ -22,29 +22,20 @@
 #ifndef MA_HPP
 #define MA_HPP
 
-#include <QStringList>
+#include "Plugin.h"
 
-#include "ScriptPlugin.h"
-
-class MA : public ScriptPlugin
+class MA : public Plugin
 {
   Q_OBJECT
 
   public:
     MA ();
     int command (Command *);
-    Curve * calculate (Curve *, int period, int method);
-    QStringList & list ();
-    int typeFromString (QString);
-    Curve * getWilder (Curve *, int period);
-
-  private:
-    QStringList _maList;
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

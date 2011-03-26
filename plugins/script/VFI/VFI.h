@@ -22,20 +22,32 @@
 #ifndef VFI_HPP
 #define VFI_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class VFI : public ScriptPlugin
+class VFI : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _PERIOD = 40
+    };
+
     VFI ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
+    Curve * getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int period);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

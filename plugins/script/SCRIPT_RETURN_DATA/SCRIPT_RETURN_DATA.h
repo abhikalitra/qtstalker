@@ -22,9 +22,9 @@
 #ifndef SCRIPT_RETURN_DATA_HPP
 #define SCRIPT_RETURN_DATA_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SCRIPT_RETURN_DATA : public ScriptPlugin
+class SCRIPT_RETURN_DATA : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class SCRIPT_RETURN_DATA : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

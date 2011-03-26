@@ -135,8 +135,8 @@ int STOCK_SPLIT::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   STOCK_SPLIT *o = new STOCK_SPLIT;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

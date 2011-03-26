@@ -24,7 +24,6 @@
 #include "../pics/edit.xpm"
 #include "Globals.h"
 #include "ChartObjectDataBase.h"
-#include "Script.h"
 #include "ConfirmDialog.h"
 
 #include <QDebug>

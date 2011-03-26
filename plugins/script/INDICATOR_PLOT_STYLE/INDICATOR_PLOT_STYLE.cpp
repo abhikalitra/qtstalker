@@ -67,8 +67,8 @@ int INDICATOR_PLOT_STYLE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT_STYLE *o = new INDICATOR_PLOT_STYLE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

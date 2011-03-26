@@ -23,17 +23,115 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "InputType.h"
+#include "MAType.h"
+#include "MACDDialog.h"
 
 #include <QtDebug>
 
 MACD::MACD ()
 {
   _plugin = "MACD";
-  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("MACD::MACD: error on TA_Initialize");
+}
+
+int MACD::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int fperiod = settings->getInt(_PERIOD_FAST);
+  int speriod = settings->getInt(_PERIOD_SLOW);
+  int sigperiod = settings->getInt(_PERIOD_SIG);
+
+  MAType mat;
+  int ftype = mat.fromString(settings->data(_MA_TYPE_FAST));
+  int stype = mat.fromString(settings->data(_MA_TYPE_SLOW));
+  int sigtype = mat.fromString(settings->data(_MA_TYPE_SIG));
+
+  InputType it;
+  Curve *in = it.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  int size = in->count();
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Real out3[size];
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  delete in;
+
+  TA_RetCode rc = TA_MACDEXT(0,
+                             size - 1,
+                             &input[0],
+                             fperiod,
+                             (TA_MAType) ftype,
+                             speriod,
+                             (TA_MAType) stype,
+                             sigperiod,
+                             (TA_MAType) sigtype,
+                             &outBeg,
+                             &outNb,
+                             &out[0],
+                             &out2[0],
+                             &out3[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *macd = new Curve;
+  Curve *signal = new Curve;
+  Curve *hist = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    macd->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    signal->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
+    hist->setBar(keys.at(keyLoop), new CurveBar(out3[outLoop]));
+
+    keyLoop--;
+    outLoop--;
+  }
+
+  macd->setAllColor(QColor(settings->data(_COLOR_MACD)));
+  macd->setLabel(settings->data(_LABEL_MACD));
+  macd->setType((Curve::Type) macd->typeFromString(settings->data(_STYLE_MACD)));
+  macd->setZ(1);
+  i->setLine(settings->data(_LABEL_MACD), macd);
+  
+  i->setLine(settings->data(_LABEL_SIG), signal);
+  signal->setAllColor(QColor(settings->data(_COLOR_SIG)));
+  signal->setLabel(settings->data(_LABEL_SIG));
+  signal->setType((Curve::Type) signal->typeFromString(settings->data(_STYLE_SIG)));
+  signal->setZ(2);
+
+  hist->setAllColor(QColor(settings->data(_COLOR_HIST)));
+  hist->setLabel(settings->data(_LABEL_HIST));
+  hist->setType((Curve::Type) hist->typeFromString(settings->data(_STYLE_HIST)));
+  hist->setZ(0);
+  i->setLine(settings->data(_LABEL_HIST), hist);
+
+  return 0;
 }
 
 int MACD::command (Command *command)
@@ -96,7 +194,8 @@ int MACD::command (Command *command)
     return 1;
   }
 
-  int ftype = _maList.indexOf(command->parm("MA_TYPE_FAST"));
+  MAType mat;
+  int ftype = mat.fromString(command->parm("MA_TYPE_FAST"));
   if (ftype == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_FAST" << command->parm("MA_TYPE_FAST");
@@ -110,7 +209,7 @@ int MACD::command (Command *command)
     return 1;
   }
 
-  int stype = _maList.indexOf(command->parm("MA_TYPE_SLOW"));
+  int stype = mat.fromString(command->parm("MA_TYPE_SLOW"));
   if (stype == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_SLOW" << command->parm("MA_TYPE_SLOW");
@@ -124,7 +223,7 @@ int MACD::command (Command *command)
     return 1;
   }
 
-  int sigtype = _maList.indexOf(command->parm("MA_TYPE_SIGNAL"));
+  int sigtype = mat.fromString(command->parm("MA_TYPE_SIGNAL"));
   if (sigtype == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_SIGNAL" << command->parm("MA_TYPE_SIGNAL");
@@ -201,12 +300,40 @@ int MACD::command (Command *command)
   return 0;
 }
 
+void MACD::dialog (QWidget *p, Indicator *i)
+{
+  MACDDialog *dialog = new MACDDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void MACD::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_INPUT, "Close");
+  set->setData(_COLOR_MACD, "red");
+  set->setData(_COLOR_SIG, "yellow");
+  set->setData(_COLOR_HIST, "blue");
+  set->setData(_LABEL_MACD, "MACD");
+  set->setData(_LABEL_SIG, "MACD_SIG");
+  set->setData(_LABEL_HIST, "MACD_HIST");
+  set->setData(_STYLE_MACD, "Line");
+  set->setData(_STYLE_SIG, "Line");
+  set->setData(_STYLE_HIST, "Histogram Bar");
+  set->setData(_PERIOD_FAST, 12);
+  set->setData(_PERIOD_SLOW, 26);
+  set->setData(_PERIOD_SIG, 9);
+  set->setData(_MA_TYPE_FAST, "EMA");
+  set->setData(_MA_TYPE_SLOW, "EMA");
+  set->setData(_MA_TYPE_SIG, "EMA");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   MACD *o = new MACD;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

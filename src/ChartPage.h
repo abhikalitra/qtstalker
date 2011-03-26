@@ -22,19 +22,15 @@
 #ifndef CHART_PAGE_HPP
 #define CHART_PAGE_HPP
 
-#include <QString>
+#include <QStringList>
 #include <QWidget>
 #include <QMenu>
-#include <QKeyEvent>
 #include <QPoint>
-#include <QComboBox>
 #include <QHash>
 #include <QAction>
-#include <QMainWindow>
 
 #include "BarData.h"
 #include "SymbolListWidget.h"
-#include "Script.h"
 
 class ChartPage : public QWidget
 {
@@ -54,7 +50,6 @@ class ChartPage : public QWidget
       _SEARCH,
       _ADD_GROUP,
       _DELETE,
-      _EXPORT,
       _SELECT_ALL,
       _UNSELECT_ALL
     };
@@ -69,13 +64,14 @@ class ChartPage : public QWidget
     void rightClick (const QPoint &);
     void chartOpened (BarData);
     void addToGroup ();
+    void addToGroup2 (QStringList);
     void updateList ();
     void symbolSearch ();
     void setSearch (QString exchange, QString symbol);
     void allButtonPressed ();
     void buttonStatus ();
     void deleteSymbol ();
-    void exportSymbol ();
+    void deleteSymbol2 ();
 
   protected:
     QString _searchString;
@@ -83,8 +79,6 @@ class ChartPage : public QWidget
     SymbolListWidget *_nav;
     QMenu *_menu;
     QHash<int, QAction *> _actions;
-    Command _symbolDialogCommand;
-    Command _addGroupCommand;
 };
 
 #endif

@@ -3,5 +3,7 @@
 } 
 
 HEADERS += SZ.h
+HEADERS += SZDialog.h
 
 SOURCES += SZ.cpp
+SOURCES += SZDialog.cpp

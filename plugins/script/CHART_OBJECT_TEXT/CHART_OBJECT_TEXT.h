@@ -22,9 +22,9 @@
 #ifndef CHART_OBJECT_TEXT_HPP
 #define CHART_OBJECT_TEXT_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class CHART_OBJECT_TEXT : public ScriptPlugin
+class CHART_OBJECT_TEXT : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class CHART_OBJECT_TEXT : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -22,20 +22,38 @@
 #ifndef STOCH_RSI_HPP
 #define STOCH_RSI_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class STOCH_RSI : public ScriptPlugin
+class STOCH_RSI : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _INPUT = 40,
+      _PERIOD = 50,
+      _COLOR_REF1 = 60,
+      _COLOR_REF2 = 70,
+      _REF1 = 80,
+      _REF2 = 90,
+      _SMOOTHING = 100,
+      _SMOOTHING_TYPE = 110
+    };
+
     STOCH_RSI ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

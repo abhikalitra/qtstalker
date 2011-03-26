@@ -63,8 +63,8 @@ void SYMBOL_DIALOG::dialogDone (QString ex, QString sym, QStringList l)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SYMBOL_DIALOG *o = new SYMBOL_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

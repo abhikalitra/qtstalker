@@ -21,7 +21,6 @@
 
 #include "CrossHairsButton.h"
 #include "Globals.h"
-#include "Script.h"
 
 #include "../pics/crosshair.xpm"
 #include "../pics/color.xpm"
@@ -30,6 +29,7 @@
 #include <QDebug>
 #include <QIcon>
 #include <QSettings>
+#include <QColorDialog>
 
 CrossHairsButton::CrossHairsButton ()
 {
@@ -52,24 +52,38 @@ CrossHairsButton::CrossHairsButton ()
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
 }
 
-void CrossHairsButton::changed (bool)
+void CrossHairsButton::changed (bool d)
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("CrosshairsStatusChanged");
-  script->setFile(settings.value("crosshairs_status_changed_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  QSettings settings(g_localSettings);
+  settings.setValue("crosshairs", d);
+  settings.sync();
+
+  int t = d;
+  g_middleMan->crosshairs(t);
 }
 
 void CrossHairsButton::dialog ()
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("CrosshairsColor");
-  script->setFile(settings.value("crosshairs_color_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  QSettings settings(g_localSettings);
+  QColor c(settings.value("crosshairs_color", "white").toString());
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << tr("Crosshair Color");
+  
+  QColorDialog *dialog = new QColorDialog(c, this);
+  dialog->setWindowTitle(l.join(" "));
+  connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(dialog2(QColor)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void CrossHairsButton::dialog2 (QColor c)
+{
+  QSettings settings(g_localSettings);
+  settings.setValue("crosshairs_color", c.name());
+  settings.sync();
+
+  g_middleMan->crosshairsColor(c);
 }
 
 void CrossHairsButton::contextMenu ()

@@ -22,9 +22,9 @@
 #ifndef MDI_HPP
 #define MDI_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class MDI : public ScriptPlugin
+class MDI : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class MDI : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -23,16 +23,80 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "WILLRDialog.h"
 
 #include <QtDebug>
 
 WILLR::WILLR ()
 {
   _plugin = "WILLR";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("WILLR::WILLR: error on TA_Initialize");
+}
+
+int WILLR::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_PERIOD);
+
+  int size = bd->count();
+  TA_Real out[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    high[loop] = (TA_Real) bar->high();
+    low[loop] = (TA_Real) bar->low();
+    close[loop] = (TA_Real) bar->close();
+  }
+
+  TA_RetCode rc = TA_WILLR(0,
+                         size - 1,
+                         &high[0],
+                         &low[0],
+                         &close[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(1);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int WILLR::command (Command *command)
@@ -155,12 +219,28 @@ int WILLR::command (Command *command)
   return 0;
 }
 
+void WILLR::dialog (QWidget *p, Indicator *i)
+{
+  WILLRDialog *dialog = new WILLRDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void WILLR::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Line");
+  set->setData(_PERIOD, 10);
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   WILLR *o = new WILLR;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

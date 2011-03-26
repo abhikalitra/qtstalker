@@ -120,8 +120,8 @@ int AVERAGE_PRICE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   AVERAGE_PRICE *o = new AVERAGE_PRICE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

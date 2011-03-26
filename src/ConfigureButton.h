@@ -29,6 +29,9 @@ class ConfigureButton : public QToolButton
 {
   Q_OBJECT
 
+  signals:
+    void signalNewIndicator (QString);
+
   public:
     ConfigureButton ();
     void createMenu ();

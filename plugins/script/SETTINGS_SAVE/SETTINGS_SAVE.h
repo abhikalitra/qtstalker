@@ -22,9 +22,9 @@
 #ifndef SETTINGS_SAVE_HPP
 #define SETTINGS_SAVE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SETTINGS_SAVE : public ScriptPlugin
+class SETTINGS_SAVE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class SETTINGS_SAVE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

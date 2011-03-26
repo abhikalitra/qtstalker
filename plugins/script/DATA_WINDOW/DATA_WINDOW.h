@@ -24,9 +24,9 @@
 
 #include <QStringList>
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class DATA_WINDOW : public ScriptPlugin
+class DATA_WINDOW : public Plugin
 {
   Q_OBJECT
   
@@ -37,7 +37,7 @@ class DATA_WINDOW : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

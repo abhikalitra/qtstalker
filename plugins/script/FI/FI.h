@@ -22,24 +22,32 @@
 #ifndef FI_HPP
 #define FI_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class FI : public ScriptPlugin
+class FI : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _SMOOTHING = 40,
+      _SMOOTHING_TYPE = 50
+    };
+
     FI ();
     int command (Command *);
-    Curve * getMA (Curve *, int period, int method);
-
-  private:
-    QStringList _maList;
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

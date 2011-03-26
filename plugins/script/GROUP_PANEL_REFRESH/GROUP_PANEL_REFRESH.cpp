@@ -42,8 +42,8 @@ int GROUP_PANEL_REFRESH::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   GROUP_PANEL_REFRESH *o = new GROUP_PANEL_REFRESH;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -24,6 +24,7 @@
 
 #include <QToolButton>
 #include <QMenu>
+#include <QColor>
 
 class GridButton : public QToolButton
 {
@@ -35,6 +36,7 @@ class GridButton : public QToolButton
   public slots:
     void changed (bool);
     void colorDialog ();
+    void colorDialog2 (QColor);
     void contextMenu ();
 
   private:

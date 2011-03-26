@@ -22,9 +22,9 @@
 #ifndef PDI_HPP
 #define PDI_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class PDI : public ScriptPlugin
+class PDI : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class PDI : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

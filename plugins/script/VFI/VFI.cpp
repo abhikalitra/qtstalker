@@ -22,6 +22,8 @@
 #include "VFI.h"
 #include "Curve.h"
 #include "Globals.h"
+#include "VFIDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -29,6 +31,58 @@
 VFI::VFI ()
 {
   _plugin = "VFI";
+  _type = _INDICATOR;
+}
+
+int VFI::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_PERIOD);
+
+  InputType it;
+  Curve *high = it.input(bd, "High");
+  if (! high)
+    return 1;
+
+  Curve *low = it.input(bd, "Low");
+  if (! low)
+  {
+    delete high;
+    return 1;
+  }
+  
+  Curve *close = it.input(bd, "Close");
+  if (! close)
+  {
+    delete high;
+    delete low;
+    return 1;
+  }
+
+  Curve *vol = it.input(bd, "Volume");
+  if (! vol)
+  {
+    delete high;
+    delete low;
+    delete close;
+    return 1;
+  }
+
+  Curve *line = getVFI(high, low, close, vol, period);
+
+  delete high;
+  delete low;
+  delete close;
+  delete vol;
+  
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+  
+  return 0;
 }
 
 int VFI::command (Command *command)
@@ -92,6 +146,18 @@ int VFI::command (Command *command)
     return 1;
   }
 
+  line = getVFI(ihigh, ilow, iclose, ivol, period);
+
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * VFI::getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int period)
+{
   Curve *vfi = new Curve;
 
   int ipos = 0;
@@ -203,20 +269,31 @@ int VFI::command (Command *command)
     vfi->setBar(ipos, new CurveBar(t));
   }
 
-  vfi->setLabel(name);
-  i->setLine(name, vfi);
+  return vfi;
+}
 
-  command->setReturnCode("0");
+void VFI::dialog (QWidget *p, Indicator *i)
+{
+  VFIDialog *dialog = new VFIDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
 
-  return 0;
+void VFI::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Histogram Bar");
+  set->setData(_PERIOD, 10);
 }
 
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   VFI *o = new VFI;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

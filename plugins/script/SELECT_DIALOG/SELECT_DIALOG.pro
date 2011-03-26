@@ -3,7 +3,5 @@
 }
 
 HEADERS += SELECT_DIALOG.h
-HEADERS += SelectDialog.h
 
 SOURCES += SELECT_DIALOG.cpp
-SOURCES += SelectDialog.cpp

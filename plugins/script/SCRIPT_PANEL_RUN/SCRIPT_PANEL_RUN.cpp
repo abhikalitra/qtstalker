@@ -45,8 +45,8 @@ int SCRIPT_PANEL_RUN::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SCRIPT_PANEL_RUN *o = new SCRIPT_PANEL_RUN;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

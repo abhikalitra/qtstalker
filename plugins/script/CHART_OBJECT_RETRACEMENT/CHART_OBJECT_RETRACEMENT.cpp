@@ -171,8 +171,8 @@ int CHART_OBJECT_RETRACEMENT::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CHART_OBJECT_RETRACEMENT *o = new CHART_OBJECT_RETRACEMENT;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

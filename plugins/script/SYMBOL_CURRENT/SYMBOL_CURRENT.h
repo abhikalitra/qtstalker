@@ -22,9 +22,9 @@
 #ifndef SYMBOL_CURRENT_HPP
 #define SYMBOL_CURRENT_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SYMBOL_CURRENT : public ScriptPlugin
+class SYMBOL_CURRENT : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class SYMBOL_CURRENT : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

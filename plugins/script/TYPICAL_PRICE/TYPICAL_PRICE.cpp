@@ -109,8 +109,8 @@ int TYPICAL_PRICE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   TYPICAL_PRICE *o = new TYPICAL_PRICE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

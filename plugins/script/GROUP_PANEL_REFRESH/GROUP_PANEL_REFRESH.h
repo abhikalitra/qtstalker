@@ -22,9 +22,9 @@
 #ifndef GROUP_PANEL_REFRESH_HPP
 #define GROUP_PANEL_REFRESH_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class GROUP_PANEL_REFRESH : public ScriptPlugin
+class GROUP_PANEL_REFRESH : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class GROUP_PANEL_REFRESH : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

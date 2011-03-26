@@ -106,8 +106,8 @@ int DIV::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   DIV *o = new DIV;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

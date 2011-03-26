@@ -22,9 +22,12 @@
 #ifndef SZ_HPP
 #define SZ_HPP
 
-#include "ScriptPlugin.h"
+#include <QStringList>
 
-class SZ : public ScriptPlugin
+#include "Plugin.h"
+#include "Curve.h"
+
+class SZ : public Plugin
 {
   Q_OBJECT
 
@@ -35,8 +38,28 @@ class SZ : public ScriptPlugin
       _SHORT
     };
 
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _PERIOD = 40,
+      _PERIOD_NO_DECLINE = 50,
+      _COEFFICIENT = 60,
+      _METHOD = 70,
+      _COLOR_BARS_UP = 80,
+      _COLOR_BARS_DOWN = 90,
+      _COLOR_BARS_NEUTRAL = 100,
+      _STYLE_BARS = 110
+    };
+
     SZ ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
+    QStringList method ();
+    Curve * getSZ (Curve *ihigh, Curve *ilow, int type, int period, int ndp, double coeff);
 
   private:
     QStringList _method;
@@ -44,7 +67,7 @@ class SZ : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

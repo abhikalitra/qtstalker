@@ -22,9 +22,9 @@
 #ifndef STOCK_SPLIT_HPP
 #define STOCK_SPLIT_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class STOCK_SPLIT : public ScriptPlugin
+class STOCK_SPLIT : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class STOCK_SPLIT : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

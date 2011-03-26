@@ -22,9 +22,9 @@
 #ifndef CANDLES_HPP
 #define CANDLES_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class CANDLES : public ScriptPlugin
+class CANDLES : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class CANDLES : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

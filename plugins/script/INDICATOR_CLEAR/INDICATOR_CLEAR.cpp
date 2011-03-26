@@ -49,8 +49,8 @@ int INDICATOR_CLEAR::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_CLEAR *o = new INDICATOR_CLEAR;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

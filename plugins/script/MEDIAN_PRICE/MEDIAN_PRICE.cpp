@@ -104,8 +104,8 @@ int MEDIAN_PRICE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   MEDIAN_PRICE *o = new MEDIAN_PRICE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

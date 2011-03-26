@@ -22,20 +22,37 @@
 #ifndef CCI_HPP
 #define CCI_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class CCI : public ScriptPlugin
+class CCI : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _PERIOD = 40,
+      _COLOR_REF1 = 50,
+      _COLOR_REF2 = 60,
+      _REF1 = 70,
+      _REF2 = 80,
+      _SMOOTHING = 90,
+      _SMOOTHING_TYPE = 100
+    };
+
     CCI ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

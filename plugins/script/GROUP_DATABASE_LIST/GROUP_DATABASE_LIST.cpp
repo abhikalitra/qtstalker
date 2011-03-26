@@ -52,8 +52,8 @@ int GROUP_DATABASE_LIST::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   GROUP_DATABASE_LIST *o = new GROUP_DATABASE_LIST;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

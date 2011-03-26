@@ -22,9 +22,9 @@
 #ifndef TEST_DIALOG_HPP
 #define TEST_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class TEST_DIALOG : public ScriptPlugin
+class TEST_DIALOG : public Plugin
 {
   public:
     TEST_DIALOG ();
@@ -33,7 +33,7 @@ class TEST_DIALOG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

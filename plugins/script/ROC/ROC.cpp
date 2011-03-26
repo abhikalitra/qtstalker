@@ -23,6 +23,9 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "ROCDialog.h"
+#include "InputType.h"
+#include "MAType.h"
 
 #include <QtDebug>
 
@@ -30,10 +33,98 @@ ROC::ROC ()
 {
   _plugin = "ROC";
   _method << "ROC" << "ROCP" << "ROCR" << "ROCR100";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("ROC::ROC: error on TA_Initialize");
+}
+
+int ROC::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_PERIOD);
+
+  InputType itypes;
+  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  int method = _method.indexOf(settings->data(_METHOD));
+
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_SUCCESS;
+
+  switch ((Method) method)
+  {
+    case _ROCN:
+      rc = TA_ROC(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case _ROCP:
+      rc = TA_ROCP(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case _ROCR:
+      rc = TA_ROCR(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    case _ROCR100:
+      rc = TA_ROCR100(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      break;
+    default:
+      break;
+  }
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  int smoothing = settings->getInt(_SMOOTHING);
+  if (smoothing > 1)
+  {
+    MAType mat;
+    Curve *ma = mat.getMA(line, smoothing, mat.fromString(settings->data(_SMOOTHING_TYPE)));
+    if (ma)
+    {
+      delete line;
+      line = ma;
+    }
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int ROC::command (Command *command)
@@ -145,12 +236,37 @@ int ROC::command (Command *command)
   return 0;
 }
 
+void ROC::dialog (QWidget *p, Indicator *i)
+{
+  ROCDialog *dialog = new ROCDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void ROC::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Histogram Bar");
+  set->setData(_PERIOD, 10);
+  set->setData(_SMOOTHING_TYPE, "EMA");
+  set->setData(_SMOOTHING, 9);
+  set->setData(_INPUT, "Close");
+  set->setData(_METHOD, "ROC");
+}
+
+QStringList ROC::method ()
+{
+  return _method;
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   ROC *o = new ROC;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -24,16 +24,18 @@
 
 #include <QToolButton>
 #include <QMenu>
+#include <QColor>
 
 class CrossHairsButton : public QToolButton
 {
   Q_OBJECT
-  
+
   public:
     CrossHairsButton ();
     
   public slots:
     void dialog ();
+    void dialog2 (QColor);
     void changed (bool);
     void contextMenu ();
 
@@ -42,5 +44,3 @@ class CrossHairsButton : public QToolButton
 };
 
 #endif
-
-

@@ -71,9 +71,13 @@ class ScriptPage : public QWidget
     void runScript ();
     void runExternalScript (QString);
     void runScript (QString);
+    void runScript2 (QStringList);
     void newScript ();
     void editScript ();
+    void editScript (QString);
+    void editScript (QStringList);
     void deleteScript ();
+    void deleteScript2 (QStringList);
     void done (QString);
     void cancelScript ();
     void cancelScript (QString);

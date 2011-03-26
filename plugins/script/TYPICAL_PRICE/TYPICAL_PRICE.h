@@ -22,9 +22,9 @@
 #ifndef TYPICAL_PRICE_HPP
 #define TYPICAL_PRICE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class TYPICAL_PRICE : public ScriptPlugin
+class TYPICAL_PRICE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class TYPICAL_PRICE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

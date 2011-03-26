@@ -47,8 +47,8 @@ int SETTINGS_LOAD::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SETTINGS_LOAD *o = new SETTINGS_LOAD;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

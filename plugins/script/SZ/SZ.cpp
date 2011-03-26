@@ -23,8 +23,9 @@
    Dr. Alexander Elder's book _Come Into My Trading Room_, p.173 */
 
 #include "SZ.h"
-#include "Curve.h"
 #include "Globals.h"
+#include "SZDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -32,6 +33,61 @@ SZ::SZ ()
 {
   _plugin = "SZ";
   _method << "LONG" << "SHORT";
+  _type = _INDICATOR;
+}
+
+int SZ::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_PERIOD);
+  int ndp = settings->getInt(_PERIOD_NO_DECLINE);
+  double coeff = settings->getDouble(_COEFFICIENT);
+  int method = _method.indexOf(settings->data(_METHOD));
+
+  InputType it;
+  Curve *high = it.input(bd, "High");
+  if (! high)
+    return 1;
+
+  Curve *low = it.input(bd, "Low");
+  if (! low)
+  {
+    delete high;
+    return 1;
+  }
+
+  // create bars
+  Curve *bars = it.ohlc(bd,
+			QColor(settings->data(_COLOR_BARS_UP)),
+			QColor(settings->data(_COLOR_BARS_DOWN)),
+			QColor(settings->data(_COLOR_BARS_NEUTRAL)));
+  if (settings->data(_STYLE_BARS) == "OHLC")
+    bars->setType(Curve::OHLC);
+  else
+    bars->setType(Curve::Candle);
+  bars->setLabel("BARS");
+  bars->setZ(0);
+  i->setLine("BARS", bars);
+
+  Curve *line = getSZ(high, low, method, period, ndp, coeff);
+  if (! line)
+  {
+    delete high;
+    delete low;
+    return 1;
+  }
+
+  delete high;
+  delete low;
+  
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(1);
+  i->setLine(settings->data(_LABEL), line);
+  
+  return 0;  
 }
 
 int SZ::command (Command *command)
@@ -103,6 +159,22 @@ int SZ::command (Command *command)
     return 1;
   }
 
+  Curve *pl = getSZ(ihigh, ilow, method, period, no_decline_period, coefficient);
+  if (! pl)
+  {
+    return 1;
+  }
+
+  pl->setLabel(name);
+  i->setLine(name, pl);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * SZ::getSZ (Curve *ihigh, Curve *ilow, int method, int period, int no_decline_period, double coefficient)
+{
   int display_uptrend = 0;
   int display_dntrend = 0;
   int position = 1;
@@ -208,7 +280,7 @@ int SZ::command (Command *command)
     int backloop;
     for (backloop = no_decline_period - 1; backloop >= 0; backloop--)
     {
-      if (loop - backloop > start)
+      if (ipos - backloop > start)
       {
         if (old_uptrend_stops[backloop] > adjusted_uptrend_stop)
           adjusted_uptrend_stop = old_uptrend_stops[backloop];
@@ -225,8 +297,8 @@ int SZ::command (Command *command)
     old_uptrend_stops[0] = uptrend_stop;
     old_dntrend_stops[0] = dntrend_stop;
 
-    sz_uptrend->setBar(loop, new CurveBar(adjusted_uptrend_stop));
-    sz_dntrend->setBar(loop, new CurveBar(adjusted_dntrend_stop));
+    sz_uptrend->setBar(ipos, new CurveBar(adjusted_uptrend_stop));
+    sz_dntrend->setBar(ipos, new CurveBar(adjusted_dntrend_stop));
   }
 
   Curve *pl = 0;
@@ -242,20 +314,43 @@ int SZ::command (Command *command)
     delete sz_uptrend;
   }
 
-  pl->setLabel(name);
-  i->setLine(name, pl);
+  return pl;
+}
 
-  command->setReturnCode("0");
+void SZ::dialog (QWidget *p, Indicator *i)
+{
+  SZDialog *dialog = new SZDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
 
-  return 0;
+void SZ::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Line");
+  set->setData(_PERIOD, 10);
+  set->setData(_PERIOD_NO_DECLINE, 2);
+  set->setData(_COEFFICIENT, 2);
+  set->setData(_METHOD, "LONG");
+  set->setData(_STYLE_BARS, "OHLC");
+  set->setData(_COLOR_BARS_UP, "green");
+  set->setData(_COLOR_BARS_DOWN, "red");
+  set->setData(_COLOR_BARS_NEUTRAL, "dimgray");
+}
+
+QStringList SZ::method ()
+{
+  return _method;
 }
 
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SZ *o = new SZ;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

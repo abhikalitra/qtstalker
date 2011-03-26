@@ -80,8 +80,8 @@ int DATA_WINDOW::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   DATA_WINDOW *o = new DATA_WINDOW;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

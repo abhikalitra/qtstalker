@@ -46,8 +46,8 @@ int SCRIPT_NAME::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SCRIPT_NAME *o = new SCRIPT_NAME;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

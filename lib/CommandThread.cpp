@@ -20,11 +20,10 @@
  */
 
 #include "CommandThread.h"
-//#include "ScriptPluginFactory.h"
 
 #include <QDebug>
 
-CommandThread::CommandThread (QObject *p, ScriptPlugin *plug, Command *com) : QThread (p)
+CommandThread::CommandThread (QObject *p, Plugin *plug, Command *com) : QThread (p)
 {
   _plug = plug;
   _command = com;
@@ -34,19 +33,5 @@ CommandThread::CommandThread (QObject *p, ScriptPlugin *plug, Command *com) : QT
 
 void CommandThread::run ()
 {
-/*  
-  ScriptPluginFactory fac;
-  ScriptPlugin *plug = fac.plugin(_command->plugin());
-  if (! plug)
-  {
-    qDebug() << "CommandThread::run: no plugin" << _command->plugin();
-    return;
-  }
-*/
-
   _plug->command(_command);
-
-//  delete plug;
-
-//  emit signalDone(_command);
 }

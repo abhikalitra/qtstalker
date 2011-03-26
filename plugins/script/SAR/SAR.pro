@@ -3,5 +3,7 @@
 } 
 
 HEADERS += SAR.h
+HEADERS += SARDialog.h
 
 SOURCES += SAR.cpp
+SOURCES += SARDialog.cpp

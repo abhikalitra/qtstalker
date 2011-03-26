@@ -22,9 +22,9 @@
 #ifndef EXCHANGE_SEARCH_DIALOG_HPP
 #define EXCHANGE_SEARCH_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class EXCHANGE_SEARCH_DIALOG : public ScriptPlugin
+class EXCHANGE_SEARCH_DIALOG : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class EXCHANGE_SEARCH_DIALOG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

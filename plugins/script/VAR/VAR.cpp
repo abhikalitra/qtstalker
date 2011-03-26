@@ -23,16 +23,83 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "VARDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
 VAR::VAR ()
 {
   _plugin = "VAR";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("VAR::VAR: error on TA_Initialize");
+}
+
+int VAR::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_PERIOD);
+
+  InputType it;
+  Curve *in = it.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  TA_Real input[in->count()];
+  TA_Real out[in->count()];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  QList<int> keys;
+  in->keys(keys);
+  int size = keys.count();
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  delete in;
+  
+  TA_RetCode rc = TA_VAR(0,
+                         size - 1,
+                         &input[0],
+                         period,
+                         0,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int VAR::command (Command *command)
@@ -125,12 +192,29 @@ int VAR::command (Command *command)
   return 0;
 }
 
+void VAR::dialog (QWidget *p, Indicator *i)
+{
+  VARDialog *dialog = new VARDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void VAR::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Line");
+  set->setData(_PERIOD, 10);
+  set->setData(_INPUT, "Close");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   VAR *o = new VAR;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

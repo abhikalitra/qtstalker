@@ -22,9 +22,9 @@
 #ifndef CHART_PANEL_REFRESH_HPP
 #define CHART_PANEL_REFRESH_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class CHART_PANEL_REFRESH : public ScriptPlugin
+class CHART_PANEL_REFRESH : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class CHART_PANEL_REFRESH : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

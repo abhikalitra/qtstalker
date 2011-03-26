@@ -127,8 +127,8 @@ int MAX::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   MAX *o = new MAX;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

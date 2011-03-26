@@ -132,6 +132,11 @@ RefreshButton * ControlPanel::refreshButton ()
   return _refreshButton;
 }
 
+ConfigureButton * ControlPanel::configureButton ()
+{
+  return _configureButton;
+}
+
 QSlider * ControlPanel::slider ()
 {
   return _slider;

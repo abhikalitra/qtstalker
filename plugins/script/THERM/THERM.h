@@ -22,20 +22,33 @@
 #ifndef THERM_HPP
 #define THERM_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class THERM : public ScriptPlugin
+class THERM : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _SMOOTHING = 40,
+      _SMOOTHING_TYPE = 50
+    };
+
     THERM ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
+    Curve * getTHERM (Curve *, Curve *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

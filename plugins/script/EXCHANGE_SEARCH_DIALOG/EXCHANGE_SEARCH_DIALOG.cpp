@@ -47,8 +47,8 @@ int EXCHANGE_SEARCH_DIALOG::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   EXCHANGE_SEARCH_DIALOG *o = new EXCHANGE_SEARCH_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

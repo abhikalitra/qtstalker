@@ -26,7 +26,6 @@
 #include "Strip.h"
 #include "ChartObjectFactory.h"
 #include "Globals.h"
-#include "Script.h"
 #include "ChartObjectDataBase.h"
 
 #include <QSettings>
@@ -88,12 +87,14 @@ Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
   _indicator = new Indicator(this);
   _indicator->setName(name);
   connect(_indicator, SIGNAL(signalPlot()), this, SLOT(updatePlot()));
+  connect(_indicator, SIGNAL(signalClear()), this, SLOT(clear()));
 
   _menu = new PlotMenu(this);
   connect(_menu, SIGNAL(signalDateStatus(bool)), this, SLOT(showDate(bool)));
   connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
   connect(_menu, SIGNAL(signalNewChartObject(QString)), this, SLOT(chartObjectNew(QString)));
   connect(_menu, SIGNAL(signalDeleteAllChartObjects()), this, SLOT(deleteAllChartObjects()));
+  connect(_menu, SIGNAL(signalEditIndicator()), _indicator, SLOT(dialog()));
 
   _dock = new DockWidget(name.left(4), mw);
   _dock->setObjectName(name);
@@ -484,12 +485,6 @@ int Plot::index ()
 
 void Plot::mouseClick (int button, QPoint p)
 {
-//  if (! _selected && button == Qt::RightButton) 
-//  {
-//    showContextMenu();
-//    return;
-//  }
-  
   emit signalClick(button, p);
 }
 

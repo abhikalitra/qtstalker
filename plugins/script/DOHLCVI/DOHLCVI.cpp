@@ -113,8 +113,8 @@ int DOHLCVI::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   DOHLCVI *o = new DOHLCVI;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -149,8 +149,8 @@ int CHART_OBJECT_TLINE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CHART_OBJECT_TLINE *o = new CHART_OBJECT_TLINE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

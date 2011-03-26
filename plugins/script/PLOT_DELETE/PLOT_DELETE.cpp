@@ -47,8 +47,8 @@ int PLOT_DELETE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   PLOT_DELETE *o = new PLOT_DELETE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

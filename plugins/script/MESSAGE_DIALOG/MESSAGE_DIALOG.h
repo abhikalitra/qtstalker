@@ -22,9 +22,9 @@
 #ifndef MESSAGE_DIALOG_HPP
 #define MESSAGE_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class MESSAGE_DIALOG : public ScriptPlugin
+class MESSAGE_DIALOG : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class MESSAGE_DIALOG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

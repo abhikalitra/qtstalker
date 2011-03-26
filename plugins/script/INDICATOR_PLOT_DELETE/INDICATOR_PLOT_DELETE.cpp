@@ -51,8 +51,8 @@ int INDICATOR_PLOT_DELETE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT_DELETE *o = new INDICATOR_PLOT_DELETE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

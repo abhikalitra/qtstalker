@@ -22,9 +22,9 @@
 #ifndef QUOTE_DATABASE_DELETE_HPP
 #define QUOTE_DATABASE_DELETE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class QUOTE_DATABASE_DELETE : public ScriptPlugin
+class QUOTE_DATABASE_DELETE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class QUOTE_DATABASE_DELETE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

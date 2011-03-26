@@ -22,9 +22,9 @@
 #ifndef DOHLCVI_HPP
 #define DOHLCVI_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class DOHLCVI : public ScriptPlugin
+class DOHLCVI : public Plugin
 {
   Q_OBJECT
 
@@ -38,7 +38,7 @@ class DOHLCVI : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

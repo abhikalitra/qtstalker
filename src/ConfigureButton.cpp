@@ -21,9 +21,10 @@
 
 #include "ConfigureButton.h"
 #include "Globals.h"
-#include "Script.h"
 #include "Doc.h"
 #include "AboutDialog.h"
+#include "NewIndicatorDialog.h"
+#include "ConfigureDialog.h"
 
 #include "../pics/about.xpm"
 #include "../pics/help.xpm"
@@ -121,20 +122,13 @@ void ConfigureButton::aboutDialog ()
 
 void ConfigureButton::configureDialog ()
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("Configure");
-  script->setFile(settings.value("configure_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  ConfigureDialog *dialog = new ConfigureDialog(this);
+  dialog->show();
 }
 
 void ConfigureButton::newIndicator ()
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("IndicatorNew");
-  script->setFile(settings.value("indicator_new_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  NewIndicatorDialog *dialog = new NewIndicatorDialog(this);
+  connect(dialog, SIGNAL(signalDone(QString)), this, SIGNAL(signalNewIndicator(QString)));
+  dialog->show();
 }

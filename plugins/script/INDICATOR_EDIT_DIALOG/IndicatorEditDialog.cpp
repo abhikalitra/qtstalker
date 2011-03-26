@@ -43,6 +43,7 @@ IndicatorEditDialog::IndicatorEditDialog (QWidget *p, Command *c) : Dialog (p)
   _indicator.setName(_name);
   _indicator.load();
 
+/*  
   QString s = _indicator.command();
   if (! s.isEmpty())
     _com->setText(s);
@@ -54,6 +55,7 @@ IndicatorEditDialog::IndicatorEditDialog (QWidget *p, Command *c) : Dialog (p)
     tl << _file;
     _fileButton->setFiles(tl);
   }
+*/
 
   loadSettings();
 
@@ -107,8 +109,8 @@ void IndicatorEditDialog::done ()
     return;
   }
 
-  _indicator.setCommand(com);
-  _indicator.setScript(_file);
+//  _indicator.setCommand(com);
+//  _indicator.setScript(_file);
   _indicator.save();
 
   _command->setReturnCode("0");

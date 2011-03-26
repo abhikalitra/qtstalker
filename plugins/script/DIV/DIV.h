@@ -22,9 +22,9 @@
 #ifndef DIV_HPP
 #define DIV_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class DIV : public ScriptPlugin
+class DIV : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class DIV : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

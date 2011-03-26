@@ -34,7 +34,6 @@
 #include <QToolBar>
 
 #include "SymbolListWidget.h"
-#include "Script.h"
 
 class GroupPage : public QWidget
 {
@@ -62,13 +61,16 @@ class GroupPage : public QWidget
   public slots:
     void updateList ();
     void newGroup ();
+    void editDialog (QString);
     void editGroup ();
     void deleteGroup ();
+    void deleteGroup2 (QStringList);
     void groupSelected (int);
     void rightClick (const QPoint &);
     void chartOpened (BarData);
     void updateGroups ();
     void addToGroup ();
+    void addToGroup2 (QStringList);
     void loadGroups ();
 
   protected:

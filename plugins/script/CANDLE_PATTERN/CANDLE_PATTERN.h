@@ -22,91 +22,30 @@
 #ifndef CANDLE_PATTERN_HPP
 #define CANDLE_PATTERN_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class CANDLE_PATTERN : public ScriptPlugin
+class CANDLE_PATTERN : public Plugin
 {
   Q_OBJECT
 
   public:
-    enum Method
+    enum Parm
     {
-      _2CROWS,
-      _3BLACKCROWS,
-      _3INSIDE,
-      _3LINESTRIKE,
-      _3OUTSIDE,
-      _3STARSINSOUTH,
-      _3WHITESOLDIERS,
-      _ABANDONEDBABY,
-      _ADVANCEBLOCK,
-      _BELTHOLD,
-      _BREAKAWAY,
-      _CLOSINGMARUBOZU,
-      _CONCEALBABYSWALL,
-      _COUNTERATTACK,
-      _DARKCLOUDCOVER,
-      _DOJI,
-      _DOJISTAR,
-      _DRAGONFLYDOJI,
-      _ENGULFING,
-      _EVENINGDOJISTAR,
-      _EVENINGSTAR,
-      _GAPSIDESIDEWHITE,
-      _GRAVESTONEDOJI,
-      _HAMMER,
-      _HANGINGMAN,
-      _HARAMI,
-      _HARAMICROSS,
-      _HIGHWAVE,
-      _HIKKAKE,
-      _HIKKAKEMOD,
-      _HOMINGPIGEON,
-      _IDENTICAL3CROWS,
-      _INNECK,
-      _INVERTEDHAMMER,
-      _KICKING,
-      _KICKINGBYLENGTH,
-      _LADDERBOTTOM,
-      _LONGLEGGEDDOJI,
-      _LONGLINE,
-      _MARUBOZU,
-      _MATCHINGLOW,
-      _MATHOLD,
-      _MORNINGDOJISTAR,
-      _MORNINGSTAR,
-      _ONNECK,
-      _PIERCING,
-      _RICKSHAWMAN,
-      _RISEFALL3METHODS,
-      _SEPARATINGLINES,
-      _SHOOTINGSTAR,
-      _SHORTLINE,
-      _SPINNINGTOP,
-      _STALLEDPATTERN,
-      _STICKSANDWICH,
-      _TAKURI,
-      _TASUKIGAP,
-      _THRUSTING,
-      _TRISTAR,
-      _UNIQUE3RIVER,
-      _UPSIDEGAP2CROWS,
-      _XSIDEGAP3METHODS
+      _METHOD = 10,
+      _COLOR = 20,
+      _PEN = 30
     };
 
     CANDLE_PATTERN ();
     int command (Command *);
-    int getCandles (Command *);
-    int getCandlesPen (Command *);
-    int method (Command *);
-
-  private:
-    QStringList _method;
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

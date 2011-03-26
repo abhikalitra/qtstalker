@@ -22,9 +22,9 @@
 #ifndef MIN_HPP
 #define MIN_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class MIN : public ScriptPlugin
+class MIN : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class MIN : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

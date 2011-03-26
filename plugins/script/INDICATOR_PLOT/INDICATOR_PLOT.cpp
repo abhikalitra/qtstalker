@@ -74,8 +74,8 @@ int INDICATOR_PLOT::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT *o = new INDICATOR_PLOT;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

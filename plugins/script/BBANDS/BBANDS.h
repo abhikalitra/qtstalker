@@ -22,23 +22,45 @@
 #ifndef BBANDS_HPP
 #define BBANDS_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class BBANDS : public ScriptPlugin
+class BBANDS : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR_UP = 10,
+      _COLOR_MID = 20,
+      _COLOR_DOWN = 30,
+      _STYLE_UP = 40,
+      _STYLE_MID = 50,
+      _STYLE_DOWN = 60,
+      _LABEL_UP = 70,
+      _LABEL_MID = 80,
+      _LABEL_DOWN = 90,
+      _DEVIATION_UP = 100,
+      _DEVIATION_DOWN = 110,
+      _INPUT = 120,
+      _PERIOD = 130,
+      _MA_TYPE = 140,
+      _COLOR_BARS_UP = 150,
+      _COLOR_BARS_DOWN = 160,
+      _COLOR_BARS_NEUTRAL = 170,
+      _STYLE_BARS = 180
+    };
+
     BBANDS ();
     int command (Command *);
-
-  private:
-    QStringList _maList;
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

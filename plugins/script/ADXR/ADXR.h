@@ -22,9 +22,9 @@
 #ifndef ADXR_HPP
 #define ADXR_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class ADXR : public ScriptPlugin
+class ADXR : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class ADXR : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

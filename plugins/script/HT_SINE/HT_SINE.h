@@ -22,20 +22,34 @@
 #ifndef HT_SINE_HPP
 #define HT_SINE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class HT_SINE : public ScriptPlugin
+class HT_SINE : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR_SINE = 10,
+      _COLOR_LEAD = 20,
+      _STYLE_SINE = 30,
+      _STYLE_LEAD = 40,
+      _LABEL_SINE = 50,
+      _LABEL_LEAD = 60,
+      _INPUT = 70
+    };
+
     HT_SINE ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

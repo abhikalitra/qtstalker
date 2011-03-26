@@ -22,9 +22,9 @@
 #ifndef YAHOO_DIALOG_HPP
 #define YAHOO_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class YAHOO_DIALOG : public ScriptPlugin
+class YAHOO_DIALOG : public Plugin
 {
   Q_OBJECT
   
@@ -35,7 +35,7 @@ class YAHOO_DIALOG : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

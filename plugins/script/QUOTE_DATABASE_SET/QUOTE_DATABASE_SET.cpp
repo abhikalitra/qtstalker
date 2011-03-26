@@ -225,8 +225,8 @@ void QUOTE_DATABASE_SET::save ()
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   QUOTE_DATABASE_SET *o = new QUOTE_DATABASE_SET;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

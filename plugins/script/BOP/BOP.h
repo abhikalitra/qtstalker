@@ -22,20 +22,32 @@
 #ifndef BOP_HPP
 #define BOP_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class BOP : public ScriptPlugin
+class BOP : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _SMOOTHING = 40,
+      _SMOOTHING_TYPE = 50
+    };
+
     BOP ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

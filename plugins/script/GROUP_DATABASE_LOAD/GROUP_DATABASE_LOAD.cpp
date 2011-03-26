@@ -55,8 +55,8 @@ int GROUP_DATABASE_LOAD::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   GROUP_DATABASE_LOAD *o = new GROUP_DATABASE_LOAD;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

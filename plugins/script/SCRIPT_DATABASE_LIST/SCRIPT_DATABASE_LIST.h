@@ -22,9 +22,9 @@
 #ifndef SCRIPT_DATABASE_LIST_HPP
 #define SCRIPT_DATABASE_LIST_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SCRIPT_DATABASE_LIST : public ScriptPlugin
+class SCRIPT_DATABASE_LIST : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class SCRIPT_DATABASE_LIST : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

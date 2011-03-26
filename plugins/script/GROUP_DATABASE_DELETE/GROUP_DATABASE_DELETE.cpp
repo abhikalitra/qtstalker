@@ -52,8 +52,8 @@ int GROUP_DATABASE_DELETE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   GROUP_DATABASE_DELETE *o = new GROUP_DATABASE_DELETE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

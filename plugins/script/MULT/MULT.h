@@ -22,9 +22,9 @@
 #ifndef MULT_HPP
 #define MULT_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class MULT : public ScriptPlugin
+class MULT : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class MULT : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

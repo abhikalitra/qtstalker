@@ -38,6 +38,14 @@ void Setting::setData (QString k, QString d)
   dict.insert(s, s2);
 }
 
+void Setting::setData (int k, QString d)
+{
+  QString s = QString::number(k);
+  QString s2 = d;
+  strip(s2);
+  dict.insert(s, s2);
+}
+
 void Setting::setData (QString k, int d)
 {
   QString s = k;
@@ -48,6 +56,13 @@ void Setting::setData (QString k, int d)
   dict.insert(s, s2);
 }
 
+void Setting::setData (int k, int d)
+{
+  QString s = QString::number(k);
+  QString s2 = QString::number(d);
+  dict.insert(s, s2);
+}
+
 void Setting::setData (QString k, double d)
 {
   QString s = k;
@@ -55,6 +70,13 @@ void Setting::setData (QString k, double d)
   
   QString s2 = QString::number(d);
   
+  dict.insert(s, s2);
+}
+
+void Setting::setData (int k, double d)
+{
+  QString s = QString::number(k);
+  QString s2 = QString::number(d);
   dict.insert(s, s2);
 }
 
@@ -93,6 +115,11 @@ QString Setting::data (QString k)
   return dict.value(k);
 }
 
+QString Setting::data (int k)
+{
+  return dict.value(QString::number(k));
+}
+
 double Setting::getDouble (QString k)
 {
   if (dict.contains(k))
@@ -101,8 +128,26 @@ double Setting::getDouble (QString k)
     return 0;
 }
 
+double Setting::getDouble (int d)
+{
+  QString k = QString::number(d);
+  if (dict.contains(k))
+    return dict.value(k).toDouble();
+  else
+    return 0;
+}
+
 int Setting::getInt (QString k)
 {
+  if (dict.contains(k))
+    return dict.value(k).toInt();
+  else
+    return 0;
+}
+
+int Setting::getInt (int d)
+{
+  QString k = QString::number(d);
   if (dict.contains(k))
     return dict.value(k).toInt();
   else

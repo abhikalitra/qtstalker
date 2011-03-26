@@ -22,20 +22,37 @@
 #ifndef MFI_HPP
 #define MFI_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class MFI : public ScriptPlugin
+class MFI : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _PERIOD = 40,
+      _SMOOTHING = 50,
+      _SMOOTHING_TYPE = 60,
+      _COLOR_REF1 = 70,
+      _COLOR_REF2 = 80,
+      _REF1 = 90,
+      _REF2 = 100
+    };
+
     MFI ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -22,9 +22,9 @@
 #ifndef INDICATOR_CLEAR_HPP
 #define INDICATOR_CLEAR_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class INDICATOR_CLEAR : public ScriptPlugin
+class INDICATOR_CLEAR : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class INDICATOR_CLEAR : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -36,16 +36,16 @@ class Indicator : public QObject
 
   signals:
     void signalPlot ();
+    void signalClear ();
   
   public:
     Indicator (QObject *);
     Indicator ();
-    QString & name ();
+    ~Indicator ();
+    QString name ();
     bool lock ();
     bool date ();
     bool log ();
-    QString & script ();
-    QString & command ();
     void setLine (QString, Curve *);
     void setLine (int, Curve *);
     Curve * line (QString);
@@ -62,6 +62,7 @@ class Indicator : public QObject
     QHash<QString, Setting> & chartObjects ();
     int chartObjectCount ();
     int lineCount ();
+    Setting * settings ();
 
   public slots:
     int save ();
@@ -70,20 +71,14 @@ class Indicator : public QObject
     void setLock (bool);
     void setDate (bool);
     void setLog (bool);
-    void setScript (QString);
-    void setCommand (QString);
     void calculate ();
-    void scriptFinished ();
+    void dialog ();
+    void dialogDone ();
 
   protected:
     QHash<QString, Curve *> _lines;
     QHash<QString, Setting> _chartObjects;
-    QString _name;
-    QString _script;
-    QString _command;
-    bool _lock;
-    bool _date;
-    bool _log;
+    Setting *_settings;
 };
 
 // this is for passing Indicator data between threads

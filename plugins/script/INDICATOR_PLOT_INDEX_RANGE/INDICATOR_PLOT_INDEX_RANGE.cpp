@@ -64,8 +64,8 @@ int INDICATOR_PLOT_INDEX_RANGE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   INDICATOR_PLOT_INDEX_RANGE *o = new INDICATOR_PLOT_INDEX_RANGE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

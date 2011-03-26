@@ -29,7 +29,7 @@
 
 #include "Indicator.h"
 #include "BarData.h"
-#include "ScriptPluginFactory.h"
+#include "PluginFactory.h"
 #include "Command.h"
 
 #include <QProcess>
@@ -89,7 +89,7 @@ class Script : public QObject
     Indicator *_indicator;
     int _indicatorFlag;
     BarData *_barData;
-    ScriptPluginFactory _factory;
+    PluginFactory _factory;
     QString _name;
     QString _com;
     QString _file;
@@ -97,7 +97,7 @@ class Script : public QObject
     QString _comment;
     int _minutes;
     QString _lastRun;
-    QHash<QString, ScriptPlugin *> _plugins;
+    QHash<QString, Plugin *> _plugins;
     Command *_command;
     QWidget *_parent;
 };

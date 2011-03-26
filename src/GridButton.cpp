@@ -21,12 +21,12 @@
 
 #include "GridButton.h"
 #include "Globals.h"
-#include "Script.h"
 
 #include "../pics/grid.xpm"
 #include "../pics/color.xpm"
 
 #include <QSettings>
+#include <QColorDialog>
 
 GridButton::GridButton ()
 {
@@ -49,24 +49,38 @@ GridButton::GridButton ()
   connect(this, SIGNAL(toggled(bool)), this, SLOT(changed(bool)));
 }
 
-void GridButton::changed (bool)
+void GridButton::changed (bool d)
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("GridStatusChanged");
-  script->setFile(settings.value("grid_status_changed_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  QSettings settings(g_localSettings);
+  settings.setValue("grid", d);
+  settings.sync();
+
+  int t = d;
+  g_middleMan->grid(t);
 }
 
 void GridButton::colorDialog ()
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("GridColor");
-  script->setFile(settings.value("grid_color_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  QSettings settings(g_localSettings);
+  QColor c(settings.value("grid_color", "dimgray").toString());
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << tr("Grid Color");
+
+  QColorDialog *dialog = new QColorDialog(c, this);
+  dialog->setWindowTitle(l.join(" "));
+  connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(colorDialog2(QColor)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->show();
+}
+
+void GridButton::colorDialog2 (QColor c)
+{
+  QSettings settings(g_localSettings);
+  settings.setValue("grid_color", c.name());
+  settings.sync();
+
+  g_middleMan->gridColor(c);
 }
 
 void GridButton::contextMenu ()

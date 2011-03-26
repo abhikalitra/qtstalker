@@ -23,16 +23,88 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "HT_SINEDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
 HT_SINE::HT_SINE ()
 {
   _plugin = "HT_SINE";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("HT_SINE::HT_SINE: error on TA_Initialize");
+}
+
+int HT_SINE::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  InputType itypes;
+  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  int size = in->count();
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_HT_SINE (0,
+                              size - 1,
+                              &input[0],
+                              &outBeg,
+                              &outNb,
+                              &out[0],
+                              &out2[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *sline = new Curve;
+  Curve *lline = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    sline->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    lline->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
+
+    keyLoop--;
+    outLoop--;
+  }
+
+  sline->setAllColor(QColor(settings->data(_COLOR_SINE)));
+  sline->setLabel(settings->data(_LABEL_SINE));
+  sline->setType((Curve::Type) sline->typeFromString(settings->data(_STYLE_SINE)));
+  sline->setZ(0);
+  i->setLine(settings->data(_LABEL_SINE), sline);
+  
+  lline->setAllColor(QColor(settings->data(_COLOR_LEAD)));
+  lline->setLabel(settings->data(_LABEL_LEAD));
+  lline->setType((Curve::Type) lline->typeFromString(settings->data(_STYLE_LEAD)));
+  lline->setZ(1);
+  i->setLine(settings->data(_LABEL_LEAD), lline);
+
+  return 0;
 }
 
 int HT_SINE::command (Command *command)
@@ -131,12 +203,31 @@ int HT_SINE::command (Command *command)
   return 0;
 }
 
+void HT_SINE::dialog (QWidget *p, Indicator *i)
+{
+  HT_SINEDialog *dialog = new HT_SINEDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void HT_SINE::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR_SINE, "red");
+  set->setData(_COLOR_LEAD, "yellow");
+  set->setData(_STYLE_SINE, "Line");
+  set->setData(_STYLE_LEAD, "Line");
+  set->setData(_LABEL_SINE, "SINE");
+  set->setData(_LABEL_LEAD, "LEAD");
+  set->setData(_INPUT, "Close");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   HT_SINE *o = new HT_SINE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

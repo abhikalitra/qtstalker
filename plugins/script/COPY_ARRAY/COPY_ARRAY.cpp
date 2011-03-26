@@ -106,8 +106,8 @@ int COPY_ARRAY::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   COPY_ARRAY *o = new COPY_ARRAY;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

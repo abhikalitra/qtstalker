@@ -21,8 +21,8 @@
 
 #include "PlotMenu.h"
 #include "Globals.h"
-#include "Script.h"
 #include "ConfirmDialog.h"
+#include "NewIndicatorDialog.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -193,27 +193,14 @@ void PlotMenu::createMenus ()
 
 void PlotMenu::editIndicator ()
 {
-  QSettings settings(g_localSettings);
-  settings.setValue("edit_indicator_selected", _indicator);
-  settings.sync();
-  
-  QSettings settings2(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("IndicatorEdit");
-  script->setFile(settings2.value("indicator_edit_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  emit signalEditIndicator();
 }
 
 void PlotMenu::deleteIndicator ()
 {
-  QSettings settings(g_globalSettings);
-  
-  Script *script = new Script(this);
-  script->setName("IndicatorDelete");
-  script->setFile(settings.value("indicator_delete_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  QStringList l;
+  l << _indicator;
+  emit signalDeleteIndicator(l);
 }
 
 void PlotMenu::deleteAllChartObjects ()
@@ -276,11 +263,7 @@ void PlotMenu::setIndicator (QString d)
 
 void PlotMenu::newIndicator ()
 {
-  QSettings settings(g_globalSettings);
-  
-  Script *script = new Script(this);
-  script->setName("IndicatorNew");
-  script->setFile(settings.value("indicator_new_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  NewIndicatorDialog *dialog = new NewIndicatorDialog(this);
+  connect(dialog, SIGNAL(signalDone(QString)), this, SIGNAL(signalNewIndicator(QString)));
+  dialog->show();
 }

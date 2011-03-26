@@ -177,7 +177,7 @@ void Script::readFromStdout ()
     return;
   }
 
-  ScriptPlugin *plug = _plugins.value(_command->plugin());
+  Plugin *plug = _plugins.value(_command->plugin());
   if (! plug)
   {
     plug = _factory.plugin(_command->plugin());
@@ -194,9 +194,9 @@ void Script::readFromStdout ()
     plug->setParent(_parent);
   }
 
-  switch ((ScriptPlugin::Type) plug->type())
+  switch ((Plugin::Type) plug->type())
   {
-    case ScriptPlugin::_DIALOG:
+    case Plugin::_DIALOG:
       plug->command(_command);
       break;
     default:

@@ -22,20 +22,32 @@
 #ifndef VAR_HPP
 #define VAR_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class VAR : public ScriptPlugin
+class VAR : public Plugin
 {
   Q_OBJECT
 
   public:
+    enum Parm
+    {
+      _COLOR = 10,
+      _STYLE = 20,
+      _LABEL = 30,
+      _PERIOD = 40,
+      _INPUT = 50
+    };
+
     VAR ();
     int command (Command *);
+    int calculate (BarData *, Indicator *);
+    void defaults (Setting *);
+    void dialog (QWidget *, Indicator *);
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

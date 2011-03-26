@@ -954,8 +954,8 @@ int TEST::saveSummary ()
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   TEST *o = new TEST;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

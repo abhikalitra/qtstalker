@@ -26,24 +26,21 @@
 #include <QThread>
 
 #include "Command.h"
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
 class CommandThread : public QThread
 {
   Q_OBJECT
 
-//  signals:
-//    void signalDone (Command *);
-
   public:
-    CommandThread (QObject *, ScriptPlugin *, Command *);
+    CommandThread (QObject *, Plugin *, Command *);
 
   protected:
     void run ();
 
   private:
     Command *_command;
-    ScriptPlugin *_plug;
+    Plugin *_plug;
 };
 
 #endif

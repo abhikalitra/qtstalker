@@ -53,8 +53,8 @@ int QUOTE_DATABASE_EXCHANGE::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   QUOTE_DATABASE_EXCHANGE *o = new QUOTE_DATABASE_EXCHANGE;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

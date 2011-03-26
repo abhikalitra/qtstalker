@@ -23,17 +23,119 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "STOCHSDialog.h"
+#include "MAType.h"
 
 #include <QtDebug>
 
 STOCH_SLOW::STOCH_SLOW ()
 {
   _plugin = "STOCH_SLOW";
-  _maList << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("STOCH_SLOW::STOCH_SLOW: error on TA_Initialize");
+}
+
+int STOCH_SLOW::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int fkperiod = settings->getInt(_PERIOD_FASTK);
+  int skperiod = settings->getInt(_PERIOD_SLOWK);
+  int sdperiod = settings->getInt(_PERIOD_SLOWD);
+
+  MAType mat;
+  int kma = mat.fromString(settings->data(_MA_TYPE_SLOWK));
+  int dma = mat.fromString(settings->data(_MA_TYPE_SLOWD));
+
+  int size = bd->count();
+  TA_Integer outBeg;
+  TA_Integer outNb;
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    high[loop] = (TA_Real) bar->high();
+    low[loop] = (TA_Real) bar->low();
+    close[loop] = (TA_Real) bar->close();
+  }
+
+  TA_RetCode rc = TA_STOCH(0,
+                           size - 1,
+                           &high[0],
+                           &low[0],
+                           &close[0],
+                           fkperiod,
+                           skperiod,
+                           (TA_MAType) kma,
+                           sdperiod,
+                           (TA_MAType) dma,
+                           &outBeg,
+                           &outNb,
+                           &out[0],
+                           &out2[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *kline = new Curve;
+  Curve *dline = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    kline->setBar(dataLoop, new CurveBar(out[outLoop]));
+    dline->setBar(dataLoop, new CurveBar(out2[outLoop]));
+
+    dataLoop--;
+    outLoop--;
+  }
+
+  kline->setAllColor(QColor(settings->data(_COLOR_K)));
+  kline->setLabel(settings->data(_LABEL_K));
+  kline->setType((Curve::Type) kline->typeFromString(settings->data(_STYLE_K)));
+  kline->setZ(0);
+  i->setLine(settings->data(_LABEL_K), kline);
+
+  dline->setAllColor(QColor(settings->data(_COLOR_D)));
+  dline->setLabel(settings->data(_LABEL_D));
+  dline->setType((Curve::Type) dline->typeFromString(settings->data(_STYLE_D)));
+  dline->setZ(1);
+  i->setLine(settings->data(_LABEL_D), dline);
+
+  // create ref1 line
+  Setting co;
+  QString key = "-" + QString::number(i->chartObjectCount() + 1);
+  co.setData("Type", QString("HLine"));
+  co.setData("ID", key);
+  co.setData("RO", 1);
+  co.setData("Price", settings->data(_REF1));
+  co.setData("Color", settings->data(_COLOR_REF1));
+  i->addChartObject(co);
+
+  // create ref2 line
+  key = "-" + QString::number(i->chartObjectCount() + 1);
+  co.setData("ID", key);
+  co.setData("Price", settings->data(_REF2));
+  co.setData("Color", settings->data(_COLOR_REF2));
+  i->addChartObject(co);
+
+  return 0;
 }
 
 int STOCH_SLOW::command (Command *command)
@@ -109,7 +211,8 @@ int STOCH_SLOW::command (Command *command)
     return 1;
   }
 
-  int kma = _maList.indexOf(command->parm("MA_TYPE_SLOWK"));
+  MAType mat;
+  int kma = mat.fromString(command->parm("MA_TYPE_SLOWK"));
   if (kma == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_SLOWK" << command->parm("MA_TYPE_SLOWK");
@@ -123,7 +226,7 @@ int STOCH_SLOW::command (Command *command)
     return 1;
   }
 
-  int dma = _maList.indexOf(command->parm("MA_TYPE_SLOWD"));
+  int dma = mat.fromString(command->parm("MA_TYPE_SLOWD"));
   if (dma == -1)
   {
     qDebug() << _plugin << "::command: invalid MA_TYPE_SLOWD" << command->parm("MA_TYPE_SLOWD");
@@ -208,12 +311,39 @@ int STOCH_SLOW::command (Command *command)
   return 0;
 }
 
+void STOCH_SLOW::dialog (QWidget *p, Indicator *i)
+{
+  STOCHSDialog *dialog = new STOCHSDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void STOCH_SLOW::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR_K, "red");
+  set->setData(_LABEL_K, "%K");
+  set->setData(_STYLE_K, "Line");
+  set->setData(_COLOR_D, "yellow");
+  set->setData(_LABEL_D, "%D");
+  set->setData(_STYLE_D, "Line");
+  set->setData(_PERIOD_FASTK, 5);
+  set->setData(_PERIOD_SLOWK, 3);
+  set->setData(_PERIOD_SLOWD, 3);
+  set->setData(_COLOR_REF1, "white");
+  set->setData(_REF1, 20);
+  set->setData(_COLOR_REF2, "white");
+  set->setData(_REF2, 80);
+  set->setData(_MA_TYPE_SLOWK, "EMA");
+  set->setData(_MA_TYPE_SLOWD, "EMA");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   STOCH_SLOW *o = new STOCH_SLOW;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

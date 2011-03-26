@@ -41,13 +41,9 @@ int IndicatorDataBase::load (Indicator *i)
 
   QSettings db(g_localSettings);
 
-  QString key = "indicator_" + name;
-  
-  i->setCommand(db.value(key + "_command", "perl").toString());
-  i->setScript(db.value(key + "_script").toString());
-  i->setLock(db.value(key + "_lock", FALSE).toBool());
-  i->setLog(db.value(key + "_log", FALSE).toBool());
-  i->setDate(db.value(key + "_date", TRUE).toBool());
+  QString key = "indicator_" + name + "_";
+
+  i->settings()->parse(db.value(key + "settings").toString());
   
   return 0;
 }
@@ -71,13 +67,11 @@ int IndicatorDataBase::save (Indicator *i)
     db.setValue("indicators", l);
   }
 
-  QString key = "indicator_" + name;
+  QString key = "indicator_" + name + "_";
 
-  db.setValue(key + "_command", i->command());
-  db.setValue(key + "_script", i->script());
-  db.setValue(key + "_lock", i->lock());
-  db.setValue(key + "_log", i->log());
-  db.setValue(key + "_date", i->date());
+  QString s;
+  i->settings()->string(s);
+  db.setValue(key + "settings", s);
   db.sync();
   
   return 0;
@@ -94,12 +88,8 @@ int IndicatorDataBase::deleteIndicator (QStringList &l)
   {
     il.removeAll(l.at(loop));
 
-    QString key = "indicator_" + l.at(loop);
-    db.remove(key + "_command");
-    db.remove(key + "_script");
-    db.remove(key + "_lock");
-    db.remove(key + "_log");
-    db.remove(key + "_date");
+    QString key = "indicator_" + l.at(loop) + "_settings";
+    db.remove(key);
   }
 
   db.setValue("indicators", il);
@@ -113,6 +103,16 @@ int IndicatorDataBase::indicators (QStringList &l)
   l.clear();
   QSettings db(g_localSettings);
   l = db.value("indicators").toStringList();
+  l.sort();
+
+  return 0;
+}
+
+int IndicatorDataBase::plugins (QStringList &l)
+{
+  l.clear();
+  QSettings db(g_globalSettings);
+  l = db.value("indicator_plugins").toStringList();
   l.sort();
 
   return 0;

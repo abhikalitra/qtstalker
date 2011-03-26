@@ -106,8 +106,8 @@ int ADD::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   ADD *o = new ADD;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

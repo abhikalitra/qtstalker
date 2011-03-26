@@ -19,23 +19,29 @@
  *  USA.
  */
 
-#ifndef SCRIPT_EDIT_DIALOG_HPP
-#define SCRIPT_EDIT_DIALOG_HPP
+#ifndef SCRIPT_SCRIPT_EDIT_DIALOG_HPP
+#define SCRIPT_SCRIPT_EDIT_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SCRIPT_EDIT_DIALOG : public ScriptPlugin
+class SCRIPT_EDIT_DIALOG : public Plugin
 {
   Q_OBJECT
 
   public:
     SCRIPT_EDIT_DIALOG ();
     int command (Command *);
+
+  public slots:
+    void command2 ();
+
+  private:
+    Command *_command;
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

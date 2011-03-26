@@ -23,6 +23,9 @@
 #include "Globals.h"
 #include "GroupDataBase.h"
 #include "QuoteDataBase.h"
+#include "GroupEditDialog.h"
+#include "SelectDialog.h"
+#include "NewDialog.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -108,32 +111,55 @@ void GroupPage::createButtonMenu ()
 
 void GroupPage::newGroup ()
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("GroupPanelNewGroup");
-  script->setFile(settings.value("group_panel_new_group_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  GroupDataBase db;
+  QStringList l;
+  db.groups(l);
+  
+  NewDialog *dialog = new NewDialog(this);
+  dialog->setItems(l);
+  dialog->setTitle(tr("Enter new group name"));
+  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(editDialog(QString)));
+
+  l.clear();
+  l << "QtStalker" + g_session + ":" << tr("New Group");
+  dialog->setWindowTitle(l.join(" "));
+  dialog->show();
+}
+  
+void GroupPage::editDialog (QString d)
+{
+  GroupEditDialog *dialog = new GroupEditDialog(this, d);
+  connect(dialog, SIGNAL(accepted()), this, SLOT(updateGroups()));
+  dialog->show();
 }
 
 void GroupPage::editGroup ()
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("GroupPanelEditGroup");
-  script->setFile(settings.value("group_panel_edit_group_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  editDialog(_groups->currentText());
 }
 
-void GroupPage::deleteGroup()
+void GroupPage::deleteGroup ()
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("GroupPanelDeleteGroup");
-  script->setFile(settings.value("group_panel_delete_group_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  SelectDialog *dialog = new SelectDialog(this);
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << tr("Delete Group");
+  dialog->setWindowTitle(l.join(" "));
+
+  GroupDataBase db;
+  db.groups(l);
+  dialog->setItems(l);
+  
+  dialog->setTitle(tr("Groups"));
+  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(deleteGroup2(QStringList)));
+  dialog->show();
+}
+
+void GroupPage::deleteGroup2 (QStringList l)
+{
+  GroupDataBase db;
+  db.deleteGroup(l);
+  updateGroups();
 }
 
 void GroupPage::groupSelected (int i)
@@ -201,21 +227,36 @@ void GroupPage::addToGroup ()
   if (! l.count())
     return;
 
+  GroupDataBase db;
+  QStringList l2;
+  db.groups(l2);
+
+  SelectDialog *dialog = new SelectDialog(this);
+  dialog->setItems(l2);
+  dialog->setTitle(tr("Groups"));
+  dialog->setMode(1);
+  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(addToGroup2(QStringList)));
+
+  l2.clear();
+  l2 << "QtStalker" + g_session + ":" << tr("Add To Group");
+  dialog->setWindowTitle(l2.join(" "));
+
+  dialog->show();
+}
+
+void GroupPage::addToGroup2 (QStringList gl)
+{
+  QList<QListWidgetItem *> l = _nav->selectedItems();
+
   QStringList l2;
   int loop = 0;
   for (; loop < l.count(); loop++)
     l2 << l.at(loop)->text();
 
-  QSettings settings(g_localSettings);
-  settings.setValue("group_panel_selected", l2.join(";"));
-  settings.sync();
+  GroupDataBase db;
+  db.merge(gl.at(0), l2);
 
-  QSettings settings2(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("GroupPanelAddToGroup");
-  script->setFile(settings2.value("group_panel_add_to_group_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  updateList();
 }
 
 void GroupPage::updateList ()

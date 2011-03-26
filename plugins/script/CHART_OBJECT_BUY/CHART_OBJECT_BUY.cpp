@@ -129,8 +129,8 @@ int CHART_OBJECT_BUY::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CHART_OBJECT_BUY *o = new CHART_OBJECT_BUY;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

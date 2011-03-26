@@ -23,16 +23,92 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "MOMDialog.h"
+#include "InputType.h"
+#include "MAType.h"
 
 #include <QtDebug>
 
 MOM::MOM ()
 {
   _plugin = "MOM";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("MOM::MOM: error on TA_Initialize");
+}
+
+int MOM::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  int period = settings->getInt(_PERIOD);
+
+  InputType itypes;
+  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  TA_Real input[in->count()];
+  TA_Real out[in->count()];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  delete in;
+  
+  TA_RetCode rc = TA_MOM(0,
+                         keys.count() - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(0);
+  i->setLine(settings->data(_LABEL), line);
+
+  // MA
+  MAType mat;
+  Curve *ma = mat.getMA(line,
+			settings->getInt(_MA_PERIOD),
+			mat.fromString(settings->data(_MA_TYPE)));
+  ma->setAllColor(QColor(settings->data(_MA_COLOR)));
+  ma->setLabel(settings->data(_MA_LABEL));
+  ma->setType((Curve::Type) line->typeFromString(settings->data(_MA_STYLE)));
+  ma->setZ(1);
+  i->setLine(settings->data(_MA_LABEL), ma);
+
+  return 0;
 }
 
 int MOM::command (Command *command)
@@ -122,12 +198,34 @@ int MOM::command (Command *command)
   return 0;
 }
 
+void MOM::dialog (QWidget *p, Indicator *i)
+{
+  MOMDialog *dialog = new MOMDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void MOM::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "red");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Histogram Bar");
+  set->setData(_PERIOD, 20);
+  set->setData(_MA_PERIOD, 9);
+  set->setData(_MA_TYPE, "EMA");
+  set->setData(_MA_COLOR, "yellow");
+  set->setData(_MA_LABEL, "MA");
+  set->setData(_MA_STYLE, "Line");
+  set->setData(_INPUT, "Close");
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   MOM *o = new MOM;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

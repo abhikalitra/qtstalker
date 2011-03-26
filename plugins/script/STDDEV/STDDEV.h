@@ -22,9 +22,9 @@
 #ifndef STDDEV_HPP
 #define STDDEV_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class STDDEV : public ScriptPlugin
+class STDDEV : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class STDDEV : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

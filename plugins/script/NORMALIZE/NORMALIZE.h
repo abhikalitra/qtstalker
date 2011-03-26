@@ -22,9 +22,9 @@
 #ifndef NORMALIZE_HPP
 #define NORMALIZE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class NORMALIZE : public ScriptPlugin
+class NORMALIZE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class NORMALIZE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

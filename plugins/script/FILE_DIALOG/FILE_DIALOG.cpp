@@ -76,8 +76,8 @@ void FILE_DIALOG::filesSelected (QStringList l)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   FILE_DIALOG *o = new FILE_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

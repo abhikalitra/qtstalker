@@ -22,20 +22,21 @@
 #include "ChartPage.h"
 #include "Globals.h"
 #include "QuoteDataBase.h"
+#include "GroupDataBase.h"
+#include "SymbolDialog.h"
+#include "ConfirmDialog.h"
+#include "SelectDialog.h"
 
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
 #include "../pics/asterisk.xpm"
 #include "../pics/delete.xpm"
-#include "../pics/export.xpm"
 #include "../pics/select_all.xpm"
 #include "../pics/unselect_all.xpm"
 
 #include <QCursor>
 #include <QToolTip>
 #include <QLayout>
-#include <QMenu>
-#include <QKeyEvent>
 #include <QtDebug>
 #include <QList>
 #include <QSettings>
@@ -95,12 +96,6 @@ void ChartPage::createActions ()
   connect(action, SIGNAL(activated()), this, SLOT(deleteSymbol()));
   _actions.insert(_DELETE, action);
 
-  action  = new QAction(QIcon(export_xpm), tr("E&xport Symbol") + "...", this);
-  action->setToolTip(tr("Export symbols to CSV files") + "...");
-  action->setStatusTip(tr("Export symbols to CSV files") + "...");
-  connect(action, SIGNAL(activated()), this, SLOT(exportSymbol()));
-  _actions.insert(_EXPORT, action);
-
   action  = new QAction(QIcon(select_all_xpm), tr("Select All"), this);
   action->setToolTip(tr("Select All"));
   action->setStatusTip(tr("Select All"));
@@ -124,8 +119,6 @@ void ChartPage::createMenu ()
   _menu->addSeparator();
   _menu->addAction(_actions.value(_DELETE));
   _menu->addSeparator();
-  _menu->addAction(_actions.value(_EXPORT));
-  _menu->addSeparator();
   _menu->addAction(_actions.value(_SELECT_ALL));
   _menu->addAction(_actions.value(_UNSELECT_ALL));
 }
@@ -148,20 +141,34 @@ void ChartPage::addToGroup ()
     return;
 
   QStringList l2;
+  GroupDataBase db;
+  db.groups(l2);
+
+  SelectDialog *dialog = new SelectDialog(this);
+  dialog->setItems(l2);
+  dialog->setTitle(tr("Groups"));
+  dialog->setMode(1);
+
+  l2.clear();
+  l2 << "QtStalker" + g_session + ":" << tr("Add To Group");
+  dialog->setWindowTitle(l2.join(" "));
+  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(addToGroup2(QStringList)));
+  dialog->show();
+}
+
+void ChartPage::addToGroup2 (QStringList gl)
+{
+  QList<QListWidgetItem *> l = _nav->selectedItems();
+  if (! l.count())
+    return;
+
+  QStringList l2;
   int loop = 0;
   for (; loop < l.count(); loop++)
     l2 << l.at(loop)->text();
-
-  QSettings settings(g_localSettings);
-  settings.setValue("chart_panel_selected", l2.join(";"));
-  settings.sync();
   
-  QSettings settings2(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("ChartPanelAddGroup");
-  script->setFile(settings2.value("chart_panel_add_group_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  GroupDataBase db;
+  db.merge(gl.at(0), l2);
 }
 
 void ChartPage::updateList ()
@@ -189,12 +196,9 @@ void ChartPage::updateList ()
 
 void ChartPage::symbolSearch ()
 {
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("ChartPanelSymbolSearch");
-  script->setFile(settings.value("chart_panel_symbol_search_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  SymbolDialog *dialog = new SymbolDialog(this);
+  connect(dialog, SIGNAL(signalDone(QString, QString, QStringList)), this, SLOT(setSearch(QString, QString)));
+  dialog->show();
 }
 
 void ChartPage::setSearch (QString exchange, QString symbol)
@@ -253,29 +257,31 @@ void ChartPage::deleteSymbol ()
   if (! l.count())
     return;
 
+  ConfirmDialog *dialog = new ConfirmDialog(this);
+  dialog->setMessage(tr("Confirm symbol delete."));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteSymbol2()));
+  dialog->show();
+}
+
+void ChartPage::deleteSymbol2 ()
+{
+  QList<QListWidgetItem *> l = _nav->selectedItems();
+  if (! l.count())
+    return;
+
+  QuoteDataBase db;
+  db.transaction();
+  
   QStringList l2;
   int loop = 0;
   for (; loop < l.count(); loop++)
-    l2 << l.at(loop)->text();
+  {
+    BarData bd;
+    bd.setKey(l.at(loop)->text());
+    db.deleteSymbol(&bd);
+  }
 
-  QSettings settings(g_localSettings);
-  settings.setValue("chart_panel_selected", l2.join(";"));
-  settings.sync();
+  db.commit();
 
-  QSettings settings2(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("ChartPanelDelete");
-  script->setFile(settings2.value("chart_panel_delete_script").toString());
-  script->setCommand("perl");
-  script->startScript();
-}
-
-void ChartPage::exportSymbol ()
-{
-  QSettings settings(g_globalSettings);
-  Script *script = new Script(this);
-  script->setName("ChartPanelSymbolExport");
-  script->setFile(settings.value("chart_panel_symbol_export_script").toString());
-  script->setCommand("perl");
-  script->startScript();
+  updateList();
 }

@@ -23,16 +23,87 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "AROONDialog.h"
 
 #include <QtDebug>
 
 AROON::AROON ()
 {
   _plugin = "AROON";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("AROON::AROON: error on TA_Initialize");
+}
+
+int AROON::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+  int period = settings->getInt(_PERIOD);
+  
+  int size = bd->count();
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    high[loop] = (TA_Real) bar->high();
+    low[loop] = (TA_Real) bar->low();
+  }
+
+  TA_RetCode rc = TA_AROON(0,
+                           size - 1,
+                           &high[0],
+                           &low[0],
+                           period,
+                           &outBeg,
+                           &outNb,
+                           &out[0],
+                           &out2[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *upper = new Curve;
+  Curve *lower = new Curve;
+
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    upper->setBar(dataLoop, new CurveBar(out[outLoop]));
+    lower->setBar(dataLoop, new CurveBar(out2[outLoop]));
+
+    dataLoop--;
+    outLoop--;
+  }
+
+  upper->setAllColor(QColor(settings->data(_COLOR_UP)));
+  upper->setLabel(settings->data(_LABEL_UP));
+  upper->setType((Curve::Type) upper->typeFromString(settings->data(_STYLE_UP)));
+  upper->setZ(0);
+  i->setLine(settings->data(_LABEL_UP), upper);
+  
+  lower->setAllColor(QColor(settings->data(_COLOR_DOWN)));
+  lower->setLabel(settings->data(_LABEL_DOWN));
+  lower->setType((Curve::Type) upper->typeFromString(settings->data(_STYLE_DOWN)));
+  lower->setZ(0);
+  i->setLine(settings->data(_LABEL_DOWN), lower);
+
+  return 0;
 }
 
 int AROON::command (Command *command)
@@ -157,12 +228,31 @@ int AROON::command (Command *command)
   return 0;
 }
 
+void AROON::dialog (QWidget *p, Indicator *i)
+{
+  AROONDialog *dialog = new AROONDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void AROON::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR_UP, QString("green"));
+  set->setData(_LABEL_UP, QString("AROONU"));
+  set->setData(_STYLE_UP, QString("Line"));
+  set->setData(_COLOR_DOWN, QString("red"));
+  set->setData(_LABEL_DOWN, QString("AROOND"));
+  set->setData(_STYLE_DOWN, QString("Line"));
+  set->setData(_PERIOD, 14);
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   AROON *o = new AROON;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -106,8 +106,8 @@ int SUB::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SUB *o = new SUB;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

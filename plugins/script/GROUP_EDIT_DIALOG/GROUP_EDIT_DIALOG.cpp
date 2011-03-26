@@ -23,7 +23,6 @@
 #include "GroupEditDialog.h"
 
 #include <QtDebug>
-#include <QDialog>
 
 GROUP_EDIT_DIALOG::GROUP_EDIT_DIALOG ()
 {
@@ -43,20 +42,29 @@ int GROUP_EDIT_DIALOG::command (Command *command)
     return 1;
   }
 
-  GroupEditDialog *dialog = new GroupEditDialog(_parent, command);
-  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  _command = command;
+  
+  GroupEditDialog *dialog = new GroupEditDialog(_parent, name);
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
+  connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(command2()));
   dialog->show();
 
   return 0;
+}
+
+void GROUP_EDIT_DIALOG::command2 ()
+{
+  _command->setReturnCode("0");
+  emit signalResume();
 }
 
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   GROUP_EDIT_DIALOG *o = new GROUP_EDIT_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

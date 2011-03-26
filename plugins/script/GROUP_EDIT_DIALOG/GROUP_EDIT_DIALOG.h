@@ -19,23 +19,29 @@
  *  USA.
  */
 
-#ifndef GROUP_EDIT_DIALOG_HPP
-#define GROUP_EDIT_DIALOG_HPP
+#ifndef SCRIPT_GROUP_EDIT_DIALOG_HPP
+#define SCRIPT_GROUP_EDIT_DIALOG_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class GROUP_EDIT_DIALOG : public ScriptPlugin
+class GROUP_EDIT_DIALOG : public Plugin
 {
   Q_OBJECT
 
   public:
     GROUP_EDIT_DIALOG ();
     int command (Command *);
+
+  public slots:
+    void command2 ();
+
+  private:
+    Command *_command;
 };
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

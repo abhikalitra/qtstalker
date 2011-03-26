@@ -80,8 +80,8 @@ int QUOTE_DATABASE_SEARCH::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   QUOTE_DATABASE_SEARCH *o = new QUOTE_DATABASE_SEARCH;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

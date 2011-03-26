@@ -178,8 +178,8 @@ int CANDLES::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   CANDLES *o = new CANDLES;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

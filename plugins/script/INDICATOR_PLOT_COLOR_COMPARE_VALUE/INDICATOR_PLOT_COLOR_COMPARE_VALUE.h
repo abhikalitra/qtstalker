@@ -22,9 +22,9 @@
 #ifndef INDICATOR_PLOT_COLOR_COMPARE_VALUE_HPP
 #define INDICATOR_PLOT_COLOR_COMPARE_VALUE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class INDICATOR_PLOT_COLOR_COMPARE_VALUE : public ScriptPlugin
+class INDICATOR_PLOT_COLOR_COMPARE_VALUE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class INDICATOR_PLOT_COLOR_COMPARE_VALUE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -55,8 +55,8 @@ int GROUP_DATABASE_SAVE_ALL::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   GROUP_DATABASE_SAVE_ALL *o = new GROUP_DATABASE_SAVE_ALL;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

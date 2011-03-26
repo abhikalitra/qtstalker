@@ -22,86 +22,76 @@
 #include "Indicator.h"
 #include "IndicatorDataBase.h"
 #include "Globals.h"
-#include "Script.h"
 #include "ChartObjectDataBase.h"
+#include "PluginFactory.h"
 
 #include <QDebug>
 
 Indicator::Indicator (QObject *p) : QObject (p)
 {
+  _settings = new Setting;
   init();
 }
 
 Indicator::Indicator ()
 {
+  _settings = new Setting;
   init();
+}
+
+Indicator::~Indicator ()
+{
+  delete _settings;
 }
 
 void Indicator::init ()
 {
-  _lock = FALSE;
-  _date = TRUE;
-  _log = FALSE;
+  _settings->setData("LOCK", 0);
+  _settings->setData("DATE_AXIS", 1);
+  _settings->setData("LOG_SCALING", 0);
 }
 
 void Indicator::setName (QString d)
 {
-  _name = d;
+  _settings->setData("NAME", d);
 }
 
-QString & Indicator::name ()
+QString Indicator::name ()
 {
-  return _name;
+  return _settings->data("NAME");
 }
 
 void Indicator::setLock (bool d)
 {
-  _lock = d;
+  _settings->setData("LOCK", d);
 }
 
 bool Indicator::lock ()
 {
-  return _lock;
+  bool d = _settings->getInt("LOCK");
+  return d;
 }
 
 void Indicator::setDate (bool d)
 {
-  _date = d;
+  _settings->setData("DATE_AXIS", d);
 }
 
 bool Indicator::date ()
 {
-  return _date;
+  bool d = _settings->getInt("DATE_AXIS");
+  return d;
 }
 
 void Indicator::setLog (bool d)
 {
-  _log = d;
+  _settings->setData("LOG_SCALING", d);
 }
 
 bool Indicator::log ()
 {
-  return _log;
-}
-
-void Indicator::setScript (QString d)
-{
-  _script = d;
-}
-
-QString & Indicator::script ()
-{
-  return _script;
-}
-
-void Indicator::setCommand (QString d)
-{
-  _command = d;
-}
-
-QString & Indicator::command ()
-{
-  return _command;
+  bool d = _settings->getInt("LOG_SCALING");
+  return d;
 }
 
 void Indicator::setLine (QString k, Curve *d)
@@ -140,7 +130,6 @@ QHash<QString, Curve *> &  Indicator::curves ()
 
 void Indicator::clear ()
 {
-  init();
   clearLines();
   clearChartObjects();
 }
@@ -201,21 +190,26 @@ int Indicator::load ()
 
 void Indicator::calculate ()
 {
-  Script *script = new Script(this);
-  script->setName(_name);
-  script->setFile(_script);
-  script->setCommand(_command);
-  connect(script, SIGNAL(signalDone(QString)), this, SLOT(scriptFinished()));
-  script->setBarData(g_barData);
-  script->setIndicator(this);
-  script->startScript();
-}
+  PluginFactory fac;
+  Plugin *plug = fac.plugin(_settings->data("PLUGIN"));
+  if (! plug)
+  {
+    qDebug() << "Indicator::calculate: no plugin";
+    return;
+  }
 
-void Indicator::scriptFinished ()
-{
+  if (plug->calculate(g_barData, this))
+  {
+    qDebug() << "Indicator::calculate: plugin error";
+    delete plug;
+    return;
+  }
+  
   weedPlots();
 
   loadChartObjects();
+
+  delete plug;
   
   emit signalPlot();
 }
@@ -224,7 +218,7 @@ void Indicator::loadChartObjects ()
 {
   QList<Setting> l;
   ChartObjectDataBase db;
-  db.load(_name, g_barData, l);
+  db.load(_settings->data("NAME"), g_barData, l);
 
   int loop = 0;
   for (; loop < l.count(); loop++)
@@ -244,4 +238,30 @@ int Indicator::chartObjectCount ()
 int Indicator::lineCount ()
 {
   return _lines.count();
+}
+
+Setting * Indicator::settings ()
+{
+  return _settings;
+}
+
+void Indicator::dialog ()
+{
+  PluginFactory fac;
+  Plugin *plug = fac.plugin(_settings->data("PLUGIN"));
+  if (! plug)
+  {
+    qDebug() << "Indicator::dialog: no plugin" << _settings->data("PLUGIN");
+    return;
+  }
+
+  plug->dialog(0, this);
+  delete plug;
+}
+
+void Indicator::dialogDone ()
+{
+  save();
+  emit signalClear();
+  calculate();
 }

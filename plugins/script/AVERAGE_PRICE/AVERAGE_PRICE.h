@@ -22,9 +22,9 @@
 #ifndef AVERAGE_PRICE_HPP
 #define AVERAGE_PRICE_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class AVERAGE_PRICE : public ScriptPlugin
+class AVERAGE_PRICE : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class AVERAGE_PRICE : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

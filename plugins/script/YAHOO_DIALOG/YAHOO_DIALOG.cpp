@@ -45,8 +45,8 @@ int YAHOO_DIALOG::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   YAHOO_DIALOG *o = new YAHOO_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

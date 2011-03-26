@@ -22,9 +22,9 @@
 #ifndef WILDER_MA_HPP
 #define WILDER_MA_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class WILDER_MA : public ScriptPlugin
+class WILDER_MA : public Plugin
 {
   Q_OBJECT
 
@@ -36,7 +36,7 @@ class WILDER_MA : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

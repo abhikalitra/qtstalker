@@ -44,8 +44,8 @@ int SCRIPT_RETURN_DATA::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SCRIPT_RETURN_DATA *o = new SCRIPT_RETURN_DATA;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

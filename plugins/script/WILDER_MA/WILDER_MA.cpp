@@ -114,8 +114,8 @@ Curve * WILDER_MA::calculate (Curve *in, int period)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   WILDER_MA *o = new WILDER_MA;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

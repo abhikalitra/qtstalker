@@ -69,6 +69,8 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
 
   setWindowTitle(getWindowCaption());
 
+  setSliderStart(g_barData->count());
+
   // expose hidden charts so they plot properly (simple hack)
 //  QTimer::singleShot(500, this, SLOT(fixDockTabs()));
 
@@ -144,6 +146,7 @@ void QtstalkerApp::createGUI ()
   connect(_controlPanel->recentCharts(), SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
   connect(_sidePanel, SIGNAL(signalRecentChart(BarData)), _controlPanel->recentCharts(), SLOT(addRecentChart(BarData)));
   connect(_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
+  connect(_controlPanel->configureButton(), SIGNAL(signalNewIndicator(QString)), this, SLOT(addNewPlot(QString)));
   
   dock = new DockWidget(QString(), this);
   dock->setObjectName("controlPanelDock");
@@ -344,7 +347,6 @@ void QtstalkerApp::addPlot (QString indicator)
   Plot *plot = new Plot(indicator, this);
   plot->setIndicator();
   plot->setBarSpacing(_controlPanel->barSpaceButton()->getPixelSpace());
-  plot->setBarSpacing(8);
   plot->loadSettings();
 
   connect(plot, SIGNAL(signalInfoMessage(Setting)), _infoPanel, SLOT(showInfo(Setting)));
@@ -355,6 +357,8 @@ void QtstalkerApp::addPlot (QString indicator)
 //  connect(this, SIGNAL(signalShutDown()), plot, SLOT(clear()));
   connect(this, SIGNAL(signalPlot()), plot->indicator(), SLOT(calculate()));
   connect(plot, SIGNAL(signalIndex(int)), _controlPanel, SLOT(setStartValue(int)));
+  connect(plot->plotMenu(), SIGNAL(signalNewIndicator(QString)), this, SLOT(addNewPlot(QString)));
+  connect(plot->plotMenu(), SIGNAL(signalDeleteIndicator(QStringList)), this, SLOT(deletePlot(QStringList)));
   
   connect(g_middleMan, SIGNAL(signalPlotBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
   connect(g_middleMan, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
@@ -377,6 +381,9 @@ void QtstalkerApp::addNewPlot (QString indicator)
 
 void QtstalkerApp::deletePlot (QStringList l)
 {
+  IndicatorDataBase db;
+  db.deleteIndicator(l);
+  
   int loop = 0;
   for (; loop < l.count(); loop++)
   {

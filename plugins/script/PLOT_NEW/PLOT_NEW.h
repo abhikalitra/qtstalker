@@ -22,9 +22,9 @@
 #ifndef PLOT_NEW_HPP
 #define PLOT_NEW_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class PLOT_NEW : public ScriptPlugin
+class PLOT_NEW : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class PLOT_NEW : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

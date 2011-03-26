@@ -106,8 +106,8 @@ int MULT::command (Command *command)
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   MULT *o = new MULT;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

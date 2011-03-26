@@ -1102,4 +1102,7 @@
            Added new script Scripts/quote/CSV_QtStalker_Format_Import.pl to import csv files
            that were previously exported by qtstalker as per request.
 
+20110325:  Added settings dialogs for the indicators. Changed the indicator scripting back to using
+           the CUS indicator.
+
 

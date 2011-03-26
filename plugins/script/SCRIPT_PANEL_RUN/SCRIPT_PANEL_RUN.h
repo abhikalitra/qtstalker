@@ -22,9 +22,9 @@
 #ifndef SCRIPT_PANEL_RUN_HPP
 #define SCRIPT_PANEL_RUN_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SCRIPT_PANEL_RUN : public ScriptPlugin
+class SCRIPT_PANEL_RUN : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class SCRIPT_PANEL_RUN : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif

@@ -23,6 +23,8 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "HTDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -30,10 +32,122 @@ HT::HT ()
 {
   _plugin = "HT";
   _method << "DCPERIOD" << "DCPHASE" << "TRENDLINE" << "TRENDMODE";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("HT::HT: error on TA_Initialize");
+}
+
+int HT::calculate (BarData *bd, Indicator *i)
+{
+  Setting *settings = i->settings();
+
+  InputType itypes;
+  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  if (! in)
+    return 1;
+
+  int method = _method.indexOf(settings->data(_METHOD));
+
+  // create bars
+  Curve *bars = itypes.ohlc(bd,
+			    QColor(settings->data(_COLOR_BARS_UP)),
+			    QColor(settings->data(_COLOR_BARS_DOWN)),
+			    QColor(settings->data(_COLOR_BARS_NEUTRAL)));
+  if (settings->data(_STYLE_BARS) == "OHLC")
+    bars->setType(Curve::OHLC);
+  else
+    bars->setType(Curve::Candle);
+  bars->setLabel("BARS");
+  bars->setZ(0);
+  i->setLine("BARS", bars);
+  
+  int size = in->count();
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  delete in;
+
+  TA_RetCode rc = TA_SUCCESS;
+  switch ((Method) method)
+  {
+    case _DCPERIOD:
+      rc = TA_HT_DCPERIOD (0, size - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case _DCPHASE:
+      rc = TA_HT_DCPHASE (0, size - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case _TRENDLINE:
+      rc = TA_HT_TRENDLINE (0, size - 1, &input[0], &outBeg, &outNb, &out[0]);
+      break;
+    case _TRENDMODE:
+    {
+      TA_Integer iout[size];
+      rc = TA_HT_TRENDMODE (0, size - 1, &input[0], &outBeg, &outNb, &iout[0]);
+      if (rc != TA_SUCCESS)
+      {
+        qDebug() << _plugin << "::command: TA-Lib error" << rc;
+        return 1;
+      }
+
+      Curve *line = new Curve;
+      int keyLoop = keys.count() - 1;
+      int outLoop = outNb - 1;
+      while (keyLoop > -1 && outLoop > -1)
+      {
+        line->setBar(keys.at(keyLoop), new CurveBar((double) iout[outLoop]));
+        keyLoop--;
+        outLoop--;
+      }
+      line->setAllColor(QColor(settings->data(_COLOR)));
+      line->setLabel(settings->data(_LABEL));
+      line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+      line->setZ(1);
+      i->setLine(settings->data(_LABEL), line);
+      return 0;
+      break;
+    }
+    default:
+      break;
+  }
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  line->setAllColor(QColor(settings->data(_COLOR)));
+  line->setLabel(settings->data(_LABEL));
+  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
+  line->setZ(1);
+  i->setLine(settings->data(_LABEL), line);
+
+  return 0;
 }
 
 int HT::command (Command *command)
@@ -158,12 +272,38 @@ int HT::command (Command *command)
   return 0;
 }
 
+void HT::dialog (QWidget *p, Indicator *i)
+{
+  HTDialog *dialog = new HTDialog(p, i->settings());
+  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
+  dialog->show();
+}
+
+void HT::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData(_COLOR, "yellow");
+  set->setData(_LABEL, _plugin);
+  set->setData(_STYLE, "Line");
+  set->setData(_METHOD, "TRENDLINE");
+  set->setData(_INPUT, "Close");
+  set->setData(_STYLE_BARS, QString("OHLC"));
+  set->setData(_COLOR_BARS_UP, QString("green"));
+  set->setData(_COLOR_BARS_DOWN, QString("red"));
+  set->setData(_COLOR_BARS_NEUTRAL, QString("dimgray"));
+}
+
+QStringList HT::method ()
+{
+  return _method;
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   HT *o = new HT;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

@@ -43,20 +43,27 @@ int SCRIPT_EDIT_DIALOG::command (Command *command)
     return 1;
   }
 
-  ScriptEditDialog *dialog = new ScriptEditDialog(_parent, command);
-  connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
+  ScriptEditDialog *dialog = new ScriptEditDialog(_parent, name);
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
+  connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(command2()));
   dialog->show();
 
   return 0;
+}
+
+void SCRIPT_EDIT_DIALOG::command2 ()
+{
+  _command->setReturnCode("0");
+  emit signalResume();
 }
 
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
-ScriptPlugin * createScriptPlugin ()
+Plugin * createPlugin ()
 {
   SCRIPT_EDIT_DIALOG *o = new SCRIPT_EDIT_DIALOG;
-  return ((ScriptPlugin *) o);
+  return ((Plugin *) o);
 }

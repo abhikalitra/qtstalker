@@ -22,9 +22,9 @@
 #ifndef SCRIPT_NAME_HPP
 #define SCRIPT_NAME_HPP
 
-#include "ScriptPlugin.h"
+#include "Plugin.h"
 
-class SCRIPT_NAME : public ScriptPlugin
+class SCRIPT_NAME : public Plugin
 {
   Q_OBJECT
 
@@ -35,7 +35,7 @@ class SCRIPT_NAME : public ScriptPlugin
 
 extern "C"
 {
-  ScriptPlugin * createScriptPlugin ();
+  Plugin * createPlugin ();
 }
 
 #endif
