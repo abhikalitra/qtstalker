@@ -24,6 +24,7 @@
 
 #include <QDoubleSpinBox>
 #include <QTabWidget>
+#include <QTreeWidget>
 
 #include "ColorButton.h"
 #include "Setting.h"
@@ -36,15 +37,20 @@ class CandlePatternDialog : public Dialog
   public:
     CandlePatternDialog (QWidget *, Setting *);
     void createGeneralPage ();
+    void createPatternPage ();
 
   public slots:
     void done ();
+    void addPattern ();
+    void addPattern (QString, QString);
+    void deletePattern ();
 
   private:
     Setting *_settings;
     QTabWidget *_tabs;
     ColorButton *_candleColor;
     QDoubleSpinBox *_pen;
+    QTreeWidget *_plist;
 };
 
 #endif

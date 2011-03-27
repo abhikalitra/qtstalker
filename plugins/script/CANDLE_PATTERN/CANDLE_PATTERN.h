@@ -33,7 +33,8 @@ class CANDLE_PATTERN : public Plugin
     {
       _METHOD = 10,
       _COLOR = 20,
-      _PEN = 30
+      _PEN = 30,
+      _PATTERN = 40
     };
 
     CANDLE_PATTERN ();

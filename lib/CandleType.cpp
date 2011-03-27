@@ -929,3 +929,8 @@ Curve * CandleType::getCandlesPen (BarData *bd, int type, double pen)
 
   return line;
 }
+
+QStringList CandleType::list ()
+{
+  return _method;
+}

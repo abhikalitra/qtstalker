@@ -52,15 +52,11 @@ int CANDLE_PATTERN::calculate (BarData *bd, Indicator *i)
   double pen = settings->getDouble(_PEN);
 
   CandleType ct;
-  QStringList l = settings->data(_METHOD).split(";", QString::SkipEmptyParts);
+  QStringList l = settings->data(_PATTERN).split(",", QString::SkipEmptyParts);
   int loop = 0;
-  for (; loop < l.count(); loop++)
+  for (; loop < l.count(); loop += 2)
   {
-    QStringList l2 = l.at(loop).split(",", QString::SkipEmptyParts);
-    if (l2.count() != 2)
-      continue;
-
-    Curve *tline = ct.getPattern(bd, l2.at(0).toInt(), pen);
+    Curve *tline = ct.getPattern(bd, ct.fromString(l.at(loop)), pen);
     if (! tline)
       continue;
 
@@ -76,7 +72,8 @@ int CANDLE_PATTERN::calculate (BarData *bd, Indicator *i)
 	CurveBar *cb2 = line->bar(loop2);
 	if (! cb2)
 	  continue;
-	cb2->setColor(QColor(l2.at(1)));
+	
+	cb2->setColor(QColor(l.at(loop + 1)));
       }
     }
 

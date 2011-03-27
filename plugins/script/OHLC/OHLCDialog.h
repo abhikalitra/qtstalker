@@ -22,8 +22,10 @@
 #ifndef OHLC_DIALOG_HPP
 #define OHLC_DIALOG_HPP
 
-#include <QLineEdit>
+#include <QSpinBox>
 #include <QComboBox>
+#include <QGroupBox>
+#include <QTabWidget>
 
 #include "Dialog.h"
 #include "ColorButton.h"
@@ -36,6 +38,9 @@ class OHLCDialog : public Dialog
   public:
     OHLCDialog (QWidget *, Setting *);
     void createGeneralPage ();
+    void createMA1Page ();
+    void createMA2Page ();
+    void createMA3Page ();
 
   public slots:
     void done ();
@@ -43,11 +48,29 @@ class OHLCDialog : public Dialog
   private:
     QStringList _styleList;
     Setting *_settings;
+    QTabWidget *_tabs;
     ColorButton *_upColor;
     ColorButton *_downColor;
     ColorButton *_neutralColor;
-    QLineEdit *_barsLabel;
     QComboBox *_style;
+    QSpinBox *_ma1Period;
+    ColorButton *_ma1Color;
+    QComboBox *_ma1Style;
+    QComboBox *_ma1Type;
+    QComboBox *_ma1Input;
+    QGroupBox *_ma1Check;
+    QSpinBox *_ma2Period;
+    ColorButton *_ma2Color;
+    QComboBox *_ma2Style;
+    QComboBox *_ma2Type;
+    QComboBox *_ma2Input;
+    QGroupBox *_ma2Check;
+    QSpinBox *_ma3Period;
+    ColorButton *_ma3Color;
+    QComboBox *_ma3Style;
+    QComboBox *_ma3Type;
+    QComboBox *_ma3Input;
+    QGroupBox *_ma3Check;
 };
 
 #endif

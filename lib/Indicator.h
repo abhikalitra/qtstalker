@@ -29,6 +29,7 @@
 
 #include "Curve.h"
 #include "Setting.h"
+//#include "IndicatorThread.h"
 
 class Indicator : public QObject
 {
@@ -72,6 +73,7 @@ class Indicator : public QObject
     void setDate (bool);
     void setLog (bool);
     void calculate ();
+//    void calculate2 ();
     void dialog ();
     void dialogDone ();
 

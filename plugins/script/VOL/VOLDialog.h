@@ -22,7 +22,6 @@
 #ifndef VOLDIALOG_HPP
 #define VOLDIALOG_HPP
 
-#include <QLineEdit>
 #include <QComboBox>
 #include <QSpinBox>
 #include <QStringList>
@@ -53,8 +52,6 @@ class VOLDialog : public Dialog
     QComboBox *_maType;
     QComboBox *_maStyle;
     QSpinBox *_maPeriod;
-    QLineEdit *_label;
-    QLineEdit *_maLabel;
 };
 
 #endif

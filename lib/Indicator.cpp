@@ -29,12 +29,14 @@
 
 Indicator::Indicator (QObject *p) : QObject (p)
 {
+//  _thread = 0;
   _settings = new Setting;
   init();
 }
 
 Indicator::Indicator ()
 {
+//  _thread = 0;
   _settings = new Setting;
   init();
 }
@@ -190,6 +192,10 @@ int Indicator::load ()
 
 void Indicator::calculate ()
 {
+//  IndicatorThread *thread = new IndicatorThread(this, g_barData, this);
+//  connect(thread, SIGNAL(finished()), this, SLOT(calculate2()), Qt::QueuedConnection);
+//  thread->start();
+  
   PluginFactory fac;
   Plugin *plug = fac.plugin(_settings->data("PLUGIN"));
   if (! plug)
@@ -204,7 +210,7 @@ void Indicator::calculate ()
     delete plug;
     return;
   }
-  
+
   weedPlots();
 
   loadChartObjects();
@@ -213,6 +219,18 @@ void Indicator::calculate ()
   
   emit signalPlot();
 }
+
+/*
+void Indicator::calculate2 ()
+{
+//  delete _thread;
+//  _thread = 0;
+  
+  weedPlots();
+  loadChartObjects();
+  emit signalPlot();
+}
+*/
 
 void Indicator::loadChartObjects ()
 {

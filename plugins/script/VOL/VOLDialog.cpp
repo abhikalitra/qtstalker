@@ -69,10 +69,6 @@ void VOLDialog::createGeneralPage ()
   _neutralColor->setColorButton();
   form->addRow(tr("Neutral Color"), _neutralColor);
 
-  // label
-  _label = new QLineEdit(_settings->data(VOL::_LABEL));
-  form->addRow(tr("Label"), _label);
-
   // make room unused
   _message->hide();
 
@@ -86,24 +82,14 @@ void VOLDialog::createMAPage ()
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
 
-  // color
-  _maColor = new ColorButton(this, QColor(_settings->data(VOL::_MA_COLOR)));
-  _maColor->setColorButton();
-  form->addRow(tr("Color"), _maColor);
+  // ma type
+  MAType mat;
+  QStringList l = mat.list();
 
-  // style
-  Curve c;
-  QStringList l;
-  c.list(l, 1);
-
-  _maStyle = new QComboBox;
-  _maStyle->addItems(l);
-  _maStyle->setCurrentIndex(_maStyle->findText(_settings->data(VOL::_MA_STYLE), Qt::MatchExactly));
-  form->addRow(tr("Style"), _maStyle);
-
-  // label
-  _maLabel = new QLineEdit(_settings->data(VOL::_MA_LABEL));
-  form->addRow(tr("Label"), _maLabel);
+  _maType = new QComboBox;
+  _maType->addItems(l);
+  _maType->setCurrentIndex(_maType->findText(_settings->data(VOL::_MA_TYPE), Qt::MatchExactly));
+  form->addRow(tr("Type"), _maType);
 
   // period
   _maPeriod = new QSpinBox;
@@ -111,14 +97,19 @@ void VOLDialog::createMAPage ()
   _maPeriod->setValue(_settings->getInt(VOL::_MA_PERIOD));
   form->addRow(tr("Period"), _maPeriod);
 
-  // ma type
-  MAType mat;
-  l = mat.list();
+  // color
+  _maColor = new ColorButton(this, QColor(_settings->data(VOL::_MA_COLOR)));
+  _maColor->setColorButton();
+  form->addRow(tr("Color"), _maColor);
 
-  _maType = new QComboBox;
-  _maType->addItems(l);
-  _maType->setCurrentIndex(_maType->findText(_settings->data(VOL::_MA_TYPE), Qt::MatchExactly));
-  form->addRow(tr("Type"), _maType);
+  // style
+  Curve c;
+  c.list(l, 1);
+
+  _maStyle = new QComboBox;
+  _maStyle->addItems(l);
+  _maStyle->setCurrentIndex(_maStyle->findText(_settings->data(VOL::_MA_STYLE), Qt::MatchExactly));
+  form->addRow(tr("Style"), _maStyle);
 
   _tabs->addTab(w, tr("MA"));
 }
@@ -128,10 +119,8 @@ void VOLDialog::done ()
   _settings->setData(VOL::_COLOR_UP, _upColor->color().name());
   _settings->setData(VOL::_COLOR_DOWN, _downColor->color().name());
   _settings->setData(VOL::_COLOR_NEUTRAL, _neutralColor->color().name());
-  _settings->setData(VOL::_LABEL, _label->text());
   _settings->setData(VOL::_MA_COLOR, _maColor->color().name());
   _settings->setData(VOL::_MA_STYLE, _maStyle->currentText());
-  _settings->setData(VOL::_MA_LABEL, _maLabel->text());
   _settings->setData(VOL::_MA_PERIOD, _maPeriod->value());
   _settings->setData(VOL::_MA_TYPE, _maType->currentText());
 

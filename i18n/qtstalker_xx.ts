@@ -412,6 +412,22 @@ eg. perl -l -T</source>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Add Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChartObject</name>
@@ -1721,15 +1737,31 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2872,10 +2904,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Label</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3060,10 +3088,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Add Symbol...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Symbol</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
