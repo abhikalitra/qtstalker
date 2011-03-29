@@ -64,6 +64,7 @@ class Indicator : public QObject
     int chartObjectCount ();
     int lineCount ();
     Setting * settings ();
+    void setTestFlag (int);
 
   public slots:
     int save ();
@@ -78,6 +79,7 @@ class Indicator : public QObject
     void dialogDone ();
 
   protected:
+    int _testFlag;
     QHash<QString, Curve *> _lines;
     QHash<QString, Setting> _chartObjects;
     Setting *_settings;

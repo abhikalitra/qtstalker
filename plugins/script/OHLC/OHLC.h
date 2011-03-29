@@ -64,6 +64,7 @@ class OHLC : public Plugin
     int calculate (BarData *, Indicator *);
     void defaults (Setting *);
     void dialog (QWidget *, Indicator *);
+    void testRuleDialog (QWidget *, Setting *);
 };
 
 extern "C"

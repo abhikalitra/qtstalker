@@ -35,6 +35,7 @@ SidePanel::SidePanel (QMainWindow *p) : QTabWidget (p)
   _lockStatus = TRUE;
   createTabs();
   setTabPosition(QTabWidget::South);
+  setMaximumWidth(200);
 }
 
 void SidePanel::createTabs ()

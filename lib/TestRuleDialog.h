@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,48 +19,34 @@
  *  USA.
  */
 
-#ifndef PLUGIN_HPP
-#define PLUGIN_HPP
+#ifndef TEST_RULE_DIALOG_HPP
+#define TEST_RULE_DIALOG_HPP
 
-#include <QObject>
-#include <QWidget>
+#include <QTreeWidget>
+#include <QStringList>
 
-#include "Command.h"
-#include "Indicator.h"
+#include "Dialog.h"
 #include "Setting.h"
-#include "BarData.h"
 
-class Plugin : public QObject
+class TestRuleDialog : public Dialog
 {
   Q_OBJECT
 
-  signals:
-    void signalResume ();
-    void signalKill ();
-  
   public:
-    enum Type
-    {
-      _DIALOG,
-      _THREAD,
-      _INDICATOR
-    };
-    
-    Plugin ();
-    virtual ~Plugin ();
-    virtual int command (Command *);
-    virtual int calculate (BarData *, Indicator *);
-    virtual void defaults (Setting *);
-    virtual void dialog (QWidget *, Indicator *);
-    virtual void testRuleDialog (QWidget *, Setting *);
-    
-    int type ();
-    void setParent (QWidget *);
+    TestRuleDialog (QWidget *, Setting *);
+    void createGUI ();
+    void loadRule ();
 
-  protected:
-    int _type;
-    QString _plugin;
-    QWidget *_parent;
+  public slots:
+    void done ();
+    void addRule ();
+    void addRule (QString check, QString val, QString offset, QString op, QString val2, QString offset2);
+    void deleteRule ();
+    void saveRule ();
+        
+  private:
+    Setting *_settings;
+    QTreeWidget *_tree;
 };
 
 #endif

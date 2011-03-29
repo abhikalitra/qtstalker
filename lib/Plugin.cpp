@@ -51,6 +51,10 @@ void Plugin::dialog (QWidget *, Indicator *)
 {
 }
 
+void Plugin::testRuleDialog (QWidget *, Setting *)
+{
+}
+
 int Plugin::type ()
 {
   return _type;

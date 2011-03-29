@@ -34,6 +34,7 @@ ControlPanel::ControlPanel ()
   _lockStatus = TRUE;
   _startFlag = FALSE;
   createGUI();
+  setMaximumHeight(75);
 }
 
 void ControlPanel::createGUI ()

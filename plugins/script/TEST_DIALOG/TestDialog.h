@@ -24,9 +24,15 @@
 
 #include <QStringList>
 #include <QTreeWidget>
+#include <QTabWidget>
+#include <QGroupBox>
+#include <QDoubleSpinBox>
+#include <QCheckBox>
 
 #include "Dialog.h"
 #include "Setting.h"
+#include "TestRuleWidget.h"
+#include "SymbolButton.h"
 
 class TestDialog : public Dialog
 {
@@ -34,8 +40,11 @@ class TestDialog : public Dialog
 
   public:
     TestDialog (QWidget *, Command *);
-    void createGUI ();
+    void createRulePage ();
+    void createSettingsPage();
+    void createSummaryPage ();
     void updateTrades ();
+    void clear ();
 
   public slots:
     void loadSettings ();
@@ -46,10 +55,34 @@ class TestDialog : public Dialog
     void addSummary (Setting);
     void deleteTest ();
     void deleteTest2 ();
+    void loadRule ();
+    void loadRule2 (QString);
+    void saveRule ();
+    void newRule ();
+    void newRule2 (QString);
+    void run ();
 
   private:
+    QString _name;
+    QTabWidget *_tabs;
     QTreeWidget *_tradeList;
     QTreeWidget *_summary;
+    TestRuleWidget *_enterLongRules;
+    TestRuleWidget *_exitLongRules;
+    TestRuleWidget *_enterShortRules;
+    TestRuleWidget *_exitShortRules;
+    QCheckBox *_long;
+    QCheckBox *_short;
+    QCheckBox *_delay;
+    QDoubleSpinBox *_equity;
+    QDoubleSpinBox *_enterComm;
+    QDoubleSpinBox *_exitComm;
+    QDoubleSpinBox *_maxLoss;
+    QDoubleSpinBox *_trailing;
+    QDoubleSpinBox *_volume;
+    SymbolButton *_symbols;
+    QGroupBox *_maxLossStop;
+    QGroupBox *_trailingStop;
 };
 
 #endif

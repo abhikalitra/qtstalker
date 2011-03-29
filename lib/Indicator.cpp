@@ -30,6 +30,7 @@
 Indicator::Indicator (QObject *p) : QObject (p)
 {
 //  _thread = 0;
+  _testFlag = 0;
   _settings = new Setting;
   init();
 }
@@ -37,6 +38,7 @@ Indicator::Indicator (QObject *p) : QObject (p)
 Indicator::Indicator ()
 {
 //  _thread = 0;
+  _testFlag = 0;
   _settings = new Setting;
   init();
 }
@@ -180,12 +182,18 @@ void Indicator::clearLines ()
 
 int Indicator::save ()
 {
+  if (_testFlag)
+    return 0;
+  
   IndicatorDataBase db;
   return db.save(this);
 }
 
 int Indicator::load ()
 {
+  if (_testFlag)
+    return 0;
+  
   IndicatorDataBase db;
   return db.load(this);
 }
@@ -279,7 +287,15 @@ void Indicator::dialog ()
 
 void Indicator::dialogDone ()
 {
+  if (_testFlag)
+    return;
+  
   save();
   emit signalClear();
   calculate();
+}
+
+void Indicator::setTestFlag (int d)
+{
+  _testFlag = d;
 }

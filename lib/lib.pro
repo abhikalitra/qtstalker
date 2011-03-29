@@ -16,6 +16,7 @@ HEADERS += CommandThread.h
 HEADERS += ConfirmDialog.h
 HEADERS += Curve.h
 HEADERS += CurveBar.h
+HEADERS += DataDataBase.h
 HEADERS += DateRange.h
 HEADERS += Dialog.h
 HEADERS += Doc.h
@@ -47,6 +48,7 @@ HEADERS += Strip.h
 HEADERS += SymbolButton.h
 HEADERS += SymbolDialog.h
 HEADERS += TestDataBase.h
+HEADERS += TestRuleDialog.h
 
 
 SOURCES += Bar.cpp
@@ -60,6 +62,7 @@ SOURCES += CommandThread.cpp
 SOURCES += ConfirmDialog.cpp
 SOURCES += Curve.cpp
 SOURCES += CurveBar.cpp
+SOURCES += DataDataBase.cpp
 SOURCES += DateRange.cpp
 SOURCES += Dialog.cpp
 SOURCES += Doc.cpp
@@ -91,6 +94,7 @@ SOURCES += Strip.cpp
 SOURCES += SymbolButton.cpp
 SOURCES += SymbolDialog.cpp
 SOURCES += TestDataBase.cpp
+SOURCES += TestRuleDialog.cpp
 
 
 TARGET = qtstalker

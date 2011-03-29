@@ -2649,10 +2649,6 @@ eg. perl -l -T</source>
 <context>
     <name>TestDialog</name>
     <message>
-        <source>Test Summary</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Summary</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2770,6 +2766,128 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Long Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Long Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Short Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Short Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Commision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Commision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trade Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Loss Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trailing Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TestRuleDialog</name>
+    <message>
+        <source>Test Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Op</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TestRuleWidget</name>
+    <message>
+        <source>Add Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Indicator Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

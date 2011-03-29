@@ -19,48 +19,37 @@
  *  USA.
  */
 
-#ifndef PLUGIN_HPP
-#define PLUGIN_HPP
+// *************************************************************************************************
+// *************************************************************************************************
 
-#include <QObject>
-#include <QWidget>
 
-#include "Command.h"
-#include "Indicator.h"
+#ifndef DATA_DATA_BASE_HPP
+#define DATA_DATA_BASE_HPP
+
+#include <QtSql>
+#include <QStringList>
+#include <QList>
+
 #include "Setting.h"
-#include "BarData.h"
 
-class Plugin : public QObject
+class DataDataBase
 {
-  Q_OBJECT
-
-  signals:
-    void signalResume ();
-    void signalKill ();
-  
   public:
-    enum Type
-    {
-      _DIALOG,
-      _THREAD,
-      _INDICATOR
-    };
-    
-    Plugin ();
-    virtual ~Plugin ();
-    virtual int command (Command *);
-    virtual int calculate (BarData *, Indicator *);
-    virtual void defaults (Setting *);
-    virtual void dialog (QWidget *, Indicator *);
-    virtual void testRuleDialog (QWidget *, Setting *);
-    
-    int type ();
-    void setParent (QWidget *);
+    DataDataBase (QString);
+    void init ();
+    int save (QString name, Setting *);
+    int save (QString name, QString key, QString data);
+    int load (QString name, Setting *);
+    int load (QString name, QString key, QString &data);
+    int names (QStringList &);
+    int removeName (QString);
+    int removeKey (QString, QString);
+    void transaction ();
+    void commit ();
 
-  protected:
-    int _type;
-    QString _plugin;
-    QWidget *_parent;
+  private:
+    QSqlDatabase _db;
+    QString _table;
 };
 
 #endif

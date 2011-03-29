@@ -102,11 +102,14 @@ int MOM::calculate (BarData *bd, Indicator *i)
   Curve *ma = mat.getMA(line,
 			settings->getInt(_MA_PERIOD),
 			mat.fromString(settings->data(_MA_TYPE)));
-  ma->setAllColor(QColor(settings->data(_MA_COLOR)));
-  ma->setLabel(settings->data(_MA_LABEL));
-  ma->setType((Curve::Type) line->typeFromString(settings->data(_MA_STYLE)));
-  ma->setZ(1);
-  i->setLine(settings->data(_MA_LABEL), ma);
+  if (ma)
+  {
+    ma->setAllColor(QColor(settings->data(_MA_COLOR)));
+    ma->setLabel(settings->data(_MA_LABEL));
+    ma->setType((Curve::Type) line->typeFromString(settings->data(_MA_STYLE)));
+    ma->setZ(1);
+    i->setLine(settings->data(_MA_LABEL), ma);
+  }
 
   return 0;
 }

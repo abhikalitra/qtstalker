@@ -100,6 +100,7 @@ Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
   _dock->setObjectName(name);
   _dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
   _dock->setWidget(this);
+  _dock->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
   mw->addDockWidget(Qt::LeftDockWidgetArea, _dock);
   connect(_menu, SIGNAL(signalLockStatus(bool)), this, SLOT(lockChanged(bool)));
 }

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,48 +19,42 @@
  *  USA.
  */
 
-#ifndef PLUGIN_HPP
-#define PLUGIN_HPP
+#ifndef TEST_RULE_WIDGET_HPP
+#define TEST_RULE_WIDGET_HPP
 
-#include <QObject>
-#include <QWidget>
+#include <QListWidget>
+#include <QStringList>
+#include <QToolButton>
 
-#include "Command.h"
 #include "Indicator.h"
-#include "Setting.h"
-#include "BarData.h"
 
-class Plugin : public QObject
+class TestRuleWidget : public QWidget
 {
   Q_OBJECT
 
-  signals:
-    void signalResume ();
-    void signalKill ();
-  
   public:
-    enum Type
-    {
-      _DIALOG,
-      _THREAD,
-      _INDICATOR
-    };
-    
-    Plugin ();
-    virtual ~Plugin ();
-    virtual int command (Command *);
-    virtual int calculate (BarData *, Indicator *);
-    virtual void defaults (Setting *);
-    virtual void dialog (QWidget *, Indicator *);
-    virtual void testRuleDialog (QWidget *, Setting *);
-    
-    int type ();
-    void setParent (QWidget *);
+    TestRuleWidget ();
+    ~TestRuleWidget ();
+    void createGUI ();
+    int load (QString name, QString prefix);
+    int save (QString name, QString prefix);
+    void clear ();
 
-  protected:
-    int _type;
-    QString _plugin;
-    QWidget *_parent;
+  public slots:
+    void addIndicator ();
+    void addIndicator2 (QString);
+    void deleteIndicator ();
+    void editIndicator ();
+    void editIndicatorRules ();
+    void listSelected ();
+        
+  private:
+    QListWidget *_list;
+    QList<Indicator *> _iList;
+    QList<Setting *> _ruleList;
+    QToolButton *_editButton;
+    QToolButton *_editRuleButton;
+    QToolButton *_deleteButton;
 };
 
 #endif

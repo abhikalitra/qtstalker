@@ -1111,4 +1111,8 @@
 
            Removed yahoo database. Not needed anymore.
 
+20110327:  Fixed resizing aspect ratio bug.
 
+20110328:  Fixed segfault when date range is changed.
+
+           
