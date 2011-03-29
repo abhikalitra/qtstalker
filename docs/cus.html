@@ -29,7 +29,9 @@ data-loading and management, and for launching external facilities.
 <p>
 These scripts can be written in any popular scripting language that can read / write to
 STDIN and STDOUT. Languages like Perl, Python, PHP etc. The pre-installed scripts
-provided are written in Perl. See the contributed "<a href="#examples">CUS
+provided are written in Perl. See the scripts in the
+<code>qtstalker/Scripts/indicator/</code> directory.
+Also see the contributed "<a href="#examples">CUS
 Examples Repository</a>" for examples.</p>
 <p> For a description of available indicators for scripts see the
 <a href="indicatorreference.html">Indicator Reference</a> and the
@@ -50,15 +52,15 @@ buffered.</li>
 <p></p>
 <p style="margin-left: 4em;">$|++;</p>
 <p></p>
-<p>Now we create a BARS indicator. Each indicator has a format. We
+<p>Now we create a "Close" indicator. Each indicator has a format. We
 consult the
 indicator reference to determine the proper format and make the
 request. The
 request to create an indicator is made to STDOUT. The request is a
 string in
-the proper format to create a BARS indicator.</p>
+the proper format to create a Close indicator.</p>
 <p></p>
-<p>print STDOUT "INDICATOR,PLUGIN,BARS,OHLC,green,red,blue";</p>
+<p>print STDOUT 'PLUGIN=DOHLCVI,METHOD=C,NAME=close_0';</p>
 <p></p>
 <p>Each time we communicate with Qtstalker, a return code is returned
 from
@@ -94,12 +96,12 @@ script.</p>
 <p></p>
 <p>If we got this far then everything has been successful. Now that we
 have our
-BARS indicator, we plot it. The next command tells Qtstalker to plot
-our BARS
+Close indicator, we plot it. The next command tells Qtstalker to plot
+our Close
 indicator. Consult the Indicator API for the plot command format for
 details.</p>
 <p></p>
-<p>print STDOUT "PLOT,OHLC"; </p>
+<p>print STDOUT 'PLUGIN=INDICATOR_PLOT_ALL,NAME=close_0,STYLE=Line,COLOR=yellow,Z=1'; </p>
 <p></p>
 <p>Once again we have to check to see if our plot command was
 successful. The
