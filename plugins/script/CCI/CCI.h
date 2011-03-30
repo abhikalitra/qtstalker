@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CCI_HPP
-#define CCI_HPP
+#ifndef PLUGIN_CCI_HPP
+#define PLUGIN_CCI_HPP
 
 #include "Plugin.h"
 

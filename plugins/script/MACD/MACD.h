@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MACD_HPP
-#define MACD_HPP
+#ifndef PLUGIN_MACD_HPP
+#define PLUGIN_MACD_HPP
 
 #include "Plugin.h"
 

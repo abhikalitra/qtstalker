@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef TRIX_HPP
-#define TRIX_HPP
+#ifndef PLUGIN_TRIX_HPP
+#define PLUGIN_TRIX_HPP
 
 #include "Plugin.h"
 

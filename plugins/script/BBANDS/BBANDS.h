@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef BBANDS_HPP
-#define BBANDS_HPP
+#ifndef PLUGIN_BBANDS_HPP
+#define PLUGIN_BBANDS_HPP
 
 #include "Plugin.h"
 

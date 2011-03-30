@@ -21,11 +21,11 @@
 
 #include "ChartObjectTLineDialog.h"
 #include "Globals.h"
-#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
+#include <QSettings>
 
-ChartObjectTLineDialog::ChartObjectTLineDialog (QWidget *p, Setting *set) : Dialog (p)
+ChartObjectTLineDialog::ChartObjectTLineDialog (QWidget *p, ChartObject *set) : Dialog (p)
 {
   _co = set;
   _keySize = "chart_object_tline_dialog_window_size";
@@ -89,15 +89,15 @@ void ChartObjectTLineDialog::done ()
     settings.sync();
   }
 
-  _co->setData("Color", _color->color());
-  _co->setData("Date", _date->dateTime());
-  _co->setData("Date2", _date2->dateTime());
-  _co->setData("Price", _price->value());
-  _co->setData("Price2", _price2->value());
-  _co->setData("Extend", _extend->isChecked());
+  Setting *set = _co->settings();
+  set->setData("COLOR", _color->color());
+  set->setData("DATE", _date->dateTime());
+  set->setData("DATE2", _date2->dateTime());
+  set->setData("PRICE", _price->value());
+  set->setData("PRICE2", _price2->value());
+  set->setData("EXTEND", _extend->isChecked());
 
-  ChartObjectDataBase db;
-  db.save(_co);
+  _co->save();
 
   saveSettings();
 
@@ -106,12 +106,13 @@ void ChartObjectTLineDialog::done ()
 
 void ChartObjectTLineDialog::loadObject ()
 {
-  _date->setDateTime(_co->dateTime("Date"));
-  _date2->setDateTime(_co->dateTime("Date2"));
-  _color->setColor(_co->color("Color"));
-  _price->setValue(_co->getDouble("Price"));
-  _price2->setValue(_co->getDouble("Price2"));
-  _extend->setChecked(_co->getInt("Extend"));
+  Setting *set = _co->settings();
+  _date->setDateTime(set->dateTime("DATE"));
+  _date2->setDateTime(set->dateTime("DATE2"));
+  _color->setColor(set->color("COLOR"));
+  _price->setValue(set->getDouble("PRICE"));
+  _price2->setValue(set->getDouble("PRICE2"));
+  _extend->setChecked(set->getInt("EXTEND"));
 }
 
 void ChartObjectTLineDialog::loadSettings ()

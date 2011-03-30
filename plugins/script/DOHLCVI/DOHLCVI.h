@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef DOHLCVI_HPP
-#define DOHLCVI_HPP
+#ifndef PLUGIN_DOHLCVI_HPP
+#define PLUGIN_DOHLCVI_HPP
 
 #include "Plugin.h"
 

@@ -1115,4 +1115,16 @@
 
 20110328:  Fixed segfault when date range is changed.
 
-           
+           The Page Up and Page Down keys are now universal to moving the chart left or right.
+
+20110329:  Added an antialias configure option to help speed up slow displays. An app restart is required
+           once the option is changed.
+
+           Managed to finally create a flexible database schema for groups, scripts, indicators and chart objects.
+           Folded all the seperate classes into one generic class DataDataBase. As a result of these changes,
+           groups, scripts, indicators and chart objects will be lost. Using key/data pairs now we can be more
+           flexible for any future changes. Now when the *.conf files get deleted, only settings will be lost.
+           Amen.
+
+           Made another attempt at fixing the rest of the aspect ratio resizing bug.
+

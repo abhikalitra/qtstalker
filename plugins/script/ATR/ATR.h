@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef ATR_HPP
-#define ATR_HPP
+#ifndef PLUGIN_ATR_HPP
+#define PLUGIN_ATR_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef STOCH_SLOW_HPP
-#define STOCH_SLOW_HPP
+#ifndef PLUGIN_STOCH_SLOW_HPP
+#define PLUGIN_STOCH_SLOW_HPP
 
 #include "Plugin.h"
 

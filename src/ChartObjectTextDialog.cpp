@@ -22,11 +22,11 @@
 #include "ChartObjectTextDialog.h"
 #include "Globals.h"
 #include "Strip.h"
-#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
+#include <QSettings>
 
-ChartObjectTextDialog::ChartObjectTextDialog (QWidget *p, Setting *set) : Dialog (p)
+ChartObjectTextDialog::ChartObjectTextDialog (QWidget *p, ChartObject *set) : Dialog (p)
 {
   _co = set;
   _keySize = "chart_object_text_dialog_window_size";
@@ -95,14 +95,14 @@ void ChartObjectTextDialog::done ()
     settings.sync();
   }
 
-  _co->setData("Color", _color->color());
-  _co->setData("Price", _price->value());
-  _co->setData("Date", _date->dateTime());
-  _co->setData("Text", _label->text());
-  _co->setData("Font", _font->font());
+  Setting *set = _co->settings();
+  set->setData("COLOR", _color->color());
+  set->setData("PRICE", _price->value());
+  set->setData("DATE", _date->dateTime());
+  set->setData("TEXT", _label->text());
+  set->setData("FONT", _font->font());
 
-  ChartObjectDataBase db;
-  db.save(_co);
+  _co->save();
 
   saveSettings();
 
@@ -111,11 +111,12 @@ void ChartObjectTextDialog::done ()
 
 void ChartObjectTextDialog::loadObject ()
 {
-  _date->setDateTime(_co->dateTime("Date"));
-  _color->setColor(_co->color("Color"));
-  _font->setFont(_co->font("Font"));
-  _price->setValue(_co->getDouble("Price"));
-  _label->setText(_co->data("Text"));
+  Setting *set = _co->settings();
+  _date->setDateTime(set->dateTime("DATE"));
+  _color->setColor(set->color("COLOR"));
+  _font->setFont(set->font("FONT"));
+  _price->setValue(set->getDouble("PRICE"));
+  _label->setText(set->data("TEXT"));
 }
 
 void ChartObjectTextDialog::loadSettings ()

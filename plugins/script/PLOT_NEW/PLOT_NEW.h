@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PLOT_NEW_HPP
-#define PLOT_NEW_HPP
+#ifndef PLUGIN_PLOT_NEW_HPP
+#define PLUGIN_PLOT_NEW_HPP
 
 #include "Plugin.h"
 

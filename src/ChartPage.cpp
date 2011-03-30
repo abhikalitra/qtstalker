@@ -22,7 +22,7 @@
 #include "ChartPage.h"
 #include "Globals.h"
 #include "QuoteDataBase.h"
-#include "GroupDataBase.h"
+#include "DataDataBase.h"
 #include "SymbolDialog.h"
 #include "ConfirmDialog.h"
 #include "SelectDialog.h"
@@ -141,8 +141,8 @@ void ChartPage::addToGroup ()
     return;
 
   QStringList l2;
-  GroupDataBase db;
-  db.groups(l2);
+  DataDataBase db("groups");
+  db.names(l2);
 
   SelectDialog *dialog = new SelectDialog(this);
   dialog->setItems(l2);
@@ -158,17 +158,21 @@ void ChartPage::addToGroup ()
 
 void ChartPage::addToGroup2 (QStringList gl)
 {
-  QList<QListWidgetItem *> l = _nav->selectedItems();
-  if (! l.count())
-    return;
+  DataDataBase db("groups");
+  QStringList g;
+  db.load(gl.at(0), g);
 
-  QStringList l2;
+  QList<QListWidgetItem *> l = _nav->selectedItems();
   int loop = 0;
   for (; loop < l.count(); loop++)
-    l2 << l.at(loop)->text();
-  
-  GroupDataBase db;
-  db.merge(gl.at(0), l2);
+    g << l.at(loop)->text();
+
+  g.removeDuplicates();
+
+  db.transaction();
+  db.removeName(gl.at(0));
+  db.save(gl.at(0), g);
+  db.commit();
 }
 
 void ChartPage::updateList ()

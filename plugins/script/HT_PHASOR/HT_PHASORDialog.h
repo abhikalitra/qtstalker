@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef HT_PHASOR_DIALOG_HPP
-#define HT_PHASOR_DIALOG_HPP
+#ifndef PLUGIN_HT_PHASOR_DIALOG_HPP
+#define PLUGIN_HT_PHASOR_DIALOG_HPP
 
 #include <QComboBox>
 #include <QTabWidget>

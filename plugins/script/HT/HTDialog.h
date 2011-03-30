@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef HT_DIALOG_HPP
-#define HT_DIALOG_HPP
+#ifndef PLUGIN_HT_DIALOG_HPP
+#define PLUGIN_HT_DIALOG_HPP
 
 #include <QComboBox>
 #include <QTabWidget>

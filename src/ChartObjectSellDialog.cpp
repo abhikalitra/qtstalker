@@ -21,11 +21,11 @@
 
 #include "ChartObjectSellDialog.h"
 #include "Globals.h"
-#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
+#include <QSettings>
 
-ChartObjectSellDialog::ChartObjectSellDialog (QWidget *p, Setting *set) : Dialog (p)
+ChartObjectSellDialog::ChartObjectSellDialog (QWidget *p, ChartObject *set) : Dialog (p)
 {
   _co = set;
   _keySize = "chart_object_sell_dialog_window_size";
@@ -73,12 +73,12 @@ void ChartObjectSellDialog::done ()
     settings.sync();
   }
 
-  _co->setData("Color", _color->color());
-  _co->setData("Price", _price->value());
-  _co->setData("Date", _date->dateTime());
+  Setting *set = _co->settings();
+  set->setData("COLOR", _color->color());
+  set->setData("PRICE", _price->value());
+  set->setData("DATE", _date->dateTime());
 
-  ChartObjectDataBase db;
-  db.save(_co);
+  _co->save();
 
   saveSettings();
 
@@ -87,9 +87,10 @@ void ChartObjectSellDialog::done ()
 
 void ChartObjectSellDialog::loadObject ()
 {
-  _color->setColor(_co->color("Color"));
-  _date->setDateTime(_co->dateTime("Date"));
-  _price->setValue(_co->getDouble("Price"));
+  Setting *set = _co->settings();
+  _color->setColor(set->color("COLOR"));
+  _date->setDateTime(set->dateTime("DATE"));
+  _price->setValue(set->getDouble("PRICE"));
 }
 
 void ChartObjectSellDialog::loadSettings ()

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef ULTOSC_HPP
-#define ULTOSC_HPP
+#ifndef PLUGIN_ULTOSC_HPP
+#define PLUGIN_ULTOSC_HPP
 
 #include "Plugin.h"
 

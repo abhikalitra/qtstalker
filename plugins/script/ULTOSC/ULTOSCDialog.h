@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef ULTOSC_DIALOG_HPP
-#define ULTOSC_DIALOG_HPP
+#ifndef PLUGIN_ULTOSC_DIALOG_HPP
+#define PLUGIN_ULTOSC_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

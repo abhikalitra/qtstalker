@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef STOCH_FAST_DIALOG_HPP
-#define STOCH_FAST_DIALOG_HPP
+#ifndef PLUGIN_STOCH_FAST_DIALOG_HPP
+#define PLUGIN_STOCH_FAST_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

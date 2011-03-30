@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CUS_DIALOG_HPP
-#define CUS_DIALOG_HPP
+#ifndef PLUGIN_CUS_DIALOG_HPP
+#define PLUGIN_CUS_DIALOG_HPP
 
 #include <QLineEdit>
 

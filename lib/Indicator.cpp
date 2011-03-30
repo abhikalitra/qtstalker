@@ -20,12 +20,12 @@
  */
 
 #include "Indicator.h"
-#include "IndicatorDataBase.h"
+#include "DataDataBase.h"
 #include "Globals.h"
-#include "ChartObjectDataBase.h"
 #include "PluginFactory.h"
 
 #include <QDebug>
+#include <QSettings>
 
 Indicator::Indicator (QObject *p) : QObject (p)
 {
@@ -185,8 +185,23 @@ int Indicator::save ()
   if (_testFlag)
     return 0;
   
-  IndicatorDataBase db;
-  return db.save(this);
+  DataDataBase db("indicators");
+  db.transaction();
+  if (db.removeName(name()))
+  {
+    qDebug() << "Indicator::save: error removing indicator";
+    return 1;
+  }
+  
+  if (db.save(name(), settings()))
+  {
+    qDebug() << "Indicator::save: error saving indicator";
+    return 1;
+  }
+
+  db.commit();
+
+  return 0;
 }
 
 int Indicator::load ()
@@ -194,8 +209,8 @@ int Indicator::load ()
   if (_testFlag)
     return 0;
   
-  IndicatorDataBase db;
-  return db.load(this);
+  DataDataBase db("indicators");
+  return db.load(name(), settings());
 }
 
 void Indicator::calculate ()
@@ -242,13 +257,25 @@ void Indicator::calculate2 ()
 
 void Indicator::loadChartObjects ()
 {
-  QList<Setting> l;
-  ChartObjectDataBase db;
-  db.load(_settings->data("NAME"), g_barData, l);
+  DataDataBase db("chartObjects");
+  QStringList names;
+  QStringList l;
+  l << _settings->data("NAME") << g_barData->exchange() << g_barData->symbol();
+  if (db.search("KEY", l.join("_"), names))
+  {
+    qDebug() << "Indicator::loadChartObjects: search error";
+    return;
+  }
 
   int loop = 0;
-  for (; loop < l.count(); loop++)
-    addChartObject(l.at(loop));
+  for (; loop < names.count(); loop++)
+  {
+    Setting set;
+    if (db.load(names.at(loop), &set))
+      continue;
+    
+    addChartObject(set);
+  }
 }
 
 QHash<QString, Setting> &  Indicator::chartObjects ()
@@ -298,4 +325,23 @@ void Indicator::dialogDone ()
 void Indicator::setTestFlag (int d)
 {
   _testFlag = d;
+}
+
+void Indicator::remove (QStringList l)
+{
+  QSettings set(g_localSettings);
+  QStringList tl = set.value("indicators").toStringList();
+  
+  DataDataBase db("indicators");
+  db.transaction();
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    db.removeName(l.at(loop));
+    tl.removeAll(l.at(loop));
+  }
+  db.commit();
+
+  set.setValue("indicators", tl);
+  set.sync();
 }

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef ADX_DIALOG_HPP
-#define ADX_DIALOG_HPP
+#ifndef PLUGIN_ADX_DIALOG_HPP
+#define PLUGIN_ADX_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

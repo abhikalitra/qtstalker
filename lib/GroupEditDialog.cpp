@@ -21,7 +21,7 @@
 
 #include "GroupEditDialog.h"
 #include "Globals.h"
-#include "GroupDataBase.h"
+#include "DataDataBase.h"
 #include "SymbolDialog.h"
 
 #include "../pics/add.xpm"
@@ -45,7 +45,7 @@ GroupEditDialog::GroupEditDialog (QWidget *p, QString n) : Dialog (p)
 
   createGUI();
 
-  GroupDataBase db;
+  DataDataBase db("groups");
   db.load(_name, l);
   
   _list->clear();
@@ -124,13 +124,17 @@ void GroupEditDialog::done ()
   for (; loop < _list->count(); loop++)
     l << _list->item(loop)->text();
 
-  GroupDataBase db;
-  if (db.saveAll(_name, l))
+  DataDataBase db("groups");
+  db.transaction();
+  db.removeName(_name);
+  if (db.save(_name, l))
   {
     qDebug() << "GroupEditDialog::done: GroupDataBase error";
     cancel();
     return;
   }
+
+  db.commit();
 
   saveSettings();
 

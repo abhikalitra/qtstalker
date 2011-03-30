@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef TEST_DIALOG_DIALOG_HPP
-#define TEST_DIALOG_DIALOG_HPP
+#ifndef PLUGIN_TEST_DIALOG_DIALOG_HPP
+#define PLUGIN_TEST_DIALOG_DIALOG_HPP
 
 #include <QStringList>
 #include <QTreeWidget>

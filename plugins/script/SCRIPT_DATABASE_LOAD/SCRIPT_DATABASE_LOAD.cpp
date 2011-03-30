@@ -20,7 +20,7 @@
  */
 
 #include "SCRIPT_DATABASE_LOAD.h"
-#include "ScriptDataBase.h"
+#include "Script.h"
 
 #include <QtDebug>
 
@@ -37,9 +37,7 @@ int SCRIPT_DATABASE_LOAD::command (Command *command)
 
   Script script;
   script.setName(command->parm("NAME"));
-
-  ScriptDataBase db;
-  if (db.load(&script))
+  if (script.load())
   {
     qDebug() << _plugin << "::command: script load error" << command->parm("NAME");
     return 1;

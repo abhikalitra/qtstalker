@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SYMBOL_DIALOG_HPP
-#define SYMBOL_DIALOG_HPP
+#ifndef PLUGIN_SYMBOL_DIALOG_HPP
+#define PLUGIN_SYMBOL_DIALOG_HPP
 
 #include "Plugin.h"
 

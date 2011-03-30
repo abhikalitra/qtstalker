@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef ATR_DIALOG_HPP
-#define ATR_DIALOG_HPP
+#ifndef PLUGIN_ATR_DIALOG_HPP
+#define PLUGIN_ATR_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SYMBOL_DIALOG_DIALOG_HPP
-#define SYMBOL_DIALOG_DIALOG_HPP
+#ifndef SYMBOL_DIALOG_HPP
+#define SYMBOL_DIALOG_HPP
 
 #include <QTreeWidget>
 #include <QComboBox>

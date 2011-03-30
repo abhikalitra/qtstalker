@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef VIDYA_HPP
-#define VIDYA_HPP
+#ifndef PLUGIN_VIDYA_HPP
+#define PLUGIN_VIDYA_HPP
 
 #include "Plugin.h"
 #include "Curve.h"

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef ADD_HPP
-#define ADD_HPP
+#ifndef PLUGIN_ADD_HPP
+#define PLUGIN_ADD_HPP
 
 #include "Plugin.h"
 

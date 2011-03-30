@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef YAHOO_HISTORY_HPP
-#define YAHOO_HISTORY_HPP
+#ifndef PLUGIN_YAHOO_HISTORY_HPP
+#define PLUGIN_YAHOO_HISTORY_HPP
 
 #include <QThread>
 #include <QDateTime>

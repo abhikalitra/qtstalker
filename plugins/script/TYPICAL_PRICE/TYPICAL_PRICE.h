@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef TYPICAL_PRICE_HPP
-#define TYPICAL_PRICE_HPP
+#ifndef PLUGIN_TYPICAL_PRICE_HPP
+#define PLUGIN_TYPICAL_PRICE_HPP
 
 #include "Plugin.h"
 

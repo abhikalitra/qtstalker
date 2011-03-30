@@ -39,11 +39,14 @@ class DataDataBase
     void init ();
     int save (QString name, Setting *);
     int save (QString name, QString key, QString data);
+    int save (QString name, QStringList &data);
     int load (QString name, Setting *);
     int load (QString name, QString key, QString &data);
+    int load (QString name, QStringList &data);
     int names (QStringList &);
     int removeName (QString);
     int removeKey (QString, QString);
+    int search (QString key, QString data, QStringList &);
     void transaction ();
     void commit ();
 

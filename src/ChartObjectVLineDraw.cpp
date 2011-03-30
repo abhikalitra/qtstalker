@@ -33,9 +33,9 @@ ChartObjectVLineDraw::ChartObjectVLineDraw ()
 void ChartObjectVLineDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->dateTime("Date")));
+  int x = xMap.transform(dsd->x(_settings->dateTime("DATE")));
 
-  p->setPen(_settings->color("Color"));
+  p->setPen(_settings->color("COLOR"));
 
   p->drawLine (x, 0, x, p->window().height());
 
@@ -69,7 +69,7 @@ void ChartObjectVLineDraw::draw (QPainter *p, const QwtScaleMap &xMap, const Qwt
 		  t * loop,
 		  _handleWidth,
 		  _handleWidth,
-		  _settings->color("Color"));
+		  _settings->color("COLOR"));
     }
   }
 }

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef BETA_HPP
-#define BETA_HPP
+#ifndef PLUGIN_BETA_HPP
+#define PLUGIN_BETA_HPP
 
 #include "Plugin.h"
 

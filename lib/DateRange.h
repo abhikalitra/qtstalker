@@ -24,7 +24,7 @@
 // input. eg. Range is Day, output datetime will be one day back from the input datetime
 // *************************************************************************************************
 
-#ifndef APP_DATE_RANGE_HPP
+#ifndef DATE_RANGE_HPP
 #define DATE_RANGE_HPP
 
 #include <QDateTime>

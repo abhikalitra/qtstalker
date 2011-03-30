@@ -22,7 +22,6 @@
 
 #include "ChartObjectVLine.h"
 #include "DateScaleDraw.h"
-#include "ChartObjectVLineDraw.h"
 #include "Strip.h"
 #include "Globals.h"
 
@@ -37,12 +36,13 @@ ChartObjectVLine::ChartObjectVLine ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("Color", set.value("default_chart_object_vline_color", "red").toString());
-  _settings->setData("Type", QString("VLine"));
+  _settings->setData("COLOR", set.value("default_chart_object_vline_color", "red").toString());
+  _settings->setData("TYPE", QString("VLine"));
 }
 
 ChartObjectVLine::~ChartObjectVLine ()
 {
+  delete _draw;
   if (_dialog)
     delete _dialog;
 }
@@ -51,7 +51,7 @@ void ChartObjectVLine::info (Setting &info)
 {
   info.setData(tr("Type"), tr("VLine"));
   
-  QDateTime dt = _settings->dateTime("Date");
+  QDateTime dt = _settings->dateTime("DATE");
   info.setData(tr("D"), dt.toString("yyyy-MM-dd"));
   info.setData(tr("T"), dt.toString("HH:mm:ss"));
 }
@@ -73,7 +73,7 @@ void ChartObjectVLine::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->setData("Date", dt);
+      _settings->setData("DATE", dt);
       
       _draw->plot()->replot();
       break;
@@ -172,7 +172,7 @@ void ChartObjectVLine::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectVLineDialog(_parent, _settings);
+  _dialog = new ChartObjectVLineDialog(_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();
@@ -181,4 +181,19 @@ void ChartObjectVLine::dialog ()
 void ChartObjectVLine::dialogDone ()
 {
   _dialog = 0;
+}
+
+int ChartObjectVLine::isSelected (QPoint p)
+{
+  return _draw->isSelected(p);
+}
+
+void ChartObjectVLine::setZ (int d)
+{
+  _draw->setZ(d);
+}
+
+void ChartObjectVLine::attach (QwtPlot *p)
+{
+  _draw->attach(p);
 }

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MAVP_DIALOG_HPP
-#define MAVP_DIALOG_HPP
+#ifndef PLUGIN_MAVP_DIALOG_HPP
+#define PLUGIN_MAVP_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

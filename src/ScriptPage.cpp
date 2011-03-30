@@ -21,7 +21,7 @@
 
 #include "ScriptPage.h"
 #include "ScriptLaunchButton.h"
-#include "ScriptDataBase.h"
+#include "DataDataBase.h"
 #include "Globals.h"
 #include "NewDialog.h"
 #include "SelectDialog.h"
@@ -169,9 +169,9 @@ void ScriptPage::createButtonMenu ()
 
 void ScriptPage::newScript ()
 {
-  ScriptDataBase db;
+  DataDataBase db("scripts");
   QStringList l;
-  db.scripts(l);
+  db.names(l);
 
   NewDialog *dialog = new NewDialog(this);
   dialog->setItems(l);
@@ -192,8 +192,8 @@ void ScriptPage::editScript ()
   l << "QtStalker" + g_session + ":" << tr("Edit Script");
   dialog->setWindowTitle(l.join(" "));
 
-  ScriptDataBase db;
-  db.scripts(l);
+  DataDataBase db("scripts");
+  db.names(l);
   dialog->setItems(l);
 
   dialog->setTitle(tr("Scripts"));
@@ -221,8 +221,8 @@ void ScriptPage::deleteScript ()
   l << "QtStalker" + g_session + ":" << tr("Delete Script");
   dialog->setWindowTitle(l.join(" "));
 
-  ScriptDataBase db;
-  db.scripts(l);
+  DataDataBase db("scripts");
+  db.names(l);
   dialog->setItems(l);
 
   dialog->setTitle(tr("Scripts"));
@@ -232,8 +232,14 @@ void ScriptPage::deleteScript ()
 
 void ScriptPage::deleteScript2 (QStringList l)
 {
-  ScriptDataBase db;
-  db.deleteScript(l);
+  DataDataBase db("scripts");
+  db.transaction();
+  
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    db.removeName(l.at(loop));
+
+  db.commit();
 }
 
 void ScriptPage::queRightClick (const QPoint &)
@@ -259,8 +265,8 @@ void ScriptPage::runScript ()
   l << "QtStalker" + g_session + ":" << tr("Run Script");
   dialog->setWindowTitle(l.join(" "));
 
-  ScriptDataBase db;
-  db.scripts(l);
+  DataDataBase db("scripts");
+  db.names(l);
   dialog->setItems(l);
 
   dialog->setTitle(tr("Scripts"));
@@ -278,9 +284,7 @@ void ScriptPage::runScript (QString d)
   Script *script = new Script(this);
   setupScript(script);
   script->setName(d);
-
-  ScriptDataBase db;
-  if (db.load(script))
+  if (script->load())
   {
     qDebug() << "ScriptPage::runScript: ScriptDataBase error" << d;
     delete script;
@@ -350,10 +354,9 @@ void ScriptPage::done (QString name)
   l << tr("Script") << name << tr("ended");
   g_middleMan->statusMessage(l.join(" "));
 
-  ScriptDataBase db;
   Script script(this);
   script.setName(name);
-  if (db.load(&script))
+  if (script.load())
   {
     // if an external script has run, we are ok to exit here
 //    qDebug() << "ScriptPage::done: script load error" << name;
@@ -362,7 +365,7 @@ void ScriptPage::done (QString name)
 
   script.setLastRun(QDateTime::currentDateTime().toString(Qt::ISODate));
   
-  if (db.save(&script))
+  if (script.save())
     qDebug() << "ScriptPage::done: script save error" << name;
 }
 
@@ -406,16 +409,18 @@ void ScriptPage::launchButtonCols2 (int d)
 
 void ScriptPage::scriptTimer ()
 {
-  ScriptDataBase db;
+  DataDataBase db("scripts");
   QStringList l;
-  db.timerScripts(l);
+  db.names(l);
 
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
     Script script(this);
     script.setName(l.at(loop));
-    db.load(&script);
+    script.load();
+    if (! script.minutes())
+      continue;
 
     QDateTime dt = QDateTime::currentDateTime();
     QDateTime dt2 = QDateTime::fromString(script.lastRun(), Qt::ISODate);

@@ -21,11 +21,11 @@
 
 #include "DATA_WINDOW.h"
 #include "Globals.h"
-#include "IndicatorDataBase.h"
 #include "DataWindow.h"
 
 #include <QtDebug>
-#include <QEventLoop>
+//#include <QEventLoop>
+#include <QSettings>
 
 DATA_WINDOW::DATA_WINDOW ()
 {
@@ -47,10 +47,10 @@ int DATA_WINDOW::command (Command *command)
   
   DataWindow *dw = new DataWindow(_parent);
 
-  IndicatorDataBase db;
-  QStringList l;
-  db.indicators(l);
-
+  // get the local indicators
+  QSettings settings(g_localSettings);
+  QStringList l = settings.value("indicators").toStringList();
+  
   int loop = 0;
   for (; loop < l.count(); loop++)
   {

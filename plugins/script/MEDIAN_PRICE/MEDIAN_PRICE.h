@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MEDIAN_PRICE_HPP
-#define MEDIAN_PRICE_HPP
+#ifndef PLUGIN_MEDIAN_PRICE_HPP
+#define PLUGIN_MEDIAN_PRICE_HPP
 
 #include "Plugin.h"
 

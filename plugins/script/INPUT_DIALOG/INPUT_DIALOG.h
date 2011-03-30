@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef INPUT_DIALOG_HPP
-#define INPUT_DIALOG_HPP
+#ifndef PLUGIN_INPUT_DIALOG_HPP
+#define PLUGIN_INPUT_DIALOG_HPP
 
 #include "Plugin.h"
 

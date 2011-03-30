@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef YAHOO_SYMBOL_DIALOG_HPP
-#define YAHOO_SYMBOL_DIALOG_HPP
+#ifndef PLUGIN_YAHOO_SYMBOL_DIALOG_HPP
+#define PLUGIN_YAHOO_SYMBOL_DIALOG_HPP
 
 #include <QListWidget>
 #include <QToolButton>

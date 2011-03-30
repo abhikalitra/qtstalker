@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PROCESS_HPP
-#define PROCESS_HPP
+#ifndef PLUGIN_PROCESS_HPP
+#define PLUGIN_PROCESS_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MAMA_HPP
-#define MAMA_HPP
+#ifndef PLUGIN_MAMA_HPP
+#define PLUGIN_MAMA_HPP
 
 #include "Plugin.h"
 

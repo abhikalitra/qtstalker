@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MAVP_HPP
-#define MAVP_HPP
+#ifndef PLUGIN_MAVP_HPP
+#define PLUGIN_MAVP_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef WEIGHTED_CLOSE_HPP
-#define WEIGHTED_CLOSE_HPP
+#ifndef PLUGIN_WEIGHTED_CLOSE_HPP
+#define PLUGIN_WEIGHTED_CLOSE_HPP
 
 #include "Plugin.h"
 

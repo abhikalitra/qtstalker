@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef ADXR_HPP
-#define ADXR_HPP
+#ifndef PLUGIN_ADXR_HPP
+#define PLUGIN_ADXR_HPP
 
 #include "Plugin.h"
 

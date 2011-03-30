@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef WILDER_MA_HPP
-#define WILDER_MA_HPP
+#ifndef PLUGIN_WILDER_MA_HPP
+#define PLUGIN_WILDER_MA_HPP
 
 #include "Plugin.h"
 

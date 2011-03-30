@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef BBANDS_DIALOG_HPP
-#define BBANDS_DIALOG_HPP
+#ifndef PLUGIN_BBANDS_DIALOG_HPP
+#define PLUGIN_BBANDS_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

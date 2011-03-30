@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CHART_PANEL_REFRESH_HPP
-#define CHART_PANEL_REFRESH_HPP
+#ifndef PLUGIN_CHART_PANEL_REFRESH_HPP
+#define PLUGIN_CHART_PANEL_REFRESH_HPP
 
 #include "Plugin.h"
 

@@ -21,7 +21,7 @@
 
 #include "INDICATOR_DATABASE_DELETE.h"
 #include "Globals.h"
-#include "IndicatorDataBase.h"
+#include "Indicator.h"
 
 #include <QtDebug>
 
@@ -37,12 +37,8 @@ int INDICATOR_DATABASE_DELETE::command (Command *command)
 
   QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
 
-  IndicatorDataBase db;
-  if (db.deleteIndicator(l))
-  {
-    qDebug() << _plugin << "::command: IndicatorDataBase error";
-    return 1;
-  }
+  Indicator i;
+  i.remove(l);
     
   command->setReturnCode("0");
   

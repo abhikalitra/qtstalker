@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PDI_HPP
-#define PDI_HPP
+#ifndef PLUGIN_PDI_HPP
+#define PLUGIN_PDI_HPP
 
 #include "Plugin.h"
 

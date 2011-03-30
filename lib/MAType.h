@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MATYPE_HPP
-#define MATYPE_HPP
+#ifndef MA_TYPE_HPP
+#define MA_TYPE_HPP
 
 #include <QStringList>
 

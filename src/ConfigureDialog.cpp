@@ -111,6 +111,15 @@ void ConfigureDialog::createGeneralPage ()
   
   _flags.insert("plotTabPosition", 0);
 
+  // antialiasing
+  _antiAlias = new QCheckBox;
+  _antiAlias->setChecked(settings.value("antialias", TRUE).toBool());
+  _antiAlias->setToolTip(tr("App restart required to take effect"));
+  connect(_antiAlias, SIGNAL(toggled(bool)), this, SLOT(antiAliasChanged()));
+  form->addRow(tr("Antialias Plotting"), _antiAlias);
+
+  _flags.insert("antialias", 0);
+  
   _tabs->addTab(w, tr("General"));
 }
 
@@ -153,6 +162,9 @@ void ConfigureDialog::done ()
     g_middleMan->plotTabPosition(_tabPosition->currentIndex());
   }
 
+  if (_flags.value("antialias"))
+    settings.setValue("antialias", _antiAlias->isChecked());
+
   saveSettings();
 
   accept();
@@ -183,5 +195,12 @@ void ConfigureDialog::tabPositionChanged ()
 {
   _modified++;
   _flags.insert("plotTabPosition", 1);
+  buttonStatus();
+}
+
+void ConfigureDialog::antiAliasChanged ()
+{
+  _modified++;
+  _flags.insert("antialias", 1);
   buttonStatus();
 }

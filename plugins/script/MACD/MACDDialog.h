@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MACD_DIALOG_HPP
-#define MACD_DIALOG_HPP
+#ifndef PLUGIN_MACD_DIALOG_HPP
+#define PLUGIN_MACD_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

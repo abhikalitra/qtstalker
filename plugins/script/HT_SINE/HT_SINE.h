@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef HT_SINE_HPP
-#define HT_SINE_HPP
+#ifndef PLUGIN_HT_SINE_HPP
+#define PLUGIN_HT_SINE_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef AVERAGE_PRICE_HPP
-#define AVERAGE_PRICE_HPP
+#ifndef PLUGIN_AVERAGE_PRICE_HPP
+#define PLUGIN_AVERAGE_PRICE_HPP
 
 #include "Plugin.h"
 

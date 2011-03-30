@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef NORMALIZE_HPP
-#define NORMALIZE_HPP
+#ifndef PLUGIN_NORMALIZE_HPP
+#define PLUGIN_NORMALIZE_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef OHLC_HPP
-#define OHLC_HPP
+#ifndef PLUGIN_OHLC_HPP
+#define PLUGIN_OHLC_HPP
 
 #include "Plugin.h"
 

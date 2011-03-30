@@ -20,7 +20,7 @@
  */
 
 #include "SCRIPT_DATABASE_LIST.h"
-#include "ScriptDataBase.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 
@@ -33,9 +33,9 @@ int SCRIPT_DATABASE_LIST::command (Command *command)
 {
   // PARMS:
 
-  ScriptDataBase db;
+  DataDataBase db("scripts");
   QStringList l;
-  if (db.scripts(l))
+  if (db.names(l))
   {
     qDebug() << _plugin << "::command: ScriptDataBase error";
     return 1;

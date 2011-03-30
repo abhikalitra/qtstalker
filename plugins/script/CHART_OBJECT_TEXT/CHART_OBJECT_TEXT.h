@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_TEXT_HPP
-#define CHART_OBJECT_TEXT_HPP
+#ifndef PLUGIN_CHART_OBJECT_TEXT_HPP
+#define PLUGIN_CHART_OBJECT_TEXT_HPP
 
 #include "Plugin.h"
 

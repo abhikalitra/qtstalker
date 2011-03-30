@@ -21,11 +21,11 @@
 
 #include "ChartObjectHLineDialog.h"
 #include "Globals.h"
-#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
+#include <QSettings>
 
-ChartObjectHLineDialog::ChartObjectHLineDialog (QWidget *p, Setting *set) : Dialog (p)
+ChartObjectHLineDialog::ChartObjectHLineDialog (QWidget *p, ChartObject *set) : Dialog (p)
 {
   _co = set;
   _keySize = "chart_object_hline_dialog_window_size";
@@ -68,11 +68,11 @@ void ChartObjectHLineDialog::done ()
     settings.sync();
   }
 
-  _co->setData("Color", _color->color());
-  _co->setData("Price", _price->value());
+  Setting *set = _co->settings();
+  set->setData("COLOR", _color->color());
+  set->setData("PRICE", _price->value());
 
-  ChartObjectDataBase db;
-  db.save(_co);
+  _co->save();
 
   saveSettings();
 
@@ -91,6 +91,7 @@ void ChartObjectHLineDialog::loadSettings ()
 
 void ChartObjectHLineDialog::loadObject ()
 {
-  _color->setColor(_co->color("Color"));
-  _price->setValue(_co->getDouble("Price"));
+  Setting *set = _co->settings();
+  _color->setColor(set->color("COLOR"));
+  _price->setValue(set->getDouble("PRICE"));
 }

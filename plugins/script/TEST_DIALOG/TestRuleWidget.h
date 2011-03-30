@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef TEST_RULE_WIDGET_HPP
-#define TEST_RULE_WIDGET_HPP
+#ifndef PLUGIN_TEST_RULE_WIDGET_HPP
+#define PLUGIN_TEST_RULE_WIDGET_HPP
 
 #include <QListWidget>
 #include <QStringList>

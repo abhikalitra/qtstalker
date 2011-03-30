@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CANDLES_DIALOG_HPP
-#define CANDLES_DIALOG_HPP
+#ifndef PLUGIN_CANDLE_PATTERN_DIALOG_HPP
+#define PLUGIN_CANDLE_PATTERN_DIALOG_HPP
 
 #include <QDoubleSpinBox>
 #include <QTabWidget>

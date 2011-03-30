@@ -37,6 +37,7 @@ InfoPanel::InfoPanel ()
   setContextMenuPolicy(Qt::CustomContextMenu);
   _lockStatus = TRUE;
   setReadOnly(TRUE);
+  setMaximumWidth(200);
 
   _menu = new QMenu(this);
   _menu->addAction(QPixmap(configure_xpm), tr("Set Number &Precision") + "...", this, SLOT(dialog()));

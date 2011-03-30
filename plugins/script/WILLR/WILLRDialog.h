@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef WILLR_DIALOG_HPP
-#define WILLR_DIALOG_HPP
+#ifndef PLUGIN_WILLR_DIALOG_HPP
+#define PLUGIN_WILLR_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

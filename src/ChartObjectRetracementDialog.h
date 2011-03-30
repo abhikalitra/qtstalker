@@ -30,13 +30,14 @@
 #include "ColorButton.h"
 #include "Setting.h"
 #include "Dialog.h"
+#include "ChartObject.h"
 
 class ChartObjectRetracementDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ChartObjectRetracementDialog (QWidget *, Setting *);
+    ChartObjectRetracementDialog (QWidget *, ChartObject *);
     void createDialog ();
     void createMainPage ();
     void createLinePage ();
@@ -61,7 +62,7 @@ class ChartObjectRetracementDialog : public Dialog
     QDateTimeEdit *_date;
     QDateTimeEdit *_date2;
     QTabWidget *_tabs;
-    Setting *_co;
+    ChartObject *_co;
 };
 
 #endif

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef RSI_DIALOG_HPP
-#define RSI_DIALOG_HPP
+#ifndef PLUGIN_RSI_DIALOG_HPP
+#define PLUGIN_RSI_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

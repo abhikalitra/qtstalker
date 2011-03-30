@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef GROUP_DATABASE_SAVE_HPP
-#define GROUP_DATABASE_SAVE_HPP
+#ifndef PLUGIN_GROUP_DATABASE_SAVE_HPP
+#define PLUGIN_GROUP_DATABASE_SAVE_HPP
 
 #include "Plugin.h"
 

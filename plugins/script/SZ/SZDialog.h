@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SZ_DIALOG_HPP
-#define SZ_DIALOG_HPP
+#ifndef PLUGIN_SZ_DIALOG_HPP
+#define PLUGIN_SZ_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

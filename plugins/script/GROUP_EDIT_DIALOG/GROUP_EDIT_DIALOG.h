@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCRIPT_GROUP_EDIT_DIALOG_HPP
-#define SCRIPT_GROUP_EDIT_DIALOG_HPP
+#ifndef PLUGIN_GROUP_EDIT_DIALOG_HPP
+#define PLUGIN_GROUP_EDIT_DIALOG_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef WILLR_HPP
-#define WILLR_HPP
+#ifndef PLUGIN_WILLR_HPP
+#define PLUGIN_WILLR_HPP
 
 #include "Plugin.h"
 

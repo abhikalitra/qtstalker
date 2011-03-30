@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef ROC_DIALOG_HPP
-#define ROC_DIALOG_HPP
+#ifndef PLUGIN_ROC_DIALOG_HPP
+#define PLUGIN_ROC_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

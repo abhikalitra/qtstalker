@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef T3_HPP
-#define T3_HPP
+#ifndef PLUGIN_T3_HPP
+#define PLUGIN_T3_HPP
 
 #include "Plugin.h"
 

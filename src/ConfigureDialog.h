@@ -25,6 +25,7 @@
 #include <QTabWidget>
 #include <QHash>
 #include <QComboBox>
+#include <QCheckBox>
 
 #include "ColorButton.h"
 #include "FontButton.h"
@@ -46,6 +47,7 @@ class ConfigureDialog : public Dialog
     void appFontChanged ();
     void plotFontChanged ();
     void tabPositionChanged ();
+    void antiAliasChanged ();
 
   private:
     QTabWidget *_tabs;
@@ -55,6 +57,7 @@ class ConfigureDialog : public Dialog
     int _modified;
     QHash<QString, int> _flags;
     QComboBox *_tabPosition;
+    QCheckBox *_antiAlias;
 };
 
 #endif

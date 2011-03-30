@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef RSI_HPP
-#define RSI_HPP
+#ifndef PLUGIN_RSI_HPP
+#define PLUGIN_RSI_HPP
 
 #include "Plugin.h"
 

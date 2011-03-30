@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef AROON_DIALOG_HPP
-#define AROON_DIALOG_HPP
+#ifndef PLUGIN_AROON_DIALOG_HPP
+#define PLUGIN_AROON_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

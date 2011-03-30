@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef FI_DIALOG_HPP
-#define FI_DIALOG_HPP
+#ifndef PLUGIN_FI_DIALOG_HPP
+#define PLUGIN_FI_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

@@ -20,7 +20,7 @@
  */
 
 #include "SCRIPT_DATABASE_DELETE.h"
-#include "ScriptDataBase.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 
@@ -36,12 +36,18 @@ int SCRIPT_DATABASE_DELETE::command (Command *command)
 
   QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
 
-  ScriptDataBase db;
-  if (db.deleteScript(l))
+  DataDataBase db("scripts");
+  db.transaction();
+  int loop = 0;
+  for (; loop < l.count(); loop++)
   {
-    qDebug() << _plugin << "::command: ScriptDataBase error";
-    return 1;
+    if (db.removeName(l.at(loop)))
+    {
+      qDebug() << _plugin << "::command: ScriptDataBase error";
+      return 1;
+    }
   }
+  db.commit();
 
   command->setReturnCode("0");
   

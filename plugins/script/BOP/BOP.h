@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef BOP_HPP
-#define BOP_HPP
+#ifndef PLUGIN_BOP_HPP
+#define PLUGIN_BOP_HPP
 
 #include "Plugin.h"
 

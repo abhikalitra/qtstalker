@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef STOCK_SPLIT_HPP
-#define STOCK_SPLIT_HPP
+#ifndef PLUGIN_STOCK_SPLIT_HPP
+#define PLUGIN_STOCK_SPLIT_HPP
 
 #include "Plugin.h"
 

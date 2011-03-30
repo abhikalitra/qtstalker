@@ -21,7 +21,6 @@
 
 #include "TestRuleWidget.h"
 #include "Globals.h"
-#include "IndicatorDataBase.h"
 #include "PluginFactory.h"
 #include "DataDataBase.h"
 
@@ -106,9 +105,10 @@ void TestRuleWidget::clear ()
 
 void TestRuleWidget::addIndicator ()
 {
-  IndicatorDataBase db;
   QStringList l;
-  db.plugins(l);
+  QSettings db(g_globalSettings);
+  l = db.value("indicator_plugins").toStringList();
+  l.sort();
   
   QInputDialog *dialog = new QInputDialog(this);
   dialog->setComboBoxItems(l);

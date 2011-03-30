@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef YAHOO_SYMBOL_HPP
-#define YAHOO_SYMBOL_HPP
+#ifndef PLUGIN_YAHOO_SYMBOL_HPP
+#define PLUGIN_YAHOO_SYMBOL_HPP
 
 #include "Setting.h"
 

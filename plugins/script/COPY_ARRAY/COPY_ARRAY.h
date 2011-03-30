@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef COPY_ARRAY_HPP
-#define COPY_ARRAY_HPP
+#ifndef PLUGIN_COPY_ARRAY_HPP
+#define PLUGIN_COPY_ARRAY_HPP
 
 #include "Plugin.h"
 

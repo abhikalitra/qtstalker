@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef GROUP_PANEL_REFRESH_HPP
-#define GROUP_PANEL_REFRESH_HPP
+#ifndef PLUGIN_GROUP_PANEL_REFRESH_HPP
+#define PLUGIN_GROUP_PANEL_REFRESH_HPP
 
 #include "Plugin.h"
 

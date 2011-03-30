@@ -21,7 +21,7 @@
 
 #include "INDICATOR_DATABASE_LIST.h"
 #include "Globals.h"
-#include "IndicatorDataBase.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 
@@ -35,8 +35,8 @@ int INDICATOR_DATABASE_LIST::command (Command *command)
   // PARMS:
 
   QStringList l;
-  IndicatorDataBase db;
-  if (db.indicators(l))
+  DataDataBase db("indicators");
+  if (db.names(l))
   {
     qDebug() << _plugin << "::command: IndicatorDataBase error";
     return 1;

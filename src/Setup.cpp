@@ -25,8 +25,9 @@
 #include "BarData.h"
 #include "MiddleMan.h"
 #include "qtstalker_defines.h"
-#include "ScriptDataBase.h"
 #include "ExchangeDataBase.h"
+#include "PluginFactory.h"
+#include "Script.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -135,7 +136,7 @@ void Setup::setupDefaultIndicators ()
     return;
   }
   
-  Indicator i(0);
+  Indicator i;
   plug->defaults(i.settings());
   i.setName("Bars");
   i.setLock(TRUE);
@@ -172,13 +173,12 @@ void Setup::setupDefaultScripts ()
   QString file = INSTALL_DATA_DIR;
   file.append("/qtstalker/quote/YahooHistoryDownload.pl");
   
-  ScriptDataBase db;
   Script script;
   script.setName(name);
   script.setCommand("perl");
   script.setFile(file);
   script.setMinutes(0);
-  db.save(&script);
+  script.save();
 
   QSettings settings(g_localSettings);
   settings.setValue("script_launch_button_1", name);

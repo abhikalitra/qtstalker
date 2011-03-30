@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CMO_DIALOG_HPP
-#define CMO_DIALOG_HPP
+#ifndef PLUGIN_CMO_DIALOG_HPP
+#define PLUGIN_CMO_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

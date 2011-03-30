@@ -20,7 +20,7 @@
  */
 
 #include "GROUP_DATABASE_SAVE.h"
-#include "GroupDataBase.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 
@@ -39,13 +39,21 @@ int GROUP_DATABASE_SAVE::command (Command *command)
 
   QStringList l = command->parm("ITEMS").split(";", QString::SkipEmptyParts);
 
-  GroupDataBase db;
-  if (db.merge(name, l))
-  {
-    qDebug() << _plugin << "::save: GroupDataBase error";
-    return 1;
-  }
-  
+  DataDataBase db("groups");
+  QStringList g;
+  db.load(name, g);
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    g << l.at(loop);
+
+  g.removeDuplicates();
+
+  db.transaction();
+  db.removeName(name);
+  db.save(name, g);
+  db.commit();
+
   command->setReturnCode("0");
 
   return 0;

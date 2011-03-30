@@ -22,7 +22,6 @@
 
 #include "ChartObjectSell.h"
 #include "DateScaleDraw.h"
-#include "ChartObjectSellDraw.h"
 #include "Strip.h"
 #include "Globals.h"
 
@@ -36,12 +35,13 @@ ChartObjectSell::ChartObjectSell ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("Color", set.value("default_chart_object_sell_color", "red").toString());
-  _settings->setData("Type", QString("Sell"));
+  _settings->setData("COLOR", set.value("default_chart_object_sell_color", "red").toString());
+  _settings->setData("TYPE", QString("Sell"));
 }
 
 ChartObjectSell::~ChartObjectSell ()
 {
+  delete _draw;
   if (_dialog)
     delete _dialog;
 }
@@ -50,23 +50,23 @@ void ChartObjectSell::info (Setting &info)
 {
   info.setData(tr("Type"), tr("Sell"));
 
-  QDateTime dt = _settings->dateTime("Date");
+  QDateTime dt = _settings->dateTime("DATE");
   info.setData(tr("D"), dt.toString("yyyy-MM-dd"));
   info.setData(tr("T"), dt.toString("HH:mm:ss"));
 
-  info.setData(tr("Price"), _settings->data("Price"));
+  info.setData(tr("Price"), _settings->data("PRICE"));
 }
 
 int ChartObjectSell::highLow (int start, int end, double &h, double &l)
 {
   DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = dsd->x(_settings->dateTime("Date"));
+  int x = dsd->x(_settings->dateTime("DATE"));
 
   if (x < start || x > end)
     return 0;
 
-  h = _settings->getDouble("Price");
-  l = _settings->getDouble("Price");
+  h = _settings->getDouble("PRICE");
+  l = _settings->getDouble("PRICE");
 
   return 1;
 }
@@ -83,10 +83,10 @@ void ChartObjectSell::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->setData("Date", dt);
+      _settings->setData("DATE", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings->setData("Price", map.invTransform((double) p.y()));
+      _settings->setData("PRICE", map.invTransform((double) p.y()));
       
       _draw->plot()->replot();
       break;
@@ -185,7 +185,7 @@ void ChartObjectSell::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectSellDialog(_parent, _settings);
+  _dialog = new ChartObjectSellDialog(_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();
@@ -194,4 +194,19 @@ void ChartObjectSell::dialog ()
 void ChartObjectSell::dialogDone ()
 {
   _dialog = 0;
+}
+
+int ChartObjectSell::isSelected (QPoint p)
+{
+  return _draw->isSelected(p);
+}
+
+void ChartObjectSell::setZ (int d)
+{
+  _draw->setZ(d);
+}
+
+void ChartObjectSell::attach (QwtPlot *p)
+{
+  _draw->attach(p);
 }

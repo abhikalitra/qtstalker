@@ -26,11 +26,12 @@
 #include "Strip.h"
 #include "ChartObjectFactory.h"
 #include "Globals.h"
-#include "ChartObjectDataBase.h"
+#include "DataDataBase.h"
 
 #include <QSettings>
 #include <QtDebug>
 #include <QCursor>
+#include <QUuid>
 #include <qwt_scale_div.h>
 #include <qwt_scale_widget.h>
 #include <qwt_plot_marker.h>
@@ -46,6 +47,7 @@ Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
   _startPos = -1;
   _endPos = -1;
   _selected = 0;
+  _antiAlias = TRUE;
   
   setMinimumHeight(20);
   
@@ -208,7 +210,7 @@ void Plot::addCurve (QString id, Curve *curve)
     case Curve::Histogram:
     {
       QwtPlotCurve *qcurve = new QwtPlotCurve;
-      qcurve->setRenderHint(QwtPlotItem::RenderAntialiased, TRUE);
+      qcurve->setRenderHint(QwtPlotItem::RenderAntialiased, _antiAlias);
       addCurve2(curve, qcurve);
 
       QColor c = curve->color();
@@ -229,7 +231,7 @@ void Plot::addCurve (QString id, Curve *curve)
     case Curve::Line:
     {
       QwtPlotCurve *qcurve = new QwtPlotCurve;
-      qcurve->setRenderHint(QwtPlotItem::RenderAntialiased, TRUE);
+      qcurve->setRenderHint(QwtPlotItem::RenderAntialiased, _antiAlias);
       qcurve->setStyle(QwtPlotCurve::Lines);
       addCurve2(curve, qcurve);
       addCurve3(id, curve, qcurve);
@@ -560,6 +562,9 @@ void Plot::loadSettings ()
   // set crosshairs color
   color.setNamedColor(settings.value("crosshairs_color", "white").toString());
   setCrossHairsColor(color);
+
+  // set anti aliasing
+  _antiAlias = settings.value("antialias", TRUE).toBool();
 }
 
 //********************************************************************
@@ -574,9 +579,9 @@ void Plot::chartObjectNew (QString type)
     return;
 
   Setting *set = co->settings();
-  set->setData("Exchange", g_barData->exchange());
-  set->setData("Symbol", g_barData->symbol());
-  set->setData("Indicator", _indicator->name());
+  QStringList l;
+  l << _indicator->name() << g_barData->exchange() << g_barData->symbol();
+  set->setData("KEY", l.join("_"));
   QString id = QUuid::createUuid().toString();
   id = id.remove(QString("{"), Qt::CaseSensitive);
   id = id.remove(QString("}"), Qt::CaseSensitive);
@@ -586,7 +591,7 @@ void Plot::chartObjectNew (QString type)
   setupChartObject(co);
 
   _chartObjects.insert(id, co);
-
+  
   co->create();
 }
 
@@ -599,8 +604,10 @@ void Plot::deleteChartObject (QString id)
   delete co;
   _chartObjects.remove(id);
 
-  ChartObjectDataBase db;
-  db.deleteChartObject(id);
+  DataDataBase db("chartObjects");
+  db.transaction();
+  db.removeName(id);
+  db.commit();
 
   _selected = 0;
   setHighLow();
@@ -610,7 +617,7 @@ void Plot::deleteChartObject (QString id)
 
 void Plot::deleteAllChartObjects ()
 {
-  ChartObjectDataBase db;
+  DataDataBase db("chartObjects");
   db.transaction();
   
   QHashIterator<QString, ChartObject *> it(_chartObjects);
@@ -622,7 +629,7 @@ void Plot::deleteAllChartObjects ()
     delete co;
     _chartObjects.remove(it.key());
 
-    db.deleteChartObject(it.key());
+    db.removeName(it.key());
   }
 
   db.commit();
@@ -706,7 +713,7 @@ void Plot::addChartObjects (QHash<QString, Setting> &l)
     it.next();
     Setting set = it.value();
     
-    ChartObject *co = fac.chartObject(set.data("Type"));
+    ChartObject *co = fac.chartObject(set.data("TYPE"));
     if (! co)
       return;
 

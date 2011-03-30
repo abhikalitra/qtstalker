@@ -31,13 +31,14 @@
 #include "Setting.h"
 #include "LineEdit.h"
 #include "Dialog.h"
+#include "ChartObject.h"
 
 class ChartObjectTextDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ChartObjectTextDialog (QWidget *, Setting *);
+    ChartObjectTextDialog (QWidget *, ChartObject *);
     void createGUI ();
     void loadObject ();
     void loadSettings ();
@@ -52,7 +53,7 @@ class ChartObjectTextDialog : public Dialog
     QCheckBox *_default;
     LineEdit *_label;
     QDateTimeEdit *_date;
-    Setting *_co;
+    ChartObject *_co;
 };
 
 #endif

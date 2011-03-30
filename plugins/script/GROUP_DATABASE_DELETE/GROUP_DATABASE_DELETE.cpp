@@ -20,7 +20,7 @@
  */
 
 #include "GROUP_DATABASE_DELETE.h"
-#include "GroupDataBase.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 
@@ -36,12 +36,14 @@ int GROUP_DATABASE_DELETE::command (Command *command)
 
   QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
 
-  GroupDataBase db;
-  if (db.deleteGroup(l))
-  {
-    qDebug() << _plugin << "::command: GroupDataBase error";
-    return 1;
-  }
+  DataDataBase db("groups");
+  db.transaction();
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    db.removeName(l.at(loop));
+
+  db.commit();
   
   command->setReturnCode("0");
   

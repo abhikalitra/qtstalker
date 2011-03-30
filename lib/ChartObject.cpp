@@ -20,11 +20,12 @@
  */
 
 #include "ChartObject.h"
+#include "Globals.h"
+#include "DataDataBase.h"
+#include "ConfirmDialog.h"
+
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
-#include "Globals.h"
-#include "ChartObjectDataBase.h"
-#include "ConfirmDialog.h"
 
 #include <QDebug>
 
@@ -42,7 +43,6 @@ ChartObject::ChartObject ()
 ChartObject::~ChartObject ()
 {
   delete _menu;
-  delete _draw;
   delete _settings;
 }
 
@@ -50,9 +50,9 @@ void ChartObject::info (Setting &)
 {
 }
 
-int ChartObject::isSelected (QPoint p)
+int ChartObject::isSelected (QPoint)
 {
-  return _draw->isSelected(p);
+  return 0;
 }
 
 int ChartObject::highLow (int, int, double &, double &)
@@ -94,14 +94,12 @@ void ChartObject::deleteChartObject2 ()
   emit signalDelete(_settings->data("ID"));
 }
 
-void ChartObject::setZ (int d)
+void ChartObject::setZ (int)
 {
-  _draw->setZ(d);
 }
 
-void ChartObject::attach (QwtPlot *p)
+void ChartObject::attach (QwtPlot *)
 {
-  _draw->attach(p);
 }
 
 Setting * ChartObject::settings ()
@@ -121,8 +119,9 @@ void ChartObject::load ()
   if (_settings->getInt("RO"))
     return;
   
-  ChartObjectDataBase db;
-  db.load(_settings);
+  DataDataBase db("chartObjects");
+  if (db.load(_settings->data("ID"), _settings))
+    qDebug() << "ChartObject::load: load error";
 }
 
 void ChartObject::save ()
@@ -130,8 +129,19 @@ void ChartObject::save ()
   if (_settings->getInt("RO"))
     return;
 
-  ChartObjectDataBase db;
-  db.save(_settings);
+  DataDataBase db("chartObjects");
+  db.transaction();
+  
+  if (db.removeName(_settings->data("ID")))
+  {
+    qDebug() << "ChartObject::save: remove error";
+    return;
+  }
+    
+  if (db.save(_settings->data("ID"), _settings))
+    qDebug() << "ChartObject::save: save error";
+
+  db.commit();
 }
 
 void ChartObject::update ()

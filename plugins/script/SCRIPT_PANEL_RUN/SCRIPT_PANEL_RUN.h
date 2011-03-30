@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCRIPT_PANEL_RUN_HPP
-#define SCRIPT_PANEL_RUN_HPP
+#ifndef PLUGIN_SCRIPT_PANEL_RUN_HPP
+#define PLUGIN_SCRIPT_PANEL_RUN_HPP
 
 #include "Plugin.h"
 

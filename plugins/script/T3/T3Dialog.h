@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef T3_DIALOG_HPP
-#define T3_DIALOG_HPP
+#ifndef PLUGIN_T3_DIALOG_HPP
+#define PLUGIN_T3_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

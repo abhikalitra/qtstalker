@@ -72,6 +72,7 @@ class GroupPage : public QWidget
     void addToGroup ();
     void addToGroup2 (QStringList);
     void loadGroups ();
+    void selectionChanged ();
 
   protected:
     SymbolListWidget *_nav;

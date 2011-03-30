@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MIN_HPP
-#define MIN_HPP
+#ifndef PLUGIN_MIN_HPP
+#define PLUGIN_MIN_HPP
 
 #include "Plugin.h"
 

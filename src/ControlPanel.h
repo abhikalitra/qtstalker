@@ -65,6 +65,8 @@ class ControlPanel : public QWidget
     void setLockStatus (bool);
     void loadSettings ();
     void saveSettings ();
+    void pageUp ();
+    void pageDown ();
     
   protected:
     QSlider *_slider;

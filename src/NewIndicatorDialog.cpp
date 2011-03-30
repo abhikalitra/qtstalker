@@ -21,11 +21,11 @@
 
 #include "NewIndicatorDialog.h"
 #include "Globals.h"
-#include "IndicatorDataBase.h"
 #include "PluginFactory.h"
 
 #include <QtDebug>
 #include <QLineEdit>
+#include <QSettings>
 
 NewIndicatorDialog::NewIndicatorDialog (QWidget *p) : Dialog (p)
 {
@@ -82,7 +82,7 @@ void NewIndicatorDialog::done ()
     return;
   }
 
-  Indicator i(0);
+  Indicator i;
   plug->defaults(i.settings());
   i.setName(name);
   if (i.save())
@@ -92,6 +92,13 @@ void NewIndicatorDialog::done ()
     return;
   }
   delete plug;
+
+  QSettings set(g_localSettings);
+  QStringList l = set.value("indicators").toStringList();
+  l.append(name);
+  l.removeDuplicates();
+  set.setValue("indicators", l);
+  set.sync();
 
   saveSettings();
 
@@ -104,12 +111,14 @@ void NewIndicatorDialog::loadSettings ()
 {
   Dialog::loadSettings();
 
-  IndicatorDataBase db;
   QStringList l;
-  db.plugins(l);
+  QSettings db(g_globalSettings);
+  l = db.value("indicator_plugins").toStringList();
+  l.sort();
+  
   _indicator->addItems(l);
+  _items = l;
 
-  db.indicators(_items);
   _name->clear();
   _name->addItems(_items);
   _name->clearEditText();

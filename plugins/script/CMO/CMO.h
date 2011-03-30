@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CMO_HPP
-#define CMO_HPP
+#ifndef PLUGIN_CMO_HPP
+#define PLUGIN_CMO_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCRIPT_NAME_HPP
-#define SCRIPT_NAME_HPP
+#ifndef PLUGIN_SCRIPT_NAME_HPP
+#define PLUGIN_SCRIPT_NAME_HPP
 
 #include "Plugin.h"
 

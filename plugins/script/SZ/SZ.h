@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SZ_HPP
-#define SZ_HPP
+#ifndef PLUGIN_SZ_HPP
+#define PLUGIN_SZ_HPP
 
 #include <QStringList>
 

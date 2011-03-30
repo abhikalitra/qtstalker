@@ -33,31 +33,31 @@ ChartObjectRetracementDraw::ChartObjectRetracementDraw ()
 void ChartObjectRetracementDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->dateTime("Date")));
+  int x = xMap.transform(dsd->x(_settings->dateTime("DATE")));
   if (x == -1)
     return;
 
-  QDateTime dt = _settings->dateTime("Date2");
-  if (_settings->getInt("Extend"))
+  QDateTime dt = _settings->dateTime("DATE2");
+  if (_settings->getInt("EXTEND"))
     dsd->date(dsd->count() - 1, dt);
 
   int x2 = xMap.transform(dsd->x(dt));
   if (x2 == -1)
     return;
 
-  p->setPen(_settings->color("Color"));
+  p->setPen(_settings->color("COLOR"));
 
   QPolygon array;
   
   _selectionArea.clear();
 
   QList<double> lineList;
-  lineList.append(_settings->getDouble("Line1"));
-  lineList.append(_settings->getDouble("Line2"));
-  lineList.append(_settings->getDouble("Line3"));
-  lineList.append(_settings->getDouble("Line4"));
-  lineList.append(_settings->getDouble("Line5"));
-  lineList.append(_settings->getDouble("Line6"));
+  lineList.append(_settings->getDouble("LINE1"));
+  lineList.append(_settings->getDouble("LINE2"));
+  lineList.append(_settings->getDouble("LINE3"));
+  lineList.append(_settings->getDouble("LINE4"));
+  lineList.append(_settings->getDouble("LINE5"));
+  lineList.append(_settings->getDouble("LINE6"));
 
   int loop;
   for (loop = 0; loop < lineList.count(); loop++)
@@ -65,20 +65,20 @@ void ChartObjectRetracementDraw::draw (QPainter *p, const QwtScaleMap &xMap, con
     double td = lineList[loop];
     if (td != 0)
     {
-      double range = _settings->getDouble("High") - _settings->getDouble("Low");
+      double range = _settings->getDouble("HIGH") - _settings->getDouble("LOW");
       double r = 0;
       if (td < 0)
-        r = _settings->getDouble("Low") + (range * td);
+        r = _settings->getDouble("LOW") + (range * td);
       else
       {
         if (td > 0)
-          r = _settings->getDouble("Low") + (range * td);
+          r = _settings->getDouble("LOW") + (range * td);
         else
         {
           if (td < 0)
-            r = _settings->getDouble("High");
+            r = _settings->getDouble("HIGH");
           else
-            r = _settings->getDouble("Low");
+            r = _settings->getDouble("LOW");
         }
       }
       
@@ -92,18 +92,18 @@ void ChartObjectRetracementDraw::draw (QPainter *p, const QwtScaleMap &xMap, con
   }
   
   // draw the low line
-  int y = yMap.transform(_settings->getDouble("Low"));
+  int y = yMap.transform(_settings->getDouble("LOW"));
   p->drawLine (x, y, x2, y);
-  p->drawText(x, y - 1, "0% - " + _settings->data("Low"));
+  p->drawText(x, y - 1, "0% - " + _settings->data("LOW"));
 
   // store the selectable area the low line occupies
   array.putPoints(0, 4, x, y - 4, x, y + 4, x2, y + 4, x2, y - 4);
   _selectionArea.append(QRegion(array));
 
   // draw the high line
-  int y2 = yMap.transform(_settings->getDouble("High"));
+  int y2 = yMap.transform(_settings->getDouble("HIGH"));
   p->drawLine (x, y2, x2, y2);
-  p->drawText(x, y2 - 1, "100% - " + _settings->data("High"));
+  p->drawText(x, y2 - 1, "100% - " + _settings->data("HIGH"));
 
   // store the selectable area the high line occupies
   array.putPoints(0, 4, x, y2 - 4, x, y2 + 4, x2, y2 + 4, x2, y2 - 4);
@@ -123,7 +123,7 @@ void ChartObjectRetracementDraw::draw (QPainter *p, const QwtScaleMap &xMap, con
 		y2 - (_handleWidth / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->color("Color"));
+		_settings->color("COLOR"));
 
     //bottom right corner
     _grabHandles.append(QRegion(x2, y - (_handleWidth / 2),
@@ -135,6 +135,6 @@ void ChartObjectRetracementDraw::draw (QPainter *p, const QwtScaleMap &xMap, con
 		y - (_handleWidth / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->color("Color"));
+		_settings->color("COLOR"));
   }
 }

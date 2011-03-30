@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef VAR_DIALOG_HPP
-#define VAR_DIALOG_HPP
+#ifndef PLUGIN_VAR_DIALOG_HPP
+#define PLUGIN_VAR_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

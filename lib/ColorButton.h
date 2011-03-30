@@ -25,8 +25,8 @@
 // Used by PrefDialog
 // *************************************************************************************************
 
-#ifndef COLORBUTTON_HPP
-#define COLORBUTTON_HPP
+#ifndef COLOR_BUTTON_HPP
+#define COLOR_BUTTON_HPP
 
 #include <QPushButton>
 #include <QColor>

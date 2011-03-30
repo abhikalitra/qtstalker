@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef OHLC_DIALOG_HPP
-#define OHLC_DIALOG_HPP
+#ifndef PLUGIN_OHLC_DIALOG_HPP
+#define PLUGIN_OHLC_DIALOG_HPP
 
 #include <QSpinBox>
 #include <QComboBox>

@@ -22,7 +22,6 @@
 
 #include "ChartObjectRetracement.h"
 #include "DateScaleDraw.h"
-#include "ChartObjectRetracementDraw.h"
 #include "Strip.h"
 #include "Globals.h"
 
@@ -37,19 +36,20 @@ ChartObjectRetracement::ChartObjectRetracement ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("Color", set.value("default_chart_object_retracement_color", "red").toString());
-  _settings->setData("Line1", set.value("default_chart_object_retracement_line1", 0.382).toDouble());
-  _settings->setData("Line2", set.value("default_chart_object_retracement_line2", 0.5).toDouble());
-  _settings->setData("Line3", set.value("default_chart_object_retracement_line3", 0.618).toDouble());
-  _settings->setData("Line4", set.value("default_chart_object_retracement_line4", 0).toDouble());
-  _settings->setData("Line5", set.value("default_chart_object_retracement_line5", 0).toDouble());
-  _settings->setData("Line6", set.value("default_chart_object_retracement_line6", 0).toDouble());
-  _settings->setData("Type", QString("Retracement"));
-  _settings->setData("Extend", 0);
+  _settings->setData("COLOR", set.value("default_chart_object_retracement_color", "red").toString());
+  _settings->setData("LINE1", set.value("default_chart_object_retracement_line1", 0.382).toDouble());
+  _settings->setData("LINE2", set.value("default_chart_object_retracement_line2", 0.5).toDouble());
+  _settings->setData("LINE3", set.value("default_chart_object_retracement_line3", 0.618).toDouble());
+  _settings->setData("LINE4", set.value("default_chart_object_retracement_line4", 0).toDouble());
+  _settings->setData("LINE5", set.value("default_chart_object_retracement_line5", 0).toDouble());
+  _settings->setData("LINE6", set.value("default_chart_object_retracement_line6", 0).toDouble());
+  _settings->setData("TYPE", QString("Retracement"));
+  _settings->setData("EXTEND", 0);
 }
 
 ChartObjectRetracement::~ChartObjectRetracement ()
 {
+  delete _draw;
   if (_dialog)
     delete _dialog;
 }
@@ -58,34 +58,34 @@ void ChartObjectRetracement::info (Setting &info)
 {
   info.setData(tr("Type"), tr("Retracement"));
   
-  QDateTime dt = _settings->dateTime("Date");
+  QDateTime dt = _settings->dateTime("DATE");
   info.setData(tr("SD"), dt.toString("yyyy-MM-dd"));
   info.setData(tr("ST"), dt.toString("HH:mm:ss"));
   
-  dt = _settings->dateTime("Date2");
+  dt = _settings->dateTime("DATE2");
   info.setData(tr("ED"), dt.toString("yyyy-MM-dd"));
   info.setData(tr("ET"), dt.toString("HH:mm:ss"));
   
-  info.setData(tr("High"), _settings->data("High"));
-  info.setData(tr("Low"), _settings->data("Low"));
-  info.setData(tr("Level 1"), _settings->data("Line1"));
-  info.setData(tr("Level 2"), _settings->data("Line2"));
-  info.setData(tr("Level 3"), _settings->data("Line3"));
-  info.setData(tr("Level 4"), _settings->data("Line4"));
-  info.setData(tr("Level 5"), _settings->data("Line5"));
-  info.setData(tr("Level 6"), _settings->data("Line6"));
+  info.setData(tr("High"), _settings->data("HIGH"));
+  info.setData(tr("Low"), _settings->data("LOW"));
+  info.setData(tr("Level 1"), _settings->data("LINE1"));
+  info.setData(tr("Level 2"), _settings->data("LINE2"));
+  info.setData(tr("Level 3"), _settings->data("LINE3"));
+  info.setData(tr("Level 4"), _settings->data("LINE4"));
+  info.setData(tr("Level 5"), _settings->data("LINE5"));
+  info.setData(tr("Level 6"), _settings->data("LINE6"));
 }
 
 int ChartObjectRetracement::highLow (int start, int end, double &h, double &l)
 {
   DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = dsd->x(_settings->dateTime("Date"));
-  int x2 = dsd->x(_settings->dateTime("Date2"));
+  int x = dsd->x(_settings->dateTime("DATE"));
+  int x2 = dsd->x(_settings->dateTime("DATE2"));
 
   if ((x >= start && x <= end) || ((x2 >= start && x2 <= end)))
   {
-    h = _settings->getDouble("High");
-    l = _settings->getDouble("Low");
+    h = _settings->getDouble("HIGH");
+    l = _settings->getDouble("LOW");
     return 1;
   }
 
@@ -108,15 +108,15 @@ void ChartObjectRetracement::move (QPoint p)
       dsd->date(x, dt);
       if (! dt.isValid())
         break;
-      _settings->setData("Date", dt);
+      _settings->setData("DATE", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings->setData("High", map.invTransform((double) p.y()));
+      _settings->setData("HIGH", map.invTransform((double) p.y()));
       
       if (_createFlag)
       {
-        _settings->setData("Date2", dt);
-        _settings->setData("Low", _settings->data("High"));
+        _settings->setData("DATE2", dt);
+        _settings->setData("LOW", _settings->data("HIGH"));
       }
 
       _draw->plot()->replot();
@@ -134,10 +134,10 @@ void ChartObjectRetracement::move (QPoint p)
       dsd->date(x, dt);
       if (! dt.isValid())
         break;
-      _settings->setData("Date2", dt);
+      _settings->setData("DATE2", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings->setData("Low", map.invTransform((double) p.y()));
+      _settings->setData("LOW", map.invTransform((double) p.y()));
       
       _draw->plot()->replot();
       break;
@@ -265,7 +265,7 @@ void ChartObjectRetracement::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectRetracementDialog(_parent, _settings);
+  _dialog = new ChartObjectRetracementDialog(_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();
@@ -274,4 +274,19 @@ void ChartObjectRetracement::dialog ()
 void ChartObjectRetracement::dialogDone ()
 {
   _dialog = 0;
+}
+
+int ChartObjectRetracement::isSelected (QPoint p)
+{
+  return _draw->isSelected(p);
+}
+
+void ChartObjectRetracement::setZ (int d)
+{
+  _draw->setZ(d);
+}
+
+void ChartObjectRetracement::attach (QwtPlot *p)
+{
+  _draw->attach(p);
 }

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CCI_DIALOG_HPP
-#define CCI_DIALOG_HPP
+#ifndef PLUGIN_CCI_DIALOG_HPP
+#define PLUGIN_CCI_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

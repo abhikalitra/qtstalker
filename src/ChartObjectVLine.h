@@ -24,6 +24,7 @@
 
 #include "ChartObject.h"
 #include "ChartObjectVLineDialog.h"
+#include "ChartObjectVLineDraw.h"
 
 class ChartObjectVLine : public ChartObject
 {
@@ -35,6 +36,9 @@ class ChartObjectVLine : public ChartObject
     void info (Setting &);
     int highLow (int start, int end, double &high, double &low);
     void create ();
+    void setZ (int);
+    void attach (QwtPlot *);
+    int isSelected (QPoint);
 
   public slots:
     void move (QPoint);
@@ -44,6 +48,7 @@ class ChartObjectVLine : public ChartObject
 
   private:
     ChartObjectVLineDialog *_dialog;
+    ChartObjectVLineDraw *_draw;
 };
 
 #endif

@@ -20,7 +20,7 @@
  */
 
 #include "GROUP_DATABASE_LIST.h"
-#include "GroupDataBase.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 
@@ -33,11 +33,11 @@ int GROUP_DATABASE_LIST::command (Command *command)
 {
   // PARMS:
 
-  GroupDataBase db;
+  DataDataBase db("groups");
   QStringList l;
-  if (db.groups(l))
+  if (db.names(l))
   {
-    qDebug() << _plugin << "::command: GroupDataBase error";
+    qDebug() << _plugin << "::command: DataDataBase error";
     return 1;
   }
 

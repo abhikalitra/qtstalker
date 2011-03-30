@@ -95,6 +95,25 @@ int DataDataBase::load (QString name, QString key, QString &data)
   return 0;
 }
 
+int DataDataBase::load (QString name, QStringList &data)
+{
+  data.clear();
+
+  QSqlQuery q(_db);
+  QString s = "SELECT data FROM " + _table + " WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataDataBase::load: " << q.lastError().text();
+    return 1;
+  }
+
+  while (q.next())
+    data << q.value(0).toString();
+
+  return 0;
+}
+
 int DataDataBase::save (QString name, Setting *set)
 {
   QSqlQuery q(_db);
@@ -137,6 +156,30 @@ int DataDataBase::save (QString name, QString key, QString data)
     qDebug() << "DataDataBase::save: " << q.lastError().text();
     qDebug() << s;
     return 1;
+  }
+
+  return 0;
+}
+
+int DataDataBase::save (QString name, QStringList &data)
+{
+  QSqlQuery q(_db);
+
+  int loop = 0;
+  for (; loop < data.count(); loop++)
+  {
+    QString s = "INSERT OR REPLACE INTO " + _table + " VALUES (";
+    s.append("NULL"); // auto increment
+    s.append(",'" + name + "'");
+    s.append(",'" + QString::number(loop) + "'");
+    s.append(",'" + data.at(loop) + "'");
+    s.append(")");
+    q.exec(s);
+    if (q.lastError().isValid())
+    {
+      qDebug() << "DataDataBase::save: " << q.lastError().text();
+      qDebug() << s;
+    }
   }
 
   return 0;
@@ -188,6 +231,28 @@ int DataDataBase::removeKey (QString name, QString key)
     qDebug() << "DataDataBase::removeKey: " << q.lastError().text();
     return 1;
   }
+
+  return 0;
+}
+
+int DataDataBase::search (QString key, QString data, QStringList &names)
+{
+  names.clear();
+
+  if (! key.count() || ! data.count())
+    return 1;
+  
+  QSqlQuery q(_db);
+  QString s = "SELECT DISTINCT name FROM " + _table + " WHERE key='" + key + "' AND data='" + data + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataDataBase::search: " << q.lastError().text();
+    return 1;
+  }
+
+  while (q.next())
+    names << q.value(0).toString();
 
   return 0;
 }

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef VOL_HPP
-#define VOL_HPP
+#ifndef PLUGIN_VOL_HPP
+#define PLUGIN_VOL_HPP
 
 #include "Plugin.h"
 #include "Curve.h"

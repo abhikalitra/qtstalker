@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef STOCHRSI_DIALOG_HPP
-#define STOCHRSI_DIALOG_HPP
+#ifndef PLUGIN_STOCH_RSI_DIALOG_HPP
+#define PLUGIN_STOCH_RSI_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

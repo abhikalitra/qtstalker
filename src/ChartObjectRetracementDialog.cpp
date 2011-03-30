@@ -21,11 +21,11 @@
 
 #include "ChartObjectRetracementDialog.h"
 #include "Globals.h"
-#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
+#include <QSettings>
 
-ChartObjectRetracementDialog::ChartObjectRetracementDialog (QWidget *p, Setting *set) : Dialog (p)
+ChartObjectRetracementDialog::ChartObjectRetracementDialog (QWidget *p, ChartObject *set) : Dialog (p)
 {
   _co = set;
   _keySize = "chart_object_retracement_dialog_window_size";
@@ -161,21 +161,21 @@ void ChartObjectRetracementDialog::done ()
     settings.sync();
   }
 
-  _co->setData("Color", _color->color());
-  _co->setData("Date", _date->dateTime());
-  _co->setData("Date2", _date2->dateTime());
-  _co->setData("High", _high->value());
-  _co->setData("Low", _low->value());
-  _co->setData("Extend", _extend->isChecked());
-  _co->setData("Line1", _line1->value());
-  _co->setData("Line2", _line2->value());
-  _co->setData("Line3", _line3->value());
-  _co->setData("Line4", _line4->value());
-  _co->setData("Line5", _line5->value());
-  _co->setData("Line6", _line6->value());
+  Setting *set = _co->settings();
+  set->setData("COLOR", _color->color());
+  set->setData("DATE", _date->dateTime());
+  set->setData("DATE2", _date2->dateTime());
+  set->setData("HIGH", _high->value());
+  set->setData("LOW", _low->value());
+  set->setData("EXTEND", _extend->isChecked());
+  set->setData("LINE1", _line1->value());
+  set->setData("LINE2", _line2->value());
+  set->setData("LINE3", _line3->value());
+  set->setData("LINE4", _line4->value());
+  set->setData("LINE5", _line5->value());
+  set->setData("LINE6", _line6->value());
 
-  ChartObjectDataBase db;
-  db.save(_co);
+  _co->save();
 
   saveSettings();
 
@@ -184,18 +184,19 @@ void ChartObjectRetracementDialog::done ()
 
 void ChartObjectRetracementDialog::loadObject ()
 {
-  _color->setColor(_co->color("Color"));
-  _date->setDateTime(_co->dateTime("Date"));
-  _date2->setDateTime(_co->dateTime("Date2"));
-  _high->setValue(_co->getDouble("High"));
-  _low->setValue(_co->getDouble("Low"));
-  _extend->setChecked(_co->getInt("Extend"));
-  _line1->setValue(_co->getDouble("Line1"));
-  _line2->setValue(_co->getDouble("Line2"));
-  _line3->setValue(_co->getDouble("Line3"));
-  _line4->setValue(_co->getDouble("Line4"));
-  _line5->setValue(_co->getDouble("Line5"));
-  _line6->setValue(_co->getDouble("Line6"));
+  Setting *set = _co->settings();
+  _color->setColor(set->color("COLOR"));
+  _date->setDateTime(set->dateTime("DATE"));
+  _date2->setDateTime(set->dateTime("DATE2"));
+  _high->setValue(set->getDouble("HIGH"));
+  _low->setValue(set->getDouble("LOW"));
+  _extend->setChecked(set->getInt("EXTEND"));
+  _line1->setValue(set->getDouble("LINE1"));
+  _line2->setValue(set->getDouble("LINE2"));
+  _line3->setValue(set->getDouble("LINE3"));
+  _line4->setValue(set->getDouble("LINE4"));
+  _line5->setValue(set->getDouble("LINE5"));
+  _line6->setValue(set->getDouble("LINE6"));
 }
 
 void ChartObjectRetracementDialog::loadSettings ()

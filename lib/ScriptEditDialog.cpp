@@ -21,7 +21,7 @@
 
 #include "ScriptEditDialog.h"
 #include "Globals.h"
-#include "ScriptDataBase.h"
+#include "Script.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -118,13 +118,17 @@ void ScriptEditDialog::done ()
     return;
   }
 
-  ScriptDataBase db;
   Script script;
   script.setName(_name);
   script.setCommand(com);
   script.setFile(_file);
   script.setMinutes(_minutes->value());
-  db.save(&script);
+  if (script.save())
+  {
+    _message->setText(tr("Database error. Script not saved."));
+    qDebug() << "ScriptEditDialog::done: error saving script";
+    return;
+  }
 
   saveSettings();
 
@@ -133,10 +137,9 @@ void ScriptEditDialog::done ()
 
 void ScriptEditDialog::loadScript ()
 {
-  ScriptDataBase db;
   Script script;
   script.setName(_name);
-  db.load(&script);
+  script.load();
 
   _file = script.file();
   QStringList l;

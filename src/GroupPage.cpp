@@ -21,7 +21,7 @@
 
 #include "GroupPage.h"
 #include "Globals.h"
-#include "GroupDataBase.h"
+#include "DataDataBase.h"
 #include "QuoteDataBase.h"
 #include "GroupEditDialog.h"
 #include "SelectDialog.h"
@@ -53,6 +53,7 @@ GroupPage::GroupPage (QWidget *p) : QWidget (p)
   _nav = new SymbolListWidget;
   connect(_nav, SIGNAL(signalSymbolSelected(BarData)), this, SLOT(chartOpened(BarData)));
   connect(_nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
+  connect(_nav, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   vbox->addWidget(_nav);
 
   _groups = new QComboBox;
@@ -66,6 +67,8 @@ GroupPage::GroupPage (QWidget *p) : QWidget (p)
   QSettings settings(g_localSettings);
   QString s = settings.value("last_group_used").toString();
   _groups->setCurrentIndex(_groups->findText(s, Qt::MatchExactly));
+
+  selectionChanged();
 }
 
 void GroupPage::createActions ()
@@ -111,9 +114,9 @@ void GroupPage::createButtonMenu ()
 
 void GroupPage::newGroup ()
 {
-  GroupDataBase db;
+  DataDataBase db("groups");
   QStringList l;
-  db.groups(l);
+  db.names(l);
   
   NewDialog *dialog = new NewDialog(this);
   dialog->setItems(l);
@@ -146,8 +149,8 @@ void GroupPage::deleteGroup ()
   l << "QtStalker" + g_session + ":" << tr("Delete Group");
   dialog->setWindowTitle(l.join(" "));
 
-  GroupDataBase db;
-  db.groups(l);
+  DataDataBase db("groups");
+  db.names(l);
   dialog->setItems(l);
   
   dialog->setTitle(tr("Groups"));
@@ -157,8 +160,15 @@ void GroupPage::deleteGroup ()
 
 void GroupPage::deleteGroup2 (QStringList l)
 {
-  GroupDataBase db;
-  db.deleteGroup(l);
+  DataDataBase db("groups");
+  db.transaction();
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    db.removeName(l.at(loop));
+
+  db.commit();
+  
   updateGroups();
 }
 
@@ -191,9 +201,9 @@ void GroupPage::loadGroups ()
 {
   _groups->clear();
 
-  GroupDataBase db;
+  DataDataBase db("groups");
   QStringList l;
-  db.groups(l);
+  db.names(l);
 
   if (! l.count())
     return;
@@ -219,6 +229,8 @@ void GroupPage::updateGroups ()
   _nav->blockSignals(FALSE);
 
   updateList();
+
+  selectionChanged();
 }
 
 void GroupPage::addToGroup ()
@@ -227,9 +239,9 @@ void GroupPage::addToGroup ()
   if (! l.count())
     return;
 
-  GroupDataBase db;
+  DataDataBase db("groups");
   QStringList l2;
-  db.groups(l2);
+  db.names(l2);
 
   SelectDialog *dialog = new SelectDialog(this);
   dialog->setItems(l2);
@@ -246,15 +258,21 @@ void GroupPage::addToGroup ()
 
 void GroupPage::addToGroup2 (QStringList gl)
 {
-  QList<QListWidgetItem *> l = _nav->selectedItems();
+  DataDataBase db("groups");
+  QStringList g;
+  db.load(gl.at(0), g);
 
-  QStringList l2;
+  QList<QListWidgetItem *> l = _nav->selectedItems();
   int loop = 0;
   for (; loop < l.count(); loop++)
-    l2 << l.at(loop)->text();
+    g << l.at(loop)->text();
 
-  GroupDataBase db;
-  db.merge(gl.at(0), l2);
+  g.removeDuplicates();
+
+  db.transaction();
+  db.removeName(gl.at(0));
+  db.save(gl.at(0), g);
+  db.commit();
 
   updateList();
 }
@@ -266,7 +284,7 @@ void GroupPage::updateList ()
   if (! _groups->count())
     return;
 
-  GroupDataBase db;
+  DataDataBase db("groups");
   QStringList l;
   db.load(_groups->currentText(), l);
 
@@ -285,4 +303,19 @@ void GroupPage::updateList ()
 SymbolListWidget * GroupPage::list ()
 {
   return _nav;
+}
+
+void GroupPage::selectionChanged ()
+{
+  bool status = TRUE;
+  QList<QListWidgetItem *> l = _nav->selectedItems();
+  if (! l.count())
+    status = FALSE;
+  _actions.value(_ADD_GROUP)->setEnabled(status);
+
+  status = TRUE;
+  if (! _groups->count())
+    status = FALSE;
+  _actions.value(_EDIT_GROUP)->setEnabled(status);
+  _actions.value(_DELETE_GROUP)->setEnabled(status);
 }

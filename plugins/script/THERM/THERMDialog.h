@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef THERM_DIALOG_HPP
-#define THERM_DIALOG_HPP
+#ifndef PLUGIN_THERM_DIALOG_HPP
+#define PLUGIN_THERM_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

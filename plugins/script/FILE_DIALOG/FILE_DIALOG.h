@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef FILE_DIALOG_HPP
-#define FILE_DIALOG_HPP
+#ifndef PLUGIN_FILE_DIALOG_HPP
+#define PLUGIN_FILE_DIALOG_HPP
 
 #include <QStringList>
 

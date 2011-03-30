@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef TEST_SIGNAL_HPP
-#define TEST_SIGNAL_HPP
+#ifndef PLUGIN_TEST_SIGNAL_HPP
+#define PLUGIN_TEST_SIGNAL_HPP
 
 #include <QString>
 

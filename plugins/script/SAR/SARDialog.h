@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SAR_DIALOG_HPP
-#define SAR_DIALOG_HPP
+#ifndef PLUGIN_SAR_DIALOG_HPP
+#define PLUGIN_SAR_DIALOG_HPP
 
 #include <QDoubleSpinBox>
 #include <QTabWidget>

@@ -20,7 +20,7 @@
  */
 
 #include "ScriptLaunchButtonDialog.h"
-#include "ScriptDataBase.h"
+#include "DataDataBase.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -55,9 +55,9 @@ ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString script, 
 void ScriptLaunchButtonDialog::createMainPage ()
 {
   // script
-  ScriptDataBase db;
+  DataDataBase db("scripts");
   QStringList l;
-  db.scripts(l);
+  db.names(l);
 
   _script = new QComboBox;
   _script->addItems(l);

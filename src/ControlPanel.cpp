@@ -35,6 +35,7 @@ ControlPanel::ControlPanel ()
   _startFlag = FALSE;
   createGUI();
   setMaximumHeight(75);
+  setMaximumWidth(200);
 }
 
 void ControlPanel::createGUI ()
@@ -196,4 +197,20 @@ void ControlPanel::saveSettings ()
 void ControlPanel::setLockStatus (bool status)
 {
   _lockStatus = status;
+}
+
+void ControlPanel::pageUp ()
+{
+  int d = _slider->value() + 50;
+  if (d > _slider->maximum())
+    d = _slider->maximum();
+  _slider->setValue(d);
+}
+
+void ControlPanel::pageDown ()
+{
+  int d = _slider->value() - 50;
+  if (d < 0)
+    d = 0;
+  _slider->setValue(d);
 }

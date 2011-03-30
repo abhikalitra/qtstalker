@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef TEST_HPP
-#define TEST_HPP
+#ifndef PLUGIN_TEST_HPP
+#define PLUGIN_TEST_HPP
 
 #include <QList>
 

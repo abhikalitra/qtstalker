@@ -20,7 +20,7 @@
  */
 
 #include "GROUP_DATABASE_LOAD.h"
-#include "GroupDataBase.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 
@@ -36,11 +36,11 @@ int GROUP_DATABASE_LOAD::command (Command *command)
 
   QString name = command->parm("NAME");
 
-  GroupDataBase db;
+  DataDataBase db("groups");
   QStringList l;
   if (db.load(name, l))
   {
-    qDebug() << _plugin << "::command: GroupDataBase error";
+    qDebug() << _plugin << "::command: DataDataBase error";
     return 1;
   }
   

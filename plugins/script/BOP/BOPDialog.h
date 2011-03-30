@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef BOP_DIALOG_HPP
-#define BOP_DIALOG_HPP
+#ifndef PLUGIN_BOP_DIALOG_HPP
+#define PLUGIN_BOP_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

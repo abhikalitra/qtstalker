@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef VFI_HPP
-#define VFI_HPP
+#ifndef PLUGIN_VFI_HPP
+#define PLUGIN_VFI_HPP
 
 #include "Plugin.h"
 

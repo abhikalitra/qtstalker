@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef HT_PHASOR_HPP
-#define HT_PHASOR_HPP
+#ifndef PLUGIN_HT_PHASOR_HPP
+#define PLUGIN_HT_PHASOR_HPP
 
 #include "Plugin.h"
 

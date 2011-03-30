@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SUMMARY_THREAD_HPP
-#define SUMMARY_THREAD_HPP
+#ifndef PLUGIN_SUMMARY_THREAD_HPP
+#define PLUGIN_SUMMARY_THREAD_HPP
 
 #include <QThread>
 #include <QStringList>

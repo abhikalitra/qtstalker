@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CANDLES_HPP
-#define CANDLES_HPP
+#ifndef PLUGIN_CANDLES_HPP
+#define PLUGIN_CANDLES_HPP
 
 #include "Plugin.h"
 

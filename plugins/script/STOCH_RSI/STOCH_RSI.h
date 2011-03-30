@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef STOCH_RSI_HPP
-#define STOCH_RSI_HPP
+#ifndef PLUGIN_STOCH_RSI_HPP
+#define PLUGIN_STOCH_RSI_HPP
 
 #include "Plugin.h"
 

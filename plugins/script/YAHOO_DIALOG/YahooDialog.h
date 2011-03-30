@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef YAHOO_DIALOG_DIALOG_HPP
-#define YAHOO_DIALOG_DIALOG_HPP
+#ifndef PLUGIN_YAHOO_DIALOG_DIALOG_HPP
+#define PLUGIN_YAHOO_DIALOG_DIALOG_HPP
 
 #include <QDateTimeEdit>
 #include <QCheckBox>

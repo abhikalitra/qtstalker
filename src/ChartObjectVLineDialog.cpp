@@ -21,11 +21,11 @@
 
 #include "ChartObjectVLineDialog.h"
 #include "Globals.h"
-#include "ChartObjectDataBase.h"
 
 #include <QtDebug>
+#include <QSettings>
 
-ChartObjectVLineDialog::ChartObjectVLineDialog (QWidget *p, Setting *set) : Dialog (p)
+ChartObjectVLineDialog::ChartObjectVLineDialog (QWidget *p, ChartObject *set) : Dialog (p)
 {
   _co = set;
   _keySize = "chart_object_vline_dialog_window_size";
@@ -67,11 +67,11 @@ void ChartObjectVLineDialog::done ()
     settings.sync();
   }
 
-  _co->setData("Color", _color->color());
-  _co->setData("Date", _date->dateTime());
+  Setting *set = _co->settings();
+  set->setData("COLOR", _color->color());
+  set->setData("DATE", _date->dateTime());
 
-  ChartObjectDataBase db;
-  db.save(_co);
+  _co->save();
 
   saveSettings();
 
@@ -80,8 +80,9 @@ void ChartObjectVLineDialog::done ()
 
 void ChartObjectVLineDialog::loadObject ()
 {
-  _date->setDateTime(_co->dateTime("Date"));
-  _color->setColor(_co->color("Color"));
+  Setting *set = _co->settings();
+  _date->setDateTime(set->dateTime("DATE"));
+  _color->setColor(set->color("COLOR"));
 }
 
 void ChartObjectVLineDialog::loadSettings ()

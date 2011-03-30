@@ -34,18 +34,18 @@ ChartObjectTLineDraw::ChartObjectTLineDraw ()
 void ChartObjectTLineDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->dateTime("Date")));
+  int x = xMap.transform(dsd->x(_settings->dateTime("DATE")));
   if (x == -1)
     return;
 
-  int x2 = xMap.transform(dsd->x(_settings->dateTime("Date2")));
+  int x2 = xMap.transform(dsd->x(_settings->dateTime("DATE2")));
   if (x2 == -1)
     return;
 
-  int y = yMap.transform(_settings->getDouble("Price"));
-  int y2 = yMap.transform(_settings->getDouble("Price2"));
+  int y = yMap.transform(_settings->getDouble("PRICE"));
+  int y2 = yMap.transform(_settings->getDouble("PRICE2"));
 
-  p->setPen(_settings->color("Color"));
+  p->setPen(_settings->color("COLOR"));
 
   p->drawLine (x, y, x2, y2);
 
@@ -55,7 +55,7 @@ void ChartObjectTLineDraw::draw (QPainter *p, const QwtScaleMap &xMap, const Qwt
   int tx = x;
   int ty = y;
 
-  if (_settings->getInt("Extend"))
+  if (_settings->getInt("EXTEND"))
   {
     int ydiff = y - y2;
     int xdiff = x2 - x;
@@ -95,7 +95,7 @@ void ChartObjectTLineDraw::draw (QPainter *p, const QwtScaleMap &xMap, const Qwt
 		ty - (_handleWidth / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->color("Color"));
+		_settings->color("COLOR"));
 
     _grabHandles.append(QRegion(tx2,
 		                ty2 - (_handleWidth / 2),
@@ -107,6 +107,6 @@ void ChartObjectTLineDraw::draw (QPainter *p, const QwtScaleMap &xMap, const Qwt
 		ty2 - (_handleWidth / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->color("Color"));
+		_settings->color("COLOR"));
   }
 }

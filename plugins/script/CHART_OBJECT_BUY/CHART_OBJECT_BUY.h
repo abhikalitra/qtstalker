@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_BUY_HPP
-#define CHART_OBJECT_BUY_HPP
+#ifndef PLUGIN_CHART_OBJECT_BUY_HPP
+#define PLUGIN_CHART_OBJECT_BUY_HPP
 
 #include "Plugin.h"
 

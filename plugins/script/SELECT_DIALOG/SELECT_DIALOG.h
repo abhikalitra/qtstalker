@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCRIPT_SELECT_DIALOG_HPP
-#define SCRIPT_SELECT_DIALOG_HPP
+#ifndef PLUGIN_SELECT_DIALOG_HPP
+#define PLUGIN_SELECT_DIALOG_HPP
 
 #include "Plugin.h"
 

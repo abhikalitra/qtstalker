@@ -61,6 +61,7 @@ class Setting
     void clear ();
     int count ();
     void strip (QString &);
+    void copy (Setting *);
 
   protected:
     QHash<QString, QString> dict;

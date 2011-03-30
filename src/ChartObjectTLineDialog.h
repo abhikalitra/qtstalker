@@ -29,13 +29,14 @@
 #include "ColorButton.h"
 #include "Setting.h"
 #include "Dialog.h"
+#include "ChartObject.h"
 
 class ChartObjectTLineDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    ChartObjectTLineDialog (QWidget *, Setting *);
+    ChartObjectTLineDialog (QWidget *, ChartObject *);
     void createGUI ();
     void loadObject ();
     void loadSettings ();
@@ -51,7 +52,7 @@ class ChartObjectTLineDialog : public Dialog
     QCheckBox *_extend;
     QDateTimeEdit *_date;
     QDateTimeEdit *_date2;
-    Setting *_co;
+    ChartObject *_co;
 };
 
 #endif

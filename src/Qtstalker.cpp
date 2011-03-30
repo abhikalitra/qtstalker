@@ -33,6 +33,7 @@
 #include <QSettings>
 #include <QCoreApplication>
 #include <QStatusBar>
+#include <QShortcut>
 
 #include "Qtstalker.h"
 #include "Setup.h"
@@ -41,7 +42,7 @@
 #include "QuoteDataBase.h"
 #include "InfoPanel.h"
 #include "DockWidget.h"
-#include "IndicatorDataBase.h"
+#include "DataDataBase.h"
 #include "RefreshButton.h"
 #include "RecentCharts.h"
 #include "BarLengthButton.h"
@@ -151,9 +152,9 @@ void QtstalkerApp::createGUI ()
 
   // we have to load the plots before app is shown otherwise
   // dock widgets do not restore properly
-  IndicatorDataBase db;
+  DataDataBase db("indicators");
   QStringList l;
-  db.indicators(l);
+  db.names(l);
   int loop = 0;
   for (; loop < l.count(); loop++)
     addPlot(l.at(loop));
@@ -161,6 +162,16 @@ void QtstalkerApp::createGUI ()
   statusBar()->showMessage(tr("Ready"), 2000);
 
   setUnifiedTitleAndToolBarOnMac(TRUE);
+
+  // trap page up key
+  QShortcut *sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::Key_PageUp));
+  connect(sc, SIGNAL(activated()), _controlPanel, SLOT(pageUp()));
+
+  // trap page down key
+  sc = new QShortcut(this);
+  sc->setKey(QKeySequence(Qt::Key_PageDown));
+  connect(sc, SIGNAL(activated()), _controlPanel, SLOT(pageDown()));
 }
 
 void QtstalkerApp::loadSettings ()
@@ -368,8 +379,8 @@ void QtstalkerApp::addNewPlot2 ()
 
 void QtstalkerApp::deletePlot (QStringList l)
 {
-  IndicatorDataBase db;
-  db.deleteIndicator(l);
+  Indicator i;
+  i.remove(l);
   
   int loop = 0;
   for (; loop < l.count(); loop++)

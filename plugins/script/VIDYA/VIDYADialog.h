@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef VIDYA_DIALOG_HPP
-#define VIDYA_DIALOG_HPP
+#ifndef PLUGIN_VIDYA_DIALOG_HPP
+#define PLUGIN_VIDYA_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

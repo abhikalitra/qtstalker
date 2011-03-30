@@ -116,6 +116,7 @@ class Plot : public QwtPlot
     int _selected;
     PlotMenu *_menu;
     DockWidget *_dock;
+    bool _antiAlias;
 };
 
 #endif

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SETTINGS_SAVE_HPP
-#define SETTINGS_SAVE_HPP
+#ifndef PLUGIN_SETTINGS_SAVE_HPP
+#define PLUGIN_SETTINGS_SAVE_HPP
 
 #include "Plugin.h"
 

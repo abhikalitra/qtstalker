@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef QUOTE_DATABASE_SET_HPP
-#define QUOTE_DATABASE_SET_HPP
+#ifndef PLUGIN_QUOTE_DATABASE_SET_HPP
+#define PLUGIN_QUOTE_DATABASE_SET_HPP
 
 #include <QHash>
 

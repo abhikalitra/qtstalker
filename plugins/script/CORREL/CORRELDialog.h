@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CORREL_DIALOG_HPP
-#define CORREL_DIALOG_HPP
+#ifndef PLUGIN_CORREL_DIALOG_HPP
+#define PLUGIN_CORREL_DIALOG_HPP
 
 #include <QComboBox>
 #include <QLineEdit>

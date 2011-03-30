@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef LINEARREG_DIALOG_HPP
-#define LINEARREG_DIALOG_HPP
+#ifndef PLUGIN_LINEARREG_DIALOG_HPP
+#define PLUGIN_LINEARREG_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

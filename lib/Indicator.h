@@ -65,6 +65,7 @@ class Indicator : public QObject
     int lineCount ();
     Setting * settings ();
     void setTestFlag (int);
+    void remove (QStringList);
 
   public slots:
     int save ();

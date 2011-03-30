@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef THERM_HPP
-#define THERM_HPP
+#ifndef PLUGIN_THERM_HPP
+#define PLUGIN_THERM_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef VOLDIALOG_HPP
-#define VOLDIALOG_HPP
+#ifndef PLUGIN_VOL_DIALOG_HPP
+#define PLUGIN_VOL_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

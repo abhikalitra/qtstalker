@@ -22,7 +22,6 @@
 
 #include "ChartObjectHLine.h"
 #include "DateScaleDraw.h"
-#include "ChartObjectHLineDraw.h"
 #include "Strip.h"
 #include "Globals.h"
 
@@ -37,12 +36,13 @@ ChartObjectHLine::ChartObjectHLine ()
   
   QSettings set(g_globalSettings);
   QString s = set.value("default_chart_object_hline_color", "red").toString();
-  _settings->setData("Color", s);
-  _settings->setData("Type", QString("HLine"));
+  _settings->setData("COLOR", s);
+  _settings->setData("TYPE", QString("HLine"));
 }
 
 ChartObjectHLine::~ChartObjectHLine ()
 {
+  delete _draw;
   if (_dialog)
     delete _dialog;
 }
@@ -50,13 +50,13 @@ ChartObjectHLine::~ChartObjectHLine ()
 void ChartObjectHLine::info (Setting &info)
 {
   info.setData(tr("Type"), tr("HLine"));
-  info.setData(tr("Price"), _settings->data("Price"));
+  info.setData(tr("Price"), _settings->data("PRICE"));
 }
 
 int ChartObjectHLine::highLow (int, int, double &h, double &l)
 {
-  h = _settings->getDouble("Price");
-  l = _settings->getDouble("Price");
+  h = _settings->getDouble("PRICE");
+  l = _settings->getDouble("PRICE");
 
   return 1;
 }
@@ -68,7 +68,7 @@ void ChartObjectHLine::move (QPoint p)
     case _Move:
     {
       QwtScaleMap map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings->setData("Price", map.invTransform((double) p.y()));
+      _settings->setData("PRICE", map.invTransform((double) p.y()));
       
       _draw->plot()->replot();
       break;
@@ -167,7 +167,7 @@ void ChartObjectHLine::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectHLineDialog(_parent, _settings);
+  _dialog = new ChartObjectHLineDialog(_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();
@@ -176,4 +176,19 @@ void ChartObjectHLine::dialog ()
 void ChartObjectHLine::dialogDone ()
 {
   _dialog = 0;
+}
+
+int ChartObjectHLine::isSelected (QPoint p)
+{
+  return _draw->isSelected(p);
+}
+
+void ChartObjectHLine::setZ (int d)
+{
+  _draw->setZ(d);
+}
+
+void ChartObjectHLine::attach (QwtPlot *p)
+{
+  _draw->attach(p);
 }

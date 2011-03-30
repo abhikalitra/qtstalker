@@ -24,6 +24,7 @@
 
 #include "ChartObject.h"
 #include "ChartObjectRetracementDialog.h"
+#include "ChartObjectRetracementDraw.h"
 
 class ChartObjectRetracement : public ChartObject
 {
@@ -35,6 +36,9 @@ class ChartObjectRetracement : public ChartObject
     void info (Setting &);
     int highLow (int start, int end, double &high, double &low);
     void create ();
+    void setZ (int);
+    void attach (QwtPlot *);
+    int isSelected (QPoint);
 
   public slots:
     void move (QPoint);
@@ -45,6 +49,7 @@ class ChartObjectRetracement : public ChartObject
   private:
     ChartObjectRetracementDialog *_dialog;
     int _createFlag;
+    ChartObjectRetracementDraw *_draw;
 };
 
 #endif

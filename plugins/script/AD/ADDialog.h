@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef AD_DIALOG_HPP
-#define AD_DIALOG_HPP
+#ifndef PLUGIN_AD_DIALOG_HPP
+#define PLUGIN_AD_DIALOG_HPP
 
 #include <QComboBox>
 

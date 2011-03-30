@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MDI_HPP
-#define MDI_HPP
+#ifndef PLUGIN_MDI_HPP
+#define PLUGIN_MDI_HPP
 
 #include "Plugin.h"
 

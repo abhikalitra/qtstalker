@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef DATA_WINDOW_DIALOG_HPP
-#define DATA_WINDOW_DIALOG_HPP
+#ifndef PLUGIN_DATA_WINDOW_DIALOG_HPP
+#define PLUGIN_DATA_WINDOW_DIALOG_HPP
 
 #include <QDialog>
 #include <QString>

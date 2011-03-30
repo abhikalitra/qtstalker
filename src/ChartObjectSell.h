@@ -28,6 +28,7 @@
 
 #include "ChartObject.h"
 #include "ChartObjectSellDialog.h"
+#include "ChartObjectSellDraw.h"
 
 class ChartObjectSell : public ChartObject
 {
@@ -39,6 +40,9 @@ class ChartObjectSell : public ChartObject
     void info (Setting &);
     int highLow (int start, int end, double &high, double &low);
     void create ();
+    void setZ (int);
+    void attach (QwtPlot *);
+    int isSelected (QPoint);
 
   public slots:
     void move (QPoint);
@@ -48,6 +52,7 @@ class ChartObjectSell : public ChartObject
 
   private:
     ChartObjectSellDialog *_dialog;
+    ChartObjectSellDraw *_draw;
 };
 
 #endif

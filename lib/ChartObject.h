@@ -27,14 +27,12 @@
 #define CHART_OBJECT_HPP
 
 #include <QStringList>
-#include <QDateTime>
 #include <QPoint>
 #include <QObject>
 #include <QMenu>
 #include <qwt_plot.h>
 
 #include "Setting.h"
-#include "ChartObjectDraw.h"
 
 class ChartObject : public QObject
 {
@@ -62,13 +60,13 @@ class ChartObject : public QObject
     virtual void info (Setting &);
     virtual int highLow (int start, int end, double &high, double &low);
     virtual void create ();
+    virtual void setZ (int);
+    virtual void attach (QwtPlot *);
+    virtual int isSelected (QPoint);
     
     Setting * settings ();
     void setSettings (Setting *);
     ChartObject::Status status ();
-    void setZ (int);
-    void attach (QwtPlot *);
-    int isSelected (QPoint);
     void load ();
     void setParent (QWidget *);
 
@@ -76,6 +74,7 @@ class ChartObject : public QObject
     virtual void move (QPoint);
     virtual void click (int, QPoint);
     virtual void dialog ();
+    
     void deleteChartObject ();
     void deleteChartObject2 ();
     void save ();
@@ -86,7 +85,6 @@ class ChartObject : public QObject
     Status _status;
     Setting *_settings;
     QMenu *_menu;
-    ChartObjectDraw *_draw;
     QAction *_editAction;
     QAction *_deleteAction;
 };

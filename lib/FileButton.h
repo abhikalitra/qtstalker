@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef FILEBUTTON_HPP
-#define FILEBUTTON_HPP
+#ifndef FILE_BUTTON_HPP
+#define FILE_BUTTON_HPP
 
 #include <QPushButton>
 #include <QStringList>

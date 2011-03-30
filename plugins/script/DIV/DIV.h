@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef DIV_HPP
-#define DIV_HPP
+#ifndef PLUGIN_DIV_HPP
+#define PLUGIN_DIV_HPP
 
 #include "Plugin.h"
 

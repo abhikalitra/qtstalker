@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef FI_HPP
-#define FI_HPP
+#ifndef PLUGIN_FI_HPP
+#define PLUGIN_FI_HPP
 
 #include "Plugin.h"
 

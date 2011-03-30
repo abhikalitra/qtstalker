@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CORREL_HPP
-#define CORREL_HPP
+#ifndef PLUGIN_CORREL_HPP
+#define PLUGIN_CORREL_HPP
 
 #include "Plugin.h"
 

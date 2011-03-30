@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef ROC_HPP
-#define ROC_HPP
+#ifndef PLUGIN_ROC_HPP
+#define PLUGIN_ROC_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MOM_HPP
-#define MOM_HPP
+#ifndef PLUGIN_MOM_HPP
+#define PLUGIN_MOM_HPP
 
 #include "Plugin.h"
 

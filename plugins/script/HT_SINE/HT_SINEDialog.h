@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef HT_SINE_DIALOG_HPP
-#define HT_SINE_DIALOG_HPP
+#ifndef PLUGIN_HT_SINE_DIALOG_HPP
+#define PLUGIN_HT_SINE_DIALOG_HPP
 
 #include <QComboBox>
 #include <QTabWidget>

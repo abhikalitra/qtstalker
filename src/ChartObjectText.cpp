@@ -22,7 +22,6 @@
 
 #include "ChartObjectText.h"
 #include "DateScaleDraw.h"
-#include "ChartObjectTextDraw.h"
 #include "Strip.h"
 #include "Globals.h"
 
@@ -36,14 +35,15 @@ ChartObjectText::ChartObjectText ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("Color", set.value("default_chart_object_text_color", "red").toString());
-  _settings->setData("Font", set.value("default_chart_object_text_font", "Helvetica,9,50,0").toString());
-  _settings->setData("Text", set.value("default_chart_object_text_text", "Text").toString());
-  _settings->setData("Type", QString("Text"));
+  _settings->setData("COLOR", set.value("default_chart_object_text_color", "red").toString());
+  _settings->setData("FONT", set.value("default_chart_object_text_font", "Helvetica,9,50,0").toString());
+  _settings->setData("TEXT", set.value("default_chart_object_text_text", "Text").toString());
+  _settings->setData("TYPE", QString("Text"));
 }
 
 ChartObjectText::~ChartObjectText ()
 {
+  delete _draw;
   if (_dialog)
     delete _dialog;
 }
@@ -52,25 +52,25 @@ void ChartObjectText::info (Setting &info)
 {
   info.setData(tr("Type"), tr("Text"));
 
-  QDateTime dt = _settings->dateTime("Date");
+  QDateTime dt = _settings->dateTime("DATE");
   info.setData(tr("D"), dt.toString("yyyy-MM-dd"));
   info.setData(tr("T"), dt.toString("HH:mm:ss"));
 
-  info.setData(tr("Price"), _settings->data("Price"));
+  info.setData(tr("Price"), _settings->data("PRICE"));
   
-  info.setData(tr("Text"), _settings->data("Text"));
+  info.setData(tr("Text"), _settings->data("TEXT"));
 }
 
 int ChartObjectText::highLow (int start, int end, double &h, double &l)
 {
   DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = dsd->x(_settings->dateTime("Date"));
+  int x = dsd->x(_settings->dateTime("DATE"));
 
   if (x < start || x > end)
     return 0;
 
-  h = _settings->getDouble("Price");
-  l = _settings->getDouble("Price");
+  h = _settings->getDouble("PRICE");
+  l = _settings->getDouble("PRICE");
 
   return 1;
 }
@@ -87,10 +87,10 @@ void ChartObjectText::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->setData("Date", dt);
+      _settings->setData("DATE", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings->setData("Price", map.invTransform((double) p.y()));
+      _settings->setData("PRICE", map.invTransform((double) p.y()));
       
       _draw->plot()->replot();
       break;
@@ -189,7 +189,7 @@ void ChartObjectText::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectTextDialog(_parent, _settings);
+  _dialog = new ChartObjectTextDialog(_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();
@@ -198,4 +198,19 @@ void ChartObjectText::dialog ()
 void ChartObjectText::dialogDone ()
 {
   _dialog = 0;
+}
+
+int ChartObjectText::isSelected (QPoint p)
+{
+  return _draw->isSelected(p);
+}
+
+void ChartObjectText::setZ (int d)
+{
+  _draw->setZ(d);
+}
+
+void ChartObjectText::attach (QwtPlot *p)
+{
+  _draw->attach(p);
 }

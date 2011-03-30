@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef LINEARREG_HPP
-#define LINEARREG_HPP
+#ifndef PLUGIN_LINEARREG_HPP
+#define PLUGIN_LINEARREG_HPP
 
 #include "Plugin.h"
 

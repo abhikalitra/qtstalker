@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCRIPT_NEW_DIALOG_HPP
-#define SCRIPT_NEW_DIALOG_HPP
+#ifndef PLUGIN_NEW_DIALOG_HPP
+#define PLUGIN_NEW_DIALOG_HPP
 
 #include "Plugin.h"
 

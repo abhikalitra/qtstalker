@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef GROUP_DATABASE_LOAD_HPP
-#define GROUP_DATABASE_LOAD_HPP
+#ifndef PLUGIN_GROUP_DATABASE_LOAD_HPP
+#define PLUGIN_GROUP_DATABASE_LOAD_HPP
 
 #include "Plugin.h"
 

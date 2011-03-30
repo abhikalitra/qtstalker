@@ -34,16 +34,11 @@ ChartObjectBuyDraw::ChartObjectBuyDraw ()
 void ChartObjectBuyDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-//  QString s = _settings->data("Date");
-//  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
-//  qDebug() << s << dt;
-//qDebug() << _settings->count() << _settings->data("Date");
-  int x = xMap.transform(dsd->x(_settings->dateTime("Date")));
-//  int x = xMap.transform(dsd->x(dt));
+  int x = xMap.transform(dsd->x(_settings->dateTime("DATE")));
 
-  int y = yMap.transform(_settings->getDouble("Price"));
+  int y = yMap.transform(_settings->getDouble("PRICE"));
 
-  p->setBrush(_settings->color("Color"));
+  p->setBrush(_settings->color("COLOR"));
 
   QPolygon arrow;
   arrow.putPoints(0, 7, x, y,
@@ -74,6 +69,6 @@ void ChartObjectBuyDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtSc
                 y - _handleWidth,
                 _handleWidth,
                 _handleWidth,
-                _settings->color("Color"));
+                _settings->color("COLOR"));
   }
 }

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SYMBOL_CURRENT_HPP
-#define SYMBOL_CURRENT_HPP
+#ifndef PLUGIN_SYMBOL_CURRENT_HPP
+#define PLUGIN_SYMBOL_CURRENT_HPP
 
 #include "Plugin.h"
 

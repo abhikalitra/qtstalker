@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MAX_HPP
-#define MAX_HPP
+#ifndef PLUGIN_MAX_HPP
+#define PLUGIN_MAX_HPP
 
 #include "Plugin.h"
 

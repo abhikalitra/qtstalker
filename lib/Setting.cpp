@@ -231,3 +231,15 @@ void Setting::strip (QString &d)
   d = d.remove(QString("|"), Qt::CaseSensitive);
   d = d.remove(QString("'"), Qt::CaseSensitive);
 }
+
+void Setting::copy (Setting *d)
+{
+  d->clear();
+  
+  QHashIterator<QString, QString> it(dict);
+  while (it.hasNext())
+  {
+    it.next();
+    d->setData(it.key(), it.value());
+  }
+}

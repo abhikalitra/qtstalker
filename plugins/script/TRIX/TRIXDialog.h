@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef TRIX_DIALOG_HPP
-#define TRIX_DIALOG_HPP
+#ifndef PLUGIN_TRIX_DIALOG_HPP
+#define PLUGIN_TRIX_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

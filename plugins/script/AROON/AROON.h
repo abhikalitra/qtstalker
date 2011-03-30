@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef AROON_HPP
-#define AROON_HPP
+#ifndef PLUGIN_AROON_HPP
+#define PLUGIN_AROON_HPP
 
 #include "Plugin.h"
 

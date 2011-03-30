@@ -22,7 +22,6 @@
 
 #include "ChartObjectTLine.h"
 #include "DateScaleDraw.h"
-#include "ChartObjectTLineDraw.h"
 #include "Strip.h"
 #include "Globals.h"
 
@@ -38,13 +37,14 @@ ChartObjectTLine::ChartObjectTLine ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("Color", set.value("default_chart_object_tline_color", "red").toString());
-  _settings->setData("Extend", set.value("default_chart_object_tline_extend", 0).toInt());
-  _settings->setData("Type", QString("TLine"));
+  _settings->setData("COLOR", set.value("default_chart_object_tline_color", "red").toString());
+  _settings->setData("EXTEND", set.value("default_chart_object_tline_extend", 0).toInt());
+  _settings->setData("TYPE", QString("TLine"));
 }
 
 ChartObjectTLine::~ChartObjectTLine ()
 {
+  delete _draw;
   if (_dialog)
     delete _dialog;
 }
@@ -53,38 +53,38 @@ void ChartObjectTLine::info (Setting &info)
 {
   info.setData(tr("Type"), tr("TLine"));
 
-  QDateTime dt = _settings->dateTime("Date");
+  QDateTime dt = _settings->dateTime("DATE");
   info.setData(tr("SD"), dt.toString("yyyy-MM-dd"));
   info.setData(tr("ST"), dt.toString("HH:mm:ss"));
 
-  dt = _settings->dateTime("Date2");
+  dt = _settings->dateTime("DATE2");
   info.setData(tr("ED"), dt.toString("yyyy-MM-dd"));
   info.setData(tr("ET"), dt.toString("HH:mm:ss"));
   
-  info.setData(tr("SP"), _settings->data("Price"));
+  info.setData(tr("SP"), _settings->data("PRICE"));
   
-  info.setData(tr("EP"), _settings->data("Price2"));
+  info.setData(tr("EP"), _settings->data("PRICE2"));
 }
 
 int ChartObjectTLine::highLow (int start, int end, double &h, double &l)
 {
   DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = dsd->x(_settings->dateTime("Date"));
-  int x2 = dsd->x(_settings->dateTime("Date2"));
+  int x = dsd->x(_settings->dateTime("DATE"));
+  int x2 = dsd->x(_settings->dateTime("DATE2"));
 
   if ((x >= start && x <= end) || ((x2 >= start && x2 <= end)))
   {
     h = -99999999.0;
     l = 99999999.0;
 
-    double tp = _settings->getDouble("Price");
+    double tp = _settings->getDouble("PRICE");
     if (tp > h)
       h = tp;
 
     if (tp < l)
       l = tp;
 
-    tp = _settings->getDouble("Price2");
+    tp = _settings->getDouble("PRICE2");
     if (tp > h)
       h = tp;
 
@@ -109,15 +109,15 @@ void ChartObjectTLine::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->setData("Date", dt);
+      _settings->setData("DATE", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings->setData("Price", map.invTransform((double) p.y()));
+      _settings->setData("PRICE", map.invTransform((double) p.y()));
 
       if (_createFlag)
       {
-        _settings->setData("Date2", dt);
-        _settings->setData("Price2", _settings->data("Price"));
+        _settings->setData("DATE2", dt);
+        _settings->setData("PRICE2", _settings->data("PRICE"));
       }
       
       _draw->plot()->replot();
@@ -131,10 +131,10 @@ void ChartObjectTLine::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) _draw->plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->setData("Date2", dt);
+      _settings->setData("DATE2", dt);
 
       map = _draw->plot()->canvasMap(QwtPlot::yRight);
-      _settings->setData("Price2", map.invTransform((double) p.y()));
+      _settings->setData("PRICE2", map.invTransform((double) p.y()));
       
       _draw->plot()->replot();
       break;
@@ -262,7 +262,7 @@ void ChartObjectTLine::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectTLineDialog(_parent, _settings);
+  _dialog = new ChartObjectTLineDialog(_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();
@@ -271,4 +271,19 @@ void ChartObjectTLine::dialog ()
 void ChartObjectTLine::dialogDone ()
 {
   _dialog = 0;
+}
+
+int ChartObjectTLine::isSelected (QPoint p)
+{
+  return _draw->isSelected(p);
+}
+
+void ChartObjectTLine::setZ (int d)
+{
+  _draw->setZ(d);
+}
+
+void ChartObjectTLine::attach (QwtPlot *p)
+{
+  _draw->attach(p);
 }

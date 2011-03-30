@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef INDICATOR_RUN_HPP
-#define INDICATOR_RUN_HPP
+#ifndef PLUGIN_INDICATOR_RUN_HPP
+#define PLUGIN_INDICATOR_RUN_HPP
 
 #include "Plugin.h"
 

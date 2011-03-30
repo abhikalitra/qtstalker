@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef MAMA_DIALOG_HPP
-#define MAMA_DIALOG_HPP
+#ifndef PLUGIN_MAMA_DIALOG_HPP
+#define PLUGIN_MAMA_DIALOG_HPP
 
 #include <QComboBox>
 #include <QDoubleSpinBox>

@@ -21,6 +21,7 @@
 
 #include "Script.h"
 #include "CommandThread.h"
+#include "DataDataBase.h"
 
 #include <QByteArray>
 #include <QtDebug>
@@ -308,4 +309,43 @@ void Script::setComment (QString d)
 QString & Script::comment ()
 {
   return _comment;
+}
+
+int Script::load ()
+{
+  if (_name.isEmpty())
+    return 1;
+
+  DataDataBase db("scripts");
+  Setting set;
+  if (db.load(_name, &set))
+    return 1;
+
+  setCommand(set.data("COMMAND"));
+  setFile(set.data("FILE"));
+  setMinutes(set.getInt("MINUTES"));
+  setLastRun(set.data("LAST_RUN"));
+
+  return 0;
+}
+
+int Script::save ()
+{
+  if (_name.isEmpty())
+    return 1;
+
+  Setting set;
+  set.setData("COMMAND", command());
+  set.setData("FILE", file());
+  set.setData("MINUTES", minutes());
+  set.setData("LAST_RUN", lastRun());
+
+  DataDataBase db("scripts");
+  db.transaction();
+  db.removeName(name());  
+  if (db.save(_name, &set))
+    return 1;
+  db.commit();
+
+  return 0;
 }

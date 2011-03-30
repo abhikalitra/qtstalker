@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PLOT_DELETE_HPP
-#define PLOT_DELETE_HPP
+#ifndef PLUGIN_PLOT_DELETE_HPP
+#define PLUGIN_PLOT_DELETE_HPP
 
 #include "Plugin.h"
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef VFI_DIALOG_HPP
-#define VFI_DIALOG_HPP
+#ifndef PLUGIN_VFI_DIALOG_HPP
+#define PLUGIN_VFI_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>

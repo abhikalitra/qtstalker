@@ -20,7 +20,7 @@
  */
 
 #include "SCRIPT_DATABASE_SAVE.h"
-#include "ScriptDataBase.h"
+#include "Script.h"
 
 #include <QtDebug>
 
@@ -38,9 +38,7 @@ int SCRIPT_DATABASE_SAVE::command (Command *command)
 
   Script script;
   script.setName(command->parm("NAME"));
-
-  ScriptDataBase db;
-  if (db.load(&script))
+  if (script.load())
   {
     qDebug() << _plugin << "::command: load error" << command->parm("NAME");
     return 1;
@@ -70,7 +68,7 @@ int SCRIPT_DATABASE_SAVE::command (Command *command)
       break;
   }
 
-  if (db.save(&script))
+  if (script.save())
   {
     qDebug() << _plugin << "::command: save error";
     return 1;

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CUS_HPP
-#define CUS_HPP
+#ifndef PLUGIN_CUS_HPP
+#define PLUGIN_CUS_HPP
 
 #include "Plugin.h"
 

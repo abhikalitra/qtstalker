@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SAR_HPP
-#define SAR_HPP
+#ifndef PLUGIN_SAR_HPP
+#define PLUGIN_SAR_HPP
 
 #include "Plugin.h"
 

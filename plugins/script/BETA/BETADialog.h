@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef BETA_DIALOG_HPP
-#define BETA_DIALOG_HPP
+#ifndef PLUGIN_BETA_DIALOG_HPP
+#define PLUGIN_BETA_DIALOG_HPP
 
 #include <QComboBox>
 #include <QLineEdit>

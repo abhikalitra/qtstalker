@@ -20,7 +20,7 @@
  */
 
 #include "CHART_OBJECT_RETRACEMENT.h"
-#include "ChartObjectDataBase.h"
+#include "ChartObject.h"
 
 #include <QtDebug>
 
@@ -66,24 +66,25 @@ int CHART_OBJECT_RETRACEMENT::command (Command *command)
 
   QStringList typeList;
   typeList << "RO" << "RW";
-  Setting co;
+  ChartObject tco;
+  Setting *co = tco.settings();
   int saveFlag = 0;
   switch (typeList.indexOf(type))
   {
     case 0: // RO
     {
       QString key = "-" + QString::number(i->chartObjectCount() + 1);
-      co.setData("Type", QString("Retracement"));
-      co.setData("ID", key);
-      co.setData("RO", 1);
+      co->setData("TYPE", QString("Retracement"));
+      co->setData("ID", key);
+      co->setData("RO", 1);
       break;
     }
     case 1:
-      co.setData("Type", QString("Retracement"));
-      co.setData("ID", command->parm("NAME"));
-      co.setData("Indicator", command->parm("INDICATOR"));
-      co.setData("Exchange", command->parm("EXCHANGE"));
-      co.setData("Symbol", command->parm("SYMBOL"));
+      co->setData("TYPE", QString("Retracement"));
+      co->setData("ID", command->parm("NAME"));
+      co->setData("INDICATOR", command->parm("INDICATOR"));
+      co->setData("EXCHANGE", command->parm("EXCHANGE"));
+      co->setData("SYMBOL", command->parm("SYMBOL"));
       saveFlag++;
       break;
     default:
@@ -99,7 +100,7 @@ int CHART_OBJECT_RETRACEMENT::command (Command *command)
     qDebug() << _plugin << "::command: invalid DATE" << command->parm("DATE");
     return 1;
   }
-  co.setData("Date", command->parm("DATE"));
+  co->setData("DATE", command->parm("DATE"));
 
   // verify date2
   dt = QDateTime::fromString(command->parm("DATE2"), Qt::ISODate);
@@ -108,7 +109,7 @@ int CHART_OBJECT_RETRACEMENT::command (Command *command)
     qDebug() << _plugin << "::command: invalid DATE2" << command->parm("DATE2");
     return 1;
   }
-  co.setData("Date2", command->parm("DATE2"));
+  co->setData("DATE2", command->parm("DATE2"));
 
   // verify color
   QColor color(command->parm("COLOR"));
@@ -117,7 +118,7 @@ int CHART_OBJECT_RETRACEMENT::command (Command *command)
     qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
-  co.setData("Color", command->parm("COLOR"));
+  co->setData("COLOR", command->parm("COLOR"));
 
   // verify high
   bool ok;
@@ -127,7 +128,7 @@ int CHART_OBJECT_RETRACEMENT::command (Command *command)
     qDebug() << _plugin << "::command: invalid HIGH" << command->parm("HIGH");
     return 1;
   }
-  co.setData("High", command->parm("HIGH"));
+  co->setData("HIGH", command->parm("HIGH"));
 
   // verify low
   command->parm("LOW").toDouble(&ok);
@@ -136,7 +137,7 @@ int CHART_OBJECT_RETRACEMENT::command (Command *command)
     qDebug() << _plugin << "::command: invalid LOW" << command->parm("LOW");
     return 1;
   }
-  co.setData("Low", command->parm("LOW"));
+  co->setData("LOW", command->parm("LOW"));
 
   // verify all the possible retracement values
   int line = 1;
@@ -150,17 +151,16 @@ int CHART_OBJECT_RETRACEMENT::command (Command *command)
       continue;
     }
 
-    QString key = "Line" + QString::number(line);
-    co.setData(key, command->parm(k));
+    QString key = "LINE" + QString::number(line);
+    co->setData(key, command->parm(k));
   }
 
   if (saveFlag)
-  {
-    ChartObjectDataBase db;
-    db.save(&co);
-  }
+    tco.save();
 
-  i->addChartObject(co);
+  Setting set;
+  co->copy(&set);
+  i->addChartObject(set);
 
   command->setReturnCode("0");
 

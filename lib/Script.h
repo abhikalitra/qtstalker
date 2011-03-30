@@ -74,6 +74,8 @@ class Script : public QObject
     QString & type ();
     void setComment (QString);
     QString & comment ();
+    int load ();
+    int save ();
     
   public slots:
     void readFromStdout ();

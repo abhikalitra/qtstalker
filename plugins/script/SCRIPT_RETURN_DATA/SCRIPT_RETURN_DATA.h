@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef SCRIPT_RETURN_DATA_HPP
-#define SCRIPT_RETURN_DATA_HPP
+#ifndef PLUGIN_SCRIPT_RETURN_DATA_HPP
+#define PLUGIN_SCRIPT_RETURN_DATA_HPP
 
 #include "Plugin.h"
 

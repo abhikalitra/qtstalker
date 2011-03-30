@@ -2324,6 +2324,10 @@ eg. perl -l -T</source>
         <source>Run every X minutes</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Database error. Script not saved.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptLaunchButton</name>
@@ -2834,6 +2838,14 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter new rule</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -20,7 +20,7 @@
  */
 
 #include "CHART_OBJECT_HLINE.h"
-#include "ChartObjectDataBase.h"
+#include "ChartObject.h"
 
 #include <QtDebug>
 
@@ -57,24 +57,25 @@ int CHART_OBJECT_HLINE::command (Command *command)
 
   QStringList typeList;
   typeList << "RO" << "RW";
-  Setting co;
+  ChartObject tco;
+  Setting *co = tco.settings();
   int saveFlag = 0;
   switch (typeList.indexOf(type))
   {
     case 0: // RO
     {
       QString key = "-" + QString::number(i->chartObjectCount() + 1);
-      co.setData("Type", QString("HLine"));
-      co.setData("ID", key);
-      co.setData("RO", 1);
+      co->setData("TYPE", QString("HLine"));
+      co->setData("ID", key);
+      co->setData("RO", 1);
       break;
     }
     case 1:
-      co.setData("Type", QString("HLine"));
-      co.setData("ID", command->parm("NAME"));
-      co.setData("Indicator", command->parm("INDICATOR"));
-      co.setData("Exchange", command->parm("EXCHANGE"));
-      co.setData("Symbol", command->parm("SYMBOL"));
+      co->setData("TYPE", QString("HLine"));
+      co->setData("ID", command->parm("NAME"));
+      co->setData("INDICATOR", command->parm("INDICATOR"));
+      co->setData("EXCHANGE", command->parm("EXCHANGE"));
+      co->setData("SYMBOL", command->parm("SYMBOL"));
       saveFlag++;
       break;
     default:
@@ -91,7 +92,7 @@ int CHART_OBJECT_HLINE::command (Command *command)
     qDebug() << _plugin << "::command: invalid PRICE" << command->parm("PRICE");
     return 1;
   }
-  co.setData("Price", command->parm("PRICE"));
+  co->setData("PRICE", command->parm("PRICE"));
 
   // verify color
   QColor color(command->parm("COLOR"));
@@ -100,15 +101,14 @@ int CHART_OBJECT_HLINE::command (Command *command)
     qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
-  co.setData("Color", command->parm("COLOR"));
+  co->setData("COLOR", command->parm("COLOR"));
 
   if (saveFlag)
-  {
-    ChartObjectDataBase db;
-    db.save(&co);
-  }
+    tco.save();
 
-  i->addChartObject(co);
+  Setting set;
+  co->copy(&set);
+  i->addChartObject(set);
 
   command->setReturnCode("0");
 

@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef QUOTE_DATABASE_GET_HPP
-#define QUOTE_DATABASE_GET_HPP
+#ifndef PLUGIN_QUOTE_DATABASE_GET_HPP
+#define PLUGIN_QUOTE_DATABASE_GET_HPP
 
 #include "Plugin.h"
 
