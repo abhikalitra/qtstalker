@@ -60,7 +60,7 @@ request to create an indicator is made to STDOUT. The request is a
 string in
 the proper format to create a Close indicator.</p>
 <p></p>
-<p>print STDOUT 'PLUGIN=DOHLCVI,METHOD=C,NAME=close_0';</p>
+<pre>print STDOUT 'PLUGIN=DOHLCVI,METHOD=C,NAME=close_0';</pre>
 <p></p>
 <p>Each time we communicate with Qtstalker, a return code is returned
 from
@@ -78,9 +78,9 @@ the buffer is cleared.</span><br>
 <p></p>
 <p>$a = &lt;STDIN&gt;; </p>
 <p></p>
-<p>The return code is a string with a carraige return, so we strip off
+<p>The return code is a string with a carriage return, so we strip off
 the
-carraige return so we can do a comparison and act accordingly. In perl
+carriage return so we can do a comparison and act accordingly. In perl
 we use
 the chomp function.</p>
 <p></p>
@@ -89,7 +89,7 @@ the chomp function.</p>
 <p>Now we find out what the return code is. If failure we exit the
 script.</p>
 <p></p>
-<p>if ($a ne "0")</p>
+<p>if ($a ne '0')</p>
 <p>{</p>
 <p>exit;</p>
 <p>}</p>
@@ -101,19 +101,11 @@ our Close
 indicator. Consult the Indicator API for the plot command format for
 details.</p>
 <p></p>
-<p>print STDOUT 'PLUGIN=INDICATOR_PLOT_ALL,NAME=close_0,STYLE=Line,COLOR=yellow,Z=1'; </p>
-<p></p>
+<pre>print STDOUT 'PLUGIN=INDICATOR_PLOT_ALL,NAME=close_0,STYLE=Line,COLOR=yellow,Z=1'; </pre>
 <p>Once again we have to check to see if our plot command was
 successful. The
 procedure is the same as the above example.</p>
-<p></p>
-<p>$a = &lt;STDIN&gt;; </p>
-<p>chomp($a);</p>
-<p>if ($a ne "0")</p>
-<p>{</p>
-<p>exit;</p>
-<p>}</p>
-<p></p>
+<pre>$a = &lt;STDIN&gt;; chomp($a); if ($a ne '0') { exit; }</pre>
 <p>If we are here then our script was a success. Almost any indicator
 can be
 created in this manner. There are over a hundred indicators, and
