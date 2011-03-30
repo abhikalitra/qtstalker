@@ -167,10 +167,9 @@ void YahooDialog::done ()
 
 void YahooDialog::downloadStart ()
 {
-  QuoteDataBase qdb;
-
   if (_symbolBox->isChecked())
   {
+    QuoteDataBase qdb;
     QList<BarData> l;
     BarData bd;
     bd.setExchange("YAHOO");
@@ -190,51 +189,15 @@ void YahooDialog::downloadStart ()
     }
   }
 
-  YahooSymbol ys;
-  QList<Setting> symbols;
-  int loop = 0;
-  for (; loop < _symbolList.count(); loop++)
+  YahooHistory *thread = new YahooHistory(this);
+  thread->setSymbols(_symbolList);
+  thread->setDateCheck(_dateBox->isChecked());
+  if (_dateBox->isChecked())
   {
-    Setting symbol;
-    symbol.setData("SYMBOL", _symbolList.at(loop));
-
-    ys.data(symbol);
-
-    if (_dateBox->isChecked())
-    {
-      BarData bd;
-      bd.setExchange(symbol.data("EXCHANGE"));
-      bd.setSymbol(symbol.data("SYMBOL"));
-      bd.setBarLength(BarLength::_DAILY);
-      bd.setRange(DateRange::_DAY);
-
-      if (qdb.getBars(&bd))
-      {
-        symbol.setData("DATE_START", QString("1950-01-01 00:00:00"));
-        symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
-      }
-      else
-      {
-        Bar *bar = bd.bar(0);
-        if (! bar)
-          continue;
-
-        symbol.setData("DATE_START", bar->date().toString(Qt::ISODate));
-        symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
-      }
-    }
-    else
-    {
-      symbol.setData("DATE_START", _sdate->dateTime().toString(Qt::ISODate));
-      symbol.setData("DATE_END", _edate->dateTime().toString(Qt::ISODate));
-    }
-    
-    symbol.setData("ADJUSTMENT", _adjustment->isChecked());
-
-    symbols.append(symbol);
+    thread->setStartDate(_sdate->dateTime());
+    thread->setEndDate(_edate->dateTime());
   }
-
-  YahooHistory *thread = new YahooHistory(this, symbols);
+  thread->setAdjustment(_adjustment->isChecked());
   connect(thread, SIGNAL(signalMessage(QString)), _log, SLOT(append(const QString &)));
   connect(thread, SIGNAL(finished()), this, SLOT(downloadDone()));
   connect(this, SIGNAL(signalStop()), thread, SLOT(stop()));

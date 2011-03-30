@@ -22,6 +22,7 @@
 #include "NewIndicatorDialog.h"
 #include "Globals.h"
 #include "PluginFactory.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 #include <QLineEdit>
@@ -112,15 +113,16 @@ void NewIndicatorDialog::loadSettings ()
   Dialog::loadSettings();
 
   QStringList l;
-  QSettings db(g_globalSettings);
-  l = db.value("indicator_plugins").toStringList();
+  QSettings set(g_globalSettings);
+  l = set.value("indicator_plugins").toStringList();
   l.sort();
-  
   _indicator->addItems(l);
+
+  DataDataBase db("indicators");
+  db.names(l);
   _items = l;
 
   _name->clear();
   _name->addItems(_items);
   _name->clearEditText();
 }
-

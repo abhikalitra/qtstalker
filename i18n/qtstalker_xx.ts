@@ -1046,6 +1046,14 @@ eg. perl -l -T</source>
         <source>Plot Font</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>App restart required to take effect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Antialias Plotting</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfirmDialog</name>

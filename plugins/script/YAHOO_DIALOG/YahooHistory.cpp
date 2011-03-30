@@ -22,14 +22,17 @@
 #include "YahooHistory.h"
 #include "BarData.h"
 #include "QuoteDataBase.h"
+#include "YahooSymbol.h"
+#include "DateRange.h"
 
 #include <QDebug>
 #include <QtNetwork>
 
-YahooHistory::YahooHistory (QObject *p, QList<Setting> l) : QThread (p)
+YahooHistory::YahooHistory (QObject *p) : QThread (p)
 {
-  _symbols = l;
   _stopFlag = FALSE;
+  _dateCheck = FALSE;
+  _adjustment = FALSE;
 
   connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
@@ -46,7 +49,7 @@ void YahooHistory::run ()
       break;
     }
     
-    Setting symbol = _symbols.at(loop);
+    Setting symbol = getSymbol(loop);
     QDateTime sd = QDateTime::fromString(symbol.data("DATE_START"), Qt::ISODate);
     QDateTime ed = QDateTime::fromString(symbol.data("DATE_END"), Qt::ISODate);
 
@@ -67,8 +70,6 @@ void YahooHistory::run ()
     QByteArray ba = reply->readAll();
     parse(ba, symbol);
   }
-
-//  emit signalDone();
 }
 
 void YahooHistory::getUrl (QDateTime &sd, QDateTime &ed, Setting &data, QString &url)
@@ -264,4 +265,72 @@ void YahooHistory::downloadName (Setting &data)
 void YahooHistory::stop ()
 {
   _stopFlag = TRUE;
+}
+
+void YahooHistory::setSymbols (QStringList &l)
+{
+  _symbols = l;
+}
+
+void YahooHistory::setDateCheck (bool d)
+{
+  _dateCheck = d;
+}
+
+void YahooHistory::setStartDate (QDateTime d)
+{
+  _startDate = d;
+}
+
+void YahooHistory::setEndDate (QDateTime d)
+{
+  _endDate = d;
+}
+
+void YahooHistory::setAdjustment (bool d)
+{
+  _adjustment = d;
+}
+
+Setting YahooHistory::getSymbol (int pos)
+{
+  YahooSymbol ys;
+  Setting symbol;
+  symbol.setData("SYMBOL", _symbols.at(pos));
+
+  ys.data(symbol);
+
+  if (_dateCheck)
+  {
+    BarData bd;
+    bd.setExchange(symbol.data("EXCHANGE"));
+    bd.setSymbol(symbol.data("SYMBOL"));
+    bd.setBarLength(BarLength::_DAILY);
+    bd.setRange(DateRange::_DAY);
+
+    QuoteDataBase qdb;
+    if (qdb.getBars(&bd))
+    {
+      symbol.setData("DATE_START", QString("1950-01-01 00:00:00"));
+      symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
+    }
+    else
+    {
+      Bar *bar = bd.bar(0);
+      if (! bar)
+        return symbol;
+
+      symbol.setData("DATE_START", bar->date().toString(Qt::ISODate));
+      symbol.setData("DATE_END", QDateTime::currentDateTime().toString(Qt::ISODate));
+    }
+  }
+  else
+  {
+    symbol.setData("DATE_START", _startDate.toString(Qt::ISODate));
+    symbol.setData("DATE_END", _endDate.toString(Qt::ISODate));
+  }
+
+  symbol.setData("ADJUSTMENT", _adjustment);
+
+  return symbol;
 }

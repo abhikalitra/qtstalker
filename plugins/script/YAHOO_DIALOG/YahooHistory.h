@@ -25,6 +25,7 @@
 #include <QThread>
 #include <QDateTime>
 #include <QList>
+#include <QStringList>
 
 #include "Setting.h"
 
@@ -34,13 +35,18 @@ class YahooHistory : public QThread
 
   signals:
     void signalMessage (QString);
-//    void signalDone ();
   
   public:
-    YahooHistory (QObject *, QList<Setting>);
+    YahooHistory (QObject *);
     void getUrl (QDateTime &, QDateTime &, Setting &, QString &);
     void parse (QByteArray &, Setting &);
     void downloadName (Setting &);
+    void setSymbols (QStringList &);
+    void setDateCheck (bool);
+    void setStartDate (QDateTime);
+    void setEndDate (QDateTime);
+    void setAdjustment (bool);
+    Setting getSymbol (int);
 
   public slots:
     void stop ();
@@ -50,7 +56,11 @@ class YahooHistory : public QThread
 
   private:
     int _stopFlag;
-    QList<Setting> _symbols;
+    QStringList _symbols;
+    bool _dateCheck;
+    bool _adjustment;
+    QDateTime _startDate;
+    QDateTime _endDate;
 };
 
 #endif
